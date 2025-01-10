@@ -49,25 +49,25 @@ static int _smallmap_cargo_count;    ///< Number of cargos in the link stats leg
 static uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 
 /** Macro for ordinary entry of LegendAndColour */
-#define MK(a, b) {a, b, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, false}
+#define MK(a, b) {a, b, IT_INVALID, 0, INVALID_COMPANY, true, false, false}
 
 /** Macro for a height legend entry with configurable colour. */
-#define MC(col_break)  {0, STR_TINY_BLACK_HEIGHT, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, col_break}
+#define MC(col_break)  {0, STR_TINY_BLACK_HEIGHT, IT_INVALID, 0, INVALID_COMPANY, true, false, col_break}
 
 /** Macro for non-company owned property entry of LegendAndColour */
-#define MO(a, b) {a, b, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, false}
+#define MO(a, b) {a, b, IT_INVALID, 0, INVALID_COMPANY, true, false, false}
 
 /** Macro used for forcing a rebuild of the owner legend the first time it is used. */
-#define MOEND() {0, 0, INVALID_INDUSTRYTYPE, 0, OWNER_NONE, true, true, false}
+#define MOEND() {0, STR_NULL, IT_INVALID, 0, OWNER_NONE, true, true, false}
 
 /** Macro for end of list marker in arrays of LegendAndColour */
-#define MKEND() {0, STR_NULL, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, true, false}
+#define MKEND() {0, STR_NULL, IT_INVALID, 0, INVALID_COMPANY, true, true, false}
 
 /**
  * Macro for break marker in arrays of LegendAndColour.
  * It will have valid data, though
  */
-#define MS(a, b) {a, b, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, true}
+#define MS(a, b) {a, b, IT_INVALID, 0, INVALID_COMPANY, true, false, true}
 
 /** Legend text giving the colours to look for on the minimap */
 static LegendAndColour _legend_land_contours[] = {
@@ -166,7 +166,7 @@ static uint16_t _industry_to_name_string_width[NUM_INDUSTRYTYPES];
 /** Show heightmap in industry and owner mode of smallmap window. */
 bool _smallmap_show_heightmap = false;
 /** Highlight a specific industry type */
-static IndustryType _smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
+static IndustryType _smallmap_industry_highlight = IT_INVALID;
 /** State of highlight blinking */
 static bool _smallmap_industry_highlight_state;
 /** For connecting company ID to position in owner list (small map legend) */
@@ -1120,7 +1120,7 @@ void SmallMapWindow::SetupWidgetData()
 
 SmallMapWindow::SmallMapWindow(WindowDesc &desc, int window_number) : Window(desc), refresh(GUITimer())
 {
-	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
+	_smallmap_industry_highlight = IT_INVALID;
 	this->overlay = std::make_unique<LinkGraphOverlay>(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
 	this->CreateNestedTree();
 	this->LowerWidget(WID_SM_CONTOUR + this->map_type);
@@ -1466,7 +1466,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 /* virtual */ void SmallMapWindow::OnMouseOver([[maybe_unused]] Point pt, WidgetID widget)
 {
-	IndustryType new_highlight = INVALID_INDUSTRYTYPE;
+	IndustryType new_highlight = IT_INVALID;
 	if (widget == WID_SM_LEGEND && this->map_type == SMT_INDUSTRY) {
 		int industry_pos = GetPositionOnLegend(pt);
 		if (industry_pos >= 0 && industry_pos < _smallmap_industry_count) {
@@ -1679,7 +1679,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 uint SmallMapWindow::GetRefreshPeriod() const
 {
-	if (_smallmap_industry_highlight != INVALID_INDUSTRYTYPE) return BLINK_PERIOD;
+	if (_smallmap_industry_highlight != IT_INVALID) return BLINK_PERIOD;
 
 	switch (map_type) {
 		case SMT_CONTOUR:
@@ -1696,7 +1696,7 @@ uint SmallMapWindow::GetRefreshPeriod() const
 
 uint SmallMapWindow::PausedAdjustRefreshTimeDelta(uint delta_ms) const
 {
-	if (_smallmap_industry_highlight != INVALID_INDUSTRYTYPE) return delta_ms;
+	if (_smallmap_industry_highlight != IT_INVALID) return delta_ms;
 
 	switch (map_type) {
 		case SMT_CONTOUR:

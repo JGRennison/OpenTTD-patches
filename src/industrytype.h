@@ -198,14 +198,12 @@ inline IndustryGfx GetTranslatedIndustryTileID(IndustryGfx gfx)
 	 * will never be assigned as a tile index and is only required in order to do some
 	 * tests while building the industry (as in WATER REQUIRED */
 	if (gfx != 0xFF) {
-		dbg_assert(gfx < INVALID_INDUSTRYTILE);
+		dbg_assert(gfx < NUM_INDUSTRYTILES);
 		const IndustryTileSpec *it = &_industry_tile_specs[gfx];
 		return it->grf_prop.override == INVALID_INDUSTRYTILE ? gfx : it->grf_prop.override;
 	} else {
 		return gfx;
 	}
 }
-
-static const uint8_t IT_INVALID = 255;
 
 #endif /* INDUSTRYTYPE_H */

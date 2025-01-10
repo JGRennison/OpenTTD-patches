@@ -134,7 +134,7 @@ const IndustrySpec *GetIndustrySpec(IndustryType thistype)
  */
 const IndustryTileSpec *GetIndustryTileSpec(IndustryGfx gfx)
 {
-	assert(gfx < INVALID_INDUSTRYTILE);
+	assert(gfx < NUM_INDUSTRYTILES);
 	return &_industry_tile_specs[gfx];
 }
 
