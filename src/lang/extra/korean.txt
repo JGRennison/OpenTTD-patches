@@ -604,27 +604,27 @@ STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :없음
 
 STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE}사용자 도시 영역
 STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :사용자 도시 영역 계산 사용: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :도시가 생성한 도시 구역의 크기를 수동으로 설정할 수 있습니다. 사용자 도시 구역 설정의 기본값은 기본 도시 성장과 매우 비슷합니다. 일부 구역은 조금만 바꿔도 되지만 구역 0은 특히 크게 지정하면 효과를 크게 볼 수 있습니다.
-STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :도시의 0구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :도시의 0구역(인도가 없는 최외곽 도로)에 적용할 계수값입니다. 이 값은 크게 주면 효과를 크게 볼 수 있습니다.
-STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :도시의 1구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :도시의 1구역(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :도시의 2구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :도시의 2구역(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :도시의 3구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :도시의 4구역(가로수가 있는 도로의 내부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :도시의 4구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :도시의 4구역(가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :대도시의 0구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :대도시의 0구역(인도가 없는 최외곽 도로)에 적용할 계수값입니다. 이 값은 크게 주면 효과를 크게 볼 수 있습니다.
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :대도시의 1구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :대도시의 1구역(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :대도시의 2구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :대도시의 2구역(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :대도시의 3구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :대도시의 4구역(가로수가 있는 도로의 내부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
-STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :대도시의 4구역에 적용할 계수: {STRING}
-STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :대도시의 4구역(가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :도시가 생성한 도시 구역의 크기를 수동으로 설정할 수 있습니다. 사용자 도시 구역 설정의 기본값은 기본 도시 성장과 매우 비슷합니다. 일부 구역은 조금만 바꿔도 되지만 대도시/도시의 가장자리 구역(0구역)은 특히 크게 지정하면 효과를 크게 볼 수 있습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :도시의 가장자리 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :도시의 가장자리 구역(0구역, 인도가 없는 최외곽 도로)에 적용할 계수값입니다. 이 값은 크게 주면 효과를 크게 볼 수 있습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :도시의 교외 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :도시의 교외 구역(1구역, 인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :도시의 바깥쪽 시내 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :도시의 바깥쪽 시내 구역(2구역, 인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :도시의 안쪽 시내 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :도시의 안쪽 시내 구역(3구역, 가로수가 있는 도로의 내부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :도시의 도시 중심 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :도시의 도시 중심 구역(4구역, 가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :대도시의 가장자리 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :대도시의 가장자리 구역(0구역, 인도가 없는 최외곽 도로)에 적용할 계수값입니다. 이 값은 크게 주면 효과를 크게 볼 수 있습니다.
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :대도시의 교외 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :대도시의 교외 구역(1구역, 인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :대도시의 바깥쪽 시내 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :대도시의 바깥쪽 시내 구역(2구역, 인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :대도시의 안쪽 시내 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :대도시의 안쪽 시내 구역(3구역, 가로수가 있는 도로의 내부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :대도시의 도시 중심 구역에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :대도시의 도시 중심 구역(4구역, 가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.{}이 계산된 도시 성장 속도의 비율에다가 지난 달에 운송된 승객과 우편의 비율을 곱합니다. 이 설정은 도시의 성장 속도를 감소시킬 뿐, 증가시키지는 않습니다.
