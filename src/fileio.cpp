@@ -55,6 +55,7 @@ static const char * const _subdirs[] = {
 	"game" PATHSEP "library" PATHSEP,
 	"screenshot" PATHSEP,
 	"social_integration" PATHSEP,
+	"docs" PATHSEP,
 };
 static_assert(lengthof(_subdirs) == NUM_SUBDIRS);
 
