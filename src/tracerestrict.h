@@ -1223,7 +1223,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	}
 
 	/** Test whether vehicle ID is already an occupant */
-	bool IsOccupant(VehicleID id) const {
+	bool IsOccupant(VehicleID id) const
+	{
 		for (size_t i = 0; i < this->occupants.size(); i++) {
 			if (this->occupants[i] == id) return true;
 		}
