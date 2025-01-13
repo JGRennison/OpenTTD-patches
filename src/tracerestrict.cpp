@@ -3106,8 +3106,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
  * @param flags type of operation
  * @param p1   index of array group
  *   - p1 bit 0-15 : GroupID
- *   - p1 bit 16: 0 - Rename group
- *                1 - Change max occupancy
+ *   - p1 bit 16-31: Operation (TraceRestrictAlterSlotOperation)
  * @param p2   new max occupancy
  * @param text the new name
  * @return the cost of this operation or an error
@@ -3117,25 +3116,30 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GB(p1, 0, 16));
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 
-	if (!HasBit(p1, 16)) {
-		/* Rename slot */
+	TraceRestrictAlterSlotOperation op = static_cast<TraceRestrictAlterSlotOperation>(GB(p1, 16, 16));
+	switch (op) {
+		case TRASO_RENAME: {
+			if (StrEmpty(text)) return CMD_ERROR;
+			size_t length = Utf8StringLength(text);
+			if (length <= 0) return CMD_ERROR;
+			if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+			if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
-		if (StrEmpty(text)) return CMD_ERROR;
-		size_t length = Utf8StringLength(text);
-		if (length <= 0) return CMD_ERROR;
-		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
-
-		if (flags & DC_EXEC) {
-			slot->name = text;
+			if (flags & DC_EXEC) {
+				slot->name = text;
+			}
+			break;
 		}
-	} else {
-		/* Change max occupancy */
 
-		if (flags & DC_EXEC) {
-			slot->max_occupancy = p2;
-			slot->UpdateSignals();
-		}
+		case TRASO_CHANGE_MAX_OCCUPANCY:
+			if (flags & DC_EXEC) {
+				slot->max_occupancy = p2;
+				slot->UpdateSignals();
+			}
+			break;
+
+		default:
+			return CMD_ERROR;
 	}
 
 	if (flags & DC_EXEC) {
@@ -3394,8 +3398,7 @@ CommandCost CmdDeleteTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
  * @param flags type of operation
  * @param p1   index of array counter
  *   - p1 bit 0-15 : Counter ID
- *   - p1 bit 16: 0 - Rename counter
- *                1 - Change value
+ *   - p1 bit 16-31: Operation (TraceRestrictAlterCounterOperation)
  * @param p2   new value
  * @param text the new name
  * @return the cost of this operation or an error
@@ -3405,24 +3408,29 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GB(p1, 0, 16));
 	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
 
-	if (!HasBit(p1, 16)) {
-		/* Rename counter */
+	TraceRestrictAlterCounterOperation op = static_cast<TraceRestrictAlterCounterOperation>(GB(p1, 16, 16));
+	switch (op) {
+		case TRACO_RENAME: {
+			if (StrEmpty(text)) return CMD_ERROR;
+			size_t length = Utf8StringLength(text);
+			if (length <= 0) return CMD_ERROR;
+			if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+			if (!IsUniqueCounterName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
-		if (StrEmpty(text)) return CMD_ERROR;
-		size_t length = Utf8StringLength(text);
-		if (length <= 0) return CMD_ERROR;
-		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueCounterName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
-
-		if (flags & DC_EXEC) {
-			ctr->name = text;
+			if (flags & DC_EXEC) {
+				ctr->name = text;
+			}
+			break;
 		}
-	} else {
-		/* Change value */
 
-		if (flags & DC_EXEC) {
-			ctr->UpdateValue(p2);
-		}
+		case TRACO_CHANGE_VALUE:
+			if (flags & DC_EXEC) {
+				ctr->UpdateValue(p2);
+			}
+			break;
+
+		default:
+			return CMD_ERROR;
 	}
 
 	if (flags & DC_EXEC) {

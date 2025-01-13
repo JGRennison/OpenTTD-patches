@@ -1246,6 +1246,11 @@ private:
 	void DeIndex(VehicleID id, const Vehicle *v);
 };
 
+enum TraceRestrictAlterSlotOperation {
+	TRASO_RENAME,
+	TRASO_CHANGE_MAX_OCCUPANCY,
+};
+
 /**
  * Counter type
  */
@@ -1267,6 +1272,11 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	}
 
 	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner; }
+};
+
+enum TraceRestrictAlterCounterOperation {
+	TRACO_RENAME,
+	TRACO_CHANGE_VALUE,
 };
 
 struct TraceRestrictFollowUpCmdData : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {

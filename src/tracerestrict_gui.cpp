@@ -4340,11 +4340,11 @@ public:
 	{
 		if (str.has_value()) {
 			if (this->slot_set_max_occupancy) {
-				if (!str->empty()) DoCommandP(0, this->slot_rename | (1 << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
+				if (!str->empty()) DoCommandP(0, this->slot_rename | (TRASO_CHANGE_MAX_OCCUPANCY << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
 			} else if (this->slot_rename == NEW_TRACE_RESTRICT_SLOT_ID) {
 				DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str());
 			} else {
-				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
+				DoCommandP(0, this->slot_rename | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 			}
 		}
 		this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
@@ -4777,12 +4777,12 @@ public:
 					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
 						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str());
 					} else {
-						DoCommandP(0, this->ctr_qt_op, 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
+						DoCommandP(0, this->ctr_qt_op | (TRACO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
 					}
 					break;
 
 				case QTO_SET_VALUE:
-					if (!str->empty()) DoCommandP(0, this->ctr_qt_op | (1 << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+					if (!str->empty()) DoCommandP(0, this->ctr_qt_op | (TRACO_CHANGE_VALUE << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
 					break;
 			}
 		}
