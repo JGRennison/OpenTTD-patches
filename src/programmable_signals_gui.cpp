@@ -687,14 +687,12 @@ public:
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_COND_SLOT: {
-				SetDParam(0, STR_PROGSIG_COND_SLOT_TOOLTIP);
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_SLOT_TOOLTIP, VEH_TRAIN), close_cond, 1);
 				return true;
 			}
 
 			case PROGRAM_WIDGET_COND_COUNTER: {
-				SetDParam(0, STR_PROGSIG_COND_COUNTER_TOOLTIP);
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_COUNTER_TOOLTIP, VEH_TRAIN), close_cond, 1);
 				return true;
 			}
 

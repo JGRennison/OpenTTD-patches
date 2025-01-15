@@ -737,36 +737,28 @@ static bool SlotVehTypeNameSorter(const TraceRestrictSlot * const &a, const Trac
 	return a->vehicle_type < b->vehicle_type;
 }
 
-/**
- * Get a DropDownList of the group list
- */
-DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types)
+static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types, bool recently_used, bool public_only)
 {
 	GUIList<const TraceRestrictSlot*> list;
-	DropDownList dlist;
 
-	std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, NEW_TRACE_RESTRICT_SLOT_ID, false);
-	new_item->SetColourFlags(TC_FORCED);
-	dlist.emplace_back(std::move(new_item));
-	dlist.push_back(MakeDropDownListDividerItem());
-
-	if (_ctrl_pressed) {
+	if (recently_used) {
 		for (TraceRestrictSlotID id : _recent_slots[vehtype]) {
 			list.push_back(TraceRestrictSlot::Get(id));
 		}
 	} else {
 		for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 			if (!show_other_types && slot->vehicle_type != vehtype) continue;
+			if (public_only && !HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) continue;
 			if (slot->owner == owner) {
 				list.push_back(slot);
 			}
 		}
 
-		if (list.size() == 0) return dlist;
-
-		list.ForceResort();
-		_slot_sort_veh_type = vehtype;
-		list.Sort(show_other_types ? &SlotVehTypeNameSorter : &SlotNameSorter);
+		if (list.size() > 0) {
+			list.ForceResort();
+			_slot_sort_veh_type = vehtype;
+			list.Sort(show_other_types ? &SlotVehTypeNameSorter : &SlotNameSorter);
+		}
 	}
 
 	selected = -1;
@@ -783,6 +775,38 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 			dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, s->index, false));
 		}
 	}
+}
+
+/**
+ * Get a DropDownList of the group list
+ */
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types)
+{
+	DropDownList dlist;
+
+	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+		for (const Company *c : Company::Iterate()) {
+			if (c->index == owner) continue;
+
+			int cselected;
+			DropDownList clist;
+			GetSlotDropDownListIntl(clist, c->index, slot_id, cselected, vehtype, show_other_types, false, true);
+			if (clist.empty()) continue;
+
+			if (!dlist.empty()) dlist.push_back(MakeDropDownListDividerItem());
+			dlist.push_back(MakeCompanyDropDownListItem(c->index, false));
+
+			if (cselected != -1) selected = cselected;
+			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
+		}
+	} else {
+		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, NEW_TRACE_RESTRICT_SLOT_ID, false);
+		new_item->SetColourFlags(TC_FORCED);
+		dlist.emplace_back(std::move(new_item));
+		dlist.push_back(MakeDropDownListDividerItem());
+
+		GetSlotDropDownListIntl(dlist, owner, slot_id, selected, vehtype, show_other_types, _ctrl_pressed, false);
+	}
 
 	return dlist;
 }
@@ -795,34 +819,26 @@ static bool CounterNameSorter(const TraceRestrictCounter * const &a, const Trace
 	return r < 0;
 }
 
-/**
- * Get a DropDownList of the counter list
- */
-DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected)
+static void GetCounterDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestrictCounterID ctr_id, int &selected, bool recently_used, bool public_only)
 {
 	GUIList<const TraceRestrictCounter*> list;
-	DropDownList dlist;
 
-	std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID, false);
-	new_item->SetColourFlags(TC_FORCED);
-	dlist.emplace_back(std::move(new_item));
-	dlist.push_back(MakeDropDownListDividerItem());
-
-	if (_ctrl_pressed) {
+	if (recently_used) {
 		for (TraceRestrictCounterID id : _recent_counters) {
 			list.push_back(TraceRestrictCounter::Get(id));
 		}
 	} else {
 		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+			if (public_only && !HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public)) continue;
 			if (ctr->owner == owner) {
 				list.push_back(ctr);
 			}
 		}
 
-		if (list.size() == 0) return dlist;
-
-		list.ForceResort();
-		list.Sort(&CounterNameSorter);
+		if (list.size() > 0) {
+			list.ForceResort();
+			list.Sort(&CounterNameSorter);
+		}
 	}
 
 	selected = -1;
@@ -831,6 +847,38 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 		if (ctr_id == s->index) selected = ctr_id;
 		SetDParam(0, s->index);
 		dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false));
+	}
+}
+
+/**
+ * Get a DropDownList of the counter list
+ */
+DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected)
+{
+	DropDownList dlist;
+
+	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+		for (const Company *c : Company::Iterate()) {
+			if (c->index == owner) continue;
+
+			int cselected;
+			DropDownList clist;
+			GetCounterDropDownListIntl(clist, c->index, ctr_id, cselected, false, true);
+			if (clist.empty()) continue;
+
+			if (!dlist.empty()) dlist.push_back(MakeDropDownListDividerItem());
+			dlist.push_back(MakeCompanyDropDownListItem(c->index, false));
+
+			if (cselected != -1) selected = cselected;
+			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
+		}
+	} else {
+		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID, false);
+		new_item->SetColourFlags(TC_FORCED);
+		dlist.emplace_back(std::move(new_item));
+		dlist.push_back(MakeDropDownListDividerItem());
+
+		GetCounterDropDownListIntl(dlist, owner, ctr_id, selected, _ctrl_pressed, false);
 	}
 
 	return dlist;
@@ -1823,6 +1871,19 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TC_WHITE : TC_BLACK);
+}
+
+
+StringID TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype)
+{
+	if (_settings_game.economy.infrastructure_sharing[vtype]) {
+		SetDParam(0, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA);
+		SetDParam(1, base_str);
+		return STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA;
+	} else {
+		SetDParam(0, base_str);
+		return STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA;
+	}
 }
 
 /** Main GUI window class */
@@ -2886,14 +2947,14 @@ public:
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
 					case TRVT_SLOT_INDEX:
-						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
-						GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 1);
 						return true;
 
 					case TRVT_GROUP_INDEX:
 						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
 							SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
-							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_GROUPS_TOOLTIP_EXTRA, close_cond, 1);
+							SetDParam(1, STR_NULL);
+							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, close_cond, 1);
 							return true;
 						}
 						return false;
@@ -2907,8 +2968,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
 					case TRVT_SLOT_INDEX_INT:
 					case TRVT_COUNTER_INDEX_INT:
-						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
-						GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 1);
 						return true;
 
 					default:
