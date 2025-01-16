@@ -103,9 +103,6 @@ static SnowLine *_snow_line = nullptr;
 /** The current spring during river generation */
 static TileIndex _current_spring = INVALID_TILE;
 
-/** The current estuary during river generation when one river flows into another */
-static TileIndex _current_estuary = INVALID_TILE;
-
 /** Whether the current river is a big river that others flow into */
 static bool _is_main_river = false;
 
@@ -1256,10 +1253,8 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 #	define IS_MARKED(x) (marks.find(x) != marks.end())
 
 	uint height = TileHeight(begin);
-	if (IsWaterTile(begin))
-	{
+	if (IsWaterTile(begin)) {
 		if (GetTileZ(begin) == 0) {
-			_current_estuary = begin;
 			_is_main_river = true;
 		}
 
