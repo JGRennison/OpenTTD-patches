@@ -1541,6 +1541,8 @@ STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to a
 STR_GROUP_EXPAND_ALL                                            :{BLACK}Expand all
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Collapse all
 
+STR_GROUP_RENAME_TOOLTIP_EXTRA                                  :{BLACK}{STRING}{}Ctrl+Click to auto-generate the name
+
 STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :Locomotives and Power Cars
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :Wagons
 

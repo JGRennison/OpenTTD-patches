@@ -478,6 +478,14 @@ private:
 		return ret;
 	}
 
+	void UpdateVehicleLists()
+	{
+		bool recalculate_totals = this->vehgroups.NeedRebuild();
+		this->BuildVehicleList();
+		this->SortVehicleList();
+		if (recalculate_totals) this->RecalculateInfoTotals();
+	}
+
 public:
 	VehicleGroupWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -638,10 +646,7 @@ public:
 	{
 		/* If we select the all vehicles, this->list will contain all vehicles of the owner
 		 * else this->list will contain all vehicles which belong to the selected group */
-		bool recalculate_totals = this->vehgroups.NeedRebuild();
-		this->BuildVehicleList();
-		this->SortVehicleList();
-		if (recalculate_totals) this->RecalculateInfoTotals();
+		this->UpdateVehicleLists();
 
 		this->BuildGroupList(this->owner);
 
@@ -930,7 +935,17 @@ public:
 				break;
 			}
 
-			case WID_GL_RENAME_GROUP: // Rename the selected roup
+			case WID_GL_RENAME_GROUP: // Rename the selected group
+				if (_ctrl_pressed) {
+					this->UpdateVehicleLists();
+					if (!this->vehgroups.empty()) {
+						std::string name = GenerateAutoNameForVehicleGroup(this->vehgroups[0].vehicles_begin[0]);
+						if (!name.empty()) {
+							DoCommandP(0, this->vli.index, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), nullptr, name.c_str());
+							return;
+						}
+					}
+				}
 				this->ShowRenameGroupWindow(this->vli.index, false);
 				break;
 
@@ -1319,6 +1334,18 @@ public:
 		this->SetDirty();
 	}
 
+	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case WID_GL_RENAME_GROUP:
+				SetDParam(0, STR_GROUP_RENAME_TOOLTIP);
+				GuiShowTooltips(this, STR_GROUP_RENAME_TOOLTIP_EXTRA, close_cond, 1);
+				return true;
+
+			default:
+				return false;
+		}
+	}
 };
 
 
