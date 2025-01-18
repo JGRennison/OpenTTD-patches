@@ -876,11 +876,11 @@ STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited st
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :load percentage
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :Path start signal
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :path start signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :signal at start of current path reservation
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :Path end signal
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :path end signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :signal at current end of path reservation
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :Path reservation end tile
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :path reservation end tile
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :tile at end of path reservation from this signal
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :train in slot
@@ -900,8 +900,8 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :train owner
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :train status
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :engine class
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :direction of order target
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :Path reservation passes tile
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :Path reservation
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :path reservation passes tile
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :path reservation
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}undefined{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
