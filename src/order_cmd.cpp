@@ -333,48 +333,76 @@ Order Order::FromJSONString(std::string jsonSTR)
 
 	Order new_order = Order(json.at("packed-data").get<uint64_t>());
 	
-	if (json.contains("destination-id") && json["destination-id"].is_number_integer()) 
+	if (json.contains("destination-id") && json["destination-id"].is_number_integer()) {
+
 		json["destination-id"].get_to(new_order.dest);
-		
+
+	}	
 	
 
 	if (json.contains("extra") && json["extra"].is_object()) {
+
 		auto &extraJson = json["extra"];
 
 		new_order.AllocExtraInfo();
 
-		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_array()) 
-			for (int i = 0; i < 64; i++) 
+		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_array()) {
+
+			for (int i = 0; i < 64; i++) {
+
 				extraJson["cargo-type-flags"][i].get_to(new_order.extra->cargo_type_flags[i]);
 
-		if (extraJson.contains("colour"))
+			}
+
+		}
+
+		if (extraJson.contains("colour")) {
+
 			extraJson["colour"].get_to(new_order.extra->colour);
 
-		if (extraJson.contains("dispatch-index"))
-			 extraJson["dispatch-index"].get_to(new_order.extra->dispatch_index);
+		}
 
-		if (extraJson.contains("xdata"))
+		if (extraJson.contains("dispatch-index")) {
+
+			extraJson["dispatch-index"].get_to(new_order.extra->dispatch_index);
+
+		}
+
+		if (extraJson.contains("xdata")) {
+
 			extraJson["xdata"].get_to(new_order.extra->xdata);
 
-		if (extraJson.contains("xdata2"))
-			 extraJson["xdata2"].get_to(new_order.extra->xdata2);
+		}
 
-		if (extraJson.contains("xflags"))
-			 extraJson["xflags"].get_to(new_order.extra->xflags);
+		if (extraJson.contains("xdata2")) {
+
+			extraJson["xdata2"].get_to(new_order.extra->xdata2);
+
+		}
+
+		if (extraJson.contains("xflags")) {
+
+			extraJson["xflags"].get_to(new_order.extra->xflags);
+
+		}
 		
 	}
 
-	if (json.contains("refit-cargo"))
+	if (json.contains("refit-cargo")) {
 		json["refit-cargo"].get_to(new_order.refit_cargo);
+	}
 
-	if (json.contains("wait-time"))
+	if (json.contains("wait-time")) {
 		json["wait-time"].get_to(new_order.wait_time);
+	}
 
-	if (json.contains("travel-time"))
+	if (json.contains("travel-time")) {
 		json["travel-time"].get_to(new_order.travel_time);
+	}
 
-	if (json.contains("max-speed"))
+	if (json.contains("max-speed")) {
 		json["max-speed"].get_to(new_order.max_speed);
+	}
 
 	return new_order;
 }
