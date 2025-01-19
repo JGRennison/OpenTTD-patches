@@ -16,7 +16,7 @@
 #include <vector>
 
 /** Type for GRF-internal string IDs. */
-struct GRFStringIDTag : public StrongType::TypedefTraits<uint16_t, StrongType::Compare, StrongType::Integer> {};
+struct GRFStringIDTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare, StrongType::Integer> {};
 using GRFStringID = StrongType::Typedef<GRFStringIDTag>;
 
 static constexpr GRFStringID GRFSTR_MISC_GRF_TEXT{0xD000}; ///< Miscellaneous GRF text range.
