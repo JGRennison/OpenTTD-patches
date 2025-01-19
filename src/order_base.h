@@ -859,6 +859,10 @@ public:
 	bool UpdateScheduledDispatchToDate(StateTicks now);
 	void UpdateScheduledDispatch(const Vehicle *v);
 
+	static DispatchSchedule FromJSONString(std::string jsonString);
+
+	std::string ToJSONString();
+
 	/**
 	 * Set the scheduled dispatch duration, in scaled tick
 	 * @param  duration  New duration
@@ -940,8 +944,6 @@ public:
 	 */
 	inline void SetScheduledDispatchFlags(int8_t flags) { this->scheduled_dispatch_flags = flags; }
 
-
-	inline void BorrowSchedule(DispatchSchedule &other)
 	inline PositionBackup BackupPosition() const
 	{
 		return PositionBackup{ this->scheduled_dispatch_start_tick, this->scheduled_dispatch_last_dispatch };

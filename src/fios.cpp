@@ -275,7 +275,7 @@ bool FiosDelete(const char *name,AbstractFileType ft)
 	switch (ft) {
 		case FT_SAVEGAME:
 		case FT_SCENARIO:
-		case FT_TOWN_DATA_JSON:
+		case FT_TOWN_DATA:
 			filename = FiosMakeSavegameName(name);
 			break;
 		case FT_ORDERLIST:
@@ -286,7 +286,7 @@ bool FiosDelete(const char *name,AbstractFileType ft)
 			break;
 	}
 	
-	return FioRemove(name);
+	return FioRemove(filename);
 }
 
 typedef FiosType fios_getlist_callback_proc(SaveLoadOperation fop, const std::string &filename, const char *ext, char *title, const char *last);

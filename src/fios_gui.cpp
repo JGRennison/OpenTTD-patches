@@ -393,6 +393,7 @@ static const TextColour _fios_colours[] = {
 	TC_YELLOW,       // DFT_HEIGHTMAP_BMP
 	TC_ORANGE,       // DFT_HEIGHTMAP_PNG
 	TC_LIGHT_BROWN,  // DFT_TOWN_DATA_JSON
+	TC_WHITE,		 // DFT_ORDERLIST_JSON
 	TC_LIGHT_BLUE,   // DFT_FIOS_DRIVE
 	TC_DARK_GREEN,   // DFT_FIOS_PARENT
 	TC_DARK_GREEN,   // DFT_FIOS_DIR
@@ -466,12 +467,10 @@ public:
 		this->filename_editbox.text.Assign(GenerateDefaultSaveName());
 	}
 
-	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop)
-			: Window(desc), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
+	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle * veh = nullptr)
+			: Window(desc), filename_editbox(64), abstract_filetype(abstract_filetype) , fop(fop), veh(veh), filter_editbox(EDITBOX_MAX_SIZE)
 	{
 		assert(this->fop == SLO_SAVE || this->fop == SLO_LOAD);
-
-		this->veh = veh;
 
 		/* For saving, construct an initial file name. */
 		if (this->fop == SLO_SAVE) {
@@ -823,17 +822,17 @@ public:
 					ShowHeightmapLoad();
 				}else if (this->abstract_filetype == FT_ORDERLIST) {
 
-					FILE * file = FioFOpenFile(this->selected->name, "r", NO_DIRECTORY);
+					auto file = FioFOpenFile(this->selected->name, "r", NO_DIRECTORY);
 					
-					if (file != nullptr) {
-						std::ifstream t(file);
+					if (file.has_value()) {
+						std::ifstream t(file.value());
 						std::stringstream buffer;
 						buffer << t.rdbuf();
 
 						veh->orders->FromJSONString(veh, buffer.str());
+					}
 
 					this->Close();
-					FILE *dataFile = fopen(this->selected->name, "r");
 					
 				} else if (this->abstract_filetype == FT_TOWN_DATA) {
 					this->Close();
@@ -882,8 +881,6 @@ public:
 						
 						this->selected = file;
 						_load_check_data.Clear();
-
-						auto type = GetDetailedFileType(file->type);
 
 						if(GetDetailedFileType(file->type) == DFT_GAME_FILE) {
 
@@ -1170,7 +1167,7 @@ static WindowDesc _load_orderlist_dialog_desc(__FILE__, __LINE__,
 	WDP_CENTER, "load_orderlist", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	0,
-	std::begin(_nested_load_orderlist_dialog_widgets), std::end(_nested_load_orderlist_dialog_widgets)
+	_nested_load_orderlist_dialog_widgets
 );
 
 /** Save game/scenario */
@@ -1186,7 +1183,7 @@ static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
 	WDP_CENTER, "save_orderlist", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	0,
-	std::begin(_nested_save_orderlist_dialog_widgets), std::end(_nested_save_orderlist_dialog_widgets)
+	_nested_save_orderlist_dialog_widgets
 );
 
 /**
@@ -1201,7 +1198,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 	if (fop == SLO_SAVE) {
 		switch (abstract_filetype) {
 		case FT_ORDERLIST:
-			new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop);
+			new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop,veh);
 			break;
 		default: 
 			new SaveLoadWindow(_save_dialog_desc, abstract_filetype, fop);
@@ -1219,7 +1216,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 				break;
 
 			case FT_ORDERLIST:
-				new new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop);
+				new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop,veh);
 				break;
 
 			default:
@@ -1227,5 +1224,4 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 		}
 	}
 
-	new SaveLoadWindow(sld, abstract_filetype, fop, veh);
 }
