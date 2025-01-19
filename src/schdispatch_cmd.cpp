@@ -385,8 +385,7 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 			SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 		} else {
 
-			DispatchSchedule new_ds = DispatchSchedule::FromJSONString(scheduleJson);
-			ds.BorrowSchedule(new_ds);
+			ds = DispatchSchedule::FromJSONString(scheduleJson);
 
 		}
 
@@ -882,8 +881,8 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	}
 }
 
-DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString)
-{
+DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
+
 	nlohmann::json json = nlohmann::json::parse(jsonString);
 
 	DispatchSchedule new_schedule;
