@@ -533,7 +533,7 @@ public:
 		this->querystrings[WID_SL_FILTER] = &this->filter_editbox;
 		this->filter_editbox.cancel_button = QueryString::ACTION_CLEAR;
 
-		/* pause is only used in single-player, non-editor mode, non-menu mode, when not operationg on orderlists. It
+		/* pause is only used in single-player, non-editor mode, non-menu mode, when not operating on orderlists. It
 		 * will be unpaused in the WE_DESTROY event handler. */
 		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR && this->abstract_filetype != FT_ORDERLIST) {
 			DoCommandP(0, PM_PAUSED_SAVELOAD, 1, CMD_PAUSE);
@@ -861,7 +861,6 @@ public:
 				break;
 
 			case WID_SL_DRIVES_DIRECTORIES_LIST: { // Click the listbox
-				printf("test");
 
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->display_list, pt.y, this, WID_SL_DRIVES_DIRECTORIES_LIST, WidgetDimensions::scaled.inset.top);
 				if (it == this->display_list.end()) return;
