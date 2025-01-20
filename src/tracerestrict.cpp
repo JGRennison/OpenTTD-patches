@@ -3016,7 +3016,7 @@ static bool IsUniqueSlotName(const char *name)
  * @param tile unused
  * @param flags type of operation
  * @param p1 bitstuffed elements
- * - p2 = (bit 0 - 2) - vehicle type
+ * - p1 = (bit 0 - 2) - vehicle type
  * @param p2   unused
  * @param p3   unused
  * @param text new slot name
