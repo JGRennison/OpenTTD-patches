@@ -1195,6 +1195,8 @@ void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index);
 void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index);
 void TraceRestrictClearRecentSlotsAndCounters();
 
+StringID TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype);
+
 static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maximum length of a slot name in characters including '\0'
 
 /**
@@ -1203,7 +1205,13 @@ static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maxi
 struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_pool> {
 	friend TraceRestrictSlotTemporaryState;
 
+	enum class Flags : uint8_t {
+		None        = 0,         ///< No flag set.
+		Public      = (1U << 0), ///< Public slot.
+	};
+
 	Owner owner;
+	Flags flags = Flags::None;
 	VehicleType vehicle_type;
 	uint32_t max_occupancy = 1;
 	std::string name;
@@ -1231,7 +1239,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 		return false;
 	}
 
-	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner; }
+	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner || HasFlag(this->flags, Flags::Public); }
 
 	bool Occupy(const Vehicle *v, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
@@ -1246,16 +1254,25 @@ private:
 	void DeIndex(VehicleID id, const Vehicle *v);
 };
 
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictSlot::Flags)
+
 enum TraceRestrictAlterSlotOperation {
 	TRASO_RENAME,
 	TRASO_CHANGE_MAX_OCCUPANCY,
+	TRASO_SET_PUBLIC,
 };
 
 /**
  * Counter type
  */
 struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrictcounter_pool> {
+	enum class Flags : uint8_t {
+		None        = 0,         ///< No flag set.
+		Public      = (1U << 0), ///< Public counter.
+	};
+
 	Owner owner;
+	Flags flags = Flags::None;
 	int32_t value = 0;
 	std::string name;
 	std::vector<SignalReference> progsig_dependants;
@@ -1271,12 +1288,15 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
 	}
 
-	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner; }
+	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner || HasFlag(this->flags, Flags::Public); }
 };
+
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictCounter::Flags)
 
 enum TraceRestrictAlterCounterOperation {
 	TRACO_RENAME,
 	TRACO_CHANGE_VALUE,
+	TRACO_SET_PUBLIC,
 };
 
 struct TraceRestrictFollowUpCmdData : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {

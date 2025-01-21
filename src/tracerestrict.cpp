@@ -3138,6 +3138,16 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
 			}
 			break;
 
+		case TRASO_SET_PUBLIC:
+			if (flags & DC_EXEC) {
+				if (p2 != 0) {
+					slot->flags |= TraceRestrictSlot::Flags::Public;
+				} else {
+					slot->flags &= ~TraceRestrictSlot::Flags::Public;
+				}
+			}
+			break;
+
 		default:
 			return CMD_ERROR;
 	}
@@ -3426,6 +3436,16 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 		case TRACO_CHANGE_VALUE:
 			if (flags & DC_EXEC) {
 				ctr->UpdateValue(p2);
+			}
+			break;
+
+		case TRACO_SET_PUBLIC:
+			if (flags & DC_EXEC) {
+				if (p2 != 0) {
+					ctr->flags |= TraceRestrictCounter::Flags::Public;
+				} else {
+					ctr->flags &= ~TraceRestrictCounter::Flags::Public;
+				}
 			}
 			break;
 
