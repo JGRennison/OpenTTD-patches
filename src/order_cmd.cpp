@@ -299,12 +299,30 @@ std::string Order::ToJSONString() const
 	if(this->extra.get() != nullptr){
 		auto& extraJson = json["extra"];
 
-		extraJson["cargo-type-flags"] = this->extra.get()->cargo_type_flags;
+		auto &cargo_type_flags = this->extra.get()->cargo_type_flags;
+
+		for (int i = 0; i < NUM_CARGO; i++) {
+			if (cargo_type_flags[i] != 0) {
+				extraJson["cargo-type-flags"] = cargo_type_flags;
+				break;
+			}
+		}
+
 		extraJson["colour"] = this->extra.get()->colour;
 		extraJson["dispatch-index"] = this->extra.get()->dispatch_index;
-		extraJson["xdata"] = this->extra.get()->xdata;
-		extraJson["xdata2"] = this->extra.get()->xdata2;
-		extraJson["xflags"] = this->extra.get()->xflags;
+
+		if (this->extra.get()->xdata != 0) {
+			extraJson["xdata"] = this->extra.get()->xdata;
+		}
+
+		if (this->extra.get()->xdata2 != 0) {
+			extraJson["xdata"] = this->extra.get()->xdata2;
+		}
+
+		if (this->extra.get()->xflags != 0) {
+			extraJson["xdata"] = this->extra.get()->xflags;
+		}
+
 	}
 
 	json["refit-cargo"] = this->GetRefitCargo();
@@ -345,10 +363,10 @@ Order Order::FromJSONString(std::string jsonSTR)
 		auto &extraJson = json["extra"];
 
 		new_order.AllocExtraInfo();
-
+		
 		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_array()) {
 
-			for (int i = 0; i < 64; i++) {
+			for (int i = 0; i < NUM_CARGO; i++) {
 
 				extraJson["cargo-type-flags"][i].get_to(new_order.extra->cargo_type_flags[i]);
 
@@ -878,7 +896,6 @@ void OrderList::MoveOrder(VehicleOrderID from, VehicleOrderID to)
 
 std::string OrderList::ToJSONString()
 {
-
 
 	nlohmann::json json;
 
