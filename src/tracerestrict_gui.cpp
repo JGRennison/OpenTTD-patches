@@ -3873,6 +3873,7 @@ enum TraceRestrictSlotWindowWidgets {
 	WID_TRSL_CREATE_SLOT,
 	WID_TRSL_DELETE_SLOT,
 	WID_TRSL_RENAME_SLOT,
+	WID_TRSL_SLOT_PUBLIC,
 	WID_TRSL_SET_SLOT_MAX_OCCUPANCY,
 	WID_TRSL_SORT_BY_ORDER,
 	WID_TRSL_SORT_BY_DROPDOWN,
@@ -3908,6 +3909,8 @@ static constexpr NWidgetPart _nested_slot_widgets[] = {
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_RENAME_SLOT), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
+				NWidget(WWT_IMGBTN, COLOUR_GREY, WID_TRSL_SLOT_PUBLIC), SetFill(0, 1),
+						SetDataTip(SPR_IMG_GOAL, STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_SET_SLOT_MAX_OCCUPANCY), SetFill(0, 1),
 						SetDataTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP),
 			EndContainer(),
@@ -3939,8 +3942,9 @@ class TraceRestrictSlotWindow : public BaseVehicleListWindow {
 private:
 	/* Columns in the group list */
 	enum ListColumns {
-		VGC_NAME,          ///< Group name.
-		VGC_NUMBER,        ///< Number of vehicles in the group.
+		VGC_NAME,          ///< Slot name.
+		VGC_PUBLIC,        ///< Slot public state.
+		VGC_NUMBER,        ///< Slot occupancy numbers.
 
 		VGC_END
 	};
@@ -3994,33 +3998,52 @@ private:
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
-		this->tiny_step_height += WidgetDimensions::scaled.matrix.top + ScaleGUITrad(1);
+		this->column_size[VGC_PUBLIC] = GetScaledSpriteSize(SPR_BLOT);
+		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_PUBLIC].height);
+
+		this->tiny_step_height += WidgetDimensions::scaled.matrix.Vertical();
 
 		return WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.vsep_wide +
 				this->column_size[VGC_NAME].width + WidgetDimensions::scaled.vsep_wide +
+				this->column_size[VGC_PUBLIC].width + WidgetDimensions::scaled.vsep_wide +
 				this->column_size[VGC_NUMBER].width + WidgetDimensions::scaled.vsep_normal;
 	}
 
 	/**
 	 * Draw a row in the slot list.
-	 * @param y Top of the row.
-	 * @param left Left of the row.
-	 * @param right Right of the row.
-	 * @param g_id Group to list.
+	 * @param draw_area Area to draw in.
+	 * @param slot_id Slot ID.
 	 */
-	void DrawSlotInfo(int y, int left, int right, TraceRestrictSlotID slot_id) const
+	void DrawSlotInfo(Rect draw_area, TraceRestrictSlotID slot_id) const
 	{
-		/* Highlight the group if a vehicle is dragged over it */
+		/* Highlight the slot if a vehicle is dragged over it */
 		if (slot_id == this->slot_over) {
-			GfxFillRect(left + WidgetDimensions::scaled.framerect.left, y + WidgetDimensions::scaled.framerect.top, right - WidgetDimensions::scaled.framerect.right,
-					y + this->tiny_step_height - WidgetDimensions::scaled.framerect.bottom - WidgetDimensions::scaled.matrix.top, GetColourGradient(COLOUR_GREY, SHADE_LIGHTEST));
+			GfxFillRect(draw_area, GetColourGradient(COLOUR_GREY, SHADE_LIGHTEST));
 		}
 
-		/* draw the selected group in white, else we draw it in black */
-		TextColour colour = slot_id == this->vli.index ? TC_WHITE : TC_BLACK;
-		bool rtl = _current_text_dir == TD_RTL;
+		const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(slot_id);
+		Rect info_area = draw_area.Shrink(WidgetDimensions::scaled.hsep_indent, 0);
+		const bool rtl = _current_text_dir == TD_RTL;
 
-		/* draw group name */
+		/* draw the selected slot in white, else we draw it in black */
+		TextColour colour = slot_id == this->vli.index ? TC_WHITE : TC_BLACK;
+
+		if (slot != nullptr) {
+			Rect sub = info_area.WithWidth(this->column_size[VGC_NUMBER].width, !rtl);
+			SetDParam(0, slot->occupants.size());
+			SetDParam(1, slot->max_occupancy);
+			DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, colour, SA_RIGHT | SA_FORCE);
+		}
+
+		Rect r = info_area.Indent(WidgetDimensions::scaled.vsep_wide + this->column_size[VGC_NUMBER].width, !rtl);
+
+		if (slot != nullptr && HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+			DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r.WithWidth(this->column_size[VGC_PUBLIC].width, !rtl), SA_CENTER);
+		}
+
+		r = r.Indent(WidgetDimensions::scaled.vsep_wide + this->column_size[VGC_PUBLIC].width, !rtl);
+
+		/* draw slot name */
 		StringID str;
 		if (slot_id == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
 			str = STR_GROUP_ALL_TRAINS + this->vli.vtype;
@@ -4028,24 +4051,7 @@ private:
 			SetDParam(0, slot_id);
 			str = STR_TRACE_RESTRICT_SLOT_NAME;
 		}
-
-		int x;
-		if (rtl) {
-			x = right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide - this->column_size[VGC_NAME].width + 1;
-		} else {
-			x = left + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.vsep_wide;
-		}
-		DrawString(x, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
-
-		if (slot_id == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) return;
-
-		const TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
-
-		/* draw the number of vehicles of the group */
-		x = rtl ? x - WidgetDimensions::scaled.vsep_normal - this->column_size[VGC_NUMBER].width : x + WidgetDimensions::scaled.vsep_normal + this->column_size[VGC_NAME].width;
-		SetDParam(0, slot->occupants.size());
-		SetDParam(1, slot->max_occupancy);
-		DrawString(x, x + this->column_size[VGC_NUMBER].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, colour, SA_RIGHT | SA_FORCE);
+		DrawString(r.left, r.right - 1, r.top + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 	}
 
 	/**
@@ -4118,6 +4124,7 @@ public:
 				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
 				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data).height);
 				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SLOT_PUBLIC)->widget_data).height);
 				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
 
 				/* Get a multiple of tiny_step_height of that amount */
@@ -4205,7 +4212,10 @@ public:
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
 				WID_TRSL_DELETE_SLOT,
 				WID_TRSL_RENAME_SLOT,
+				WID_TRSL_SLOT_PUBLIC,
 				WID_TRSL_SET_SLOT_MAX_OCCUPANCY);
+
+		this->SetWidgetLoweredState(WID_TRSL_SLOT_PUBLIC, TraceRestrictSlot::IsValidID(this->vli.index) && HasFlag(TraceRestrictSlot::Get(this->vli.index)->flags, TraceRestrictSlot::Flags::Public));
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -4228,20 +4238,21 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES:
-				DrawSlotInfo(r.top + WidgetDimensions::scaled.framerect.top, r.left, r.right, ALL_TRAINS_TRACE_RESTRICT_SLOT_ID);
+				DrawSlotInfo(r.WithHeight(this->tiny_step_height).Shrink(WidgetDimensions::scaled.framerect), ALL_TRAINS_TRACE_RESTRICT_SLOT_ID);
 				break;
 
 			case WID_TRSL_LIST_SLOTS: {
-				int y1 = r.top + WidgetDimensions::scaled.framerect.top;
+				Rect ir = r.WithHeight(this->tiny_step_height).Shrink(WidgetDimensions::scaled.framerect);
 				int max = std::min<int>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), static_cast<int>(this->slots.size()));
 				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
 
 					assert(slot->owner == this->owner);
 
-					DrawSlotInfo(y1, r.left, r.right, slot->index);
+					DrawSlotInfo(ir, slot->index);
 
-					y1 += this->tiny_step_height;
+					ir.top += this->tiny_step_height;
+					ir.bottom += this->tiny_step_height;
 				}
 				break;
 			}
@@ -4333,6 +4344,14 @@ public:
 			case WID_TRSL_RENAME_SLOT: // Rename the selected slot
 				this->ShowRenameSlotWindow(this->vli.index);
 				break;
+
+			case WID_TRSL_SLOT_PUBLIC: { // Toggle public state of the selected slot
+				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(this->vli.index);
+				if (slot != nullptr) {
+					DoCommandP(0, this->vli.index | (TRASO_SET_PUBLIC << 16), HasFlag(slot->flags, TraceRestrictSlot::Flags::Public) ? 0 : 1, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME));
+				}
+				break;
+			}
 
 			case WID_TRSL_SET_SLOT_MAX_OCCUPANCY: // Set max occupancy of the selected slot
 				this->ShowSetSlotMaxOccupancyWindow(this->vli.index);
@@ -4574,6 +4593,7 @@ enum TraceRestrictCounterWindowWidgets {
 	WID_TRCL_CREATE_COUNTER,
 	WID_TRCL_DELETE_COUNTER,
 	WID_TRCL_RENAME_COUNTER,
+	WID_TRCL_COUNTER_PUBLIC,
 	WID_TRCL_SET_COUNTER_VALUE,
 };
 
@@ -4599,6 +4619,8 @@ static constexpr NWidgetPart _nested_counter_widgets[] = {
 					SetDataTip(STR_TRACE_RESTRICT_COUNTER_DELETE, STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_RENAME_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
 					SetDataTip(STR_TRACE_RESTRICT_COUNTER_RENAME, STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_TRCL_COUNTER_PUBLIC), SetMinimalSize(75, 12), SetFill(1, 0),
+					SetDataTip(STR_TRACE_RESTRICT_COUNTER_PUBLIC, STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_SET_COUNTER_VALUE), SetMinimalSize(75, 12), SetFill(1, 0),
 					SetDataTip(STR_TRACE_RESTRICT_COUNTER_SET_VALUE, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -4621,6 +4643,7 @@ private:
 	GUIList<const TraceRestrictCounter*> ctrs; ///< List of slots
 	uint tiny_step_height;              ///< Step height for the counter list
 	uint value_col_width;               ///< Value column width
+	uint public_col_width;              ///< Public column width
 	Scrollbar *sb;
 
 	void BuildCounterList()
@@ -4642,44 +4665,55 @@ private:
 	}
 
 	/**
-	 * Compute tiny_step_height and column_size
-	 * @return Total width required for the group list.
+	 * Compute dimensions
+	 * @return Total width required for the list.
 	 */
 	uint ComputeInfoSize()
 	{
 		SetDParamMaxValue(0, 9999, 3);
 		Dimension dim = GetStringBoundingBox(STR_JUST_COMMA);
-		this->tiny_step_height = dim.height + WidgetDimensions::scaled.matrix.top;
+		this->tiny_step_height = dim.height;
 		this->value_col_width = dim.width;
+
+		Dimension public_dim = GetScaledSpriteSize(SPR_BLOT);
+		this->tiny_step_height = std::max(this->tiny_step_height, public_dim.height);
+		this->public_col_width = public_dim.width;
+
+		this->tiny_step_height += WidgetDimensions::scaled.matrix.Vertical();
 
 		return WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.vsep_wide +
 				170 + WidgetDimensions::scaled.vsep_wide +
 				dim.width + WidgetDimensions::scaled.vsep_wide +
+				public_dim.width + WidgetDimensions::scaled.vsep_wide +
 				WidgetDimensions::scaled.framerect.right;
 	}
 
 	/**
-	 * Draw a row in the slot list.
-	 * @param y Top of the row.
-	 * @param left Left of the row.
-	 * @param right Right of the row.
-	 * @param g_id Group to list.
+	 * Draw a row in the counter list.
+	 * @param draw_area Area to draw in.
+	 * @param ctr_id Counter ID.
 	 */
-	void DrawCounterInfo(int y, int left, int right, TraceRestrictCounterID ctr_id) const
+	void DrawCounterInfo(Rect draw_area, TraceRestrictCounterID ctr_id) const
 	{
-		/* draw the selected counter in white, else we draw it in black */
-		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
+		const TraceRestrictCounter *ctr = TraceRestrictCounter::Get(ctr_id);
+		Rect info_area = draw_area.Shrink(WidgetDimensions::scaled.hsep_indent, 0);
 		bool rtl = _current_text_dir == TD_RTL;
 
-		SetDParam(0, ctr_id);
-		DrawString(left + WidgetDimensions::scaled.vsep_wide + (rtl ? this->value_col_width + WidgetDimensions::scaled.vsep_wide : 0),
-				right - WidgetDimensions::scaled.vsep_wide - (rtl ? 0 : this->value_col_width + WidgetDimensions::scaled.vsep_wide),
-				y, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
+		/* draw the selected counter in white, else we draw it in black */
+		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
 
-		SetDParam(0, TraceRestrictCounter::Get(ctr_id)->value);
-		DrawString(rtl ? left + WidgetDimensions::scaled.vsep_wide : right - WidgetDimensions::scaled.vsep_wide - this->value_col_width,
-				rtl ? left + WidgetDimensions::scaled.vsep_wide + this->value_col_width : right - WidgetDimensions::scaled.vsep_wide,
-				y, STR_JUST_COMMA, colour, SA_RIGHT | SA_FORCE);
+		Rect r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide + this->public_col_width, !rtl);
+		SetDParam(0, ctr_id);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
+
+		if (HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public)) {
+			r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide, !rtl).WithWidth(this->public_col_width, !rtl);
+			DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r, SA_CENTER);
+		}
+
+		r = info_area.WithWidth(this->value_col_width, !rtl);
+		SetDParam(0, ctr->value);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_JUST_COMMA, colour, SA_RIGHT | SA_FORCE);
 	}
 
 public:
@@ -4751,7 +4785,10 @@ public:
 		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->ctr_company,
 				WID_TRCL_DELETE_COUNTER,
 				WID_TRCL_RENAME_COUNTER,
+				WID_TRCL_COUNTER_PUBLIC,
 				WID_TRCL_SET_COUNTER_VALUE);
+
+		this->SetWidgetLoweredState(WID_TRCL_COUNTER_PUBLIC, this->selected != INVALID_TRACE_RESTRICT_COUNTER_ID && HasFlag(TraceRestrictCounter::Get(this->selected)->flags, TraceRestrictCounter::Flags::Public));
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -4769,17 +4806,17 @@ public:
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
-				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-				int y1 = ir.top;
+				Rect ir = r.WithHeight(this->tiny_step_height).Shrink(WidgetDimensions::scaled.framerect);
 				int max = std::min<int>(this->sb->GetPosition() + this->sb->GetCapacity(), static_cast<int>(this->ctrs.size()));
 				for (int i = this->sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictCounter *ctr = this->ctrs[i];
 
 					assert(ctr->owner == this->ctr_company);
 
-					DrawCounterInfo(y1, ir.left, ir.right, ctr->index);
+					DrawCounterInfo(ir, ctr->index);
 
-					y1 += this->tiny_step_height;
+					ir.top += this->tiny_step_height;
+					ir.bottom += this->tiny_step_height;
 				}
 				break;
 			}
@@ -4822,6 +4859,14 @@ public:
 			case WID_TRCL_RENAME_COUNTER: // Rename the selected counter
 				this->ShowRenameCounterWindow(this->selected);
 				break;
+
+			case WID_TRCL_COUNTER_PUBLIC: { // Toggle public state of the selected counter
+				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(this->selected);
+				if (ctr != nullptr) {
+					DoCommandP(0, this->selected | (TRACO_SET_PUBLIC << 16), HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public) ? 0 : 1, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+				}
+				break;
+			}
 
 			case WID_TRCL_SET_COUNTER_VALUE:
 				this->ShowSetCounterValueWindow(this->selected);

@@ -1081,6 +1081,7 @@ STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - 
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Click to create a slot
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Delete the selected slot
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Rename the selected slot
+STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}Set whether the selected slot is public.{}Public slots can be used by signals and order lists of other companies if infrastructure sharing is enabled
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Set the maximum occupancy of the selected slot
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing Restrictions - Slot Management ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Manage slots
@@ -1095,10 +1096,12 @@ STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}Counters
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}Create
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}Delete
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}Rename
+STR_TRACE_RESTRICT_COUNTER_PUBLIC                               :{BLACK}Public
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}Set Value
 STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}Click to create a counter
 STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}Delete the selected counter
 STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}Rename the selected counter
+STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP                       :{BLACK}Set whether the selected counter is public.{}Public counters can be used by signals and order lists of other companies if infrastructure sharing is enabled
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}Set the value of the selected counter
 STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}Routing Restrictions - Counter Management
 STR_TRACE_RESTRICT_COUNTER_MANAGE                               :Manage counters
