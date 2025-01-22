@@ -100,7 +100,7 @@ static TileIndex GetReferenceTile(NewsReferenceType reftype, uint32_t ref)
 static constexpr NWidgetPart _nested_normal_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.fullbevel),
-			NWidget(NWID_LAYER),
+			NWidget(NWID_LAYER, INVALID_COLOUR),
 				/* Layer 1 */
 				NWidget(NWID_VERTICAL), SetPIPRatio(0, 0, 1),
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
@@ -132,7 +132,7 @@ static WindowDesc _normal_news_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _nested_vehicle_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.fullbevel),
-			NWidget(NWID_LAYER),
+			NWidget(NWID_LAYER, INVALID_COLOUR),
 				/* Layer 1 */
 				NWidget(NWID_VERTICAL), SetPIPRatio(0, 0, 1),
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
@@ -179,7 +179,7 @@ static WindowDesc _vehicle_news_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _nested_company_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.fullbevel),
-			NWidget(NWID_LAYER),
+			NWidget(NWID_LAYER, INVALID_COLOUR),
 				/* Layer 1 */
 				NWidget(NWID_VERTICAL), SetPIPRatio(0, 0, 1),
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
@@ -223,7 +223,7 @@ static WindowDesc _company_news_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _nested_thin_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.fullbevel),
-			NWidget(NWID_LAYER),
+			NWidget(NWID_LAYER, INVALID_COLOUR),
 				/* Layer 1 */
 				NWidget(NWID_VERTICAL), SetPIPRatio(0, 0, 1),
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
