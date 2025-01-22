@@ -2211,7 +2211,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
 					if (slot == nullptr) return CMD_ERROR;
 					if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) return CMD_ERROR;
-					if (slot->owner != _current_company) return CMD_ERROR;
+					if (!slot->IsUsableByOwner(_current_company)) return CMD_ERROR;
 				}
 				break;
 
@@ -2219,7 +2219,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 				if (GetTraceRestrictValue(item) != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
 					if (ctr == nullptr) return CMD_ERROR;
-					if (ctr->owner != _current_company) return CMD_ERROR;
+					if (!ctr->IsUsableByOwner(_current_company)) return CMD_ERROR;
 				}
 				break;
 
