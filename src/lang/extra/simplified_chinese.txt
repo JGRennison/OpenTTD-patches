@@ -614,8 +614,8 @@ STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :城镇中心因
 STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :城镇中心大小因子（区域 4，带有路灯的道路）这个设定在有较小的变更时效果最好
 STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :都市边缘因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :都市边缘大小因子（区域 0，最外面的没有人行道的道路）这个设定适合更大的值
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :都市郊区边因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :都市郊区边大小因子（区域 1，有人行道的外部区域）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :都市郊区边缘因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :都市郊区边缘大小因子（区域 1，有人行道的外部区域）这个设定在有较小的变更时效果最好
 STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :都市外郊区因子：{STRING}
 STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :都市外郊区大小因子（区域 2，有人行道的外部区域）这个设定在有较小的变更时效果最好
 STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :都市内郊区因子：{STRING}
@@ -1025,6 +1025,7 @@ STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}槽位 -
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}点击创建槽位
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}删除所选槽位
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重名名所选槽位
+STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}公开所选槽位。{}其他公司的调度计划与信号可以在启用基建设施共享时使用公开的槽位
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}设定所选槽位的容量
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 槽位管理（{STRING}）
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理槽位
@@ -1039,10 +1040,12 @@ STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}计数�
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}创建
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}删除
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}重命名
+STR_TRACE_RESTRICT_COUNTER_PUBLIC                               :{BLACK}公开
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}设定值
 STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}点击创建计数器
 STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}删除所选计数器
 STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}重命名所选计数器
+STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP                       :{BLACK}公开所选计数器。{}其他公司的调度计划与信号可以在启用基建设施共享时使用公开的计数器
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}设置所选计数器值
 STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}寻路限制 - 计数器管理
 STR_TRACE_RESTRICT_COUNTER_MANAGE                               :管理计数器
@@ -1074,7 +1077,8 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLAC
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}寻路限制
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击选择一条命令{}按住 <Ctrl> 键点击以前往命令目标（如果目标存在）
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮显示所有共享该程序的信号
-STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 键点击以列出最近使用项
+STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 键点击以列出最近使用项目
+STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Shift> 键点击以列出其他公司项目
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}（需要真实制动）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}（仅适用于信号模式控制操作）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}（不适用于信号模式控制操作）{POP_COLOUR}
@@ -1396,12 +1400,12 @@ STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在车次中显
 STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :是否在出发看板车次中显示载具的类型
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :使用银色显示载具图标：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :是否以银色显示载具类型标志
-STR_CONFIG_DEPARTURE_LARGER_FONT                                :适用较大的字体指示自出发车次面板中的即将到达的车站：{STRING}
-STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否使用较大的字体来显示在车站列表中的即将到达的车站
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :在出发看板中为停靠站使用更大的字体：{STRING}
+STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否为停靠站列表使用更大的字体
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :添加标志以区分码头与机场：{STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是码头或机场时，添加一个标志加以区分
-STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟载具到达的目的地：{STRING}
-STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否显示不久后会有另一辆载具到达的目的地
+STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不要显示可以通过稍后出发的其他载具更快到达的终点站：{STRING}
+STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :是否显示可以通过稍后出发的其他载具更快到达的终点站
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :条件性命令处理方式：{STRING}
 STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :计算出发看板车次时处理条件性命令的方式
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :放弃处理
@@ -1478,8 +1482,10 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :转移命令至
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :转移命令至其他船坞
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :转移命令至其他机库
 
-STR_GROUP_EXPAND_ALL                                            :{BLACK}展开全部
-STR_GROUP_COLLAPSE_ALL                                          :{BLACK}折叠全部
+STR_GROUP_EXPAND_ALL                                            :{BLACK}全部展开
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}全部折叠
+
+STR_GROUP_RENAME_TOOLTIP_EXTRA                                  :{BLACK}{STRING}{}按住 <Ctrl> 键点击以自动生成名称
 
 STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :机车与动车
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :车厢
