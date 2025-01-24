@@ -572,8 +572,8 @@ void EngineOverrideManager::ResetToDefaultMapping()
 {
 	this->mappings.clear();
 	for (VehicleType type = VEH_TRAIN; type <= VEH_AIRCRAFT; type++) {
-		for (uint internal_id = 0; internal_id < _engine_counts[type]; internal_id++) {
-			this->mappings.emplace_back(INVALID_GRFID, internal_id, type, internal_id);
+		for (uint8_t internal_id = 0; internal_id < _engine_counts[type]; internal_id++) {
+			this->mappings.push_back({ INVALID_GRFID, internal_id, type, internal_id });
 		}
 	}
 	this->ReIndex();
