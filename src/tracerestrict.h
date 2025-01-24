@@ -1239,8 +1239,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 		return false;
 	}
 
-	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner || HasFlag(this->flags, Flags::Public); }
-
+	inline bool IsUsableByOwner(Owner using_owner) const;
 	bool Occupy(const Vehicle *v, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
 	bool OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
@@ -1255,6 +1254,11 @@ private:
 };
 
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictSlot::Flags)
+
+bool TraceRestrictSlot::IsUsableByOwner(Owner using_owner) const
+{
+	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
+}
 
 enum TraceRestrictAlterSlotOperation {
 	TRASO_RENAME,
@@ -1288,10 +1292,15 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
 	}
 
-	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner || HasFlag(this->flags, Flags::Public); }
+	inline bool IsUsableByOwner(Owner using_owner) const;
 };
 
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictCounter::Flags)
+
+bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
+{
+	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
+}
 
 enum TraceRestrictAlterCounterOperation {
 	TRACO_RENAME,
