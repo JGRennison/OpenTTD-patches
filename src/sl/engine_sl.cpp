@@ -163,7 +163,7 @@ void Load_ERNC()
 	for (uint32_t idx = 0; idx < count; idx++) {
 		EngineID id = SlReadUint16();
 		CargoTypes refit_mask = SlReadUint64();
-		_engine_refit_network_caches.emplace_back(id, refit_mask);
+		_engine_refit_network_caches.push_back({ id, refit_mask });
 	}
 }
 
