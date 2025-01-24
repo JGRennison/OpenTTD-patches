@@ -59,6 +59,7 @@
 #include "debug_desync.h"
 #include "event_logs.h"
 #include "plans_func.h"
+#include "order_backup.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -368,6 +369,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		/* Single player cheated to AI company.
 		 * There are no spectators in singleplayer mode, so we must pick some other company. */
 		assert(!_networking);
+		OrderBackup::Reset();
 		Backup<CompanyID> cur_company2(_current_company, FILE_LINE);
 		for (const Company *c : Company::Iterate()) {
 			if (c->index != old_owner) {

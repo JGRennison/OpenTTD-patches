@@ -28,6 +28,7 @@
 #include "newgrf.h"
 #include "error.h"
 #include "network/network.h"
+#include "order_backup.h"
 #include "order_base.h"
 #include "vehicle_base.h"
 #include "currency.h"
@@ -72,6 +73,7 @@ static int32_t ClickChangeCompanyCheat(int32_t p1, int32_t p2)
 {
 	while ((uint)p1 < Company::GetPoolSize()) {
 		if (Company::IsValidID((CompanyID)p1)) {
+			OrderBackup::Reset();
 			SetLocalCompany((CompanyID)p1);
 			return _local_company;
 		}

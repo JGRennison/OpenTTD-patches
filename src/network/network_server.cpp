@@ -2362,6 +2362,8 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 	NetworkServerSendChat(action, DESTTYPE_BROADCAST, 0, "", client_id, company_id + 1);
 
 	InvalidateWindowData(WC_CLIENT_LIST, 0);
+
+	OrderBackup::ResetUser(client_id);
 }
 
 /**
