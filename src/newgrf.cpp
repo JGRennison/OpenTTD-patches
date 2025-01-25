@@ -2347,7 +2347,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 				break;
 
 			case 0x0F: // Long format year of availability (year since year 0)
-				bridge->avail_year = Clamp<CalTime::Year>(buf.ReadDWord(), CalTime::MIN_YEAR, CalTime::MAX_YEAR);
+				bridge->avail_year = CalTime::DeserialiseYearClamped(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x10: { // purchase string

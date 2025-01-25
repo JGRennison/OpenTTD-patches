@@ -107,22 +107,22 @@ extern void EnginesMonthlyLoop();
 static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 {
 	/* Don't allow changing to an invalid year, or the current year. */
-	p1 = Clamp(p1, CalTime::MIN_YEAR.base(), CalTime::MAX_YEAR.base());
-	if (p1 == CalTime::CurYear()) return CalTime::CurYear().base();
+	const CalTime::Year year = CalTime::DeserialiseYearClamped(p1);
+	if (year == CalTime::CurYear()) return year.base();
 
-	CalTime::Date new_date = CalTime::ConvertYMDToDate(p1, CalTime::CurMonth(), CalTime::CurDay());
+	CalTime::Date new_date = CalTime::ConvertYMDToDate(year, CalTime::CurMonth(), CalTime::CurDay());
 
 	/* Change the date. */
 	CalTime::Detail::SetDate(new_date, CalTime::CurDateFract());
 
 	if (!EconTime::UsingWallclockUnits()) {
-		EconTime::Date new_econ_date = new_date.base();
+		EconTime::Date new_econ_date{new_date.base()};
 		EconTime::DateFract new_econ_date_fract = CalTime::CurDateFract();
 
 		/* Shift cached dates. */
 		LinkGraphSchedule::instance.ShiftDates(new_econ_date - EconTime::CurDate());
 		ShiftVehicleDates(new_econ_date - EconTime::CurDate());
-		EconTime::Detail::period_display_offset -= (p1 - EconTime::CurYear().base());
+		EconTime::Detail::period_display_offset -= YearDelta{year.base() - EconTime::CurYear().base()};
 
 		EconTime::Detail::SetDate(new_econ_date, new_econ_date_fract);
 		UpdateOrderUIOnDateChange();

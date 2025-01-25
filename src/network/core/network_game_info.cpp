@@ -344,8 +344,6 @@ void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &in
  */
 void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfoNewGRFLookupTable *newgrf_lookup_table)
 {
-	static const CalTime::Date MAX_DATE = CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31); // December is month 11
-
 	uint8_t game_info_version = p.Recv_uint8();
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
 
@@ -416,8 +414,8 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
 		}
 
 		case 3:
-			info.calendar_date  = Clamp(p.Recv_uint32(), 0, MAX_DATE.base());
-			info.calendar_start = Clamp(p.Recv_uint32(), 0, MAX_DATE.base());
+			info.calendar_date  = CalTime::DeserialiseDateClamped(p.Recv_uint32());
+			info.calendar_start = CalTime::DeserialiseDateClamped(p.Recv_uint32());
 			[[fallthrough]];
 
 		case 2:
@@ -464,15 +462,13 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
  */
 void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 {
-	static const CalTime::Date MAX_DATE = CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31); // December is month 11
-
 	const uint8_t version = p.Recv_uint8();
 	if (version > SERVER_GAME_INFO_EXTENDED_MAX_VERSION) return; // Unknown version
 
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
 
-	info.calendar_date  = Clamp(p.Recv_uint32(), 0, MAX_DATE.base());
-	info.calendar_start = Clamp(p.Recv_uint32(), 0, MAX_DATE.base());
+	info.calendar_date  = CalTime::DeserialiseDateClamped(p.Recv_uint32());
+	info.calendar_start = CalTime::DeserialiseDateClamped(p.Recv_uint32());
 	info.companies_max  = p.Recv_uint8 ();
 	info.companies_on   = p.Recv_uint8 ();
 	p.Recv_uint8(); // Used to contain max-spectators.
