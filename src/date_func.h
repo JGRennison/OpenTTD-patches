@@ -52,34 +52,34 @@ void UpdateEffectiveDayLengthFactor();
 
 inline constexpr YearDelta DateDeltaToYearDelta(DateDelta date)
 {
-	return date.base() / DAYS_IN_LEAP_YEAR;
+	return YearDelta{date.base() / DAYS_IN_LEAP_YEAR};
 }
 
 inline constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, uint16_t fract = 0)
 {
-	return ((int64_t)date.base() * DAY_TICKS) + fract;
+	return DateTicksDelta{((int64_t)date.base() * DAY_TICKS) + fract};
 }
 
 inline EconTime::Date StateTicksToDate(StateTicks ticks)
 {
-	return (ticks.base() - DateDetail::_state_ticks_offset.base()) / (DAY_TICKS * DayLengthFactor());
+	return EconTime::Date{static_cast<int>((ticks.base() - DateDetail::_state_ticks_offset.base()) / (DAY_TICKS * DayLengthFactor()))};
 }
 
 CalTime::Date StateTicksToCalendarDate(StateTicks ticks);
 
 inline StateTicks DateToStateTicks(EconTime::Date date)
 {
-	return ((int64_t)date.base() * DAY_TICKS * DayLengthFactor()) + DateDetail::_state_ticks_offset.base();
+	return StateTicks{((int64_t)date.base() * DAY_TICKS * DayLengthFactor()) + DateDetail::_state_ticks_offset.base()};
 }
 
 inline EconTime::DateTicks StateTicksToDateTicks(StateTicks ticks)
 {
-	return (ticks.base() - DateDetail::_state_ticks_offset.base()) / DayLengthFactor();
+	return EconTime::DateTicks{(ticks.base() - DateDetail::_state_ticks_offset.base()) / DayLengthFactor()};
 }
 
 inline StateTicks DateTicksToStateTicks(EconTime::DateTicks date_ticks)
 {
-	return ((int64_t)date_ticks.base() * DayLengthFactor()) + DateDetail::_state_ticks_offset.base();
+	return StateTicks{((int64_t)date_ticks.base() * DayLengthFactor()) + DateDetail::_state_ticks_offset.base()};
 }
 
 inline Ticks TimetableDisplayUnitSize()

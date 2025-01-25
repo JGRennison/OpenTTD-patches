@@ -750,7 +750,7 @@ static void NetworkInitialize(bool close_admins = true)
 
 	_network_reconnect = 0;
 
-	_last_sync_date = 0;
+	_last_sync_date = EconTime::Date{0};
 	_last_sync_date_fract = 0;
 	_last_sync_tick_skip_counter = 0;
 	_last_sync_frame_counter = 0;

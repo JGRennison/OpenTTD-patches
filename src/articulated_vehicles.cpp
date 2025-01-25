@@ -532,7 +532,7 @@ void AddArticulatedParts(Vehicle *first)
 		v->build_year = first->build_year;
 
 		v->cargo_subtype = 0;
-		v->max_age = 0;
+		v->max_age = DateDelta{0};
 		v->engine_type = engine_type;
 		v->value = 0;
 		v->random_bits = Random();

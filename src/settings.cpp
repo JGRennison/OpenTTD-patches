@@ -1332,9 +1332,9 @@ static void ChangeTimekeepingUnits(int32_t)
 			new_economy_date_fract = EconTime::CurDateFract();
 		} else {
 			/* If the new mode is calendar units, sync the economy date with the calendar date. */
-			new_economy_date = CalTime::CurDate().base();
+			new_economy_date = ToEconTimeCast(CalTime::CurDate());
 			new_economy_date_fract = CalTime::CurDateFract();
-			EconTime::Detail::period_display_offset -= (CalTime::CurYear().base() - EconTime::CurYear().base());
+			EconTime::Detail::period_display_offset -= YearDelta{CalTime::CurYear().base() - EconTime::CurYear().base()};
 		}
 
 		/* Update link graphs and vehicles, as these include stored economy dates. */

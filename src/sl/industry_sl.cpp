@@ -19,7 +19,7 @@ void OldIndustryAccepted::Reset()
 {
 	this->old_cargo.fill(INVALID_CARGO);
 	this->old_waiting.fill(0);
-	this->old_last_accepted.fill(0);
+	this->old_last_accepted.fill({});
 }
 
 void OldIndustryProduced::Reset()

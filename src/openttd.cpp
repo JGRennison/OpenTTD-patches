@@ -445,10 +445,10 @@ static void ShutdownGame()
 	_loaded_local_company = COMPANY_SPECTATOR;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
-	_game_load_cur_date_ymd = { 0, 0, 0 };
+	_game_load_cur_date_ymd = { EconTime::Year{0}, 0, 0 };
 	_game_load_date_fract = 0;
 	_game_load_tick_skip_counter = 0;
-	_game_load_state_ticks = 0;
+	_game_load_state_ticks = StateTicks{0};
 	_game_load_time = 0;
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;
@@ -730,7 +730,7 @@ int openttd_main(std::span<char * const> arguments)
 			scanner->join_company_password = mgo.opt;
 			break;
 		case 'r': ParseResolution(&resolution, mgo.opt); break;
-		case 't': scanner->startyear = atoi(mgo.opt); break;
+		case 't': scanner->startyear = CalTime::Year(atoi(mgo.opt)); break;
 		case 'd': {
 #if defined(_WIN32)
 				CreateConsole();

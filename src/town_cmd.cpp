@@ -1065,7 +1065,7 @@ static CalTime::Date GetTownRoadTypeFirstIntroductionDate()
 		best = rti;
 	}
 
-	if (best == nullptr) return INT32_MAX;
+	if (best == nullptr) return CalTime::Date(INT32_MAX);
 	return best->introduction_date;
 }
 

@@ -29,7 +29,7 @@ struct IndustryLocationCacheEntry {
 };
 static_assert(sizeof(IndustryLocationCacheEntry) == 8);
 
-static const YearDelta PROCESSING_INDUSTRY_ABANDONMENT_YEARS = 5; ///< If a processing industry doesn't produce for this many consecutive years, it may close.
+static const YearDelta PROCESSING_INDUSTRY_ABANDONMENT_YEARS{5}; ///< If a processing industry doesn't produce for this many consecutive years, it may close.
 
 /*
  * Production level maximum, minimum and default values.

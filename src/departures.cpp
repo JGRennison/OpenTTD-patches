@@ -216,7 +216,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 		if (order->IsScheduledDispatchOrder(true) && !(arrived_at_timing_point && is_current_implicit_order(order))) {
 			const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 
-			StateTicks actual_departure         = INT64_MAX;
+			StateTicks actual_departure         = STATE_TICKS_INT_MAX;
 			int actual_slot_index               = -1;
 			const StateTicks begin_time         = ds.GetScheduledDispatchStartTick();
 			const uint32_t dispatch_duration    = ds.GetScheduledDispatchDuration();
@@ -266,7 +266,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 				}
 			}
 
-			if (actual_departure == INT64_MAX) {
+			if (actual_departure == STATE_TICKS_INT_MAX) {
 				/* Failed to find a dispatch slot for this departure at all, the schedule is invalid/empty.
 				 * Just treat it as a non-dispatch order. */
 				*previous_departure += order->GetTravelTime() + order->GetWaitTime();
@@ -946,7 +946,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 								}
 								departure_tick += order->GetWaitTime() - target->GetTravelTime();
 								if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes()) {
-									c.scheduled_tick = 0;
+									c.scheduled_tick = StateTicks{0};
 								}
 								order = target;
 								travel_time_required = false;
@@ -965,7 +965,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 				departure_tick += order->GetTravelTime();
 				if (travel_time_required && order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
-					c.scheduled_tick = 0;
+					c.scheduled_tick = StateTicks{0};
 				}
 				if (c.scheduled_tick != 0) c.scheduled_tick = departure_tick;
 
@@ -1338,7 +1338,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 						}
 						departure_tick += order->GetWaitTime() - target->GetTravelTime();
 						if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes() && !target->IsType(OT_CONDITIONAL)) {
-							c.scheduled_tick = 0;
+							c.scheduled_tick = StateTicks{0};
 						}
 						order = target;
 						travel_time_required = false;
@@ -1358,7 +1358,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 
 		departure_tick += order->GetTravelTime();
 		if (travel_time_required && order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
-			c.scheduled_tick = 0;
+			c.scheduled_tick = StateTicks{0};
 		}
 		if (c.scheduled_tick != 0) c.scheduled_tick = departure_tick;
 		c.target = CallAtTargetID::FromOrder(order);
@@ -1580,7 +1580,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			Ticks adjustment = slots[i].offset - first_offset;
 			for (size_t j = start_number_departures; j != done_first_slot_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->ShiftTimes(adjustment);
+				d->ShiftTimes(StateTicksDelta{adjustment});
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1589,7 +1589,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
 			for (size_t j = start_number_departures; j != done_schedule_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->ShiftTimes(adjustment);
+				d->ShiftTimes(StateTicksDelta{adjustment});
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1637,7 +1637,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 			StateTicks dispatch_tick = ds.GetScheduledDispatchStartTick();
 			if (dispatch_tick < start_tick) {
-				dispatch_tick += CeilDivT<StateTicksDelta>(start_tick - dispatch_tick, duration).AsTicks() * duration;
+				dispatch_tick += CeilDivT<StateTicksDelta>(start_tick - dispatch_tick, StateTicksDelta{duration}).AsTicks() * duration;
 			}
 			if (dispatch_tick > start_tick) {
 				StateTicksDelta delta = (dispatch_tick - start_tick);
@@ -1738,7 +1738,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	for (std::unique_ptr<Departure> &d : result) {
 		StateTicks new_tick = d->scheduled_tick;
 		if (new_tick < start_tick) {
-			new_tick += CeilDivT<StateTicksDelta>(start_tick - new_tick, tick_duration).AsTicks() * tick_duration;
+			new_tick += CeilDivT<StateTicksDelta>(start_tick - new_tick, StateTicksDelta{tick_duration}).AsTicks() * tick_duration;
 		}
 		if (new_tick > start_tick) {
 			StateTicksDelta delta = (new_tick - start_tick);

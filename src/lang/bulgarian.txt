@@ -414,21 +414,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Отво
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Размяна на ленти с инструменти
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Запис, зареждане на сценарий, затваряне на редактора, изход
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Запис, зареждане на сценарий, затваряне на редактора, изход
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Редактор на сценарии
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Премести назад началната дата с 1 година
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Премести напред началната дата с 1 година
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Натиснете, за да въведете година на започване
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Отворете карта, допълнителен прозорец за изглед, или списък със знаци, градове или отрасли
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Отваряне на меню за тераформиране или генериране на нов свят
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Създаване или генериране на градове
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Построяване или генериране на индустрии
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Строене на пътна инфраструктура
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Строене на трамвайна инфраструктура
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Засаждане на дърва. Ctrl+Click за маркиране по диагонал. Shift за показване на цената за засаждане
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Поставяне табела
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Постави обект. Ctrl+Click за маркиране по диагонал. Shift за показване на цената за построяване
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Премести назад началната дата с 1 година
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Премести напред началната дата с 1 година
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Натиснете, за да въведете година на започване
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Отворете карта, допълнителен прозорец за изглед, или списък със знаци, градове или отрасли
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Отваряне на меню за тераформиране или генериране на нов свят
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Създаване или генериране на градове
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Построяване или генериране на индустрии
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Строене на пътна инфраструктура
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Строене на трамвайна инфраструктура
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Засаждане на дърва. Ctrl+Click за маркиране по диагонал. Shift за показване на цената за засаждане
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Поставяне табела
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Постави обект. Ctrl+Click за маркиране по диагонал. Shift за показване на цената за построяване
 
 # Scenario editor file menu
 ###length 7
@@ -800,7 +800,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Сняг
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Покажи/скрий имената на градовете
-STR_SMALLMAP_CENTER                                             :{BLACK}Центриране на малката карта върху текущата позиция
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Центриране на малката карта върху текущата позиция
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -946,21 +946,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Камера {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Преместване на камерата
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Преместване на тази камера до глобалната
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Преместване на тази камера до глобалната
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Преместване глобалната камера
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Преместване глобалната камера до тази
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Преместване глобалната камера до тази
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Игрови настройки
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Основни
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Изберете основни настройки
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Изберете основни настройки
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Графични
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Изберете графични настройки
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Изберете графични настройки
 STR_GAME_OPTIONS_TAB_SOUND                                      :Звукови
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Изберете звукови и музикални настройки
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Изберете звукови и музикални настройки
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Социални
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Изберете настройки за социална интеграция
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Изберете настройки за социална интеграция
 
 STR_GAME_OPTIONS_VOLUME                                         :Височина на звук
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Звукови ефекти
@@ -2338,9 +2338,9 @@ STR_FACE_SAVE                                                   :{BLACK}Запа
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Запази любимо лице
 STR_FACE_SAVE_DONE                                              :{WHITE}Това лице ще бъде запазено като Вашето любимо в OpenTTD config файла
 STR_FACE_EUROPEAN                                               :{BLACK}Eвропеец
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Избери Европейски лица
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Избери Европейски лица
 STR_FACE_AFRICAN                                                :{BLACK}Aфриканец
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Избери Африкански лица
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Избери Африкански лица
 STR_FACE_YES                                                    :Дa
 STR_FACE_NO                                                     :He
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Позволи мустак или обица
@@ -2396,7 +2396,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Съвм
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Кликнете върху игра от списъка, за да я изберете
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Последно използвания сървър:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Кликнете, за да изберете последно използвания сървър
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Кликнете, за да изберете последно използвания сървър
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}ИНФО ЗА ИГРАТА
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Играчи: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3040,7 +3040,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Всич
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Име на града:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Въведи име на град
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Кликнете, за да въведете име на града
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Кликнете, за да въведете име на града
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Произволно име
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Генерирай прозиволно име
 
@@ -3054,7 +3054,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Метр
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Метрополисите се разрастват по-бързо от градовете.{}В зависимост от настройките те са по-големи при тяхното създаване
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}План на пътищата:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Изберете план за пътищата в този град
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Изберете план за пътищата в този град
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Оргинален
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}По-добри пътища
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}мрежа 2x2
@@ -3288,7 +3288,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Заре
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Отваряне на височинна карта
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Запис на височинна карта
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Зареждане на данни за града
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Прескачане към директорията за запис/зареждане по подразбиране
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Прескачане към директорията за запис/зареждане по подразбиране
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} свободно
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Списък с хард-дисковете, директориите и запазените игри
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Избрано име за запазена игра
@@ -3327,15 +3327,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Брой
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Изберете гъстотата на индустриите или въведете число ръчно
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Най-висок връх:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Изберете най-високия връх, който играта ще се опита да създаде, измерен във височина над морското равнище
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Увеличете максималната височина на най-високия връх на картата с едно
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Намалете максималната височина на най-високия връх на картата с едно
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Увеличете максималната височина на най-високия връх на картата с едно
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Намалете максималната височина на най-високия връх на картата с едно
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Снежно покритие:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Увеличи снежното покритие с десет процента
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Намали снежното покритие с десет процента
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Увеличи снежното покритие с десет процента
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Намали снежното покритие с десет процента
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Пустинно покритие:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Увеличаване на пустинното покритие с десет процента
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Намаляване на пустиното покритие с десет процента
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Увеличаване на пустинното покритие с десет процента
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Намаляване на пустиното покритие с десет процента
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тип на терен:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Морско равнище:
@@ -3408,8 +3408,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Гене
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Случайна карта
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Височина на плоска земя:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Изберете височината на земята над морското равнище
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Намаляване на височината на плоска земя
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Увеличаване на височината на плоска земя
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Намаляване на височината на плоска земя
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Увеличаване на височината на плоска земя
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Промяна височината на плоска земя
 
@@ -3783,12 +3783,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Невал
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Имена на станции - натиснете върху име, за да центрирате камерата върху станцията. Ctrl+Click отваря прозорец с нов изглед към станцията
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Задържете CTRL, за да изберете повече от един тип
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Задържете CTRL, за да изберете повече от един тип
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Станци{P я и}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Николко -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Избор на всички съоръжения
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Избор на всички съоръжения
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Всички видове товар и без рейтинг
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Различни видове товари
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Без типове товар
@@ -3866,7 +3866,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Центриране на камерата върху междинния пункт. Ctrl+Click отваря прозорец с нов изглед към пункта
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Смяна на името на междинния пункт
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Центриране на камерата върху шамандура. Ctrl+Click отваря прозорец с нов изглед към шамандурата
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Промяна на името на шамандурата
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Промяна на името на шамандурата
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Редакция на името на междинния пункт
 
@@ -3942,7 +3942,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Пост
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Покажи Централния Офис
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Виж щабкравтирата на компанията
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Преместване ЦК
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Преместване централата на компанията на друго място за 1% от стойноста на компанията. Shift за показване на цената за построяване
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Преместване централата на компанията на друго място за 1% от стойноста на компанията. Shift за показване на цената за построяване
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Детайли
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Детайлна бройка на инфраструктурите
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Дайте пари
@@ -3989,7 +3989,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} и още {NUM}...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Имена на индустриите - натиснете, за да центрирате камерата върху индустрията. Ctrl+Click отваря прозорец с нов изглед към индустрията
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Имена на индустриите - натиснете, за да центрирате камерата върху индустрията. Ctrl+Click отваря прозорец с нов изглед към индустрията
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Приеман товар {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Произведен товар: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Всички типове товари
@@ -4264,10 +4264,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Клон
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Клониране на летателно средство
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Закупуване на копие на влак, заедно с всички негови вагони. Натиснете този бутон и след това върху влак вътре или вън от депото. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Закупуване на копие на автомобил. Натиснете този бутон и след това върху МПС вътре или вън от депото. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Закупуване на копие на кораб. Натиснете този бутон и след това върху кораб вътре или вън от дока. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Закупуванне на копие на летателно средство. Натиснете този бутон и след това върху летателна машина вътре или вън от хангара. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Закупуване на копие на влак, заедно с всички негови вагони. Натиснете този бутон и след това върху влак вътре или вън от депото. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Закупуване на копие на автомобил. Натиснете този бутон и след това върху МПС вътре или вън от депото. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Закупуване на копие на кораб. Натиснете този бутон и след това върху кораб вътре или вън от дока. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Закупуванне на копие на летателно средство. Натиснете този бутон и след това върху летателна машина вътре или вън от хангара. Ctrl+Click за споделяне на заповедите. Shift за показване на цената за построяване
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Центриране на картата върху влаковото депо. Ctrl+Click отваря прозорец с нов изглед към депото
@@ -4338,31 +4338,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Автобус/
 STR_REPLACE_VEHICLE_SHIP                                        :Кораб
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Летателно средство
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Избор на нов двигател за замяната
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Изберете нов тип двигател, който бихте желали да поставите на мястото на избрания в ляво
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Избор на нов двигател за замяната
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Изберете нов тип двигател, който бихте желали да поставите на мястото на избрания в ляво
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Започване на замяната
 STR_REPLACE_VEHICLES_NOW                                        :Замени всички превозни средства сега
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Замени само старите превозни средства
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Натиснете за започване подмяната на ляво избрания тип двигател с избрания в дясно
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Натиснете за започване подмяната на ляво избрания тип двигател с избрания в дясно
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Не заменя
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Няма избрани превозни средства
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} когато е стар
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Спиране на замяната
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Натиснете за спиране подновяването на избрания в ляво двигател
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Натиснете за спиране подновяването на избрания в ляво двигател
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Превключване между замяна на локомотиви и вагони
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Превключване между замяна на локомотиви и вагони
 STR_REPLACE_ENGINES                                             :Двигатели
 STR_REPLACE_WAGONS                                              :Вагони
 STR_REPLACE_ALL_RAILTYPE                                        :Всички влакови композиции
 STR_REPLACE_ALL_ROADTYPE                                        :Всички пътни превозни средства
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Изберете типа влакова линия, за който искате да се заменят локомотиви
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Изберете типа асфалтов път, за който искате да се заменят автомобили
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Изберете типа влакова линия, за който искате да се заменят локомотиви
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Изберете типа асфалтов път, за който искате да се заменят автомобили
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Показва с какъв локомотив се заменя селектираният вляво
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Показва с какъв локомотив се заменя селектираният вляво
 STR_REPLACE_RAIL_VEHICLES                                       :Двурелсови локомотиви
 STR_REPLACE_ELRAIL_VEHICLES                                     :Електрически локомотиви
 STR_REPLACE_MONORAIL_VEHICLES                                   :Еднорелсови локомотиви
@@ -4372,7 +4372,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Автомоб�
 STR_REPLACE_TRAM_VEHICLES                                       :Трамвайни машини
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Премахване на вагон ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Автоматичната замяна ще запази дължината на влака, като премахне вагони (започвайки от предните), ако замяната довежда до по-дълъг влак
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Автоматичната замяна ще запази дължината на влака, като премахне вагони (започвайки от предните), ако замяната довежда до по-дълъг влак
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Click за прилагане и към подгрупи
 
 # Vehicle view

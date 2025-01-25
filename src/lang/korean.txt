@@ -414,21 +414,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}지역 �
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}툴바를 변경합니다.
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}시나리오를 저장하거나, 불러오거나, 시나리오 에디터를 종료하거나, 게임을 종료합니다
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}시나리오를 저장하거나, 불러오거나, 시나리오 에디터를 종료하거나, 게임을 종료합니다
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}시나리오 에디터
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}시작 일시를 1년 앞당깁니다.
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}시작 일시를 1년 늦춥니다.
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}시작 연도를 입력하세요.
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}지도, 추가 외부 화면, 팻말 목록, 또는 도시나 산업 시설 목록을 엽니다
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}지형 편집 메뉴 또는 새로운 세계 생성 메뉴를 엽니다
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}도시를 만듭니다
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}산업시설을 건설합니다
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}도로 기반시설을 건설합니다
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}전차 기반 시설을 건설합니다
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}나무를 심습니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}팻말을 답니다.
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}오브젝트를 설치합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}시작 일시를 1년 앞당깁니다.
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}시작 일시를 1년 늦춥니다.
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}시작 연도를 입력하세요.
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}지도, 추가 외부 화면, 팻말 목록, 또는 도시나 산업 시설 목록을 엽니다
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}지형 편집 메뉴 또는 새로운 세계 생성 메뉴를 엽니다
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}도시를 만듭니다
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}산업시설을 건설합니다
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}도로 기반시설을 건설합니다
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}전차 기반 시설을 건설합니다
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}나무를 심습니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}팻말을 답니다.
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}오브젝트를 설치합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 
 # Scenario editor file menu
 ###length 7
@@ -802,7 +802,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}눈
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}도시 이름을 표시하거나 숨깁니다
-STR_SMALLMAP_CENTER                                             :{BLACK}소형지도 내부창의 위치를 현재 게임 화면 위치로 이동시킵니다.
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}소형지도 내부창의 위치를 현재 게임 화면 위치로 이동시킵니다.
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -948,21 +948,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}외부 화면 {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}외부 화면으로 복사
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}현재 장소를 외부 화면에 복사합니다.
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}현재 장소를 외부 화면에 복사합니다.
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}이 장소로 이동
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}외부 화면에 저장된 장소로 이동합니다.
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}외부 화면에 저장된 장소로 이동합니다.
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}게임 설정
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :일반
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}일반 설정을 선택합니다
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}일반 설정을 선택합니다
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :그래픽
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}그래픽 설정을 선택합니다
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}그래픽 설정을 선택합니다
 STR_GAME_OPTIONS_TAB_SOUND                                      :효과음
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}효과음과 배경음 설정을 선택합니다
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}효과음과 배경음 설정을 선택합니다
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :소셜
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}소셜 통합 설정을 선택합니다
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}소셜 통합 설정을 선택합니다
 
 STR_GAME_OPTIONS_VOLUME                                         :음량
 STR_GAME_OPTIONS_SFX_VOLUME                                     :효과음
@@ -2332,9 +2332,9 @@ STR_FACE_SAVE                                                   :{BLACK}저장
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}즐겨찾는 얼굴로 저장
 STR_FACE_SAVE_DONE                                              :{WHITE}이 얼굴이 OpenTTD 설정 파일에 즐겨찾는 얼굴로 저장될 것입니다.
 STR_FACE_EUROPEAN                                               :{BLACK}유럽인
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}유럽인 얼굴 선택
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}유럽인 얼굴 선택
 STR_FACE_AFRICAN                                                :{BLACK}흑인
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}흑인 얼굴 선택
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}흑인 얼굴 선택
 STR_FACE_YES                                                    :예
 STR_FACE_NO                                                     :아니요
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}콧수염이나 귀걸이 착용
@@ -2390,7 +2390,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}서버 �
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}선택하려면 목록에서 게임을 클릭하세요
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}최근에 접속한 서버:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}최근에 플레이한 서버를 선택하려면 클릭하세요
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}최근에 플레이한 서버를 선택하려면 클릭하세요
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}게임 정보
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}접속현황: {WHITE}{COMMA} / {COMMA}명 - 회사 {COMMA} / {COMMA}개
@@ -3042,7 +3042,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}모든 �
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}도시 이름:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}도시 이름 입력
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}도시 이름을 입력하려면 클릭하세요
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}도시 이름을 입력하려면 클릭하세요
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}무작위 이름
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}무작위 이름 생성
 
@@ -3056,7 +3056,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}대도�
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}대도시는 도시보다 빠르게 성장합니다.{}도시를 만들었을 때, 위 설정에 따라 더욱 커집니다
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}도시 도로 설계:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}이 도시에 사용할 도로 설계를 선택합니다
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}이 도시에 사용할 도로 설계를 선택합니다
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}오리지널
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}개선된 도로
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 칸
@@ -3290,7 +3290,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}시나�
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}높이맵 불러오기
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}높이맵 저장
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}도시 데이터 불러오기
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}기본 저장/불러오기 폴더로 이동하려면 여기를 클릭하세요
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}기본 저장/불러오기 폴더로 이동하려면 여기를 클릭하세요
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} 남음
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}드라이브, 폴더, 저장된 게임 파일의 목록입니다
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}현재 입력된 게임 저장 파일의 이름입니다
@@ -3329,15 +3329,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}산업�
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}산업 시설의 수를 선택하거나, 직접 그 개수를 입력합니다
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}가장 높은 지점의 높이:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}해수면을 기준으로, 게임이 생성하려고 하는 가장 높은 곳의 높이를 선택합니다.
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}지도에서 가장 높은 지점의 최대 높이를 1만큼 높입니다
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}지도에서 가장 높은 지점의 최대 높이를 1만큼 낮춥니다
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}지도에서 가장 높은 지점의 최대 높이를 1만큼 높입니다
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}지도에서 가장 높은 지점의 최대 높이를 1만큼 낮춥니다
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}눈 비율:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}눈 지역의 비율을 10%p 늘립니다.
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}눈 지역의 비율을 10%p 줄입니다.
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}눈 지역의 비율을 10%p 늘립니다.
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}눈 지역의 비율을 10%p 줄입니다.
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}사막 비율:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}눈이 내린 곳의 비율을 10%p 줄입니다.
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}사막 지역의 비율을 10%p 줄입니다.
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}눈이 내린 곳의 비율을 10%p 줄입니다.
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}사막 지역의 비율을 10%p 줄입니다.
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}지형 종류:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}해수면:
@@ -3410,8 +3410,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}평평�
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}무작위 지형
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}평지의 높이:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}해수면 위의 땅 높이를 선택합니다
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}평지의 높이를 1칸 낮춥니다
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}평지의 높이를 1칸 높입니다
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}평지의 높이를 1칸 낮춥니다
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}평지의 높이를 1칸 높입니다
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}평지의 높이 변경
 
@@ -3785,12 +3785,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}잘못된 
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}역 이름 - 이 역의 위치로 시점을 변경하려면 클릭하세요. CTRL+클릭하면 이 역 위치를 기준으로 새로운 외부 화면을 엽니다
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}하나 이상의 항목을 동시에 선택하려면 CTRL+클릭하세요
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}하나 이상의 항목을 동시에 선택하려면 CTRL+클릭하세요
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA}개 역사
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- 없음 -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}모든 시설을 선택합니다.
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}모든 시설을 선택합니다.
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :모든 화물
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :여러 개의 화물
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :등급 없는 화물
@@ -3868,7 +3868,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}이 경유지의 위치로 시점을 변경합니다. CTRL+클릭하면 이 경유지 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}이 경유지의 이름을 변경합니다
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}이 부표의 위치로 이동합니다. CTRL+클릭하면 이 부표 위치를 기준으로 새로운 외부 화면을 엽니다
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}부표 이름 바꾸기
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}부표 이름 바꾸기
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}경유지 이름 설정
 
@@ -3944,7 +3944,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}회사 �
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}본사 보기
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}회사 본사 위치로 이동합니다
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}본사 위치 변경
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}회사가치의 1% 가격을 들여 본사를 다른 위치로 옮깁니다. SHIFT+클릭을 사용하면 예상 비용을 볼 수 있습니다
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}회사가치의 1% 가격을 들여 본사를 다른 위치로 옮깁니다. SHIFT+클릭을 사용하면 예상 비용을 볼 수 있습니다
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}상세정보
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}기반시설 상세정보 창을 엽니다
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}돈 보내기
@@ -3991,7 +3991,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} 및 {NUM}종의 화물
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}산업시설 이름 - 산업시설로 이동하려면 이름을 클릭하세요. CTRL+클릭하면 이 산업시설의 위치를 기준으로 새로운 외부 화면을 엽니다
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}산업시설 이름 - 산업시설로 이동하려면 이름을 클릭하세요. CTRL+클릭하면 이 산업시설의 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}받는 화물: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}생산 화물: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :모든 화물
@@ -4266,10 +4266,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}선박 �
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}항공기 복제
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}객차/화차를 포함한 열차 전체를 복제합니다. 이 버튼을 클릭하고 차량기지 안이나 밖에 있는 열차를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}차량을 복제합니다. 이 버튼을 클릭하고 차고지 안이나 밖에 있는 열차를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}선박을 복제합니다. 이 버튼을 누르고 정류소의 안이나 밖에 있는 선박을 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}항공기를 복제합니다. 이 버튼을 누르고 격납고의 안이나 밖에 있는 항공기를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}객차/화차를 포함한 열차 전체를 복제합니다. 이 버튼을 클릭하고 차량기지 안이나 밖에 있는 열차를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}차량을 복제합니다. 이 버튼을 클릭하고 차고지 안이나 밖에 있는 열차를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}선박을 복제합니다. 이 버튼을 누르고 정류소의 안이나 밖에 있는 선박을 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}항공기를 복제합니다. 이 버튼을 누르고 격납고의 안이나 밖에 있는 항공기를 클릭하세요. CTRL+클릭하면 경로를 같이 공유합니다
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}이 차량기지로 이동합니다. CTRL+클릭하면 이 차량기지의 위치를 기준으로 새로운 외부 화면을 엽니다
@@ -4340,31 +4340,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :{G=f}자동차/
 STR_REPLACE_VEHICLE_SHIP                                        :{G=m}선박
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :{G=f}항공기
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}교체할 기관차 종류를 선택하세요
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}새로 교체될 기관차를 선택하세요
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}교체할 기관차 종류를 선택하세요
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}새로 교체될 기관차를 선택하세요
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}차량 교체 시작
 STR_REPLACE_VEHICLES_NOW                                        :모든 차량을 지금 교체
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :오래된 차량만 교체
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}왼쪽에서 선택한 기관차를 오른쪽의 새 기관차로 교체하려면 누르세요
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}왼쪽에서 선택한 기관차를 오른쪽의 새 기관차로 교체하려면 누르세요
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}교체 안 됨
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}차량이 선택되지 않았음
 STR_REPLACE_REPLACING_WHEN_OLD                                  :낡으면 {ENGINE}{G 0 "으" ""}로 교체
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}차량 교체 중지
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}왼쪽에서 선택한 기관차의 차량교체를 중지하려면 이 버튼을 누르세요
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}왼쪽에서 선택한 기관차의 차량교체를 중지하려면 이 버튼을 누르세요
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}기관차/화물차 교체 창으로 전환합니다
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}기관차/화물차 교체 창으로 전환합니다
 STR_REPLACE_ENGINES                                             :기관차
 STR_REPLACE_WAGONS                                              :화물차
 STR_REPLACE_ALL_RAILTYPE                                        :모든 철도 차량
 STR_REPLACE_ALL_ROADTYPE                                        :모든 자동차
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}교체할 기관차의 선로 종류를 고르세요
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}교체할 차량이 속한 도로 종류를 고르세요
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}교체할 기관차의 선로 종류를 고르세요
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}교체할 차량이 속한 도로 종류를 고르세요
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}왼쪽의 선택한 기관차가 어떤 기관차로 교체되고 있는지 표시합니다
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}왼쪽의 선택한 기관차가 어떤 기관차로 교체되고 있는지 표시합니다
 STR_REPLACE_RAIL_VEHICLES                                       :철도 차량
 STR_REPLACE_ELRAIL_VEHICLES                                     :전기철도 차량
 STR_REPLACE_MONORAIL_VEHICLES                                   :모노레일 차량
@@ -4374,7 +4374,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :자동차
 STR_REPLACE_TRAM_VEHICLES                                       :전차 차량
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}화물차 제거 ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}자동 교체시 열차의 길이가 교체 전보다 길어지면 객차/화차를 (앞쪽부터) 제거하여 열차의 전체 길이가 달라지지 않도록 합니다
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}자동 교체시 열차의 길이가 교체 전보다 길어지면 객차/화차를 (앞쪽부터) 제거하여 열차의 전체 길이가 달라지지 않도록 합니다
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. CTRL+클릭하면 하위 그룹에도 적용됩니다
 
 # Vehicle view

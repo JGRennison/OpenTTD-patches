@@ -357,20 +357,20 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Lânynfo
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Skeakelje tusken ark
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Senario opslaan, senario lade, senariobouwer ferlitte, ôfslute
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Senario opslaan, senario lade, senariobouwer ferlitte, ôfslute
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}Iepen TTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Senariobouwer
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Set it startjier 1 jier efterút
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Set it startjier 1 jier foarút
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klik om it startjier yn te fieren
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Kaart sjen litte, stêdlist sjen litte
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Lânskipgeneraasje
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Stêdgeneraasje
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Yndustry generaasje
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Dikenbou
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Beammen plantsje. Shift skeakelt tusken bouwe/taksearje fan de kosten
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Set in buordsje del
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Pleats in objekt. Shift skeakelt tusken bouwe/taksearje fan de kosten
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Set it startjier 1 jier efterút
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Set it startjier 1 jier foarút
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klik om it startjier yn te fieren
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Kaart sjen litte, stêdlist sjen litte
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Lânskipgeneraasje
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Stêdgeneraasje
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Yndustry generaasje
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Dikenbou
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Beammen plantsje. Shift skeakelt tusken bouwe/taksearje fan de kosten
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Set in buordsje del
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Pleats in objekt. Shift skeakelt tusken bouwe/taksearje fan de kosten
 
 # Scenario editor file menu
 ###length 7
@@ -719,7 +719,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Snie
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Set stêdsnammen oan/út op 'e kaart
-STR_SMALLMAP_CENTER                                             :{BLACK}Set dit plak sintraal yn de kaart
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Set dit plak sintraal yn de kaart
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -846,9 +846,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Loaitsfinster {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopiearje nei loaitsfinster
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopiearje de lokaasje fan it haadfinster nei dit loaitsfinster
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopiearje de lokaasje fan it haadfinster nei dit loaitsfinster
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Plak fanút loaitsfinster
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Plak de lokaasje fan dit loaitsfinster nei it haadfinster
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Plak de lokaasje fan dit loaitsfinster nei it haadfinster
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spulopsjes
@@ -1939,9 +1939,9 @@ STR_FACE_FACECODE                                               :{BLACK}Spielers
 STR_FACE_SAVE                                                   :{BLACK}Opslaan
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Favorite gesicht opslaan
 STR_FACE_EUROPEAN                                               :{BLACK}Jeropeesk
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Selektearje jeropeeske gesichten
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Selektearje jeropeeske gesichten
 STR_FACE_AFRICAN                                                :{BLACK}Afrikaans
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Selektearje Afrikaanske gesichten
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Selektearje Afrikaanske gesichten
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :#
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Snorren en earbellen
@@ -1989,7 +1989,7 @@ STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Wizigje 
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klik in spul út de list om it te selektearjen
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Server wert dast it lêst op spiele hast
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klik om server wert dast it lêst op spiele hast te selektearje
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klik om server wert dast it lêst op spiele hast te selektearje
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}Spul INFO
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Kliïnten: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2420,7 +2420,7 @@ STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Pleats S
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Stêd namme:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Typ namme fan in stêd
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klik hjire om in stêd namme oan te meitsje
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klik hjire om in stêd namme oan te meitsje
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Samar in namme
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Meitsje in willekeurich nije namme
 
@@ -2434,7 +2434,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Stêd
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Stêden groeien flugger as doarpen{}Ôfhinklik fan ynstellings binne se grutter at se makke wurde
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Strjittenpatroan
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Selektear strjittenpatroan foar dit plak
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Selektear strjittenpatroan foar dit plak
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Orizjiniel
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Bettere diken
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 raster
@@ -2609,7 +2609,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Sla Scen
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Laad Scenario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Laad Hichtemap
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Hichtekaart bewarje
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Hjir klikke om nei standert opslach- en laadtriemtafel te gean
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Hjir klikke om nei standert opslach- en laadtriemtafel te gean
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} frij
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}List fan skiven, mappen en bestânen
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Op dit stuit selektearre namme foar bewarre spul
@@ -2694,8 +2694,8 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Sljocht 
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}In sljocht lânskip generearje
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Samar in lânskip
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Hichte sljocht lânskip:
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}De hichte fan it sljochte lânskip oanpasse
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Hichte sljocht lânskip ien omheech ferpleatse
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}De hichte fan it sljochte lânskip oanpasse
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Hichte sljocht lânskip ien omheech ferpleatse
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Hichte sljocht lânskip oanpasse
 
@@ -3004,7 +3004,7 @@ STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}Folgjend
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}Gean nei de folgjende pagina
 
 # Station list window
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Hâld CTRL yndrukt om meardere objekten te selektearje
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Hâld CTRL yndrukt om meardere objekten te selektearje
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Stasjon{P "" s}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
@@ -3071,7 +3071,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Sintrearje it byld op de lokaasje fan dizze kontrôlepost
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Namme fan kontrôlepost oanpasse
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Sintrearje it byld op de lokaasje fan dizze boei
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Namme fan boei oanpasse
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Namme fan boei oanpasse
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Namme fan kontrôlepost oanpasse
 
@@ -3412,7 +3412,7 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Auto
 STR_REPLACE_VEHICLE_SHIP                                        :Skip
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Fleanmasine
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Selektearje it type lokomotyf om te ferfangen
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Selektearje it type lokomotyf om te ferfangen
 
 STR_REPLACE_VEHICLES_NOW                                        :No alle fiertugen ferfange
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Ferfang allinech âlde weinen

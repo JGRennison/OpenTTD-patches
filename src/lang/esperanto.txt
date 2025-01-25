@@ -494,21 +494,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Informoj
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Ŝalti ilobretojn
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Konservu scenaron, ŝarĝu scenaron, foriru el la kreilo, fermu
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Konservu scenaron, ŝarĝu scenaron, foriru el la kreilo, fermu
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenarkreilon
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Movu la komencdaton 1 jaron posten
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Movu la komencdaton 1 jaron antaŭen
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klaku por enigi komencjaron
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Malfermu mapon, ekstran vidujon, liston de ŝildoj, aŭ katalogon de urboj aŭ industriejoj
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Landaspekta generado
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Urba generado
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Industria generado
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Konstruu stratan infrastrukturon
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Konstruado de tramvojo
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plantu arbojn. «Shift» aktivigita konstruado/montrante kosto takso
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Metu signon
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Metu objekton. Ctrl+klak+tiru por elekti areon diagonale. Ankaŭ premu Shift por nur montri kostotakson
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Movu la komencdaton 1 jaron posten
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Movu la komencdaton 1 jaron antaŭen
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klaku por enigi komencjaron
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Malfermu mapon, ekstran vidujon, liston de ŝildoj, aŭ katalogon de urboj aŭ industriejoj
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Landaspekta generado
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Urba generado
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Industria generado
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Konstruu stratan infrastrukturon
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Konstruado de tramvojo
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Plantu arbojn. «Shift» aktivigita konstruado/montrante kosto takso
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Metu signon
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Metu objekton. Ctrl+klak+tiru por elekti areon diagonale. Ankaŭ premu Shift por nur montri kostotakson
 
 # Scenario editor file menu
 ###length 7
@@ -867,7 +867,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Neĝo
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Vidu aŭ ne vidu urbonomojn sur la mapo
-STR_SMALLMAP_CENTER                                             :{BLACK}Centrigi la mapeton al la nuna loko
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centrigi la mapeton al la nuna loko
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -1005,19 +1005,19 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Vidujo {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopiu al vidujo
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopiu la lokon de la ĉefvido al ĉi tiu vidujo
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopiu la lokon de la ĉefvido al ĉi tiu vidujo
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Gluu de vidujo
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Gluu la lokon de ĉi tiu vidujo al la ĉefvido
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Gluu la lokon de ĉi tiu vidujo al la ĉefvido
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludaj agordoj
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Ĝenerale
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Elektu ĝeneralajn agordojn
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Elektu ĝeneralajn agordojn
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafiko
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Elektu agordojn pri grafiko
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Elektu agordojn pri grafiko
 STR_GAME_OPTIONS_TAB_SOUND                                      :Sono
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Elektu agordojn pri sono kaj muziko
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Elektu agordojn pri sono kaj muziko
 
 STR_GAME_OPTIONS_VOLUME                                         :Laŭteco
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Sonefektoj
@@ -2297,9 +2297,9 @@ STR_FACE_SAVE                                                   :{BLACK}Konservi
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Konservi favoratan vizaĝon
 STR_FACE_SAVE_DONE                                              :{WHITE}Tiu ĉi vizaĝo estos konservita kiel via favorata en la agord-dosiero de OpenTTD.
 STR_FACE_EUROPEAN                                               :{BLACK}Europa
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Elekti eŭropajn vizaĝojn
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Elekti eŭropajn vizaĝojn
 STR_FACE_AFRICAN                                                :{BLACK}Afrika
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Elekti afrikajn vizaĝojn
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Elekti afrikajn vizaĝojn
 STR_FACE_YES                                                    :Jes
 STR_FACE_NO                                                     :Ne
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Ŝalti lipharojn aŭ orelringon.
@@ -2353,7 +2353,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Lingvo, 
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Alklaku ludon el la listo por elekti ĝin
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}La servilo kiun vi laste ensalutis:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klaku por selekti la servilon kie vi ludis la lastan fojon
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klaku por selekti la servilon kie vi ludis la lastan fojon
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}LUDINFORMOJ
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Klientoj: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2947,7 +2947,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Ĉiuj ur
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Urbnomo:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Enigu urbnomon
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klaku por enigi urbnomon
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klaku por enigi urbnomon
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Hazarda nomo
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Kreu hazardan novan urbnomon
 
@@ -2961,7 +2961,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Urbo
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Urbegoj kreskas pli rapide ol kutimaj urboj{}Depende de agordoj, ili pli grandas je fondiĝo
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Urba strataranĝo:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Selektu strataranĝon uzendan por ĉi tiu urbo
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Selektu strataranĝon uzendan por ĉi tiu urbo
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Originale
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Pli bonaj stratoj
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 krado
@@ -3191,7 +3191,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Konservu
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Ŝarĝu Scenaron
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Ŝarĝu Altecmapon
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Konservu altecmapon
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klaku ĉi tie por salti al la nuna defaŭlta konserva dosierujo
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klaku ĉi tie por salti al la nuna defaŭlta konserva dosierujo
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} libera{P "" j}
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Listo da diskoj, dosierujoj kaj luddosieroj
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Nune elektita nomo por luddosiero
@@ -3225,15 +3225,15 @@ STR_MAPGEN_DATE                                                 :{BLACK}Dato:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Kiom da industrioj:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Elektu densecon de industriejoj, aŭ specifan nombron
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Plej alta pinto:
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Pliigu la maksimuman altecon de la plej alta pinto sur la mapo je unu
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Malpliigu la maksimuman altecon de la plej alta pinto sur la mapo je unu
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Pliigu la maksimuman altecon de la plej alta pinto sur la mapo je unu
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Malpliigu la maksimuman altecon de la plej alta pinto sur la mapo je unu
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Neĝa kovro:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Pliigu neĝan kovron je dek procentoj
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Malpliigu neĝan kovron je dek procentoj
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Pliigu neĝan kovron je dek procentoj
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Malpliigu neĝan kovron je dek procentoj
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Dezerta kovro:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Pliigu dezertan kovron je dek procentoj
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Malpliigu dezertan kovron je dek procentoj
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Pliigu dezertan kovron je dek procentoj
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Malpliigu dezertan kovron je dek procentoj
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terentipo:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Marnivelo:
@@ -3301,8 +3301,8 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Ebena la
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Generu ebenan landon
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Hazarda lando
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Alteco de ebena lando:
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Malaltigu la altecon de ebena lando per unu
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Altigu la altecon de ebena lando per unu
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Malaltigu la altecon de ebena lando per unu
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Altigu la altecon de ebena lando per unu
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Ŝanĝu altecon de ebena lando
 
@@ -3630,12 +3630,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Malvalida 
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stacionomoj - klaku nomon por centri vidpunkto ĉe la stacio. Ctrl+Klak por malfermi novan vidujon ĉe la stacioloko
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Tenu Ctrl-klavon por elekti plurajn erojn
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Tenu Ctrl-klavon por elekti plurajn erojn
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Stacio{P "" j}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Neniu -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Elektu ĉiujn konstruaĵojn
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Elektu ĉiujn konstruaĵojn
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Neniaj ŝarĝoj
 STR_STATION_LIST_CARGO_FILTER_NO_RATING                         :Sen ŝarĝotakso
 
@@ -3706,7 +3706,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centri ĉefvidon ĉe la vojpunkto. Stir+Klak por malfermi novan vidujon ĉe la loko.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Ŝanĝi nomon de vojpunkto.
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centri ĉefvidon ĉe la buo. Ctrl+Klak por malfermi novan vidujon ĉe la bua loko.
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Ŝanĝi nomon de la buo.
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Ŝanĝi nomon de la buo.
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ŝanĝu vojpunktonomon
 
@@ -3783,7 +3783,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Konstrui
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vidu HQ
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Rigardi kompanian administraciejon
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Relokigu HQ
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Rekonstruu kompanian ĉefkonstruaĵon aliloke por 1% de kompanivaloro. Tenu maljuskliga klavo + Klak por (kost)taksi sen rekonstrui ĉefkonstruaĵon
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Rekonstruu kompanian ĉefkonstruaĵon aliloke por 1% de kompanivaloro. Tenu maljuskliga klavo + Klak por (kost)taksi sen rekonstrui ĉefkonstruaĵon
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaloj
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vidu detalajn nombrojn de infrastruktureroj
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donu monon
@@ -3827,7 +3827,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} kaj {NUM} pliaj...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrionomoj - klaku nomon por centri vidon ĉe la industrio. Ctrl+Klak por malfermi novan vidujon ĉe la loko
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrionomoj - klaku nomon por centri vidon ĉe la industrio. Ctrl+Klak por malfermi novan vidujon ĉe la loko
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Ŝarĝo akceptata: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produktata kargo: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Ĉiaj ŝarĝoj
@@ -4093,10 +4093,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klonu Ŝ
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klonu aviadilon
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Aĉeti kopion de vagonaro kun ĉiuj vagonoj. Klaku ĉi tiun butonon kaj poste vagonaron en aŭ ekster la garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Aĉeti kopion de stratveturilo. Klaku ĉi tiun butonon kaj poste veturilon en aŭ ekster la garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Aĉeti kopion de ŝipo. Klaku ĉi tiun butonon kaj poste ŝipon en aŭ ekster garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Aĉetu kopion de aviadilo. Klaku ĉi tiun butonon kaj poste aviadilon en aŭ ekster la hangaro. Ctrl+Klak kunhavigas la ordonojn. Ankaŭ premu Shift por nur montri kostotakson
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Aĉeti kopion de vagonaro kun ĉiuj vagonoj. Klaku ĉi tiun butonon kaj poste vagonaron en aŭ ekster la garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Aĉeti kopion de stratveturilo. Klaku ĉi tiun butonon kaj poste veturilon en aŭ ekster la garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Aĉeti kopion de ŝipo. Klaku ĉi tiun butonon kaj poste ŝipon en aŭ ekster garaĝo. Ctrl+Klak kunhavigas la itineron. Maljuskliga klavo+klaku montras taksatan koston sen aĉeti
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Aĉetu kopion de aviadilo. Klaku ĉi tiun butonon kaj poste aviadilon en aŭ ekster la hangaro. Ctrl+Klak kunhavigas la ordonojn. Ankaŭ premu Shift por nur montri kostotakson
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centri ĉefvidon ĉe la vagonartenejo. Stir+Klak por malfermi novan vidujon ĉe la vagonartenejo loko.
@@ -4164,19 +4164,19 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Stratveturilo
 STR_REPLACE_VEHICLE_SHIP                                        :Ŝipo
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aviadilo
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Elektu maŝinon por anstataŭi
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Elektu novan maŝinon por uzi anstataŭ la maldekstre elektitan
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Elektu maŝinon por anstataŭi
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Elektu novan maŝinon por uzi anstataŭ la maldekstre elektitan
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Komencu Anstataŭi
 STR_REPLACE_VEHICLES_NOW                                        :Anstataŭigu ĉiujn veturilojn nun
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Anstataŭigu nur malnovajn veturilojn
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Premu por komenci anstataŭi la maldekstre elektitan maŝinon per la dekstre elektitan
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Premu por komenci anstataŭi la maldekstre elektitan maŝinon per la dekstre elektitan
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Ne anstataŭante
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Ne elektiĝis veturilo
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Ĉesu Anstataŭi
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Premu por ĉesi anstataŭi la maldekstre elektitan maŝinon
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Premu por ĉesi anstataŭi la maldekstre elektitan maŝinon
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Ŝaltu inter maŝina kaj vagona anstataŭigo
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Ŝaltu inter maŝina kaj vagona anstataŭigo
 STR_REPLACE_ENGINES                                             :Maŝinoj
 STR_REPLACE_WAGONS                                              :Vagonoj
 STR_REPLACE_ALL_RAILTYPE                                        :Ĉiuj relveturiloj
@@ -4184,11 +4184,11 @@ STR_REPLACE_ALL_RAILTYPE.n                                      :Ĉiujn relvetur
 STR_REPLACE_ALL_ROADTYPE                                        :Ĉiuj stratveturiloj
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Elektu fervojtipon por kiu vi volas anstataŭigi maŝinojn
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Elektu la vojtipon por kiu vi volas anstataŭigi veturilojn
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Elektu fervojtipon por kiu vi volas anstataŭigi maŝinojn
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Elektu la vojtipon por kiu vi volas anstataŭigi veturilojn
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Montras ontan maŝinecon de la maldekstra maŝino, se anstataŭote
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Montras ontan maŝinecon de la maldekstra maŝino, se anstataŭote
 STR_REPLACE_RAIL_VEHICLES                                       :Relaj Veturiloj
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektraj Relaj Veturiloj
 STR_REPLACE_MONORAIL_VEHICLES                                   :Unurelaj Veturiloj
@@ -4200,7 +4200,7 @@ STR_REPLACE_TRAM_VEHICLES                                       :Tramvojaj vetur
 STR_REPLACE_TRAM_VEHICLES.n                                     :Tramvojajn veturilojn
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagonforigo ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Ĉe aŭtomata anstataŭigo tenu saman longecon de la vagonaro per forigo de vagonoj (defronte), se per nova maŝino la vagonaro plilongiĝas
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Ĉe aŭtomata anstataŭigo tenu saman longecon de la vagonaro per forigo de vagonoj (defronte), se per nova maŝino la vagonaro plilongiĝas
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}

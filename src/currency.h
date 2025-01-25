@@ -15,8 +15,9 @@
 #include "strings_type.h"
 #include <array>
 
-static const int CF_NOEURO = 0; ///< Currency never switches to the Euro (as far as known).
-static const int CF_ISEURO = 1; ///< Currency _is_ the Euro.
+static constexpr CalTime::Year CF_NOEURO{0}; ///< Currency never switches to the Euro (as far as known).
+static constexpr CalTime::Year CF_ISEURO{1}; ///< Currency _is_ the Euro.
+static constexpr CalTime::Year MIN_EURO_YEAR{2000}; ///< The earliest year custom currencies may switch to the Euro.
 
 /**
  * This enum gives the currencies a unique id which must be maintained for

@@ -81,7 +81,7 @@ Engine::Engine(VehicleType type, EngineID base)
 		/* 'power' defaults to zero, so we also have to default to 'wagon' */
 		if (type == VEH_TRAIN) this->u.rail.railveh_type = RAILVEH_WAGON;
 		/* Set model life to maximum to make wagons available */
-		this->info.base_life = 0xFF;
+		this->info.base_life = YearDelta{0xFF};
 		/* Set road vehicle tractive effort to the default value */
 		if (type == VEH_ROAD) this->u.road.tractive_effort = 0x4C;
 		/* Aircraft must have CT_INVALID as default, as there is no property */
@@ -116,7 +116,7 @@ Engine::Engine(VehicleType type, EngineID base)
 			this->info.string_id = STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM + base;
 
 			/* Set the default model life of original wagons to "infinite" */
-			if (this->u.rail.railveh_type == RAILVEH_WAGON) this->info.base_life = 0xFF;
+			if (this->u.rail.railveh_type == RAILVEH_WAGON) this->info.base_life = YearDelta{0xFF};
 
 			break;
 
@@ -505,7 +505,7 @@ uint Engine::GetDisplayMaxTractiveEffort() const
 DateDelta Engine::GetLifeLengthInDays() const
 {
 	/* Assume leap years; this gives the player a bit more than the given amount of years, but never less. */
-	return (this->info.lifelength + _settings_game.vehicle.extend_vehicle_life).base() * DAYS_IN_LEAP_YEAR;
+	return DateDelta{(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life).base() * DAYS_IN_LEAP_YEAR};
 }
 
 /**
@@ -756,7 +756,7 @@ void CalcEngineReliability(Engine *e, bool new_month)
 void SetYearEngineAgingStops()
 {
 	/* Determine last engine aging year, default to 2050 as previously. */
-	_year_engine_aging_stops = 2050;
+	_year_engine_aging_stops = CalTime::Year{2050};
 
 	for (const Engine *e : Engine::Iterate()) {
 		const EngineInfo *ei = &e->info;
@@ -873,7 +873,7 @@ void StartupEngines()
 	const CalTime::Date expire_stop_date = std::min(CalTime::CurDate(), CalTime::ConvertYMDToDate(aging_stop_year, 0, 1));
 	const CalTime::YearMonthDay expire_stop_ymd = CalTime::ConvertDateToYMD(expire_stop_date);
 
-	CalTime::Date no_introduce_after_date = INT_MAX;
+	CalTime::Date no_introduce_after_date{INT_MAX};
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
 		no_introduce_after_date = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
 	}
@@ -1236,7 +1236,7 @@ static void NewVehicleAvailable(Engine *e)
 void EnginesMonthlyLoop()
 {
 	if (CalTime::CurYear() < _year_engine_aging_stops) {
-		CalTime::Date no_introduce_after = INT_MAX;
+		CalTime::Date no_introduce_after{INT_MAX};
 		bool no_engine_aging = (_settings_game.vehicle.no_expire_vehicles_after > 0 && CalTime::CurYear() >= _settings_game.vehicle.no_expire_vehicles_after);
 		if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
 			no_introduce_after = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
@@ -1416,7 +1416,7 @@ bool IsEngineRefittable(EngineID engine)
  */
 void CheckEngines()
 {
-	CalTime::Date min_date = INT32_MAX;
+	CalTime::Date min_date{INT32_MAX};
 
 	for (const Engine *e : Engine::Iterate()) {
 		if (!e->IsEnabled()) continue;

@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Avaa maa
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Vaihda työkalupalkkeja
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Tallenna skenaario, lataa skenaario, sulje skenaariomuokkain, lopeta
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Tallenna skenaario, lataa skenaario, sulje skenaariomuokkain, lopeta
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Skenaariomuokkain
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Siirrä aloituspäivää vuodella taaksepäin
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Siirrä aloituspäivää vuodella eteenpäin
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Aseta aloitusvuosi napsauttamalla
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Avaa kartta, lisänäkymä, kylttiluettelo tai kunta- tai teollisuushakemisto
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Avaa maastonmuokkausvalikko tai luo uusi maailma
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Kuntien rakentaminen tai luominen
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Rakenna tai luo teollisuutta
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Tieinfrastruktuurin rakentaminen
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Raitiotieinfrastruktuurin rakentaminen
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Istuta puita. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Sijoita kyltti
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Sijoita objekti. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Siirrä aloituspäivää vuodella taaksepäin
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Siirrä aloituspäivää vuodella eteenpäin
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Aseta aloitusvuosi napsauttamalla
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Avaa kartta, lisänäkymä, kylttiluettelo tai kunta- tai teollisuushakemisto
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Avaa maastonmuokkausvalikko tai luo uusi maailma
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Kuntien rakentaminen tai luominen
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Rakenna tai luo teollisuutta
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Tieinfrastruktuurin rakentaminen
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Raitiotieinfrastruktuurin rakentaminen
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Istuta puita. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Sijoita kyltti
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Sijoita objekti. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Lunta
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Valitse, näytetäänkö kuntien nimet
-STR_SMALLMAP_CENTER                                             :{BLACK}Keskitä pieni kartta tähän paikkaan
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Keskitä pieni kartta tähän paikkaan
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Näkymä {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Päänäkymästä tähän
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopioi päänäkymän sijainti tähän näkymään
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopioi päänäkymän sijainti tähän näkymään
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Vaihda päänäkymää
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Siirrä päänäkymää tämän näkymän sijaintiin
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Siirrä päänäkymää tämän näkymän sijaintiin
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Pelin valinnat
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Yleiset
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Valitse yleisasetukset
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Valitse yleisasetukset
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafiikka
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Valitse grafiikka-asetukset
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Valitse grafiikka-asetukset
 STR_GAME_OPTIONS_TAB_SOUND                                      :Ääni
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Valitse ääni- ja musiikkiasetukset
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Valitse ääni- ja musiikkiasetukset
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Sosiaaliset
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Valitse sosiaalisen integraation asetukset
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Valitse sosiaalisen integraation asetukset
 
 STR_GAME_OPTIONS_VOLUME                                         :Äänenvoimakkuus
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Äänitehosteet
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}Tallenna
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Tallenna suosikkikasvot
 STR_FACE_SAVE_DONE                                              :{WHITE}Nämä kasvot tallennetaan suosikkikasvoiksesi OpenTTD:n kokoonpanotiedostoon.
 STR_FACE_EUROPEAN                                               :{BLACK}Eurooppalainen
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Valitse eurooppalaisia kasvoja
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Valitse eurooppalaisia kasvoja
 STR_FACE_AFRICAN                                                :{BLACK}Afrikkalainen
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Valitse afrikkalaisia kasvoja
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Valitse afrikkalaisia kasvoja
 STR_FACE_YES                                                    :Kyllä
 STR_FACE_NO                                                     :Ei
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Käytä viiksiä tai korvakorua
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Palvelim
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Napsauta peliä luettelossa valitaksesi
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Edellinen palvelin:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Valitse edellinen palvelin, jolla pelasit
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Valitse edellinen palvelin, jolla pelasit
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}PELITIEDOT
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Pelaajat: {WHITE}{COMMA} / {COMMA} – {COMMA} / {COMMA}
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Kasvata 
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Kunnan nimi:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Syötä kunnan nimi
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Syötä kunnan nimi napsauttamalla
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Syötä kunnan nimi napsauttamalla
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Satunnainen nimi
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Arvo uusi satunnainen nimi
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Kaupunki
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Kaupungit kasvavat nopeammin kuin tavalliset kunnat{}Asetuksista riippuen, ne ovat suurempia perustettaessa
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Kunnan tiekaava:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Valitse tiekaava tälle kunnalle
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Valitse tiekaava tälle kunnalle
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Alkuperäinen
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Parempia teitä
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2×2-ruudukko
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Lataa sk
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Lataa korkeuskartta
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Tallenna korkeuskartta
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Lataa kuntatietoja
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Siirry tallennusten oletuskansioon napsauttamalla tätä
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Siirry tallennusten oletuskansioon napsauttamalla tätä
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} vapaana
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Lista asemista, hakemistoista ja tallennetuista peleistä
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Valittu nimi pelitallenteelle
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Teollisu
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Valitse teollisuuden tiheys tai valinnainen määrä
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Korkein huippu:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Valitse korkein huippu, jonka peli pyrkii luomaan, mitattuna korkeutena merenpinnasta
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Korota kartan korkeimman huipun maksimikorkeutta yhdellä
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Madalla kartan korkeimman huipun maksimikorkeutta yhdellä
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Korota kartan korkeimman huipun maksimikorkeutta yhdellä
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Madalla kartan korkeimman huipun maksimikorkeutta yhdellä
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Lumen peitto:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Kasvata lumen peittoa 10 prosentilla
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Vähennä lumen peittoa 10 prosentilla
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Kasvata lumen peittoa 10 prosentilla
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Vähennä lumen peittoa 10 prosentilla
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}{NBSP}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aavikon peitto:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Kasvata aavikon peittoa 10 prosentilla
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Vähennä aavikon peittoa 10 prosentilla
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Kasvata aavikon peittoa 10 prosentilla
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Vähennä aavikon peittoa 10 prosentilla
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NBSP}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maaston tyyppi:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merenpinta:
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Luo tasa
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Satunnainen maa
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Tasaisen maan korkeus:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Valitse merenpinnan yläpuolisen maan korkeus
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Siirrä tasaista maata yksi alaspäin
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Siirrä tasaista maata yksi ylöspäin
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Siirrä tasaista maata yksi alaspäin
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Siirrä tasaista maata yksi ylöspäin
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Vaihda tasaisen maan korkeutta
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Virheellin
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Asemien nimet – napsauta nimeä keskittääksesi päänäkymän asemaan. Ctrl+napsautus avaa uuden näkymäikkunan aseman sijaintiin.
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+napsautus valitsee useamman kohteen
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+napsautus valitsee useamman kohteen
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} – {COMMA} asema{P "" a}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Ei mitään -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Valitse kaikki laitteet
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Valitse kaikki laitteet
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Kaikki rahtityypit, ei arviota
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Useita rahtityyppejä
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Ei rahtityyppejä
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Keskitä päänäkymä reittipisteen sijaintiin. Ctrl+napsautus avaa uuden näkymäikkunan reittipisteen sijaintiin.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Muuta reittipisteen nimeä
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Keskitä päänäkymä poijun sijaintiin. Ctrl+napsautus avaa uuden näkymäikkunan poijun sijaintiin
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Vaihda poijun nimeä
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Vaihda poijun nimeä
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Muokkaa reittipisteen nimeä
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Rakenna 
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Näytä päämaja
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Näytä yhtiön päämaja
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Siirrä päämaja
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Rakenna yhtiön pääkonttori muualle, kustannus 1{NBSP}% yhtiön arvosta. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Rakenna yhtiön pääkonttori muualle, kustannus 1{NBSP}% yhtiön arvosta. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Yksityiskohdat
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Näytä tarkka infrastruktuurin määrä
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Anna rahaa
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ja {NUM} muuta
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Teollisuushaarojen nimet – kohdista päänäkymä tuotantolaitokseen napsauttamalla nimeä. Ctrl+napsautus avaa uuden näkymäikkunan laitoksen sijaintiin
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Teollisuushaarojen nimet – kohdista päänäkymä tuotantolaitokseen napsauttamalla nimeä. Ctrl+napsautus avaa uuden näkymäikkunan laitoksen sijaintiin
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Vastaanotettava rahti: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Tuotettu rahti: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Kaikki rahtityypit
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Kloonaa 
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Kloonaa ilma-alus
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Osta kopio junasta kaikkine vaunuineen. Napsauta tätä painiketta ja sen jälkeen junaa varikon sisä- tai ulkopuolella. Ctrl+napsautus jakaa käskyt. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Tämä ostaa kopion ajoneuvosta. Napsauta tätä painiketta ja sen jälkeen ajoneuvoa varikon sisä- tai ulkopuolella. Ctrl+napsautus jakaa käskyt. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Osta laivan kopio. Napsauta tätä painiketta ja sitten laivaa telakan sisä- tai ulkopuolella. Ctrl+napsautus jakaa komennot. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Osta ilma-aluksen kopio. Napsauta tätä painiketta ja sitten ilma-alusta lentokonehallin sisä- tai ulkopuolella. Ctrl+napsautus jakaa komennot. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Osta kopio junasta kaikkine vaunuineen. Napsauta tätä painiketta ja sen jälkeen junaa varikon sisä- tai ulkopuolella. Ctrl+napsautus jakaa käskyt. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Tämä ostaa kopion ajoneuvosta. Napsauta tätä painiketta ja sen jälkeen ajoneuvoa varikon sisä- tai ulkopuolella. Ctrl+napsautus jakaa käskyt. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Osta laivan kopio. Napsauta tätä painiketta ja sitten laivaa telakan sisä- tai ulkopuolella. Ctrl+napsautus jakaa komennot. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Osta ilma-aluksen kopio. Napsauta tätä painiketta ja sitten ilma-alusta lentokonehallin sisä- tai ulkopuolella. Ctrl+napsautus jakaa komennot. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Keskitä päänäkymä veturitallin sijaintiin. Ctrl+napsautus avaa uuden näkymäikkunan veturitallin sijaintiin
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :ajoneuvoja
 STR_REPLACE_VEHICLE_SHIP                                        :laivoja
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :lentokoneita
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Valitse korvattava veturityyppi.
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Valitse vasemmalla näkyvän veturityypinn korvaava uusi veturityyppi.
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Valitse korvattava veturityyppi.
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Valitse vasemmalla näkyvän veturityypinn korvaava uusi veturityyppi.
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Aloita kulkuneuvojen korvaaminen
 STR_REPLACE_VEHICLES_NOW                                        :Korvaa kaikki kulkuneuvot heti
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Korvaa vain vanhat kulkuneuvot
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Napsauta aloittaaksesi vasemmalta valitun veturityypin korvauksen oikealta valitulla veturityypillä.
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Napsauta aloittaaksesi vasemmalta valitun veturityypin korvauksen oikealta valitulla veturityypillä.
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Ei korvata
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Ei kulkuneuvoa valittuna
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kun vanha
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Lopeta kulkuneuvojen korvaaminen
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Napsauta pysäyttääksesi vasemmalta valitun veturityypin korvauksen.
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Napsauta pysäyttääksesi vasemmalta valitun veturityypin korvauksen.
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Vaihda toiseen korvausikkunaan
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Vaihda toiseen korvausikkunaan
 STR_REPLACE_ENGINES                                             :Veturit
 STR_REPLACE_WAGONS                                              :Vaunut
 STR_REPLACE_ALL_RAILTYPE                                        :Kaikki junat
 STR_REPLACE_ALL_ROADTYPE                                        :Kaikki ajoneuvot
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Valitse rautatietyyppi, jolle veturikorvaukset tehdään.
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Valitse tien tyyppi, jolle ajoneuvojen korvaukset tehdään
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Valitse rautatietyyppi, jolle veturikorvaukset tehdään.
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Valitse tien tyyppi, jolle ajoneuvojen korvaukset tehdään
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Näyttää, millä vasemmalta valittu veturi korvataan, jos millään.
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Näyttää, millä vasemmalta valittu veturi korvataan, jos millään.
 STR_REPLACE_RAIL_VEHICLES                                       :Junat
 STR_REPLACE_ELRAIL_VEHICLES                                     :Sähköjunat
 STR_REPLACE_MONORAIL_VEHICLES                                   :Yksiraiteiset
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Ajoneuvot
 STR_REPLACE_TRAM_VEHICLES                                       :Raitiovaunut
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vaunun poisto ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Automaattikorvauksessa junapituus pidetään samana poistamalla vaunuja (edestä) jos veturi pidentäisi junaa
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Automaattikorvauksessa junapituus pidetään samana poistamalla vaunuja (edestä) jos veturi pidentäisi junaa
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+napsautus kohdistaaksesi myös aliryhmiin.
 
 # Vehicle view

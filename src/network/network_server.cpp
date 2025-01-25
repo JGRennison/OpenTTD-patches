@@ -1357,7 +1357,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Packet &p)
 {
 	EconTime::Date date = EconTime::DeserialiseDateClamped(p.Recv_uint32());
-	EconTime::DateFract date_fract = p.Recv_uint16();
+	EconTime::DateFract date_fract = EconTime::DateFract{p.Recv_uint16()};
 	uint8_t tick_skip_counter = p.Recv_uint8();
 	std::string msg;
 	p.Recv_string(msg);

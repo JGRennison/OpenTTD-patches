@@ -342,20 +342,20 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}زمین
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK} ٹول بآر منتقل کیجیئے
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK} منظر محفوظ کیجئے، منظر کھولیں، منظر دست بردار کیجیئے، منظر چھوڑیئے
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK} منظر محفوظ کیجئے، منظر کھولیں، منظر دست بردار کیجیئے، منظر چھوڑیئے
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW} منظر نامھ
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}شروع کرنے کی تاریخ کو ایک سال پیچھے کرو
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}شروع کرنے کی تاریخ کو ایک سال آگے کرو
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK} کلک کر کے ابتدائی سال درج کیجیئے
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK} نقشھ، کتبِ قصبات
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK} منظر تخلیق
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK} قصبھ تخلیق
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK} صنعت تخلیق
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK} سڑک کی تعمیر
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK} درخت لگایئے۔ Shift تعپیر/اندازاً خرچے میں تدویم کرتا ھے
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK} اشارھ لگایئے
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK} چیز لگایئے۔ Shift تعپیر/اندازاً خرچے میں تدویم کرتا ھے
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}شروع کرنے کی تاریخ کو ایک سال پیچھے کرو
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}شروع کرنے کی تاریخ کو ایک سال آگے کرو
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK} کلک کر کے ابتدائی سال درج کیجیئے
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK} نقشھ، کتبِ قصبات
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK} منظر تخلیق
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK} قصبھ تخلیق
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK} صنعت تخلیق
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK} سڑک کی تعمیر
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK} درخت لگایئے۔ Shift تعپیر/اندازاً خرچے میں تدویم کرتا ھے
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK} اشارھ لگایئے
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK} چیز لگایئے۔ Shift تعپیر/اندازاً خرچے میں تدویم کرتا ھے
 
 # Scenario editor file menu
 ###length 7
@@ -691,7 +691,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}برف
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}نقشے پر شہروں کے ناموں کی تدویم کیجئیے
-STR_SMALLMAP_CENTER                                             :{BLACK}موجودہ جگہ پر چھوٹا نقشہ درمیان سے دیکھیں
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}موجودہ جگہ پر چھوٹا نقشہ درمیان سے دیکھیں
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
@@ -812,9 +812,9 @@ STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}دہکھنے والی کھڑکی {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}دہکھنے والی کھڑکی کی نقل
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}بنیادی منظر میں نظر آنے والی جگہ کو دیکھنے والی کھڑکی میں نقل کریں
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}بنیادی منظر میں نظر آنے والی جگہ کو دیکھنے والی کھڑکی میں نقل کریں
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}دہکھنے والی کھڑکی سے نقل کریں
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}دیکھنے والی کھڑکی میں نظر آنے والی جگہ کو بنیادی منظر میں نقل کریں
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}دیکھنے والی کھڑکی میں نظر آنے والی جگہ کو بنیادی منظر میں نقل کریں
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}کھیل کے اختیارات
@@ -1623,9 +1623,9 @@ STR_FACE_SAVE                                                   :{BLACK}بچائ
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}پسندیدہ چہرہ بچائیں
 STR_FACE_SAVE_DONE                                              :{WHITE}یہ چہرہ آپ کے پسندیدہ چہرے کے طور پر OpenTTD configuration file میں محفوظ کر لیا جائے گا
 STR_FACE_EUROPEAN                                               :{BLACK}یورپئین
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}یورپئین چہرہ چنئے
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}یورپئین چہرہ چنئے
 STR_FACE_AFRICAN                                                :{BLACK}افریقی
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}افریقی چہرہ چنئے
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}افریقی چہرہ چنئے
 STR_FACE_YES                                                    :ہاں
 STR_FACE_NO                                                     :نہیں
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}مونچھیں یا کان کی بالیاں فعال کریں
@@ -1675,7 +1675,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Language
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}فہرست میں سے ایک کھیل کو چُننے کے لئے ایک پر کلک کریں
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}آپ کا پچھلی مرتبہ اختیار کیا ہُوا سرور:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}اپنے چھلی مرتبہ اختیار شدہ سرور کو منتخب کرنے کے لئے کلک کریں
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}اپنے چھلی مرتبہ اختیار شدہ سرور کو منتخب کرنے کے لئے کلک کریں
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}کھیل کی معلومات
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Clients: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2156,7 +2156,7 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}شہر �
 STR_FOUND_TOWN_CITY                                             :{BLACK}شہر
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}شہر کی سڑکوں کا پھیلائو:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}اس شہر کیلئے سڑکوں کا بھیلائو منتخب کرو
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}اس شہر کیلئے سڑکوں کا بھیلائو منتخب کرو
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}اصلی
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}بہتر سڑکیں
 STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{G=f}{BLACK}کوئٰ سی
@@ -2359,7 +2359,7 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}غلط م�
 # Station list window
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}تمام سہولتوں کا انتخاب کرو
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}تمام سہولتوں کا انتخاب کرو
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}

@@ -922,7 +922,7 @@ void DeparturesWindow::RecomputeDateWidth()
 	} else if (!CalTime::IsCalendarFrozen()) {
 		/* If the calendar is frozen, all dates are the same, so just don't show anything */
 		for (uint i = 0; i < 365; ++i) {
-			eval_tick(INT_MAX - (i * DAY_TICKS));
+			eval_tick(StateTicks{INT_MAX - (i * DAY_TICKS)});
 		}
 	}
 

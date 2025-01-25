@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Landomr�
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Skift værktøjslinier
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Gem scenarie, hent scenarie, forlad scenarieeditoren, afslut
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Gem scenarie, hent scenarie, forlad scenarieeditoren, afslut
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenarieeditor
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Flyt startdatoen 1 år tilbage
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Flyt startdatoen 1 år frem
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klik for at angive startdatoen
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Åbn kort, ekstra visnings af skilteliste eller by- eller brancheoversigt
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Åbn landskabsmenuen, eller generer en ny verden
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Byg eller generer by
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Byg eller generer industrier
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Byg vejinfrastruktur
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Byg sporvejskonstruktion
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plante træer. Ctrl+klik+træk for at markere området diagonalt. Tryk også på Shift for kun at vise omkostningsestimat
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Placér skilt
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placer objekt. Ctrl+klik+træk for at markere området diagonalt. Tryk også på Shift for kun at vise omkostningsestimat
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Flyt startdatoen 1 år tilbage
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Flyt startdatoen 1 år frem
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klik for at angive startdatoen
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Åbn kort, ekstra visnings af skilteliste eller by- eller brancheoversigt
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Åbn landskabsmenuen, eller generer en ny verden
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Byg eller generer by
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Byg eller generer industrier
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Byg vejinfrastruktur
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Byg sporvejskonstruktion
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Plante træer. Ctrl+klik+træk for at markere området diagonalt. Tryk også på Shift for kun at vise omkostningsestimat
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Placér skilt
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Placer objekt. Ctrl+klik+træk for at markere området diagonalt. Tryk også på Shift for kun at vise omkostningsestimat
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Sne
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Vis/skjul bynavne på kort
-STR_SMALLMAP_CENTER                                             :{BLACK}Centrer det lille kort ved den nuværende position
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centrer det lille kort ved den nuværende position
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Lokalitetsvindue {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Hent hovedvisning
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Bevæg denne visning til samme sted som hovedvisningen
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Bevæg denne visning til samme sted som hovedvisningen
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Flyt hovedvisning
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Bevæg hovedvisningen til samme sted som dette vindue
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Bevæg hovedvisningen til samme sted som dette vindue
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Opsætning
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Generel
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Vælg generelle indstillinger
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Vælg generelle indstillinger
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Vælg grafikindstillinger
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Vælg grafikindstillinger
 STR_GAME_OPTIONS_TAB_SOUND                                      :Lyd
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Vælg lyd og musik indstillinger
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Vælg lyd og musik indstillinger
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Social
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Vælg sociale integrationsindstillinger
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Vælg sociale integrationsindstillinger
 
 STR_GAME_OPTIONS_VOLUME                                         :Lydstyrke
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Lydeffekter
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}Gem
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Gem favoritansigt
 STR_FACE_SAVE_DONE                                              :{WHITE}Dette ansigt bliver gemt som din favorit i OpenTTD konfigurationsfilen.
 STR_FACE_EUROPEAN                                               :{BLACK}Europæisk
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Vælg europæiske ansigter
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Vælg europæiske ansigter
 STR_FACE_AFRICAN                                                :{BLACK}Afrikansk
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Vælg afrikanske ansigter
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Vælg afrikanske ansigter
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nej
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Slå overskæg eller ørering til
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Serverko
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klik på et spil fra listen for at vælge det
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Den senest tilsluttede server:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klik for at vælge den server du spillede på sidst
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klik for at vælge den server du spillede på sidst
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}SPIL INFO
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Klienter: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Få alle
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Bynavn:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Indtast bynavn
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klik for at indtaste bynavn
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klik for at indtaste bynavn
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Tilfældigt navn
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Generer nyt tilfældigt navn
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Storby
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Storbyer vokser hurtigere en almindelige byer{}Afhængig af indstillingerne kan de være større ved grundlæggelsen
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Byens vej-layout:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Vælg vej-layout for denne by
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Vælg vej-layout for denne by
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Originalt
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Bedre veje
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 vej gitter
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Hent sce
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Hent højdekort
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Gem højdekort
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Indlæs bydata
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klik her for at gå til den nuværende standard gem/indlæs mappe
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klik her for at gå til den nuværende standard gem/indlæs mappe
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} fri
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Liste over drev, biblioteker og gemte spilfiler
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Nuværende gemte spils navn
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal in
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Vælg tætheden af industrier eller et brugerdefineret tal
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Højeste bjergtop:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Vælg den højeste top, som spillet vil forsøge at skabe, målt i højde over havets overflade
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Forøger den maksimale højde på højeste bjergtop på kortet med én
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Sænker den maksimale højde på højeste bjergtop på kortet med én
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Forøger den maksimale højde på højeste bjergtop på kortet med én
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Sænker den maksimale højde på højeste bjergtop på kortet med én
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Snedække:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Forøger snedækket med ti procent
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Sænker snedækket med ti procent
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Forøger snedækket med ti procent
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Sænker snedækket med ti procent
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Ørkendækning:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Forøger ørkendækningen med ti procent
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Sænker ørkendækningen med ti procent
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Forøger ørkendækningen med ti procent
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Sænker ørkendækningen med ti procent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terræntype:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havniveau
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Generer 
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Tilfældigt land
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Højde af fladt landskab:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Vælg højden af landet over havets overflade
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Sæt højden af fladt landskab en ned
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Sæt højden af fladt landskab en op
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Sæt højden af fladt landskab en ned
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Sæt højden af fladt landskab en op
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Ændre højden af fladt landskab
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Ugyldig m�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stationsnavne - klik på et navn for at centrere skærmen over stationen. Ctrl+Klik åbner et nyt vindue ved stationens lokalitet
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Hold Ctrl+klik nede for at vælge mere end én ting
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Hold Ctrl+klik nede for at vælge mere end én ting
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Stationer
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Ingen -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Vælg alle faciliteter
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Vælg alle faciliteter
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Alle lasttyper og ingen rating
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Flere lasttyper
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Ingen gods typer
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrer skærmen over rutepunktets lokalitet. Ctrl+Klik åbner et nyt vindue ved rutepunktets lokalitet.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Omdøb rutepunkt
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrér skærmen ved bøjens placering. Ctrl+klik åbner et nyt vindue ved bøjens placering
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Ændre navnet på bøjen
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Ændre navnet på bøjen
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Omdøb rutepunkt
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Byg sels
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vis HK
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Vis selskabets hovedkvarter
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flyt hovedkvarter
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Flyt selskabets hovedkvarter for 1% af selskabsværdien. Shift skifter mellem at flytte og vise prisoverslag.
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Flyt selskabets hovedkvarter for 1% af selskabsværdien. Shift skifter mellem at flytte og vise prisoverslag.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaljer
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Se detaljerede infrastruktur-tal
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Giv penge
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} og {NUM} flere...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrinavne - klik på navn for at centrere visningen over en industri. Ctrl+Klik åbner et nyt vindue ved industriens lokalitet.
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrinavne - klik på navn for at centrere visningen over en industri. Ctrl+Klik åbner et nyt vindue ved industriens lokalitet.
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Accepteret last: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produceret last: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Alle lasttyper
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klon ski
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klon fly
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Dette vil købe en kopi af toget inklusiv alle vogne. Klik på denne knap og så på et tog indeni eller udenfor remisen. Ctrl-klik vil kopiere ordrer. Shift-klik vil vise prisoverslag.
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Dette vil købe en kopi af køretøjet. Klik på denne knap og så på et køretøj indeni eller udenfor værkstedet. Ctrl-klik vil dele ordrer. Shift-klik viser anslået pris uden køb
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Køb en kopi af et skib. Klik på denne knap og derefter på et skib i eller uden for depotet. Ctrl+klik for at dele ordrerne. Tryk også på Shift for kun at vise omkostningsestimat
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Dette vil købe en kopi af et fly. Klik på denne knap og så på et fly indeni eller udenfor hangaren. Ctrl-klik vil dele ordrer. Shift-klik viser estimerede omkostninger uden at indkøbe
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Dette vil købe en kopi af toget inklusiv alle vogne. Klik på denne knap og så på et tog indeni eller udenfor remisen. Ctrl-klik vil kopiere ordrer. Shift-klik vil vise prisoverslag.
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Dette vil købe en kopi af køretøjet. Klik på denne knap og så på et køretøj indeni eller udenfor værkstedet. Ctrl-klik vil dele ordrer. Shift-klik viser anslået pris uden køb
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Køb en kopi af et skib. Klik på denne knap og derefter på et skib i eller uden for depotet. Ctrl+klik for at dele ordrerne. Tryk også på Shift for kun at vise omkostningsestimat
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Dette vil købe en kopi af et fly. Klik på denne knap og så på et fly indeni eller udenfor hangaren. Ctrl-klik vil dele ordrer. Shift-klik viser estimerede omkostninger uden at indkøbe
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrér skærmen over remisens placering. Ctrl+klik åbner et nyt vindue ved remisens placering
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Vejkøretøj
 STR_REPLACE_VEHICLE_SHIP                                        :Skib
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Fly
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Vælg en køretøjstype, som du ønsker udskiftet
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Vælg en køretøjstype, som du ønker benyttet i stedet for den type, du har valgt i venste side
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Vælg en køretøjstype, som du ønsker udskiftet
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Vælg en køretøjstype, som du ønker benyttet i stedet for den type, du har valgt i venste side
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Start udskiftning
 STR_REPLACE_VEHICLES_NOW                                        :Erstat alle køretøjer nu
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Erstat kun gamle køretøjer
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Tryk for at begynde at udskifte køretøjstypen til venstre med køretøjstypen til højre
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Tryk for at begynde at udskifte køretøjstypen til venstre med køretøjstypen til højre
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Udskifter ikke
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Intet køretøj valgt
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} når det er gammelt
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop udskiftning
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Tryk for at stoppe udskiftningen at den køretøjstype, som du har valgt til venstre
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Tryk for at stoppe udskiftningen at den køretøjstype, som du har valgt til venstre
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Skift imellem lokomotiv- og vognudskiftningsvindue
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Skift imellem lokomotiv- og vognudskiftningsvindue
 STR_REPLACE_ENGINES                                             :Lokomotiver
 STR_REPLACE_WAGONS                                              :Vogne
 STR_REPLACE_ALL_RAILTYPE                                        :Alle jernbanevogne
 STR_REPLACE_ALL_ROADTYPE                                        :Alle vejkøretøjer
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Vælg den skinne type, du ønsker at udskifte lokomotiver til
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Vælg vejtypen du ønsker at udskifte køretøjer for
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Vælg den skinne type, du ønsker at udskifte lokomotiver til
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Vælg vejtypen du ønsker at udskifte køretøjer for
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Viser hvilket køretøj det valgte køretøj til venstre bliver udskiftet med, hvis det udskiftes
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Viser hvilket køretøj det valgte køretøj til venstre bliver udskiftet med, hvis det udskiftes
 STR_REPLACE_RAIL_VEHICLES                                       :Jernbane
 STR_REPLACE_ELRAIL_VEHICLES                                     :Eltog
 STR_REPLACE_MONORAIL_VEHICLES                                   :Monorail
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Vejkøretøjer
 STR_REPLACE_TRAM_VEHICLES                                       :Sporvogne
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Fjern vogne ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Få autoudskift til at bevare længden af tog ved at fjerne vogne (startende fra fronten), hvis autoudskiftningen gør toget længere.
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Få autoudskift til at bevare længden af tog ved at fjerne vogne (startende fra fronten), hvis autoudskiftningen gør toget længere.
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+klik for også at anvende på undergrupper
 
 # Vehicle view

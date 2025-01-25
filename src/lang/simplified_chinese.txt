@@ -355,7 +355,7 @@ STR_SORT_BY_POWER                                               :功率
 STR_SORT_BY_TRACTIVE_EFFORT                                     :牵引力
 STR_SORT_BY_INTRO_DATE                                          :面世日期
 STR_SORT_BY_RUNNING_COST                                        :运行费用
-STR_SORT_BY_POWER_VS_RUNNING_COST                               :功率/运行费用 比值
+STR_SORT_BY_POWER_VS_RUNNING_COST                               :功率/运行费用
 STR_SORT_BY_CARGO_CAPACITY                                      :运载能力
 STR_SORT_BY_RANGE                                               :航行距离
 STR_SORT_BY_POPULATION                                          :人口
@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}查询�
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}切换工具栏
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}保存场景，读取场景，放弃场景，退出
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}保存场景，读取场景，放弃场景，退出
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}场景编辑器
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}将开始年份向前调整 1 年
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}将开始年份向后调整 1 年
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}点击输入开始年份
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}显示地图、视点、标志、城镇或工业菜单
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}修改或生成地形
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}城镇生成
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}建造或生成工业
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}建设公路设施
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}建设电车设施
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}种植树木。按住 <Ctrl> 以沿对角线建造。按住 <Shift> 键以显示预计费用
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}放置标志
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}放置物件。按住 <Ctrl> 以沿对角线放置，按住 <Shift> 以显示预计费用
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}将开始年份向前调整 1 年
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}将开始年份向后调整 1 年
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}点击输入开始年份
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}显示地图、视点、标志、城镇或工业菜单
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}修改或生成地形
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}城镇生成
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}建造或生成工业
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}建设公路设施
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}建设电车设施
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}种植树木。按住 <Ctrl> 以沿对角线建造。按住 <Shift> 键以显示预计费用
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}放置标志
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}放置物件。按住 <Ctrl> 以沿对角线放置，按住 <Shift> 以显示预计费用
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}雪地
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}切换城镇名称
-STR_SMALLMAP_CENTER                                             :{BLACK}在地图中心点显示当前位置
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}在地图中心点显示当前位置
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING}（{NUM}）
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}视点 {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}将主视角复制到视点
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}将额外视点移动到屏幕中心的位置
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}将额外视点移动到屏幕中心的位置
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}移动主视角到该视点
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}将主视角移动到额外视点的位置
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}将主视角移动到额外视点的位置
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}游戏选项
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :通用
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}通用设置
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}通用设置
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :图像
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}图像设置
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}图像设置
 STR_GAME_OPTIONS_TAB_SOUND                                      :音效
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}声音设置
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}声音设置
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :社交
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}选择社交插件设置
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}选择社交插件设置
 
 STR_GAME_OPTIONS_VOLUME                                         :音量
 STR_GAME_OPTIONS_SFX_VOLUME                                     :音效
@@ -2163,7 +2163,7 @@ STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :系统 NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :与当前版本 OpenTTD 不兼容
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :未知
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}……压缩等级“{STRING}”无效
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}……存档格式“{STRING}”不适用。请转换成“{STRING}”
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}……本版本不支持存档格式“{STRING}”，现改用“{STRING}”格式
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}……禁用基础图形设置“{STRING}”：未找到
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}……禁用基础音效设置“{STRING}”：未找到
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}……禁用基础音乐设置“{STRING}”：未找到
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}储存�
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}储存喜好的头像
 STR_FACE_SAVE_DONE                                              :{WHITE}该头像将作为你的喜好储存至 OpenTTD 配置文件中
 STR_FACE_EUROPEAN                                               :{BLACK}欧洲人
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}使用欧洲人面孔
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}使用欧洲人面孔
 STR_FACE_AFRICAN                                                :{BLACK}非洲人
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}使用非洲人面孔
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}使用非洲人面孔
 STR_FACE_YES                                                    :是
 STR_FACE_NO                                                     :否
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}是否有胡子或耳环
@@ -2344,7 +2344,7 @@ STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}选择�
 STR_FACE_EYECOLOUR                                              :眼睛
 STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}选择眼睛颜色
 STR_FACE_GLASSES                                                :眼镜
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}是否有 眼镜
+STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}增加眼镜
 STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}选择眼镜
 STR_FACE_NOSE                                                   :鼻子
 STR_FACE_NOSE_TOOLTIP                                           :{BLACK}选择鼻子
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}服务�
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}点击列表中的服务器可以选定它
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}上一次加入的服务器：
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}点击选择您上次加入的服务器
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}点击选择您上次加入的服务器
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}游戏信息
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}客户端：{WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2787,7 +2787,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}建设�
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}建设铁路信号。建造时按住 <Ctrl> 键切换信号灯的风格样式。{}建造时拖拽可以在拖拽区间内按照设定的信号间距均匀建造信号灯。按住 <Ctrl> 键拖拽以按设定的信号灯建造至下一个交叉点 / 车站 / 信号灯。按住 <Shift> 以显示预计费用
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}建设铁路桥梁。按住 <Shift> 键显示预计费用
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}建设铁路隧道。按住 <Shift> 键以显示预计费用
-STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}切换建筑 / 拆除铁轨、信号机、路点以及车站。按住 <Ctrl> 键点选以同时移除路点及车站中的铁轨
+STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}切换建设或拆除铁轨、信号机、路点以及车站。按住 <Ctrl> 键点选以同时移除路点及车站中的铁轨
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}转换或升级铁路类型。按住 <Shift> 键单击以显示预计费用
 
 STR_RAIL_NAME_RAILROAD                                          :铁路
@@ -2913,8 +2913,8 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}建设�
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}建设电车桥梁。按住 <Shift> 键以显示预计费用
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}建设公路隧道。按住 <Shift> 键以显示预计费用
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}建设电车隧道。按住 <Shift> 键以显示预计费用
-STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}建设/拆除 公路
-STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}建设/拆除 电车轨道
+STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}切换建设或拆除公路
+STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}切换建设或拆除电车轨道
 STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD                           :{BLACK}转换或升级道路类型。按住 <Shift> 键单击以显示预计费用
 STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM                           :{BLACK}转换或升级电车轨道类型。按住 <Shift> 键单击以显示预计费用
 
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}使所�
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}城镇名称：
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}输入城镇名称
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}点击这里输入城镇名称
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}点击这里输入城镇名称
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}随机名称
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}重新随机生成城镇名称
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}都市
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}都市增长速度高于一般城镇{}它们建立时规模更大
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}城镇道路布局：
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}为此城镇选择使用的道路布局
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}为此城镇选择使用的道路布局
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}原版
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}改良
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2×2 网格
@@ -3135,7 +3135,7 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :田地
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :雪地
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :沙漠
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :铁路 轨道
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :铁路轨道
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :有通过信号灯的铁路轨道
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :有入口信号灯的铁路轨道
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :有出口信号灯的铁路轨道
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}读取�
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}读取地形图
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}保存高度图
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}加载城镇数据
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}点击这里返回默认的游戏存档目录
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}点击这里返回默认的游戏存档目录
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} 可用
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}驱动器、目录和游戏存档列表
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}保存当前游戏用的存档名字
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}工业�
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}选择工业密度，或者输入一个自定义数字
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}最高峰：
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}选择游戏地图中最高峰的海拔，以海平面为原点计
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}提高最高峰的最大高度一格
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}降低最高峰的最大高度一格
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}提高最高峰的最大高度一格
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}降低最高峰的最大高度一格
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}雪地比率：
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}将雪地比率增加 10%
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}将雪地比率减少 10%
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}将雪地比率增加 10%
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}将雪地比率减少 10%
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}沙漠比率：
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}将沙漠比率增加 10%
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}将沙漠比率减少 10%
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}将沙漠比率增加 10%
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}将沙漠比率减少 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形特点：
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}海洋面积：
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}生成�
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}随机地面
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}地面高度：
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}选择地面海拔高度
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}提升地面高度
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}降低地面高度
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}提升地面高度
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}降低地面高度
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}改变地面的高度
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}无效的�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}车站名称 - 点选名称以将屏幕中心移动到车站的位置。按住 <Ctrl> 键点选会在新视点中显示车站位置
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}按住 <Ctrl> 键点选以选择多个项目
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}按住 <Ctrl> 键点选以选择多个项目
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - 车站 {COMMA} 座
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- 没有 -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}选择所有设施
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}选择所有设施
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :所有货物类型与无评价
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :多种货物类型
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :无货物类型
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}将屏幕中心移动到路点所在的位置。按住 <Ctrl> 单击会在新视点中显示路点
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}修改路点名
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}将屏幕中心移动到浮标所在的位置。按住 <Ctrl> 单击会在新视点中显示目标位置
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}修改浮标名
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}修改浮标名
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}编辑路点名称
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}建立�
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}查看总部
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}查看公司总部
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}重置总部
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}以公司市值 1% 的代价重建总部，按住 <Shift> 键单击可以显示所需资金
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}以公司市值 1% 的代价重建总部，按住 <Shift> 键单击可以显示所需资金
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}基建详情
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}显示详细的设施情况
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}给予资金
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}、{STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}、{STRING}、{STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}、{STRING}、{STRING}……（尚有 {NUM} 个未显示）
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}工业名称 - 点选名称以将屏幕中心移动到当前工业的位置。按住 <Ctrl> 键点选会在新视点中显示工业位置
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}工业名称 - 点选名称以将屏幕中心移动到当前工业的位置。按住 <Ctrl> 键点选会在新视点中显示工业位置
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}接受货物：{SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}产出货物：{SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :所有货物类型
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}克隆�
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}克隆飞机
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}复制火车。点击此按钮然后再点击任意一列在车库内或车库外的火车以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}复制汽车。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}复制船只。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}复制飞机。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}复制火车。点击此按钮然后再点击任意一列在车库内或车库外的火车以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}复制汽车。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}复制船只。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}复制飞机。点击此按钮然后再点击任意一辆在车库内或车库外的载具以复制购买。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}将屏幕中心移动到列车车库所在的位置。按住 <Ctrl> 单击会在新视点中显示列车车库位置
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :汽车
 STR_REPLACE_VEHICLE_SHIP                                        :船只
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :飞机
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}选择要替换的载具类型
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}选择用来替换左侧选定载具的新载具
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}选择要替换的载具类型
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}选择用来替换左侧选定载具的新载具
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}开始更新
 STR_REPLACE_VEHICLES_NOW                                        :立刻替换所有载具
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :只替换旧的
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}按下以开始将左侧选定的载具替换为右侧指定的载具
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}按下以开始将左侧选定的载具替换为右侧指定的载具
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}没有更新
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}请选择要更新的对象
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} 变老旧时
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}停止更新
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}按下以停止替换左侧指定的载具
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}按下以停止替换左侧指定的载具
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}可以切换 机车/挂车 替换项目
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}在机车及车厢替换窗口间切换
 STR_REPLACE_ENGINES                                             :机车
 STR_REPLACE_WAGONS                                              :挂车
 STR_REPLACE_ALL_RAILTYPE                                        :所有铁路载具
 STR_REPLACE_ALL_ROADTYPE                                        :所有道路载具
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}选择更新载具的对应铁路类型
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}选择更新载具的对应道路类型
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}选择更新载具的对应铁路类型
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}选择更新载具的对应道路类型
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}显示用来替换左侧选定载具的新载具
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}显示用来替换左侧选定载具的新载具
 STR_REPLACE_RAIL_VEHICLES                                       :普通列车
 STR_REPLACE_ELRAIL_VEHICLES                                     :电力机车
 STR_REPLACE_MONORAIL_VEHICLES                                   :单轨列车
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :路面交通工
 STR_REPLACE_TRAM_VEHICLES                                       :电车
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}移除车厢（{STRING}）：{ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}如果替换会使列车更长。则从列车前方开始自动移除车厢以维持目前长度
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}如果替换会使列车更长。则从列车前方开始自动移除车厢以维持目前长度
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}。按住 <Ctrl> 键点击以套用至所有子分组
 
 # Vehicle view
@@ -4421,10 +4421,10 @@ STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}显示�
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}显示飞机的详情
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}当前列车动作 - 点击以 停止/启动 列车
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}当前载具操作 - 点击以停止/启动载具
-STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}当前船只动作 - 点击以 停止/启动 船只
-STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}当前飞机动作 - 点击以 停止/启动 飞机
+STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}当前列车状态 - 点击以停止或启动列车
+STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}当前载具状态 - 点击以停止或启动载具
+STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}当前船舶状态 - 点击以停止或启动船舶
+STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}当前飞机状态 - 点击以停止或启动飞机
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}装载/卸货
@@ -4815,7 +4815,7 @@ STR_AI_DEBUG_SETTINGS                                           :{BLACK}AI 设�
 STR_AI_DEBUG_SETTINGS_TOOLTIP                                   :{BLACK}修改 AI 设置
 STR_AI_DEBUG_RELOAD                                             :{BLACK}重载 AI
 STR_AI_DEBUG_RELOAD_TOOLTIP                                     :{BLACK}关闭 AI 并重启 AI
-STR_AI_DEBUG_BREAK_STR_ON_OFF_TOOLTIP                           :{BLACK}启用／停用 当 AI 记录信息符合断点字符串时中断执行的功能
+STR_AI_DEBUG_BREAK_STR_ON_OFF_TOOLTIP                           :{BLACK}启用或停用当 AI 记录信息符合断点字符串时中断执行的功能
 STR_AI_DEBUG_BREAK_ON_LABEL                                     :{BLACK}中断点：
 STR_AI_DEBUG_BREAK_STR_OSKTITLE                                 :{BLACK}中断点
 STR_AI_DEBUG_BREAK_STR_TOOLTIP                                  :{BLACK}当 AI 记录信息与该字符串相符时暂停游戏
@@ -5823,7 +5823,7 @@ STR_DEFAULT_SIGN_NAME                                           :标志
 STR_COMPANY_SOMEONE                                             :某人
 
 STR_SAVEGAME_DURATION_REALTIME                                  :{NUM} 时 {NUM} 分
-STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}，{STRING}
+STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}, {STRING}
 STR_SAVEGAME_NAME_SPECTATOR                                     :观众，{1:STRING}
 
 # Viewport strings

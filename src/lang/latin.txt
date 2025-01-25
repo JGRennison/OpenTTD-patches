@@ -546,20 +546,20 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Indicia 
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Mutare inter arcas instrumentorum
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Servare scaenarium, legere scaenarium, relinquere scriptorium scaenarii, exire
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Servare scaenarium, legere scaenarium, relinquere scriptorium scaenarii, exire
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scriptorium Scaenarii
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Facit ut dies initii uno anno procedatur
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Facit ut dies initii uno anno recedatur
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Mutare diem initii
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Monstrare tabulam geographicam vel indicem oppidorum
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Plasmatio terrae
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Conditus oppidorum
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Conditus industriarum
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Constructio viarum
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Serere arbores. Shift mutat inter constructionem et aestimationem monstrandam
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Ponere signum
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Ponere ornamentum. Shift mutat inter constructionem et aestimationem monstrandam
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Facit ut dies initii uno anno procedatur
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Facit ut dies initii uno anno recedatur
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Mutare diem initii
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Monstrare tabulam geographicam vel indicem oppidorum
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Plasmatio terrae
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Conditus oppidorum
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Conditus industriarum
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Constructio viarum
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Serere arbores. Shift mutat inter constructionem et aestimationem monstrandam
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Ponere signum
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Ponere ornamentum. Shift mutat inter constructionem et aestimationem monstrandam
 
 # Scenario editor file menu
 ###length 7
@@ -911,7 +911,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Nix
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Monstrare celareve nomina oppidorum in tabula
-STR_SMALLMAP_CENTER                                             :{BLACK}Movere tabulam geographicam supra conspectum praesentem
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Movere tabulam geographicam supra conspectum praesentem
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -1038,9 +1038,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Fenestra conspectus {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Mutare conspectum
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Transcribere locum primarium ad hanc fenestram conspectus
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Transcribere locum primarium ad hanc fenestram conspectus
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Mutare conspectum primum
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Transcribere locum ex hac fenestra ad conspectum primarium
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Transcribere locum ex hac fenestra ad conspectum primarium
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludi optiones
@@ -2190,9 +2190,9 @@ STR_FACE_SAVE                                                   :{BLACK}Servare
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Servare faciem dilectam
 STR_FACE_SAVE_DONE                                              :{WHITE}Haec facies servabit ad dilectam tuam in fasciculo OpenTTD configurationis
 STR_FACE_EUROPEAN                                               :{BLACK}Europaea
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Eligere facies Europaeas
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Eligere facies Europaeas
 STR_FACE_AFRICAN                                                :{BLACK}Africana
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Eligere facies Africanas
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Eligere facies Africanas
 STR_FACE_YES                                                    :Ita
 STR_FACE_NO                                                     :Non
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Apponere mystacem vel inaurem
@@ -2242,7 +2242,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Lingua, 
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Eligere ludum ex indice
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Servatrum prius iunctum:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Eligere servatrum abs te prius adhibitum
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Eligere servatrum abs te prius adhibitum
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}LUDI INDICIA
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Clientes: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2757,7 +2757,7 @@ STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Condere 
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Nomen Oppidi:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Inscribe nomen oppidi
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Preme ut oppidi nomen inscribas
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Preme ut oppidi nomen inscribas
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Nomen fortuitum
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Creare novum nomen fortuitum
 
@@ -2771,7 +2771,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Urbs
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Urbes crescunt oppidis celerius{}Etiam maiores sunt cum conduntur
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Dispositio viarum oppidi:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Eligere dispositionem viarum huic oppido adhibendam
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Eligere dispositionem viarum huic oppido adhibendam
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Originalis
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Viae satius
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}Cancelli 2x2
@@ -2949,7 +2949,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Servare 
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Legere Scaenarium
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Legere tabulam altitudinum
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Servare tabulam altitudinum
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Preme ut salias ad currens directorium solitum servandi/legendi
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Preme ut salias ad currens directorium solitum servandi/legendi
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} reliqua
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Index discorum, directoriorum, et ludorum servatorum
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Nomen electum ludo servato
@@ -3035,8 +3035,8 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Terra pl
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Creare terram planam
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Terrae fortuitae
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Altitudo terrae planae:
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Inclinere altitudinem terram planam
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Tollere altitudinem terram planam
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Inclinere altitudinem terram planam
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Tollere altitudinem terram planam
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Mutare altitudinem planae terrae
 
@@ -3370,12 +3370,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Propositum
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Nomina stationum - preme in nomen ut conspectus moveatur supra stationem. Ctrl+Preme ut nova fenestra conspectus aperiatur supra stationem
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Comprime Ctrl ut plures res eligantur
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Comprime Ctrl ut plures res eligantur
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Statio{P "" nes}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Nullae -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Omnes eligere
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Omnes eligere
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3444,7 +3444,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Movere conspectum supra hunc interlocum. ut nova fenestra conspectus aperiatur supra interlocum
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Mutare nomen interloci
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Movere conspectum supra hoc signum monitorium. ut nova fenestra conspectus aperiatur supra signum monitorium
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Mutare nomen signi monitorii
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Mutare nomen signi monitorii
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Recensere nomen interloci
 
@@ -3503,7 +3503,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Struere 
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Videre sedem
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Videre primariam sedem societatis
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Movere sedem
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Movere primariam sedem societatis aliquo pretio 1% aestimationis valoris societatis. Shift+Preme ut pretium monstretur sine sedem movendo
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Movere primariam sedem societatis aliquo pretio 1% aestimationis valoris societatis. Shift+Preme ut pretium monstretur sine sedem movendo
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Indicia
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Videre indicia descripta infrastructurae
 
@@ -3535,7 +3535,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Aeroport
 # Industry directory
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Nullae -
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Nomina industriarum - preme in nomen ut conspectus moveatur supra industriam. Ctrl+Preme ut nova fenestra conspectus aperiatur supra industriam
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Nomina industriarum - preme in nomen ut conspectus moveatur supra industriam. Ctrl+Preme ut nova fenestra conspectus aperiatur supra industriam
 
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
@@ -3789,10 +3789,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Duplicar
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Duplicare Aeroplanum
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Emet exemplar hamaxostichi electi et omnes currus eius. Preme hunc globulum deinde in hamaxostichum vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Emet exemplar vehiculi viarii electi. Preme hunc globulum deinde in vehiculum viarium vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Emet exemplar navis electae. Preme hunc globulum deinde in navem vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Emet exemplar aeroplani electi. Preme hunc globulum deinde in aeroplanum vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Emet exemplar hamaxostichi electi et omnes currus eius. Preme hunc globulum deinde in hamaxostichum vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Emet exemplar vehiculi viarii electi. Preme hunc globulum deinde in vehiculum viarium vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Emet exemplar navis electae. Preme hunc globulum deinde in navem vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Emet exemplar aeroplani electi. Preme hunc globulum deinde in aeroplanum vel intra vel extra receptaculum. Ctrl+Preme ut iussa communicentur. Shift+Preme ut pretium monstretur sine emptione
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Movere conspectum supra hoc receptaculum ferriviarium. Ctrl+Preme ut nova fenestra conspectus aperiatur supra receptaculum ferriviarium
@@ -3849,36 +3849,36 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Vehiculum Viari
 STR_REPLACE_VEHICLE_SHIP                                        :Navem
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeroplanum
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Eligere typum mutandum
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Eligere novum typum in loco typi sinistri utendum
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Eligere typum mutandum
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Eligere novum typum in loco typi sinistri utendum
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Mutationem Vehiculorum Incipere
 STR_REPLACE_VEHICLES_NOW                                        :Omnia vehicula statim mutare
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Vehicula vetera solum mutare
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Preme ut vehiculum sinistrum electum incipiat commutari vehiculo dextro electo
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Preme ut vehiculum sinistrum electum incipiat commutari vehiculo dextro electo
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Non mutandum est
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Nullum vehiculum electum
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} cum vetus
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Consistere mutationem vehiculorum
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Preme ut mutatio vehiculi sinistri consistatur
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Preme ut mutatio vehiculi sinistri consistatur
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Mutare inter mutationem hamaxarum curruumque
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Mutare inter mutationem hamaxarum curruumque
 STR_REPLACE_ENGINES                                             :Hamaxarum
 STR_REPLACE_WAGONS                                              :Curruum
 STR_REPLACE_ALL_RAILTYPE                                        :Omnia vehicula ferriviaria
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Eligere typum astarii cui est hamaxas commutandas
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Eligere typum astarii cui est hamaxas commutandas
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Haec monstrat novum vehiculum desideratum, si adest
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Haec monstrat novum vehiculum desideratum, si adest
 STR_REPLACE_RAIL_VEHICLES                                       :Vehicula Ferriviaria
 STR_REPLACE_ELRAIL_VEHICLES                                     :Vehicula Ferriviaria Electrica
 STR_REPLACE_MONORAIL_VEHICLES                                   :Vehicula Monoorbitalia
 STR_REPLACE_MAGLEV_VEHICLES                                     :Vehicula Maglev
 
 
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Facere ut automutatio longitudinem traminis contineat ablatione curruum (primo primorum), si tramen longius fiat mutatione hamaxae
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Facere ut automutatio longitudinem traminis contineat ablatione curruum (primo primorum), si tramen longius fiat mutatione hamaxae
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}

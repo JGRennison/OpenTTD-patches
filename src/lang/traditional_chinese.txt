@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}開啟�
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}切換工具列
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}儲存場景、載入場景、離開編輯器、結束
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}儲存場景、載入場景、離開編輯器、結束
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}場景編輯器
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}將開始時間往前 1 年
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}將開始時間往後 1 年
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}點選可輸入開始年份
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}開啟地圖、額外視野、標誌清單、市鎮或工業目錄
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}修改或產生地形
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}建立或產生市鎮
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}建立或產生工業
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}鋪設道路設施
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}鋪設電車路軌設施
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}植樹。按住 <Ctrl> 以對角線選擇區域。按住 <Shift> 可顯示預估成本
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}放置標誌
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}放置物件。按住 <Ctrl> 以對角線選擇區域。按住 <Shift> 可顯示預估成本
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}將開始時間往前 1 年
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}將開始時間往後 1 年
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}點選可輸入開始年份
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}開啟地圖、額外視野、標誌清單、市鎮或工業目錄
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}修改或產生地形
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}建立或產生市鎮
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}建立或產生工業
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}鋪設道路設施
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}鋪設電車路軌設施
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}植樹。按住 <Ctrl> 以對角線選擇區域。按住 <Shift> 可顯示預估成本
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}放置標誌
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}放置物件。按住 <Ctrl> 以對角線選擇區域。按住 <Shift> 可顯示預估成本
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}雪地
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}切換市鎮名稱顯示
-STR_SMALLMAP_CENTER                                             :{BLACK}將小地圖移到目前地點
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}將小地圖移到目前地點
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}視野 {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}複製至本視野
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}將主視野的位置複製到此視窗
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}將主視野的位置複製到此視窗
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}貼上至主視野
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}將主視野位置移到此視窗的中央位置
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}將主視野位置移到此視窗的中央位置
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}遊戲選項
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :基本
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}選擇基本設定
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}選擇基本設定
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :圖形集
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}選擇圖形設定
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}選擇圖形設定
 STR_GAME_OPTIONS_TAB_SOUND                                      :音效
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}選擇音效及音樂設定
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}選擇音效及音樂設定
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :社交
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}選擇社交插件設定
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}選擇社交插件設定
 
 STR_GAME_OPTIONS_VOLUME                                         :音量
 STR_GAME_OPTIONS_SFX_VOLUME                                     :音效
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}儲存
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}儲存喜愛臉孔
 STR_FACE_SAVE_DONE                                              :{WHITE}這將被當成您喜愛的臉孔存入 OpenTTD 設定檔
 STR_FACE_EUROPEAN                                               :{BLACK}歐洲人
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}選擇歐洲人臉孔
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}選擇歐洲人臉孔
 STR_FACE_AFRICAN                                                :{BLACK}非洲人
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}選擇非洲人臉孔
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}選擇非洲人臉孔
 STR_FACE_YES                                                    :確定
 STR_FACE_NO                                                     :取消
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}增加鬍鬚或耳飾
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}伺服�
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}點選清單內的伺服器即可選擇遊戲
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}最後加入的伺服器：
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}點選您上次最後加入的伺服器
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}點選您上次最後加入的伺服器
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}遊戲資訊
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}用戶端：{WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}讓所�
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}市鎮名稱：
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}輸入市鎮名稱
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}點選輸入市鎮名稱
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}點選輸入市鎮名稱
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}隨機名稱
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}產生新隨機名稱
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}城市
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}城市比普通城鎮成長的更快{}你可以從進階設定中調整城市的初始規模
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}市鎮道路配置：
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}選擇這個市鎮使用的道路配置
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}選擇這個市鎮使用的道路配置
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}原版
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}較佳規劃
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}２x２網格
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}載入�
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}載入高度圖
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}儲存高度圖
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}載入市鎮數據
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}點選這裡跳到預設儲存目錄
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}點選這裡跳到預設儲存目錄
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}空間尚有 {BYTES}
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}列出磁碟、目錄與遊戲存檔
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}目前選定的存檔名稱
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}工業�
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}選擇工業密度，或輸入自訂數字
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}最高峰：
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}選擇遊戲版圖內最高峰的海拔，以海平面為基準計算
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}將地圖上最高峰的最大高度增加1
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}將地圖上最高峰的最大高度減少1
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}將地圖上最高峰的最大高度增加1
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}將地圖上最高峰的最大高度減少1
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}雪地覆蓋率:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}將雪地覆蓋率提高10%
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}將雪地覆蓋率降低10%
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}將雪地覆蓋率提高10%
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}將雪地覆蓋率降低10%
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}沙漠覆蓋率:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}將沙漠覆蓋率提高10%
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}將沙漠覆蓋率降低10%
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}將沙漠覆蓋率提高10%
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}將沙漠覆蓋率降低10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形種類：
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}海平面：
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}產生�
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}隨機產生地形
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}平地高度：
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}選擇地面海拔高度
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}將平地高度下移一層
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}將平地高度上移一層
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}將平地高度下移一層
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}將平地高度上移一層
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}修改平地高度
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}無效的�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}車站名稱 - 點選名稱可將車站置於畫面中央。按住 <Ctrl> 點選可於車站位置開啟新視窗視野
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}按住 <Ctrl> 點選可選擇多個項目
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}按住 <Ctrl> 點選可選擇多個項目
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - 車站 {COMMA} 座
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- 無 -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}選擇所有設施
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}選擇所有設施
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :所有貨物種類和沒有評價
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :多種貨物類型
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :無貨物種類
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}將號誌站置於畫面中央。 按住 <Ctrl> 點選可於號誌站位置開啟新視窗視野
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}修改號誌站名稱
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}將浮標置於畫面中央。按住 <Ctrl> 點選可於浮標位置開啟新視窗視野
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}修改浮標名稱
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}修改浮標名稱
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}編輯號誌站名稱
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}建造�
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}檢視總部
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}檢視公司總部
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}搬移總部
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}以公司總值的 1% 在其他地方建造新公司總部。按住 <Shift> 點選則只會顯示預估的建造費用
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}以公司總值的 1% 在其他地方建造新公司總部。按住 <Shift> 點選則只會顯示預估的建造費用
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}詳情
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}顯示基礎建設數目的詳細資料
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}給予資金
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}、{STRING}、{STRING}……（尚有 {NUM} 個未顯示）
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}工業名稱 - 點選名稱可將工業置於畫面中央。按住 <Ctrl> 點選可於工業位置開啟新視窗視野
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}工業名稱 - 點選名稱可將工業置於畫面中央。按住 <Ctrl> 點選可於工業位置開啟新視窗視野
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}接受貨物：{SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}產出的貨物: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :所有貨物種類
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}複製�
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}複製飛機
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}購買一列相同的列車，包含所有車廂。按下按鈕之後再點選機廠內或外的列車。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}購買一部相同的車輛。按下此鈕之後再點選車廠內或外的車輛。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}購買一艘相同的船舶。按下按鈕之後再點選船塢內或外的船舶。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}購買一架相同的飛機。按下此鈕之後再點選機棚內或外的飛機。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}購買一列相同的列車，包含所有車廂。按下按鈕之後再點選機廠內或外的列車。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}購買一部相同的車輛。按下此鈕之後再點選車廠內或外的車輛。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}購買一艘相同的船舶。按下按鈕之後再點選船塢內或外的船舶。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}購買一架相同的飛機。按下此鈕之後再點選機棚內或外的飛機。按住 <Ctrl> 點選可共享指令。按住 <Shift> 則可顯示預估成本
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}將鐵路機廠置於畫面中央。按住 <Ctrl> 點選可於鐵路機廠位置開啟新視窗視野
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :車輛
 STR_REPLACE_VEHICLE_SHIP                                        :船舶
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :飛機
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}選擇要替換的車頭種類
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}選擇您想替換左方選定車頭的新車頭種類
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}選擇要替換的車頭種類
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}選擇您想替換左方選定車頭的新車頭種類
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}開始替換車輛
 STR_REPLACE_VEHICLES_NOW                                        :立刻替換所有車輛
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :僅替換老舊的車輛
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}按下之後就會開始將左方選定的車頭替換成右方指定的車頭
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}按下之後就會開始將左方選定的車頭替換成右方指定的車頭
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}不替換
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}未選擇任何車輛
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} 老舊時
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}停止替換車輛
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}按下之後會停止替換左方指定的車頭
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}按下之後會停止替換左方指定的車頭
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}在車頭及車廂替換畫面間切換。
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}在車頭及車廂替換畫面間切換。
 STR_REPLACE_ENGINES                                             :車頭
 STR_REPLACE_WAGONS                                              :車廂
 STR_REPLACE_ALL_RAILTYPE                                        :所有鐵路車輛
 STR_REPLACE_ALL_ROADTYPE                                        :所有公路車輛
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}選擇您要替換機車頭的軌道種類
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}選擇您要替換車輛的道路類型
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}選擇您要替換機車頭的軌道種類
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}選擇您要替換車輛的道路類型
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}顯示左方的車頭要替換成哪種車頭
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}顯示左方的車頭要替換成哪種車頭
 STR_REPLACE_RAIL_VEHICLES                                       :列車
 STR_REPLACE_ELRAIL_VEHICLES                                     :電氣化列車
 STR_REPLACE_MONORAIL_VEHICLES                                   :單軌列車
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :車輛
 STR_REPLACE_TRAM_VEHICLES                                       :電車車輛
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}移除車廂 ({STRING})：{ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}如果替換後的車廂較長的話，讓自動替換功能移除多餘的車廂 (從頭開始) 以便維持列車長度
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}如果替換後的車廂較長的話，讓自動替換功能移除多餘的車廂 (從頭開始) 以便維持列車長度
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. 按住Ctrl並點擊以套用到所有子群組
 
 # Vehicle view

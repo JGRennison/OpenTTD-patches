@@ -258,7 +258,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		if (v->state == 1) {
 			if (++v->age == 38) {
 				v->state = 2;
-				v->age = 0;
+				v->age = DateDelta{0};
 			}
 
 			if (GB(v->tick_counter, 0, 3) == 0) CreateEffectVehicleRel(v, 0, -17, 2, EV_CRASH_SMOKE);
@@ -266,7 +266,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		} else if (v->state == 0) {
 			if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
 				v->state = 1;
-				v->age = 0;
+				v->age = DateDelta{0};
 
 				SetDParam(0, GetStationIndex(v->tile));
 				AddTileNewsItem(STR_NEWS_DISASTER_ZEPPELIN, NT_ACCIDENT, v->tile);
@@ -320,7 +320,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		}
 	} else if (v->age == 350) {
 		v->state = 3;
-		v->age = 0;
+		v->age = DateDelta{0};
 	}
 
 	if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
@@ -378,7 +378,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 				}
 				/* Target it. */
 				v->dest_tile = u->index;
-				v->age = 0;
+				v->age = DateDelta{0};
 				break;
 			}
 		}
@@ -482,7 +482,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 	} else if (v->state == 1) {
 		if (++v->age == 112) {
 			v->state = 2;
-			v->age = 0;
+			v->age = DateDelta{0};
 
 			Industry *i = Industry::Get(v->dest_tile); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
 			DestructIndustry(i);
@@ -501,11 +501,11 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 		if (!IsTileType(tile, MP_INDUSTRY)) return true;
 
 		IndustryID ind = GetIndustryIndex(tile);
-		v->dest_tile = ind;
+		v->dest_tile = TileIndex{ind};
 
 		if (GetIndustrySpec(Industry::Get(ind)->type)->behaviour & industry_flag) {
 			v->state = 1;
-			v->age = 0;
+			v->age = DateDelta{0};
 		}
 	}
 
@@ -635,7 +635,7 @@ static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 			if (is_valid_target(t) && (n-- == 0)) {
 				/* Target it. */
 				v->dest_tile = t->tile;
-				v->age = 0;
+				v->age = DateDelta{0};
 				break;
 			}
 		}
@@ -759,7 +759,7 @@ static void Disaster_Zeppeliner_Init()
 	if (!Vehicle::CanAllocateItem(2)) return;
 
 	/* Pick a random place, unless we find a small airport */
-	int x = TileX(Random()) * TILE_SIZE + TILE_SIZE / 2;
+	int x = TileX(RandomTile()) * TILE_SIZE + TILE_SIZE / 2;
 
 	for (const Station *st : Station::Iterate()) {
 		if (st->airport.tile != INVALID_TILE && (st->airport.type == AT_SMALL || st->airport.type == AT_LARGE)) {
@@ -785,7 +785,7 @@ static void Disaster_Small_Ufo_Init()
 {
 	if (!Vehicle::CanAllocateItem(2)) return;
 
-	int x = TileX(Random()) * TILE_SIZE + TILE_SIZE / 2;
+	int x = TileX(RandomTile()) * TILE_SIZE + TILE_SIZE / 2;
 	DisasterVehicle *v = new DisasterVehicle(x, 0, DIR_SE, ST_SMALL_UFO);
 	v->dest_tile = TileXY(MapSizeX() / 2, MapSizeY() / 2);
 
@@ -861,7 +861,7 @@ static void Disaster_Big_Ufo_Init()
 {
 	if (!Vehicle::CanAllocateItem(2)) return;
 
-	int x = TileX(Random()) * TILE_SIZE + TILE_SIZE / 2;
+	int x = TileX(RandomTile()) * TILE_SIZE + TILE_SIZE / 2;
 	int y = MapMaxX() * TILE_SIZE - 1;
 
 	DisasterVehicle *v = new DisasterVehicle(x, y, DIR_NW, ST_BIG_UFO);
@@ -882,7 +882,7 @@ static void Disaster_Submarine_Init(DisasterSubType subtype)
 	int y;
 	Direction dir;
 	uint32_t r = Random();
-	int x = TileX(r) * TILE_SIZE + TILE_SIZE / 2;
+	int x = TileX(RandomTileSeed(r)) * TILE_SIZE + TILE_SIZE / 2;
 
 	if (HasBit(r, 31)) {
 		y = MapMaxY() * TILE_SIZE - TILE_SIZE / 2 - 1;
@@ -951,14 +951,14 @@ struct Disaster {
 };
 
 static const Disaster _disasters[] = {
-	{Disaster_Zeppeliner_Init,      1930, 1955}, // zeppeliner
-	{Disaster_Small_Ufo_Init,       1940, 1970}, // ufo (small)
-	{Disaster_Airplane_Init,        1960, 1990}, // airplane
-	{Disaster_Helicopter_Init,      1970, 2000}, // helicopter
-	{Disaster_Big_Ufo_Init,         2000, 2100}, // ufo (big)
-	{Disaster_Small_Submarine_Init, 1940, 1965}, // submarine (small)
-	{Disaster_Big_Submarine_Init,   1975, 2010}, // submarine (big)
-	{Disaster_CoalMine_Init,        1950, 1985}, // coalmine
+	{Disaster_Zeppeliner_Init,      CalTime::Year{1930}, CalTime::Year{1955}}, // zeppeliner
+	{Disaster_Small_Ufo_Init,       CalTime::Year{1940}, CalTime::Year{1970}}, // ufo {small}
+	{Disaster_Airplane_Init,        CalTime::Year{1960}, CalTime::Year{1990}}, // airplane
+	{Disaster_Helicopter_Init,      CalTime::Year{1970}, CalTime::Year{2000}}, // helicopter
+	{Disaster_Big_Ufo_Init,         CalTime::Year{2000}, CalTime::Year{2100}}, // ufo {big}
+	{Disaster_Small_Submarine_Init, CalTime::Year{1940}, CalTime::Year{1965}}, // submarine {small}
+	{Disaster_Big_Submarine_Init,   CalTime::Year{1975}, CalTime::Year{2010}}, // submarine {big}
+	{Disaster_CoalMine_Init,        CalTime::Year{1950}, CalTime::Year{1985}}, // coalmine
 };
 
 void DoDisaster()
@@ -1038,7 +1038,7 @@ void ReleaseDisasterVehicleTargetingVehicle(VehicleID vehicle)
 	v->state = 0;
 	v->dest_tile = RandomTile();
 	GetAircraftFlightLevelBounds(v, &v->z_pos, nullptr);
-	v->age = 0;
+	v->age = DateDelta{0};
 }
 
 void ResetDisasterVehicleTargeting()

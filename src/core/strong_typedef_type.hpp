@@ -194,6 +194,7 @@ namespace StrongType {
 			friend constexpr TType &operator +(const TType &lhs, const T &rhs) = delete;
 
 			friend constexpr TType &operator +=(TType &lhs, const TDeltaType &rhs) { lhs.value += rhs.value; return lhs; }
+			friend constexpr TType &operator +=(TType &lhs, const TBaseType &rhs) { lhs.value += rhs; return lhs; }
 			friend constexpr TType operator +(const TType &lhs, const TDeltaType &rhs) { return TType{ lhs.value + rhs.value }; }
 			friend constexpr TType operator +(const TDeltaType &lhs, const TType &rhs) { return TType{ lhs.value + rhs.value }; }
 			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value + rhs }; }
@@ -205,6 +206,7 @@ namespace StrongType {
 			friend constexpr TType &operator -=(TType &lhs, const TDeltaType &rhs) { lhs.value -= rhs.value; return lhs; }
 			friend constexpr TType &operator -=(TType &lhs, const TBaseType &rhs) { lhs.value -= rhs; return lhs; }
 			friend constexpr TDeltaType operator -(const TType &lhs, const TType &rhs) { return TDeltaType{ lhs.value - rhs.value }; }
+			friend constexpr TType operator -(const TType &lhs, const TDeltaType &rhs) { return TType{ lhs.value - rhs.value }; }
 			friend constexpr TType operator -(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value - rhs }; }
 
 			constexpr TDeltaType AsDelta() const { return TDeltaType{ static_cast<const TType &>(*this).value }; }
@@ -271,8 +273,8 @@ namespace StrongType {
 			friend constexpr bool operator >=(const TType &lhs, TCompatibleType rhs) { return lhs.value >= static_cast<TBaseType>(rhs); }
 			friend constexpr bool operator >(const TType &lhs, TCompatibleType rhs) { return lhs.value > static_cast<TBaseType>(rhs); }
 
-			friend constexpr TType operator +(const TType &lhs, TCompatibleType rhs) { return { static_cast<TBaseType>(lhs.value + rhs) }; }
-			friend constexpr TType operator -(const TType &lhs, TCompatibleType rhs) { return { static_cast<TBaseType>(lhs.value - rhs) }; }
+			friend constexpr TType operator +(const TType &lhs, TCompatibleType rhs) { return TType{ static_cast<TBaseType>(lhs.value + rhs) }; }
+			friend constexpr TType operator -(const TType &lhs, TCompatibleType rhs) { return TType{ static_cast<TBaseType>(lhs.value - rhs) }; }
 		};
 	};
 
@@ -298,11 +300,10 @@ namespace StrongType {
 		constexpr Typedef(const Typedef &) = default;
 		constexpr Typedef(Typedef &&) = default;
 
-		constexpr Typedef(const TBaseType &value) : value(value) {}
+		explicit constexpr Typedef(const TBaseType &value) : value(value) {}
 
 		constexpr Typedef &operator =(const Typedef &rhs) { this->value = rhs.value; return *this; }
 		constexpr Typedef &operator =(Typedef &&rhs) { this->value = std::move(rhs.value); return *this; }
-		constexpr Typedef &operator =(const TBaseType &rhs) { this->value = rhs; return *this; }
 
 		/* Only allow conversion to BaseType via method. */
 		constexpr TBaseType base() const { return this->value; }

@@ -35,7 +35,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(EconTime::Date{date});
 	return ymd.year.base();
 }
 
@@ -43,7 +43,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(EconTime::Date{date});
 	return ymd.month + 1;
 }
 
@@ -51,7 +51,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(EconTime::Date{date});
 	return ymd.day;
 }
 
@@ -59,9 +59,9 @@
 {
 	if (month < 1 || month > 12) return DATE_INVALID;
 	if (day_of_month < 1 || day_of_month > 31) return DATE_INVALID;
-	if (year < 0 || year > CalTime::MAX_YEAR) return DATE_INVALID;
+	if (year < 0 || year > EconTime::MAX_YEAR.base()) return DATE_INVALID;
 
-	return (ScriptDate::Date)::EconTime::ConvertYMDToDate(year, month - 1, day_of_month).base();
+	return (ScriptDate::Date)::EconTime::ConvertYMDToDate(EconTime::Year{static_cast<int>(year)}, month - 1, day_of_month).base();
 }
 
 /* static */ SQInteger ScriptDate::GetSystemTime()

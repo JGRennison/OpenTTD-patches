@@ -248,7 +248,7 @@ inline void IncrementHouseAge(TileIndex t)
 inline CalTime::Year GetHouseAge(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
-	return IsHouseCompleted(t) ? _m[t].m5 : 0;
+	return CalTime::Year{IsHouseCompleted(t) ? _m[t].m5 : 0};
 }
 
 /**

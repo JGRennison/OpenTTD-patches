@@ -414,21 +414,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Apre una
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Alterna barre degli strumenti
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Salva scenario, carica scenario, abbandona l'editor di scenari, esci
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Salva scenario, carica scenario, abbandona l'editor di scenari, esci
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Editor di scenari
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Sposta la data d'inizio indietro di 1 anno
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Sposta la data d'inizio avanti di 1 anno
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Fare clic per inserire l'anno d'inizio
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Apre la mappa, la finestra extra, l'elenco dei cartelli, l'elenco delle città o delle industrie
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Aprire il menu Paesaggio o generare un nuovo mondo
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Costruire o generare città
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Costruire o generare industrie
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Costruire infrastrutture stradali
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Realizza un'infrastruttura tranviaria
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Piantare alberi. Ctrl+Clic+trascinamento per selezionare l'area in diagonale. Premere anche Shift per mostrare solo la stima dei costi
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Posiziona cartello
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Posiziona l'oggetto. Ctrl+Clic+trascinamento per selezionare l'area in diagonale. Premere anche Shift per mostrare solo la stima dei costi
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Sposta la data d'inizio indietro di 1 anno
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Sposta la data d'inizio avanti di 1 anno
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Fare clic per inserire l'anno d'inizio
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Apre la mappa, la finestra extra, l'elenco dei cartelli, l'elenco delle città o delle industrie
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Aprire il menu Paesaggio o generare un nuovo mondo
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Costruire o generare città
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Costruire o generare industrie
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Costruire infrastrutture stradali
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Realizza un'infrastruttura tranviaria
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Piantare alberi. Ctrl+Clic+trascinamento per selezionare l'area in diagonale. Premere anche Shift per mostrare solo la stima dei costi
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Posiziona cartello
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Posiziona l'oggetto. Ctrl+Clic+trascinamento per selezionare l'area in diagonale. Premere anche Shift per mostrare solo la stima dei costi
 
 # Scenario editor file menu
 ###length 7
@@ -798,7 +798,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Neve
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Attiva/disattiva la visualizzazione dei nomi delle città sulla mappa
-STR_SMALLMAP_CENTER                                             :{BLACK}Centra la minimappa sulla posizione corrente
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centra la minimappa sulla posizione corrente
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -944,21 +944,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Mini visuale {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Cambia mini visuale
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copia la posizione della visuale principale in questa mini visuale
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Copia la posizione della visuale principale in questa mini visuale
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Cambia vis. principale
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copia la posizione di questa mini visuale nella visuale principale
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Copia la posizione di questa mini visuale nella visuale principale
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Opzioni di gioco
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Generale
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Scegliere le impostazioni generali
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Scegliere le impostazioni generali
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafica
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Scegliere le impostazioni grafiche
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Scegliere le impostazioni grafiche
 STR_GAME_OPTIONS_TAB_SOUND                                      :Suono
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Scegliere le impostazioni audio e musicali
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Scegliere le impostazioni audio e musicali
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Social
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Scegli le impostazioni di integrazione social
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Scegli le impostazioni di integrazione social
 
 STR_GAME_OPTIONS_VOLUME                                         :Volume
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Effetti sonori
@@ -2360,9 +2360,9 @@ STR_FACE_SAVE                                                   :{BLACK}Salva
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Salva come faccia preferita
 STR_FACE_SAVE_DONE                                              :{WHITE}La faccia corrente è stata salvata come preferita nel file di configurazione di OpenTTD
 STR_FACE_EUROPEAN                                               :{BLACK}Europea
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Seleziona le facce europee
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Seleziona le facce europee
 STR_FACE_AFRICAN                                                :{BLACK}Africana
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Seleziona le facce africane
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Seleziona le facce africane
 STR_FACE_YES                                                    :Sì
 STR_FACE_NO                                                     :No
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Abilita i baffi o l'orecchino
@@ -2418,7 +2418,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Lingua, 
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Fare clic su una partita in elenco per selezionarla
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Ultimo server utilizzato:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Fare clic per selezionare il server su cui si è giocato l'ultima volta
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Fare clic per selezionare il server su cui si è giocato l'ultima volta
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}INFORMAZIONI PARTITA
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Client: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3060,7 +3060,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Fa cresc
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Nome città:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Inserire il nome della città
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Fare clic per inserire il nome della città
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Fare clic per inserire il nome della città
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Nome casuale
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Genera un nuovo nome casuale
 
@@ -3074,7 +3074,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Metropol
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Le metropoli crescono più rapidamente delle normali città.{}A seconda delle impostazioni, sono più grandi quando vengono fondate.
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Disposizione strade:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Seleziona la disposizione delle strade per questa città
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Seleziona la disposizione delle strade per questa città
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Originale
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Migliorata
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}Griglia 2x2
@@ -3307,7 +3307,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Salva sc
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Carica scenario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Carica heightmap
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Salva Heightmap
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Fare clic qui per spostarsi nella cartella di salvataggio predefinita
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Fare clic qui per spostarsi nella cartella di salvataggio predefinita
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} liber{P o i}
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Elenco delle unità, delle cartelle e dei file delle partite salvate
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Nome del salvataggio selezionato
@@ -3345,15 +3345,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Numero i
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Selezionare la densità delle industrie o un numero personalizzato.
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Picco massimo:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Scegliere la vetta più alta che il gioco tenterà di creare, misurata in altezza sul livello del mare
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Aumenta la massima altezza del picco più alto sulla mappa di uno
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Diminuisci la massima altezza del picco più alto sulla mappa di uno
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Aumenta la massima altezza del picco più alto sulla mappa di uno
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Diminuisci la massima altezza del picco più alto sulla mappa di uno
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Aree innevate:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Aumenta la copertura della neve del dieci per cento
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Diminuisci la copertura della neve del dieci per cento
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Aumenta la copertura della neve del dieci per cento
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Diminuisci la copertura della neve del dieci per cento
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aree desertiche:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Aumenta la copertura del deserto del dieci percento
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Diminuisci la copertura del deserto del dieci percento
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Aumenta la copertura del deserto del dieci percento
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Diminuisci la copertura del deserto del dieci percento
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo di terreno:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Livello di mare:
@@ -3426,8 +3426,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Genera u
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Casuale
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Altezza terreno pianeggiante:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Scegliere l'altitudine del terreno sul livello del mare
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Sposta in giù di uno l'altezza del terreno pianeggiante
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Sposta in su di uno l'altezza del terreno pianeggiante
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Sposta in giù di uno l'altezza del terreno pianeggiante
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Sposta in su di uno l'altezza del terreno pianeggiante
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Cambia l'altezza del terreno pianeggiante
 
@@ -3793,12 +3793,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Riferiment
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Nomi delle stazioni - fare clic su un nome per centrare la visuale principale sulla stazione. Ctrl+Clic per aprire una nuova finestra di visualizzazione sulla posizione della stazione
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Clic per selezionare più di un elemento
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+Clic per selezionare più di un elemento
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} stazion{P 1 e i}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Nessuna -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Seleziona tutti i fabbricati
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Seleziona tutti i fabbricati
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Tutti i tipi di carico e nessun punteggio
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Tipi di carico multipli
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Nessun tipo di carico
@@ -3876,7 +3876,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centra la vista principale sulla posizione del waypoint. Ctrl+Clic per aprire una nuova finestra sulla posizione del waypoint.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Cambia il nome del waypoint
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centra la visuale principale sulla posizione della boa. Ctrl+Clic per aprire una nuova finestra di visualizzazione sulla posizione della boa
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Cambia il nome della boa
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Cambia il nome della boa
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Rinomina il waypoint
 
@@ -3951,7 +3951,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Costruis
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vedi sede
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Visualizza la sede della compagnia
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Sposta sede
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ricostruisce la sede della compagnia in un altro luogo pagando l'1% del valore della compagnia. Premere anche Shift per visualizzare solo la stima dei costi
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Ricostruisce la sede della compagnia in un altro luogo pagando l'1% del valore della compagnia. Premere anche Shift per visualizzare solo la stima dei costi
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Dettagli
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Visualizza i conteggi dettagliati delle infrastrutture
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Trasferisci denaro
@@ -3997,7 +3997,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} e {NUM} ancora...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Nomi delle industrie - fare clic su un nome per centrare la visuale sull'industria. Ctrl+Clic per aprire una nuova finestra sulla posizione dell'industria
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Nomi delle industrie - fare clic su un nome per centrare la visuale sull'industria. Ctrl+Clic per aprire una nuova finestra sulla posizione dell'industria
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Carichi accettati: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Carico prodotto: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Tutti i tipi di carico
@@ -4270,10 +4270,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Clona na
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Clona aeromobile
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Compra una copia di un treno, inclusi tutti i vagoni. Fare Clic su questo pulsante e poi su un treno all'interno o all'esterno del deposito. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Compra una copia di un automezzo.Fare clic su questo pulsante e poi su un veicolo stradale all'interno o all'esterno del deposito. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Compra una copia di una nave. Fare clic su questo pulsante e quindi su una nave dentro o fuori dal deposito.Ctrl+Clic per condividere gli ordini. Premere anche Shift per mostrare solo la stima dei costi
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Compra una copia di un aeromobile. Fare Clic su questo pulsante e poi su un aereo all'interno o all'esterno dell'hangar. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Compra una copia di un treno, inclusi tutti i vagoni. Fare Clic su questo pulsante e poi su un treno all'interno o all'esterno del deposito. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Compra una copia di un automezzo.Fare clic su questo pulsante e poi su un veicolo stradale all'interno o all'esterno del deposito. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Compra una copia di una nave. Fare clic su questo pulsante e quindi su una nave dentro o fuori dal deposito.Ctrl+Clic per condividere gli ordini. Premere anche Shift per mostrare solo la stima dei costi
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Compra una copia di un aeromobile. Fare Clic su questo pulsante e poi su un aereo all'interno o all'esterno dell'hangar. Ctrl+Clic per condividere gli ordini. Premere anche Shift per visualizzare solo la stima dei costi
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centra la visuale principale sulla posizione del deposito ferroviario. Ctrl+Clic per aprire una nuova finestra di visualizzazione sulla posizione del deposito ferroviario
@@ -4344,31 +4344,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Automezzo
 STR_REPLACE_VEHICLE_SHIP                                        :Nave
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeromobile
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Selezionare il tipo di locomotiva da rimpiazzare
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Selezionare il nuovo modello di locomotiva che si desidera usare al posto di quello selezionato a sinistra
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Selezionare il tipo di locomotiva da rimpiazzare
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Selezionare il nuovo modello di locomotiva che si desidera usare al posto di quello selezionato a sinistra
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Inizia rimpiazzamento
 STR_REPLACE_VEHICLES_NOW                                        :Rimpiazza tutti i veicoli adesso
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Rimpiazza solo i veicoli vecchi
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Premere per iniziare il rimpiazzamento del modello di locomotiva selezionato a sinistra con quello selezionato a destra
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Premere per iniziare il rimpiazzamento del modello di locomotiva selezionato a sinistra con quello selezionato a destra
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Nessun rimpiazzo
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Nessun veicolo selezionato
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} una volta vecchio
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Interrompi rimpiazzamento
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Premere per interrompere il rimpiazzamento del modello di locomotiva selezionato a sinistra
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Premere per interrompere il rimpiazzamento del modello di locomotiva selezionato a sinistra
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Scambia tra loro le finestre di rimpiazzamento delle locomotive e dei vagoni
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Scambia tra loro le finestre di rimpiazzamento delle locomotive e dei vagoni
 STR_REPLACE_ENGINES                                             :Locomotive
 STR_REPLACE_WAGONS                                              :Vagoni
 STR_REPLACE_ALL_RAILTYPE                                        :Tutti i veicoli ferroviari
 STR_REPLACE_ALL_ROADTYPE                                        :Tutti i veicoli stradali
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Selezionare il tipo di rotaie per il quale si desidera rimpiazzare le locomotive
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Selezionare il tipo di strada per il quale si desidera rimpiazzare i veicoli
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Selezionare il tipo di rotaie per il quale si desidera rimpiazzare le locomotive
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Selezionare il tipo di strada per il quale si desidera rimpiazzare i veicoli
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Mostra con quale locomotiva sarà rimpiazzato il modello eventualmente selezionato a sinistra
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Mostra con quale locomotiva sarà rimpiazzato il modello eventualmente selezionato a sinistra
 STR_REPLACE_RAIL_VEHICLES                                       :Veicoli ferroviari
 STR_REPLACE_ELRAIL_VEHICLES                                     :Veicoli ferroviari elettrici
 STR_REPLACE_MONORAIL_VEHICLES                                   :Veicoli monorotaia
@@ -4378,7 +4378,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Veicoli stradal
 STR_REPLACE_TRAM_VEHICLES                                       :Veicoli tranviari
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Rimozione vagoni ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Fa sì che il rimpiazzamento automatico mantenga costante la lunghezza dei treni rimuovendo vagoni (iniziando dalla testa) nel caso in cui la sostituzione della locomotiva rendesse il treno più lungo
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Fa sì che il rimpiazzamento automatico mantenga costante la lunghezza dei treni rimuovendo vagoni (iniziando dalla testa) nel caso in cui la sostituzione della locomotiva rendesse il treno più lungo
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Clic per applicare anche ai sotto-gruppi
 
 # Vehicle view

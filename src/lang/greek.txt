@@ -475,21 +475,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Πληρ
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Εναλλάγη μπαρών εργασίας
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Αποθήκευση σεναρίου, φόρτωση, εγκατάλειψη προγράμματος επεξεργασίας σεναρίων, έξοδος
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Αποθήκευση σεναρίου, φόρτωση, εγκατάλειψη προγράμματος επεξεργασίας σεναρίων, έξοδος
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Πρόγραμμα Επεξεργασίας Σεναρίου
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Μετακίνηση ημ/νίας εκκίνησης 1 χρόνο πίσω
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Μετακινήστε την ημερομηνία εκκίνησης 1 χρόνο μπροστά
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Πατήστε εδώ για να εισαγάγετε την χρονιά έναρξης
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Εμφάνιση χάρτη, επιπλέον παραθύρου προβολής, λίστας πινακίδων ή λίστας πόλεων ή βιομηχανιών
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Εμφάνιση μενού δημιουργίας τοπίου ή δημιουργία νέου κόσμου
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Δημιουργία πόλης
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Δημιουργία βιομηχανίας
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Κατασκευή δρόμου
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}{BLACK}Κατασκευή τροχιοδρόμου
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Φύτευση Δέντρων. Ctrl+Κλικ για διαγώνια επιλογή περιοχής. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Τοποθέτηση πινακίδας
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Τοποθέτηση αντικειμένου. Ctrl+Κλικ για διαγώνια επιλογή περιοχής. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Μετακίνηση ημ/νίας εκκίνησης 1 χρόνο πίσω
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Μετακινήστε την ημερομηνία εκκίνησης 1 χρόνο μπροστά
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Πατήστε εδώ για να εισαγάγετε την χρονιά έναρξης
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Εμφάνιση χάρτη, επιπλέον παραθύρου προβολής, λίστας πινακίδων ή λίστας πόλεων ή βιομηχανιών
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Εμφάνιση μενού δημιουργίας τοπίου ή δημιουργία νέου κόσμου
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Δημιουργία πόλης
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Δημιουργία βιομηχανίας
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Κατασκευή δρόμου
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}{BLACK}Κατασκευή τροχιοδρόμου
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Φύτευση Δέντρων. Ctrl+Κλικ για διαγώνια επιλογή περιοχής. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Τοποθέτηση πινακίδας
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Τοποθέτηση αντικειμένου. Ctrl+Κλικ για διαγώνια επιλογή περιοχής. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 
 # Scenario editor file menu
 ###length 7
@@ -894,7 +894,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Χιόνι
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Εναλλαγή εμφάνισης των ονομάτων πόλεων
-STR_SMALLMAP_CENTER                                             :{BLACK}Κεντράρισμα του μικρού χάρτη στην τρέχουσα θέση
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Κεντράρισμα του μικρού χάρτη στην τρέχουσα θέση
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -1040,21 +1040,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Προβολή {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Αντιγραφή στο παράθυρο εμφάνισης
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Αντιγραφή της τοποθεσίας της κύριας προβολής σε αυτό το παράθυρο εμφάνισης
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Αντιγραφή της τοποθεσίας της κύριας προβολής σε αυτό το παράθυρο εμφάνισης
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Επικόλληση από παράθυρο εμφάνισης
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Επικόλληση της τοποθεσίας αυτού του παραθύρου εμφάνισης στην κύρια προβολή
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Επικόλληση της τοποθεσίας αυτού του παραθύρου εμφάνισης στην κύρια προβολή
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Επιλογές Παιχνιδιού
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Γενικά
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Επιλέξτε γενικές ρυθμίσεις
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Επιλέξτε γενικές ρυθμίσεις
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Γραφικά
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Επιλέξτε ρυθμίσεις γραφικών
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Επιλέξτε ρυθμίσεις γραφικών
 STR_GAME_OPTIONS_TAB_SOUND                                      :Ήχος
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Επιλέξτε ρυθμίσεις ήχου και μουσικής
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Επιλέξτε ρυθμίσεις ήχου και μουσικής
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Κοινωνικά
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Επιλέξτε ρυθμίσεις κοινωνικής ενσωμάτωσης
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Επιλέξτε ρυθμίσεις κοινωνικής ενσωμάτωσης
 
 STR_GAME_OPTIONS_VOLUME                                         :Ένταση Ήχου
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Ηχητικά εφέ
@@ -2424,9 +2424,9 @@ STR_FACE_SAVE                                                   :{BLACK}Αποθ
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Αποθήκευση αγαπημένου προσώπου
 STR_FACE_SAVE_DONE                                              :{WHITE}Αυτό το πρόσωπο θα αποθηκευτεί ως αγαπημένο στο αρχείο ρυθμίσεων του OpenTTD
 STR_FACE_EUROPEAN                                               :{BLACK}Ευρωπαϊκό
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Επιλογή ευρωπαϊκών προσώπων
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Επιλογή ευρωπαϊκών προσώπων
 STR_FACE_AFRICAN                                                :{BLACK}Αφρικάνικο
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Επιλογή αφρικάνικων προσώπων
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Επιλογή αφρικάνικων προσώπων
 STR_FACE_YES                                                    :Ναι
 STR_FACE_NO                                                     :Όχι
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Ενεργοποίηση μουστακιού ή σκουλαρικιού
@@ -2482,7 +2482,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Στοι
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Πατήστε σε ένα παιχνίδι από τη λίστα για το επιλέξετε
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Ο διακομιστής που συμμετείχατε την τελευταία φορά:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Πατήστε για να επιλέξετε το διακομιστή που συμμετείχατε την τελευταία φορά
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Πατήστε για να επιλέξετε το διακομιστή που συμμετείχατε την τελευταία φορά
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}ΠΛΗΡΟΦΟΡΙΕΣ ΠΑΙΧΝΙΔΙΟΥ
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Συμμετέχοντες:: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3134,7 +3134,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Κάνε
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Όνομα πόλης:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Εισαγάγετε το όνομα της πόλης
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Πατήστε για να δώσετε το όνομα της πόλης
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Πατήστε για να δώσετε το όνομα της πόλης
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Τυχαίο όνομα
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Δημιουργία ενός τυχαίου ονόματος
 
@@ -3148,7 +3148,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Πόλη
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Οι πόλεις αναπτύσσονται ταχύτερα από τις απλές κωμοπόλεις{}Ανάλογα με τις ρυθμίσεις, είναι μεγαλύτερες όταν ιδρύονται
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Σχέδιο δρόμων πόλης
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Επιλογή σχεδίου δρόμων που χρησιμοποιείται για αυτή την πόλη
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Επιλογή σχεδίου δρόμων που χρησιμοποιείται για αυτή την πόλη
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Αρχικό
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Καλύτεροι δρόμοι
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}Πλέγμα 2x2
@@ -3382,7 +3382,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Φόρτ
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Φόρτωση Χάρτη Υψομετρίας
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Αποθήκευση Χάρτη Υψομετρίας
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Φόρτωση δεδομένων πόλης
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Πατήστε εδώ για να μεταβείτε στον τρέχοντα φάκελο αποθήκευσης/φόρτωσης
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Πατήστε εδώ για να μεταβείτε στον τρέχοντα φάκελο αποθήκευσης/φόρτωσης
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} ελεύθερα
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Λίστα δισκών, φακέλων και αποθηκευμένων παιχνιδιών
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Τρέχον επιλεγμένο όνομα για το αποθηκευμένο παιχνίδι
@@ -3421,15 +3421,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Αριθ
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Επιλέξτε την πυκνότητα των βιομηχανιών ή έναν προσαρμοσμένο αριθμό
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Υψηλότερη κορυφή:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Επιλέξτε την υψηλότερη κορυφή που θα προσπαθήσει να δημιουργήσει το παιχνίδι, μετρημένη σε υψόμετρο πάνω από την επιφάνεια της θάλασσας
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Αύξηση του μέγιστου ύψους της υψηλότερης κορυφής στον χάρτη κατά ένα
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Μειώστε το μέγιστο ύψος της υψηλότερης κορυφής στον χάρτη κατά ένα
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Αύξηση του μέγιστου ύψους της υψηλότερης κορυφής στον χάρτη κατά ένα
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Μειώστε το μέγιστο ύψος της υψηλότερης κορυφής στον χάρτη κατά ένα
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Κάλυψη χιονιού:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Αύξηση κάλυψης χιονιού κατά δέκα τοις εκατό
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Μείωση κάλυψης χιονιού κατά δέκα τοις εκατό
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Αύξηση κάλυψης χιονιού κατά δέκα τοις εκατό
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Μείωση κάλυψης χιονιού κατά δέκα τοις εκατό
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Κάλυψη ερήμου:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Αύξηση κάλυψης ερήμου κατά δέκα τοις εκατό
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Μείωση κάλυψης ερήμου κατά δέκα τοις εκατό
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Αύξηση κάλυψης ερήμου κατά δέκα τοις εκατό
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Μείωση κάλυψης ερήμου κατά δέκα τοις εκατό
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Τύπος εδάφους:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Επίπεδο θάλασσας:
@@ -3502,8 +3502,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Δημι
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Τυχαίο έδαφος
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Ύψος επίπεδης γης:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Επιλέξτε το ύψος της ξηράς πάνω από την επιφάνεια της θάλασσας
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Μετακίνηση του ύψους του επίπεδου εδάφους ένα κάτω
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Μετακίνηση του ύψους του επίπεδου εδάφους ένα πάνω
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Μετακίνηση του ύψους του επίπεδου εδάφους ένα κάτω
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Μετακίνηση του ύψους του επίπεδου εδάφους ένα πάνω
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Αλλαγή του ύψους του επίπεδου εδαφους
 
@@ -3877,12 +3877,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Μη έγ�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Ονόματα σταθμών - πατήστε στο όνομα για κεντράρισμα της κύριας προβολής στην τοποθεσία του σταθμού. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία του σταθμού
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Κλικ για επιλογή πολλαπλών αντικειμένων
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+Κλικ για επιλογή πολλαπλών αντικειμένων
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Σταθμ{P ός οί}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Κανένας -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Επιλογή όλων των εγκαταστάσεων
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Επιλογή όλων των εγκαταστάσεων
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Όλα τα είδη φορτίων και χωρίς βαθμολογία
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Πολλαπλά είδη φορτίων
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Κανένα είδος φορτίου
@@ -3960,7 +3960,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Κεντράρισμα της κύριας προβολής στην τοποθεσία του σημείου καθοδήγησης. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία του σημείου καθοδήγησης
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Αλλαγή του ονόματος του σημείου καθοδήγησης
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Κεντράρισμα της κύριας προβολής στη τοποθεσία της σημαδούρας. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία της σημαδούρας
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Αλλαγή ονόματος σημαδούρας
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Αλλαγή ονόματος σημαδούρας
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Διαμόρφωση ονόματος σημείου καθοδήγησης
 
@@ -4037,7 +4037,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Κατα
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Προβολή Έδρας
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Προβολή έδρας εταιρίας
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Μετεγκατάσταση Έδρας
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Επανοικοδόμηση της έδρας της εταιρίας σε άλλο μέρος, με κόστος το 1% της αξίας της εταιρίας. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Επανοικοδόμηση της έδρας της εταιρίας σε άλλο μέρος, με κόστος το 1% της αξίας της εταιρίας. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Λεπτομέρειες
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Προβολή λεπτομερούς μέτρησης υποδομών
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Δώστε χρήματα
@@ -4084,7 +4084,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} και {NUM} περισσότερα...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Ονόματα βιομηχανιών - πατήστε στο όνομα για κεντράρισμα της κύριας προβολής στη βιομηχανία. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία της βιομηχανίας
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Ονόματα βιομηχανιών - πατήστε στο όνομα για κεντράρισμα της κύριας προβολής στη βιομηχανία. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία της βιομηχανίας
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Αποδεκτό φορτίο: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Παραγόμενο εμπόρευμα: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Όλα τα είδη φορτίου
@@ -4360,10 +4360,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Κλων
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Κλωνοποίηση Αεροσκάφους
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Αγορά αντιγράφου ενός τρένου μαζί με όλα τα βαγόνια. Πατήστε αυτό το κουμπί και μετά σε κάποιο τρένο μέσα ή έξω από το αμαξοστάσιο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Αγορά αντιγράφου ενός οδικού οχήματος. Πατήστε αυτό το κουμπί και μετά σε κάποιο όχημα μέσα ή έξω από το αμαξοστάσιο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Αγορά αντιγράφου ενός πλοίου. Πατήστε αυτό το κουμπί και μετά σε κάποιο πλοίο μέσα ή έξω από το ναυπηγείο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Αγορά αντιγράφου του αεροσκάφους. Πατήστε αυτό το κουμπί και μετά σε κάποιο αεροσκάφος μέσα ή έξω από το υπόστεγο. Με Ctrl+Κλικ θα διαμοιραστούν τις εντολές. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Αγορά αντιγράφου ενός τρένου μαζί με όλα τα βαγόνια. Πατήστε αυτό το κουμπί και μετά σε κάποιο τρένο μέσα ή έξω από το αμαξοστάσιο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Αγορά αντιγράφου ενός οδικού οχήματος. Πατήστε αυτό το κουμπί και μετά σε κάποιο όχημα μέσα ή έξω από το αμαξοστάσιο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Αγορά αντιγράφου ενός πλοίου. Πατήστε αυτό το κουμπί και μετά σε κάποιο πλοίο μέσα ή έξω από το ναυπηγείο. Ctrl+Κλικ για διαμοιρασμό εντολών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Αγορά αντιγράφου του αεροσκάφους. Πατήστε αυτό το κουμπί και μετά σε κάποιο αεροσκάφος μέσα ή έξω από το υπόστεγο. Με Ctrl+Κλικ θα διαμοιραστούν τις εντολές. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Κεντράρισμα της κύριας προβολής στην τοποθεσία του αμαξοστάσιου. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία του αμαξοστασίου
@@ -4440,31 +4440,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Οδικό όχ
 STR_REPLACE_VEHICLE_SHIP                                        :Πλοίο
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Αεροσκάφος
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Επιλέξτε τον τύπο μηχανής για αντικατάσταση
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Επιλέξτε τον νέο τύπο μηχανής που θέλετε να χρησιμοποιηθεί στην θέση του επιλεγμένου τύπου μηχανής στα αριστερά
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Επιλέξτε τον τύπο μηχανής για αντικατάσταση
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Επιλέξτε τον νέο τύπο μηχανής που θέλετε να χρησιμοποιηθεί στην θέση του επιλεγμένου τύπου μηχανής στα αριστερά
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Εκκίνηση Αντικατάστασης Οχημάτων
 STR_REPLACE_VEHICLES_NOW                                        :Αντικατάσταση όλων των οχημάτων τώρα
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Αντικατάσταση μόνο παλιών οχημάτων
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Πατήστε για να ξεκινήσει η αντικατάσταση του αριστερά επιλεγμένου τύπου μηχανής με τον τύπο μηχανής επιλεγμένο δεξιά
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Πατήστε για να ξεκινήσει η αντικατάσταση του αριστερά επιλεγμένου τύπου μηχανής με τον τύπο μηχανής επιλεγμένο δεξιά
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Δεν γίνεται αντικατάσταση
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Δεν έχει επιλεχτεί όχημα
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} όταν είναι παλιό
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Διακοπή Αντικατάστασης Οχημάτων
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Πατήστε για να σταματήσει η αντικατάσταση του τύπου μηχανής επιλεγμένος στα αριστερά
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Πατήστε για να σταματήσει η αντικατάσταση του τύπου μηχανής επιλεγμένος στα αριστερά
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Εναλλαγή μεταξύ των παραθύρων αντικατάστασης μηχανών και βαγονιών
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Εναλλαγή μεταξύ των παραθύρων αντικατάστασης μηχανών και βαγονιών
 STR_REPLACE_ENGINES                                             :Μηχανές
 STR_REPLACE_WAGONS                                              :Βαγόνια
 STR_REPLACE_ALL_RAILTYPE                                        :Όλα τα σιδηροδρομικά οχήματα
 STR_REPLACE_ALL_ROADTYPE                                        :Όλα τα οδικά οχήματα
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Επιλέξτε τον τύπο σιδηροδρόμου για τον οποίο θέλετε να γίνει η αντικατάσταση των μηχανών
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Επιλέξτε τον τύπο δρόμου για τον οποίο θέλετε να γίνει η αντικατάσταση των μηχανών
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Επιλέξτε τον τύπο σιδηροδρόμου για τον οποίο θέλετε να γίνει η αντικατάσταση των μηχανών
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Επιλέξτε τον τύπο δρόμου για τον οποίο θέλετε να γίνει η αντικατάσταση των μηχανών
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Εμφανίζει ποια μηχανή αυτή στα αριστερά θα αντικατασταθεί, εάν υπάρχει
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Εμφανίζει ποια μηχανή αυτή στα αριστερά θα αντικατασταθεί, εάν υπάρχει
 STR_REPLACE_RAIL_VEHICLES                                       :Σιδηροδρομικά οχήματα
 STR_REPLACE_ELRAIL_VEHICLES                                     :Οχήματα Ηλεκτρικού Σιδηροδρόμου
 STR_REPLACE_MONORAIL_VEHICLES                                   :Οχήματα Μονοτρόχιου
@@ -4474,7 +4474,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Οδικά οχ
 STR_REPLACE_TRAM_VEHICLES                                       :Οχήματα τροχιοδρόμου
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Αφαίρεση βαγονιού: ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Υποχρεώνει την αυτόματη αντικατάσταση να διατηρεί σταθερό το μήκος του τρένου αφαιρώντας βαγόνια (ξεκινώντας από μπροστά), όταν η αντικατάσταση της μηχανής κάνει το τρένο μεγαλύτερο
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Υποχρεώνει την αυτόματη αντικατάσταση να διατηρεί σταθερό το μήκος του τρένου αφαιρώντας βαγόνια (ξεκινώντας από μπροστά), όταν η αντικατάσταση της μηχανής κάνει το τρένο μεγαλύτερο
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Πατήστε Ctrl+Κλικ για εφαρμογή επίσης στην υπό-ομάδα
 
 # Vehicle view

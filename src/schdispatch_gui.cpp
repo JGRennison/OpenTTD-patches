@@ -196,7 +196,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	Scrollbar *vscroll;     ///< Verticle scrollbar
 	uint num_columns;       ///< Number of columns.
 
-	StateTicks next_departure_update = INT64_MAX; ///< Time after which the last departure value should be re-drawn
+	StateTicks next_departure_update = STATE_TICKS_INT_MAX; ///< Time after which the last departure value should be re-drawn
 	uint warning_count = 0;
 	uint extra_line_count = 0;
 
@@ -531,7 +531,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					if (_settings_time.time_in_minutes) {
 						ClockFaceMinutes start_minutes = _settings_time.ToTickMinutes(start_tick).ToClockFaceMinutes();
 						if (start_minutes != 0) {
-							TickMinutes offset_minutes = slot->offset / _settings_time.ticks_per_minute;
+							TickMinutes offset_minutes = TickMinutes{slot->offset / _settings_time.ticks_per_minute};
 							SetDParam(0, offset_minutes.ClockHHMM());
 							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE);
 						}
@@ -646,7 +646,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	virtual void OnGameTick() override
 	{
 		if (_state_ticks >= this->next_departure_update) {
-			this->next_departure_update = INT64_MAX;
+			this->next_departure_update = STATE_TICKS_INT_MAX;
 			SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
 		}
 	}
@@ -720,7 +720,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL: {
-				const_cast<SchdispatchWindow*>(this)->next_departure_update = INT64_MAX;
+				const_cast<SchdispatchWindow*>(this)->next_departure_update = STATE_TICKS_INT_MAX;
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
 
@@ -1495,7 +1495,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ENABLED), SetDataTip(STR_SCHDISPATCH_ENABLED, STR_NULL), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetDataTip(STR_JUST_STRING3, STR_NULL), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetDataTip(STR_JUST_STRING3, STR_NULL), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_PREV), SetDataTip(STR_SCHDISPATCH_PREV_SCHEDULE, STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_NEXT), SetDataTip(STR_SCHDISPATCH_NEXT_SCHEDULE, STR_SCHDISPATCH_NEXT_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
@@ -1563,7 +1563,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			Window(desc)
 	{
 		this->start = _settings_time.NowInTickMinutes().ToClockFaceMinutes();
-		this->step = 30;
+		this->step = ClockFaceMinutes{30};
 		this->end = this->start + 60;
 		this->parent = parent;
 		this->CreateNestedTree();
@@ -1709,17 +1709,17 @@ static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_SCHDISPATCH_ADD_SLOT_START_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START, STR_NULL),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_START_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START, STR_NULL),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_HOUR), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_MINUTE), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP, STR_NULL),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP, STR_NULL),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetDataTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),

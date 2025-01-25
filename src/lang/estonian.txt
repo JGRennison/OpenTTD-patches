@@ -469,21 +469,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Maa-ala 
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Vaheta tarvikuribad
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Kaardi salvestamine, kaardi laadimine, kaarditegemisest lahkumine, mängust väljumine
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Kaardi salvestamine, kaardi laadimine, kaarditegemisest lahkumine, mängust väljumine
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Stsenaariumiredaktor
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Alguse liigutamine 1 aasta võrra tagasi
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Alguse liigutamine 1 aasta võrra edasi
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Alustamise aasta valikuks klõpsi siin
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Ava kaart, asustuste register
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Ava maastikukujunduse menüü või genereeri uus maailm
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Asustuste tekitamine
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Tööstuste ehitamine või tekitamine
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Maanteede ehitamine
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Trammiteede ehitamine
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Istuta puid. Ctrl valib piirkonna diagonaalselt. Shift valib ehitamise/hinna kuvamise režiimi vahel
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Paigalda silt
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Paigalda objekt. Ctrl valib ala diagonaaliti. Shift valib ehitamise/hinna kuvamise režiimi vahel
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Alguse liigutamine 1 aasta võrra tagasi
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Alguse liigutamine 1 aasta võrra edasi
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Alustamise aasta valikuks klõpsi siin
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Ava kaart, asustuste register
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Ava maastikukujunduse menüü või genereeri uus maailm
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Asustuste tekitamine
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Tööstuste ehitamine või tekitamine
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Maanteede ehitamine
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Trammiteede ehitamine
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Istuta puid. Ctrl valib piirkonna diagonaalselt. Shift valib ehitamise/hinna kuvamise režiimi vahel
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Paigalda silt
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Paigalda objekt. Ctrl valib ala diagonaaliti. Shift valib ehitamise/hinna kuvamise režiimi vahel
 
 # Scenario editor file menu
 ###length 7
@@ -851,7 +851,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Lumi
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Asustuste nimede sisse- ja välja lülitamine
-STR_SMALLMAP_CENTER                                             :{BLACK}Näita väikekaardil praegust asukohta
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Näita väikekaardil praegust asukohta
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -995,21 +995,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Vaateaken {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopeeri vaateaknasse
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopeeri praegune vaade vaateaknasse
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopeeri praegune vaade vaateaknasse
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Muuda peamist vaadet
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Vaateala koha võtmine peamiseks vaateks
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Vaateala koha võtmine peamiseks vaateks
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Liidese seadistus
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Üldine
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Vali üldised seaded
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Vali üldised seaded
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Graafika
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Vali graafika seaded
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Vali graafika seaded
 STR_GAME_OPTIONS_TAB_SOUND                                      :Heli
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Vali heli ja muusika seaded
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Vali heli ja muusika seaded
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Sotsiaal
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Vali sotsiaalse integratsiooni seaded
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Vali sotsiaalse integratsiooni seaded
 
 STR_GAME_OPTIONS_VOLUME                                         :Helitase
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Heliefektid
@@ -2375,9 +2375,9 @@ STR_FACE_SAVE                                                   :{BLACK}Salvesta
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Salvesta lemmiknägu
 STR_FACE_SAVE_DONE                                              :{WHITE}See nägu salvestatakse sinu lemmikuna OpenTTD seadete faili.
 STR_FACE_EUROPEAN                                               :{BLACK}Eurooplane
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Vali euroopa näod
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Vali euroopa näod
 STR_FACE_AFRICAN                                                :{BLACK}Aafriklane
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Vali aafrika näod
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Vali aafrika näod
 STR_FACE_YES                                                    :Jah
 STR_FACE_NO                                                     :Ei
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Vuntsid või kõrvarõngad on lubatud
@@ -2433,7 +2433,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Suhtlusk
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Loendis mängu klõpsamine valib selle
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Server, kus sa viimati mängisid:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klõpsa, et valida server, kus sa viimati mängisid
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klõpsa, et valida server, kus sa viimati mängisid
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}MÄNGU ANDMED
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Kliente: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3059,7 +3059,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Kõik as
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Asula nimi:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Sisesta asula nimi
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klõpsa asulale nime andmiseks
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klõpsa asulale nime andmiseks
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Suvaline nimi
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Loo suvaline nimi
 
@@ -3073,7 +3073,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Linn
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Linnad kasvavad kiiremini, kui tavalised asulad{}Sõltuvalt seadetest on need ka alguses suuremad
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Asula teeplaneering
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Vali selle asula teeplaneering
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Vali selle asula teeplaneering
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Algne
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Paremad teed
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 ruudustik
@@ -3306,7 +3306,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Salvesta
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Laadi stsenaariumit
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Laadi kõrguskaart
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Salvesta kõrguskaart
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Vajutamisel avaneb salvestuste ja jätkamiste jaoks määratud algne kataloog
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Vajutamisel avaneb salvestuste ja jätkamiste jaoks määratud algne kataloog
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} vaba
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Nimekiri ketastest, kataloogidest ja salvestatud mängudest
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Mängu salvestuse nimi
@@ -3344,15 +3344,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Tööstu
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :Vali tööstuste tihedus või nende arv
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Kõrgpunkt:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Vali kõrgeim punkt, mida mäng saab teha, mõõtes kõrguses üle merepinna
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Suurenda kaardi kõrgpunkti ühe võrra
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Vähenda kaardi kõrgpunkti ühe võrra
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Suurenda kaardi kõrgpunkti ühe võrra
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Vähenda kaardi kõrgpunkti ühe võrra
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Lumekatvus:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Suurenda lumekatvust kümne protsendi võrra
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Vähenda lumekatvust kümne protsendi võrra
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Suurenda lumekatvust kümne protsendi võrra
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Vähenda lumekatvust kümne protsendi võrra
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Kõrbekatvus:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Suurenda kõrbekatvust kümne protsendi võrra
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Vähenda kõrbekatvust kümne protsendi võrra
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Suurenda kõrbekatvust kümne protsendi võrra
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Vähenda kõrbekatvust kümne protsendi võrra
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maapinna tüüp:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merepinna tase:
@@ -3425,8 +3425,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Tekita t
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Suvaline maa
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Lameda maa kõrgus:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Vali maapinna kõrgus merepinnast
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Lameda maa kõrguse langetamine ühe võrra
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Lameda maa kõrguse tõstmine ühe võrra
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Lameda maa kõrguse langetamine ühe võrra
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Lameda maa kõrguse tõstmine ühe võrra
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Muuda maa kõrgust lamedal maal
 
@@ -3790,12 +3790,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Vigane vii
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Jaamanimed - nimel vajutades viiakse vaade jaamale. Ctrl+klõps avab jaama asukohas uue vaate.
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Mitme asja valimiseks kasuta Ctrl-klahvi
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Mitme asja valimiseks kasuta Ctrl-klahvi
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} jaam{P "" a}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Puudub -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Vali kõik tööstused
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Vali kõik tööstused
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Kõik veoseliigid ja mitte hinnang
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Mitu kaubaliiki
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Ilma kaubaliikideta
@@ -3873,7 +3873,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Keskenda vaade teemärgisel. Ctrl+klõps avab teemärgisel uue vaate
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Muuda meldepunkti nime
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Keskenda vaade poi kohale. Ctrl+klõps avab poi kohal uue vaateakna
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Muuda poi nime
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Muuda poi nime
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Muuda meldepunkti nime
 
@@ -3948,7 +3948,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Ehita et
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vaata peakorterit
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Ettevõtte peakorteri vaatamine
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Liiguta peakorterit
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ehita ettevõtte peakorter mujale 1% firmaväärtuse tasu eest. Shift+klõps näitab toimingu eeldatavat maksumust
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Ehita ettevõtte peakorter mujale 1% firmaväärtuse tasu eest. Shift+klõps näitab toimingu eeldatavat maksumust
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Täpsustused
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vaata täpset taristu hulka
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Saada raha
@@ -3994,7 +3994,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ja veel {NUM}...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Tööstuste nimed - klõpsates keskendatakse vaade tööstusele. Ctrl+klõps avab uue vaate ettevõtte asukohast
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Tööstuste nimed - klõpsates keskendatakse vaade tööstusele. Ctrl+klõps avab uue vaate ettevõtte asukohast
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Vastuvõetud veosed: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Toodetud veosed: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Kõik veoseliigid
@@ -4267,10 +4267,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klooni l
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klooni õhusõiduk
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Ostetakse samasugune rong koos kõikide vagunitega. Vajuta sellele nupule, ning seejärel rongile depoo sees või väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Ostetakse samasugune mootorsõiduk. Vajuta sellele nupule, ning seejärel mootorsõidukil depoos või sellest väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Ostetakse samasugune laev. Vajuta sellele nupule, ning seejärel laevale laevaremonditehase sees või väljas. «Ctrl»+klõps jagab korraldusi. Hoia all shift-klahvi, et näidata ainult hinnangulist maksumust
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Ostetakse samasugune õhusõiduk. Vajuta sellele nupule, ning seejärel õhusõidukile angaari sees või väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Ostetakse samasugune rong koos kõikide vagunitega. Vajuta sellele nupule, ning seejärel rongile depoo sees või väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Ostetakse samasugune mootorsõiduk. Vajuta sellele nupule, ning seejärel mootorsõidukil depoos või sellest väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Ostetakse samasugune laev. Vajuta sellele nupule, ning seejärel laevale laevaremonditehase sees või väljas. «Ctrl»+klõps jagab korraldusi. Hoia all shift-klahvi, et näidata ainult hinnangulist maksumust
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Ostetakse samasugune õhusõiduk. Vajuta sellele nupule, ning seejärel õhusõidukile angaari sees või väljas. «Ctrl»+klõps jagab korraldusi. «Shift»+klõps näitab eeldatavat ostuhinda
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Keskenda põhivaade rongidepoo kohale
@@ -4341,31 +4341,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :maanteesõiduke
 STR_REPLACE_VEHICLE_SHIP                                        :laevu
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :õhusõidukeid
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Vali asendatav veduritüüp
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Vali uus vedur, millega sa soovid vasakult valitud vedurit asendada.
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Vali asendatav veduritüüp
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Vali uus vedur, millega sa soovid vasakult valitud vedurit asendada.
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Alusta sõidukite asendamist
 STR_REPLACE_VEHICLES_NOW                                        :Asenda kohe kõik sõidukid
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Asenda ainult vanu sõidukeid
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Vajuta vasakul asuva veduri asendamiseks paremal valitud veduriga
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Vajuta vasakul asuva veduri asendamiseks paremal valitud veduriga
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Ei asenda praegu
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Ühtegi sõidukit pole valitud
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kui vana
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Lõpeta sõidukite asendamine
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Vajuta lõpetamaks vasakult valitud veduri asendust
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Vajuta lõpetamaks vasakult valitud veduri asendust
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Vaheta aken mootori ja vaguni asendamise aknate vahel
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Vaheta aken mootori ja vaguni asendamise aknate vahel
 STR_REPLACE_ENGINES                                             :Vedurid
 STR_REPLACE_WAGONS                                              :Vagunid
 STR_REPLACE_ALL_RAILTYPE                                        :Kõik rööbassõidukid
 STR_REPLACE_ALL_ROADTYPE                                        :Kõik maanteesõidukid
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Vali rööbasteetüüp mille vedureid sa soovid asendada
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Vali teeliik, mille vedureid vahetada
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Vali rööbasteetüüp mille vedureid sa soovid asendada
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Vali teeliik, mille vedureid vahetada
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Näitab mis veduriga soovitakse vasakult valitud vedurit asendada, kui üldse
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Näitab mis veduriga soovitakse vasakult valitud vedurit asendada, kui üldse
 STR_REPLACE_RAIL_VEHICLES                                       :Raudteesõidukid
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektrirongid
 STR_REPLACE_MONORAIL_VEHICLES                                   :Monorelssveerem
@@ -4375,7 +4375,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Maanteesõiduki
 STR_REPLACE_TRAM_VEHICLES                                       :Trammid
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagunite kõrvaldamine ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Automaatne asendamine hoiab rongi pikkuse samana, vajadusel kõrvaldab vaguneid (alates esiotsast), kui muidu rongikoosseis suureneks
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Automaatne asendamine hoiab rongi pikkuse samana, vajadusel kõrvaldab vaguneid (alates esiotsast), kui muidu rongikoosseis suureneks
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+klõps, et rakendada ka alamgruppidele
 
 # Vehicle view

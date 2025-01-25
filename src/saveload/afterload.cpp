@@ -281,7 +281,7 @@ static void InitializeWindowsAndCaches()
 		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != CalTime::MIN_YEAR) {
 			c->inaugurated_year = CalTime::CurYear();
 			c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::CurYear());
-			c->age_years = 0;
+			c->age_years = YearDelta{0};
 		}
 	}
 
@@ -687,7 +687,7 @@ bool AfterLoadGame()
 
 	extern TileIndex _cur_tileloop_tile; // From landscape.cpp.
 	/* The LFSR used in RunTileLoop iteration cannot have a zeroed state, make it non-zeroed. */
-	if (_cur_tileloop_tile == 0) _cur_tileloop_tile = 1;
+	if (_cur_tileloop_tile == 0) _cur_tileloop_tile = TileIndex{1};
 
 	extern TileIndex _aux_tileloop_tile;
 	if (_aux_tileloop_tile == 0) _aux_tileloop_tile = 1;
@@ -1862,17 +1862,17 @@ bool AfterLoadGame()
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 6)) {
-		EconTime::Detail::years_elapsed = EconTime::CurYear().base() - 1;
-		EconTime::Detail::period_display_offset = 0;
+		EconTime::Detail::years_elapsed = EconTime::CurYear() - EconTime::Year{1};
+		EconTime::Detail::period_display_offset = YearDelta{0};
 		for (Company *c : Company::Iterate()) {
 			if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5, 5)) {
 				/* inaugurated_year is calendar time in XSLFI_VARIABLE_DAY_LENGTH version 5 */
-				c->age_years = std::max<YearDelta>(0, CalTime::CurYear() - c->inaugurated_year);
-				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(c->inaugurated_year.base() + EconTime::CurYear().base() - CalTime::CurYear().base());
+				c->age_years = std::max<YearDelta>(YearDelta{0}, CalTime::CurYear() - c->inaugurated_year);
+				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::Year{c->inaugurated_year.base() + EconTime::CurYear().base() - CalTime::CurYear().base()});
 			} else {
-				c->age_years = std::max<YearDelta>(0, EconTime::CurYear().base() - c->inaugurated_year.base());
-				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(c->inaugurated_year.base());
-				c->inaugurated_year += CalTime::CurYear().base() - EconTime::CurYear().base();
+				c->age_years = std::max<YearDelta>(YearDelta{0}, YearDelta{EconTime::CurYear().base() - c->inaugurated_year.base()});
+				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::Year{c->inaugurated_year.base()});
+				c->inaugurated_year += YearDelta{CalTime::CurYear().base() - EconTime::CurYear().base()};
 			}
 		}
 	}
@@ -3688,7 +3688,7 @@ bool AfterLoadGame()
 				if (a.cargo != INVALID_CARGO) {
 					a.last_accepted = i->GetAccepted(0).last_accepted;
 				} else {
-					a.last_accepted = 0;
+					a.last_accepted = EconTime::MIN_DATE;
 				}
 			}
 		}
@@ -3700,7 +3700,7 @@ bool AfterLoadGame()
 			/* If the start date is 0, the vehicle is not waiting to start and can be ignored. */
 			if (v->timetable_start == 0) continue;
 
-			v->timetable_start += _state_ticks.base() - _tick_counter;
+			v->timetable_start += StateTicksDelta{_state_ticks.base() - (int64_t)_tick_counter};
 		}
 	} else if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
 		extern btree::btree_map<VehicleID, uint16_t> _old_timetable_start_subticks_map;
@@ -3712,10 +3712,10 @@ bool AfterLoadGame()
 				v->timetable_start.edit_base() *= DAY_TICKS;
 			}
 
-			v->timetable_start = DateTicksToStateTicks(v->timetable_start.base());
+			v->timetable_start = DateTicksToStateTicks(EconTime::DateTicks{v->timetable_start.base()});
 
 			if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2)) {
-				v->timetable_start += _old_timetable_start_subticks_map[v->index];
+				v->timetable_start += StateTicksDelta{_old_timetable_start_subticks_map[v->index]};
 			}
 		}
 
@@ -3726,12 +3726,12 @@ bool AfterLoadGame()
 		for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 			if (v->unbunch_state != nullptr) {
 				if (v->unbunch_state->depot_unbunching_last_departure > 0) {
-					v->unbunch_state->depot_unbunching_last_departure += _state_ticks.base() - _tick_counter;
+					v->unbunch_state->depot_unbunching_last_departure += StateTicksDelta{_state_ticks.base() - (int64_t)_tick_counter};
 				} else {
 					v->unbunch_state->depot_unbunching_last_departure = INVALID_STATE_TICKS;
 				}
 				if (v->unbunch_state->depot_unbunching_next_departure > 0) {
-					v->unbunch_state->depot_unbunching_next_departure += _state_ticks.base() - _tick_counter;
+					v->unbunch_state->depot_unbunching_next_departure += StateTicksDelta{_state_ticks.base() - (int64_t)_tick_counter};
 				} else {
 					v->unbunch_state->depot_unbunching_next_departure = INVALID_STATE_TICKS;
 				}
@@ -4019,10 +4019,10 @@ bool AfterLoadGame()
 			v->last_loading_tick = _state_ticks - v->current_order_time;
 		}
 	} else if (SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK, 3)) {
-		const StateTicksDelta delta = _state_ticks.base() - (int64_t)_scaled_tick_counter;
+		const StateTicksDelta delta = StateTicksDelta{_state_ticks.base() - (int64_t)_scaled_tick_counter};
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->last_loading_tick != 0) {
-				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = v->last_loading_tick.base() * DayLengthFactor();
+				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = StateTicks{v->last_loading_tick.base() * DayLengthFactor()};
 				v->last_loading_tick += delta;
 			}
 		}
@@ -4444,7 +4444,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_NEWGRF_LAST_SERVICE) && SlXvIsFeatureMissing(XSLFI_NEWGRF_LAST_SERVICE)) {
 		/* Set service date provided to NewGRF. */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->date_of_last_service_newgrf = v->date_of_last_service.base();
+			v->date_of_last_service_newgrf = ToCalTimeCast(v->date_of_last_service);
 		}
 	}
 

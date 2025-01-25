@@ -600,21 +600,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Rodyti l
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Perjungti įrankių juostas
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Išsaugoti scenarijų, įkelti scenarijų, išjungti scenarijų redaktorių, išeiti
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Išsaugoti scenarijų, įkelti scenarijų, išjungti scenarijų redaktorių, išeiti
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenarijaus redaktorius
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Žaidimo pradžios datą sumažinti 1 metais
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Žaidimo pradžios datą padidinti 1 metais
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Spustelk norėdamas įvesti pradžios metus
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Rodyti žemėlapį, miestų sąrašą
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Kraštovaizdžio kūrimas
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Miesto įkūrimas
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Pramonės kūrimas
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Statyti kelio infrastruktūrą
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Tiesti tramvajaus linijas
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Sodinti medžius. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Statyti ženklus
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Statyti objektus. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Žaidimo pradžios datą sumažinti 1 metais
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Žaidimo pradžios datą padidinti 1 metais
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Spustelk norėdamas įvesti pradžios metus
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Rodyti žemėlapį, miestų sąrašą
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Kraštovaizdžio kūrimas
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Miesto įkūrimas
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Pramonės kūrimas
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Statyti kelio infrastruktūrą
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Tiesti tramvajaus linijas
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Sodinti medžius. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Statyti ženklus
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Statyti objektus. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos
 
 # Scenario editor file menu
 ###length 7
@@ -985,7 +985,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Snieguoti kraštai
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Rodyti/slėpti miestų pavadinimus žemėlapyje
-STR_SMALLMAP_CENTER                                             :{BLACK}Centruoti žemėlapį esamoje vietoje
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centruoti žemėlapį esamoje vietoje
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -1125,21 +1125,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Peržiūros langas {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopijuoti į peržiūros langą
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopijuoti pagrindinio lango padėtį į šį peržiūros langą
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopijuoti pagrindinio lango padėtį į šį peržiūros langą
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Įkelti iš peržiūros lango
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Įkelti esamą padėtį į pagrindinį langą
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Įkelti esamą padėtį į pagrindinį langą
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Pagrindinės nuostatos
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Bendras
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Pasirinkti bendrus nustatymus
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Pasirinkti bendrus nustatymus
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Vaizdas
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Pasirinkti vaizdo nustatymus
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Pasirinkti vaizdo nustatymus
 STR_GAME_OPTIONS_TAB_SOUND                                      :Garsas
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Pasirinkti garso ir muzikos nustatymus
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Pasirinkti garso ir muzikos nustatymus
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Socialumas
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Pasirinkti socialumo integracijos nustatymus
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Pasirinkti socialumo integracijos nustatymus
 
 STR_GAME_OPTIONS_VOLUME                                         :Tūris
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Garso efektai
@@ -2484,9 +2484,9 @@ STR_FACE_SAVE                                                   :{BLACK}Išsaugo
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Išsaugoti mėgstamą veidą
 STR_FACE_SAVE_DONE                                              :{WHITE}Šis veidas bus išsaugotas kaip tavo mėgstamas OpenTTD nustatymų faile.
 STR_FACE_EUROPEAN                                               :{BLACK}Europietiškas
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Pasirinkti europietiškus veidus
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Pasirinkti europietiškus veidus
 STR_FACE_AFRICAN                                                :{BLACK}Afrikietiškas
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Pasirinkti afrikietiškus veidus
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Pasirinkti afrikietiškus veidus
 STR_FACE_YES                                                    :Taip
 STR_FACE_NO                                                     :Ne
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Įjungti ūsus arba auskarą
@@ -2542,7 +2542,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Kalba, s
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Pasirink iš sąrašo žaidimą
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Serveris, kuriame žaidėte paskutinį kartą:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Spragtelkite ant serverio, kuriame žaidėte paskutinį kartą
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Spragtelkite ant serverio, kuriame žaidėte paskutinį kartą
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}Žaidimo informacija
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Žaidėjai: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3148,7 +3148,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Kad visi
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Miesto pavadinimas:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Įvesti miesto pavadinimą
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Paspauskite miesto pavadinimui įvesti
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Paspauskite miesto pavadinimui įvesti
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Atsitiktinis pavadinimas
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Generuoti naują atsitiktinį pavadinimą
 
@@ -3162,7 +3162,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Miestas
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Didemiesčiai auga greičiau nei įprasti miestai{}Pagal tam tikras nuostatas, jie didesni, nuo atsiradimo
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Miesto kelių išdėstymas:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Pasirinkti kelio išdėstymą šiam miestui
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Pasirinkti kelio išdėstymą šiam miestui
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Originalus
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Geresni keliai
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 tinklelis
@@ -3394,7 +3394,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Išsaugo
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Įkelti scenarijų
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Įkelti teminį žemėlapį
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Išsaugoti teminį žemėlapį
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Šokti į numatytąjį saugojimo/įkėlimo katalogą
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Šokti į numatytąjį saugojimo/įkėlimo katalogą
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} laisva
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Diskų, katalogų ir išsaugotu žaidimų sąrašas
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Pasirinktas žaidimas
@@ -3431,15 +3431,15 @@ STR_MAPGEN_DATE_TOOLTIP                                         :{BLACK}Pasirink
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Pramonės įmonių kiekis:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Pasirinkti pramonės tankumą, arba pasirinktinę reikšmę
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Didžiausias aukštis
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Padidinti didžiausią galimą reljefo aukštį vienetu
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Sumažinti didžiausią galimą reljefo aukštį vienetu
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Padidinti didžiausią galimą reljefo aukštį vienetu
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Sumažinti didžiausią galimą reljefo aukštį vienetu
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Sniegynų aprėptis
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Padidintį sniegynų aprėptį 10%
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Sumažinti sniegynų aprėptį 10%
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Padidintį sniegynų aprėptį 10%
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Sumažinti sniegynų aprėptį 10%
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Dykumų aprėptis:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Padidinti dykumų aprėptį 10%
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Sumažinti dykumų aprėptį 10%
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Padidinti dykumų aprėptį 10%
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Sumažinti dykumų aprėptį 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vietovės tipas:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Jūros lygis:
@@ -3510,8 +3510,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Sukurti 
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Atsitiktinis reljefas
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Lygumos aukštis:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Pasirinkite žemės aukštį virš jūros lygio
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Pakeisti lygumos aukštį vienu žemyn
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Pakelti žemės lygį vienu aukščiu
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Pakeisti lygumos aukštį vienu žemyn
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Pakelti žemės lygį vienu aukščiu
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Keisti lygumos aukštį
 
@@ -3873,12 +3873,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Klaidinga 
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stotelių pavadinimai - paspausk ant stotelės pavadinimo, kad pamatytum ją ekrano centre. Ctrl+Paspaudimas atidaro naują langą su stotelės vaizdu
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Laikant nuspaustą VALD (CTRL) galima pažymėti daugiau nei vieną
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Laikant nuspaustą VALD (CTRL) galima pažymėti daugiau nei vieną
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Stotelės
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Nieko -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Pažymėti visus pastatus
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Pažymėti visus pastatus
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Visi kargo tipai ir jokio reitingo
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Keli krovinių tipai
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Jokių krovinių tipų
@@ -3951,7 +3951,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Rodyti kontrolės punktą lango centre.Ctrl+Paspaudimas atidaro naują langą su kontrolės punkto vazidu.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Keisti waypoint pavadinimą
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centruoti plūdurą pagrindiniame lange. Spragtelėkite laikant nuspaustą Ctrl klavišą, kad atidarytumėte naują peržiūros langą su vaizdu į šį plūdurą
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Pakeisti plūduro pavadinimą
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Pakeisti plūduro pavadinimą
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Redaguoti punkto vardą
 
@@ -4026,7 +4026,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Statyti 
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Apžiūrėti būstinę
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Apžiūrėti įmonės būstinę
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Perkelti būstinę
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Perstatyti įmonės būstinę kitur už 1% įmonės vertės. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos nieko realiai neperkeliant
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Perstatyti įmonės būstinę kitur už 1% įmonės vertės. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos nieko realiai neperkeliant
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Išsamiau
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Peržiūrėti detalesnę infrastruktūros informaciją
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Pervesti pinigų
@@ -4072,7 +4072,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ir {NUM} daugiau...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Pramonės pavadinimai - spragtelėjus ant pavadinimo, pramonė rodoma ekrano centre. Spragtelėjus laikant nuspaustą Ctrl klavišą atidarysite naują langą su pramonės vaizdu
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Pramonės pavadinimai - spragtelėjus ant pavadinimo, pramonė rodoma ekrano centre. Spragtelėjus laikant nuspaustą Ctrl klavišą atidarysite naują langą su pramonės vaizdu
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Priimami kroviniai: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Tiekiami kroviniai: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Visi krovinių tipai
@@ -4344,10 +4344,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Kopijuot
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Kopijuoti lėktuvą
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Nupirkti traukinio kopiją įskaitant visus vagonus. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Nupirkti automobilio kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Nupirkti laivo kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Nupirkti lėktuvo kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Nupirkti traukinio kopiją įskaitant visus vagonus. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Nupirkti automobilio kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Nupirkti laivo kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Nupirkti lėktuvo kopiją. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus bendrinamos kopijos ir originalo užduotys. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos tik numatomos išlaidos
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centruoti traukinių depą pagrindiniame lange. Spragtelėkite laikant nuspaustą Ctrl klavišą, kad atidaryti naują peržiūros langą su vaizdu į šį depą
@@ -4455,31 +4455,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE.ka                             :Automobilį
 STR_REPLACE_VEHICLE_SHIP                                        :Laivas
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Lėktuvus
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Pasirink tr. priemonės tipą, kurią reikės keisti
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Pasirink tr. priemonės tipą, kuria bus keičiamos pasirinktos tr. priemonės
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Pasirink tr. priemonės tipą, kurią reikės keisti
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Pasirink tr. priemonės tipą, kuria bus keičiamos pasirinktos tr. priemonės
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Pradėti tr. priemonių keitimą
 STR_REPLACE_VEHICLES_NOW                                        :Atnaujinti visas transporto priemones
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Atnaujinti tik pasenusias transporto priemones
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Spustelk, jei nori pradėti pažymėto tipo tr. priemonių keitimo procedūrą
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Spustelk, jei nori pradėti pažymėto tipo tr. priemonių keitimo procedūrą
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Nekeičiama
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Nėra pažymėta nei viena tr. priemonė
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} jei paseno
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stabdyti tr. priemonių keitimą
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Spustelk, jei nori sustabdyti šiuo metu vykdomą keitimo procedūrą
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Spustelk, jei nori sustabdyti šiuo metu vykdomą keitimo procedūrą
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Pereidinėti tarp garvežių ir vagonų pakeitimo langų
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Pereidinėti tarp garvežių ir vagonų pakeitimo langų
 STR_REPLACE_ENGINES                                             :Varikliai
 STR_REPLACE_WAGONS                                              :Vagonai
 STR_REPLACE_ALL_RAILTYPE                                        :Visas bėgines transporto priemones
 STR_REPLACE_ALL_ROADTYPE                                        :Visas kelių transporto priemones
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Pasirinkite bėgio tipą, kur dėl variklio norėtumėte pakeisti
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Pasirinkite kelio tipą, kurio automobilius norite pakeisti
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Pasirinkite bėgio tipą, kur dėl variklio norėtumėte pakeisti
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Pasirinkite kelio tipą, kurio automobilius norite pakeisti
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Kaireje lango dalyje pazymeta tr. priemone bus pakeista tr. priemone, kuri yra pazymeta desineje lango puseje
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Kaireje lango dalyje pazymeta tr. priemone bus pakeista tr. priemone, kuri yra pazymeta desineje lango puseje
 STR_REPLACE_RAIL_VEHICLES                                       :Paprasti traukiniai
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektrifikuoti Traukiniai
 STR_REPLACE_MONORAIL_VEHICLES                                   :Vienbegiai traukiniai
@@ -4489,7 +4489,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Automobilius
 STR_REPLACE_TRAM_VEHICLES                                       :Tramvajinės transporto priemonės
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagono pašalinimas ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Pakeitimo metu išlaikyti traukinio ilgį atjungiant vagonus (pradedant nuo priekio), jeigu pakeitus garvežį traukinys pailgėtų
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Pakeitimo metu išlaikyti traukinio ilgį atjungiant vagonus (pradedant nuo priekio), jeigu pakeitus garvežį traukinys pailgėtų
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}

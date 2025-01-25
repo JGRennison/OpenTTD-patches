@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Öppna m
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Byt verktygsrad
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Spara scenario, öppna scenario, avsluta scenarioeditor, avsluta OpenTTD
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Spara scenario, öppna scenario, avsluta scenarioeditor, avsluta OpenTTD
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenarioeditor
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Flytta startdatumet 1 år bakåt
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Flytta startdatumet 1 år framåt
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klicka för att mata in startår
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Öppna karta, extra vyfönster, skyltlista, eller lista över städer eller industrier
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Öppna menyn för landskapsarkitektur eller generera en ny värld
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Bygg eller generera städer
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Bygg eller generera industrier
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Bygg infrastruktur för vägar
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Bygg infrastruktur för spårvägar
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plantera träd. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Placera skylt
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placera objekt. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Flytta startdatumet 1 år bakåt
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Flytta startdatumet 1 år framåt
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klicka för att mata in startår
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Öppna karta, extra vyfönster, skyltlista, eller lista över städer eller industrier
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Öppna menyn för landskapsarkitektur eller generera en ny värld
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Bygg eller generera städer
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Bygg eller generera industrier
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Bygg infrastruktur för vägar
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Bygg infrastruktur för spårvägar
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Plantera träd. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Placera skylt
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Placera objekt. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Snö
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Slå på/av visning av stadsnamn
-STR_SMALLMAP_CENTER                                             :{BLACK}Centrera minikartan på den nuvarande positionen
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centrera minikartan på den nuvarande positionen
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Vyfönster {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Byt vy
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopiera huvudvyns position till detta vyfönster
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopiera huvudvyns position till detta vyfönster
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Byt huvudvy
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Kopiera denna vys position till huvudvyn
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Kopiera denna vys position till huvudvyn
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelinställningar
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Allmänt
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Välj generella inställningar
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Välj generella inställningar
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Välj grafikinställningar
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Välj grafikinställningar
 STR_GAME_OPTIONS_TAB_SOUND                                      :Ljud
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Välj ljud- och musikinställningar
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Välj ljud- och musikinställningar
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Socialt
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Välj inställningar för social integration
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Välj inställningar för social integration
 
 STR_GAME_OPTIONS_VOLUME                                         :Volym
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Ljudeffekter
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}Spara
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Spara favoritansikte
 STR_FACE_SAVE_DONE                                              :{WHITE}Det här ansiktet kommer att sparas som ditt favoritansikte i OpenTTDs konfigurationsfil.
 STR_FACE_EUROPEAN                                               :{BLACK}Europeisk
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Välj europeiska ansikten
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Välj europeiska ansikten
 STR_FACE_AFRICAN                                                :{BLACK}Afrikanska
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Välj afrikanska ansikten
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Välj afrikanska ansikten
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nej
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Aktivera mustasch eller örhänge
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Serverko
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klicka på ett spel från listan för att välja det
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Servern du senast anslöt till:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Välj servern du senast spelade på
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Välj servern du senast spelade på
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}SPELINFO
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Klienter: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Gör så
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Stadsnamn:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Skriv in stadsnamn
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klicka för att skriva in stadsnamn
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klicka för att skriva in stadsnamn
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Slumpmässigt namn
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Generera nytt slumpmässigt namn
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Stad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Storstäder växer snabbare än vanliga städer{}Beroende på inställningarna så är de större när de grundas
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Utformning av stadens vägnät:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Välj vägnätets utformning för denna stad
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Välj vägnätets utformning för denna stad
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Original
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Bättre vägar
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 rutnät
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Öppna s
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Läs höjdkarta
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Spara höjdkarta
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Läs in stadsdata
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klicka här för att gå till standardkatalogen för spara/ladda
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klicka här för att gå till standardkatalogen för spara/ladda
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} ledigt
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Listar enheter, kataloger och sparade spel
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Valt namn för spelet
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal in
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Välj densiteten av industrier, eller ett valfritt antal
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Högsta höjdpunkt:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Välj den högsta toppen som spelet kommer försöka skapa, mätt som höjd över havsnivån
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Öka högsta höjd punkten på kartan med en
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Minska maximal höjd på högsta topp med en
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Öka högsta höjd punkten på kartan med en
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Minska maximal höjd på högsta topp med en
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Snötäckning:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Öka snötäckning med tio procent
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Minska snötäckning med tio procent
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Öka snötäckning med tio procent
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Minska snötäckning med tio procent
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Ökentäckning:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Öka ökentäckning med tio procent
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Minska ökentäckning med tio procent
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Öka ökentäckning med tio procent
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Minska ökentäckning med tio procent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrängtyp:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havsnivå
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Generera
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Slumpat land
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Höjd av platt land:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Välj landshöjden över havsnivå
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Sänk höjden av platt land ett ner
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Öka höjden av platt land ett steg
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Sänk höjden av platt land ett ner
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Öka höjden av platt land ett steg
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Ändra höjd av platt land
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Ogiltig m�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stationsnamn - klicka på ett namn för att centrera huvudvyn på stationen. Ctrl+Klick för att öppna en ny fönstervy över stationens läge
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Klick för att markera flera objekt
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+Klick för att markera flera objekt
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Station{P "" er}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Inga -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Markera alla inrättningar
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Markera alla inrättningar
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Alla godstyper och ingen värdering
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Flera godstyper
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Inga godstyper
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrera huvudvyn på riktmärket. Ctrl+Klick för att öppna en ny fönstervy över riktmärkets läge
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Byt namn på riktmärke
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrera huvudvyn på bojen. Ctrl+Klick för att öppna en ny skärmvy över bojens läge
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Ändra namn på boj
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Ändra namn på boj
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ändra namn på riktmärke
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Bygg fö
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Visa högkvarter
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Vy av företagets huvudkontor
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flytta högkvarter
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Flytta högkvarter till annan plats för 1% av företagets värde. Håll även in Shift för att endast visa uppskattad kostnad
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Flytta högkvarter till annan plats för 1% av företagets värde. Håll även in Shift för att endast visa uppskattad kostnad
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaljer
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Visa detaljerat antal infrastruktur-element
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Ge pengar
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} och {NUM} till...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrinamn - klicka på namnet för att centrera huvudvyn över industrin. Ctrl+Klick för att öppna en ny fönstervy över industrins läge
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrinamn - klicka på namnet för att centrera huvudvyn över industrin. Ctrl+Klick för att öppna en ny fönstervy över industrins läge
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Accepterat gods: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Producerat fraktgods: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Alla godstyper
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klona sk
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klona flygplan
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Köp en kopia av ett tåg inklusive alla vagnar. Klicka på denna knapp och sedan på ett tåg i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Köp en kopia av ett vägfordon. Klicka på denna knapp och sedan på ett vägfordon i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Köp en kopia av ett skepp. Klicka på denna knapp och sedan på ett skepp i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Köp en kopia av en flygfarkost. Klicka på denna knapp och sedan på en flygfarkost i eller utanför hangaren. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Köp en kopia av ett tåg inklusive alla vagnar. Klicka på denna knapp och sedan på ett tåg i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Köp en kopia av ett vägfordon. Klicka på denna knapp och sedan på ett vägfordon i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Köp en kopia av ett skepp. Klicka på denna knapp och sedan på ett skepp i eller utanför depån. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Köp en kopia av en flygfarkost. Klicka på denna knapp och sedan på en flygfarkost i eller utanför hangaren. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrera huvudvyn ovanför depån. Ctrl+Klick för att öppna en ny fönstervy över tågdepåns läge
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Vägfordon
 STR_REPLACE_VEHICLE_SHIP                                        :Skepp
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Flygplan
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Välj fordonstyp att byta ut
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Välj den nya fordonstyp du vill använda i stället för den till vänster valda typen
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Välj fordonstyp att byta ut
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Välj den nya fordonstyp du vill använda i stället för den till vänster valda typen
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Börja byta ut fordon
 STR_REPLACE_VEHICLES_NOW                                        :Byt ut alla fordon nu
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Byt endast ut gamla fordon
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Tryck för att börja byta ut fordonstypen vald på vänster sida med fordonstypen på höger sida
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Tryck för att börja byta ut fordonstypen vald på vänster sida med fordonstypen på höger sida
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Byter inte ut
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Inget fordon valt
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} vid hög ålder
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Sluta byta ut fordon
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Tryck för att sluta byta ut fordonstypen vald på vänster sida
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Tryck för att sluta byta ut fordonstypen vald på vänster sida
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Växla mellan lok- och vagnersättningsfönster
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Växla mellan lok- och vagnersättningsfönster
 STR_REPLACE_ENGINES                                             :Lok
 STR_REPLACE_WAGONS                                              :Vagnar
 STR_REPLACE_ALL_RAILTYPE                                        :Alla järnvägsfordon
 STR_REPLACE_ALL_ROADTYPE                                        :Alla vägfordon
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Välj vilken järnvägstyp du vill byta ut lok för
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Välj vilken vägtyp du vill byta ut motorer för
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Välj vilken järnvägstyp du vill byta ut lok för
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Välj vilken vägtyp du vill byta ut motorer för
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Visa vilket fordon det vänstra fordonet byts ut till, om något
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Visa vilket fordon det vänstra fordonet byts ut till, om något
 STR_REPLACE_RAIL_VEHICLES                                       :Järnvägsfordon
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektriska järnvägsfordon
 STR_REPLACE_MONORAIL_VEHICLES                                   :Monorail-fordon
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Vägfordon
 STR_REPLACE_TRAM_VEHICLES                                       :Spårvägsfordon
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagnborttagning ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Gör så att automatiskt utbyte behåller ett tågs längd genom att ta bort vagnar (med början längst fram) om utbytandet av loket skulle göra tåget längre
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Gör så att automatiskt utbyte behåller ett tågs längd genom att ta bort vagnar (med början längst fram) om utbytandet av loket skulle göra tåget längre
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+klicka för att också tillämpa det på undergrupper
 
 # Vehicle view

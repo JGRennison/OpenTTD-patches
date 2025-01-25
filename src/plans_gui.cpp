@@ -103,7 +103,7 @@ struct PlansWindow : Window {
 	int selected; ///< What item is currently selected in the panel.
 	uint vis_btn_left; ///< left offset of visibility button
 	Dimension company_icon_spr_dim; ///< dimensions of company icon
-	WindowToken current_dragging_viewport_window = 0;
+	WindowToken current_dragging_viewport_window{0};
 
 private:
 	/* Runtime saved values */
@@ -596,7 +596,7 @@ public:
 		const Window *cursor_window = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 		if (cursor_window == nullptr) return;
 
-		if (this->current_dragging_viewport_window == 0) {
+		if (this->current_dragging_viewport_window == WindowToken{0}) {
 			this->current_dragging_viewport_window = cursor_window->GetWindowToken();
 		} else if (this->current_dragging_viewport_window != cursor_window->GetWindowToken()) {
 			/* Don't allow dragging across viewports as this leads to erratic plans */
@@ -618,7 +618,7 @@ public:
 	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_current_plan != nullptr) _current_plan->ValidateNewLine();
-		this->current_dragging_viewport_window = 0;
+		this->current_dragging_viewport_window = WindowToken{0};
 	}
 
 	/** The drawing of a line is aborted. */

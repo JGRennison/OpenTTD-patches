@@ -450,7 +450,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 		if (IsSavegameVersionBefore(SLV_VEHICLE_ECONOMY_AGE) && SlXvIsFeatureMissing(XSLFI_VEHICLE_ECONOMY_AGE)) {
 			/* Set vehicle economy age based on calendar age. */
 			for (Vehicle *v : Vehicle::Iterate()) {
-				v->economy_age = v->age.base();
+				v->economy_age = v->age;
 			}
 		}
 	}

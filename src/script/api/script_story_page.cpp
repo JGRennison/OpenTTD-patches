@@ -86,7 +86,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	TileIndex reftile = 0;
 	switch (type) {
 		case SPET_LOCATION:
-			reftile = reference;
+			reftile = TileIndex(reference);
 			break;
 		case SPET_GOAL:
 		case SPET_BUTTON_PUSH:
@@ -136,7 +136,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	TileIndex reftile = 0;
 	switch (type) {
 		case ::SPET_LOCATION:
-			reftile = reference;
+			reftile = TileIndex(reference);
 			break;
 		case ::SPET_GOAL:
 		case ::SPET_BUTTON_PUSH:

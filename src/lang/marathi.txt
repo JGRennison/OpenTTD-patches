@@ -336,15 +336,15 @@ STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}सा�
 
 # Extra tooltips for the scenario editor toolbar
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}ओपेन टीटीडी
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}सुरुवातीची तारीख एक वर्ष मागे न्या
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}सुरुवातीची तारीख एक वर्ष पुढे न्या
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}सुरुवातीचं वर्ष पुरवण्यासाठी क्लिक करा
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}नकाशा, शहरांची यादी दाखवा
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}प्रदेश उत्पन्न करणे
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}गावे उत्पन्न करणे
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}इंडस्ट्री उत्पन्न करणे
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}रस्तेबांधणी
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}चिन्ह लावा
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}सुरुवातीची तारीख एक वर्ष मागे न्या
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}सुरुवातीची तारीख एक वर्ष पुढे न्या
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}सुरुवातीचं वर्ष पुरवण्यासाठी क्लिक करा
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}नकाशा, शहरांची यादी दाखवा
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}प्रदेश उत्पन्न करणे
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}गावे उत्पन्न करणे
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}इंडस्ट्री उत्पन्न करणे
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}रस्तेबांधणी
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}चिन्ह लावा
 
 # Scenario editor file menu
 ###length 7
@@ -1077,9 +1077,9 @@ STR_FACE_SIMPLE                                                 :{BLACK}सु�
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}सुटसुटीत चेहेरा निवड
 STR_FACE_FACECODE                                               :{BLACK}खेळाडू चेहेरा क्र.
 STR_FACE_EUROPEAN                                               :{BLACK}युरोपिअन
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}युरोपिअन चेहेरा निवडा
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}युरोपिअन चेहेरा निवडा
 STR_FACE_AFRICAN                                                :{BLACK}अफ्रिकन
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}आफ्रिकन चेहेरा निवडा
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}आफ्रिकन चेहेरा निवडा
 STR_FACE_YES                                                    :हो
 STR_FACE_NO                                                     :नाही
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}मिशी अथवा कर्णफुले असू द्या

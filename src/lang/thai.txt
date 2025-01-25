@@ -361,20 +361,20 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}ข้�
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}เปลี่ยนกล่องเครื่องมือ
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}บันทึกฉาก, โหลดฉาก, ยกเลิกการแก้ไขฉาก, ออก
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}บันทึกฉาก, โหลดฉาก, ยกเลิกการแก้ไขฉาก, ออก
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}โปรแกรมแก้ไขแผนที่
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}เลื่อนวันที่เริ่มต้นย้อนไป 1 ปี
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}เลือนวันที่เริ่มต้นไปอีก 1 ปี
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}คลิกเพื่อใส่ปีเริ่มต้น
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}แสดงแผนที่และทำเนียบชื่อเมือง
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}สร้างภูมิประเทศ
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}สร้างเมือง
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}สร้างอุตสาหกรรม
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}สร้างถนน
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}ปลูกต้นไม้. กด Shift เพื่อเปิด-ปิดสิ่งปลูกสร้าง/แสดงการประเมินค่าใช้จ่าย
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}ปักป้าย
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}วางวัตถุ. กด Shift เพื่อปิด-เปิดสิ่งปลูกสร้าง/แสดงการประเมินค่าใช้จ่าย
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}เลื่อนวันที่เริ่มต้นย้อนไป 1 ปี
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}เลือนวันที่เริ่มต้นไปอีก 1 ปี
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}คลิกเพื่อใส่ปีเริ่มต้น
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}แสดงแผนที่และทำเนียบชื่อเมือง
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}สร้างภูมิประเทศ
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}สร้างเมือง
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}สร้างอุตสาหกรรม
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}สร้างถนน
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}ปลูกต้นไม้. กด Shift เพื่อเปิด-ปิดสิ่งปลูกสร้าง/แสดงการประเมินค่าใช้จ่าย
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}ปักป้าย
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}วางวัตถุ. กด Shift เพื่อปิด-เปิดสิ่งปลูกสร้าง/แสดงการประเมินค่าใช้จ่าย
 
 # Scenario editor file menu
 ###length 7
@@ -724,7 +724,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}หิมะ
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}เปิด/ปิด ชื่อเมืองบนแผนที่
-STR_SMALLMAP_CENTER                                             :{BLACK}ให้จุดที่อยู่ ณ ปัจจุบันมาแสดงตำแหน่งในแผนที่ย่อ
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}ให้จุดที่อยู่ ณ ปัจจุบันมาแสดงตำแหน่งในแผนที่ย่อ
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -852,9 +852,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}มุมมอง {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}คัดลอกไปยังมุมมอง
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}คัดลอกตำแหน่งของมุมมองหลังมายังมุมมองนี้
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}คัดลอกตำแหน่งของมุมมองหลังมายังมุมมองนี้
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}วางจากมุมมอง
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}วางตำแหน่งจากมุมมองนี้ไปยังมุมมองหลัก
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}วางตำแหน่งจากมุมมองนี้ไปยังมุมมองหลัก
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}ตัวเลือกเกม
@@ -1998,9 +1998,9 @@ STR_FACE_SAVE                                                   :{BLACK}บั�
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}บันทึกใบหน้าโปรด
 STR_FACE_SAVE_DONE                                              :{WHITE}ใบหน้านี้จะถูกบันทึกเป็นใบหน้าโปรดในไฟล์การตั้งค่าของ OpenTTD
 STR_FACE_EUROPEAN                                               :{BLACK}ยุโรป
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}เลือกใบหน้ายุโรป
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}เลือกใบหน้ายุโรป
 STR_FACE_AFRICAN                                                :{BLACK}แอฟริกัน
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}เลือกใบหน้าแอฟริกัน
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}เลือกใบหน้าแอฟริกัน
 STR_FACE_YES                                                    :ใช่
 STR_FACE_NO                                                     :ไม่
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}เปิดใช้งานหนวด
@@ -2053,7 +2053,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}ภา�
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}คลิกที่เกมจากรายการเพื่อเลือก
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}เซิร์ฟเวอร์ที่เข้าร่วมล่าสุด:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}คลิกเพื่อเลือกเซิร์ฟเวอร์ที่เล่นล่าสุด
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}คลิกเพื่อเลือกเซิร์ฟเวอร์ที่เล่นล่าสุด
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}ข้อมูลเกม
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}ลูกข่าย: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2589,7 +2589,7 @@ STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}สุ�
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}ชื่อเมือง:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}ใส่ชื่อเมือง
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}คลิกเพื่อใส่ชื่อเมือง
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}คลิกเพื่อใส่ชื่อเมือง
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}สุ่มชื่อ
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}สุ่มสร้างชื่อใหม่
 
@@ -2603,7 +2603,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}เม�
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}เมืองใหญ่ขยายตัวเร็วกว่าเมืองเล็ก{}เลือกค่านี้ เมืองที่สร้างจะใหญ่ขึ้นเมื่อสร้างใหม่
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}รูปแบบถนนของเมือง:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}เลือกรูปแบบถนนสำหรับเมืองนี้
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}เลือกรูปแบบถนนสำหรับเมืองนี้
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}ดั้งเดิม
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}ถนนดีขึ้น
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}ตาราง 2x2
@@ -2806,7 +2806,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}บั�
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}โหลดแผนที่
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}โหลดแผนที่ระดับสูง
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}บันทึกแผนที่จำลองเสมือนจริง
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}กดที่นี่เพื่อเข้าสู่ตำแหน่งบันทึกเกม/โหลดเกมที่ใช้อยู่
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}กดที่นี่เพื่อเข้าสู่ตำแหน่งบันทึกเกม/โหลดเกมที่ใช้อยู่
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} ฟรี
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}แสดงไดรฟ์, โฟลเดอร์, และไฟล์เซฟ
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}ชื่อที่กำลังถูกเลือกสำหรับเซฟเกม
@@ -2838,9 +2838,9 @@ STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}เล�
 STR_MAPGEN_DATE                                                 :{BLACK}วันที่:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}จำนวนอุตสาหกรรม:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}จุดที่พีคมากที่สุด:
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}เพิ่มขนาดความสูงที่สุดของยอดเขาบนแผนที่
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}ลดขนาดความสูงที่สุดของยอดเขาบนแผนที่
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}เพิ่มการครอบคลุมหิมะไปถึงสิบเปอร์เซ็นต์
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}เพิ่มขนาดความสูงที่สุดของยอดเขาบนแผนที่
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}ลดขนาดความสูงที่สุดของยอดเขาบนแผนที่
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}เพิ่มการครอบคลุมหิมะไปถึงสิบเปอร์เซ็นต์
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}การปกคลุมของทะเลทราย:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}ประเภทภูมิประเทศ:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}ระดับทะเล:
@@ -2899,8 +2899,8 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}ที�
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}สร้างที่ราบ
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}สุ่มพื้นดิน
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}ระดับความสูงของพื้นราบ:
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}ปรับเปลี่ยนความสูงพื้นราบลงมา 1 ระดับ
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}ปรับเปลี่ยนความสูงพื้นราบขึ้นไป 1 ระดับ
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}ปรับเปลี่ยนความสูงพื้นราบลงมา 1 ระดับ
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}ปรับเปลี่ยนความสูงพื้นราบขึ้นไป 1 ระดับ
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}เปลี่ยนความสูงของพื้นราบ
 
@@ -3221,12 +3221,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}จุด�
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}ชื่อสถานี - กดที่ชื่อเพื่อไปยังจุดกึ่งกลาง
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}กด Crtl เพื่อเลือกมากกว่า 1 รายการ
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}กด Crtl เพื่อเลือกมากกว่า 1 รายการ
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} สถานี
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- ไม่มี -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}เลือกทั้งหมด
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}เลือกทั้งหมด
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3295,7 +3295,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}จุดศูนย์กลางมุมมองสถานี
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}เปลี่ยนชื่อ Waypoint
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}จุดศูนย์กลางมุมมองสถานี
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}เปลี่ยนชื่อทุ่มลอยน้ำ
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}เปลี่ยนชื่อทุ่มลอยน้ำ
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}เปลี่ยนชื่อ Waypoint
 
@@ -3354,7 +3354,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}สร�
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}ไปยังที่ทำการบริษัท
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}เคลื่อนย้ายไปยังที่ทำการบริษัท
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}ย้ายที่ตั้งที่ทำการบริษัท
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}ย้ายที่ตั้งที่ทำการบริษัท
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}ย้ายที่ตั้งที่ทำการบริษัท
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}รายละเอียด
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}ดูรายละเอียดเกี่ยวกับโครงสร้างพื้นฐาน
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}ให้เงินสนับสนุน
@@ -3390,7 +3390,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}ท่�
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- ไม่มี -
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}ชื่อของอุตสาหกรรม - คลิ๊กที่ชื่อเพื่อไปยังจุดศูนย์กลาง
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}ชื่อของอุตสาหกรรม - คลิ๊กที่ชื่อเพื่อไปยังจุดศูนย์กลาง
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}ผลผลิตที่ได้: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :ไม่มี
 
@@ -3628,10 +3628,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}คั�
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}คัดลอกอากาศยาน
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}กดเพื่อซื้อแบบคัดลอกขบวนรถไฟทั้งขบวน
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}กดเพื่อซื้อแบบคัดลอกยานพาหนะ
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}กดเพื่อซื้อแบบคัดลอกยานพาหนะทางน้ำ
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}กดเพื่อซื้อแบบคัดลอกอากาศยาน
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}กดเพื่อซื้อแบบคัดลอกขบวนรถไฟทั้งขบวน
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}กดเพื่อซื้อแบบคัดลอกยานพาหนะ
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}กดเพื่อซื้อแบบคัดลอกยานพาหนะทางน้ำ
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}กดเพื่อซื้อแบบคัดลอกอากาศยาน
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}กดเพื่อไปยังจุดศูนย์กลางของโรงซ่อมบำรุง
@@ -3687,28 +3687,28 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :ยานพา
 STR_REPLACE_VEHICLE_SHIP                                        :ยานพาหนะทางน้ำ
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :อากาศยาน
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}เลือกประเภทของรถจักรที่จะแทนที่
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}เลือกประเภทของพาหนะที่จะแทนที่ทางซ้ายมือ
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}เลือกประเภทของรถจักรที่จะแทนที่
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}เลือกประเภทของพาหนะที่จะแทนที่ทางซ้ายมือ
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}เริ่มต้นการแทนที่ยานพาหนะ
 STR_REPLACE_VEHICLES_NOW                                        :แทนที่ยานพาหนะทั้งหมดเดี๋ยวนี้
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :แทนที่เฉพาะยานพาหนะที่เก่าแล้ว
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}กดเพื่อเริ่มต้นการแทนที่ยานพาหนะตามที่เลือกไว้ในรายการ
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}กดเพื่อเริ่มต้นการแทนที่ยานพาหนะตามที่เลือกไว้ในรายการ
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}ไม่เปลี่ยน
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}ไม่มียานพาหนะที่เลือกไว้
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} เมื่อเก่า
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}หยุดการแทนที่ยานพาหนะ
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}กดเพื่อเริ่มหยุดการแทนที่ยานพาหนะตามที่เลือกไว้ในรายการ
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}กดเพื่อเริ่มหยุดการแทนที่ยานพาหนะตามที่เลือกไว้ในรายการ
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}สลับระหว่างหน้าต่างการแทนที่ของรถจักรและรถพ่วง
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}สลับระหว่างหน้าต่างการแทนที่ของรถจักรและรถพ่วง
 STR_REPLACE_ENGINES                                             :รถจักร
 STR_REPLACE_WAGONS                                              :รถพ่วง
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}เลือกประเภทของรถจักรและรถพ่วงที่จะแทนที่ใหม่
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}เลือกประเภทของรถจักรและรถพ่วงที่จะแทนที่ใหม่
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}แสดงพาหนะที่จะแทนที่ทางด้านซ้าย
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}แสดงพาหนะที่จะแทนที่ทางด้านซ้าย
 STR_REPLACE_RAIL_VEHICLES                                       :ยานพาหนะประเภทรถไฟ
 STR_REPLACE_ELRAIL_VEHICLES                                     :ยานพาหนะที่ใช้ไฟฟ้า
 STR_REPLACE_MONORAIL_VEHICLES                                   :ยานพาหนะประเภทรถไฟรางเดี่ยว
@@ -3718,7 +3718,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :ถนนสำ
 STR_REPLACE_TRAM_VEHICLES                                       :รถราง
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}แทนที่รถจักรและรถพ่วง({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}ทำให้การแทนที่ขบวนรถไฟทำให้ความยาวของขบวนยังเท่าเดิม
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}ทำให้การแทนที่ขบวนรถไฟทำให้ความยาวของขบวนยังเท่าเดิม
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Click ที่กลุ่มที่เลือกไว้ สามารถเปิดกลุ่มย่อยได้ด้วยเช่นกัน
 
 # Vehicle view

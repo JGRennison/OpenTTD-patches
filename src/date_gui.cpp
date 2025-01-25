@@ -173,7 +173,7 @@ struct SetDateWindow : Window {
 				break;
 
 			case WID_SD_YEAR:
-				this->date.year = index;
+				this->date.year = EconTime::Year{index};
 				break;
 		}
 		this->SetDirty();
@@ -187,7 +187,7 @@ struct SetMinutesWindow : SetDateWindow
 	/** Constructor. */
 	SetMinutesWindow(WindowDesc &desc, WindowNumber window_number, Window *parent, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year,
 				SetTickCallback *callback, StringID button_text, StringID button_tooltip) :
-			SetDateWindow(desc, window_number, parent, 0, min_year, max_year, callback, button_text, button_tooltip),
+			SetDateWindow(desc, window_number, parent, EconTime::Date{0}, min_year, max_year, callback, button_text, button_tooltip),
 			minutes(_settings_time.ToTickMinutes(initial_tick))
 	{
 	}
@@ -280,7 +280,7 @@ struct SetMinutesWindow : SetDateWindow
 	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		const TickMinutes now = _settings_time.NowInTickMinutes();
-		TickMinutes current = 0;
+		TickMinutes current{0};
 		switch (widget) {
 			case WID_SD_DAY:
 				current = now.ToSameDayClockTime(this->minutes.ClockHour(), index);
@@ -294,7 +294,7 @@ struct SetMinutesWindow : SetDateWindow
 				return;
 		}
 
-		if (current < (now - 60)) current += 60 * 24;
+		if (current < (now - 60)) current += TickMinutes{60 * 24};
 		this->minutes = current;
 
 		this->SetDirty();

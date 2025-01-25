@@ -164,7 +164,7 @@ struct TimeSettings {
 
 	TickMinutes ToTickMinutes(StateTicks ticks) const
 	{
-		return (ticks.base() / this->ticks_per_minute) + this->clock_offset;
+		return TickMinutes{(ticks.base() / this->ticks_per_minute) + this->clock_offset};
 	}
 
 	Ticks GetTickMinutesRemainder(StateTicks ticks) const
@@ -180,7 +180,7 @@ struct TimeSettings {
 
 	StateTicks FromTickMinutes(TickMinutes minutes) const
 	{
-		return (minutes.base() - this->clock_offset) * this->ticks_per_minute;
+		return StateTicks{(minutes.base() - this->clock_offset) * this->ticks_per_minute};
 	}
 };
 

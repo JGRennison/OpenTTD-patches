@@ -266,6 +266,7 @@ STR_UNITS_MINUTES                                               :{NUM}{NBSP}Minu
 STR_UNITS_YEARS                                                 :{NUM}{NBSP}Joer{P "" ""}
 STR_UNITS_PERIODS                                               :{NUM}{NBSP}Period{P "" en}
 
+STR_LIST_SEPARATOR                                              :,{SPACE}
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filter:
@@ -412,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Informat
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Wiessel Toolbars
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Szenario späicheren, Szenario lueden, Eraus aus dem Szenarioeditor, Eraus
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Szenario späicheren, Szenario lueden, Eraus aus dem Szenarioeditor, Eraus
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Szenarien Editor
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Änner de Startdatum 1 Joer nohannen
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Änner de Startdatum 1 Joer no vir
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klick fir d'Startjoer festzeleeën
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Kaart opman, Extrausiicht, Stiedverzeeschnëss oder Stied- oder Industrie-Verzeechnis
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Landschaftsmenu opman oder nei Welt generéiren
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Bau oder generéier nei Stied
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Bau oder generéier Industrien
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Bau Stroosseninfrastruktur
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Bau Traminfrastruktur
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Beem planzen. Ctrl+Klick+Zéien wielt d'Areal diagonal. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Schëld opstellen
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Objet plazéiren. Ctrl+Klick+Zéien wielt d'Areal diagonal aus. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Änner de Startdatum 1 Joer nohannen
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Änner de Startdatum 1 Joer no vir
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klick fir d'Startjoer festzeleeën
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Kaart opman, Extrausiicht, Stiedverzeeschnëss oder Stied- oder Industrie-Verzeechnis
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Landschaftsmenu opman oder nei Welt generéiren
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Bau oder generéier nei Stied
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Bau oder generéier Industrien
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Bau Stroosseninfrastruktur
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Bau Traminfrastruktur
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Beem planzen. Ctrl+Klick+Zéien wielt d'Areal diagonal. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Schëld opstellen
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Objet plazéiren. Ctrl+Klick+Zéien wielt d'Areal diagonal aus. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
 
 # Scenario editor file menu
 ###length 7
@@ -614,6 +615,7 @@ STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Eenheete
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Firme-Leeschtungsbewäertung (max Bewäertung=1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Firmewäertgrafik
 
+STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Lescht 24 Minuten
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Dauert 72 Minutten
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Luedungs Bezuelraten
@@ -627,6 +629,7 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Keng Wue
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Schalt d'Grafik fir de Wuerentyp em
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Produktiounshistorie
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Produzéiert
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Transportéiert
 
@@ -798,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Schnéi
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Schalt d'Stiednimm un/aus
-STR_SMALLMAP_CENTER                                             :{BLACK}Zentréiert d'kleng Kaart op déi aktuell Positioun
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Zentréiert d'kleng Kaart op déi aktuell Positioun
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -944,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Usiicht {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Ännert d'Usiicht
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopéiert d'Plaz vun der globaler Usiicht op des Usiicht
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopéiert d'Plaz vun der globaler Usiicht op des Usiicht
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Haptusiicht änneren
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Setzt d'Plaz vun dëser Usiicht op déi global Usiicht
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Setzt d'Plaz vun dëser Usiicht op déi global Usiicht
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spill Optiounen
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Generell
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Wiel generell Astellungen aus
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Wiel generell Astellungen aus
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Wiel Grafik-Astellungen aus
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Wiel Grafik-Astellungen aus
 STR_GAME_OPTIONS_TAB_SOUND                                      :Sound
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Wiel Sound- a Musikastellungen aus
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Wiel Sound- a Musikastellungen aus
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Social
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Wiel Astellungen déi mat Social Media ze dinn hunn
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Wiel Astellungen déi mat Social Media ze dinn hunn
 
 STR_GAME_OPTIONS_VOLUME                                         :Volume
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Soundeffekter
@@ -2328,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}Späiche
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Späichert favoriséiert Gesiicht
 STR_FACE_SAVE_DONE                                              :{WHITE}Dëst Gesiicht gëtt als favoriséiert an der OpenTTD Konfiguratiounsdatei gespäichert.
 STR_FACE_EUROPEAN                                               :{BLACK}Europäesch
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Wielt europäesch Gesiichter
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Wielt europäesch Gesiichter
 STR_FACE_AFRICAN                                                :{BLACK}Afrikanesch
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Wielt afrikanesch Gesiichter
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Wielt afrikanesch Gesiichter
 STR_FACE_YES                                                    :Jo
 STR_FACE_NO                                                     :Nee
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Schalt Schnauz oder Ouerréng un
@@ -2386,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Serverko
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klick op en Spill aus der Lëscht fir et auszewielen
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Server deems du d'leschte Kéier bäigetruede bass:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klick fir de Server ze wielen deens du d'leschte Kéier haas
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klick fir de Server ze wielen deens du d'leschte Kéier haas
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}SPILL INFO
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Spiller: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2831,6 +2834,14 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Wiel eng Stad-Z
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Wiel en Haustyp fir ze bauen. Ctrl+Klick fir en bei d'gespäichert Objeten dobäizesetzen oder ewechzehuelen
 
 STR_HOUSE_PICKER_CAPTION                                        :Häiserauswiel
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Numm: {ORANGE}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Awunner: {ORANGE}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Joer: {ORANGE}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Joer: {ORANGE}All
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Joer: {ORANGE}Vun {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Joer: {ORANGE}Bis {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Gréisst: {ORANGE}{NUM}x{NUM} Felder
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Akzeptéiert Wuer: {ORANGE}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rand
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Ausseberäich
@@ -3030,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}All Dier
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Stadnumm:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Stadnumm agin
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klick fir Stad ze benennen
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klick fir Stad ze benennen
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Zoufällegen Numm
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Neien Zoufallsnumm generéiren
 
@@ -3044,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Stad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Stied wuessen méi schnell wéi Dierfer{}Ofhängeg vun den Astellungen, sinn se méi grouss am Ufank
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Stroosselayout vun der Stad:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Stroosselayout fir des Stad wielen
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Stroosselayout fir des Stad wielen
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Original
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Besser Stroossen
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 Gitter
@@ -3278,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Szenario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Héichtekaart lueden
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Héichtenkaart späichern
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Lued Stieddaten
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klick hei fir op d'Standard Späicher-/Luedverzeeschnis ze goen
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klick hei fir op d'Standard Späicher-/Luedverzeeschnis ze goen
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} fräi
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Lëscht vun de Lafwierker, Dossieren a Späicherstänn
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Momentan gewielten Numm fir de Spillstand
@@ -3317,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Unz. Ind
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}D'Dicht vun Industrien auswielen oder eng eegen Zuel aginn
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Héchste Punkt:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Wiel den héchste Punkt den d'Spill probéiert ze erstellen, gemooss an Héicht iwwert dem Mieresspigel
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Setzt d'Maximalhéicht vum héchste Punkt op der Kaart em een erop
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Setzt d'Maximalhéicht vum héchste Punkt op der Kaart em een erof
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Setzt d'Maximalhéicht vum héchste Punkt op der Kaart em een erop
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Setzt d'Maximalhéicht vum héchste Punkt op der Kaart em een erof
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Schnéiundeel
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Schnéiundeel em zéng Prozent eropsetzen
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Schnéiundeel em zéng Prozent erofsetzen
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Schnéiundeel em zéng Prozent eropsetzen
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Schnéiundeel em zéng Prozent erofsetzen
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Wüstenundeel:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Wüstenundeel em zéng Prozent eropsetzen
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Wüstenundeel em zéng Prozent erofsetzen
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Wüstenundeel em zéng Prozent eropsetzen
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Wüstenundeel em zéng Prozent erofsetzen
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain Typ:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Mieresspigel:
@@ -3398,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Generéi
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Zoufallsland
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Héicht vum flaache Land:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Wiel d'Héicht vum Land iwwert dem Mieresspigel
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Héicht vum flaache Land 1 erofsetzen
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Héicht vum flaache Land 1 eropsetzen
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Héicht vum flaache Land 1 erofsetzen
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Héicht vum flaache Land 1 eropsetzen
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Héicht vum flaache Land änneren
 
@@ -3773,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Ongültëg
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Statiounennimm - klick op den Numm fir d'Usiicht dorop ze zentréieren. Ctrl+Klick erstellt eng nei Usiicht op d'Statioun
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Klick e puer Objeten auszewielen
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+Klick e puer Objeten auszewielen
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Statioun{P "" en}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Näischt -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Wiel all d'Fabriken
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Wiel all d'Fabriken
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :All Wuerentyp a keng Bewertung
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Multipel Wuerentypen
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Keng Wuerentypen
@@ -3856,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Zentréiert d'Usiicht op de Weepunkt. Ctrl+Klick erstellt eng nei Usiicht um Weepunkt
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Weepunkt Numm änneren
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Zentréiert d'Usiicht op d'Boje. Ctrl+Klick erstellt eng nei Usiicht op d'Boje
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Boje ëmbenennen
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Boje ëmbenennen
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Weepunktnumm
 
@@ -3932,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Haaptgeb
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Weis d'Haaptgebai
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Haaptgebai uweisen
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Firmenhaaptgebai réckelen
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Bau d'Firmenhaaptgebai op eng aaner Plaz fir 1% Käschte vum Firmewäert. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Bau d'Firmenhaaptgebai op eng aaner Plaz fir 1% Käschte vum Firmewäert. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detailer
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Detailléiert Infrastrukturen uweisen
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gëff d'Geld
@@ -3979,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} an nach {NUM} méi...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrienimm - klick op en Numm fir d'Usiicht do drop ze zentréieren. Ctrl+Klick erstellt eng nei Usiicht op d'Industrie
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrienimm - klick op en Numm fir d'Usiicht do drop ze zentréieren. Ctrl+Klick erstellt eng nei Usiicht op d'Industrie
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Akzeptéiert Wuer: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produzéiert Wuer: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :All Wuerentyp
@@ -3991,6 +4002,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Produkti
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Produktioun déi läscht Minutt:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% transportéiert)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Zentréiert d'Siicht op d'Industrie. Ctrl+Klick erstellt eng nei Usiicht op d'Industrie
+STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Produktiounsgrafik
+STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Weist d'Grafik vun der Industrieproduktiounshistorie un
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktiounslevel: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}D'Industrie annoncéiert dass se zougemaach gëtt
 
@@ -4252,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Schëff 
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Fliger klonen
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Bau eng Kopie vun engem Zuch mat all de Waggonen. Klick op dese Knäppchen an dann op en Zuch am Schapp oder baussen. Ctrl+Klick fir Opträg ze deelen. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Keeft eng Kopie vum Stroossegefier. Klick dese Kneppchen an dann op e Stroossegefier am oder baussent dem Schapp. Ctrl+Klick deelt och d'Opträg. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Bau eng Kopie vum Schëff. Klick op dese Knäppchen an dann op en Schëff an der Werft oder baussen. Ctrl+Klick kopéiert och d'Opträg. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Baut eng Kopie vun engem Fliger. Klick op dese Knäppchen, an dann op en Fliger am Hangar oder baussen. Ctrl+Klick fir Opträg ze deelen. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Bau eng Kopie vun engem Zuch mat all de Waggonen. Klick op dese Knäppchen an dann op en Zuch am Schapp oder baussen. Ctrl+Klick fir Opträg ze deelen. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Keeft eng Kopie vum Stroossegefier. Klick dese Kneppchen an dann op e Stroossegefier am oder baussent dem Schapp. Ctrl+Klick deelt och d'Opträg. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Bau eng Kopie vum Schëff. Klick op dese Knäppchen an dann op en Schëff an der Werft oder baussen. Ctrl+Klick kopéiert och d'Opträg. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Baut eng Kopie vun engem Fliger. Klick op dese Knäppchen, an dann op en Fliger am Hangar oder baussen. Ctrl+Klick fir Opträg ze deelen. Dréck Shift fir nëmmen déi ongeféier Käschten unzeweisen
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Zentréiert d'Usiicht op de Schapp. Ctrl+Klick erstellt eng nei Usiicht op de Schapp
@@ -4326,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Stroossegefier
 STR_REPLACE_VEHICLE_SHIP                                        :Schëff
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Fliger
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Wielt de Maschinentyp fir auszetauschen
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Wielt den neien Typ de benotzt soll ginn amplaz vun der lénks gewielter Maschin
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Wielt de Maschinentyp fir auszetauschen
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Wielt den neien Typ de benotzt soll ginn amplaz vun der lénks gewielter Maschin
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Start Gefieraustosch
 STR_REPLACE_VEHICLES_NOW                                        :All Gefier elo ersetzen
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Nëmmen al Gefierer ersetzen
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Drécken fir den Austosch vun der lénker mat der rietser Maschin unzefenken
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Drécken fir den Austosch vun der lénker mat der rietser Maschin unzefenken
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Net ausgetosch:
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Keen gefier gewielt
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} wann al
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop Gefieraustosch
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Drécken fir den Austosch ze stoppen
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Drécken fir den Austosch ze stoppen
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Wiessel tëscht Maschin- an Waggonaustosch-Fënster
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Wiessel tëscht Maschin- an Waggonaustosch-Fënster
 STR_REPLACE_ENGINES                                             :Lokomotiven
 STR_REPLACE_WAGONS                                              :Waggonen
 STR_REPLACE_ALL_RAILTYPE                                        :All Zich
 STR_REPLACE_ALL_ROADTYPE                                        :All Stroossegefierer
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Wielt de Schinnentyp fir déi Lokomotiven ausgetosch ginn
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Wielt de Stroossentyp fir déi d'Maschinnen ausgetosch ginn
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Wielt de Schinnentyp fir déi Lokomotiven ausgetosch ginn
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Wielt de Stroossentyp fir déi d'Maschinnen ausgetosch ginn
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Weist un wellech Lokomotiv vun der lénks ugewielter Lokomotiv ausgetosch soll ginn, wann et zoutrëfft
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Weist un wellech Lokomotiv vun der lénks ugewielter Lokomotiv ausgetosch soll ginn, wann et zoutrëfft
 STR_REPLACE_RAIL_VEHICLES                                       :Zich
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektresch Zich
 STR_REPLACE_MONORAIL_VEHICLES                                   :Monorail Gefierer
@@ -4360,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Stroossegefiere
 STR_REPLACE_TRAM_VEHICLES                                       :Tram-Gefierer
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Waggon raushuelen: ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Mécht dass d'automatescht Austauschen d'Längt vum Zuch behält, an dem e Waggonen (vu lénks un) wechhëllt, wann d'Lok den Zuch ze laang mécht
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Mécht dass d'automatescht Austauschen d'Längt vum Zuch behält, an dem e Waggonen (vu lénks un) wechhëllt, wann d'Lok den Zuch ze laang mécht
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Klick fir och ob Ennergruppen ze applizéiren
 
 # Vehicle view
@@ -4741,7 +4754,8 @@ STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(fuer während 
 STR_TIMETABLE_STAY_FOR                                          :an bleif fir {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :an ënnerwee während {STRING}
 
-STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Dësen Zäitplang brauch {STRING} fir faërdeg ze ginn
+STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Dësen Zäitplang brauch ongeféier {STRING} fir fäerdeg ze ginn
+STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Dësen Zäitplang brauch {STRING} fir fäerdeg ze ginn
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Dësen Zäitplang brauch op manst {STRING} (net all geplangt)
 
 STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}D'Gefier ass mat Zäit

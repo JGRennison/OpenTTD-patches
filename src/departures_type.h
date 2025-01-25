@@ -98,7 +98,7 @@ struct Departure {
 	static constexpr Ticks INVALID_WAIT_TICKS = INT32_MIN;
 	static constexpr Ticks MISSING_WAIT_TICKS = INT32_MIN + 1;
 
-	StateTicks scheduled_tick = 0;         ///< The tick this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
+	StateTicks scheduled_tick{0};          ///< The tick this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
 	Ticks lateness = 0;                    ///< How delayed the departure is expected to be
 	StationID via = INVALID_STATION;       ///< The station the departure should list as going via
 	StationID via2 = INVALID_STATION;      ///< Secondary station the departure should list as going via

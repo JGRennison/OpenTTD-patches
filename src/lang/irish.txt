@@ -370,21 +370,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Faisnéi
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Athraigh barraí uirlisí
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Sábháil scéal, lódáil scéal, fág eagarthóir na scéalta, scoir
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Sábháil scéal, lódáil scéal, fág eagarthóir na scéalta, scoir
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Eagarthóir Scéalta
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Cuir an dáta tosaigh siar bliain amháin
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Cuir an dáta tosaigh ar aghaidh bliain amháin
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Cliceáil chun an dáta tosaigh a iontráil
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Taispeáin léarscáil, liosta na mbailte
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Tírdhreach a chruthú
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Baile a chruthú
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Tionscal a chruthú
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Bóithre a thógáil
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Tógáil trambhealaí
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Crainnte a chur
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Comhartha a chur
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Cuir síos oibiacht
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Cuir an dáta tosaigh siar bliain amháin
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Cuir an dáta tosaigh ar aghaidh bliain amháin
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Cliceáil chun an dáta tosaigh a iontráil
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Taispeáin léarscáil, liosta na mbailte
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Tírdhreach a chruthú
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Baile a chruthú
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Tionscal a chruthú
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Bóithre a thógáil
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Tógáil trambhealaí
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Crainnte a chur
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Comhartha a chur
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Cuir síos oibiacht
 
 # Scenario editor file menu
 ###length 7
@@ -738,7 +738,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Sneachta
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Scoránaigh ainmneacha na mbailte air/as ar an léarscáil
-STR_SMALLMAP_CENTER                                             :{BLACK}Láraigh an léarscáil beag ar an suíomh reatha
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Láraigh an léarscáil beag ar an suíomh reatha
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -868,9 +868,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Amharc {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Cóipeáil chuig amharc
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Cóipeáil suíomh an phríomh-amhairc chuig an amharc seo
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Cóipeáil suíomh an phríomh-amhairc chuig an amharc seo
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Greamaigh ón amharc
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Gramaigh suíomh an amhairc seo chuig an bpríomh-amharc
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Gramaigh suíomh an amhairc seo chuig an bpríomh-amharc
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Roghanna Cluiche
@@ -2095,9 +2095,9 @@ STR_FACE_SAVE                                                   :{BLACK}Sábhái
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Sábháil aghaidh is fearr leat
 STR_FACE_SAVE_DONE                                              :{WHITE}Sábhálfar an aghaidh mar an ceann is fearr leat i gcomhad cumraíochta OpenTTD
 STR_FACE_EUROPEAN                                               :{BLACK}Eorpach
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Roghnaigh aghaidheanna Eorpacha
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Roghnaigh aghaidheanna Eorpacha
 STR_FACE_AFRICAN                                                :{BLACK}Afraiceach
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Roghnaigh aghaidheanna Afraiceacha
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Roghnaigh aghaidheanna Afraiceacha
 STR_FACE_YES                                                    :Tá
 STR_FACE_NO                                                     :Níl
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Cumasaigh croiméal nó fáinne cluasa
@@ -2150,7 +2150,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Teanga, 
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Cliceáil ar chluiche ón liosta lena roghnú
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}An freastalaí a ndeachaidh tú isteach ann an uair deiridh:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Cliceáil chun an freastalaí ina raibh tú ag imirt an uair deiridh a roghnú
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Cliceáil chun an freastalaí ina raibh tú ag imirt an uair deiridh a roghnú
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}FAISNÉIS FAOIN gCLUICHE
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Cliaint: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -2736,7 +2736,7 @@ STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Clúdaig
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Ainm an bhaile:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Ionchur ainm an bhaile
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Cliceáil chun ainm an bhaile a ionchur
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Cliceáil chun ainm an bhaile a ionchur
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Ainm fánach
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Cruthaigh ainm fánach nua
 
@@ -2750,7 +2750,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Cathair
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Fásann cathracha níos mó ná gnáthbhailte{}Ag brath ar na socruithe, bíonn siad níos mó nuair a bhunaítear iad
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Leagan amach bóithre an bhaile:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Roghnaigh leagan amach na mbóithre don bhaile seo
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Roghnaigh leagan amach na mbóithre don bhaile seo
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Bunaidh
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Bóithre níos fearr
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}greille 2x2
@@ -2980,7 +2980,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Sábhái
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Lódáil Scéal
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Lódáil Mapa airde
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Sábháil Mapa airde
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Cliceáil anseo le léim chuig an comhadlann réamhshocraithe sábhála/lódála reatha
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Cliceáil anseo le léim chuig an comhadlann réamhshocraithe sábhála/lódála reatha
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} saor
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Liosta na dtiomántán, na gcomhadlann agus na gcomhad cluichí sábháilte
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Ainm atá roghnaithe faoi láthair don chluiche sábháilte
@@ -3014,15 +3014,15 @@ STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Roghnaig
 STR_MAPGEN_DATE                                                 :{BLACK}Dáta:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Líon na dtionscal:
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}An beann is airde:
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Méadaigh airde uasta an bhinn is airde ar an léarscáil d'aon leibhéal amháin
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Laghdaigh airde uasta an bhinn is airde ar an léarscáil d'aon leibhéal amháin
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Méadaigh airde uasta an bhinn is airde ar an léarscáil d'aon leibhéal amháin
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Laghdaigh airde uasta an bhinn is airde ar an léarscáil d'aon leibhéal amháin
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Clúdach sneachta:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Méadaigh clúdach an tsneachta deich faoin gcéad
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Laghdaigh clúdach an tsneachta deich faoin gcéad
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Méadaigh clúdach an tsneachta deich faoin gcéad
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Laghdaigh clúdach an tsneachta deich faoin gcéad
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Clúdach an fhásaigh:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Méadaigh clúdach an fhásaigh deich faoin gcéad
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Laghdaigh clúdach an fhásaigh deich faoin gcéad
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Méadaigh clúdach an fhásaigh deich faoin gcéad
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Laghdaigh clúdach an fhásaigh deich faoin gcéad
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Cineál tír-raoin:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Leibhéal na farraige:
@@ -3083,8 +3083,8 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Talamh r
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Cruthaigh talamh réidh
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Talamh randamach
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Airde na talún réidh:
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Bog airde na talún réidh síos ceann amháin
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Bog airde na talún réidh suas ceann amháin
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Bog airde na talún réidh síos ceann amháin
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Bog airde na talún réidh suas ceann amháin
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Athraigh airde na talún réidh
 
@@ -3424,12 +3424,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Tagairt ne
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Ainmneacha na stáisiún - cliceáil ar ainm chun an t-amharc a lárú ar stáisiún. Osclaítear amharc nua ar shuíomh an stáisiúin le Ctrl+Cliceáil
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Coinnigh síos Ctrl le níos mó ná rud amháin a roghnú
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Coinnigh síos Ctrl le níos mó ná rud amháin a roghnú
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Stáisiú{P "" "" "" "" ""}n
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Ceann ar bith -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Roghnaigh gach áis
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Roghnaigh gach áis
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3498,7 +3498,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Láraigh an príomhamharc ar shuíomh an phointe bealaigh. Osclaítear amharc nua ar shuíomh an phointe bealaigh le Ctrl+Cliceáil
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Athraigh ainm an phointe bealaigh
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Láraigh an príomhamharc ar shuíomh an bhaoi. Osclaítear amharc nua ar shuíomh an bhaoi le Ctrl+Cliceáil
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Athraigh ainm an bhaoi
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Athraigh ainm an bhaoi
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Cuir ainm an phointe bealaigh in eagar
 
@@ -3557,7 +3557,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Tóg cea
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Breathanaigh ar CC
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Breathnaigh ar cheanncheathrú na cuideachta
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Athlonnaigh an CC
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Tóg ceanncheathrú na cuideachta in áit eile ar chostas 1% de luach na cuideachta
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Tóg ceanncheathrú na cuideachta in áit eile ar chostas 1% de luach na cuideachta
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Sonraí
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Taispeáin líon mionsonraithe na bpíosaí bonneagair
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Tabhair airgead
@@ -3598,7 +3598,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} agus {NUM} sa bhreis...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Ainmneacha na dtionscal - cliceáil ar ainm chun an príomh-amharc a lárú ar thionscal. Osclaítear amharc nua ar shuíomh an tionscail le Ctrl+Cliceáil
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Ainmneacha na dtionscal - cliceáil ar ainm chun an príomh-amharc a lárú ar thionscal. Osclaítear amharc nua ar shuíomh an tionscail le Ctrl+Cliceáil
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Lastas a ghlactar leis: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Lastas a tháirgtear: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Gach cineál lastais
@@ -3859,10 +3859,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Clónái
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Clónáil Aerárthach
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Ceannóidh sé seo cóip de thraein lena n-áirítear gach vaigín. Cliceáil ar an gcnaipe seo agus ansin ar thraein laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Ceannóidh sé seo cóip d'fheithicil bóthair. Cliceáil ar an gcnaipe seo agus ansin ar fheithicil bóthair laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Ceannóidh sé seo cóip de long. Cliceáil ar an gcnaipe seo agus ansin ar long laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Ceannóidh sé seo cóip d'aerárthach. Cliceáil ar an gcnaipe seo agus ansin ar aerárthach laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Ceannóidh sé seo cóip de thraein lena n-áirítear gach vaigín. Cliceáil ar an gcnaipe seo agus ansin ar thraein laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Ceannóidh sé seo cóip d'fheithicil bóthair. Cliceáil ar an gcnaipe seo agus ansin ar fheithicil bóthair laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Ceannóidh sé seo cóip de long. Cliceáil ar an gcnaipe seo agus ansin ar long laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Ceannóidh sé seo cóip d'aerárthach. Cliceáil ar an gcnaipe seo agus ansin ar aerárthach laistigh nó lasmuigh den iosta. Déantar na horduithe a chomhroinnt le Ctrl+Cliceáil
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Láraigh an príomhamharc ar shuíomh an iosta traenach. Osclaítear amharc nua ar shuíomh an iosta traenach le Ctrl+Cliceáil
@@ -3921,31 +3921,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Feithicil Bóth
 STR_REPLACE_VEHICLE_SHIP                                        :Long
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aerárthach
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Roghnaigh an cineál innill le hathsholáthar
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Roghnaigh an cineál nua innill is mian leat a úsáid in ionad an chineáil innill atá roghnaithe ar chlé
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Roghnaigh an cineál innill le hathsholáthar
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Roghnaigh an cineál nua innill is mian leat a úsáid in ionad an chineáil innill atá roghnaithe ar chlé
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Tosaigh ag athsholáthar Feithiclí
 STR_REPLACE_VEHICLES_NOW                                        :Ionadaigh gach feithicil anois
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Ionadaigh seanfheithiclí amháin
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Brúigh le tús a chur leis an gcineál innill atá roghnaithe ar chlé a athsholáthar leis an gcineál innill atá roghnaithe ar dheis
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Brúigh le tús a chur leis an gcineál innill atá roghnaithe ar chlé a athsholáthar leis an gcineál innill atá roghnaithe ar dheis
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Níl athsholáthar ar bun
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Níl aon fheithicil roghnaithe
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} má tá sé sean
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stad ag athsholáthar Feithiclí
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Brúigh chun deireadh a chur le hathsholáthar den chineál innill atá roghnaithe ar chlé
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Brúigh chun deireadh a chur le hathsholáthar den chineál innill atá roghnaithe ar chlé
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Athraigh idir na fuinneoga athsholáthair innill agus vaigíní
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Athraigh idir na fuinneoga athsholáthair innill agus vaigíní
 STR_REPLACE_ENGINES                                             :Innill
 STR_REPLACE_WAGONS                                              :Vaigíní
 STR_REPLACE_ALL_RAILTYPE                                        :Gach feithicil iarnróid
 STR_REPLACE_ALL_ROADTYPE                                        :Gach feithicil bóthair
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Roghnaigh an cineál ráille is mian leat innill a athsholáthar air
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Roghnaigh an cineál bóthair is mian leat na hinnill a ionadú air
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Roghnaigh an cineál ráille is mian leat innill a athsholáthar air
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Roghnaigh an cineál bóthair is mian leat na hinnill a ionadú air
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Taispeántar cén inneall a dhéanfar an t-inneall atá roghnaithe ar chlé a athsholáthar leis, má dhéanfar é a athsholáthar
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Taispeántar cén inneall a dhéanfar an t-inneall atá roghnaithe ar chlé a athsholáthar leis, má dhéanfar é a athsholáthar
 STR_REPLACE_RAIL_VEHICLES                                       :Feithiclí Iarnróid
 STR_REPLACE_ELRAIL_VEHICLES                                     :Feithiclí Iarnróid Leictreacha
 STR_REPLACE_MONORAIL_VEHICLES                                   :Feithiclí Aonráille
@@ -3955,7 +3955,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Feithiclí Bót
 STR_REPLACE_TRAM_VEHICLES                                       :Feithiclí Trambhealaigh
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vaigíní a bhaint ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Ceangail ar uath-athsholáthar fad na traenach a choinneáil mar an gcéanna trí vaigíní a bhaint (ag tosú ag an tosach), má tharlaíonn sé go mbeadh an traein níos faide tar éis an t-inneall a athsholáthar.
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Ceangail ar uath-athsholáthar fad na traenach a choinneáil mar an gcéanna trí vaigíní a bhaint (ag tosú ag an tosach), má tharlaíonn sé go mbeadh an traein níos faide tar éis an t-inneall a athsholáthar.
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Cliceáil chun é a chur i bhfeidhm i leith foghrúpaí freisin
 
 # Vehicle view

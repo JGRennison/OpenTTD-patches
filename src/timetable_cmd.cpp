@@ -581,7 +581,7 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p
 			/* Overwrite waiting times only if they got longer */
 			if (HasBit(p2, 1)) SetBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
-			v->timetable_start = 0;
+			v->timetable_start = StateTicks{0};
 			v->lateness_counter = 0;
 		} else {
 			ClrBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
@@ -631,7 +631,7 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32_t 
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				if (HasBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
-					v2->timetable_start = 0;
+					v2->timetable_start = StateTicks{0};
 					v2->lateness_counter = 0;
 				}
 				v2->ClearSeparation();
@@ -850,12 +850,12 @@ std::pair<StateTicks, int> GetScheduledDispatchTime(const DispatchSchedule &ds, 
 		int32_t threshold = last_dispatched_offset;
 		if (HasBit(slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) threshold--;
 		if ((int32_t)current_offset <= threshold) {
-			current_offset += dispatch_duration * ((threshold + dispatch_duration - current_offset) / dispatch_duration);
+			current_offset += ((threshold + dispatch_duration - current_offset) / dispatch_duration) * dispatch_duration;
 		}
 
 		StateTicks current_departure = begin_time + current_offset;
 		if (current_departure < minimum) {
-			current_departure += dispatch_duration * ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration);
+			current_departure += ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration) * dispatch_duration;
 		}
 
 		if (first_slot == INVALID_STATE_TICKS || first_slot > current_departure) {
@@ -963,7 +963,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 
 		if (v->timetable_start != 0) {
 			v->lateness_counter = (_state_ticks - v->timetable_start).AsTicks();
-			v->timetable_start = 0;
+			v->timetable_start = StateTicks{0};
 		}
 
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);

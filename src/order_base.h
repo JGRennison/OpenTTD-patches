@@ -823,7 +823,7 @@ private:
 	friend NamedSaveLoadTable GetDispatchScheduleDescription();         ///< Saving and loading of dispatch schedules
 
 	std::vector<DispatchSlot> scheduled_dispatch;                       ///< Scheduled dispatch slots
-	StateTicks scheduled_dispatch_start_tick = -1;                      ///< Scheduled dispatch start tick
+	StateTicks scheduled_dispatch_start_tick = StateTicks{-1};          ///< Scheduled dispatch start tick
 	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	int32_t scheduled_dispatch_last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET; ///< Last vehicle dispatched offset
 	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay

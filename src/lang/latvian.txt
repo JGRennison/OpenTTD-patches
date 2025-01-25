@@ -415,21 +415,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Atvērt 
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Pārslēgt rīkjoslas
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Saglabāt scenāriju, ielādēt scenāriju, pamest scenāriju redaktoru, iziet
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Saglabāt scenāriju, ielādēt scenāriju, pamest scenāriju redaktoru, iziet
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}scenāriju redaktors
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Pārvietot sākuma datumu 1 gadu atpakaļ
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Pārvietot sākuma datumu 1 gadu uz priekšu
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klikšķināt, lai ievadītu sākuma gadu
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Atvērt karti, papildu skata logu, zīmju sarakstu vai pilsētas vai ražotņu sarakstu
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Atvērt ainavu izvēlni vai izveidot jaunu pasauli
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Buvēt vai ģenerēt pilsētas
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Veidot vai ģenerēt ražotnes
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Būvēt ceļu infrastruktūru
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Būvēt tramvaju infrastruktūru
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Iestādiet kokus. Velkot Ctrl+klikšķis atlasīs apgabalu pa diagonāli.  Shift parāda izmaksas, neveicot iegādi
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Novietot zīmi
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Novietojiet objektu. Velkot Ctrl+klikšķis tiek atlasīts apgabals pa diagonāli. Shift parāda novērtētās izmaksas, neveicot iegādi
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Pārvietot sākuma datumu 1 gadu atpakaļ
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Pārvietot sākuma datumu 1 gadu uz priekšu
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klikšķināt, lai ievadītu sākuma gadu
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Atvērt karti, papildu skata logu, zīmju sarakstu vai pilsētas vai ražotņu sarakstu
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Atvērt ainavu izvēlni vai izveidot jaunu pasauli
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Buvēt vai ģenerēt pilsētas
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Veidot vai ģenerēt ražotnes
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Būvēt ceļu infrastruktūru
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Būvēt tramvaju infrastruktūru
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Iestādiet kokus. Velkot Ctrl+klikšķis atlasīs apgabalu pa diagonāli.  Shift parāda izmaksas, neveicot iegādi
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Novietot zīmi
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Novietojiet objektu. Velkot Ctrl+klikšķis tiek atlasīts apgabals pa diagonāli. Shift parāda novērtētās izmaksas, neveicot iegādi
 
 # Scenario editor file menu
 ###length 7
@@ -803,7 +803,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Sniegs
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Rādīt pilsētu nosaukumus uz kartes
-STR_SMALLMAP_CENTER                                             :{BLACK}Centrēt minikarti uz pašreizējo pozīciju
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Centrēt minikarti uz pašreizējo pozīciju
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -949,21 +949,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Skatvieta {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Mainīt skatvietu
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopēt galvenā skata atrašanās vietu uz šo skatvietu
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopēt galvenā skata atrašanās vietu uz šo skatvietu
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Mainīt galveno skatu
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Kopēt šīs skatvietas atrašanās vietu uz galveno skatu
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Kopēt šīs skatvietas atrašanās vietu uz galveno skatu
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spēles opcijas
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Vispārīgi
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Izvēlieties vispārīgos iestatījumus
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Izvēlieties vispārīgos iestatījumus
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafika
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Izvēlieties grafikas iestatījumus
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Izvēlieties grafikas iestatījumus
 STR_GAME_OPTIONS_TAB_SOUND                                      :Skaņa
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Izvēlieties skaņas un mūzikas iestatījumus
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Izvēlieties skaņas un mūzikas iestatījumus
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Sociālais tīkls
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Izvēlieties sociālās integrācijas iestatījumus
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Izvēlieties sociālās integrācijas iestatījumus
 
 STR_GAME_OPTIONS_VOLUME                                         :Skaļums
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Skaņas efekti
@@ -2335,9 +2335,9 @@ STR_FACE_SAVE                                                   :{BLACK}Saglabā
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Saglabāt iecienīto seju
 STR_FACE_SAVE_DONE                                              :{WHITE}Šī seja tiks saglabāta OpenTDD konfigurācijas failā kā iecienītā seja
 STR_FACE_EUROPEAN                                               :{BLACK}Eiropietis
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Izvēlēties eiropiešu sejas
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Izvēlēties eiropiešu sejas
 STR_FACE_AFRICAN                                                :{BLACK}Afrikānis
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Izvēlēties afrikāņu sejas
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Izvēlēties afrikāņu sejas
 STR_FACE_YES                                                    :Ir
 STR_FACE_NO                                                     :Nav
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Iespējot ūsas vai auskarus
@@ -2393,7 +2393,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Informā
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klikšķināt sarakstā uz spēles, lai to izvēlētos
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Serveris, kuram jūs pievienojāties pēdējoreiz:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klikšķis, lai izvēlētos serveri kurā jūs spēlējāt pēdējoreiz
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klikšķis, lai izvēlētos serveri kurā jūs spēlējāt pēdējoreiz
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}SPĒLES INFORMĀCIJA
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Spēlētāji: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3045,7 +3045,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Likt vis
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW} Pilsētas nosaukums:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Ievadīt pilsētas nosaukumu
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klikšķināt, lai ievadītu pilsētas nosaukumu
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klikšķināt, lai ievadītu pilsētas nosaukumu
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Gadījuma nosaukums
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Radīt jaunu gadījuma nosaukumu
 
@@ -3059,7 +3059,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Pilsēta
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Pilsētas aug straujāk kā parastas apdzīvotās vietas{}Atkarībā no iestatījumiem, dibināšanas brīdī pilsētas ir lielākas
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Pilsētas ceļu izskats:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Atlasīt šajā pilsētā lietojamo ceļu izkārtojumu
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Atlasīt šajā pilsētā lietojamo ceļu izkārtojumu
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Sākotnēji
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Labāki ceļi
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2 režģis
@@ -3294,7 +3294,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Ielādē
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Ielādēt augstumu karti
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Saglabāt augstumu karti
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Ielādēt pilsētas datus
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klikšķināt šeit, lai pārietu uz pašreizējo saglabāšanas/ielādēšanas mapi
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klikšķināt šeit, lai pārietu uz pašreizējo saglabāšanas/ielādēšanas mapi
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} brīv{P s i u}
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Disku, mapju un saglabāto spēļu failu saraksts
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Šobrīd izvēlētais saglabājamās spēles nosaukums
@@ -3333,15 +3333,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Ražotņ
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Atlasiet nozaru blīvumu vai pielāgojiet daudzumu
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Augstākā virsotne:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Izvēlieties augstāko virsotni, ko spēle mēģinās izveidot, mērot augstumu virs jūras līmeņa
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Palielināt augstāko punktu virsotnes pa vienai
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Pa vienai samazināt kartes augstākās virsotnes maksimālo augstumu
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Palielināt augstāko punktu virsotnes pa vienai
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Pa vienai samazināt kartes augstākās virsotnes maksimālo augstumu
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Sniega pārklājums:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Palielināt sniega segumu par desmit procentiem
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Samazināt sniega pārklājumu par desmit procentiem
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Palielināt sniega segumu par desmit procentiem
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Samazināt sniega pārklājumu par desmit procentiem
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Tuksneša pārklājums:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Palielināt tuksneša pārklājumu par desmit procentiem
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Samazināt tuksneša pārklājumu par desmit procentiem
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Palielināt tuksneša pārklājumu par desmit procentiem
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Samazināt tuksneša pārklājumu par desmit procentiem
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Apvidus reljefs:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Jūras līmenis:
@@ -3414,8 +3414,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Radīt l
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Nejauša zeme
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Līdzenas zemes augstums:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Izvēlieties zemes augstumu virs jūras līmeņa
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Par vienu līmeni samazināt līdzenas zemes augstumu
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Par vienu līmeni palielināt līdzenas zemes augstumu
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Par vienu līmeni samazināt līdzenas zemes augstumu
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Par vienu līmeni palielināt līdzenas zemes augstumu
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Mainīt zemes augstumu
 
@@ -3794,12 +3794,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Mērķa no
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Staciju nosaukumi - klišķināt uz nosaukuma, lai centrētu galveno skatu uz staciju. Ctrl+klikšķis atvērs skatu uz stacijas atrašanos jaunā skatlaukā
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+klikšķis, atlasa vairākus vienumus
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+klikšķis, atlasa vairākus vienumus
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} stacij{P a as u}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Nav -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Izvēlēties visu aprīkojumu
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Izvēlēties visu aprīkojumu
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Visi kravu veidi un bez vērtējuma
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Vairāki kravu veidi
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Nav kravas veidu
@@ -3877,7 +3877,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrēt galveno skatu uz pieturas punktu. Ctrl+klikšķis atvērs skatu uz pieturas punktu jaunā skatlaukā
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Mainīt pieturas punkta nosaukumu
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrēt galveno skatu uz boju. Ctrl+klikšķis atvērs skatu uz boju jaunā skatlaukā
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Mainīt bojas nosaukumu
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Mainīt bojas nosaukumu
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Labot pieturas punkta nosaukumu
 
@@ -3953,7 +3953,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Būvēt 
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Skatīt biroju
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Rādīt uzņēmuma vadības ēku
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Pārvietot biroju
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Pārcelt uzņēmuma centrālo biroju uz citu vietu samaksājot 1% no uzņēmuma vērtības.  Shift parāda izmaksas, neveicot pārcelšanu
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Pārcelt uzņēmuma centrālo biroju uz citu vietu samaksājot 1% no uzņēmuma vērtības.  Shift parāda izmaksas, neveicot pārcelšanu
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Sīkāk
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Skatīt detalizētāku infrastruktūras uzskaiti
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Iedot naudu
@@ -4001,7 +4001,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} un vēl {NUM}...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Ražotņu nosaukumi - klikšķināt uz nosaukuma, lai centrētu skatu uz ražotni. Ctrl+klikšķis atvērs jaunu skatvietu pie ražotnes
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Ražotņu nosaukumi - klikšķināt uz nosaukuma, lai centrētu skatu uz ražotni. Ctrl+klikšķis atvērs jaunu skatvietu pie ražotnes
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Pieņemamā krava: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Saražotā krava: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Visi kravu veidi
@@ -4276,10 +4276,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klonēt 
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klonēt lidaparātu
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Nopirkt vilciena kopiju ar visiem vagoniem. Spiediet šo pogu, un pēc tam uz vilciena, kas atrodas depo vai ārpus tā. Ctrl+Klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Nopirkt autotransporta kopiju. Spiediet uz pogas un pēc tam uz autotransporta, kas atrodas depo vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Nopirkt kuģa kopiju. Spiediet šo pogu un pēc tam uz kuģa, kas atrodas depo vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Pirkt lidaparāta kopiju. Spiediet uz pogas un pēc tam uz lidaparāta, kas atrodas angārā vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Nopirkt vilciena kopiju ar visiem vagoniem. Spiediet šo pogu, un pēc tam uz vilciena, kas atrodas depo vai ārpus tā. Ctrl+Klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Nopirkt autotransporta kopiju. Spiediet uz pogas un pēc tam uz autotransporta, kas atrodas depo vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Nopirkt kuģa kopiju. Spiediet šo pogu un pēc tam uz kuģa, kas atrodas depo vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Pirkt lidaparāta kopiju. Spiediet uz pogas un pēc tam uz lidaparāta, kas atrodas angārā vai ārpus tā. Ctrl+klikšķis, lai koplietotu rīkojumus. Shift rāda izmaksu novērtējumu, neveicot pirkumu
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrēt galveno skatu uz vilcienu depo. Ctrl+klikšķis atvērs skatu uz depo jaunā skatlaukā
@@ -4350,31 +4350,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Autotransporta 
 STR_REPLACE_VEHICLE_SHIP                                        :Kuģis
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Lidaparāts
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Izvēlēties lokomotīves veidu, kuru vēlaties mainīt
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Izvēlēties jaunu lokomotīves veidu, kuru vēlaties lietot kreisajā pusē atlasītās lokomotīves vietā
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Izvēlēties lokomotīves veidu, kuru vēlaties mainīt
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Izvēlēties jaunu lokomotīves veidu, kuru vēlaties lietot kreisajā pusē atlasītās lokomotīves vietā
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Sākt transportlīdzekļu nomaiņu
 STR_REPLACE_VEHICLES_NOW                                        :Nomainīt visus transportlīdzekļus
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Nomainīt tikai vecos transportlīdzekļus
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Nospiest, lai sāktu kreisajā pusē atlasītās lokomotīves aizstāšanu ar labajā pusē atlasīto lokomotīvi
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Nospiest, lai sāktu kreisajā pusē atlasītās lokomotīves aizstāšanu ar labajā pusē atlasīto lokomotīvi
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Netiks nomainīts
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Nav atlasītu transportlīdzekļu
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kad vecs
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Pārtraukt transportlīdzekļu nomaiņu
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Nospiest, lai apturētu kreisajā pusē atlasītās lokomotīves aizstāšanu
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Nospiest, lai apturētu kreisajā pusē atlasītās lokomotīves aizstāšanu
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Parslēgties starp lokomotīves un vagona aizstāšanas logiem
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Parslēgties starp lokomotīves un vagona aizstāšanas logiem
 STR_REPLACE_ENGINES                                             :Lokomotīves
 STR_REPLACE_WAGONS                                              :Vagoni
 STR_REPLACE_ALL_RAILTYPE                                        :Visi dzelzceļa transporta līdzekļi
 STR_REPLACE_ALL_ROADTYPE                                        :Visi ceļa transportlīdzekļi
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Izvēlēties sliežu veidu, kuram vēlaties nomainīt lokomotīves
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Izvēlēties ceļu veidu, kuram vēlaties nomainīt dzinējus
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Izvēlēties sliežu veidu, kuram vēlaties nomainīt lokomotīves
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Izvēlēties ceļu veidu, kuram vēlaties nomainīt dzinējus
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Parāda kura lokomotīve no kreisajā pusē atlasītajām tiek nomainīta, ja vien kāda ir
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Parāda kura lokomotīve no kreisajā pusē atlasītajām tiek nomainīta, ja vien kāda ir
 STR_REPLACE_RAIL_VEHICLES                                       :Sliežu transportlīdzekļi
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektrificētā dzelzceļa transportlīdzekļi
 STR_REPLACE_MONORAIL_VEHICLES                                   :Viensliedes transportlīdzekļi
@@ -4384,7 +4384,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Autotransporta 
 STR_REPLACE_TRAM_VEHICLES                                       :Tramvaji
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagona noņemšana ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Automātiskā aizvietošana saglabās esošo vilciena garumu noņemot vagonus (sākot no priekšgala), ja mainot lokomotīvi tas kļūtu garāks
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Automātiskā aizvietošana saglabās esošo vilciena garumu noņemot vagonus (sākot no priekšgala), ja mainot lokomotīvi tas kļūtu garāks
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Klikšķiniet Ctrl+Click lai iestatītu arī apakšgrupas
 
 # Vehicle view

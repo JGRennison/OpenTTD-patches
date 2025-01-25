@@ -475,21 +475,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Terület
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Eszköztár váltás
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Pálya betöltése, mentése, pályaszerkesztő elhagyása, kilépés
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Pálya betöltése, mentése, pályaszerkesztő elhagyása, kilépés
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Pályaszerkesztő
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}A kezdődátum hátrébb állítása egy évvel
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}A kezdődátum előrébb állítása egy évvel
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Kattints ide a kezdődátum beírásához
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Térkép, extra látkép, feliratok listája, városlista és gazdasági épületlista
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Tájszerkesztő megnyitása vagy új világ létrehozása
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Települések építése vagy generálása
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Gazdasági épületek építése vagy generálása
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Közúti infrastruktúra építése
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Villamos infrastruktúra építése
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Fák ültetése. Ctrl+kattintás+húzással átlós terület jelölhető ki. Shift+kattintással csak a becsült költséget jeleníti meg
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Felirat lerakása
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Objektum építése. Ctrl+kattintás+húzással átlós terület jelölhető ki. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}A kezdődátum hátrébb állítása egy évvel
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}A kezdődátum előrébb állítása egy évvel
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Kattints ide a kezdődátum beírásához
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Térkép, extra látkép, feliratok listája, városlista és gazdasági épületlista
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Tájszerkesztő megnyitása vagy új világ létrehozása
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Települések építése vagy generálása
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Gazdasági épületek építése vagy generálása
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Közúti infrastruktúra építése
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Villamos infrastruktúra építése
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Fák ültetése. Ctrl+kattintás+húzással átlós terület jelölhető ki. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Felirat lerakása
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Objektum építése. Ctrl+kattintás+húzással átlós terület jelölhető ki. Shift+kattintással csak a becsült költséget jeleníti meg
 
 # Scenario editor file menu
 ###length 7
@@ -860,7 +860,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Hó
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Városnevek be/ki
-STR_SMALLMAP_CENTER                                             :{BLACK}A térkép közepét a jelenlegi helyre állítja
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}A térkép közepét a jelenlegi helyre állítja
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -1005,21 +1005,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}{COMMA}. látkép
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Látkép átállítása
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}A látképre a fő nézet pozícióját másolja
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}A látképre a fő nézet pozícióját másolja
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Fő nézet ideállítása
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}A látkép pozícióját a fő nézetre másolja
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}A látkép pozícióját a fő nézetre másolja
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Játékbeállítások
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Általános
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Általános beállítások módosítása
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Általános beállítások módosítása
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafika
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Grafikus beállítások módosítása
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Grafikus beállítások módosítása
 STR_GAME_OPTIONS_TAB_SOUND                                      :Hang effektek
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Hang- és zenebeállítások módosítása
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Hang- és zenebeállítások módosítása
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Közösségi
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Közösségi beállítások módosítása
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Közösségi beállítások módosítása
 
 STR_GAME_OPTIONS_VOLUME                                         :Hangerő
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Hang effektek
@@ -2388,9 +2388,9 @@ STR_FACE_SAVE                                                   :{BLACK}Mentés
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Kedvenc arc elmentése
 STR_FACE_SAVE_DONE                                              :{WHITE}Ez az arc mint a kedvenc arcod kerül az OpenTTD konfig-fájlba mentésre.
 STR_FACE_EUROPEAN                                               :{BLACK}Európai
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Európai arc választása
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Európai arc választása
 STR_FACE_AFRICAN                                                :{BLACK}Afrikai
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Afrikai arc választása
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Afrikai arc választása
 STR_FACE_YES                                                    :Igen
 STR_FACE_NO                                                     :Nem
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Engedélyez bajuszt vagy a fülbevalót
@@ -2446,7 +2446,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Nyelv, s
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Kattintással a listában szereplő játék kiválasztása
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}A szerver amihez legutóbb csatlakoztál:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Kattints ide a legutóbb használt szerver kiválasztásához
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Kattints ide a legutóbb használt szerver kiválasztásához
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}JÁTÉK INFÓ
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Kliensek: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3086,7 +3086,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Minden v
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Városnév:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}A város nevének megadása
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Kattints ide a város nevének beírásához
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Kattints ide a város nevének beírásához
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Véletlen név
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Új véletlen név generálása
 
@@ -3100,7 +3100,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Város
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Átlagosnál gyorsabban növekedő városok{}Beállítástól függően nagyobbak alapításkor
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Település úthálózat építési mintája:
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Válassz úthálózati elrendezést ehhez a városhoz
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Válassz úthálózati elrendezést ehhez a városhoz
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Eredeti
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Jobb utak
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2-es háló
@@ -3333,7 +3333,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Pálya m
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Pálya betöltése
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Magasságtérkép betöltése
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Magasságtérkép mentése
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Kattints ide az aktuális mentési könyvtárra való ugráshoz
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Kattints ide az aktuális mentési könyvtárra való ugráshoz
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} szabad
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Meghajtók, könyvtárak és mentések listája
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}A mentés neve
@@ -3371,15 +3371,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Gazd. é
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Válaszd ki a gazdasági épületek számát vagy adj meg egy egyéni értéket
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Legmagasabb pont:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}A legmagasabb csúcspont beállítása, amit a játék megpróbáljon létrehozni, a tengerszint feletti magasságban mérve.
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}A térkép legmagasabb pontjának tengerszint feletti magasságának növelése eggyel
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}A térkép legmagasabb pontjának tengerszint feletti magasságának csökkentése eggyel
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}A térkép legmagasabb pontjának tengerszint feletti magasságának növelése eggyel
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}A térkép legmagasabb pontjának tengerszint feletti magasságának csökkentése eggyel
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Havas terület kiterjedése:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}A havas terület kiterjedésének növelése 10%-kal
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}A havas terület kiterjedésének csökkentése 10%-kal
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}A havas terület kiterjedésének növelése 10%-kal
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}A havas terület kiterjedésének csökkentése 10%-kal
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Sivatag kiterjedése:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}A sivatag kiterjedésének növelése 10%-kal
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}A sivatag kiterjedésének csökkentése 10%-kal
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}A sivatag kiterjedésének növelése 10%-kal
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}A sivatag kiterjedésének csökkentése 10%-kal
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tereptípus:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Tengerszint:
@@ -3452,8 +3452,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Egy lapo
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Véletlen térkép
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Lapos terep magassága:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}A szárazföld tengerszint feletti magasságának kiválasztása
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Lapos terep magasságának csökkentése eggyel
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Lapos terep magasságának növelése eggyel
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Lapos terep magasságának csökkentése eggyel
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Lapos terep magasságának növelése eggyel
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Lapos terep magasságának megváltoztatása
 
@@ -3822,12 +3822,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Érvényte
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Állomásnevek - kattints egy névre az állomás megnézéséhez. Ctrl+kattintással új nézet nyílik az állomás helyzeténél
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+kattintás több elem kiválasztásához
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+kattintás több elem kiválasztásához
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} állomásai - {COMMA}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Nincs -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Minden szállítóegység kiválasztása
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Minden szállítóegység kiválasztása
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Minden rakománytípus és semmi minősítés
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Többféle rakománytípus
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Semmilyen rakománytípus
@@ -3905,7 +3905,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}A fő nézetet az ellenőrző pontra állítja. Ctrl+kattintással új nézet nyílik az ellenőrzőpontnál
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Átnevezi az ellenőrző pontot
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}A fő nézetet a bójára állítja. Ctrl+kattintással új nézet nyílik a bója helyzeténél
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Bója átnevezése
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Bója átnevezése
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ellenőrző pont nevének módosítása
 
@@ -3980,7 +3980,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}A válla
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Székház
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Székház megtekintése
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}SZH áthelyezése
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}A vállalat székházának újraépítése máshol a vállalat értékének 1%-áért. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}A vállalat székházának újraépítése máshol a vállalat értékének 1%-áért. Shift+kattintással csak a becsült költséget jeleníti meg
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Részletek
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Részletes információk megtekintése az infrastruktúráról
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Adományozz pénzt
@@ -4027,7 +4027,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} és {NUM} további...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Gazdasági épületek neve - a névre kattintva a fő nézetet a választott objektumra irányíthatod. Ctrl+kattintással új nézet nyílik a gazdasági épület helyzeténél
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Gazdasági épületek neve - a névre kattintva a fő nézetet a választott objektumra irányíthatod. Ctrl+kattintással új nézet nyílik a gazdasági épület helyzeténél
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Elfogad: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Termel: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Minden rakománytípus
@@ -4300,10 +4300,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Hajó m�
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Repülőgép másolása
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Ide kattintva elkészítheted egy teljes vonat másolatát annak összes kocsijával. Kattints erre a gombra, majd a vonatra kívül vagy belül a járműtelepen. Kattints ide, majd a másolandó vonatra. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Ide kattintva megveheted egy közúti jármű másolatát. Kattints ide, majd a másolandó járműre a járműtelepen belül vagy kívül. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Ide kattintva elkészítheted egy hajó másolatát. Kattints ide, majd a másolandó hajóra. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Ide kattintva elkészítheted egy repülőgép másolatát. Kattints ide, majd a másolandó repülőgépre. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Ide kattintva elkészítheted egy teljes vonat másolatát annak összes kocsijával. Kattints erre a gombra, majd a vonatra kívül vagy belül a járműtelepen. Kattints ide, majd a másolandó vonatra. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Ide kattintva megveheted egy közúti jármű másolatát. Kattints ide, majd a másolandó járműre a járműtelepen belül vagy kívül. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Ide kattintva elkészítheted egy hajó másolatát. Kattints ide, majd a másolandó hajóra. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Ide kattintva elkészítheted egy repülőgép másolatát. Kattints ide, majd a másolandó repülőgépre. Ctrl+kattintás az utasítások megosztásához. Shift+kattintással csak a becsült költséget jeleníti meg
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}A fő nézetet a járműtelepre állítja. Ctrl+kattintással új nézet nyílik a járműtelep helyzeténél
@@ -4374,31 +4374,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Közúti járm�
 STR_REPLACE_VEHICLE_SHIP                                        :Hajók
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Repülőgépek
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Cserélendő járműtípus kiválasztása
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}A bal oldalon kiválasztott járműtípus helyett kívánt új járműtípus kiválasztása
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Cserélendő járműtípus kiválasztása
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}A bal oldalon kiválasztott járműtípus helyett kívánt új járműtípus kiválasztása
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Járműcsere elkezdése
 STR_REPLACE_VEHICLES_NOW                                        :Az összes jármű azonnali lecserélése
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Csak az elöregedett járművek lecserélése
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Nyomd meg ezt a gombot hogy a bal oldalon kiválasztott járműveket lecseréld a jobb oldalon kiválasztottra
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Nyomd meg ezt a gombot hogy a bal oldalon kiválasztott járműveket lecseréld a jobb oldalon kiválasztottra
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Nem cserélendő
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Nincs kiválasztva jármű
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} - csak ha elöregedett
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Járműcsere befejezése
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Nyomd meg ezt a gombot, ha be akarod fejezni a bal oldalon kiválasztott járművek cseréjét
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Nyomd meg ezt a gombot, ha be akarod fejezni a bal oldalon kiválasztott járművek cseréjét
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Váltás a mozdony és a vagoncserélő ablak között
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Váltás a mozdony és a vagoncserélő ablak között
 STR_REPLACE_ENGINES                                             :Mozdonyok
 STR_REPLACE_WAGONS                                              :Vagonok
 STR_REPLACE_ALL_RAILTYPE                                        :Minden vasúti jármű
 STR_REPLACE_ALL_ROADTYPE                                        :Minden típus
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Cserélendő egységek vasúttípusának kiválasztása
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Cserélendő járművek úttípusának kiválasztása
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Cserélendő egységek vasúttípusának kiválasztása
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Cserélendő járművek úttípusának kiválasztása
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Megmutatja, hogy melyik bal oldali egységet akarod kicserélni
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Megmutatja, hogy melyik bal oldali egységet akarod kicserélni
 STR_REPLACE_RAIL_VEHICLES                                       :Normál vasúti járművek
 STR_REPLACE_ELRAIL_VEHICLES                                     :Villamosított vasúti járművek
 STR_REPLACE_MONORAIL_VEHICLES                                   :Egysínű Vasutak
@@ -4408,7 +4408,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Közúti járm�
 STR_REPLACE_TRAM_VEHICLES                                       :Villamosok
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Vagon törlés ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Az automatikus cserénél a szerelvény hosszának a megtartása vagonok eltávolításával (mozdony utántól kezdve), ha a csere után a szerelvény hosszabb lenne
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Az automatikus cserénél a szerelvény hosszának a megtartása vagonok eltávolításával (mozdony utántól kezdve), ha a csere után a szerelvény hosszabb lenne
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+kattintással az alárendelt csoportokra is alkalmazhatod ezt.
 
 # Vehicle view

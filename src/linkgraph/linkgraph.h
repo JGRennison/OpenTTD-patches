@@ -287,7 +287,7 @@ public:
 	static const uint MIN_TIMEOUT_DISTANCE = 32;
 
 	/** Number of days before deleting links served only by vehicles stopped in depot. */
-	static constexpr DateDelta STALE_LINK_DEPOT_TIMEOUT = 1024;
+	static constexpr DateDelta STALE_LINK_DEPOT_TIMEOUT = DateDelta{1024};
 
 	/** Minimum number of ticks between subsequent compressions of a LG. */
 	static constexpr ScaledTickCounter COMPRESSION_INTERVAL = 256 * DAY_TICKS;

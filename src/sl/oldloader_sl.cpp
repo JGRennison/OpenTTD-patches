@@ -387,7 +387,7 @@ static bool FixTTOEngines()
 		for (uint i = 0; i < lengthof(_orig_aircraft_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_AIRCRAFT, i);
 	}
 
-	CalTime::Date aging_date = std::min(CalTime::CurDate() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), CalTime::ConvertYMDToDate(2050, 0, 1));
+	CalTime::Date aging_date = std::min(CalTime::CurDate() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), CalTime::ConvertYMDToDate(CalTime::Year{2050}, 0, 1));
 	CalTime::YearMonthDay aging_ymd = CalTime::ConvertDateToYMD(aging_date);
 
 	for (EngineID i = 0; i < 256; i++) {
@@ -399,7 +399,7 @@ static bool FixTTOEngines()
 			CalTime::State backup = CalTime::Detail::now;
 			CalTime::Detail::now.cal_date += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			CalTime::Detail::now.cal_ymd = CalTime::ConvertDateToYMD(CalTime::Detail::now.cal_date);
-			StartupOneEngine(e, aging_ymd, aging_ymd, 0, INT_MAX);
+			StartupOneEngine(e, aging_ymd, aging_ymd, 0, CalTime::Date{INT_MAX});
 			CalcEngineReliability(e, false);
 			e->intro_date -= CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			CalTime::Detail::now = backup;
@@ -871,7 +871,7 @@ static bool LoadOldIndustry(LoadgameState *ls, int num)
 			if (i->type > 0x06) i->type++; // Printing Works were added
 			if (i->type == 0x0A) i->type = 0x12; // Iron Ore Mine has different ID
 
-			i->last_prod_year = CalTime::CurYear().base();
+			i->last_prod_year = ToEconTimeCast(CalTime::CurYear());
 
 			i->random_colour = RemapTTOColour(i->random_colour);
 		}
@@ -1027,7 +1027,7 @@ static bool LoadOldCompany(LoadgameState *ls, int num)
 
 		if (num == 0) {
 			/* If the first company has no name, make sure we call it UNNAMED */
-			if (c->name_1 == 0) {
+			if (c->name_1 == STR_NULL) {
 				c->name_1 = STR_SV_UNNAMED;
 			}
 		} else {

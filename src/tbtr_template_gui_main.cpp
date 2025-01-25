@@ -109,7 +109,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 	//Top Matrix
 	NWidget(NWID_VERTICAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, COLOUR_GREY, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
+			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_MATRIX, COLOUR_GREY, TRW_WIDGET_TOP_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetDataTip(0x1, STR_NULL), SetResize(1, 0), SetScrollbar(TRW_WIDGET_TOP_SCROLLBAR),
@@ -119,7 +119,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 	// Template Display
 	NWidget(NWID_VERTICAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, COLOUR_GREY, TRW_WIDGET_INSET_TEMPLATES), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_AVAILABLE_TEMPLATES, STR_NULL),
+			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_TEMPLATES), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_AVAILABLE_TEMPLATES, STR_NULL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_MATRIX, COLOUR_GREY, TRW_WIDGET_BOTTOM_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetDataTip(0x1, STR_NULL), SetResize(1, 1), SetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR),
@@ -129,7 +129,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 	// Info Area
 	NWidget(NWID_VERTICAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, COLOUR_GREY, TRW_WIDGET_TMPL_INFO_INSET), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_TEMPLATE_INFO, STR_NULL),
+			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_TMPL_INFO_INSET), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetDataTip(STR_TMPL_TEMPLATE_INFO, STR_NULL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_INFO_PANEL), SetMinimalSize(216,120), SetResize(1,0), SetScrollbar(TRW_WIDGET_BOTTOM_SCROLLBAR), EndContainer(),
@@ -167,7 +167,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_START), SetMinimalSize(150, 12), SetDataTip(STR_TMPL_RPL_START, STR_TMPL_RPL_START_TOOLTIP),
 			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TRAIN_FLUFF_LEFT), SetMinimalSize(15, 12), EndContainer(),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN), SetMinimalSize(150, 12), SetDataTip(0x0, STR_REPLACE_HELP_RAILTYPE), SetResize(1, 0),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN), SetMinimalSize(150, 12), SetDataTip(0x0, STR_REPLACE_RAILTYPE_TOOLTIP), SetResize(1, 0),
 			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TRAIN_FLUFF_RIGHT), SetMinimalSize(16, 12), EndContainer(),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_STOP), SetMinimalSize(150, 12), SetDataTip(STR_TMPL_RPL_STOP, STR_TMPL_RPL_STOP_TOOLTIP),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),

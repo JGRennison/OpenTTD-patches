@@ -3215,7 +3215,7 @@ void IndustryMonthlyLoop()
 void InitializeIndustries()
 {
 	Industry::industries = {};
-	_industry_sound_tile = 0;
+	_industry_sound_tile = TileIndex{};
 
 	_industry_builder.Reset();
 }

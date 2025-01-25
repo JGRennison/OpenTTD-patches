@@ -50,7 +50,7 @@ extern void ClearOutOfDateSignalSpeedRestrictions();
 
 void CheckStateTicksWrap()
 {
-	StateTicksDelta tick_adjust = 0;
+	StateTicksDelta tick_adjust{0};
 	auto get_tick_adjust = [&](StateTicksDelta target) {
 		int32_t rounding = _settings_time.time_in_minutes * 1440;
 		return target - (target.base() % rounding);
@@ -122,7 +122,7 @@ int32_t EconTime::Detail::WallClockYearToDisplay(EconTime::Year year)
 
 StateTicks GetStateTicksFromDateWithoutOffset(EconTime::Date date, EconTime::DateFract date_fract)
 {
-	return ((int64_t)(EconTime::DateToDateTicks(date, date_fract).base()) * DayLengthFactor()) + TickSkipCounter();
+	return StateTicks{((int64_t)(EconTime::DateToDateTicks(date, date_fract).base()) * DayLengthFactor()) + TickSkipCounter()};
 }
 
 void RecalculateStateTicksOffset()
@@ -158,7 +158,7 @@ CalTime::Date StateTicksToCalendarDate(StateTicks ticks)
 	uint subticks_left_this_day = ((DAY_TICKS - CalTime::CurDateFract()) * ticks_per_cal_day) - CalTime::CurSubDateFract();
 	Ticks ticks_into_this_day = ticks_per_cal_day - CeilDiv(subticks_left_this_day, DAY_TICKS);
 
-	return CalTime::CurDate().base() + (int32_t)(((ticks - _state_ticks).base() + ticks_into_this_day) / ticks_per_cal_day);
+	return CalTime::CurDate() + static_cast<int32_t>(((ticks - _state_ticks).base() + ticks_into_this_day) / ticks_per_cal_day);
 }
 
 #define M(a, b) ((a << 5) | b)
@@ -210,29 +210,29 @@ CalTime::YearMonthDay CalTime::ConvertDateToYMD(CalTime::Date date)
 	 */
 
 	/* There are 97 leap years in 400 years */
-	CalTime::Year yr = 400 * (date.base() / (DAYS_IN_YEAR * 400 + 97));
+	CalTime::Year yr = CalTime::Year{400 * (date.base() / (DAYS_IN_YEAR * 400 + 97))};
 	int rem = date.base() % (DAYS_IN_YEAR * 400 + 97);
 	uint16_t x;
 
 	if (rem >= DAYS_IN_YEAR * 100 + 25) {
 		/* There are 25 leap years in the first 100 years after
 		 * every 400th year, as every 400th year is a leap year */
-		yr  += 100;
+		yr += YearDelta{100};
 		rem -= DAYS_IN_YEAR * 100 + 25;
 
 		/* There are 24 leap years in the next couple of 100 years */
-		yr += 100 * (rem / (DAYS_IN_YEAR * 100 + 24));
+		yr += YearDelta{100 * (rem / (DAYS_IN_YEAR * 100 + 24))};
 		rem = (rem % (DAYS_IN_YEAR * 100 + 24));
 	}
 
 	if (!CalTime::IsLeapYear(yr) && rem >= DAYS_IN_YEAR * 4) {
 		/* The first 4 year of the century are not always a leap year */
-		yr  += 4;
+		yr += YearDelta{4};
 		rem -= DAYS_IN_YEAR * 4;
 	}
 
 	/* There is 1 leap year every 4 years */
-	yr += 4 * (rem / (DAYS_IN_YEAR * 4 + 1));
+	yr += YearDelta{4 * (rem / (DAYS_IN_YEAR * 4 + 1))};
 	rem = rem % (DAYS_IN_YEAR * 4 + 1);
 
 	/* The last (max 3) years to account for; the first one
@@ -277,7 +277,7 @@ EconTime::YearMonthDay EconTime::ConvertDateToYMD(EconTime::Date date)
 	if (EconTime::UsingWallclockUnits()) {
 		/* If we're using wallclock units, economy months have 30 days and an economy year has 360 days. */
 		EconTime::YearMonthDay ymd;
-		ymd.year = date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR;
+		ymd.year = EconTime::Year{date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR};
 		ymd.month = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR) / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
 		ymd.day = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + 1;
 		return ymd;
@@ -293,7 +293,7 @@ EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month m
 	if (EconTime::UsingWallclockUnits()) {
 		/* If we're using wallclock units, economy months have 30 days and an economy year has 360 days. */
 		const int total_months = (year.base() * MONTHS_IN_YEAR) + month;
-		return (total_months * EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + day - 1; // Day is 1-indexed but Date is 0-indexed, hence the - 1.
+		return EconTime::Date{(total_months * EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + day - 1}; // Day is 1-indexed but Date is 0-indexed, hence the - 1.
 	}
 
 	/* Process the same as calendar time */
@@ -396,7 +396,7 @@ static void OnNewEconomyYear()
 	if (EconTime::CurYear() == EconTime::MAX_YEAR + 1) {
 		EconTime::Detail::period_display_offset++;
 		EconTime::Detail::now.econ_ymd.year--;
-		int days_this_year = EconTime::IsLeapYear(EconTime::Detail::now.econ_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
+		DateDelta days_this_year = DateDelta{EconTime::IsLeapYear(EconTime::Detail::now.econ_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR};
 		EconTime::Detail::now.econ_date -= days_this_year;
 		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		UpdateOrderUIOnDateChange();

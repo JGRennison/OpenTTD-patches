@@ -412,21 +412,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Agor gwy
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Amnewid bariau offer
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Cadw Senario, llwytho senario, gwaredu a'r golygydd senario, gadael
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Cadw Senario, llwytho senario, gwaredu a'r golygydd senario, gadael
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Golygydd Senario
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Symud y dyddiad cychwyn yn ôl 1 blwyddyn
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Symud y dyddiad cychwyn ymlaen 2 flynedd
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Cliciwch i fewnbynnu'r flwyddyn dechreuol
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Agor map, porth golwg ychwanegol, rhestr arwyddion neu cyfeiriadur diwydiant
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Agor y ddewislen tirweddu neu gynhyrchu byd newydd
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Adeiladu neu gynhyrchu trefi
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Adeiladu neu gynhyrchu diwydiannau
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Adeiladu tanadeiledd ffordd
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Adeiladu tanadeiledd tramffordd
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plannu coed. Ctrl+Clic+Llusgo i ddewis yr ardal yn ddeiagonal. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Gosod arwydd
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Gosod. Ctrl+Clic+Llusgo i ddewis yr ardal yn ddeiagonal. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Symud y dyddiad cychwyn yn ôl 1 blwyddyn
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Symud y dyddiad cychwyn ymlaen 2 flynedd
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Cliciwch i fewnbynnu'r flwyddyn dechreuol
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Agor map, porth golwg ychwanegol, rhestr arwyddion neu cyfeiriadur diwydiant
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Agor y ddewislen tirweddu neu gynhyrchu byd newydd
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Adeiladu neu gynhyrchu trefi
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Adeiladu neu gynhyrchu diwydiannau
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Adeiladu tanadeiledd ffordd
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Adeiladu tanadeiledd tramffordd
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Plannu coed. Ctrl+Clic+Llusgo i ddewis yr ardal yn ddeiagonal. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Gosod arwydd
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Gosod. Ctrl+Clic+Llusgo i ddewis yr ardal yn ddeiagonal. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
 
 # Scenario editor file menu
 ###length 7
@@ -796,7 +796,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Eira
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Toglu dangos enwau trefi
-STR_SMALLMAP_CENTER                                             :{BLACK}Canoli'r map bach ar y lleoliad presennol
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Canoli'r map bach ar y lleoliad presennol
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -942,21 +942,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Ffenestr Olygfa{COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Copïo i Ffenestr Olygfa
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copïo lleoliad y golwg byd-eang i'r ffenestr olygfa
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Copïo lleoliad y golwg byd-eang i'r ffenestr olygfa
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Gludo o'r Ffenestr Olygfa
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Gludo lleoliad y ffenestr olygfa i'r golwg byd-eang
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Gludo lleoliad y ffenestr olygfa i'r golwg byd-eang
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Dewisiadau Gêm
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Cyffredinol
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Dewis gosodiadau cyffredinol
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Dewis gosodiadau cyffredinol
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Graffeg
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Dewis gosodiadau graffeg
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Dewis gosodiadau graffeg
 STR_GAME_OPTIONS_TAB_SOUND                                      :Sain
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Dewis gosodiadau sain a cherddoriaeth
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Dewis gosodiadau sain a cherddoriaeth
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Cymdeithasol
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Dewis gosodiadau integreiddio cymdeithasol
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Dewis gosodiadau integreiddio cymdeithasol
 
 STR_GAME_OPTIONS_VOLUME                                         :Lefel Sain
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Effeithiau sŵn
@@ -2326,9 +2326,9 @@ STR_FACE_SAVE                                                   :{BLACK}Cadw
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Cadw hoff wyneb
 STR_FACE_SAVE_DONE                                              :{WHITE}Bydd yr wyneb hwn yn cael ei gadw fel eich ffefryn yn y ffeil ffurfweddu OpenTTD
 STR_FACE_EUROPEAN                                               :{BLACK}Ewropeiaidd
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Dewis gwyneb Ewropeaidd
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Dewis gwyneb Ewropeaidd
 STR_FACE_AFRICAN                                                :{BLACK}Affricanaidd
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Dewis gwyneb Affricanaidd
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Dewis gwyneb Affricanaidd
 STR_FACE_YES                                                    :Ie
 STR_FACE_NO                                                     :Na
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Galluogi mwstásh neu glustdlws
@@ -2384,7 +2384,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Iaith, f
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Cliciwch gêm o'r rhestr i'w ddewis
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Y gweinydd yr ymunoch chi ag o ddiwethaf:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Cliciwch i ddewis y gweinydd y chwaraeoch chi ddiwethaf
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Cliciwch i ddewis y gweinydd y chwaraeoch chi ddiwethaf
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}GWYBODAETH AM Y GÊM
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Gwesteion: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3026,7 +3026,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Gwneud i
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Enw tref:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Rhowch enw'r dref
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Cliciwch i fewnbynnu enw'r dref
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Cliciwch i fewnbynnu enw'r dref
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Enw ar hap
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Cynhyrchu enw newydd ar hap
 
@@ -3040,7 +3040,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Dinas
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Mae dinasoedd yn tyfu'n gynt na threfi arferol{}Yn dibynnu ar y gosodiadau, maent hefyd yn fwy pan gânt eu sefydlu
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Cynllun ffyrdd tref
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Dewiswch y cynllun ffyrdd i'w ddefnyddio ar gyfer y dref hon
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Dewiswch y cynllun ffyrdd i'w ddefnyddio ar gyfer y dref hon
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Gwreiddiol
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Gwell ffyrdd
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}Grid 2x2
@@ -3273,7 +3273,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Cadw Sen
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Llwytho Senario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Llwytho Heightmap
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Cadw Siart Uchder
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Cliciwch yma i newid i'r cyfeiriadur cadw/llwytho diofyn cyfredol
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Cliciwch yma i newid i'r cyfeiriadur cadw/llwytho diofyn cyfredol
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} yn rhydd
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Rhestr o yriannau, cyfeiriaduron ffeiliau gemau wedi'i cadw
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Enw sydd wedi'i dewis ar gyfer gêm wedi'i chadw
@@ -3311,15 +3311,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nifer di
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :BLACK}Dewis dwysedd y diwydiannau, neu rif addasedig
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Copa uchaf:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Dewis y copa uchaf y bydd y gêm yn ceisio ei greu, mesurwyd o lefel y môr
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Cynyddu uchder uchafsymol y copa uchaf ar y map o un
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Lleihau uchder uchafsymol y copa uchaf ar y map o un
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Cynyddu uchder uchafsymol y copa uchaf ar y map o un
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Lleihau uchder uchafsymol y copa uchaf ar y map o un
 STR_MAPGEN_SNOW_COVERAGE                                        :Gorchuddiad eira:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Cynyddu gorchudd eira o 10 y cant
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Lleihau gorchudd eira o 10 y cant
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Cynyddu gorchudd eira o 10 y cant
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Lleihau gorchudd eira o 10 y cant
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Gorchudd anialwch:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Cynyddu gorchudd anialwch o 10 y cant
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Lleihau gorchudd anialwch o 10 y cant
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Cynyddu gorchudd anialwch o 10 y cant
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Lleihau gorchudd anialwch o 10 y cant
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Math Tirwedd:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Lefel y Môr:
@@ -3392,8 +3392,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Cynhyrch
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Tir ar hap
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}uchder tir gwastad:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Dewis uchder y tir uwchben lefel y môr
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Symud uchder tir gwastad un yn uwch
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Symud uchder tir gwastad un yn is
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Symud uchder tir gwastad un yn uwch
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Symud uchder tir gwastad un yn is
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Newid uchder tir gwastad
 
@@ -3762,12 +3762,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Cyfeiriad 
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Enwau gorsafoedd - cliciwch ar enw i ganoli'r brif olygfa ar yr orsaf. Ctrl+Clic i agor ffenest golwg newydd ar leoliad yr orsaf
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Clic i ddewis mwy nag un eitem
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+Clic i ddewis mwy nag un eitem
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Gorsaf
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Dim -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Dewis pob cyfleuster
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Dewis pob cyfleuster
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Bob math cargo a dim graddfa
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Mathau cargo lluosog
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Dim mathau cargo
@@ -3845,7 +3845,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Canoli'r brif olygfa ar leoliad y pwynt llwybro. Ctrl+Clic i agor ffenest olygfa newydd ar leoliad y pwynt llwybro
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Newid enw pwynt llwybro
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Canoli'r brif olygfa ar leoliad y bwï. Ctrl+Clic i agor ffenestr olygfa newydd ar leoliad y bwï
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Newid enw bwï
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Newid enw bwï
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Golygu enw pwynt llwybro
 
@@ -3920,7 +3920,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Adeiladu
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Gweld pencadlys cwmni
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Gweld pencadlys y cwmni
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Ail-leoli pencadlys cwmni
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ailadeiladu pencadlys cwmni mewn man arall am 1% o werth y cwmni. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Ailadeiladu pencadlys cwmni mewn man arall am 1% o werth y cwmni. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Manylion
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gweld cyfansymau tanadeiledd manwl
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Rhoi arian
@@ -3967,7 +3967,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} a {NUM} mwy...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Enwau diwydiannau - cliciwch ar enw i ganoli'r sgrin ar ddiwydiant. Ctrl+Clic i agor ffenest golwg newydd ar leoliad y diwydiant
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Enwau diwydiannau - cliciwch ar enw i ganoli'r sgrin ar ddiwydiant. Ctrl+Clic i agor ffenest golwg newydd ar leoliad y diwydiant
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Llwythi a dderbynir: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Cargo a gynhyrchir: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Pob math o lwyth
@@ -4240,10 +4240,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Dyblygu 
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Dyblygu Awyren
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Prynu copi o'r trên gan gynnwys pob cerbyd. Cliciwch ar y botwm hwn ac yna ar drên tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu'r gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Prynu copi o gerbyd ffordd. Cliciwch ar y botwm hwn ac yna ar gerbyd sydd tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Prynu copi o long. Cliciwch ar y botwm hwn ac yna ar long sydd tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu gorchmynion. Hefyd Shift i ddangos amcangyfrif o'r gost yn unig
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Prynu copi o awyren. Cliciwch ar y botwm hwn ac yna ar awyren sydd tu fewn neu tu allan i awyrendy. Ctrl+Clic i rannu gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Prynu copi o'r trên gan gynnwys pob cerbyd. Cliciwch ar y botwm hwn ac yna ar drên tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu'r gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Prynu copi o gerbyd ffordd. Cliciwch ar y botwm hwn ac yna ar gerbyd sydd tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Prynu copi o long. Cliciwch ar y botwm hwn ac yna ar long sydd tu fewn neu tu allan i ddepo. Ctrl+Clic i rannu gorchmynion. Hefyd Shift i ddangos amcangyfrif o'r gost yn unig
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Prynu copi o awyren. Cliciwch ar y botwm hwn ac yna ar awyren sydd tu fewn neu tu allan i awyrendy. Ctrl+Clic i rannu gorchmynion. Pwyso Shift hefyd i ddangos amcangyfrif o'r gost yn unig
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Canoli'r prif olygfa ar leoliad y depo trên. Ctrl+Clic i agor ffenest golwg newydd ar leoliad y depo
@@ -4314,31 +4314,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Mae Cerbyd Ffor
 STR_REPLACE_VEHICLE_SHIP                                        :Mae Llong
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Mae Awyren
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Dewiswch y math injan i'w ddisodli
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Dewiswch y math injan newydd yr hoffech chi ei ddefnyddio yn lle'r math injan ar y chwith
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Dewiswch y math injan i'w ddisodli
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Dewiswch y math injan newydd yr hoffech chi ei ddefnyddio yn lle'r math injan ar y chwith
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Dechrau Disodli Cerbydau
 STR_REPLACE_VEHICLES_NOW                                        :Disodli pob cerbyd yn awr
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Disodli hen gerbydau yn unig
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Pwyswch i ddechrau disodli'r math injan a ddewiswyd ar y chwith gyda'r math injan a ddewiswyd ar y dde
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Pwyswch i ddechrau disodli'r math injan a ddewiswyd ar y chwith gyda'r math injan a ddewiswyd ar y dde
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Ddim yn disodli
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Dim cerbyd wedi'i ddewis
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} pan yn hen
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Gorffen Disodli Cerbydau
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Gwasgwch i atal disodli'r math injan sydd wedi'i ddewis ar y chwith
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Gwasgwch i atal disodli'r math injan sydd wedi'i ddewis ar y chwith
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Newid rhwng y ffenest disodli wagenni a'r un injanau
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Newid rhwng y ffenest disodli wagenni a'r un injanau
 STR_REPLACE_ENGINES                                             :Injanau
 STR_REPLACE_WAGONS                                              :Wagenni
 STR_REPLACE_ALL_RAILTYPE                                        :Pob cerbyd rheilffordd
 STR_REPLACE_ALL_ROADTYPE                                        :Pob cerbyd ffordd
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Dewiswch y math o reilffordd yr hoffech chi ddisodli injans ar ei gyfer
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Dewiswch y math o ffordd yr hoffech ddisodli injans ar ei gyfer
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Dewiswch y math o reilffordd yr hoffech chi ddisodli injans ar ei gyfer
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Dewiswch y math o ffordd yr hoffech ddisodli injans ar ei gyfer
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Dangoswch pa injan (os unrhyw) y mae'r injan ar y chwith yn cael ei disodli gyda
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Dangoswch pa injan (os unrhyw) y mae'r injan ar y chwith yn cael ei disodli gyda
 STR_REPLACE_RAIL_VEHICLES                                       :Cerbydau Rheilffordd
 STR_REPLACE_ELRAIL_VEHICLES                                     :Cerbydau Rheilffordd Drydan
 STR_REPLACE_MONORAIL_VEHICLES                                   :Cerbydau Monoreilffordd
@@ -4348,7 +4348,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Cerbydau Ffordd
 STR_REPLACE_TRAM_VEHICLES                                       :Cerbydau Tramffordd
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Tynnu wagenni: ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Gwneud i awtoddisodli gadw hyd y trên yr un peth drwy dynnu wagenni (gan ddechrau yn y blaen), os byddai newid yr injan yn gwneud y trên yn hirach
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}Gwneud i awtoddisodli gadw hyd y trên yr un peth drwy dynnu wagenni (gan ddechrau yn y blaen), os byddai newid yr injan yn gwneud y trên yn hirach
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+Clic i weithredu ar is-grwpiau hefyd
 
 # Vehicle view

@@ -433,8 +433,8 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
 			info.clients_on     = p.Recv_uint8 ();
 			info.spectators_on  = p.Recv_uint8 ();
 			if (game_info_version < 3) { // 16 bits dates got scrapped and are read earlier
-				info.calendar_date  = p.Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
-				info.calendar_start = p.Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
+				info.calendar_date  = CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR + p.Recv_uint16();
+				info.calendar_start = CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR + p.Recv_uint16();
 			}
 			if (game_info_version < 6) while (p.Recv_uint8() != 0) {} // Used to contain the map-name.
 

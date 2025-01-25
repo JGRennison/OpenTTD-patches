@@ -413,21 +413,21 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Landinfo
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Knoppenbalken wisselen
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Scenario opslaan of laden, scenariobewerker verlaten, afsluiten
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Scenario opslaan of laden, scenariobewerker verlaten, afsluiten
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenariobewerker
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Startdatum 1 jaar terugzetten
-STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Startdatum 1 jaar vooruitzetten
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klik om het startjaar op te geven
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Kaart, extra venster, lijst met bordjes, stedenlijst of lijst met industrieën openen
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Menu Landschapsontwikkeling openen of nieuwe wereld genereren
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Steden bouwen of genereren
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Industrieën bouwen of genereren
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Wegenbouw
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Tramsporen bouwen
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Bomen planten. Ctrl+klik+slepen selecteert het gebied diagonaal. Voeg Shift toe voor alleen inschatting van de kosten
-STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Bord plaatsen
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Object plaatsen. Ctrl+klik+slepen selecteert een diagonaal gebied. Voeg Shift toe voor alleen verwachte kosten
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Startdatum 1 jaar terugzetten
+STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_FORWARD_TOOLTIP     :{BLACK}Startdatum 1 jaar vooruitzetten
+STR_SCENEDIT_TOOLBAR_SET_DATE_TOOLTIP                           :{BLACK}Klik om het startjaar op te geven
+STR_SCENEDIT_TOOLBAR_DISPLAY_MAP_TOWN_DIRECTORY_TOOLTIP         :{BLACK}Kaart, extra venster, lijst met bordjes, stedenlijst of lijst met industrieën openen
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION_TOOLTIP               :{BLACK}Menu Landschapsontwikkeling openen of nieuwe wereld genereren
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP                    :{BLACK}Steden bouwen of genereren
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP                :{BLACK}Industrieën bouwen of genereren
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP                  :{BLACK}Wegenbouw
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP                  :{BLACK}Tramsporen bouwen
+STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP                        :{BLACK}Bomen planten. Ctrl+klik+slepen selecteert het gebied diagonaal. Voeg Shift toe voor alleen inschatting van de kosten
+STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP                         :{BLACK}Bord plaatsen
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Object plaatsen. Ctrl+klik+slepen selecteert een diagonaal gebied. Voeg Shift toe voor alleen verwachte kosten
 
 # Scenario editor file menu
 ###length 7
@@ -801,7 +801,7 @@ STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Sneeuw
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Plaatsnamen weergeven-verbergen.
-STR_SMALLMAP_CENTER                                             :{BLACK}Kleine kaart centreren op huidige positie
+STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Kleine kaart centreren op huidige positie
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
@@ -947,21 +947,21 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLAC
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Kijkvenster {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Verander kijkvenster
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopieer de locatie van het algemene scherm naar dit kijkvenster
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TOOLTIP                        :{BLACK}Kopieer de locatie van het algemene scherm naar dit kijkvenster
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Verander algemeen scherm
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Kopieer de locatie van dit kijkvenster naar het algemene scherm
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Kopieer de locatie van dit kijkvenster naar het algemene scherm
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelopties
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Algemeen
-STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Algemene instellingen kiezen
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Algemene instellingen kiezen
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafische elementen
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Grafische instellingen kiezen
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Grafische instellingen kiezen
 STR_GAME_OPTIONS_TAB_SOUND                                      :Geluid
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Geluids- en muziekinstellingen kiezen
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Geluids- en muziekinstellingen kiezen
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Sociaal
-STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Instellingen voor sociale integratie kiezen
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Instellingen voor sociale integratie kiezen
 
 STR_GAME_OPTIONS_VOLUME                                         :Volume
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Geluidseffecten
@@ -2331,9 +2331,9 @@ STR_FACE_SAVE                                                   :{BLACK}Opslaan
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Favoriet gezicht opslaan
 STR_FACE_SAVE_DONE                                              :{WHITE}Dit gezicht wordt in het OpenTTD-configuratiebestand opgeslagen als jouw favoriet
 STR_FACE_EUROPEAN                                               :{BLACK}Europeaans
-STR_FACE_SELECT_EUROPEAN                                        :{BLACK}Selecteer Europese gezichten
+STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Selecteer Europese gezichten
 STR_FACE_AFRICAN                                                :{BLACK}Afrikaans
-STR_FACE_SELECT_AFRICAN                                         :{BLACK}Selecteer Afrikaanse gezichten
+STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Selecteer Afrikaanse gezichten
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nee
 STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Geef het gezicht een snor of oorbel
@@ -2389,7 +2389,7 @@ STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Info ove
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klik op een spel uit de lijst om dit te selecteren
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}De server waarmee je het laatste verbonden was:
-STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST                    :{BLACK}Klik om de server te selecteren waar je het laatste op hebt gespeeld
+STR_NETWORK_SERVER_LIST_CLICK_TO_SELECT_LAST_TOOLTIP            :{BLACK}Klik om de server te selecteren waar je het laatste op hebt gespeeld
 
 STR_NETWORK_SERVER_LIST_GAME_INFO                               :{SILVER}SPELINFORMATIE
 STR_NETWORK_SERVER_LIST_CLIENTS                                 :{SILVER}Spelers: {WHITE}{COMMA} / {COMMA} - {COMMA} / {COMMA}
@@ -3041,7 +3041,7 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Laat all
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Plaatsnaam:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Plaatsnaam invoeren
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Klik om plaatsnaam in te voeren
+STR_FOUND_TOWN_NAME_EDITOR_TOOLTIP                              :{BLACK}Klik om plaatsnaam in te voeren
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Willekeurige naam
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Genereer een willekeurige nieuwe naam
 
@@ -3055,7 +3055,7 @@ STR_FOUND_TOWN_CITY                                             :{BLACK}Groeista
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Groeisteden groeien sneller dan gewone steden{}Afhankelijk van de instellingen kunnen ze ook groter zijn als ze gesticht worden
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Wegpatroon
-STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Wegpatroon voor deze stad kiezen
+STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Wegpatroon voor deze stad kiezen
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Origineel
 STR_FOUND_TOWN_SELECT_LAYOUT_BETTER_ROADS                       :{BLACK}Verbeterd
 STR_FOUND_TOWN_SELECT_LAYOUT_2X2_GRID                           :{BLACK}2x2-raster
@@ -3289,7 +3289,7 @@ STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Scenario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Hoogtekaart laden
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Hoogtekaart opslaan
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Stadsgegevens laden
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Klik hier om naar de standaard-opslagmap te gaan
+STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klik hier om naar de standaard-opslagmap te gaan
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} vrij
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Lijst van schijven, mappen en opgeslagen spellen
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Huidige gekozen naam voor opgeslagen spel
@@ -3328,15 +3328,15 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Aantal i
 STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Kies de dichtheid van industrieën of een aangepast getal
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Hoogste berg:
 STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Kies de hoogste piek die het spel probeert te creëren, gemeten in hoogte boven zeeniveau
-STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Verhoogt de maximale hoogte van de hoogste berg op de kaart met één
-STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Verlaagt de maximale hoogte van de hoogste berg op de kaart met één
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP_TOOLTIP                          :{BLACK}Verhoogt de maximale hoogte van de hoogste berg op de kaart met één
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN_TOOLTIP                        :{BLACK}Verlaagt de maximale hoogte van de hoogste berg op de kaart met één
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Sneeuwoppervlak:
-STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Vergroot het sneeuwoppervlak met tien procent
-STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Verkleint het sneeuwoppervlak met tien procent
+STR_MAPGEN_SNOW_COVERAGE_UP_TOOLTIP                             :{BLACK}Vergroot het sneeuwoppervlak met tien procent
+STR_MAPGEN_SNOW_COVERAGE_DOWN_TOOLTIP                           :{BLACK}Verkleint het sneeuwoppervlak met tien procent
 STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
 STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Woestijnoppervlak:
-STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Vergroot het woestijnoppervlak met tien procent
-STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Verkleint het woestijnoppervlak met tien procent
+STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Vergroot het woestijnoppervlak met tien procent
+STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Verkleint het woestijnoppervlak met tien procent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terreintype:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Zeeniveau:
@@ -3409,8 +3409,8 @@ STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Genereer
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Willekeurig land
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Hoogte van vlak land:
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Kies de hoogte van het land boven zee
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Verlaag de hoogte van vlak land met één
-STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Verhoog de hoogte van vlak land met één
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN_TOOLTIP                    :{BLACK}Verlaag de hoogte van vlak land met één
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP_TOOLTIP                      :{BLACK}Verhoog de hoogte van vlak land met één
 
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}Verander hoogte van vlak land
 
@@ -3784,12 +3784,12 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Ongeldige 
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stationsnamen - klik op naam om het scherm te centreren op het station. Ctrl+klik opent een nieuw venster op de locatie van het station
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+klik om meerdere onderdelen te kiezen
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP                :{BLACK}Ctrl+klik om meerdere onderdelen te kiezen
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Station{P "" s}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Geen -
-STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Alle faciliteiten selecteren
+STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP                  :{BLACK}Alle faciliteiten selecteren
 STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Alle vrachtsoorten zonder waardering
 STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Meer vrachtsoorten
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Geen vrachtsoorten
@@ -3867,7 +3867,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centreer het hoofdscherm op het routepunt. Ctrl+klik opent nieuw venster op locatie van routepunt.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Naam routepunt aanpassen
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centreer het hoofdscherm op de locatie van de boei. Ctrl+klik opent een nieuw venster op de locatie van de boei.
-STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Naam van boei aanpassen
+STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Naam van boei aanpassen
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Naam routepunt aanpassen
 
@@ -3943,7 +3943,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Hoofdkan
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Hoofdkantoor bekijken
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Hoofdkantoor weergeven
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Hoofdkantoor verplaatsen
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Hoofdkantoor verplaatsen voor 1% van de bedrijfswaarde. Shift+klik geeft de verwachte kosten zonder hoofdkantoor te verplaatsen.
+STR_COMPANY_VIEW_RELOCATE_HQ_TOOLTIP                            :{BLACK}Hoofdkantoor verplaatsen voor 1% van de bedrijfswaarde. Shift+klik geeft de verwachte kosten zonder hoofdkantoor te verplaatsen.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gedetailleerde aantallen infrastructuur bekijken
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld geven
@@ -3990,7 +3990,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} en {NUM} meer...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrienamen - klik op een naam om het scherm te centreren op de industrie. Ctrl+klik opent een nieuw venster op de locatie van de industrie.
+STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrienamen - klik op een naam om het scherm te centreren op de industrie. Ctrl+klik opent een nieuw venster op de locatie van de industrie.
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Geaccepteerde vracht: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Geproduceerde vracht: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Alle soorten vracht
@@ -4265,10 +4265,10 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Schip kl
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Vliegtuig klonen
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Hiermee koop je een kopie van een trein, inclusief wagons. Klik op deze knop en dan op een trein binnen of buiten het depot. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Hiermee koop je een kopie van een wegvoertuig. Klik op deze knop en dan op een wegvoertuig binnen of buiten de garage. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Hiermee koop je een kopie van een schip. Klik op deze knop en dan op een schip binnen of buiten het dok. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Hiermee koop je een kopie van een vliegtuig. Klik op deze knop en dan op een vliegtuig binnen of buiten de hangar. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
+STR_DEPOT_CLONE_TRAIN_DEPOT_TOOLTIP                             :{BLACK}Hiermee koop je een kopie van een trein, inclusief wagons. Klik op deze knop en dan op een trein binnen of buiten het depot. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_TOOLTIP                      :{BLACK}Hiermee koop je een kopie van een wegvoertuig. Klik op deze knop en dan op een wegvoertuig binnen of buiten de garage. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
+STR_DEPOT_CLONE_SHIP_DEPOT_TOOLTIP                              :{BLACK}Hiermee koop je een kopie van een schip. Klik op deze knop en dan op een schip binnen of buiten het dok. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
+STR_DEPOT_CLONE_AIRCRAFT_HANGAR_TOOLTIP                         :{BLACK}Hiermee koop je een kopie van een vliegtuig. Klik op deze knop en dan op een vliegtuig binnen of buiten de hangar. Ctrl+klik deelt de orders. Voeg Shift toe voor alleen inschatting van de kosten
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centreer het hoofdscherm op de remise. Ctrl+klik opent een nieuw scherm op locatie van remise.
@@ -4339,31 +4339,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Wegvoertuig
 STR_REPLACE_VEHICLE_SHIP                                        :Schip
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Vliegtuig
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Selecteer het type locomotief om te vervangen
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Selecteer een nieuw type locomotief die je wilt gebruiken om het links geselecteerde type locomotief te vervangen
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Selecteer het type locomotief om te vervangen
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Selecteer een nieuw type locomotief die je wilt gebruiken om het links geselecteerde type locomotief te vervangen
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Start het vervangen
 STR_REPLACE_VEHICLES_NOW                                        :Vervang alle voertuigen nu
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Vervang alleen oude voertuigen
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Klik op deze knop als je de links geselecteerde locomotief wilt vervangen met de rechtse
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Klik op deze knop als je de links geselecteerde locomotief wilt vervangen met de rechtse
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Niet vervangen
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Geen voertuig geselecteerd
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} als oud
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop het vervangen
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klik op deze knop als je de links geselecteerde locomotief niet wilt vervangen
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Klik op deze knop als je de links geselecteerde locomotief niet wilt vervangen
 
-STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Wissel tussen locomotief- en wagonvervangvensters
+STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Wissel tussen locomotief- en wagonvervangvensters
 STR_REPLACE_ENGINES                                             :Motoren
 STR_REPLACE_WAGONS                                              :Wagons
 STR_REPLACE_ALL_RAILTYPE                                        :Alle treinen
 STR_REPLACE_ALL_ROADTYPE                                        :Alle wegvoertuigen
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Selecteer een spoortype waar je locomotieven voor wilt vervangen
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Selecteer het type weg waar je voertuigen voor wilt vervangen
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Selecteer een spoortype waar je locomotieven voor wilt vervangen
+STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Selecteer het type weg waar je voertuigen voor wilt vervangen
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Dit geeft weer waarmee de links geselecteerde locomotief vervangen wordt
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Dit geeft weer waarmee de links geselecteerde locomotief vervangen wordt
 STR_REPLACE_RAIL_VEHICLES                                       :Spoorvoertuigen
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektrische spoorvoertuigen
 STR_REPLACE_MONORAIL_VEHICLES                                   :Monorailvoertuigen
@@ -4373,7 +4373,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :Wegvoertuigen
 STR_REPLACE_TRAM_VEHICLES                                       :Trams
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}Wagons verwijderen ({STRING}): {ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}De te vervangen trein behoudt zijn lengte door wagons weg te halen (startend aan de voorkant), als het vervangen de trein langer zou maken
+STR_REPLACE_REMOVE_WAGON_TOOLTIP                                :{BLACK}De te vervangen trein behoudt zijn lengte door wagons weg te halen (startend aan de voorkant), als het vervangen de trein langer zou maken
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Met Ctrl+klik geldt dit ook voor subgroepen
 
 # Vehicle view

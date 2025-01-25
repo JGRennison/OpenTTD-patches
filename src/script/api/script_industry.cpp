@@ -231,7 +231,7 @@
 	if (i == nullptr) return ScriptDate::DATE_INVALID;
 
 	if (cargo_type == INVALID_CARGO) {
-		EconTime::Date date = 0;
+		EconTime::Date date{0};
 		for (const auto &a : i->Accepted()) {
 			date = std::max(date, a.last_accepted);
 		}

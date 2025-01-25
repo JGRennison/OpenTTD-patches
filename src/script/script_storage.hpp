@@ -18,6 +18,7 @@
 #include "../story_type.h"
 #include "../3rdparty/robin_hood/robin_hood.h"
 
+#include "script_types.hpp"
 #include "script_log_types.hpp"
 
 #include "table/strings.h"
@@ -52,7 +53,7 @@ private:
 	CommandCost costs;               ///< The costs the script is tracking.
 	Money last_cost;                 ///< The last cost of the command.
 	uint32_t last_result;            ///< The last result data of the command.
-	uint last_error;                 ///< The last error of the command.
+	ScriptErrorType last_error{};    ///< The last error of the command.
 	bool last_command_res;           ///< The last result of the command.
 
 	TileIndex last_tile;             ///< The last tile passed to a command.
@@ -91,7 +92,6 @@ public:
 		/* costs (can't be set) */
 		last_cost         (0),
 		last_result       (0),
-		last_error        (STR_NULL),
 		last_command_res  (true),
 		last_tile         (INVALID_TILE),
 		last_p1           (0),

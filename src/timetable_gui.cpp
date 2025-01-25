@@ -1191,7 +1191,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					const TickMinutes now = _settings_time.NowInTickMinutes();
 					TickMinutes time = now.ToSameDayClockTime(hours, minutes);
 
-					if (time < (now - 60)) time += 60 * 24;
+					if (time < (now - 60)) time += TickMinutes{60 * 24};
 
 					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _settings_time.FromTickMinutes(time));
 				}

@@ -1018,7 +1018,7 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 {
 	switch (prop) {
 		case 0x00: // Introduction date
-			ei->base_intro = buf.ReadWord() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
+			ei->base_intro = CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR + buf.ReadWord();
 			break;
 
 		case 0x02: // Decay speed
@@ -1026,11 +1026,11 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 			break;
 
 		case 0x03: // Vehicle life
-			ei->lifelength = buf.ReadByte();
+			ei->lifelength = YearDelta{buf.ReadByte()};
 			break;
 
 		case 0x04: // Model life
-			ei->base_life = buf.ReadByte();
+			ei->base_life = YearDelta{buf.ReadByte()};
 			break;
 
 		case 0x06: // Climates available
@@ -1307,7 +1307,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x2A: // Long format introduction date (days since year 0)
-				ei->base_intro = buf.ReadDWord();
+				ei->base_intro = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case PROP_TRAIN_CARGO_AGE_PERIOD: // 0x2B Cargo aging period
@@ -1498,7 +1498,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x1F: // Long format introduction date (days since year 0)
-				ei->base_intro = buf.ReadDWord();
+				ei->base_intro = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x20: // Alter purchase list sort order
@@ -1685,7 +1685,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x1A: // Long format introduction date (days since year 0)
-				ei->base_intro = buf.ReadDWord();
+				ei->base_intro = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x1B: // Alter purchase list sort order
@@ -1868,7 +1868,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				break;
 
 			case 0x1A: // Long format introduction date (days since year 0)
-				ei->base_intro = buf.ReadDWord();
+				ei->base_intro = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x1B: // Alter purchase list sort order
@@ -2286,7 +2286,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 			case 0x08: { // Year of availability
 				/* We treat '0' as always available */
 				uint8_t year = buf.ReadByte();
-				bridge->avail_year = (year > 0 ? CalTime::ORIGINAL_BASE_YEAR + year : 0);
+				bridge->avail_year = (year > 0 ? CalTime::ORIGINAL_BASE_YEAR + year : CalTime::Year{0});
 				break;
 			}
 
@@ -2687,11 +2687,11 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 			}
 
 			case 0x21: // long introduction year
-				housespec->min_year = buf.ReadWord();
+				housespec->min_year = CalTime::Year{buf.ReadWord()};
 				break;
 
 			case 0x22: // long maximum year
-				housespec->max_year = buf.ReadWord();
+				housespec->max_year = housespec->max_year = CalTime::Year{buf.ReadWord()};
 				if (housespec->max_year == UINT16_MAX) housespec->max_year = CalTime::MAX_YEAR;
 				break;
 
@@ -2905,7 +2905,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 			case 0x0F: { //  Euro introduction dates
 				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
-				CalTime::Year year_euro = buf.ReadWord();
+				CalTime::Year year_euro{buf.ReadWord()};
 
 				if (curidx < CURRENCY_END) {
 					_currency_specs[curidx].to_euro = year_euro;
@@ -4140,8 +4140,8 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 			}
 
 			case 0x0C:
-				as->min_year = buf.ReadWord();
-				as->max_year = buf.ReadWord();
+				as->min_year = CalTime::Year{buf.ReadWord()};
+				as->max_year = CalTime::Year{buf.ReadWord()};
 				if (as->max_year == 0xFFFF) as->max_year = CalTime::MAX_YEAR;
 				break;
 
@@ -4463,11 +4463,11 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				break;
 
 			case 0x0E: // Introduction date
-				spec->introduction_date = buf.ReadDWord();
+				spec->introduction_date = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x0F: // End of life
-				spec->end_of_life_date = buf.ReadDWord();
+				spec->end_of_life_date = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x10: // Flags
@@ -4661,7 +4661,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				break;
 
 			case 0x17: // Introduction date
-				rti->introduction_date = buf.ReadDWord();
+				rti->introduction_date = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x1A: // Sort order
@@ -4907,7 +4907,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 				break;
 
 			case 0x17: // Introduction date
-				rti->introduction_date = buf.ReadDWord();
+				rti->introduction_date = CalTime::Date(static_cast<int32_t>(buf.ReadDWord()));
 				break;
 
 			case 0x1A: // Sort order
@@ -7545,7 +7545,7 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 
 	switch (param) {
 		case 0x00: // current date
-			*value = std::max<DateDelta>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR, 0).base();
+			*value = std::max<DateDelta>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR, DateDelta{0}).base();
 			return true;
 
 		case 0x01: // current year
@@ -11138,7 +11138,7 @@ static void EnsureEarlyHouse(HouseZones bitmask)
 	for (auto &hs : HouseSpec::Specs()) {
 		if (!hs.enabled) continue;
 		if ((hs.building_availability & bitmask) != bitmask) continue;
-		if (hs.min_year == min_year) hs.min_year = 0;
+		if (hs.min_year == min_year) hs.min_year = CalTime::MIN_YEAR;
 	}
 }
 
@@ -11231,32 +11231,6 @@ static void FinaliseIndustriesArray()
 	for (GRFFile * const file : _grf_files) {
 		for (const auto &indsp : file->industryspec) {
 			if (indsp == nullptr || !indsp->enabled) continue;
-
-			StringID strid;
-			/* process the conversion of text at the end, so to be sure everything will be fine
-			 * and available.  Check if it does not return undefind marker, which is a very good sign of a
-			 * substitute industry who has not changed the string been examined, thus using it as such */
-			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->name);
-			if (strid != STR_UNDEFINED) indsp->name = strid;
-
-			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->closure_text);
-			if (strid != STR_UNDEFINED) indsp->closure_text = strid;
-
-			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->production_up_text);
-			if (strid != STR_UNDEFINED) indsp->production_up_text = strid;
-
-			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->production_down_text);
-			if (strid != STR_UNDEFINED) indsp->production_down_text = strid;
-
-			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->new_industry_text);
-			if (strid != STR_UNDEFINED) indsp->new_industry_text = strid;
-
-			if (indsp->station_name != STR_NULL) {
-				/* STR_NULL (0) can be set by grf.  It has a meaning regarding assignation of the
-				 * station's name. Don't want to lose the value, therefore, do not process. */
-				strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->station_name);
-				if (strid != STR_UNDEFINED) indsp->station_name = strid;
-			}
 
 			_industry_mngr.SetEntitySpec(indsp.get());
 		}
@@ -11875,7 +11849,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		EconTime::Detail::now = EconTime::Detail::NewState(ToEconTimeCast(_settings_game.game_creation.starting_year));
 		_tick_counter = 0;
 		_scaled_tick_counter = 0;
-		_state_ticks = 0;
+		_state_ticks = StateTicks{0};
 		_display_opt  = 0;
 		UpdateCachedSnowLine();
 		RecalculateStateTicksOffset();

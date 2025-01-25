@@ -495,7 +495,7 @@ Vehicle::Vehicle(VehicleType type)
 	this->cargo_age_counter  = 1;
 	this->last_station_visited = INVALID_STATION;
 	this->last_loading_station = INVALID_STATION;
-	this->last_loading_tick = 0;
+	this->last_loading_tick = StateTicks{0};
 	this->cur_image_valid_dir  = INVALID_DIR;
 	this->vcache.cached_veh_flags = 0;
 }
@@ -2561,7 +2561,7 @@ void AgeVehicle(Vehicle *v)
 
 	DateDelta age = v->age - v->max_age;
 	for (int i = 0; i <= 4; i++) {
-		if (age == CalTime::DateAtStartOfYear(i).AsDelta()) {
+		if (age == CalTime::DateAtStartOfYear(CalTime::Year{i}).AsDelta()) {
 			v->reliability_spd_dec <<= 1;
 			break;
 		}
@@ -5014,7 +5014,7 @@ void AdjustVehicleStateTicksBase(StateTicksDelta delta)
 void ShiftVehicleDates(DateDelta interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
-		v->date_of_last_service = std::max<EconTime::Date>(v->date_of_last_service + interval, 0);
+		v->date_of_last_service = std::max<EconTime::Date>(v->date_of_last_service + interval, EconTime::Date{0});
 	}
 	/* date_of_last_service_newgrf is not updated here as it must stay stable
 	 * for vehicles outside of a depot. */

@@ -970,7 +970,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32_t p
 	TransportType transport_type = Extract<TransportType, 8, 2>(p1);
 	RailType railtype = INVALID_RAILTYPE;
 	RoadType roadtype = INVALID_ROADTYPE;
-	_build_tunnel_endtile = 0;
+	_build_tunnel_endtile = TileIndex{};
 	switch (transport_type) {
 		case TRANSPORT_RAIL:
 			railtype = Extract<RailType, 0, 6>(p1);
