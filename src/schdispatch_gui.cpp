@@ -182,8 +182,8 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = 24 * 60 * _settings_time.ticks_per_minute;
 	} else {
 		/* Set Jan 1st and 365 day, calendar and economy time must be locked together for this to result in a useful schedule */
-		start_tick = DateToStateTicks(CalTime::DateAtStartOfYear(CalTime::CurYear()).base());
-		duration = 365 * DAY_TICKS;
+		start_tick = DateToStateTicks(EconTime::DateAtStartOfYear(EconTime::CurYear()));
+		duration = (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
 	}
 
 	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
