@@ -11872,7 +11872,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 
 	if (_networking) {
 		CalTime::Detail::now = CalTime::Detail::NewState(_settings_game.game_creation.starting_year);
-		EconTime::Detail::now = EconTime::Detail::NewState(_settings_game.game_creation.starting_year.base());
+		EconTime::Detail::now = EconTime::Detail::NewState(ToEconTimeCast(_settings_game.game_creation.starting_year));
 		_tick_counter = 0;
 		_scaled_tick_counter = 0;
 		_state_ticks = 0;

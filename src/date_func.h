@@ -102,6 +102,14 @@ inline Ticks TimetableAbsoluteDisplayUnitSize()
 	}
 }
 
+/* Casts from economy date/year to the equivalent calendar type, this is only for use when not using wallclock mode or during saveload conversion */
+inline CalTime::Date ToCalTimeCast(EconTime::Date date) { return CalTime::Date{date.base()}; }
+inline CalTime::Year ToCalTimeCast(EconTime::Year year) { return CalTime::Year{year.base()}; }
+
+/* Casts from calendar date/year to the equivalent economy type, this is only for use when not using wallclock mode or during saveload conversion */
+inline EconTime::Date ToEconTimeCast(CalTime::Date date) { return EconTime::Date{date.base()}; }
+inline EconTime::Year ToEconTimeCast(CalTime::Year year) { return EconTime::Year{year.base()}; }
+
 struct debug_date_dumper {
 	const char *HexDate(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter);
 

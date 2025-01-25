@@ -150,7 +150,7 @@ void UpdateEffectiveDayLengthFactor()
 
 CalTime::Date StateTicksToCalendarDate(StateTicks ticks)
 {
-	if (!EconTime::UsingWallclockUnits()) return StateTicksToDate(ticks).base();
+	if (!EconTime::UsingWallclockUnits()) return ToCalTimeCast(StateTicksToDate(ticks));
 
 	if (CalTime::IsCalendarFrozen()) return CalTime::CurDate();
 
@@ -284,8 +284,8 @@ EconTime::YearMonthDay EconTime::ConvertDateToYMD(EconTime::Date date)
 	}
 
 	/* Process the same as calendar time */
-	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date.base());
-	return { ymd.year.base(), ymd.month, ymd.day };
+	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(ToCalTimeCast(date));
+	return { ToEconTimeCast(ymd.year), ymd.month, ymd.day };
 }
 
 EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month month, EconTime::Day day)
@@ -297,7 +297,7 @@ EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month m
 	}
 
 	/* Process the same as calendar time */
-	return CalTime::ConvertYMDToDate(year.base(), month, day).base();
+	return ToEconTimeCast(CalTime::ConvertYMDToDate(ToCalTimeCast(year), month, day));
 }
 
 bool CalTime::IsCalendarFrozen(bool newgame)

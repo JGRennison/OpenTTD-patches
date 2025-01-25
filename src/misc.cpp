@@ -164,7 +164,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 		if (EconTime::UsingWallclockUnits()) {
 			EconTime::Detail::SetDate(EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE, 0);
 		} else {
-			EconTime::Detail::SetDate(CalTime::CurDate().base(), 0);
+			EconTime::Detail::SetDate(ToEconTimeCast(CalTime::CurDate()), 0);
 		}
 		EconTime::Detail::period_display_offset = 1 - EconTime::CurYear();
 		InitializeOldNames();
