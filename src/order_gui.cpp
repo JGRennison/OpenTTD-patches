@@ -37,6 +37,7 @@
 #include "scope.h"
 #include "zoom_func.h"
 #include "core/backup_type.hpp"
+#include "fios.h"
 
 #include "widgets/order_widget.h"
 
@@ -614,6 +615,8 @@ enum OrderDropDownID {
 static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_REVERSE_ORDER_LIST,
 	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
+	STR_ORDER_EXPORT_ORDER_LIST,
+	STR_ORDER_IMPORT_ORDER_LIST,
 };
 
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
@@ -1533,6 +1536,7 @@ private:
 	};
 
 	int selected_order;
+	VehicleID vehicle_id;
 	VehicleOrderID order_over;         ///< Order over which another order is dragged, \c INVALID_VEH_ORDER_ID if none.
 	OrderPlaceObjectState goto_type;
 	Scrollbar *vscroll;
@@ -3574,6 +3578,8 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
+					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, this->GetVehicle()); break;
+					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle()); break;
 					default: NOT_REACHED();
 				}
 				break;
