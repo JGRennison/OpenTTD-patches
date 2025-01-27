@@ -3677,25 +3677,27 @@ void Vehicle::LeaveStation()
 
 	if (this->cur_real_order_index < this->GetNumOrders()) {
 		Order *real_current_order = this->GetOrder(this->cur_real_order_index);
-		uint current_occupancy = CalcPercentVehicleFilled(this, nullptr);
-		uint old_occupancy = real_current_order->GetOccupancy();
-		uint new_occupancy;
-		if (old_occupancy == 0) {
-			new_occupancy = current_occupancy;
-		} else {
-			Company *owner = Company::GetIfValid(this->owner);
-			uint8_t occupancy_smoothness = owner ? owner->settings.order_occupancy_smoothness : 0;
-			// Exponential weighted moving average using occupancy_smoothness
-			new_occupancy = (old_occupancy - 1) * occupancy_smoothness;
-			new_occupancy += current_occupancy * (100 - occupancy_smoothness);
-			new_occupancy += 50; // round to nearest integer percent, rather than just floor
-			new_occupancy /= 100;
-		}
-		if (new_occupancy + 1 != old_occupancy) {
-			this->order_occupancy_average = 0;
-			real_current_order->SetOccupancy(static_cast<uint8_t>(new_occupancy + 1));
-			for (const Vehicle *v = this->FirstShared(); v != nullptr; v = v->NextShared()) {
-				SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
+		if (real_current_order->IsType(OT_GOTO_STATION) && real_current_order->GetDestination() == this->last_station_visited) {
+			uint current_occupancy = CalcPercentVehicleFilled(this, nullptr);
+			uint old_occupancy = real_current_order->GetOccupancy();
+			uint new_occupancy;
+			if (old_occupancy == 0) {
+				new_occupancy = current_occupancy;
+			} else {
+				Company *owner = Company::GetIfValid(this->owner);
+				uint8_t occupancy_smoothness = owner ? owner->settings.order_occupancy_smoothness : 0;
+				// Exponential weighted moving average using occupancy_smoothness
+				new_occupancy = (old_occupancy - 1) * occupancy_smoothness;
+				new_occupancy += current_occupancy * (100 - occupancy_smoothness);
+				new_occupancy += 50; // round to nearest integer percent, rather than just floor
+				new_occupancy /= 100;
+			}
+			if (new_occupancy + 1 != old_occupancy) {
+				this->order_occupancy_average = 0;
+				real_current_order->SetOccupancy(static_cast<uint8_t>(new_occupancy + 1));
+				for (const Vehicle *v = this->FirstShared(); v != nullptr; v = v->NextShared()) {
+					SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
+				}
 			}
 		}
 	}
