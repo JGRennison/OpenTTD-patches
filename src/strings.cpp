@@ -2123,6 +2123,14 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					break;
 				}
 
+				case SCC_TR_SLOT_GROUP_NAME: { // {TRSLOTGROUP}
+					const TraceRestrictSlotGroup *slot = TraceRestrictSlotGroup::GetIfValid(args.GetNextParameter<uint32_t>());
+					if (slot == nullptr) break;
+					auto tmp_params = MakeParameters(slot->name.c_str());
+					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+					break;
+				}
+
 				case SCC_TR_COUNTER_NAME: { // {TRCOUNTER}
 					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (ctr == nullptr) break;

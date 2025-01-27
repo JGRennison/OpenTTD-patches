@@ -76,6 +76,9 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 TraceRestrictSlotPool _tracerestrictslot_pool("TraceRestrictSlot");
 INSTANTIATE_POOL_METHODS(TraceRestrictSlot)
 
+TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool("TraceRestrictSlotGroup");
+INSTANTIATE_POOL_METHODS(TraceRestrictSlotGroup)
+
 TraceRestrictCounterPool _tracerestrictcounter_pool("TraceRestrictCounter");
 INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
 
@@ -3107,7 +3110,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
  * @param p1   index of array group
  *   - p1 bit 0-15 : GroupID
  *   - p1 bit 16-31: Operation (TraceRestrictAlterSlotOperation)
- * @param p2   new max occupancy
+ * @param p2   new max occupancy, flag state or slot group ID
  * @param text the new name
  * @return the cost of this operation or an error
  */
@@ -3147,6 +3150,19 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
 				}
 			}
 			break;
+
+		case TRASO_SET_PARENT_GROUP: {
+			TraceRestrictSlotGroupID gid = static_cast<TraceRestrictSlotGroupID>(p2);
+			if (gid != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+				const TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(gid);
+				if (slot_group == nullptr || slot_group->owner != slot->owner || slot_group->vehicle_type != slot->vehicle_type) return CMD_ERROR;
+			}
+
+			if (flags & DC_EXEC) {
+				slot->parent_group = gid;
+			}
+			break;
+		}
 
 		default:
 			return CMD_ERROR;
@@ -3209,6 +3225,142 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 
 	if (flags & DC_EXEC) {
 		slot->Vacate(v);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Create a new slot group.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 bitstuffed elements
+ * - p1 = (bit 0 - 2) - vehicle type
+ * @param p2   unused
+ * @param text new slot name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateTraceRestrictSlotGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	if (!TraceRestrictSlotGroup::CanAllocateItem()) return CMD_ERROR;
+	if (StrEmpty(text)) return CMD_ERROR;
+
+	VehicleType vehtype = Extract<VehicleType, 0, 3>(p1);
+	if (vehtype >= VEH_COMPANY_END) return CMD_ERROR;
+
+	size_t length = Utf8StringLength(text);
+	if (length <= 0) return CMD_ERROR;
+	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+	for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
+		if (sg->vehicle_type == vehtype && sg->owner == _current_company && sg->name == text) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	}
+
+	CommandCost result;
+	if (flags & DC_EXEC) {
+		TraceRestrictSlotGroup *slot_group = new TraceRestrictSlotGroup(_current_company, vehtype);
+		slot_group->name = text;
+		result.SetResultData(slot_group->index);
+
+		/* Update windows */
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	}
+
+	return result;
+}
+
+/**
+ * Alters a slot group.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *   - p1 bit 0-15 : Slot group ID
+ *   - p1 bit 16: 0 - Rename slot group
+ *                1 - Set slot group parent
+ * @param p2   parent slot group index
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdAlterTraceRestrictSlotGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(GB(p1, 0, 16));
+	if (slot_group == nullptr || slot_group->owner != _current_company) return CMD_ERROR;
+
+	if (!HasBit(p1, 16)) {
+		/* Rename slot group */
+		if (StrEmpty(text)) return CMD_ERROR;
+		size_t length = Utf8StringLength(text);
+		if (length <= 0) return CMD_ERROR;
+		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+		for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
+			if (sg->vehicle_type == slot_group->vehicle_type && sg->owner == _current_company && sg->name == text) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		}
+
+		if (flags & DC_EXEC) {
+			slot_group->name = text;
+		}
+	} else {
+		/* Set slot group parent */
+		const TraceRestrictSlotGroup *pg = TraceRestrictSlotGroup::GetIfValid(GB(p2, 0, 16));
+
+		if (pg != nullptr) {
+			if (pg->owner != _current_company) return CMD_ERROR;
+			if (pg->vehicle_type != slot_group->vehicle_type) return CMD_ERROR;
+
+			/* Ensure request parent isn't child of group.
+			 * This is the only place that infinite loops are prevented. */
+			for (const TraceRestrictSlotGroup *parent = pg; parent != nullptr; parent = TraceRestrictSlotGroup::GetIfValid(parent->parent)) {
+				if (parent->index == slot_group->index) return CommandCost(STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION);
+			}
+		}
+
+		if (flags & DC_EXEC) {
+			slot_group->parent = (pg == nullptr) ? INVALID_TRACE_RESTRICT_SLOT_GROUP : pg->index;
+		}
+	}
+
+	if (flags & DC_EXEC) {
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Deletes a slot group.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *      - p1 bit 0-15 : Slot group ID
+ * @param p2   unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdDeleteTraceRestrictSlotGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(p1);
+	if (slot_group == nullptr || slot_group->owner != _current_company) return CMD_ERROR;
+
+	/* Delete sub-groups */
+	for (const TraceRestrictSlotGroup *gp : TraceRestrictSlotGroup::Iterate()) {
+		if (gp->parent == slot_group->index) {
+			DoCommand(0, gp->index, 0, flags, CMD_DELETE_TRACERESTRICT_SLOT_GROUP);
+		}
+	}
+
+	if (flags & DC_EXEC) {
+		for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
+			if (slot->parent_group == slot_group->index) {
+				slot->parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+			}
+		}
+
+		delete slot_group;
+
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
 	}
 
 	return CommandCost();

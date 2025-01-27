@@ -138,6 +138,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"COMPANY_NUM",       EmitSingleChar, SCC_COMPANY_NUM,        1, -1, C_NONE},
 	{"PRESIDENT_NAME",    EmitSingleChar, SCC_PRESIDENT_NAME,     1, -1, C_NONE | C_GENDER},
 	{"TRSLOT",            EmitSingleChar, SCC_TR_SLOT_NAME,       1, -1, C_NONE | C_GENDER},
+	{"TRSLOTGROUP",       EmitSingleChar, SCC_TR_SLOT_GROUP_NAME, 1, -1, C_NONE | C_GENDER},
 	{"TRCOUNTER",         EmitSingleChar, SCC_TR_COUNTER_NAME,    1, -1, C_NONE | C_GENDER},
 
 	{"VP_TOWN_LABEL1",    EmitSingleChar, SCC_VIEWPORT_TOWN_LABEL1, 2, -1, C_NONE},

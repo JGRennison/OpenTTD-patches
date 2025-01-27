@@ -130,6 +130,7 @@ static const NamedSaveLoad _trace_restrict_slot_desc[] = {
 	NSL("vehicle_type",  SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13))),
 	NSL("occupants",     SLE_VARVEC(TraceRestrictSlot, occupants, SLE_UINT32)),
 	NSLT("flags",        SLE_VAR(TraceRestrictSlot, flags, SLE_UINT8)),
+	NSLT("parent_group", SLE_VAR(TraceRestrictSlot, parent_group, SLE_UINT16)),
 };
 
 /**
@@ -157,6 +158,40 @@ static void Save_TRRS()
 	for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		SlSetArrayIndex(slot->index);
 		SlObjectSaveFiltered(slot, slt);
+	}
+}
+
+static const NamedSaveLoad _trace_restrict_slot_group_desc[] = {
+	NSLT("name",          SLE_SSTR(TraceRestrictSlotGroup, name, SLE_STR | SLF_ALLOW_CONTROL)),
+	NSLT("owner",         SLE_VAR(TraceRestrictSlotGroup, owner, SLE_UINT8)),
+	NSLT("vehicle_type",  SLE_VAR(TraceRestrictSlotGroup, vehicle_type, SLE_UINT8)),
+	NSLT("parent",        SLE_VAR(TraceRestrictSlotGroup, parent, SLE_UINT16)),
+};
+
+/**
+ * Load slot group pool
+ */
+static void Load_TRRG()
+{
+	SaveLoadTableData slt = SlTableHeader(_trace_restrict_slot_group_desc);
+
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		TraceRestrictSlotGroup *slot_group = new (index) TraceRestrictSlotGroup();
+		SlObjectLoadFiltered(slot_group, slt);
+	}
+}
+
+/**
+ * Save slot group pool
+ */
+static void Save_TRRG()
+{
+	SaveLoadTableData slt = SlTableHeader(_trace_restrict_slot_group_desc);
+
+	for (TraceRestrictSlotGroup *slot_group : TraceRestrictSlotGroup::Iterate()) {
+		SlSetArrayIndex(slot_group->index);
+		SlObjectSaveFiltered(slot_group, slt);
 	}
 }
 
@@ -208,6 +243,7 @@ extern const ChunkHandler trace_restrict_chunk_handlers[] = {
 	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_TABLE },    // Trace Restrict Mapping chunk
 	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_TABLE },           // Trace Restrict Mapping Program Pool chunk
 	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Pool chunk
+	{ 'TRRG', Save_TRRG, Load_TRRG, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Group Pool chunk
 	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_TABLE },           // Trace Restrict Counter Pool chunk
 };
 

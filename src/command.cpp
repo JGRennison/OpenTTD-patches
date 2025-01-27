@@ -281,6 +281,9 @@ CommandProc CmdAlterTraceRestrictSlot;
 CommandProc CmdDeleteTraceRestrictSlot;
 CommandProc CmdAddVehicleTraceRestrictSlot;
 CommandProc CmdRemoveVehicleTraceRestrictSlot;
+CommandProc CmdCreateTraceRestrictSlotGroup;
+CommandProc CmdAlterTraceRestrictSlotGroup;
+CommandProc CmdDeleteTraceRestrictSlotGroup;
 CommandProcEx CmdCreateTraceRestrictCounter;
 CommandProc CmdAlterTraceRestrictCounter;
 CommandProc CmdDeleteTraceRestrictCounter;
@@ -549,6 +552,9 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdDeleteTraceRestrictSlot,                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_SLOT
 	DEF_CMD(CmdAddVehicleTraceRestrictSlot,                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_VEHICLE_TRACERESTRICT_SLOT
 	DEF_CMD(CmdRemoveVehicleTraceRestrictSlot,                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdCreateTraceRestrictSlotGroup,                   0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_TRACERESTRICT_SLOT_GROUP
+	DEF_CMD(CmdAlterTraceRestrictSlotGroup,                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_TRACERESTRICT_SLOT_GROUP
+	DEF_CMD(CmdDeleteTraceRestrictSlotGroup,                   0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_SLOT_GROUP
 	DEF_CMD(CmdCreateTraceRestrictCounter,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_TRACERESTRICT_COUNTER
 	DEF_CMD(CmdAlterTraceRestrictCounter,                      0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_TRACERESTRICT_COUNTER
 	DEF_CMD(CmdDeleteTraceRestrictCounter,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_COUNTER

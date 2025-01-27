@@ -53,6 +53,18 @@ static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // 
 static const TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID = 0xFFFE; // for GUI use only
 static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
+/** Slot group pool ID type. */
+typedef uint16_t TraceRestrictSlotGroupID;
+struct TraceRestrictSlotGroup;
+
+/** Type of the pool for trace restrict slot groups. */
+typedef Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 16, 0xFFF0> TraceRestrictSlotGroupPool;
+/** The actual pool for trace restrict slot groups. */
+extern TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool;
+
+static const GroupID NEW_TRACE_RESTRICT_SLOT_GROUP     = 0xFFFE; ///< Sentinel for a to-be-created group.
+static const GroupID INVALID_TRACE_RESTRICT_SLOT_GROUP = 0xFFFF; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
+
 /** Counter pool ID type. */
 typedef uint16_t TraceRestrictCounterID;
 struct TraceRestrictCounter;
@@ -1213,6 +1225,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	Owner owner;
 	Flags flags = Flags::None;
 	VehicleType vehicle_type;
+	TraceRestrictSlotGroupID parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	uint32_t max_occupancy = 1;
 	std::string name;
 	std::vector<VehicleID> occupants;
@@ -1264,6 +1277,21 @@ enum TraceRestrictAlterSlotOperation {
 	TRASO_RENAME,
 	TRASO_CHANGE_MAX_OCCUPANCY,
 	TRASO_SET_PUBLIC,
+	TRASO_SET_PARENT_GROUP,
+};
+
+/**
+ * Slot group type
+ */
+struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerestrictslotgroup_pool> {
+	std::string name;           ///< Slot group Name
+	Owner owner;                ///< Slot group owner
+	VehicleType vehicle_type;   ///< Vehicle type of the slot group
+	TraceRestrictSlotGroupID parent; ///< Parent slot group
+
+	bool folded = false;        ///< NOSAVE: Is this slot group folded in the slot view?
+
+	TraceRestrictSlotGroup(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
 };
 
 /**
