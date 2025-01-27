@@ -763,7 +763,7 @@ CommandCost CmdDepotSellAllVehicles(TileIndex tile, DoCommandFlag flags, uint32_
 	VehicleType vehicle_type = Extract<VehicleType, 0, 3>(p1);
 
 	if (!IsCompanyBuildableVehicleType(vehicle_type)) return CMD_ERROR;
-	if (!IsDepotTile(tile) || !IsTileOwner(tile, _current_company)) return CMD_ERROR;
+	if (!IsDepotTile(tile)) return CMD_ERROR;
 
 	uint sell_command = GetCmdSellVeh(vehicle_type);
 
@@ -773,6 +773,7 @@ CommandCost CmdDepotSellAllVehicles(TileIndex tile, DoCommandFlag flags, uint32_
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
 	for (const Vehicle *v : list) {
+		if (v->owner != _current_company) continue;
 		CommandCost ret = DoCommand(tile, v->index | (1 << 20), 0, flags, sell_command);
 		if (ret.Succeeded()) {
 			cost.AddCost(ret);
