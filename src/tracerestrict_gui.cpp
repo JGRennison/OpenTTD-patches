@@ -47,9 +47,9 @@
 #include "core/geometry_func.hpp"
 #include "infrastructure_func.h"
 #include "zoom_func.h"
-#include "group_gui_list.h"
 #include "newgrf_debug.h"
 #include "core/ring_buffer.hpp"
+#include "core/y_combinator.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
@@ -690,16 +690,42 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
  */
 static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected, bool include_default = true)
 {
-	GUIGroupOnlyList list;
+	std::vector<const Group *> list;
+	robin_hood::unordered_set<GroupID> seen_parents;
 
 	for (const Group *g : Group::Iterate()) {
 		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
 			list.push_back(g);
+			seen_parents.insert(g->parent);
 		}
 	}
 
-	list.ForceResort();
-	SortGUIGroupOnlyList(list);
+	{
+		/* Sort the groups by their parent group, then their name */
+		const Group *last_group[2] = { nullptr, nullptr };
+		format_buffer last_name[2] = { {}, {} };
+		std::sort(list.begin(), list.end(), [&](const Group *a, const Group *b) {
+			if (a->parent != b->parent) return a->parent < b->parent;
+
+			if (a != last_group[0]) {
+				last_group[0] = a;
+				SetDParam(0, a->index);
+				last_name[0].clear();
+				AppendStringInPlace(last_name[0], STR_GROUP_NAME);
+			}
+
+			if (b != last_group[1]) {
+				last_group[1] = b;
+				SetDParam(0, b->index);
+				last_name[1].clear();
+				AppendStringInPlace(last_name[1], STR_GROUP_NAME);
+			}
+
+			int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
+			if (r == 0) return a->index < b->index;
+			return r < 0;
+		});
+	}
 
 	DropDownList dlist;
 	selected = -1;
@@ -709,11 +735,22 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
 	}
 
-	for (const Group *g : list) {
-		if (group_id == g->index) selected = group_id;
-		SetDParam(0, g->index | GROUP_NAME_HIERARCHY);
-		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_NAME, g->index, false));
-	}
+	auto output_groups = y_combinator([&](auto output_groups, uint indent, GroupID parent_filter) -> void {
+		auto start = std::lower_bound(list.begin(), list.end(), parent_filter, [&](const Group *g, GroupID parent_filter) {
+			return g->parent < parent_filter;
+		});
+		for (auto it = start; it != list.end() && (*it)->parent == parent_filter; ++it) {
+			const Group *g = *it;
+			if (group_id == g->index) selected = group_id;
+			SetDParam(0, g->index);
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_GROUP_NAME, g->index, false));
+			if (seen_parents.count(g->index)) {
+				/* Output child groups */
+				output_groups(indent + 1, g->index);
+			}
+		}
+	});
+	output_groups(0, INVALID_GROUP);
 
 	return dlist;
 }

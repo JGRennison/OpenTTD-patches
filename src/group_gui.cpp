@@ -30,7 +30,6 @@
 #include "tbtr_template_gui_main.h"
 #include "newgrf_debug.h"
 #include "group_gui.h"
-#include "group_gui_list.h"
 #include "zoom_func.h"
 
 #include "widgets/group_widget.h"
@@ -192,32 +191,6 @@ void BuildGuiGroupList(GUIGroupList &dst, bool fold, Owner owner, VehicleType ve
 	});
 
 	GuiGroupListAddChildren(dst, list, fold, INVALID_GROUP, 0);
-}
-
-void SortGUIGroupOnlyList(GUIGroupOnlyList &list)
-{
-	/* Sort the groups by their name */
-	const Group *last_group[2] = { nullptr, nullptr };
-	format_buffer last_name[2] = { {}, {} };
-	list.Sort([&](const Group * const &a, const Group * const &b) {
-		if (a != last_group[0]) {
-			last_group[0] = a;
-			SetDParam(0, a->index | GROUP_NAME_HIERARCHY);
-			last_name[0].clear();
-			AppendStringInPlace(last_name[0], STR_GROUP_NAME);
-		}
-
-		if (b != last_group[1]) {
-			last_group[1] = b;
-			SetDParam(0, b->index | GROUP_NAME_HIERARCHY);
-			last_name[1].clear();
-			AppendStringInPlace(last_name[1], STR_GROUP_NAME);
-		}
-
-		int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
-		if (r == 0) return a->index < b->index;
-		return r < 0;
-	});
 }
 
 class VehicleGroupWindow : public BaseVehicleListWindow {
