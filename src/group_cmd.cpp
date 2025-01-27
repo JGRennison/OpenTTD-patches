@@ -519,7 +519,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
  * @param flags type of operation
  * @param p1   index of array group
  *   - p1 bit 0-15 : GroupID
- *   - p1 bit 16: 0 - Rename grouop
+ *   - p1 bit 16: 0 - Rename group
  *                1 - Set group parent
  * @param p2   parent group index
  * @param text the new name or an empty string when resetting to the default
