@@ -127,9 +127,9 @@ static const NamedSaveLoad _trace_restrict_slot_desc[] = {
 	NSL("max_occupancy", SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32)),
 	NSL("name",          SLE_SSTR(TraceRestrictSlot, name, SLE_STR | SLF_ALLOW_CONTROL)),
 	NSL("owner",         SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8)),
-	NSL("flags",         SLE_VAR(TraceRestrictSlot, flags, SLE_UINT8)),
 	NSL("vehicle_type",  SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13))),
 	NSL("occupants",     SLE_VARVEC(TraceRestrictSlot, occupants, SLE_UINT32)),
+	NSLT("flags",        SLE_VAR(TraceRestrictSlot, flags, SLE_UINT8)),
 };
 
 /**
@@ -161,10 +161,10 @@ static void Save_TRRS()
 }
 
 static const NamedSaveLoad _trace_restrict_counter_desc[] = {
-	NSL("value", SLE_VAR(TraceRestrictCounter, value, SLE_INT32)),
-	NSL("name",  SLE_SSTR(TraceRestrictCounter, name, SLE_STR | SLF_ALLOW_CONTROL)),
-	NSL("owner", SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8)),
-	NSL("flags", SLE_VAR(TraceRestrictCounter, flags, SLE_UINT8)),
+	NSL("value",  SLE_VAR(TraceRestrictCounter, value, SLE_INT32)),
+	NSL("name",   SLE_SSTR(TraceRestrictCounter, name, SLE_STR | SLF_ALLOW_CONTROL)),
+	NSL("owner",  SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8)),
+	NSLT("flags", SLE_VAR(TraceRestrictCounter, flags, SLE_UINT8)),
 };
 
 /**
