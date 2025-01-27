@@ -1004,6 +1004,7 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :día
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :mes
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :atraso
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :adianto
+STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :seguinte slot de saída
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :último slot de saída
@@ -1028,6 +1029,7 @@ STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - 
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Fai click para crear un slot
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Eliminar o slot seleccionado
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Renomear o slot seleccionado
+STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}Establecer se a ranura seleccionada é pública.{}As ranuras públicas poden ser usadas por sinais e listas de orde doutras compañías se o uso compartido de infraestruturas está activado.
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Fixar a máxima ocupación do slot seleccionado
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Restrición de busca de rutas - Xestión dos slots ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Xestionar slots
@@ -1042,10 +1044,12 @@ STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}Contador
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}Crear
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}Eliminar
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}Renomear
+STR_TRACE_RESTRICT_COUNTER_PUBLIC                               :{BLACK}Público
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}Fixar valor
 STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}Fai click para crear un contador
 STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}Eliminar o contador seleccionado
 STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}Renomear o contador seleccionado
+STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP                       :{BLACK}Establecer se o contador seleccionado é público.{}Os contadores públicos poden ser usados por sinais e listas de orde doutras compañías se o uso compartido de infraestruturas está activado.
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}Fixar o valor do contador seleccionado
 STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}Restrición de busca de rutas - Xestión de contadores
 STR_TRACE_RESTRICT_COUNTER_MANAGE                               :Xestionar contadores
@@ -1078,6 +1082,7 @@ STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Restrici
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Fai click nunha instrución para seleccionala{}Ctrl+Click para desplazarte ata o obxectivo da instrución(se o hai)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Alterna destacar todos os sinais compartindo este programa
 STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}Ctrl+Click para listar os usados recentemente
+STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}Shift+Click para listar items doutras compañías
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(require freo realista){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(só para as accions de control de modo de sinais){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(non para as accións de control de modo de sinais){POP_COLOUR}
@@ -1483,6 +1488,8 @@ STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Mover orde a ou
 
 STR_GROUP_EXPAND_ALL                                            :{BLACK}Expandir todo
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Contraer todo
+
+STR_GROUP_RENAME_TOOLTIP_EXTRA                                  :{BLACK}{STRING}{}Ctrl+Click para auto-xerar o nome
 
 STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :Locomotoras e coches motriz
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :Vagóns
