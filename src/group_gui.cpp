@@ -251,6 +251,16 @@ private:
 		BuildGuiGroupList(this->groups, true, owner, this->vli.vtype);
 
 		this->groups.RebuildDone();
+
+		/* Change selection if group is currently hidden by fold */
+		const Group *g = Group::GetIfValid(this->vli.index);
+		while (g != nullptr) {
+			g = Group::GetIfValid(g->parent);
+			if (g != nullptr && g->folded) {
+				this->vli.index = g->index;
+				this->vehgroups.ForceRebuild();
+			}
+		}
 	}
 
 	/**
