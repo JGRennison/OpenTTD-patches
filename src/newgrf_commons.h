@@ -330,6 +330,13 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 	uint16_t override;                      ///< id of the entity been replaced by
 };
 
+/** Container for a label for rail or road type conversion. */
+template <typename T>
+struct LabelObject {
+	T label = {}; ///< Label of rail or road type.
+	uint8_t subtype = 0; ///< Subtype of type (road or tram).
+};
+
 enum SpriteGroupCallbacksUsed : uint8_t {
 	SGCU_NONE                           = 0,
 	SGCU_ALL                            = 0xF,

@@ -44,6 +44,8 @@
 #include "../load_check.h"
 #include "../error.h"
 #include "../scope.h"
+#include "../newgrf_railtype.h"
+#include "../newgrf_roadtype.h"
 #include "../core/ring_buffer.hpp"
 #include "../timer/timer_game_tick.h"
 #include <atomic>
@@ -3742,7 +3744,8 @@ extern bool LoadOldSaveGame(const std::string &file);
 static void ResetSaveloadData()
 {
 	ResetTempEngineData();
-	ResetLabelMaps();
+	ClearRailTypeLabelList();
+	ClearRoadTypeLabelList();
 	ResetOldWaypoints();
 
 	extern void ClearOrderPoolLoadState();

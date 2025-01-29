@@ -72,4 +72,8 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
 RailType GetRailTypeTranslation(uint8_t railtype, const GRFFile *grffile);
 uint8_t GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile);
 
+void ConvertRailTypes();
+void SetCurrentRailTypeLabelList();
+void ClearRailTypeLabelList();
+
 #endif /* NEWGRF_RAILTYPE_H */

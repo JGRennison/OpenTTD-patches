@@ -32,7 +32,6 @@ void FixupTrainLengths();
 void AfterLoadTemplateVehicles();
 void AfterLoadStations();
 void AfterLoadRoadStops();
-void ResetLabelMaps();
 void AfterLoadLabelMaps();
 void AfterLoadStoryBook();
 void AfterLoadLinkGraphs();
