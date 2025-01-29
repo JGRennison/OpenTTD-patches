@@ -3020,7 +3020,7 @@ static bool IsUniqueSlotName(const char *name)
  * @param flags type of operation
  * @param p1 bitstuffed elements
  * - p1 = (bit 0 - 2) - vehicle type
- * @param p2   unused
+ * @param p2   parent slot group ID
  * @param p3   unused
  * @param text new slot name
  * @param aux_data optional follow-up command
@@ -3039,6 +3039,12 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
+	const TraceRestrictSlotGroup *pg = TraceRestrictSlotGroup::GetIfValid(GB(p2, 0, 16));
+	if (pg != nullptr) {
+		if (pg->owner != _current_company) return CMD_ERROR;
+		if (pg->vehicle_type != vehtype) return CMD_ERROR;
+	}
+
 	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
 	if (aux_data != nullptr) {
 		CommandCost ret = follow_up_cmd.Load(aux_data);
@@ -3050,6 +3056,7 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	if (flags & DC_EXEC) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
 		slot->name = text;
+		if (pg != nullptr) slot->parent_group = pg->index;
 		result.SetResultData(slot->index);
 
 		if (follow_up_cmd.HasData()) {
@@ -3236,7 +3243,7 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
  * @param flags type of operation
  * @param p1 bitstuffed elements
  * - p1 = (bit 0 - 2) - vehicle type
- * @param p2   unused
+ * @param p2 parent slot group ID
  * @param text new slot name
  * @return the cost of this operation or an error
  */
@@ -3255,10 +3262,17 @@ CommandCost CmdCreateTraceRestrictSlotGroup(TileIndex tile, DoCommandFlag flags,
 		if (sg->vehicle_type == vehtype && sg->owner == _current_company && sg->name == text) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
+	const TraceRestrictSlotGroup *pg = TraceRestrictSlotGroup::GetIfValid(GB(p2, 0, 16));
+	if (pg != nullptr) {
+		if (pg->owner != _current_company) return CMD_ERROR;
+		if (pg->vehicle_type != vehtype) return CMD_ERROR;
+	}
+
 	CommandCost result;
 	if (flags & DC_EXEC) {
 		TraceRestrictSlotGroup *slot_group = new TraceRestrictSlotGroup(_current_company, vehtype);
 		slot_group->name = text;
+		if (pg != nullptr) slot_group->parent = pg->index;
 		result.SetResultData(slot_group->index);
 
 		/* Update windows */

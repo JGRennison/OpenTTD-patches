@@ -800,6 +800,17 @@ struct SlotItem {
 		}
 	}
 
+	TraceRestrictSlotGroupID GetClosestGroupID() const
+	{
+		if (this->type == SlotItemType::Slot) {
+			return this->GetParentItem().GetClosestGroupID();
+		} else if (this->type == SlotItemType::Group) {
+			return this->id;
+		} else {
+			return INVALID_TRACE_RESTRICT_SLOT_GROUP;
+		}
+	}
+
 	bool IsInvalid() const
 	{
 		if (this->type == SlotItemType::Slot && this->id != NEW_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(this->id)) return true;
@@ -2545,7 +2556,7 @@ public:
 				if (type == TRVT_SLOT_INDEX || type == TRVT_SLOT_INDEX_INT) {
 					TraceRestrictFollowUpCmdData aux;
 					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
-					DoCommandPEx(0, VEH_TRAIN, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+					DoCommandPEx(0, VEH_TRAIN, INVALID_TRACE_RESTRICT_SLOT_GROUP, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
 				}
 				return;
 
@@ -4808,13 +4819,13 @@ public:
 				case QuerySelectorMode::Rename:
 					if (this->slot_query.type == SlotItemType::Slot) {
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_ID) {
-							DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str());
+							DoCommandP(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str());
 						} else {
 							DoCommandP(0, this->slot_query.id | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 						}
 					} else if (this->slot_query.type == SlotItemType::Group) {
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_GROUP) {
-							DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str->c_str());
+							DoCommandP(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str->c_str());
 						} else {
 							DoCommandP(0, this->slot_query.id, 0, CMD_ALTER_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 						}
