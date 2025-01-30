@@ -1502,7 +1502,7 @@ struct GenWorldStatus {
 	StringID cls;
 	uint current;
 	uint total;
-	std::chrono::steady_clock::time_point next_update;
+	bool single_section; ///< Whether to only use the current section for the overall percentage
 };
 
 static GenWorldStatus _gws;
@@ -1605,13 +1605,13 @@ struct GenerateProgressWindow : public Window {
 /**
  * Initializes the progress counters to the starting point.
  */
-void PrepareGenerateWorldProgress()
+void PrepareGenerateWorldProgress(bool single_section_mode)
 {
 	_gws.cls = STR_GENERATION_WORLD_GENERATION;
 	_gws.current = 0;
 	_gws.total = 0;
 	_gws.percent = 0;
-	_gws.next_update = std::chrono::steady_clock::now();
+	_gws.single_section = single_section_mode;
 }
 
 /**
@@ -1652,7 +1652,11 @@ static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uin
 	}
 
 	/* Percentage is about the number of completed tasks, so 'current - 1' */
-	_gws.percent = percent_table[cls] + (percent_table[cls + 1] - percent_table[cls]) * (_gws.current == 0 ? 0 : _gws.current - 1) / _gws.total;
+	if (_gws.single_section) {
+		_gws.percent = (100 * (_gws.current == 0 ? 0 : _gws.current - 1)) / _gws.total;
+	} else {
+		_gws.percent = percent_table[cls] + (percent_table[cls + 1] - percent_table[cls]) * (_gws.current == 0 ? 0 : _gws.current - 1) / _gws.total;
+	}
 
 	if (_network_dedicated) {
 		static uint last_percent = 0;

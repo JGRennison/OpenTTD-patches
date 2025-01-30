@@ -72,6 +72,8 @@ extern bool _town_noise_no_update;
 
 class AbortGenerateWorldSignal { };
 
+std::function<void()> _exec_with_generate_world;
+
 /**
  * Generation is done; show windows again and delete the progress window.
  */
@@ -363,6 +365,39 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	}
 
 	_GenerateWorld();
+}
+
+void ExecuteWithGenerateWorld(std::function<void()> func)
+{
+	if (HasModalProgress()) return;
+	SetModalProgress(true);
+	_gw.abort  = false;
+	_gw.abortp = []() {
+		_switch_mode = SM_NONE; // Don't switch mode on abort
+	};
+
+	PrepareGenerateWorldProgress(true);
+	ShowGenerateWorldProgress();
+
+	try {
+		func();
+	} catch (AbortGenerateWorldSignal&) {
+		/* No action */
+	}
+
+	SetMouseCursorBusy(false);
+	SetModalProgress(false);
+	_gw.proc     = nullptr;
+	_gw.abortp   = nullptr;
+
+	CloseWindowByClass(WC_MODAL_PROGRESS);
+	MarkWholeScreenDirty();
+}
+
+void ScheduleExecuteWithGenerateWorld(std::function<void()> func)
+{
+	_exec_with_generate_world = std::move(func);
+	_check_special_modes = true;
 }
 
 /** Town data imported from JSON files and used to place towns. */

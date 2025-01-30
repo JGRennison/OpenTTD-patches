@@ -1750,6 +1750,12 @@ void GameLoopSpecial()
 		_switch_baseset.clear();
 	}
 
+	extern std::function<void()> _exec_with_generate_world;
+	if (_exec_with_generate_world) {
+		ExecuteWithGenerateWorld(std::move(_exec_with_generate_world));
+		_exec_with_generate_world = nullptr;
+	}
+
 	_check_special_modes = false;
 }
 

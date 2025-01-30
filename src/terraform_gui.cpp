@@ -539,7 +539,10 @@ struct PublicRoadsWindow : Window {
 				extern void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type);
 				PublicRoadsConstruction build_mode = _settings_game.game_creation.build_public_roads;
 				if (build_mode == PRC_NONE) build_mode = PRC_WITH_CURVES;
-				GeneratePublicRoads(build_mode, _selected_public_road_type);
+				RoadType road_type = _selected_public_road_type;
+				ScheduleExecuteWithGenerateWorld([=]() {
+					GeneratePublicRoads(build_mode, road_type);
+				});
 				break;
 			}
 
