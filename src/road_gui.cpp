@@ -43,6 +43,7 @@
 #include "core/backup_type.hpp"
 #include "picker_gui.h"
 #include "newgrf_extension.h"
+#include "town.h"
 
 #include "widgets/road_widget.h"
 #include "table/strings.h"
@@ -186,7 +187,7 @@ void ConnectRoadToStructure(TileIndex tile, DiagDirection direction)
 	/* if there is a roadpiece just outside of the station entrance, build a connecting route */
 	if (IsNormalRoadTile(tile)) {
 		if (GetRoadBits(tile, GetRoadTramType(_cur_roadtype)) != ROAD_NONE) {
-			DoCommandP(tile, _cur_roadtype << 4 | DiagDirToRoadBits(ReverseDiagDir(direction)), 0, CMD_BUILD_ROAD);
+			DoCommandP(tile, _cur_roadtype << 4 | DiagDirToRoadBits(ReverseDiagDir(direction)), INVALID_TOWN, CMD_BUILD_ROAD);
 		}
 	}
 }
