@@ -4150,12 +4150,12 @@ private:
 
 		for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 			if (slot->owner == owner && slot->vehicle_type == this->vli.vtype) {
-				list.emplace_back(SlotItem{ SlotItemType::Slot, slot->index }, slot->parent_group, &(slot->name));
+				list.push_back({ SlotItem{ SlotItemType::Slot, slot->index }, slot->parent_group, &(slot->name) });
 			}
 		}
 		for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
 			if (sg->owner == owner && sg->vehicle_type == this->vli.vtype) {
-				list.emplace_back(SlotItem{ SlotItemType::Group, sg->index }, sg->parent, &(sg->name));
+				list.push_back({ SlotItem{ SlotItemType::Group, sg->index }, sg->parent, &(sg->name) });
 			}
 		}
 
