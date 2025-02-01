@@ -4541,7 +4541,7 @@ private:
 	}
 
 public:
-	TraceRestrictSlotWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
+	TraceRestrictSlotWindow(WindowDesc &desc, WindowNumber window_number, const VehicleListIdentifier &vli) : BaseVehicleListWindow(desc, vli)
 	{
 		this->CreateNestedTree();
 
@@ -5168,8 +5168,8 @@ void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype)
 {
 	if (!Company::IsValidID(company)) return;
 
-	WindowNumber num = VehicleListIdentifier(VL_SLOT_LIST, vehtype, company).Pack();
-	AllocateWindowDescFront<TraceRestrictSlotWindow>(_slot_window_desc, num);
+	VehicleListIdentifier vli(VL_SLOT_LIST, vehtype, company);
+	AllocateWindowDescFront<TraceRestrictSlotWindow>(_slot_window_desc, vli.Pack(), vli);
 }
 
 /**

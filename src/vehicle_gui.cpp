@@ -236,7 +236,7 @@ const StringID BaseVehicleListWindow::vehicle_depot_sell_name[] = {
 	STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL
 };
 
-BaseVehicleListWindow::BaseVehicleListWindow(WindowDesc &desc, WindowNumber wno) : Window(desc), vli(VehicleListIdentifier::UnPack(wno))
+BaseVehicleListWindow::BaseVehicleListWindow(WindowDesc &desc, const VehicleListIdentifier &vli) : Window(desc), vli(vli)
 {
 	this->grouping = _grouping[vli.type][vli.vtype];
 	this->vehicle_sel = INVALID_VEHICLE;
@@ -2350,12 +2350,7 @@ uint BaseVehicleListWindow::GetSorterDisableMask(VehicleType type) const
 
 /**
  * Window for the (old) vehicle listing.
- *
- * bitmask for w->window_number
- * 0-7 CompanyID (owner)
- * 8-10 window type (use flags in vehicle_gui.h)
- * 11-15 vehicle type (using VEH_, but can be compressed to fewer bytes if needed)
- * 16-31 StationID or OrderID depending on window type (bit 8-10)
+ * See #VehicleListIdentifier::Pack for the contents of the window number.
  */
 struct VehicleListWindow : public BaseVehicleListWindow {
 private:
@@ -2383,7 +2378,7 @@ private:
 	};
 
 public:
-	VehicleListWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
+	VehicleListWindow(WindowDesc &desc, WindowNumber window_number, const VehicleListIdentifier &vli) : BaseVehicleListWindow(desc, vli)
 	{
 		this->CreateNestedTree();
 
@@ -2862,8 +2857,8 @@ static void ShowVehicleListWindowLocal(CompanyID company, VehicleListType vlt, V
 	if (!Company::IsValidID(company) && company != OWNER_NONE) return;
 
 	assert(vehicle_type < std::size(_vehicle_list_desc));
-	WindowNumber num = VehicleListIdentifier(vlt, vehicle_type, company, unique_number).Pack();
-	AllocateWindowDescFront<VehicleListWindow>(_vehicle_list_desc[vehicle_type], num);
+	VehicleListIdentifier vli(vlt, vehicle_type, company, unique_number);
+	AllocateWindowDescFront<VehicleListWindow>(_vehicle_list_desc[vehicle_type], vli.Pack(), vli);
 }
 
 void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type)

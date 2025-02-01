@@ -140,7 +140,7 @@ public:
 	static const std::initializer_list<VehicleGroupSortFunction * const> vehicle_group_none_sorter_funcs;
 	static const std::initializer_list<VehicleGroupSortFunction * const> vehicle_group_shared_orders_sorter_funcs;
 
-	BaseVehicleListWindow(WindowDesc &desc, WindowNumber wno);
+	BaseVehicleListWindow(WindowDesc &desc, const VehicleListIdentifier &vli);
 
 	void OnInit() override;
 
