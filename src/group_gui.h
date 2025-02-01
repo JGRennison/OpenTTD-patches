@@ -15,7 +15,7 @@
 #include "group.h"
 #include "sortlist_type.h"
 
-void ShowCompanyGroup(CompanyID company, VehicleType veh, GroupID group = INVALID_GROUP, bool need_existing_window = false);
+void ShowCompanyGroup(CompanyID company, VehicleType veh, GroupID group = INVALID_GROUP);
 void ShowCompanyGroupForVehicle(const Vehicle *v);
 void DeleteGroupHighlightOfVehicle(const Vehicle *v);
 

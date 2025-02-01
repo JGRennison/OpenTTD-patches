@@ -440,7 +440,7 @@ void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 {
 	if (spec == nullptr || !spec->IsAvailable() || !ObjectPickerCallbacks::instance.IsActive() || spec->class_index == INVALID_OBJECT_CLASS) return;
 
-	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow>(_build_object_desc, 0, true);
+	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow, true>(_build_object_desc, 0);
 	if (w != nullptr) {
 		w->PickItem(spec->class_index, spec->index);
 	}
