@@ -11,6 +11,7 @@
 #define GENWORLD_H
 
 #include "company_type.h"
+#include <functional>
 #include <thread>
 
 /** Constants related to world generation */
