@@ -7016,7 +7016,10 @@ Trackdir Train::GetVehicleTrackdir() const
 		 * If a reachable track piece is reserved, use that, otherwise use the first reachable track piece.
 		 */
 		TrackBits tracks = GetAcrossTunnelBridgeReservationTrackBits(this->tile);
-		if (!tracks) tracks = GetAcrossTunnelBridgeTrackBits(this->tile);
+		if (tracks == TRACK_BIT_NONE) {
+			tracks = GetAcrossTunnelBridgeTrackBits(this->tile);
+			if (unlikely(tracks == TRACK_BIT_NONE)) return INVALID_TRACKDIR;
+		}
 		Trackdir td = TrackExitdirToTrackdir(FindFirstTrack(tracks), GetTunnelBridgeDirection(this->tile));
 		if (GetTunnelBridgeDirection(this->tile) != DirToDiagDir(this->direction)) td = ReverseTrackdir(td);
 		return td;
