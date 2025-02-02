@@ -3828,7 +3828,7 @@ public:
 			case WID_O_COND_COUNTER:
 			case WID_O_SLOT:
 			case WID_O_CHANGE_COUNTER:
-				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(this->GetWidget<NWidgetCore>(widget)->tool_tip, this->vehicle->type), close_cond, 1);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(this->GetWidget<NWidgetCore>(widget)->tool_tip, this->vehicle->type), close_cond, 0);
 				return true;
 
 			default:

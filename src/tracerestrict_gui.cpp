@@ -3094,14 +3094,14 @@ public:
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
 					case TRVT_SLOT_INDEX:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 1);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
 						return true;
 
 					case TRVT_GROUP_INDEX:
 						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
 							SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
 							SetDParam(1, STR_NULL);
-							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, close_cond, 1);
+							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, close_cond, 0);
 							return true;
 						}
 						return false;
@@ -3115,7 +3115,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
 					case TRVT_SLOT_INDEX_INT:
 					case TRVT_COUNTER_INDEX_INT:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 1);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
 						return true;
 
 					default:
