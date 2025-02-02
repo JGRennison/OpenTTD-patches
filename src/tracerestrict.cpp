@@ -2629,6 +2629,15 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 		}
 	}
 
+	for (TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
+		if (sg->owner != old_company) continue;
+		if (new_company == INVALID_OWNER) {
+			delete sg;
+		} else {
+			sg->owner = new_company;
+		}
+	}
+
 	/* Update windows */
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
