@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.64.0 (2025-02-02)
+* Fix incorrect behaviour with some industry GRFs.
+* Fix order backups being able to be partially restored after changing company.
+* Fix incorrect order occupancy values when order list is edited.
+* Enable cloning orders from another company's vehicle if infrastructure sharing is enabled.
+* Add feature to ctrl-click on group rename button to rename to an auto-generated name.
+* Allow use of sell all vehicles in depot button for other company depots.
+* Show a progress dialog for long running public road generation in the scenario editor.
+* Routing restrictions:
+  * Allow referencing groups of other companies.
+  * Allow cloning programs from other company signals.
+  * Add feature to organise slots into groups in the UI.
+  * Add mechanism to mark slots and counters as public, to allow use by other companies.
+  * Show hierarchy in group lists drop downs.
+* Bump trunk base from commit dd87bf9333bd7f62dee2f3b526e6fc6b6ee2fea1 to commit 666f7bfe2354483ceddf93330304808b80ad4b43.
+
 ### v0.63.3 (2024-12-28)
 * Fix crash when creating a new plan, when the plan text filter was active.
 * Fix server crash which occurred when a network client encountered a multiplayer desync.
