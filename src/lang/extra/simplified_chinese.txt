@@ -941,6 +941,9 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :预留的路径
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :预留的路径在此终止时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}槽位{CONSUME_ARG}：{LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}，{LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1024,14 +1027,18 @@ STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}槽位�
 STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}槽位 - 点击一个槽位来列出所有属于这个槽位的载具列表
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}点击创建槽位
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}删除所选槽位
-STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重名名所选槽位
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重命名所选槽位
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}创建槽位组
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}创建一个新的槽位组
 STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}公开所选槽位。{}其他公司的调度计划与信号可以在启用基建设施共享时使用公开的槽位
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}设定所选槽位的容量
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 槽位管理（{STRING}）
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理槽位
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重命名槽位
+STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}重命名槽位组
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}创建槽位
+STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}创建槽位组
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}设置最大槽位占用
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}删除槽位
 STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你确定你要删除该槽位吗？
