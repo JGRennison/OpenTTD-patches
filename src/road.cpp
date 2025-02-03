@@ -822,7 +822,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				// If it is already a road and has the right bits, we are good. Otherwise build the needed ones.
 				if (need_to_build_road) {
 					Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-					CmdBuildRoad(tile, DC_EXEC, _public_road_type << 4 | road_bits, 0);
+					CmdBuildRoad(tile, DC_EXEC, _public_road_type << 4 | road_bits, INVALID_TOWN);
 					cur_company.Restore();
 				}
 			}
