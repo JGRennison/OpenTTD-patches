@@ -11,7 +11,6 @@
 #include "script_tunnel.hpp"
 #include "script_rail.hpp"
 #include "../script_instance.hpp"
-#include "../../town.h"
 #include "../../tunnel_map.h"
 
 #include "../../safeguards.h"

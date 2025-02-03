@@ -14,6 +14,8 @@
 #include <vector>
 
 typedef uint16_t TownID;
+static const TownID INVALID_TOWN = 0xFFFF;
+
 struct Town;
 
 typedef std::vector<TownID> TownList;

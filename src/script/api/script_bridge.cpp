@@ -13,7 +13,6 @@
 #include "../script_instance.hpp"
 #include "../../bridge_map.h"
 #include "../../strings_func.h"
-#include "../../town.h"
 #include "../../date_func.h"
 #include "table/strings.h"
 

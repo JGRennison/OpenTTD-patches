@@ -43,7 +43,6 @@
 #include "core/backup_type.hpp"
 #include "picker_gui.h"
 #include "newgrf_extension.h"
-#include "town.h"
 
 #include "widgets/road_widget.h"
 #include "table/strings.h"

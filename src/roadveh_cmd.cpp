@@ -39,7 +39,6 @@
 #include "string_func.h"
 #include "core/checksum_func.hpp"
 #include "newgrf_roadstop.h"
-#include "town.h"
 
 #include "table/strings.h"
 
