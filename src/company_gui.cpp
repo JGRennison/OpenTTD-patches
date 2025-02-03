@@ -2205,7 +2205,7 @@ static constexpr NWidgetPart _nested_company_widgets[] = {
 			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
 				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 					NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-						NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INAUGURATION), SetDataTip(STR_COMPANY_VIEW_INAUGURATED_TITLE, STR_NULL), SetFill(1, 0),
+						NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INAUGURATION), SetDataTip(STR_JUST_STRING2, STR_NULL), SetFill(1, 0),
 						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 							NWidget(WWT_LABEL, INVALID_COLOUR, WID_C_DESC_COLOUR_SCHEME), SetDataTip(STR_COMPANY_VIEW_COLOUR_SCHEME_TITLE, STR_NULL),
 							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_COLOUR_SCHEME_EXAMPLE), SetMinimalSize(30, 0), SetFill(1, 1),
@@ -2576,9 +2576,18 @@ struct CompanyWindow : Window
 				SetDParam(1, (CompanyID)this->window_number);
 				break;
 
-			case WID_C_DESC_INAUGURATION:
-				SetDParam(0, Company::Get((CompanyID)this->window_number)->InauguratedDisplayYear());
+			case WID_C_DESC_INAUGURATION: {
+				const Company *c = Company::Get(static_cast<CompanyID>(this->window_number));
+				if (EconTime::UsingWallclockUnits() ) {
+					SetDParam(0, STR_COMPANY_VIEW_INAUGURATED_TITLE_WALLCLOCK);
+					SetDParam(1, c->inaugurated_year);
+					SetDParam(2, c->display_inaugurated_period);
+				} else {
+					SetDParam(0, STR_COMPANY_VIEW_INAUGURATED_TITLE);
+					SetDParam(1, c->inaugurated_year);
+				}
 				break;
+			}
 
 			case WID_C_DESC_COMPANY_VALUE:
 				SetDParam(0, CalculateCompanyValue(Company::Get((CompanyID)this->window_number)));
