@@ -1865,7 +1865,12 @@ bool AfterLoadGame()
 		EconTime::Detail::years_elapsed = EconTime::CurYear() - EconTime::Year{1};
 		EconTime::Detail::period_display_offset = YearDelta{0};
 		for (Company *c : Company::Iterate()) {
-			if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5, 5)) {
+			if (!IsSavegameVersionBefore(SLV_COMPANY_INAUGURATED_PERIOD_V2)) {
+				/* inaugurated_year is calendar time, loaded from upstream inaugurated_year_calendar.
+				 * display_inaugurated_period is loaded from upstream inaugurated_year. */
+				c->age_years = std::max<YearDelta>(YearDelta{0}, CalTime::CurYear() - c->inaugurated_year);
+				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::Year{c->display_inaugurated_period});
+			} else if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5, 5)) {
 				/* inaugurated_year is calendar time in XSLFI_VARIABLE_DAY_LENGTH version 5 */
 				c->age_years = std::max<YearDelta>(YearDelta{0}, CalTime::CurYear() - c->inaugurated_year);
 				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::Year{c->inaugurated_year.base() + EconTime::CurYear().base() - CalTime::CurYear().base()});
