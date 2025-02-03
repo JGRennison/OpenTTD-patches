@@ -380,6 +380,7 @@ int MaxTreeCount(const TileIndex tile)
 void PlaceTreesRandomly()
 {
 	int i, j, ht;
+	uint8_t max_height = _settings_game.construction.map_height_limit;
 
 	i = Map::ScaleBySize(DEFAULT_TREE_STEPS);
 	if (_game_mode == GM_EDITOR) i /= EDITOR_TREE_DIV;
@@ -402,6 +403,8 @@ void PlaceTreesRandomly()
 			j = ht * 2;
 			/* Above snowline more trees! */
 			if (_settings_game.game_creation.landscape == LT_ARCTIC && ht > GetSnowLine()) j *= 3;
+			/* Scale generation by maximum map height. */
+			if (max_height > MAP_HEIGHT_LIMIT_ORIGINAL) j = j * MAP_HEIGHT_LIMIT_ORIGINAL / max_height;
 			while (j--) {
 				PlaceTreeAtSameHeight(tile, ht);
 			}
