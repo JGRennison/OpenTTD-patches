@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.64.1 (2025-02-05)
+* Fix crash that could occur when displaying tooltips in the routing restriction window.
+* Fix public roads generation.
+
 ### v0.64.0 (2025-02-02)
 * Fix incorrect behaviour with some industry GRFs.
 * Fix order backups being able to be partially restored after changing company.
