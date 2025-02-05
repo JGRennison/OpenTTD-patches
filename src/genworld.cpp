@@ -375,6 +375,7 @@ void ExecuteWithGenerateWorld(std::function<void()> func)
 {
 	if (HasModalProgress()) return;
 	SetModalProgress(true);
+	MarkWholeScreenDirty();
 	_gw.abort  = false;
 	_gw.abortp = []() {
 		_switch_mode = SM_NONE; // Don't switch mode on abort
