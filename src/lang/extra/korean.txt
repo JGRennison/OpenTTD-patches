@@ -944,6 +944,9 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :경로 예약 �
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 종료: 슬롯 해제: {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}슬롯{CONSUME_ARG}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1029,12 +1032,17 @@ STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}슬롯 -
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}슬롯을 생성하려면 클릭하세요
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}선택한 슬롯을 삭제합니다
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}선택한 슬롯의 이름을 변경합니다
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}새 슬롯 그룹
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}새로운 슬롯 그룹을 생성합니다
+STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}선택한 슬롯을 모두에게 공개할지 설정합니다.{}공개 슬롯은 기반 시설 공유가 켜져있는 경우 다른 회사가 신호기나 경로 목록에서 사용될 수 있습니다
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}선택한 슬롯의 최대 수용량을 설정합니다
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}경로 제한 - 슬롯 관리자 ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :슬롯 관리
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}슬롯 이름 바꾸기
+STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}슬롯 그룹 이름 바꾸기
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}슬롯 생성하기
+STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}슬롯 그룹 생성하기
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}슬롯의 최대 수용량을 설정하세요
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}슬롯 삭제
 STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}이 슬롯을 정말로 삭제하시겠습니까?
@@ -1043,10 +1051,12 @@ STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}카운�
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}생성
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}삭제
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}이름 바꾸기
+STR_TRACE_RESTRICT_COUNTER_PUBLIC                               :{BLACK}공개
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}값 설정
 STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}카운터를 생성하려면 클릭하세요
 STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}선택한 카운터를 삭제합니다
 STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}선택한 카운터의 이름을 바꿉니다
+STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP                       :{BLACK}선택한 카운터를 모두에게 공개할지 설정합니다.{}공개 카운터는 기반 시설 공유가 켜져있는 경우 다른 회사가 신호기나 경로 목록에서 사용될 수 있습니다
 STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}선택한 카운터의 값을 바꿉니다
 STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}경로 제한 - 카운터 관리
 STR_TRACE_RESTRICT_COUNTER_MANAGE                               :카운터 관리
@@ -1485,6 +1495,8 @@ STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :다른 격납�
 
 STR_GROUP_EXPAND_ALL                                            :{BLACK}모두 펼치기
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}모두 접기
+
+STR_GROUP_RENAME_TOOLTIP_EXTRA                                  :{BLACK}{STRING}{}CTRL + 클릭하면 이름을 자동으로 생성합니다
 
 STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :기관차 및 동력차
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :객화차
