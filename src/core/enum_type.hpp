@@ -158,7 +158,7 @@ public:
 	 */
 	inline constexpr EnumBitSet &Set(Tenum value)
 	{
-		this->data |= (1U << to_underlying(value));
+		this->data |= (1ULL << to_underlying(value));
 		return *this;
 	}
 
@@ -169,7 +169,7 @@ public:
 	 */
 	inline constexpr EnumBitSet &Reset(Tenum value)
 	{
-		this->data &= ~(1U << to_underlying(value));
+		this->data &= ~(1ULL << to_underlying(value));
 		return *this;
 	}
 
@@ -194,7 +194,7 @@ public:
 	 */
 	inline constexpr bool Test(Tenum value) const
 	{
-		return (this->data & (1U << to_underlying(value))) != 0;
+		return (this->data & (1ULL << to_underlying(value))) != 0;
 	}
 
 	/**
