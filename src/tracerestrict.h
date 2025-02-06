@@ -804,40 +804,40 @@ enum TraceRestrictConditionOpType : uint8_t {
  * see TraceRestrictTypePropertySet
  */
 enum TraceRestrictValueType : uint8_t {
-	TRVT_NONE                     = 0, ///< value field not used (set to 0)
-	TRVT_SPECIAL                  = 1, ///< special handling of value field
-	TRVT_INT                      = 2, ///< takes an unsigned integer value
-	TRVT_DENY                     = 3, ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
-	TRVT_SPEED                    = 4, ///< takes an integer speed value
-	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
-	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
-	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
-	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
-	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
-	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
-	TRVT_LONG_RESERVE             = 11,///< takes a TraceRestrictLongReserveValueField
-	TRVT_GROUP_INDEX              = 12,///< takes a GroupID
-	TRVT_WEIGHT                   = 13,///< takes a weight
-	TRVT_POWER                    = 14,///< takes a power
-	TRVT_FORCE                    = 15,///< takes a force
-	TRVT_POWER_WEIGHT_RATIO       = 16,///< takes a power / weight ratio, * 100
-	TRVT_FORCE_WEIGHT_RATIO       = 17,///< takes a force / weight ratio, * 100
-	TRVT_WAIT_AT_PBS              = 18,///< takes a TraceRestrictWaitAtPbsValueField value
-	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
-	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
-	TRVT_PERCENT                  = 21,///> takes a unsigned integer percentage value between 0 and 100
-	TRVT_OWNER                    = 40,///< takes a CompanyID
-	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
-	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
-	TRVT_NEWS_CONTROL             = 43,///< takes a TraceRestrictNewsControlField
-	TRVT_COUNTER_INDEX_INT        = 44,///< takes a TraceRestrictCounterID, and an integer in the next item slot
-	TRVT_TIME_DATE_INT            = 45,///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
-	TRVT_ENGINE_CLASS             = 46,///< takes a EngineClass
-	TRVT_PF_PENALTY_CONTROL       = 47,///< takes a TraceRestrictPfPenaltyControlField
-	TRVT_SPEED_ADAPTATION_CONTROL = 48,///< takes a TraceRestrictSpeedAdaptationControlField
-	TRVT_SIGNAL_MODE_CONTROL      = 49,///< takes a TraceRestrictSignalModeControlField
-	TRVT_ORDER_TARGET_DIAGDIR     = 50,///< takes a DiagDirection, and the order type in the auxiliary field
-	TRVT_TILE_INDEX_THROUGH       = 51,///< takes a TileIndex in the next item slot (passes through)
+	TRVT_NONE,                     ///< value field not used (set to 0)
+	TRVT_SPECIAL,                  ///< special handling of value field
+	TRVT_INT,                      ///< takes an unsigned integer value
+	TRVT_DENY,                     ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
+	TRVT_SPEED,                    ///< takes an integer speed value
+	TRVT_ORDER,                    ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
+	TRVT_CARGO_ID,                 ///< takes a CargoID
+	TRVT_DIRECTION,                ///< takes a TraceRestrictDirectionTypeSpecialValue
+	TRVT_TILE_INDEX,               ///< takes a TileIndex in the next item slot
+	TRVT_PF_PENALTY,               ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
+	TRVT_RESERVE_THROUGH,          ///< takes a value 0 = reserve through, 1 = cancel previous reserve through
+	TRVT_LONG_RESERVE,             ///< takes a TraceRestrictLongReserveValueField
+	TRVT_GROUP_INDEX,              ///< takes a GroupID
+	TRVT_WEIGHT,                   ///< takes a weight
+	TRVT_POWER,                    ///< takes a power
+	TRVT_FORCE,                    ///< takes a force
+	TRVT_POWER_WEIGHT_RATIO,       ///< takes a power / weight ratio, * 100
+	TRVT_FORCE_WEIGHT_RATIO,       ///< takes a force / weight ratio, * 100
+	TRVT_WAIT_AT_PBS,              ///< takes a TraceRestrictWaitAtPbsValueField value
+	TRVT_SLOT_INDEX,               ///< takes a TraceRestrictSlotID
+	TRVT_SLOT_INDEX_INT,           ///< takes a TraceRestrictSlotID, and an integer in the next item slot
+	TRVT_PERCENT,                  ///> takes a unsigned integer percentage value between 0 and 100
+	TRVT_OWNER,                    ///< takes a CompanyID
+	TRVT_TRAIN_STATUS,             ///< takes a TraceRestrictTrainStatusValueField
+	TRVT_REVERSE,                  ///< takes a TraceRestrictReverseValueField
+	TRVT_NEWS_CONTROL,             ///< takes a TraceRestrictNewsControlField
+	TRVT_COUNTER_INDEX_INT,        ///< takes a TraceRestrictCounterID, and an integer in the next item slot
+	TRVT_TIME_DATE_INT,            ///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
+	TRVT_ENGINE_CLASS,             ///< takes a EngineClass
+	TRVT_PF_PENALTY_CONTROL,       ///< takes a TraceRestrictPfPenaltyControlField
+	TRVT_SPEED_ADAPTATION_CONTROL, ///< takes a TraceRestrictSpeedAdaptationControlField
+	TRVT_SIGNAL_MODE_CONTROL,      ///< takes a TraceRestrictSignalModeControlField
+	TRVT_ORDER_TARGET_DIAGDIR,     ///< takes a DiagDirection, and the order type in the auxiliary field
+	TRVT_TILE_INDEX_THROUGH,       ///< takes a TileIndex in the next item slot (passes through)
 };
 
 /**
