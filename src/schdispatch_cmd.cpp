@@ -906,7 +906,7 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 	}
 	
 	new_schedule.ScheduleName() = json.at("name").get<std::string>();
-	new_schedule.SetScheduledDispatchStartTick(json.at("start-tick").get<uint32_t>());
+	new_schedule.SetScheduledDispatchStartTick((StateTicks)json.at("start-tick").get<uint32_t>());
 	new_schedule.SetScheduledDispatchDuration(json.at("duration").get<uint32_t>());
 	new_schedule.SetScheduledDispatchDelay(json.at("max-delay").get<uint32_t>());
 	new_schedule.SetScheduledDispatchFlags(json.at("flags").get<uint8_t>());
