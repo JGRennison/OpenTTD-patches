@@ -303,7 +303,7 @@ std::string Order::ToJSONString() const
 
 		for (int i = 0; i < NUM_CARGO; i++) {
 			if (cargo_type_flags[i] != 0) {
-				extraJson["cargo-type-flags"] = cargo_type_flags;
+				extraJson["cargo-type-flags"][std::to_string(i)] = cargo_type_flags[i];
 				break;
 			}
 		}
@@ -364,11 +364,19 @@ Order Order::FromJSONString(std::string jsonSTR)
 
 		new_order.AllocExtraInfo();
 		
-		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_array()) {
+		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_object()) {
 
 			for (int i = 0; i < NUM_CARGO; i++) {
 
-				extraJson["cargo-type-flags"][i].get_to(new_order.extra->cargo_type_flags[i]);
+				if (extraJson["cargo-type-flags"].contains(std::to_string(i))) {
+
+					extraJson["cargo-type-flags"][std::to_string(i)].get_to(new_order.extra->cargo_type_flags[i]);
+
+				} else {
+
+					new_order.extra->cargo_type_flags[i] = 0;
+
+				}
 
 			}
 
@@ -956,7 +964,8 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
 				auto &orderJson = it.value();
 				OrderID new_orderID = v->GetNumOrders();
-				DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
+				bool res = DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
+				auto a = res;
 			}
 		}
 	}
@@ -1172,7 +1181,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 	VehicleOrderID sel_ord = GB(p2,  0, 16);
 	Order new_order = (orderJson != nullptr) ? Order::FromJSONString(orderJson) : Order(p3);
 
-	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, CIOIF_NONE);
+	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE);
 }
 
 /**
