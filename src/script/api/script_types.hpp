@@ -108,9 +108,10 @@
 #include "../../company_type.h"
 #include <squirrel.h>
 
-/* Define all types here, so they are added to the API docs. */
-typedef uint BridgeID;               ///< The ID of a bridge type.
-typedef uint8_t CargoID;             ///< The ID of a cargo.
+/* Define all types here, so we don't have to include the whole _type.h maze */
+typedef uint BridgeID;             ///< Internal name, not of any use for you.
+typedef uint8_t CargoID;                ///< The ID of a cargo.
+class CommandCost;                   ///< The cost of a command.
 typedef uint16_t EngineID;           ///< The ID of an engine.
 typedef uint16_t GoalID;             ///< The ID of a goal.
 typedef uint16_t GroupID;            ///< The ID of a group.
