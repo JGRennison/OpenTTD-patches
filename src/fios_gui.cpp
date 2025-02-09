@@ -816,8 +816,10 @@ public:
 				_file_to_saveload.Set(*this->selected);
 
 				if (this->abstract_filetype == FT_HEIGHTMAP) {
+
 					this->Close();
 					ShowHeightmapLoad();
+
 				}else if (this->abstract_filetype == FT_ORDERLIST) {
 
 					auto file = FioFOpenFile(this->selected->name, "r", NO_DIRECTORY);

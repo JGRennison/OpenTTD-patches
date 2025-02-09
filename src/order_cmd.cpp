@@ -289,12 +289,18 @@ std::string Order::ToJSONString() const
 {
 	std::string out;
 	nlohmann::json json;
-	json["packed-data"] = this->Pack();
+
+	json["type"] = this->type;
+
+	json["flags"] = this->GetRawFlags();
 
 	json["destination-id"] = this->GetDestination();
 	Station * station = Station::GetIfValid(this->GetDestination());
-	if(station != nullptr)
-		json["destination-name"] = station->cached_name;
+	if (station != nullptr) {
+
+		json["destination-name"] = station->GetCachedName();
+
+	}
 
 	if(this->extra.get() != nullptr){
 		auto& extraJson = json["extra"];
@@ -326,8 +332,11 @@ std::string Order::ToJSONString() const
 	}
 
 	json["refit-cargo"] = this->GetRefitCargo();
+
 	json["wait-time"] = this->GetWaitTime();
+
 	json["travel-time"] = this->GetTravelTime();
+
 	json["max-speed"] = this->GetMaxSpeed();
 
 	out = json.dump();
@@ -338,24 +347,25 @@ Order Order::FromJSONString(std::string jsonSTR)
 {
 	nlohmann::json json = nlohmann::json::parse(jsonSTR);
 
-	if (!json.contains("packed-data") && json["packed_data"].is_number_integer()) {
+	Order new_order;
 
-		Order errOrder;
+	if(json.contains("type") && json["type"].is_number_integer()) {
 
-		errOrder.MakeLabel(OLST_TEXT);
-		errOrder.SetColour(COLOUR_RED);
-		errOrder.SetLabelText("JSON_ERR: JSON does not contain mandatory 'packed-data' field for this order");
+		new_order.type = json["type"];
 
-		return errOrder;
 	}
 
-	Order new_order = Order(json.at("packed-data").get<uint64_t>());
-	
+	if (json.contains("flags") && json["flags"].is_number_integer()) {
+
+		new_order.flags = json["flags"];
+
+	}
+
 	if (json.contains("destination-id") && json["destination-id"].is_number_integer()) {
 
 		json["destination-id"].get_to(new_order.dest);
 
-	}	
+	}
 	
 
 	if (json.contains("extra") && json["extra"].is_object()) {
@@ -934,7 +944,7 @@ std::string OrderList::ToJSONString()
 		} while ((o = this->GetNext(o)) != this->GetFirstOrder());
 	}
 	
-	return json.dump();
+	return json.dump(4);
 
 }
 
@@ -948,7 +958,9 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 
 	nlohmann::json json;
 	try {
+
 		json = nlohmann::json::parse(json_str);
+
 	} catch(nlohmann::json::parse_error e){
 
 		ShowErrorMessage(STR_ERROR_JON, STR_ERROR_ORDERLIST_MALFORMED_JSON,WL_ERROR);
@@ -959,13 +971,17 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 	DoCommandP(v->tile, v->index, v->GetNumOrders(), CMD_DELETE_ORDER | CMD_MSG(STR_ERROR_CAN_T_DELETE_THIS_ORDER));
 
 	if (json.contains("orders")) {
+
 		auto &ordersJson = json["orders"];
+
 		if (ordersJson.is_array()) {
+
 			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
+
 				auto &orderJson = it.value();
 				OrderID new_orderID = v->GetNumOrders();
-				bool res = DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
-				auto a = res;
+				DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
+
 			}
 		}
 	}
