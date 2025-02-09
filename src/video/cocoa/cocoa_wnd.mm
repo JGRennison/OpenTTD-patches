@@ -36,7 +36,7 @@
 #include "../../toolbar_gui.h"
 #include <array>
 
-#include "table/sprites.h"
+#include "../../table/sprites.h"
 
 /* Table data for key mapping. */
 #include "cocoa_keys.h"

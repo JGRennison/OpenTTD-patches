@@ -10,7 +10,7 @@
 #include "../stdafx.h"
 
 #include "saveload.h"
-#include "debug.h"
+#include "../debug.h"
 #include "compat/settings_sl_compat.h"
 
 #include "../settings_type.h"

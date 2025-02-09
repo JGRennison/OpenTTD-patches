@@ -23,7 +23,7 @@
 
 #include "../../table/control_codes.h"
 
-#include "safeguards.h"
+#include "../../safeguards.h"
 
 bool SetFallbackFont(FontCacheSettings *settings, const std::string &language_isocode, MissingGlyphSearcher *callback)
 {

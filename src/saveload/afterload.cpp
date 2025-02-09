@@ -84,7 +84,7 @@
 #include <algorithm>
 
 #include "../safeguards.h"
-#include "window_func.h"
+#include "../window_func.h"
 
 extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev);
 

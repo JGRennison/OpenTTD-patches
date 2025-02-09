@@ -19,11 +19,11 @@
 #include "queue.h"
 #include <memory>
 
-#include "../../tile_type.h"
-#include "../../track_type.h"
+#include "../tile_type.h"
+#include "../track_type.h"
 
-#include "../../core/pod_pool.hpp"
-#include "../../3rdparty/robin_hood/robin_hood.h"
+#include "../core/pod_pool.hpp"
+#include "../3rdparty/robin_hood/robin_hood.h"
 
 static const int AYSTAR_DEF_MAX_SEARCH_NODES = 10000; ///< Reference limit for #AyStar::max_search_nodes
 

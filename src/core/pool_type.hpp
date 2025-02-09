@@ -11,7 +11,7 @@
 #define POOL_TYPE_HPP
 
 #include "enum_type.hpp"
-#include "debug_dbg_assert.h"
+#include "../debug_dbg_assert.h"
 #include <vector>
 
 /** Various types of a pool. */

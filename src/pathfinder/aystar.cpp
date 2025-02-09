@@ -21,12 +21,12 @@
  * should call clear() yourself!
  */
 
-#include "../../stdafx.h"
-#include "../../core/alloc_func.hpp"
+#include "../stdafx.h"
+#include "../core/alloc_func.hpp"
 #include "aystar.h"
 
-#include "../../safeguards.h"
-#include "core/mem_func.hpp"
+#include "../safeguards.h"
+#include "../core/mem_func.hpp"
 
 /**
  * This looks in the hash whether a node exists in the closed list.
