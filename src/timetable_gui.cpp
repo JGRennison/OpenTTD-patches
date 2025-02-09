@@ -287,6 +287,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 	bool have_missing_travel = false;
 	bool have_bad_full_load = false;
 	bool have_non_timetabled_conditional_branch = false;
+	bool have_autoseparate_bad_non_stop_type = false;
 
 	const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 	for (int n = 0; n < v->GetNumOrders(); n++) {
@@ -314,10 +315,19 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 				}
 			}
 		}
+
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && !have_autoseparate_bad_non_stop_type) {
+			if (order->IsType(OT_IMPLICIT)) {
+				have_autoseparate_bad_non_stop_type = true;
+			} else if (order->IsGotoOrder() && (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) == 0) {
+				have_autoseparate_bad_non_stop_type = true;
+			}
+		}
 	}
 
 	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
 		if (have_conditional) handler(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
+		if (have_autoseparate_bad_non_stop_type) handler(STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE, true);
 		if (have_missing_wait || have_missing_travel) {
 			if (assume_timetabled) {
 				handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);

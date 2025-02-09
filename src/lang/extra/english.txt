@@ -1876,6 +1876,7 @@ STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}This tim
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}This timetable is not being auto separated because there is only 1 vehicle
 STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}Cannot auto separate timetable: conditional order(s) present
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Cannot auto separate timetable: wait or travel time(s) missing
+STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}All orders should be 'non-stop' when using auto separation
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}Timetabling full-load orders is not recommended
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}Autofill will only update taken branch of conditional orders
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}Not all conditional order branch-taken travel times are timetabled
