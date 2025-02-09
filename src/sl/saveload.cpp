@@ -110,6 +110,7 @@ namespace upstream_sl {
 	void SlFixPointerChunkByID(uint32_t id);
 	void SlSaveChunkChunkByID(uint32_t id);
 	void SlResetLoadState();
+	void FixSCCEncoded(std::string &str, bool fix_code);
 }
 
 /** What are we currently doing? */
@@ -1196,6 +1197,19 @@ static void SlString(void *ptr, size_t length, VarType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
+			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT) && GetVarMemType(conv) != SLE_VAR_NULL) {
+				/* Use std::string load path */
+				std::string buffer;
+				SlStdString(&buffer, conv);
+				free(*(char **)ptr);
+				if (buffer.empty()) {
+					*(char **)ptr = nullptr;
+				} else {
+					*(char **)ptr = stredup(buffer.data(), buffer.data() + buffer.size());
+				}
+				break;
+			}
+
 			size_t len = SlReadArrayLength();
 
 			switch (GetVarMemType(conv)) {
@@ -1221,9 +1235,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					str_fix_scc_encoded((char *)ptr, (char *)ptr + len);
-				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
@@ -1270,10 +1281,7 @@ void SlStdString(std::string *ptr, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					char *buf = str.data();
-					str.resize(str_fix_scc_encoded(buf, buf + str.size()) - buf);
-				}
+				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT)) upstream_sl::FixSCCEncoded(str, IsSavegameVersionBefore(SLV_169));
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
