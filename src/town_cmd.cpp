@@ -937,6 +937,7 @@ static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
 	const HouseID house = GetHouseType(tile);
 
 	td->str = GetHouseName(house, tile);
+	td->town_can_upgrade = !IsHouseProtected(tile);
 
 	if (!IsHouseCompleted(tile)) {
 		td->dparam[0] = td->str;
@@ -2737,15 +2738,16 @@ HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile)
  * @param stage The current construction stage of the house.
  * @param type The type of house.
  * @param random_bits Random bits for newgrf houses to use.
+ * @param is_protected Whether the house is protected from the town upgrading it.
  * @pre The house can be built here.
  */
-static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
+static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits, bool is_protected)
 {
 	[[maybe_unused]] CommandCost cc = Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, tile);
 	assert(cc.Succeeded());
 
 	IncreaseBuildingCount(t, type);
-	MakeHouseTile(tile, t->index, counter, stage, type, random_bits);
+	MakeHouseTile(tile, t->index, counter, stage, type, random_bits, is_protected);
 	if (HouseSpec::Get(type)->building_flags & BUILDING_IS_ANIMATED) AddAnimatedTile(tile, false);
 
 	MarkTileDirtyByTile(tile);
@@ -2760,16 +2762,17 @@ static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, 
  * @param stage The current construction stage.
  * @param The type of house.
  * @param random_bits Random bits for newgrf houses to use.
+ * @param is_protected Whether the house is protected from the town upgrading it.
  * @pre The house can be built here.
  */
-static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
+static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits, bool is_protected)
 {
 	BuildingFlags size = HouseSpec::Get(type)->building_flags;
 
-	ClearMakeHouseTile(tile, t, counter, stage, type, random_bits);
-	if (size & BUILDING_2_TILES_Y)   ClearMakeHouseTile(tile + TileDiffXY(0, 1), t, counter, stage, ++type, random_bits);
-	if (size & BUILDING_2_TILES_X)   ClearMakeHouseTile(tile + TileDiffXY(1, 0), t, counter, stage, ++type, random_bits);
-	if (size & BUILDING_HAS_4_TILES) ClearMakeHouseTile(tile + TileDiffXY(1, 1), t, counter, stage, ++type, random_bits);
+	ClearMakeHouseTile(tile, t, counter, stage, type, random_bits, is_protected);
+	if (size & BUILDING_2_TILES_Y)   ClearMakeHouseTile(tile + TileDiffXY(0, 1), t, counter, stage, ++type, random_bits, is_protected);
+	if (size & BUILDING_2_TILES_X)   ClearMakeHouseTile(tile + TileDiffXY(1, 0), t, counter, stage, ++type, random_bits, is_protected);
+	if (size & BUILDING_HAS_4_TILES) ClearMakeHouseTile(tile + TileDiffXY(1, 1), t, counter, stage, ++type, random_bits, is_protected);
 
 	if (!_generating_world) {
 		ForAllStationsAroundTiles(TileArea(tile, (size & BUILDING_2_TILES_X) ? 2 : 1, (size & BUILDING_2_TILES_Y) ? 2 : 1), [t](Station *st, TileIndex tile) {
@@ -3015,8 +3018,9 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
  * @param house The @a HouseID of the house.
  * @param random_bits The random data to be associated with the house.
  * @param house_completed Should the house be placed already complete, instead of under construction?
+ * @param is_protected Whether the house is protected from the town upgrading it.
  */
-static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID house, uint8_t random_bits, bool house_completed)
+static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID house, uint8_t random_bits, bool house_completed, bool is_protected)
 {
 	t->cache.num_houses++;
 
@@ -3043,7 +3047,7 @@ static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID
 		}
 	}
 
-	MakeTownHouse(tile, t, construction_counter, construction_stage, house, random_bits);
+	MakeTownHouse(tile, t, construction_counter, construction_stage, house, random_bits, is_protected);
 	UpdateTownRadius(t);
 	UpdateTownGrowthRate(t);
 }
@@ -3118,14 +3122,24 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 		/* Check if GRF allows this house */
 		if (!HouseAllowsConstruction(house, tile, t, random_bits)) continue;
 
-		BuildTownHouse(t, tile, HouseSpec::Get(house), house, random_bits, false);
+		const HouseSpec *hs = HouseSpec::Get(house);
+		BuildTownHouse(t, tile, hs, house, random_bits, false, HasFlag(hs->extra_flags, BUILDING_IS_PROTECTED));
 		return true;
 	}
 
 	return false;
 }
 
-CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, TownID town_id)
+/**
+ * Place an individual house.
+ * @param flags Type of operation.
+ * @param tile Tile on which to place the house.
+ * @param HouseID The HouseID of the house spec.
+ * @param is_protected Whether the house is protected from the town upgrading it.
+ * @param town_id Town ID, or INVALID_TOWN to pick a town automatically.
+ * @return Empty cost or an error.
+ */
+CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, bool is_protected, TownID town_id)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.place_houses == PH_FORBIDDEN) return CMD_ERROR;
 
@@ -3159,7 +3173,7 @@ CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, To
 
 	if (flags & DC_EXEC) {
 		bool house_completed = _settings_game.economy.place_houses == PH_ALLOWED_CONSTRUCTED;
-		BuildTownHouse(t, tile, hs, house, Random(), house_completed);
+		BuildTownHouse(t, tile, hs, house, Random(), house_completed, is_protected);
 	}
 
 	return CommandCost();
