@@ -2649,6 +2649,7 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.town_build_tunnels"));
 				towns->Add(new SettingEntry("economy.town_max_road_slope"));
 				towns->Add(new SettingEntry("economy.found_town"));
+				towns->Add(new SettingEntry("economy.place_houses"));
 				towns->Add(new SettingEntry("economy.town_layout"));
 				towns->Add(new SettingEntry("economy.larger_towns"));
 				towns->Add(new SettingEntry("economy.initial_city_size"));
