@@ -3640,8 +3640,8 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
 		AddNewsItem(msg, NT_GENERAL, NF_NORMAL, NR_TOWN, t->index, NR_NONE, UINT32_MAX);
-		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
-		Game::NewEvent(new ScriptEventRoadReconstruction((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
+		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
+		Game::NewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 	}
 	return CommandCost();
 }
@@ -3799,8 +3799,8 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlag flags)
 		SetDParam(2, t->index);
 		SetDParamStr(3, cni->company_name);
 		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_GENERAL, NF_COMPANY, NR_TOWN, t->index, NR_NONE, UINT32_MAX, std::move(cni));
-		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
-		Game::NewEvent(new ScriptEventExclusiveTransportRights((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
+		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
+		Game::NewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 	}
 	return CommandCost();
 }
