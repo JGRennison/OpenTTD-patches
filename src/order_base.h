@@ -277,7 +277,7 @@ public:
 	 */
 	inline bool IsGotoOrder() const
 	{
-		return IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION);
+		return this->IsType(OT_GOTO_WAYPOINT) || this->IsType(OT_GOTO_DEPOT) || this->IsType(OT_GOTO_STATION);
 	}
 
 	/**
@@ -286,7 +286,7 @@ public:
 	 */
 	inline bool IsBaseStationOrder() const
 	{
-		return IsType(OT_IMPLICIT) || IsType(OT_GOTO_STATION) || IsType(OT_GOTO_WAYPOINT);
+		return this->IsType(OT_IMPLICIT) || this->IsType(OT_GOTO_STATION) || this->IsType(OT_GOTO_WAYPOINT);
 	}
 
 	/**
