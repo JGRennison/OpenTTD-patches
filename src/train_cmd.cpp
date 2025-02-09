@@ -5706,6 +5706,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Currently the locomotive is active. Determine which one of the
 					 * available tracks to choose */
 					ChooseTrainTrackResult result = ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD);
+					assert(IsValidTrack(result.track));
 					chosen_track = TrackToTrackBits(result.track);
 					reverse_at_signal = (result.ctt_flags & CTTRF_REVERSE_AT_SIGNAL);
 					dbg_assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x{:X}, 0x{:X}, 0x{:X}", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
@@ -7018,9 +7019,10 @@ Trackdir Train::GetVehicleTrackdir() const
 		TrackBits tracks = GetAcrossTunnelBridgeReservationTrackBits(this->tile);
 		if (tracks == TRACK_BIT_NONE) {
 			tracks = GetAcrossTunnelBridgeTrackBits(this->tile);
-			if (unlikely(tracks == TRACK_BIT_NONE)) return INVALID_TRACKDIR;
 		}
-		Trackdir td = TrackExitdirToTrackdir(FindFirstTrack(tracks), GetTunnelBridgeDirection(this->tile));
+		Track track = FindFirstTrack(tracks);
+		if (unlikely(!IsValidTrack(track))) return INVALID_TRACKDIR;
+		Trackdir td = TrackExitdirToTrackdir(track, GetTunnelBridgeDirection(this->tile));
 		if (GetTunnelBridgeDirection(this->tile) != DirToDiagDir(this->direction)) td = ReverseTrackdir(td);
 		return td;
 	} else if (this->track & TRACK_BIT_WORMHOLE) {
