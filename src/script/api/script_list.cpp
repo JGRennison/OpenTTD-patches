@@ -475,7 +475,6 @@ public:
 ScriptList::ScriptList()
 {
 	/* Default sorter */
-	this->sorter         = nullptr;
 	this->sorter_type    = SORT_BY_VALUE;
 	this->sort_ascending = false;
 	this->initialized    = false;
@@ -485,7 +484,6 @@ ScriptList::ScriptList()
 
 ScriptList::~ScriptList()
 {
-	delete this->sorter;
 }
 
 bool ScriptList::HasItem(SQInteger item)
@@ -606,20 +604,19 @@ void ScriptList::InitSorter()
 		switch (this->sorter_type) {
 			case SORT_BY_ITEM:
 				if (this->sort_ascending) {
-					this->sorter = new ScriptListSorterItemAscending(this);
+					this->sorter = std::make_unique<ScriptListSorterItemAscending>(this);
 				} else {
-					this->sorter = new ScriptListSorterItemDescending(this);
+					this->sorter = std::make_unique<ScriptListSorterItemDescending>(this);
 				}
 				break;
 
 			case SORT_BY_VALUE:
 				if (this->sort_ascending) {
-					this->sorter = new ScriptListSorterValueAscending(this);
+					this->sorter = std::make_unique<ScriptListSorterValueAscending>(this);
 				} else {
-					this->sorter = new ScriptListSorterValueDescending(this);
+					this->sorter = std::make_unique<ScriptListSorterValueDescending>(this);
 				}
 				break;
-
 			default: NOT_REACHED();
 		}
 	}
@@ -705,8 +702,7 @@ void ScriptList::Sort(SorterType sorter, bool ascending)
 	if (sorter != SORT_BY_VALUE && sorter != SORT_BY_ITEM) return;
 	if (sorter == this->sorter_type && ascending == this->sort_ascending) return;
 
-	delete this->sorter;
-	this->sorter = nullptr;
+	this->sorter.reset();
 	this->sorter_type    = sorter;
 	this->sort_ascending = ascending;
 	this->initialized    = false;
@@ -740,12 +736,12 @@ void ScriptList::SwapList(ScriptList *list)
 
 	this->items.swap(list->items);
 	this->values.swap(list->values);
-	Swap(this->sorter, list->sorter);
-	Swap(this->sorter_type, list->sorter_type);
-	Swap(this->sort_ascending, list->sort_ascending);
-	Swap(this->initialized, list->initialized);
-	Swap(this->values_inited, list->values_inited);
-	Swap(this->modifications, list->modifications);
+	std::swap(this->sorter, list->sorter);
+	std::swap(this->sorter_type, list->sorter_type);
+	std::swap(this->sort_ascending, list->sort_ascending);
+	std::swap(this->initialized, list->initialized);
+	std::swap(this->values_inited, list->values_inited);
+	std::swap(this->modifications, list->modifications);
 	if (this->sorter != nullptr) this->sorter->Retarget(this);
 	if (list->sorter != nullptr) list->sorter->Retarget(list);
 }
