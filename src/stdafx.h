@@ -33,7 +33,6 @@
  * We need INT64_MAX, which for most systems comes from stdint.h.
  * For OSX the inclusion is already done in osx_stdafx.h. */
 #	define __STDC_LIMIT_MACROS
-#	define __STDC_FORMAT_MACROS
 #	include <stdint.h>
 #endif /* __APPLE__ */
 
@@ -64,14 +63,6 @@
 /* Stuff for GCC */
 #if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
 #	define CDECL
-#	define __int64 long long
-	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
-	 * is the format string, second argument is start of values passed to printf. */
-#	if defined(__MINGW32__) && defined(__USE_MINGW_ANSI_STDIO)
-#		define WARN_FORMAT(string, args) __attribute__ ((format (__MINGW_PRINTF_FORMAT, string, args)))
-#	else
-#		define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
-#	endif
 	#define WARN_TIME_FORMAT(string) __attribute__ ((format (strftime, string, 0)))
 #endif /* __GNUC__ || __clang__ */
 
@@ -120,7 +111,6 @@
 #	pragma warning(disable: 6246)   // code analyzer: Local declaration of 'statspec' hides declaration of the same name in outer scope. For additional information, see previous declaration at ...
 
 #	define CDECL _cdecl
-#	define WARN_FORMAT(string, args)
 #	define WARN_TIME_FORMAT(string)
 
 #	if defined(_WIN32) && !defined(_WIN64)
@@ -206,37 +196,6 @@
 #	define PACK_N(type_dec, n) type_dec __attribute__((__packed__, aligned(n)))
 #endif
 #define PACK(type_dec) PACK_N(type_dec, 1)
-
-/* MSVCRT of course has to have a different syntax for long long *sigh* */
-#if defined(_MSC_VER) || (defined(__MINGW32__) && !defined(__USE_MINGW_ANSI_STDIO))
-#   define OTTD_PRINTF64 "%I64d"
-#   define OTTD_PRINTF64U "%I64u"
-#   define OTTD_PRINTFHEX64_SUFFIX "I64X"
-#   define PRINTF_SIZE "%Iu"
-#   define PRINTF_SIZEX "%IX"
-#   define PRINTF_SIZEX_SUFFIX "IX"
-#else
-#if defined(PRId64)
-#   define OTTD_PRINTF64 "%" PRId64
-#else
-#   define OTTD_PRINTF64 "%lld"
-#endif
-#if defined(PRIu64)
-#   define OTTD_PRINTF64U "%" PRIu64
-#else
-#   define OTTD_PRINTF64U "%llu"
-#endif
-#if defined(PRIX64)
-#   define OTTD_PRINTFHEX64_SUFFIX PRIX64
-#else
-#   define OTTD_PRINTFHEX64_SUFFIX "llX"
-#endif
-#   define PRINTF_SIZE "%zu"
-#   define PRINTF_SIZEX "%zX"
-#   define PRINTF_SIZEX_SUFFIX "zX"
-#endif
-#define OTTD_PRINTFHEX64 "%" OTTD_PRINTFHEX64_SUFFIX
-#define OTTD_PRINTFHEX64PAD "%016" OTTD_PRINTFHEX64_SUFFIX
 
 /*
  * When making a (pure) debug build, the compiler will by default disable
@@ -349,7 +308,7 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
  * @param variable The variable to get the size of.
  * @return the size of the variable
  */
-#define cpp_sizeof(base, variable) (sizeof(((base*)8)->variable))
+#define cpp_sizeof(base, variable) (sizeof(std::declval<base>().variable))
 
 
 /* take care of some name clashes on MacOS */
@@ -485,8 +444,6 @@ inline void free(const void *ptr)
 	#define INCLUDE_FOR_PREFETCH_NTA "stdafx.h"
 	#define PREFETCH_NTA(address)
 #endif
-
-#define SINGLE_ARG(...) __VA_ARGS__
 
 #if defined(DEDICATED)
 inline constexpr bool IsHeadless() { return true; }
