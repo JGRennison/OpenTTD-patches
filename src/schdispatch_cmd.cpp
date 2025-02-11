@@ -917,7 +917,7 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 std::string DispatchSchedule::ToJSONString()
 {
 
-	nlohmann::json json;
+	nlohmann::ordered_json json;
 
 	for (unsigned int i = 0; auto & SD_slot : this->GetScheduledDispatch()) {
 		auto &slotsJson = json["slots"][i++];
