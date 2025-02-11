@@ -2,9 +2,14 @@ name: CI - Build
 
 on:
   pull_request:
-  push:
-    branches:
-    - master
+#  push:
+#    branches:
+#    - master
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Ref to build (for Pull Requests, use refs/pull/NNN/head)'
+        required: true
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
