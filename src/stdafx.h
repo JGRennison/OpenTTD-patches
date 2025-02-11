@@ -107,7 +107,6 @@
 #	pragma warning(disable: 6011)   // code analyzer: Dereferencing NULL pointer 'pfGetAddrInfo': Lines: 995, 996, 998, 999, 1001
 #	pragma warning(disable: 6326)   // code analyzer: potential comparison of a constant with another constant
 #	pragma warning(disable: 6031)   // code analyzer: Return value ignored: 'ReadFile'
-#	pragma warning(disable: 6255)   // code analyzer: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead
 #	pragma warning(disable: 6246)   // code analyzer: Local declaration of 'statspec' hides declaration of the same name in outer scope. For additional information, see previous declaration at ...
 
 #	define CDECL _cdecl
