@@ -83,7 +83,6 @@ extern std::string _loadgame_DBGL_data;
 extern bool _save_DBGC_data;
 extern std::string _loadgame_DBGC_data;
 
-void CDECL debug(DebugLevelID dbg, int8_t level, const char *format, ...) WARN_FORMAT(3, 4);
 void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg);
 
 void DumpDebugFacilityNames(struct format_target &output);
