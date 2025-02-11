@@ -361,6 +361,8 @@ enum CloneOptions : uint8_t {
 	CO_UNSHARE = 2
 };
 
+const uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
+
 struct Order;
 struct OrderPoolItem;
 struct OrderList;
