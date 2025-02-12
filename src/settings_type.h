@@ -156,7 +156,7 @@ enum PublicRoadsConstruction : uint8_t {
 	PRC_END
 };
 
-/** Settings related to time display. This may be loaded from the savegame and/or overriden by the client. */
+/** Settings related to time display. This may be loaded from the savegame and/or overridden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	uint16_t ticks_per_minute;               ///< how many ticks per minute
@@ -718,7 +718,7 @@ struct VehicleSettings {
 	bool     ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 	bool     no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
 	bool     roadveh_articulated_overtaking;   ///< enable articulated road vehicles overtaking other vehicles
-	bool     roadveh_cant_quantum_tunnel;      ///< enable or disable vehicles quantum tunelling through over vehicles when blocked
+	bool     roadveh_cant_quantum_tunnel;      ///< enable or disable vehicles quantum tunnelling through other vehicles when blocked
 	bool     drive_through_train_depot;        ///< enable drive-through train depot emulation
 	uint16_t through_load_speed_limit;         ///< maximum speed for through load
 	uint16_t rail_depot_speed_limit;           ///< maximum speed entering/existing rail depots

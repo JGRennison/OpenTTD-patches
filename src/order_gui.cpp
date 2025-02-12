@@ -131,7 +131,7 @@ private:
 
 	/**
 	 * Returns the load/unload type of this order for the specified cargo.
-	 * @param cargo_id The cargo index for wich we want the load/unload type.
+	 * @param cargo_id The cargo index for which we want the load/unload type.
 	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
 	 */
 	uint8_t GetOrderActionTypeForCargo(CargoID cargo_id)

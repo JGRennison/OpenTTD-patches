@@ -47,7 +47,7 @@ private:
 	/** Pointer to the error message. */
 	static const char *message;
 
-	/** Whether a crash has already occured */
+	/** Whether a crash has already occurred */
 	static bool have_crashed;
 
 protected:

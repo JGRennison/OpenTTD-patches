@@ -177,7 +177,7 @@ void GamelogPrint(format_target &buffer)
 					break;
 
 				case GLCT_REVISION:
-					/* The game was loaded in a diffferent version than before. */
+					/* The game was loaded in a different version than before. */
 					buffer.format("Revision text changed to {}, savegame version {}, ",
 						lc->revision.text, lc->revision.slver);
 

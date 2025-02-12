@@ -228,7 +228,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			/* Distance to the nearest water/land tile */
 			case 0x8B: return GetClosestWaterDistance(this->tile, (GetIndustrySpec(this->industry->type)->behaviour & INDUSTRYBEH_BUILT_ONWATER) == 0);
 
-			/* Square of Euclidian distance from town */
+			/* Square of Euclidean distance from town */
 			case 0x8D: return ClampTo<uint16_t>(DistanceSquare(this->industry->town->xy, this->tile));
 
 			/* 32 random bits */
@@ -331,7 +331,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			TileIndex tile = GetNearbyTile(parameter, this->tile, true);
 			return GetTownRadiusGroup(this->industry->town, tile) << 16 | ClampTo<uint16_t>(DistanceManhattan(tile, this->industry->town->xy));
 		}
-		/* Get square of Euclidian distance of closest town */
+		/* Get square of Euclidean distance of closest town */
 		case 0x66: {
 			if (this->tile == INVALID_TILE) break;
 			TileIndex tile = GetNearbyTile(parameter, this->tile, true);

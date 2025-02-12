@@ -122,7 +122,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet
 	ClearGRFConfigList(&item->info.grfconfig);
 	/* Retrieve the NetworkGameInfo from the packet. */
 	DeserializeNetworkGameInfo(p, item->info);
-	/* Check for compatability with the client. */
+	/* Check for compatibility with the client. */
 	CheckGameCompatibility(item->info);
 	/* Ensure we consider the server online. */
 	item->status = NGLS_ONLINE;
@@ -141,7 +141,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTEND
 	ClearGRFConfigList(&item->info.grfconfig);
 	/* Retrieve the NetworkGameInfo from the packet. */
 	DeserializeNetworkGameInfoExtended(p, item->info);
-	/* Check for compatability with the client. */
+	/* Check for compatibility with the client. */
 	CheckGameCompatibility(item->info, true);
 	/* Ensure we consider the server online. */
 	item->status = NGLS_ONLINE;

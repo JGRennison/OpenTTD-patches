@@ -852,7 +852,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8_t aux_data = 0);
 
 /**
- * Get TraceRestrictTypePropertySet for a given instruction, using the instruction type and where appropriate the auxilliary type field
+ * Get TraceRestrictTypePropertySet for a given instruction, using the instruction type and where appropriate the auxiliary type field
  */
 inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrictItem item)
 {

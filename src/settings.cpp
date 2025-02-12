@@ -3790,7 +3790,7 @@ void LoadSettingsPlyx(bool skip)
 		const Company *c = nullptr;
 		if (!skip) {
 			c = Company::GetIfValid(company_id);
-			if (c == nullptr) SlErrorCorruptFmt("PLYX chunk: non-existant company ID: {}", company_id);
+			if (c == nullptr) SlErrorCorruptFmt("PLYX chunk: non-existent company ID: {}", company_id);
 		}
 
 		uint32_t company_flags = SlReadUint32();

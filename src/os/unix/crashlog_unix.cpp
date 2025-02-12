@@ -573,7 +573,7 @@ class CrashLogUnix final : public CrashLog {
 	 * If libdl is present, try to use that to get the section file name and possibly the symbol
 	 * name/address instead of using the string from backtrace_symbols().
 	 * If libdl and libbfd are present, try to use that to get the symbol name/address using the
-	 * section file name returned from libdl. This is becuase libbfd also does line numbers,
+	 * section file name returned from libdl. This is because libbfd also does line numbers,
 	 * and knows about more symbols than libdl does.
 	 * If demangling support is available, try to demangle whatever symbol name we got back.
 	 * If we could find a symbol address from libdl or libbfd, show the offset from that to the frame address.

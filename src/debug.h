@@ -71,7 +71,7 @@ void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&
 }
 
 /**
- * Ouptut a line of debugging information.
+ * Output a line of debugging information.
  * @param name The category of debug information.
  * @param level The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
  * @param format_string The formatting string of the message.

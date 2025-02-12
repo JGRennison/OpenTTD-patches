@@ -548,7 +548,7 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 			break;
 		}
 
-		/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+		/* If an order has a 0 travel time, and it's not explicitly set, then stop. */
 		if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 			break;
 		}
@@ -1163,7 +1163,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				break;
 			}
 
-			/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+			/* If an order has a 0 travel time, and it's not explicitly set, then stop. */
 			if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 				break;
 			}
@@ -1437,7 +1437,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 	/* We only need to consider each order at most once. */
 	for (int i = this->v->GetNumOrders(); i > 0; --i) {
-		/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+		/* If an order has a 0 travel time, and it's not explicitly set, then stop. */
 		if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT) && !order->IsType(OT_CONDITIONAL)) {
 			break;
 		}

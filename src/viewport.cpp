@@ -5962,7 +5962,7 @@ Trackdir PointDirToTrackdir(const Point &pt, Direction dir)
 
 static bool FindPolyline(const Point &pt, const LineSnapPoint &start, PolylineInfo *ret)
 {
-	/* relative coordinats of the mouse point (offset against the snap point) */
+	/* relative coordinates of the mouse point (offset against the snap point) */
 	int x = pt.x - start.x;
 	int y = pt.y - start.y;
 	int we = y - x;
@@ -6817,7 +6817,7 @@ static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirect
  * @param start_tile         tile where the track starts
  * @param end_tile           tile where the track ends
  * @param start_track        track piece on the start_tile
- * @param bidirectional_exit whether to allow to highlight next track in any direction; otherwise new track will have to fallow the stored one (usefull when placing tunnels and bridges)
+ * @param bidirectional_exit whether to allow to highlight next track in any direction; otherwise new track will have to follow the stored one (useful when placing tunnels and bridges)
  */
 void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track start_track, bool bidirectional_exit)
 {
@@ -6846,7 +6846,7 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 		}
 		/* Create new snap point set. */
 		if (had_start && had_end) {
-			/* just stop snaping, don't forget snap points */
+			/* just stop snapping, don't forget snap points */
 			SetRailSnapMode(RSM_NO_SNAP);
 		} else {
 			/* include only new points */

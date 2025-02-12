@@ -393,7 +393,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 /* virtual */ uint32_t HouseScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	if (this->tile == INVALID_TILE) {
-		/* House does not yet exist, nor is it being planned to exist. Provide some default values intead. */
+		/* House does not yet exist, nor is it being planned to exist. Provide some default values instead. */
 		switch (variable) {
 			case 0x40: return TOWN_HOUSE_COMPLETED | this->view << 2; /* Construction stage. */
 			case 0x41: return 0;

@@ -1840,7 +1840,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		a.cargo = indspec->accepts_cargo[index];
 	}
 
-	/* Randomize inital production if non-original economy is used and there are no production related callbacks. */
+	/* Randomize initial production if non-original economy is used and there are no production related callbacks. */
 	if (!indspec->UsesOriginalEconomy()) {
 		for (auto &p : i->Produced()) {
 			p.rate = ClampTo<uint8_t>((RandomRange(256) + 128) * p.rate >> 8);

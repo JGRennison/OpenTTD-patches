@@ -163,7 +163,7 @@ static bool CompareRailTypes(const RailType &first, const RailType &second)
 			// Last sort by speed
 			sort_value[i] = (GetRailTypeInfo(rt[i])->max_speed != 0) ? GetRailTypeInfo(rt[i])->max_speed : UINT16_MAX;
 
-			// Inside those categories filter by compatibility with eachother.
+			// Inside those categories filter by compatibility with each other.
 			if (!HasPowerOnRail(rt[i], rt[(i + 1) % 2])) {
 				sort_value[i] += (1 << 16);
 			}

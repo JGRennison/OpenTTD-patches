@@ -445,7 +445,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
  * Highlight a tile on the map.
  * param x tile number or tile x coordinate.
  * param y optional y coordinate.
- * @note When only one argument is given it is intepreted as the tile number.
+ * @note When only one argument is given it is interpreted as the tile number.
  *       When two arguments are given, they are interpreted as the tile's x
  *       and y coordinates.
  * @return True when either console help was shown or a proper amount of parameters given.
@@ -1204,7 +1204,7 @@ DEF_CONSOLE_CMD(ConMergeCompanies)
 	if (argc != 3) {
 		IConsolePrint(CC_HELP, "Merge two companies together. Usage: 'merge_companies <main-company-id> <to-merge-company-id>'");
 		IConsolePrint(CC_HELP, "The first company ID <main-company-id> will be left with the combined assets of both companies.");
-		IConsolePrint(CC_HELP, "The second company ID <to-merge-company-id> will be removed, with all assets transfered to the first company ID.");
+		IConsolePrint(CC_HELP, "The second company ID <to-merge-company-id> will be removed, with all assets transferred to the first company ID.");
 		IConsolePrint(CC_HELP, "For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
 		return true;
 	}

@@ -3508,7 +3508,7 @@ void Vehicle::BeginLoading()
 					if (this->cur_implicit_order_index > 0) --this->cur_implicit_order_index;
 
 					/* InsertOrder disabled creation of implicit orders for all vehicles with the same implicit order.
-					 * Reenable it for this vehicle */
+					 * Re-enable it for this vehicle */
 					uint16_t &gv_flags = this->GetGroundVehicleFlags();
 					ClrBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 				}

@@ -3301,7 +3301,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 					/* Do not call PrepareToEnterBridge because that also increments z_pos if
 					 * GVF_GOINGUP_BIT is set.
-					 * That is not required because this is occuring at frame == TILE_SIZE,
+					 * That is not required because this is occurring at frame == TILE_SIZE,
 					 * instead at TILE_SIZE - 1 */
 					ClrBit(t->gv_flags, GVF_GOINGUP_BIT);
 					ClrBit(t->gv_flags, GVF_GOINGDOWN_BIT);

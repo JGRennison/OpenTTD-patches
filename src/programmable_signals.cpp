@@ -51,7 +51,7 @@ struct SignalVM {
 
 	void Execute()
 	{
-		Debug(misc, 6, "Begining execution of programmable pre-signal on tile {:x}, track {}",
+		Debug(misc, 6, "Beginning execution of programmable pre-signal on tile {:x}, track {}",
 					this->program->tile, this->program->track);
 		do {
 			Debug(misc, 10, "  Executing instruction {}, opcode {}", this->instruction->Id(), this->instruction->Opcode());
@@ -734,7 +734,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	return CommandCost();
 }
 
-/** Modify a singal instruction
+/** Modify a signal instruction
  *
  * @param tile The Tile on which to perform the operation
  * @param p1 Flags and information
@@ -745,7 +745,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
  *       - Colour to set the signal to
  *   - PSO_IF:
  *       - Bit 0 If 0, set the condidion code:
- *         - Bit 1-8:  Conditon code to change to
+ *         - Bit 1-8:  Condition code to change to
  *       - Otherwise, if SignalVariableCondition:
  *        - Bits 1-2:  Which field to change (ConditionField)
  *        - Bits 3-31: Value to set field to

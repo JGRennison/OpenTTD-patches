@@ -1949,7 +1949,7 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 			break;
 
 		/* SL_WRITEBYTE writes a value to the savegame to identify the type of an object.
-		 * When loading, the value is read explictly with SlReadByte() to determine which
+		 * When loading, the value is read explicitly with SlReadByte() to determine which
 		 * object description to use. */
 		case SL_WRITEBYTE:
 			if (_sl.action == SLA_SAVE) save.push_back(sld);
@@ -2066,7 +2066,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 						size_t offset = _sl.dumper->GetWriteOffsetGeneric();
 						sld.struct_handler->Save(object);
 						if (offset == _sl.dumper->GetWriteOffsetGeneric()) {
-							/* Nothing was actaully written, so it's safe to change the 1 above to 0 */
+							/* Nothing was actually written, so it's safe to change the 1 above to 0 */
 							_sl.dumper->ReplaceLastWrittenByte(0); // This is fine iff nothing has been written since the WriteByte(1)
 						}
 					} else {
@@ -3678,7 +3678,7 @@ static const SaveLoadFormat _saveload_formats[] = {
 	 * a good choice for multiplayer servers. And zstd level 1 seems to be the optimal one for client connection speed
 	 * (compress + 10 MB/s download + decompress time), about 3x faster than lzma:2 and 1.5x than zlib:2 and lzo.
 	 * As zstd has negative compression levels the values were increased by 100 moving zstd level range -100..22 into
-	 * openttd 0..122. Also note that value 100 mathes zstd level 0 which is a special value for default level 3 (openttd 103) */
+	 * openttd 0..122. Also note that value 100 matches zstd level 0 which is a special value for default level 3 (openttd 103) */
 	{"zstd",   TO_BE32X('OTTS'), CreateLoadFilter<ZSTDLoadFilter>,   CreateSaveFilter<ZSTDSaveFilter>,   0, 101, 122, SLF_REQUIRES_ZSTD},
 #else
 	{"zstd",   TO_BE32X('OTTS'), nullptr,                            nullptr,                            0, 0, 0, SLF_REQUIRES_ZSTD},

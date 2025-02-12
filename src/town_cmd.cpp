@@ -633,13 +633,13 @@ static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t
 }
 
 /**
- * Generate cargo for a house using the binominal algorithm.
+ * Generate cargo for a house using the binomial algorithm.
  * @param t The current town.
  * @param tpe The town production effect.
  * @param rate The town's product rate for this production.
  * @param stations Available stations for this house.
  */
-static void TownGenerateCargoBinominal(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
+static void TownGenerateCargoBinomial(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
 	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
 		const CargoSpec *cs = CargoSpec::Get(cid);
@@ -719,8 +719,8 @@ static void TileLoop_Town(TileIndex tile)
 				/* Reduce generation rate to a 1/4, using tile bits to spread out distribution.
 				 * As tick counter is incremented by 256 between each call, we ignore the lower 8 bits. */
 				if (GB(_tick_counter, 8, 2) == GB(tile, 0, 2)) {
-					TownGenerateCargoBinominal(t, TPE_PASSENGERS, hs->population, stations);
-					TownGenerateCargoBinominal(t, TPE_MAIL, hs->mail_generation, stations);
+					TownGenerateCargoBinomial(t, TPE_PASSENGERS, hs->population, stations);
+					TownGenerateCargoBinomial(t, TPE_MAIL, hs->mail_generation, stations);
 				}
 				break;
 
@@ -2688,7 +2688,7 @@ bool GenerateTowns(TownLayout layout)
 
 /**
  * Returns the bit corresponding to the town zone of the specified tile
- * or #HZB_END if the tile is ouside of the town.
+ * or #HZB_END if the tile is outside of the town.
  *
  * @param t Town on which town zone is to be found
  * @param tile TileIndex where town zone needs to be found
@@ -2712,7 +2712,7 @@ HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile)
 
 /**
  * Returns the bit corresponding to the town zone of the specified tile.
- * Returns #HZB_TOWN_EDGE if the tile is either in an edge zone or ouside of the town.
+ * Returns #HZB_TOWN_EDGE if the tile is either in an edge zone or outside of the town.
  *
  * @param t Town on which town zone is to be found
  * @param tile TileIndex where town zone needs to be found
@@ -2843,15 +2843,15 @@ static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int
 
 
 /**
- * Test whether houses of given type are avaliable in current game.
+ * Test whether houses of given type are available in current game.
  *
- * The function will check whether the house is available at all e.g. is not overriden.
+ * The function will check whether the house is available at all e.g. is not overridden.
  * Also availability for current climate and given house zone will be tested.
  *
  * @param house house type
  * @param above_snowline true to test availability above the snow line, false for below (arctic climate only)
  * @param zone return error if houses are forbidden in this house zone
- * @return success if house is avaliable, error message otherwise
+ * @return success if house is available, error message otherwise
  */
 static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline, HouseZonesBits zone)
  {
@@ -2879,8 +2879,8 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
 
 /**
  * Check whether a town can hold more house types.
- * @param t the town we wan't to check
- * @param house type of the house we wan't to add
+ * @param t the town we want to check
+ * @param house type of the house we want to add
  * @return success if houses of this type are allowed, error message otherwise
  */
 static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house)

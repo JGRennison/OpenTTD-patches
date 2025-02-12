@@ -15,7 +15,7 @@
  * - [v]snprintf: returns the length of the string as it would be written
  *   when the output is large enough, so it can be more than the size of
  *   the buffer and than can underflow size_t (uint-ish) which makes all
- *   subsequent snprintf alikes write outside of the buffer. Use
+ *   subsequent snprintf-like functions write outside of the buffer. Use
  *   [v]seprintf instead; it will return the number of bytes actually
  *   added so no [v]seprintf will cause outside of bounds writes.
  * - [v]sprintf: does not bounds checking: use [v]seprintf instead.

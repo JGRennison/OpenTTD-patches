@@ -919,7 +919,7 @@ public:
 	inline void SetScheduledDispatchReuseSlots(bool reuse_slots) { AssignBit(this->scheduled_dispatch_flags, SDF_REUSE_SLOTS, reuse_slots); }
 
 	/**
-	 * Get the scheduled dispatch maximum alowed delay, in scaled tick
+	 * Get the scheduled dispatch maximum allowed delay, in scaled ticks
 	 * @return  scheduled dispatch last dispatch
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }

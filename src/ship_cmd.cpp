@@ -693,7 +693,7 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
 	TrackBits bits = scc->track_bits | Ship::From(v)->state;
 	if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) return nullptr;
 
-	/* Don't detect ships passing on aquaduct. */
+	/* Don't detect ships passing on aqueduct. */
 	if (abs(v->z_pos - scc->v->z_pos) >= 8) return nullptr;
 
 	/* Only requested tiles are checked. avoid desync. */
@@ -707,7 +707,7 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
  * @param search_tile  Tile that the requesting ship will check, one will be added to look in front of the bow.
  * @param ramp         Ramp tile from aqueduct.
  * @param v            Ship that does the request.
- * @return Allways false.
+ * @return Always false.
  */
 static bool HandleSpeedOnAqueduct(Ship *v, TileIndex tile, TileIndex ramp)
 {

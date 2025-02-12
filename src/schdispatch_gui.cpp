@@ -131,7 +131,7 @@ static void ScheduleAddCallback(const Window *w, StateTicks date)
  * @param timetable_duration  timetable duration in scaled tick
  * @param schedule_duration  scheduled dispatch duration in scaled tick
  * @param offsets list of all dispatch offsets in the schedule
- * @return maxinum number of vehicle required
+ * @return maximum number of vehicles required
  */
 static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedule_duration, const std::vector<DispatchSlot> &slots)
 {
@@ -193,7 +193,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	int schedule_index;
 	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
 	int click_subaction;    ///< Subaction for clicked_widget
-	Scrollbar *vscroll;     ///< Verticle scrollbar
+	Scrollbar *vscroll;     ///< Vertical scrollbar
 	uint num_columns;       ///< Number of columns.
 
 	StateTicks next_departure_update = STATE_TICKS_INT_MAX; ///< Time after which the last departure value should be re-drawn

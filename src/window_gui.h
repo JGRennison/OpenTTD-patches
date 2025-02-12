@@ -66,7 +66,7 @@ public:
 	int vsep_wide;            ///< Wide vertical spacing.
 	int hsep_normal;          ///< Normal horizontal spacing.
 	int hsep_wide;            ///< Wide horizontal spacing.
-	int hsep_indent;          ///< Width of identation for tree layouts.
+	int hsep_indent;          ///< Width of indentation for tree layouts.
 
 	static const WidgetDimensions unscaled; ///< Unscaled widget dimensions.
 	static WidgetDimensions scaled;         ///< Widget dimensions scaled for current zoom level.

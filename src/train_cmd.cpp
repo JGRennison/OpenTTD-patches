@@ -771,7 +771,7 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 			int overshoot = station_length - std::min(v->gcache.cached_total_length - beyond, station_length);
 			adjust = beyond - overshoot;
 		} else {
-			/* Train hasn't reached the platform yet, or no advancing has occured, use predictive mode */
+			/* Train hasn't reached the platform yet, or no advancing has occurred, use predictive mode */
 			for (const Train *u = v; u != nullptr; u = u->Next()) {
 				if (overhang > 0 && !u->IsArticulatedPart()) {
 					bool skip = true;

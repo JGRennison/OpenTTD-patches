@@ -437,7 +437,7 @@ void InvalidateWaterRegion(TileIndex tile)
  * Calls the provided callback function for all water region patches
  * accessible from one particular side of the starting patch.
  * @param water_region_patch Water patch within the water region to start searching from
- * @param side Side of the water region to look for neigboring patches of water
+ * @param side Side of the water region to look for neighboring patches of water
  * @param callback The function that will be called for each neighbor that is found
  */
 static inline void VisitAdjacentWaterRegionPatchNeighbors(const WaterRegionPatchDesc &water_region_patch, DiagDirection side, TVisitWaterRegionPatchCallBack &func)
@@ -499,7 +499,7 @@ void VisitWaterRegionPatchNeighbors(const WaterRegionPatchDesc &water_region_pat
 	/* Visit adjacent water region patches in each cardinal direction */
 	for (DiagDirection side = DIAGDIR_BEGIN; side < DIAGDIR_END; side++) VisitAdjacentWaterRegionPatchNeighbors(water_region_patch, side, callback);
 
-	/* Visit neigboring water patches accessible via cross-region aqueducts */
+	/* Visit neighboring water patches accessible via cross-region aqueducts */
 	if (current_region.HasCrossRegionAqueducts()) {
 		for (const TileIndex tile : current_region) {
 			if (GetWaterRegionPatchInfo(tile) == water_region_patch && IsAqueductTile(tile)) {

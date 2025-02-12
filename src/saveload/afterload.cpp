@@ -1016,7 +1016,7 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
 		/*
-		 * Reject helicopters aproaching oil rigs using the wrong aircraft movement data
+		 * Reject helicopters approaching oil rigs using the wrong aircraft movement data
 		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
 		 * Do this here as AfterLoadVehicles can also check it indirectly via the newgrf code.
 		 */

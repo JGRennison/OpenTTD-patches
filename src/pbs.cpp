@@ -1197,7 +1197,7 @@ void FillTrainReservationLookAhead(Train *v)
 
 		/* Special case, if called from TrainController,
 		 * v->tile, v->track and v->direction can be updated to the new tile,
-		 * but v->x_pos and v->y_pos can still use the cordinates on the old tile,
+		 * but v->x_pos and v->y_pos can still use the coordinates on the old tile,
 		 * GetTileMarginInFrontOfTrain could erroneously return -5 if the old and
 		 * new directions don't match. */
 		v->lookahead->reservation_end_position = std::max(GetTileMarginInFrontOfTrain(v), -4);

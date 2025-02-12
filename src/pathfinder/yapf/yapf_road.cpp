@@ -20,7 +20,7 @@
  * This is due to the addition of the extra-large maps patch,
  * which increases MAX_MAP_SIZE by several orders of magnitude.
  * This is no longer a sensible value for pathfinding as it
- * leads to major performace issues if a path is not found.
+ * leads to major performance issues if a path is not found.
  */
 const uint MAX_RV_PF_TILES = 1 << 11;
 

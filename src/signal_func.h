@@ -153,7 +153,7 @@ void CheckRemoveSignalsFromTile(TileIndex tile);
 void CheckRemoveSignal(TileIndex tile, Track track);
 
 /** Adds a signal dependency
- *  The signal identified by @p dep will be marked as dependend upon
+ *  The signal identified by @p dep will be marked as dependent upon
  *  the signal identified by @p on
  */
 void AddSignalDependency(SignalReference on, SignalReference dep);

@@ -52,7 +52,7 @@ CargoID _cargo_id_passengers = INVALID_CARGO;
 CargoID _cargo_id_mail = INVALID_CARGO;
 
 /**
- * Default cargo translation for upto version 7 NewGRFs.
+ * Default cargo translation for up to version 7 NewGRFs.
  * This maps the original 12 cargo slots to their original label. If a climate dependent cargo is not present it will
  * map to CT_INVALID. For default cargoes this ends up as a 1:1 mapping via climate slot -> label -> cargo ID.
  */

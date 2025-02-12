@@ -14,7 +14,7 @@
 
 typedef uint32_t TunnelID; ///< Type for the unique identifier of tunnels.
 
-static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to store in m2 to indiciate that the ID should be looked up instead
+static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to store in m2 to indicate that the ID should be looked up instead
 
 /**
  * Is this a tunnel (entrance)?

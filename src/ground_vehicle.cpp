@@ -206,7 +206,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 
-	/* Constructued from power, with need to multiply by 18 and assuming
+	/* Constructed from power, with need to multiply by 18 and assuming
 	 * low speed, it needs to be a 64 bit integer too. */
 	int64_t force;
 	int64_t braking_force;

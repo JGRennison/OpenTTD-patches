@@ -69,7 +69,7 @@ inline uint8_t GetObjectRandomBits(TileIndex t)
 }
 
 /**
- * Get the ground type of ths tile.
+ * Get the ground type of this tile.
  * @param t The tile to get the ground type of.
  * @pre IsTileType(t, MP_OBJECT)
  * @return The ground type.

@@ -1398,7 +1398,7 @@ static void CreateRivers()
  * Calculate what height would be needed to cover N% of the landmass.
  *
  * The function allows both snow and desert/tropic line to be calculated. It
- * tries to find the closests height which covers N% of the landmass; it can
+ * tries to find the closest height which covers N% of the landmass; it can
  * be below or above it.
  *
  * Tropic has a mechanism where water and tropic tiles in mountains grow

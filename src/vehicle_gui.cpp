@@ -711,7 +711,7 @@ uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID des
  * This means the engine with the lowest breakdown_type.
  * If the breakdown types of 2 engines are equal, the one with the lowest breakdown_severity (most severe) is picked.
  * @param v The front engine of the train.
- * @return The most severly broken engine.
+ * @return The most severely broken engine.
  */
 const Vehicle *GetMostSeverelyBrokenEngine(const Train *v)
 {

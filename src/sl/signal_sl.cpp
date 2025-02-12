@@ -133,7 +133,7 @@ static void Save_SPRG()
 {
 	// Check for, and dispose of, any signal information on a tile which doesn't have signals.
 	// This indicates that someone removed the signals from the tile but didn't clean them up.
-	// (This code is to detect bugs and limit their consquences, not to cover them up!)
+	// (This code is to detect bugs and limit their consequences, not to cover them up!)
 	for (ProgramList::iterator i = _signal_programs.begin(); i != _signal_programs.end();) {
 		SignalReference ref = i->first;
 		if (!HasProgrammableSignals(ref)) {

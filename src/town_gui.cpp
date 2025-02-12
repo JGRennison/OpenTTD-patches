@@ -92,7 +92,7 @@ private:
 	uint displayed_actions_on_previous_painting; ///< Actions that were available on the previous call to OnPaint()
 
 	Dimension icon_size;      ///< Dimensions of company icon
-	Dimension exclusive_size; ///< Dimensions of exlusive icon
+	Dimension exclusive_size; ///< Dimensions of exclusive icon
 
 	/**
 	 * Get the position of the Nth set bit.
@@ -341,9 +341,9 @@ public:
 						const bool disabled = ChangeSettingsDisabled();
 						const bool selected = (this->sel_index == (0x100 + i));
 						const TextColour tc = disabled ? (TC_NO_SHADE | (selected ? TC_SILVER : TC_GREY)) : (selected ? TC_WHITE : TC_ORANGE);
-						const bool overriden = HasBit(this->town->override_flags, i);
+						const bool overridden = HasBit(this->town->override_flags, i);
 						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + i);
-						SetDParam(1, overriden ? STR_JUST_STRING1 : STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT);
+						SetDParam(1, overridden ? STR_JUST_STRING1 : STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT);
 						switch (i) {
 							case TSOF_OVERRIDE_BUILD_ROADS:
 								SetDParam(2, this->town->GetAllowBuildRoads() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);

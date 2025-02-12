@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file oldloader.h Declarations of strctures and function used in loader of old savegames */
+/** @file oldloader.h Declarations of structures and function used in loader of old savegames */
 
 #ifndef SL_OLDLOADER_H
 #define SL_OLDLOADER_H

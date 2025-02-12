@@ -554,7 +554,7 @@ static int GetDropDownListIndexByValue(const TraceRestrictDropDownListSet *list_
 }
 
 /**
- * Get StringID correspoding to @p value, in @list_set
+ * Get StringID corresponding to @p value, in @list_set
  * @p value must be present
  */
 static StringID GetDropDownStringByValue(const TraceRestrictDropDownListSet *list_set, uint value)
