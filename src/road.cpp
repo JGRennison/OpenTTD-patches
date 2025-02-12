@@ -65,9 +65,9 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 {
 	if (!IsValidTile(tile)) return ROAD_NONE;
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
-		TileIndex neighbor_tile = TileAddByDiagDir(tile, dir);
+		TileIndex neighbour_tile = TileAddByDiagDir(tile, dir);
 
-		/* Get the Roadbit pointing to the neighbor_tile */
+		/* Get the Roadbit pointing to the neighbour_tile */
 		const RoadBits target_rb = DiagDirToRoadBits(dir);
 
 		/* If the roadbit is in the current plan */
@@ -76,8 +76,8 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 			const RoadBits mirrored_rb = MirrorRoadBits(target_rb);
 
 			test_tile:
-			if (IsValidTile(neighbor_tile)) {
-				switch (GetTileType(neighbor_tile)) {
+			if (IsValidTile(neighbour_tile)) {
+				switch (GetTileType(neighbour_tile)) {
 					/* Always connective ones */
 					case MP_CLEAR: case MP_TREES:
 						connective = true;
@@ -87,21 +87,21 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 					case MP_TUNNELBRIDGE:
 					case MP_STATION:
 					case MP_ROAD:
-						if (IsNormalRoadTile(neighbor_tile)) {
+						if (IsNormalRoadTile(neighbour_tile)) {
 							/* Always connective */
 							connective = true;
 						} else {
-							const RoadBits neighbor_rb = GetAnyRoadBits(neighbor_tile, RTT_ROAD) | GetAnyRoadBits(neighbor_tile, RTT_TRAM);
+							const RoadBits neighbour_rb = GetAnyRoadBits(neighbour_tile, RTT_ROAD) | GetAnyRoadBits(neighbour_tile, RTT_TRAM);
 
 							/* Accept only connective tiles */
-							connective = (neighbor_rb & mirrored_rb) != ROAD_NONE;
+							connective = (neighbour_rb & mirrored_rb) != ROAD_NONE;
 						}
 						break;
 
 					case MP_RAILWAY: {
-						if (IsPossibleCrossing(neighbor_tile, DiagDirToAxis(dir))) {
+						if (IsPossibleCrossing(neighbour_tile, DiagDirToAxis(dir))) {
 							/* Check far side of crossing */
-							neighbor_tile = TileAddByDiagDir(neighbor_tile, dir);
+							neighbour_tile = TileAddByDiagDir(neighbour_tile, dir);
 							goto test_tile;
 						}
 						break;
@@ -109,7 +109,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 
 					case MP_WATER:
 						/* Check for real water tile */
-						connective = !IsWater(neighbor_tile);
+						connective = !IsWater(neighbour_tile);
 						break;
 
 					/* The definitely not connective ones */
@@ -117,7 +117,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 				}
 			}
 
-			/* If the neighbor tile is inconnective, remove the planned road connection to it */
+			/* If the neighbour tile is inconnective, remove the planned road connection to it */
 			if (!connective) org_rb ^= target_rb;
 		}
 	}
@@ -710,7 +710,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 		aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 		aystar->num_neighbours++;
 	} else {
-		// Handle regular neighbors.
+		// Handle regular neighbours.
 		for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 			const auto neighbour = current_tile + TileOffsByDiagDir(d);
 

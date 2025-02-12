@@ -17,7 +17,7 @@
 
 #include "../../safeguards.h"
 
-constexpr int DIRECT_NEIGHBOR_COST = 100;
+constexpr int DIRECT_NEIGHBOUR_COST = 100;
 constexpr int NODES_PER_REGION = 4;
 constexpr uint32_t MAX_NUMBER_OF_NODES = 65536;
 
@@ -38,7 +38,7 @@ struct CYapfRegionPatchNodeKey {
 
 inline uint ManhattanDistance(const CYapfRegionPatchNodeKey &a, const CYapfRegionPatchNodeKey &b)
 {
-	return (Delta(a.water_region_patch.x, b.water_region_patch.x) + Delta(a.water_region_patch.y, b.water_region_patch.y)) * DIRECT_NEIGHBOR_COST;
+	return (Delta(a.water_region_patch.x, b.water_region_patch.x) + Delta(a.water_region_patch.y, b.water_region_patch.y)) * DIRECT_NEIGHBOUR_COST;
 }
 
 /** Yapf Node for water regions. */
@@ -172,7 +172,7 @@ public:
 			node.Set(&old_node, water_region_patch);
 			Yapf().AddNewNode(node, TrackFollower{});
 		};
-		VisitWaterRegionPatchNeighbors(old_node.key.water_region_patch, visitFunc);
+		VisitWaterRegionPatchNeighbours(old_node.key.water_region_patch, visitFunc);
 	}
 
 	inline char TransportTypeChar() const { return '^'; }

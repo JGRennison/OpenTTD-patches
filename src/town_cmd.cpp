@@ -1097,7 +1097,7 @@ bool CheckTownRoadTypes()
  * @param dist_multi The distance multiplier.
  * @return true if there is a parallel road.
  */
-static bool IsNeighborRoadTile(TileIndex tile, const DiagDirection dir, uint dist_multi)
+static bool IsNeighbourRoadTile(TileIndex tile, const DiagDirection dir, uint dist_multi)
 {
 	if (!IsValidTile(tile)) return false;
 
@@ -1151,7 +1151,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 	}
 
 	Slope cur_slope = _settings_game.construction.build_on_slopes ? std::get<0>(GetFoundationSlope(tile)) : GetTileSlope(tile);
-	bool ret = !IsNeighborRoadTile(tile, dir, t->layout == TL_ORIGINAL ? 1 : 2);
+	bool ret = !IsNeighbourRoadTile(tile, dir, t->layout == TL_ORIGINAL ? 1 : 2);
 	if (cur_slope == SLOPE_FLAT) return ret;
 
 	/* If the tile is not a slope in the right direction, then
@@ -1259,7 +1259,7 @@ static RoadBits GetTownRoadGridElement(Town *t, TileIndex tile, DiagDirection di
 
 /**
  * Grows the town with an extra house.
- *  Check if there are enough neighbor house tiles
+ *  Check if there are enough neighbour house tiles
  *  next to the current tile. If there are enough
  *  add another house.
  *
@@ -1272,7 +1272,7 @@ static bool GrowTownWithExtraHouse(Town *t, TileIndex tile)
 	/* We can't look further than that. */
 	if (DistanceFromEdge(tile) == 0) return false;
 
-	uint counter = 0; // counts the house neighbor tiles
+	uint counter = 0; // counts the house neighbour tiles
 
 	/* Check the tiles E,N,W and S of the current tile for houses */
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
@@ -1289,7 +1289,7 @@ static bool GrowTownWithExtraHouse(Town *t, TileIndex tile)
 				break;
 		}
 
-		/* If there are enough neighbors stop here */
+		/* If there are enough neighbours stop here */
 		if (counter >= 3) {
 			if (TryBuildTownHouse(t, tile)) {
 				_grow_town_result = GROWTH_SUCCEED;

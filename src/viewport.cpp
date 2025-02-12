@@ -5995,7 +5995,7 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, PolylineIn
 	Direction diag_line_dir = ChangeDir(DIR_SE, (DirDiff)(2 * diag_quadrant));  // DIR_SE is the middle of the diag quadrant no. 0
 	if (!HasBit(start.dirs, ortho_line_dir) && !HasBit(start.dirs, diag_line_dir)) return false;
 
-	/* length of booth segments of auto line (choosing orthogonal direction first) */
+	/* length of both segments of auto line (choosing orthogonal direction first) */
 	uint ortho_len = 0, ortho_len2 = 0;
 	if (HasBit(start.dirs, ortho_line_dir)) {
 		bool is_len_even = (align_x != 0) ? d_x >= d_y : d_x <= d_y;
@@ -6008,7 +6008,7 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, PolylineIn
 		}
 	}
 
-	/* length of booth segments of auto line (choosing diagonal direction first) */
+	/* length of both segments of auto line (choosing diagonal direction first) */
 	uint diag_len = 0, diag_len2 = 0;
 	if (HasBit(start.dirs, diag_line_dir)) {
 		if (d_x == 0 || d_y == 0) { // just single segment?
@@ -6080,7 +6080,7 @@ static LineSnapPoint *FindBestPolyline(const Point &pt, LineSnapPoint *snap_poin
 		/* check whether we've found a better polyline */
 		if (best_snap_point != nullptr) {
 			/* firstly choose shorter polyline (the one with smaller amount of
-			 * track pieces composing booth the white and the blue line) */
+			 * track pieces composing both the white and the blue line) */
 			uint cur_len = polyline.first_len + polyline.second_len;
 			uint best_len = ret->first_len + ret->second_len;
 			if (cur_len > best_len) continue;
@@ -6822,7 +6822,7 @@ static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirect
 void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track start_track, bool bidirectional_exit)
 {
 	if (start_tile != INVALID_TILE && end_tile != INVALID_TILE) {
-		/* calculate trackdirs at booth ends of the track */
+		/* calculate trackdirs at both ends of the track */
 		Trackdir exit_trackdir_at_start = TrackToTrackdir(start_track);
 		Trackdir exit_trackdir_at_end = ReverseTrackdir(TrackToTrackdir(start_track));
 		if (start_tile != end_tile) { // multi-tile case

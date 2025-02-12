@@ -906,7 +906,7 @@ public:
 	 * @param widget      Widget number of the widget clicked in.
 	 * @param padding     Amount of empty space between the widget edge and the top of the first row. Default value is \c 0.
 	 * @param line_height Height of a single row. A negative value means using the vertical resize step of the widget.
-	 * @return Iterator to the element clicked at. If clicked at a wrong position, returns as iterator to the end of the container.
+	 * @return Iterator to the element clicked at. If clicked at a wrong position, returns an iterator to the end of the container.
 	 */
 	template <typename Tcontainer>
 	auto GetScrolledItemFromWidget(Tcontainer &container, int clickpos, const Window * const w, WidgetID widget, int padding = 0, int line_height = -1) const
