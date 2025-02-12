@@ -57,6 +57,28 @@ public:
 	}
 
 	/**
+	 * Set values from another bitset.
+	 * @param other Bitset of values to set.
+	 * @returns The bit set
+	 */
+	inline constexpr Timpl &Set(const Timpl &other)
+	{
+		this->data |= other.data;
+		return static_cast<Timpl&>(*this);
+	}
+
+	/**
+	 * Assign the value-th bit.
+	 * @param value Bit to assign to.
+	 * @param set true if the bit should be set, false if the bit should be reset.
+	 * @returns The EnumBitset
+	 */
+	inline constexpr Timpl &Set(Tvalue_type value, bool set)
+	{
+		return set ? this->Set(value) : this->Reset(value);
+	}
+
+	/**
 	 * Reset the value-th bit.
 	 * @param value Bit to reset.
 	 * @returns The bit set
@@ -64,6 +86,17 @@ public:
 	inline constexpr Timpl &Reset(Tvalue_type value)
 	{
 		this->data &= ~(1ULL << Timpl::DecayValueType(value));
+		return static_cast<Timpl&>(*this);
+	}
+
+	/**
+	 * Reset values from another bitset.
+	 * @param other Bitset of values to reset.
+	 * @returns The bit set
+	 */
+	inline constexpr Timpl &Reset(const Timpl &other)
+	{
+		this->data &= ~other.data;
 		return static_cast<Timpl&>(*this);
 	}
 
@@ -79,6 +112,17 @@ public:
 		} else {
 			return this->Set(value);
 		}
+	}
+
+	/**
+	 * Flip values from another bitset.
+	 * @param other Bitset of values to flip.
+	 * @returns The bit set
+	 */
+	inline constexpr Timpl &Flip(const Timpl &other)
+	{
+		this->data ^= other.data;
+		return static_cast<Timpl&>(*this);
 	}
 
 	/**
