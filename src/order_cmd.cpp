@@ -2103,7 +2103,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (data != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(data);
 				if (ctr == nullptr) return CMD_ERROR;
-				if (ctr->IsUsableByOwner(v->owner)) return CMD_ERROR;
+				if (!ctr->IsUsableByOwner(v->owner)) return CMD_ERROR;
 			}
 			break;
 
