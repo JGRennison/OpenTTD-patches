@@ -16,8 +16,8 @@
 /* Enable string logging for setting commands */
 struct ChangeSettingCmdData final : public AutoFmtTupleCmdData<ChangeSettingCmdData, TCDF_STRINGS, std::string, int32_t> {};
 
-DEF_CMD_TUPLE_NT(CMD_CHANGE_SETTING,         CmdChangeSetting,        CMD_SERVER, CMDT_SERVER_SETTING,  ChangeSettingCmdData)
-DEF_CMD_TUPLE_NT(CMD_CHANGE_COMPANY_SETTING, CmdChangeCompanySetting,         {}, CMDT_COMPANY_SETTING, ChangeSettingCmdData)
-DEF_CMD_TUPLE_NT(CMD_CHEAT_SETTING,          CmdCheatSetting,         CMD_SERVER, CMDT_CHEAT,           CmdDataT<CheatNumbers, uint32_t>)
+DEF_CMD_TUPLE_NT(CMD_CHANGE_SETTING,         CmdChangeSetting,        CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING,  ChangeSettingCmdData)
+DEF_CMD_TUPLE_NT(CMD_CHANGE_COMPANY_SETTING, CmdChangeCompanySetting,              CMD_NO_EST, CMDT_COMPANY_SETTING, ChangeSettingCmdData)
+DEF_CMD_TUPLE_NT(CMD_CHEAT_SETTING,          CmdCheatSetting,         CMD_SERVER | CMD_NO_EST, CMDT_CHEAT,           CmdDataT<CheatNumbers, uint32_t>)
 
 #endif /* SETTINGS_CMD_H */
