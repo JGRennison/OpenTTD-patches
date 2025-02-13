@@ -74,6 +74,7 @@
 #include "../newgrf_industrytiles.h"
 #include "../timer/timer.h"
 #include "../timer/timer_game_tick.h"
+#include "../picker_func.h"
 #include "../pathfinder/water_regions.h"
 
 
@@ -4676,6 +4677,7 @@ void ReloadNewGRFData()
 	/* Update company infrastructure counts. */
 	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
 	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	InvalidateAllPickerWindows();
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();

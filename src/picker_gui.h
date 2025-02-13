@@ -162,6 +162,7 @@ public:
 		PFI_POSITION = 1U << 2, ///< Update scroll positions.
 		PFI_VALIDATE = 1U << 3, ///< Validate selected item.
 	};
+	static constexpr PickerFilterInvalidation PICKER_INVALIDATION_ALL{PFI_CLASS | PFI_TYPE | PFI_POSITION | PFI_VALIDATE};
 
 	static const int PREVIEW_WIDTH = 64; ///< Width of each preview button.
 	static const int PREVIEW_HEIGHT = 48; ///< Height of each preview button.
