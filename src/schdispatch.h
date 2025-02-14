@@ -15,6 +15,10 @@
 #include "vehicle_type.h"
 #include "settings_type.h"
 
+uint32_t getScheduledDispatchDefaultDuration();
+
+void AddNewScheduledDispatchSchedule(VehicleID vindex, const char *jsonString);
+
 void ShowSchdispatchWindow(const Vehicle *v);
 void SchdispatchInvalidateWindows(const Vehicle *v);
 

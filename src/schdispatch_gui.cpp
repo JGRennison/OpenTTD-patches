@@ -40,6 +40,7 @@
 #include "table/sprites.h"
 
 #include "safeguards.h"
+#include "schdispatch.h"
 
 enum SchdispatchWidgets {
 	WID_SCHDISPATCH_CAPTION,         ///< Caption of window.
@@ -74,6 +75,20 @@ enum SchdispatchWidgets {
 static void SetScheduleStartDateIntl(uint32_t p1, StateTicks date)
 {
 	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+}
+
+//ripped straight from AddNewScheduledDispatchSchedule()
+uint32_t getScheduledDispatchDefaultDuration()
+{
+	const Company *c = Company::GetIfValid(_local_company);
+	if (c != nullptr && c->settings.default_sched_dispatch_duration != 0) {
+		return c->settings.default_sched_dispatch_duration * _settings_time.ticks_per_minute;
+	} else if (_settings_time.time_in_minutes) {
+		return 24 * 60 * _settings_time.ticks_per_minute;
+	} else {
+		return (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
+	}
+
 }
 
 /**
@@ -161,7 +176,7 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedu
 	return vehicle_count;
 }
 
-static void AddNewScheduledDispatchSchedule(VehicleID vindex)
+void AddNewScheduledDispatchSchedule(VehicleID vindex, const char * jsonString = nullptr)
 {
 	StateTicks start_tick;
 	uint32_t duration;
@@ -186,7 +201,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
 	}
 
-	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
+	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, jsonString, 0);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {

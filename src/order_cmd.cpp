@@ -295,7 +295,7 @@ std::string Order::ToJSONString() const
 	//in this->GetConditionComparator() other then that, I believe I have fully decoded it
 
 	json["type"] = this->GetType(); 
-
+	
 	if (
 		IsType(OT_GOTO_WAYPOINT)	|| IsType(OT_GOTO_STATION)		||
 		(IsType(OT_LABEL)			&& IsDestinationOrderLabelSubType(this->GetLabelSubType()))
@@ -1048,13 +1048,20 @@ std::string OrderList::ToJSONString()
 	};
 
 	auto& SD_data = this->GetScheduledDispatchScheduleSet();
-	auto& headJson = json["head"];
-	for (unsigned int i = 0; auto &SD : SD_data) {
 
-		headJson["scheduled-dispatch"][i++] = nlohmann::ordered_json::parse(SD.ToJSONString());
+	if (SD_data.size() != 0) {
+
+		json["game-properties"]["default-scheduled-dispatch-duration"] = getScheduledDispatchDefaultDuration();
+
+		for (unsigned int i = 0; auto & SD : SD_data) {
+
+			json["scheduled-dispatch"]["schedules"][i++] = nlohmann::ordered_json::parse(SD.ToJSONString());
+
+		}
 
 	}
 
+	
 	const Order* o = this->GetFirstOrder();
 
 	if (o != nullptr) {
@@ -1109,17 +1116,15 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 		}
 	}
 
-	if (json.contains("head")){
-		auto &headJson = json["head"];
-		if (headJson.contains("scheduled-dispatch")) {
-			auto &SDJson = headJson["scheduled-dispatch"];
-			if (SDJson.is_array()) {
-				for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
-					DoCommandPEx(0, v->index, 0, 0, CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, it.value().dump().c_str() , 0);
-				}
+	if (json.contains("scheduled-dispatch")) {
+		auto &SDJson = json["scheduled-dispatch"];
+		if (SDJson.is_array()) {
+			for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
+				AddNewScheduledDispatchSchedule(v->index, it.value().dump().c_str());
 			}
 		}
 	}
+	
 }
 
 /**
