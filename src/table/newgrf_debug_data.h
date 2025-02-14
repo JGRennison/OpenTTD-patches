@@ -542,8 +542,8 @@ class NIHVehicle : public NIHelper {
 					if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
 					if (root_spritegroup == nullptr) {
 						CargoType cargo = v->cargo_type;
-						assert(cargo < std::size(e->grf_prop.spritegroup));
-						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
+						const SpriteGroup *cargo_spritegroup = e->grf_prop.GetSpriteGroup(cargo);
+						root_spritegroup = (cargo_spritegroup != nullptr) ? cargo_spritegroup : e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT);
 					}
 					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
 					if (iter != e->sprite_group_cb36_properties_used.end()) {
@@ -945,7 +945,7 @@ class NIHHouse : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.spritegroup[0], 0);
+		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.GetSpriteGroup(), 0);
 	}
 };
 

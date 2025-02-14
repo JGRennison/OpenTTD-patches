@@ -283,25 +283,31 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 	if (st == nullptr) {
 		/* No station, so we are in a purchase list */
 		ctype = SpriteGroupCargo::SG_PURCHASE;
+		this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	} else if (Station::IsExpected(st)) {
 		const Station *station = Station::From(st);
 		/* Pick the first cargo that we have waiting */
-		for (const CargoSpec *cs : CargoSpec::Iterate()) {
-			if (roadstopspec->grf_prop.spritegroup[cs->Index()] != nullptr &&
-					station->goods[cs->Index()].CargoTotalCount() > 0) {
-				ctype = cs->Index();
+		for (const auto &[cargo, spritegroup] : roadstopspec->grf_prop.spritegroups) {
+			if (cargo < NUM_CARGO && station->goods[cargo].CargoTotalCount() > 0) {
+				ctype = cargo;
+				this->root_spritegroup = spritegroup;
 				break;
 			}
 		}
+
+		if (this->root_spritegroup == nullptr) {
+			ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+			this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
+		}
 	}
 
-	if (roadstopspec->grf_prop.spritegroup[ctype] == nullptr) {
+	if (this->root_spritegroup == nullptr) {
 		ctype = SpriteGroupCargo::SG_DEFAULT;
+		this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	/* Remember the cargo type we've picked */
 	this->roadstop_scope.cargo_type = ctype;
-	this->root_spritegroup = roadstopspec->grf_prop.spritegroup[ctype];
 }
 
 TownScopeResolver *RoadStopResolverObject::GetTown()
@@ -702,28 +708,26 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Sp
 {
 	bool written_group = false;
 
-	for (uint i = 0; i < NUM_CARGO + 3; i++) {
-		if (spec->grf_prop.spritegroup[i] != nullptr) {
-			if (written_group) {
-				dumper.Print("");
-			} else {
-				written_group = true;
-			}
-			switch (i) {
-				case SpriteGroupCargo::SG_DEFAULT:
-					dumper.Print("SG_DEFAULT");
-					break;
-				case SpriteGroupCargo::SG_PURCHASE:
-					dumper.Print("SG_PURCHASE");
-					break;
-				case SpriteGroupCargo::SG_DEFAULT_NA:
-					dumper.Print("SG_DEFAULT_NA");
-					break;
-				default:
-					dumper.Print(fmt::format("Cargo: {}", i));
-					break;
-			}
-			dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[i], 0);
+	for (const auto &[cargo, spritegroup] : spec->grf_prop.spritegroups) {
+		if (written_group) {
+			dumper.Print("");
+		} else {
+			written_group = true;
 		}
+		switch (cargo) {
+			case SpriteGroupCargo::SG_DEFAULT:
+				dumper.Print("SG_DEFAULT");
+				break;
+			case SpriteGroupCargo::SG_PURCHASE:
+				dumper.Print("SG_PURCHASE");
+				break;
+			case SpriteGroupCargo::SG_DEFAULT_NA:
+				dumper.Print("SG_DEFAULT_NA");
+				break;
+			default:
+				dumper.Print(fmt::format("Cargo: {}", cargo));
+				break;
+		}
+		dumper.DumpSpriteGroup(spritegroup, 0);
 	}
 }

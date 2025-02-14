@@ -147,7 +147,7 @@ IndustryTileResolverObject::IndustryTileResolverObject(IndustryGfx gfx, TileInde
 	ind_scope(*this, tile, indus, indus->type),
 	gfx(gfx)
 {
-	this->root_spritegroup = GetIndustryTileSpec(gfx)->grf_prop.spritegroup[0];
+	this->root_spritegroup = GetIndustryTileSpec(gfx)->grf_prop.GetSpriteGroup();
 }
 
 GrfSpecFeature IndustryTileResolverObject::GetFeature() const
@@ -357,7 +357,7 @@ static void DoTriggerIndustryTile(TileIndex tile, IndustryTileTrigger trigger, I
 	IndustryGfx gfx = GetIndustryGfx(tile);
 	const IndustryTileSpec *itspec = GetIndustryTileSpec(gfx);
 
-	if (itspec->grf_prop.spritegroup[0] == nullptr) return;
+	if (itspec->grf_prop.GetSpriteGroup() == nullptr) return;
 
 	IndustryTileResolverObject object(gfx, tile, ind, CBID_RANDOM_TRIGGER);
 	object.waiting_triggers = GetIndustryTriggers(tile) | trigger;
@@ -459,7 +459,7 @@ void AnalyseIndustryTileSpriteGroups()
 				to_check &= ~current;
 
 				const IndustryTileSpec &tilespec = _industry_tile_specs[gfx];
-				if (tilespec.grf_prop.spritegroup[0] == nullptr) continue;
+				if (tilespec.grf_prop.GetSpriteGroup() == nullptr) continue;
 
 				anim_mask |= current;
 
@@ -470,7 +470,7 @@ void AnalyseIndustryTileSpriteGroups()
 				cfg.check_anim_next_frame_cb = HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME);
 
 				IndustryTileDataAnalyser analyser(cfg, current);
-				analyser.AnalyseGroup(tilespec.grf_prop.spritegroup[0]);
+				analyser.AnalyseGroup(tilespec.grf_prop.GetSpriteGroup());
 
 				if (analyser.anim_state_at_offset) {
 					/* Give up: use of get anim state of offset tiles */

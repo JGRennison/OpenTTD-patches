@@ -608,25 +608,32 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	if (this->station_scope.st == nullptr) {
 		/* No station, so we are in a purchase list */
 		ctype = SpriteGroupCargo::SG_PURCHASE;
+		this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
 	} else if (Station::IsExpected(this->station_scope.st)) {
 		const Station *st = Station::From(this->station_scope.st);
 		/* Pick the first cargo that we have waiting */
-		for (const CargoSpec *cs : CargoSpec::Iterate()) {
-			if (this->station_scope.statspec->grf_prop.spritegroup[cs->Index()] != nullptr &&
-					st->goods[cs->Index()].CargoTotalCount() > 0) {
-				ctype = cs->Index();
+		for (const auto &[cargo, spritegroup] : statspec->grf_prop.spritegroups) {
+			if (cargo < NUM_CARGO && st->goods[cargo].CargoTotalCount() > 0) {
+				ctype = cargo;
+				this->root_spritegroup = spritegroup;
 				break;
 			}
 		}
+
+		if (this->root_spritegroup == nullptr) {
+			ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+			this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
+		}
 	}
 
-	if (this->station_scope.statspec->grf_prop.spritegroup[ctype] == nullptr) {
+
+	if (this->root_spritegroup == nullptr) {
 		ctype = SpriteGroupCargo::SG_DEFAULT;
+		this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	/* Remember the cargo type we've picked */
 	this->station_scope.cargo_type = ctype;
-	this->root_spritegroup = this->station_scope.statspec->grf_prop.spritegroup[this->station_scope.cargo_type];
 }
 
 /**
@@ -1064,10 +1071,10 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 
 	dumper.DumpSpriteGroup(ro.root_spritegroup, 0);
 
-	for (uint i = 0; i < NUM_CARGO + 3; i++) {
-		if (statspec->grf_prop.spritegroup[i] != ro.root_spritegroup && statspec->grf_prop.spritegroup[i] != nullptr) {
+	for (const auto &[cargo, spritegroup] : statspec->grf_prop.spritegroups) {
+		if (spritegroup != ro.root_spritegroup) {
 			dumper.Print("");
-			switch (i) {
+			switch (cargo) {
 				case SpriteGroupCargo::SG_DEFAULT:
 					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT");
 					break;
@@ -1078,10 +1085,10 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT_NA");
 					break;
 				default:
-					dumper.Print(fmt::format("OTHER SPRITE GROUP: Cargo: {}", i));
+					dumper.Print(fmt::format("OTHER SPRITE GROUP: Cargo: {}", cargo));
 					break;
 			}
-			dumper.DumpSpriteGroup(statspec->grf_prop.spritegroup[i], 0);
+			dumper.DumpSpriteGroup(spritegroup, 0);
 		}
 	}
 }
