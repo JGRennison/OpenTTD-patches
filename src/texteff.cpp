@@ -141,10 +141,13 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + GetCharacterHeight(FS_NORMAL), dpi->zoom);
 	const bool show_loading = (_settings_client.gui.loading_indicators && !load_transparent);
 
+	ViewportStringFlags flags{};
+	if (dpi->zoom >= ZOOM_LVL_TEXT_EFFECT) flags |= ViewportStringFlags::Small;
+
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
 		if ((te.mode == TE_RISING || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
-			ViewportAddString(vdd, dpi, ZOOM_LVL_TEXT_EFFECT, &te, te.string_id, te.string_id, STR_NULL, te.params_1, te.params_2);
+			ViewportAddString(vdd, dpi, &te, flags, te.string_id, te.params_1, te.params_2);
 		}
 	}
 }

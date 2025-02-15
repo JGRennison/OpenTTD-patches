@@ -14,7 +14,7 @@
 
 #include <queue>
 
-template<class T>
+template <class T>
 using ring_buffer_queue = std::queue<T, ring_buffer<T>>;
 
 #endif /* RING_BUFFER_QUEUE_HPP */

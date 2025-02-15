@@ -1569,7 +1569,7 @@ static size_t SlReadListLength()
 /**
  * Template class to help with list-like types.
  */
-template <template<typename> typename Tstorage, typename Tvar>
+template <template <typename> typename Tstorage, typename Tvar>
 class SlStorageHelper {
 	typedef Tstorage<Tvar> SlStorageT;
 public:
@@ -1658,7 +1658,7 @@ public:
  * @param list The std::list to find the size of.
  * @param conv VarType type of variable that is used for calculating the size.
  */
- template<typename PtrList>
+ template <typename PtrList>
 static inline size_t SlCalcRefListLen(const void *list)
 {
 	const PtrList *l = (const PtrList *) list;
@@ -1674,7 +1674,7 @@ static inline size_t SlCalcRefListLen(const void *list)
  * Return the size in bytes of a list
  * @param list The std::list to find the size of
  */
- template<typename PtrList>
+ template <typename PtrList>
 static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
 {
 	const PtrList *l = (const PtrList *) list;
@@ -1689,7 +1689,7 @@ static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
  */
-template<typename PtrList>
+template <typename PtrList>
 static void SlRefList(void *list, SLRefType conv)
 {
 	/* Automatically calculate the length? */
@@ -1741,7 +1741,7 @@ static void SlRefList(void *list, SLRefType conv)
  * @param list The list being manipulated
  * @param conv VarType type of the list
  */
-template<typename PtrList>
+template <typename PtrList>
 static void SlVarList(void *list, VarType conv)
 {
 	const size_t size_len = SlCalcConvMemLen(conv);

@@ -81,6 +81,7 @@
 #include "graph_gui.h"
 #include "string_func_extra.h"
 #include "engine_override.h"
+#include "core/backup_type.hpp"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -450,7 +451,7 @@ size_t IntSettingDesc::ParseValue(const char *str) const
 		msg.SetDParamStr(0, str);
 		msg.SetDParamStr(1, this->name);
 		_settings_error_list.push_back(msg);
-		return this->def;
+		return this->GetDefaultValue();
 	}
 	if (*end != '\0') {
 		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_TRAILING_CHARACTERS);
@@ -472,7 +473,7 @@ size_t OneOfManySettingDesc::ParseValue(const char *str) const
 	msg.SetDParamStr(0, str);
 	msg.SetDParamStr(1, this->name);
 	_settings_error_list.push_back(msg);
-	return this->def;
+	return this->GetDefaultValue();
 }
 
 size_t ManyOfManySettingDesc::ParseValue(const char *str) const
@@ -483,7 +484,7 @@ size_t ManyOfManySettingDesc::ParseValue(const char *str) const
 	msg.SetDParamStr(0, str);
 	msg.SetDParamStr(1, this->name);
 	_settings_error_list.push_back(msg);
-	return this->def;
+	return this->GetDefaultValue();
 }
 
 size_t BoolSettingDesc::ParseValue(const char *str) const
@@ -495,7 +496,7 @@ size_t BoolSettingDesc::ParseValue(const char *str) const
 	msg.SetDParamStr(0, str);
 	msg.SetDParamStr(1, this->name);
 	_settings_error_list.push_back(msg);
-	return this->def;
+	return this->GetDefaultValue();
 }
 
 static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32_t &val)
@@ -576,6 +577,15 @@ void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
 }
 
 /**
+ * Get the default value of the setting.
+ * @return The default value.
+ */
+int32_t IntSettingDesc::GetDefaultValue() const
+{
+	return this->get_def_cb != nullptr ? this->get_def_cb(*this) : this->def;
+}
+
+/**
  * Make the value valid and then write it to the setting.
  * See #MakeValidValid and #Write for more details.
  * @param object The object the setting is to be saved in.
@@ -614,13 +624,13 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 			/* Override the minimum value. No value below this->min, except special value 0 */
 			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || val != 0) {
 				if (this->flags & SF_ENUM) {
-					if (!ValidateEnumSetting(this, val)) val = (int32_t)(size_t)this->def;
+					if (!ValidateEnumSetting(this, val)) val = GetDefaultValue();
 				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
 					val = Clamp(val, this->min, this->max);
 				} else if (val < this->min || val > (int32_t)this->max) {
 					/* Reset invalid discrete setting (where different values change gameplay) to its default value */
-					val = this->def;
+					val = this->GetDefaultValue();
 				}
 			}
 			break;
@@ -631,7 +641,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || uval != 0) {
 				if (this->flags & SF_ENUM) {
 					if (!ValidateEnumSetting(this, val)) {
-						uval = (uint32_t)(size_t)this->def;
+						uval = (uint32_t)this->GetDefaultValue();
 					} else {
 						uval = (uint32_t)val;
 					}
@@ -640,7 +650,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 					uval = ClampU(uval, this->min, this->max);
 				} else if (uval < (uint)this->min || uval > this->max) {
 					/* Reset invalid discrete setting to its default value */
-					uval = (uint32_t)this->def;
+					uval = (uint32_t)this->GetDefaultValue();
 				}
 			}
 			val = (int32_t)uval;
@@ -784,7 +794,7 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 
 void IntSettingDesc::ParseValue(const IniItem *item, void *object) const
 {
-	size_t val = (item == nullptr) ? this->def : this->ParseValue(item->value.has_value() ? item->value->c_str() : "");
+	size_t val = (item == nullptr) ? this->GetDefaultValue() : this->ParseValue(item->value.has_value() ? item->value->c_str() : "");
 	this->MakeValueValidAndWrite(object, (int32_t)val);
 }
 
@@ -890,12 +900,12 @@ bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
 bool IntSettingDesc::IsDefaultValue(void *object) const
 {
 	int32_t object_value = this->Read(object);
-	return this->def == object_value;
+	return this->GetDefaultValue() == object_value;
 }
 
 void IntSettingDesc::ResetToDefault(void *object) const
 {
-	this->Write(object, this->def);
+	this->Write(object, this->GetDefaultValue());
 }
 
 void StringSettingDesc::FormatValue(format_target &buf, const void *object) const
@@ -1267,7 +1277,7 @@ static void UpdateServiceInterval(VehicleType type, int32_t new_value)
  * Checks if the service intervals in the settings are specified as percentages and corrects the default value accordingly.
  * @param new_value Contains the service interval's default value in days, or 50 (default in percentage).
  */
-static int32_t GetDefaultServiceInterval(VehicleType type)
+static int32_t GetDefaultServiceInterval(const IntSettingDesc &sd, VehicleType type)
 {
 	VehicleDefaultSettings *vds;
 	if (_game_mode == GM_MENU || !Company::IsValidID(_current_company)) {
@@ -1276,28 +1286,19 @@ static int32_t GetDefaultServiceInterval(VehicleType type)
 		vds = &Company::Get(_current_company)->settings.vehicle;
 	}
 
-	int32_t new_value;
-	if (vds->servint_ispercent) {
-		new_value = DEF_SERVINT_PERCENT;
-	} else if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
+	if (vds->servint_ispercent) return DEF_SERVINT_PERCENT;
+
+	if (EconTime::UsingWallclockUnits((_game_mode == GM_MENU))) {
 		switch (type) {
-			case VEH_TRAIN:    new_value = DEF_SERVINT_MINUTES_TRAINS; break;
-			case VEH_ROAD:     new_value = DEF_SERVINT_MINUTES_ROADVEH; break;
-			case VEH_AIRCRAFT: new_value = DEF_SERVINT_MINUTES_AIRCRAFT; break;
-			case VEH_SHIP:     new_value = DEF_SERVINT_MINUTES_SHIPS; break;
-			default: NOT_REACHED();
-		}
-	} else {
-		switch (type) {
-			case VEH_TRAIN:    new_value = DEF_SERVINT_DAYS_TRAINS; break;
-			case VEH_ROAD:     new_value = DEF_SERVINT_DAYS_ROADVEH; break;
-			case VEH_AIRCRAFT: new_value = DEF_SERVINT_DAYS_AIRCRAFT; break;
-			case VEH_SHIP:     new_value = DEF_SERVINT_DAYS_SHIPS; break;
+			case VEH_TRAIN:    return DEF_SERVINT_MINUTES_TRAINS;
+			case VEH_ROAD:     return DEF_SERVINT_MINUTES_ROADVEH;
+			case VEH_AIRCRAFT: return DEF_SERVINT_MINUTES_AIRCRAFT;
+			case VEH_SHIP:     return DEF_SERVINT_MINUTES_SHIPS;
 			default: NOT_REACHED();
 		}
 	}
 
-	return new_value;
+	return sd.def;
 }
 
 /**
@@ -3146,7 +3147,7 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
 	this->Write(object, newval);
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
-	if (this->flags & SF_NO_NETWORK) {
+	if (HasFlag(this->flags, SF_NO_NETWORK) || HasFlag(this->flags, SF_SANDBOX)) {
 		GamelogStartAction(GLAT_SETTING);
 		GamelogSetting(this->name, oldval, newval);
 		GamelogStopAction();
@@ -3353,10 +3354,11 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 void SetDefaultCompanySettings(CompanyID cid)
 {
 	Company *c = Company::Get(cid);
+	AutoRestoreBackup backup(_current_company, cid);
 	for (auto &sd : _company_settings) {
 		if (sd->IsIntSetting()) {
 			const IntSettingDesc *int_setting = sd->AsIntSetting();
-			int_setting->MakeValueValidAndWrite(&c->settings, int_setting->def);
+			int_setting->MakeValueValidAndWrite(&c->settings, int_setting->GetDefaultValue());
 		}
 	}
 }
@@ -3429,9 +3431,9 @@ uint GetSettingIndexByFullName(const SettingTable &table, const char *name)
 void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
-
-	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
-		IConsolePrint(CC_WARNING, "'{}' is an unknown setting.", name);
+	/* Company settings are not in "list_settings", so don't try to modify them. */
+	if (sd == nullptr || (sd->flags & SF_PER_COMPANY) || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+		IConsolePrint(CC_ERROR, "'{}' is an unknown setting.", name);
 		return;
 	}
 
@@ -3479,9 +3481,9 @@ void IConsoleSetSetting(const char *name, int value)
 void IConsoleGetSetting(const char *name, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
-
-	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
-		IConsolePrint(CC_WARNING, "'{}' is an unknown setting.", name);
+	/* Company settings are not in "list_settings", so don't try to read them. */
+	if (sd == nullptr || (sd->flags & SF_PER_COMPANY) || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+		IConsolePrint(CC_ERROR, "'{}' is an unknown setting.", name);
 		return;
 	}
 
@@ -3533,9 +3535,10 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
 		sd->FormatValue(value, &GetGameSettings());
 		if (show_defaults && sd->IsIntSetting()) {
 			const IntSettingDesc *int_setting = sd->AsIntSetting();
+			auto def = int_setting->GetDefaultValue();
 			format_buffer defvalue;
-			int_setting->FormatIntValue(defvalue, int_setting->def);
-			TextColour colour = (int_setting->Read(&GetGameSettings()) != int_setting->def) ? CC_WARNING : CC_DEFAULT;
+			int_setting->FormatIntValue(defvalue, def);
+			TextColour colour = (int_setting->Read(&GetGameSettings()) != def) ? CC_WARNING : CC_DEFAULT;
 			IConsolePrint(colour, "{} = {} (default: {})", sd->name, value, defvalue);
 		} else {
 			IConsolePrint(CC_DEFAULT, "{} = {}", sd->name, value);

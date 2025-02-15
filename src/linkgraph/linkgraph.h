@@ -95,7 +95,7 @@ public:
 	 * Wrapper for an edge (const or not) allowing retrieval, but no modification.
 	 * @tparam Tedge Actual edge class, may be "const BaseEdge" or just "BaseEdge".
 	 */
-	template<typename Tedge>
+	template <typename Tedge>
 	class EdgeWrapper {
 	protected:
 		Tedge *edge; ///< Actual edge to be used.
@@ -155,7 +155,7 @@ public:
 	 * Wrapper for a node (const or not) allowing retrieval, but no modification.
 	 * @tparam Tedge Actual node class, may be "const BaseNode" or just "BaseNode".
 	 */
-	template<typename Tnode>
+	template <typename Tnode>
 	class NodeWrapper {
 	protected:
 		Tnode &node;          ///< Node being wrapped.

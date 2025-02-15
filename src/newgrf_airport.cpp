@@ -281,5 +281,5 @@ StringID GetAirportTextCallback(const AirportSpec *as, uint8_t layout, uint16_t 
 		return STR_UNDEFINED;
 	}
 
-	return GetGRFStringID(as->grf_prop.grffile, 0xD000 + cb_res);
+	return GetGRFStringID(as->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + cb_res);
 }

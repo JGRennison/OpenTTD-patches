@@ -59,7 +59,7 @@ private:
 	ScriptListMap::iterator RemoveIter(ScriptListMap::iterator item_iter);
 	ScriptListValueSet::iterator RemoveValueIter(ScriptListValueSet::iterator value_iter);
 
-	template<typename T>
+	template <typename T>
 	struct FillListHelper {
 		using IterType = T;
 
@@ -75,13 +75,13 @@ private:
 	};
 
 protected:
-	template<typename T, typename... Targs>
+	template <typename T, typename... Targs>
 	static void FillList(Targs... args)
 	{
 		FillListT<FillListHelper<T>>(FillListHelper<T>{}, args...);
 	}
 
-	template<typename Thelper, class ItemValid, class ItemFilter>
+	template <typename Thelper, class ItemValid, class ItemFilter>
 	static void FillListT(Thelper helper, ScriptList *list, ItemValid item_valid, ItemFilter item_filter)
 	{
 		using IterType = typename Thelper::IterType;
@@ -98,7 +98,7 @@ protected:
 		ScriptController::DecreaseOps(opcode_charge + helper.OpcodeCharge(item_count));
 	}
 
-	template<typename Thelper, class ItemValid>
+	template <typename Thelper, class ItemValid>
 	static void FillListT(Thelper helper, ScriptList *list, ItemValid item_valid)
 	{
 		using IterType = typename Thelper::IterType;
@@ -106,7 +106,7 @@ protected:
 		ScriptList::FillListT<Thelper>(helper, list, item_valid, [](const IterType *) { return true; });
 	}
 
-	template<typename Thelper>
+	template <typename Thelper>
 	static void FillListT(Thelper helper, ScriptList *list)
 	{
 		using IterType = typename Thelper::IterType;
@@ -114,7 +114,7 @@ protected:
 		ScriptList::FillListT<Thelper>(list, [](const IterType *) { return true; });
 	}
 
-	template<typename Thelper, class ItemValid>
+	template <typename Thelper, class ItemValid>
 	static void FillListT(Thelper helper, HSQUIRRELVM vm, ScriptList *list, ItemValid item_valid)
 	{
 		using IterType = typename Thelper::IterType;
@@ -188,7 +188,7 @@ protected:
 		ScriptObject::SetAllowDoCommand(backup_allow);
 	}
 
-	template<typename Thelper>
+	template <typename Thelper>
 	static void FillListT(Thelper helper, HSQUIRRELVM vm, ScriptList *list)
 	{
 		using IterType = typename Thelper::IterType;

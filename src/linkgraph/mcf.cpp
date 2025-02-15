@@ -13,7 +13,7 @@ typedef btree::btree_map<NodeID, Path *> PathViaMap;
 /**
  * This is a priority queue item for Tannotation annotation values and IDs
  */
-template<typename Tannotation>
+template <typename Tannotation>
 class AnnoQueueItem {
 public:
 	typename Tannotation::AnnotationValueType cached_annotation;
@@ -312,7 +312,7 @@ bool CapacityAnnotation::IsBetter(const CapacityAnnotation *base, uint cap,
 	}
 }
 
-template<class Tannotation>
+template <class Tannotation>
 struct MultiCommodityFlow::DijkstraState {
 	std::vector<AnnoQueueItem<Tannotation>> anno_queue;
 	std::vector<Tannotation> local_paths;
@@ -334,7 +334,7 @@ struct MultiCommodityFlow::DijkstraState {
  * @param source_node Node where the algorithm starts.
  * @param paths Container for the paths to be calculated.
  */
-template<class Tannotation, class Tedge_iterator>
+template <class Tannotation, class Tedge_iterator>
 void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths, DijkstraState<Tannotation> &state)
 {
 	const uint size = this->job.Size();

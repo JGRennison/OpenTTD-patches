@@ -56,12 +56,12 @@ namespace StrongType {
 			friend constexpr TType operator --(TType &lhs, int) { TType res = lhs; lhs.value--; return res; }
 
 			friend constexpr TType &operator +=(TType &lhs, const TType &rhs) { lhs.value += rhs.value; return lhs; }
-			friend constexpr TType operator +(const TType &lhs, const TType &rhs) { return TType{ lhs.value + rhs.value }; }
-			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value + rhs }; }
+			friend constexpr TType operator +(const TType &lhs, const TType &rhs) { return TType(lhs.value + rhs.value); }
+			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType(lhs.value + rhs); }
 
 			friend constexpr TType &operator -=(TType &lhs, const TType &rhs) { lhs.value -= rhs.value; return lhs; }
-			friend constexpr TType operator -(const TType &lhs, const TType &rhs) { return TType{ lhs.value - rhs.value }; }
-			friend constexpr TType operator -(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value - rhs }; }
+			friend constexpr TType operator -(const TType &lhs, const TType &rhs) { return TType(lhs.value - rhs.value); }
+			friend constexpr TType operator -(const TType &lhs, const TBaseType &rhs) { return TType(lhs.value - rhs); }
 
 			/* For most new types, the rest of the operators make no sense. For example,
 			 * what does it actually mean to multiply a Year with a value. Or to do a
@@ -188,9 +188,9 @@ namespace StrongType {
 			friend constexpr TType operator ++(TType &lhs, int) { TType res = lhs; lhs.value++; return res; }
 			friend constexpr TType operator --(TType &lhs, int) { TType res = lhs; lhs.value--; return res; }
 
-			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
 			friend constexpr TType &operator +=(TType &lhs, const T &rhs) = delete;
-			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
 			friend constexpr TType &operator +(const TType &lhs, const T &rhs) = delete;
 
 			friend constexpr TType &operator +=(TType &lhs, const TDeltaType &rhs) { lhs.value += rhs.value; return lhs; }
@@ -200,7 +200,7 @@ namespace StrongType {
 			friend constexpr TType operator +(const TType &lhs, const TBaseType &rhs) { return TType{ lhs.value + rhs }; }
 			friend constexpr TType operator +(const TBaseType &lhs, const TType &rhs) { return TType{ lhs + rhs.value }; }
 
-			template<class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+			template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
 			friend constexpr TType &operator -=(TType &lhs, const T &rhs) = delete;
 
 			friend constexpr TType &operator -=(TType &lhs, const TDeltaType &rhs) { lhs.value -= rhs.value; return lhs; }
@@ -273,8 +273,8 @@ namespace StrongType {
 			friend constexpr bool operator >=(const TType &lhs, TCompatibleType rhs) { return lhs.value >= static_cast<TBaseType>(rhs); }
 			friend constexpr bool operator >(const TType &lhs, TCompatibleType rhs) { return lhs.value > static_cast<TBaseType>(rhs); }
 
-			friend constexpr TType operator +(const TType &lhs, TCompatibleType rhs) { return TType{ static_cast<TBaseType>(lhs.value + rhs) }; }
-			friend constexpr TType operator -(const TType &lhs, TCompatibleType rhs) { return TType{ static_cast<TBaseType>(lhs.value - rhs) }; }
+			friend constexpr TType operator +(const TType &lhs, TCompatibleType rhs) { return TType(lhs.value + rhs); }
+			friend constexpr TType operator -(const TType &lhs, TCompatibleType rhs) { return TType(lhs.value - rhs); }
 		};
 	};
 

@@ -401,15 +401,15 @@ static inline void DrawInset(const Rect &r, Colours colour, TextColour text_colo
  * @param r       Rectangle of the matrix background.
  * @param colour  Colour of the background.
  * @param clicked Matrix is rendered lowered.
- * @param data    Data of the widget, number of rows and columns of the widget.
+ * @param num_columns The number of columns in the matrix.
+ * @param num_rows The number of rows in the matrix.
  * @param resize_x Matrix resize unit size.
  * @param resize_y Matrix resize unit size.
  */
-static inline void DrawMatrix(const Rect &r, Colours colour, bool clicked, uint16_t data, uint resize_x, uint resize_y)
+static inline void DrawMatrix(const Rect &r, Colours colour, bool clicked, uint32_t num_columns, uint32_t num_rows, uint resize_x, uint resize_y)
 {
 	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
 
-	int num_columns = GB(data, MAT_COL_START, MAT_COL_BITS);  // Lower 8 bits of the widget data: Number of columns in the matrix.
 	int column_width; // Width of a single column in the matrix.
 	if (num_columns == 0) {
 		column_width = resize_x;
@@ -418,7 +418,6 @@ static inline void DrawMatrix(const Rect &r, Colours colour, bool clicked, uint1
 		column_width = r.Width() / num_columns;
 	}
 
-	int num_rows = GB(data, MAT_ROW_START, MAT_ROW_BITS); // Upper 8 bits of the widget data: Number of rows in the matrix.
 	int row_height; // Height of a single row in the matrix.
 	if (num_rows == 0) {
 		row_height = resize_y;
@@ -1114,11 +1113,11 @@ void NWidgetResizeBase::AssignSizePosition(SizingType sizing, int x, int y, uint
  * @param widget_data Data component of the widget. @see Widget::data
  * @param tool_tip    Tool tip of the widget. @see Widget::tooltips
  */
-NWidgetCore::NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fill_x, uint fill_y, uint32_t widget_data, StringID tool_tip) : NWidgetResizeBase(tp, fill_x, fill_y), index(index)
+NWidgetCore::NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fill_x, uint fill_y, const WidgetData &widget_data, StringID tool_tip) : NWidgetResizeBase(tp, fill_x, fill_y), index(index)
 {
 	this->colour = colour;
 	this->widget_data = widget_data;
-	this->tool_tip = tool_tip;
+	this->SetToolTip(tool_tip);
 	this->scrollbar_index = -1;
 	this->text_colour = tp == WWT_CAPTION ? TC_WHITE : TC_BLACK;
 	this->text_size = FS_NORMAL;
@@ -1126,14 +1125,62 @@ NWidgetCore::NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fil
 }
 
 /**
- * Set data and tool tip of the nested widget.
- * @param widget_data Data to use.
- * @param tool_tip    Tool tip string to use.
+ * Set string of the nested widget.
+ * @param string The new string.
  */
-void NWidgetCore::SetDataTip(uint32_t widget_data, StringID tool_tip)
+void NWidgetCore::SetString(StringID string)
 {
-	this->widget_data = widget_data;
-	this->tool_tip = tool_tip;
+	this->widget_data.string = string;
+}
+
+/**
+ * Set string and tool tip of the nested widget.
+ * @param stringThe new string.
+ * @param tool_tip The new tool_tip.
+ */
+void NWidgetCore::SetStringTip(StringID string, StringID tool_tip)
+{
+	this->SetString(string);
+	this->SetToolTip(tool_tip);
+}
+
+/**
+ * Set sprite of the nested widget.
+ * @param sprite The new sprite.
+ */
+void NWidgetCore::SetSprite(SpriteID sprite)
+{
+	this->widget_data.sprite = sprite;
+}
+
+/**
+ * Set sprite and tool tip of the nested widget.
+ * @param sprite The new sprite.
+ * @param tool_tip The new tool_tip.
+ */
+void NWidgetCore::SetSpriteTip(SpriteID sprite, StringID tool_tip)
+{
+	this->SetSprite(sprite);
+	this->SetToolTip(tool_tip);
+}
+
+/**
+ * Set the matrix dimension.
+ * @param columns The number of columns in the matrix (0 for autoscaling).
+ * @param rows The number of rows in the matrix (0 for autoscaling).
+ */
+void NWidgetCore::SetMatrixDimension(uint32_t columns, uint32_t rows)
+{
+	this->widget_data.matrix = { columns, rows };
+}
+
+/**
+ * Set the resize widget type of the nested widget.
+ * @param type The new resize widget.
+ */
+void NWidgetCore::SetResizeWidgetType(ResizeWidgetValues type)
+{
+	this->widget_data.resize_widget_type = type;
 }
 
 /**
@@ -1157,12 +1204,30 @@ void NWidgetCore::SetToolTip(StringID tool_tip)
 }
 
 /**
+ * Get the tool tip of the nested widget.
+ * @return The tool tip string.
+ */
+StringID NWidgetCore::GetToolTip() const
+{
+	return this->tool_tip;
+}
+
+/**
  * Set the text/image alignment of the nested widget.
  * @param align Alignment to use.
  */
 void NWidgetCore::SetAlignment(StringAlignment align)
 {
 	this->align = align;
+}
+
+/**
+ * Get the string that has been set for this nested widget.
+ * @return The string.
+ */
+StringID NWidgetCore::GetString() const
+{
+	return this->widget_data.string;
 }
 
 void NWidgetCore::FillWidgetLookup(WidgetLookup &widget_lookup)
@@ -2174,7 +2239,7 @@ void NWidgetMatrix::GetScrollOffsets(int &start_x, int &start_y, int &base_offs_
  *               vertical container will be inserted while adding the first
  *               child widget.
  */
-NWidgetBackground::NWidgetBackground(WidgetType tp, Colours colour, WidgetID index, std::unique_ptr<NWidgetPIPContainer> child) : NWidgetCore(tp, colour, index, 1, 1, 0x0, STR_NULL)
+NWidgetBackground::NWidgetBackground(WidgetType tp, Colours colour, WidgetID index, std::unique_ptr<NWidgetPIPContainer> child) : NWidgetCore(tp, colour, index, 1, 1, {}, STR_NULL)
 {
 	assert(tp == WWT_PANEL || tp == WWT_INSET || tp == WWT_FRAME);
 	this->child = std::move(child);
@@ -2260,13 +2325,13 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 		if (this->type == WWT_FRAME) {
 			/* Account for the size of the frame's text if that exists */
 			this->child->padding     = WidgetDimensions::scaled.frametext;
-			this->child->padding.top = std::max<uint8_t>(WidgetDimensions::scaled.frametext.top, this->widget_data != STR_NULL ? GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.frametext.top / 2 : 0);
+			this->child->padding.top = std::max<uint8_t>(WidgetDimensions::scaled.frametext.top, this->GetString() != STR_NULL ? GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.frametext.top / 2 : 0);
 
 			this->smallest_x += this->child->padding.Horizontal();
 			this->smallest_y += this->child->padding.Vertical();
 
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			this->smallest_x = std::max(this->smallest_x, GetStringBoundingBox(this->widget_data, this->text_size).width + WidgetDimensions::scaled.frametext.Horizontal());
+			this->smallest_x = std::max(this->smallest_x, GetStringBoundingBox(this->GetString(), this->text_size).width + WidgetDimensions::scaled.frametext.Horizontal());
 		} else if (this->type == WWT_INSET) {
 			/* Apply automatic padding for bevel thickness. */
 			this->child->padding = WidgetDimensions::scaled.bevel;
@@ -2282,7 +2347,7 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 		if (w != nullptr) { // A non-nullptr window pointer acts as switch to turn dynamic widget size on.
 			if (this->type == WWT_FRAME || this->type == WWT_INSET) {
 				if (this->index >= 0) w->SetStringParameters(this->index);
-				Dimension background = GetStringBoundingBox(this->widget_data, this->text_size);
+				Dimension background = GetStringBoundingBox(this->GetString(), this->text_size);
 				background.width += (this->type == WWT_FRAME) ? (WidgetDimensions::scaled.frametext.Horizontal()) : (WidgetDimensions::scaled.inset.Horizontal());
 				d = maxdim(d, background);
 			}
@@ -2339,18 +2404,17 @@ void NWidgetBackground::Draw(const Window *w)
 
 	switch (this->type) {
 		case WWT_PANEL:
-			assert(this->widget_data == 0);
 			DrawFrameRect(r.left, r.top, r.right, r.bottom, this->colour, this->IsLowered() ? FR_LOWERED : FR_NONE);
 			break;
 
 		case WWT_FRAME:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawFrame(r, this->colour, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawFrame(r, this->colour, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		case WWT_INSET:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawInset(r, this->colour, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawInset(r, this->colour, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		default:
@@ -2394,7 +2458,7 @@ NWidgetBase *NWidgetBackground::GetWidgetOfType(WidgetType tp)
 	return nwid;
 }
 
-NWidgetViewport::NWidgetViewport(WidgetID index) : NWidgetCore(NWID_VIEWPORT, INVALID_COLOUR, index, 1, 1, 0x0, STR_NULL)
+NWidgetViewport::NWidgetViewport(WidgetID index) : NWidgetCore(NWID_VIEWPORT, INVALID_COLOUR, index, 1, 1, {}, STR_NULL)
 {
 }
 
@@ -2581,7 +2645,7 @@ Rect ScrollRect(Rect r, const Scrollbar &sb, int resize_step)
  * @param colour Colour of the scrollbar.
  * @param index  Index of the widget.
  */
-NWidgetScrollbar::NWidgetScrollbar(WidgetType tp, Colours colour, WidgetID index) : NWidgetCore(tp, colour, index, 1, 1, 0x0, STR_NULL), Scrollbar(tp != NWID_HSCROLLBAR)
+NWidgetScrollbar::NWidgetScrollbar(WidgetType tp, Colours colour, WidgetID index) : NWidgetCore(tp, colour, index, 1, 1, {}, STR_NULL), Scrollbar(tp != NWID_HSCROLLBAR)
 {
 	assert(tp == NWID_HSCROLLBAR || tp == NWID_VSCROLLBAR);
 
@@ -2589,13 +2653,13 @@ NWidgetScrollbar::NWidgetScrollbar(WidgetType tp, Colours colour, WidgetID index
 		case NWID_HSCROLLBAR:
 			this->SetResize(1, 0);
 			this->SetFill(1, 0);
-			this->SetDataTip(0x0, STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST);
+			this->SetToolTip(STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST);
 			break;
 
 		case NWID_VSCROLLBAR:
 			this->SetResize(0, 1);
 			this->SetFill(0, 1);
-			this->SetDataTip(0x0, STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST);
+			this->SetToolTip(STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST);
 			break;
 
 		default: NOT_REACHED();
@@ -2709,7 +2773,7 @@ Dimension NWidgetLeaf::dropdown_dimension   = {0, 0};
  * @param data   Data of the widget.
  * @param tip    Tooltip of the widget.
  */
-NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t data, StringID tip) : NWidgetCore(tp, colour, index, 1, 1, data, tip)
+NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, const WidgetData &data, StringID tip) : NWidgetCore(tp, colour, index, 1, 1, data, tip)
 {
 	assert(index >= 0 || tp == WWT_LABEL || tp == WWT_TEXT || tp == WWT_CAPTION || tp == WWT_RESIZEBOX || tp == WWT_SHADEBOX || tp == WWT_DEFSIZEBOX || tp == WWT_DEBUGBOX || tp == WWT_STICKYBOX || tp == WWT_CLOSEBOX);
 	this->min_x = 0;
@@ -2759,47 +2823,48 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t
 			this->SetResize(1, 0);
 			this->SetMinimalSize(0, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetMinimalTextLines(1, WidgetDimensions::unscaled.captiontext.Vertical(), FS_NORMAL);
-			this->SetDataTip(data, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
+			this->SetToolTip(STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 			break;
 
 		case WWT_STICKYBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_STICKYBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
-			this->SetDataTip(STR_NULL, STR_TOOLTIP_STICKY);
+			this->SetToolTip(STR_TOOLTIP_STICKY);
 			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_SHADEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_SHADEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
-			this->SetDataTip(STR_NULL, STR_TOOLTIP_SHADE);
+			this->SetToolTip(STR_TOOLTIP_SHADE);
 			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_DEBUGBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_DEBUGBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
-			this->SetDataTip(STR_NULL, STR_TOOLTIP_DEBUG);
+			this->SetToolTip(STR_TOOLTIP_DEBUG);
 			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_DEFSIZEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_DEFSIZEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
-			this->SetDataTip(STR_NULL, STR_TOOLTIP_DEFSIZE);
+			this->SetToolTip(STR_TOOLTIP_DEFSIZE);
 			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_RESIZEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_RESIZEBOX_WIDTH, 12);
-			this->SetDataTip(RWV_SHOW_BEVEL, STR_TOOLTIP_RESIZE);
+			this->SetResizeWidgetType(RWV_SHOW_BEVEL);
+			this->SetToolTip(STR_TOOLTIP_RESIZE);
 			break;
 
 		case WWT_CLOSEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_CLOSEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
-			this->SetDataTip(STR_NULL, STR_TOOLTIP_CLOSE_WINDOW);
+			this->SetToolTip(STR_TOOLTIP_CLOSE_WINDOW);
 			this->SetAspect(this->min_x, this->min_y);
 			break;
 
@@ -2917,8 +2982,8 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 		case WWT_IMGBTN_2:
 		case WWT_PUSHIMGBTN: {
 			padding = {WidgetDimensions::scaled.imgbtn.Horizontal(), WidgetDimensions::scaled.imgbtn.Vertical()};
-			Dimension d2 = GetScaledSpriteSize(this->widget_data);
-			if (this->type == WWT_IMGBTN_2) d2 = maxdim(d2, GetScaledSpriteSize(this->widget_data + 1));
+			Dimension d2 = GetScaledSpriteSize(this->widget_data.sprite);
+			if (this->type == WWT_IMGBTN_2) d2 = maxdim(d2, GetScaledSpriteSize(this->widget_data.sprite + 1));
 			d2.width += padding.width;
 			d2.height += padding.height;
 			size = maxdim(size, d2);
@@ -2944,7 +3009,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 		case WWT_TEXTBTN_2: {
 			padding = {WidgetDimensions::scaled.framerect.Horizontal(), WidgetDimensions::scaled.framerect.Vertical()};
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			Dimension d2 = GetStringBoundingBox(this->widget_data, this->text_size);
+			Dimension d2 = GetStringBoundingBox(this->GetString(), this->text_size);
 			d2.width += padding.width;
 			d2.height += padding.height;
 			size = maxdim(size, d2);
@@ -2953,13 +3018,13 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 		case WWT_LABEL:
 		case WWT_TEXT: {
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			size = maxdim(size, GetStringBoundingBox(this->widget_data, this->text_size));
+			size = maxdim(size, GetStringBoundingBox(this->GetString(), this->text_size));
 			break;
 		}
 		case WWT_CAPTION: {
 			padding = {WidgetDimensions::scaled.captiontext.Horizontal(), WidgetDimensions::scaled.captiontext.Vertical()};
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			Dimension d2 = GetStringBoundingBox(this->widget_data, this->text_size);
+			Dimension d2 = GetStringBoundingBox(this->GetString(), this->text_size);
 			d2.width += padding.width;
 			d2.height += padding.height;
 			size = maxdim(size, d2);
@@ -2971,7 +3036,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 			const Dimension &dropdown_dim = NWidgetLeaf::GetDropdownBoxDimension();
 			padding = {WidgetDimensions::scaled.dropdowntext.Horizontal() + dropdown_dim.width + WidgetDimensions::scaled.fullbevel.Horizontal(), WidgetDimensions::scaled.dropdowntext.Vertical()};
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			Dimension d2 = GetStringBoundingBox(this->widget_data, this->text_size);
+			Dimension d2 = GetStringBoundingBox(this->GetString(), this->text_size);
 			d2.width += padding.width;
 			d2.height = std::max(d2.height + padding.height, dropdown_dim.height);
 			size = maxdim(size, d2);
@@ -3021,14 +3086,13 @@ void NWidgetLeaf::Draw(const Window *w)
 			break;
 
 		case WWT_PUSHBTN:
-			assert(this->widget_data == 0);
 			DrawFrameRect(r.left, r.top, r.right, r.bottom, this->colour, (clicked) ? FR_LOWERED : FR_NONE);
 			break;
 
 		case WWT_IMGBTN:
 		case WWT_PUSHIMGBTN:
 		case WWT_IMGBTN_2:
-			DrawImageButtons(r, this->type, this->colour, clicked, this->widget_data, this->align);
+			DrawImageButtons(r, this->type, this->colour, clicked, this->widget_data.sprite, this->align);
 			break;
 
 		case WWT_TEXTBTN:
@@ -3036,13 +3100,13 @@ void NWidgetLeaf::Draw(const Window *w)
 		case WWT_TEXTBTN_2:
 			if (this->index >= 0) w->SetStringParameters(this->index);
 			DrawFrameRect(r.left, r.top, r.right, r.bottom, this->colour, (clicked) ? FR_LOWERED : FR_NONE);
-			DrawLabel(r, this->type, clicked, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawLabel(r, this->type, clicked, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		case WWT_ARROWBTN:
 		case WWT_PUSHARROWBTN: {
 			SpriteID sprite;
-			switch (this->widget_data) {
+			switch (this->widget_data.arrow_widget_type) {
 				case AWV_DECREASE: sprite = _current_text_dir != TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
 				case AWV_INCREASE: sprite = _current_text_dir == TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
 				case AWV_LEFT:     sprite = SPR_ARROW_LEFT;  break;
@@ -3055,16 +3119,16 @@ void NWidgetLeaf::Draw(const Window *w)
 
 		case WWT_LABEL:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawLabel(r, this->type, clicked, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawLabel(r, this->type, clicked, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		case WWT_TEXT:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawText(r, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawText(r, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		case WWT_MATRIX:
-			DrawMatrix(r, this->colour, clicked, this->widget_data, this->resize_x, this->resize_y);
+			DrawMatrix(r, this->colour, clicked, this->widget_data.matrix.width, this->widget_data.matrix.height, this->resize_x, this->resize_y);
 			break;
 
 		case WWT_EDITBOX: {
@@ -3075,11 +3139,10 @@ void NWidgetLeaf::Draw(const Window *w)
 
 		case WWT_CAPTION:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawCaption(r, this->colour, w->owner, this->text_colour, this->widget_data, this->align, this->text_size);
+			DrawCaption(r, this->colour, w->owner, this->text_colour, this->GetString(), this->align, this->text_size);
 			break;
 
 		case WWT_SHADEBOX:
-			assert(this->widget_data == 0);
 			DrawShadeBox(r, this->colour, w->IsShaded());
 			break;
 
@@ -3088,17 +3151,15 @@ void NWidgetLeaf::Draw(const Window *w)
 			break;
 
 		case WWT_STICKYBOX:
-			assert(this->widget_data == 0);
 			DrawStickyBox(r, this->colour, !!(w->flags & WF_STICKY));
 			break;
 
 		case WWT_DEFSIZEBOX:
-			assert(this->widget_data == 0);
 			DrawDefSizeBox(r, this->colour, clicked);
 			break;
 
 		case WWT_RESIZEBOX:
-			DrawResizeBox(r, this->colour, this->pos_x < (w->width / 2), !!(w->flags & WF_SIZING), this->widget_data == 0);
+			DrawResizeBox(r, this->colour, this->pos_x < (w->width / 2), !!(w->flags & WF_SIZING), this->widget_data.resize_widget_type == RWV_SHOW_BEVEL);
 			break;
 
 		case WWT_CLOSEBOX:
@@ -3107,13 +3168,13 @@ void NWidgetLeaf::Draw(const Window *w)
 
 		case WWT_DROPDOWN:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawButtonDropdown(r, this->colour, false, clicked, this->widget_data, this->align);
+			DrawButtonDropdown(r, this->colour, false, clicked, this->GetString(), this->align);
 			break;
 
 		case NWID_BUTTON_DROPDOWN:
 		case NWID_PUSHBUTTON_DROPDOWN:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawButtonDropdown(r, this->colour, clicked, (this->disp_flags & ND_DROPDOWN_ACTIVE) != 0, this->widget_data, this->align);
+			DrawButtonDropdown(r, this->colour, clicked, (this->disp_flags & ND_DROPDOWN_ACTIVE) != 0, this->GetString(), this->align);
 			break;
 
 		default:
@@ -3217,7 +3278,7 @@ static void ApplyNWidgetPartAttribute(const NWidgetPart &nwid, NWidgetBase *dest
 			NWidgetCore *nwc = dynamic_cast<NWidgetCore *>(dest);
 			if (nwc == nullptr) [[unlikely]] throw std::runtime_error("WPT_DATATIP requires NWidgetCore");
 			nwc->widget_data = nwid.u.data_tip.data;
-			nwc->tool_tip = nwid.u.data_tip.tooltip;
+			nwc->SetToolTip(nwid.u.data_tip.tooltip);
 			break;
 		}
 
@@ -3300,7 +3361,7 @@ static std::unique_ptr<NWidgetBase> MakeNWidget(const NWidgetPart &nwid)
 
 		default:
 			assert((nwid.type & WWT_MASK) < WWT_LAST || (nwid.type & WWT_MASK) == NWID_BUTTON_DROPDOWN);
-			return std::make_unique<NWidgetLeaf>(nwid.type, nwid.u.widget.colour, nwid.u.widget.index, 0x0, STR_NULL);
+			return std::make_unique<NWidgetLeaf>(nwid.type, nwid.u.widget.colour, nwid.u.widget.index, WidgetData{}, STR_NULL);
 	}
 }
 
@@ -3490,7 +3551,7 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, Widget
 		panel->SetMinimalSize(sprite_size.width, sprite_size.height);
 		panel->SetFill(1, 1);
 		if (resizable) panel->SetResize(1, 0);
-		panel->SetDataTip(0x0, button_tooltip);
+		panel->SetToolTip(button_tooltip);
 		hor->Add(std::move(panel));
 		hor_length++;
 	}

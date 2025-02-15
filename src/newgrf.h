@@ -379,7 +379,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	uint8_t ctrl_flags;                      ///< General GRF control flags
 
-	btree::btree_map<uint16_t, uint> string_map; ///< Map of local GRF string ID to string ID
+	btree::btree_map<GRFStringID, StringIndexInTab> string_map; ///< Map of local GRF string ID to string ID
 
 	GRFFile(const struct GRFConfig *config);
 
@@ -443,8 +443,8 @@ void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)
 
 bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 
-StringID MapGRFStringID(uint32_t grfid, StringID str);
-StringID MapGRFStringID(const struct GRFFile *grf, StringID str);
+StringID MapGRFStringID(uint32_t grfid, GRFStringID str);
+StringID MapGRFStringID(const struct GRFFile *grf, GRFStringID str);
 void ShowNewGRFError();
 uint CountSelectedGRFs(GRFConfig *grfconf);
 

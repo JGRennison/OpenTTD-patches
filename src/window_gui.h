@@ -572,7 +572,7 @@ public:
 	 * @param disab_stat status to use ie: disabled = true, enabled = false
 	 * @param widgets list of widgets
 	 */
-	template<typename... Args>
+	template <typename... Args>
 	void SetWidgetsDisabledState(bool disab_stat, Args... widgets)
 	{
 		(SetWidgetDisabledState(widgets, disab_stat), ...);
@@ -583,7 +583,7 @@ public:
 	 * @param lowered_stat status to use ie: lowered = true, raised = false
 	 * @param widgets list of widgets
 	 */
-	template<typename... Args>
+	template <typename... Args>
 	void SetWidgetsLoweredState(bool lowered_stat, Args... widgets)
 	{
 		(SetWidgetLoweredState(widgets, lowered_stat), ...);
@@ -593,7 +593,7 @@ public:
 	 * Raises the widgets and sets widgets dirty that are lowered.
 	 * @param widgets list of widgets
 	 */
-	template<typename... Args>
+	template <typename... Args>
 	void RaiseWidgetsWhenLowered(Args... widgets)
 	{
 		(this->RaiseWidgetWhenLowered(widgets), ...);
@@ -930,7 +930,7 @@ public:
 	 */
 	virtual void ShowNewGRFInspectWindow() const { NOT_REACHED(); }
 
-	template<class T>
+	template <class T>
 	using window_type = std::conditional_t<std::is_const<T>{}, Window const, Window>;
 
 	enum IterationMode {

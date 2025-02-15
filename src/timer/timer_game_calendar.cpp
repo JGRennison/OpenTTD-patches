@@ -27,7 +27,7 @@
 
 #include "../safeguards.h"
 
-template<>
+template <>
 void IntervalTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed triggers)
 {
 	if (HasBit(triggers, this->period.trigger)) {
@@ -35,7 +35,7 @@ void IntervalTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed trigg
 	}
 }
 
-template<>
+template <>
 void TimeoutTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed triggers)
 {
 	if (this->fired) return;
@@ -46,7 +46,7 @@ void TimeoutTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed trigge
 	}
 }
 
-template<>
+template <>
 void TimerManager<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed triggers)
 {
 	for (auto timer : TimerManager<TimerGameCalendar>::GetTimerVector()) {
@@ -55,7 +55,7 @@ void TimerManager<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed trigge
 }
 
 #ifdef WITH_ASSERT
-template<>
+template <>
 void TimerManager<TimerGameCalendar>::Validate(TimerGameCalendar::TPeriod period)
 {
 	if (period.priority == TimerGameCalendar::Priority::NONE) return;

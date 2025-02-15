@@ -10,6 +10,7 @@
 #ifndef STRINGS_TYPE_H
 #define STRINGS_TYPE_H
 
+#include "core/strong_typedef_type.hpp"
 #include <optional>
 
 /**
@@ -41,6 +42,9 @@ enum StringTab {
 	TEXT_TAB_GAMESCRIPT_START = 32, ///< Start of GameScript supplied strings.
 	TEXT_TAB_NEWGRF_START     = 64, ///< Start of NewGRF supplied strings.
 };
+
+/** The index/offset of a string within a #StringTab. */
+using StringIndexInTab = StrongType::Typedef<uint32_t, struct StringIndexInTabTag, StrongType::Compare, StrongType::Integer>;
 
 /** Number of bits for the StringIndex within a StringTab */
 static const uint TAB_SIZE_BITS       = 11;

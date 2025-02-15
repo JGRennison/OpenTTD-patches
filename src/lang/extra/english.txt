@@ -19,7 +19,7 @@ STR_JUST_TT_TIME_ABS                                            :{TT_TIME_ABS}
 STR_RED_INT                                                     :{RED}{NUM}
 
 STR_VIEWPORT_TOWN_LABEL                                         :{VP_TOWN_LABEL1}
-STR_VIEWPORT_TOWN_LABEL_TINY                                    :{TINY_FONT}{VP_TOWN_LABEL2}
+STR_VIEWPORT_TOWN_LABEL_TINY                                    :{VP_TOWN_LABEL2}
 ##no-translate off
 
 ##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED

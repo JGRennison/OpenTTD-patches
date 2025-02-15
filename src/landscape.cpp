@@ -1036,8 +1036,8 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
  */
 static bool FindSpring(TileIndex tile, void *)
 {
-	int referenceHeight;
-	if (!IsTileFlat(tile, &referenceHeight) || IsWaterTile(tile)) return false;
+	int reference_height;
+	if (!IsTileFlat(tile, &reference_height) || IsWaterTile(tile)) return false;
 
 	/* In the tropics rivers start in the rainforest. */
 	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
@@ -1047,7 +1047,7 @@ static bool FindSpring(TileIndex tile, void *)
 	for (int dx = -1; dx <= 1; dx++) {
 		for (int dy = -1; dy <= 1; dy++) {
 			TileIndex t = TileAddWrap(tile, dx, dy);
-			if (t != INVALID_TILE && GetTileMaxZ(t) > referenceHeight) num++;
+			if (t != INVALID_TILE && GetTileMaxZ(t) > reference_height) num++;
 		}
 	}
 
@@ -1058,7 +1058,7 @@ static bool FindSpring(TileIndex tile, void *)
 		for (int dx = -16; dx <= 16; dx++) {
 			for (int dy = -16; dy <= 16; dy++) {
 				TileIndex t = TileAddWrap(tile, dx, dy);
-				if (t != INVALID_TILE && GetTileMaxZ(t) > referenceHeight + 2) return false;
+				if (t != INVALID_TILE && GetTileMaxZ(t) > reference_height + 2) return false;
 			}
 		}
 	}
@@ -1130,14 +1130,14 @@ static bool FlowsDown(TileIndex begin, TileIndex end)
 {
 	dbg_assert(DistanceManhattan(begin, end) == 1);
 
-	auto [slopeBegin, heightBegin] = GetTileSlopeZ(begin);
-	auto [slopeEnd, heightEnd] = GetTileSlopeZ(end);
+	auto [slope_begin, height_begin] = GetTileSlopeZ(begin);
+	auto [slope_end, height_end] = GetTileSlopeZ(end);
 
-	return heightEnd <= heightBegin &&
+	return height_end <= height_begin &&
 			/* Slope either is inclined or flat; rivers don't support other slopes. */
-			(slopeEnd == SLOPE_FLAT || IsInclinedSlope(slopeEnd)) &&
+			(slope_end == SLOPE_FLAT || IsInclinedSlope(slope_end)) &&
 			/* Slope continues, then it must be lower... or either end must be flat. */
-			((slopeEnd == slopeBegin && heightEnd < heightBegin) || slopeEnd == SLOPE_FLAT || slopeBegin == SLOPE_FLAT);
+			((slope_end == slope_begin && height_end < height_begin) || slope_end == SLOPE_FLAT || slope_begin == SLOPE_FLAT);
 }
 
 /* AyStar callback for checking whether we reached our destination. */
@@ -1165,9 +1165,9 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 
 	aystar->num_neighbours = 0;
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
-		TileIndex t2 = tile + TileOffsByDiagDir(d);
-		if (IsValidTile(t2) && FlowsDown(tile, t2)) {
-			aystar->neighbours[aystar->num_neighbours].tile = t2;
+		TileIndex t = tile + TileOffsByDiagDir(d);
+		if (IsValidTile(t) && FlowsDown(tile, t)) {
+			aystar->neighbours[aystar->num_neighbours].tile = t;
 			aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 			aystar->num_neighbours++;
 		}
@@ -1175,9 +1175,9 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 }
 
 /** Callback to widen a river tile. */
-static bool RiverMakeWider(TileIndex tile, void *data)
+static bool RiverMakeWider(TileIndex tile, void *user_data)
 {
-	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)data)) {
+	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)user_data)) {
 		MakeRiver(tile, Random());
 		/* Remove desert directly around the river tile. */
 
@@ -1249,10 +1249,8 @@ static void BuildRiver(TileIndex begin, TileIndex end)
  */
 static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 {
-#	define SET_MARK(x) marks.insert(x)
-#	define IS_MARKED(x) (marks.find(x) != marks.end())
+	uint height_begin = TileHeight(begin);
 
-	uint height = TileHeight(begin);
 	if (IsWaterTile(begin)) {
 		if (GetTileZ(begin) == 0) {
 			_is_main_river = true;
@@ -1262,7 +1260,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 	}
 
 	btree::btree_set<TileIndex> marks;
-	SET_MARK(begin);
+	marks.insert(begin);
 
 	/* Breadth first search for the closest tile we can flow down to. */
 	ring_buffer<TileIndex> queue;
@@ -1275,18 +1273,18 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 		end = queue.front();
 		queue.pop_front();
 
-		uint height2 = TileHeight(end);
-		if (IsTileFlat(end) && (height2 < height || (height2 == height && IsWaterTile(end)))) {
+		uint height_end = TileHeight(end);
+		if (IsTileFlat(end) && (height_end < height_begin || (height_end == height_begin && IsWaterTile(end)))) {
 			found = true;
 			break;
 		}
 
 		for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
-			TileIndex t2 = end + TileOffsByDiagDir(d);
-			if (IsValidTile(t2) && !IS_MARKED(t2) && FlowsDown(end, t2)) {
-				SET_MARK(t2);
+			TileIndex t = end + TileOffsByDiagDir(d);
+			if (IsValidTile(t) && !marks.contains(t) && FlowsDown(end, t)) {
+				marks.insert(t);
 				count++;
-				queue.push_back(t2);
+				queue.push_back(t);
 			}
 		}
 	} while (!queue.empty());
@@ -1296,36 +1294,36 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 		found = FlowRiver(spring, end, min_river_length);
 	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
-		TileIndex lakeCenter = 0;
+		TileIndex lake_centre = 0;
 		int i = RandomRange(count - 1) + 1;
 		btree::btree_set<TileIndex>::const_iterator cit = marks.begin();
 		while (--i) cit++;
-		lakeCenter = *cit;
+		lake_centre = *cit;
 
-		if (IsValidTile(lakeCenter) &&
+		if (IsValidTile(lake_centre) &&
 				/* A river, or lake, can only be built on flat slopes. */
-				IsTileFlat(lakeCenter) &&
+				IsTileFlat(lake_centre) &&
 				/* We want the lake to be built at the height of the river. */
-				TileHeight(begin) == TileHeight(lakeCenter) &&
+				TileHeight(begin) == TileHeight(lake_centre) &&
 				/* We don't want the lake at the entry of the valley. */
-				lakeCenter != begin &&
+				lake_centre != begin &&
 				/* We don't want lakes in the desert. */
-				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
+				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lake_centre) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
-				DistanceManhattan(spring, lakeCenter) > min_river_length) {
-			end = lakeCenter;
-			MakeRiver(lakeCenter, Random());
-			MarkTileDirtyByTile(lakeCenter);
+				DistanceManhattan(spring, lake_centre) > min_river_length) {
+			end = lake_centre;
+			MakeRiver(lake_centre, Random());
+			MarkTileDirtyByTile(lake_centre);
 			/* Remove desert directly around the river tile. */
-			IterateCurvedCircularTileArea(lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			IterateCurvedCircularTileArea(lake_centre, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 
 			// Setting lake size +- 25%
 			const auto random_percentage = 75 + RandomRange(50);
 			const uint range = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
 
 			MakeLakeData data;
-			data.centre = lakeCenter;
-			data.height = height;
+			data.centre = lake_centre;
+			data.height = height_begin;
 			data.max_distance = range / 2;
 
 			/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
@@ -1337,10 +1335,10 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			/* sin^2 + cos^2 = 1 */
 			data.cos_fp = IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
 
-			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
+			CircularTileSearch(&lake_centre, range, MakeLake, &data);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
-			lakeCenter = end;
-			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
+			lake_centre = end;
+			CircularTileSearch(&lake_centre, range, MakeLake, &data);
 			found = true;
 		}
 	}

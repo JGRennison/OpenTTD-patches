@@ -1100,7 +1100,7 @@ using ring_buffer_sl = ring_buffer<T>;
 /**
  * Template class to help with list-like types.
  */
-template <template<typename, typename> typename Tstorage, typename Tvar, typename Tallocator = std::allocator<Tvar>>
+template <template <typename, typename> typename Tstorage, typename Tvar, typename Tallocator = std::allocator<Tvar>>
 class SlStorageHelper {
 	typedef Tstorage<Tvar, Tallocator> SlStorageT;
 public:

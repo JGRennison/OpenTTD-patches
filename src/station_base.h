@@ -368,7 +368,7 @@ static_assert(std::is_nothrow_move_constructible<FlowStat>::value, "FlowStat mus
 static_assert(sizeof(FlowStat) == 24, "");
 #endif
 
-template<typename cv_value, typename cv_container, typename cv_index_iter>
+template <typename cv_value, typename cv_container, typename cv_index_iter>
 class FlowStatMapIterator
 {
 	friend FlowStatMap;
@@ -1020,7 +1020,7 @@ void RebuildStationKdtree();
  * @param func The function to call, must take two parameters: Station* and TileIndex and return true
  *             if coverage of that tile is acceptable for a given station or false if search should continue
  */
-template<typename Func>
+template <typename Func>
 void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 {
 	/* There are no stations, so we will never find anything. */

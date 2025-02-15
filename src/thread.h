@@ -88,7 +88,7 @@ bool IsNonGameThread();
  * @param _Ax Arguments for the thread function.
  * @return True if the thread was successfully started, false otherwise.
  */
-template<class TFn, class... TArgs>
+template <class TFn, class... TArgs>
 inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&&... _Ax)
 {
 	try {

@@ -321,7 +321,7 @@ namespace DateDetail {
 			TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
 
 		public:
-			template<typename T>
+			template <typename T>
 			T AsTicksT() const { return ClampTo<T>(this->GetBase()); }
 
 			Ticks AsTicks() const { return this->AsTicksT<Ticks>(); }

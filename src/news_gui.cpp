@@ -106,7 +106,7 @@ static constexpr NWidgetPart _nested_normal_news_widgets[] = {
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
 						NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX),
 						NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_DATE),
-								SetDataTip(STR_JUST_DATE_LONG, STR_NULL),
+								SetStringTip(STR_JUST_DATE_LONG),
 								SetTextStyle(TC_BLACK, FS_SMALL),
 								SetAlignment(SA_RIGHT | SA_TOP),
 					EndContainer(),
@@ -145,7 +145,7 @@ static constexpr NWidgetPart _nested_vehicle_news_widgets[] = {
 						SetMinimalTextLines(2, 0, FS_LARGE),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
-						SetDataTip(STR_EMPTY, STR_NULL),
+						SetStringTip(STR_EMPTY),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_VEH_BKGND), SetPadding(WidgetDimensions::unscaled.fullbevel),
 				NWidget(NWID_VERTICAL),
@@ -192,7 +192,7 @@ static constexpr NWidgetPart _nested_company_news_widgets[] = {
 						SetMinimalTextLines(1, 0, FS_LARGE),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_normal),
-						SetDataTip(STR_EMPTY, STR_NULL),
+						SetStringTip(STR_EMPTY),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(2),
@@ -229,7 +229,7 @@ static constexpr NWidgetPart _nested_thin_news_widgets[] = {
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
 						NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX),
 						NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_DATE),
-								SetDataTip(STR_JUST_DATE_LONG, STR_NULL),
+								SetStringTip(STR_JUST_DATE_LONG),
 								SetTextStyle(TC_BLACK, FS_SMALL),
 								SetAlignment(SA_RIGHT | SA_TOP),
 					EndContainer(),
@@ -262,7 +262,7 @@ static constexpr NWidgetPart _nested_small_news_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_LIGHT_BLUE, WID_N_SHOW_GROUP),
 				SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON),
 				SetResize(1, 0),
-				SetDataTip(STR_NULL /* filled in later */, STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP),
+				SetToolTip(STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP),
 	EndContainer(),
 
 	/* Main part */
@@ -364,23 +364,23 @@ struct NewsWindow : Window {
 		this->CreateNestedTree();
 
 		/* For company news with a face we have a separate headline in param[0] */
-		if (&desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0].data;
+		if (&desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->SetString(this->ni->params[0].data);
 
 		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP);
 		if (ni->reftype1 == NR_VEHICLE && nwid != nullptr) {
 			const Vehicle *v = Vehicle::Get(ni->ref1);
 			switch (v->type) {
 				case VEH_TRAIN:
-					nwid->widget_data = STR_TRAIN;
+					nwid->SetString(STR_TRAIN);
 					break;
 				case VEH_ROAD:
-					nwid->widget_data = RoadVehicle::From(v)->IsBus() ? STR_BUS : STR_LORRY;
+					nwid->SetString(RoadVehicle::From(v)->IsBus() ? STR_BUS : STR_LORRY);
 					break;
 				case VEH_SHIP:
-					nwid->widget_data = STR_SHIP;
+					nwid->SetString(STR_SHIP);
 					break;
 				case VEH_AIRCRAFT:
-					nwid->widget_data = STR_PLANE;
+					nwid->SetString(STR_PLANE);
 					break;
 				default:
 					break; // Do nothing
@@ -467,7 +467,7 @@ struct NewsWindow : Window {
 
 			case WID_N_SHOW_GROUP:
 				if (this->ni->reftype1 == NR_VEHICLE) {
-					Dimension d2 = GetStringBoundingBox(this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP)->widget_data);
+					Dimension d2 = GetStringBoundingBox(this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP)->GetString());
 					d2.height += WidgetDimensions::scaled.captiontext.Vertical();
 					d2.width += WidgetDimensions::scaled.captiontext.Horizontal();
 					size = d2;
@@ -1257,14 +1257,14 @@ struct MessageHistoryWindow : Window {
 static constexpr NWidgetPart _nested_message_history[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_MESSAGE_HISTORY, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_MESSAGE_HISTORY, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_BROWN, WID_MH_BACKGROUND), SetMinimalSize(200, 125), SetDataTip(0x0, STR_MESSAGE_HISTORY_TOOLTIP), SetResize(1, 12), SetScrollbar(WID_MH_SCROLLBAR),
+		NWidget(WWT_PANEL, COLOUR_BROWN, WID_MH_BACKGROUND), SetMinimalSize(200, 125), SetToolTip(STR_MESSAGE_HISTORY_TOOLTIP), SetResize(1, 12), SetScrollbar(WID_MH_SCROLLBAR),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_MH_SCROLLBAR),

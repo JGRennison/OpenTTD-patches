@@ -75,7 +75,7 @@ struct GRFTextEntry {
 	GRFTextList textholder;
 	StringID def_string;
 	uint32_t grfid;
-	uint16_t stringid;
+	GRFStringID stringid;
 };
 
 
@@ -312,11 +312,11 @@ std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool all
 			case 0x81:
 			{
 				if (src[0] == '\0' || src[1] == '\0') goto string_end;
-				StringID string;
+				uint16_t string;
 				string = static_cast<uint8_t>(*src++);
 				string |= static_cast<uint8_t>(*src++) << 8;
 				Utf8Encode(d, SCC_NEWGRF_STRINL);
-				Utf8Encode(d, MapGRFStringID(grfid, string));
+				Utf8Encode(d, MapGRFStringID(grfid, GRFStringID{string}));
 				break;
 			}
 			case 0x82:
@@ -553,7 +553,7 @@ void AddGRFTextToList(GRFTextWrapper &list, std::string_view text_to_add)
 /**
  * Add the new read string into our structure.
  */
-StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, bool new_scheme, bool allow_newlines, std::string_view text_to_add, StringID def_string)
+StringID AddGRFString(uint32_t grfid, GRFStringID stringid, uint8_t langid_to_add, bool new_scheme, bool allow_newlines, std::string_view text_to_add, StringID def_string)
 {
 	/* When working with the old language scheme (grf_version is less than 7) and
 	 * English or American is among the set bits, simply add it as English in
@@ -573,7 +573,7 @@ StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, 
 		}
 	}
 
-	uint id;
+	StringIndexInTab id{};
 	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid);
 	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (grf == nullptr) return STR_EMPTY;
@@ -590,7 +590,7 @@ StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, 
 		}
 
 		/* Allocate new ID */
-		id = (uint)_grf_text.size();
+		id = StringIndexInTab{(uint)_grf_text.size()};
 		GRFTextEntry &entry = _grf_text.emplace_back();
 		entry.grfid      = grfid;
 		entry.stringid   = stringid;
@@ -600,7 +600,7 @@ StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, 
 	}
 
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
-	AddGRFTextToList(_grf_text[id].textholder, langid_to_add, newtext);
+	AddGRFTextToList(_grf_text[id.base()].textholder, langid_to_add, newtext);
 
 	GrfMsg(3, "Added 0x{:X}: grfid {:08X} string 0x{:X} lang 0x{:X} string '{}' ({:X})", id, grfid, stringid, langid_to_add, newtext.c_str(), MakeStringID(TEXT_TAB_NEWGRF_START, id));
 
@@ -611,7 +611,7 @@ StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, 
  * Returns the index for this stringid associated with its grfID.
  * This form should be preferred over the uint32_t grfid form, to avoid redundant GRFID to GRF lookups.
  */
-StringID GetGRFStringID(const GRFFile *grf, StringID stringid)
+StringID GetGRFStringID(const GRFFile *grf, GRFStringID stringid)
 {
 	if (stringid > UINT16_MAX || grf == nullptr) return STR_UNDEFINED;
 
@@ -624,17 +624,15 @@ StringID GetGRFStringID(const GRFFile *grf, StringID stringid)
 /**
  * Returns the index for this stringid associated with its grfID
  */
-StringID GetGRFStringID(uint32_t grfid, StringID stringid)
+StringID GetGRFStringID(uint32_t grfid, GRFStringID stringid)
 {
-	if (stringid > UINT16_MAX) return STR_UNDEFINED;
-
 	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid);
 	const GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (unlikely(grf == nullptr)) {
-		for (uint id = 0; id < (uint)_grf_text.size(); id++) {
-			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-				return MakeStringID(TEXT_TAB_NEWGRF_START, id);
-			}
+		auto it = std::ranges::find_if(_grf_text, [&grfid, &stringid](const GRFTextEntry &grf_text) { return grf_text.grfid == grfid && grf_text.stringid == stringid; });
+		if (it != std::end(_grf_text)) {
+			StringIndexInTab id(it - std::begin(_grf_text));
+			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
 		}
 	} else {
 		auto iter = grf->string_map.find(stringid);
@@ -685,7 +683,7 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list)
 	return default_text;
 }
 
-static std::array<std::pair<uint32_t, const char *>, 16> _grf_string_ptr_log;
+static std::array<std::pair<StringIndexInTab, const char *>, 16> _grf_string_ptr_log;
 static unsigned int _grf_string_ptr_log_next = 0;
 
 /**
@@ -708,20 +706,20 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
 /**
  * Get a C-string from a stringid set by a newgrf.
  */
-const char *GetGRFStringPtr(uint32_t stringid)
+const char *GetGRFStringPtr(StringIndexInTab stringid)
 {
-	if (stringid >= _grf_text.size() || _grf_text[stringid].grfid == 0) {
+	if (stringid.base() >= _grf_text.size() || _grf_text[stringid.base()].grfid == 0) {
 		Debug(misc, 0, "Invalid NewGRF string ID: {}", stringid);
 		return "(invalid StringID)";
 	}
 
-	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
+	const char *str = GetGRFStringFromGRFText(_grf_text[stringid.base()].textholder);
 	if (str == nullptr) {
 		/* Use the default string ID if the fallback string isn't available */
-		str = GetStringPtr(_grf_text[stringid].def_string);
+		str = GetStringPtr(_grf_text[stringid.base()].def_string);
 	}
 
-	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<uint32_t, const char *>(stringid, str);
+	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<StringIndexInTab, const char *>(stringid, str);
 	_grf_string_ptr_log_next = (_grf_string_ptr_log_next + 1) % _grf_string_ptr_log.size();
 
 	return str;
@@ -767,7 +765,7 @@ void CleanUpStrings()
 {
 	_grf_text.clear();
 
-	_grf_string_ptr_log.fill({ 0, nullptr });
+	_grf_string_ptr_log.fill({ StringIndexInTab{0}, nullptr });
 }
 
 struct TextRefStack {
@@ -919,12 +917,12 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, StringBuilder builder, const
 		uint32_t grfid = 0;
 		for (uint entry = 0; entry < _grf_string_ptr_log.size(); entry++) {
 			const char *txt = _grf_string_ptr_log[entry].second;
-			uint32_t stringid = _grf_string_ptr_log[entry].first;
+			StringIndexInTab stringid = _grf_string_ptr_log[entry].first;
 			if (txt != nullptr &&
 					buffer >= txt && buffer < txt + 8192 &&
 					buffer < txt + strlen(txt) &&
-					_grf_text[stringid].grfid != 0) {
-				grfid = _grf_text[stringid].grfid;
+					_grf_text[stringid.base()].grfid != 0) {
+				grfid = _grf_text[stringid.base()].grfid;
 				break;
 			}
 		}
@@ -1031,7 +1029,7 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, StringBuilder builder, const
 				break;
 
 			case SCC_NEWGRF_PRINT_WORD_STRING_ID:
-				parameters.SetParam(0, MapGRFStringID(_newgrf_textrefstack.grffile, _newgrf_textrefstack.PopUnsignedWord()));
+				parameters.SetParam(0, MapGRFStringID(_newgrf_textrefstack.grffile, GRFStringID{_newgrf_textrefstack.PopUnsignedWord()}));
 				break;
 
 			case SCC_NEWGRF_PRINT_WORD_CARGO_NAME: {
@@ -1131,7 +1129,7 @@ uint32_t GetStringGRFID(StringID string)
 {
 	switch (GetStringTab(string)) {
 		case TEXT_TAB_NEWGRF_START:
-			return _grf_text[GetStringIndex(string)].grfid;
+			return _grf_text[GetStringIndex(string).base()].grfid;
 		default:
 			return 0;
 	}

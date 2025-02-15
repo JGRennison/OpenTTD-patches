@@ -15,20 +15,20 @@
 
 /* Based on C++ std library proposal: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0200r0.html */
 
-template<class F>
+template <class F>
 class y_combinator_result {
 	F func_;
 public:
-	template<class T>
+	template <class T>
 	explicit y_combinator_result(T &&func): func_(std::forward<T>(func)) {}
 
-	template<class ...Args>
+	template <class ...Args>
 	decltype(auto) operator()(Args &&...args) {
 		return func_(std::ref(*this), std::forward<Args>(args)...);
 	}
 };
 
-template<class F>
+template <class F>
 decltype(auto) y_combinator(F &&func) {
 	return y_combinator_result<std::decay_t<F>>(std::forward<F>(func));
 }

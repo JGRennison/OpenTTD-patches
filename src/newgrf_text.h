@@ -15,14 +15,14 @@
 #include "table/control_codes.h"
 #include <string>
 
-StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid, bool new_scheme, bool allow_newlines, std::string_view text_to_add, StringID def_string);
-StringID GetGRFStringID(uint32_t grfid, StringID stringid);
-StringID GetGRFStringID(const struct GRFFile *grf, StringID stringid);
+StringID AddGRFString(uint32_t grfid, GRFStringID stringid, uint8_t langid, bool new_scheme, bool allow_newlines, std::string_view text_to_add, StringID def_string);
+StringID GetGRFStringID(uint32_t grfid, GRFStringID stringid);
+StringID GetGRFStringID(const struct GRFFile *grf, GRFStringID stringid);
 const char *GetGRFStringFromGRFText(const GRFTextList &text_list);
 const char *GetGRFStringFromGRFText(const GRFTextWrapper &text);
 const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list);
 const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text);
-const char *GetGRFStringPtr(uint32_t stringid);
+const char *GetGRFStringPtr(StringIndexInTab stringid);
 void CleanUpStrings();
 void SetCurrentGrfLangID(uint8_t language_id);
 std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool allow_newlines, std::string_view str, StringControlCode byte80 = SCC_NEWGRF_PRINT_WORD_STRING_ID);

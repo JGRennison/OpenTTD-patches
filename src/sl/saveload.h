@@ -331,11 +331,11 @@ struct sl_is_instance : public std::false_type {};
 template <class...Ts, template <class, class...> class U>
 struct sl_is_instance<U<Ts...>, U> : public std::true_type {};
 
-template<template<class, std::size_t> class T, class U>
+template <template <class, std::size_t> class T, class U>
 struct sl_is_derived_from_array
 {
 private:
-	template<class V, std::size_t N>
+	template <class V, std::size_t N>
 	static decltype(static_cast<T<V, N>>(std::declval<U>()), std::true_type{}) test(const T<V, N>&);
 	static std::false_type test(...);
 

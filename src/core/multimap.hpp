@@ -12,7 +12,7 @@
 
 #include <map>
 
-template<typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare>
+template <typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare>
 class MultiMap;
 
 /**
@@ -24,7 +24,7 @@ class MultiMap;
  * @tparam Tcontainer Container type for the values of the MultiMap.
  * @tparam Tcompare Comparator type for keys of the MultiMap.
  */
-template<class Tmap_iter, class Tlist_iter, class Tkey, class Tvalue, class Tcontainer, class Tcompare>
+template <class Tmap_iter, class Tlist_iter, class Tkey, class Tvalue, class Tcontainer, class Tcompare>
 class MultiMapIterator {
 protected:
 	friend class MultiMap<Tkey, Tvalue, Tcontainer, Tcompare>;
@@ -56,7 +56,7 @@ public:
 	 * @tparam Tnon_const Iterator type assignable to Tmap_iter (which might be const).
 	 * @param mi One such iterator.
 	 */
-	template<class Tnon_const>
+	template <class Tnon_const>
 	MultiMapIterator(Tnon_const mi) : map_iter(mi), list_valid(false) {}
 
 	/**
@@ -77,7 +77,7 @@ public:
 	 * @param mi One such iterator.
 	 * @return This iterator.
 	 */
-	template<class Tnon_const>
+	template <class Tnon_const>
 	Self &operator=(Tnon_const mi)
 	{
 		this->map_iter = mi;
@@ -199,7 +199,7 @@ public:
  * @param iter2 Second iterator to compare.
  * @return If iter1 and iter2 are equal.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tlist_iter2, class Tkey, class Tvalue1, class Tvalue2, class Tcontainer1, class Tcontainer2, class Tcompare>
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tlist_iter2, class Tkey, class Tvalue1, class Tvalue2, class Tcontainer1, class Tcontainer2, class Tcompare>
 bool operator==(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue1, Tcontainer1, Tcompare> &iter1, const MultiMapIterator<Tmap_iter2, Tlist_iter2, Tkey, Tvalue2, Tcontainer2, Tcompare> &iter2)
 {
 	if (iter1.GetMapIter() != iter2.GetMapIter()) return false;
@@ -216,7 +216,7 @@ bool operator==(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue1, T
  * @param iter2 Second iterator to compare.
  * @return If iter1 and iter2 are not equal.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tlist_iter2, class Tkey, class Tvalue1, class Tvalue2, class Tcontainer1, class Tcontainer2, class Tcompare>
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tlist_iter2, class Tkey, class Tvalue1, class Tvalue2, class Tcontainer1, class Tcontainer2, class Tcompare>
 bool operator!=(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue1, Tcontainer1, Tcompare> &iter1, const MultiMapIterator<Tmap_iter2, Tlist_iter2, Tkey, Tvalue2, Tcontainer2, Tcompare> &iter2)
 {
 	return !(iter1 == iter2);
@@ -230,7 +230,7 @@ bool operator!=(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue1, T
  * @param iter2 Map iterator.
  * @return If iter1 points to the begin of the list pointed to by iter2.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
 bool operator==(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tcontainer, Tcompare> &iter1, const Tmap_iter2 &iter2)
 {
 	return !iter1.ListValid() && iter1.GetMapIter() == iter2;
@@ -242,7 +242,7 @@ bool operator==(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tc
  * @param iter2 Map iterator.
  * @return If iter1 doesn't point to the begin of the list pointed to by iter2.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
 bool operator!=(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tcontainer, Tcompare> &iter1, const Tmap_iter2 &iter2)
 {
 	return iter1.ListValid() || iter1.GetMapIter() != iter2;
@@ -254,7 +254,7 @@ bool operator!=(const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tc
  * @param iter1 MultiMap iterator.
  * @return If iter1 points to the begin of the list pointed to by iter2.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
 bool operator==(const Tmap_iter2 &iter2, const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tcontainer, Tcompare> &iter1)
 {
 	return !iter1.ListValid() && iter1.GetMapIter() == iter2;
@@ -266,7 +266,7 @@ bool operator==(const Tmap_iter2 &iter2, const MultiMapIterator<Tmap_iter1, Tlis
  * @param iter1 MultiMap iterator.
  * @return If iter1 doesn't point to the begin of the list pointed to by iter2.
  */
-template<class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
+template <class Tmap_iter1, class Tlist_iter1, class Tmap_iter2, class Tkey, class Tvalue, class Tcontainer, class Tcompare >
 bool operator!=(const Tmap_iter2 &iter2, const MultiMapIterator<Tmap_iter1, Tlist_iter1, Tkey, Tvalue, Tcontainer, Tcompare> &iter1)
 {
 	return iter1.ListValid() || iter1.GetMapIter() != iter2;
@@ -280,7 +280,7 @@ bool operator!=(const Tmap_iter2 &iter2, const MultiMapIterator<Tmap_iter1, Tlis
  * STL-compatible members are named in STL style, all others are named in OpenTTD
  * style.
  */
-template<typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare = std::less<Tkey> >
+template <typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare = std::less<Tkey> >
 class MultiMap : public std::map<Tkey, Tcontainer, Tcompare > {
 public:
 	typedef Tcontainer List;

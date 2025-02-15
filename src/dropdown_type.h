@@ -59,7 +59,7 @@ public:
  * Drop down unselectable component.
  * @tparam TBase Base component.
  */
-template<class TBase>
+template <class TBase>
 class DropDownUnselectable : public TBase {
 public:
 	template <typename... Args>

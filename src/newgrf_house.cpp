@@ -629,7 +629,7 @@ StringID GetHouseName(HouseID house_id, TileIndex tile)
 		if (callback_res > 0x400) {
 			ErrorUnknownCallbackResult(hs->grf_prop.grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
 		} else {
-			StringID ret = GetGRFStringID(hs->grf_prop.grffile, 0xD000 + callback_res);
+			StringID ret = GetGRFStringID(hs->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res);
 			if (ret != STR_NULL && ret != STR_UNDEFINED) return ret;
 		}
 	}

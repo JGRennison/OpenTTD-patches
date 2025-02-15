@@ -21,10 +21,10 @@ protected:
 			max_saturation(job.Settings().short_path_saturation)
 	{}
 
-	template<class Tannotation>
+	template <class Tannotation>
 	struct DijkstraState;
 
-	template<class Tannotation, class Tedge_iterator>
+	template <class Tannotation, class Tedge_iterator>
 	void Dijkstra(NodeID from, PathVector &paths, DijkstraState<Tannotation> &state);
 
 	uint PushFlow(DemandAnnotation &anno, Path *path, uint min_step_size, uint accuracy, uint max_saturation);
@@ -76,7 +76,7 @@ public:
  * Link graph handler for MCF. Creates MultiCommodityFlow instance according to
  * the template parameter.
  */
-template<class Tpass>
+template <class Tpass>
 class MCFHandler : public ComponentHandler {
 public:
 

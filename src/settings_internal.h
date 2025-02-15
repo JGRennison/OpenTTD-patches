@@ -32,6 +32,7 @@ enum SettingFlag : uint32_t {
 	SF_NOT_IN_SAVE             = 1 << 10, ///< Do not save with savegame, basically client-based.
 	SF_NOT_IN_CONFIG           = 1 << 11, ///< Do not save to config file.
 	SF_NO_NETWORK_SYNC         = 1 << 12, ///< Do not synchronize over network (but it is saved if SF_NOT_IN_SAVE is not set).
+	SF_SANDBOX                 = 1 << 13, ///< This setting is a sandbox setting.
 	SF_ENUM                    = 1 << 14, ///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
 	SF_NO_NEWGAME              = 1 << 15, ///< the setting does not apply and is not shown in a new game context
 	SF_RUN_CALLBACKS_ON_PARSE  = 1 << 17, ///< run callbacks when parsing from config file
@@ -186,6 +187,7 @@ struct IntSettingDesc : SettingDesc {
 	typedef StringID GetTitleCallback(const IntSettingDesc &sd);
 	typedef StringID GetHelpCallback(const IntSettingDesc &sd);
 	typedef void SetValueDParamsCallback(const IntSettingDesc &sd, uint first_param, int32_t value);
+	typedef int32_t GetDefaultValueCallback(const IntSettingDesc &sd);
 
 	/**
 	 * A check to be performed before the setting gets changed. The passed integer may be
@@ -201,12 +203,6 @@ struct IntSettingDesc : SettingDesc {
 	 * @param The new value for the setting.
 	 */
 	typedef void PostChangeCallback(int32_t value);
-	/**
-	 * A callback to get the correct default value. For example a default that can be measured in time
-	 * units or expressed as a percentage.
-	 * @return The correct default value for the setting.
-	 */
-	typedef int32_t GetDefaultValueCallback();
 
 	IntSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,
@@ -239,6 +235,7 @@ struct IntSettingDesc : SettingDesc {
 	StringID GetTitle() const;
 	StringID GetHelp() const;
 	void SetValueDParams(uint first_param, int32_t value) const;
+	int32_t GetDefaultValue() const;
 
 	/**
 	 * Check whether this setting is a boolean type setting.

@@ -189,7 +189,7 @@ inline constexpr NamedSaveLoad NSLT(const char *name, SaveLoad save_load)
 	return { name, save_load, NSLF_TABLE_ONLY };
 }
 
-template<typename T, auto... ARGS>
+template <typename T, auto... ARGS>
 inline constexpr SaveLoadStructHandlerFactory MakeSaveLoadStructHandlerFactory()
 {
 	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {

@@ -346,7 +346,7 @@ struct format_to_fixed_z final : public format_to_fixed_base {
  *
  * Does not null-terminate.
  */
-template<size_t N>
+template <size_t N>
 struct format_buffer_fixed final : public format_to_fixed_base {
 	char strbuffer[N];
 

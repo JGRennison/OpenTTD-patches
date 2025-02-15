@@ -70,7 +70,7 @@ enum TemplateReplaceCreateWindowWidgets {
 static constexpr NWidgetPart _template_create_window_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, TCW_CAPTION), SetDataTip(STR_TMPL_CREATEGUI_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, TCW_CAPTION), SetStringTip(STR_TMPL_CREATEGUI_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -78,19 +78,19 @@ static constexpr NWidgetPart _template_create_window_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_PANEL, COLOUR_GREY, TCW_NEW_TMPL_PANEL), SetMinimalSize(250, 30), SetResize(1, 0), SetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL), SetDataTip(STR_NULL, STR_DEPOT_TRAIN_LIST_TOOLTIP), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_GREY, TCW_NEW_TMPL_PANEL), SetMinimalSize(250, 30), SetResize(1, 0), SetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL), SetToolTip(STR_DEPOT_TRAIN_LIST_TOOLTIP), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY, TCW_INFO_PANEL), SetMinimalSize(250, 100), SetResize(1, 1), SetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL), EndContainer(),
 			NWidget(NWID_HSCROLLBAR, COLOUR_GREY, TCW_SCROLLBAR_H_NEW_TMPL),
 		EndContainer(),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, TCW_SELL_TMPL), SetMinimalSize(40, 40), SetDataTip(0x0, STR_NULL), SetResize(0, 1), SetFill(0, 1),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, TCW_SELL_TMPL), SetMinimalSize(40, 40), SetResize(0, 1), SetFill(0, 1),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TCW_SCROLLBAR_V_NEW_TMPL),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_OK),     SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_TMPL_CONFIRM,          STR_TMPL_CONFIRM),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_NEW),    SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_TMPL_NEW,              STR_TMPL_NEW),
-		NWidget(WWT_TEXTBTN,    COLOUR_GREY, TCW_CLONE),  SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_TMPL_CREATE_CLONE_VEH, STR_TMPL_CREATE_CLONE_VEH),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_REFIT),  SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_TMPL_REFIT,            STR_TMPL_REFIT),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_CANCEL), SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_TMPL_CANCEL,           STR_TMPL_CANCEL),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_OK),     SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_TMPL_CONFIRM,          STR_TMPL_CONFIRM),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_NEW),    SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_TMPL_NEW,              STR_TMPL_NEW),
+		NWidget(WWT_TEXTBTN,    COLOUR_GREY, TCW_CLONE),  SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_TMPL_CREATE_CLONE_VEH, STR_TMPL_CREATE_CLONE_VEH),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_REFIT),  SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_TMPL_REFIT,            STR_TMPL_REFIT),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TCW_CANCEL), SetMinimalSize(52, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_TMPL_CANCEL,           STR_TMPL_CANCEL),
 		NWidget(WWT_RESIZEBOX,  COLOUR_GREY),
 	EndContainer(),
 };
@@ -144,7 +144,7 @@ public:
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
 		this->FinishInitNested(VEH_TRAIN);
 		/* a sprite */
-		this->GetWidget<NWidgetCore>(TCW_SELL_TMPL)->widget_data = SPR_SELL_TRAIN;
+		this->GetWidget<NWidgetCore>(TCW_SELL_TMPL)->SetString(SPR_SELL_TRAIN);
 
 		this->owner = _local_company;
 

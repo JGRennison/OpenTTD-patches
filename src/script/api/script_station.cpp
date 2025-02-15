@@ -38,7 +38,7 @@
 	return ::GetStationIndex(tile);
 }
 
-template<bool Tfrom, bool Tvia>
+template <bool Tfrom, bool Tvia>
 /* static */ bool ScriptStation::IsCargoRequestValid(StationID station_id,
 		StationID from_station_id, StationID via_station_id, CargoID cargo_id)
 {
@@ -49,7 +49,7 @@ template<bool Tfrom, bool Tvia>
 	return true;
 }
 
-template<bool Tfrom, bool Tvia>
+template <bool Tfrom, bool Tvia>
 /* static */ SQInteger ScriptStation::CountCargoWaiting(StationID station_id,
 		StationID from_station_id, StationID via_station_id, CargoID cargo_id)
 {
@@ -100,7 +100,7 @@ template<bool Tfrom, bool Tvia>
 	return CountCargoWaiting<true, true>(station_id, from_station_id, via_station_id, cargo_id);
 }
 
-template<bool Tfrom, bool Tvia>
+template <bool Tfrom, bool Tvia>
 /* static */ SQInteger ScriptStation::CountCargoPlanned(StationID station_id,
 		StationID from_station_id, StationID via_station_id, CargoID cargo_id)
 {

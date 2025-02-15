@@ -42,7 +42,7 @@ void WriteScopeLog(struct format_target &buffer)
 
 #endif
 
-template<>
+template <>
 void GeneralFmtDumper<Company, int>::fmt_format_value(format_target &buf) const
 {
 	buf.format("{} (", this->value);
@@ -51,7 +51,7 @@ void GeneralFmtDumper<Company, int>::fmt_format_value(format_target &buf) const
 	buf.push_back(')');
 }
 
-template<>
+template <>
 void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target &buf) const
 {
 	const Vehicle *v = this->value;
@@ -108,7 +108,7 @@ void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target 
 	}
 }
 
-template<>
+template <>
 void GeneralFmtDumper<BaseStation, const BaseStation *>::fmt_format_value(format_target &buf) const
 {
 	const BaseStation *st = this->value;
@@ -133,13 +133,13 @@ void GeneralFmtDumper<BaseStation, const BaseStation *>::fmt_format_value(format
 	}
 }
 
-template<>
+template <>
 void GeneralFmtDumper<DumpTileInfoTag, TileIndex>::fmt_format_value(format_target &output) const
 {
 	DumpTileInfo(output, this->value);
 }
 
-template<>
+template <>
 void GeneralFmtDumper<Window, const struct Window *>::fmt_format_value(format_target &output) const
 {
 	DumpWindowInfo(output, this->value);

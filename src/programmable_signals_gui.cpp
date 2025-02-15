@@ -890,16 +890,14 @@ private:
 				right_sel->SetDisplayedPlane(DPR_COND_VALUE);
 
 				this->EnableWidget(PROGRAM_WIDGET_COND_VARIABLE);
-				this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_VARIABLE)->widget_data =
-						_program_condvar[i->condition->ConditionCode()];
+				this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_VARIABLE)->SetString(_program_condvar[i->condition->ConditionCode()]);
 
 				if (IsConditionComparator(i->condition)) {
 					SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(i->condition);
 					this->EnableWidget(PROGRAM_WIDGET_COND_COMPARATOR);
 					this->EnableWidget(PROGRAM_WIDGET_COND_VALUE);
 
-					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_COMPARATOR)->widget_data =
-						_program_comparator[vc->comparator];
+					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_COMPARATOR)->SetString(_program_comparator[vc->comparator]);
 
 				} else if (i->condition->ConditionCode() == PSC_SIGNAL_STATE) {
 					this->EnableWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
@@ -910,12 +908,12 @@ private:
 
 				if (i->condition->ConditionCode() == PSC_SLOT_OCC || i->condition->ConditionCode() == PSC_SLOT_OCC_REM) {
 					SignalSlotCondition *scc = static_cast<SignalSlotCondition*>(i->condition);
-					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_SLOT)->widget_data = scc->IsSlotValid() ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_SLOT)->SetString(scc->IsSlotValid() ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					aux_sel->SetDisplayedPlane(DPA_SLOT);
 				}
 				if (i->condition->ConditionCode() == PSC_COUNTER) {
 					SignalCounterCondition *scc = static_cast<SignalCounterCondition*>(i->condition);
-					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_COUNTER)->widget_data = scc->IsCounterValid() ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_COUNTER)->SetString(scc->IsCounterValid() ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					aux_sel->SetDisplayedPlane(DPA_COUNTER);
 				}
 			} break;
@@ -924,8 +922,7 @@ private:
 				SignalSet *s = static_cast<SignalSet*>(insn);
 				left_sel->SetDisplayedPlane(DPL_SET_STATE);
 				this->SetWidgetDisabledState(PROGRAM_WIDGET_SET_STATE, false);
-				this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_SET_STATE)->widget_data =
-						_program_sigstate[s->to_state];
+				this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_SET_STATE)->SetString(_program_sigstate[s->to_state]);
 			} break;
 
 			case PSO_FIRST:
@@ -963,7 +960,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, PROGRAM_WIDGET_CAPTION), SetDataTip(STR_PROGSIG_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, PROGRAM_WIDGET_CAPTION), SetStringTip(STR_PROGSIG_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -971,7 +968,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 	// Program display
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, PROGRAM_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_NULL), SetResize(1, 1), EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY, PROGRAM_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetResize(1, 1), EndContainer(),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, PROGRAM_WIDGET_SCROLLBAR),
 	EndContainer(),
 
@@ -980,46 +977,46 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_LEFT),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_VARIABLE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_PROGSIG_COND_VARIABLE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_PROGSIG_COND_VARIABLE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_SET_STATE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_PROGSIG_SIGNAL_STATE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_PROGSIG_SIGNAL_STATE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_AUX),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_PROGSIG_COND_SLOT_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_PROGSIG_COND_SLOT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_PROGSIG_COND_COUNTER_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_PROGSIG_COND_COUNTER_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_MIDDLE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_PROGSIG_COND_COMPARATOR_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_PROGSIG_COND_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COND_GOTO_SIGNAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_PROGSIG_GOTO_SIGNAL, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_PROGSIG_GOTO_SIGNAL, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_JUST_COMMA, STR_PROGSIG_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_JUST_COMMA, STR_PROGSIG_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COND_SET_SIGNAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_PROGSIG_COND_SET_SIGNAL, STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_PROGSIG_COND_SET_SIGNAL, STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, PROGRAM_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetDataTip(SPR_ARROW_RIGHT, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, PROGRAM_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetSpriteTip(SPR_ARROW_RIGHT, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP),
 	EndContainer(),
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_PROGSIG_INSERT, STR_PROGSIG_INSERT_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_PROGSIG_INSERT, STR_PROGSIG_INSERT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE), SetMinimalSize(186, 12), SetFill(1, 0),
-														SetDataTip(STR_PROGSIG_REMOVE, STR_PROGSIG_REMOVE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_PROGSIG_REMOVE, STR_PROGSIG_REMOVE_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 
 	/* Third button row*/
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetDataTip(STR_PROGSIG_REMOVE_PROGRAM, STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP), SetResize(1, 0),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COPY_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetDataTip(STR_PROGSIG_COPY_PROGRAM, STR_PROGSIG_COPY_PROGRAM_TOOLTIP), SetResize(1, 0),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetStringTip(STR_PROGSIG_REMOVE_PROGRAM, STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP), SetResize(1, 0),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COPY_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetStringTip(STR_PROGSIG_COPY_PROGRAM, STR_PROGSIG_COPY_PROGRAM_TOOLTIP), SetResize(1, 0),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };

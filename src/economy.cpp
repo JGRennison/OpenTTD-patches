@@ -1633,7 +1633,7 @@ static uint GetLoadAmount(Vehicle *v)
  * @param ignore_multihead_rear Don't call action on multihead rear.
  * @return false if any of the action invocations returned false, true otherwise.
  */
-template<class Taction>
+template <class Taction>
 bool IterateVehicleParts(Vehicle *v, Taction action, bool ignore_multihead_rear = false)
 {
 	for (Vehicle *w = v; w != nullptr;

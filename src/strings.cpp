@@ -233,7 +233,7 @@ const char *GetStringPtr(StringID string)
 		case TEXT_TAB_OLD_NEWGRF: NOT_REACHED();
 		case TEXT_TAB_NEWGRF_START: return GetGRFStringPtr(GetStringIndex(string));
 		default: {
-			const uint offset = _langpack.langtab_start[GetStringTab(string)] + GetStringIndex(string);
+			const size_t offset = _langpack.langtab_start[GetStringTab(string)] + GetStringIndex(string).base();
 			if (offset < _langpack.offsets.size()) return _langpack.offsets[offset];
 			return nullptr;
 		}
@@ -255,24 +255,24 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 		return;
 	}
 
-	uint index = GetStringIndex(string);
+	StringIndexInTab index = GetStringIndex(string);
 	StringTab tab = GetStringTab(string);
 
 	switch (tab) {
 		case TEXT_TAB_TOWN:
 			if (index >= 0xC0 && !game_script) {
-				GetSpecialTownNameString(builder, index - 0xC0, args.GetNextParameter<uint32_t>());
+				GetSpecialTownNameString(builder, index.base() - 0xC0, args.GetNextParameter<uint32_t>());
 				return;
 			}
 			break;
 
 		case TEXT_TAB_SPECIAL:
 			if (index >= 0xE4 && !game_script) {
-				GetSpecialNameString(builder, index - 0xE4, args);
+				GetSpecialNameString(builder, index.base() - 0xE4, args);
 				return;
 			}
 			if (index < lengthof(_temp_special_strings) && !game_script) {
-				FormatString(builder, _temp_special_strings[index].c_str(), args, case_index);
+				FormatString(builder, _temp_special_strings[index.base()].c_str(), args, case_index);
 				return;
 			}
 			break;
@@ -533,7 +533,7 @@ static void FormatYmdString(StringBuilder builder, CalTime::Date date, uint case
 {
 	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
 
-	auto tmp_params = MakeParameters(ymd.day + STR_DAY_NUMBER_1ST - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year);
+	auto tmp_params = MakeParameters(STR_DAY_NUMBER_1ST + ymd.day - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year);
 	FormatString(builder, GetStringPtr(STR_FORMAT_DATE_LONG), tmp_params, case_index);
 }
 
@@ -1252,7 +1252,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					ArrayStringParameters<20> sub_args;
 
 					char *p;
-					uint32_t stringid = std::strtoul(str, &p, 16);
+					StringIndexInTab stringid(std::strtoul(str, &p, 16));
 					if (*p != ':' && *p != '\0') {
 						while (*p != '\0') p++;
 						str = p;
@@ -1313,7 +1313,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 									builder += "(invalid sub-StringID)";
 									break;
 								}
-								param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, param);
+								param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, StringIndexInTab(param));
 							}
 
 							sub_args.SetParam(i++, param);
@@ -1898,7 +1898,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 							StartTextRefStackUsage(grffile, 6);
 							ArrayStringParameters<6> tmp_params;
-							GetStringWithArgs(builder, GetGRFStringID(grffile, 0xD000 + callback), tmp_params);
+							GetStringWithArgs(builder, GetGRFStringID(grffile, GRFSTR_MISC_GRF_TEXT + callback), tmp_params);
 							StopTextRefStackUsage();
 
 							break;

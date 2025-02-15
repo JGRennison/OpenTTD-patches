@@ -3391,8 +3391,7 @@ private:
 
 		const TraceRestrictProgram *prog = this->GetProgram();
 
-		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->widget_data =
-				(prog != nullptr && prog->refcount > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION;
+		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->SetString((prog != nullptr && prog->refcount > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION);
 
 		this->SetWidgetDisabledState(TR_WIDGET_HIGHLIGHT, prog == nullptr);
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
@@ -3465,7 +3464,7 @@ private:
 					/* Setup condflags dropdown to show else */
 					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
 					this->EnableWidget(TR_WIDGET_CONDFLAGS);
-					this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ELSE;
+					this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->SetString(STR_TRACE_RESTRICT_CONDITIONAL_ELSE);
 				}
 			} else {
 				TraceRestrictTypePropertySet properties = GetTraceRestrictTypeProperties(item);
@@ -3482,16 +3481,16 @@ private:
 					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
 					switch (GetTraceRestrictCondFlags(item)) {
 						case TRCF_DEFAULT:                            // opening if, leave disabled
-							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_IF;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->SetString(STR_TRACE_RESTRICT_CONDITIONAL_IF);
 							break;
 
 						case TRCF_ELSE:                               // else-if
-							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ELIF;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->SetString(STR_TRACE_RESTRICT_CONDITIONAL_ELIF);
 							this->EnableWidget(TR_WIDGET_CONDFLAGS);
 							break;
 
 						case TRCF_OR:                                 // or-if
-							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ORIF;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->SetString(STR_TRACE_RESTRICT_CONDITIONAL_ORIF);
 							this->EnableWidget(TR_WIDGET_CONDFLAGS);
 							break;
 
@@ -3505,8 +3504,7 @@ private:
 				}
 				this->EnableWidget(type_widget);
 
-				this->GetWidget<NWidgetCore>(type_widget)->widget_data =
-						GetTypeString(item);
+				this->GetWidget<NWidgetCore>(type_widget)->SetString(GetTypeString(item));
 
 				if (properties.cond_type == TRCOT_BINARY || properties.cond_type == TRCOT_ALL) {
 					middle_sel->SetDisplayedPlane(DPM_COMPARATOR);
@@ -3515,8 +3513,7 @@ private:
 					const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(properties);
 
 					if (list_set) {
-						this->GetWidget<NWidgetCore>(TR_WIDGET_COMPARATOR)->widget_data =
-								GetDropDownStringByValue(list_set, GetTraceRestrictCondOp(item));
+						this->GetWidget<NWidgetCore>(TR_WIDGET_COMPARATOR)->SetString(GetDropDownStringByValue(list_set, GetTraceRestrictCondOp(item)));
 					}
 				}
 
@@ -3531,8 +3528,7 @@ private:
 						case TRVT_DENY:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_PF_ALLOW : STR_TRACE_RESTRICT_PF_DENY;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_PF_ALLOW : STR_TRACE_RESTRICT_PF_DENY);
 							break;
 
 						case TRVT_ORDER:
@@ -3543,15 +3539,13 @@ private:
 						case TRVT_CARGO_ID:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetCargoStringByID(GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetCargoStringByID(GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_DIRECTION:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_TILE_INDEX:
@@ -3573,32 +3567,29 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							if (GetTraceRestrictAuxField(item) == TRPPAF_VALUE) {
-								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_JUST_COMMA;
+								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_JUST_COMMA);
 							} else {
-								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-										GetDropDownStringByValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item));
+								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item)));
 							}
 							break;
 
 						case TRVT_RESERVE_THROUGH:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH);
 							break;
 
 						case TRVT_LONG_RESERVE:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_long_reserve_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_long_reserve_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_WAIT_AT_PBS:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_wait_at_pbs_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_wait_at_pbs_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_GROUP_INDEX:
@@ -3606,15 +3597,15 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_GROUP:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
 								case DEFAULT_GROUP:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_GROUP_DEFAULT_TRAINS;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_GROUP_DEFAULT_TRAINS);
 									break;
 
 								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_GROUP_NAME;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_GROUP_NAME);
 									break;
 							}
 							break;
@@ -3622,7 +3613,7 @@ private:
 						case TRVT_OWNER:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_COMPANY;
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_COMPANY);
 							break;
 
 						case TRVT_SLOT_INDEX: {
@@ -3633,15 +3624,14 @@ private:
 							}
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 
-							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->widget_data =
-									GetDropDownStringByValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->SetString(GetDropDownStringByValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item)));
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_SLOT_ID:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
 								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_SLOT_NAME;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_NAME);
 									break;
 							}
 							break;
@@ -3655,11 +3645,11 @@ private:
 
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_SLOT_ID:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
 								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_SLOT_NAME;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_NAME);
 									break;
 							}
 							break;
@@ -3668,22 +3658,19 @@ private:
 						case TRVT_TRAIN_STATUS:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_train_status_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_train_status_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_REVERSE:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_reverse_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_reverse_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_NEWS_CONTROL:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_news_control_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_news_control_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_COUNTER_INDEX_INT: {
@@ -3693,18 +3680,17 @@ private:
 							if (!IsTraceRestrictConditional(item)) {
 								left_sel->SetDisplayedPlane(DPL_COUNTER_OP);
 								this->EnableWidget(TR_WIDGET_COUNTER_OP);
-								this->GetWidget<NWidgetCore>(TR_WIDGET_COUNTER_OP)->widget_data =
-										GetDropDownStringByValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item));
+								this->GetWidget<NWidgetCore>(TR_WIDGET_COUNTER_OP)->SetString(GetDropDownStringByValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item)));
 							}
 							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_COUNTER_ID:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
 								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_COUNTER_NAME;
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_COUNTER_NAME);
 									break;
 							}
 							break;
@@ -3715,36 +3701,32 @@ private:
 							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_INT);
 							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_SHORT + GetTraceRestrictValue(item);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_TIME_MINUTE_SHORT + GetTraceRestrictValue(item));
 							break;
 						}
 
 						case TRVT_ENGINE_CLASS:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_PF_PENALTY_CONTROL:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_pf_penalty_control_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_pf_penalty_control_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_SPEED_ADAPTATION_CONTROL:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_speed_adaptation_control_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_speed_adaptation_control_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_SIGNAL_MODE_CONTROL:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_signal_mode_control_value, GetTraceRestrictValue(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_signal_mode_control_value, GetTraceRestrictValue(item)));
 							break;
 
 						case TRVT_ORDER_TARGET_DIAGDIR:
@@ -3752,10 +3734,8 @@ private:
 							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_diagdir_value, GetTraceRestrictValue(item));
-							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data =
-									GetDropDownStringByValue(&_target_direction_aux_value, GetTraceRestrictAuxField(item));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_diagdir_value, GetTraceRestrictValue(item)));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(GetDropDownStringByValue(&_target_direction_aux_value, GetTraceRestrictAuxField(item)));
 							break;
 
 						default:
@@ -3894,97 +3874,97 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 	/* Title bar */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION), SetDataTip(STR_TRACE_RESTRICT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION), SetStringTip(STR_TRACE_RESTRICT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_HIGHLIGHT), SetAspect(1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_HIGHLIGHT), SetAspect(1), SetSpriteTip(SPR_SHARED_ORDERS_ICON, STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 
 	/* Program display */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP),
+		NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetToolTip(STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP),
 				SetResize(1, 1), SetScrollbar(TR_WIDGET_SCROLLBAR), EndContainer(),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TR_WIDGET_SCROLLBAR),
 	EndContainer(),
 
 	/* Button Bar */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_UP_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetDataTip(SPR_ARROW_UP, STR_TRACE_RESTRICT_UP_BTN_TOOLTIP),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_DOWN_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetDataTip(SPR_ARROW_DOWN, STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_UP_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetSpriteTip(SPR_ARROW_UP, STR_TRACE_RESTRICT_UP_BTN_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_DOWN_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetSpriteTip(SPR_ARROW_DOWN, STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT_2),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_NONCOND), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_CONDFLAGS), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_L2), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_COND), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_COUNTER_OP), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_L), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT_AUX),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_LEFT_AUX_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_MIDDLE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_SLOT_OP), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_M), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SELECT_TARGET, STR_TRACE_RESTRICT_SELECT_TARGET), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_SELECT_TARGET, STR_TRACE_RESTRICT_SELECT_TARGET), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_SIGNAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SELECT_SIGNAL, STR_TRACE_RESTRICT_SELECT_SIGNAL), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_SELECT_SIGNAL, STR_TRACE_RESTRICT_SELECT_SIGNAL), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_TILE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SELECT_TILE, STR_TRACE_RESTRICT_SELECT_TILE), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_SELECT_TILE, STR_TRACE_RESTRICT_SELECT_TILE), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_R), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetDataTip(SPR_GOTO_LOCATION, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
 	EndContainer(),
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_INSERT, STR_TRACE_RESTRICT_INSERT_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_INSERT, STR_TRACE_RESTRICT_INSERT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_REMOVE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_REMOVE, STR_TRACE_RESTRICT_REMOVE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_REMOVE, STR_TRACE_RESTRICT_REMOVE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_RESET), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_RESET, STR_TRACE_RESTRICT_RESET_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_RESET, STR_TRACE_RESTRICT_RESET_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_COPY),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_COPY), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_COPY, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_COPY, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_COPY_APPEND), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_APPEND, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_APPEND, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_DUPLICATE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_DUPLICATE, STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_DUPLICATE, STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_SHARE),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SHARE, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_SHARE, STR_NULL), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_UNSHARE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_UNSHARE, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_UNSHARE, STR_NULL), SetResize(1, 0),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE_ONTO), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_TRACE_RESTRICT_SHARE_ONTO, STR_NULL), SetResize(1, 0),
+														SetStringTip(STR_TRACE_RESTRICT_SHARE_ONTO, STR_NULL), SetResize(1, 0),
 				EndContainer(),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -4036,7 +4016,7 @@ enum TraceRestrictSlotWindowWidgets {
 static constexpr NWidgetPart _nested_slot_widgets[] = {
 	NWidget(NWID_HORIZONTAL), // Window header
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRSL_CAPTION), SetDataTip(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRSL_CAPTION), SetStringTip(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_NULL),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -4053,31 +4033,31 @@ static constexpr NWidgetPart _nested_slot_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_CREATE_SLOT), SetFill(0, 1),
-						SetDataTip(SPR_GROUP_CREATE_TRAIN, STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP),
+						SetToolTip(STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_DELETE_SLOT), SetFill(0, 1),
-						SetDataTip(SPR_GROUP_DELETE_TRAIN, STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP),
+						SetToolTip(STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_RENAME_SLOT), SetFill(0, 1),
-						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP),
+						SetToolTip(STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_NEW_GROUP), SetFill(0, 1),
-						SetDataTip(STR_TRACE_RESTRICT_NEW_SLOT_GROUP, STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP),
+						SetStringTip(STR_TRACE_RESTRICT_NEW_SLOT_GROUP, STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_COLLAPSE_ALL_GROUPS), SetFill(0, 1),
-						SetDataTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+						SetStringTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_EXPAND_ALL_GROUPS), SetFill(0, 1),
-						SetDataTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
+						SetStringTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
 				NWidget(WWT_IMGBTN, COLOUR_GREY, WID_TRSL_SLOT_PUBLIC), SetFill(0, 1),
-						SetDataTip(SPR_IMG_GOAL, STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP),
+						SetSpriteTip(SPR_IMG_GOAL, STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TRSL_SET_SLOT_MAX_OCCUPANCY), SetFill(0, 1),
-						SetDataTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP),
+						SetSpriteTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP),
 			EndContainer(),
 		EndContainer(),
 		/* right part */
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TRSL_FILTER_BY_CARGO_SEL),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetStringTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
 				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
@@ -4395,10 +4375,10 @@ public:
 		this->slots.NeedResort();
 		this->BuildSlotList(vli.company);
 
-		this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data += this->vli.vtype;
-		this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data += this->vli.vtype;
-		this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data += this->vli.vtype;
-		this->GetWidget<NWidgetCore>(WID_TRSL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
+		this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->SetSprite(SPR_GROUP_CREATE_TRAIN + this->vli.vtype);
+		this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->SetSprite(SPR_GROUP_RENAME_TRAIN + this->vli.vtype);
+		this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->SetSprite(SPR_GROUP_DELETE_TRAIN + this->vli.vtype);
+		this->GetWidget<NWidgetCore>(WID_TRSL_LIST_VEHICLE)->SetToolTip(STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype);
 
 		this->FinishInitNested(window_number);
 		this->owner = vli.company;
@@ -4421,11 +4401,11 @@ public:
 				size.height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
 
 				/* ... minus the buttons at the bottom ... */
-				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
-				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data).height);
-				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data).height);
-				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SLOT_PUBLIC)->widget_data).height);
-				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
+				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data.sprite).height;
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data.sprite).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data.sprite).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SLOT_PUBLIC)->widget_data.sprite).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data.sprite).height);
 
 				/* Get a multiple of tiny_step_height of that amount */
 				size.height = Ceil(size.height - max_icon_height, tiny_step_height);
@@ -4438,7 +4418,7 @@ public:
 				break;
 
 			case WID_TRSL_SORT_BY_ORDER: {
-				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
+				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->GetString());
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -4527,9 +4507,9 @@ public:
 				WID_TRSL_CREATE_SLOT, WID_TRSL_NEW_GROUP);
 
 		/* Set text of sort by dropdown */
-		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
+		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->SetString(this->GetVehicleSorterNames()[this->vehgroups.SortType()]);
 
-		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->GetCargoFilterLabel(this->cargo_filter_criteria);
+		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->SetString(this->GetCargoFilterLabel(this->cargo_filter_criteria));
 
 		this->DrawWidgets();
 	}
@@ -5041,7 +5021,7 @@ enum TraceRestrictCounterWindowWidgets {
 static constexpr NWidgetPart _nested_counter_widgets[] = {
 	NWidget(NWID_HORIZONTAL), // Window header
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRCL_CAPTION), SetDataTip(STR_TRACE_RESTRICT_COUNTER_CAPTION, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRCL_CAPTION), SetStringTip(STR_TRACE_RESTRICT_COUNTER_CAPTION, STR_NULL),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -5054,15 +5034,15 @@ static constexpr NWidgetPart _nested_counter_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_CREATE_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
-					SetDataTip(STR_TRACE_RESTRICT_COUNTER_CREATE, STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP),
+					SetStringTip(STR_TRACE_RESTRICT_COUNTER_CREATE, STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_DELETE_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
-					SetDataTip(STR_TRACE_RESTRICT_COUNTER_DELETE, STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP),
+					SetStringTip(STR_TRACE_RESTRICT_COUNTER_DELETE, STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_RENAME_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
-					SetDataTip(STR_TRACE_RESTRICT_COUNTER_RENAME, STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP),
+					SetStringTip(STR_TRACE_RESTRICT_COUNTER_RENAME, STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_TRCL_COUNTER_PUBLIC), SetMinimalSize(75, 12), SetFill(1, 0),
-					SetDataTip(STR_TRACE_RESTRICT_COUNTER_PUBLIC, STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP),
+					SetStringTip(STR_TRACE_RESTRICT_COUNTER_PUBLIC, STR_TRACE_RESTRICT_COUNTER_PUBLIC_TOOLTIP),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_SET_COUNTER_VALUE), SetMinimalSize(75, 12), SetFill(1, 0),
-					SetDataTip(STR_TRACE_RESTRICT_COUNTER_SET_VALUE, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP),
+					SetStringTip(STR_TRACE_RESTRICT_COUNTER_SET_VALUE, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
 	EndContainer(),

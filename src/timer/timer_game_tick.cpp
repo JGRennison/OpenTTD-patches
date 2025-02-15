@@ -16,7 +16,7 @@
 
 #include "../safeguards.h"
 
-template<>
+template <>
 void IntervalTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 {
 	if (this->period.value == 0) return;
@@ -34,7 +34,7 @@ void IntervalTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 	}
 }
 
-template<>
+template <>
 void TimeoutTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 {
 	if (this->fired) return;
@@ -48,7 +48,7 @@ void TimeoutTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 	}
 }
 
-template<>
+template <>
 void TimerManager<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 {
 	for (auto timer : TimerManager<TimerGameTick>::GetTimerVector()) {
@@ -57,7 +57,7 @@ void TimerManager<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 }
 
 #ifdef WITH_ASSERT
-template<>
+template <>
 void TimerManager<TimerGameTick>::Validate(TimerGameTick::TPeriod period)
 {
 	if (period.priority == TimerGameTick::Priority::NONE) return;

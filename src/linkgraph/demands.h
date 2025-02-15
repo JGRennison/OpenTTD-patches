@@ -19,10 +19,10 @@ private:
 	int32_t mod_dist;      ///< Distance modifier, determines how much demands decrease with distance.
 	int32_t accuracy;      ///< Accuracy of the calculation.
 
-	template<class Tscaler>
+	template <class Tscaler>
 	void CalcDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler);
 
-	template<class Tscaler>
+	template <class Tscaler>
 	void CalcMinimisedDistanceDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler);
 };
 

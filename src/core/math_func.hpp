@@ -417,7 +417,7 @@ constexpr uint64_t PowerOfTen(int power)
 /**
  * Unsigned saturating add.
  */
-template<typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
+template <typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
 constexpr inline T SaturatingAdd(T a, T b)
 {
 #ifdef WITH_OVERFLOW_BUILTINS
@@ -436,7 +436,7 @@ constexpr inline T SaturatingAdd(T a, T b)
 /**
  * Return number of base 10 digits required for an unsigned value.
  */
-template<typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
+template <typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
 constexpr inline uint GetBase10DigitsRequired(T x)
 {
 	if (sizeof(T) <= sizeof(uint32_t) || x <= UINT32_MAX) {

@@ -453,7 +453,7 @@ void VehicleCargoList::Append(CargoPacket *cp, MoveToAction action)
  *                 will be kept and the loop will be aborted.
  * @param action Action instance to be applied.
  */
-template<class Taction>
+template <class Taction>
 void VehicleCargoList::ShiftCargo(Taction action)
 {
 	Iterator it(this->packets.begin());
@@ -477,7 +477,7 @@ void VehicleCargoList::ShiftCargo(Taction action)
  * @param action Action instance to be applied.
  * @param filter Cargo packet filter.
  */
-template<class Taction, class Tfilter>
+template <class Taction, class Tfilter>
 void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action, Tfilter filter)
 {
 	std::vector<CargoPacket *> packets_to_front_insert;
@@ -509,7 +509,7 @@ void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action, Tfilter filter)
  *                 will be kept and the loop will be aborted.
  * @param action Action instance to be applied.
  */
-template<class Taction>
+template <class Taction>
 void VehicleCargoList::PopCargo(Taction action)
 {
 	if (this->packets.empty()) return;
@@ -759,7 +759,7 @@ void VehicleCargoList::InvalidateCache()
  * @param max_move Maximum amount of cargo to reassign.
  * @return Amount of cargo actually reassigned.
  */
-template<VehicleCargoList::MoveToAction Tfrom, VehicleCargoList::MoveToAction Tto>
+template <VehicleCargoList::MoveToAction Tfrom, VehicleCargoList::MoveToAction Tto>
 uint VehicleCargoList::Reassign(uint max_move)
 {
 	static_assert(Tfrom != MTA_TRANSFER && Tto != MTA_TRANSFER);
@@ -776,7 +776,7 @@ uint VehicleCargoList::Reassign(uint max_move)
  * @param max_move Maximum amount of cargo to reassign.
  * @return Amount of cargo actually reassigned.
  */
-template<>
+template <>
 uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_TRANSFER>(uint max_move)
 {
 	max_move = std::min(this->action_counts[MTA_DELIVER], max_move);

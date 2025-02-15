@@ -35,23 +35,23 @@
 static constexpr NWidgetPart _nested_plans_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_PLN_CAPTION), SetDataTip(STR_PLANS_CAPTION, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_PLN_CAPTION), SetStringTip(STR_PLANS_CAPTION, STR_NULL),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_SORT_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_OWN_ONLY), SetDataTip(STR_PLANS_OWN_ONLY, STR_PLANS_OWN_ONLY_TOOLTIP),
-		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_PLN_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_SORT_ORDER), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetStringTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_OWN_ONLY), SetStringTip(STR_PLANS_OWN_ONLY, STR_PLANS_OWN_ONLY_TOOLTIP),
+		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_PLN_FILTER), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_INSET, COLOUR_GREY, WID_PLN_LIST), SetFill(1, 1), SetPadding(2, 1, 2, 2), SetResize(1, 0), SetScrollbar(WID_PLN_SCROLLBAR), SetDataTip(STR_NULL, STR_PLANS_LIST_TOOLTIP),
+				NWidget(WWT_INSET, COLOUR_GREY, WID_PLN_LIST), SetFill(1, 1), SetPadding(2, 1, 2, 2), SetResize(1, 0), SetScrollbar(WID_PLN_SCROLLBAR), SetToolTip(STR_PLANS_LIST_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
@@ -61,18 +61,18 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_NEW), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_NEW_PLAN, STR_PLANS_NEW_PLAN_TOOLTIP),
-				NWidget(WWT_TEXTBTN_2, COLOUR_GREY, WID_PLN_ADD_LINES), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_ADD_LINES, STR_PLANS_ADD_LINES_TOOLTIP),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_VISIBILITY), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_VISIBILITY_PUBLIC, STR_PLANS_VISIBILITY_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_COLOUR), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_PLANS_COLOUR_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_NEW), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_NEW_PLAN, STR_PLANS_NEW_PLAN_TOOLTIP),
+				NWidget(WWT_TEXTBTN_2, COLOUR_GREY, WID_PLN_ADD_LINES), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_ADD_LINES, STR_PLANS_ADD_LINES_TOOLTIP),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_VISIBILITY), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_VISIBILITY_PUBLIC, STR_PLANS_VISIBILITY_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_COLOUR), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_JUST_STRING, STR_PLANS_COLOUR_TOOLTIP),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_HIDE_ALL_SEL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_HIDE_ALL, STR_PLANS_HIDE_ALL_TOOLTIP),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_HIDE_ALL, STR_PLANS_HIDE_ALL_TOOLTIP),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
 				EndContainer(),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_DELETE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_DELETE, STR_PLANS_DELETE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_DELETE), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_DELETE, STR_PLANS_DELETE_TOOLTIP),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_RENAME_SEL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_RENAME), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_NULL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_TAKE_OWNERSHIP), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_TAKE_OWNERSHIP, STR_PLANS_TAKE_OWNERSHIP_TOOLTIP),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_RENAME), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_TAKE_OWNERSHIP), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_TAKE_OWNERSHIP, STR_PLANS_TAKE_OWNERSHIP_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -437,7 +437,7 @@ public:
 		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
 		if (_current_plan != nullptr) {
 			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR);
-			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->widget_data = _current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC;
+			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->SetString(_current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC);
 			this->SetWidgetDisabledState(WID_PLN_TAKE_OWNERSHIP, Company::IsValidID(_current_plan->owner) || IsNonAdminNetworkClient());
 			this->rename_sel->SetDisplayedPlane(Company::IsValidID(_current_plan->owner) || !Company::IsValidID(_current_company) ? 0 : 1);
 		} else {
@@ -527,7 +527,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_SORT_ORDER: {
-				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
+				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->GetString());
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				size = maxdim(size, d);

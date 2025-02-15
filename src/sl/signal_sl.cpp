@@ -220,7 +220,7 @@ struct Fixup {
 
 typedef std::vector<Fixup> FixupList;
 
-template<typename T>
+template <typename T>
 static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVALID)
 {
 	ir = reinterpret_cast<T*>((size_t)id);
