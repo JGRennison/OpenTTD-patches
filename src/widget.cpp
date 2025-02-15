@@ -1221,15 +1221,6 @@ void NWidgetCore::SetAlignment(StringAlignment align)
 	this->align = align;
 }
 
-/**
- * Get the string that has been set for this nested widget.
- * @return The string.
- */
-StringID NWidgetCore::GetString() const
-{
-	return this->widget_data.string;
-}
-
 void NWidgetCore::FillWidgetLookup(WidgetLookup &widget_lookup)
 {
 	if (this->index >= 0) widget_lookup[this->index] = this;

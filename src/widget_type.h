@@ -402,7 +402,8 @@ public:
 	void SetTextStyle(TextColour colour, FontSize size);
 	void SetAlignment(StringAlignment align);
 
-	StringID GetString() const;
+	inline StringID GetString() const;
+	inline SpriteID GetSprite() const;
 
 	inline void SetLowered(bool lowered);
 	inline bool IsLowered() const;
@@ -429,6 +430,24 @@ public:
 	FontSize text_size;        ///< Size of text within widget.
 	StringAlignment align;     ///< Alignment of text/image within widget.
 };
+
+/**
+ * Get the string that has been set for this nested widget.
+ * @return The string.
+ */
+inline StringID NWidgetCore::GetString() const
+{
+	return this->widget_data.string;
+}
+
+/**
+ * Get the sprite that has been set for this nested widget.
+ * @return The sprite.
+ */
+inline SpriteID NWidgetCore::GetSprite() const
+{
+	return this->widget_data.sprite;
+}
 
 /**
  * Highlight the widget or not.
