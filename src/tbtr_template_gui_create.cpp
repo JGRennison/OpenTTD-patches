@@ -144,7 +144,7 @@ public:
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
 		this->FinishInitNested(VEH_TRAIN);
 		/* a sprite */
-		this->GetWidget<NWidgetCore>(TCW_SELL_TMPL)->SetString(SPR_SELL_TRAIN);
+		this->GetWidget<NWidgetCore>(TCW_SELL_TMPL)->SetSprite(SPR_SELL_TRAIN);
 
 		this->owner = _local_company;
 
