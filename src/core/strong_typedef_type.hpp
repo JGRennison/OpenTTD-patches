@@ -282,11 +282,11 @@ namespace StrongType {
 	 * Templated helper to make a type-safe 'typedef' representing a single POD value.
 	 * A normal 'typedef' is not distinct from its base type and will be treated as
 	 * identical in many contexts. This class provides a distinct type that can still
-	 * be assign from and compared to values of its base type.
+	 * be assigned from and compared to values of its base type.
 	 *
 	 * Example usage:
 	 *
-	 *   using MyType = StrongType::Typedef<int, struct MyTypeTag, StrongType::Explicit, StrongType::Compare, StrongType::Integer>;
+	 *   using MyType = StrongType::Typedef<int, struct MyTypeTag, StrongType::Compare, StrongType::Integer>;
 	 *
 	 * @tparam TBaseType Type of the derived class (i.e. the concrete usage of this class).
 	 * @tparam TTag An unique struct to keep types of the same TBaseType distinct.
@@ -324,6 +324,58 @@ namespace StrongType {
 	protected:
 #endif /* __clang__ */
 		TBaseType value{};
+	};
+
+	/**
+	 * Templated helper to make a type-safe reference wrapper type over the base type.
+	 * A normal 'typedef' is not distinct from its base type and will be treated as
+	 * identical in many contexts. This class provides a distinct type that can still
+	 * be assigned from and compared to values of its base type.
+	 *
+	 * Example usage:
+	 *
+	 *   using MyType = StrongType::Typedef<int, struct MyTypeTag, StrongType::Compare, StrongType::Integer>;
+	 *   using MyTypeBaseRef = StrongType::BaseRefTypedef<MyType, StrongType::Compare, StrongType::Integer>;
+	 *
+	 * @tparam TTypedef Corresponding StrongType::Typedef.
+	 * @tparam TProperties A list of mixins to add to the class.
+	 */
+	template <typename TTypedef, typename... TProperties>
+	struct EMPTY_BASES BaseRefTypedef : public StrongTypedefBase, public TProperties::template mixin<BaseRefTypedef<TTypedef, TProperties...>, typename TTypedef::BaseType>... {
+		using ValueType = TTypedef;
+		using BaseType = typename TTypedef::BaseType;
+
+		constexpr BaseRefTypedef(BaseRefTypedef &) = default;
+		constexpr BaseRefTypedef(ValueType &target) : value(target.edit_base()) {}
+
+		explicit constexpr BaseRefTypedef(BaseType &value) : value(value) {}
+
+		constexpr BaseRefTypedef &operator =(const BaseRefTypedef &rhs) { this->value = rhs.value; return *this; }
+		constexpr BaseRefTypedef &operator =(BaseRefTypedef &&rhs) { this->value = std::move(rhs.value); return *this; }
+		constexpr BaseRefTypedef &operator =(const ValueType &rhs) { this->value = rhs.base(); return *this; }
+		constexpr BaseRefTypedef &operator =(ValueType &&rhs) { this->value = std::move(rhs.edit_base()); return *this; }
+
+		constexpr operator ValueType() const { return ValueType{this->value}; }
+
+		/* Only allow conversion to BaseType via method. */
+		constexpr BaseType base() const { return this->value; }
+		constexpr BaseType &edit_base() { return this->value; }
+
+		/* Only allow TProperties classes access to the internal value. Everyone else needs to call .base(). */
+		friend struct Compare;
+		friend struct Integer;
+		friend struct IntegerScalable;
+		template <typename TDeltaType> friend struct IntegerDelta;
+		template <typename TCompatibleType> friend struct Compatible;
+
+/* GCC / MSVC don't pick up on the "friend struct" above, where CLang does.
+ * As in our CI we compile for all three targets, it is sufficient to have one
+ * that errors on this; but nobody should be using "value" directly. Instead,
+ * use base() to convert to the base type. */
+#ifdef __clang__
+	protected:
+#endif /* __clang__ */
+		BaseType &value;
 	};
 }
 
