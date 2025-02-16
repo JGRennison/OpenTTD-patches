@@ -96,7 +96,10 @@ extern TraceRestrictMapping _tracerestrictprogram_mapping;
 
 void ClearTraceRestrictMapping();
 
-/** Type of a single instruction, this is bit-packed as per TraceRestrictItemFlagAllocation */
+/**
+ * Type of a single instruction item, instructions are bit-packed as per TraceRestrictItemFlagAllocation.
+ * Some instruction types (see: IsTraceRestrictDoubleItem) have an extra free-form item in the next slot.
+ */
 typedef uint32_t TraceRestrictItem;
 
 /**
@@ -447,6 +450,108 @@ enum TraceRestrictPathfinderPenaltyPresetIndex : uint8_t {
 };
 
 /**
+ * Type to hold a complete instruction, including the optional second item.
+ * The second item is 0 if unused.
+ * Not used for instruction storage.
+ */
+struct TraceRestrictInstructionRecord {
+	TraceRestrictItem instruction = 0;
+	uint32_t secondary = 0;
+};
+
+/** Get TraceRestrictItem type field */
+inline TraceRestrictItemType GetTraceRestrictType(TraceRestrictItem item)
+{
+	return static_cast<TraceRestrictItemType>(GB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT));
+}
+
+/** Get TraceRestrictItem condition flags field */
+inline TraceRestrictCondFlags GetTraceRestrictCondFlags(TraceRestrictItem item)
+{
+	return static_cast<TraceRestrictCondFlags>(GB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT));
+}
+
+/** Get TraceRestrictItem condition operator field */
+inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
+{
+	return static_cast<TraceRestrictCondOp>(GB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
+}
+
+/** Get TraceRestrictItem auxiliary field */
+inline uint8_t GetTraceRestrictAuxField(TraceRestrictItem item)
+{
+	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
+}
+
+/** Get TraceRestrictItem combined condition operator and auxiliary fields */
+inline uint8_t GetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem item)
+{
+	return GB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT);
+}
+
+/** Get TraceRestrictItem value field */
+inline uint16_t GetTraceRestrictValue(TraceRestrictItem item)
+{
+	return static_cast<uint16_t>(GB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
+}
+
+/** Set TraceRestrictItem type field */
+inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictItemType type)
+{
+	SB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT, type);
+}
+
+/** Set TraceRestrictItem condition operator field */
+inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
+{
+	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
+}
+
+/** Set TraceRestrictItem condition flags field */
+inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
+{
+	SB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
+}
+
+/** Set TraceRestrictItem auxiliary field */
+inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8_t data)
+{
+	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
+}
+
+/** Set TraceRestrictItem combined condition operator and auxiliary fields */
+inline void SetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem &item, uint8_t data)
+{
+	SB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT, data);
+}
+
+/** Set TraceRestrictItem value field */
+inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16_t value)
+{
+	SB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
+}
+
+/** Is TraceRestrictItemType a conditional type? */
+inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
+{
+	return type >= TRIT_COND_BEGIN && type < TRIT_COND_END;
+}
+
+/** Is TraceRestrictItem type field a conditional type? */
+inline bool IsTraceRestrictConditional(TraceRestrictItem item)
+{
+	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
+}
+
+/** Is TraceRestrictItem a double-item type? */
+inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
+{
+	const TraceRestrictItemType type = GetTraceRestrictType(item);
+	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER ||
+			type == TRIT_COND_COUNTER_VALUE || type == TRIT_COND_TIME_DATE_VALUE || type == TRIT_COND_RESERVATION_THROUGH;
+}
+
+/**
  * Enumeration for TraceRestrictProgramResult::flags
  */
 enum TraceRestrictProgramResultFlags : uint16_t {
@@ -690,104 +795,21 @@ public:
 		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
 	}
 
+	/** Get an instruction record at the given instruction offset, this reads the second item if suitable for the instruction type. */
+	TraceRestrictInstructionRecord GetInstructionRecordAt(size_t instruction_offset) const
+	{
+		size_t offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(this->items, instruction_offset);
+		TraceRestrictInstructionRecord record{ this->items[offset] };
+		if (IsTraceRestrictDoubleItem(record.instruction)) record.secondary = this->items[offset + 1];
+		return record;
+	}
+
 	/** Call validation function on current program instruction list and set actions_used_flags */
 	CommandCost Validate()
 	{
 		return TraceRestrictProgram::Validate(this->items, this->actions_used_flags);
 	}
 };
-
-/** Get TraceRestrictItem type field */
-inline TraceRestrictItemType GetTraceRestrictType(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictItemType>(GB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT));
-}
-
-/** Get TraceRestrictItem condition flags field */
-inline TraceRestrictCondFlags GetTraceRestrictCondFlags(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictCondFlags>(GB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT));
-}
-
-/** Get TraceRestrictItem condition operator field */
-inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictCondOp>(GB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
-}
-
-/** Get TraceRestrictItem auxiliary field */
-inline uint8_t GetTraceRestrictAuxField(TraceRestrictItem item)
-{
-	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
-}
-
-/** Get TraceRestrictItem combined condition operator and auxiliary fields */
-inline uint8_t GetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem item)
-{
-	return GB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT);
-}
-
-/** Get TraceRestrictItem value field */
-inline uint16_t GetTraceRestrictValue(TraceRestrictItem item)
-{
-	return static_cast<uint16_t>(GB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
-}
-
-/** Set TraceRestrictItem type field */
-inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictItemType type)
-{
-	SB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT, type);
-}
-
-/** Set TraceRestrictItem condition operator field */
-inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
-{
-	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
-}
-
-/** Set TraceRestrictItem condition flags field */
-inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
-{
-	SB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
-}
-
-/** Set TraceRestrictItem auxiliary field */
-inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8_t data)
-{
-	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
-}
-
-/** Set TraceRestrictItem combined condition operator and auxiliary fields */
-inline void SetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem &item, uint8_t data)
-{
-	SB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT, data);
-}
-
-/** Set TraceRestrictItem value field */
-inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16_t value)
-{
-	SB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
-}
-
-/** Is TraceRestrictItemType a conditional type? */
-inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
-{
-	return type >= TRIT_COND_BEGIN && type < TRIT_COND_END;
-}
-
-/** Is TraceRestrictItem type field a conditional type? */
-inline bool IsTraceRestrictConditional(TraceRestrictItem item)
-{
-	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
-}
-
-/** Is TraceRestrictItem a double-item type? */
-inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
-{
-	const TraceRestrictItemType type = GetTraceRestrictType(item);
-	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER ||
-			type == TRIT_COND_COUNTER_VALUE || type == TRIT_COND_TIME_DATE_VALUE || type == TRIT_COND_RESERVATION_THROUGH;
-}
 
 /**
  * Categorisation of what is allowed in the TraceRestrictItem condition op field

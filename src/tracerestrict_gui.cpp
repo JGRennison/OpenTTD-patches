@@ -1439,10 +1439,11 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictItem item,
  * @param right Right border for text drawing
  * @param owner Owning company ID
  */
-static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictItem item, int index, int y, bool selected, int indent, int left, int right, Owner owner)
+static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictInstructionRecord instruction_record, int index, int y, bool selected, int indent, int left, int right, Owner owner)
 {
 	StringID instruction_string = INVALID_STRING_ID;
 
+	TraceRestrictItem item = instruction_record.instruction;
 	TraceRestrictTypePropertySet properties = GetTraceRestrictTypeProperties(item);
 
 	if (IsTraceRestrictConditional(item)) {
@@ -1532,7 +1533,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_TILE_INDEX: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL);
-					TileIndex tile = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					TileIndex tile = instruction_record.secondary;
 					if (tile == INVALID_TILE) {
 						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 					} else {
@@ -1577,7 +1578,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_TILE_INDEX_THROUGH: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_RESERVATION_THROUGH);
-					TileIndex tile = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					TileIndex tile = instruction_record.secondary;
 					if (tile == INVALID_TILE) {
 						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 					} else {
@@ -1674,7 +1675,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_SLOT_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY);
-					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					SetDParam(1, GetTraceRestrictAuxField(item) ? STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT : STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT);
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_SLOT_ID) {
@@ -1685,7 +1685,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(2, GetTraceRestrictValue(item));
 					}
 					SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-					SetDParam(4, value);
+					SetDParam(4, instruction_record.secondary);
 					break;
 				}
 
@@ -1700,7 +1700,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_COUNTER_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE);
-					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_COUNTER_ID) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
@@ -1710,19 +1709,18 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(1, GetTraceRestrictValue(item));
 					}
 					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-					SetDParam(3, value);
+					SetDParam(3, instruction_record.secondary);
 					break;
 				}
 
 				case TRVT_TIME_DATE_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_TIME_DATE_VALUE);
-					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					instruction_string = GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
 					SetDParam(1, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + GetTraceRestrictValue(item));
 					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-					SetDParam(3, value);
+					SetDParam(3, instruction_record.secondary);
 					break;
 				}
 
@@ -1934,7 +1932,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_COUNTER: {
-				uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 				switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
 					case TRCCOF_INCREASE:
 						instruction_string = STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM;
@@ -1958,7 +1955,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_NAME);
 					SetDParam(1, GetTraceRestrictValue(item));
 				}
-				SetDParam(2, value);
+				SetDParam(2, instruction_record.secondary);
 				break;
 			}
 
@@ -2103,13 +2100,13 @@ public:
 
 					if (sel == -1) return;
 
-					TraceRestrictItem item = this->GetItem(this->GetProgram(), sel);
-					TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
+					TraceRestrictInstructionRecord item = this->GetItem(this->GetProgram(), sel);
+					TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item.instruction).value_type;
 					if (val_type == TRVT_ORDER) {
-						switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item.instruction))) {
 							case TROCAF_STATION:
 							case TROCAF_WAYPOINT: {
-								const BaseStation *st = BaseStation::GetIfValid(GetTraceRestrictValue(item));
+								const BaseStation *st = BaseStation::GetIfValid(GetTraceRestrictValue(item.instruction));
 								if (st != nullptr) {
 									ScrollMainWindowToTile(st->xy);
 								}
@@ -2117,7 +2114,7 @@ public:
 							}
 
 							case TROCAF_DEPOT: {
-								const Depot *depot = Depot::GetIfValid(GetTraceRestrictValue(item));
+								const Depot *depot = Depot::GetIfValid(GetTraceRestrictValue(item.instruction));
 								if (depot != nullptr) {
 									ScrollMainWindowToTile(depot->xy);
 								}
@@ -2125,7 +2122,7 @@ public:
 							}
 						}
 					} else if (val_type == TRVT_TILE_INDEX || val_type == TRVT_TILE_INDEX_THROUGH) {
-						TileIndex tile = *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, sel - 1) + 1);
+						TileIndex tile = item.secondary;
 						if (tile != INVALID_TILE) {
 							ScrollMainWindowToTile(tile);
 						}
@@ -2157,7 +2154,7 @@ public:
 
 				uint32_t disabled = _program_insert_or_if_hide_mask;
 				uint32_t hidden = 0;
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
 						(IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0)) {
 					/* This is either: an else/or if, an else, or an end if
@@ -2169,7 +2166,7 @@ public:
 					disabled |= _program_insert_else_hide_mask | _program_insert_else_if_hide_mask;
 				}
 				if (this->selected_instruction > 1) {
-					TraceRestrictItem prev_item = this->GetItem(this->GetProgram(), this->selected_instruction - 1);
+					TraceRestrictItem prev_item = this->GetItem(this->GetProgram(), this->selected_instruction - 1).instruction;
 					if (IsTraceRestrictConditional(prev_item) && GetTraceRestrictType(prev_item) != TRIT_COND_ENDIF) {
 						/* Previous item is either: an if, or an else/or if */
 
@@ -2193,7 +2190,7 @@ public:
 			}
 
 			case TR_WIDGET_REMOVE: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				if (this->GetOwner() != _local_company || item == 0) {
 					return;
 				}
@@ -2205,7 +2202,7 @@ public:
 
 			case TR_WIDGET_UP_BTN:
 			case TR_WIDGET_DOWN_BTN: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				if (this->GetOwner() != _local_company || item == 0) {
 					return;
 				}
@@ -2224,7 +2221,7 @@ public:
 			}
 
 			case TR_WIDGET_DUPLICATE: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				if (this->GetOwner() != _local_company || item == 0) {
 					return;
 				}
@@ -2237,7 +2234,7 @@ public:
 			}
 
 			case TR_WIDGET_CONDFLAGS: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				if (this->GetOwner() != _local_company || item == 0) {
 					return;
 				}
@@ -2262,7 +2259,7 @@ public:
 
 			case TR_WIDGET_TYPE_COND:
 			case TR_WIDGET_TYPE_NONCOND: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				TraceRestrictGuiItemType type = GetItemGuiType(item);
 
 				if (type != TRIT_NULL) {
@@ -2278,7 +2275,7 @@ public:
 			}
 
 			case TR_WIDGET_COMPARATOR: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(GetTraceRestrictTypeProperties(item));
 				if (list_set != nullptr) {
 					this->ShowDropDownListWithValue(list_set, GetTraceRestrictCondOp(item), false, TR_WIDGET_COMPARATOR, 0, 0);
@@ -2287,32 +2284,32 @@ public:
 			}
 
 			case TR_WIDGET_SLOT_OP: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				this->ShowDropDownListWithValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item), false, TR_WIDGET_SLOT_OP, 0, 0);
 				break;
 			}
 
 			case TR_WIDGET_COUNTER_OP: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				this->ShowDropDownListWithValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item), false, TR_WIDGET_COUNTER_OP, 0, 0);
 				break;
 			}
 
 			case TR_WIDGET_VALUE_INT: {
-				TraceRestrictItem item = this->GetSelected();
-				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				TraceRestrictInstructionRecord record = this->GetSelected();
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(record.instruction).value_type;
 				if (IsIntegerValueType(type)) {
-					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
+					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(record.instruction), true));
 					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
+					SetDParam(0, record.secondary);
 					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				}
 				break;
 			}
 
 			case TR_WIDGET_VALUE_DECIMAL: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
 					int64_t value, decimal;
@@ -2328,7 +2325,7 @@ public:
 			}
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
 					case TRVT_DENY:
 						this->ShowDropDownListWithValue(&_deny_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0);
@@ -2439,7 +2436,7 @@ public:
 			}
 
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
 					case TRVT_SLOT_INDEX_INT: {
 						int selected;
@@ -2545,7 +2542,7 @@ public:
 	{
 		if (!str.has_value() || str->empty()) return;
 
-		TraceRestrictItem item = GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 
 		switch (this->query_submode) {
@@ -2610,7 +2607,7 @@ public:
 
 	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
-		TraceRestrictItem item = GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		if (item == 0 || index < 0 || this->selected_instruction < 1) {
 			return;
 		}
@@ -2851,7 +2848,7 @@ public:
 	 */
 	void OnPlaceObjectDestination(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
-		TraceRestrictItem item = GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_ORDER) return;
 
 		bool stations_only = (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION);
@@ -2890,7 +2887,7 @@ public:
 	 */
 	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
-		TraceRestrictItem item = GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
@@ -2923,7 +2920,7 @@ public:
 	 */
 	void OnPlaceObjectTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
-		TraceRestrictItem item = GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
@@ -2975,18 +2972,18 @@ public:
 		int count = this->GetItemCount(prog);
 		uint indent = 1;
 		for (int i = 0; i < count; i++) {
-			TraceRestrictItem item = this->GetItem(prog, i);
+			TraceRestrictInstructionRecord item = this->GetItem(prog, i);
 			uint this_indent = indent;
-			if (IsTraceRestrictConditional(item)) {
-				if (GetTraceRestrictCondFlags(item) & (TRCF_ELSE | TRCF_OR)) {
+			if (IsTraceRestrictConditional(item.instruction)) {
+				if (GetTraceRestrictCondFlags(item.instruction) & (TRCF_ELSE | TRCF_OR)) {
 					this_indent--;
-				} else if (GetTraceRestrictType(item) == TRIT_COND_ENDIF) {
+				} else if (GetTraceRestrictType(item.instruction) == TRIT_COND_ENDIF) {
 					indent--;
 					this_indent--;
 				} else {
 					indent++;
 				}
-			} else if (GetTraceRestrictType(item) == TRIT_NULL) {
+			} else if (GetTraceRestrictType(item.instruction) == TRIT_NULL) {
 				this_indent = 0;
 			}
 
@@ -3009,16 +3006,16 @@ public:
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
 				SetDParam(0, STR_JUST_COMMA);
-				TraceRestrictItem item = this->GetSelected();
-				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
-				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE) {
+				TraceRestrictInstructionRecord record = this->GetSelected();
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(record.instruction).value_type;
+				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(record.instruction) == TRTDVF_HOUR_MINUTE) {
 					SetDParam(0, STR_JUST_TIME_HHMM);
 				}
 				SetDParam(1, 0);
 				if (IsIntegerValueType(type)) {
-					SetDParam(1, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
+					SetDParam(1, ConvertIntegerValue(type, GetTraceRestrictValue(record.instruction), true));
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-					SetDParam(1, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
+					SetDParam(1, record.secondary);
 				}
 				break;
 			}
@@ -3026,7 +3023,7 @@ public:
 			case TR_WIDGET_VALUE_DECIMAL: {
 				SetDParam(0, 0);
 				SetDParam(1, 0);
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
 					int64_t value, decimal;
@@ -3048,7 +3045,7 @@ public:
 			}
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 				if ((type.value_type == TRVT_PF_PENALTY &&
 						GetTraceRestrictAuxField(item) == TRPPAF_VALUE)
@@ -3060,7 +3057,7 @@ public:
 			}
 
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
-				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictItem item = this->GetSelected().instruction;
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, GetTraceRestrictValue(item));
@@ -3092,7 +3089,7 @@ public:
 			}
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
-				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
+				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX:
 						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
 						return true;
@@ -3112,7 +3109,7 @@ public:
 			}
 
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
-				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
+				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX_INT:
 					case TRVT_COUNTER_INDEX_INT:
 						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
@@ -3178,39 +3175,39 @@ private:
 	}
 
 	/**
-	 * Get instruction at @p index in program @p prog
+	 * Get instruction record at @p index in program @p prog
 	 * This correctly handles start/end markers, offsets, etc.
 	 * This returns a 0 instruction if out of bounds
 	 * @p prog may be nullptr
 	 */
-	TraceRestrictItem GetItem(const TraceRestrictProgram *prog, int index) const
+	TraceRestrictInstructionRecord GetItem(const TraceRestrictProgram *prog, int index) const
 	{
 		if (index < 0) {
-			return 0;
+			return { 0 };
 		}
 
 		if (index == 0) {
-			return MakeSpecialItem(TRNTSV_START);
+			return { MakeSpecialItem(TRNTSV_START) };
 		}
 
 		if (prog != nullptr) {
 			size_t instruction_count = prog->GetInstructionCount();
 
 			if (static_cast<size_t>(index) == instruction_count + 1) {
-				return MakeSpecialItem(TRNTSV_END);
+				return { MakeSpecialItem(TRNTSV_END) };
 			}
 
 			if (static_cast<size_t>(index) > instruction_count + 1) {
-				return 0;
+				return { 0 };
 			}
 
-			return prog->items[prog->InstructionOffsetToArrayOffset(index - 1)];
+			return prog->GetInstructionRecordAt(index - 1);
 		} else {
 			/* No program defined, this is equivalent to an empty program */
 			if (index == 1) {
-				return MakeSpecialItem(TRNTSV_END);
+				return { MakeSpecialItem(TRNTSV_END) };
 			} else {
-				return 0;
+				return { 0 };
 			}
 		}
 	}
@@ -3218,7 +3215,7 @@ private:
 	/**
 	 * Get selected instruction, or a zero instruction
 	 */
-	TraceRestrictItem GetSelected() const
+	TraceRestrictInstructionRecord GetSelected() const
 	{
 		return this->GetItem(this->GetProgram(), this->selected_instruction);
 	}
@@ -3257,7 +3254,7 @@ private:
 			/* Program length has changed */
 
 			if (this->GetItemCount(prog) < this->vscroll->GetCount() ||
-					this->GetItem(prog, this->selected_instruction) != this->expecting_inserted_item) {
+					this->GetItem(prog, this->selected_instruction).instruction != this->expecting_inserted_item) {
 				/* Length has shrunk or if we weren't expecting an insertion, deselect */
 				this->selected_instruction = -1;
 			}
@@ -3274,7 +3271,7 @@ private:
 		const TraceRestrictProgram *prog = this->GetProgram();
 		if (prog == nullptr) return false;
 
-		TraceRestrictItem item = this->GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
 
 		std::vector<TraceRestrictItem> items = prog->items; // copy
@@ -3294,7 +3291,7 @@ private:
 		const TraceRestrictProgram *prog = this->GetProgram();
 		if (prog == nullptr) return false;
 
-		TraceRestrictItem item = this->GetSelected();
+		TraceRestrictItem item = this->GetSelected().instruction;
 		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
 
 		uint32_t offset = this->selected_instruction - 1;
@@ -3440,7 +3437,7 @@ private:
 			return;
 		}
 
-		TraceRestrictItem item = this->GetItem(prog, this->selected_instruction);
+		TraceRestrictItem item = this->GetItem(prog, this->selected_instruction).instruction;
 		if (item != 0) {
 			if (GetTraceRestrictType(item) == TRIT_NULL) {
 				switch (GetTraceRestrictValue(item)) {
