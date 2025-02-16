@@ -186,9 +186,9 @@ static bool TestCondition(int value, TraceRestrictCondOp condop, int condvalue)
 /**
  * Binary condition testing helper function
  */
-static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
+static bool TestBinaryConditionCommon(TraceRestrictInstructionItem item, bool input)
 {
-	switch (GetTraceRestrictCondOp(item)) {
+	switch (item.GetCondOp()) {
 		case TRCO_IS:
 			return input;
 
@@ -205,13 +205,13 @@ static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
  * Test order condition
  * @p order may be nullptr
  */
-static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
+static bool TestOrderCondition(const Order *order, TraceRestrictInstructionItem item)
 {
 	bool result = false;
 
 	if (order != nullptr) {
-		DestinationID condvalue = GetTraceRestrictValue(item);
-		switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+		DestinationID condvalue = item.GetValue();
+		switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {
 			case TROCAF_STATION:
 				result = (order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING_ADVANCE))
 						&& order->GetDestination() == condvalue;
@@ -235,11 +235,40 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 /**
  * Test station condition
  */
-static bool TestStationCondition(StationID station, TraceRestrictItem item)
+static bool TestStationCondition(StationID station, TraceRestrictInstructionItem item)
 {
-	bool result = (GetTraceRestrictAuxField(item) == TROCAF_STATION) && (station == GetTraceRestrictValue(item));
+	bool result = (item.GetAuxField() == TROCAF_STATION) && (station == item.GetValue());
 	return TestBinaryConditionCommon(item, result);
 
+}
+
+/**
+ * Convert an instruction index into an item array index
+ */
+size_t TraceRestrictInstructionOffsetToArrayOffset(const std::span<const TraceRestrictProgramItem> items, size_t offset)
+{
+	size_t output_offset = 0;
+	size_t size = items.size();
+	for (size_t i = 0; i < offset && output_offset < size; i++, output_offset++) {
+		if (TraceRestrictInstructionItem(items[output_offset].base()).IsDoubleItem()) {
+			output_offset++;
+		}
+	}
+	return output_offset;
+}
+
+/**
+ * Convert an item array index into an instruction index
+ */
+size_t TraceRestrictArrayOffsetToInstructionOffset(const std::span<const TraceRestrictProgramItem> items, size_t offset)
+{
+	size_t output_offset = 0;
+	for (size_t i = 0; i < offset; i++, output_offset++) {
+		if (TraceRestrictInstructionItem(items[i].base()).IsDoubleItem()) {
+			i++;
+		}
+	}
+	return output_offset;
 }
 
 /**
@@ -260,14 +289,13 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	uint8_t have_previous_signal = 0;
 	TileIndex previous_signal_tile[3];
 
-	size_t size = this->items.size();
-	for (size_t i = 0; i < size; i++) {
-		TraceRestrictItem item = this->items[i];
-		TraceRestrictItemType type = GetTraceRestrictType(item);
+	for (auto iter : this->IterateInstructions()) {
+		const TraceRestrictInstructionItem item = iter.Instruction();
+		const TraceRestrictItemType type = item.GetType();
 
-		if (IsTraceRestrictConditional(item)) {
-			TraceRestrictCondFlags condflags = GetTraceRestrictCondFlags(item);
-			TraceRestrictCondOp condop = GetTraceRestrictCondOp(item);
+		if (item.IsConditional()) {
+			TraceRestrictCondFlags condflags = item.GetCondFlags();
+			TraceRestrictCondOp condop = item.GetCondOp();
 
 			if (type == TRIT_COND_ENDIF) {
 				assert(!condstack.empty());
@@ -281,7 +309,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					condstack.pop_back();
 				}
 			} else {
-				uint16_t condvalue = GetTraceRestrictValue(item);
+				uint16_t condvalue = item.GetValue();
 				bool result = false;
 				switch(type) {
 					case TRIT_COND_UNDEFINED:
@@ -321,7 +349,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_COND_CARGO: {
 						bool have_cargo = false;
 						for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
-							if (v_iter->cargo_type == GetTraceRestrictValue(item) && v_iter->cargo_cap > 0) {
+							if (v_iter->cargo_type == item.GetValue() && v_iter->cargo_cap > 0) {
 								have_cargo = true;
 								break;
 							}
@@ -332,12 +360,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_ENTRY_DIRECTION: {
 						bool direction_match;
-						switch (GetTraceRestrictValue(item)) {
+						switch (item.GetValue()) {
 							case TRNTSV_NE:
 							case TRNTSV_SE:
 							case TRNTSV_SW:
 							case TRNTSV_NW:
-								direction_match = (static_cast<DiagDirection>(GetTraceRestrictValue(item)) == TrackdirToExitdir(ReverseTrackdir(input.trackdir)));
+								direction_match = (static_cast<DiagDirection>(item.GetValue()) == TrackdirToExitdir(ReverseTrackdir(input.trackdir)));
 								break;
 
 							case TRDTSV_FRONT:
@@ -366,10 +394,9 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_PBS_ENTRY_SIGNAL: {
 						/* TRIT_COND_PBS_ENTRY_SIGNAL value type uses the next slot */
-						i++;
-						TraceRestrictPBSEntrySignalAuxField mode = static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item));
+						TraceRestrictPBSEntrySignalAuxField mode = static_cast<TraceRestrictPBSEntrySignalAuxField>(item.GetAuxField());
 						assert(mode == TRPESAF_VEH_POS || mode == TRPESAF_RES_END || mode == TRPESAF_RES_END_TILE);
-						uint32_t signal_tile = this->items[i];
+						uint32_t signal_tile = iter.Secondary();
 						if (!HasBit(have_previous_signal, mode)) {
 							if (input.previous_signal_callback) {
 								previous_signal_tile[mode] = input.previous_signal_callback(v, input.previous_signal_ptr, mode);
@@ -385,22 +412,21 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_TRAIN_GROUP: {
-						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, GetTraceRestrictValue(item)));
+						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, item.GetValue()));
 						break;
 					}
 
 					case TRIT_COND_TRAIN_IN_SLOT: {
-						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
 						result = TestBinaryConditionCommon(item, slot != nullptr && slot->IsOccupant(v->index));
 						break;
 					}
 
 					case TRIT_COND_SLOT_OCCUPANCY: {
 						/* TRIT_COND_SLOT_OCCUPANCY value type uses the next slot */
-						i++;
-						uint32_t value = this->items[i];
-						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
-						switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(GetTraceRestrictAuxField(item))) {
+						uint32_t value = iter.Secondary();
+						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
+						switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(item.GetAuxField())) {
 							case TRSOCAF_OCCUPANTS:
 								result = TestCondition(slot != nullptr ? static_cast<uint>(slot->occupants.size()) : 0, condop, value);
 								break;
@@ -417,7 +443,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_PHYS_PROP: {
-						switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictPhysPropCondAuxField>(item.GetAuxField())) {
 							case TRPPCAF_WEIGHT:
 								result = TestCondition(v->gcache.cached_weight, condop, condvalue);
 								break;
@@ -438,7 +464,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_PHYS_RATIO: {
-						switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(item.GetAuxField())) {
 							case TRPPRCAF_POWER_WEIGHT:
 								result = TestCondition(std::min<uint>(UINT16_MAX, (100 * v->gcache.cached_power) / std::max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
 								break;
@@ -461,7 +487,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_TRAIN_STATUS: {
 						bool has_status = false;
-						switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictTrainStatusValueField>(item.GetValue())) {
 							case TRTSVF_EMPTY:
 								has_status = true;
 								for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
@@ -546,18 +572,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_COUNTER_VALUE: {
 						/* TRVT_COUNTER_INDEX_INT value type uses the next slot */
-						i++;
-						uint32_t value = this->items[i];
-						const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
-						result = TestCondition(ctr != nullptr ? ctr->value : 0, condop, value);
+						const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(item.GetValue());
+						result = TestCondition(ctr != nullptr ? ctr->value : 0, condop, iter.Secondary());
 						break;
 					}
 
 					case TRIT_COND_TIME_DATE_VALUE: {
 						/* TRVT_TIME_DATE_INT value type uses the next slot */
-						i++;
-						uint32_t value = this->items[i];
-						result = TestCondition(GetTraceRestrictTimeDateValue(static_cast<TraceRestrictTimeDateValueField>(GetTraceRestrictValue(item))), condop, value);
+						result = TestCondition(GetTraceRestrictTimeDateValue(static_cast<TraceRestrictTimeDateValueField>(item.GetValue())), condop, iter.Secondary());
 						break;
 					}
 
@@ -571,10 +593,10 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_CATEGORY: {
-						switch (static_cast<TraceRestrictCatgeoryCondAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
 							case TRCCAF_ENGINE_CLASS: {
 								EngineClass ec = (EngineClass)condvalue;
-								result = (GetTraceRestrictCondOp(item) != TRCO_IS);
+								result = (item.GetCondOp() != TRCO_IS);
 								for (const Train *u = v; u != nullptr; u = u->Next()) {
 									/* Check if engine class present */
 									if (u->IsEngine() && RailVehInfo(u->engine_type)->engclass == ec) {
@@ -594,7 +616,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_TARGET_DIRECTION: {
 						const Order *o = nullptr;
-						switch (static_cast<TraceRestrictTargetDirectionCondAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictTargetDirectionCondAuxField>(item.GetAuxField())) {
 							case TRTDCAF_CURRENT_ORDER:
 								o = &(v->current_order);
 								break;
@@ -637,8 +659,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_RESERVATION_THROUGH: {
 						/* TRIT_COND_RESERVATION_THROUGH value type uses the next slot */
-						i++;
-						uint32_t test_tile = this->items[i];
+						uint32_t test_tile = iter.Secondary();
 						result = TestBinaryConditionCommon(item, TrainReservationPassesThroughTile(v, test_tile));
 						break;
 					}
@@ -652,7 +673,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 			if (condstack.empty() || condstack.back() & TRCSF_ACTIVE) {
 				switch(type) {
 					case TRIT_PF_DENY:
-						if (GetTraceRestrictValue(item)) {
+						if (item.GetValue()) {
 							out.flags &= ~TRPRF_DENY;
 						} else {
 							out.flags |= TRPRF_DENY;
@@ -660,13 +681,13 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_PF_PENALTY:
-						switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(GetTraceRestrictAuxField(item))) {
+						switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(item.GetAuxField())) {
 							case TRPPAF_VALUE:
-								out.penalty += GetTraceRestrictValue(item);
+								out.penalty += item.GetValue();
 								break;
 
 							case TRPPAF_PRESET: {
-								uint16_t index = GetTraceRestrictValue(item);
+								uint16_t index = item.GetValue();
 								assert(index < TRPPPI_END);
 								out.penalty += _tracerestrict_pathfinder_penalty_preset_values[index];
 								break;
@@ -678,7 +699,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_RESERVE_THROUGH:
-						if (GetTraceRestrictValue(item)) {
+						if (item.GetValue()) {
 							out.flags &= ~TRPRF_RESERVE_THROUGH;
 						} else {
 							out.flags |= TRPRF_RESERVE_THROUGH;
@@ -686,7 +707,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_LONG_RESERVE:
-						switch (static_cast<TraceRestrictLongReserveValueField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictLongReserveValueField>(item.GetValue())) {
 							case TRLRVF_LONG_RESERVE:
 								out.flags |= TRPRF_LONG_RESERVE;
 								break;
@@ -708,7 +729,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_WAIT_AT_PBS:
-						switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictWaitAtPbsValueField>(item.GetValue())) {
 							case TRWAPVF_WAIT_AT_PBS:
 								out.flags |= TRPRF_WAIT_AT_PBS;
 								break;
@@ -733,9 +754,9 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_SLOT: {
 						if (!input.permitted_slot_operations) break;
-						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
 						if (slot == nullptr || slot->vehicle_type != v->type) break;
-						switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
+						switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									if (!slot->Occupy(v)) out.flags |= TRPRF_WAIT_AT_PBS;
@@ -804,7 +825,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_REVERSE:
-						switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 							case TRRVF_REVERSE_BEHIND:
 								out.flags |= TRPRF_REVERSE_BEHIND;
 								break;
@@ -828,13 +849,13 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_SPEED_RESTRICTION: {
-						out.speed_restriction = GetTraceRestrictValue(item);
+						out.speed_restriction = item.GetValue();
 						out.flags |= TRPRF_SPEED_RESTRICTION_SET;
 						break;
 					}
 
 					case TRIT_NEWS_CONTROL:
-						switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictNewsControlField>(item.GetValue())) {
 							case TRNCF_TRAIN_NOT_STUCK:
 								out.flags |= TRPRF_TRAIN_NOT_STUCK;
 								break;
@@ -851,17 +872,15 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COUNTER: {
 						/* TRVT_COUNTER_INDEX_INT value type uses the next slot */
-						i++;
-						uint32_t value = this->items[i];
 						if (!(input.permitted_slot_operations & TRPISP_CHANGE_COUNTER)) break;
-						TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
+						TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(item.GetValue());
 						if (ctr == nullptr) break;
-						ctr->ApplyUpdate(static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item)), value);
+						ctr->ApplyUpdate(static_cast<TraceRestrictCounterCondOpField>(item.GetCondOp()), iter.Secondary());
 						break;
 					}
 
 					case TRIT_PF_PENALTY_CONTROL:
-						switch (static_cast<TraceRestrictPfPenaltyControlField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictPfPenaltyControlField>(item.GetValue())) {
 							case TRPPCF_NO_PBS_BACK_PENALTY:
 								out.flags |= TRPRF_NO_PBS_BACK_PENALTY;
 								break;
@@ -877,7 +896,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_SPEED_ADAPTATION_CONTROL:
-						switch (static_cast<TraceRestrictSpeedAdaptationControlField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictSpeedAdaptationControlField>(item.GetValue())) {
 							case TRSACF_SPEED_ADAPT_EXEMPT:
 								out.flags |= TRPRF_SPEED_ADAPT_EXEMPT;
 								out.flags &= ~TRPRF_RM_SPEED_ADAPT_EXEMPT;
@@ -895,7 +914,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_SIGNAL_MODE_CONTROL:
-						switch (static_cast<TraceRestrictSignalModeControlField>(GetTraceRestrictValue(item))) {
+						switch (static_cast<TraceRestrictSignalModeControlField>(item.GetValue())) {
 							case TRSMCF_NORMAL_ASPECT:
 								out.flags |= TRPRF_SIGNAL_MODE_NORMAL;
 								out.flags &= ~TRPRF_SIGNAL_MODE_SHUNT;
@@ -915,8 +934,6 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					default:
 						NOT_REACHED();
 				}
-			} else {
-				if (IsTraceRestrictDoubleItem(type)) i++;
 			}
 		}
 	}
@@ -994,7 +1011,7 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
  * This only validates that conditional nesting is correct,
  * and that all instructions have a known type, at present
  */
-CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
+CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictProgramItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
 	/* Static to avoid needing to re-alloc/resize on each execution */
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
@@ -1005,10 +1022,10 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 	static std::vector<TraceRestrictSlotID> pbs_res_end_acquired_slots;
 	pbs_res_end_acquired_slots.clear();
 
-	size_t size = items.size();
+	const size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
-		TraceRestrictItem item = items[i];
-		TraceRestrictItemType type = GetTraceRestrictType(item);
+		const TraceRestrictInstructionItem item{items[i].base()};
+		const TraceRestrictItemType type = item.GetType();
 
 		auto validation_error = [i](StringID str) -> CommandCost {
 			CommandCost result(str);
@@ -1021,15 +1038,15 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 		};
 
 		/* Check multi-word instructions */
-		if (IsTraceRestrictDoubleItem(item)) {
+		if (item.IsDoubleItem()) {
 			i++;
 			if (i >= size) {
 				return validation_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // Instruction ran off end
 			}
 		}
 
-		if (IsTraceRestrictConditional(item)) {
-			TraceRestrictCondFlags condflags = GetTraceRestrictCondFlags(item);
+		if (item.IsConditional()) {
+			const TraceRestrictCondFlags condflags = item.GetCondFlags();
 
 			if (type == TRIT_COND_ENDIF) {
 				if (condstack.empty()) {
@@ -1058,7 +1075,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				HandleCondition(condstack, condflags, true);
 			}
 
-			const TraceRestrictCondOp condop = GetTraceRestrictCondOp(item);
+			const TraceRestrictCondOp condop = item.GetCondOp();
 			auto invalid_condition = [&]() -> bool {
 				switch (condop) {
 					case TRCO_IS:
@@ -1083,7 +1100,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 			};
 			auto invalid_order_condition = [&]() -> bool {
 				if (invalid_binary_condition()) return true;
-				switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+				switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {
 					case TROCAF_STATION:
 					case TROCAF_WAYPOINT:
 					case TROCAF_DEPOT:
@@ -1094,7 +1111,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 			};
 
 			/* Validate condition type */
-			switch (GetTraceRestrictType(item)) {
+			switch (type) {
 				case TRIT_COND_ENDIF:
 				case TRIT_COND_UNDEFINED:
 					break;
@@ -1123,7 +1140,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_ENTRY_DIRECTION:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (GetTraceRestrictValue(item)) {
+					switch (item.GetValue()) {
 						case TRNTSV_NE:
 						case TRNTSV_SE:
 						case TRNTSV_SW:
@@ -1141,7 +1158,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(item.GetAuxField())) {
 						case TRPESAF_VEH_POS:
 						case TRPESAF_RES_END:
 						case TRPESAF_RES_END_TILE:
@@ -1155,7 +1172,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_PHYS_PROP:
 					if (invalid_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictPhysPropCondAuxField>(item.GetAuxField())) {
 						case TRPPCAF_WEIGHT:
 						case TRPPCAF_POWER:
 						case TRPPCAF_MAX_TE:
@@ -1168,7 +1185,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_PHYS_RATIO:
 					if (invalid_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(item.GetAuxField())) {
 						case TRPPRCAF_POWER_WEIGHT:
 						case TRPPRCAF_MAX_TE_WEIGHT:
 							break;
@@ -1180,7 +1197,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_TIME_DATE_VALUE:
 					if (invalid_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictTimeDateValueField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictTimeDateValueField>(item.GetValue())) {
 						case TRTDVF_MINUTE:
 						case TRTDVF_HOUR:
 						case TRTDVF_HOUR_MINUTE:
@@ -1195,7 +1212,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_CATEGORY:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictCatgeoryCondAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
 						case TRCCAF_ENGINE_CLASS:
 							break;
 
@@ -1206,7 +1223,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_TARGET_DIRECTION:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictTargetDirectionCondAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictTargetDirectionCondAuxField>(item.GetAuxField())) {
 						case TRTDCAF_CURRENT_ORDER:
 						case TRTDCAF_NEXT_ORDER:
 							break;
@@ -1214,7 +1231,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 						default:
 							return unknown_instruction();
 					}
-					switch (GetTraceRestrictValue(item)) {
+					switch (item.GetValue()) {
 						case DIAGDIR_NE:
 						case DIAGDIR_SE:
 						case DIAGDIR_SW:
@@ -1228,7 +1245,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_TRAIN_STATUS:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictTrainStatusValueField>(item.GetValue())) {
 						case TRTSVF_EMPTY:
 						case TRTSVF_FULL:
 						case TRTSVF_BROKEN_DOWN:
@@ -1250,7 +1267,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 				case TRIT_COND_SLOT_OCCUPANCY:
 					if (invalid_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(item.GetAuxField())) {
 						case TRSOCAF_OCCUPANTS:
 						case TRSOCAF_REMAINING:
 							break;
@@ -1265,7 +1282,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 			}
 
 			/* Determine actions_used_flags */
-			switch (GetTraceRestrictType(item)) {
+			switch (item.GetType()) {
 				case TRIT_COND_ENDIF:
 				case TRIT_COND_UNDEFINED:
 				case TRIT_COND_TRAIN_LENGTH:
@@ -1293,7 +1310,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_COND_TRAIN_STATUS:
-					switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictTrainStatusValueField>(item.GetValue())) {
 						case TRTSVF_HEADING_TO_STATION_WAYPOINT:
 						case TRTSVF_HEADING_TO_DEPOT:
 						case TRTSVF_LOADING:
@@ -1310,7 +1327,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				case TRIT_COND_TRAIN_IN_SLOT:
 				case TRIT_COND_SLOT_OCCUPANCY:
 					actions_used_flags |= TRPAUF_SLOT_CONDITIONALS;
-					if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0 || find_index(pbs_res_end_acquired_slots, GetTraceRestrictValue(item)) >= 0) {
+					if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0 || find_index(pbs_res_end_acquired_slots, item.GetValue()) >= 0) {
 						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 					}
 					break;
@@ -1320,7 +1337,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					NOT_REACHED();
 			}
 		} else {
-			switch (GetTraceRestrictType(item)) {
+			switch (item.GetType()) {
 				case TRIT_PF_DENY:
 					actions_used_flags |= TRPAUF_PF;
 					break;
@@ -1328,12 +1345,12 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				case TRIT_PF_PENALTY:
 					actions_used_flags |= TRPAUF_PF;
 
-					switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(GetTraceRestrictAuxField(item))) {
+					switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(item.GetAuxField())) {
 						case TRPPAF_VALUE:
 							break;
 
 						case TRPPAF_PRESET:
-							if (GetTraceRestrictValue(item) >= TRPPPI_END) return unknown_instruction();
+							if (item.GetValue() >= TRPPPI_END) return unknown_instruction();
 							break;
 
 						default:
@@ -1342,13 +1359,13 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_RESERVE_THROUGH:
-					if (GetTraceRestrictValue(item)) {
+					if (item.GetValue()) {
 						if (condstack.empty()) actions_used_flags &= ~TRPAUF_RESERVE_THROUGH;
 					} else {
 						actions_used_flags |= TRPAUF_RESERVE_THROUGH;
 					}
 
-					if (GetTraceRestrictValue(item)) {
+					if (item.GetValue()) {
 						actions_used_flags &= ~TRPAUF_RESERVE_THROUGH_ALWAYS;
 					} else if (condstack.empty()) {
 						actions_used_flags |= TRPAUF_RESERVE_THROUGH_ALWAYS;
@@ -1360,7 +1377,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_WAIT_AT_PBS:
-					switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictWaitAtPbsValueField>(item.GetValue())) {
 						case TRWAPVF_WAIT_AT_PBS:
 							actions_used_flags |= TRPAUF_WAIT_AT_PBS;
 							break;
@@ -1383,7 +1400,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_SLOT:
-					switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
+					switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
 						case TRSCOF_ACQUIRE_WAIT:
 							actions_used_flags |= TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_CONDITIONALS | TRPAUF_WAIT_AT_PBS;
 							break;
@@ -1406,19 +1423,19 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 
 						case TRSCOF_PBS_RES_END_ACQ_WAIT:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT | TRPAUF_SLOT_CONDITIONALS ;
-							if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
-							include(pbs_res_end_acquired_slots, GetTraceRestrictValue(item));
+							if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, item.GetValue());
 							break;
 
 						case TRSCOF_PBS_RES_END_ACQ_TRY:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
-							if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
-							include(pbs_res_end_acquired_slots, GetTraceRestrictValue(item));
+							if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, item.GetValue());
 							break;
 
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
-							include(pbs_res_end_released_slots, GetTraceRestrictValue(item));
+							include(pbs_res_end_released_slots, item.GetValue());
 							break;
 
 						default:
@@ -1427,7 +1444,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_REVERSE:
-					switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 						case TRRVF_REVERSE_BEHIND:
 							actions_used_flags |= TRPAUF_REVERSE_BEHIND;
 							break;
@@ -1454,7 +1471,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_NEWS_CONTROL:
-					switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictNewsControlField>(item.GetValue())) {
 						case TRNCF_TRAIN_NOT_STUCK:
 							actions_used_flags |= TRPAUF_TRAIN_NOT_STUCK;
 							break;
@@ -1471,7 +1488,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				case TRIT_COUNTER:
 					actions_used_flags |= TRPAUF_CHANGE_COUNTER;
 
-					switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
+					switch (static_cast<TraceRestrictCounterCondOpField>(item.GetCondOp())) {
 						case TRCCOF_INCREASE:
 						case TRCCOF_DECREASE:
 						case TRCCOF_SET:
@@ -1483,7 +1500,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 					break;
 
 				case TRIT_PF_PENALTY_CONTROL:
-					switch (static_cast<TraceRestrictPfPenaltyControlField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictPfPenaltyControlField>(item.GetValue())) {
 						case TRPPCF_NO_PBS_BACK_PENALTY:
 							actions_used_flags |= TRPAUF_NO_PBS_BACK_PENALTY;
 							break;
@@ -1500,7 +1517,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				case TRIT_SPEED_ADAPTATION_CONTROL:
 					actions_used_flags |= TRPAUF_SPEED_ADAPTATION;
 
-					switch (static_cast<TraceRestrictSpeedAdaptationControlField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictSpeedAdaptationControlField>(item.GetValue())) {
 						case TRSACF_SPEED_ADAPT_EXEMPT:
 						case TRSACF_REMOVE_SPEED_ADAPT_EXEMPT:
 							break;
@@ -1513,7 +1530,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 				case TRIT_SIGNAL_MODE_CONTROL:
 					actions_used_flags |= TRPAUF_CMB_SIGNAL_MODE_CTRL;
 
-					switch (static_cast<TraceRestrictSignalModeControlField>(GetTraceRestrictValue(item))) {
+					switch (static_cast<TraceRestrictSignalModeControlField>(item.GetValue())) {
 						case TRSMCF_NORMAL_ASPECT:
 						case TRSMCF_SHUNT_ASPECT:
 							break;
@@ -1535,38 +1552,9 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictIt
 }
 
 /**
- * Convert an instruction index into an item array index
- */
-size_t TraceRestrictProgram::InstructionOffsetToArrayOffset(const std::span<const TraceRestrictItem> items, size_t offset)
-{
-	size_t output_offset = 0;
-	size_t size = items.size();
-	for (size_t i = 0; i < offset && output_offset < size; i++, output_offset++) {
-		if (IsTraceRestrictDoubleItem(items[output_offset])) {
-			output_offset++;
-		}
-	}
-	return output_offset;
-}
-
-/**
- * Convert an item array index into an instruction index
- */
-size_t TraceRestrictProgram::ArrayOffsetToInstructionOffset(const std::span<const TraceRestrictItem> items, size_t offset)
-{
-	size_t output_offset = 0;
-	for (size_t i = 0; i < offset; i++, output_offset++) {
-		if (IsTraceRestrictDoubleItem(items[i])) {
-			i++;
-		}
-	}
-	return output_offset;
-}
-
-/**
  * Set the value and aux field of @p item, as per the value type in @p value_type
  */
-void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type)
+void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type)
 {
 	switch (value_type) {
 		case TRVT_NONE:
@@ -1593,54 +1581,54 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_SPEED_ADAPTATION_CONTROL:
 		case TRVT_SIGNAL_MODE_CONTROL:
 		case TRVT_ORDER_TARGET_DIAGDIR:
-			SetTraceRestrictValue(item, 0);
-			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
-				SetTraceRestrictAuxField(item, 0);
+			item.SetValue(0);
+			if (!IsTraceRestrictTypeAuxSubtype(item.GetType())) {
+				item.SetAuxField(0);
 			}
 			break;
 
 		case TRVT_ORDER:
-			SetTraceRestrictValue(item, INVALID_STATION);
-			SetTraceRestrictAuxField(item, TROCAF_STATION);
+			item.SetValue(INVALID_STATION);
+			item.SetAuxField(TROCAF_STATION);
 			break;
 
 		case TRVT_CARGO_ID:
 			assert(_standard_cargo_mask != 0);
-			SetTraceRestrictValue(item, FindFirstBit(_standard_cargo_mask));
-			SetTraceRestrictAuxField(item, 0);
+			item.SetValue(FindFirstBit(_standard_cargo_mask));
+			item.SetAuxField(0);
 			break;
 
 		case TRVT_DIRECTION:
-			SetTraceRestrictValue(item, TRDTSV_FRONT);
-			SetTraceRestrictAuxField(item, 0);
+			item.SetValue(TRDTSV_FRONT);
+			item.SetAuxField(0);
 			break;
 
 		case TRVT_PF_PENALTY:
-			SetTraceRestrictValue(item, TRPPPI_SMALL);
-			SetTraceRestrictAuxField(item, TRPPAF_PRESET);
+			item.SetValue(TRPPPI_SMALL);
+			item.SetAuxField(TRPPAF_PRESET);
 			break;
 
 		case TRVT_GROUP_INDEX:
-			SetTraceRestrictValue(item, INVALID_GROUP);
-			SetTraceRestrictAuxField(item, 0);
+			item.SetValue(INVALID_GROUP);
+			item.SetAuxField(0);
 			break;
 
 		case TRVT_OWNER:
-			SetTraceRestrictValue(item, INVALID_OWNER);
-			SetTraceRestrictAuxField(item, 0);
+			item.SetValue(INVALID_OWNER);
+			item.SetAuxField(0);
 			break;
 
 		case TRVT_SLOT_INDEX:
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
-			SetTraceRestrictAuxField(item, 0);
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
+			item.SetAuxField(0);
 			break;
 
 		case TRVT_SLOT_INDEX_INT:
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
 			break;
 
 		case TRVT_COUNTER_INDEX_INT:
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID);
+			item.SetValue(INVALID_TRACE_RESTRICT_COUNTER_ID);
 			break;
 
 		default:
@@ -1652,18 +1640,18 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 /**
  * Set the type field of a TraceRestrictItem, and resets any other fields which are no longer valid/meaningful to sensible defaults
  */
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8_t aux_data)
+void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, TraceRestrictItemType type, uint8_t aux_data)
 {
 	if (item != 0) {
-		assert(GetTraceRestrictType(item) != TRIT_NULL);
-		assert(IsTraceRestrictConditional(item) == IsTraceRestrictTypeConditional(type));
+		assert(item.GetType() != TRIT_NULL);
+		assert(item.IsConditional() == IsTraceRestrictTypeConditional(type));
 	}
 	assert(type != TRIT_NULL);
 
 	TraceRestrictTypePropertySet old_properties = GetTraceRestrictTypeProperties(item);
-	SetTraceRestrictType(item, type);
+	item.SetType(type);
 	if (IsTraceRestrictTypeAuxSubtype(type)) {
-		SetTraceRestrictAuxField(item, aux_data);
+		item.SetAuxField(aux_data);
 	} else {
 		assert(aux_data == 0);
 	}
@@ -1671,16 +1659,16 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
 
 	if (old_properties.cond_type != new_properties.cond_type ||
 			old_properties.value_type != new_properties.value_type) {
-		SetTraceRestrictCondOp(item, TRCO_IS);
+		item.SetCondOp(TRCO_IS);
 		SetTraceRestrictValueDefault(item, new_properties.value_type);
 	}
 	if (new_properties.value_type == TRVT_SLOT_INDEX || new_properties.value_type == TRVT_SLOT_INDEX_INT) {
-		if (!IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) {
-			const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
-			if (slot != nullptr && slot->vehicle_type != VEH_TRAIN) SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
+		if (!IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) {
+			const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
+			if (slot != nullptr && slot->vehicle_type != VEH_TRAIN) item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
 		}
 	}
-	if (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION && GetTraceRestrictAuxField(item) != TROCAF_STATION) {
+	if (item.GetType() == TRIT_COND_LAST_STATION && item.GetAuxField() != TROCAF_STATION) {
 		/* If changing type from another order type to last visited station, reset value if not currently a station */
 		SetTraceRestrictValueDefault(item, TRVT_ORDER);
 	}
@@ -1949,9 +1937,9 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track, b
  * Returns an appropriate default value for the second item of a dual-item instruction
  * @p item is the first item of the instruction
  */
-static uint32_t GetDualInstructionInitialValue(TraceRestrictItem item)
+static uint32_t GetDualInstructionInitialValue(TraceRestrictInstructionItem item)
 {
-	switch (GetTraceRestrictType(item)) {
+	switch (item.GetType()) {
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
 		case TRIT_COND_RESERVATION_THROUGH:
 			return INVALID_TILE;
@@ -1969,27 +1957,18 @@ static uint32_t GetDualInstructionInitialValue(TraceRestrictItem item)
 	}
 }
 
-template <typename T>
-T InstructionIteratorNext(T iter)
-{
-	return IsTraceRestrictDoubleItem(*iter) ? iter + 2 : iter + 1;
-}
+using VectorInstructionIterator = TraceRestrictInstructionIterator<std::vector<TraceRestrictProgramItem>::iterator>;
 
-template <typename T>
-void InstructionIteratorAdvance(T &iter)
+CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset, bool shallow_mode)
 {
-	iter = InstructionIteratorNext(iter);
-}
+	VectorInstructionIterator remove_start = TraceRestrictInstructionIteratorAt(items, offset);
+	VectorInstructionIterator remove_end = std::next(remove_start);
 
-CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset, bool shallow_mode)
-{
-	std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
-	std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
-	TraceRestrictItem old_item = *remove_start;
-	if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
+	TraceRestrictInstructionItem old_item = remove_start.Instruction();
+	if (old_item.IsConditional() && old_item.GetCondFlags() != TRCF_OR) {
 		bool remove_whole_block = false;
-		if (GetTraceRestrictCondFlags(old_item) == 0) {
-			if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
+		if (old_item.GetCondFlags() == 0) {
+			if (old_item.GetType() == TRIT_COND_ENDIF) {
 				/* This is an end if, can't remove these */
 				return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF);
 			} else {
@@ -2001,21 +1980,21 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 		uint32_t recursion_depth = 1;
 
 		/* Iterate until matching end block found */
-		for (; remove_end != items.end(); InstructionIteratorAdvance(remove_end)) {
-			TraceRestrictItem current_item = *remove_end;
-			if (IsTraceRestrictConditional(current_item)) {
-				if (GetTraceRestrictCondFlags(current_item) == 0) {
-					if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
+		for (; remove_end.ItemIter() != items.end(); ++remove_end) {
+			const TraceRestrictInstructionItem current_item = remove_end.Instruction();
+			if (current_item.IsConditional()) {
+				if (current_item.GetCondFlags() == 0) {
+					if (current_item.GetType() == TRIT_COND_ENDIF) {
 						/* This is an end if */
 						recursion_depth--;
 						if (recursion_depth == 0) {
 							if (remove_whole_block) {
 								if (shallow_mode) {
 									/* Must erase endif first, as it is later in the vector */
-									items.erase(remove_end, InstructionIteratorNext(remove_end));
+									items.erase(remove_end.ItemIter(), std::next(remove_end).ItemIter());
 								} else {
 									/* Inclusively remove up to here */
-									InstructionIteratorAdvance(remove_end);
+									++remove_end;
 								}
 								break;
 							} else {
@@ -2043,33 +2022,32 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 		}
 		if (recursion_depth != 0) return CMD_ERROR; // ran off the end
 		if (shallow_mode) {
-			items.erase(remove_start, InstructionIteratorNext(remove_start));
+			items.erase(remove_start.ItemIter(), std::next(remove_start).ItemIter());
 		} else {
-			items.erase(remove_start, remove_end);
+			items.erase(remove_start.ItemIter(), remove_end.ItemIter());
 		}
 	} else {
-		items.erase(remove_start, remove_end);
+		items.erase(remove_start.ItemIter(), remove_end.ItemIter());
 	}
 	return CommandCost();
 }
 
-static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestrictItem> &items,
-		const std::vector<TraceRestrictItem>::iterator &move_start, std::vector<TraceRestrictItem>::iterator &move_end, bool allow_elif)
+static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestrictProgramItem> &items, const VectorInstructionIterator move_start, VectorInstructionIterator &move_end, bool allow_elif)
 {
-	TraceRestrictItem old_item = *move_start;
-	if (IsTraceRestrictConditional(old_item)) {
-		if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
+	TraceRestrictInstructionItem old_item = move_start.Instruction();
+	if (old_item.IsConditional()) {
+		if (old_item.GetType() == TRIT_COND_ENDIF) {
 			/* This is an else or end if, can't move these */
 			return CMD_ERROR;
 		}
-		if (GetTraceRestrictCondFlags(old_item) != 0) {
+		if (old_item.GetCondFlags() != 0) {
 			if (allow_elif) {
 				uint32_t recursion_depth = 0;
-				for (; move_end != items.end(); InstructionIteratorAdvance(move_end)) {
-					TraceRestrictItem current_item = *move_end;
-					if (IsTraceRestrictConditional(current_item)) {
-						if (GetTraceRestrictCondFlags(current_item) == 0) {
-							if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
+				for (; move_end.ItemIter() != items.end(); ++move_end) {
+					TraceRestrictInstructionItem current_item = move_end.Instruction();
+					if (current_item.IsConditional()) {
+						if (current_item.GetCondFlags() == 0) {
+							if (current_item.GetType() == TRIT_COND_ENDIF) {
 								/* This is an end if */
 								if (recursion_depth == 0) break;
 								recursion_depth--;
@@ -2091,16 +2069,16 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 
 		uint32_t recursion_depth = 1;
 		/* Iterate until matching end block found */
-		for (; move_end != items.end(); InstructionIteratorAdvance(move_end)) {
-			TraceRestrictItem current_item = *move_end;
-			if (IsTraceRestrictConditional(current_item)) {
-				if (GetTraceRestrictCondFlags(current_item) == 0) {
-					if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
+		for (; move_end.ItemIter() != items.end(); ++move_end) {
+			TraceRestrictInstructionItem current_item = move_end.Instruction();
+			if (current_item.IsConditional()) {
+				if (current_item.GetCondFlags() == 0) {
+					if (current_item.GetType() == TRIT_COND_ENDIF) {
 						/* This is an end if */
 						recursion_depth--;
 						if (recursion_depth == 0) {
 							/* Inclusively remove up to here */
-							InstructionIteratorAdvance(move_end);
+							++move_end;
 							break;
 						}
 					} else {
@@ -2115,10 +2093,10 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 	return CommandCost();
 }
 
-CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t &offset, bool up, bool shallow_mode)
+CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t &offset, bool up, bool shallow_mode)
 {
-	std::vector<TraceRestrictItem>::iterator move_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
-	std::vector<TraceRestrictItem>::iterator move_end = InstructionIteratorNext(move_start);
+	VectorInstructionIterator move_start = TraceRestrictInstructionIteratorAt(items, offset);
+	VectorInstructionIterator move_end = std::next(move_start);
 
 	if (!shallow_mode) {
 		CommandCost res = AdvanceItemEndIteratorForBlock(items, move_start, move_end, false);
@@ -2127,37 +2105,37 @@ CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items
 
 	if (up) {
 		if (move_start == items.begin()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
-		std::rotate(TraceRestrictProgram::IteratorAtInstruction(items, offset - 1), move_start, move_end);
+		std::rotate(TraceRestrictInstructionIteratorAt(items, offset - 1).ItemIter(), move_start.ItemIter(), move_end.ItemIter());
 		offset--;
 	} else {
 		if (move_end == items.end()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
-		std::rotate(move_start, move_end, InstructionIteratorNext(move_end));
+		std::rotate(move_start.ItemIter(), move_end.ItemIter(), std::next(move_end).ItemIter());
 		offset++;
 	}
 	return CommandCost();
 }
 
-CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset)
+CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset)
 {
-	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
-	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
+	VectorInstructionIterator dup_start = TraceRestrictInstructionIteratorAt(items, offset);
+	VectorInstructionIterator dup_end = std::next(dup_start);
 
 	CommandCost res = AdvanceItemEndIteratorForBlock(items, dup_start, dup_end, true);
 	if (res.Failed()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM);
 
-	std::vector<TraceRestrictItem> new_items;
-	new_items.reserve(items.size() + (dup_end - dup_start));
-	new_items.insert(new_items.end(), items.begin(), dup_end);
-	new_items.insert(new_items.end(), dup_start, dup_end);
-	new_items.insert(new_items.end(), dup_end, items.end());
+	std::vector<TraceRestrictProgramItem> new_items;
+	new_items.reserve(items.size() + (dup_end.ItemIter() - dup_start.ItemIter()));
+	new_items.insert(new_items.end(), items.begin(), dup_end.ItemIter());
+	new_items.insert(new_items.end(), dup_start.ItemIter(), dup_end.ItemIter());
+	new_items.insert(new_items.end(), dup_end.ItemIter(), items.end());
 	items = std::move(new_items);
 	return CommandCost();
 }
 
-bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictItem> &items, uint32_t offset)
+bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictProgramItem> &items, uint32_t offset)
 {
-	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::IteratorAtInstruction(const_cast<std::vector<TraceRestrictItem> &>(items), offset);
-	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
+	VectorInstructionIterator dup_start = TraceRestrictInstructionIteratorAt(const_cast<std::vector<TraceRestrictProgramItem> &>(items), offset);
+	VectorInstructionIterator dup_end = std::next(dup_start);
 
 	CommandCost res = AdvanceItemEndIteratorForBlock(items, dup_start, dup_end, true);
 	return res.Succeeded();
@@ -2182,7 +2160,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 	Track track = static_cast<Track>(GB(p1, 0, 3));
 	uint32_t offset = GB(p1, 8, 16);
-	TraceRestrictItem item = static_cast<TraceRestrictItem>(p2);
+	TraceRestrictInstructionItem item(p2);
 
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
 	if (ret.Failed()) {
@@ -2207,17 +2185,17 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		switch (GetTraceRestrictTypeProperties(item).value_type) {
 			case TRVT_SLOT_INDEX:
 			case TRVT_SLOT_INDEX_INT:
-				if (GetTraceRestrictValue(item) != INVALID_TRACE_RESTRICT_SLOT_ID) {
-					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+				if (item.GetValue() != INVALID_TRACE_RESTRICT_SLOT_ID) {
+					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
 					if (slot == nullptr) return CMD_ERROR;
-					if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) return CMD_ERROR;
+					if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) return CMD_ERROR;
 					if (!slot->IsUsableByOwner(_current_company)) return CMD_ERROR;
 				}
 				break;
 
 			case TRVT_COUNTER_INDEX_INT:
-				if (GetTraceRestrictValue(item) != INVALID_TRACE_RESTRICT_COUNTER_ID) {
-					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
+				if (item.GetValue() != INVALID_TRACE_RESTRICT_COUNTER_ID) {
+					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(item.GetValue());
 					if (ctr == nullptr) return CMD_ERROR;
 					if (!ctr->IsUsableByOwner(_current_company)) return CMD_ERROR;
 				}
@@ -2229,53 +2207,53 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	}
 
 	/* Copy program */
-	std::vector<TraceRestrictItem> items;
+	std::vector<TraceRestrictProgramItem> items;
 	if (prog != nullptr) items = prog->items;
 
 	switch (type) {
 		case TRDCT_INSERT_ITEM: {
-			TraceRestrictItem values[3] = { item, 0, 0 };
+			TraceRestrictProgramItem values[3] = { item.AsProgramItem(), {}, {} };
 			uint value_count = 1;
-			if (IsTraceRestrictDoubleItem(item)) {
-				values[value_count++] = GetDualInstructionInitialValue(item);
+			if (item.IsDoubleItem()) {
+				values[value_count++] = TraceRestrictProgramItem{GetDualInstructionInitialValue(item)};
 			}
-			if (IsTraceRestrictConditional(item) &&
-					GetTraceRestrictCondFlags(item) == 0 &&
-					GetTraceRestrictType(item) != TRIT_COND_ENDIF) {
+			if (item.IsConditional() &&
+					item.GetCondFlags() == 0 &&
+					item.GetType() != TRIT_COND_ENDIF) {
 				/* This is an opening if block, insert a corresponding end if */
-				TraceRestrictItem endif_item = 0;
-				SetTraceRestrictType(endif_item, TRIT_COND_ENDIF);
-				values[value_count++] = endif_item;
+				TraceRestrictInstructionItem endif_item = {};
+				endif_item.SetType(TRIT_COND_ENDIF);
+				values[value_count++] = endif_item.AsProgramItem();
 			}
-			items.insert(TraceRestrictProgram::IteratorAtInstruction(items, offset), values, values + value_count);
+			items.insert(TraceRestrictInstructionIteratorAt(items, offset).ItemIter(), values, values + value_count);
 			break;
 		}
 
 		case TRDCT_MODIFY_ITEM: {
-			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::IteratorAtInstruction(items, offset);
-			if (IsTraceRestrictConditional(*old_item) != IsTraceRestrictConditional(item)) {
+			auto old_iter = TraceRestrictInstructionIteratorAt(items, offset);
+			TraceRestrictInstructionItem old_item_value = old_iter.Instruction();
+			if (old_item_value.IsConditional() != item.IsConditional()) {
 				return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
 			}
-			const TraceRestrictItem old_item_value = *old_item;
-			bool old_is_dual = IsTraceRestrictDoubleItem(old_item_value);
-			bool new_is_dual = IsTraceRestrictDoubleItem(item);
-			*old_item = item;
+			bool old_is_dual = old_item_value.IsDoubleItem();
+			bool new_is_dual = item.IsDoubleItem();
+			old_iter.InstructionRef() = item;
 			if (old_is_dual && !new_is_dual) {
-				items.erase(old_item + 1);
+				items.erase(old_iter.ItemIter() + 1);
 			} else if (!old_is_dual && new_is_dual) {
-				items.insert(old_item + 1, GetDualInstructionInitialValue(item));
-			} else if (old_is_dual && new_is_dual && GetTraceRestrictType(old_item_value) != GetTraceRestrictType(item)) {
-				*(old_item + 1) = GetDualInstructionInitialValue(item);
+				items.insert(old_iter.ItemIter() + 1, TraceRestrictProgramItem{GetDualInstructionInitialValue(item)});
+			} else if (old_is_dual && new_is_dual && old_item_value.GetType() != item.GetType()) {
+				old_iter.SecondaryRef() = GetDualInstructionInitialValue(item);
 			}
 			break;
 		}
 
 		case TRDCT_MODIFY_DUAL_ITEM: {
-			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::IteratorAtInstruction(items, offset);
-			if (!IsTraceRestrictDoubleItem(*old_item)) {
+			auto old_iter = TraceRestrictInstructionIteratorAt(items, offset);
+			if (!old_iter.Instruction().IsDoubleItem()) {
 				return CMD_ERROR;
 			}
-			*(old_item + 1) = p2;
+			old_iter.SecondaryRef() = p2;
 			break;
 		}
 
@@ -2431,7 +2409,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
-				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem>(prog->items).last(source_prog->items.size()), _current_company);
+				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem>(prog->items).last(source_prog->items.size()), _current_company);
 				prog->Validate();
 
 				TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
@@ -2454,7 +2432,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		}
 
 		case TRDCT_PROG_UNSHARE: {
-			std::vector<TraceRestrictItem> items;
+			std::vector<TraceRestrictProgramItem> items;
 			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, false);
 			if (prog != nullptr) {
 				/* Copy program into temporary */
@@ -2554,16 +2532,15 @@ int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16_t index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
-		for (size_t i = 0; i < prog->items.size(); i++) {
-			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if (GetTraceRestrictType(item) == TRIT_COND_CURRENT_ORDER ||
-					GetTraceRestrictType(item) == TRIT_COND_NEXT_ORDER ||
-					GetTraceRestrictType(item) == TRIT_COND_LAST_STATION) {
-				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
+		for (auto iter : prog->IterateInstructionsMutable()) {
+			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+			if (item.GetType() == TRIT_COND_CURRENT_ORDER ||
+					item.GetType() == TRIT_COND_NEXT_ORDER ||
+					item.GetType() == TRIT_COND_LAST_STATION) {
+				if (item.GetAuxField() == type && item.GetValue() == index) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
 			}
-			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
 	}
 
@@ -2578,12 +2555,11 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 void TraceRestrictRemoveGroupID(GroupID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
-		for (size_t i = 0; i < prog->items.size(); i++) {
-			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if (GetTraceRestrictType(item) == TRIT_COND_TRAIN_GROUP && GetTraceRestrictValue(item) == index) {
+		for (auto iter : prog->IterateInstructionsMutable()) {
+			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+			if (item.GetType() == TRIT_COND_TRAIN_GROUP && item.GetValue() == index) {
 				SetTraceRestrictValueDefault(item, TRVT_GROUP_INDEX); // this updates the instruction in-place
 			}
-			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
 	}
 
@@ -2599,14 +2575,13 @@ void TraceRestrictRemoveGroupID(GroupID index)
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
-		for (size_t i = 0; i < prog->items.size(); i++) {
-			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if (GetTraceRestrictType(item) == TRIT_COND_TRAIN_OWNER) {
-				if (GetTraceRestrictValue(item) == old_company) {
-					SetTraceRestrictValue(item, new_company); // this updates the instruction in-place
+		for (auto iter : prog->IterateInstructionsMutable()) {
+			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+			if (item.GetType() == TRIT_COND_TRAIN_OWNER) {
+				if (item.GetValue() == old_company) {
+					item.SetValue(new_company); // this updates the instruction in-place
 				}
 			}
-			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
 	}
 
@@ -2947,17 +2922,16 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 }
 
 template <typename F>
-void ClearInstructionRangeTraceRestrictSlotIf(std::span<TraceRestrictItem> instructions, F cond)
+void ClearInstructionRangeTraceRestrictSlotIf(std::span<TraceRestrictProgramItem> instructions, F cond)
 {
-	for (auto i = instructions.begin(); i < instructions.end(); ++i) {
-		TraceRestrictItem &item = *i; // note this is a reference,
-		if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_TRAIN_IN_SLOT) && cond(static_cast<TraceRestrictSlotID>(GetTraceRestrictValue(item)))) {
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
+	for (auto iter : TraceRestrictInstructionIterateWrapper(instructions)) {
+		TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+		if ((item.GetType() == TRIT_SLOT || item.GetType() == TRIT_COND_TRAIN_IN_SLOT) && cond(static_cast<TraceRestrictSlotID>(item.GetValue()))) {
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
 		}
-		if ((GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY) && cond(static_cast<TraceRestrictSlotID>(GetTraceRestrictValue(item)))) {
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
+		if ((item.GetType() == TRIT_COND_SLOT_OCCUPANCY) && cond(static_cast<TraceRestrictSlotID>(item.GetValue()))) {
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
 		}
-		if (IsTraceRestrictDoubleItem(item)) i++;
 	}
 }
 
@@ -3430,14 +3404,13 @@ static bool IsUniqueCounterName(const char *name)
 }
 
 template <typename F>
-void ClearInstructionRangeTraceRestrictCounterIf(std::span<TraceRestrictItem> instructions, F cond)
+void ClearInstructionRangeTraceRestrictCounterIf(std::span<TraceRestrictProgramItem> instructions, F cond)
 {
-	for (auto i = instructions.begin(); i < instructions.end(); ++i) {
-		TraceRestrictItem &item = *i; // note this is a reference,
-		if ((GetTraceRestrictType(item) == TRIT_COUNTER || GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE) && cond(static_cast<TraceRestrictCounterID>(GetTraceRestrictValue(item)))) {
-			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID); // this updates the instruction in-place
+	for (auto iter : TraceRestrictInstructionIterateWrapper(instructions)) {
+		TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+		if ((item.GetType() == TRIT_COUNTER || item.GetType() == TRIT_COND_COUNTER_VALUE) && cond(static_cast<TraceRestrictCounterID>(item.GetValue()))) {
+			item.SetValue(INVALID_TRACE_RESTRICT_COUNTER_ID); // this updates the instruction in-place
 		}
-		if (IsTraceRestrictDoubleItem(item)) ++i;
 	}
 }
 
@@ -3657,9 +3630,10 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 {
 	BaseCommandContainer cmd = this->cmd;
 	switch (cmd.cmd & CMD_ID_MASK) {
-		case CMD_PROGRAM_TRACERESTRICT_SIGNAL:
-			SetTraceRestrictValue(cmd.p2, value);
+		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
+			TraceRestrictInstructionItemRef(cmd.p2).SetValue(value);
 			break;
+		}
 
 		case CMD_MODIFY_SIGNAL_INSTRUCTION:
 			SB(cmd.p2, 3, 27, value);
@@ -3685,7 +3659,7 @@ std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
 	return fmt::to_string(out);
 }
 
-void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem> instructions, Owner instructions_owner)
+void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner)
 {
 	ClearInstructionRangeTraceRestrictSlotIf(instructions, [&](TraceRestrictSlotID idx) {
 		if (idx == INVALID_TRACE_RESTRICT_SLOT_ID) return false;

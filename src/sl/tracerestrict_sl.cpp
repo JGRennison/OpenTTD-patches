@@ -63,12 +63,11 @@ static void Load_TRRP()
 		SlObjectLoadFiltered(prog, slt);
 
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
-			for (size_t i = 0; i < prog->items.size(); i++) {
-				TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-				if (GetTraceRestrictType(item) == 19 || GetTraceRestrictType(item) == 20) {
-					SetTraceRestrictType(item, (TraceRestrictItemType)(GetTraceRestrictType(item) + 2));
+			for (auto iter : prog->IterateInstructionsMutable()) {
+				TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+				if (item.GetType() == 19 || item.GetType() == 20) {
+					item.SetType((TraceRestrictItemType)(item.GetType() + 2));
 				}
-				if (IsTraceRestrictDoubleItem(item)) i++;
 			}
 		}
 		if (SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT, 17)) {
@@ -76,17 +75,16 @@ static void Load_TRRP()
 			 * Do this for all previous versions to avoid cases where it is unexpectedly present despite the version,
 			 * e.g. in JokerPP and non-SLXI tracerestrict saves.
 			 */
-			for (size_t i = 0; i < prog->items.size(); i++) {
-				TraceRestrictItem &item = prog->items[i]; // note this is a reference
-				if (GetTraceRestrictType(item) == TRIT_SLOT) {
-					TraceRestrictSlotSubtypeField subtype = static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCondOp(item));
+			for (auto iter : prog->IterateInstructionsMutable()) {
+				TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+				if (item.GetType() == TRIT_SLOT) {
+					TraceRestrictSlotSubtypeField subtype = static_cast<TraceRestrictSlotSubtypeField>(item.GetCondOp());
 					if (subtype == 7) {
 						/* Was TRSCOF_ACQUIRE_TRY_ON_RESERVE */
 						subtype = TRSCOF_ACQUIRE_TRY;
 					}
-					SetTraceRestrictCombinedAuxCondOpField(item, subtype);
+					item.SetCombinedAuxCondOpField(subtype);
 				}
-				if (IsTraceRestrictDoubleItem(item)) i++;
 			}
 		}
 		CommandCost validation_result = prog->Validate();

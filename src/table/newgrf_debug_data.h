@@ -2169,15 +2169,11 @@ class NIHTraceRestrict : public NIHelper {
 		output.Print("");
 
 		output.Print("Program: items: {}, instructions: {}", prog->items.size(), prog->GetInstructionCount());
-		auto iter = prog->items.begin();
-		auto end = prog->items.end();
-		while (iter != end) {
-			if (IsTraceRestrictDoubleItem(*iter)) {
-				output.Print("  {:08X} {:08X}", *iter, *(iter + 1));
-				iter += 2;
+		for (auto iter : prog->IterateInstructions()) {
+			if (iter.Instruction().IsDoubleItem()) {
+				output.Print("  {:08X} {:08X}", iter.Instruction(), iter.Secondary());
 			} else {
-				output.Print("  {:08X}", *iter);
-				++iter;
+				output.Print("  {:08X}", iter.Instruction());
 			}
 		}
 	}

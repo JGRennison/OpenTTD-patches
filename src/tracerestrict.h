@@ -15,6 +15,7 @@
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
 #include "core/container_func.hpp"
+#include "core/strong_typedef_type.hpp"
 #include "command_aux.h"
 #include "command_func.h"
 #include "rail_map.h"
@@ -97,13 +98,14 @@ extern TraceRestrictMapping _tracerestrictprogram_mapping;
 void ClearTraceRestrictMapping();
 
 /**
- * Type of a single instruction item, instructions are bit-packed as per TraceRestrictItemFlagAllocation.
- * Some instruction types (see: IsTraceRestrictDoubleItem) have an extra free-form item in the next slot.
+ * Type of a single program item, as in std::vector<TraceRestrictProgramItem>.
+ * Each instruction is formed of a TraceRestrictInstructionItem value, optionally followed by
+ * a free-form item in the next slot (if TraceRestrictInstructionItem::IsDoubleItem() is true).
  */
-typedef uint32_t TraceRestrictItem;
+using TraceRestrictProgramItem = StrongType::Typedef<uint32_t, struct TraceRestrictProgramItemTag, StrongType::Compare>;
 
 /**
- * Describes the allocation of bits to fields in TraceRestrictItem.
+ * Describes the allocation of bits to fields in TraceRestrictInstructionItem.
  * Of the fields below, the type seems the most likely
  * to need future expansion, hence the reserved bits are placed
  * immediately after them.
@@ -122,7 +124,7 @@ typedef uint32_t TraceRestrictItem;
  * COUNT values describe the field bit width
  * OFFSET values describe the field bit offset
  */
-enum TraceRestrictItemFlagAllocation {
+enum TraceRestrictInstructionItemFlagAllocation {
 	TRIFA_TYPE_COUNT              = 6,
 	TRIFA_TYPE_OFFSET             = 0,
 
@@ -449,107 +451,243 @@ enum TraceRestrictPathfinderPenaltyPresetIndex : uint8_t {
 	TRPPPI_END,                              ///< end value
 };
 
-/**
- * Type to hold a complete instruction, including the optional second item.
- * The second item is 0 if unused.
- * Not used for instruction storage.
- */
-struct TraceRestrictInstructionRecord {
-	TraceRestrictItem instruction = 0;
-	uint32_t secondary = 0;
-};
-
-/** Get TraceRestrictItem type field */
-inline TraceRestrictItemType GetTraceRestrictType(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictItemType>(GB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT));
-}
-
-/** Get TraceRestrictItem condition flags field */
-inline TraceRestrictCondFlags GetTraceRestrictCondFlags(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictCondFlags>(GB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT));
-}
-
-/** Get TraceRestrictItem condition operator field */
-inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
-{
-	return static_cast<TraceRestrictCondOp>(GB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
-}
-
-/** Get TraceRestrictItem auxiliary field */
-inline uint8_t GetTraceRestrictAuxField(TraceRestrictItem item)
-{
-	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
-}
-
-/** Get TraceRestrictItem combined condition operator and auxiliary fields */
-inline uint8_t GetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem item)
-{
-	return GB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT);
-}
-
-/** Get TraceRestrictItem value field */
-inline uint16_t GetTraceRestrictValue(TraceRestrictItem item)
-{
-	return static_cast<uint16_t>(GB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
-}
-
-/** Set TraceRestrictItem type field */
-inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictItemType type)
-{
-	SB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT, type);
-}
-
-/** Set TraceRestrictItem condition operator field */
-inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
-{
-	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
-}
-
-/** Set TraceRestrictItem condition flags field */
-inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
-{
-	SB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
-}
-
-/** Set TraceRestrictItem auxiliary field */
-inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8_t data)
-{
-	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
-}
-
-/** Set TraceRestrictItem combined condition operator and auxiliary fields */
-inline void SetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem &item, uint8_t data)
-{
-	SB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT, data);
-}
-
-/** Set TraceRestrictItem value field */
-inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16_t value)
-{
-	SB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
-}
-
 /** Is TraceRestrictItemType a conditional type? */
 inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
 {
 	return type >= TRIT_COND_BEGIN && type < TRIT_COND_END;
 }
 
-/** Is TraceRestrictItem type field a conditional type? */
-inline bool IsTraceRestrictConditional(TraceRestrictItem item)
-{
-	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
-}
-
 /** Is TraceRestrictItem a double-item type? */
-inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
+inline bool IsTraceRestrictDoubleItemType(TraceRestrictItemType type)
 {
-	const TraceRestrictItemType type = GetTraceRestrictType(item);
 	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER ||
 			type == TRIT_COND_COUNTER_VALUE || type == TRIT_COND_TIME_DATE_VALUE || type == TRIT_COND_RESERVATION_THROUGH;
 }
+
+namespace TracerestrictDetail {
+	/* Mixin for TraceRestrictInstructionItem */
+	struct InstructionItemOperations {
+		template <typename TType, typename TBaseType>
+		struct mixin {
+		private:
+			TBaseType base() const { return static_cast<const TType &>(*this).base(); }
+			TBaseType &edit_base() { return static_cast<TType &>(*this).edit_base(); }
+
+		public:
+			/** Get TraceRestrictItem type field */
+			TraceRestrictItemType GetType() const
+			{
+				return static_cast<TraceRestrictItemType>(GB(this->base(), TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT));
+			}
+
+			/** Get TraceRestrictItem condition flags field */
+			TraceRestrictCondFlags GetCondFlags() const
+			{
+				return static_cast<TraceRestrictCondFlags>(GB(this->base(), TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT));
+			}
+
+			/** Get condition operator field */
+			inline TraceRestrictCondOp GetCondOp() const
+			{
+				return static_cast<TraceRestrictCondOp>(GB(this->base(), TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
+			}
+
+			/** Get auxiliary field */
+			uint8_t GetAuxField() const
+			{
+				return GB(this->base(), TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
+			}
+
+			/** Get combined condition operator and auxiliary fields */
+			uint8_t GetCombinedAuxCondOpField() const
+			{
+				return GB(this->base(), TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT);
+			}
+
+			/** Get value field */
+			uint16_t GetValue() const
+			{
+				return static_cast<uint16_t>(GB(this->base(), TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
+			}
+
+			/** Set type field */
+			inline void SetType(TraceRestrictItemType type)
+			{
+				SB(this->edit_base(), TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT, type);
+			}
+
+			/** Set condition operator field */
+			inline void SetCondOp(TraceRestrictCondOp condop)
+			{
+				SB(this->edit_base(), TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
+			}
+
+			/** Set condition flags field */
+			inline void SetCondFlags(TraceRestrictCondFlags condflags)
+			{
+				SB(this->edit_base(), TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
+			}
+
+			/** Set auxiliary field */
+			inline void SetAuxField(uint8_t data)
+			{
+				SB(this->edit_base(), TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
+			}
+
+			/** Set combined condition operator and auxiliary fields */
+			inline void SetCombinedAuxCondOpField(uint8_t data)
+			{
+				SB(this->edit_base(), TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT, data);
+			}
+
+			/** Set value field */
+			inline void SetValue(uint16_t value)
+			{
+				SB(this->edit_base(), TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
+			}
+
+			/** Is the type field a conditional type? */
+			inline bool IsConditional() const
+			{
+				return IsTraceRestrictTypeConditional(this->GetType());
+			}
+
+			/** Is this a double-item type? */
+			inline bool IsDoubleItem() const
+			{
+				return IsTraceRestrictDoubleItemType(this->GetType());
+			}
+
+			/** Get TraceRestrictProgramItem of this instruction item */
+			inline TraceRestrictProgramItem AsProgramItem() const
+			{
+				return TraceRestrictProgramItem{this->base()};
+			}
+		};
+	};
+};
+
+/**
+ * Type of a single instruction item. Instructions are bit-packed as per TraceRestrictItemFlagAllocation.
+ */
+using TraceRestrictInstructionItem = StrongType::Typedef<uint32_t, struct TraceRestrictInstructionItemTag, StrongType::Compare, TracerestrictDetail::InstructionItemOperations>;
+
+/** Reference wrapper type for TraceRestrictInstructionItem */
+using TraceRestrictInstructionItemRef = StrongType::BaseRefTypedef<TraceRestrictInstructionItem, StrongType::Compare, TracerestrictDetail::InstructionItemOperations>;
+
+template <typename ITER>
+struct TraceRestrictInstructionEndSentinel {
+private:
+	ITER iter; // Underlying iterator type
+
+public:
+	constexpr TraceRestrictInstructionEndSentinel(ITER iter) : iter(iter) {}
+	constexpr TraceRestrictInstructionEndSentinel(const TraceRestrictInstructionEndSentinel &other) = default;
+
+	ITER ItemIter() const { return this->iter; }
+};
+
+template <typename ITER>
+struct TraceRestrictInstructionIterator {
+	using difference_type = std::ptrdiff_t;
+	using value_type = TraceRestrictInstructionIterator;
+	using reference = TraceRestrictInstructionIterator;
+	using pointer = TraceRestrictInstructionIterator;
+	using iterator_category = std::forward_iterator_tag;
+
+private:
+	ITER iter; // Underlying iterator type
+
+	void Next()
+	{
+		if (this->Instruction().IsDoubleItem()) ++this->iter;
+		++this->iter;
+	}
+
+public:
+	constexpr TraceRestrictInstructionIterator(ITER iter) : iter(iter) {}
+	constexpr TraceRestrictInstructionIterator(const TraceRestrictInstructionIterator &other) = default;
+
+	bool operator==(const TraceRestrictInstructionIterator &other) const = default;
+	bool operator<(const TraceRestrictInstructionIterator &other) const = default;
+	bool operator==(const ITER &other) const { return this->iter == other; }
+	bool operator<(const ITER &other) const { return this->iter < other; }
+
+	/* For instruction iteration, use operator < on the underlying iterator instead of !=, this is to disallow skipping over the end in pre-validation saveload edits */
+	bool operator!=(const TraceRestrictInstructionEndSentinel<ITER> &end) const { return this->iter < end.ItemIter(); }
+
+	TraceRestrictInstructionItem Instruction() const { return TraceRestrictInstructionItem{this->iter->base()}; }
+	TraceRestrictInstructionItemRef InstructionRef() const { return TraceRestrictInstructionItemRef{this->iter->edit_base()}; }
+
+	uint32_t Secondary() const
+	{
+		dbg_assert(this->Instruction().IsDoubleItem());
+		return (this->iter + 1)->base();
+	}
+
+	uint32_t &SecondaryRef() const
+	{
+		dbg_assert(this->Instruction().IsDoubleItem());
+		return (this->iter + 1)->edit_base();
+	}
+
+	ITER ItemIter() const { return this->iter; }
+
+	/* Increment operator (postfix) */
+	TraceRestrictInstructionIterator operator ++(int)
+	{
+		TraceRestrictInstructionIterator tmp = *this;
+		this->Next();
+		return tmp;
+	}
+
+	/* Increment operator (prefix) */
+	TraceRestrictInstructionIterator &operator ++()
+	{
+		this->Next();
+		return *this;
+	}
+
+	/* For range for, don't automatically dereference */
+	TraceRestrictInstructionIterator &operator *() { return *this; }
+};
+
+template <typename C>
+struct TraceRestrictInstructionIterateWrapper {
+	C &container;
+
+	constexpr TraceRestrictInstructionIterateWrapper(C &container) : container(container) {}
+
+	auto begin() { return TraceRestrictInstructionIterator(this->container.begin()); }
+	auto end() { return TraceRestrictInstructionEndSentinel(this->container.end()); }
+};
+
+
+size_t TraceRestrictInstructionOffsetToArrayOffset(const std::span<const TraceRestrictProgramItem> items, size_t offset);
+size_t TraceRestrictArrayOffsetToInstructionOffset(const std::span<const TraceRestrictProgramItem> items, size_t offset);
+
+/** Get number of instructions in @p items */
+inline size_t TraceRestrictGetInstructionCount(const std::span<const TraceRestrictProgramItem> items)
+{
+	return TraceRestrictArrayOffsetToInstructionOffset(items, items.size());
+}
+
+/** Get an instruction iterator at a given @p instruction_offset in @p items */
+template <typename T>
+auto TraceRestrictInstructionIteratorAt(T &items, size_t instruction_offset)
+{
+	return TraceRestrictInstructionIterator(items.begin() + TraceRestrictInstructionOffsetToArrayOffset(items, instruction_offset));
+}
+
+/**
+ * Type to hold a complete instruction, including the optional second item.
+ * The second item is 0 if unused.
+ * Not used for instruction storage.
+ */
+struct TraceRestrictInstructionRecord {
+	TraceRestrictInstructionItem instruction = {};
+	uint32_t secondary = {};
+};
 
 /**
  * Enumeration for TraceRestrictProgramResult::flags
@@ -712,7 +850,7 @@ struct TraceRestrictProgramResult {
  */
 struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrictprogram_pool> {
 	uint32_t refcount;
-	std::vector<TraceRestrictItem> items;
+	std::vector<TraceRestrictProgramItem> items;
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
 private:
@@ -753,49 +891,23 @@ public:
 
 	void DecrementRefCount(TraceRestrictRefId ref_id);
 
-	static CommandCost Validate(const std::span<const TraceRestrictItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
+	static CommandCost Validate(const std::span<const TraceRestrictProgramItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 
-	static size_t InstructionOffsetToArrayOffset(const std::span<const TraceRestrictItem> items, size_t offset);
-
-	static size_t ArrayOffsetToInstructionOffset(const std::span<const TraceRestrictItem> items, size_t offset);
-
-	/** Call InstructionOffsetToArrayOffset on current program instruction list */
-	size_t InstructionOffsetToArrayOffset(size_t offset) const
-	{
-		return TraceRestrictProgram::InstructionOffsetToArrayOffset(this->items, offset);
-	}
-
-	/** Call ArrayOffsetToInstructionOffset on current program instruction list */
-	size_t ArrayOffsetToInstructionOffset(size_t offset) const
-	{
-		return TraceRestrictProgram::ArrayOffsetToInstructionOffset(this->items, offset);
-	}
-
-	/** Get number of instructions in @p items */
-	static size_t GetInstructionCount(const std::span<const TraceRestrictItem> items)
-	{
-		return ArrayOffsetToInstructionOffset(items, items.size());
-	}
-
-	/** Call GetInstructionCount on current program instruction list */
+	/** Get instruction count of current program instruction list */
 	size_t GetInstructionCount() const
 	{
-		return TraceRestrictProgram::GetInstructionCount(this->items);
-	}
-
-	/** Get an iterator to the instruction at a given @p instruction_offset in @p items */
-	template <typename T>
-	static auto IteratorAtInstruction(T &items, size_t instruction_offset)
-	{
-		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
+		return TraceRestrictGetInstructionCount(this->items);
 	}
 
 	/** Get an instruction record at the given instruction offset, this reads the second item if suitable for the instruction type. */
 	TraceRestrictInstructionRecord GetInstructionRecordAt(size_t instruction_offset) const
 	{
-		size_t offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(this->items, instruction_offset);
-		TraceRestrictInstructionRecord record{ this->items[offset] };
-		if (IsTraceRestrictDoubleItem(record.instruction)) record.secondary = this->items[offset + 1];
+		auto iter = TraceRestrictInstructionIteratorAt(this->items, instruction_offset);
+		TraceRestrictInstructionRecord record{ iter.Instruction() };
+		if (record.instruction.IsDoubleItem()) {
+			dbg_assert(iter.ItemIter() + 1 < this->items.end());
+			record.secondary = iter.Secondary();
+		}
 		return record;
 	}
 
@@ -804,6 +916,9 @@ public:
 	{
 		return TraceRestrictProgram::Validate(this->items, this->actions_used_flags);
 	}
+
+	auto IterateInstructions() const { return TraceRestrictInstructionIterateWrapper(this->items); }
+	auto IterateInstructionsMutable() { return TraceRestrictInstructionIterateWrapper(this->items); }
 };
 
 /**
@@ -865,27 +980,27 @@ struct TraceRestrictTypePropertySet {
 	TraceRestrictValueType value_type;
 };
 
-void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type);
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8_t aux_data = 0);
+void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type);
+void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, TraceRestrictItemType type, uint8_t aux_data = 0);
 
 /**
  * Get TraceRestrictTypePropertySet for a given instruction, using the instruction type and where appropriate the auxiliary type field
  */
-inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrictItem item)
+inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrictInstructionItem item)
 {
 	TraceRestrictTypePropertySet out;
 
-	if (GetTraceRestrictType(item) == TRIT_NULL) {
+	if (item.GetType() == TRIT_NULL) {
 		out.cond_type = TRCOT_NONE;
 		out.value_type = TRVT_SPECIAL;
-	} else if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
-			GetTraceRestrictType(item) == TRIT_COND_UNDEFINED) {
+	} else if (item.GetType() == TRIT_COND_ENDIF ||
+			item.GetType() == TRIT_COND_UNDEFINED) {
 		out.cond_type = TRCOT_NONE;
 		out.value_type = TRVT_NONE;
-	} else if (IsTraceRestrictConditional(item)) {
+	} else if (item.IsConditional()) {
 		out.cond_type = TRCOT_ALL;
 
-		switch (GetTraceRestrictType(item)) {
+		switch (item.GetType()) {
 			case TRIT_COND_TRAIN_LENGTH:
 				out.value_type = TRVT_INT;
 				break;
@@ -931,7 +1046,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				break;
 
 			case TRIT_COND_PHYS_PROP:
-				switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
+				switch (static_cast<TraceRestrictPhysPropCondAuxField>(item.GetAuxField())) {
 					case TRPPCAF_WEIGHT:
 						out.value_type = TRVT_WEIGHT;
 						break;
@@ -951,7 +1066,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				break;
 
 			case TRIT_COND_PHYS_RATIO:
-				switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
+				switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(item.GetAuxField())) {
 					case TRPPRCAF_POWER_WEIGHT:
 						out.value_type = TRVT_POWER_WEIGHT_RATIO;
 						break;
@@ -993,7 +1108,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				break;
 
 			case TRIT_COND_CATEGORY:
-				switch (static_cast<TraceRestrictCatgeoryCondAuxField>(GetTraceRestrictAuxField(item))) {
+				switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
 					case TRCCAF_ENGINE_CLASS:
 						out.value_type = TRVT_ENGINE_CLASS;
 						break;
@@ -1021,7 +1136,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 	} else {
 		out.cond_type = TRCOT_NONE;
 
-		switch (GetTraceRestrictType(item)) {
+		switch (item.GetType()) {
 			case TRIT_PF_PENALTY:
 				out.value_type = TRVT_PF_PENALTY;
 				break;
@@ -1198,10 +1313,10 @@ inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRe
 CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 
-CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset, bool shallow_mode);
-CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t &offset, bool up, bool shallow_mode);
-CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset);
-bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictItem> &items, uint32_t offset);
+CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset, bool shallow_mode);
+CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t &offset, bool up, bool shallow_mode);
+CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset);
+bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictProgramItem> &items, uint32_t offset);
 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 
@@ -1213,7 +1328,7 @@ void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);
 void TraceRestrictRemoveCounterID(TraceRestrictCounterID index);
-void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem> instructions, Owner instructions_owner);
+void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner);
 void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order_owner);
 
 void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);
