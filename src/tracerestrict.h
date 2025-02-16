@@ -753,11 +753,11 @@ public:
 
 	void DecrementRefCount(TraceRestrictRefId ref_id);
 
-	static CommandCost Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
+	static CommandCost Validate(const std::span<const TraceRestrictItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 
-	static size_t InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+	static size_t InstructionOffsetToArrayOffset(const std::span<const TraceRestrictItem> items, size_t offset);
 
-	static size_t ArrayOffsetToInstructionOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+	static size_t ArrayOffsetToInstructionOffset(const std::span<const TraceRestrictItem> items, size_t offset);
 
 	/** Call InstructionOffsetToArrayOffset on current program instruction list */
 	size_t InstructionOffsetToArrayOffset(size_t offset) const
@@ -772,7 +772,7 @@ public:
 	}
 
 	/** Get number of instructions in @p items */
-	static size_t GetInstructionCount(const std::vector<TraceRestrictItem> &items)
+	static size_t GetInstructionCount(const std::span<const TraceRestrictItem> items)
 	{
 		return ArrayOffsetToInstructionOffset(items, items.size());
 	}

@@ -994,7 +994,7 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
  * This only validates that conditional nesting is correct,
  * and that all instructions have a known type, at present
  */
-CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
+CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
 	/* Static to avoid needing to re-alloc/resize on each execution */
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
@@ -1537,7 +1537,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 /**
  * Convert an instruction index into an item array index
  */
-size_t TraceRestrictProgram::InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset)
+size_t TraceRestrictProgram::InstructionOffsetToArrayOffset(const std::span<const TraceRestrictItem> items, size_t offset)
 {
 	size_t output_offset = 0;
 	size_t size = items.size();
@@ -1552,7 +1552,7 @@ size_t TraceRestrictProgram::InstructionOffsetToArrayOffset(const std::vector<Tr
 /**
  * Convert an item array index into an instruction index
  */
-size_t TraceRestrictProgram::ArrayOffsetToInstructionOffset(const std::vector<TraceRestrictItem> &items, size_t offset)
+size_t TraceRestrictProgram::ArrayOffsetToInstructionOffset(const std::span<const TraceRestrictItem> items, size_t offset)
 {
 	size_t output_offset = 0;
 	for (size_t i = 0; i < offset; i++, output_offset++) {
