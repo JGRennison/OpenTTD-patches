@@ -391,16 +391,16 @@ class NWidgetCore : public NWidgetResizeBase {
 public:
 	NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fill_x, uint fill_y, const WidgetData &widget_data, StringID tool_tip);
 
-	void SetString(StringID string);
-	void SetStringTip(StringID string, StringID tool_tip);
-	void SetSprite(SpriteID sprite);
-	void SetSpriteTip(SpriteID sprite, StringID tool_tip);
-	void SetMatrixDimension(uint32_t columns, uint32_t rows);
-	void SetResizeWidgetType(ResizeWidgetValues type);
-	void SetToolTip(StringID tool_tip);
-	StringID GetToolTip() const;
-	void SetTextStyle(TextColour colour, FontSize size);
-	void SetAlignment(StringAlignment align);
+	inline void SetString(StringID string);
+	inline void SetStringTip(StringID string, StringID tool_tip);
+	inline void SetSprite(SpriteID sprite);
+	inline void SetSpriteTip(SpriteID sprite, StringID tool_tip);
+	inline void SetMatrixDimension(uint32_t columns, uint32_t rows);
+	inline void SetResizeWidgetType(ResizeWidgetValues type);
+	inline void SetToolTip(StringID tool_tip);
+	inline StringID GetToolTip() const;
+	inline void SetTextStyle(TextColour colour, FontSize size);
+	inline void SetAlignment(StringAlignment align);
 
 	inline StringID GetString() const;
 	inline SpriteID GetSprite() const;
@@ -436,6 +436,103 @@ protected:
 	/* This function constructs the widgets, so it should be able to write the variables. */
 	friend void ApplyNWidgetPartAttribute(const struct NWidgetPart &nwid, NWidgetBase *dest);
 };
+
+/**
+ * Set string of the nested widget.
+ * @param string The new string.
+ */
+inline void NWidgetCore::SetString(StringID string)
+{
+	this->widget_data.string = string;
+}
+
+/**
+ * Set string and tool tip of the nested widget.
+ * @param stringThe new string.
+ * @param tool_tip The new tool_tip.
+ */
+inline void NWidgetCore::SetStringTip(StringID string, StringID tool_tip)
+{
+	this->SetString(string);
+	this->SetToolTip(tool_tip);
+}
+
+/**
+ * Set sprite of the nested widget.
+ * @param sprite The new sprite.
+ */
+inline void NWidgetCore::SetSprite(SpriteID sprite)
+{
+	this->widget_data.sprite = sprite;
+}
+
+/**
+ * Set sprite and tool tip of the nested widget.
+ * @param sprite The new sprite.
+ * @param tool_tip The new tool_tip.
+ */
+inline void NWidgetCore::SetSpriteTip(SpriteID sprite, StringID tool_tip)
+{
+	this->SetSprite(sprite);
+	this->SetToolTip(tool_tip);
+}
+
+/**
+ * Set the matrix dimension.
+ * @param columns The number of columns in the matrix (0 for autoscaling).
+ * @param rows The number of rows in the matrix (0 for autoscaling).
+ */
+inline void NWidgetCore::SetMatrixDimension(uint32_t columns, uint32_t rows)
+{
+	this->widget_data.matrix = { columns, rows };
+}
+
+/**
+ * Set the resize widget type of the nested widget.
+ * @param type The new resize widget.
+ */
+inline void NWidgetCore::SetResizeWidgetType(ResizeWidgetValues type)
+{
+	this->widget_data.resize_widget_type = type;
+}
+
+/**
+ * Set the text style of the nested widget.
+ * @param colour TextColour to use.
+ * @param size Font size to use.
+ */
+inline void NWidgetCore::SetTextStyle(TextColour colour, FontSize size)
+{
+	this->text_colour = colour;
+	this->text_size = size;
+}
+
+/**
+ * Set the tool tip of the nested widget.
+ * @param tool_tip Tool tip string to use.
+ */
+inline void NWidgetCore::SetToolTip(StringID tool_tip)
+{
+	this->tool_tip = tool_tip;
+}
+
+/**
+ * Get the tool tip of the nested widget.
+ * @return The tool tip string.
+ */
+inline StringID NWidgetCore::GetToolTip() const
+{
+	return this->tool_tip;
+}
+
+/**
+ * Set the text/image alignment of the nested widget.
+ * @param align Alignment to use.
+ */
+inline void NWidgetCore::SetAlignment(StringAlignment align)
+{
+	this->align = align;
+}
 
 /**
  * Get the string that has been set for this nested widget.
