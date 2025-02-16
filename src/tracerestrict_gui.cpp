@@ -3427,7 +3427,7 @@ private:
 			this->base_copy_plane = DPC_COPY;
 		}
 
-		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->tool_tip = (this->base_copy_plane == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP;
+		this->GetWidget<NWidgetCore>(TR_WIDGET_COPY_APPEND)->SetToolTip((this->base_copy_plane == DPC_DUPLICATE) ? STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP : STR_TRACE_RESTRICT_COPY_TOOLTIP);
 		this->UpdatePlaceObjectPlanes();
 
 		/* Haven't selected instruction */

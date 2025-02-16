@@ -202,7 +202,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 			_scroller_click_timeout = 3;
 			changed = sb->UpdatePosition(rtl ? 1 : -1);
 		}
-		w->mouse_capture_widget = sb->index;
+		w->mouse_capture_widget = sb->GetIndex();
 	} else if (pos >= ma - button_size) {
 		/* Pressing the lower button? */
 		SetBit(sb->disp_flags, NDB_SCROLLBAR_DOWN);
@@ -211,7 +211,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 			_scroller_click_timeout = 3;
 			changed = sb->UpdatePosition(rtl ? -1 : 1);
 		}
-		w->mouse_capture_widget = sb->index;
+		w->mouse_capture_widget = sb->GetIndex();
 	} else {
 		Point pt = HandleScrollbarHittest(sb, mi, ma, sb->type == NWID_HSCROLLBAR);
 
@@ -222,7 +222,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 		} else {
 			_scrollbar_start_pos = pt.x - mi - button_size;
 			_scrollbar_size = ma - mi - button_size * 2 - (pt.y - pt.x);
-			w->mouse_capture_widget = sb->index;
+			w->mouse_capture_widget = sb->GetIndex();
 			_cursorpos_drag_start = _cursor.pos;
 		}
 	}
@@ -271,7 +271,7 @@ void ScrollbarClickHandler(Window *w, NWidgetCore *nw, int x, int y)
 WidgetID GetWidgetFromPos(const Window *w, int x, int y)
 {
 	NWidgetCore *nw = w->nested_root->GetWidgetFromPos(x, y);
-	return (nw != nullptr) ? nw->index : -1;
+	return (nw != nullptr) ? nw->GetIndex() : -1;
 }
 
 /**
@@ -3217,7 +3217,7 @@ static bool IsAttributeWidgetPartType(WidgetType tp)
  * @param dest NWidget to apply attribute to.
  * @pre NWidgetPart must be an attribute NWidgetPart.
  */
-static void ApplyNWidgetPartAttribute(const NWidgetPart &nwid, NWidgetBase *dest)
+void ApplyNWidgetPartAttribute(const NWidgetPart &nwid, NWidgetBase *dest)
 {
 	switch (nwid.type) {
 		case WPT_RESIZE: {

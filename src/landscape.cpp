@@ -1143,7 +1143,7 @@ static bool FlowsDown(TileIndex begin, TileIndex end)
 /* AyStar callback for checking whether we reached our destination. */
 static AyStarStatus River_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
-	return current->path.node.tile == *(TileIndex*)aystar->user_target ? AyStarStatus::FoundEndNode : AyStarStatus::Done;
+	return current->path.node.tile == *static_cast<TileIndex *>(aystar->user_target) ? AyStarStatus::FoundEndNode : AyStarStatus::Done;
 }
 
 /* AyStar callback for getting the cost of the current node. */
@@ -1155,7 +1155,7 @@ static int32_t River_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNod
 /* AyStar callback for getting the estimated cost to the destination. */
 static int32_t River_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
-	return DistanceManhattan(*(TileIndex*)aystar->user_target, current->tile);
+	return DistanceManhattan(*static_cast<TileIndex *>(aystar->user_target), current->tile);
 }
 
 /* AyStar callback for getting the neighbouring nodes of the given node. */

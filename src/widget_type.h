@@ -404,6 +404,8 @@ public:
 
 	inline StringID GetString() const;
 	inline SpriteID GetSprite() const;
+	inline WidgetID GetIndex() const;
+	inline WidgetID GetScrollbarIndex() const;
 
 	inline void SetLowered(bool lowered);
 	inline bool IsLowered() const;
@@ -421,14 +423,18 @@ public:
 
 	NWidgetDisplay disp_flags; ///< Flags that affect display and interaction with the widget.
 	Colours colour;            ///< Colour of this widget.
+protected:
 	const WidgetID index;      ///< Index of the nested widget (\c -1 means 'not used').
 	WidgetData widget_data;    ///< Data of the widget. @see Widget::data
-	StringID tool_tip;         ///< Tooltip of the widget. @see Widget::tootips
+	StringID tool_tip;         ///< Tooltip of the widget. @see Widget::tool_tips
 	WidgetID scrollbar_index;  ///< Index of an attached scrollbar.
 	TextColour highlight_colour; ///< Colour of highlight.
 	TextColour text_colour;    ///< Colour of text within widget.
 	FontSize text_size;        ///< Size of text within widget.
 	StringAlignment align;     ///< Alignment of text/image within widget.
+
+	/* This function constructs the widgets, so it should be able to write the variables. */
+	friend void ApplyNWidgetPartAttribute(const struct NWidgetPart &nwid, NWidgetBase *dest);
 };
 
 /**
@@ -447,6 +453,24 @@ inline StringID NWidgetCore::GetString() const
 inline SpriteID NWidgetCore::GetSprite() const
 {
 	return this->widget_data.sprite;
+}
+
+/**
+ * Get the \c WidgetID of this nested widget.
+ * @return The \c WidgetID.
+ */
+inline WidgetID NWidgetCore::GetIndex() const
+{
+	return this->index;
+}
+
+/**
+ * Get the \c WidgetID of this nested widget's scrollbar.
+ * @return The \c WidgetID.
+ */
+inline WidgetID NWidgetCore::GetScrollbarIndex() const
+{
+	return this->scrollbar_index;
 }
 
 /**

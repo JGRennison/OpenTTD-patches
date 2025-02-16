@@ -182,8 +182,7 @@ bool HaveDParamChanged(const std::span<const StringParameterBackup> backup)
 }
 
 static void StationGetSpecialString(StringBuilder builder, StationFacility x);
-static void GetSpecialTownNameString(StringBuilder builder, int ind, uint32_t seed);
-static void GetSpecialNameString(StringBuilder builder, int ind, StringParameters &args);
+static bool GetSpecialNameString(StringBuilder builder, StringID string, StringParameters &args);
 
 static void FormatString(StringBuilder builder, const char *str, StringParameters &args, uint case_index = 0, bool game_script = false, bool dry_run = false);
 
@@ -260,16 +259,15 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 
 	switch (tab) {
 		case TEXT_TAB_TOWN:
-			if (index >= 0xC0 && !game_script) {
-				GetSpecialTownNameString(builder, index.base() - 0xC0, args.GetNextParameter<uint32_t>());
+			if (IsInsideMM(string, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && !game_script) {
+				GenerateTownNameString(builder, string - SPECSTR_TOWNNAME_START, args.GetNextParameter<uint32_t>());
 				return;
 			}
 			break;
 
 		case TEXT_TAB_SPECIAL:
-			if (index >= 0xE4 && !game_script) {
-				GetSpecialNameString(builder, index.base() - 0xE4, args);
-				return;
+			if (!game_script) {
+				if (GetSpecialNameString(builder, string, args)) return;
 			}
 			if (index < lengthof(_temp_special_strings) && !game_script) {
 				FormatString(builder, _temp_special_strings[index.base()].c_str(), args, case_index);
@@ -2175,11 +2173,6 @@ static void StationGetSpecialString(StringBuilder builder, StationFacility x)
 	if ((x & FACIL_AIRPORT) != 0) builder.Utf8Encode(SCC_PLANE);
 }
 
-static void GetSpecialTownNameString(StringBuilder builder, int ind, uint32_t seed)
-{
-	GenerateTownNameString(builder, ind, seed);
-}
-
 static const char * const _silly_company_names[] = {
 	"Bloggs Brothers",
 	"Tiny Transport Ltd.",
@@ -2286,30 +2279,30 @@ static void GenPresidentName(StringBuilder builder, uint32_t seed)
 	builder += GetSurname(seed);
 }
 
-static void GetSpecialNameString(StringBuilder builder, int ind, StringParameters &args)
+static bool GetSpecialNameString(StringBuilder builder, StringID string, StringParameters &args)
 {
-	switch (ind) {
-		case 1: // not used
+	switch (string) {
+		case SPECSTR_SILLY_NAME: // Not used in new companies, but retained for old-loader savegames
 			builder += _silly_company_names[std::min<size_t>(args.GetNextParameter<uint16_t>(), std::size(_silly_company_names) - 1)];
-			return;
+			return true;
 
-		case 2: // used for Foobar & Co company names
+		case SPECSTR_ANDCO_NAME: // used for Foobar & Co company names
 			GenAndCoName(builder, args.GetNextParameter<uint32_t>());
-			return;
+			return true;
 
-		case 3: // President name
+		case SPECSTR_PRESIDENT_NAME: // President name
 			GenPresidentName(builder, args.GetNextParameter<uint32_t>());
-			return;
+			return true;
 	}
 
-	/* town name? */
-	if (IsInsideMM(ind - 6, 0, SPECSTR_TOWNNAME_LAST - SPECSTR_TOWNNAME_START + 1)) {
-		GetSpecialTownNameString(builder, ind - 6, args.GetNextParameter<uint32_t>());
+	/* TownName Transport company names, with the appropriate town name. */
+	if (IsInsideMM(string, SPECSTR_COMPANY_NAME_START, SPECSTR_COMPANY_NAME_END)) {
+		GenerateTownNameString(builder, string - SPECSTR_COMPANY_NAME_START, args.GetNextParameter<uint32_t>());
 		builder += " Transport";
-		return;
+		return true;
 	}
 
-	NOT_REACHED();
+	return false;
 }
 
 /**

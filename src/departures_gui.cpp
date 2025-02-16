@@ -301,10 +301,10 @@ public:
 			VehicleType vt;
 			if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
 				vt = HasBit(wp->waypoint_flags, WPF_ROAD) ? VEH_ROAD : VEH_TRAIN;
-				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_WAYPOINT_VIEW_CENTER_TOOLTIP;
+				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_WAYPOINT_VIEW_CENTER_TOOLTIP);
 			} else {
 				vt = VEH_SHIP;
-				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_BUOY_VIEW_CENTER_TOOLTIP;
+				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_BUOY_VIEW_CENTER_TOOLTIP);
 			}
 			for (uint i = 0; i < 4; ++i) {
 				if (i == vt) {
@@ -354,7 +354,7 @@ public:
 		this->title_params[1] = vt;
 		this->title_params[2] = this->source.destination;
 
-		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt;
+		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt);
 
 		for (uint i = 0; i < 4; ++i) {
 			if (i == vt) {
