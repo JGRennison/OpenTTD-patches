@@ -784,13 +784,8 @@ public:
 	}
 
 	/** Get an iterator to the instruction at a given @p instruction_offset in @p items */
-	static std::vector<TraceRestrictItem>::iterator InstructionAt(std::vector<TraceRestrictItem> &items, size_t instruction_offset)
-	{
-		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
-	}
-
-	/** Get a const_iterator to the instruction at a given @p instruction_offset in @p items */
-	static std::vector<TraceRestrictItem>::const_iterator InstructionAt(const std::vector<TraceRestrictItem> &items, size_t instruction_offset)
+	template <typename T>
+	static auto IteratorAtInstruction(T &items, size_t instruction_offset)
 	{
 		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
 	}

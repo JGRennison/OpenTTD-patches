@@ -1983,7 +1983,9 @@ void InstructionIteratorAdvance(T &iter)
 
 CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset, bool shallow_mode)
 {
-	TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
+	std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
+	std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
+	TraceRestrictItem old_item = *remove_start;
 	if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
 		bool remove_whole_block = false;
 		if (GetTraceRestrictCondFlags(old_item) == 0) {
@@ -1997,8 +1999,6 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 		}
 
 		uint32_t recursion_depth = 1;
-		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-		std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
 
 		/* Iterate until matching end block found */
 		for (; remove_end != items.end(); InstructionIteratorAdvance(remove_end)) {
@@ -2048,9 +2048,6 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 			items.erase(remove_start, remove_end);
 		}
 	} else {
-		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-		std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
-
 		items.erase(remove_start, remove_end);
 	}
 	return CommandCost();
@@ -2120,7 +2117,7 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 
 CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t &offset, bool up, bool shallow_mode)
 {
-	std::vector<TraceRestrictItem>::iterator move_start = TraceRestrictProgram::InstructionAt(items, offset);
+	std::vector<TraceRestrictItem>::iterator move_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
 	std::vector<TraceRestrictItem>::iterator move_end = InstructionIteratorNext(move_start);
 
 	if (!shallow_mode) {
@@ -2130,7 +2127,7 @@ CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items
 
 	if (up) {
 		if (move_start == items.begin()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
-		std::rotate(TraceRestrictProgram::InstructionAt(items, offset - 1), move_start, move_end);
+		std::rotate(TraceRestrictProgram::IteratorAtInstruction(items, offset - 1), move_start, move_end);
 		offset--;
 	} else {
 		if (move_end == items.end()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
@@ -2142,7 +2139,7 @@ CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items
 
 CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset)
 {
-	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::InstructionAt(items, offset);
+	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::IteratorAtInstruction(items, offset);
 	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
 
 	CommandCost res = AdvanceItemEndIteratorForBlock(items, dup_start, dup_end, true);
@@ -2159,7 +2156,7 @@ CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &
 
 bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictItem> &items, uint32_t offset)
 {
-	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::InstructionAt(const_cast<std::vector<TraceRestrictItem> &>(items), offset);
+	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::IteratorAtInstruction(const_cast<std::vector<TraceRestrictItem> &>(items), offset);
 	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
 
 	CommandCost res = AdvanceItemEndIteratorForBlock(items, dup_start, dup_end, true);
@@ -2236,22 +2233,26 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	if (prog != nullptr) items = prog->items;
 
 	switch (type) {
-		case TRDCT_INSERT_ITEM:
-			items.insert(TraceRestrictProgram::InstructionAt(items, offset), item);
+		case TRDCT_INSERT_ITEM: {
+			TraceRestrictItem values[3] = { item, 0, 0 };
+			uint value_count = 1;
+			if (IsTraceRestrictDoubleItem(item)) {
+				values[value_count++] = GetDualInstructionInitialValue(item);
+			}
 			if (IsTraceRestrictConditional(item) &&
 					GetTraceRestrictCondFlags(item) == 0 &&
 					GetTraceRestrictType(item) != TRIT_COND_ENDIF) {
 				/* This is an opening if block, insert a corresponding end if */
 				TraceRestrictItem endif_item = 0;
 				SetTraceRestrictType(endif_item, TRIT_COND_ENDIF);
-				items.insert(TraceRestrictProgram::InstructionAt(items, offset) + 1, endif_item);
-			} else if (IsTraceRestrictDoubleItem(item)) {
-				items.insert(TraceRestrictProgram::InstructionAt(items, offset) + 1, GetDualInstructionInitialValue(item));
+				values[value_count++] = endif_item;
 			}
+			items.insert(TraceRestrictProgram::IteratorAtInstruction(items, offset), values, values + value_count);
 			break;
+		}
 
 		case TRDCT_MODIFY_ITEM: {
-			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::InstructionAt(items, offset);
+			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::IteratorAtInstruction(items, offset);
 			if (IsTraceRestrictConditional(*old_item) != IsTraceRestrictConditional(item)) {
 				return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
 			}
@@ -2270,7 +2271,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		}
 
 		case TRDCT_MODIFY_DUAL_ITEM: {
-			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::InstructionAt(items, offset);
+			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::IteratorAtInstruction(items, offset);
 			if (!IsTraceRestrictDoubleItem(*old_item)) {
 				return CMD_ERROR;
 			}
