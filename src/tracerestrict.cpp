@@ -1575,7 +1575,6 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 		case TRVT_REVERSE:
 		case TRVT_PERCENT:
 		case TRVT_NEWS_CONTROL:
-		case TRVT_TIME_DATE_INT:
 		case TRVT_ENGINE_CLASS:
 		case TRVT_PF_PENALTY_CONTROL:
 		case TRVT_SPEED_ADAPTATION_CONTROL:
@@ -1629,6 +1628,10 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 
 		case TRVT_COUNTER_INDEX_INT:
 			item.SetValue(INVALID_TRACE_RESTRICT_COUNTER_ID);
+			break;
+
+		case TRVT_TIME_DATE_INT:
+			item.SetValue(_settings_game.game_time.time_in_minutes ? TRTDVF_MINUTE : TRTDVF_DAY);
 			break;
 
 		default:
