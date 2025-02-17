@@ -845,12 +845,7 @@ static inline bool OrderGoesToRoadDepot(const Vehicle *v, const Order *o)
  */
 static void DeleteOrderWarnings(const Vehicle *v)
 {
-	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS);
-	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_VOID_ORDER);
-	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY);
-	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_INVALID_ENTRY);
-	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_NO_DEPOT_ORDER);
-	DeleteVehicleNews(v->index, STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY);
+	DeleteVehicleNews(v->index, AdviceType::Order);
 }
 
 /**
@@ -2910,7 +2905,7 @@ void CheckOrders(const Vehicle *v)
 		if (message == INVALID_STRING_ID) return;
 
 		SetDParam(0, v->index);
-		AddVehicleAdviceNewsItem(message, v->index);
+		AddVehicleAdviceNewsItem(AdviceType::Order, message, v->index);
 	}
 }
 

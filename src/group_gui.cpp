@@ -667,7 +667,7 @@ public:
 
 		/* If not a default group and the group has replace protection, show an enabled replace sprite. */
 		uint16_t protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
-		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && HasBit(Group::Get(this->vli.index)->flags, GroupFlags::GF_REPLACE_PROTECTION)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
+		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && HasFlag(Group::Get(this->vli.index)->flags, GroupFlags::ReplaceProtection)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->SetSprite(protect_sprite + this->vli.vtype);
 
 		/* Set text of "group by" dropdown widget. */
@@ -722,7 +722,7 @@ public:
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION), g->folded || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
+					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, HasFlag(g->flags, GroupFlags::ReplaceProtection), g->folded || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
 
 					y1 += this->tiny_step_height;
 				}
@@ -967,7 +967,7 @@ public:
 			case WID_GL_REPLACE_PROTECTION: {
 				const Group *g = Group::GetIfValid(this->vli.index);
 				if (g != nullptr) {
-					DoCommandP(0, this->vli.index | (GroupFlags::GF_REPLACE_PROTECTION << 16), (HasBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION) ? 0 : 1) | (_ctrl_pressed << 1), CMD_SET_GROUP_FLAG);
+					DoCommandP(0, this->vli.index | (static_cast<uint32_t>(GroupFlags::ReplaceProtection) << 16), (HasFlag(g->flags, GroupFlags::ReplaceProtection) ? 0 : 1) | (_ctrl_pressed << 1), CMD_SET_GROUP_FLAG);
 				}
 				break;
 			}

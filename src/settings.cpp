@@ -561,7 +561,8 @@ void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
 			}
 			SetDParam(first_param++, str);
 		} else if ((this->flags & SF_GUI_DROPDOWN) != 0) {
-			SetDParam(first_param++, this->str_val - this->min + value);
+			auto [min_val, _] = this->GetRange();
+			SetDParam(first_param++, this->str_val - min_val + value);
 		} else {
 			SetDParam(first_param++, this->str_val + ((value == 0 && (this->flags & SF_GUI_0_IS_SPECIAL) != 0) ? 1 : 0));
 		}
@@ -583,6 +584,15 @@ void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
 int32_t IntSettingDesc::GetDefaultValue() const
 {
 	return this->get_def_cb != nullptr ? this->get_def_cb(*this) : this->def;
+}
+
+/**
+ * Get the min/max range for the setting.
+ * @return The min/max range.
+ */
+std::tuple<int32_t, uint32_t> IntSettingDesc::GetRange() const
+{
+	return this->get_range_cb != nullptr ? this->get_range_cb(*this) : std::tuple(this->min, this->max);
 }
 
 /**
@@ -608,6 +618,7 @@ void IntSettingDesc::MakeValueValidAndWrite(const void *object, int32_t val) con
  */
 void IntSettingDesc::MakeValueValid(int32_t &val) const
 {
+	auto [min_val, max_val] = this->GetRange();
 	/* We need to take special care of the uint32_t type as we receive from the function
 	 * a signed integer. While here also bail out on 64-bit settings as those are not
 	 * supported. Unsigned 8 and 16-bit variables are safe since they fit into a signed
@@ -627,8 +638,8 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 					if (!ValidateEnumSetting(this, val)) val = GetDefaultValue();
 				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
-					val = Clamp(val, this->min, this->max);
-				} else if (val < this->min || val > (int32_t)this->max) {
+					val = Clamp(val, min_val, max_val);
+				} else if (val < min_val || val > static_cast<int32_t>(max_val)) {
 					/* Reset invalid discrete setting (where different values change gameplay) to its default value */
 					val = this->GetDefaultValue();
 				}
@@ -637,7 +648,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 		}
 		case SLE_VAR_U32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
-			uint32_t uval = (uint32_t)val;
+			uint32_t uval = static_cast<uint32_t>(val);
 			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || uval != 0) {
 				if (this->flags & SF_ENUM) {
 					if (!ValidateEnumSetting(this, val)) {
@@ -647,13 +658,13 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 					}
 				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
-					uval = ClampU(uval, this->min, this->max);
-				} else if (uval < (uint)this->min || uval > this->max) {
+					uval = ClampU(uval, min_val, max_val);
+				} else if (uval < static_cast<uint32_t>(min_val) || uval > max_val) {
 					/* Reset invalid discrete setting to its default value */
-					uval = (uint32_t)this->GetDefaultValue();
+					uval = static_cast<uint32_t>(this->GetDefaultValue());
 				}
 			}
-			val = (int32_t)uval;
+			val = static_cast<int32_t>(uval);
 			return;
 		}
 		case SLE_VAR_I64:
@@ -1395,6 +1406,24 @@ static void ChangeMinutesPerYear(int32_t new_value)
 		_settings_newgame.economy.timekeeping_units = TKU_WALLCLOCK;
 		InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
 	}
+}
+
+static std::tuple<int32_t, uint32_t> GetServiceIntervalRange(const IntSettingDesc &)
+{
+	VehicleDefaultSettings *vds;
+	if (_game_mode == GM_MENU || !Company::IsValidID(_current_company)) {
+		vds = &_settings_client.company.vehicle;
+	} else {
+		vds = &Company::Get(_current_company)->settings.vehicle;
+	}
+
+	if (vds->servint_ispercent) return { MIN_SERVINT_PERCENT, MAX_SERVINT_PERCENT };
+
+	if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
+		return { MIN_SERVINT_MINUTES, MAX_SERVINT_MINUTES };
+	}
+
+	return { MIN_SERVINT_DAYS, MAX_SERVINT_DAYS };
 }
 
 static void TrainAccelerationModelChanged(int32_t new_value)
@@ -3495,11 +3524,10 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		const IntSettingDesc *int_setting = sd->AsIntSetting();
 
 		bool show_min_max = true;
-		int64_t min_value = int_setting->min;
-		int64_t max_value = int_setting->max;
+		auto [min_val, max_val] = int_setting->GetRange();
 		if (sd->flags & SF_ENUM) {
-			min_value = INT64_MAX;
-			max_value = INT64_MIN;
+			int64_t min_value = INT64_MAX;
+			int64_t max_value = INT64_MIN;
 			int count = 0;
 			for (const SettingDescEnumEntry *enumlist = int_setting->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 				if (enumlist->val < min_value) min_value = enumlist->val;
@@ -3509,6 +3537,9 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 			if (max_value - min_value != (int64_t)(count - 1)) {
 				/* Discontinuous range */
 				show_min_max = false;
+			} else {
+				min_val = min_value;
+				max_val = (uint64_t)max_value;
 			}
 		}
 
@@ -3517,7 +3548,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 
 		if (show_min_max) {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {})",
-				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_value, max_value);
+				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_val, max_val);
 		} else {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'",
 				name, value);

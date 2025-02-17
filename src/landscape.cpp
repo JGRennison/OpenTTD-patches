@@ -98,7 +98,7 @@ static const uint TILE_UPDATE_FREQUENCY = 1 << TILE_UPDATE_FREQUENCY_LOG;  ///< 
  * @ingroup SnowLineGroup
  * @see GetSnowLine() GameCreationSettings
  */
-static SnowLine *_snow_line = nullptr;
+static std::unique_ptr<SnowLine> _snow_line;
 
 /** The current spring during river generation */
 static TileIndex _current_spring = INVALID_TILE;
@@ -528,22 +528,12 @@ bool IsSnowLineSet()
 
 /**
  * Set a variable snow line, as loaded from a newgrf file.
- * @param table the 12 * 32 byte table containing the snowline for each day
+ * @param snow_line The new snow line configuration.
  * @ingroup SnowLineGroup
  */
-void SetSnowLine(uint8_t table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
+void SetSnowLine(std::unique_ptr<SnowLine> snow_line)
 {
-	_snow_line = CallocT<SnowLine>(1);
-	_snow_line->lowest_value = 0xFF;
-	memcpy(_snow_line->table, table, sizeof(_snow_line->table));
-
-	for (uint i = 0; i < SNOW_LINE_MONTHS; i++) {
-		for (uint j = 0; j < SNOW_LINE_DAYS; j++) {
-			_snow_line->highest_value = std::max(_snow_line->highest_value, table[i][j]);
-			_snow_line->lowest_value = std::min(_snow_line->lowest_value, table[i][j]);
-		}
-	}
-
+	_snow_line = std::move(snow_line);
 	UpdateCachedSnowLine();
 	UpdateCachedSnowLineBounds();
 }
@@ -584,7 +574,6 @@ void UpdateCachedSnowLineBounds()
  */
 void ClearSnowLine()
 {
-	free(_snow_line);
 	_snow_line = nullptr;
 	UpdateCachedSnowLine();
 	UpdateCachedSnowLineBounds();
@@ -1130,14 +1119,21 @@ static bool FlowsDown(TileIndex begin, TileIndex end)
 {
 	dbg_assert(DistanceManhattan(begin, end) == 1);
 
-	auto [slope_begin, height_begin] = GetTileSlopeZ(begin);
 	auto [slope_end, height_end] = GetTileSlopeZ(end);
 
-	return height_end <= height_begin &&
-			/* Slope either is inclined or flat; rivers don't support other slopes. */
-			(slope_end == SLOPE_FLAT || IsInclinedSlope(slope_end)) &&
-			/* Slope continues, then it must be lower... or either end must be flat. */
-			((slope_end == slope_begin && height_end < height_begin) || slope_end == SLOPE_FLAT || slope_begin == SLOPE_FLAT);
+	/* Slope either is inclined or flat; rivers don't support other slopes. */
+	if (slope_end != SLOPE_FLAT && !IsInclinedSlope(slope_end)) return false;
+
+	auto [slope_begin, height_begin] = GetTileSlopeZ(begin);
+
+	/* It can't flow uphill. */
+	if (height_end > height_begin) return false;
+
+	/* Slope continues, then it must be lower... */
+	if (slope_end == slope_begin && height_end < height_begin) return true;
+
+	/* ... or either end must be flat. */
+	return slope_end == SLOPE_FLAT || slope_begin == SLOPE_FLAT;
 }
 
 /* AyStar callback for checking whether we reached our destination. */

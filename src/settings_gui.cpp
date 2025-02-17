@@ -1745,6 +1745,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	bool editable = this->IsGUIEditable();
 
 	SetDParam(0, STR_CONFIG_SETTING_VALUE);
+	auto [min_val, max_val] = sd->GetRange();
 	int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 	if (sd->IsBoolSetting()) {
 		/* Draw checkbox for boolean-value either on/off */
@@ -1755,7 +1756,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	} else {
 		/* Draw [<][>] boxes for settings of an integer-type */
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
-				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : sd->min), editable && (uint32_t)value != sd->max);
+				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : min_val), editable && static_cast<uint32_t>(value) != max_val);
 	}
 	this->DrawSettingString(text_left, text_right, y + (SETTING_HEIGHT - GetCharacterHeight(FS_NORMAL)) / 2, highlight, value);
 }
@@ -3108,6 +3109,7 @@ struct GameSettingsWindow : Window {
 			return;
 		}
 
+		auto [min_val, max_val] = sd->GetRange();
 		int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 
 		/* clicked on the icon on the left side. Either scroller, bool on/off or dropdown */
@@ -3140,8 +3142,8 @@ struct GameSettingsWindow : Window {
 
 					DropDownList list;
 					if (sd->flags & SF_GUI_DROPDOWN) {
-						for (int i = sd->min; i <= (int)sd->max; i++) {
-							int val = i;
+						for (int32_t i = min_val; i <= static_cast<int32_t>(max_val); i++) {
+							int32_t val = i;
 							if (sd->guiproc != nullptr) {
 								SettingOnGuiCtrlData data;
 								data.type = SOGCT_GUI_DROPDOWN_ORDER;
@@ -3149,8 +3151,8 @@ struct GameSettingsWindow : Window {
 								if (sd->guiproc(data)) {
 									val = data.val;
 								}
+								assert_msg(val >= min_val && val <= static_cast<int32_t>(max_val), "min: {}, max: {}, val: {}", sd->min, sd->max, val);
 							}
-							assert_msg(val >= sd->min && val <= (int)sd->max, "min: {}, max: {}, val: {}", sd->min, sd->max, val);
 							sd->SetValueDParams(0, val);
 							list.push_back(MakeDropDownListStringItem(STR_JUST_STRING2, val, false));
 						}
@@ -3175,7 +3177,7 @@ struct GameSettingsWindow : Window {
 				 * 50-steps you should be able to get from min to max,
 				 * unless specified otherwise in the 'interval' variable
 				 * of the current setting. */
-				uint32_t step = (sd->interval == 0) ? ((sd->max - sd->min) / 50) : sd->interval;
+				uint32_t step = (sd->interval == 0) ? ((max_val - min_val) / 50) : sd->interval;
 				if (step == 0) step = 1;
 
 				/* don't allow too fast scrolling */
@@ -3187,16 +3189,16 @@ struct GameSettingsWindow : Window {
 				/* Increase or decrease the value and clamp it to extremes */
 				if (x >= SETTING_BUTTON_WIDTH / 2) {
 					value += step;
-					if (sd->min < 0) {
-						assert((int32_t)sd->max >= 0);
-						if (value > (int32_t)sd->max) value = (int32_t)sd->max;
+					if (min_val < 0) {
+						assert(static_cast<int32_t>(max_val) >= 0);
+						if (value > static_cast<int32_t>(max_val)) value = static_cast<int32_t>(max_val);
 					} else {
-						if ((uint32_t)value > sd->max) value = (int32_t)sd->max;
+						if (static_cast<uint32_t>(value) > max_val) value = static_cast<int32_t>(max_val);
 					}
-					if (value < sd->min) value = sd->min; // skip between "disabled" and minimum
+					if (value < min_val) value = min_val; // skip between "disabled" and minimum
 				} else {
 					value -= step;
-					if (value < sd->min) value = (sd->flags & SF_GUI_0_IS_SPECIAL) ? 0 : sd->min;
+					if (value < min_val) value = (sd->flags & SF_GUI_0_IS_SPECIAL) ? 0 : min_val;
 				}
 
 				/* Set up scroller timeout for numeric values */
@@ -3226,13 +3228,13 @@ struct GameSettingsWindow : Window {
 				this->valuewindow_entry = pe;
 				if (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3) {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
-					if (sd->min < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
+					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
 					SetDParam(0, value64);
 					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
 				} else {
 					CharSetFilter charset_filter = CS_NUMERAL; //default, only numeric input allowed
-					if (sd->min < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
+					if (min_val < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
 
 					SetDParam(0, value64);
 					/* Limit string length to 14 so that MAX_INT32 * max currency rate doesn't exceed MAX_INT64. */

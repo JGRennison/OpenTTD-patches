@@ -325,7 +325,7 @@ static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle
 		SetDParam(2, CargoSpec::Get(old_veh->cargo_type)->name);
 	}
 
-	AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
 	return CommandCost();
 }
 
@@ -433,7 +433,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 			SetDParam(0, old_veh->index);
 			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
 			SetDParam(2, CargoSpec::Get(FindFirstBit(remaining))->name);
-			AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+			AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
 		}
 		return CommandCost();
 	}
@@ -926,7 +926,7 @@ CommandCost CmdAutoreplaceVehicle(TileIndex tile, DoCommandFlag flags, uint32_t 
 	bool same_type_only = HasBit(p2, 0);
 
 	const Group *g = Group::GetIfValid(v->group_id);
-	if (g != nullptr) wagon_removal = HasBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
+	if (g != nullptr) wagon_removal = HasFlag(g->flags, GroupFlags::ReplaceWagonRemoval);
 
 	/* Test whether any replacement is set, before issuing a whole lot of commands that would end in nothing changed */
 	Vehicle *w = v;

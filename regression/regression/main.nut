@@ -2035,6 +2035,20 @@ function Regression::Start()
 				print("      VehicleID:         " + c.GetVehicleID());
 			} break;
 
+			case AIEvent.ET_COMPANY_RENAMED: {
+				local c = AIEventCompanyRenamed.Convert(e);
+				print("      EventName:         CompanyRenamed");
+				print("      CompanyID:         " + c.GetCompanyID());
+				print("      CompanyName:       " + c.GetNewName());
+			} break;
+
+			case AIEvent.ET_PRESIDENT_RENAMED: {
+				local c = AIEventPresidentRenamed.Convert(e);
+				print("      EventName:         PresidentRenamed");
+				print("      CompanyID:         " + c.GetCompanyID());
+				print("      PresidentName:     " + c.GetNewName());
+			} break;
+
 			default:
 				print("      Unknown Event");
 				break;

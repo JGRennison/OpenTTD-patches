@@ -188,6 +188,7 @@ struct IntSettingDesc : SettingDesc {
 	typedef StringID GetHelpCallback(const IntSettingDesc &sd);
 	typedef void SetValueDParamsCallback(const IntSettingDesc &sd, uint first_param, int32_t value);
 	typedef int32_t GetDefaultValueCallback(const IntSettingDesc &sd);
+	typedef std::tuple<int32_t, uint32_t> GetRangeCallback(const IntSettingDesc &sd);
 
 	/**
 	 * A check to be performed before the setting gets changed. The passed integer may be
@@ -208,11 +209,12 @@ struct IntSettingDesc : SettingDesc {
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,
 			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
-			GetDefaultValueCallback get_def_cb,
+			GetDefaultValueCallback get_def_cb, GetRangeCallback get_range_cb,
 			const SettingDescEnumEntry *enumlist) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), min(min), max(max), interval(interval),
 			str(str), str_help(str_help), str_val(str_val), cat(cat), pre_check(pre_check), post_callback(post_callback),
-			get_title_cb(get_title_cb), get_help_cb(get_help_cb), set_value_dparams_cb(set_value_dparams_cb), get_def_cb(get_def_cb),
+			get_title_cb(get_title_cb), get_help_cb(get_help_cb), set_value_dparams_cb(set_value_dparams_cb),
+			get_def_cb(get_def_cb), get_range_cb(get_range_cb),
 			enumlist(enumlist) {}
 
 	int32_t def;            ///< default value given when none is present
@@ -229,6 +231,7 @@ struct IntSettingDesc : SettingDesc {
 	GetHelpCallback *get_help_cb;
 	SetValueDParamsCallback *set_value_dparams_cb;
 	GetDefaultValueCallback *get_def_cb; ///< Callback to set the correct default value
+	GetRangeCallback *get_range_cb;
 
 	const SettingDescEnumEntry *enumlist; ///< For SF_ENUM. The last entry must use STR_NULL
 
@@ -236,6 +239,7 @@ struct IntSettingDesc : SettingDesc {
 	StringID GetHelp() const;
 	void SetValueDParams(uint first_param, int32_t value) const;
 	int32_t GetDefaultValue() const;
+	std::tuple<int32_t, uint32_t> GetRange() const;
 
 	/**
 	 * Check whether this setting is a boolean type setting.
@@ -269,7 +273,7 @@ struct BoolSettingDesc : IntSettingDesc {
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
 			GetDefaultValueCallback get_def_cb) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat,
-			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr) {}
+			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr, nullptr) {}
 
 	static std::optional<bool> ParseSingleValue(const char *str);
 
@@ -288,7 +292,7 @@ struct OneOfManySettingDesc : IntSettingDesc {
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
 			GetDefaultValueCallback get_def_cb, std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, max, 0, str, str_help, str_val, cat,
-			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr), many_cnvt(many_cnvt)
+			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr, nullptr), many_cnvt(many_cnvt)
 	{
 		for (auto one : many) this->many.push_back(one);
 	}

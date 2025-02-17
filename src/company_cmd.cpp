@@ -433,7 +433,7 @@ static void GenerateCompanyName(Company *c)
 
 	StringID str;
 	uint32_t strp;
-	std::string buffer;
+	std::string name;
 	if (t->name.empty() && IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END)) {
 		str = t->townnametype - SPECSTR_TOWNNAME_START + SPECSTR_COMPANY_NAME_START;
 		strp = t->townnameparts;
@@ -445,14 +445,16 @@ verify_name:;
 		}
 
 		SetDParam(0, strp);
-		buffer = GetString(str);
-		if (Utf8StringLength(buffer) >= MAX_LENGTH_COMPANY_NAME_CHARS) goto bad_town_name;
+		name = GetString(str);
+		if (Utf8StringLength(name) >= MAX_LENGTH_COMPANY_NAME_CHARS) goto bad_town_name;
 
 set_name:;
 		c->name_1 = str;
 		c->name_2 = strp;
 
 		MarkWholeScreenDirty();
+		AI::BroadcastNewEvent(new ScriptEventCompanyRenamed(c->index, name));
+		Game::NewEvent(new ScriptEventCompanyRenamed(c->index, name));
 
 		if (c->is_ai) {
 			auto cni = std::make_unique<CompanyNewsInformation>(c);
@@ -1351,6 +1353,11 @@ CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 		}
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
+
+		SetDParam(0, c->index);
+		std::string new_name = GetString(STR_COMPANY_NAME);
+		AI::BroadcastNewEvent(new ScriptEventCompanyRenamed(c->index, new_name));
+		Game::NewEvent(new ScriptEventCompanyRenamed(c->index, new_name));
 	}
 
 	return CommandCost();
@@ -1407,6 +1414,11 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 		InvalidateWindowClassesData(WC_COMPANY, 1);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
+
+		SetDParam(0, c->index);
+		std::string new_name = GetString(STR_PRESIDENT_NAME);
+		AI::BroadcastNewEvent(new ScriptEventPresidentRenamed(c->index, new_name));
+		Game::NewEvent(new ScriptEventPresidentRenamed(c->index, new_name));
 	}
 
 	return CommandCost();

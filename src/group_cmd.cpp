@@ -433,7 +433,7 @@ CommandCost CmdCreateGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		if (pg == nullptr) {
 			g->livery.colour1 = c->livery[LS_DEFAULT].colour1;
 			g->livery.colour2 = c->livery[LS_DEFAULT].colour2;
-			if (c->settings.renew_keep_length) SetBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
+			if (c->settings.renew_keep_length) g->flags |= GroupFlags::ReplaceWagonRemoval;
 		} else {
 			g->parent = pg->index;
 			g->livery.colour1 = pg->livery.colour1;
@@ -923,9 +923,9 @@ CommandCost CmdSetGroupLivery(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 static void SetGroupFlag(Group *g, GroupFlags flag, bool set, bool children)
 {
 	if (set) {
-		SetBit(g->flags, flag);
+		g->flags |= flag;
 	} else {
-		ClrBit(g->flags, flag);
+		g->flags &= ~flag;
 	}
 
 	if (!children) return;
@@ -941,7 +941,7 @@ static void SetGroupFlag(Group *g, GroupFlags flag, bool set, bool children)
  * @param flags type of operation
  * @param p1   index of group array
  * - p1 bit 0-15  : GroupID
- * - p1 bit 16-18 : Flag to set, by value not bit.
+ * - p1 bit 16-23 : Group flag bit to set
  * @param p2
  * - p2 bit 0    : 1 to set or 0 to clear protection.
  * - p2 bit 1    : 1 to apply to sub-groups.
@@ -953,10 +953,8 @@ CommandCost CmdSetGroupFlag(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 	Group *g = Group::GetIfValid(GB(p1, 0, 16));
 	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
-	/* GroupFlags are stored in as an 8 bit bitfield but passed here by value,
-	 * so 3 bits is sufficient to cover each possible value. */
-	GroupFlags flag = (GroupFlags)GB(p1, 16, 3);
-	if (flag >= GroupFlags::GF_END) return CMD_ERROR;
+	GroupFlags flag = (GroupFlags)GB(p1, 16, 8);
+	if (flag != GroupFlags::ReplaceProtection && flag != GroupFlags::ReplaceWagonRemoval) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		SetGroupFlag(g, flag, HasBit(p2, 0), HasBit(p2, 1));

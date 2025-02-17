@@ -1157,7 +1157,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 		DirtyVehicleListWindowForVehicle(this);
 
 		/* Delete the news item. */
-		DeleteVehicleNews(this->index, STR_NEWS_VEHICLE_IS_LOST);
+		DeleteVehicleNews(this->index, AdviceType::VehicleLost);
 		return;
 	}
 
@@ -1186,7 +1186,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 	AI::NewEvent(this->owner, new ScriptEventVehicleLost(this->index));
 	if (_settings_client.gui.lost_vehicle_warn && this->owner == _local_company) {
 		SetDParam(0, this->index);
-		AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_IS_LOST, this->index);
+		AddVehicleAdviceNewsItem(AdviceType::VehicleLost, STR_NEWS_VEHICLE_IS_LOST, this->index);
 	}
 }
 
@@ -1310,7 +1310,7 @@ Vehicle::~Vehicle()
 	if (this->type < VEH_COMPANY_END) UpdateVehicleTileHash(this, true);
 	UpdateVehicleViewportHash(this, INVALID_COORD, 0);
 	if (this->type != VEH_EFFECT) {
-		DeleteVehicleNews(this->index, INVALID_STRING_ID);
+		DeleteVehicleNews(this->index);
 		DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
 	}
 }
@@ -1458,7 +1458,7 @@ static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *
 
 	SetDParam(0, v->index);
 	SetDParam(1, error_message);
-	AddVehicleAdviceNewsItem(message, v->index);
+	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, message, v->index);
 }
 
 static std::vector<VehicleID> _train_news_too_heavy_this_tick;
@@ -2593,7 +2593,7 @@ void AgeVehicle(Vehicle *v)
 	}
 
 	SetDParam(0, v->index);
-	AddVehicleAdviceNewsItem(str, v->index);
+	AddVehicleAdviceNewsItem(AdviceType::VehicleOld, str, v->index);
 }
 
 /**
@@ -2790,7 +2790,7 @@ void VehicleEnterDepot(Vehicle *v)
 				if (v->owner == _local_company) {
 					/* Notify the user that we stopped the vehicle */
 					SetDParam(0, v->index);
-					AddVehicleAdviceNewsItem(STR_NEWS_ORDER_REFIT_FAILED, v->index);
+					AddVehicleAdviceNewsItem(AdviceType::RefitFailed, STR_NEWS_ORDER_REFIT_FAILED, v->index);
 				}
 			} else if (cost.GetCost() != 0) {
 				v->profit_this_year -= cost.GetCost() << 8;
@@ -2830,7 +2830,7 @@ void VehicleEnterDepot(Vehicle *v)
 			/* Announce that the vehicle is waiting to players and AIs. */
 			if (v->owner == _local_company) {
 				SetDParam(0, v->index);
-				AddVehicleAdviceNewsItem(STR_NEWS_TRAIN_IS_WAITING + v->type, v->index);
+				AddVehicleAdviceNewsItem(AdviceType::VehicleWaiting, STR_NEWS_TRAIN_IS_WAITING + v->type, v->index);
 			}
 			AI::NewEvent(v->owner, new ScriptEventVehicleWaitingInDepot(v->index));
 		}
@@ -4705,7 +4705,7 @@ void VehiclesYearlyLoop()
 				if (_settings_client.gui.vehicle_income_warn && v->owner == _local_company) {
 					SetDParam(0, v->index);
 					SetDParam(1, profit);
-					AddVehicleAdviceNewsItem(EconTime::UsingWallclockUnits() ? STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD : STR_NEWS_VEHICLE_UNPROFITABLE_YEAR, v->index);
+					AddVehicleAdviceNewsItem(AdviceType::VehicleUnprofitable, EconTime::UsingWallclockUnits() ? STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD : STR_NEWS_VEHICLE_UNPROFITABLE_YEAR, v->index);
 				}
 				AI::NewEvent(v->owner, new ScriptEventVehicleUnprofitable(v->index));
 			}
