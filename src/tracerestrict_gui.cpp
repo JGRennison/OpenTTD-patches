@@ -221,48 +221,15 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
 	STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
 	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
-	STR_TRACE_RESTRICT_PF_DENY,
-	STR_TRACE_RESTRICT_PF_PENALTY,
-	STR_TRACE_RESTRICT_RESERVE_THROUGH,
-	STR_TRACE_RESTRICT_LONG_RESERVE,
-	STR_TRACE_RESTRICT_SLOT_OP,
-	STR_TRACE_RESTRICT_WAIT_AT_PBS,
-	STR_TRACE_RESTRICT_REVERSE,
-	STR_TRACE_RESTRICT_SPEED_RESTRICTION,
-	STR_TRACE_RESTRICT_NEWS_CONTROL,
-	STR_TRACE_RESTRICT_COUNTER_OP,
-	STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
-	STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL,
-	STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL,
 };
 static const uint32_t _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
 static const uint32_t _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
 static const uint32_t _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
-static const uint32_t _program_wait_pbs_hide_mask = 0x200;       ///< disable bitmask for wait at PBS
-static const uint32_t _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
-static const uint32_t _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
-static const uint32_t _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
-static const uint32_t _program_penalty_adj_hide_mask = 0x4000;   ///< disable bitmask for penalty adjust
-static const uint32_t _program_speed_adapt_hide_mask = 0x8000;   ///< disable bitmask for speed adaptation
-static const uint32_t _program_signal_mode_hide_mask = 0x10000;  ///< disable bitmask for signal mode control
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
 	TRIT_COND_UNDEFINED | (TRCF_OR << 16),             // orif block
 	TRIT_COND_ENDIF | (TRCF_ELSE << 16),               // else block
-	TRIT_PF_DENY,                                      // deny
-	TRIT_PF_PENALTY,                                   // penalty
-	TRIT_RESERVE_THROUGH,                              // reserve through
-	TRIT_LONG_RESERVE,                                 // long reserve
-	TRIT_SLOT,                                         // slot operation
-	TRIT_WAIT_AT_PBS,                                  // wait at PBS signal
-	TRIT_REVERSE,                                      // reverse
-	TRIT_SPEED_RESTRICTION,                            // speed restriction
-	TRIT_NEWS_CONTROL,                                 // news control
-	TRIT_COUNTER,                                      // counter operation
-	TRIT_PF_PENALTY_CONTROL,                           // penalty control
-	TRIT_SPEED_ADAPTATION_CONTROL,                     // speed adaptation control
-	TRIT_SIGNAL_MODE_CONTROL,                          // signal mode control
 };
 
 /** insert drop down list strings and values */
@@ -595,10 +562,7 @@ struct TraceRestrictDropDownListItem {
 	TraceRestrictDropDownListItemFlags flags;
 };
 
-/**
- * Return the appropriate type dropdown TraceRestrictDropDownListItem std::span for the given item type @p type
- */
-static std::span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(TraceRestrictGuiItemType type)
+static std::span<const TraceRestrictDropDownListItem> GetActionDropDownListItems()
 {
 	static const TraceRestrictDropDownListItem actions[] = {
 		{ TRIT_PF_DENY,                  STR_TRACE_RESTRICT_PF_DENY,                  TRDDLIF_NONE },
@@ -615,7 +579,11 @@ static std::span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(T
 		{ TRIT_SPEED_ADAPTATION_CONTROL, STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL, TRDDLIF_ADVANCED | TRDDLIF_SPEED_ADAPTATION },
 		{ TRIT_SIGNAL_MODE_CONTROL,      STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL,      TRDDLIF_ADVANCED | TRDDLIF_NORMAL_SHUNT_SIGNAL_STYLE },
 	};
+	return std::span<const TraceRestrictDropDownListItem>(actions);
+}
 
+static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListItems()
+{
 	static const TraceRestrictDropDownListItem conditions[] = {
 		{ TRIT_COND_UNDEFINED,                                        STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,                 TRDDLIF_HIDDEN },
 		{ TRIT_COND_TRAIN_LENGTH,                                     STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH,              TRDDLIF_NONE },
@@ -647,11 +615,18 @@ static std::span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(T
 		{ TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END << 16),       STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL,        TRDDLIF_ADVANCED | TRDDLIF_REALISTIC_BRAKING },
 		{ TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END_TILE << 16),  STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE,          TRDDLIF_ADVANCED | TRDDLIF_NORMAL_SHUNT_SIGNAL_STYLE },
 	};
+	return std::span<const TraceRestrictDropDownListItem>(conditions);
+}
 
+/**
+ * Return the appropriate type dropdown TraceRestrictDropDownListItem std::span for the given item type @p type
+ */
+static std::span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(TraceRestrictGuiItemType type)
+{
 	if (IsTraceRestrictTypeConditional(ItemTypeFromGuiType(type))) {
-		return std::span<const TraceRestrictDropDownListItem>(conditions);
+		return GetConditionDropDownListItems();
 	} else {
-		return std::span<const TraceRestrictDropDownListItem>(actions);
+		return GetActionDropDownListItems();
 	}
 }
 
@@ -2152,7 +2127,6 @@ public:
 				}
 
 				uint32_t disabled = _program_insert_or_if_hide_mask;
-				uint32_t hidden = 0;
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				if (item.GetType() == TRIT_COND_ENDIF ||
 						(item.IsConditional() && item.GetCondFlags() != 0)) {
@@ -2173,18 +2147,19 @@ public:
 						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
 					}
 				}
-				if (!_settings_client.gui.show_adv_tracerestrict_features) {
-					hidden |= _program_wait_pbs_hide_mask | _program_reverse_hide_mask |
-							_program_speed_res_hide_mask | _program_counter_hide_mask | _program_penalty_adj_hide_mask;
-				}
-				if (!_settings_client.gui.show_adv_tracerestrict_features || !_settings_game.vehicle.train_speed_adaptation) {
-					hidden |= _program_speed_adapt_hide_mask;
-				}
-				if (!(_settings_client.gui.show_adv_tracerestrict_features && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && _signal_style_masks.combined_normal_shunt != 0)) {
-					hidden |= _program_signal_mode_hide_mask;
-				}
 
-				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden);
+				DropDownList dlist;
+				uint i = 0;
+				for (StringID str : _program_insert.string_array) {
+					dlist.push_back(MakeDropDownListStringItem(str, _program_insert.value_array[i], i < 32 && HasBit(disabled, i)));
+					++i;
+				}
+				for (const TraceRestrictDropDownListItem &item : GetActionDropDownListItems()) {
+					if (!ShouldHideTypeDropDownListItem(item.flags)) {
+						dlist.push_back(MakeDropDownListStringItem(item.str, item.type, false));
+					}
+				}
+				ShowDropDownList(this, std::move(dlist), 0, TR_WIDGET_INSERT, 0);
 				break;
 			}
 
@@ -2646,6 +2621,20 @@ public:
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 		}
 
+		if (widget == TR_WIDGET_INSERT) {
+			TraceRestrictInstructionItem insert_item{};
+
+			SetTraceRestrictTypeAndNormalise(insert_item, static_cast<TraceRestrictItemType>(index & 0xFFFF));
+			if (insert_item.IsConditional()) {
+				/* Inserting an if/elif/orif/else */
+				insert_item.SetCondFlags(static_cast<TraceRestrictCondFlags>(index >> 16)); // this needs to happen after calling SetTraceRestrictTypeAndNormalise
+			}
+
+			this->expecting_inserted_item = insert_item;
+			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_INSERT_ITEM, this->selected_instruction - 1, insert_item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
+			return;
+		}
+
 		const TraceRestrictDropDownListSet *list_set = this->drop_down_list_mapping[widget];
 		if (!list_set) {
 			return;
@@ -2654,19 +2643,6 @@ public:
 		uint value = list_set->value_array[index];
 
 		switch (widget) {
-			case TR_WIDGET_INSERT: {
-				TraceRestrictInstructionItem insert_item{};
-
-				TraceRestrictCondFlags cond_flags = static_cast<TraceRestrictCondFlags>(value >> 16);
-				value &= 0xFFFF;
-				SetTraceRestrictTypeAndNormalise(insert_item, static_cast<TraceRestrictItemType>(value));
-				insert_item.SetCondFlags(cond_flags); // this needs to happen after calling SetTraceRestrictTypeAndNormalise
-
-				this->expecting_inserted_item = insert_item;
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_INSERT_ITEM, this->selected_instruction - 1, insert_item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
-				break;
-			}
-
 			case TR_WIDGET_CONDFLAGS: {
 				CondFlagsDropDownType cond_type = static_cast<CondFlagsDropDownType>(value);
 				if (cond_type == CFDDT_ELSE) {
