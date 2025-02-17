@@ -142,6 +142,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_VALUE_DEST,
 	TR_WIDGET_VALUE_SIGNAL,
 	TR_WIDGET_VALUE_TILE,
+	TR_WIDGET_LABEL,
 	TR_WIDGET_LEFT_AUX_DROPDOWN,
 
 	TR_WIDGET_BLANK_L2,
@@ -188,6 +189,7 @@ enum PanelWidgets {
 	DPR_VALUE_DEST,
 	DPR_VALUE_SIGNAL,
 	DPR_VALUE_TILE,
+	DPR_LABEL_BUTTON,
 	DPR_BLANK,
 
 	/* Share */
@@ -578,6 +580,7 @@ static std::span<const TraceRestrictDropDownListItem> GetActionDropDownListItems
 		{ TRIT_PF_PENALTY_CONTROL,       STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,       TRDDLIF_ADVANCED },
 		{ TRIT_SPEED_ADAPTATION_CONTROL, STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL, TRDDLIF_ADVANCED | TRDDLIF_SPEED_ADAPTATION },
 		{ TRIT_SIGNAL_MODE_CONTROL,      STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL,      TRDDLIF_ADVANCED | TRDDLIF_NORMAL_SHUNT_SIGNAL_STYLE },
+		{ TRIT_GUI_LABEL,                STR_TRACE_RESTRICT_GUI_LABEL,                TRDDLIF_NONE },
 	};
 	return std::span<const TraceRestrictDropDownListItem>(actions);
 }
@@ -1856,6 +1859,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_GUI_LABEL:
+				instruction_string = STR_TRACE_RESTRICT_GUI_LABEL_ITEM;
+				SetDParamStr(0, prog->GetLabel(item.GetValue()));
+				break;
+
 			case TRIT_REVERSE:
 				switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 					case TRRVF_REVERSE_BEHIND:
@@ -1988,7 +1996,9 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 	}
 
 	bool rtl = _current_text_dir == TD_RTL;
-	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TC_WHITE : TC_BLACK);
+	TextColour colour = selected ? TC_WHITE : TC_BLACK;
+	if (selected && item.GetType() == TRIT_GUI_LABEL) colour |= TC_FORCED;
+	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, colour);
 }
 
 
@@ -2022,6 +2032,7 @@ class TraceRestrictWindow: public Window {
 		QSM_DEFAULT,
 		QSM_NEW_SLOT,
 		QSM_NEW_COUNTER,
+		QSM_SET_TEXT,
 	};
 	QuerySubMode query_submode = QSM_DEFAULT;                                   ///< sub-mode for query strings
 
@@ -2509,12 +2520,22 @@ public:
 				}
 				break;
 			}
+
+			case TR_WIDGET_LABEL: {
+				const TraceRestrictProgram *prog = this->GetProgram();
+				if (prog != nullptr) {
+					TraceRestrictInstructionItem item = this->GetSelected().instruction;
+					SetDParamStr(0, prog->GetLabel(item.GetValue()));
+					this->TraceRestrictShowQueryString(STR_JUST_RAW_STRING, STR_ORDER_LABEL_TEXT_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_SET_TEXT);
+				}
+				break;
+			}
 		}
 	}
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value() || str->empty()) return;
+		if (!str.has_value() || (str->empty() && this->query_submode != QSM_SET_TEXT)) return;
 
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
 		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
@@ -2536,6 +2557,12 @@ public:
 					TraceRestrictFollowUpCmdData aux;
 					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 					DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+				}
+				return;
+
+			case QSM_SET_TEXT:
+				if (type == TRVT_LABEL_INDEX) {
+					TraceRestrictDoCommandP(tile, track, TRDCT_SET_TEXT, this->selected_instruction - 1, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM, str->c_str());
 				}
 				return;
 		}
@@ -3710,6 +3737,10 @@ private:
 							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(GetDropDownStringByValue(&_target_direction_aux_value, item.GetAuxField()));
 							break;
 
+						case TRVT_LABEL_INDEX:
+							right_sel->SetDisplayedPlane(DPR_LABEL_BUTTON);
+							break;
+
 						default:
 							break;
 					}
@@ -3906,6 +3937,8 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 														SetStringTip(STR_TRACE_RESTRICT_SELECT_SIGNAL, STR_TRACE_RESTRICT_SELECT_SIGNAL), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_TILE), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_TRACE_RESTRICT_SELECT_TILE, STR_TRACE_RESTRICT_SELECT_TILE), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_LABEL), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetStringTip(STR_ORDER_LABEL_TEXT_BUTTON, STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_R), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),

@@ -1058,6 +1058,8 @@ STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :month
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
 STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
+STR_TRACE_RESTRICT_GUI_LABEL                                    :Text label
+STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}Label:{POP_COLOUR} {RAW_STRING}
 
 ###length 3
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :next departure slot

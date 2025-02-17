@@ -824,6 +824,10 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_GUI_LABEL:
+						/* This instruction does nothing when executed */
+						break;
+
 					case TRIT_REVERSE:
 						switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 							case TRRVF_REVERSE_BEHIND:
@@ -1443,6 +1447,10 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					}
 					break;
 
+					case TRIT_GUI_LABEL:
+						/* This instruction does nothing when executed, and sets no actions_used_flags */
+						break;
+
 				case TRIT_REVERSE:
 					switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 						case TRRVF_REVERSE_BEHIND:
@@ -1551,6 +1559,68 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 	return CommandCost();
 }
 
+uint16_t TraceRestrictProgram::AddLabel(std::string_view str)
+{
+	if (str.empty()) return UINT16_MAX;
+	if (this->texts == nullptr) this->texts = std::make_unique<TraceRestrictProgramTexts>();
+
+	std::vector<std::string> &labels = this->texts->labels;
+	if (unlikely(labels.size() > UINT16_MAX)) labels.resize(UINT16_MAX); // This should never be reached, but handle this case anyway
+
+	/* Re-use an existing label ID if the same string is already there */
+	for (size_t i = 0; i < labels.size(); i++) {
+		if (labels[i] == str) {
+			return static_cast<uint16_t>(i);
+		}
+	}
+
+	/* Use an empty slot if available */
+	for (size_t i = 0; i < labels.size(); i++) {
+		if (labels[i].empty()) {
+			labels[i] = str;
+			return static_cast<uint16_t>(i);
+		}
+	}
+
+	if (labels.size() >= UINT16_MAX) return UINT16_MAX; // Full, just discard the label
+	labels.emplace_back(str);
+	return static_cast<uint16_t>(labels.size() - 1);
+}
+
+void TraceRestrictProgram::TrimLabels(const std::span<const TraceRestrictProgramItem> items)
+{
+	if (this->texts == nullptr || this->texts->labels.empty()) return; // Nothing to do
+
+	std::vector<std::string> &labels = this->texts->labels;
+	if (unlikely(labels.size() > UINT16_MAX)) labels.resize(UINT16_MAX); // This should never be reached, but handle this case anyway
+	const size_t size = labels.size();
+	TempBufferT<uint32_t, 16> used_ids(CeilDivT<size_t>(size, 32), 0);
+
+	/* Find used label IDs in program */
+	for (auto iter : TraceRestrictInstructionIterateWrapper(items)) {
+		if (iter.Instruction().GetType() == TRIT_GUI_LABEL) {
+			uint16_t label_id = iter.Instruction().GetValue();
+			if (label_id < size) SetBit(used_ids[label_id / 32], label_id % 32);
+		}
+	}
+
+	size_t new_size = 0;
+	for (size_t i = 0; i < labels.size(); i++) {
+		if (!HasBit(used_ids[i / 32], i % 32)) {
+			labels[i].clear();
+		} else if (!labels[i].empty()) {
+			new_size = i + 1;
+		}
+	}
+	labels.resize(new_size);
+}
+
+std::string_view TraceRestrictProgram::GetLabel(uint16_t id) const
+{
+	if (this->texts != nullptr && id < this->texts->labels.size()) return this->texts->labels[id];
+	return {};
+}
+
 /**
  * Set the value and aux field of @p item, as per the value type in @p value_type
  */
@@ -1632,6 +1702,10 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 
 		case TRVT_TIME_DATE_INT:
 			item.SetValue(_settings_game.game_time.time_in_minutes ? TRTDVF_MINUTE : TRTDVF_DAY);
+			break;
+
+		case TRVT_LABEL_INDEX:
+			item.SetValue(UINT16_MAX);
 			break;
 
 		default:
@@ -1890,10 +1964,10 @@ BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track trac
 /**
  * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
  */
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text)
 {
 	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
-	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), nullptr, text);
 }
 
 /**
@@ -2151,6 +2225,7 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictPr
  * Below apply for instruction modification actions only
  * @param p1 Bitstuffed items
  * @param p2 Item, for insert and modify operations. Flags for instruction move operations
+ * @param text Label text for TRDCT_SET_TEXT
  * @return the cost of this operation (which is free), or an error
  */
 CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
@@ -2279,6 +2354,26 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			break;
 		}
 
+		case TRDCT_SET_TEXT: {
+			auto old_iter = TraceRestrictInstructionIteratorAt(items, offset);
+			TraceRestrictInstructionItem old_item_value = old_iter.Instruction();
+			if (old_item_value.GetType() != TRIT_GUI_LABEL) return CMD_ERROR;
+
+			std::string_view label_text;
+			if (text != nullptr) {
+				if (Utf8StringLength(text) >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+				label_text = text;
+			}
+
+			/* Setting the label before calling validate here is OK, only the instruction value field is changed */
+			if (flags & DC_EXEC) {
+				old_iter.InstructionRef().SetValue(UINT16_MAX); // Unreference the old label before calling TrimLabels
+				prog->TrimLabels(items);
+				old_iter.InstructionRef().SetValue(prog->AddLabel(label_text));
+			}
+			break;
+		}
+
 		default:
 			return CMD_ERROR;
 	}
@@ -2306,6 +2401,19 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			TraceRestrictRemoveProgramMapping(MakeTraceRestrictRefId(tile, track));
 		} else {
 			TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
+
+			/* Trim labels after potentially destructive edits */
+			switch (type) {
+				case TRDCT_MODIFY_ITEM:
+				case TRDCT_REMOVE_ITEM:
+				case TRDCT_SHALLOW_REMOVE_ITEM:
+					prog->TrimLabels(prog->items);
+					if (prog->texts != nullptr && prog->texts->IsEmpty()) prog->texts.reset();
+					break;
+
+				default:
+					break;
+			}
 		}
 
 		/* Update windows */
@@ -2326,6 +2434,15 @@ void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, Trac
 	SB(p1, 3, 5, type);
 	SB(p1, 8, 3, source_track);
 	DoCommandP(tile, p1, source_tile, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+}
+
+static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestrictProgramItem> instructions, TraceRestrictProgram *prog, const TraceRestrictProgram *source)
+{
+	for (auto iter : TraceRestrictInstructionIterateWrapper(instructions)) {
+		if (iter.Instruction().GetType() == TRIT_GUI_LABEL) {
+			iter.InstructionRef().SetValue(prog->AddLabel(source->GetLabel(iter.Instruction().GetValue())));
+		}
+	}
 }
 
 /**
@@ -2391,6 +2508,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 				prog->items = source_prog->items; // copy
 				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(prog->items, _current_company);
+				if (source_prog->texts != nullptr) prog->texts = std::make_unique<TraceRestrictProgramTexts>(*source_prog->texts); // copy texts
 				prog->Validate();
 
 				TraceRestrictCheckRefreshSignals(prog, 0, TRPAUF_NONE);
@@ -2412,7 +2530,11 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
-				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem>(prog->items).last(source_prog->items.size()), _current_company);
+				std::span<TraceRestrictProgramItem> edit_region = std::span<TraceRestrictProgramItem>(prog->items).last(source_prog->items.size());
+				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(edit_region, _current_company);
+				if (prog != source_prog) {
+					TraceRestrictUpdateLabelInstructionsFromSource(edit_region, prog, source_prog);
+				}
 				prog->Validate();
 
 				TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
@@ -2453,6 +2575,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 
 				new_prog->items.swap(items);
+				if (prog != nullptr && prog->texts != nullptr) new_prog->texts = std::make_unique<TraceRestrictProgramTexts>(*prog->texts); // copy texts
 				new_prog->Validate();
 				TraceRestrictCheckRefreshSingleSignal(new_prog, self, TRPAUF_NONE);
 			}

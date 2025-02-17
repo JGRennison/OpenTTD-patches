@@ -2176,6 +2176,16 @@ class NIHTraceRestrict : public NIHelper {
 				output.Print("  {:08X}", iter.Instruction());
 			}
 		}
+
+		if (prog->texts != nullptr && !prog->texts->labels.empty()) {
+			output.Print("");
+			output.Print("Labels:");
+			size_t i = 0;
+			for (const auto &str : prog->texts->labels) {
+				if (!str.empty()) output.Print("  {:X}: {}", i, str);
+				i++;
+			}
+		}
 	}
 };
 

@@ -164,6 +164,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_LONG_RESERVE             = 4,    ///< Long reserve PBS signal
 	TRIT_WAIT_AT_PBS              = 5,    ///< Wait at PBS signal
 	TRIT_SLOT                     = 6,    ///< Slot operation
+	TRIT_GUI_LABEL                = 7,    ///< GUI label
 
 	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the same value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
@@ -844,6 +845,15 @@ struct TraceRestrictProgramResult {
 			: penalty(0), flags(static_cast<TraceRestrictProgramResultFlags>(0)) { }
 };
 
+struct TraceRestrictProgramTexts {
+	std::vector<std::string> labels;
+
+	bool IsEmpty() const
+	{
+		return this->labels.empty();
+	}
+};
+
 /**
  * Program type, this stores the instruction list
  * This is refcounted, see info at top of tracerestrict.cpp
@@ -852,6 +862,7 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 	uint32_t refcount;
 	std::vector<TraceRestrictProgramItem> items;
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
+	std::unique_ptr<TraceRestrictProgramTexts> texts;
 
 private:
 
@@ -919,6 +930,10 @@ public:
 
 	auto IterateInstructions() const { return TraceRestrictInstructionIterateWrapper(this->items); }
 	auto IterateInstructionsMutable() { return TraceRestrictInstructionIterateWrapper(this->items); }
+
+	uint16_t AddLabel(std::string_view str);
+	void TrimLabels(const std::span<const TraceRestrictProgramItem> items);
+	std::string_view GetLabel(uint16_t id) const;
 };
 
 /**
@@ -970,6 +985,7 @@ enum TraceRestrictValueType : uint8_t {
 	TRVT_SIGNAL_MODE_CONTROL,      ///< takes a TraceRestrictSignalModeControlField
 	TRVT_ORDER_TARGET_DIAGDIR,     ///< takes a DiagDirection, and the order type in the auxiliary field
 	TRVT_TILE_INDEX_THROUGH,       ///< takes a TileIndex in the next item slot (passes through)
+	TRVT_LABEL_INDEX,              ///< takes a label ID
 };
 
 /**
@@ -1161,6 +1177,10 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				out.value_type = TRVT_SLOT_INDEX;
 				break;
 
+			case TRIT_GUI_LABEL:
+				out.value_type = TRVT_LABEL_INDEX;
+				break;
+
 			case TRIT_REVERSE:
 				out.value_type = TRVT_REVERSE;
 				break;
@@ -1287,6 +1307,7 @@ enum TraceRestrictDoCommandType : uint8_t {
 	TRDCT_SHALLOW_REMOVE_ITEM,               ///< shallow remove instruction at offset field, does not delete contents of block
 	TRDCT_MOVE_ITEM,                         ///< move instruction or block at offset field
 	TRDCT_DUPLICATE_ITEM,                    ///< duplicate instruction/block at offset field
+	TRDCT_SET_TEXT,                          ///< set text for label instruction
 
 	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
 	TRDCT_PROG_COPY_APPEND,                  ///< copy and append program operation
@@ -1297,7 +1318,7 @@ enum TraceRestrictDoCommandType : uint8_t {
 };
 
 BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text = nullptr);
 
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
 		TileIndex source_tile, Track source_track, StringID error_msg);

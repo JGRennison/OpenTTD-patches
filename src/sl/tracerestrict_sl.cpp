@@ -46,8 +46,49 @@ static void Save_TRRM()
 	}
 }
 
+struct TraceRestrictProgramLabelsStructHandler final : public TypedSaveLoadStructHandler<TraceRestrictProgramLabelsStructHandler, TraceRestrictProgram> {
+public:
+	struct LabelWrapper {
+		std::string label;
+	};
+
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad description[] = {
+			NSLT("label", SLE_SSTR(LabelWrapper, label, SLE_STR)),
+		};
+		return description;
+	}
+
+	void Save(TraceRestrictProgram *prog) const override
+	{
+		if (prog->texts == nullptr) {
+			SlSetStructListLength(0);
+			return;
+		}
+
+		SlSetStructListLength(prog->texts->labels.size());
+		for (std::string &str : prog->texts->labels) {
+			SlObjectSaveFiltered(&str, this->GetLoadDescription());
+		}
+	}
+
+	void Load(TraceRestrictProgram *prog) const override
+	{
+		size_t num_labels = SlGetStructListLength(UINT16_MAX);
+		if (num_labels == 0) return;
+
+		if (prog->texts == nullptr) prog->texts = std::make_unique<TraceRestrictProgramTexts>();
+		prog->texts->labels.resize(num_labels);
+		for (std::string &str : prog->texts->labels) {
+			SlObjectLoadFiltered(&str, this->GetLoadDescription());
+		}
+	}
+};
+
 static const NamedSaveLoad _trace_restrict_program_desc[] = {
 	NSL("items", SLE_VARVEC(TraceRestrictProgram, items, SLE_UINT32)),
+	NSLT_STRUCTLIST<TraceRestrictProgramLabelsStructHandler>("labels"),
 };
 
 /**
