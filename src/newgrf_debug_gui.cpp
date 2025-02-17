@@ -39,6 +39,7 @@
 #include "newgrf_act5.h"
 #include "newgrf_airport.h"
 #include "newgrf_airporttiles.h"
+#include "newgrf_badge.h"
 #include "newgrf_debug.h"
 #include "newgrf_dump.h"
 #include "newgrf_object.h"
@@ -248,6 +249,13 @@ public:
 	 * @return GRFID of the item. 0 means that the item is not inspectable.
 	 */
 	virtual uint32_t GetGRFID(uint index) const = 0;
+
+	/**
+	 * Get the list of badges of this item.
+	 * @param index index to check.
+	 * @return List of badges of the item.
+	 */
+	virtual std::span<const BadgeID> GetBadges(uint index) const = 0;
 
 	/**
 	 * Resolve (action2) variable for a given index.
@@ -838,6 +846,15 @@ struct NewGRFInspectWindow final : Window {
 				if (last_non_blank != (uint)psa.size()) {
 					this->DrawString(r, i++, "  {} to {} are all 0", psa_limit, (psa.size() - 1));
 				}
+			}
+		}
+
+		auto badges = nih->GetBadges(index);
+		if (!badges.empty()) {
+			this->DrawString(r, i++, "Badges:");
+			for (const BadgeID &badge_index : badges) {
+				const Badge *badge = GetBadge(badge_index);
+				this->DrawString(r, i++, "  {}: {}", StrMakeValid(badge->label), GetString(badge->name));
 			}
 		}
 
