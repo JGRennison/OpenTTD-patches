@@ -4149,16 +4149,6 @@ private:
 		bool enable_expand_all = false;
 		bool enable_collapse_all = false;
 
-		for (const Group *g : Group::Iterate()) {
-			if (g->owner == owner && g->vehicle_type == this->vli.vtype && g->parent != INVALID_GROUP) {
-				if (Group::Get(g->parent)->folded) {
-					enable_expand_all = true;
-				} else {
-					enable_collapse_all = true;
-				}
-			}
-		}
-
 		auto output_items = y_combinator([&](auto output_items, uint indent, TraceRestrictSlotGroupID parent_filter) -> uint {
 			uint seen = 0;
 			for (const ListItem &item : list) {
