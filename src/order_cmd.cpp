@@ -308,7 +308,8 @@ std::string Order::ToJSONString() const
 		if (station != nullptr) {
 
 			json["destination-name"] = station->GetCachedName();
-
+			json["destination-location"]["X"] = TileX(station->xy);
+			json["destination-location"]["Y"] = TileY(station->xy);
 		}
 
 	} else if (this->IsType(OT_GOTO_DEPOT)) {
