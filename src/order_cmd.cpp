@@ -1058,6 +1058,9 @@ std::string OrderList::ToJSONString()
 
 	nlohmann::ordered_json json;
 
+	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
+	json["source"] = std::string(_openttd_revision);
+
 	if (this == nullptr) { //order list not intiailised, return an empty result
 		json["error"] = "Orderlist was not initialised";
 		return json.dump();
@@ -1086,9 +1089,6 @@ std::string OrderList::ToJSONString()
 			json["orders"][i++] = nlohmann::ordered_json::parse(o->ToJSONString());
 		} while ((o = this->GetNext(o)) != this->GetFirstOrder());
 	}
-
-	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
-	json["source"] = std::string(_openttd_revision);
 
 	return json.dump(4);
 
