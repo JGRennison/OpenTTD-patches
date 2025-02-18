@@ -313,9 +313,25 @@ std::string Order::ToJSONString() const
 
 	} else if (this->IsType(OT_GOTO_DEPOT)) {
 
-		json["depot-id"] = this->GetDestination();
+		if (this->GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
+			json["depot-id"] = "nearest";
+		} else {
+			json["depot-id"] = this->GetDestination();
+		}
 
-		json["flags"] = this->GetRawFlags(); //TEMP (need to understand depot flags)
+		if (this->GetDepotActionType() & ODATF_SERVICE_ONLY) {
+			json["action"] = this->GetDepotActionType() & ODATF_SERVICE_ONLY;
+
+		} else if (this->GetDepotActionType() & ODATFB_HALT) {
+			json["action"] = this->GetDepotActionType() & ODATFB_HALT;
+
+		} else if (this->GetDepotActionType() & ODATFB_SELL) {
+			json["action"] = this->GetDepotActionType() & ODATFB_SELL;
+
+		} else if (this->GetDepotActionType() & ODATFB_UNBUNCH) {
+			json["action"] = this->GetDepotActionType() & ODATFB_UNBUNCH;
+
+		}
 
 	}
 

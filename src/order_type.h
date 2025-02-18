@@ -66,6 +66,7 @@ enum OrderLabelSubType : uint8_t {
 	OLST_TEXT                  = 0,
 	OLST_DEPARTURES_VIA        = 1,
 	OLST_DEPARTURES_REMOVE_VIA = 2,
+	OLST_END
 };
 
 inline bool IsDestinationOrderLabelSubType(OrderLabelSubType subtype)

@@ -37,11 +37,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderWaypointFlags, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLabelSubType, {
+	{OLST_END,nullptr},
 	{OLST_TEXT,"text"},
 	{OLST_DEPARTURES_VIA,"show-departure-via"},
 	{OLST_DEPARTURES_REMOVE_VIA,"rem-departure-via"}
 })
 
+// Temporary ordertypes omitted
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderType, {
 	{OT_NOTHING,nullptr},
 	{OT_GOTO_STATION,"go-to-station"},
@@ -52,6 +54,20 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderType, {
 	{OT_SLOT,"slot"},
 	{OT_COUNTER,"counter"},
 	{OT_LABEL,"label"}
+})
+
+/*
+* ODATFB_NEAREST_DEPOT is not treated as a part of the export - relevant data in this context.
+* It is the only entry in OrderDepotActionFlags that justifies the enum being declared as a bitset
+* and it is therefore the only element that can appear more then once, as such it will be treated separately
+*/
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderDepotActionFlags, {
+
+	{ODATF_SERVICE_ONLY,"service-only"},
+	{ODATFB_HALT,"stop"},
+	{ODATFB_SELL,"sell"},
+	{ODATFB_UNBUNCH,"unbunch"},
+
 })
 
 #endif
