@@ -377,19 +377,27 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 	if (flags & DC_EXEC) {
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
-		if (scheduleJson == nullptr) {
-			if (p2 == 0) return CMD_ERROR;
-			ds.SetScheduledDispatchDuration(p2);
-			ds.SetScheduledDispatchStartTick((StateTicks)p3);
-			ds.UpdateScheduledDispatch(nullptr);
-			SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+
+		if (p2 == 0) return CMD_ERROR;
+
+		if (scheduleJson != nullptr) {
+
+			DispatchSchedule ds = DispatchSchedule::FromJSONString(scheduleJson);
+
 		} else {
 
-			ds = DispatchSchedule::FromJSONString(scheduleJson);
+			//If Json is present it will set the duration instead 
+			ds.SetScheduledDispatchDuration(p2);
 
 		}
 
+		ds.SetScheduledDispatchStartTick((StateTicks)p3);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+
 	}
+
+	
 
 	return CommandCost();
 }
@@ -881,7 +889,7 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	}
 }
 
-DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
+DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) { //broken
 
 	nlohmann::json json = nlohmann::json::parse(jsonString);
 
@@ -891,13 +899,37 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 
 		auto &slotsJson = json.at("slots");
 
-		if (slotsJson.is_array()) {
-			for (nlohmann::json::iterator it = slotsJson.begin(); it != slotsJson.end(); ++it) {
+		if (slotsJson.is_object()) {
+
+			for (auto it = slotsJson.begin(); it != slotsJson.end(); ++it) {
 
 				DispatchSlot newDispatchSlot;
 
-				newDispatchSlot.offset = it.value().at("offset").template get<uint32_t>();
-				newDispatchSlot.flags = it.value().at("flags").template get<uint16_t>();
+				int offset;
+
+				try {
+
+					offset = std::stoi(it.key());
+					if (offset < 0) throw 1;
+
+				} catch (...) {
+
+					continue;
+
+				}
+
+				nlohmann::json slotData = it.value();
+
+				new_schedule.AddScheduledDispatch(offset);
+
+				if (slotData.contains("re-use-slot") && slotData["re-use-slot"].is_boolean()) {
+					
+				}
+
+				if(slotData.contains("tags") && slotData["tags"].is_array()) {
+					
+				}
+
 
 				new_schedule.GetScheduledDispatchMutable().push_back(newDispatchSlot);
 
@@ -906,7 +938,17 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 	}
 	
 	new_schedule.ScheduleName() = json.at("name").get<std::string>();
-	new_schedule.SetScheduledDispatchStartTick((StateTicks)json.at("start-tick").get<uint32_t>());
+
+	if (json.contains("duration") && json["duration"].is_number_integer() && json["duration"] > 0) {
+
+		new_schedule.SetScheduledDispatchDuration(json["duration"]);
+
+	} else {
+
+		new_schedule.SetScheduledDispatchDuration(-1); //set invalid duration so it gets overridden or throws an error[TODO]
+
+	}
+
 	new_schedule.SetScheduledDispatchDuration(json.at("duration").get<uint32_t>());
 	new_schedule.SetScheduledDispatchDelay(json.at("max-delay").get<uint32_t>());
 	new_schedule.SetScheduledDispatchFlags(json.at("flags").get<uint8_t>());
@@ -914,22 +956,61 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 	return new_schedule;
 }
 
+
 std::string DispatchSchedule::ToJSONString()
 {
 
 	nlohmann::ordered_json json;
 
-	for (unsigned int i = 0; auto & SD_slot : this->GetScheduledDispatch()) {
-		auto &slotsJson = json["slots"][i++];
-		slotsJson["offset"] = SD_slot.offset;
-		slotsJson["flags"] = SD_slot.flags;
+	for (int i = 0; i < (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); i++) {
+
+		std::string_view rename = this->GetSupplementaryName(SDSNT_DEPARTURE_TAG, i);
+
+		if (!rename.empty()) {
+
+			json["renamed-tags"]["Tag-" + std::to_string(i + 1)] = rename;
+
+		}
+
 	}
 
-	json["name"] = this->ScheduleName();
-	json["start-tick"] = this->GetScheduledDispatchStartTick().value;
-	json["duration"] = this->GetScheduledDispatchDuration();
-	json["max-delay"] = this->GetScheduledDispatchDelay();
-	json["flags"] = this->GetScheduledDispatchFlags();
+	for (auto & SD_slot : this->GetScheduledDispatch()) {
+
+		std::string stringOffset = std::to_string(SD_slot.offset);
+
+		auto &slotJson = json["slots"][stringOffset];
+
+		if (HasBit(SD_slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+			slotJson["re-use-slot"] = true;
+		}
+
+		for (int i = 0; i <= (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); i++) {
+			int ctr = 0;
+			if (HasBit(SD_slot.flags, DispatchSlot::SDSF_FIRST_TAG + i)) {
+
+				slotJson["tags"][ctr++] = "Tag-" + std::to_string(i + 1);
+
+			}
+
+		}
+		
+	}
+
+	if (!this->ScheduleName().empty()) {
+		json["name"] = this->ScheduleName();
+	}
+
+	if (this->GetScheduledDispatchDuration() != getScheduledDispatchDefaultDuration()) {
+		json["duration"] = this->GetScheduledDispatchDuration();
+	}
+
+	if (this->GetScheduledDispatchDelay() != 0) {
+		json["delay"] = this->GetScheduledDispatchDelay();
+	}
+
+	if (this->GetScheduledDispatchFlags() != 0) {
+		json["re-use-all-slots"] = true;
+	}
 
 	return json.dump();
 }
