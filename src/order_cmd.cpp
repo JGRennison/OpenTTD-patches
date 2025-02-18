@@ -310,6 +310,7 @@ std::string Order::ToJSONString() const
 			json["destination-name"] = station->GetCachedName();
 			json["destination-location"]["X"] = TileX(station->xy);
 			json["destination-location"]["Y"] = TileY(station->xy);
+
 		}
 
 	} else if (this->IsType(OT_GOTO_DEPOT)) {
@@ -338,79 +339,73 @@ std::string Order::ToJSONString() const
 
 	if (this->IsGotoOrder()) {
 
-		json["stopping-pattern"] = this->GetNonStopType();
-
-		if (this->IsWaitTimetabled()) {
-
-			json["wait-time"] = this->GetWaitTime();
-
+		if (this->GetNonStopType() != ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) { //default for timetablers
+			json["stopping-pattern"] = this->GetNonStopType();
 		}
 
 		if (this->IsWaitTimetabled()) {
+			json["wait-time"] = this->GetWaitTime();
+		}
 
+		if (this->IsWaitTimetabled()) {
 			json["travel-time"] = this->GetTravelTime();
-
 		}
 
 		if (this->GetMaxSpeed() != UINT16_MAX) {
-
 			json["max-speed"] = this->GetMaxSpeed();
-
 		}
 
 	}
 
-	if(this->extra.get() != nullptr){
+	if (this->GetLoadType() != OLFB_CARGO_TYPE_LOAD && this->GetLoadType() != OLF_LOAD_IF_POSSIBLE) {
+		json["load"] = this->GetLoadType();
+	}
 
-		auto& extraJson = json["extra"];
+	if (this->GetUnloadType() != OUFB_CARGO_TYPE_UNLOAD && this->GetUnloadType() != OUF_UNLOAD_IF_POSSIBLE) {
+		json["unload"] = this->GetUnloadType();
+	}
+
+	if(this->extra.get() != nullptr){
 
 		if (this->IsType(OT_GOTO_STATION)) {
 
-			auto &cargo_type_flags = this->extra.get()->cargo_type_flags;
-
 			for (int i = 0; i < NUM_CARGO; i++) {
 
-				if (cargo_type_flags[i] != 0) {
-
-					extraJson["cargo-type-flags"][std::to_string(i)] = cargo_type_flags[i];
-					break;
-
+				if (this->GetLoadType() == OLFB_CARGO_TYPE_LOAD && this->GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
+					json["load-by-cargo-type"][std::to_string(i)]["load"] = this->GetCargoLoadType(i);
 				}
 
+				if (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD && this->GetCargoLoadType(i) != OUF_UNLOAD_IF_POSSIBLE) {
+					json["load-by-cargo-type"][std::to_string(i)]["unload"] = this->GetCargoUnloadType(i);
+				}
+
+			}
+
+			if (this->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
+				json["roadstop-travel-dir"] = this->GetRoadVehTravelDirection();
 			}
 
 		}
 
 		if (this->GetColour() != -1) {
-
-			extraJson["colour"] = this->GetColour();
-
-		}
-
-
-		if (this->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
-
-			extraJson["roadstop-vehicle-travel-dir"] = this->GetRoadVehTravelDirection();
-
+			json["colour"] = this->GetColour();
 		}
 
 		if (this->GetDispatchScheduleIndex() != -1) {
-
-			extraJson["dispatch-index"] = this->GetDispatchScheduleIndex();
-
+			json["dispatch-index"] = this->GetDispatchScheduleIndex();
 		}
 
 		//TMP
 		if (this->extra.get()->xdata != 0) {
 
-			extraJson["xdata"] = this->extra.get()->xdata;
+			json["xdata"] = this->extra.get()->xdata;
 
 		}
 
 		//TMP
 		if (this->extra.get()->xdata2 != 0) {
 
-			extraJson["xdata"] = this->extra.get()->xdata2;
+			json["xdata2"] = this->extra.get()->xdata2;
 
 		}
 
@@ -428,7 +423,11 @@ std::string Order::ToJSONString() const
 
 		}
 
-		json["stop-location"] = this->GetStopLocation();
+		if (this->GetStopLocation() != OSL_PLATFORM_MIDDLE) {
+
+			json["stop-location"] = this->GetStopLocation();
+
+		}
 
 	} else if (this->IsType(OT_GOTO_WAYPOINT)) {
 
@@ -456,130 +455,295 @@ std::string Order::ToJSONString() const
 	return out;
 }
 
+static Order makeJsonErrorOrder(std::string error)
+{
+	Order error_order;
+	error_order.MakeLabel(OLST_TEXT);
+	error_order.SetLabelText(error.c_str());
+	error_order.SetColour(COLOUR_RED);
+	return error_order;
+}
+
 Order Order::FromJSONString(std::string jsonSTR)
 {
-
-	nlohmann::json json = nlohmann::json::parse(jsonSTR);
-
-	Order new_order;
-
 	try {
 
-		if (json.contains("type") && json["type"].is_number_integer()) {
+		nlohmann::json json = nlohmann::json::parse(jsonSTR);
 
-			new_order.type = json["type"];
+		OrderType type = OT_NOTHING;
+
+		if (json.contains("type")) {
+
+			try {
+
+				type = (OrderType)json["type"];
 			
+				if (type == OT_NOTHING) {
+					return makeJsonErrorOrder("Value for 'type' is invalid");
+				}
+
+			} catch (...) {
+				return makeJsonErrorOrder("Data type for 'type' is invalid");
+			}
+
+		} else {
+			return makeJsonErrorOrder("Required 'type' is missing");
 		}
 
-		if (json.contains("flags") && json["flags"].is_number_integer()) {
+		DestinationID destination = INVALID_STATION;
 
-			new_order.flags = json["flags"];
+		OrderLabelSubType subtype = OLST_TEXT;
 
-		}
-		 
-		if (json.contains("destination-id") && json["destination-id"].is_number_integer()) {
-
-			json["destination-id"].get_to(new_order.dest);
-
-		}
-
-		if (json.contains("extra") && json["extra"].is_object()) {
-
-			auto &extraJson = json["extra"];
-
-			new_order.AllocExtraInfo();
-
-			if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_object()) {
-
-				for (int i = 0; i < NUM_CARGO; i++) {
-
-					if (extraJson["cargo-type-flags"].contains(std::to_string(i))) {
-
-						extraJson["cargo-type-flags"][std::to_string(i)].get_to(new_order.extra->cargo_type_flags[i]);
-
-					} else {
-
-						new_order.extra->cargo_type_flags[i] = 0;
-
+		//Get basic order data required to build order
+		switch (type) {
+			case OT_LABEL:		
+				if (json.contains("label-subtype")) {
+					try {
+						subtype = (OrderLabelSubType)json["label-subtype"];
+						if (subtype == OLST_END) {
+							return makeJsonErrorOrder("Value of 'label-subtype' is invalid");
+						}
+					} catch (...) {
+						return makeJsonErrorOrder("Data type of 'label-subtype' is invalid");
 					}
+				}
+
+				if(subtype != OLST_DEPARTURES_REMOVE_VIA && subtype != OLST_DEPARTURES_VIA) break;
+
+				//fall through if label has destination
+				[[fallthrough]];
+
+			case OT_GOTO_STATION:
+			case OT_GOTO_WAYPOINT:
+			case OT_IMPLICIT:
+				if (json.contains("destination-id")) {
+					if (json["destination-id"].is_number_integer()) {
+						 destination = json["destination-id"];
+					} else {
+						return makeJsonErrorOrder("Data type of 'destination-id' is invalid");
+					}
+				} else {
+					if (type == OT_LABEL) {
+						return makeJsonErrorOrder("Go-via labels require 'destination-id'");
+					} else {
+						return makeJsonErrorOrder("Order type '" + (std::string)json["order-type"] + "' requires 'destination-id' to be set");
+					}
+				}
+
+				break;
+
+			case OT_GOTO_DEPOT:
+				if (json.contains("depot-id")) {
+					if (json["depot-id"].is_string()) {
+						if (json["depot-id"] == "nearest") {
+							destination = INVALID_DEPOT;
+						} else {
+							return makeJsonErrorOrder("Value for 'depot-id' is invalid");
+						}
+					} else if(json["depot-id"].is_number_integer()){
+						destination = json["depot-id"];
+					} else {
+						return makeJsonErrorOrder("Data type of 'depot-id' is invalid");
+					}
+				} else {
+					destination = INVALID_DEPOT;
+				}
+				break;
+
+		}
+
+		//Now let's build the order
+		Order new_order;
+		switch (type) {
+			case OT_GOTO_STATION: new_order.MakeGoToStation(destination); break;
+			case OT_GOTO_WAYPOINT: new_order.MakeGoToWaypoint(destination); break;
+			case OT_GOTO_DEPOT: new_order.MakeGoToDepot(destination, ODTFB_PART_OF_ORDERS); break;
+			case OT_IMPLICIT: new_order.MakeImplicit(destination); break;
+			case OT_LABEL:
+				new_order.MakeLabel(subtype);
+				if (new_order.GetLabelSubType() != OLST_TEXT) {
+					new_order.SetDestination(destination);
+				}
+				break;
+		}
+
+		//And now set up the flags
+		if (new_order.IsGotoOrder()) {
+			if (json.contains("stopping-pattern")) {
+
+				try {
+
+					OrderNonStopFlags stoppingPattern = (OrderNonStopFlags)json["stopping-pattern"];
+					if (stoppingPattern == ONSF_END) {
+						return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid");
+					} else {
+						switch (new_order.GetType()) {
+							case OT_GOTO_DEPOT:
+								if (stoppingPattern == ONSF_NO_STOP_AT_ANY_STATION || stoppingPattern == ONSF_NO_STOP_AT_DESTINATION_STATION) {
+									return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid for 'type'='go-to-depot'");
+								}
+								break;
+
+							case OT_GOTO_WAYPOINT:
+								if (stoppingPattern == ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS || stoppingPattern == ONSF_STOP_EVERYWHERE) {
+									return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid for 'type'='go-to-waypoint'");
+								}
+								break;
+						}
+					}
+					
+				} catch (...) {
+
+					return makeJsonErrorOrder("Data type of 'stopping-pattern' is invalid");
 
 				}
 
+			} else {
+				new_order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS); //default for timetablers
 			}
-
-			if (extraJson.contains("colour")) {
-
-				extraJson["colour"].get_to(new_order.extra->colour);
-
-			}
-
-			if (extraJson.contains("dispatch-index")) {
-
-				extraJson["dispatch-index"].get_to(new_order.extra->dispatch_index);
-
-			}
-
-			if (extraJson.contains("xdata")) {
-
-				extraJson["xdata"].get_to(new_order.extra->xdata);
-
-			}
-
-			if (extraJson.contains("xdata2")) {
-
-				extraJson["xdata2"].get_to(new_order.extra->xdata2);
-
-			}
-
-			if (extraJson.contains("xflags")) {
-
-				extraJson["xflags"].get_to(new_order.extra->xflags);
-
-			}
-
-		}
-
-		if (json.contains("refit-cargo")) {
-
-			new_order.SetRefit(json["refit-cargo"].get<CargoID>());
-
-		}
-
-		if (json.contains("wait-time")) {
-
-			new_order.SetWaitTime(json["wait-time"].get<TimetableTicks>());
-			new_order.SetWaitTimetabled(true);
-
-		}
-
-		if (json.contains("travel-time")) {
-
-			new_order.SetTravelTime(json["travel-time"].get<TimetableTicks>());
-			new_order.SetTravelTimetabled(true);
 
 		}
 
 		if (json.contains("max-speed")) {
-
-			new_order.SetMaxSpeed(json["max-speed"].get<uint16_t>());
-
+			if (json["max-speed"].is_number_integer()) {
+				if (json["max-speed"] > 0) {
+					new_order.SetMaxSpeed(json["max-speed"]);
+				} else {
+					return makeJsonErrorOrder("Value of 'max-speed' is invalid");
+				}
+			} else {
+				return makeJsonErrorOrder("Data type of 'max-speed' is invalid");
+			}
 		}
 
+		if (json.contains("wait-time")) {
+			if (json["wait-time"].is_number_integer()) {
+				if (json["wait-time"] >= 0) {
+					new_order.SetWaitTimetabled(true);
+					new_order.SetWaitTime(json["wait-time"]);
+				} else {
+					return makeJsonErrorOrder("Value of 'wait-time' is invalid");
+				}
+			} else {
+				return makeJsonErrorOrder("Data type of 'wait-time' is invalid");
+			}
+		}
+
+		if (json.contains("travel-time")) {
+			if (json["travel-time"].is_number_integer()) {
+				if (json["travel-time"] >= 0) {
+					new_order.SetTravelTimetabled(true);
+					new_order.SetTravelTime(json["travel-time"]);
+				} else {
+					return makeJsonErrorOrder("Value of 'travel-time' is invalid");
+				}
+			} else {
+				return makeJsonErrorOrder("Data type of 'travel-time' is invalid");
+			}
+		}
+
+		if (new_order.IsType(OT_GOTO_STATION)) {
+
+			bool isGeneralLoad;
+			if (isGeneralLoad = json.contains("load")) {
+				try {
+					new_order.SetLoadType((OrderLoadFlags)json["load"]);
+				} catch (...) {
+					return makeJsonErrorOrder("Value of 'load' is invalid");
+				}
+			}
+
+			bool isGeneralUnLoad;
+			if (isGeneralUnLoad = json.contains("unload")) {
+				try {
+					new_order.SetUnloadType((OrderUnloadFlags)json["unload"]);
+				} catch (...) {
+					return makeJsonErrorOrder("Value of 'unload' is invalid");
+				}
+			}
+
+			if (json.contains("load-by-cargo-type") && json["load-by-cargo-type"].is_object()) {
+
+				for (int i = 0; i < NUM_CARGO; i++) {
+
+					if (json["load-by-cargo-type"].contains(std::to_string(i))) {
+
+						auto &specificLULjson = json["load-by-cargo-type"][std::to_string(i)];
+
+						if (specificLULjson.is_object()) {
+
+							if (!isGeneralLoad && specificLULjson.contains("load")) {
+								try {
+									new_order.SetLoadType((OrderLoadFlags)specificLULjson["load"], i);
+								} catch (...) {
+									return makeJsonErrorOrder("Value of 'load' is invalid");
+								}
+							}
+
+							if (!isGeneralUnLoad && specificLULjson.contains("unload")) {
+								try {
+									new_order.SetUnloadType((OrderUnloadFlags)specificLULjson["unload"], i);
+								} catch (...) {
+									return makeJsonErrorOrder("Value of 'unload' is invalid");
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (json.contains("stop-location")) {
+				try {
+					OrderStopLocation sl = (OrderStopLocation)json["stop-location"];
+					if (sl == OSL_END) return makeJsonErrorOrder("Value of 'stop-location' is invalid");
+					new_order.SetStopLocation(sl);
+				} catch (...){
+					return makeJsonErrorOrder("Type of 'stop-location' is invalid");
+				}
+			} else {
+				new_order.SetStopLocation(OSL_PLATFORM_MIDDLE);
+			}
+
+			if (json.contains("refit-cargo")) {
+
+				if (json["refit-cargo"].is_string()) {
+
+					if (json["refit-cargo"] == "auto") {
+						new_order.SetRefit(CARGO_AUTO_REFIT);
+					} else {
+						return makeJsonErrorOrder("Value of 'refit-cargo' is invalid");
+					}
+				} else if (json["refit-cargo"].is_number_integer()) {
+					if (json["refit-caargo"] < 0 && json["refit-cargo"] >= NUM_CARGO) {
+						new_order.SetRefit(json["refit-cargo"]);
+					} else {
+						return makeJsonErrorOrder("Value of 'refit-cargo' is invalid");
+					}
+				} else {
+					return makeJsonErrorOrder("Type of 'refit-cargo' is invalid");
+				}
+			}
+
+			if (json.contains("roadstop-travel-dir")) {
+				if (json["roadstop-trvel-dir"].is_number_integer()) {
+					new_order.SetRoadVehTravelDirection(json["roadstop-trvel-dir"]);
+				} else {
+					return makeJsonErrorOrder("Type of 'refit-cargo' is invalid");
+				}
+			}
+		}
+
+		return new_order;
+
 	} catch (nlohmann::json::exception &e) {
-		
-		new_order.MakeLabel(OLST_TEXT);
-		new_order.SetLabelText(std::string(("Error : ") + std::string(e.what())).c_str());
-		new_order.SetColour(COLOUR_RED);
+
+		return makeJsonErrorOrder(std::string(("Json exception : ") + std::string(e.what())).c_str());
 
 	} catch (std::exception &e) {
 
-		new_order.MakeLabel(OLST_TEXT);
-		new_order.SetLabelText(std::string(("Internal Error") + std::string(e.what())).c_str());
-		new_order.SetColour(COLOUR_RED);
+		return makeJsonErrorOrder((std::string(("Internal Error : ") + std::string(e.what())).c_str()));
 
 	}
-
-	return new_order;
 
 }
 

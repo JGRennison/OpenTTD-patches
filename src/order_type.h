@@ -144,6 +144,7 @@ enum OrderDepotActionFlags {
 	ODATFB_NEAREST_DEPOT = 1 << 1, ///< Send the vehicle to the nearest depot.
 	ODATFB_SELL          = 1 << 2, ///< Sell the vehicle on arrival at the depot.
 	ODATFB_UNBUNCH       = 1 << 3, ///< Service the vehicle and then unbunch it.
+	ODAFTB_END
 };
 DECLARE_ENUM_AS_BIT_SET(OrderDepotActionFlags)
 

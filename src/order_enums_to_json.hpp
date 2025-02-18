@@ -62,12 +62,25 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderType, {
 * and it is therefore the only element that can appear more then once, as such it will be treated separately
 */
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderDepotActionFlags, {
-
+	{ODAFTB_END,nullptr},
 	{ODATF_SERVICE_ONLY,"service-only"},
 	{ODATFB_HALT,"stop"},
 	{ODATFB_SELL,"sell"},
-	{ODATFB_UNBUNCH,"unbunch"},
+	{ODATFB_UNBUNCH,"unbunch"}
+})
 
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadFlags, {
+	{OLF_LOAD_IF_POSSIBLE,"load"},
+	{OLFB_FULL_LOAD,"full-load"},
+	{OLF_FULL_LOAD_ANY,"full-load-any"},
+	{OLFB_NO_LOAD,"no-load"}
+})
+
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadFlags, {
+	{OUF_UNLOAD_IF_POSSIBLE,"unload"},
+	{OUFB_UNLOAD,"unload-and-leave-empty"},
+	{OUFB_TRANSFER,"transfer"},
+	{OUFB_NO_UNLOAD,"no-unload"},
 })
 
 #endif
