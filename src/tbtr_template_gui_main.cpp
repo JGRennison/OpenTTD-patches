@@ -196,8 +196,6 @@ private:
 
 	GUIGroupList groups;                      ///< List of groups
 
-	int bottom_matrix_item_size = 0;
-	int details_height;                       ///< Minimal needed height of the details panels (found so far).
 	RailType sel_railtype = INVALID_RAILTYPE; ///< Type of rail tracks selected.
 	Scrollbar *vscroll[3];
 	GUITemplateList templates;
@@ -207,6 +205,7 @@ private:
 
 	bool edit_in_progress = false;
 
+	int bottom_matrix_item_size = 0;
 	uint buy_cost_width = 0;
 	uint refit_text_width = 0;
 	uint depot_text_width = 0;
@@ -216,8 +215,6 @@ private:
 public:
 	TemplateReplaceWindow(WindowDesc &wdesc) : Window(wdesc)
 	{
-		this->details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
-
 		this->CreateNestedTree();
 		this->vscroll[0] = this->GetScrollbar(TRW_WIDGET_TOP_SCROLLBAR);
 		this->vscroll[1] = this->GetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR);
@@ -246,10 +243,12 @@ public:
 	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
-			case TRW_WIDGET_TOP_MATRIX:
+			case TRW_WIDGET_TOP_MATRIX: {
 				resize.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 				size.height = 8 * resize.height;
 				break;
+			}
+
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				int base_resize = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FS_NORMAL) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
@@ -272,6 +271,7 @@ public:
 				size.width = std::max(size.width, left_side + gap + right_side);
 				break;
 			}
+
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
 				Dimension d = GetStringBoundingBox(STR_REPLACE_ALL_RAILTYPE);
 				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
@@ -288,6 +288,7 @@ public:
 			case TRW_WIDGET_TMPL_CONFIG_HEADER:
 				size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				break;
+
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL:
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL:
 				size.width = std::max(size.width, NWidgetLeaf::GetResizeBoxDimension().width);
@@ -308,15 +309,15 @@ public:
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX: {
-				DrawAllGroupsFunction(r);
+				this->DrawAllGroupsFunction(r);
 				break;
 			}
 			case TRW_WIDGET_BOTTOM_MATRIX: {
-				DrawTemplateList(r);
+				this->DrawTemplateList(r);
 				break;
 			}
 			case TRW_WIDGET_TMPL_INFO_PANEL: {
-				DrawTemplateInfo(r);
+				this->DrawTemplateInfo(r);
 				break;
 			}
 			case TRW_WIDGET_TMPL_CONFIG_HEADER: {
@@ -404,6 +405,7 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
@@ -412,6 +414,7 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE:
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_INCOMING: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
@@ -421,6 +424,7 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
@@ -429,21 +433,24 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_DEFINE: {
 				this->edit_in_progress = true;
 				ShowTemplateCreateWindow(nullptr, &this->edit_in_progress);
-				UpdateButtonState();
+				this->UpdateButtonState();
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					this->edit_in_progress = true;
 					TemplateVehicle *sel = TemplateVehicle::Get(((this->templates)[selected_template_index])->index);
 					ShowTemplateCreateWindow(sel, &this->edit_in_progress);
-					UpdateButtonState();
+					this->UpdateButtonState();
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_CLONE: {
 				this->SetWidgetDirty(TRW_WIDGET_TMPL_BUTTONS_CLONE);
 				this->ToggleWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CLONE);
@@ -455,6 +462,7 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 
@@ -468,6 +476,7 @@ public:
 					}
 				}
 				break;
+
 			case TRW_WIDGET_TMPL_BUTTONS_RENAME:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 					const TemplateVehicle *tmp = this->templates[this->selected_template_index];
@@ -475,9 +484,11 @@ public:
 					ShowQueryString(STR_JUST_RAW_STRING, STR_TMPL_RENAME_TEMPLATE, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				}
 				break;
+
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: // Railtype selection dropdown menu
 				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
+
 			case TRW_WIDGET_TOP_MATRIX: {
 				uint16_t newindex = (uint16_t)((pt.y - this->GetWidget<NWidgetBase>(TRW_WIDGET_TOP_MATRIX)->pos_y) / (GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
 				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
@@ -488,6 +499,7 @@ public:
 				this->UpdateButtonState();
 				break;
 			}
+
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				uint16_t newindex = (uint16_t)((pt.y - this->GetWidget<NWidgetBase>(TRW_WIDGET_BOTTOM_MATRIX)->pos_y) / this->bottom_matrix_item_size) + this->vscroll[1]->GetPosition();
 				if (newindex == this->selected_template_index || newindex >= templates.size()) {
@@ -500,6 +512,7 @@ public:
 				this->UpdateButtonState();
 				break;
 			}
+
 			case TRW_WIDGET_START: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) &&
 						(this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size())) {
@@ -511,6 +524,7 @@ public:
 				}
 				break;
 			}
+
 			case TRW_WIDGET_STOP:
 				if ((this->selected_group_index < 0) || (this->selected_group_index >= (int)this->groups.size())) {
 					return;
