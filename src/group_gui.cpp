@@ -123,18 +123,18 @@ static constexpr NWidgetPart _nested_group_widgets[] = {
  * @param parent Current tree parent (set by self with recursion).
  * @param indent Current tree indentation level (set by self with recursion).
  */
-static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, bool fold, GroupID parent = INVALID_GROUP, uint8_t indent = 0)
+static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, GroupFoldBits fold, GroupID parent = INVALID_GROUP, uint8_t indent = 0)
 {
 	for (const auto &item : src) {
 		if (item.group->parent != parent) continue;
 
 		dst.emplace_back(item.group, indent);
 
-		if (fold && item.group->folded) {
+		if (fold != GroupFoldBits::None && item.group->IsFolded(fold)) {
 			/* Test if this group has children at all. If not, the folded flag should be cleared to avoid lingering unfold buttons in the list. */
 			GroupID groupid = item.group->index;
 			bool has_children = std::any_of(src.begin(), src.end(), [groupid](const auto &child) { return child.group->parent == groupid; });
-			Group::Get(item.group->index)->folded = has_children;
+			SetFlagState(const_cast<Group *>(item.group)->folded_mask, fold, has_children);
 		} else {
 			GuiGroupListAddChildren(dst, src, fold, item.group->index, indent + 1);
 		}
@@ -158,7 +158,7 @@ static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, 
  * @param owner Owner of groups.
  * @param veh_type Vehicle type of groups.
  */
-void BuildGuiGroupList(GUIGroupList &dst, bool fold, Owner owner, VehicleType veh_type)
+void BuildGuiGroupList(GUIGroupList &dst, GroupFoldBits fold, Owner owner, VehicleType veh_type)
 {
 	GUIGroupList list;
 
@@ -237,7 +237,7 @@ private:
 
 		for (const Group *g : Group::Iterate()) {
 			if (g->owner == owner && g->vehicle_type == this->vli.vtype && g->parent != INVALID_GROUP) {
-				if (Group::Get(g->parent)->folded) {
+				if (Group::Get(g->parent)->IsFolded(GroupFoldBits::GroupView)) {
 					enable_expand_all = true;
 				} else {
 					enable_collapse_all = true;
@@ -248,7 +248,7 @@ private:
 		this->SetWidgetDisabledState(WID_GL_EXPAND_ALL_GROUPS, !enable_expand_all);
 		this->SetWidgetDisabledState(WID_GL_COLLAPSE_ALL_GROUPS, !enable_collapse_all);
 
-		BuildGuiGroupList(this->groups, true, owner, this->vli.vtype);
+		BuildGuiGroupList(this->groups, GroupFoldBits::GroupView, owner, this->vli.vtype);
 
 		this->groups.RebuildDone();
 
@@ -256,7 +256,7 @@ private:
 		const Group *g = Group::GetIfValid(this->vli.index);
 		while (g != nullptr) {
 			g = Group::GetIfValid(g->parent);
-			if (g != nullptr && g->folded) {
+			if (g != nullptr && g->IsFolded(GroupFoldBits::GroupView)) {
 				this->vli.index = g->index;
 				this->vehgroups.ForceRebuild();
 			}
@@ -353,7 +353,7 @@ private:
 		/* draw fold / unfold button */
 		int x = rtl ? right - WidgetDimensions::scaled.framerect.right - this->column_size[VGC_FOLD].width + 1 : left + WidgetDimensions::scaled.framerect.left;
 		if (has_children) {
-			DrawSprite(Group::Get(g_id)->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, x + indent * level_width, y + (this->tiny_step_height - this->column_size[VGC_FOLD].height) / 2);
+			DrawSprite(Group::Get(g_id)->IsFolded(GroupFoldBits::GroupView) ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, x + indent * level_width, y + (this->tiny_step_height - this->column_size[VGC_FOLD].height) / 2);
 		}
 
 		/* draw group name */
@@ -428,7 +428,7 @@ private:
 		for (const Group *g : Group::Iterate()) {
 			if (g->owner == this->owner && g->vehicle_type == this->vli.vtype) {
 				if (g->parent != INVALID_GROUP) {
-					Group::Get(g->parent)->folded = folded;
+					SetFlagState(Group::Get(g->parent)->folded_mask, GroupFoldBits::GroupView, folded);
 				}
 			}
 		}
@@ -722,7 +722,7 @@ public:
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, HasFlag(g->flags, GroupFlags::ReplaceProtection), g->folded || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
+					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, HasFlag(g->flags, GroupFlags::ReplaceProtection), g->IsFolded(GroupFoldBits::GroupView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
 
 					y1 += this->tiny_step_height;
 				}
@@ -814,7 +814,7 @@ public:
 				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
 				if (it == this->groups.end()) return;
 
-				if (it->group->folded || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent)) {
+				if (it->group->IsFolded(GroupFoldBits::GroupView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent)) {
 					/* The group has children, check if the user clicked the fold / unfold button. */
 					NWidgetCore *group_display = this->GetWidget<NWidgetCore>(widget);
 					int x = _current_text_dir == TD_RTL ?
@@ -833,7 +833,7 @@ public:
 							} while (g != INVALID_GROUP);
 						}
 
-						Group::Get(it->group->index)->folded = !it->group->folded;
+						ToggleFlag(const_cast<Group *>(it->group)->folded_mask, GroupFoldBits::GroupView);
 						this->groups.ForceRebuild();
 
 						this->SetDirty();
@@ -1304,7 +1304,7 @@ public:
 			if (found == std::end(this->groups)) {
 				/* The group's branch is maybe collapsed, so try to expand it. */
 				for (auto pg = Group::GetIfValid(g->parent); pg != nullptr; pg = Group::GetIfValid(pg->parent)) {
-					pg->folded = false;
+					pg->folded_mask &= ~GroupFoldBits::GroupView;
 				}
 				this->groups.ForceRebuild();
 				this->BuildGroupList(this->owner);

@@ -712,7 +712,7 @@ private:
 		if (this->livery_class >= LC_GROUP_RAIL) {
 			VehicleType vtype = (VehicleType)(this->livery_class - LC_GROUP_RAIL);
 
-			BuildGuiGroupList(this->groups, false, owner, vtype);
+			BuildGuiGroupList(this->groups, GroupFoldBits::None, owner, vtype);
 		}
 
 		this->groups.RebuildDone();

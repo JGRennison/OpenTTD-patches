@@ -607,7 +607,7 @@ public:
 
 		this->groups.clear();
 
-		BuildGuiGroupList(this->groups, false, this->owner, VEH_TRAIN);
+		BuildGuiGroupList(this->groups, GroupFoldBits::None, this->owner, VEH_TRAIN);
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();

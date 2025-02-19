@@ -71,6 +71,12 @@ enum class GroupFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(GroupFlags)
 
+enum class GroupFoldBits : uint8_t {
+	None                = 0,
+	GroupView           = 1U << 0, ///< If set, this group is folded in the group view.
+};
+DECLARE_ENUM_AS_BIT_SET(GroupFoldBits)
+
 /** Group data. */
 struct Group : GroupPool::PoolItem<&_group_pool> {
 	std::string name;           ///< Group Name
@@ -81,12 +87,14 @@ struct Group : GroupPool::PoolItem<&_group_pool> {
 	Livery livery;              ///< Custom colour scheme for vehicles in this group
 	GroupStatistics statistics; ///< NOSAVE: Statistics and caches on the vehicles in the group.
 
-	bool folded;                ///< NOSAVE: Is this group folded in the group view?
+	GroupFoldBits folded_mask = GroupFoldBits::None; ///< NOSAVE: Which views this group is folded in?
 
 	GroupID parent;             ///< Parent group
-	uint16_t number; ///< Per-company group number.
+	uint16_t number;            ///< Per-company group number.
 
 	Group(CompanyID owner = INVALID_COMPANY);
+
+	bool IsFolded(GroupFoldBits fold_bit) const { return (this->folded_mask & fold_bit) != GroupFoldBits::None; }
 };
 
 

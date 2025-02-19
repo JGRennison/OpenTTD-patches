@@ -29,7 +29,7 @@ struct GUIGroupListItem {
 
 using GUIGroupList = GUIList<GUIGroupListItem>;
 
-void BuildGuiGroupList(GUIGroupList &dst, bool fold, Owner owner, VehicleType veh_type);
+void BuildGuiGroupList(GUIGroupList &dst, GroupFoldBits fold, Owner owner, VehicleType veh_type);
 void SortGUIGroupList(GUIGroupList &list);
 
 #endif /* GROUP_GUI_H */
