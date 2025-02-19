@@ -105,4 +105,20 @@ debug_inline constexpr void ToggleFlag(T &x, const T y)
 	}
 }
 
+/**
+ * Set or unset a value in a bitset enum.
+ * @param x The value to change.
+ * @param y The flag to apply.
+ * @param set Whether to set or unset the flag.
+ */
+template <typename T, class = typename std::enable_if_t<std::is_enum_v<T>>>
+debug_inline constexpr void SetFlagState(T &x, const T y, bool set)
+{
+	if (set) {
+		x |= y;
+	} else {
+		x &= ~y;
+	}
+}
+
 #endif /* ENUM_TYPE_HPP */
