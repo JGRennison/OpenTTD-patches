@@ -194,20 +194,18 @@ enum {
 class TemplateReplaceWindow : public Window {
 private:
 
-	GUIGroupList groups;          ///< List of groups
+	GUIGroupList groups;                      ///< List of groups
 
 	int bottom_matrix_item_size = 0;
-
-	int details_height;           ///< Minimal needed height of the details panels (found so far).
-	RailType sel_railtype;        ///< Type of rail tracks selected.
+	int details_height;                       ///< Minimal needed height of the details panels (found so far).
+	RailType sel_railtype = INVALID_RAILTYPE; ///< Type of rail tracks selected.
 	Scrollbar *vscroll[3];
-	// listing/sorting continued
 	GUITemplateList templates;
 
-	int selected_template_index;
-	int selected_group_index;
+	int selected_template_index = -1;
+	int selected_group_index = -1;
 
-	bool editInProgress;
+	bool edit_in_progress = false;
 
 	uint buy_cost_width = 0;
 	uint refit_text_width = 0;
@@ -218,8 +216,6 @@ private:
 public:
 	TemplateReplaceWindow(WindowDesc &wdesc) : Window(wdesc)
 	{
-		this->sel_railtype = INVALID_RAILTYPE;
-
 		this->details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 
 		this->CreateNestedTree();
@@ -234,12 +230,7 @@ public:
 		this->groups.NeedResort();
 		this->BuildGroupList();
 
-		this->selected_template_index = -1;
-		this->selected_group_index = -1;
-
 		this->UpdateButtonState();
-
-		this->editInProgress = false;
 
 		this->templates.ForceRebuild();
 
@@ -399,7 +390,7 @@ public:
 
 	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
-		if (this->editInProgress) return;
+		if (this->edit_in_progress) return;
 
 		this->BuildGroupList();
 		this->BuildTemplateGuiList();
@@ -439,16 +430,16 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_DEFINE: {
-				editInProgress = true;
-				ShowTemplateCreateWindow(nullptr, &editInProgress);
+				this->edit_in_progress = true;
+				ShowTemplateCreateWindow(nullptr, &this->edit_in_progress);
 				UpdateButtonState();
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
-					editInProgress = true;
+					this->edit_in_progress = true;
 					TemplateVehicle *sel = TemplateVehicle::Get(((this->templates)[selected_template_index])->index);
-					ShowTemplateCreateWindow(sel, &editInProgress);
+					ShowTemplateCreateWindow(sel, &this->edit_in_progress);
 					UpdateButtonState();
 				}
 				break;
@@ -465,7 +456,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
@@ -478,7 +469,7 @@ public:
 				}
 				break;
 			case TRW_WIDGET_TMPL_BUTTONS_RENAME:
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 					const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 					SetDParamStr(0, tmp->name);
 					ShowQueryString(STR_JUST_RAW_STRING, STR_TMPL_RENAME_TEMPLATE, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
@@ -590,7 +581,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 			DoCommandP(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str->c_str());
 		}
@@ -908,7 +899,7 @@ public:
 		}
 
 		const TemplateID tid = GetTemplateIDByGroupID(g_id);
-		const bool disable_selection_buttons = this->editInProgress || !selected_ok;
+		const bool disable_selection_buttons = this->edit_in_progress || !selected_ok;
 
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, disable_selection_buttons);
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DELETE, disable_selection_buttons);
@@ -918,12 +909,12 @@ public:
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, disable_selection_buttons);
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, disable_selection_buttons);
 
-		this->SetWidgetDisabledState(TRW_WIDGET_START, this->editInProgress || !(selected_ok && group_ok && FindTemplateIndex(tid) != this->selected_template_index));
-		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->editInProgress || !(group_ok && tid != INVALID_TEMPLATE));
+		this->SetWidgetDisabledState(TRW_WIDGET_START, this->edit_in_progress || !(selected_ok && group_ok && FindTemplateIndex(tid) != this->selected_template_index));
+		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->edit_in_progress || !(group_ok && tid != INVALID_TEMPLATE));
 
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DEFINE, this->editInProgress);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CLONE, this->editInProgress);
-		this->SetWidgetDisabledState(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN, this->editInProgress);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DEFINE, this->edit_in_progress);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CLONE, this->edit_in_progress);
+		this->SetWidgetDisabledState(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN, this->edit_in_progress);
 	}
 };
 
