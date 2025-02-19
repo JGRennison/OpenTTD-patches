@@ -1447,9 +1447,9 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					}
 					break;
 
-					case TRIT_GUI_LABEL:
-						/* This instruction does nothing when executed, and sets no actions_used_flags */
-						break;
+				case TRIT_GUI_LABEL:
+					/* This instruction does nothing when executed, and sets no actions_used_flags */
+					break;
 
 				case TRIT_REVERSE:
 					switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
