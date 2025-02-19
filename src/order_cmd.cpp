@@ -433,7 +433,7 @@ std::string Order::ToJSONString() const
 
 		if (this->GetWaypointFlags() != OWF_DEFAULT) {
 
-			json["reverse"] = this->GetWaypointFlags();
+			json["waypoint-action"] = this->GetWaypointFlags();
 
 		}
 
@@ -492,15 +492,15 @@ Order Order::FromJSONString(std::string jsonSTR)
 
 		DestinationID destination = INVALID_STATION;
 
-		OrderLabelSubType subtype = OLST_TEXT;
+		OrderLabelSubType labelSubtype = OLST_TEXT;
 
 		//Get basic order data required to build order
 		switch (type) {
 			case OT_LABEL:		
 				if (json.contains("label-subtype")) {
 					try {
-						subtype = (OrderLabelSubType)json["label-subtype"];
-						if (subtype == OLST_END) {
+						labelSubtype = (OrderLabelSubType)json["label-subtype"];
+						if (labelSubtype == OLST_END) {
 							return makeJsonErrorOrder("Value of 'label-subtype' is invalid");
 						}
 					} catch (...) {
@@ -508,7 +508,7 @@ Order Order::FromJSONString(std::string jsonSTR)
 					}
 				}
 
-				if(subtype != OLST_DEPARTURES_REMOVE_VIA && subtype != OLST_DEPARTURES_VIA) break;
+				if(labelSubtype != OLST_DEPARTURES_REMOVE_VIA && labelSubtype != OLST_DEPARTURES_VIA) break;
 
 				//fall through if label has destination
 				[[fallthrough]];
@@ -560,7 +560,7 @@ Order Order::FromJSONString(std::string jsonSTR)
 			case OT_GOTO_DEPOT: new_order.MakeGoToDepot(destination, ODTFB_PART_OF_ORDERS); break;
 			case OT_IMPLICIT: new_order.MakeImplicit(destination); break;
 			case OT_LABEL:
-				new_order.MakeLabel(subtype);
+				new_order.MakeLabel(labelSubtype);
 				if (new_order.GetLabelSubType() != OLST_TEXT) {
 					new_order.SetDestination(destination);
 				}
@@ -725,11 +725,57 @@ Order Order::FromJSONString(std::string jsonSTR)
 			}
 
 			if (json.contains("roadstop-travel-dir")) {
-				if (json["roadstop-trvel-dir"].is_number_integer()) {
-					new_order.SetRoadVehTravelDirection(json["roadstop-trvel-dir"]);
-				} else {
-					return makeJsonErrorOrder("Type of 'refit-cargo' is invalid");
+				try {
+					DiagDirection dir = json["roadstop-trvel-dir"];
+					if (dir == INVALID_DIAGDIR) {
+						new_order.SetRoadVehTravelDirection(dir);
+					} else {
+						return makeJsonErrorOrder("Value of 'roadstop-travel-dir' is invalid");
+					}
+				} catch (...) {
+					return makeJsonErrorOrder("Type of 'roadstop-travel-dir' is invalid");
 				}
+			}
+
+		}
+
+		if (new_order.IsType(OT_GOTO_WAYPOINT) && json.contains("waypoint-action")) {
+			try {
+				new_order.SetWaypointFlags((OrderWaypointFlags)json["waypoint-action"]);
+			} catch (...) {
+				return makeJsonErrorOrder("Type of 'waypoint-action' is invalid");
+			}
+		}
+
+		if (new_order.IsType(OT_LABEL) && new_order.GetLabelSubType() == OLST_TEXT && json.contains("label-text")) {
+			if(json["label-text"].is_string()){
+				new_order.SetLabelText(((std::string)json["label-text"]).c_str());
+			} else {
+				return makeJsonErrorOrder("Type of 'waypoint-action' is invalid");
+			}
+		}
+
+		if (json.contains("colour")) {
+			try {
+				if ((Colours)json["colour"] != INVALID_COLOUR) {
+					new_order.SetColour((Colours)json["colour"]);
+				} else {
+					return makeJsonErrorOrder("Value of 'colour' is invalid");
+				}
+			} catch (...) {
+				return makeJsonErrorOrder("Type of 'colour' is invalid");
+			}
+		}
+
+		if (json.contains("dispatch-index")) {
+			if(json["dispatch-index"].is_number_integer()){
+				if (json["dispatch-index"] >= 0) {
+					new_order.SetDispatchScheduleIndex(json["dispatch-index"]);
+				} else {
+					return makeJsonErrorOrder("Value of 'dispatch-index' is invalid");
+				}
+			} else {
+				return makeJsonErrorOrder("Type of 'dispatch-index' is invalid");
 			}
 		}
 

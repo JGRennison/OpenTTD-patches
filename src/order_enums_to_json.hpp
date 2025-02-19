@@ -11,6 +11,8 @@
 #define ORDER_ENUMS_TO_JSON
 
 #include "order_type.h"
+#include "direction_type.h"
+#include "gfx_type.h"
 
 #include "3rdparty/nlohmann/json.hpp"
 
@@ -81,6 +83,34 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadFlags, {
 	{OUFB_UNLOAD,"unload-and-leave-empty"},
 	{OUFB_TRANSFER,"transfer"},
 	{OUFB_NO_UNLOAD,"no-unload"},
+})
+
+NLOHMANN_JSON_SERIALIZE_ENUM(DiagDirection, {
+	{INVALID_DIAGDIR,nullptr},
+	{DIAGDIR_NE,"north-east"},
+	{DIAGDIR_SE,"south-east"},
+	{DIAGDIR_NW,"north-west"},
+	{DIAGDIR_SW,"south-west"}
+})
+
+NLOHMANN_JSON_SERIALIZE_ENUM( Colours,{
+	{INVALID_COLOUR, nullptr},
+	{COLOUR_DARK_BLUE,"dark-blue"},
+	{COLOUR_PALE_GREEN,"pale-green"},
+	{COLOUR_PINK,"pink"},
+	{COLOUR_YELLOW,"yellow"},
+	{COLOUR_RED,"red"},
+	{COLOUR_LIGHT_BLUE,"light-blue"},
+	{COLOUR_GREEN,"green"},
+	{COLOUR_DARK_GREEN,"dark-green"},
+	{COLOUR_BLUE,"blue"},
+	{COLOUR_CREAM,"cream"},
+	{COLOUR_MAUVE,"mauve"},
+	{COLOUR_PURPLE,"purple"},
+	{COLOUR_ORANGE,"orange"},
+	{COLOUR_BROWN,"brown"},
+	{COLOUR_GREY,"grey"},
+	{COLOUR_WHITE,"white"}
 })
 
 #endif
