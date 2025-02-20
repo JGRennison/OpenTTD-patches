@@ -74,6 +74,7 @@ DECLARE_ENUM_AS_BIT_SET(GroupFlags)
 enum class GroupFoldBits : uint8_t {
 	None                = 0,
 	GroupView           = 1U << 0, ///< If set, this group is folded in the group view.
+	TemplateReplaceView = 1U << 1, ///< If set, this group is folded in the template replacement view.
 };
 DECLARE_ENUM_AS_BIT_SET(GroupFoldBits)
 

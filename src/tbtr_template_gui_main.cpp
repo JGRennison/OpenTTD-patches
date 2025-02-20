@@ -54,6 +54,8 @@ enum TemplateReplaceWindowWidgets {
 	TRW_WIDGET_INSET_GROUPS,
 	TRW_WIDGET_TOP_MATRIX,
 	TRW_WIDGET_TOP_SCROLLBAR,
+	TRW_WIDGET_COLLAPSE_ALL_GROUPS,
+	TRW_WIDGET_EXPAND_ALL_GROUPS,
 
 	TRW_WIDGET_INSET_TEMPLATES,
 	TRW_WIDGET_BOTTOM_MATRIX,
@@ -108,8 +110,12 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 	EndContainer(),
 	//Top Matrix
 	NWidget(NWID_VERTICAL),
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetStringTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_PANEL, COLOUR_GREY),
+				NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
+			EndContainer(),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_COLLAPSE_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_EXPAND_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_MATRIX, COLOUR_GREY, TRW_WIDGET_TOP_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 0), SetScrollbar(TRW_WIDGET_TOP_SCROLLBAR),
@@ -201,9 +207,12 @@ private:
 	GUITemplateList templates;
 
 	int selected_template_index = -1;
-	int selected_group_index = -1;
+	GroupID selected_group = INVALID_GROUP;
 
 	bool edit_in_progress = false;
+
+	Dimension fold_sprite_dim = {};
+	uint top_matrix_step_height = 0;
 
 	int bottom_matrix_item_size = 0;
 	uint buy_cost_width = 0;
@@ -244,7 +253,9 @@ public:
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX: {
-				resize.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
+				Dimension fold_dim = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
+				this->fold_sprite_dim = fold_dim;
+				resize.height = this->top_matrix_step_height = std::max<uint>(GetCharacterHeight(FS_NORMAL), fold_dim.height) + WidgetDimensions::scaled.matrix.Vertical();
 				size.height = 8 * resize.height;
 				break;
 			}
@@ -490,12 +501,35 @@ public:
 				break;
 
 			case TRW_WIDGET_TOP_MATRIX: {
-				uint16_t newindex = (uint16_t)((pt.y - this->GetWidget<NWidgetBase>(TRW_WIDGET_TOP_MATRIX)->pos_y) / (GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
-				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
-					this->selected_group_index = -1;
-				} else if (newindex < this->groups.size()) {
-					this->selected_group_index = newindex;
+				auto it = this->vscroll[0]->GetScrolledItemFromWidget(this->groups, pt.y, this, TRW_WIDGET_TOP_MATRIX);
+				if (it == this->groups.end()) return;
+
+				if (it->group->IsFolded(GroupFoldBits::TemplateReplaceView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent)) {
+					/* The group has children, check if the user clicked the fold / unfold button. */
+					NWidgetCore *group_display = this->GetWidget<NWidgetCore>(widget);
+					int x = _current_text_dir == TD_RTL ?
+							group_display->pos_x + group_display->current_x - WidgetDimensions::scaled.framerect.right - it->indent * WidgetDimensions::scaled.hsep_indent - this->fold_sprite_dim.width :
+							group_display->pos_x + WidgetDimensions::scaled.framerect.left + it->indent * WidgetDimensions::scaled.hsep_indent;
+					if (click_count > 1 || (pt.x >= x && pt.x < (int)(x + this->fold_sprite_dim.width))) {
+						GroupID g = this->selected_group;
+						if (g != INVALID_GROUP) {
+							do {
+								g = Group::Get(g)->parent;
+								if (g == it->group->index) {
+									this->selected_group = g;
+									break;
+								}
+							} while (g != INVALID_GROUP);
+						}
+
+						ToggleFlag(const_cast<Group *>(it->group)->folded_mask, GroupFoldBits::TemplateReplaceView);
+						this->groups.ForceRebuild();
+						this->UpdateButtonState();
+						break;
+					}
 				}
+
+				this->selected_group = it->group->index;
 				this->UpdateButtonState();
 				break;
 			}
@@ -514,27 +548,32 @@ public:
 			}
 
 			case TRW_WIDGET_START: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) &&
-						(this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size())) {
-					uint32_t tv_index = ((this->templates)[selected_template_index])->index;
-					int current_group_index = (this->groups)[this->selected_group_index].group->index;
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != INVALID_GROUP) {
+					TemplateID tv_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, current_group_index, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
+					DoCommandP(0, this->selected_group, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
 					this->UpdateButtonState();
 				}
 				break;
 			}
 
-			case TRW_WIDGET_STOP:
-				if ((this->selected_group_index < 0) || (this->selected_group_index >= (int)this->groups.size())) {
-					return;
+			case TRW_WIDGET_STOP: {
+				if (this->selected_group != INVALID_GROUP) {
+					DoCommandP(0, this->selected_group, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
+					this->UpdateButtonState();
 				}
-
-				int current_group_index = (this->groups)[this->selected_group_index].group->index;
-
-				DoCommandP(0, current_group_index, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
-				this->UpdateButtonState();
 				break;
+			}
+
+			case TRW_WIDGET_COLLAPSE_ALL_GROUPS: {
+				this->SetAllGroupsFoldState(true);
+				break;
+			}
+
+			case TRW_WIDGET_EXPAND_ALL_GROUPS: {
+				this->SetAllGroupsFoldState(false);
+				break;
+			}
 		}
 		this->SetDirty();
 	}
@@ -587,6 +626,9 @@ public:
 
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
+		if (!Group::IsValidID(this->selected_group)) {
+			this->selected_group = INVALID_GROUP;
+		}
 		this->groups.ForceRebuild();
 		this->templates.ForceRebuild();
 		this->UpdateButtonState();
@@ -619,13 +661,38 @@ public:
 	{
 		if (!this->groups.NeedRebuild()) return;
 
+		bool enable_expand_all = false;
+		bool enable_collapse_all = false;
+
+		for (const Group *g : Group::Iterate()) {
+			if (g->owner == owner && g->vehicle_type == VEH_TRAIN && g->parent != INVALID_GROUP) {
+				if (Group::Get(g->parent)->IsFolded(GroupFoldBits::TemplateReplaceView)) {
+					enable_expand_all = true;
+				} else {
+					enable_collapse_all = true;
+				}
+			}
+		}
+
+		this->SetWidgetDisabledState(TRW_WIDGET_EXPAND_ALL_GROUPS, !enable_expand_all);
+		this->SetWidgetDisabledState(TRW_WIDGET_COLLAPSE_ALL_GROUPS, !enable_collapse_all);
+
 		this->groups.clear();
 
-		BuildGuiGroupList(this->groups, GroupFoldBits::None, this->owner, VEH_TRAIN);
+		BuildGuiGroupList(this->groups, GroupFoldBits::TemplateReplaceView, this->owner, VEH_TRAIN);
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
-		this->vscroll[0]->SetCount((uint)groups.size());
+		this->vscroll[0]->SetCount(groups.size());
+
+		/* Change selection if group is currently hidden by fold */
+		const Group *g = Group::GetIfValid(this->selected_group);
+		while (g != nullptr) {
+			g = Group::GetIfValid(g->parent);
+			if (g != nullptr && g->IsFolded(GroupFoldBits::TemplateReplaceView)) {
+				this->selected_group = g->index;
+			}
+		}
 	}
 
 	void BuildTemplateGuiList()
@@ -637,26 +704,41 @@ public:
 
 	void DrawAllGroupsFunction(const Rect &r) const
 	{
-		int left = r.left + WidgetDimensions::scaled.matrix.left;
-		int right = r.right - WidgetDimensions::scaled.matrix.right;
+		const int left = r.left + WidgetDimensions::scaled.matrix.left;
+		const int right = r.right - WidgetDimensions::scaled.matrix.right;
+		const bool rtl = _current_text_dir == TD_RTL;
+
 		int y = r.top;
-		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), (int)this->groups.size());
+		auto [first, last] = this->vscroll[0]->GetVisibleRangeIterators(this->groups);
+		for (auto it = first; it != last; ++it) {
+			const Group *g = it->group;
+			const GroupID g_id = g->index;
 
-		bool rtl = _current_text_dir == TD_RTL;
+			const int offset = (rtl ? -(int)this->fold_sprite_dim.width : (int)this->fold_sprite_dim.width) / 2;
+			const int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
+			const int linecolour = GetColourGradient(COLOUR_ORANGE, SHADE_NORMAL);
 
-		/* Then treat all groups defined by/for the current company */
-		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
-			const GUIGroupListItem &item = (this->groups)[i];
-			const Group *g = item.group;
-			GroupID g_id = g->index;
-
-			/* Fill the background of the current cell in a darker tone for the currently selected template */
-			if (this->selected_group_index == i) {
-				GfxFillRect(r.left + 1, y, r.right, y + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical(), GetColourGradient(COLOUR_GREY, SHADE_DARK));
+			if (it->indent > 0) {
+				/* Draw tree continuation lines. */
+				int tx = (rtl ? right : left) + offset;
+				for (uint lvl = 1; lvl <= it->indent; ++lvl) {
+					if (HasBit(it->level_mask, lvl)) GfxDrawLine(tx, y, tx, y + this->top_matrix_step_height - 1, linecolour, WidgetDimensions::scaled.fullbevel.top);
+					if (lvl < it->indent) tx += level_width;
+				}
+				/* Draw our node in the tree. */
+				int ycentre = y + this->top_matrix_step_height / 2 - 1;
+				if (!HasBit(it->level_mask, it->indent)) GfxDrawLine(tx, y, tx, ycentre, linecolour, WidgetDimensions::scaled.fullbevel.top);
+				GfxDrawLine(tx, ycentre, tx + offset - (rtl ? -1 : 1), ycentre, linecolour, WidgetDimensions::scaled.fullbevel.top);
 			}
 
-			int text_y = y + WidgetDimensions::scaled.matrix.top;
+			/* draw fold / unfold button */
+			const bool has_children = g->IsFolded(GroupFoldBits::TemplateReplaceView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent);
+			int x = rtl ? right - this->fold_sprite_dim.width + 1 : left;
+			if (has_children) {
+				DrawSprite(g->IsFolded(GroupFoldBits::TemplateReplaceView) ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, x + it->indent * level_width, y + (this->top_matrix_step_height - this->fold_sprite_dim.height) / 2);
+			}
 
+			const int text_y = y + (this->top_matrix_step_height - GetCharacterHeight(FS_NORMAL)) / 2;
 			auto draw_text = [&](int left, int right, StringID str, TextColour colour, StringAlignment align) {
 				if (rtl) {
 					DrawString(r.left + (r.right - right), r.right - (left - r.left), text_y, str, colour, align);
@@ -665,20 +747,20 @@ public:
 				}
 			};
 
-			int col1 = left + (2 * left + right) / 3;
-			int col2 = left + (left + 2 * right) / 3;
+			const int col1 = left + (2 * left + right) / 3;
+			const int col2 = left + (left + 2 * right) / 3;
 
 			SetDParam(0, g_id);
-			StringID str = STR_GROUP_NAME;
-			draw_text(left + ScaleGUITrad(4 + item.indent * 10), col1 - ScaleGUITrad(4), str, TC_BLACK, SA_LEFT);
+			draw_text(left + WidgetDimensions::scaled.hsep_normal + this->fold_sprite_dim.width + (it->indent * WidgetDimensions::scaled.hsep_indent),
+					col1 - WidgetDimensions::scaled.hsep_normal, STR_GROUP_NAME, g_id == this->selected_group ? TC_WHITE : TC_BLACK, SA_LEFT);
 
 			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
 
 			/* Draw the template in use for this group, if there is one */
-			int template_in_use = FindTemplateIndex(tid);
+			int template_in_use = this->FindTemplateIndex(tid);
 			if (tid != INVALID_TEMPLATE && tid_self == INVALID_TEMPLATE) {
-				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
+				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
 			} else if (template_in_use >= 0) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
 				SetDParam(1, template_in_use);
@@ -688,9 +770,9 @@ public:
 					SetDParam(0, STR_TMPL_NAME);
 					SetDParamStr(2, tv->name);
 				}
-				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
 			} else if (tid != INVALID_TEMPLATE) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
-				draw_text(col1 + ScaleGUITrad(4), col2 - ScaleGUITrad(4), STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
+				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
 
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
@@ -699,10 +781,10 @@ public:
 				const uint num_trains = CountTrainsNeedingTemplateReplacement(g_id, tv);
 				SetDParam(0, num_trains > 0 ? TC_ORANGE : TC_GREY);
 				SetDParam(1, num_trains);
-				draw_text(col2 + ScaleGUITrad(4), right - ScaleGUITrad(4), STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
+				draw_text(col2 + WidgetDimensions::scaled.hsep_normal, right - WidgetDimensions::scaled.hsep_normal, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
-			y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
+			y += this->top_matrix_step_height;
 		}
 	}
 
@@ -904,15 +986,9 @@ public:
 		this->BuildTemplateGuiList();
 
 		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size());
-		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size());
+		bool group_ok = this->selected_group != INVALID_GROUP;
 
-		GroupID g_id = -1;
-		if (group_ok) {
-			const Group *g = (this->groups)[this->selected_group_index].group;
-			g_id = g->index;
-		}
-
-		const TemplateID tid = GetTemplateIDByGroupID(g_id);
+		const TemplateID tid = GetTemplateIDByGroupID(this->selected_group);
 		const bool disable_selection_buttons = this->edit_in_progress || !selected_ok;
 
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, disable_selection_buttons);
@@ -923,12 +999,26 @@ public:
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, disable_selection_buttons);
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, disable_selection_buttons);
 
-		this->SetWidgetDisabledState(TRW_WIDGET_START, this->edit_in_progress || !(selected_ok && group_ok && FindTemplateIndex(tid) != this->selected_template_index));
+		this->SetWidgetDisabledState(TRW_WIDGET_START, this->edit_in_progress || !(selected_ok && group_ok && this->FindTemplateIndex(tid) != this->selected_template_index));
 		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->edit_in_progress || !(group_ok && tid != INVALID_TEMPLATE));
 
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DEFINE, this->edit_in_progress);
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CLONE, this->edit_in_progress);
 		this->SetWidgetDisabledState(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN, this->edit_in_progress);
+	}
+
+	void SetAllGroupsFoldState(bool folded)
+	{
+		for (const Group *g : Group::Iterate()) {
+			if (g->owner == this->owner && g->vehicle_type == VEH_TRAIN) {
+				if (g->parent != INVALID_GROUP) {
+					SetFlagState(Group::Get(g->parent)->folded_mask, GroupFoldBits::TemplateReplaceView, folded);
+				}
+			}
+		}
+		this->groups.ForceRebuild();
+		this->UpdateButtonState();
+		this->SetDirty();
 	}
 };
 
