@@ -162,7 +162,8 @@ static void DrawClearLandFence(const TileInfo *ti)
 
 static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 {
-	ClearGround ground = IsSnowTile(ti->tile) ? CLEAR_SNOW : GetClearGround(ti->tile);
+	ClearGround real_ground = GetClearGround(ti->tile);
+	ClearGround ground = IsSnowTile(ti->tile) ? CLEAR_SNOW : real_ground;
 
 	switch (ground) {
 		case CLEAR_GRASS:
@@ -191,10 +192,16 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 		case CLEAR_SNOW:
 			if (!params.no_ground_tiles) {
 				uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
-				if (GetClearGround(ti->tile) == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
+				if (real_ground == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
 					if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, true)) break;
 				}
-				DrawGroundSprite(GetSpriteIDForSnowDesertUsingOffset(slope_to_sprite_offset, GetClearDensity(ti->tile)), PAL_NONE);
+				uint8_t density = GetClearDensity(ti->tile);
+				DrawGroundSprite(_clear_land_sprites_snow_desert[density] + slope_to_sprite_offset, PAL_NONE);
+				if (real_ground == CLEAR_ROCKS) {
+					/* There 4 levels of snowy overlay rocks, each with 19 sprites. */
+					++density;
+					DrawGroundSprite(SPR_OVERLAY_ROCKS_BASE + (density * 19) + slope_to_sprite_offset, PAL_NONE);
+				}
 			}
 			break;
 
