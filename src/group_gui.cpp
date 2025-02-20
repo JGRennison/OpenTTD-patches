@@ -627,11 +627,11 @@ public:
 
 	void OnPaint() override
 	{
+		this->BuildGroupList(this->owner);
+
 		/* If we select the all vehicles, this->list will contain all vehicles of the owner
 		 * else this->list will contain all vehicles which belong to the selected group */
 		this->UpdateVehicleLists();
-
-		this->BuildGroupList(this->owner);
 
 		this->group_sb->SetCount(this->groups.size());
 		this->vscroll->SetCount(this->vehgroups.size());
