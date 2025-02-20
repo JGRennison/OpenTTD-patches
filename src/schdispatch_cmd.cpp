@@ -382,22 +382,20 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 
 		if (scheduleJson != nullptr) {
 
-			DispatchSchedule ds = DispatchSchedule::FromJSONString(scheduleJson);
+			ds = DispatchSchedule::FromJSONString(scheduleJson);
 
 		} else {
 
 			//If Json is present it will set the duration instead 
 			ds.SetScheduledDispatchDuration(p2);
+			ds.SetScheduledDispatchStartTick((StateTicks)p3);
+			ds.UpdateScheduledDispatch(nullptr);
 
 		}
 
-		ds.SetScheduledDispatchStartTick((StateTicks)p3);
-		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 
 	}
-
-	
 
 	return CommandCost();
 }
@@ -803,12 +801,22 @@ void DispatchSchedule::SetScheduledDispatch(std::vector<DispatchSlot> dispatch_l
  */
 void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
 {
+	this->AddScheduledDispatch({ offset,0 });
+}
+
+/**
+ * Add new scheduled dispatch slot at offsets time.
+ * @param slot The DispatchSlot time to add.
+ */
+void DispatchSchedule::AddScheduledDispatch(DispatchSlot dispatchSlot)
+{
+	uint32_t offset = dispatchSlot.offset;
 	/* Maintain sorted list status */
-	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), DispatchSlot{ offset, 0 });
+	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), dispatchSlot);
 	if (insert_position != this->scheduled_dispatch.end() && insert_position->offset == offset) {
 		return;
 	}
-	this->scheduled_dispatch.insert(insert_position, { offset, 0 });
+	this->scheduled_dispatch.insert(insert_position, dispatchSlot);
 	this->UpdateScheduledDispatch(nullptr);
 }
 
@@ -889,11 +897,59 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	}
 }
 
-DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) { //broken
+/**
+*Returns the tag index for a given rapresentative tag string, or -1 if it fails to parse the string
+*/
+int tagStringToIndex(std::string tag)
+{
+
+	 //format : ^Tag-[1-4]$
+
+	if (tag.length() != 5) return -1;
+	if (tag.substr(0, 4) != "Tag-") return -1;
+	try {
+		int val = std::stoi(tag.substr(4, 1));
+		return (val >= 1 && val <= 4) ? val-1 : -1 ;
+	} catch (...) {
+		return -1;
+	}
+}
+
+DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) {
 
 	nlohmann::json json = nlohmann::json::parse(jsonString);
 
 	DispatchSchedule new_schedule;
+
+	if (json.contains("renamed-tags") && json["renamed-tags"].is_object()) {
+
+		for (auto &names : json["renamed-tags"].items()) {
+			int index = tagStringToIndex(names.key());
+
+			if (index == -1) continue;
+			if (!names.value().is_string()) continue;
+
+			new_schedule.SetSupplementaryName(SDSNT_DEPARTURE_TAG, index, names.value());
+		}
+	}
+
+	if (json.contains("name") && json["name"].is_string()) {
+		new_schedule.ScheduleName() = json["name"];
+	}
+
+	if (json.contains("duration") && json["duration"].is_number_integer() && json["duration"] > 0) {
+		new_schedule.SetScheduledDispatchDuration(json["duration"]);
+	} else {
+		new_schedule.SetScheduledDispatchDuration(getScheduledDispatchDefaultDuration());
+	}
+
+	if (json.contains("max-delay") && json["max-delay"].is_number_integer()) {
+		new_schedule.SetScheduledDispatchDelay(json["max-delay"]);
+	}
+
+	if (json.contains("re-use-all-slots") && json["re-use-all-slots"].is_boolean() && json["re-use-all-slots"]) {
+		new_schedule.SetScheduledDispatchReuseSlots(true);
+	}
 
 	if (json.contains("slots")) {
 
@@ -901,58 +957,46 @@ DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString) { //br
 
 		if (slotsJson.is_object()) {
 
-			for (auto it = slotsJson.begin(); it != slotsJson.end(); ++it) {
+			for (auto& it : slotsJson.items()) {
 
 				DispatchSlot newDispatchSlot;
 
-				int offset;
-
 				try {
 
-					offset = std::stoi(it.key());
-					if (offset < 0) throw 1;
+					newDispatchSlot.offset = std::stoi(it.key());
+					if (newDispatchSlot.offset < 0) throw 1;
 
 				} catch (...) {
 
 					continue;
 
 				}
-
+				
 				nlohmann::json slotData = it.value();
 
-				new_schedule.AddScheduledDispatch(offset);
+				if (slotData.is_object()) {
 
-				if (slotData.contains("re-use-slot") && slotData["re-use-slot"].is_boolean()) {
-					
+					if (slotData.contains("re-use-slot") && slotData["re-use-slot"].is_boolean() && slotData["re-use-slot"]) {
+						SetBit(newDispatchSlot.flags, DispatchSlot::SDSF_REUSE_SLOT);
+					}
+
+					if (slotData.contains("tags") && slotData["tags"].is_array()) {
+						for (nlohmann::json::reference tag : slotData["tags"]) {
+							if (tag.is_string()) {
+								std::string tagString = std::string(tag);
+								int tag = tagStringToIndex(tagString);
+								if (tag == -1) continue;
+								SetBit(newDispatchSlot.flags, DispatchSlot::SDSF_FIRST_TAG + tag);
+							}
+						}
+					}
 				}
 
-				if(slotData.contains("tags") && slotData["tags"].is_array()) {
-					
-				}
-
-
-				new_schedule.GetScheduledDispatchMutable().push_back(newDispatchSlot);
-
+				new_schedule.AddScheduledDispatch(newDispatchSlot);
 			}
 		}
 	}
-	
-	new_schedule.ScheduleName() = json.at("name").get<std::string>();
 
-	if (json.contains("duration") && json["duration"].is_number_integer() && json["duration"] > 0) {
-
-		new_schedule.SetScheduledDispatchDuration(json["duration"]);
-
-	} else {
-
-		new_schedule.SetScheduledDispatchDuration(-1); //set invalid duration so it gets overridden or throws an error[TODO]
-
-	}
-
-	new_schedule.SetScheduledDispatchDuration(json.at("duration").get<uint32_t>());
-	new_schedule.SetScheduledDispatchDelay(json.at("max-delay").get<uint32_t>());
-	new_schedule.SetScheduledDispatchFlags(json.at("flags").get<uint8_t>());
-	
 	return new_schedule;
 }
 
@@ -971,7 +1015,6 @@ std::string DispatchSchedule::ToJSONString()
 			json["renamed-tags"]["Tag-" + std::to_string(i + 1)] = rename;
 
 		}
-
 	}
 
 	for (auto & SD_slot : this->GetScheduledDispatch()) {
@@ -991,9 +1034,7 @@ std::string DispatchSchedule::ToJSONString()
 				slotJson["tags"][ctr++] = "Tag-" + std::to_string(i + 1);
 
 			}
-
 		}
-		
 	}
 
 	if (!this->ScheduleName().empty()) {

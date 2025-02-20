@@ -322,16 +322,16 @@ std::string Order::ToJSONString() const
 		}
 
 		if (this->GetDepotActionType() & ODATF_SERVICE_ONLY) {
-			json["action"] = this->GetDepotActionType() & ODATF_SERVICE_ONLY;
+			json["depot-action"] = this->GetDepotActionType() & ODATF_SERVICE_ONLY;
 
 		} else if (this->GetDepotActionType() & ODATFB_HALT) {
-			json["action"] = this->GetDepotActionType() & ODATFB_HALT;
+			json["depot-action"] = this->GetDepotActionType() & ODATFB_HALT;
 
 		} else if (this->GetDepotActionType() & ODATFB_SELL) {
-			json["action"] = this->GetDepotActionType() & ODATFB_SELL;
+			json["depot-action"] = this->GetDepotActionType() & ODATFB_SELL;
 
 		} else if (this->GetDepotActionType() & ODATFB_UNBUNCH) {
-			json["action"] = this->GetDepotActionType() & ODATFB_UNBUNCH;
+			json["depot-action"] = this->GetDepotActionType() & ODATFB_UNBUNCH;
 
 		}
 
@@ -357,43 +357,7 @@ std::string Order::ToJSONString() const
 
 	}
 
-	if (this->GetLoadType() != OLFB_CARGO_TYPE_LOAD && this->GetLoadType() != OLF_LOAD_IF_POSSIBLE) {
-		json["load"] = this->GetLoadType();
-	}
-
-	if (this->GetUnloadType() != OUFB_CARGO_TYPE_UNLOAD && this->GetUnloadType() != OUF_UNLOAD_IF_POSSIBLE) {
-		json["unload"] = this->GetUnloadType();
-	}
-
 	if(this->extra.get() != nullptr){
-
-		if (this->IsType(OT_GOTO_STATION)) {
-
-			for (int i = 0; i < NUM_CARGO; i++) {
-
-				if (this->GetLoadType() == OLFB_CARGO_TYPE_LOAD && this->GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
-					json["load-by-cargo-type"][std::to_string(i)]["load"] = this->GetCargoLoadType(i);
-				}
-
-				if (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD && this->GetCargoLoadType(i) != OUF_UNLOAD_IF_POSSIBLE) {
-					json["load-by-cargo-type"][std::to_string(i)]["unload"] = this->GetCargoUnloadType(i);
-				}
-
-			}
-
-			if (this->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
-				json["roadstop-travel-dir"] = this->GetRoadVehTravelDirection();
-			}
-
-		}
-
-		if (this->GetColour() != -1) {
-			json["colour"] = this->GetColour();
-		}
-
-		if (this->GetDispatchScheduleIndex() != -1) {
-			json["dispatch-index"] = this->GetDispatchScheduleIndex();
-		}
 
 		//TMP
 		if (this->extra.get()->xdata != 0) {
@@ -413,20 +377,39 @@ std::string Order::ToJSONString() const
 
 	if (this->IsType(OT_GOTO_STATION)) {
 
-		if (this->IsAutoRefit()) {
+		if (this->GetLoadType() != OLFB_CARGO_TYPE_LOAD && this->GetLoadType() != OLF_LOAD_IF_POSSIBLE) {
+			json["load"] = this->GetLoadType();
+		}
 
-			json["refit-cargo"] = "auto";
+		if (this->GetUnloadType() != OUFB_CARGO_TYPE_UNLOAD && this->GetUnloadType() != OUF_UNLOAD_IF_POSSIBLE) {
+			json["unload"] = this->GetUnloadType();
+		}
 
-		} else if (this->IsRefit()) {
 
-			json["refit-cargo"] = this->GetRefitCargo();
+		for (int i = 0; i < NUM_CARGO; i++) {
+
+			if (this->GetLoadType() == OLFB_CARGO_TYPE_LOAD && this->GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
+				json["load-by-cargo-type"][std::to_string(i)]["load"] = this->GetCargoLoadType(i);
+			}
+
+			if (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD && this->GetCargoLoadType(i) != OUF_UNLOAD_IF_POSSIBLE) {
+				json["load-by-cargo-type"][std::to_string(i)]["unload"] = this->GetCargoUnloadType(i);
+			}
 
 		}
 
+		if (this->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
+			json["roadstop-travel-dir"] = this->GetRoadVehTravelDirection();
+		}
+
+		if (this->IsAutoRefit()) {
+			json["refit-cargo"] = "auto";
+		} else if (this->IsRefit()) {
+			json["refit-cargo"] = this->GetRefitCargo();
+		}
+
 		if (this->GetStopLocation() != OSL_PLATFORM_MIDDLE) {
-
 			json["stop-location"] = this->GetStopLocation();
-
 		}
 
 	} else if (this->IsType(OT_GOTO_WAYPOINT)) {
@@ -450,6 +433,15 @@ std::string Order::ToJSONString() const
 		}
 
 	}
+
+	if (this->GetColour() != INVALID_COLOUR) {
+		json["colour"] = this->GetColour();
+	}
+
+	if (this->GetDispatchScheduleIndex() != -1) {
+		json["dispatch-index"] = this->GetDispatchScheduleIndex();
+	}
+
 
 	out = json.dump();
 	return out;
@@ -598,6 +590,8 @@ Order Order::FromJSONString(std::string jsonSTR)
 
 				}
 
+			} else if(new_order.IsType(OT_GOTO_WAYPOINT)) {
+				new_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION); //default for timetablers
 			} else {
 				new_order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS); //default for timetablers
 			}
@@ -691,7 +685,7 @@ Order Order::FromJSONString(std::string jsonSTR)
 					}
 				}
 			}
-
+			
 			if (json.contains("stop-location")) {
 				try {
 					OrderStopLocation sl = (OrderStopLocation)json["stop-location"];
@@ -752,6 +746,24 @@ Order Order::FromJSONString(std::string jsonSTR)
 				new_order.SetLabelText(((std::string)json["label-text"]).c_str());
 			} else {
 				return makeJsonErrorOrder("Type of 'waypoint-action' is invalid");
+			}
+		}
+
+		if (new_order.IsType(OT_GOTO_DEPOT)) {
+			if (new_order.dest == INVALID_DEPOT) {
+				new_order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
+			}
+			if (json.contains("depot-action")) {
+				try {
+					OrderDepotActionFlags flag = (OrderDepotActionFlags)json["deopt-action"];
+					if (flag != ODAFTB_END) {
+						new_order.SetDepotActionType(flag);
+					} else {
+						return makeJsonErrorOrder("Value of 'depot-action' is invalid");
+					}
+				} catch (...) {
+					return makeJsonErrorOrder("Type of 'depot-action' is invalid");
+				}
 			}
 		}
 
@@ -1342,12 +1354,14 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 			}
 		}
 	}
-
-	if (json.contains("scheduled-dispatch")) {
-		auto &SDJson = json["scheduled-dispatch"];
-		if (SDJson.is_array()) {
-			for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
-				AddNewScheduledDispatchSchedule(v->index, it.value().dump().c_str());
+	
+	if (json.contains("scheduled-dispatch") && json["scheduled-dispatch"].is_object()) {
+		if (json["scheduled-dispatch"].contains("schedules")) {
+			auto &schedules = json["scheduled-dispatch"]["schedules"];
+			if (schedules.is_array()) {
+				for (auto &it : schedules) {
+					AddNewScheduledDispatchSchedule(v->index, it.dump().c_str());
+				}
 			}
 		}
 	}
@@ -1690,7 +1704,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 					}
 				} else {
 					const Depot *dp = Depot::GetIfValid(new_order.GetDestination());
-
+					
 					if (dp == nullptr) return CMD_ERROR;
 
 					CommandCost ret = CheckInfraUsageAllowed(v->type, GetTileOwner(dp->xy), dp->xy);

@@ -792,8 +792,8 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 }
 
 struct DispatchSlot {
-	uint32_t offset;
-	uint16_t flags;
+	uint32_t offset = 0;
+	uint16_t flags = 0;
 
 	bool operator<(const DispatchSlot &other) const
 	{
@@ -853,6 +853,7 @@ public:
 	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
 
 	void AddScheduledDispatch(uint32_t offset);
+	void AddScheduledDispatch(DispatchSlot slot);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void AdjustScheduledDispatch(int32_t adjust);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
