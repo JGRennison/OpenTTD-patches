@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.64.2 (2025-02-20)
+* Fix not being being able to change the counter in set counter orders.
+* Routing restrictions: Add a text label routing restriction instruction.
+* Template-based train replacement: Enable collapsing/expanding train groups in the upper panel.
+* Fix various minor issues with the collapse/expand all buttons in the vehicle group and routing restriction slot windows.
+* Show timetable warning when using orders with an incorrect non-stop type with auto-separation.
+* Bump trunk base from commit 666f7bfe2354483ceddf93330304808b80ad4b43 to commit e2b0ea15097561844b7b29560cd80ae7a9a6e7af.
+
 ### v0.64.1 (2025-02-05)
 * Fix crash that could occur when displaying tooltips in the routing restriction window.
 * Fix public roads generation.
