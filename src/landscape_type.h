@@ -32,7 +32,7 @@ enum class Borders : uint8_t {
 	SouthEast = 1U << 1, ///< Border on South East.
 	SouthWest = 1U << 2, ///< Border on South West.
 	NorthWest = 1U << 3, ///< Border on North West.
-	Random = 1U << 4, ///< Randomise borders.
+	RandomBorders = 1U << 4, ///< Randomise borders.
 	All = NorthEast | SouthEast | SouthWest | NorthWest, ///< Border on all sides.
 };
 DECLARE_ENUM_AS_BIT_SET(Borders)

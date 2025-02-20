@@ -868,7 +868,7 @@ static void HeightMapNormalize()
 	HeightMapAdjustWaterLevel(water_percent, h_max_new);
 
 	Borders water_borders = _settings_game.construction.freeform_edges ? _settings_game.game_creation.water_borders : Borders::All;
-	if (water_borders == Borders::Random) water_borders = static_cast<Borders>(GB(Random(), 0, 4));
+	if (water_borders == Borders::RandomBorders) water_borders = static_cast<Borders>(GB(Random(), 0, 4));
 
 	HeightMapCoastLines(water_borders);
 	HeightMapSmoothSlopes(roughness);
