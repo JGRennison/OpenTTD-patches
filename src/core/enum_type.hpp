@@ -98,11 +98,7 @@ debug_inline constexpr bool HasFlag(const T x, const T y)
 template <typename T, class = typename std::enable_if_t<std::is_enum_v<T>>>
 debug_inline constexpr void ToggleFlag(T &x, const T y)
 {
-	if (HasFlag(x, y)) {
-		x &= ~y;
-	} else {
-		x |= y;
-	}
+	x ^= y;
 }
 
 /**
