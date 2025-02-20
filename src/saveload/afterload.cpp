@@ -2838,7 +2838,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_135)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			if (IsTileType(t, MP_CLEAR)) {
-				if (GetRawClearGround(t) == CLEAR_SNOW) {
+				if (GetClearGround(t) == CLEAR_SNOW) { // CLEAR_SNOW becomes CLEAR_GRASS with IsSnowTile() set.
 					SetClearGroundDensity(t, CLEAR_GRASS, GetClearDensity(t));
 					SetBit(_m[t].m3, 4);
 				} else {

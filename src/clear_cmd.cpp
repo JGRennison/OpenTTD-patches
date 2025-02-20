@@ -28,7 +28,7 @@ bool _allow_rocks_desert = false;
 
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 {
-	static const Price clear_price_table[] = {
+	static constexpr Price clear_price_table[] = {
 		PR_CLEAR_GRASS,
 		PR_CLEAR_ROUGH,
 		PR_CLEAR_ROCKS,
@@ -38,7 +38,9 @@ static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 	};
 	CommandCost price(EXPENSES_CONSTRUCTION);
 
-	if (!IsClearGround(tile, CLEAR_GRASS) || GetClearDensity(tile) != 0) {
+	if (IsSnowTile(tile)) {
+		price.AddCost(_price[clear_price_table[CLEAR_SNOW]]);
+	} else if (!IsClearGround(tile, CLEAR_GRASS) || GetClearDensity(tile) != 0) {
 		price.AddCost(_price[clear_price_table[GetClearGround(tile)]]);
 	}
 
@@ -156,7 +158,9 @@ static void DrawClearLandFence(const TileInfo *ti)
 
 static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 {
-	switch (GetClearGround(ti->tile)) {
+	ClearGround ground = IsSnowTile(ti->tile) ? CLEAR_SNOW : GetClearGround(ti->tile);
+
+	switch (ground) {
 		case CLEAR_GRASS:
 			if (!params.no_ground_tiles) DrawClearLandTile(ti, GetClearDensity(ti->tile));
 			break;
@@ -183,7 +187,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 		case CLEAR_SNOW:
 			if (!params.no_ground_tiles) {
 				uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
-				if (GetRawClearGround(ti->tile) == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
+				if (GetClearGround(ti->tile) == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
 					if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, true)) break;
 				}
 				DrawGroundSprite(GetSpriteIDForSnowDesertUsingOffset(slope_to_sprite_offset, GetClearDensity(ti->tile)), PAL_NONE);
@@ -319,6 +323,8 @@ static void TileLoop_Clear(TileIndex tile)
 		case LandscapeType::Arctic: TileLoopClearAlps(tile);   break;
 		default: break;
 	}
+
+	if (IsSnowTile(tile)) return;
 
 	switch (GetClearGround(tile)) {
 		case CLEAR_GRASS:
