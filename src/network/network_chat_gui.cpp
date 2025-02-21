@@ -377,7 +377,7 @@ struct NetworkChatWindow : public Window {
 		bool second_scan = false;
 
 		/* Create views, so we do not need to copy the data for now. */
-		std::string_view pre_buf = _chat_tab_completion_active ? std::string_view(_chat_tab_completion_buf) : std::string_view(tb->buf);
+		std::string_view pre_buf = _chat_tab_completion_active ? std::string_view(_chat_tab_completion_buf) : std::string_view(tb->GetText());
 		std::string_view tb_buf = ChatTabCompletionFindText(pre_buf);
 
 		/*
@@ -399,11 +399,11 @@ struct NetworkChatWindow : public Window {
 
 					/* If we are completing at the begin of the line, skip the ': ' we added */
 					if (begin_of_line) {
-						view = std::string_view(tb->buf, (tb->bytes - 1) - 2);
+						view = std::string_view(tb->GetText(), (tb->bytes - 1) - 2);
 					} else {
 						/* Else, find the place we are completing at */
 						size_t offset = pre_buf.size() + 1;
-						view = std::string_view(tb->buf + offset, (tb->bytes - 1) - offset);
+						view = std::string_view(tb->GetText() + offset, (tb->bytes - 1) - offset);
 					}
 
 					/* Compare if we have a match */
@@ -417,7 +417,7 @@ struct NetworkChatWindow : public Window {
 
 			if (tb_buf.size() < cur_name.size() && cur_name.starts_with(tb_buf)) {
 				/* Save the data it was before completion */
-				if (!second_scan) _chat_tab_completion_buf = tb->buf;
+				if (!second_scan) _chat_tab_completion_buf = tb->GetText();
 				_chat_tab_completion_active = true;
 
 				/* Change to the found name. Add ': ' if we are at the start of the line (pretty) */
@@ -460,7 +460,7 @@ struct NetworkChatWindow : public Window {
 	{
 		switch (widget) {
 			case WID_NC_SENDBUTTON: /* Send */
-				SendChat(this->message_editbox.text.buf, this->dtype, this->dest);
+				SendChat(this->message_editbox.text.GetText(), this->dtype, this->dest);
 				[[fallthrough]];
 
 			case WID_NC_CLOSE: /* Cancel */

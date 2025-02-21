@@ -444,7 +444,6 @@ STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Gerar localidad
 STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Colocar casas
 
 # Settings menu
-###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opções do jogo
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Configurações
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Configurações de IA
@@ -454,6 +453,11 @@ STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Opções da san
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opções de transparência
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Mostrar nomes de localidades
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Mostrar nomes de estações
+STR_SETTINGS_MENU_STATION_NAMES_TRAIN                           :Estações de trem
+STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Paradas de caminhão
+STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Paradas de ônibus
+STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Docas
+STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Aeroportos
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Mostrar nomes dos pontos de controle
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Mostrar placas
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Mostrar placas/nomes dos concorrentes

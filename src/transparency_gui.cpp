@@ -29,6 +29,7 @@ TransparencyOptionBits _transparency_lock_extra; ///< "
 TransparencyOptionBits _invisibility_opt;  ///< The bits that should be invisible.
 uint8_t _display_opt; ///< What do we want to draw/do?
 uint8_t _extra_display_opt;
+uint8_t _facility_display_opt; ///< What station facilities to draw.
 
 void PreTransparencyOptionSave()
 {

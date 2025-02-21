@@ -1090,22 +1090,22 @@ static uint8_t GetTopographyValue(TileIndex tile)
 
 	if (tile_type == MP_STATION) {
 		switch (GetStationType(tile)) {
-			case STATION_RAIL:
+			case StationType::Rail:
 				return MKCOLOUR(PC_GREY);
-			case STATION_AIRPORT:
+			case StationType::Airport:
 				return MKCOLOUR(PC_GREY);
-			case STATION_TRUCK:
+			case StationType::Truck:
 				return MKCOLOUR(PC_BLACK);
-			case STATION_BUS:
+			case StationType::Bus:
 				return MKCOLOUR(PC_BLACK);
-			case STATION_OILRIG: // FALLTHROUGH
-			case STATION_DOCK:
+			case StationType::Oilrig:
+			case StationType::Dock:
 				return MKCOLOUR(PC_GREY);
-			case STATION_BUOY:
+			case StationType::Buoy:
 				return MKCOLOUR(PC_WATER);
-			case STATION_WAYPOINT:
+			case StationType::RailWaypoint:
 				return MKCOLOUR(PC_GREY);
-			case STATION_ROADWAYPOINT:
+			case StationType::RoadWaypoint:
 				return MKCOLOUR(PC_GREY);
 			default: NOT_REACHED();
 		}
@@ -1185,22 +1185,22 @@ static uint8_t GetIndustryValue(TileIndex tile)
 
 	if (tile_type == MP_STATION) {
 		switch (GetStationType(tile)) {
-			case STATION_RAIL:
+			case StationType::Rail:
 				return MKCOLOUR(PC_DARK_GREY);
-			case STATION_AIRPORT:
+			case StationType::Airport:
 				return MKCOLOUR(GREY_SCALE(12));
-			case STATION_TRUCK:
+			case StationType::Truck:
 				return MKCOLOUR(PC_GREY);
-			case STATION_BUS:
+			case StationType::Bus:
 				return MKCOLOUR(PC_GREY);
-			case STATION_OILRIG: // FALLTHROUGH
-			case STATION_DOCK:
+			case StationType::Oilrig:
+			case StationType::Dock:
 				return MKCOLOUR(PC_GREY);
-			case STATION_BUOY:
+			case StationType::Buoy:
 				return MKCOLOUR(PC_BLACK);
-			case STATION_WAYPOINT:
+			case StationType::RailWaypoint:
 				return MKCOLOUR(PC_GREY);
-			case STATION_ROADWAYPOINT:
+			case StationType::RoadWaypoint:
 				return MKCOLOUR(PC_GREY);
 			default: NOT_REACHED();
 		}

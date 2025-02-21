@@ -64,6 +64,8 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include <variant>
+
 #include "safeguards.h"
 
 /* TTDPatch extended GRF format codec
@@ -976,7 +978,7 @@ enum ChangeInfoResult {
 	CIR_INVALID_ID, ///< Attempt to modify an invalid ID
 };
 
-typedef ChangeInfoResult (*VCI_Handler)(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf);
+using ChangeInfoHandler = ChangeInfoResult(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf);
 
 static ChangeInfoResult HandleAction0PropertyDefault(ByteReader &buf, int prop)
 {
@@ -1051,18 +1053,19 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 
 /**
  * Define properties for rail vehicles
- * @param engine :ocal ID of the first vehicle.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first vehicle.
+ * @param last Local ID of the last vehicle.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	for (int i = 0; i < numinfo; i++) {
-		Engine *e = GetNewEngine(_cur.grffile, VEH_TRAIN, engine + i);
+	for (uint id = first; id < last; ++id) {
+		Engine *e = GetNewEngine(_cur.grffile, VEH_TRAIN, id);
 		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
@@ -1359,18 +1362,19 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 
 /**
  * Define properties for road vehicles
- * @param engine Local ID of the first vehicle.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first vehicle.
+ * @param last Local ID of the last vehicle.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	for (int i = 0; i < numinfo; i++) {
-		Engine *e = GetNewEngine(_cur.grffile, VEH_ROAD, engine + i);
+	for (uint id = first; id < last; ++id) {
+		Engine *e = GetNewEngine(_cur.grffile, VEH_ROAD, id);
 		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
@@ -1564,18 +1568,18 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 
 /**
  * Define properties for ships
- * @param engine Local ID of the first vehicle.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first vehicle.
+ * @param last Local ID of the last vehicle.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult ShipVehicleChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	for (int i = 0; i < numinfo; i++) {
-		Engine *e = GetNewEngine(_cur.grffile, VEH_SHIP, engine + i);
+	for (uint id = first; id < last; ++id) {
+		Engine *e = GetNewEngine(_cur.grffile, VEH_SHIP, id);
 		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
@@ -1755,18 +1759,18 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 
 /**
  * Define properties for aircraft
- * @param engine Local ID of the aircraft.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first vehicle.
+ * @param last Local ID of the last vehicle.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult AircraftVehicleChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	for (int i = 0; i < numinfo; i++) {
-		Engine *e = GetNewEngine(_cur.grffile, VEH_AIRCRAFT, engine + i);
+	for (uint id = first; id < last; ++id) {
+		Engine *e = GetNewEngine(_cur.grffile, VEH_AIRCRAFT, id);
 		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
@@ -1924,30 +1928,30 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 
 /**
  * Define properties for stations
- * @param stid StationID of the first station tile.
- * @param numinfo Number of subsequent station tiles to change the property for.
+ * @param first Local ID of the first station.
+ * @param last Local ID of the last station.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (stid + numinfo > NUM_STATIONS_PER_GRF) {
-		GrfMsg(1, "StationChangeInfo: Station {} is invalid, max {}, ignoring", stid + numinfo, NUM_STATIONS_PER_GRF);
+	if (last > NUM_STATIONS_PER_GRF) {
+		GrfMsg(1, "StationChangeInfo: Station {} is invalid, max {}, ignoring", last, NUM_STATIONS_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate station specs if necessary */
-	if (_cur.grffile->stations.size() < stid + numinfo) _cur.grffile->stations.resize(stid + numinfo);
+	if (_cur.grffile->stations.size() < last) _cur.grffile->stations.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		StationSpec *statspec = _cur.grffile->stations[stid + i].get();
+	for (uint id = first; id < last; ++id) {
+		StationSpec *statspec = _cur.grffile->stations[id].get();
 
 		/* Check that the station we are modifying is defined. */
 		if (statspec == nullptr && prop != 0x08) {
-			GrfMsg(2, "StationChangeInfo: Attempt to modify undefined station {}, ignoring", stid + i);
+			GrfMsg(2, "StationChangeInfo: Attempt to modify undefined station {}, ignoring", id);
 			return CIR_INVALID_ID;
 		}
 
@@ -1955,8 +1959,8 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 			case 0x08: { // Class ID
 				/* Property 0x08 is special; it is where the station is allocated */
 				if (statspec == nullptr) {
-					_cur.grffile->stations[stid + i] = std::make_unique<StationSpec>();
-					statspec = _cur.grffile->stations[stid + i].get();
+					_cur.grffile->stations[id] = std::make_unique<StationSpec>();
+					statspec = _cur.grffile->stations[id].get();
 				}
 
 				/* Swap classid because we read it in BE meaning WAYP or DFLT */
@@ -2009,7 +2013,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 				/* Number of layouts must be even, alternating X and Y */
 				if (statspec->renderdata.size() & 1) {
-					GrfMsg(1, "StationChangeInfo: Station {} defines an odd number of sprite layouts, dropping the last item", stid + i);
+					GrfMsg(1, "StationChangeInfo: Station {} defines an odd number of sprite layouts, dropping the last item", id);
 					statspec->renderdata.pop_back();
 				}
 				break;
@@ -2020,7 +2024,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
-					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy sprite layout to {}.", srcid, stid + i);
+					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy sprite layout to {}.", srcid, id);
 					continue;
 				}
 
@@ -2074,7 +2078,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
-					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy tile layout to {}.", srcid, stid + i);
+					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy tile layout to {}.", srcid, id);
 					continue;
 				}
 
@@ -2166,7 +2170,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 				/* Number of layouts must be even, alternating X and Y */
 				if (statspec->renderdata.size() & 1) {
-					GrfMsg(1, "StationChangeInfo: Station {} defines an odd number of sprite layouts, dropping the last item", stid + i);
+					GrfMsg(1, "StationChangeInfo: Station {} defines an odd number of sprite layouts, dropping the last item", id);
 					statspec->renderdata.pop_back();
 				}
 				break;
@@ -2226,23 +2230,23 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 /**
  * Define properties for water features
- * @param id Type of the first water feature.
- * @param numinfo Number of subsequent water feature ids to change the property for.
+ * @param first Local ID of the first water feature.
+ * @param last Local ID of the last water feature.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult CanalChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (id + numinfo > CF_END) {
-		GrfMsg(1, "CanalChangeInfo: Canal feature 0x{:02X} is invalid, max {}, ignoring", id + numinfo, CF_END);
+	if (last > CF_END) {
+		GrfMsg(1, "CanalChangeInfo: Canal feature 0x{:02X} is invalid, max {}, ignoring", last, CF_END);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		CanalProperties *cp = &_cur.grffile->canal_local_properties[id + i];
+	for (uint id = first; id < last; ++id) {
+		CanalProperties *cp = &_cur.grffile->canal_local_properties[id];
 
 		switch (prop) {
 			case 0x08:
@@ -2264,23 +2268,23 @@ static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, const GR
 
 /**
  * Define properties for bridges
- * @param brid BridgeID of the bridge.
- * @param numinfo Number of subsequent bridgeIDs to change the property for.
+ * @param first Local ID of the first bridge.
+ * @param last Local ID of the last bridge.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult BridgeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (brid + numinfo > MAX_BRIDGES) {
-		GrfMsg(1, "BridgeChangeInfo: Bridge {} is invalid, max {}, ignoring", brid + numinfo, MAX_BRIDGES);
+	if (last > MAX_BRIDGES) {
+		GrfMsg(1, "BridgeChangeInfo: Bridge {} is invalid, max {}, ignoring", last, MAX_BRIDGES);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		BridgeSpec *bridge = &_bridge[brid + i];
+	for (uint id = first; id < last; ++id) {
+		BridgeSpec *bridge = &_bridge[id];
 
 		switch (prop) {
 			case 0x08: { // Year of availability
@@ -2467,26 +2471,27 @@ static ChangeInfoResult IgnoreTownHouseProperty(int prop, ByteReader &buf)
 
 /**
  * Define properties for houses
- * @param hid HouseID of the house.
- * @param numinfo Number of subsequent houseIDs to change the property for.
+ * @param first Local ID of the first house.
+ * @param last Local ID of the last house.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (hid + numinfo > NUM_HOUSES_PER_GRF) {
-		GrfMsg(1, "TownHouseChangeInfo: Too many houses loaded ({}), max ({}). Ignoring.", hid + numinfo, NUM_HOUSES_PER_GRF);
+	if (last > NUM_HOUSES_PER_GRF) {
+		GrfMsg(1, "TownHouseChangeInfo: Too many houses loaded ({}), max ({}). Ignoring.", last, NUM_HOUSES_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate house specs if they haven't been allocated already. */
-	if (_cur.grffile->housespec.size() < hid + numinfo) _cur.grffile->housespec.resize(hid + numinfo);
+	if (_cur.grffile->housespec.size() < last) _cur.grffile->housespec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		HouseSpec *housespec = _cur.grffile->housespec[hid + i].get();
+	for (uint id = first; id < last; ++id) {
+		HouseSpec *housespec = _cur.grffile->housespec[id].get();
 
 		if (prop != 0x08 && housespec == nullptr) {
 			/* If the house property 08 is not yet set, ignore this property */
@@ -2501,22 +2506,22 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 				if (subs_id == 0xFF) {
 					/* Instead of defining a new house, a substitute house id
 					 * of 0xFF disables the old house with the current id. */
-					if (hid + i < NEW_HOUSE_OFFSET) HouseSpec::Get(hid + i)->enabled = false;
+					if (id < NEW_HOUSE_OFFSET) HouseSpec::Get(id)->enabled = false;
 					continue;
 				} else if (subs_id >= NEW_HOUSE_OFFSET) {
 					/* The substitute id must be one of the original houses. */
-					GrfMsg(2, "TownHouseChangeInfo: Attempt to use new house {} as substitute house for {}. Ignoring.", subs_id, hid + i);
+					GrfMsg(2, "TownHouseChangeInfo: Attempt to use new house {} as substitute house for {}. Ignoring.", subs_id, id);
 					continue;
 				}
 
 				/* Allocate space for this house. */
 				if (housespec == nullptr) {
 					/* Only the first property 08 setting copies properties; if you later change it, properties will stay. */
-					_cur.grffile->housespec[hid + i] = std::make_unique<HouseSpec>(*HouseSpec::Get(subs_id));
-					housespec = _cur.grffile->housespec[hid + i].get();
+					_cur.grffile->housespec[id] = std::make_unique<HouseSpec>(*HouseSpec::Get(subs_id));
+					housespec = _cur.grffile->housespec[id].get();
 
 					housespec->enabled = true;
-					housespec->grf_prop.local_id = hid + i;
+					housespec->grf_prop.local_id = id;
 					housespec->grf_prop.subst_id = subs_id;
 					housespec->grf_prop.grfid = _cur.grffile->grfid;
 					housespec->grf_prop.grffile = _cur.grffile;
@@ -2608,11 +2613,11 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 
 				/* The house being overridden must be an original house. */
 				if (override >= NEW_HOUSE_OFFSET) {
-					GrfMsg(2, "TownHouseChangeInfo: Attempt to override new house {} with house id {}. Ignoring.", override, hid + i);
+					GrfMsg(2, "TownHouseChangeInfo: Attempt to override new house {} with house id {}. Ignoring.", override, id);
 					continue;
 				}
 
-				_house_mngr.Add(hid + i, _cur.grffile->grfid, override);
+				_house_mngr.Add(id, _cur.grffile->grfid, override);
 				break;
 			}
 
@@ -2746,25 +2751,25 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 
 /**
  * Load a cargo- or railtype-translation table.
- * @param gvid ID of the global variable. This is basically only checked for zerones.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first ID of the first translation table entry.
+ * @param last ID of the last translation table entry.
  * @param buf The property value.
  * @param gettable Function to get storage for the translation table.
  * @param name Name of the table for debug output.
  * @return ChangeInfoResult.
  */
 template <typename T, typename TGetTableFunc>
-static ChangeInfoResult LoadTranslationTable(uint gvid, int numinfo, ByteReader &buf, TGetTableFunc gettable, std::string_view name)
+static ChangeInfoResult LoadTranslationTable(uint first, uint last, ByteReader &buf, TGetTableFunc gettable, std::string_view name)
 {
-	if (gvid != 0) {
+	if (first != 0) {
 		GrfMsg(1, "LoadTranslationTable: {} translation table must start at zero", name);
 		return CIR_INVALID_ID;
 	}
 
 	std::vector<T> &translation_table = gettable(*_cur.grffile);
 	translation_table.clear();
-	translation_table.reserve(numinfo);
-	for (int i = 0; i < numinfo; i++) {
+	translation_table.reserve(last);
+	for (uint id = first; id < last; ++id) {
 		translation_table.push_back(T(BSWAP32(buf.ReadDWord())));
 	}
 
@@ -2794,27 +2799,28 @@ static std::string ReadDWordAsString(ByteReader &reader)
 
 /**
  * Define properties for global variables
- * @param gvid ID of the global variable.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first ID of the first global var.
+ * @param last ID of the last global var.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	/* Properties which are handled as a whole */
 	switch (prop) {
 		case 0x09: // Cargo Translation Table; loading during both reservation and activation stage (in case it is selected depending on defined cargos)
-			return LoadTranslationTable<CargoLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
+			return LoadTranslationTable<CargoLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
 
 		case 0x12: // Rail type translation table; loading during both reservation and activation stage (in case it is selected depending on defined railtypes)
-			return LoadTranslationTable<RailTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RailTypeLabel> & { return grf.railtype_list; }, "Rail type");
+			return LoadTranslationTable<RailTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RailTypeLabel> & { return grf.railtype_list; }, "Rail type");
 
 		case 0x16: // Road type translation table; loading during both reservation and activation stage (in case it is selected depending on defined roadtypes)
-			return LoadTranslationTable<RoadTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.roadtype_list; }, "Road type");
+			return LoadTranslationTable<RoadTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.roadtype_list; }, "Road type");
 
 		case 0x17: // Tram type translation table; loading during both reservation and activation stage (in case it is selected depending on defined tramtypes)
-			return LoadTranslationTable<RoadTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.tramtype_list; }, "Tram type");
+			return LoadTranslationTable<RoadTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.tramtype_list; }, "Tram type");
 
 		default:
 			break;
@@ -2822,22 +2828,21 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 	/* Properties which are handled per item */
 	ChangeInfoResult ret = CIR_SUCCESS;
-	for (int i = 0; i < numinfo; i++) {
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case 0x08: { // Cost base factor
 				int factor = buf.ReadByte();
-				uint price = gvid + i;
 
-				if (price < PR_END) {
-					_cur.grffile->price_base_multipliers[price] = std::min<int>(factor - 8, MAX_PRICE_MODIFIER);
+				if (id < PR_END) {
+					_cur.grffile->price_base_multipliers[id] = std::min<int>(factor - 8, MAX_PRICE_MODIFIER);
 				} else {
-					GrfMsg(1, "GlobalVarChangeInfo: Price {} out of range, ignoring", price);
+					GrfMsg(1, "GlobalVarChangeInfo: Price {} out of range, ignoring", id);
 				}
 				break;
 			}
 
 			case 0x0A: { // Currency display names
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				if (curidx < CURRENCY_END) {
 					AddStringForMapping(GRFStringID{buf.ReadWord()}, curidx, [](StringID str, uint curidx) {
 						_currency_specs[curidx].name = str;
@@ -2850,7 +2855,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x0B: { // Currency multipliers
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				uint32_t rate = buf.ReadDWord();
 
 				if (curidx < CURRENCY_END) {
@@ -2865,7 +2870,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x0C: { // Currency options
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				uint16_t options = buf.ReadWord();
 
 				if (curidx < CURRENCY_END) {
@@ -2881,7 +2886,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x0D: { // Currency prefix symbol
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				std::string prefix = ReadDWordAsString(buf);
 
 				if (curidx < CURRENCY_END) {
@@ -2893,7 +2898,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x0E: { // Currency suffix symbol
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				std::string suffix = ReadDWordAsString(buf);
 
 				if (curidx < CURRENCY_END) {
@@ -2905,7 +2910,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x0F: { //  Euro introduction dates
-				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
+				uint curidx = GetNewgrfCurrencyIdConverted(id);
 				CalTime::Year year_euro{buf.ReadWord()};
 
 				if (curidx < CURRENCY_END) {
@@ -2917,8 +2922,8 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			}
 
 			case 0x10: // Snow line height table
-				if (numinfo > 1 || IsSnowLineSet()) {
-					GrfMsg(1, "GlobalVarChangeInfo: The snowline can only be set once ({})", numinfo);
+				if (last > 1 || IsSnowLineSet()) {
+					GrfMsg(1, "GlobalVarChangeInfo: The snowline can only be set once ({})", last);
 				} else if (buf.Remaining() < SNOW_LINE_MONTHS * SNOW_LINE_DAYS) {
 					GrfMsg(1, "GlobalVarChangeInfo: Not enough entries set in the snowline table ({})", buf.Remaining());
 				} else {
@@ -2956,7 +2961,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 			case 0x13:   // Gender translation table
 			case 0x14:   // Case translation table
 			case 0x15: { // Plural form translation
-				uint curidx = gvid + i; // The current index, i.e. language.
+				uint curidx = id; // The current index, i.e. language.
 				const LanguageMetadata *lang = curidx < MAX_LANG ? GetLanguage(curidx) : nullptr;
 				if (lang == nullptr) {
 					GrfMsg(1, "GlobalVarChangeInfo: Language {} is not known, ignoring", curidx);
@@ -3059,21 +3064,21 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 	return ret;
 }
 
-static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult GlobalVarReserveInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	/* Properties which are handled as a whole */
 	switch (prop) {
 		case 0x09: // Cargo Translation Table; loading during both reservation and activation stage (in case it is selected depending on defined cargos)
-			return LoadTranslationTable<CargoLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
+			return LoadTranslationTable<CargoLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
 
 		case 0x12: // Rail type translation table; loading during both reservation and activation stage (in case it is selected depending on defined railtypes)
-			return LoadTranslationTable<RailTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RailTypeLabel> & { return grf.railtype_list; }, "Rail type");
+			return LoadTranslationTable<RailTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RailTypeLabel> & { return grf.railtype_list; }, "Rail type");
 
 		case 0x16: // Road type translation table; loading during both reservation and activation stage (in case it is selected depending on defined roadtypes)
-			return LoadTranslationTable<RoadTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.roadtype_list; }, "Road type");
+			return LoadTranslationTable<RoadTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.roadtype_list; }, "Road type");
 
 		case 0x17: // Tram type translation table; loading during both reservation and activation stage (in case it is selected depending on defined tramtypes)
-			return LoadTranslationTable<RoadTypeLabel>(gvid, numinfo, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.tramtype_list; }, "Tram type");
+			return LoadTranslationTable<RoadTypeLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<RoadTypeLabel> & { return grf.tramtype_list; }, "Tram type");
 
 		default:
 			break;
@@ -3081,7 +3086,8 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 
 	/* Properties which are handled per item */
 	ChangeInfoResult ret = CIR_SUCCESS;
-	for (int i = 0; i < numinfo; i++) {
+
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case 0x08: // Cost base factor
 			case 0x15: // Plural form translation
@@ -3138,32 +3144,32 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 
 /**
  * Define properties for cargoes
- * @param cid Local ID of the cargo.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first ID of the first cargo.
+ * @param last ID of the last cargo.
  * @param prop The property to change.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult CargoChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (cid + numinfo > NUM_CARGO) {
-		GrfMsg(2, "CargoChangeInfo: Cargo type {} out of range (max {})", cid + numinfo, NUM_CARGO - 1);
+	if (last > NUM_CARGO) {
+		GrfMsg(2, "CargoChangeInfo: Cargo type {} out of range (max {})", last, NUM_CARGO - 1);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		CargoSpec *cs = CargoSpec::Get(cid + i);
+	for (uint id = first; id < last; ++id) {
+		CargoSpec *cs = CargoSpec::Get(id);
 
 		switch (prop) {
 			case 0x08: // Bit number of cargo
 				cs->bitnum = buf.ReadByte();
 				if (cs->IsValid()) {
 					cs->grffile = _cur.grffile;
-					SetBit(_cargo_mask, cid + i);
+					SetBit(_cargo_mask, id);
 				} else {
-					ClrBit(_cargo_mask, cid + i);
+					ClrBit(_cargo_mask, id);
 				}
 				BuildCargoLabelMap();
 				break;
@@ -3296,13 +3302,14 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 
 /**
  * Define properties for sound effects
- * @param sid Local ID of the sound.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first sound.
+ * @param last Local ID of the last sound.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult SoundEffectChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -3311,13 +3318,13 @@ static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, c
 		return CIR_INVALID_ID;
 	}
 
-	if (sid + numinfo - ORIGINAL_SAMPLE_COUNT > _cur.grffile->num_sounds) {
-		GrfMsg(1, "SoundEffectChangeInfo: Attempting to change undefined sound effect ({}), max ({}). Ignoring.", sid + numinfo, ORIGINAL_SAMPLE_COUNT + _cur.grffile->num_sounds);
+	if (last - ORIGINAL_SAMPLE_COUNT > _cur.grffile->num_sounds) {
+		GrfMsg(1, "SoundEffectChangeInfo: Attempting to change undefined sound effect ({}), max ({}). Ignoring.", last, ORIGINAL_SAMPLE_COUNT + _cur.grffile->num_sounds);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		SoundEntry *sound = GetSound(sid + i + _cur.grffile->sound_offset - ORIGINAL_SAMPLE_COUNT);
+	for (uint id = first; id < last; ++id) {
+		SoundEntry *sound = GetSound(first + _cur.grffile->sound_offset - ORIGINAL_SAMPLE_COUNT);
 
 		switch (prop) {
 			case 0x08: // Relative volume
@@ -3391,26 +3398,27 @@ static ChangeInfoResult IgnoreIndustryTileProperty(int prop, ByteReader &buf)
 
 /**
  * Define properties for industry tiles
- * @param indtid Local ID of the industry tile.
- * @param numinfo Number of subsequent industry tile IDs to change the property for.
+ * @param first Local ID of the first industry tile.
+ * @param last Local ID of the last industry tile.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (indtid + numinfo > NUM_INDUSTRYTILES_PER_GRF) {
-		GrfMsg(1, "IndustryTilesChangeInfo: Too many industry tiles loaded ({}), max ({}). Ignoring.", indtid + numinfo, NUM_INDUSTRYTILES_PER_GRF);
+	if (last > NUM_INDUSTRYTILES_PER_GRF) {
+		GrfMsg(1, "IndustryTilesChangeInfo: Too many industry tiles loaded ({}), max ({}). Ignoring.", last, NUM_INDUSTRYTILES_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate industry tile specs if they haven't been allocated already. */
-	if (_cur.grffile->indtspec.size() < indtid + numinfo) _cur.grffile->indtspec.resize(indtid + numinfo);
+	if (_cur.grffile->indtspec.size() < last) _cur.grffile->indtspec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		IndustryTileSpec *tsp = _cur.grffile->indtspec[indtid + i].get();
+	for (uint id = first; id < last; ++id) {
+		IndustryTileSpec *tsp = _cur.grffile->indtspec[id].get();
 
 		if (prop != 0x08 && tsp == nullptr) {
 			ChangeInfoResult cir = IgnoreIndustryTileProperty(prop, buf);
@@ -3423,14 +3431,14 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 				uint8_t subs_id = buf.ReadByte();
 				if (subs_id >= NEW_INDUSTRYTILEOFFSET) {
 					/* The substitute id must be one of the original industry tile. */
-					GrfMsg(2, "IndustryTilesChangeInfo: Attempt to use new industry tile {} as substitute industry tile for {}. Ignoring.", subs_id, indtid + i);
+					GrfMsg(2, "IndustryTilesChangeInfo: Attempt to use new industry tile {} as substitute industry tile for {}. Ignoring.", subs_id, id);
 					continue;
 				}
 
 				/* Allocate space for this industry. */
 				if (tsp == nullptr) {
-					_cur.grffile->indtspec[indtid + i] = std::make_unique<IndustryTileSpec>(_industry_tile_specs[subs_id]);
-					tsp = _cur.grffile->indtspec[indtid + i].get();
+					_cur.grffile->indtspec[id] = std::make_unique<IndustryTileSpec>(_industry_tile_specs[subs_id]);
+					tsp = _cur.grffile->indtspec[id].get();
 
 					tsp->enabled = true;
 
@@ -3440,11 +3448,11 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 					tsp->anim_production = INDUSTRYTILE_NOANIM;
 					tsp->anim_next = INDUSTRYTILE_NOANIM;
 
-					tsp->grf_prop.local_id = indtid + i;
+					tsp->grf_prop.local_id = id;
 					tsp->grf_prop.subst_id = subs_id;
 					tsp->grf_prop.grfid = _cur.grffile->grfid;
 					tsp->grf_prop.grffile = _cur.grffile;
-					_industile_mngr.AddEntityID(indtid + i, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
+					_industile_mngr.AddEntityID(id, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
 				break;
 			}
@@ -3454,11 +3462,11 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 
 				/* The industry being overridden must be an original industry. */
 				if (ovrid >= NEW_INDUSTRYTILEOFFSET) {
-					GrfMsg(2, "IndustryTilesChangeInfo: Attempt to override new industry tile {} with industry tile id {}. Ignoring.", ovrid, indtid + i);
+					GrfMsg(2, "IndustryTilesChangeInfo: Attempt to override new industry tile {} with industry tile id {}. Ignoring.", ovrid, id);
 					continue;
 				}
 
-				_industile_mngr.Add(indtid + i, _cur.grffile->grfid, ovrid);
+				_industile_mngr.Add(id, _cur.grffile->grfid, ovrid);
 				break;
 			}
 
@@ -3650,26 +3658,27 @@ static bool ValidateIndustryLayout(const IndustryTileLayout &layout)
 
 /**
  * Define properties for industries
- * @param indid Local ID of the industry.
- * @param numinfo Number of subsequent industry IDs to change the property for.
+ * @param first Local ID of the first industry.
+ * @param last Local ID of the last industry.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (indid + numinfo > NUM_INDUSTRYTYPES_PER_GRF) {
-		GrfMsg(1, "IndustriesChangeInfo: Too many industries loaded ({}), max ({}). Ignoring.", indid + numinfo, NUM_INDUSTRYTYPES_PER_GRF);
+	if (last > NUM_INDUSTRYTYPES_PER_GRF) {
+		GrfMsg(1, "IndustriesChangeInfo: Too many industries loaded ({}), max ({}). Ignoring.", last, NUM_INDUSTRYTYPES_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate industry specs if they haven't been allocated already. */
-	if (_cur.grffile->industryspec.size() < indid + numinfo) _cur.grffile->industryspec.resize(indid + numinfo);
+	if (_cur.grffile->industryspec.size() < last) _cur.grffile->industryspec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		IndustrySpec *indsp = _cur.grffile->industryspec[indid + i].get();
+	for (uint id = first; id < last; ++id) {
+		IndustrySpec *indsp = _cur.grffile->industryspec[id].get();
 
 		if (prop != 0x08 && indsp == nullptr) {
 			ChangeInfoResult cir = IgnoreIndustryProperty(prop, buf);
@@ -3683,11 +3692,11 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				if (subs_id == 0xFF) {
 					/* Instead of defining a new industry, a substitute industry id
 					 * of 0xFF disables the old industry with the current id. */
-					_industry_specs[indid + i].enabled = false;
+					_industry_specs[id].enabled = false;
 					continue;
 				} else if (subs_id >= NEW_INDUSTRYOFFSET) {
 					/* The substitute id must be one of the original industry. */
-					GrfMsg(2, "_industry_specs: Attempt to use new industry {} as substitute industry for {}. Ignoring.", subs_id, indid + i);
+					GrfMsg(2, "_industry_specs: Attempt to use new industry {} as substitute industry for {}. Ignoring.", subs_id, id);
 					continue;
 				}
 
@@ -3695,11 +3704,11 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				 * Only need to do it once. If ever it is called again, it should not
 				 * do anything */
 				if (indsp == nullptr) {
-					_cur.grffile->industryspec[indid + i] = std::make_unique<IndustrySpec>(_origin_industry_specs[subs_id]);
-					indsp = _cur.grffile->industryspec[indid + i].get();
+					_cur.grffile->industryspec[id] = std::make_unique<IndustrySpec>(_origin_industry_specs[subs_id]);
+					indsp = _cur.grffile->industryspec[id].get();
 
 					indsp->enabled = true;
-					indsp->grf_prop.local_id = indid + i;
+					indsp->grf_prop.local_id = id;
 					indsp->grf_prop.subst_id = subs_id;
 					indsp->grf_prop.grfid = _cur.grffile->grfid;
 					indsp->grf_prop.grffile = _cur.grffile;
@@ -3715,11 +3724,11 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 				/* The industry being overridden must be an original industry. */
 				if (ovrid >= NEW_INDUSTRYOFFSET) {
-					GrfMsg(2, "IndustriesChangeInfo: Attempt to override new industry {} with industry id {}. Ignoring.", ovrid, indid + i);
+					GrfMsg(2, "IndustriesChangeInfo: Attempt to override new industry {} with industry id {}. Ignoring.", ovrid, id);
 					continue;
 				}
 				indsp->grf_prop.override = ovrid;
-				_industry_mngr.Add(indid + i, _cur.grffile->grfid, ovrid);
+				_industry_mngr.Add(id, _cur.grffile->grfid, ovrid);
 				break;
 			}
 
@@ -3736,7 +3745,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 					for (uint k = 0;; k++) {
 						if (bytes_read >= definition_size) {
-							GrfMsg(3, "IndustriesChangeInfo: Incorrect size for industry tile layout definition for industry {}.", indid);
+							GrfMsg(3, "IndustriesChangeInfo: Incorrect size for industry tile layout definition for industry {}.", id);
 							/* Avoid warning twice */
 							definition_size = UINT32_MAX;
 						}
@@ -3753,12 +3762,12 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 							bytes_read += 2;
 
 							if (type >= lengthof(_origin_industry_specs)) {
-								GrfMsg(1, "IndustriesChangeInfo: Invalid original industry number for layout import, industry {}", indid);
+								GrfMsg(1, "IndustriesChangeInfo: Invalid original industry number for layout import, industry {}", id);
 								DisableGrf(STR_NEWGRF_ERROR_INVALID_ID);
 								return CIR_DISABLED;
 							}
 							if (laynbr >= _origin_industry_specs[type].layouts.size()) {
-								GrfMsg(1, "IndustriesChangeInfo: Invalid original industry layout index for layout import, industry {}", indid);
+								GrfMsg(1, "IndustriesChangeInfo: Invalid original industry layout index for layout import, industry {}", id);
 								DisableGrf(STR_NEWGRF_ERROR_INVALID_ID);
 								return CIR_DISABLED;
 							}
@@ -3787,7 +3796,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 							int tempid = _industile_mngr.GetID(local_tile_id, _cur.grffile->grfid);
 
 							if (tempid == INVALID_INDUSTRYTILE) {
-								GrfMsg(2, "IndustriesChangeInfo: Attempt to use industry tile {} with industry id {}, not yet defined. Ignoring.", local_tile_id, indid);
+								GrfMsg(2, "IndustriesChangeInfo: Attempt to use industry tile {} with industry id {}, not yet defined. Ignoring.", local_tile_id, id);
 							} else {
 								/* Declared as been valid, can be used */
 								it.gfx = tempid;
@@ -3809,7 +3818,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 					if (!ValidateIndustryLayout(layout)) {
 						/* The industry layout was not valid, so skip this one. */
-						GrfMsg(1, "IndustriesChangeInfo: Invalid industry layout for industry id {}. Ignoring", indid);
+						GrfMsg(1, "IndustriesChangeInfo: Invalid industry layout for industry id {}. Ignoring", id);
 						new_num_layouts--;
 						j--;
 					} else {
@@ -4025,29 +4034,30 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 /**
  * Define properties for airports
- * @param airport Local ID of the airport.
- * @param numinfo Number of subsequent airport IDs to change the property for.
+ * @param first Local ID of the first airport.
+ * @param last Local ID of the last airport.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (airport + numinfo > NUM_AIRPORTS_PER_GRF) {
-		GrfMsg(1, "AirportChangeInfo: Too many airports, trying id ({}), max ({}). Ignoring.", airport + numinfo, NUM_AIRPORTS_PER_GRF);
+	if (last > NUM_AIRPORTS_PER_GRF) {
+		GrfMsg(1, "AirportChangeInfo: Too many airports, trying id ({}), max ({}). Ignoring.", last, NUM_AIRPORTS_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate industry specs if they haven't been allocated already. */
-	if (_cur.grffile->airportspec.size() < airport + numinfo) _cur.grffile->airportspec.resize(airport + numinfo);
+	if (_cur.grffile->airportspec.size() < last) _cur.grffile->airportspec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		AirportSpec *as = _cur.grffile->airportspec[airport + i].get();
+	for (uint id = first; id < last; ++id) {
+		AirportSpec *as = _cur.grffile->airportspec[id].get();
 
 		if (as == nullptr && prop != 0x08 && prop != 0x09) {
-			GrfMsg(2, "AirportChangeInfo: Attempt to modify undefined airport {}, ignoring", airport + i);
+			GrfMsg(2, "AirportChangeInfo: Attempt to modify undefined airport {}, ignoring", id);
 			return CIR_INVALID_ID;
 		}
 
@@ -4057,11 +4067,11 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 				if (subs_id == 0xFF) {
 					/* Instead of defining a new airport, an airport id
 					 * of 0xFF disables the old airport with the current id. */
-					AirportSpec::GetWithoutOverride(airport + i)->enabled = false;
+					AirportSpec::GetWithoutOverride(id)->enabled = false;
 					continue;
 				} else if (subs_id >= NEW_AIRPORT_OFFSET) {
 					/* The substitute id must be one of the original airports. */
-					GrfMsg(2, "AirportChangeInfo: Attempt to use new airport {} as substitute airport for {}. Ignoring.", subs_id, airport + i);
+					GrfMsg(2, "AirportChangeInfo: Attempt to use new airport {} as substitute airport for {}. Ignoring.", subs_id, id);
 					continue;
 				}
 
@@ -4069,16 +4079,16 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 				 * Only need to do it once. If ever it is called again, it should not
 				 * do anything */
 				if (as == nullptr) {
-					_cur.grffile->airportspec[airport + i] = std::make_unique<AirportSpec>(*AirportSpec::GetWithoutOverride(subs_id));
-					as = _cur.grffile->airportspec[airport + i].get();
+					_cur.grffile->airportspec[id] = std::make_unique<AirportSpec>(*AirportSpec::GetWithoutOverride(subs_id));
+					as = _cur.grffile->airportspec[id].get();
 
 					as->enabled = true;
-					as->grf_prop.local_id = airport + i;
+					as->grf_prop.local_id = id;
 					as->grf_prop.subst_id = subs_id;
 					as->grf_prop.grfid = _cur.grffile->grfid;
 					as->grf_prop.grffile = _cur.grffile;
 					/* override the default airport */
-					_airport_mngr.Add(airport + i, _cur.grffile->grfid, subs_id);
+					_airport_mngr.Add(id, _cur.grffile->grfid, subs_id);
 				}
 				break;
 			}
@@ -4118,7 +4128,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 							uint16_t tempid = _airporttile_mngr.GetID(local_tile_id, _cur.grffile->grfid);
 
 							if (tempid == INVALID_AIRPORTTILE) {
-								GrfMsg(2, "AirportChangeInfo: Attempt to use airport tile {} with airport id {}, not yet defined. Ignoring.", local_tile_id, airport + i);
+								GrfMsg(2, "AirportChangeInfo: Attempt to use airport tile {} with airport id {}, not yet defined. Ignoring.", local_tile_id, id);
 							} else {
 								/* Declared as been valid, can be used */
 								tile.gfx = tempid;
@@ -4181,17 +4191,19 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 
 /**
  * Define properties for signals
- * @param id Local ID (unused).
+ * @param first Local ID (unused) first.
+ * @param last Local ID (unused) last.
  * @param numinfo Number of subsequent IDs to change the property for.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	/* Properties which are handled per item */
 	ChangeInfoResult ret = CIR_SUCCESS;
-	for (int i = 0; i < numinfo; i++) {
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
@@ -4396,27 +4408,27 @@ static ChangeInfoResult IgnoreObjectProperty(uint prop, ByteReader &buf)
 
 /**
  * Define properties for objects
- * @param id Local ID of the object.
- * @param numinfo Number of subsequent objectIDs to change the property for.
+ * @param first Local ID of the first object.
+ * @param last Local ID of the last object.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (id + numinfo > NUM_OBJECTS_PER_GRF) {
-		GrfMsg(1, "ObjectChangeInfo: Too many objects loaded ({}), max ({}). Ignoring.", id + numinfo, NUM_OBJECTS_PER_GRF);
+	if (last > NUM_OBJECTS_PER_GRF) {
+		GrfMsg(1, "ObjectChangeInfo: Too many objects loaded ({}), max ({}). Ignoring.", last, NUM_OBJECTS_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
-	if (id + numinfo > _cur.grffile->objectspec.size()) {
-		_cur.grffile->objectspec.resize(id + numinfo);
-	}
+	/* Allocate object specs if they haven't been allocated already. */
+	if (_cur.grffile->objectspec.size() < last) _cur.grffile->objectspec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		ObjectSpec *spec = _cur.grffile->objectspec[id + i].get();
+	for (uint id = first; id < last; ++id) {
+		ObjectSpec *spec = _cur.grffile->objectspec[id].get();
 
 		if (prop != 0x08 && spec == nullptr) {
 			/* If the object property 08 is not yet set, ignore this property */
@@ -4429,8 +4441,8 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 			case 0x08: { // Class ID
 				/* Allocate space for this object. */
 				if (spec == nullptr) {
-					_cur.grffile->objectspec[id + i] = std::make_unique<ObjectSpec>();
-					spec = _cur.grffile->objectspec[id + i].get();
+					_cur.grffile->objectspec[id] = std::make_unique<ObjectSpec>();
+					spec = _cur.grffile->objectspec[id].get();
 					spec->views = 1; // Default for NewGRFs that don't set it.
 					spec->size = OBJECT_SIZE_1X1; // Default for NewGRFs that manage to not set it (1x1)
 				}
@@ -4457,7 +4469,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 			case 0x0C: // Size
 				spec->size = buf.ReadByte();
 				if (GB(spec->size, 0, 4) == 0 || GB(spec->size, 4, 4) == 0) {
-					GrfMsg(0, "ObjectChangeInfo: Invalid object size requested (0x{:X}) for object id {}. Ignoring.", spec->size, id + i);
+					GrfMsg(0, "ObjectChangeInfo: Invalid object size requested (0x{:X}) for object id {}. Ignoring.", spec->size, id);
 					spec->size = OBJECT_SIZE_1X1;
 				}
 				break;
@@ -4508,7 +4520,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 			case 0x17: // Views
 				spec->views = buf.ReadByte();
 				if (spec->views != 1 && spec->views != 2 && spec->views != 4) {
-					GrfMsg(2, "ObjectChangeInfo: Invalid number of views ({}) for object id {}. Ignoring.", spec->views, id + i);
+					GrfMsg(2, "ObjectChangeInfo: Invalid number of views ({}) for object id {}. Ignoring.", spec->views, id);
 					spec->views = 1;
 				}
 				break;
@@ -4559,25 +4571,26 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 
 /**
  * Define properties for railtypes
- * @param id ID of the railtype.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first railtype.
+ * @param last Local ID of the last railtype.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RailTypeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
 
-	if (id + numinfo > RAILTYPE_END) {
-		GrfMsg(1, "RailTypeChangeInfo: Rail type {} is invalid, max {}, ignoring", id + numinfo, RAILTYPE_END);
+	if (last > RAILTYPE_END) {
+		GrfMsg(1, "RailTypeChangeInfo: Rail type {} is invalid, max {}, ignoring", last, RAILTYPE_END);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		RailType rt = _cur.grffile->railtype_map[id + i];
+	for (uint id = first; id < last; ++id) {
+		RailType rt = _cur.grffile->railtype_map[id];
 		if (rt == INVALID_RAILTYPE) return CIR_INVALID_ID;
 
 		RailTypeInfo *rti = &_railtypes[rt];
@@ -4725,18 +4738,18 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 	return ret;
 }
 
-static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RailTypeReserveInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
 
-	if (id + numinfo > RAILTYPE_END) {
-		GrfMsg(1, "RailTypeReserveInfo: Rail type {} is invalid, max {}, ignoring", id + numinfo, RAILTYPE_END);
+	if (last > RAILTYPE_END) {
+		GrfMsg(1, "RailTypeReserveInfo: Rail type {} is invalid, max {}, ignoring", last, RAILTYPE_END);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case 0x08: // Label of rail type
 			{
@@ -4749,7 +4762,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 					rt = AllocateRailType(rtl);
 				}
 
-				_cur.grffile->railtype_map[id + i] = rt;
+				_cur.grffile->railtype_map[id] = rt;
 				break;
 			}
 
@@ -4766,14 +4779,14 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 				break;
 
 			case 0x1D: // Alternate rail type label list
-				if (_cur.grffile->railtype_map[id + i] != INVALID_RAILTYPE) {
+				if (_cur.grffile->railtype_map[id] != INVALID_RAILTYPE) {
 					int n = buf.ReadByte();
 					for (int j = 0; j != n; j++) {
-						_railtypes[_cur.grffile->railtype_map[id + i]].alternate_labels.push_back(BSWAP32(buf.ReadDWord()));
+						_railtypes[_cur.grffile->railtype_map[id]].alternate_labels.push_back(BSWAP32(buf.ReadDWord()));
 					}
 					break;
 				}
-				GrfMsg(1, "RailTypeReserveInfo: Ignoring property 1D for rail type {} because no label was set", id + i);
+				GrfMsg(1, "RailTypeReserveInfo: Ignoring property 1D for rail type {} because no label was set", id);
 				[[fallthrough]];
 
 			case 0x0E: // Compatible railtype list
@@ -4816,26 +4829,28 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 
 /**
  * Define properties for roadtypes
- * @param id ID of the roadtype.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first roadtype.
+ * @param last Local ID of the last roadtype.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
+ * @param rtt Roat/tram type.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, RoadTramType rtt)
+static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, RoadTramType rtt)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
-	if (id + numinfo > ROADTYPE_END) {
-		GrfMsg(1, "RoadTypeChangeInfo: Road type {} is invalid, max {}, ignoring", id + numinfo, ROADTYPE_END);
+	if (last > ROADTYPE_END) {
+		GrfMsg(1, "RoadTypeChangeInfo: Road type {} is invalid, max {}, ignoring", last, ROADTYPE_END);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
-		RoadType rt = type_map[id + i];
+	for (uint id = first; id < last; ++id) {
+		RoadType rt = type_map[id];
 		if (rt == INVALID_ROADTYPE) return CIR_INVALID_ID;
 
 		RoadTypeInfo *rti = &_roadtypes[rt];
@@ -4951,30 +4966,30 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 	return ret;
 }
 
-static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	return RoadTypeChangeInfo(id, numinfo, prop, mapping_entry, buf, RTT_ROAD);
+	return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RTT_ROAD);
 }
 
-static ChangeInfoResult TramTypeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult TramTypeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	return RoadTypeChangeInfo(id, numinfo, prop, mapping_entry, buf, RTT_TRAM);
+	return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RTT_TRAM);
 }
 
 
-static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, RoadTramType rtt)
+static ChangeInfoResult RoadTypeReserveInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, RoadTramType rtt)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
-	if (id + numinfo > ROADTYPE_END) {
-		GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid, max {}, ignoring", id + numinfo, ROADTYPE_END);
+	if (last > ROADTYPE_END) {
+		GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid, max {}, ignoring", last, ROADTYPE_END);
 		return CIR_INVALID_ID;
 	}
 
-	for (int i = 0; i < numinfo; i++) {
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case 0x08: { // Label of road type
 				RoadTypeLabel rtl = buf.ReadDWord();
@@ -4985,11 +5000,11 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 					/* Set up new road type */
 					rt = AllocateRoadType(rtl, rtt);
 				} else if (GetRoadTramType(rt) != rtt) {
-					GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid type (road/tram), ignoring", id + numinfo);
+					GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid type (road/tram), ignoring", id);
 					return CIR_INVALID_ID;
 				}
 
-				type_map[id + i] = rt;
+				type_map[id] = rt;
 				break;
 			}
 			case 0x09: // Toolbar caption of roadtype
@@ -5005,14 +5020,14 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 				break;
 
 			case 0x1D: // Alternate road type label list
-				if (type_map[id + i] != INVALID_ROADTYPE) {
+				if (type_map[id] != INVALID_ROADTYPE) {
 					int n = buf.ReadByte();
 					for (int j = 0; j != n; j++) {
-						_roadtypes[type_map[id + i]].alternate_labels.push_back(BSWAP32(buf.ReadDWord()));
+						_roadtypes[type_map[id]].alternate_labels.push_back(BSWAP32(buf.ReadDWord()));
 					}
 					break;
 				}
-				GrfMsg(1, "RoadTypeReserveInfo: Ignoring property 1D for road type {} because no label was set", id + i);
+				GrfMsg(1, "RoadTypeReserveInfo: Ignoring property 1D for road type {} because no label was set", id);
 				/* FALL THROUGH */
 
 			case 0x0F: // Powered roadtype list
@@ -5048,33 +5063,33 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 	return ret;
 }
 
-static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RoadTypeReserveInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	return RoadTypeReserveInfo(id, numinfo, prop, mapping_entry, buf, RTT_ROAD);
+	return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RTT_ROAD);
 }
 
-static ChangeInfoResult TramTypeReserveInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult TramTypeReserveInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	return RoadTypeReserveInfo(id, numinfo, prop, mapping_entry, buf, RTT_TRAM);
+	return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RTT_TRAM);
 }
 
-static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult AirportTilesChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (airtid + numinfo > NUM_AIRPORTTILES_PER_GRF) {
-		GrfMsg(1, "AirportTileChangeInfo: Too many airport tiles loaded ({}), max ({}). Ignoring.", airtid + numinfo, NUM_AIRPORTTILES_PER_GRF);
+	if (last > NUM_AIRPORTTILES_PER_GRF) {
+		GrfMsg(1, "AirportTileChangeInfo: Too many airport tiles loaded ({}), max ({}). Ignoring.", last, NUM_AIRPORTTILES_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
 	/* Allocate airport tile specs if they haven't been allocated already. */
-	if (_cur.grffile->airtspec.size() < airtid + numinfo) _cur.grffile->airtspec.resize(airtid + numinfo);
+	if (_cur.grffile->airtspec.size() < last) _cur.grffile->airtspec.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		AirportTileSpec *tsp = _cur.grffile->airtspec[airtid + i].get();
+	for (uint id = first; id < last; ++id) {
+		AirportTileSpec *tsp = _cur.grffile->airtspec[id].get();
 
 		if (prop != 0x08 && tsp == nullptr) {
-			GrfMsg(2, "AirportTileChangeInfo: Attempt to modify undefined airport tile {}. Ignoring.", airtid + i);
+			GrfMsg(2, "AirportTileChangeInfo: Attempt to modify undefined airport tile {}. Ignoring.", id);
 			return CIR_INVALID_ID;
 		}
 
@@ -5083,24 +5098,24 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 				uint8_t subs_id = buf.ReadByte();
 				if (subs_id >= NEW_AIRPORTTILE_OFFSET) {
 					/* The substitute id must be one of the original airport tiles. */
-					GrfMsg(2, "AirportTileChangeInfo: Attempt to use new airport tile {} as substitute airport tile for {}. Ignoring.", subs_id, airtid + i);
+					GrfMsg(2, "AirportTileChangeInfo: Attempt to use new airport tile {} as substitute airport tile for {}. Ignoring.", subs_id, id);
 					continue;
 				}
 
 				/* Allocate space for this airport tile. */
 				if (tsp == nullptr) {
-					_cur.grffile->airtspec[airtid + i] = std::make_unique<AirportTileSpec>(*AirportTileSpec::Get(subs_id));
-					tsp = _cur.grffile->airtspec[airtid + i].get();
+					_cur.grffile->airtspec[id] = std::make_unique<AirportTileSpec>(*AirportTileSpec::Get(subs_id));
+					tsp = _cur.grffile->airtspec[id].get();
 
 					tsp->enabled = true;
 
 					tsp->animation.status = ANIM_STATUS_NO_ANIMATION;
 
-					tsp->grf_prop.local_id = airtid + i;
+					tsp->grf_prop.local_id = id;
 					tsp->grf_prop.subst_id = subs_id;
 					tsp->grf_prop.grfid = _cur.grffile->grfid;
 					tsp->grf_prop.grffile = _cur.grffile;
-					_airporttile_mngr.AddEntityID(airtid + i, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
+					_airporttile_mngr.AddEntityID(id, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
 				break;
 			}
@@ -5110,11 +5125,11 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 
 				/* The airport tile being overridden must be an original airport tile. */
 				if (override >= NEW_AIRPORTTILE_OFFSET) {
-					GrfMsg(2, "AirportTileChangeInfo: Attempt to override new airport tile {} with airport tile id {}. Ignoring.", override, airtid + i);
+					GrfMsg(2, "AirportTileChangeInfo: Attempt to override new airport tile {} with airport tile id {}. Ignoring.", override, id);
 					continue;
 				}
 
-				_airporttile_mngr.Add(airtid + i, _cur.grffile->grfid, override);
+				_airporttile_mngr.Add(id, _cur.grffile->grfid, override);
 				break;
 			}
 
@@ -5184,24 +5199,22 @@ static ChangeInfoResult IgnoreRoadStopProperty(uint prop, ByteReader &buf)
 	return ret;
 }
 
-static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
-	if (id + numinfo > NUM_ROADSTOPS_PER_GRF) {
-		GrfMsg(1, "RoadStopChangeInfo: RoadStop {} is invalid, max {}, ignoring", id + numinfo, NUM_ROADSTOPS_PER_GRF);
+	if (last > NUM_ROADSTOPS_PER_GRF) {
+		GrfMsg(1, "RoadStopChangeInfo: RoadStop {} is invalid, max {}, ignoring", last, NUM_ROADSTOPS_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
-	if (id + numinfo > _cur.grffile->roadstops.size()) {
-		_cur.grffile->roadstops.resize(id + numinfo);
-	}
+	if (_cur.grffile->roadstops.size() < last) _cur.grffile->roadstops.resize(last);
 
-	for (int i = 0; i < numinfo; i++) {
-		RoadStopSpec *rs = _cur.grffile->roadstops[id + i].get();
+	for (uint id = first; id < last; ++id) {
+		RoadStopSpec *rs = _cur.grffile->roadstops[id].get();
 
 		if (rs == nullptr && prop != 0x08 && prop != A0RPI_ROADSTOP_CLASS_ID) {
-			GrfMsg(1, "RoadStopChangeInfo: Attempt to modify undefined road stop {}, ignoring", id + i);
+			GrfMsg(1, "RoadStopChangeInfo: Attempt to modify undefined road stop {}, ignoring", id);
 			ChangeInfoResult cir = IgnoreRoadStopProperty(prop, buf);
 			if (cir > ret) ret = cir;
 			continue;
@@ -5213,8 +5226,8 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				[[fallthrough]];
 			case 0x08: { // Road Stop Class ID
 				if (rs == nullptr) {
-					_cur.grffile->roadstops[id + i] = std::make_unique<RoadStopSpec>();
-					rs = _cur.grffile->roadstops[id + i].get();
+					_cur.grffile->roadstops[id] = std::make_unique<RoadStopSpec>();
+					rs = _cur.grffile->roadstops[id].get();
 				}
 
 				uint32_t classid = buf.ReadDWord();
@@ -5339,17 +5352,18 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 /**
  * Define properties for new landscape
- * @param id Landscape type.
- * @param numinfo Number of subsequent IDs to change the property for.
+ * @param first Local ID of the first landscape.
+ * @param last Local ID of the first landscape.
  * @param prop The property to change.
+ * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult NewLandscapeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
+static ChangeInfoResult NewLandscapeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	/* Properties which are handled per item */
 	ChangeInfoResult ret = CIR_SUCCESS;
-	for (int i = 0; i < numinfo; i++) {
+	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
@@ -5578,7 +5592,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 	 * B property      what property to change, depends on the feature
 	 * V new-info      new bytes of info (variable size; depends on properties) */
 
-	static const VCI_Handler handler[] = {
+	static ChangeInfoHandler * const handler[] = {
 		/* GSF_TRAINS */        RailVehicleChangeInfo,
 		/* GSF_ROADVEHICLES */  RoadVehicleChangeInfo,
 		/* GSF_SHIPS */         ShipVehicleChangeInfo,
@@ -5603,7 +5617,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 		/* GSF_NEWLANDSCAPE */  NewLandscapeChangeInfo,
 		/* GSF_FAKE_TOWNS */    nullptr,
 	};
-	static_assert(GSF_END == lengthof(handler));
+	static_assert(GSF_END == std::size(handler));
 	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");
 
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte());
@@ -5631,7 +5645,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 	while (numprops-- && buf.HasData()) {
 		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 
-		ChangeInfoResult cir = handler[feature](engine, numinfo, desc.prop, desc.entry, buf);
+		ChangeInfoResult cir = handler[feature](engine, engine + numinfo, desc.prop, desc.entry, buf);
 		if (HandleChangeInfoResult("FeatureChangeInfo", cir, feature, desc.prop)) return;
 	}
 }
@@ -5692,23 +5706,23 @@ static void ReserveChangeInfo(ByteReader &buf)
 		switch (feature) {
 			default: NOT_REACHED();
 			case GSF_CARGOES:
-				cir = CargoChangeInfo(index, numinfo, desc.prop, desc.entry, buf);
+				cir = CargoChangeInfo(index, index + numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_GLOBALVAR:
-				cir = GlobalVarReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
+				cir = GlobalVarReserveInfo(index, index + numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_RAILTYPES:
-				cir = RailTypeReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
+				cir = RailTypeReserveInfo(index, index + numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_ROADTYPES:
-				cir = RoadTypeReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
+				cir = RoadTypeReserveInfo(index, index + numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_TRAMTYPES:
-				cir = TramTypeReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
+				cir = TramTypeReserveInfo(index, index + numinfo, desc.prop, desc.entry, buf);
 				break;
 		}
 
@@ -7364,7 +7378,7 @@ static constexpr auto _action5_types = std::to_array<Action5Type>({
 	/* 0x0A */ { A5BLOCK_ALLOW_OFFSET, SPR_2CCMAP_BASE,              1, TWOCCMAP_SPRITE_COUNT,                       "2CC colour maps"          },
 	/* 0x0B */ { A5BLOCK_ALLOW_OFFSET, SPR_TRAMWAY_BASE,             1, TRAMWAY_SPRITE_COUNT,                        "Tramway graphics"         },
 	/* 0x0C */ { A5BLOCK_INVALID,      0,                          133, 0,                                           "Snowy temperate tree"     }, // Not yet used by OTTD.
-	/* 0x0D */ { A5BLOCK_FIXED,        SPR_SHORE_BASE,              16, SPR_SHORE_SPRITE_COUNT,                      "Shore graphics"           },
+	/* 0x0D */ { A5BLOCK_FIXED,        SPR_SHORE_BASE,              16, SHORE_SPRITE_COUNT,                          "Shore graphics"           },
 	/* 0x0E */ { A5BLOCK_INVALID,      0,                            0, 0,                                           "New Signals graphics"     }, // Not yet used by OTTD.
 	/* 0x0F */ { A5BLOCK_ALLOW_OFFSET, SPR_TRACKS_FOR_SLOPES_BASE,   1, TRACKS_FOR_SLOPES_SPRITE_COUNT,              "Sloped rail track"        },
 	/* 0x10 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORTX_BASE,            1, AIRPORTX_SPRITE_COUNT,                       "Airport graphics"         },
@@ -7373,7 +7387,7 @@ static constexpr auto _action5_types = std::to_array<Action5Type>({
 	/* 0x13 */ { A5BLOCK_ALLOW_OFFSET, SPR_AUTORAIL_BASE,            1, AUTORAIL_SPRITE_COUNT,                       "Autorail graphics"        },
 	/* 0x14 */ { A5BLOCK_INVALID,      0,                            1, 0,                                           "Flag graphics"            }, // deprecated, no longer used.
 	/* 0x15 */ { A5BLOCK_ALLOW_OFFSET, SPR_OPENTTD_BASE,             1, OPENTTD_SPRITE_COUNT,                        "OpenTTD GUI graphics"     },
-	/* 0x16 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORT_PREVIEW_BASE,     1, SPR_AIRPORT_PREVIEW_COUNT,                   "Airport preview graphics" },
+	/* 0x16 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORT_PREVIEW_BASE,     1, AIRPORT_PREVIEW_SPRITE_COUNT,                "Airport preview graphics" },
 	/* 0x17 */ { A5BLOCK_ALLOW_OFFSET, SPR_RAILTYPE_TUNNEL_BASE,     1, RAILTYPE_TUNNEL_BASE_COUNT,                  "Railtype tunnel base"     },
 	/* 0x18 */ { A5BLOCK_ALLOW_OFFSET, SPR_PALETTE_BASE,             1, PALETTE_SPRITE_COUNT,                        "Palette"                  },
 	/* 0x19 */ { A5BLOCK_ALLOW_OFFSET, SPR_ROAD_WAYPOINTS_BASE,      1, ROAD_WAYPOINTS_SPRITE_COUNT,                 "Road waypoints"           },
@@ -7484,15 +7498,15 @@ static void GraphicsNew(ByteReader &buf)
 	}
 
 	/* If the baseset or grf only provides sprites for flat tiles (pre #10282), duplicate those for use on slopes. */
-	bool dup_oneway_sprites = ((type == 0x09) && (offset + num <= SPR_ONEWAY_SLOPE_N_OFFSET));
+	bool dup_oneway_sprites = ((type == 0x09) && (offset + num <= ONEWAY_SLOPE_N_OFFSET));
 
 	for (uint16_t n = num; n > 0; n--) {
 		_cur.nfo_line++;
 		SpriteID load_index = (replace == 0 ? _cur.spriteid++ : replace++);
 		LoadNextSprite(load_index, *_cur.file, _cur.nfo_line);
 		if (dup_oneway_sprites) {
-			DupSprite(load_index, load_index + SPR_ONEWAY_SLOPE_N_OFFSET);
-			DupSprite(load_index, load_index + SPR_ONEWAY_SLOPE_S_OFFSET);
+			DupSprite(load_index, load_index + ONEWAY_SLOPE_N_OFFSET);
+			DupSprite(load_index, load_index + ONEWAY_SLOPE_S_OFFSET);
 		}
 	}
 
@@ -9357,79 +9371,15 @@ typedef bool (*BranchHandler)(ByteReader &);                ///< Type of callbac
  * 3. Text leaf nodes (identified by 'T').
  */
 struct AllowedSubtags {
-	/** Create empty subtags object used to identify the end of a list. */
-	AllowedSubtags() :
-		id(0),
-		type(0)
-	{}
+	/** Custom 'span' of subtags. Required because std::span with an incomplete type is UB. */
+	using Span = std::pair<const AllowedSubtags *, const AllowedSubtags *>;
 
-	/**
-	 * Create a binary leaf node.
-	 * @param id The id for this node.
-	 * @param handler The callback function to call.
-	 */
-	AllowedSubtags(uint32_t id, DataHandler handler) :
-		id(id),
-		type('B')
-	{
-		this->handler.data = handler;
-	}
-
-	/**
-	 * Create a text leaf node.
-	 * @param id The id for this node.
-	 * @param handler The callback function to call.
-	 */
-	AllowedSubtags(uint32_t id, TextHandler handler) :
-		id(id),
-		type('T')
-	{
-		this->handler.text = handler;
-	}
-
-	/**
-	 * Create a branch node with a callback handler
-	 * @param id The id for this node.
-	 * @param handler The callback function to call.
-	 */
-	AllowedSubtags(uint32_t id, BranchHandler handler) :
-		id(id),
-		type('C')
-	{
-		this->handler.call_handler = true;
-		this->handler.u.branch = handler;
-	}
-
-	/**
-	 * Create a branch node with a list of sub-nodes.
-	 * @param id The id for this node.
-	 * @param subtags Array with all valid subtags.
-	 */
-	AllowedSubtags(uint32_t id, AllowedSubtags *subtags) :
-		id(id),
-		type('C')
-	{
-		this->handler.call_handler = false;
-		this->handler.u.subtags = subtags;
-	}
-
-	uint32_t id;          ///< The identifier for this node
-	uint8_t type;         ///< The type of the node, must be one of 'C', 'B' or 'T'.
-	union {
-		DataHandler data; ///< Callback function for a binary node, only valid if type == 'B'.
-		TextHandler text; ///< Callback function for a text node, only valid if type == 'T'.
-		struct {
-			union {
-				BranchHandler branch;    ///< Callback function for a branch node, only valid if type == 'C' && call_handler.
-				AllowedSubtags *subtags; ///< Pointer to a list of subtags, only valid if type == 'C' && !call_handler.
-			} u;
-			bool call_handler; ///< True if there is a callback function for this node, false if there is a list of subnodes.
-		};
-	} handler;
+	uint32_t id; ///< The identifier for this node.
+	std::variant<DataHandler, TextHandler, BranchHandler, Span> handler; ///< The handler for this node.
 };
 
 static bool SkipUnknownInfo(ByteReader &buf, uint8_t type);
-static bool HandleNodes(ByteReader &buf, AllowedSubtags *tags);
+static bool HandleNodes(ByteReader &buf, std::span<const AllowedSubtags> tags);
 
 /**
  * Try to skip the current branch node and all subnodes.
@@ -9469,14 +9419,11 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 		uint8_t langid = buf.ReadByte();
 		std::string_view name_string = buf.ReadString();
 
-		auto val_name = _cur_parameter->value_names.find(id);
-		if (val_name != _cur_parameter->value_names.end()) {
-			AddGRFTextToList(val_name->second, langid, _cur.grfconfig->ident.grfid, false, name_string);
-		} else {
-			GRFTextList list;
-			AddGRFTextToList(list, langid, _cur.grfconfig->ident.grfid, false, name_string);
-			_cur_parameter->value_names[id] = list;
+		auto it = std::ranges::lower_bound(_cur_parameter->value_names, id, std::less{}, &GRFParameterInfo::ValueName::first);
+		if (it == std::end(_cur_parameter->value_names) || it->first != id) {
+			it = _cur_parameter->value_names.emplace(it, id, GRFTextList{});
 		}
+		AddGRFTextToList(it->second, langid, _cur.grfconfig->ident.grfid, false, name_string);
 
 		type = buf.ReadByte();
 	}
@@ -9484,15 +9431,14 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 }
 
 /** Action14 parameter tags */
-AllowedSubtags _tags_parameters[] = {
-	AllowedSubtags('NAME', ChangeGRFParamName),
-	AllowedSubtags('DESC', ChangeGRFParamDescription),
-	AllowedSubtags('TYPE', ChangeGRFParamType),
-	AllowedSubtags('LIMI', ChangeGRFParamLimits),
-	AllowedSubtags('MASK', ChangeGRFParamMask),
-	AllowedSubtags('VALU', ChangeGRFParamValueNames),
-	AllowedSubtags('DFLT', ChangeGRFParamDefault),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_parameters[] = {
+	AllowedSubtags{'NAME', ChangeGRFParamName},
+	AllowedSubtags{'DESC', ChangeGRFParamDescription},
+	AllowedSubtags{'TYPE', ChangeGRFParamType},
+	AllowedSubtags{'LIMI', ChangeGRFParamLimits},
+	AllowedSubtags{'MASK', ChangeGRFParamMask},
+	AllowedSubtags{'VALU', ChangeGRFParamValueNames},
+	AllowedSubtags{'DFLT', ChangeGRFParamDefault},
 };
 
 /**
@@ -9528,17 +9474,16 @@ static bool HandleParameterInfo(ByteReader &buf)
 }
 
 /** Action14 tags for the INFO node */
-AllowedSubtags _tags_info[] = {
-	AllowedSubtags('NAME', ChangeGRFName),
-	AllowedSubtags('DESC', ChangeGRFDescription),
-	AllowedSubtags('URL_', ChangeGRFURL),
-	AllowedSubtags('NPAR', ChangeGRFNumUsedParams),
-	AllowedSubtags('PALS', ChangeGRFPalette),
-	AllowedSubtags('BLTR', ChangeGRFBlitter),
-	AllowedSubtags('VRSN', ChangeGRFVersion),
-	AllowedSubtags('MINV', ChangeGRFMinVersion),
-	AllowedSubtags('PARA', HandleParameterInfo),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_info[] = {
+	AllowedSubtags{'NAME', ChangeGRFName},
+	AllowedSubtags{'DESC', ChangeGRFDescription},
+	AllowedSubtags{'URL_', ChangeGRFURL},
+	AllowedSubtags{'NPAR', ChangeGRFNumUsedParams},
+	AllowedSubtags{'PALS', ChangeGRFPalette},
+	AllowedSubtags{'BLTR', ChangeGRFBlitter},
+	AllowedSubtags{'VRSN', ChangeGRFVersion},
+	AllowedSubtags{'MINV', ChangeGRFMinVersion},
+	AllowedSubtags{'PARA', HandleParameterInfo},
 };
 
 
@@ -9656,13 +9601,12 @@ static bool ChangeGRFFeatureTestSuccessResultValue(size_t len, ByteReader &buf)
 }
 
 /** Action14 tags for the FTST node */
-AllowedSubtags _tags_ftst[] = {
-	AllowedSubtags('NAME', ChangeGRFFeatureTestName),
-	AllowedSubtags('MINV', ChangeGRFFeatureMinVersion),
-	AllowedSubtags('MAXV', ChangeGRFFeatureMaxVersion),
-	AllowedSubtags('SETP', ChangeGRFFeatureSetPlatformVarBit),
-	AllowedSubtags('SVAL', ChangeGRFFeatureTestSuccessResultValue),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_ftst[] = {
+	AllowedSubtags{'NAME', ChangeGRFFeatureTestName},
+	AllowedSubtags{'MINV', ChangeGRFFeatureMinVersion},
+	AllowedSubtags{'MAXV', ChangeGRFFeatureMaxVersion},
+	AllowedSubtags{'SETP', ChangeGRFFeatureSetPlatformVarBit},
+	AllowedSubtags{'SVAL', ChangeGRFFeatureTestSuccessResultValue},
 };
 
 /**
@@ -10125,13 +10069,12 @@ static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader &buf)
 }
 
 /** Action14 tags for the FIDM node */
-AllowedSubtags _tags_fidm[] = {
-	AllowedSubtags('NAME', ChangePropertyRemapName),
-	AllowedSubtags('FTID', ChangePropertyRemapFeatureId),
-	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
-	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
-	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_fidm[] = {
+	AllowedSubtags{'NAME', ChangePropertyRemapName},
+	AllowedSubtags{'FTID', ChangePropertyRemapFeatureId},
+	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -10146,15 +10089,14 @@ static bool HandleFeatureIDMap(ByteReader &buf)
 }
 
 /** Action14 tags for the A0PM node */
-AllowedSubtags _tags_a0pm[] = {
-	AllowedSubtags('NAME', ChangePropertyRemapName),
-	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
-	AllowedSubtags('PROP', ChangePropertyRemapPropertyId),
-	AllowedSubtags('XPRP', ChangePropertyRemapExtendedPropertyId),
-	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
-	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
-	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_a0pm[] = {
+	AllowedSubtags{'NAME', ChangePropertyRemapName},
+	AllowedSubtags{'FEAT', ChangePropertyRemapFeature},
+	AllowedSubtags{'PROP', ChangePropertyRemapPropertyId},
+	AllowedSubtags{'XPRP', ChangePropertyRemapExtendedPropertyId},
+	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -10169,17 +10111,16 @@ static bool HandleAction0PropertyMap(ByteReader &buf)
 }
 
 /** Action14 tags for the A2VM node */
-AllowedSubtags _tags_a2vm[] = {
-	AllowedSubtags('NAME', ChangePropertyRemapName),
-	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
-	AllowedSubtags('RSFT', ChangePropertyRemapSetInputShift),
-	AllowedSubtags('RMSK', ChangePropertyRemapSetInputMask),
-	AllowedSubtags('VSFT', ChangePropertyRemapSetOutputShift),
-	AllowedSubtags('VMSK', ChangePropertyRemapSetOutputMask),
-	AllowedSubtags('VPRM', ChangePropertyRemapSetOutputParam),
-	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
-	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_a2vm[] = {
+	AllowedSubtags{'NAME', ChangePropertyRemapName},
+	AllowedSubtags{'FEAT', ChangePropertyRemapFeature},
+	AllowedSubtags{'RSFT', ChangePropertyRemapSetInputShift},
+	AllowedSubtags{'RMSK', ChangePropertyRemapSetInputMask},
+	AllowedSubtags{'VSFT', ChangePropertyRemapSetOutputShift},
+	AllowedSubtags{'VMSK', ChangePropertyRemapSetOutputMask},
+	AllowedSubtags{'VPRM', ChangePropertyRemapSetOutputParam},
+	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -10194,13 +10135,12 @@ static bool HandleAction2VariableMap(ByteReader &buf)
 }
 
 /** Action14 tags for the A5TM node */
-AllowedSubtags _tags_a5tm[] = {
-	AllowedSubtags('NAME', ChangePropertyRemapName),
-	AllowedSubtags('TYPE', ChangePropertyRemapTypeId),
-	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
-	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
-	AllowedSubtags('SVAL', ChangePropertyRemapSuccessResultValue),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_a5tm[] = {
+	AllowedSubtags{'NAME', ChangePropertyRemapName},
+	AllowedSubtags{'TYPE', ChangePropertyRemapTypeId},
+	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -10215,25 +10155,23 @@ static bool HandleAction5TypeMap(ByteReader &buf)
 }
 
 /** Action14 root tags */
-AllowedSubtags _tags_root_static[] = {
-	AllowedSubtags('INFO', _tags_info),
-	AllowedSubtags('FTST', SkipInfoChunk),
-	AllowedSubtags('FIDM', SkipInfoChunk),
-	AllowedSubtags('A0PM', SkipInfoChunk),
-	AllowedSubtags('A2VM', SkipInfoChunk),
-	AllowedSubtags('A5TM', SkipInfoChunk),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_root_static[] = {
+	AllowedSubtags{'INFO', std::make_pair(std::begin(_tags_info), std::end(_tags_info))},
+	AllowedSubtags{'FTST', SkipInfoChunk},
+	AllowedSubtags{'FIDM', SkipInfoChunk},
+	AllowedSubtags{'A0PM', SkipInfoChunk},
+	AllowedSubtags{'A2VM', SkipInfoChunk},
+	AllowedSubtags{'A5TM', SkipInfoChunk},
 };
 
 /** Action14 root tags */
-AllowedSubtags _tags_root_feature_tests[] = {
-	AllowedSubtags('INFO', SkipInfoChunk),
-	AllowedSubtags('FTST', HandleFeatureTestInfo),
-	AllowedSubtags('FIDM', HandleFeatureIDMap),
-	AllowedSubtags('A0PM', HandleAction0PropertyMap),
-	AllowedSubtags('A2VM', HandleAction2VariableMap),
-	AllowedSubtags('A5TM', HandleAction5TypeMap),
-	AllowedSubtags()
+static constexpr AllowedSubtags _tags_root_feature_tests[] = {
+	AllowedSubtags{'INFO', SkipInfoChunk},
+	AllowedSubtags{'FTST', HandleFeatureTestInfo},
+	AllowedSubtags{'FIDM', HandleFeatureIDMap},
+	AllowedSubtags{'A0PM', HandleAction0PropertyMap},
+	AllowedSubtags{'A2VM', HandleAction2VariableMap},
+	AllowedSubtags{'A5TM', HandleAction5TypeMap},
 };
 
 
@@ -10283,34 +10221,49 @@ static bool SkipUnknownInfo(ByteReader &buf, uint8_t type)
  * @param subtags Allowed subtags.
  * @return Whether all tags could be handled.
  */
-static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, AllowedSubtags subtags[])
+static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, std::span<const AllowedSubtags> subtags)
 {
-	uint i = 0;
-	AllowedSubtags *tag;
-	while ((tag = &subtags[i++])->type != 0) {
-		if (tag->id != BSWAP32(id) || tag->type != type) continue;
-		switch (type) {
-			default: NOT_REACHED();
+	/* Visitor to get a subtag handler's type. */
+	struct type_visitor {
+		char operator()(const DataHandler &) { return 'B'; }
+		char operator()(const TextHandler &) { return 'T'; }
+		char operator()(const BranchHandler &) { return 'C'; }
+		char operator()(const AllowedSubtags::Span &) { return 'C'; }
+	};
 
-			case 'T': {
-				uint8_t langid = buf.ReadByte();
-				return tag->handler.text(langid, buf.ReadString());
-			}
+	/* Visitor to evaluate a subtag handler. */
+	struct evaluate_visitor {
+		ByteReader &buf;
 
-			case 'B': {
-				size_t len = buf.ReadWord();
-				if (buf.Remaining() < len) return false;
-				return tag->handler.data(len, buf);
-			}
-
-			case 'C': {
-				if (tag->handler.call_handler) {
-					return tag->handler.u.branch(buf);
-				}
-				return HandleNodes(buf, tag->handler.u.subtags);
-			}
+		bool operator()(const DataHandler &handler)
+		{
+			size_t len = buf.ReadWord();
+			if (buf.Remaining() < len) return false;
+			return handler(len, buf);
 		}
+
+		bool operator()(const TextHandler &handler)
+		{
+			uint8_t langid = buf.ReadByte();
+			return handler(langid, buf.ReadString());
+		}
+
+		bool operator()(const BranchHandler &handler)
+		{
+			return handler(buf);
+		}
+
+		bool operator()(const AllowedSubtags::Span &subtags)
+		{
+			return HandleNodes(buf, {subtags.first, subtags.second});
+		}
+	};
+
+	for (const auto &tag : subtags) {
+		if (tag.id != BSWAP32(id) || std::visit(type_visitor{}, tag.handler) != type) continue;
+		return std::visit(evaluate_visitor{buf}, tag.handler);
 	}
+
 	GrfMsg(2, "StaticGRFInfo: unknown type/id combination found, type={:c}, id={:x}", type, id);
 	return SkipUnknownInfo(buf, type);
 }
@@ -10321,7 +10274,7 @@ static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, AllowedSubtag
  * @param subtags List of subtags.
  * @return Whether the nodes could all be handled.
  */
-static bool HandleNodes(ByteReader &buf, AllowedSubtags subtags[])
+static bool HandleNodes(ByteReader &buf, std::span<const AllowedSubtags> subtags)
 {
 	uint8_t type = buf.ReadByte();
 	while (type != 0) {

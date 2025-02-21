@@ -44,6 +44,7 @@ extern TransparencyOptionBits _transparency_lock_extra;
 extern TransparencyOptionBits _invisibility_opt;
 extern uint8_t _display_opt;
 extern uint8_t _extra_display_opt;
+extern uint8_t _facility_display_opt;
 
 void PreTransparencyOptionSave();
 void PostTransparencyOptionLoad();

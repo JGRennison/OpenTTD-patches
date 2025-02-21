@@ -114,7 +114,7 @@ struct ReadBuffer {
 		if (likely(b <= this->bufe)) {
 			this->bufp = b;
 		} else {
-			SkipBytesSlowPath(bytes);
+			this->SkipBytesSlowPath(bytes);
 		}
 	}
 

@@ -50,13 +50,13 @@ inline StationType GetStationType(TileIndex t)
 /**
  * Get the road stop type of this tile
  * @param t the tile to query
- * @pre GetStationType(t) == STATION_TRUCK || GetStationType(t) == STATION_BUS
+ * @pre GetStationType(t) == StationType::Truck || GetStationType(t) == StationType::Bus
  * @return the road stop type
  */
 inline RoadStopType GetRoadStopType(TileIndex t)
 {
-	dbg_assert_tile(GetStationType(t) == STATION_TRUCK || GetStationType(t) == STATION_BUS, t);
-	return GetStationType(t) == STATION_TRUCK ? ROADSTOP_TRUCK : ROADSTOP_BUS;
+	dbg_assert_tile(GetStationType(t) == StationType::Truck || GetStationType(t) == StationType::Bus, t);
+	return GetStationType(t) == StationType::Truck ? RoadStopType::Truck : RoadStopType::Bus;
 }
 
 /**
@@ -91,7 +91,7 @@ inline void SetStationGfx(TileIndex t, StationGfx gfx)
  */
 inline bool IsRailStation(TileIndex t)
 {
-	return GetStationType(t) == STATION_RAIL;
+	return GetStationType(t) == StationType::Rail;
 }
 
 /**
@@ -112,7 +112,7 @@ inline bool IsRailStationTile(TileIndex t)
  */
 inline bool IsRailWaypoint(TileIndex t)
 {
-	return GetStationType(t) == STATION_WAYPOINT;
+	return GetStationType(t) == StationType::RailWaypoint;
 }
 
 /**
@@ -156,7 +156,7 @@ inline bool HasStationTileRail(TileIndex t)
  */
 inline bool IsAirport(TileIndex t)
 {
-	return GetStationType(t) == STATION_AIRPORT;
+	return GetStationType(t) == StationType::Airport;
 }
 
 /**
@@ -179,7 +179,7 @@ bool IsHangar(TileIndex t);
  */
 inline bool IsTruckStop(TileIndex t)
 {
-	return GetStationType(t) == STATION_TRUCK;
+	return GetStationType(t) == StationType::Truck;
 }
 
 /**
@@ -190,7 +190,7 @@ inline bool IsTruckStop(TileIndex t)
  */
 inline bool IsBusStop(TileIndex t)
 {
-	return GetStationType(t) == STATION_BUS;
+	return GetStationType(t) == StationType::Bus;
 }
 
 /**
@@ -201,7 +201,7 @@ inline bool IsBusStop(TileIndex t)
  */
 inline bool IsRoadWaypoint(TileIndex t)
 {
-	return GetStationType(t) == STATION_ROADWAYPOINT;
+	return GetStationType(t) == StationType::RoadWaypoint;
 }
 
 /**
@@ -390,7 +390,7 @@ inline Axis GetDriveThroughStopAxis(TileIndex t)
  */
 inline bool IsOilRig(TileIndex t)
 {
-	return GetStationType(t) == STATION_OILRIG;
+	return GetStationType(t) == StationType::Oilrig;
 }
 
 /**
@@ -401,7 +401,7 @@ inline bool IsOilRig(TileIndex t)
  */
 inline bool IsDock(TileIndex t)
 {
-	return GetStationType(t) == STATION_DOCK;
+	return GetStationType(t) == StationType::Dock;
 }
 
 /**
@@ -411,7 +411,7 @@ inline bool IsDock(TileIndex t)
  */
 inline bool IsDockTile(TileIndex t)
 {
-	return IsTileType(t, MP_STATION) && GetStationType(t) == STATION_DOCK;
+	return IsTileType(t, MP_STATION) && GetStationType(t) == StationType::Dock;
 }
 
 /**
@@ -422,7 +422,7 @@ inline bool IsDockTile(TileIndex t)
  */
 inline bool IsBuoy(TileIndex t)
 {
-	return GetStationType(t) == STATION_BUOY;
+	return GetStationType(t) == StationType::Buoy;
 }
 
 /**
@@ -748,7 +748,7 @@ inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType st, uin
 	_m[t].m4 = 0;
 	_m[t].m5 = section;
 	SB(_me[t].m6, 2, 1, 0);
-	SB(_me[t].m6, 3, 4, st);
+	SB(_me[t].m6, 3, 4, to_underlying(st));
 	_me[t].m7 = 0;
 	_me[t].m8 = 0;
 }
@@ -764,7 +764,7 @@ inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType st, uin
  */
 inline void MakeRailStation(TileIndex t, Owner o, StationID sid, Axis a, uint8_t section, RailType rt)
 {
-	MakeStation(t, o, sid, STATION_RAIL, section + a);
+	MakeStation(t, o, sid, StationType::Rail, section + a);
 	SetRailType(t, rt);
 	SetRailStationReservation(t, false);
 }
@@ -780,7 +780,7 @@ inline void MakeRailStation(TileIndex t, Owner o, StationID sid, Axis a, uint8_t
  */
 inline void MakeRailWaypoint(TileIndex t, Owner o, StationID sid, Axis a, uint8_t section, RailType rt)
 {
-	MakeStation(t, o, sid, STATION_WAYPOINT, section + a);
+	MakeStation(t, o, sid, StationType::RailWaypoint, section + a);
 	SetRailType(t, rt);
 	SetRailStationReservation(t, false);
 }
@@ -797,7 +797,7 @@ inline void MakeRailWaypoint(TileIndex t, Owner o, StationID sid, Axis a, uint8_
  */
 inline void MakeRoadStop(TileIndex t, Owner o, StationID sid, RoadStopType rst, RoadType road_rt, RoadType tram_rt, DiagDirection d)
 {
-	MakeStation(t, o, sid, (rst == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK), d);
+	MakeStation(t, o, sid, (rst == RoadStopType::Bus ? StationType::Bus : StationType::Truck), d);
 	SetRoadTypes(t, road_rt, tram_rt);
 	SetRoadOwner(t, RTT_ROAD, o);
 	SetRoadOwner(t, RTT_TRAM, o);
@@ -833,7 +833,7 @@ inline void MakeDriveThroughRoadStop(TileIndex t, Owner station, Owner road, Own
  */
 inline void MakeAirport(TileIndex t, Owner o, StationID sid, uint8_t section, WaterClass wc)
 {
-	MakeStation(t, o, sid, STATION_AIRPORT, section, wc);
+	MakeStation(t, o, sid, StationType::Airport, section, wc);
 }
 
 /**
@@ -847,7 +847,7 @@ inline void MakeBuoy(TileIndex t, StationID sid, WaterClass wc)
 	/* Make the owner of the buoy tile the same as the current owner of the
 	 * water tile. In this way, we can reset the owner of the water to its
 	 * original state when the buoy gets removed. */
-	MakeStation(t, GetTileOwner(t), sid, STATION_BUOY, 0, wc);
+	MakeStation(t, GetTileOwner(t), sid, StationType::Buoy, 0, wc);
 }
 
 /**
@@ -860,8 +860,8 @@ inline void MakeBuoy(TileIndex t, StationID sid, WaterClass wc)
  */
 inline void MakeDock(TileIndex t, Owner o, StationID sid, DiagDirection d, WaterClass wc)
 {
-	MakeStation(t, o, sid, STATION_DOCK, d);
-	MakeStation(t + TileOffsByDiagDir(d), o, sid, STATION_DOCK, GFX_DOCK_BASE_WATER_PART + DiagDirToAxis(d), wc);
+	MakeStation(t, o, sid, StationType::Dock, d);
+	MakeStation(t + TileOffsByDiagDir(d), o, sid, StationType::Dock, GFX_DOCK_BASE_WATER_PART + DiagDirToAxis(d), wc);
 }
 
 /**
@@ -872,7 +872,7 @@ inline void MakeDock(TileIndex t, Owner o, StationID sid, DiagDirection d, Water
  */
 inline void MakeOilrig(TileIndex t, StationID sid, WaterClass wc)
 {
-	MakeStation(t, OWNER_NONE, sid, STATION_OILRIG, 0, wc);
+	MakeStation(t, OWNER_NONE, sid, StationType::Oilrig, 0, wc);
 }
 
 #endif /* STATION_MAP_H */

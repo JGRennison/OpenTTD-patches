@@ -32,23 +32,24 @@ static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;
 typedef SmallStack<StationID, StationID, INVALID_STATION, 8, 0xFFFD> StationIDStack;
 
 /** Station types */
-enum StationType : uint8_t {
-	STATION_RAIL,
-	STATION_AIRPORT,
-	STATION_TRUCK,
-	STATION_BUS,
-	STATION_OILRIG,
-	STATION_DOCK,
-	STATION_BUOY,
-	STATION_WAYPOINT,
-	STATION_ROADWAYPOINT,
-	STATION_END,
+enum class StationType : uint8_t {
+	Rail,
+	Airport,
+	Truck,
+	Bus,
+	Oilrig,
+	Dock,
+	Buoy,
+	RailWaypoint,
+	RoadWaypoint,
+	End,
 };
 
 /** Types of RoadStops */
-enum RoadStopType : uint8_t {
-	ROADSTOP_BUS,    ///< A standard stop for buses
-	ROADSTOP_TRUCK,  ///< A standard stop for trucks
+enum class RoadStopType : uint8_t {
+	Bus,   ///< A standard stop for buses
+	Truck, ///< A standard stop for trucks
+	End,   ///< End of valid types
 };
 
 /** The facilities a station might be having */

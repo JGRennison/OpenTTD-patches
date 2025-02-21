@@ -99,14 +99,14 @@ static bool IsRoadStopEverAvailable(const RoadStopSpec *spec, StationType type)
 	if (HasBit(spec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) return false;
 	if (HasBit(spec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)) return false;
 
-	if (type == STATION_ROADWAYPOINT && spec->stop_type != ROADSTOPTYPE_ALL) {
+	if (type == StationType::RoadWaypoint && spec->stop_type != ROADSTOPTYPE_ALL) {
 		if (spec->grf_prop.grffile != nullptr && HasBit(spec->grf_prop.grffile->observed_feature_tests, GFTOF_ROAD_STOPS)) return true;
 	}
 
 	switch (spec->stop_type) {
 		case ROADSTOPTYPE_ALL: return true;
-		case ROADSTOPTYPE_PASSENGER: return type == STATION_BUS;
-		case ROADSTOPTYPE_FREIGHT: return type == STATION_TRUCK;
+		case ROADSTOPTYPE_PASSENGER: return type == StationType::Bus;
+		case ROADSTOPTYPE_FREIGHT: return type == StationType::Truck;
 		default: NOT_REACHED();
 	}
 }
@@ -578,14 +578,14 @@ struct BuildRoadToolbarWindow : Window {
 
 			case WID_ROT_BUS_STATION:
 				if (HandlePlacePushButton(this, WID_ROT_BUS_STATION, SPR_CURSOR_BUS_STATION, HT_RECT)) {
-					ShowRVStationPicker(this, ROADSTOP_BUS);
+					ShowRVStationPicker(this, RoadStopType::Bus);
 					this->last_started_action = widget;
 				}
 				break;
 
 			case WID_ROT_TRUCK_STATION:
 				if (HandlePlacePushButton(this, WID_ROT_TRUCK_STATION, SPR_CURSOR_TRUCK_STATION, HT_RECT)) {
-					ShowRVStationPicker(this, ROADSTOP_TRUCK);
+					ShowRVStationPicker(this, RoadStopType::Truck);
 					this->last_started_action = widget;
 				}
 				break;
@@ -811,24 +811,24 @@ struct BuildRoadToolbarWindow : Window {
 
 				case DDSP_BUILD_BUSSTOP:
 				case DDSP_REMOVE_BUSSTOP:
-					if (this->IsWidgetLowered(WID_ROT_BUS_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), ROADSTOP_BUS, _cur_roadtype)) {
+					if (this->IsWidgetLowered(WID_ROT_BUS_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), RoadStopType::Bus, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
-							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | ROADSTOP_BUS, CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[ROADSTOP_BUS]), CcPlaySound_CONSTRUCTION_OTHER);
+							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Bus), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Bus)]), CcPlaySound_CONSTRUCTION_OTHER);
 						} else {
-							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | ROADSTOP_BUS, CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[ROADSTOP_BUS]));
+							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | to_underlying(RoadStopType::Bus), CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[to_underlying(RoadStopType::Bus)]));
 						}
 					}
 					break;
 
 				case DDSP_BUILD_TRUCKSTOP:
 				case DDSP_REMOVE_TRUCKSTOP:
-					if (this->IsWidgetLowered(WID_ROT_TRUCK_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), ROADSTOP_TRUCK, _cur_roadtype)) {
+					if (this->IsWidgetLowered(WID_ROT_TRUCK_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), RoadStopType::Truck, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
-							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | ROADSTOP_TRUCK, CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[ROADSTOP_TRUCK]), CcPlaySound_CONSTRUCTION_OTHER);
+							DoCommandP(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Truck), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Truck)]), CcPlaySound_CONSTRUCTION_OTHER);
 						} else {
-							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | ROADSTOP_TRUCK, CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[ROADSTOP_TRUCK]));
+							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | to_underlying(RoadStopType::Truck), CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[to_underlying(RoadStopType::Truck)]));
 						}
 					}
 					break;
@@ -1234,8 +1234,8 @@ public:
 			if (IsWaypointClass(cls)) continue;
 			for (const auto *spec : cls.Specs()) {
 				if (spec == nullptr) continue;
-				if (roadstoptype == ROADSTOP_TRUCK && spec->stop_type != ROADSTOPTYPE_FREIGHT && spec->stop_type != ROADSTOPTYPE_ALL) continue;
-				if (roadstoptype == ROADSTOP_BUS && spec->stop_type != ROADSTOPTYPE_PASSENGER && spec->stop_type != ROADSTOPTYPE_ALL) continue;
+				if (roadstoptype == RoadStopType::Truck && spec->stop_type != ROADSTOPTYPE_FREIGHT && spec->stop_type != ROADSTOPTYPE_ALL) continue;
+				if (roadstoptype == RoadStopType::Bus && spec->stop_type != ROADSTOPTYPE_PASSENGER && spec->stop_type != ROADSTOPTYPE_ALL) continue;
 				return true;
 			}
 		}
@@ -1268,25 +1268,25 @@ public:
 	StringID GetTypeName(int cls_id, int id) const override
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
-		if (!IsRoadStopEverAvailable(spec, roadstoptype == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK)) return INVALID_STRING_ID;
+		if (!IsRoadStopEverAvailable(spec, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck)) return INVALID_STRING_ID;
 		return (spec == nullptr) ? STR_STATION_CLASS_DFLT_ROADSTOP : spec->name;
 	}
 
 	bool IsTypeAvailable(int cls_id, int id) const override
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
-		return IsRoadStopAvailable(spec, roadstoptype == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK);
+		return IsRoadStopAvailable(spec, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck);
 	}
 
 	void DrawType(int x, int y, int cls_id, int id) const override
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
 		if (spec == nullptr) {
-			StationPickerDrawSprite(x, y, roadstoptype == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui.orientation);
+			StationPickerDrawSprite(x, y, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui.orientation);
 		} else {
 			DiagDirection orientation = _roadstop_gui.orientation;
 			if (orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) orientation = DIAGDIR_END;
-			DrawRoadStopTile(x, y, _cur_roadtype, spec, roadstoptype == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK, (uint8_t)orientation);
+			DrawRoadStopTile(x, y, _cur_roadtype, spec, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck, (uint8_t)orientation);
 		}
 	}
 
@@ -1294,31 +1294,31 @@ public:
 	{
 		for (const Station *st : Station::Iterate()) {
 			if (st->owner != _local_company) continue;
-			if (roadstoptype == ROADSTOP_TRUCK && !(st->facilities & FACIL_TRUCK_STOP)) continue;
-			if (roadstoptype == ROADSTOP_BUS && !(st->facilities & FACIL_BUS_STOP)) continue;
+			if (roadstoptype == RoadStopType::Truck && !(st->facilities & FACIL_TRUCK_STOP)) continue;
+			if (roadstoptype == RoadStopType::Bus && !(st->facilities & FACIL_BUS_STOP)) continue;
 			items.insert({0, 0, ROADSTOP_CLASS_DFLT, 0}); // We would need to scan the map to find out if default is used.
 			for (const auto &sm : st->roadstop_speclist) {
 				if (sm.spec == nullptr) continue;
-				if (roadstoptype == ROADSTOP_TRUCK && sm.spec->stop_type != ROADSTOPTYPE_FREIGHT && sm.spec->stop_type != ROADSTOPTYPE_ALL) continue;
-				if (roadstoptype == ROADSTOP_BUS && sm.spec->stop_type != ROADSTOPTYPE_PASSENGER && sm.spec->stop_type != ROADSTOPTYPE_ALL) continue;
+				if (roadstoptype == RoadStopType::Truck && sm.spec->stop_type != ROADSTOPTYPE_FREIGHT && sm.spec->stop_type != ROADSTOPTYPE_ALL) continue;
+				if (roadstoptype == RoadStopType::Bus && sm.spec->stop_type != ROADSTOPTYPE_PASSENGER && sm.spec->stop_type != ROADSTOPTYPE_ALL) continue;
 				items.insert({sm.grfid, sm.localidx, sm.spec->class_index, sm.spec->index});
 			}
 		}
 	}
 };
 
-template <> StringID RoadStopPickerCallbacks<ROADSTOP_BUS>::GetClassTooltip() const { return STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP; }
-template <> StringID RoadStopPickerCallbacks<ROADSTOP_BUS>::GetTypeTooltip() const { return STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP; }
+template <> StringID RoadStopPickerCallbacks<RoadStopType::Bus>::GetClassTooltip() const { return STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP; }
+template <> StringID RoadStopPickerCallbacks<RoadStopType::Bus>::GetTypeTooltip() const { return STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP; }
 
-template <> StringID RoadStopPickerCallbacks<ROADSTOP_TRUCK>::GetClassTooltip() const { return STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP; }
-template <> StringID RoadStopPickerCallbacks<ROADSTOP_TRUCK>::GetTypeTooltip() const { return STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP; }
+template <> StringID RoadStopPickerCallbacks<RoadStopType::Truck>::GetClassTooltip() const { return STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP; }
+template <> StringID RoadStopPickerCallbacks<RoadStopType::Truck>::GetTypeTooltip() const { return STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP; }
 
-static RoadStopPickerCallbacks<ROADSTOP_BUS> _bus_callback_instance("fav_passenger_roadstops");
-static RoadStopPickerCallbacks<ROADSTOP_TRUCK> _truck_callback_instance("fav_freight_roadstops");
+static RoadStopPickerCallbacks<RoadStopType::Bus> _bus_callback_instance("fav_passenger_roadstops");
+static RoadStopPickerCallbacks<RoadStopType::Truck> _truck_callback_instance("fav_freight_roadstops");
 
 static PickerCallbacks &GetRoadStopPickerCallbacks(RoadStopType rs)
 {
-	return rs == ROADSTOP_BUS ? static_cast<PickerCallbacks &>(_bus_callback_instance) : static_cast<PickerCallbacks &>(_truck_callback_instance);
+	return rs == RoadStopType::Bus ? static_cast<PickerCallbacks &>(_bus_callback_instance) : static_cast<PickerCallbacks &>(_truck_callback_instance);
 }
 
 struct BuildRoadStationWindow : public PickerWindow {
@@ -1359,16 +1359,16 @@ public:
 		this->ConstructWindow();
 
 		const RoadTypeInfo *rti = GetRoadTypeInfo(_cur_roadtype);
-		this->GetWidget<NWidgetCore>(WID_BROS_CAPTION)->SetString(rti->strings.picker_title[rs]);
+		this->GetWidget<NWidgetCore>(WID_BROS_CAPTION)->SetString(rti->strings.picker_title[to_underlying(rs)]);
 
 		for (WidgetID i = RoadTypeIsTram(_cur_roadtype) ? WID_BROS_STATION_X : WID_BROS_STATION_NE; i < WID_BROS_LT_OFF; i++) {
-			this->GetWidget<NWidgetCore>(i)->SetToolTip(rti->strings.picker_tooltip[rs]);
+			this->GetWidget<NWidgetCore>(i)->SetToolTip(rti->strings.picker_tooltip[to_underlying(rs)]);
 		}
 
 		this->LowerWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
 		this->LowerWidget(WID_BROS_LT_OFF + _settings_client.gui.station_show_coverage);
 
-		this->ChangeWindowClass((rs == ROADSTOP_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION);
+		this->ChangeWindowClass((rs == RoadStopType::Bus) ? WC_BUS_STATION : WC_TRUCK_STATION);
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -1444,8 +1444,8 @@ public:
 	StationType GetRoadStationTypeByWindowClass(WindowClass window_class) const
 	{
 		switch (window_class) {
-			case WC_BUS_STATION:          return STATION_BUS;
-			case WC_TRUCK_STATION:        return STATION_TRUCK;
+			case WC_BUS_STATION:          return StationType::Bus;
+			case WC_TRUCK_STATION:        return StationType::Truck;
 			default: NOT_REACHED();
 		}
 	}
@@ -1690,16 +1690,16 @@ public:
 
 	bool IsTypeAvailable(int cls_id, int id) const override
 	{
-		return IsRoadStopAvailable(this->GetSpec(cls_id, id), STATION_ROADWAYPOINT);
+		return IsRoadStopAvailable(this->GetSpec(cls_id, id), StationType::RoadWaypoint);
 	}
 
 	void DrawType(int x, int y, int cls_id, int id) const override
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
 		if (spec == nullptr) {
-			StationPickerDrawSprite(x, y, STATION_ROADWAYPOINT, INVALID_RAILTYPE, _cur_roadtype, RSV_DRIVE_THROUGH_X);
+			StationPickerDrawSprite(x, y, StationType::RoadWaypoint, INVALID_RAILTYPE, _cur_roadtype, RSV_DRIVE_THROUGH_X);
 		} else {
-			DrawRoadStopTile(x, y, _cur_roadtype, spec, STATION_ROADWAYPOINT, RSV_DRIVE_THROUGH_X);
+			DrawRoadStopTile(x, y, _cur_roadtype, spec, StationType::RoadWaypoint, RSV_DRIVE_THROUGH_X);
 		}
 	}
 
@@ -1974,11 +1974,11 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 	RoadStopClassID class_index;
 	uint16_t spec_index;
 	if (spec != nullptr) {
-		if (IsWaypointClass(*RoadStopClass::Get(spec->class_index)) != (station_type == STATION_ROADWAYPOINT)) return;
+		if (IsWaypointClass(*RoadStopClass::Get(spec->class_index)) != (station_type == StationType::RoadWaypoint)) return;
 		class_index = spec->class_index;
 		spec_index = spec->index;
 	} else {
-		class_index = (station_type == STATION_ROADWAYPOINT) ? ROADSTOP_CLASS_WAYP : ROADSTOP_CLASS_DFLT;
+		class_index = (station_type == StationType::RoadWaypoint) ? ROADSTOP_CLASS_WAYP : ROADSTOP_CLASS_DFLT;
 		spec_index = 0;
 	}
 
@@ -1991,15 +1991,15 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 		}
 	};
 
-	if (station_type == STATION_ROADWAYPOINT) {
+	if (station_type == StationType::RoadWaypoint) {
 		trigger_widget(WID_ROT_BUILD_WAYPOINT);
 
 		BuildRoadWaypointWindow *waypoint_window = dynamic_cast<BuildRoadWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD));
 		if (waypoint_window != nullptr) waypoint_window->PickItem(class_index, spec_index);
 	} else {
-		trigger_widget((station_type == STATION_BUS) ? WID_ROT_BUS_STATION : WID_ROT_TRUCK_STATION);
+		trigger_widget((station_type == StationType::Bus) ? WID_ROT_BUS_STATION : WID_ROT_TRUCK_STATION);
 
-		BuildRoadStationWindow *roadstop_window = dynamic_cast<BuildRoadStationWindow *>(FindWindowById((station_type == STATION_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION, TRANSPORT_ROAD));
+		BuildRoadStationWindow *roadstop_window = dynamic_cast<BuildRoadStationWindow *>(FindWindowById((station_type == StationType::Bus) ? WC_BUS_STATION : WC_TRUCK_STATION, TRANSPORT_ROAD));
 		if (roadstop_window != nullptr) roadstop_window->PickItem(class_index, spec_index);
 	}
 }

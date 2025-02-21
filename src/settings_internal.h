@@ -398,6 +398,8 @@ const SettingDesc *GetSettingFromName(std::string_view name);
 bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame = false);
 bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);
 
+std::vector<const SettingDesc *> GetFilteredSettingCollection(std::function<bool(const SettingDesc &desc)> func);
+
 void IterateSettingsTables(std::function<void(const SettingTable &, void *)> handler);
 std::initializer_list<SettingTable> GetSaveLoadSettingsTables();
 const SettingTable &GetLinkGraphSettingTable();

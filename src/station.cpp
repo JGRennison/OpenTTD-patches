@@ -222,7 +222,7 @@ void BaseStation::RemoveRoadStopTileData(TileIndex tile)
  */
 RoadStop *Station::GetPrimaryRoadStop(const RoadVehicle *v) const
 {
-	RoadStop *rs = this->GetPrimaryRoadStop(v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK);
+	RoadStop *rs = this->GetPrimaryRoadStop(v->IsBus() ? RoadStopType::Bus : RoadStopType::Truck);
 
 	for (; rs != nullptr; rs = rs->next) {
 		/* The vehicle cannot go to this roadstop (different roadtype) */
@@ -330,24 +330,30 @@ static uint GetTileCatchmentRadius(TileIndex tile, const Station *st)
 
 	if (_settings_game.station.modified_catchment) {
 		switch (GetStationType(tile)) {
-			case STATION_RAIL:    return CA_TRAIN + inc;
-			case STATION_OILRIG:  return CA_UNMODIFIED + inc;
-			case STATION_AIRPORT: return st->airport.GetSpec()->catchment + inc;
-			case STATION_TRUCK:   return CA_TRUCK + inc;
-			case STATION_BUS:     return CA_BUS + inc;
-			case STATION_DOCK:    return CA_DOCK + inc;
+			case StationType::Rail:    return CA_TRAIN + inc;
+			case StationType::Oilrig:  return CA_UNMODIFIED + inc;
+			case StationType::Airport: return st->airport.GetSpec()->catchment + inc;
+			case StationType::Truck:   return CA_TRUCK + inc;
+			case StationType::Bus:     return CA_BUS + inc;
+			case StationType::Dock:    return CA_DOCK + inc;
 
-			default: NOT_REACHED();
-			case STATION_BUOY:
-			case STATION_WAYPOINT:
-			case STATION_ROADWAYPOINT: return CA_NONE;
+			default:
+				NOT_REACHED();
+
+			case StationType::Buoy:
+			case StationType::RailWaypoint:
+			case StationType::RoadWaypoint:
+				return CA_NONE;
 		}
 	} else {
 		switch (GetStationType(tile)) {
-			default:               return CA_UNMODIFIED + inc;
-			case STATION_BUOY:
-			case STATION_WAYPOINT:
-			case STATION_ROADWAYPOINT: return CA_NONE;
+			default:
+				return CA_UNMODIFIED + inc;
+
+			case StationType::Buoy:
+			case StationType::RailWaypoint:
+			case StationType::RoadWaypoint:
+				return CA_NONE;
 		}
 	}
 }

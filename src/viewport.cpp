@@ -2117,6 +2117,7 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 			case ViewportSignKdtreeItem::VKI_STATION: {
 				if (!show_stations) break;
 				const BaseStation *st = BaseStation::Get(item.id.station);
+				if ((_facility_display_opt & st->facilities) == 0) break;
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
@@ -3364,7 +3365,7 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 	if (t != MP_STATION) {
 		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 	} else {
-		if (GetStationType(tile) == STATION_RAIL) colour = colour_index & 1 ? colour : PC_BLACK;
+		if (GetStationType(tile) == StationType::Rail) colour = colour_index & 1 ? colour : PC_BLACK;
 	}
 	if (is_32bpp) return COL8TO32(colour);
 	return colour;
@@ -3425,12 +3426,12 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 
 		case MP_STATION:
 			switch (GetStationType(tile)) {
-				case STATION_RAIL:    return IS32(PC_VERY_DARK_BROWN);
-				case STATION_AIRPORT: return IS32(PC_RED);
-				case STATION_TRUCK:   return IS32(PC_ORANGE);
-				case STATION_BUS:     return IS32(PC_YELLOW);
-				case STATION_DOCK:    return IS32(PC_LIGHT_BLUE);
-				default:              return IS32(0xFF);
+				case StationType::Rail:    return IS32(PC_VERY_DARK_BROWN);
+				case StationType::Airport: return IS32(PC_RED);
+				case StationType::Truck:   return IS32(PC_ORANGE);
+				case StationType::Bus:     return IS32(PC_YELLOW);
+				case StationType::Dock:    return IS32(PC_LIGHT_BLUE);
+				default:                   return IS32(0xFF);
 			}
 
 		case MP_RAILWAY: {

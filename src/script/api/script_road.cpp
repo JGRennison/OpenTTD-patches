@@ -682,7 +682,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	EnforcePrecondition(false, IsTileType(tile, MP_STATION));
 	EnforcePrecondition(false, IsStationRoadStop(tile));
 
-	return ScriptObject::DoCommand(tile, 1 | 1 << 8, GetRoadStopType(tile), CMD_REMOVE_ROAD_STOP);
+	return ScriptObject::DoCommand(tile, 1 | 1 << 8, to_underlying(GetRoadStopType(tile)), CMD_REMOVE_ROAD_STOP);
 }
 
 /* static */ Money ScriptRoad::GetBuildCost(RoadType roadtype, BuildType build_type)

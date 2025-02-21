@@ -3183,6 +3183,7 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
 	}
 
 	SetWindowClassesDirty(WC_GAME_OPTIONS);
+	if (HasFlag(this->flags, SF_SANDBOX)) SetWindowClassesDirty(WC_CHEATS);
 
 	if (_save_config) SaveToConfig(ini_save_flags);
 }
@@ -3263,6 +3264,26 @@ SaveToConfigFlags ConfigSaveFlagsUsingGameSettingsFor(const SettingDesc *sd)
 	SaveToConfigFlags flags = ConfigSaveFlagsFor(sd);
 	if (_game_mode != GM_MENU && !sd->save.global) flags &= ~STCF_GENERIC;
 	return flags;
+}
+
+/**
+ * Get a collection of settings matching a custom filter.
+ * @param func Function to filter each setting.
+ * @returns Vector containing the list of collections.
+ */
+std::vector<const SettingDesc *> GetFilteredSettingCollection(std::function<bool(const SettingDesc &desc)> func)
+{
+	std::vector<const SettingDesc *> collection;
+
+	IterateSettingsTables([&](const SettingTable &table, void *object) {
+		for (const auto &sd : table) {
+			if (!func(*sd)) continue;
+
+			collection.push_back(sd.get());
+		}
+	});
+
+	return collection;
 }
 
 /**

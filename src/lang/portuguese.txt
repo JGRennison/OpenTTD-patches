@@ -444,7 +444,6 @@ STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Gerar localidad
 STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Colocar casas
 
 # Settings menu
-###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opções do Jogo
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Definições
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Definições de IA
@@ -454,6 +453,11 @@ STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Opções da "sa
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opções de Transparência
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Mostrar nomes de localidades
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Mostrar nomes de estações
+STR_SETTINGS_MENU_STATION_NAMES_TRAIN                           :Estações de comboio
+STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Paragens de camião
+STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Paragens de autocarro
+STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Docas
+STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Aeroportos
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Mostrar nomes dos pontos de controlo
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Mostrar sinais
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Mostrar sinais e nomes dos oponentes
@@ -1317,7 +1321,7 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Configurar o n�
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessões: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se ativo, podem ocorrer recessões periodicamente. Durante uma recessão a produção em geral é mais baixa (e regressa aos níveis anteriores quando termina a recessão)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Desabilitar inversão de combóios nas estações: {STRING}
+STR_CONFIG_SETTING_TRAIN_REVERSING                              :Desabilitar inversão de comboios nas estações: {STRING}
 STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Quando ativo, os comboios não podem inverter marcha em estações não-terminais, mesmo se existir um caminho mais curto para o próximo destino ao inverter
 
 STR_CONFIG_SETTING_DISASTERS                                    :Desastres: {STRING}

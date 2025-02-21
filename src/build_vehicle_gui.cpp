@@ -2259,7 +2259,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BV_FILTER) {
-			this->string_filter.SetFilterTerm(this->vehicle_editbox.text.buf);
+			this->string_filter.SetFilterTerm(this->vehicle_editbox.text.GetText());
 			this->InvalidateData();
 		}
 	}
@@ -3228,12 +3228,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BV_FILTER_LOCO) {
-			this->loco.string_filter.SetFilterTerm(this->loco.vehicle_editbox.text.buf);
+			this->loco.string_filter.SetFilterTerm(this->loco.vehicle_editbox.text.GetText());
 			this->loco.eng_list.ForceRebuild();
 			this->SetDirty();
 		}
 		if (wid == WID_BV_FILTER_WAGON) {
-			this->wagon.string_filter.SetFilterTerm(this->wagon.vehicle_editbox.text.buf);
+			this->wagon.string_filter.SetFilterTerm(this->wagon.vehicle_editbox.text.GetText());
 			this->wagon.eng_list.ForceRebuild();
 			this->SetDirty();
 		}

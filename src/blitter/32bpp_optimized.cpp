@@ -340,18 +340,18 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		n_size += size * 2 + src_orig->height * 4 * 2;
 	}
 
-	Colour * const px_buffer = MallocT<Colour>(px_size);
-	uint16_t * const n_buffer = MallocT<uint16_t>(n_size);
-	Colour *px_buffer_next = px_buffer;
-	uint16_t *n_buffer_next = n_buffer;
+	const auto px_buffer = std::make_unique<Colour[]>(px_size);
+	const auto n_buffer = std::make_unique<uint16_t[]>(n_size);
+	Colour *px_buffer_next = px_buffer.get();
+	uint16_t *n_buffer_next = n_buffer.get();
 
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_orig = &sprite[z];
 
 		dst_px_orig[z] = px_buffer_next;
 		dst_n_orig[z] = n_buffer_next;
-		uint32_t *dst_px_ln = (uint32_t *)px_buffer_next;
-		uint32_t *dst_n_ln  = (uint32_t *)n_buffer_next;
+		uint32_t *dst_px_ln = reinterpret_cast<uint32_t *>(px_buffer_next);
+		uint32_t *dst_n_ln  = reinterpret_cast<uint32_t *>(n_buffer_next);
 
 		const SpriteLoader::CommonPixel *src = (const SpriteLoader::CommonPixel *)src_orig->data;
 
@@ -459,11 +459,11 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 			dst_n_ln =  (uint32_t *)dst_n;
 		}
 
-		lengths[z][0] = (uint8_t *)dst_px_ln - (uint8_t *)dst_px_orig[z]; // all are aligned to 4B boundary
-		lengths[z][1] = (uint8_t *)dst_n_ln  - (uint8_t *)dst_n_orig[z];
+		lengths[z][0] = reinterpret_cast<uint8_t *>(dst_px_ln) - reinterpret_cast<uint8_t *>(dst_px_orig[z]); // all are aligned to 4B boundary
+		lengths[z][1] = reinterpret_cast<uint8_t *>(dst_n_ln)  - reinterpret_cast<uint8_t *>(dst_n_orig[z]);
 
-		px_buffer_next = (Colour *)dst_px_ln;
-		n_buffer_next = (uint16_t *)dst_n_ln;
+		px_buffer_next = reinterpret_cast<Colour *>(dst_px_ln);
+		n_buffer_next = reinterpret_cast<uint16_t *>(dst_n_ln);
 	}
 
 	uint len = 0; // total length of data
@@ -500,9 +500,6 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		if (lengths[z][0] != 0) memcpy(dst->data + dst->offset[z][0], dst_px_orig[z], lengths[z][0]);
 		if (lengths[z][1] != 0) memcpy(dst->data + dst->offset[z][1], dst_n_orig[z],  lengths[z][1]);
 	}
-
-	free(px_buffer);
-	free(n_buffer);
 
 	return dest_sprite;
 }

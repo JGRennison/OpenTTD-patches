@@ -183,12 +183,12 @@ public:
 	template <typename... Args>
 	explicit DropDownIndent(uint indent, Args&&... args) : TBase(std::forward<Args>(args)...), indent(indent) {}
 
-	uint Width() const override { return (WidgetDimensions::scaled.hsep_indent * this->indent) + this->TBase::Width(); }
+	uint Width() const override { return this->indent * WidgetDimensions::scaled.hsep_indent + this->TBase::Width(); }
 
 	void Draw(const Rect &full, const Rect &r, bool sel, Colours bg_colour) const override
 	{
 		bool rtl = TEnd ^ (_current_text_dir == TD_RTL);
-		this->TBase::Draw(full, r.Indent((WidgetDimensions::scaled.hsep_indent * this->indent), rtl), sel, bg_colour);
+		this->TBase::Draw(full, r.Indent(this->indent * WidgetDimensions::scaled.hsep_indent, rtl), sel, bg_colour);
 	}
 };
 
@@ -196,7 +196,7 @@ public:
 using DropDownListDividerItem = DropDownDivider<DropDownListItem>;
 using DropDownListStringItem = DropDownString<DropDownListItem>;
 using DropDownListIconItem = DropDownIcon<DropDownString<DropDownListItem>>;
-using DropDownListCheckedItem = DropDownCheck<DropDownString<DropDownListItem>>;
+using DropDownListCheckedItem = DropDownIndent<DropDownCheck<DropDownString<DropDownListItem>>>;
 using DropDownListIndentStringItem = DropDownIndent<DropDownString<DropDownListItem>>;
 
 #endif /* DROPDOWN_COMMON_TYPE_H */

@@ -636,7 +636,7 @@ public:
 	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_PLN_FILTER) {
-			this->string_filter.SetFilterTerm(this->planname_editbox.text.buf);
+			this->string_filter.SetFilterTerm(this->planname_editbox.text.GetText());
 			this->InvalidateData(INVALID_PLAN);
 		}
 	}

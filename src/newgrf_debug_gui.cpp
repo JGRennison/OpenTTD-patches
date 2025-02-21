@@ -1421,16 +1421,16 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 
 		case MP_STATION:
 			switch (GetStationType(tile)) {
-				case STATION_RAIL:
-				case STATION_WAYPOINT:
+				case StationType::Rail:
+				case StationType::RailWaypoint:
 					return GSF_STATIONS;
 
-				case STATION_AIRPORT:
+				case StationType::Airport:
 					return GSF_AIRPORTTILES;
 
-				case STATION_BUS:
-				case STATION_TRUCK:
-				case STATION_ROADWAYPOINT:
+				case StationType::Bus:
+				case StationType::Truck:
+				case StationType::RoadWaypoint:
 					return GSF_ROADSTOPS;
 
 				default:

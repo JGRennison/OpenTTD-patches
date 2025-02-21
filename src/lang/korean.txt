@@ -444,7 +444,6 @@ STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :도시 생성
 STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :건물 건설
 
 # Settings menu
-###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :게임 기본 설정
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :설정
 STR_SETTINGS_MENU_AI_SETTINGS                                   :인공지능 설정
@@ -454,6 +453,11 @@ STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :치트
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :투명 설정
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :도시 이름을 표시함
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :역 이름을 표시함
+STR_SETTINGS_MENU_STATION_NAMES_TRAIN                           :기차역
+STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :트럭 적하장
+STR_SETTINGS_MENU_STATION_NAMES_BUS                             :버스 정류장
+STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :항구
+STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :공항
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :경유지의 이름을 표시함
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :팻말을 표시함
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :경쟁사의 팻말과 역 이름을 표시
@@ -5098,7 +5102,7 @@ STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... 통�
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}역의 일부를 제거할 수 없습니다...
 STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :{WHITE}철도역을 먼저 제거하세요
 STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :{WHITE}버스 정류장을 제거할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}트럭 터미널을 제거할 수 없습니다...
+STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}트럭 적하장을 제거할 수 없습니다...
 STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :{WHITE}여객 전차역을 제거할 수 없습니다...
 STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :{WHITE}화물 전차역을 제거할 수 없습니다...
 STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}정류장을 먼저 제거하세요

@@ -100,7 +100,7 @@ void MoveBuoysToWaypoints()
 			for (TileIndex t : train_st) {
 				if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != index) continue;
 
-				SB(_me[t].m6, 3, 3, STATION_WAYPOINT);
+				SB(_me[t].m6, 3, 3, to_underlying(StationType::RailWaypoint));
 				wp->rect.BeforeAddTile(t, StationRect::ADD_FORCE);
 			}
 

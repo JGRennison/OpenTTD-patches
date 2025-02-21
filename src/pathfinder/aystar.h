@@ -61,8 +61,6 @@ struct OpenListNode {
 	PathNode path;
 };
 
-bool CheckIgnoreFirstTile(const PathNode *node);
-
 struct AyStar;
 
 /**

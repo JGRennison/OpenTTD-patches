@@ -544,8 +544,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 		for (TileIndex tile = tile_start + delta; tile != tile_end; tile += delta) {
 			if (IsTileType(tile, MP_STATION)) {
 				switch (GetStationType(tile)) {
-					case STATION_RAIL:
-					case STATION_WAYPOINT: {
+					case StationType::Rail:
+					case StationType::RailWaypoint: {
 						CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
@@ -555,9 +555,9 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 						break;
 					}
 
-					case STATION_BUS:
-					case STATION_TRUCK:
-					case STATION_ROADWAYPOINT: {
+					case StationType::Bus:
+					case StationType::Truck:
+					case StationType::RoadWaypoint: {
 						CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), IsDriveThroughStopTile(tile), IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile),
 								tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
@@ -568,12 +568,12 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 						break;
 					}
 
-					case STATION_BUOY:
+					case StationType::Buoy:
 						/* Buoys are always allowed */
 						break;
 
 					default:
-						if (!(GetStationType(tile) == STATION_DOCK && _settings_game.construction.allow_docks_under_bridges)) {
+						if (!(GetStationType(tile) == StationType::Dock && _settings_game.construction.allow_docks_under_bridges)) {
 							CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 							if (ret.Failed()) return ret;
 						}
@@ -666,11 +666,11 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 
 				case MP_STATION: {
 					switch (GetStationType(tile)) {
-						case STATION_AIRPORT:
+						case StationType::Airport:
 							goto not_valid_below;
 
-						case STATION_RAIL:
-						case STATION_WAYPOINT: {
+						case StationType::Rail:
+						case StationType::RailWaypoint: {
 							CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 							if (ret.Failed()) {
 								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
@@ -679,9 +679,9 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 							break;
 						}
 
-						case STATION_BUS:
-						case STATION_TRUCK:
-						case STATION_ROADWAYPOINT: {
+						case StationType::Bus:
+						case StationType::Truck:
+						case StationType::RoadWaypoint: {
 							CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), IsDriveThroughStopTile(tile), IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile),
 									tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 							if (ret.Failed()) {
@@ -691,12 +691,12 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 							break;
 						}
 
-						case STATION_BUOY:
+						case StationType::Buoy:
 							/* Buoys are always allowed */
 							break;
 
 						default:
-							if (!(GetStationType(tile) == STATION_DOCK && _settings_game.construction.allow_docks_under_bridges)) goto not_valid_below;
+							if (!(GetStationType(tile) == StationType::Dock && _settings_game.construction.allow_docks_under_bridges)) goto not_valid_below;
 							break;
 					}
 					break;
@@ -1741,10 +1741,10 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 
 			int z_offset = 0;
 			if (offset == 2 || offset == 5) {        // SLOPE_NE, SLOPE_NW
-				oneway += SPR_ONEWAY_SLOPE_N_OFFSET;
+				oneway += ONEWAY_SLOPE_N_OFFSET;
 				z_offset = TILE_HEIGHT / 2;
 			} else if (offset == 3 || offset == 4) { // SLOPE_SE, SLOPE_SW
-				oneway += SPR_ONEWAY_SLOPE_S_OFFSET;
+				oneway += ONEWAY_SLOPE_S_OFFSET;
 				z_offset = TILE_HEIGHT / 2;
 			}
 			static constexpr uint8_t is_x_axis = 0x16;

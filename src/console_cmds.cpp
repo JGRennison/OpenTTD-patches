@@ -2796,7 +2796,7 @@ DEF_CONSOLE_CMD(ConUnblockBayRoadStops)
 	}
 
 	for (Station *st : Station::Iterate()) {
-		for (RoadStopType rs_type : { ROADSTOP_BUS, ROADSTOP_TRUCK }) {
+		for (RoadStopType rs_type : { RoadStopType::Bus, RoadStopType::Truck }) {
 			for (RoadStop *rs = st->GetPrimaryRoadStop(rs_type); rs != nullptr; rs = rs->next) {
 				if (IsBayRoadStopTile(rs->xy)) {
 					rs->DebugClearOccupancy();

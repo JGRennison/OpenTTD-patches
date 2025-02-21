@@ -396,7 +396,7 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = INVALID_STATION;
 	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
-	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, 5 << axis, true, STATION_ROADWAYPOINT, axis, &est, INVALID_ROADTYPE, true);
+	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, 5 << axis, true, StationType::RoadWaypoint, axis, &est, INVALID_ROADTYPE, true);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
 
@@ -488,7 +488,7 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 			UpdateCompanyRoadInfrastructure(road_rt, road_owner, ROAD_STOP_TRACKBIT_FACTOR);
 			UpdateCompanyRoadInfrastructure(tram_rt, tram_owner, ROAD_STOP_TRACKBIT_FACTOR);
 
-			MakeDriveThroughRoadStop(cur_tile, wp->owner, road_owner, tram_owner, wp->index, STATION_ROADWAYPOINT, road_rt, tram_rt, axis);
+			MakeDriveThroughRoadStop(cur_tile, wp->owner, road_owner, tram_owner, wp->index, StationType::RoadWaypoint, road_rt, tram_rt, axis);
 			SetDriveThroughStopDisallowedRoadDirections(cur_tile, drd);
 			SetCustomRoadStopSpecIndex(cur_tile, map_spec_index);
 			if (spec != nullptr) wp->SetRoadStopRandomBits(cur_tile, 0);

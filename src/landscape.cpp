@@ -391,9 +391,9 @@ void DrawFoundation(TileInfo *ti, Foundation f)
 	if (!HasFoundationNE(ti->tile, slope, z)) sprite_block += 2;
 
 	/* Use the original slope sprites if NW and NE borders should be visible */
-	SpriteID leveled_base = (sprite_block == 0 ? (int)SPR_FOUNDATION_BASE : (SPR_SLOPES_VIRTUAL_BASE + sprite_block * SPR_TRKFOUND_BLOCK_SIZE));
-	SpriteID inclined_base = SPR_SLOPES_VIRTUAL_BASE + SPR_SLOPES_INCLINED_OFFSET + sprite_block * SPR_TRKFOUND_BLOCK_SIZE;
-	SpriteID halftile_base = SPR_HALFTILE_FOUNDATION_BASE + sprite_block * SPR_HALFTILE_BLOCK_SIZE;
+	SpriteID leveled_base = (sprite_block == 0 ? (int)SPR_FOUNDATION_BASE : (SPR_SLOPES_VIRTUAL_BASE + sprite_block * TRKFOUND_BLOCK_SIZE));
+	SpriteID inclined_base = SPR_SLOPES_VIRTUAL_BASE + SLOPES_INCLINED_OFFSET + sprite_block * TRKFOUND_BLOCK_SIZE;
+	SpriteID halftile_base = SPR_HALFTILE_FOUNDATION_BASE + sprite_block * HALFTILE_BLOCK_SIZE;
 
 	if (IsSteepSlope(ti->tileh)) {
 		if (!IsNonContinuousFoundation(f)) {
@@ -896,7 +896,7 @@ static void GenerateTerrain(int type, uint flag)
 				for (uint w_cur = w; w_cur != 0; --w_cur) {
 					if (GB(*p, 0, 4) >= TileHeight(tile_cur)) SetTileHeight(tile_cur, GB(*p, 0, 4));
 					p++;
-					tile_cur++;
+					tile_cur += TileDiffXY(1, 0);
 				}
 				tile += TileDiffXY(0, 1);
 			} while (--h != 0);
@@ -923,7 +923,7 @@ static void GenerateTerrain(int type, uint flag)
 				for (uint w_cur = w; w_cur != 0; --w_cur) {
 					if (GB(*p, 0, 4) >= TileHeight(tile_cur)) SetTileHeight(tile_cur, GB(*p, 0, 4));
 					p++;
-					tile_cur--;
+					tile_cur -= TileDiffXY(1, 0);
 				}
 				tile += TileDiffXY(0, 1);
 			} while (--h != 0);
@@ -1407,13 +1407,6 @@ static void CreateRivers()
  */
 static uint CalculateCoverageLine(uint coverage, uint edge_multiplier)
 {
-	const DiagDirection neighbour_dir[] = {
-		DIAGDIR_NE,
-		DIAGDIR_SE,
-		DIAGDIR_SW,
-		DIAGDIR_NW,
-	};
-
 	/* Histogram of how many tiles per height level exist. */
 	std::array<int, MAX_TILE_HEIGHT + 1> histogram = {};
 	/* Histogram of how many neighbour tiles are lower than the tiles of the height level. */
@@ -1426,7 +1419,7 @@ static uint CalculateCoverageLine(uint coverage, uint edge_multiplier)
 
 		if (edge_multiplier != 0) {
 			/* Check if any of our neighbours is below us. */
-			for (auto dir : neighbour_dir) {
+			for (DiagDirection dir = DIAGDIR_BEGIN; dir != DIAGDIR_END; dir++) {
 				TileIndex neighbour_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(dir));
 				if (IsValidTile(neighbour_tile) && TileHeight(neighbour_tile) < h) {
 					edge_histogram[h]++;

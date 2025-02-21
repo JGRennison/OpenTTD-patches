@@ -33,19 +33,11 @@
 
 #include "safeguards.h"
 
-
-/**
- * Create a new GRFConfig.
- * @param filename Set the filename of this GRFConfig to filename.
- */
-GRFConfig::GRFConfig(const std::string &filename) : filename(filename), num_valid_params(MAX_NUM_PARAMS) {}
-
 /**
  * Create a new GRFConfig that is a deep copy of an existing config.
  * @param config The GRFConfig object to make a copy of.
  */
 GRFConfig::GRFConfig(const GRFConfig &config) :
-	ZeroedMemoryAllocator(),
 	ident(config.ident),
 	original_md5sum(config.original_md5sum),
 	filename(config.filename),
@@ -217,13 +209,13 @@ void GRFConfig::SetValue(const GRFParameterInfo &info, uint32_t value)
  */
 void GRFParameterInfo::Finalize()
 {
-	this->complete_labels = true;
-	for (uint32_t value = this->min_value; value <= this->max_value; value++) {
-		if (this->value_names.count(value) == 0) {
-			this->complete_labels = false;
-			break;
-		}
-	}
+	/* Remove value names outside of the permitted range of values. */
+	auto it = std::remove_if(std::begin(this->value_names), std::end(this->value_names),
+			[this](const ValueName &vn) { return vn.first < this->min_value || vn.first > this->max_value; });
+	this->value_names.erase(it, std::end(this->value_names));
+
+	/* Test if the number of named values matches the full ranges of values. -1 because the range is inclusive. */
+	this->complete_labels = (this->max_value - this->min_value) == std::size(this->value_names) - 1;
 }
 
 /**

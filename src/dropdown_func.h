@@ -27,7 +27,7 @@ std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(StringID str, int v
 std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(const std::string &str, int value, bool masked = false, bool shaded = false);
 std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
 std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim, SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
-std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked = false, bool shaded = false, uint indent = 0);
 std::unique_ptr<DropDownListItem> MakeDropDownListIndentStringItem(uint indent, StringID str, int value, bool masked = false, bool shaded = false);
 
 #endif /* DROPDOWN_FUNC_H */
