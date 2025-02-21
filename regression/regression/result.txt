@@ -9723,7 +9723,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetEventType:        33
       EventName:         CompanyRenamed
       CompanyID:         1
-      CompanyName:       Little Frutford Transport
+      CompanyName:       Beningville Transport
   IsEventWaiting:        false
 
 --Math--
