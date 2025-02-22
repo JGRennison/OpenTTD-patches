@@ -2049,7 +2049,7 @@ static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
  * Add sign strings to a viewport.
  * @param vdd viewport drawer
  * @param dpi Current viewport area.
- * @param towns List of signs to add.
+ * @param signs List of signs to add.
  * @param small Add small versions of strings.
  */
 static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const Sign *> &signs, bool small)
@@ -2073,7 +2073,7 @@ static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
  * Add station strings to a viewport.
  * @param vdd viewport drawer
  * @param dpi Current viewport area.
- * @param towns List of stations to add.
+ * @param stations List of stations to add.
  * @param small Add small versions of strings.
  */
 static void ViewportAddStationStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const BaseStation *> &stations, bool small)
@@ -4409,6 +4409,7 @@ static void ClampSmoothScroll(uint32_t delta_ms, int64_t delta_hi, int64_t delta
 /**
  * Update the next viewport position being displayed.
  * @param w %Window owning the viewport.
+ * @param delta_ms Milliseconds since the last update.
  */
 void UpdateNextViewportPosition(Window *w, uint32_t delta_ms)
 {

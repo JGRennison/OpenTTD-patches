@@ -4834,7 +4834,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint first, uint last, int prop, con
  * @param prop The property to change.
  * @param mapping_entry Variable mapping entry.
  * @param buf The property value.
- * @param rtt Roat/tram type.
+ * @param rtt Road/tram type.
  * @return ChangeInfoResult.
  */
 static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, RoadTramType rtt)
