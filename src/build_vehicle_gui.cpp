@@ -1652,11 +1652,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 	}
 
-	void BuildBadgeClasses()
-	{
-		this->badge_classes = GUIBadgeClasses(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
-	}
-
 	BuildVehicleWindow(WindowDesc &desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, type, virtual_train_out), vehicle_editbox(MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS)
 	{
 		this->sel_engine = INVALID_ENGINE;
@@ -1664,8 +1659,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->sort_criteria         = _engine_sort_last_criteria[type];
 		this->descending_sort_order = _engine_sort_last_order[type];
 		this->show_hidden_engines   = _engine_sort_show_hidden_engines[type];
-
-		this->BuildBadgeClasses();
 
 		this->UpdateFilterByTile();
 
@@ -1770,6 +1763,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 	void OnInit() override
 	{
+		this->badge_classes = GUIBadgeClasses(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
 		this->SetCargoFilterArray();
 		this->vscroll->SetCount(this->eng_list.size());
 	}
@@ -2524,8 +2518,6 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->railtype = (tile == INVALID_TILE) ? RAILTYPE_END : GetRailType(tile);
 
-		this->badge_classes = GUIBadgeClasses(static_cast<GrfSpecFeature>(GSF_TRAINS));
-
 		this->UpdateFilterByTile();
 
 		this->CreateNestedTree();
@@ -2664,6 +2656,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void OnInit() override
 	{
+		this->badge_classes = GUIBadgeClasses(GSF_TRAINS);
+
 		this->SetCargoFilterArray(this->loco, _last_filter_criteria_loco);
 		this->SetCargoFilterArray(this->wagon, _last_filter_criteria_wagon);
 
