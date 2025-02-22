@@ -1896,7 +1896,6 @@ STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}……�
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}船塢太多了
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}……不適合的號誌類型
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……號誌已配置尋路限制邏輯
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}可編程邏輯號誌評估次數超過限制
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}橋樑相對車站太低
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}橋柱阻礙車站

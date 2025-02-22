@@ -1879,7 +1879,6 @@ STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... в �
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Слишком много доков
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... неподходящий тип сигнала
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... сигнал прикреплён программу ограничения маршрутизации
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Превышен предел количество программируемых пресигналов
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Мост слишком низкий для станции
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Опоры моста загораживают станцию

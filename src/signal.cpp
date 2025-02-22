@@ -913,6 +913,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
 			/* too many cascades */
 			newstate = SIGNAL_STATE_RED;
+			Debug(misc, 0, "Number of programmable pre-signal evaluations exceeded limit at tile: {} x {}", TileX(tile), TileY(tile));
 		} else {
 			/* is it a bidir combo? - then do not count its other signal direction as exit */
 			if (IsComboSignal(sig) && HasSignalOnTrackdir(tile, ReverseTrackdir(trackdir))) {
@@ -925,18 +926,21 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				if (sig == SIGTYPE_PROG) { /* Programmable */
 					_num_signals_evaluated++;
 
-					if (!RunSignalProgram(SignalReference(tile, track), exits, green))
+					if (!RunSignalProgram(SignalReference(tile, track), exits, green)) {
 						newstate = SIGNAL_STATE_RED;
+					}
 				} else { /* traditional combo */
-					if (!green && exits)
+					if (!green && exits) {
 						newstate = SIGNAL_STATE_RED;
+					}
 				}
 			} else { // entry, at least one exit, no green exit
 				if (IsEntrySignal(sig)) {
 					if (sig == SIGTYPE_PROG) {
 						_num_signals_evaluated++;
-						if (!RunSignalProgram(SignalReference(tile, track), info.num_exits, info.num_green))
+						if (!RunSignalProgram(SignalReference(tile, track), info.num_exits, info.num_green)) {
 							newstate = SIGNAL_STATE_RED;
+						}
 					} else { /* traditional combo */
 						if (!info.num_green && info.num_exits) newstate = SIGNAL_STATE_RED;
 					}
@@ -1124,10 +1128,6 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		if (info.flags & SF_FULL) {
 			ResetSets(); // free all sets
 			break;
-		}
-
-		if (_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
-			ShowErrorMessage(STR_ERROR_SIGNAL_CHANGES, STR_EMPTY, WL_INFO);
 		}
 
 		UpdateSignalsAroundSegment(info);

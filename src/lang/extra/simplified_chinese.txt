@@ -1909,7 +1909,6 @@ STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}……�
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}船坞太多了
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}……不适合的信号类型
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……信号已配置寻路限制程序
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}可编程逻辑信号评估次数超过限制
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}桥梁相对车站太低
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}桥柱与车站冲突

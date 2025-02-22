@@ -1490,7 +1490,6 @@ STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... Geb�
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... nur ein Geb채ude dieses Typs ist in einer Stadt erlaubt
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Zu viele Docks
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... ungeeignete Signalart
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Anzahl der Auswertungen von programmierbaren Signalen 체bersteigt das Limit
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Die Br체cke ist zu niedrig f체r die Haltestelle
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Die Br체ckenpfeiler behindern die Haltestelle

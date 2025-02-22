@@ -1974,7 +1974,6 @@ STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... only
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Too many docks
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... unsuitable signal type
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... signal has attached routing restriction program
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Number of programmable pre-signal evaluations exceeded limit
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bridge is too low for station
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Bridge pillars obstruct station
