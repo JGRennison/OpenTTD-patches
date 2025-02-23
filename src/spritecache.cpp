@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <optional>
 
 #include "safeguards.h"
 
@@ -1063,16 +1064,14 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	SpriteLoader::SpriteCollection sprites;
 	sprites[ZOOM_LVL_MIN].type = SpriteType::Normal;
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
-	uint8_t sprite_avail;
 	const uint8_t screen_depth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	auto zoom_mask = [&](bool is32bpp) -> uint8_t {
 		return 1 << FindFirstBit(GB(sc->flags, is32bpp ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START, 6));
 	};
 
-	/* Try to read the 32bpp sprite first. */
-	if (screen_depth == 32 && sc->GetHasNonPalette()) {
-		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, true, sc->count, sc->flags, zoom_mask(true)).loaded_sprites;
+	auto check_32bpp = [&]() -> std::optional<uint32_t> {
+		uint8_t sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, true, sc->count, sc->flags, zoom_mask(true)).loaded_sprites;
 		if (sprite_avail != 0) {
 			SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 			/* Return the average colour. */
@@ -1110,10 +1109,17 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 			}
 			return cnt ? Colour(r / cnt, g / cnt, b / cnt).data : 0;
 		}
+		return std::nullopt;
+	};
+
+	/* 32bpp screen: Try to read the 32bpp sprite first. */
+	if (screen_depth == 32 && sc->GetHasNonPalette()) {
+		auto result = check_32bpp();
+		if (result.has_value()) return *result;
 	}
 
 	/* No 32bpp, try 8bpp. */
-	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, false, sc->count, sc->flags, zoom_mask(false)).loaded_sprites;
+	uint8_t sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, SpriteType::Normal, false, sc->count, sc->flags, zoom_mask(false)).loaded_sprites;
 	if (sprite_avail != 0) {
 		SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 		SpriteLoader::CommonPixel *pixel = sprite->data;
@@ -1143,6 +1149,12 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 			}
 			return std::max_element(counts.begin(), counts.end()) - counts.begin();
 		}
+	}
+
+	/* 8bpp screen: As a fallback, try to read the 32bpp sprite, and then convert the average colour to an 8bpp index. */
+	if (screen_depth != 32 && sc->GetHasNonPalette()) {
+		auto result = check_32bpp();
+		if (result.has_value()) return GetNearestColourIndex(Colour(*result));
 	}
 
 	return 0;
