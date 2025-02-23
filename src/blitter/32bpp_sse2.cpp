@@ -94,14 +94,14 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::SpriteCollection &spri
 						uint8_t rgb_max = std::max({ src->r, src->g, src->b });
 
 						/* Black pixel (8bpp or old 32bpp image), so use default value */
-						if (rgb_max == 0) rgb_max = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+						if (rgb_max == 0) rgb_max = DEFAULT_BRIGHTNESS;
 
 						extern Colour _water_palette[10];
 						Colour c = AdjustBrightneSSE(_water_palette[src->m - 245], rgb_max);
 						dst_rgba->r = c.r;
 						dst_rgba->g = c.g;
 						dst_rgba->b = c.b;
-						dst_mv->v = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+						dst_mv->v = DEFAULT_BRIGHTNESS;
 					} else if (src->m != 0) {
 						/* Do some accounting for flags. */
 						has_remap = true;
@@ -109,7 +109,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::SpriteCollection &spri
 
 						/* Get brightest value (or default brightness if it's a black pixel). */
 						const uint8_t rgb_max = std::max({src->r, src->g, src->b});
-						dst_mv->v = (rgb_max == 0) ? Blitter_32bppBase::DEFAULT_BRIGHTNESS : rgb_max;
+						dst_mv->v = (rgb_max == 0) ? DEFAULT_BRIGHTNESS : rgb_max;
 
 						/* Pre-convert the mapping channel to a RGB value. */
 						const Colour colour = AdjustBrightneSSE(Blitter_32bppBase::LookupColourInPalette(src->m), dst_mv->v);
@@ -120,7 +120,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::SpriteCollection &spri
 						dst_rgba->r = src->r;
 						dst_rgba->g = src->g;
 						dst_rgba->b = src->b;
-						dst_mv->v = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+						dst_mv->v = DEFAULT_BRIGHTNESS;
 					}
 				} else {
 					dst_rgba->data = 0;

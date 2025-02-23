@@ -319,7 +319,7 @@ void VideoDriver_CocoaOpenGL::Paint()
 		/* Always push a changed palette to OpenGL. */
 		CGLSetCurrentContext(this->gl_context);
 		OpenGLBackend::Get()->UpdatePalette(_cur_palette.palette, _cur_palette.first_dirty, _cur_palette.count_dirty);
-		if (blitter->UsePaletteAnimation() == Blitter::PALETTE_ANIMATION_BLITTER) {
+		if (blitter->UsePaletteAnimation() == Blitter::PaletteAnimation::Blitter) {
 			blitter->PaletteAnimate(_cur_palette);
 		}
 

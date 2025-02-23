@@ -487,7 +487,7 @@ void GfxDetermineMainColours()
 		if (brightness_adjust != 0) {
 			for (uint tg = 0; tg < 5; tg++) {
 				for (uint i = 0; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
-					_vp_map_vegetation_tree_colours[s][tg][i] = Blitter_32bppBase::AdjustBrightness(Colour(_vp_map_vegetation_tree_colours[0][tg][i]), Blitter_32bppBase::DEFAULT_BRIGHTNESS + brightness_adjust).data;
+					_vp_map_vegetation_tree_colours[s][tg][i] = AdjustBrightness(Colour(_vp_map_vegetation_tree_colours[0][tg][i]), DEFAULT_BRIGHTNESS + brightness_adjust).data;
 				}
 			}
 		} else {

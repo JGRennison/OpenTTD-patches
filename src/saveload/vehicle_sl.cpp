@@ -39,8 +39,8 @@ static std::vector<TileIndex> _path_tile;
 namespace upstream_sl {
 
 static uint8_t  _cargo_periods;
-static uint16_t _cargo_source;
-static uint32_t _cargo_source_xy;
+static StationID _cargo_source;
+static TileIndex _cargo_source_xy;
 static uint16_t _cargo_count;
 static uint16_t _cargo_paid_for;
 static Money  _cargo_feeder_share;

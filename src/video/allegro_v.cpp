@@ -100,15 +100,15 @@ void VideoDriver_Allegro::CheckPaletteAnim()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
-			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
+			case Blitter::PaletteAnimation::VideoBackend:
 				UpdatePalette(_cur_palette.first_dirty, _cur_palette.count_dirty);
 				break;
 
-			case Blitter::PALETTE_ANIMATION_BLITTER:
+			case Blitter::PaletteAnimation::Blitter:
 				blitter->PaletteAnimate(_cur_palette);
 				break;
 
-			case Blitter::PALETTE_ANIMATION_NONE:
+			case Blitter::PaletteAnimation::None:
 				break;
 
 			default:

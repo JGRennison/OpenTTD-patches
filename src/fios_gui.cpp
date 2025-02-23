@@ -61,7 +61,7 @@ void LoadCheckData::Clear()
 
 	GamelogFree(this->gamelog_actions);
 
-	ClearGRFConfigList(&this->grfconfig);
+	ClearGRFConfigList(this->grfconfig);
 
 	this->debug_log_data.clear();
 	this->debug_config_data.clear();
@@ -722,7 +722,7 @@ public:
 
 			case WID_SL_NEWGRF_INFO:
 				if (_load_check_data.HasNewGrfs()) {
-					ShowNewGRFSettings(false, false, false, &_load_check_data.grfconfig);
+					ShowNewGRFSettings(false, false, false, _load_check_data.grfconfig);
 				}
 				break;
 

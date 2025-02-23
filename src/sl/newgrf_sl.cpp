@@ -106,13 +106,13 @@ static void Save_NGRF()
 }
 
 
-static void Load_NGRF_common(GRFConfig *&grfconfig)
+static void Load_NGRF_common(GRFConfigList &grfconfig)
 {
 	if (SlXvIsFeaturePresent(XSLFI_TABLE_NEWGRF_SL, 1, 1)) {
 		SlLoadTableWithArrayLengthPrefixesMissing();
 	}
 	SaveLoadTableData sld = SlTableHeaderOrRiff(_grfconfig_desc);
-	ClearGRFConfigList(&grfconfig);
+	ClearGRFConfigList(grfconfig);
 	while (SlIterateArray() != -1) {
 		GRFConfig *c = new GRFConfig();
 		SlObjectLoadFiltered(c, sld);
@@ -124,7 +124,7 @@ static void Load_NGRF_common(GRFConfig *&grfconfig)
 			c->param.assign(std::begin(_grf_param), last);
 		}
 		if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
-		AppendToGRFConfigList(&grfconfig, c);
+		AppendToGRFConfigList(grfconfig, c);
 	}
 	Debug(sl, 2, "Loaded {} NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
 }
@@ -141,7 +141,7 @@ static void Load_NGRF()
 		ResetGRFConfig(false);
 	} else {
 		/* Append static NewGRF configuration */
-		AppendStaticGRFConfigs(&_grfconfig);
+		AppendStaticGRFConfigs(_grfconfig);
 	}
 }
 

@@ -389,16 +389,16 @@ static void ResetSignalHandlers()
  * @param c the GRF to get the 'previous' version of.
  * @return the GRF identifier or \a c if none could be found.
  */
-static const GRFIdentifier *GetOverriddenIdentifier(const GRFConfig *c)
+static const GRFIdentifier &GetOverriddenIdentifier(const GRFConfig *c)
 {
 	const LoggedAction &la = _gamelog_actions.back();
-	if (la.at != GLAT_LOAD) return &c->ident;
+	if (la.at != GLAT_LOAD) return c->ident;
 
 	for (const LoggedChange &lc : la.changes) {
-		if (lc.ct == GLCT_GRFCOMPAT && lc.grfcompat.grfid == c->ident.grfid) return &lc.grfcompat;
+		if (lc.ct == GLCT_GRFCOMPAT && lc.grfcompat.grfid == c->ident.grfid) return lc.grfcompat;
 	}
 
-	return &c->ident;
+	return c->ident;
 }
 
 /** Was the saveload crash because of missing NewGRFs? */
@@ -451,9 +451,9 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 
 		for (const GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 			if (HasBit(c->flags, GCF_COMPATIBLE)) {
-				const GRFIdentifier *replaced = GetOverriddenIdentifier(c);
+				const GRFIdentifier &replaced = GetOverriddenIdentifier(c);
 				buffer.format("NewGRF {:08X} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
-						BSWAP32(c->ident.grfid), c->original_md5sum, c->filename, replaced->md5sum);
+						BSWAP32(c->ident.grfid), c->original_md5sum, c->filename, replaced.md5sum);
 			}
 			if (c->status == GCS_NOT_FOUND) {
 				buffer.format("NewGRF {:08X} ({}) not found; checksum {}.\n", BSWAP32(c->ident.grfid), c->filename, c->ident.md5sum);
@@ -844,7 +844,7 @@ bool AfterLoadGame()
 		if (c->status == GCS_NOT_FOUND) {
 			GamelogGRFRemove(c->ident.grfid);
 		} else if (HasBit(c->flags, GCF_COMPATIBLE)) {
-			GamelogGRFCompatible(&c->ident);
+			GamelogGRFCompatible(c->ident);
 		}
 	}
 

@@ -65,6 +65,9 @@ const uint PALETTE_BITS_OR = (1U << (PALETTE_SHIFT - 1));
 using PaletteLookup = std::array<uint8_t, 1U << (PALETTE_BITS * 3)>;
 static PaletteLookup _palette_lookup{};
 
+using ReshadeLookup = std::array<uint8_t, 1U << PALETTE_BITS>;
+static ReshadeLookup _reshade_lookup{};
+
 /**
  * Reduce bits per channel to PALETTE_BITS, and place value in the middle of the reduced range.
  * This is to counteract the information lost between bright and dark pixels, e.g if PALETTE_BITS was 2:
@@ -138,6 +141,27 @@ static uint8_t FindNearestColourIndex(uint8_t r, uint8_t g, uint8_t b)
 }
 
 /**
+ * Find nearest company colour palette index for a brightness level.
+ * @param pixel Pixel to find.
+ * @returns palette index of nearest colour.
+ */
+static uint8_t FindNearestColourReshadeIndex(uint8_t b)
+{
+	b = CrunchColour(b);
+
+	uint best_index = 0;
+	uint best_distance = UINT32_MAX;
+
+	for (uint i = PALETTE_INDEX_CC_START; i < PALETTE_INDEX_CC_END; i++) {
+		if (uint distance = CalculateColourDistance(_palette.palette[i], b, b, b); distance < best_distance) {
+			best_index = i;
+			best_distance = distance;
+		}
+	}
+	return best_index;
+}
+
+/**
  * Get nearest colour palette index from an RGB colour.
  * A search is performed if this colour is not already in the lookup table.
  * @param r Red component.
@@ -150,6 +174,55 @@ uint8_t GetNearestColourIndex(uint8_t r, uint8_t g, uint8_t b)
 	uint32_t key = (r >> PALETTE_SHIFT) | (g >> PALETTE_SHIFT) << PALETTE_BITS | (b >> PALETTE_SHIFT) << (PALETTE_BITS * 2);
 	if (_palette_lookup[key] == 0) _palette_lookup[key] = FindNearestColourIndex(r, g, b);
 	return _palette_lookup[key];
+}
+
+/**
+ * Get nearest colour palette index from a brightness level.
+ * A search is performed if this brightness level is not already in the lookup table.
+ * @param b Brightness component.
+ * @returns nearest colour palette index.
+ */
+uint8_t GetNearestColourReshadeIndex(uint8_t b)
+{
+	uint32_t key = (b >> PALETTE_SHIFT);
+	if (_reshade_lookup[key] == 0) _reshade_lookup[key] = FindNearestColourReshadeIndex(b);
+	return _reshade_lookup[key];
+}
+
+/**
+ * Adjust brightness of colour.
+ * @param colour Colour to adjust.
+ * @param brightness Brightness to apply to colour.
+ * @returns Adjusted colour.
+ */
+Colour ReallyAdjustBrightness(Colour colour, int brightness)
+{
+	if (brightness == DEFAULT_BRIGHTNESS) return colour;
+
+	uint64_t combined = (static_cast<uint64_t>(colour.r) << 32) | (static_cast<uint64_t>(colour.g) << 16) | static_cast<uint64_t>(colour.b);
+	combined *= brightness;
+
+	uint16_t r = GB(combined, 39, 9);
+	uint16_t g = GB(combined, 23, 9);
+	uint16_t b = GB(combined, 7, 9);
+
+	if ((combined & 0x800080008000L) == 0L) {
+		return Colour(r, g, b, colour.a);
+	}
+
+	uint16_t ob = 0;
+	/* Sum overbright */
+	if (r > 255) ob += r - 255;
+	if (g > 255) ob += g - 255;
+	if (b > 255) ob += b - 255;
+
+	/* Reduce overbright strength */
+	ob /= 2;
+	return Colour(
+		r >= 255 ? 255 : std::min(r + ob * (255 - r) / 256, 255),
+		g >= 255 ? 255 : std::min(g + ob * (255 - g) / 256, 255),
+		b >= 255 ? 255 : std::min(b + ob * (255 - b) / 256, 255),
+		colour.a);
 }
 
 void DoPaletteAnimations();
@@ -183,7 +256,7 @@ void DoPaletteAnimations()
 	const uint old_tc = palette_animation_counter;
 	uint j;
 
-	if (blitter != nullptr && blitter->UsePaletteAnimation() == Blitter::PALETTE_ANIMATION_NONE) {
+	if (blitter != nullptr && blitter->UsePaletteAnimation() == Blitter::PaletteAnimation::None) {
 		palette_animation_counter = 0;
 	}
 
@@ -268,7 +341,7 @@ void DoPaletteAnimations()
 		if (j >= EPV_CYCLES_GLITTER_WATER) j -= EPV_CYCLES_GLITTER_WATER;
 	}
 
-	if (blitter != nullptr && blitter->UsePaletteAnimation() == Blitter::PALETTE_ANIMATION_NONE) {
+	if (blitter != nullptr && blitter->UsePaletteAnimation() == Blitter::PaletteAnimation::None) {
 		palette_animation_counter = old_tc;
 	} else if (_cur_palette.count_dirty == 0 && memcmp(old_val, &_cur_palette.palette[PALETTE_ANIM_START], sizeof(old_val)) != 0) {
 		/* Did we changed anything on the palette? Seems so.  Mark it as dirty */

@@ -538,9 +538,9 @@ bool GamelogGRFBugReverse(uint32_t grfid, uint16_t internal_id)
  * @param g grf to determine
  * @return true iff GRF is not static and is loaded
  */
-static inline bool IsLoggableGrfConfig(const GRFConfig *g)
+static inline bool IsLoggableGrfConfig(const GRFConfig &g)
 {
-	return !HasBit(g->flags, GCF_STATIC) && g->status != GCS_NOT_FOUND;
+	return !HasBit(g.flags, GCF_STATIC) && g.status != GCS_NOT_FOUND;
 }
 
 /**
@@ -561,7 +561,7 @@ void GamelogGRFRemove(uint32_t grfid)
  * Logs adding of a GRF
  * @param newg added GRF
  */
-void GamelogGRFAdd(const GRFConfig *newg)
+void GamelogGRFAdd(const GRFConfig &newg)
 {
 	assert(_gamelog_action_type == GLAT_LOAD || _gamelog_action_type == GLAT_START || _gamelog_action_type == GLAT_GRF);
 
@@ -570,7 +570,7 @@ void GamelogGRFAdd(const GRFConfig *newg)
 	LoggedChange *lc = GamelogChange(GLCT_GRFADD);
 	if (lc == nullptr) return;
 
-	lc->grfadd = newg->ident;
+	lc->grfadd = newg.ident;
 }
 
 /**
@@ -578,14 +578,14 @@ void GamelogGRFAdd(const GRFConfig *newg)
  * (the same ID, but different MD5 hash)
  * @param newg new (updated) GRF
  */
-void GamelogGRFCompatible(const GRFIdentifier *newg)
+void GamelogGRFCompatible(const GRFIdentifier &newg)
 {
 	assert(_gamelog_action_type == GLAT_LOAD || _gamelog_action_type == GLAT_GRF);
 
 	LoggedChange *lc = GamelogChange(GLCT_GRFCOMPAT);
 	if (lc == nullptr) return;
 
-	lc->grfcompat = *newg;
+	lc->grfcompat = newg;
 }
 
 /**
@@ -622,14 +622,14 @@ static void GamelogGRFParameters(uint32_t grfid)
 /**
  * Logs adding of list of GRFs.
  * Useful when old savegame is loaded or when new game is started
- * @param newg head of GRF linked list
+ * @param newg the GRFConfigList.
  */
-void GamelogGRFAddList(const GRFConfig *newg)
+void GamelogGRFAddList(const GRFConfigList newg)
 {
 	assert(_gamelog_action_type == GLAT_START || _gamelog_action_type == GLAT_LOAD);
 
-	for (; newg != nullptr; newg = newg->next) {
-		GamelogGRFAdd(newg);
+	for (GRFConfig *gc = newg; gc != nullptr; gc = gc->next) {
+		GamelogGRFAdd(*gc);
 	}
 }
 
@@ -641,20 +641,20 @@ struct GRFList {
 
 /**
  * Generates GRFList
- * @param grfc head of GRF linked list
+ * @param grfc the GRFConfigList.
  */
-static GRFList *GenerateGRFList(const GRFConfig *grfc)
+static GRFList *GenerateGRFList(const GRFConfigList grfc)
 {
 	uint n = 0;
 	for (const GRFConfig *g = grfc; g != nullptr; g = g->next) {
-		if (IsLoggableGrfConfig(g)) n++;
+		if (IsLoggableGrfConfig(*g)) n++;
 	}
 
 	GRFList *list = (GRFList*)MallocT<uint8_t>(sizeof(GRFList) + n * sizeof(GRFConfig*));
 
 	list->n = 0;
 	for (const GRFConfig *g = grfc; g != nullptr; g = g->next) {
-		if (IsLoggableGrfConfig(g)) list->grf[list->n++] = g;
+		if (IsLoggableGrfConfig(*g)) list->grf[list->n++] = g;
 	}
 
 	return list;
@@ -665,7 +665,7 @@ static GRFList *GenerateGRFList(const GRFConfig *grfc)
  * @param oldc original GRF list
  * @param newc new GRF list
  */
-void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
+void GamelogGRFUpdate(const GRFConfigList oldc, const GRFConfigList newc)
 {
 	GRFList *ol = GenerateGRFList(oldc);
 	GRFList *nl = GenerateGRFList(newc);
@@ -688,7 +688,7 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
 			}
 			if (oi == ol->n) {
 				/* GRF couldn't be found in the OLD list, GRF was ADDED */
-				GamelogGRFAdd(nl->grf[n++]);
+				GamelogGRFAdd(*nl->grf[n++]);
 				continue;
 			}
 			for (ni = 0; ni < nl->n; ni++) {
@@ -722,7 +722,7 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
 		} else {
 			if (og->ident.md5sum != ng->ident.md5sum) {
 				/* md5sum changed, probably loading 'compatible' GRF */
-				GamelogGRFCompatible(&nl->grf[n]->ident);
+				GamelogGRFCompatible(nl->grf[n]->ident);
 			}
 
 			if (og->param != ng->param) {
@@ -735,7 +735,7 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
 	}
 
 	while (o < ol->n) GamelogGRFRemove(ol->grf[o++]->ident.grfid); // remaining GRFs were removed ...
-	while (n < nl->n) GamelogGRFAdd   (nl->grf[n++]);              // ... or added
+	while (n < nl->n) GamelogGRFAdd(*nl->grf[n++]);                // ... or added
 
 	free(ol);
 	free(nl);

@@ -652,14 +652,14 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 				if (do_shadow && (glyph & SPRITE_GLYPH) != 0) continue;
 
-				GfxMainBlitter(ctx, sprite, begin_x + (do_shadow ? shadow_offset : 0), top + (do_shadow ? shadow_offset : 0), BM_COLOUR_REMAP);
+				GfxMainBlitter(ctx, sprite, begin_x + (do_shadow ? shadow_offset : 0), top + (do_shadow ? shadow_offset : 0), BlitterMode::ColourRemap);
 			}
 		}
 
 		if (truncation && (!do_shadow || (dot_has_shadow && colour_has_shadow))) {
 			int x = (_current_text_dir == TD_RTL) ? left : (right - 3 * dot_width);
 			for (int i = 0; i < 3; i++, x += dot_width) {
-				GfxMainBlitter(ctx, dot_sprite, x + (do_shadow ? shadow_offset : 0), y + (do_shadow ? shadow_offset : 0), BM_COLOUR_REMAP);
+				GfxMainBlitter(ctx, dot_sprite, x + (do_shadow ? shadow_offset : 0), y + (do_shadow ? shadow_offset : 0), BlitterMode::ColourRemap);
 			}
 		}
 	}
@@ -953,7 +953,7 @@ void DrawCharCentered(char32_t c, const Rect &r, TextColour colour)
 	GfxMainBlitter(ctx, GetGlyph(FS_NORMAL, c),
 		CenterBounds(r.left, r.right, GetCharacterWidth(FS_NORMAL, c)),
 		CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)),
-		BM_COLOUR_REMAP);
+		BlitterMode::ColourRemap);
 }
 
 /**
@@ -987,13 +987,13 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 static BlitterMode GetBlitterMode(PaletteID pal)
 {
 	if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
-		return GB(pal, 0, PALETTE_WIDTH) != PAL_NONE ? BM_COLOUR_REMAP_WITH_BRIGHTNESS : BM_NORMAL_WITH_BRIGHTNESS;
+		return GB(pal, 0, PALETTE_WIDTH) != PAL_NONE ? BlitterMode::ColourRemapWithBrightness : BlitterMode::NormalWithBrightness;
 	}
 	switch (pal) {
-		case PAL_NONE:          return BM_NORMAL;
-		case PALETTE_CRASH:     return BM_CRASH_REMAP;
-		case PALETTE_ALL_BLACK: return BM_BLACK_REMAP;
-		default:                return BM_COLOUR_REMAP;
+		case PAL_NONE:          return BlitterMode::Normal;
+		case PALETTE_CRASH:     return BlitterMode::CrashRemap;
+		case PALETTE_ALL_BLACK: return BlitterMode::BlackRemap;
+		default:                return BlitterMode::ColourRemap;
 	}
 }
 
@@ -1013,7 +1013,7 @@ void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixel
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
 		pal = GB(pal, 0, PALETTE_WIDTH);
 		ctx.colour_remap_ptr = sprite_store.GetRecolourSprite(pal);
-		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, SpriteType::Normal), x, y, pal == PALETTE_TO_TRANSPARENT ? BM_TRANSPARENT : BM_TRANSPARENT_REMAP, sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, SpriteType::Normal), x, y, pal == PALETTE_TO_TRANSPARENT ? BlitterMode::Transparent : BlitterMode::TransparentRemap, sub, real_sprite);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
@@ -1028,7 +1028,7 @@ void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixel
 		}
 		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, SpriteType::Normal), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
-		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, SpriteType::Normal), x, y, BM_NORMAL, sub, real_sprite);
+		GfxMainBlitterViewport(ctx, sprite_store.GetSprite(real_sprite, SpriteType::Normal), x, y, BlitterMode::Normal, sub, real_sprite);
 	}
 }
 
@@ -1061,7 +1061,7 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
 		pal = GB(pal, 0, PALETTE_WIDTH);
 		ctx.colour_remap_ptr = GetNonSprite(pal, SpriteType::Recolour);
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, pal == PALETTE_TO_TRANSPARENT ? BM_TRANSPARENT : BM_TRANSPARENT_REMAP, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, pal == PALETTE_TO_TRANSPARENT ? BlitterMode::Transparent : BlitterMode::TransparentRemap, sub, real_sprite, zoom);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
@@ -1070,7 +1070,7 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 		}
 		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
 	} else {
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BM_NORMAL, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BlitterMode::Normal, sub, real_sprite, zoom);
 	}
 }
 
@@ -1268,7 +1268,7 @@ std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel 
 	/* Temporarily disable screen animations while blitting - This prevents 40bpp_anim from writing to the animation buffer. */
 	Backup<bool> disable_anim(_screen_disable_anim, true, FILE_LINE);
 	GfxBlitterCtx ctx(&dpi);
-	GfxBlitter<1, true>(ctx, sprite, 0, 0, BM_NORMAL, nullptr, real_sprite, zoom);
+	GfxBlitter<1, true>(ctx, sprite, 0, 0, BlitterMode::Normal, nullptr, real_sprite, zoom);
 	disable_anim.Restore();
 
 	if (blitter->GetScreenDepth() == 8) {

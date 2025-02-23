@@ -36,18 +36,18 @@ void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoom
 			uint colour = 0;
 
 			switch (mode) {
-				case BM_COLOUR_REMAP:
-				case BM_CRASH_REMAP:
-				case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
+				case BlitterMode::ColourRemap:
+				case BlitterMode::CrashRemap:
+				case BlitterMode::ColourRemapWithBrightness:
 					colour = bp->remap[*src];
 					break;
 
-				case BM_TRANSPARENT:
-				case BM_TRANSPARENT_REMAP:
+				case BlitterMode::Transparent:
+				case BlitterMode::TransparentRemap:
 					if (*src != 0) colour = bp->remap[*dst];
 					break;
 
-				case BM_BLACK_REMAP:
+				case BlitterMode::BlackRemap:
 					if (*src != 0) *dst = 0;
 					break;
 

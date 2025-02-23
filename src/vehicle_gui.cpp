@@ -2822,31 +2822,44 @@ public:
 	}
 };
 
-static WindowDesc _vehicle_list_other_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_vehicles", 260, 246,
-	WC_INVALID, WC_NONE,
-	0,
-	_nested_vehicle_list
-);
-
-static WindowDesc _vehicle_list_train_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_vehicles_train", 325, 246,
-	WC_TRAINS_LIST, WC_NONE,
-	0,
-	_nested_vehicle_list
-);
+static WindowDesc _vehicle_list_desc[] = {
+	{
+		__FILE__, __LINE__,
+		WDP_AUTO, "list_vehicles_train", 325, 246,
+		WC_TRAINS_LIST, WC_NONE,
+		0,
+		_nested_vehicle_list
+	},
+	{
+		__FILE__, __LINE__,
+		WDP_AUTO, "list_vehicles_roadveh", 260, 246,
+		WC_ROADVEH_LIST, WC_NONE,
+		0,
+		_nested_vehicle_list
+	},
+	{
+		__FILE__, __LINE__,
+		WDP_AUTO, "list_vehicles_ship", 260, 246,
+		WC_SHIPS_LIST, WC_NONE,
+		0,
+		_nested_vehicle_list
+	},
+	{
+		__FILE__, __LINE__,
+		WDP_AUTO, "list_vehicles_aircraft", 260, 246,
+		WC_AIRCRAFT_LIST, WC_NONE,
+		0,
+		_nested_vehicle_list
+	}
+};
 
 static void ShowVehicleListWindowLocal(CompanyID company, VehicleListType vlt, VehicleType vehicle_type, uint32_t unique_number)
 {
 	if (!Company::IsValidID(company) && company != OWNER_NONE) return;
 
+	assert(vehicle_type < std::size(_vehicle_list_desc));
 	WindowNumber num = VehicleListIdentifier(vlt, vehicle_type, company, unique_number).Pack();
-	if (vehicle_type == VEH_TRAIN) {
-		AllocateWindowDescFront<VehicleListWindow>(_vehicle_list_train_desc, num);
-	} else {
-		_vehicle_list_other_desc.cls = GetWindowClassForVehicleType(vehicle_type);
-		AllocateWindowDescFront<VehicleListWindow>(_vehicle_list_other_desc, num);
-	}
+	AllocateWindowDescFront<VehicleListWindow>(_vehicle_list_desc[vehicle_type], num);
 }
 
 void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type)

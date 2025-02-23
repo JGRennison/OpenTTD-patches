@@ -51,38 +51,30 @@ static FSoundDriver_XAudio2 iFSoundDriver_XAudio2;
 class StreamingVoiceContext : public IXAudio2VoiceCallback
 {
 private:
-	int bufferLength;
-	char *buffer;
+	std::vector<BYTE> buffer;
 
 public:
-	IXAudio2SourceVoice *SourceVoice;
+	IXAudio2SourceVoice *source_voice = nullptr;
 
-	StreamingVoiceContext(int bufferLength)
+	StreamingVoiceContext(int buffer_length)
 	{
-		this->bufferLength = bufferLength;
-		this->buffer = MallocT<char>(bufferLength);
-	}
-
-	virtual ~StreamingVoiceContext()
-	{
-		free(this->buffer);
+		this->buffer.resize(buffer_length);
 	}
 
 	HRESULT SubmitBuffer()
 	{
 		// Ensure we do have a valid voice
-		if (this->SourceVoice == nullptr)
-		{
+		if (this->source_voice == nullptr) {
 			return E_FAIL;
 		}
 
-		MxMixSamples(this->buffer, this->bufferLength / 4);
+		MxMixSamples(this->buffer.data(), static_cast<uint>(this->buffer.size() / 4));
 
 		XAUDIO2_BUFFER buf = { 0 };
-		buf.AudioBytes = this->bufferLength;
-		buf.pAudioData = (const BYTE *) this->buffer;
+		buf.AudioBytes = static_cast<UINT32>(this->buffer.size());
+		buf.pAudioData = this->buffer.data();
 
-		return SourceVoice->SubmitSourceBuffer(&buf);
+		return source_voice->SubmitSourceBuffer(&buf);
 	}
 
 	STDMETHOD_(void, OnVoiceProcessingPassStart)(UINT32) override
@@ -119,7 +111,7 @@ static HMODULE _xaudio_dll_handle;
 static IXAudio2SourceVoice *_source_voice = nullptr;
 static IXAudio2MasteringVoice *_mastering_voice = nullptr;
 static ComPtr<IXAudio2> _xaudio2;
-static StreamingVoiceContext *_voice_context = nullptr;
+static std::unique_ptr<StreamingVoiceContext> _voice_context;
 
 /** Create XAudio2 context with SEH exception checking. */
 static HRESULT CreateXAudio(API_XAudio2Create xAudio2Create)
@@ -150,16 +142,14 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 {
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		Debug(driver, 0, "xaudio2_s: CoInitializeEx failed ({:08x})", (uint)hr);
 		return "Failed to initialise COM";
 	}
 
 	_xaudio_dll_handle = LoadLibraryA(XAUDIO2_DLL_A);
 
-	if (_xaudio_dll_handle == nullptr)
-	{
+	if (_xaudio_dll_handle == nullptr) {
 		CoUninitialize();
 
 		Debug(driver, 0, "xaudio2_s: Unable to load " XAUDIO2_DLL_A);
@@ -168,8 +158,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 
 	API_XAudio2Create xAudio2Create = (API_XAudio2Create) GetProcAddress(_xaudio_dll_handle, "XAudio2Create");
 
-	if (xAudio2Create == nullptr)
-	{
+	if (xAudio2Create == nullptr) {
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
@@ -180,8 +169,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 	// Create the XAudio engine
 	hr = CreateXAudio(xAudio2Create);
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
 
@@ -192,8 +180,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 	// Create a mastering voice
 	hr = _xaudio2->CreateMasteringVoice(&_mastering_voice);
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		_xaudio2.Reset();
 		FreeLibrary(_xaudio_dll_handle);
 		CoUninitialize();
@@ -216,10 +203,9 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 	int bufsize = GetDriverParamInt(parm, "samples", 2048);
 	bufsize = std::min<int>(bufsize, UINT16_MAX);
 
-	_voice_context = new StreamingVoiceContext(bufsize * 4);
+	_voice_context = std::make_unique<StreamingVoiceContext>(bufsize * 4);
 
-	if (_voice_context == nullptr)
-	{
+	if (_voice_context == nullptr) {
 		_mastering_voice->DestroyVoice();
 		_xaudio2.Reset();
 		FreeLibrary(_xaudio_dll_handle);
@@ -228,10 +214,9 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 		return "Failed to create streaming voice context";
 	}
 
-	hr = _xaudio2->CreateSourceVoice(&_source_voice, &wfex, 0, 1.0f, _voice_context);
+	hr = _xaudio2->CreateSourceVoice(&_source_voice, &wfex, 0, 1.0f, _voice_context.get());
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		_mastering_voice->DestroyVoice();
 		_xaudio2.Reset();
 		FreeLibrary(_xaudio_dll_handle);
@@ -241,11 +226,10 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 		return "Failed to create a source voice";
 	}
 
-	_voice_context->SourceVoice = _source_voice;
+	_voice_context->source_voice = _source_voice;
 	hr = _source_voice->Start(0, 0);
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		Debug(driver, 0, "xaudio2_s: _source_voice->Start failed ({:08x})", (uint)hr);
 
 		Stop();
@@ -257,8 +241,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 	// Submit the first buffer
 	hr = _voice_context->SubmitBuffer();
 
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		Debug(driver, 0, "xaudio2_s: _voice_context->SubmitBuffer failed ({:08x})", (uint)hr);
 
 		Stop();
@@ -276,7 +259,6 @@ void SoundDriver_XAudio2::Stop()
 	// Clean up XAudio2
 	_source_voice->DestroyVoice();
 
-	delete _voice_context;
 	_voice_context = nullptr;
 
 	_mastering_voice->DestroyVoice();

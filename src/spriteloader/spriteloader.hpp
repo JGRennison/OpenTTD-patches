@@ -27,6 +27,19 @@ enum SpriteColourComponent {
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteColourComponent)
 
+struct SpriteLoaderResult {
+	uint8_t loaded_sprites = 0;  ///< Bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
+	uint8_t avail_8bpp = 0;
+	uint8_t avail_32bpp = 0;
+
+	void Apply(const SpriteLoaderResult &other)
+	{
+		this->loaded_sprites |= other.loaded_sprites;
+		this->avail_8bpp |= other.avail_8bpp;
+		this->avail_32bpp |= other.avail_32bpp;
+	}
+};
+
 /** Interface for the loader of our sprites. */
 class SpriteLoader {
 public:
@@ -78,9 +91,9 @@ public:
 	 * @param sprite_type The type of sprite we're trying to load.
 	 * @param load_32bpp  True if 32bpp sprites should be loaded, false for a 8bpp sprite.
 	 * @param control_flags Control flags, see SpriteCacheCtrlFlags.
-	 * @return Bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
+	 * @return SpriteLoaderResult. loaded_sprites field is a bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
 	 */
-	virtual uint8_t LoadSprite(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, uint8_t zoom_levels) = 0;
+	virtual SpriteLoaderResult LoadSprite(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, uint8_t zoom_levels) = 0;
 
 	virtual ~SpriteLoader() = default;
 };

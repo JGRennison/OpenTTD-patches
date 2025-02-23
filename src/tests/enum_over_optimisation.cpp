@@ -5,20 +5,27 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-AILog.Info("1.11 API compatibility in effect.");
+/**
+ * @file enum_over_optimisation.cpp Test whether we do not trigger an over optimisation of enums.
+ *
+ * For more details, see http://gcc.gnu.org/PR43680 and PR#5246.
+ */
 
-/* 13 really checks RoadType against RoadType */
-AIRoad._HasRoadType <- AIRoad.HasRoadType;
-AIRoad.HasRoadType <- function(tile, road_type)
+#include "../stdafx.h"
+
+#include "../3rdparty/catch2/catch.hpp"
+
+enum TestEnum : int8_t {
+	ZERO,
+	ONE,
+	TWO
+};
+
+TEST_CASE("EnumOverOptimisation_BoundsCheck")
 {
-	local list = AIRoadTypeList(AIRoad.GetRoadTramType(road_type));
-	foreach (rt, _ in list) {
-		if (AIRoad._HasRoadType(tile, rt)) {
-			return true;
-		}
-	}
-	return false;
-}
+	TestEnum negative_one = static_cast<TestEnum>(-1);
+	CHECK(negative_one < ZERO);
 
-/* 15 renames GetBridgeID */
-AIBridge.GetBridgeID <- AIBridge.GetBridgeType;
+	TestEnum three = static_cast<TestEnum>(3);
+	CHECK(TWO < three);
+}

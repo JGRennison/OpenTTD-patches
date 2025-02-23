@@ -48,11 +48,11 @@ void GamelogMode();
 void GamelogOldver();
 void GamelogSetting(const char *name, int32_t oldval, int32_t newval);
 
-void GamelogGRFUpdate(const GRFConfig *oldg, const GRFConfig *newg);
-void GamelogGRFAddList(const GRFConfig *newg);
+void GamelogGRFUpdate(const GRFConfigList oldg, const GRFConfigList newg);
+void GamelogGRFAddList(const GRFConfigList newg);
 void GamelogGRFRemove(uint32_t grfid);
-void GamelogGRFAdd(const GRFConfig *newg);
-void GamelogGRFCompatible(const GRFIdentifier *newg);
+void GamelogGRFAdd(const GRFConfig &newg);
+void GamelogGRFCompatible(const GRFIdentifier &newg);
 
 void GamelogTestRevision();
 void GamelogTestMode();
