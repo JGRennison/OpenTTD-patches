@@ -98,7 +98,7 @@ struct PacketReader : LoadFilter {
 		if (p.RemainingBytesToTransfer() == 0) return;
 
 		/* Allocate a new chunk and add the remaining data. */
-		this->blocks.push_back(this->buf = CallocT<uint8_t>(CHUNK));
+		this->blocks.push_back(this->buf = MallocT<uint8_t>(CHUNK));
 		this->bufe = this->buf + CHUNK;
 
 		p.TransferOutWithLimit(TransferOutMemCopy, this->bufe - this->buf, this);

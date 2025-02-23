@@ -324,21 +324,21 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 					case VEH_TRAIN:
 						gro_cache.push_back(Train::From(u)->gcache);
 						tra_cache.push_back(Train::From(u)->tcache);
-						veh_old.emplace_back(CallocT<Train>(1));
+						veh_old.emplace_back(MallocT<Train>(1));
 						memcpy((void *) veh_old.back().get(), (const void *) Train::From(u), sizeof(Train));
 						break;
 					case VEH_ROAD:
 						gro_cache.push_back(RoadVehicle::From(u)->gcache);
-						veh_old.emplace_back(CallocT<RoadVehicle>(1));
+						veh_old.emplace_back(MallocT<RoadVehicle>(1));
 						memcpy((void *) veh_old.back().get(), (const void *) RoadVehicle::From(u), sizeof(RoadVehicle));
 						break;
 					case VEH_AIRCRAFT:
 						air_cache.push_back(Aircraft::From(u)->acache);
-						veh_old.emplace_back(CallocT<Aircraft>(1));
+						veh_old.emplace_back(MallocT<Aircraft>(1));
 						memcpy((void *) veh_old.back().get(), (const void *) Aircraft::From(u), sizeof(Aircraft));
 						break;
 					default:
-						veh_old.emplace_back(CallocT<Vehicle>(1));
+						veh_old.emplace_back(MallocT<Vehicle>(1));
 						memcpy((void *) veh_old.back().get(), (const void *) u, sizeof(Vehicle));
 						break;
 				}

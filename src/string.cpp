@@ -120,8 +120,9 @@ void strecpy(std::span<char> dst, std::string_view src)
 char *stredup(const char *s, const char *last)
 {
 	size_t len = last == nullptr ? strlen(s) : ttd_strnlen(s, last - s + 1);
-	char *tmp = CallocT<char>(len + 1);
+	char *tmp = MallocT<char>(len + 1);
 	memcpy(tmp, s, len);
+	tmp[len] = '\0';
 	return tmp;
 }
 

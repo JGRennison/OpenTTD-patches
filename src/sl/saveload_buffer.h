@@ -312,7 +312,7 @@ struct MemoryDumper {
 	MemoryDumper()
 	{
 		const size_t size = 8192;
-		this->autolen_buf = CallocT<uint8_t>(size);
+		this->autolen_buf = MallocT<uint8_t>(size);
 		this->autolen_buf_end = this->autolen_buf + size;
 	}
 
