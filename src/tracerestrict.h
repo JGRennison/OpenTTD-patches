@@ -649,8 +649,8 @@ public:
 		return *this;
 	}
 
-	/* For range for, don't automatically dereference */
-	TraceRestrictInstructionIterator &operator *() { return *this; }
+	/* For range for, don't automatically dereference, but return a const ref to prevent the iterator being modified */
+	const TraceRestrictInstructionIterator &operator *() { return *this; }
 };
 
 template <typename C>
