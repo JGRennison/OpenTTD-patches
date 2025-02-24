@@ -33,6 +33,7 @@
 #include "../crashlog.h"
 #include "../core/checksum_func.hpp"
 #include "../core/alloc_func.hpp"
+#include "../core/alloc_type.hpp"
 #include "../fileio_func.h"
 #include "../debug_settings.h"
 #include "../3rdparty/monocypher/monocypher.h"
@@ -51,24 +52,15 @@ static void ResetClientConnectionKeyStates();
 struct PacketReader : LoadFilter {
 	static const size_t CHUNK = 32 * 1024;  ///< 32 KiB chunks of memory.
 
-	std::vector<uint8_t *> blocks;          ///< Buffer with blocks of allocated memory.
-	uint8_t *buf;                           ///< Buffer we're going to write to/read from.
-	uint8_t *bufe;                          ///< End of the buffer we write to/read from.
-	uint8_t **block;                        ///< The block we're reading from/writing to.
-	size_t written_bytes;                   ///< The total number of bytes we've written.
-	size_t read_bytes;                      ///< The total number of read bytes.
+	std::vector<std::unique_ptr<char, FreeDeleter>> blocks; ///< Buffer with blocks of allocated memory.
+	char *buf;                                              ///< Buffer we're going to write to/read from.
+	char *bufe;                                             ///< End of the buffer we write to/read from.
+	size_t current_block;                                   ///< Index of current block
+	size_t written_bytes;                                   ///< The total number of bytes we've written.
+	size_t read_bytes;                                      ///< The total number of read bytes.
 
 	/** Initialise everything. */
-	PacketReader() : LoadFilter(nullptr), buf(nullptr), bufe(nullptr), block(nullptr), written_bytes(0), read_bytes(0)
-	{
-	}
-
-	~PacketReader() override
-	{
-		for (auto p : this->blocks) {
-			free(p);
-		}
-	}
+	PacketReader() : LoadFilter(nullptr), buf(nullptr), bufe(nullptr), current_block(0), written_bytes(0), read_bytes(0) {}
 
 	/**
 	 * Simple wrapper around fwrite to be able to pass it to Packet's TransferOut.
@@ -98,8 +90,9 @@ struct PacketReader : LoadFilter {
 		if (p.RemainingBytesToTransfer() == 0) return;
 
 		/* Allocate a new chunk and add the remaining data. */
-		this->blocks.push_back(this->buf = MallocT<uint8_t>(CHUNK));
+		this->buf = MallocT<char>(CHUNK);
 		this->bufe = this->buf + CHUNK;
+		this->blocks.emplace_back(this->buf);
 
 		p.TransferOutWithLimit(TransferOutMemCopy, this->bufe - this->buf, this);
 	}
@@ -113,7 +106,8 @@ struct PacketReader : LoadFilter {
 
 		while (rbuf != rbufe) {
 			if (this->buf == this->bufe) {
-				this->buf = *this->block++;
+				this->current_block++;
+				this->buf = this->blocks[this->current_block].get();
 				this->bufe = this->buf + CHUNK;
 			}
 
@@ -130,9 +124,9 @@ struct PacketReader : LoadFilter {
 	{
 		this->read_bytes = 0;
 
-		this->block = this->blocks.data();
-		this->buf   = *this->block++;
-		this->bufe  = this->buf + CHUNK;
+		this->current_block = 0;
+		this->buf = this->blocks[this->current_block].get();
+		this->bufe = this->buf + CHUNK;
 	}
 };
 
