@@ -3082,7 +3082,7 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		IConsolePrint(CC_DEFAULT, "  Job: {:5}, nodes: {}, cost: {}, started: {}, ends in: {}, duration: {}",
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
-				(int)(lgj->StartTick() - _scaled_tick_counter), (lgj->JoinTick() - _scaled_tick_counter), (lgj->JoinTick() - lgj->StartTick()));
+				(int64_t)(lgj->StartTick() - _scaled_tick_counter), (int64_t)(lgj->JoinTick() - _scaled_tick_counter), (lgj->JoinTick() - lgj->StartTick()));
 	 }
 	return true;
 }
