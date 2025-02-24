@@ -374,9 +374,8 @@ public:
 	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode);
 	void RemoveEdge(NodeID from, NodeID to);
 
-	inline uint64_t CalculateCostEstimate() const {
-		uint64_t size_squared = (uint32_t)this->Size() * (uint32_t)this->Size();
-		return size_squared * FindLastBit(size_squared * size_squared); // N^2 * 4log_2(N)
+	inline uint32_t CalculateCostEstimate() const {
+		return (uint32_t)this->Size() * (uint32_t)this->Size();
 	}
 
 protected:

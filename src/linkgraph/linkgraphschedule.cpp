@@ -30,16 +30,16 @@
 /**
  * Start the next job(s) in the schedule.
  *
- * The cost estimate of a link graph job is C ~ N^2 log N, where
+ * The cost estimate of a link graph job is C ~ N^2, where
  * N is the number of nodes in the job link graph.
  *
  * The cost estimate is summed for all running and scheduled jobs to form the total cost estimate T = sum C.
- * The clamped total cost estimate is calculated as U = min(1 << 25, T). This is to prevent excessively high cost budgets.
+ * The clamped total cost estimate is calculated as U = min(1 << 24, T). This is to prevent excessively high cost budgets.
  * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = 1 + max(0, log_2 U - 13).
  * The cost budget for an individual call to this method is given by U / S.
  * The last scheduled job may exceed the cost budget.
  *
- * The nominal duration of an individual job is D = N / 75
+ * The nominal duration of an individual job is D = N / 500
  *
  * The purpose of this algorithm is so that overall responsiveness is not hindered by large numbers of small/cheap
  * jobs which would previously need to be cycled through individually, but equally large/slow jobs have an extended
@@ -65,7 +65,7 @@ void LinkGraphSchedule::SpawnNext()
 	for (auto &it : this->running) {
 		total_cost += it->Graph().CalculateCostEstimate();
 	}
-	uint64_t clamped_total_cost = std::min<uint64_t>(total_cost, 1 << 25);
+	uint64_t clamped_total_cost = std::min<uint64_t>(total_cost, 1 << 24);
 	uint log2_clamped_total_cost = FindLastBit(clamped_total_cost);
 	uint scaling = log2_clamped_total_cost > 13 ? log2_clamped_total_cost - 12 : 1;
 	uint64_t cost_budget = clamped_total_cost / scaling;
@@ -78,7 +78,7 @@ void LinkGraphSchedule::SpawnNext()
 		uint64_t cost = lg->CalculateCostEstimate();
 		used_budget += cost;
 		if (LinkGraphJob::CanAllocateItem()) {
-			uint duration_multiplier = CeilDivT<uint64_t>(lg->Size(), 75);
+			uint duration_multiplier = CeilDivT<uint64_t>(lg->Size(), 500);
 			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
 			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinTick() >= this->running.back()->JoinTick()) {
