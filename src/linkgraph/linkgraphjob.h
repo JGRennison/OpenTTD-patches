@@ -387,7 +387,7 @@ public:
 	inline NodeID GetOrigin() const { return this->origin; }
 
 	/** Get the parent leg of this one. */
-	inline Path *GetParent() { return reinterpret_cast<Path *>(this->parent_storage & ~1); }
+	inline Path *GetParent() { return reinterpret_cast<Path *>(this->parent_storage & ~static_cast<uintptr_t>(1)); }
 
 	/** Get the overall capacity of the path. */
 	inline uint GetCapacity() const { return this->capacity; }
