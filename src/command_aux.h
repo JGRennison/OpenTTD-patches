@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <vector>
 
-struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
+struct CommandAuxiliarySerialised final : public CommandAuxiliaryBase {
 	std::vector<uint8_t> serialised_data;
 	mutable std::string debug_summary;
 
@@ -34,7 +34,7 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 
-	virtual std::string GetDebugSummary() const override { return std::move(this->debug_summary); }
+	virtual void FormatDebugSummary(struct format_target &) const override;
 };
 
 template <typename T>
@@ -70,7 +70,7 @@ public:
 				return CMD_ERROR;
 			}
 			this->data = &(*(this->store));
-			deserialise_from->debug_summary = this->data->GetDebugSummary();
+			deserialise_from->debug_summary = this->data->GetDebugSummaryString();
 			return res;
 		} else {
 			this->data = dynamic_cast<const T*>(base);

@@ -3776,13 +3776,11 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 	return DoCommand(cmd, flags);
 }
 
-std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
+void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
 {
-	auto out = fmt::memory_buffer();
-	fmt::format_to(std::back_inserter(out), "follow up: {} x {}, p1: 0x{:08X}, p2: 0x{:08X}", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.p1, this->cmd.p2);
-	if (this->cmd.p3 != 0) fmt::format_to(std::back_inserter(out), ", p3: 0x{:016X}", this->cmd.p3);
-	fmt::format_to(std::back_inserter(out), ", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
-	return fmt::to_string(out);
+	output.format("follow up: {} x {}, p1: 0x{:08X}, p2: 0x{:08X}", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.p1, this->cmd.p2);
+	if (this->cmd.p3 != 0) output.format(", p3: 0x{:016X}", this->cmd.p3);
+	output.format(", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
 }
 
 void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner)

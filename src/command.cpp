@@ -896,11 +896,12 @@ static int _docommand_recursive = 0;
 
 void FmtCommandTextInfo(format_target &out, const char *text, const CommandAuxiliaryBase *aux_data)
 {
-	if (text) {
+	if (text != nullptr) {
 		out.format(", text: length: {}", strlen(text));
 	}
-	if (aux_data) {
-		out.append(", aux data");
+	if (aux_data != nullptr) {
+		out.append(", aux data: ");
+		aux_data->FormatDebugSummary(out);
 	}
 }
 
@@ -1000,7 +1001,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
-			if (current.text.empty() && aux_data != nullptr) current.text = aux_data->GetDebugSummary();
+			if (current.text.empty() && aux_data != nullptr) current.text = aux_data->GetDebugSummaryString();
 			DebugLogCommandLogEntry(current);
 			return;
 		}
@@ -1013,7 +1014,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 			if (text != nullptr) str.assign(text);
 			break;
 	}
-	if (str.empty() && aux_data != nullptr) str = aux_data->GetDebugSummary();
+	if (str.empty() && aux_data != nullptr) str = aux_data->GetDebugSummaryString();
 
 	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, p3, cmd, log_flags, std::move(str));
 	DebugLogCommandLogEntry(cmd_log.log[cmd_log.next]);
@@ -1544,4 +1545,16 @@ const char *BaseCommandContainer::DeserialiseBaseCommandContainer(Deserialisatio
 		b.Recv_binary((aux_data->serialised_data.data()), aux_data_size);
 	}
 	return nullptr;
+}
+
+std::string CommandAuxiliaryBase::GetDebugSummaryString() const
+{
+	format_buffer dbg;
+	this->FormatDebugSummary(dbg);
+	return dbg.to_string();
+}
+
+void CommandAuxiliarySerialised::FormatDebugSummary(format_target &output) const
+{
+	output.append(this->debug_summary);
 }

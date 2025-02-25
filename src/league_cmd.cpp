@@ -211,9 +211,9 @@ CommandCost CmdRemoveLeagueTableElement(TileIndex tile, DoCommandFlag flags, uin
 	return CmdRemoveLeagueTableElement(flags, p1);
 }
 
-std::string LeagueTableElementCmdData::GetDebugSummary() const
+void LeagueTableElementCmdData::FormatDebugSummary(format_target &output) const
 {
-	return fmt::format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
+	output.format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
 }
 
 template CommandCost CommandExecHelperAuxT<LeagueTableCmdData>(void *, const CommandPayload &);

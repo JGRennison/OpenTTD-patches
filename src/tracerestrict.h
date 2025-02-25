@@ -1495,7 +1495,7 @@ struct TraceRestrictFollowUpCmdData final : public CommandAuxiliarySerialisable<
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
 	CommandCost Deserialise(DeserialisationBuffer &buffer);
 	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
-	std::string GetDebugSummary() const override;
+	void FormatDebugSummary(struct format_target &) const override;
 };
 
 #endif /* TRACERESTRICT_H */

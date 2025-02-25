@@ -678,7 +678,10 @@ struct CommandAuxiliaryBase {
 
 	virtual void Serialise(struct BufferSerialisationRef buffer) const = 0;
 
-	virtual std::string GetDebugSummary() const { return {}; }
+	/* FormatDebugSummary may be called when populating the crash log so should not allocate */
+	virtual void FormatDebugSummary(struct format_target &) const {}
+
+	std::string GetDebugSummaryString() const;
 };
 
 struct CommandAuxiliaryPtr : public std::unique_ptr<CommandAuxiliaryBase>

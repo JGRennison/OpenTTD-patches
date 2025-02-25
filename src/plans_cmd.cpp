@@ -63,9 +63,9 @@ struct PlanLineCmdData final : public CommandAuxiliarySerialisable<PlanLineCmdDa
 		return CommandCost();
 	}
 
-	std::string GetDebugSummary() const override
+	void FormatDebugSummary(format_target &output) const override
 	{
-		return fmt::format("Plan: {:X}, {} tiles", this->plan, this->tiles.size());
+		output.format("Plan {:X}, {} tiles", this->plan, this->tiles.size());
 	}
 };
 

@@ -65,7 +65,7 @@ struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<Lea
 		return CommandCost();
 	}
 
-	std::string GetDebugSummary() const override;
+	void FormatDebugSummary(struct format_target &) const override;
 };
 
 #endif /* LEAGUE_CMD_H */
