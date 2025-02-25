@@ -128,9 +128,9 @@ protected:
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
 
-	static bool DoCommandAux(TileIndex tile, const struct CommandAuxiliaryBase *aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandAux(TileIndex tile, const struct CommandAuxiliaryBase &aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, 0, 0, 0, cmd, nullptr, aux_data, callback);
+		return ScriptObject::DoCommandEx(tile, 0, 0, 0, cmd, nullptr, &aux_data, callback);
 	}
 
 	/**

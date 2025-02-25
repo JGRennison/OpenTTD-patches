@@ -29,9 +29,9 @@ inline CommandCost DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, DoCommand
 	return DoCommandEx(tile, p1, p2, 0, flags, cmd, text, nullptr);
 }
 
-inline CommandCost DoCommandAux(TileIndex tile, const CommandAuxiliaryBase *aux_data, DoCommandFlag flags, uint32_t cmd)
+inline CommandCost DoCommandAux(TileIndex tile, const CommandAuxiliaryBase &aux_data, DoCommandFlag flags, uint32_t cmd)
 {
-	return DoCommandEx(tile, 0, 0, 0, flags, cmd, nullptr, aux_data);
+	return DoCommandEx(tile, 0, 0, 0, flags, cmd, nullptr, &aux_data);
 }
 
 inline CommandCost DoCommand(const BaseCommandContainer &container, DoCommandFlag flags)
@@ -46,9 +46,9 @@ inline bool DoCommandP(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, C
 	return DoCommandPEx(tile, p1, p2, 0, cmd, callback, text, nullptr, my_cmd);
 }
 
-inline bool DoCommandPAux(TileIndex tile, const CommandAuxiliaryBase *aux_data, uint32_t cmd, CommandCallback *callback = nullptr, bool my_cmd = true)
+inline bool DoCommandPAux(TileIndex tile, const CommandAuxiliaryBase &aux_data, uint32_t cmd, CommandCallback *callback = nullptr, bool my_cmd = true)
 {
-	return DoCommandPEx(tile, 0, 0, 0, cmd, callback, nullptr, aux_data, my_cmd);
+	return DoCommandPEx(tile, 0, 0, 0, cmd, callback, nullptr, &aux_data, my_cmd);
 }
 
 inline bool DoCommandP(const CommandContainer &container, bool my_cmd = true)

@@ -76,7 +76,7 @@ bool AddPlanLine(PlanID plan, TileVector tiles)
 	PlanLineCmdData data;
 	data.plan = plan;
 	data.tiles = std::move(tiles);
-	return DoCommandPAux(0, &data, CMD_ADD_PLAN_LINE);
+	return DoCommandPAux(0, data, CMD_ADD_PLAN_LINE);
 }
 
 /**
