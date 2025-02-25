@@ -177,24 +177,16 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	return CommandCost();
 }
 
-CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, const LeagueTableCmdData &data)
 {
-	CommandAuxData<LeagueTableCmdData> data;
-	CommandCost ret = data.Load(aux_data);
-	if (ret.Failed()) return ret;
-
-	auto [res, id] = CmdCreateLeagueTable(flags, data->title, data->header, data->footer);
+	auto [res, id] = CmdCreateLeagueTable(flags, data.title, data.header, data.footer);
 	res.SetResultData(id);
 	return res;
 }
 
-CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, const LeagueTableElementCmdData &data)
 {
-	CommandAuxData<LeagueTableElementCmdData> data;
-	CommandCost ret = data.Load(aux_data);
-	if (ret.Failed()) return ret;
-
-	auto [res, id] = CmdCreateLeagueTableElement(flags, data->table, data->rating, data->company, data->text_str, data->score, data->link_type, data->link_target);
+	auto [res, id] = CmdCreateLeagueTableElement(flags, data.table, data.rating, data.company, data.text_str, data.score, data.link_type, data.link_target);
 	res.SetResultData(id);
 	return res;
 }
@@ -223,3 +215,6 @@ std::string LeagueTableElementCmdData::GetDebugSummary() const
 {
 	return fmt::format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
 }
+
+template CommandCost CommandExecHelperAuxT<LeagueTableCmdData>(void *, const CommandPayload &);
+template CommandCost CommandExecHelperAuxT<LeagueTableElementCmdData>(void *, const CommandPayload &);

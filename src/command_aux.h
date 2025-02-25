@@ -92,5 +92,19 @@ public:
 	}
 };
 
+template <typename T>
+using CommandProcAuxT = CommandCost(TileIndex tile, DoCommandFlag flags, const T &aux_data);
+
+template <typename T>
+CommandCost CommandExecHelperAuxT(void *target, const CommandPayload &payload)
+{
+	CommandAuxData<T> data;
+	CommandCost ret = data.Load(payload.aux_data);
+	if (ret.Failed()) return ret;
+
+	if (payload.p1 != 0 || payload.p2 != 0 || payload.p3 != 0) return CMD_ERROR;
+	return reinterpret_cast<CommandProcAuxT<T> *>(target)(payload.tile, payload.flags, *data);
+}
+
 #endif /* COMMAND_AUX_H */
 

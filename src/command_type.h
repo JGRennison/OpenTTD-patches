@@ -719,6 +719,16 @@ struct BaseCommandContainer {
 	const char *DeserialiseBaseCommandContainer(struct DeserialisationBuffer &b, bool allow_str_ctrl);
 };
 
+struct CommandPayload {
+	TileIndex tile;
+	DoCommandFlag flags;
+	uint32_t p1;
+	uint32_t p2;
+	uint64_t p3;
+	const char *text;
+	const CommandAuxiliaryBase *aux_data;
+};
+
 /**
  * Struct representation of a command call (including callback)
  */

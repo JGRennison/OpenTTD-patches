@@ -61,15 +61,27 @@
  * @param text Additional text
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
-typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
-typedef CommandCost CommandProcAux(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data);
+using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
+using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
 
-enum CommandArgMode : uint8_t {
-	CMD_ARG_STD,
-	CMD_ARG_EX,
-	CMD_ARG_AUX,
+typedef CommandCost CommandExecHelper(void *target, const CommandPayload &payload);
+
+CommandCost CommandExecHelperStd(void *target, const CommandPayload &payload)
+{
+	if (payload.p3 != 0 || payload.aux_data != nullptr) return CMD_ERROR;
+	return reinterpret_cast<CommandProc *>(target)(payload.tile, payload.flags, payload.p1, payload.p2, payload.text);
+}
+
+CommandCost CommandExecHelperEx(void *target, const CommandPayload &payload)
+{
+	return reinterpret_cast<CommandProcEx *>(target)(payload.tile, payload.flags, payload.p1, payload.p2, payload.p3, payload.text, payload.aux_data);
+}
+
+enum CommandLoggingFlags : uint8_t {
+	CMDLF_NONE        =  0x0, ///< None
+	CMDLF_PVALUES     =  0x1, ///< Include p1/p2 values in log
 };
+DECLARE_ENUM_AS_BIT_SET(CommandLoggingFlags)
 
 /**
  * Define a command with the flags which belongs to it.
@@ -78,41 +90,29 @@ enum CommandArgMode : uint8_t {
  * the #CMD_AUTO, #CMD_OFFLINE and #CMD_SERVER values.
  */
 struct Command {
-	union {
-		CommandProc *proc;      ///< The procedure to actually execute
-		CommandProcEx *procex;  ///< The procedure to actually execute, extended parameters
-		CommandProcAux *procaux;  ///< The procedure to actually execute, only auxiliary parameter
-	};
-	const char *name;   ///< A human readable name for the procedure
-	CommandFlags flags; ///< The (command) flags to that apply to this command
-	CommandType type;   ///< The type of command.
-	CommandArgMode mode; ///< The command argument mode
+	CommandExecHelper *helper;    ///< Command proc helper
+	void *target;                 ///< Actual command proc target
+	const char *name;             ///< A human readable name for the procedure
+	CommandFlags flags;           ///< The (command) flags to that apply to this command
+	CommandType type;             ///< The type of command.
+	CommandLoggingFlags logging;  ///< Logging flags
 
 	Command(CommandProc *proc, const char *name, CommandFlags flags, CommandType type)
-			: proc(proc), name(name), flags(flags), type(type), mode(CMD_ARG_STD) {}
+			: helper(CommandExecHelperStd), target(reinterpret_cast<void *>(proc)), name(name), flags(flags), type(type), logging(CMDLF_PVALUES) {}
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
-			: procex(procex), name(name), flags(flags), type(type), mode(CMD_ARG_EX) {}
-	Command(CommandProcAux *procaux, const char *name, CommandFlags flags, CommandType type)
-			: procaux(procaux), name(name), flags(flags), type(type), mode(CMD_ARG_AUX) {}
+			: helper(CommandExecHelperEx), target(reinterpret_cast<void *>(procex)), name(name), flags(flags), type(type), logging(CMDLF_PVALUES) {}
 
-	CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data) const;
+	template <typename T>
+	Command(CommandProcAuxT<T> *proc, const char *name, CommandFlags flags, CommandType type)
+			: helper(CommandExecHelperAuxT<T>), target(reinterpret_cast<void *>(proc)), name(name), flags(flags), type(type), logging(CMDLF_NONE) {}
+
+	inline CommandCost Execute(const CommandPayload &payload) const
+	{
+		return this->helper(this->target, payload);
+	}
 };
 
-CommandCost Command::Execute(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data) const {
-	switch (this->mode) {
-		case CMD_ARG_STD:
-			return this->proc(tile, flags, p1, p2, text);
-
-		case CMD_ARG_EX:
-			return this->procex(tile, flags, p1, p2, p3, text, aux_data);
-
-		case CMD_ARG_AUX:
-			return this->procaux(tile, flags, aux_data);
-
-		default:
-			NOT_REACHED();
-	}
-}
+#define CMD_PROC_AUXT(proc, auxtype) extern template CommandCost CommandExecHelperAuxT<struct auxtype>(void *, const CommandPayload &); CommandProcAuxT<struct auxtype> proc;
 
 CommandProc CmdBuildRailroadTrack;
 CommandProc CmdRemoveRailroadTrack;
@@ -340,8 +340,8 @@ CommandProcEx CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
-CommandProcAux CmdCreateLeagueTable;
-CommandProcAux CmdCreateLeagueTableElement;
+CMD_PROC_AUXT(CmdCreateLeagueTable, LeagueTableCmdData);
+CMD_PROC_AUXT(CmdCreateLeagueTableElement, LeagueTableElementCmdData);
 CommandProc CmdUpdateLeagueTableElementData;
 CommandProcEx CmdUpdateLeagueTableElementScore;
 CommandProc CmdRemoveLeagueTableElement;
@@ -693,16 +693,16 @@ extern uint32_t _frame_counter;
 
 /**
  * This function mask the parameter with CMD_ID_MASK and returns
- * the argument mode which belongs to the given command.
+ * the log flags for the given command.
  *
  * @param cmd The integer value of the command
- * @return The argument mode for this command
+ * @return The log flags for this command
  */
-static CommandArgMode GetCommandArgMode(uint32_t cmd)
+CommandLoggingFlags GetCommandLogFlags(uint32_t cmd)
 {
 	assert(IsValidCommand(cmd));
 
-	return _command_proc_table[cmd & CMD_ID_MASK].mode;
+	return _command_proc_table[cmd & CMD_ID_MASK].logging;
 }
 
 struct CommandLogEntry {
@@ -780,7 +780,7 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 			buffer.format(", client: {:4}", entry.client_id);
 		}
 		buffer.format(" | {:{}} x {:{}} | ", TileX(entry.tile), MapDigitsX(), TileY(entry.tile), MapDigitsY());
-		if (GetCommandArgMode(entry.cmd) != CMD_ARG_AUX) {
+		if (GetCommandLogFlags(entry.cmd) & CMDLF_PVALUES) {
 			buffer.format("p1: 0x{:08X}, p2: 0x{:08X}, ", entry.p1, entry.p2);
 			if (entry.p3 != 0) {
 				buffer.format("p3: 0x{:016X}, ", entry.p3);
@@ -835,7 +835,7 @@ bool IsValidCommand(uint32_t cmd)
 {
 	cmd &= CMD_ID_MASK;
 
-	return cmd < lengthof(_command_proc_table) && _command_proc_table[cmd].proc != nullptr;
+	return cmd < lengthof(_command_proc_table) && _command_proc_table[cmd].helper != nullptr;
 }
 
 /**
@@ -937,7 +937,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, D
 	if (_docommand_recursive == 1 || !(flags & DC_EXEC) ) {
 		if (_docommand_recursive == 1) _cleared_object_areas.clear();
 		SetTownRatingTestMode(true);
-		res = command.Execute(tile, flags & ~DC_EXEC, p1, p2, p3, text, aux_data);
+		res = command.Execute({ tile, flags & ~DC_EXEC, p1, p2, p3, text, aux_data });
 		SetTownRatingTestMode(false);
 		if (res.Failed()) {
 			goto error;
@@ -959,7 +959,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, D
 	/* Execute the command here. All cost-relevant functions set the expenses type
 	 * themselves to the cost object at some point */
 	if (_docommand_recursive == 1) _cleared_object_areas.clear();
-	res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
+	res = command.Execute({ tile, flags, p1, p2, p3, text, aux_data });
 	if (res.Failed()) {
 error:
 		_docommand_recursive--;
@@ -1209,7 +1209,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	const Command &command = _command_proc_table[cmd_id];
 	/* Shouldn't happen, but you never know when someone adds
 	 * NULLs to the _command_proc_table. */
-	assert(command.proc != nullptr);
+	assert(command.helper != nullptr);
 
 	/* Command flags are used internally */
 	CommandFlags cmd_flags = GetCommandFlags(cmd);
@@ -1243,7 +1243,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	_cleared_object_areas.clear();
 	SetTownRatingTestMode(true);
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_TESTMODE);
-	CommandCost res = command.Execute(tile, flags, p1, p2, p3, text, aux_data);
+	CommandCost res = command.Execute({ tile, flags, p1, p2, p3, text, aux_data });
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_TESTMODE);
 	SetTownRatingTestMode(false);
 
@@ -1316,7 +1316,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	 * use the construction one */
 	_cleared_object_areas.clear();
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_COMMAND);
-	CommandCost res2 = command.Execute(tile, flags | DC_EXEC, p1, p2, p3, text, aux_data);
+	CommandCost res2 = command.Execute({ tile, flags | DC_EXEC, p1, p2, p3, text, aux_data });
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_COMMAND);
 
 	if (cmd_id == CMD_COMPANY_CTRL) {
