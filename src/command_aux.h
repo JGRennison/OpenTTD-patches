@@ -48,6 +48,20 @@ struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
 };
 
 template <typename T>
+inline static CommandCost DeserialiseCommandAuxFromSrc(CommandAuxiliaryDeserialisationSrc &deserialise_from, T &target)
+{
+	DeserialisationBuffer buffer(deserialise_from.src.data(), deserialise_from.src.size());
+	CommandCost res = target.Deserialise(buffer);
+	if (res.Failed()) return res;
+	if (buffer.error || buffer.pos != buffer.size) {
+		/* Other deserialisation error or wrong number of bytes read */
+		return CMD_ERROR;
+	}
+	deserialise_from.debug_summary = target.GetDebugSummaryString();
+	return res;
+}
+
+template <typename T>
 struct CommandAuxData {
 	static_assert(std::is_final_v<T>);
 
@@ -62,15 +76,8 @@ public:
 		std::optional<CommandAuxiliaryDeserialisationSrc> deserialise_from = base->GetDeserialisationSrc();
 		if (deserialise_from.has_value()) {
 			this->store = T();
-			DeserialisationBuffer buffer(deserialise_from->src.data(), deserialise_from->src.size());
-			CommandCost res = this->store->Deserialise(buffer);
-			if (res.Failed()) return res;
-			if (buffer.error || buffer.pos != buffer.size) {
-				/* Other deserialisation error or wrong number of bytes read */
-				return CMD_ERROR;
-			}
-			this->data = &(*(this->store));
-			deserialise_from->debug_summary = this->data->GetDebugSummaryString();
+			CommandCost res = DeserialiseCommandAuxFromSrc<T>(*deserialise_from, *this->store);
+			if (res.Succeeded()) this->data = &(*(this->store));
 			return res;
 		} else {
 			this->data = dynamic_cast<const T*>(base);
