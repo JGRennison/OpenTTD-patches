@@ -1492,10 +1492,37 @@ enum TraceRestrictAlterCounterOperation {
 struct TraceRestrictFollowUpCmdData final : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
 	BaseCommandContainer cmd;
 
+	TraceRestrictFollowUpCmdData() = default;
+	TraceRestrictFollowUpCmdData(BaseCommandContainer cmd) : cmd(cmd) {}
+
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
 	CommandCost Deserialise(DeserialisationBuffer &buffer);
 	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
 	void FormatDebugSummary(struct format_target &) const override;
 };
+
+struct TraceRestrictCreateSlotCmdData final : public CommandAuxiliarySerialisable<TraceRestrictCreateSlotCmdData> {
+	VehicleType vehtype = VEH_INVALID;
+	TraceRestrictSlotGroupID parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+	std::string name;
+	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
+
+	virtual void Serialise(BufferSerialisationRef buffer) const override;
+	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	void FormatDebugSummary(struct format_target &) const override;
+};
+
+template CommandCost CommandExecHelperAuxT<TraceRestrictCreateSlotCmdData>(void *, const CommandPayload &);
+
+struct TraceRestrictCreateCounterCmdData final : public CommandAuxiliarySerialisable<TraceRestrictCreateCounterCmdData> {
+	std::string name;
+	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
+
+	virtual void Serialise(BufferSerialisationRef buffer) const override;
+	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	void FormatDebugSummary(struct format_target &) const override;
+};
+
+template CommandCost CommandExecHelperAuxT<TraceRestrictCreateCounterCmdData>(void *, const CommandPayload &);
 
 #endif /* TRACERESTRICT_H */

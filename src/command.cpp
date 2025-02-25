@@ -347,7 +347,7 @@ CommandProcEx CmdUpdateLeagueTableElementScore;
 CommandProc CmdRemoveLeagueTableElement;
 
 CommandProc CmdProgramSignalTraceRestrict;
-CommandProcEx CmdCreateTraceRestrictSlot;
+CMD_PROC_AUXT(CmdCreateTraceRestrictSlot, TraceRestrictCreateSlotCmdData);
 CommandProc CmdAlterTraceRestrictSlot;
 CommandProc CmdDeleteTraceRestrictSlot;
 CommandProc CmdAddVehicleTraceRestrictSlot;
@@ -355,7 +355,7 @@ CommandProc CmdRemoveVehicleTraceRestrictSlot;
 CommandProc CmdCreateTraceRestrictSlotGroup;
 CommandProc CmdAlterTraceRestrictSlotGroup;
 CommandProc CmdDeleteTraceRestrictSlotGroup;
-CommandProcEx CmdCreateTraceRestrictCounter;
+CMD_PROC_AUXT(CmdCreateTraceRestrictCounter, TraceRestrictCreateCounterCmdData);
 CommandProc CmdAlterTraceRestrictCounter;
 CommandProc CmdDeleteTraceRestrictCounter;
 

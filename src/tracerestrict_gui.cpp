@@ -2546,17 +2546,21 @@ public:
 
 			case QSM_NEW_SLOT:
 				if (type == TRVT_SLOT_INDEX || type == TRVT_SLOT_INDEX_INT) {
-					TraceRestrictFollowUpCmdData aux;
-					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
-					DoCommandPEx(0, VEH_TRAIN, INVALID_TRACE_RESTRICT_SLOT_GROUP, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+					TraceRestrictCreateSlotCmdData data;
+					data.vehtype = VEH_TRAIN;
+					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+					data.name = std::move(*str);
+					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
+					DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
 				}
 				return;
 
 			case QSM_NEW_COUNTER:
 				if (type == TRVT_COUNTER_INDEX_INT) {
-					TraceRestrictFollowUpCmdData aux;
-					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
-					DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+					TraceRestrictCreateCounterCmdData data;
+					data.name = std::move(*str);
+					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
+					DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter);
 				}
 				return;
 
@@ -4794,7 +4798,11 @@ public:
 				case QuerySelectorMode::Rename:
 					if (this->slot_query.type == SlotItemType::Slot) {
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_ID) {
-							DoCommandP(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str());
+							TraceRestrictCreateSlotCmdData data;
+							data.vehtype = this->vli.vtype;
+							data.parent = this->slot_sel.GetClosestGroupID();
+							data.name = std::move(*str);
+							DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
 						} else {
 							DoCommandP(0, this->slot_query.id | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 						}
@@ -5295,7 +5303,9 @@ public:
 			switch (this->qto) {
 				case QTO_RENAME:
 					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
-						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str());
+						TraceRestrictCreateCounterCmdData data;
+						data.name = std::move(*str);
+						DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter);
 					} else {
 						DoCommandP(0, this->ctr_qt_op | (TRACO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
 					}

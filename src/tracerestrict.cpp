@@ -3116,7 +3116,7 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 	TraceRestrictEraseRecentSlot(index);
 }
 
-static bool IsUniqueSlotName(const char *name)
+static bool IsUniqueSlotName(std::string_view name)
 {
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		if (slot->name == name) return false;
@@ -3128,49 +3128,37 @@ static bool IsUniqueSlotName(const char *name)
  * Create a new slot.
  * @param tile unused
  * @param flags type of operation
- * @param p1 bitstuffed elements
- * - p1 = (bit 0 - 2) - vehicle type
- * @param p2   parent slot group ID
- * @param p3   unused
- * @param text new slot name
- * @param aux_data optional follow-up command
+ * @param data command data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, const TraceRestrictCreateSlotCmdData &data)
 {
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
-	if (StrEmpty(text)) return CMD_ERROR;
+	if (data.name.empty()) return CMD_ERROR;
 
-	VehicleType vehtype = Extract<VehicleType, 0, 3>(p1);
-	if (vehtype >= VEH_COMPANY_END) return CMD_ERROR;
+	if (data.vehtype >= VEH_COMPANY_END) return CMD_ERROR;
 
-	size_t length = Utf8StringLength(text);
+	size_t length = Utf8StringLength(data.name);
 	if (length <= 0) return CMD_ERROR;
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-	if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	if (!IsUniqueSlotName(data.name)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
-	const TraceRestrictSlotGroup *pg = TraceRestrictSlotGroup::GetIfValid(GB(p2, 0, 16));
+	const TraceRestrictSlotGroup *pg = TraceRestrictSlotGroup::GetIfValid(data.parent);
 	if (pg != nullptr) {
 		if (pg->owner != _current_company) return CMD_ERROR;
-		if (pg->vehicle_type != vehtype) return CMD_ERROR;
-	}
-
-	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
-	if (aux_data != nullptr) {
-		CommandCost ret = follow_up_cmd.Load(aux_data);
-		if (ret.Failed()) return ret;
+		if (pg->vehicle_type != data.vehtype) return CMD_ERROR;
 	}
 
 	CommandCost result;
 
 	if (flags & DC_EXEC) {
-		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
-		slot->name = text;
+		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
+		slot->name = data.name;
 		if (pg != nullptr) slot->parent_group = pg->index;
 		result.SetResultData(slot->index);
 
-		if (follow_up_cmd.HasData()) {
-			CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(slot->index, flags);
+		if (data.follow_up_cmd.has_value()) {
+			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index, flags);
 			if (follow_up_res.Failed()) {
 				delete slot;
 				return follow_up_res;
@@ -3180,9 +3168,9 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-	} else if (follow_up_cmd.HasData()) {
-		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
-		CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(slot->index, flags);
+	} else if (data.follow_up_cmd.has_value()) {
+		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
+		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index, flags);
 		delete slot;
 		if (follow_up_res.Failed()) return follow_up_res;
 	}
@@ -3521,7 +3509,7 @@ int32_t TraceRestrictCounter::ApplyValue(int32_t current, TraceRestrictCounterCo
 	}
 }
 
-static bool IsUniqueCounterName(const char *name)
+static bool IsUniqueCounterName(std::string_view name)
 {
 	for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
 		if (ctr->name == name) return false;
@@ -3598,36 +3586,28 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
  * Create a new counter.
  * @param tile unused
  * @param flags type of operation
- * @param p1   unused
- * @param p2   unused
- * @param text new counter name
+ * @param data new counter data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, const TraceRestrictCreateCounterCmdData &data)
 {
 	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
-	if (StrEmpty(text)) return CMD_ERROR;
+	if (data.name.empty()) return CMD_ERROR;
 
-	size_t length = Utf8StringLength(text);
+	size_t length = Utf8StringLength(data.name);
 	if (length <= 0) return CMD_ERROR;
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-	if (!IsUniqueCounterName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
-
-	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
-	if (aux_data != nullptr) {
-		CommandCost ret = follow_up_cmd.Load(aux_data);
-		if (ret.Failed()) return ret;
-	}
+	if (!IsUniqueCounterName(data.name)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 	CommandCost result;
 
 	if (flags & DC_EXEC) {
 		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
-		ctr->name = text;
+		ctr->name = data.name;
 		result.SetResultData(ctr->index);
 
-		if (follow_up_cmd.HasData()) {
-			CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+		if (data.follow_up_cmd.has_value()) {
+			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index, flags);
 			if (follow_up_res.Failed()) {
 				delete ctr;
 				return follow_up_res;
@@ -3637,9 +3617,9 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
-	} else if (follow_up_cmd.HasData()) {
+	} else if (data.follow_up_cmd.has_value()) {
 		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
-		CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index, flags);
 		delete ctr;
 		if (follow_up_res.Failed()) return follow_up_res;
 	}
@@ -3781,6 +3761,62 @@ void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) con
 	output.format("follow up: {} x {}, p1: 0x{:08X}, p2: 0x{:08X}", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.p1, this->cmd.p2);
 	if (this->cmd.p3 != 0) output.format(", p3: 0x{:016X}", this->cmd.p3);
 	output.format(", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
+}
+
+void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_uint8(this->vehtype);
+	buffer.Send_uint16(this->parent);
+	buffer.Send_bool(this->follow_up_cmd.has_value());
+	if (this->follow_up_cmd.has_value()) {
+		this->follow_up_cmd->Serialise(buffer);
+	}
+}
+
+CommandCost TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer)
+{
+	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
+	this->parent = buffer.Recv_uint16();
+	if (buffer.Recv_bool()) {
+		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer);
+		if (res.Failed()) return res;
+	}
+
+	return CommandCost();
+}
+
+void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) const
+{
+	output.format("vt: {}, parent: {:X}", this->vehtype, this->parent);
+	if (this->follow_up_cmd.has_value()) {
+		output.append(", ");
+		this->follow_up_cmd->FormatDebugSummary(output);
+	}
+}
+
+void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_bool(this->follow_up_cmd.has_value());
+	if (this->follow_up_cmd.has_value()) {
+		this->follow_up_cmd->Serialise(buffer);
+	}
+}
+
+CommandCost TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer)
+{
+	if (buffer.Recv_bool()) {
+		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer);
+		if (res.Failed()) return res;
+	}
+
+	return CommandCost();
+}
+
+void TraceRestrictCreateCounterCmdData::FormatDebugSummary(format_target &output) const
+{
+	if (this->follow_up_cmd.has_value()) {
+		this->follow_up_cmd->FormatDebugSummary(output);
+	}
 }
 
 void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner)

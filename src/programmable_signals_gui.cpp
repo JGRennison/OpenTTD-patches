@@ -529,10 +529,14 @@ public:
 					uint p2 = 0;
 					SB(p2, 0, 1, 1);
 					SB(p2, 1, 2, SCF_SLOT_COUNTER);
-					TraceRestrictFollowUpCmdData aux;
-					aux.cmd = NewBaseCommandContainerBasic(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+					TraceRestrictFollowUpCmdData aux{ NewBaseCommandContainerBasic(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION)) };
 					if (this->query_submode == QSM_NEW_SLOT) {
-						DoCommandPEx(0, VEH_TRAIN, INVALID_TRACE_RESTRICT_SLOT_GROUP, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+						TraceRestrictCreateSlotCmdData data;
+						data.vehtype = VEH_TRAIN;
+						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+						data.name = std::move(*str);
+						data.follow_up_cmd = std::move(aux);
+						DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
 					} else {
 						DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
 					}

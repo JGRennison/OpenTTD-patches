@@ -3436,9 +3436,17 @@ public:
 					NOT_REACHED();
 			}
 			if (this->query_text_widget == WID_O_COND_COUNTER) {
-				DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+				TraceRestrictCreateCounterCmdData data;
+				data.name = std::move(*str);
+				data.follow_up_cmd = std::move(aux);
+				DoCommandPAux(0, aux, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter);
 			} else {
-				DoCommandPEx(0, this->vehicle->type, INVALID_TRACE_RESTRICT_SLOT_GROUP, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+				TraceRestrictCreateSlotCmdData data;
+				data.vehtype = this->vehicle->type;
+				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+				data.name = std::move(*str);
+				data.follow_up_cmd = std::move(aux);
+				DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
 			}
 		}
 	}
