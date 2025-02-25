@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "command_func.h"
-#include "command_aux.h"
 #include "plans_base.h"
 #include "plans_func.h"
 #include "window_func.h"

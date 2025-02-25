@@ -99,7 +99,6 @@ add_files(
     clear_map.h
     cmd_helper.h
     command.cpp
-    command_aux.h
     command_func.h
     command_log.h
     command_type.h

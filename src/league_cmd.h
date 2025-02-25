@@ -10,7 +10,7 @@
 #ifndef LEAGUE_CMD_H
 #define LEAGUE_CMD_H
 
-#include "command_aux.h"
+#include "command_type.h"
 
 struct LeagueTableCmdData final : public CommandAuxiliarySerialisable<LeagueTableCmdData> {
 	std::string title;

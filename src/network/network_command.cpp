@@ -12,7 +12,6 @@
 #include "network_client.h"
 #include "network_server.h"
 #include "../command_func.h"
-#include "../command_aux.h"
 #include "../company_func.h"
 #include "../error_func.h"
 #include "../settings_type.h"

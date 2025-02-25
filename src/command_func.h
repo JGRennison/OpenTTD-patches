@@ -13,15 +13,6 @@
 #include "command_type.h"
 #include "company_type.h"
 
-/**
- * Define a default return value for a failed command.
- *
- * This variable contains a CommandCost object with is declared as "failed".
- * Other functions just need to return this error if there is an error,
- * which doesn't need to specific by a StringID.
- */
-static const CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
-
 CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr);
 
 inline CommandCost DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)

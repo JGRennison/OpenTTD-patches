@@ -44,7 +44,6 @@
 #include "../settings_internal.h"
 #ifdef DEBUG_DUMP_COMMANDS
 #	include "../fileio_func.h"
-#	include "../command_aux.h"
 #	include "../3rdparty/nlohmann/json.hpp"
 #	include <charconv>
 #endif
