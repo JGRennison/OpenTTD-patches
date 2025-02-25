@@ -28,6 +28,7 @@
 #include "../network/network.h"
 #include "../window_func.h"
 #include "../strings_func.h"
+#include "../core/bitmath_func.hpp"
 #include "../core/endian_func.hpp"
 #include "../vehicle_base.h"
 #include "../company_func.h"
@@ -723,32 +724,30 @@ void SlWriteSimpleGamma(size_t i)
 
 void RawMemoryDumper::RawWriteSimpleGamma(size_t i)
 {
-	if (i >= (1 << 7)) {
-		if (i >= (1 << 14)) {
-			if (i >= (1 << 21)) {
-				if (i >= (1 << 28)) {
-					assert(i <= UINT32_MAX); // We can only support 32 bits for now.
-					*this->buf++ = ((uint8_t)(0xF0));
-					*this->buf++ = ((uint8_t)(i >> 24));
-				} else {
-					*this->buf++ = ((uint8_t)(0xE0 | (i >> 24)));
-				}
-				*this->buf++ = ((uint8_t)(i >> 16));
-			} else {
-				*this->buf++ = ((uint8_t)(0xC0 | (i >> 16)));
-			}
-			*this->buf++ = ((uint8_t)(i >> 8));
-		} else {
-			*this->buf++ = ((uint8_t)(0x80 | (i >> 8)));
-		}
+	const uint8_t data_bits = FindLastBit(i);
+	assert(data_bits < 32);
+
+	uint8_t extra_bytes = data_bits / 7;
+	this->buf += 1 + extra_bytes;
+	uint8_t *b = this->buf;
+
+	uint8_t first_byte = 0;
+	while (extra_bytes > 0) {
+		first_byte >>= 1;
+		first_byte |= 0x80;
+		extra_bytes--;
+		b--;
+		*b = (uint8_t)i;
+		i >>= 8;
 	}
-	*this->buf++ = ((uint8_t)i);
+	b--;
+	*b = first_byte | (uint8_t)i;
 }
 
 /** Return how many bytes used to encode a gamma value */
 uint SlGetGammaLength(size_t i)
 {
-	return 1 + (i >= (1 << 7)) + (i >= (1 << 14)) + (i >= (1 << 21)) + (i >= (1 << 28));
+	return 1 + (FindLastBit(i) / 7);
 }
 
 static inline uint SlReadSparseIndex()
