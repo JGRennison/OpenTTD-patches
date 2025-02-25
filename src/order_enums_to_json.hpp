@@ -113,4 +113,12 @@ NLOHMANN_JSON_SERIALIZE_ENUM( Colours,{
 	{COLOUR_WHITE,"white"}
 })
 
+NLOHMANN_JSON_SERIALIZE_ENUM(VehicleType, {
+	{VEH_END,nullptr},
+	{VEH_TRAIN,"train"},
+	{VEH_ROAD,"road"},
+	{VEH_SHIP,"ship"},
+	{VEH_AIRCRAFT,"aircraft"}
+})
+
 #endif

@@ -291,9 +291,6 @@ std::string Order::ToJSONString() const
 	std::string out;
 	nlohmann::ordered_json json;
 
-	//TYPE NOTE TO SELF: the (raw) type is also used in conditional orders to save the operator used in comparison
-	//in this->GetConditionComparator() other then that, I believe I have fully decoded it
-
 	json["type"] = this->GetType(); 
 	
 	if (
@@ -483,7 +480,6 @@ Order Order::FromJSONString(std::string jsonSTR)
 		}
 
 		DestinationID destination = INVALID_STATION;
-
 		OrderLabelSubType labelSubtype = OLST_TEXT;
 
 		//Get basic order data required to build order
@@ -499,7 +495,7 @@ Order Order::FromJSONString(std::string jsonSTR)
 						return makeJsonErrorOrder("Data type of 'label-subtype' is invalid");
 					}
 				}
-
+				
 				if(labelSubtype != OLST_DEPARTURES_REMOVE_VIA && labelSubtype != OLST_DEPARTURES_VIA) break;
 
 				//fall through if label has destination
@@ -514,14 +510,11 @@ Order Order::FromJSONString(std::string jsonSTR)
 					} else {
 						return makeJsonErrorOrder("Data type of 'destination-id' is invalid");
 					}
+				} else if (type == OT_LABEL) {
+					return makeJsonErrorOrder("Go-via labels require 'destination-id'");
 				} else {
-					if (type == OT_LABEL) {
-						return makeJsonErrorOrder("Go-via labels require 'destination-id'");
-					} else {
-						return makeJsonErrorOrder("Order type '" + (std::string)json["order-type"] + "' requires 'destination-id' to be set");
-					}
+					return makeJsonErrorOrder("Order type '" + (std::string)json["order-type"] + "' requires 'destination-id' to be set");
 				}
-
 				break;
 
 			case OT_GOTO_DEPOT:
@@ -1284,6 +1277,8 @@ std::string OrderList::ToJSONString()
 	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
 	json["source"] = std::string(_openttd_revision);
 
+	json["vehicle-type"] = this->GetFirstSharedVehicle()->type;
+
 	if (this == nullptr) { //order list not intiailised, return an empty result
 		json["error"] = "Orderlist was not initialised";
 		return json.dump();
@@ -1294,11 +1289,15 @@ std::string OrderList::ToJSONString()
 	if (SD_data.size() != 0) {
 
 		json["game-properties"]["default-scheduled-dispatch-duration"] = getScheduledDispatchDefaultDuration();
-
+	
+		if (EconTime::UsingWallclockUnits()) {
+			json["game-properties"]["ticks-per-minute"] = _settings_time.ticks_per_minute;
+		} else {
+			json["game-properties"]["ticks-per-day"] = TicksPerCalendarDay();
+		}
+		
 		for (unsigned int i = 0; auto & SD : SD_data) {
-
 			json["scheduled-dispatch"]["schedules"][i++] = nlohmann::ordered_json::parse(SD.ToJSONString());
-
 		}
 
 	}
@@ -1341,6 +1340,7 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 
 	if (json.contains("orders")) {
 
+		std::vector<int> assignedDispatchSchedules;
 		auto &ordersJson = json["orders"];
 
 		if (ordersJson.is_array()) {
@@ -1360,7 +1360,7 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 			auto &schedules = json["scheduled-dispatch"]["schedules"];
 			if (schedules.is_array()) {
 				for (auto &it : schedules) {
-					AddNewScheduledDispatchSchedule(v->index, it.dump().c_str());
+					AddNewScheduledDispatchSchedule(v->index, it.dump().c_str());					
 				}
 			}
 		}
