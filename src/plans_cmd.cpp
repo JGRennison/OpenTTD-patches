@@ -38,7 +38,7 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_
 	return CommandCost();
 }
 
-struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
+struct PlanLineCmdData final : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 	PlanID plan;
 	TileVector tiles;
 

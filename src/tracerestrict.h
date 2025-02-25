@@ -1489,7 +1489,7 @@ enum TraceRestrictAlterCounterOperation {
 	TRACO_SET_PUBLIC,
 };
 
-struct TraceRestrictFollowUpCmdData : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
+struct TraceRestrictFollowUpCmdData final : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
 	BaseCommandContainer cmd;
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override;

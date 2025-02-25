@@ -15,6 +15,7 @@
 #include "string_type.h"
 #include "core/serialisation.hpp"
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
@@ -48,6 +49,8 @@ struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
 
 template <typename T>
 struct CommandAuxData {
+	static_assert(std::is_final_v<T>);
+
 private:
 	std::optional<T> store;
 	const T *data = nullptr;

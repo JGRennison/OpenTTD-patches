@@ -12,7 +12,7 @@
 
 #include "command_aux.h"
 
-struct LeagueTableCmdData : public CommandAuxiliarySerialisable<LeagueTableCmdData> {
+struct LeagueTableCmdData final : public CommandAuxiliarySerialisable<LeagueTableCmdData> {
 	std::string title;
 	std::string header;
 	std::string footer;
@@ -33,7 +33,7 @@ struct LeagueTableCmdData : public CommandAuxiliarySerialisable<LeagueTableCmdDa
 	}
 };
 
-struct LeagueTableElementCmdData : public CommandAuxiliarySerialisable<LeagueTableElementCmdData> {
+struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<LeagueTableElementCmdData> {
 	LeagueTableID table;
 	int64_t rating;
 	CompanyID company;
