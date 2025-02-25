@@ -1513,7 +1513,7 @@ void BaseCommandContainer::SerialiseBaseCommandContainer(BufferSerialisationRef 
 	b.Send_uint32(this->p2);
 	b.Send_uint64(this->p3);
 	b.Send_uint32(this->tile);
-	b.Send_string(this->text.c_str());
+	b.Send_string(this->text);
 
 	size_t aux_data_size_pos = b.GetSendOffset();
 	b.Send_uint16(0);
