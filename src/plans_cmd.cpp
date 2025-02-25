@@ -39,10 +39,12 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_
 }
 
 struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
+	PlanID plan;
 	TileVector tiles;
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override
 	{
+		buffer.Send_uint16(this->plan);
 		buffer.Send_uint32((uint32_t)this->tiles.size());
 		for (TileIndex t : this->tiles) {
 			buffer.Send_uint32(t);
@@ -51,6 +53,7 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 
 	CommandCost Deserialise(DeserialisationBuffer &buffer)
 	{
+		this->plan = buffer.Recv_uint16();
 		uint32_t size = buffer.Recv_uint32();
 		if (!buffer.CanRecvBytes(size * 4)) return CMD_ERROR;
 		this->tiles.resize(size);
@@ -62,42 +65,39 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 
 	std::string GetDebugSummary() const override
 	{
-		return fmt::format("{} tiles", this->tiles.size());
+		return fmt::format("Plan: {:X}, {} tiles", this->plan, this->tiles.size());
 	}
 };
+
+template CommandCost CommandExecHelperAuxT<PlanLineCmdData>(void *, const CommandPayload &);
 
 bool AddPlanLine(PlanID plan, TileVector tiles)
 {
 	PlanLineCmdData data;
+	data.plan = plan;
 	data.tiles = std::move(tiles);
-	return DoCommandPEx(0, plan, 0, 0, CMD_ADD_PLAN_LINE, nullptr, nullptr, &data);
+	return DoCommandPAux(0, &data, CMD_ADD_PLAN_LINE);
 }
 
 /**
  * Create a new line in a plan.
  * @param tile unused
  * @param flags type of operation
- * @param p1 plan id
- * @param p2 number of nodes
- * @param text list of tile indexes that compose the line
- * @param aux_data auxiliary data
+ * @param data plan data
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, const PlanLineCmdData &data)
 {
-	Plan *p = Plan::GetIfValid(p1);
+	Plan *p = Plan::GetIfValid(data.plan);
 	if (p == nullptr) return CMD_ERROR;
+
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 
-	CommandAuxData<PlanLineCmdData> data;
-	ret = data.Load(aux_data);
-	if (ret.Failed()) return ret;
-
-	if (data->tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
+	if (data.tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
 	if (flags & DC_EXEC) {
 		PlanLine &pl = p->NewLine();
-		pl.tiles = std::move(data->tiles);
+		pl.tiles = data.tiles;
 		pl.UpdateVisualExtents();
 		if (p->IsListable()) {
 			pl.SetVisibility(p->visible);

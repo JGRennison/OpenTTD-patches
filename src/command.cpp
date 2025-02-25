@@ -384,7 +384,7 @@ CommandProcEx CmdScheduledDispatchSetSlotFlags;
 CommandProc CmdScheduledDispatchRenameTag;
 
 CommandProc CmdAddPlan;
-CommandProcEx CmdAddPlanLine;
+CMD_PROC_AUXT(CmdAddPlanLine, PlanLineCmdData);
 CommandProc CmdRemovePlan;
 CommandProc CmdRemovePlanLine;
 CommandProc CmdChangePlanVisibility;
