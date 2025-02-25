@@ -766,15 +766,21 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 			return (entry.log_flags & CLEF_SCRIPT_ASYNC) ? 'A' : 'a';
 		};
 
+		auto cmdflag = [&](FlaggedCommands flag, char c) -> char {
+			return entry.cmd & flag ? c : '-';
+		};
+
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
 		buffer.format("{:4}-{:02}-{:02}, {:2}, {:3}", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
 		if (_networking) {
 			buffer.format(", {:08X}", entry.frame_counter);
 		}
-		buffer.format(" | {}{}{}{}{}{}{}{}{}{}{} | ",
+		buffer.format(" | {}{}{}{}{}{}{}{}{}{}{}{}{} | ",
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
 				script_fc(), fc(CLEF_AUX_DATA, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
-				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
+				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'),
+				cmdflag(CMD_NETWORK_COMMAND, 'N'), cmdflag(CMD_NO_SHIFT_ESTIMATE, 'S')
+				);
 		buffer.format("cc: {:3}, lc: {:3}", (uint) entry.current_company, (uint) entry.local_company);
 		if (_network_server) {
 			buffer.format(", client: {:4}", entry.client_id);
@@ -786,7 +792,7 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 				buffer.format("p3: 0x{:016X}, ", entry.p3);
 			}
 		}
-		buffer.format("cmd: 0x{:08X} ({})", entry.cmd, GetCommandName(entry.cmd));
+		buffer.format("cmd: 0x{:02X} ({})", entry.cmd & CMD_ID_MASK, GetCommandName(entry.cmd));
 
 		if (!entry.text.empty()) {
 			buffer.format(" [{}]", entry.text);
