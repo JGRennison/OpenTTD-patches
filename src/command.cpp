@@ -43,6 +43,77 @@
 
 #include "safeguards.h"
 
+/**
+ * Defines the callback type for all command handler functions.
+ *
+ * This type defines the function header for all functions which handles a CMD_* command.
+ * A command handler use the parameters to act according to the meaning of the command.
+ * The tile parameter defines the tile to perform an action on.
+ * The flag parameter is filled with flags from the DC_* enumeration. The parameters
+ * p1 and p2 are filled with parameters for the command like "which road type", "which
+ * order" or "direction". Each function should mentioned in there doxygen comments
+ * the usage of these parameters.
+ *
+ * @param tile The tile to apply a command on
+ * @param flags Flags for the command, from the DC_* enumeration
+ * @param p1 Additional data for the command
+ * @param p2 Additional data for the command
+ * @param text Additional text
+ * @return The CommandCost of the command, which can be succeeded or failed.
+ */
+typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
+typedef CommandCost CommandProcAux(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data);
+
+enum CommandArgMode : uint8_t {
+	CMD_ARG_STD,
+	CMD_ARG_EX,
+	CMD_ARG_AUX,
+};
+
+/**
+ * Define a command with the flags which belongs to it.
+ *
+ * This struct connect a command handler function with the flags created with
+ * the #CMD_AUTO, #CMD_OFFLINE and #CMD_SERVER values.
+ */
+struct Command {
+	union {
+		CommandProc *proc;      ///< The procedure to actually execute
+		CommandProcEx *procex;  ///< The procedure to actually execute, extended parameters
+		CommandProcAux *procaux;  ///< The procedure to actually execute, only auxiliary parameter
+	};
+	const char *name;   ///< A human readable name for the procedure
+	CommandFlags flags; ///< The (command) flags to that apply to this command
+	CommandType type;   ///< The type of command.
+	CommandArgMode mode; ///< The command argument mode
+
+	Command(CommandProc *proc, const char *name, CommandFlags flags, CommandType type)
+			: proc(proc), name(name), flags(flags), type(type), mode(CMD_ARG_STD) {}
+	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
+			: procex(procex), name(name), flags(flags), type(type), mode(CMD_ARG_EX) {}
+	Command(CommandProcAux *procaux, const char *name, CommandFlags flags, CommandType type)
+			: procaux(procaux), name(name), flags(flags), type(type), mode(CMD_ARG_AUX) {}
+
+	CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data) const;
+};
+
+CommandCost Command::Execute(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data) const {
+	switch (this->mode) {
+		case CMD_ARG_STD:
+			return this->proc(tile, flags, p1, p2, text);
+
+		case CMD_ARG_EX:
+			return this->procex(tile, flags, p1, p2, p3, text, aux_data);
+
+		case CMD_ARG_AUX:
+			return this->procaux(tile, flags, aux_data);
+
+		default:
+			NOT_REACHED();
+	}
+}
+
 CommandProc CmdBuildRailroadTrack;
 CommandProc CmdRemoveRailroadTrack;
 CommandProc CmdBuildSingleRail;
