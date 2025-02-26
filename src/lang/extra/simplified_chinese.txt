@@ -1004,6 +1004,8 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :日
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :月
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :延误
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :早点
+STR_TRACE_RESTRICT_GUI_LABEL                                    :文字标签
+STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}标签：{POP_COLOUR}{STRING}
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :下个发车时间
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :最后一个发车时间
@@ -1719,25 +1721,25 @@ STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}从单�
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}按住 <Ctrl> 键操作以以创建组
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :经由并在 {WAYPOINT} 掉头
-STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :不停车经由并在 {WAYPOINT} 掉头
+STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :直达经由并在 {WAYPOINT} 掉头
 STR_ORDER_SELL_ORDER                                            :（卖出载具）
 STR_ORDER_CARGO_TYPE_LOAD                                       :（以货物类型装载）
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :（卸载并以货物类型装载）
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :（联运并以货物类型装载）
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :（不卸载并以货物类型装载）
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :（卸载，以货物类型装载）
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :（联运，以货物类型装载）
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :（不卸载，以货物类型装载）
 STR_ORDER_CARGO_TYPE_UNLOAD                                     :（以货物类型卸载）
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :（以货物类型卸载并等待装满货物）
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :（以货物类型卸载并等待装满任意货物）
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :（以货物类型卸载并空车离开）
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :（以货物类型卸载并以货物类型装载）
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :（以货物类型装载，允许自动改装为运载{STRING}）
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :（卸载且以货物类型装载，允许自动改装为运载{STRING}）
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :（联运且以货物类型装载，允许自动改装为运载{STRING}）
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :（不卸货且以货物类型装载，允许自动改装为运载{STRING}）
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :（以货物类型卸载且装载，允许自动改装为运载{STRING}）
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :（以货物类型卸载且装满所有货物，允许自动改装为运载{STRING}）
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :（以货物类型卸载且装满任意货物，允许自动改装为运载{STRING}）
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :（以货物类型卸载且以货物类型装载，允许自动改装为运载{STRING}）
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :（以货物类型卸载，等待满载）
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :（以货物类型卸载，等待任一货物满载）
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :（以货物类型卸载，空车离开）
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :（以货物类型卸载，以货物类型装载）
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :（改装为运载{STRING}后以货物类型装载）
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :（卸载，改装为运载{STRING}后以货物类型装载）
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :（联运，改装为运载{STRING}后以货物类型装载）
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :（不卸载，改装为运载{STRING}后以货物类型装载）
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :（以货物类型卸载，改装为运载{STRING}后装载）
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :（以货物类型卸载，改装为运载{STRING}后等待满载）
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :（以货物类型卸载，改装为运载{STRING}后等待任一货物满载）
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :（以货物类型卸载，改装为运载{STRING}后以货物类型装载）
 
 STR_ORDER_RV_DIR_ANY                                            :[任意方向]
 STR_ORDER_RV_DIR_NE                                             :[东北方]
@@ -1815,6 +1817,7 @@ STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}时刻�
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}无法自动分离：仅有一部载具使用此时刻表
 STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}无法自动分离：调度计划中有条件性命令
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}无法自动分离：缺失等待时间或运行时间
+STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}当使用自动分离时，调度计划中的所有命令都应为直达命令
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}不建议为包含满载命令的调度计划制定时刻表
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}自动填充选项只会选择性更新条件性命令被执行的部分
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}游戏不会为所有条件性命令分支运行时间制定时刻表时间
