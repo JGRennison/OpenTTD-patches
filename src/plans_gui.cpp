@@ -440,7 +440,7 @@ public:
 			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->SetString(_current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC);
 			this->SetWidgetDisabledState(WID_PLN_TAKE_OWNERSHIP, Company::IsValidID(_current_plan->owner) || IsNonAdminNetworkClient());
-			this->rename_sel->SetDisplayedPlane(Company::IsValidID(_current_plan->owner) || !Company::IsValidID(_current_company) ? 0 : 1);
+			this->rename_sel->SetDisplayedPlane(Company::IsValidID(_current_plan->owner) || !Company::IsValidID(_local_company) ? 0 : 1);
 		} else {
 			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR, WID_PLN_TAKE_OWNERSHIP);
 			this->rename_sel->SetDisplayedPlane(0);
