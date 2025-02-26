@@ -43,7 +43,7 @@ struct fmt::formatter<E, Char, std::enable_if_t<std::is_enum<E>::value>> : fmt::
 };
 
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value>> : fmt::formatter<typename T::BaseType> {
+struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_format_as_base, T>::value>> : fmt::formatter<typename T::BaseType> {
 	using underlying_type = typename T::BaseType;
 	using parent = typename fmt::formatter<underlying_type>;
 

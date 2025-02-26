@@ -341,6 +341,9 @@ typedef uint64_t unaligned_uint64;
 /* This is an inheritable tag, to enable looking for a fmt_format_value method, which takes a struct format_target & */
 struct fmt_formattable{};
 
+/* This is an inheritable tag, to enable formatting by calling base() */
+struct fmt_format_as_base{};
+
 /* JSON: Don't include IO stream headers/support */
 #define JSON_NO_IO
 

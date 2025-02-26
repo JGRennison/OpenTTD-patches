@@ -293,7 +293,7 @@ namespace StrongType {
 	 * @tparam TProperties A list of mixins to add to the class.
 	 */
 	template <typename TBaseType, typename TTag, typename... TProperties>
-	struct EMPTY_BASES Typedef : public StrongTypedefBase, public TProperties::template mixin<Typedef<TBaseType, TTag, TProperties...>, TBaseType>... {
+	struct EMPTY_BASES Typedef : public StrongTypedefBase, public fmt_format_as_base, public TProperties::template mixin<Typedef<TBaseType, TTag, TProperties...>, TBaseType>... {
 		using BaseType = TBaseType;
 
 		constexpr Typedef() = default;
@@ -341,7 +341,7 @@ namespace StrongType {
 	 * @tparam TProperties A list of mixins to add to the class.
 	 */
 	template <typename TTypedef, typename... TProperties>
-	struct EMPTY_BASES BaseRefTypedef : public StrongTypedefBase, public TProperties::template mixin<BaseRefTypedef<TTypedef, TProperties...>, typename TTypedef::BaseType>... {
+	struct EMPTY_BASES BaseRefTypedef : public StrongTypedefBase, public fmt_format_as_base, public TProperties::template mixin<BaseRefTypedef<TTypedef, TProperties...>, typename TTypedef::BaseType>... {
 		using ValueType = TTypedef;
 		using BaseType = typename TTypedef::BaseType;
 

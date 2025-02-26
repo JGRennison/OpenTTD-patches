@@ -21,7 +21,7 @@
  * @param T     the type these integers are stored with.
  */
 template <class T>
-class OverflowSafeInt
+class OverflowSafeInt : public fmt_format_as_base
 {
 private:
 	static constexpr T T_MAX = std::numeric_limits<T>::max();
@@ -31,6 +31,8 @@ private:
 	T m_value;
 	typedef typename std::make_unsigned<T>::type T_unsigned;
 public:
+	using BaseType = T;
+
 	constexpr OverflowSafeInt() : m_value(0) { }
 
 	constexpr OverflowSafeInt(const OverflowSafeInt &other) : m_value(other.m_value) { }
@@ -176,6 +178,8 @@ public:
 
 	static inline constexpr OverflowSafeInt<T> max() { return T_MAX; }
 	static inline constexpr OverflowSafeInt<T> min() { return T_MIN; }
+
+	BaseType base() const noexcept { return this->m_value; }
 };
 
 
