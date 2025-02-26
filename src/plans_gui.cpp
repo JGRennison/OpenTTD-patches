@@ -260,7 +260,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN, CcAddPlan);
+				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS), CcAddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -268,9 +268,9 @@ public:
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
 					if (this->list[this->selected].is_plan) {
-						DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_REMOVE_PLAN);
+						DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_REMOVE_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 					} else {
-						DoCommandPOld(0, this->list[this->selected].plan_id, this->list[this->selected].line_id, CMD_REMOVE_PLAN_LINE);
+						DoCommandPOld(0, this->list[this->selected].plan_id, this->list[this->selected].line_id, CMD_REMOVE_PLAN_LINE | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 					}
 				}
 				break;
@@ -293,7 +293,7 @@ public:
 
 			case WID_PLN_TAKE_OWNERSHIP: {
 				if (_current_plan != nullptr && !IsNonAdminNetworkClient()) {
-					DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN);
+					DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				}
 				break;
 			}
