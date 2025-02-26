@@ -11,6 +11,7 @@
 #define COMMAND_TYPE_H
 
 #include "economy_type.h"
+#include "string_type.h"
 #include "strings_type.h"
 #include "tile_type.h"
 #include "core/serialisation.hpp"
@@ -678,6 +679,7 @@ struct CommandSerialisationBuffer;
 struct CommandAuxiliaryDeserialisationSrc {
 	std::span<const uint8_t> src;
 	std::string &debug_summary;
+	StringValidationSettings default_string_validation{};
 };
 
 struct CommandAuxiliaryBase {
@@ -763,6 +765,7 @@ inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32_t p1, ui
 struct CommandAuxiliarySerialised final : public CommandAuxiliaryBase {
 	std::vector<uint8_t> serialised_data;
 	mutable std::string debug_summary;
+	StringValidationSettings default_string_validation{};
 
 	CommandAuxiliaryBase *Clone() const override
 	{
@@ -771,7 +774,7 @@ struct CommandAuxiliarySerialised final : public CommandAuxiliaryBase {
 
 	virtual std::optional<CommandAuxiliaryDeserialisationSrc> GetDeserialisationSrc() const override
 	{
-		return CommandAuxiliaryDeserialisationSrc{ std::span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()), this->debug_summary };
+		return CommandAuxiliaryDeserialisationSrc{ std::span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()), this->debug_summary, this->default_string_validation };
 	}
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
@@ -793,7 +796,7 @@ template <typename T>
 inline static CommandCost DeserialiseCommandAuxFromSrc(CommandAuxiliaryDeserialisationSrc &deserialise_from, T &target)
 {
 	DeserialisationBuffer buffer(deserialise_from.src.data(), deserialise_from.src.size());
-	CommandCost res = target.Deserialise(buffer);
+	CommandCost res = target.Deserialise(buffer, deserialise_from.default_string_validation);
 	if (res.Failed()) return res;
 	if (buffer.error || buffer.pos != buffer.size) {
 		/* Other deserialisation error or wrong number of bytes read */

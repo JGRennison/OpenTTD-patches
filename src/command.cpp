@@ -1544,10 +1544,11 @@ const char *BaseCommandContainer::DeserialiseBaseCommandContainer(Deserialisatio
 
 	uint16_t aux_data_size = b.Recv_uint16();
 	if (aux_data_size > 0 && b.CanRecvBytes(aux_data_size, true)) {
-		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
-		this->aux_data.reset(aux_data);
-		aux_data->serialised_data.resize(aux_data_size);
-		b.Recv_binary((aux_data->serialised_data.data()), aux_data_size);
+		auto aux = std::make_unique<CommandAuxiliarySerialised>();
+		aux->default_string_validation = settings;
+		aux->serialised_data.resize(aux_data_size);
+		b.Recv_binary(aux->serialised_data.data(), aux_data_size);
+		this->aux_data = std::move(aux);
 	}
 	return nullptr;
 }

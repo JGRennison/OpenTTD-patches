@@ -1495,7 +1495,7 @@ struct TraceRestrictFollowUpCmdData final : public CommandAuxiliarySerialisable<
 	TraceRestrictFollowUpCmdData(BaseCommandContainer cmd) : cmd(cmd) {}
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
 	void FormatDebugSummary(struct format_target &) const override;
 };
@@ -1507,7 +1507,7 @@ struct TraceRestrictCreateSlotCmdData final : public CommandAuxiliarySerialisabl
 	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
@@ -1518,7 +1518,7 @@ struct TraceRestrictCreateCounterCmdData final : public CommandAuxiliarySerialis
 	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
 
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 	void FormatDebugSummary(struct format_target &) const override;
 };
 

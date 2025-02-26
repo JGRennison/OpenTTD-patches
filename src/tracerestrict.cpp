@@ -3724,7 +3724,7 @@ void TraceRestrictFollowUpCmdData::Serialise(BufferSerialisationRef buffer) cons
 	this->cmd.SerialiseBaseCommandContainer(buffer);
 }
 
-CommandCost TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer)
+CommandCost TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	const char *err = this->cmd.DeserialiseBaseCommandContainer(buffer, false);
 	if (err != nullptr) return CMD_ERROR;
@@ -3773,12 +3773,12 @@ void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) co
 	}
 }
 
-CommandCost TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer)
+CommandCost TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
 	this->parent = buffer.Recv_uint16();
 	if (buffer.Recv_bool()) {
-		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer);
+		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation);
 		if (res.Failed()) return res;
 	}
 
@@ -3802,10 +3802,10 @@ void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer)
 	}
 }
 
-CommandCost TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer)
+CommandCost TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	if (buffer.Recv_bool()) {
-		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer);
+		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation);
 		if (res.Failed()) return res;
 	}
 

@@ -50,7 +50,7 @@ struct PlanLineCmdData final : public CommandAuxiliarySerialisable<PlanLineCmdDa
 		}
 	}
 
-	CommandCost Deserialise(DeserialisationBuffer &buffer)
+	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 	{
 		this->plan = buffer.Recv_uint16();
 		uint32_t size = buffer.Recv_uint32();
