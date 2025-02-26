@@ -296,7 +296,7 @@ public:
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
-				DoCommandP(this->tile, p1, 0, CMD_REMOVE_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_REMOVE_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, 0, CMD_REMOVE_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_REMOVE_INSTRUCTION));
 				this->RebuildInstructionList();
 			} break;
 
@@ -395,7 +395,7 @@ public:
 			} break;
 
 			case PROGRAM_WIDGET_REMOVE_PROGRAM: {
-				DoCommandP(this->tile, this->track | (SPMC_REMOVE << 3), 0, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandPOld(this->tile, this->track | (SPMC_REMOVE << 3), 0, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				this->RebuildInstructionList();
 			} break;
 
@@ -445,7 +445,7 @@ public:
 				ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
 				return;
 			}
-			DoCommandP(this->tile, this->track | (SPMC_CLONE << 3) | (track1 << 7), tile1, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
+			DoCommandPOld(this->tile, this->track | (SPMC_CLONE << 3) | (track1 << 7), tile1, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
 			ResetObjectToPlace();
 			this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
 			this->RebuildInstructionList();
@@ -504,7 +504,7 @@ public:
 		SB(p2, 1, 4,  td);
 		SB(p2, 5, 27, tile1);
 
-		DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+		DoCommandPOld(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 		ResetObjectToPlace();
 		this->RaiseWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		//OnPaint(); // this appears to cause visual artefacts
@@ -555,7 +555,7 @@ public:
 			SB(p2, 1, 2, SCF_VALUE);
 			SB(p2, 3, 27, value);
 
-			DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+			DoCommandPOld(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 		}
 	}
 
@@ -571,7 +571,7 @@ public:
 				SB(p1, 3, 16, ins->Id());
 				SB(p1, 19, 8, OpcodeForIndex(index));
 
-				DoCommandP(this->tile, p1, 0, CMD_INSERT_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, 0, CMD_INSERT_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
 				this->RebuildInstructionList();
 				break;
 			}
@@ -581,7 +581,7 @@ public:
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
-				DoCommandP(this->tile, p1, index, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, index, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				break;
 			}
 
@@ -593,7 +593,7 @@ public:
 				SB(p2, 0, 1, 0);
 				SB(p2, 1, 8, index);
 
-				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				break;
 			}
 
@@ -606,7 +606,7 @@ public:
 				SB(p2, 1, 2, SCF_COMPARATOR);
 				SB(p2, 3, 27, index);
 
-				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				break;
 			}
 
@@ -637,7 +637,7 @@ public:
 					TraceRestrictRecordRecentCounter(index);
 				}
 
-				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+				DoCommandPOld(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 			}
 		}
 	}

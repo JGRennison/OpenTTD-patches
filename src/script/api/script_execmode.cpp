@@ -16,7 +16,7 @@
 
 bool ScriptExecMode::ModeProc()
 {
-	/* In execution mode we only return 'true', telling the DoCommand it
+	/* In execution mode we only return 'true', telling the DoCommandOld it
 	 *  should continue with the real execution of the command. */
 	return true;
 }

@@ -1156,7 +1156,7 @@ void ExecuteCommandQueue()
 	while (!_command_queue.empty()) {
 		Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 		cur_company.Change(_command_queue.front().company);
-		DoCommandP(_command_queue.front().cmd);
+		DoCommandPContainer(_command_queue.front().cmd);
 		cur_company.Restore();
 		_command_queue.pop_front();
 	}
@@ -1170,7 +1170,7 @@ void ClearCommandQueue()
 void EnqueueDoCommandP(CommandContainer cmd)
 {
 	if (_docommand_recursive == 0) {
-		DoCommandP(cmd);
+		DoCommandPContainer(cmd);
 	} else {
 		CommandQueueItem &item = _command_queue.emplace_back();
 		item.cmd = std::move(cmd);

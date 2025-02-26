@@ -107,7 +107,7 @@
 
 	EnforcePrecondition(false, IsValidLink(Link((::LinkType)link_type, link_target)));
 
-	return ScriptObject::DoCommand(0, element | (c << 16) | (link_type << 24), link_target, CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA, encoded_text);
+	return ScriptObject::DoCommandOld(0, element | (c << 16) | (link_type << 24), link_target, CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA, encoded_text);
 }
 
 /* static */ bool ScriptLeagueTable::UpdateElementScore(LeagueTableElementID element, SQInteger rating, Text *score)
@@ -129,5 +129,5 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidLeagueTableElement(element));
 
-	return ScriptObject::DoCommand(0, element, 0, CMD_REMOVE_LEAGUE_TABLE_ELEMENT);
+	return ScriptObject::DoCommandOld(0, element, 0, CMD_REMOVE_LEAGUE_TABLE_ELEMENT);
 }

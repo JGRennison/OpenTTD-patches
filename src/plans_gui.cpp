@@ -260,7 +260,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				DoCommandP(0, 0, 0, CMD_ADD_PLAN, CcAddPlan);
+				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN, CcAddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -268,9 +268,9 @@ public:
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
 					if (this->list[this->selected].is_plan) {
-						DoCommandP(0, this->list[this->selected].plan_id, 0, CMD_REMOVE_PLAN);
+						DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_REMOVE_PLAN);
 					} else {
-						DoCommandP(0, this->list[this->selected].plan_id, this->list[this->selected].line_id, CMD_REMOVE_PLAN_LINE);
+						DoCommandPOld(0, this->list[this->selected].plan_id, this->list[this->selected].line_id, CMD_REMOVE_PLAN_LINE);
 					}
 				}
 				break;
@@ -293,7 +293,7 @@ public:
 
 			case WID_PLN_TAKE_OWNERSHIP: {
 				if (_current_plan != nullptr && !IsNonAdminNetworkClient()) {
-					DoCommandP(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN);
+					DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN);
 				}
 				break;
 			}
@@ -419,7 +419,7 @@ public:
 	{
 		if (_current_plan == nullptr || !str.has_value()) return;
 
-		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str->c_str());
+		DoCommandPOld(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str->c_str());
 	}
 
 	bool AllPlansHidden() const

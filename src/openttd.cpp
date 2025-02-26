@@ -1082,7 +1082,7 @@ static void OnStartGame(bool dedicated_server)
 		SetLocalCompany(dedicated_server ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
 	}
 	if (_ctrl_pressed && !dedicated_server) {
-		DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 	}
 
 	NetworkOnGameStart();
@@ -1101,7 +1101,7 @@ static void MakeNewGameDone()
 	/* In a dedicated server, the server does not play */
 	if (!VideoDriver::GetInstance()->HasGUI()) {
 		OnStartGame(true);
-		if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		if (_settings_client.gui.pause_on_newgame) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 		return;
 	}
 
@@ -1122,7 +1122,7 @@ static void MakeNewGameDone()
 	}
 
 	if (_settings_client.gui.starting_colour_secondary != COLOUR_END && HasBit(_loaded_newgrf_features.used_liveries, LS_DEFAULT)) {
-		DoCommandP(0, LS_DEFAULT | 1 << 8, _settings_client.gui.starting_colour_secondary, CMD_SET_COMPANY_COLOUR);
+		DoCommandPOld(0, LS_DEFAULT | 1 << 8, _settings_client.gui.starting_colour_secondary, CMD_SET_COMPANY_COLOUR);
 	}
 
 	OnStartGame(false);
@@ -1136,7 +1136,7 @@ static void MakeNewGameDone()
 		NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 	}
 
-	if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+	if (_settings_client.gui.pause_on_newgame) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 	CheckEngines();
 	CheckIndustries();
@@ -1381,7 +1381,7 @@ void SwitchToMode(SwitchMode new_mode)
 				}
 				OnStartGame(_network_dedicated);
 				/* Decrease pause counter (was increased from opening load dialog) */
-				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
+				DoCommandPOld(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 			}
 
 			UpdateSocialIntegration(GM_NORMAL);
@@ -1415,7 +1415,7 @@ void SwitchToMode(SwitchMode new_mode)
 				GenerateSavegameId();
 				_settings_newgame.game_creation.starting_year = CalTime::CurYear();
 				/* Cancel the saveload pausing */
-				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
+				DoCommandPOld(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 			} else {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			}

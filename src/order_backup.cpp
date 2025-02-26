@@ -71,7 +71,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 {
 	/* If we had shared orders, recover that */
 	if (this->clone != nullptr) {
-		DoCommand(0, v->index | CO_SHARE << 30, this->clone->index, DC_EXEC, CMD_CLONE_ORDER);
+		DoCommandOld(0, v->index | CO_SHARE << 30, this->clone->index, DC_EXEC, CMD_CLONE_ORDER);
 	} else if (!this->orders.empty() && OrderList::CanAllocateItem()) {
 		v->orders = new OrderList(std::move(this->orders), v);
 		this->orders.clear();
@@ -93,7 +93,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 	if (v->cur_timetable_order_index >= v->GetNumOrders()) v->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 
 	/* Restore vehicle group */
-	DoCommand(0, this->group, v->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
+	DoCommandOld(0, this->group, v->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
 }
 
 /**
@@ -174,7 +174,7 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32_t p1
 		/* If it's not a backup of us, ignore it. */
 		if (ob->user != user) continue;
 
-		DoCommandP(0, 0, user, CMD_CLEAR_ORDER_BACKUP);
+		DoCommandPOld(0, 0, user, CMD_CLEAR_ORDER_BACKUP);
 		return;
 	}
 }

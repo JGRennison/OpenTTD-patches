@@ -435,7 +435,7 @@ void RemoveAllTrees()
 
 	for (TileIndex tile = 0; tile < MapSize(); tile++) {
 		if (GetTileType(tile) == MP_TREES) {
-			DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+			DoCommandPOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
 		}
 	}
 }
@@ -620,7 +620,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 					switch (GetRawClearGround(tile)) {
 						case CLEAR_FIELDS:
 						case CLEAR_ROCKS: {
-							CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+							CommandCost ret = DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 							if (ret.Failed()) return ret;
 							cost.AddCost(ret);
 							break;
@@ -1120,7 +1120,7 @@ void InitializeTrees()
 
 static CommandCost TerraformTile_Trees(TileIndex tile, DoCommandFlag flags, int, Slope)
 {
-	return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 }
 
 

@@ -1078,8 +1078,8 @@ struct ScriptDebugWindow : public Window {
 					break;
 				}
 				/* First kill the company of the AI, then start a new one. This should start the current AI again */
-				DoCommandP(0, CCA_DELETE | this->filter.script_debug_company << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
-				DoCommandP(0, CCA_NEW_AI | this->filter.script_debug_company << 16, 0, CMD_COMPANY_CTRL);
+				DoCommandPOld(0, CCA_DELETE | this->filter.script_debug_company << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+				DoCommandPOld(0, CCA_NEW_AI | this->filter.script_debug_company << 16, 0, CMD_COMPANY_CTRL);
 				break;
 
 			case WID_SCRD_SETTINGS:
@@ -1118,7 +1118,7 @@ struct ScriptDebugWindow : public Window {
 						}
 						if (all_unpaused) {
 							/* All scripts have been unpaused => unpause the game. */
-							DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
+							DoCommandPOld(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
 						}
 					}
 				}
@@ -1171,7 +1171,7 @@ struct ScriptDebugWindow : public Window {
 
 					/* Pause the game. */
 					if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-						DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+						DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 					}
 
 					/* Highlight row that matched */

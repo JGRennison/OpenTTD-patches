@@ -898,7 +898,7 @@ DEF_CONSOLE_CMD(ConPauseGame)
 	}
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-		DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 		if (!_networking) IConsolePrint(CC_DEFAULT, "Game paused.");
 	} else {
 		IConsolePrint(CC_DEFAULT, "Game is already paused.");
@@ -920,7 +920,7 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 	}
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) != PM_UNPAUSED) {
-		DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
+		DoCommandPOld(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
 		if (!_networking) IConsolePrint(CC_DEFAULT, "Game unpaused.");
 	} else if ((_pause_mode & PM_PAUSED_ERROR) != PM_UNPAUSED) {
 		IConsolePrint(CC_DEFAULT, "Game is in error state and cannot be unpaused via console.");
@@ -941,7 +941,7 @@ DEF_CONSOLE_CMD(ConStepGame)
 	}
 	auto n = (argc > 1 ? atoi(argv[1]) : 1);
 
-	DoCommandP(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
+	DoCommandPOld(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
 
 	return true;
 }
@@ -1169,7 +1169,7 @@ DEF_CONSOLE_CMD(ConResetCompany)
 	}
 
 	/* It is safe to remove this company */
-	DoCommandP(0, CCA_DELETE | index << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_DELETE | index << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;
@@ -1193,7 +1193,7 @@ DEF_CONSOLE_CMD(ConOfferCompanySale)
 		return true;
 	}
 
-	DoCommandP(0, CCA_SALE | index << 16, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_SALE | index << 16, 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
 
 	return true;
@@ -1222,7 +1222,7 @@ DEF_CONSOLE_CMD(ConMergeCompanies)
 		return true;
 	}
 
-	DoCommandP(0, CCA_MERGE | (main_company << 16) | (to_merge_company << 24), 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_MERGE | (main_company << 16) | (to_merge_company << 24), 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "Companies merged.");
 
 	return true;
@@ -1610,7 +1610,7 @@ DEF_CONSOLE_CMD(ConStartAI)
 	}
 
 	/* Start a new AI company */
-	DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
 
 	return true;
 }
@@ -1646,8 +1646,8 @@ DEF_CONSOLE_CMD(ConReloadAI)
 	}
 
 	/* First kill the company of the AI, then start a new one. This should start the current AI again */
-	DoCommandP(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
-	DoCommandP(0, CCA_NEW_AI | company_id << 16, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_NEW_AI | company_id << 16, 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "AI reloaded.");
 
 	return true;
@@ -1684,7 +1684,7 @@ DEF_CONSOLE_CMD(ConStopAI)
 	}
 
 	/* Now kill the company of the AI. */
-	DoCommandP(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "AI stopped, company deleted.");
 
 	return true;
@@ -2231,7 +2231,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Add(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandP(0, CALCA_ADD, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
+				DoCommandPOld(0, CALCA_ADD, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
 			}
 			IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			return;
@@ -2246,7 +2246,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Remove(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandP(0, CALCA_REMOVE, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
+				DoCommandPOld(0, CALCA_REMOVE, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
 			}
 			IConsolePrint(CC_INFO, "Removed {} from {}.", authorized_key, name);
 			return;
@@ -3530,7 +3530,7 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 
 	bool broadcast = (argc == 2 && atoi(argv[1]) > 0 && (!_networking || _network_server));
 	if (broadcast) {
-		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
+		DoCommandPOld(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
 		auto logger = [&](std::string_view str) {
 			IConsolePrint(CC_WARNING, std::string{str});
@@ -3833,7 +3833,7 @@ DEF_CONSOLE_CMD(ConDeleteCompany)
 		return true;
 	}
 
-	DoCommandP(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;

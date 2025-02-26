@@ -96,11 +96,11 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 
 	/* For rail we do nothing special */
 	if (vehicle_type == ScriptVehicle::VT_RAIL) {
-		return ScriptObject::DoCommand(start, type, 0, CMD_BUILD_TUNNEL);
+		return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL);
 	}
 
 	ScriptObject::SetCallbackVariable(0, start);
-	return ScriptObject::DoCommand(start, type, 0, CMD_BUILD_TUNNEL, nullptr, &::_DoCommandReturnBuildTunnel1);
+	return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL, nullptr, &::_DoCommandReturnBuildTunnel1);
 }
 
 /* static */ bool ScriptTunnel::_BuildTunnelRoad1()
@@ -114,7 +114,7 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::DoCommand(start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2) | (ScriptObject::GetRoadType() << 4), INVALID_TOWN, CMD_BUILD_ROAD, nullptr, &::_DoCommandReturnBuildTunnel2);
+	return ScriptObject::DoCommandOld(start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2) | (ScriptObject::GetRoadType() << 4), INVALID_TOWN, CMD_BUILD_ROAD, nullptr, &::_DoCommandReturnBuildTunnel2);
 }
 
 /* static */ bool ScriptTunnel::_BuildTunnelRoad2()
@@ -128,7 +128,7 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::DoCommand(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1) | (ScriptObject::GetRoadType() << 4), INVALID_TOWN, CMD_BUILD_ROAD);
+	return ScriptObject::DoCommandOld(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1) | (ScriptObject::GetRoadType() << 4), INVALID_TOWN, CMD_BUILD_ROAD);
 }
 
 /* static */ bool ScriptTunnel::RemoveTunnel(TileIndex tile)
@@ -136,5 +136,5 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsTunnelTile(tile));
 
-	return ScriptObject::DoCommand(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 }

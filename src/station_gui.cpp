@@ -2169,7 +2169,7 @@ struct StationViewWindow : public Window {
 				break;
 
 			case WID_SV_CLOSE_AIRPORT:
-				DoCommandP(0, this->window_number, 0, CMD_OPEN_CLOSE_AIRPORT);
+				DoCommandPOld(0, this->window_number, 0, CMD_OPEN_CLOSE_AIRPORT);
 				break;
 
 			case WID_SV_TRAINS:   // Show list of scheduled trains to this station
@@ -2223,7 +2223,7 @@ struct StationViewWindow : public Window {
 					const GoodsEntry *ge = &st->goods[cs->Index()];
 					if (!ge->HasRating()) continue;
 					if (row == 1) {
-						DoCommandP(0, this->window_number, cs->Index() | (ge->IsSupplyAllowed() ? 0 : 1 << 8), CMD_SET_STATION_CARGO_ALLOWED_SUPPLY | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+						DoCommandPOld(0, this->window_number, cs->Index() | (ge->IsSupplyAllowed() ? 0 : 1 << 8), CMD_SET_STATION_CARGO_ALLOWED_SUPPLY | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 					}
 					row--;
 				}
@@ -2234,7 +2234,7 @@ struct StationViewWindow : public Window {
 
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
-		DoCommandP(tile, this->window_number, 0, CMD_EXCHANGE_STATION_NAMES | CMD_MSG(STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES));
+		DoCommandPOld(tile, this->window_number, 0, CMD_EXCHANGE_STATION_NAMES | CMD_MSG(STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES));
 		ResetObjectToPlace();
 	}
 
@@ -2353,7 +2353,7 @@ struct StationViewWindow : public Window {
 	{
 		if (!str.has_value()) return;
 
-		DoCommandP(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), nullptr, str->c_str());
 	}
 
 	void OnResize() override
@@ -2615,7 +2615,7 @@ struct SelectStationWindow : Window {
 		   (distant_join ? _stations_nearby_list[st_index] : NEW_STATION));
 
 		/* Execute stored Command */
-		DoCommandP(this->select_station_cmd);
+		DoCommandPContainer(this->select_station_cmd);
 
 		/* Close Window; this might cause double frees! */
 		CloseWindowById(WC_SELECT_STATION, 0);
@@ -2699,7 +2699,7 @@ static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
 	if (!_ctrl_pressed) return false;
 
 	/* Now check if we could build there */
-	if (DoCommand(cmd, CommandFlagsToDCFlags(GetCommandFlags(cmd.cmd))).Failed()) return false;
+	if (DoCommandContainer(cmd, CommandFlagsToDCFlags(GetCommandFlags(cmd.cmd))).Failed()) return false;
 
 	return FindStationsNearby<T>(ta, false, IsSpecializedStationRightType<T>(cmd)) == nullptr;
 }
@@ -2717,7 +2717,7 @@ void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 		new SelectStationWindow<T>(_select_station_desc, cmd, ta);
 	} else {
-		DoCommandP(cmd);
+		DoCommandPContainer(cmd);
 	}
 }
 

@@ -1357,7 +1357,7 @@ static void AdminCompanyResetCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		if (NetworkCompanyHasClients(_admin_company_id)) return;
-		DoCommandP(0, CCA_DELETE | _admin_company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+		DoCommandPOld(0, CCA_DELETE | _admin_company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
 	}
 }
 
@@ -1493,7 +1493,7 @@ private:
 	static void OnClickCompanyNew([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID)
 	{
 		if (_network_server) {
-			DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
+			DoCommandPOld(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
 		} else {
 			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, nullptr);
 		}

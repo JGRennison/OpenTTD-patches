@@ -3363,7 +3363,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	const IntSettingDesc *setting = sd->AsIntSetting();
 	if ((setting->flags & SF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return DoCommandP(0, 0, value, CMD_CHANGE_COMPANY_SETTING, nullptr, setting->name);
+			return DoCommandPOld(0, 0, value, CMD_CHANGE_COMPANY_SETTING, nullptr, setting->name);
 		} else if (setting->flags & SF_NO_NEWGAME) {
 			return false;
 		}
@@ -3393,7 +3393,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 
 	/* send non-company-based settings over the network */
 	if (!IsNonAdminNetworkClient()) {
-		return DoCommandP(0, 0, value, CMD_CHANGE_SETTING, nullptr, setting->name);
+		return DoCommandPOld(0, 0, value, CMD_CHANGE_SETTING, nullptr, setting->name);
 	}
 	return false;
 }

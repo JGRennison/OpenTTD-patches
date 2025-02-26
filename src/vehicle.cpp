@@ -435,7 +435,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		SetDParamStr(0, grfconfig->GetName());
 		SetDParam(1, engine);
 		ShowErrorMessage(part1, part2, WL_CRITICAL);
-		if (!_networking) DoCommand(0, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, 1, DC_EXEC, CMD_PAUSE);
+		if (!_networking) DoCommandOld(0, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, 1, DC_EXEC, CMD_PAUSE);
 	}
 
 	std::string log_msg;
@@ -1763,7 +1763,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = DoCommand(v->tile, v->index | (1 << 20), 0, DC_EXEC, GetCmdSellVeh(v));
+		CommandCost cost = DoCommandOld(v->tile, v->index | (1 << 20), 0, DC_EXEC, GetCmdSellVeh(v));
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -1800,14 +1800,14 @@ void CallVehicleTicks()
 
 		_new_vehicle_id = INVALID_VEHICLE;
 
-		CommandCost res = DoCommand(t->tile, t->index, 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+		CommandCost res = DoCommandOld(t->tile, t->index, 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
 
 		if (_new_vehicle_id != INVALID_VEHICLE) {
 			VehicleID t_new = _new_vehicle_id;
 			t = Train::Get(t_new);
 			const Company *c = Company::Get(_current_company);
 			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-			CommandCost res2 = DoCommand(0, t_new, 1, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
+			CommandCost res2 = DoCommandOld(0, t_new, 1, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
 			if (res2.HasResultData()) {
 				t = Train::Get(res2.GetResultData());
 			}
@@ -1851,7 +1851,7 @@ void CallVehicleTicks()
 
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res = DoCommand(0, v->index, 0, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
+		CommandCost res = DoCommandOld(0, v->index, 0, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
@@ -1919,7 +1919,7 @@ void RemoveVirtualTrainsOfUser(uint32_t user)
 	for (const Train *front : _tick_train_front_cache) {
 		if (front->IsVirtual() && front->motion_counter == user) {
 			cur_company.Change(front->owner);
-			DoCommandP(0, front->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+			DoCommandPOld(0, front->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 		}
 	}
 	cur_company.Restore();
@@ -2782,7 +2782,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		if (v->current_order.IsRefit()) {
 			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
-			CommandCost cost = DoCommand(v->tile, v->index, v->current_order.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
+			CommandCost cost = DoCommandOld(v->tile, v->index, v->current_order.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
 			cur_company.Restore();
 
 			if (cost.Failed()) {
@@ -4011,7 +4011,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				int y = this->y_pos;
 				int z = this->z_pos;
 
-				CommandCost cost = DoCommand(this->tile, this->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE);
+				CommandCost cost = DoCommandOld(this->tile, this->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE);
 				if (cost.Succeeded()) {
 					if (IsLocalCompany()) {
 						if (cost.GetCost() != 0) {
@@ -4138,7 +4138,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
 		if (this->type == VEH_TRAIN && (closestDepot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
-			DoCommand(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
+			DoCommandOld(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {

@@ -1435,7 +1435,7 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadType rt, RoadB
 	/* The 'current' company is not necessarily the owner of the vehicle. */
 	Backup<CompanyID> cur_company(_current_company, c, FILE_LINE);
 
-	CommandCost ret = DoCommand(t, rt << 4 | r, INVALID_TOWN, DC_NO_WATER, CMD_BUILD_ROAD);
+	CommandCost ret = DoCommandOld(t, rt << 4 | r, INVALID_TOWN, DC_NO_WATER, CMD_BUILD_ROAD);
 
 	cur_company.Restore();
 	return ret.Succeeded();

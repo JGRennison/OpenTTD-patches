@@ -560,7 +560,7 @@ protected:
 				this->SetTimeout();
 				this->SetWidgetDirty(WID_SB_PAGE_PANEL);
 
-				DoCommandP(0, pe.index, 0, CMD_STORY_PAGE_BUTTON);
+				DoCommandPOld(0, pe.index, 0, CMD_STORY_PAGE_BUTTON);
 				break;
 
 			case SPET_BUTTON_TILE:
@@ -909,7 +909,7 @@ public:
 			return;
 		}
 
-		DoCommandP(tile, pe->index, 0, CMD_STORY_PAGE_BUTTON);
+		DoCommandPOld(tile, pe->index, 0, CMD_STORY_PAGE_BUTTON);
 		ResetObjectToPlace();
 	}
 
@@ -928,7 +928,7 @@ public:
 		VehicleType wanted_vehtype = data.GetVehicleType();
 		if (wanted_vehtype != VEH_INVALID && wanted_vehtype != v->type) return false;
 
-		DoCommandP(0, pe->index, v->index, CMD_STORY_PAGE_BUTTON);
+		DoCommandPOld(0, pe->index, v->index, CMD_STORY_PAGE_BUTTON);
 		ResetObjectToPlace();
 		return true;
 	}

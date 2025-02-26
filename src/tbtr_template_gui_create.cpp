@@ -120,7 +120,7 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 
 	if (wagon == v) return;
 
-	DoCommandP(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == nullptr ? INVALID_VEHICLE : wagon->index,
+	DoCommandPOld(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == nullptr ? INVALID_VEHICLE : wagon->index,
 			CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWagonsMoved);
 }
 
@@ -156,7 +156,7 @@ public:
 		this->sell_hovered = false;
 
 		if (to_edit != nullptr) {
-			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
+			DoCommandPOld(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
 		}
 
 		this->resize.step_height = 1;
@@ -167,7 +167,7 @@ public:
 	void Close(int data = 0) override
 	{
 		if (virtual_train != nullptr) {
-			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+			DoCommandPOld(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 			virtual_train = nullptr;
 		}
 
@@ -181,7 +181,7 @@ public:
 	void SetVirtualTrain(Train* const train)
 	{
 		if (virtual_train != nullptr) {
-			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+			DoCommandPOld(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 		}
 
 		virtual_train = train;
@@ -239,9 +239,9 @@ public:
 			}
 			case TCW_OK: {
 				if (virtual_train != nullptr) {
-					DoCommandP(0, this->template_index, virtual_train->index, CMD_REPLACE_TEMPLATE_VEHICLE);
+					DoCommandPOld(0, this->template_index, virtual_train->index, CMD_REPLACE_TEMPLATE_VEHICLE);
 				} else if (this->template_index != INVALID_VEHICLE) {
-					DoCommandP(0, this->template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
+					DoCommandPOld(0, this->template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
 				}
 				this->Close();
 				break;
@@ -263,12 +263,12 @@ public:
 	{
 		// throw away the current virtual train
 		if (virtual_train != nullptr) {
-			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+			DoCommandPOld(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 			virtual_train = nullptr;
 		}
 
 		// create a new one
-		DoCommandP(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
+		DoCommandPOld(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
 		this->ToggleWidgetLoweredState(TCW_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
@@ -456,7 +456,7 @@ public:
 
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
 					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
-						DoCommandP(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
+						DoCommandPOld(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
 								CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE), CcVirtualTrainWagonsMoved);
 					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = INVALID_VEHICLE;
@@ -483,7 +483,7 @@ public:
 					}
 				}
 
-				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, CMD_SELL_VIRTUAL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN), CcDeleteVirtualTrain);
+				DoCommandPOld(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, CMD_SELL_VIRTUAL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN), CcDeleteVirtualTrain);
 
 				this->sel = INVALID_VEHICLE;
 

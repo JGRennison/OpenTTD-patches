@@ -1731,7 +1731,7 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			if (order_count < 2) return CMD_ERROR;
 			uint max_order = order_count - 1;
 			for (uint i = 0; i < max_order; i++) {
-				CommandCost cost = DoCommand(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
+				CommandCost cost = DoCommandOld(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
 				if (cost.Failed()) return cost;
 			}
 			break;
@@ -2534,7 +2534,7 @@ static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlag flags)
 	if (target_orders.empty()) return;
 
 	VehicleOrderID skip_to = target_orders[v->unitnumber % target_orders.size()];
-	DoCommand(v->tile, v->index, skip_to, flags, CMD_SKIP_TO_ORDER);
+	DoCommandOld(v->tile, v->index, skip_to, flags, CMD_SKIP_TO_ORDER);
 }
 
 static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle *dst)
@@ -3623,7 +3623,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 					v->current_order.SetDestination(closestDepot.destination);
 
 					/* If there is no depot in front, reverse automatically (trains only) */
-					if (v->type == VEH_TRAIN && closestDepot.reverse) DoCommand(v->tile, v->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
+					if (v->type == VEH_TRAIN && closestDepot.reverse) DoCommandOld(v->tile, v->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
 
 					if (v->type == VEH_AIRCRAFT) {
 						Aircraft *a = Aircraft::From(v);
@@ -3950,7 +3950,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 						new_order.SetWaitTimetabled(false);
 						if (!new_order.IsTravelFixed()) new_order.SetTravelTimetabled(false);
 						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE | CIOIF_ALLOW_DUPLICATE_UNBUNCH).Succeeded()) {
-							DoCommand(0, v->index, index, flags, CMD_DELETE_ORDER);
+							DoCommandOld(0, v->index, index, flags, CMD_DELETE_ORDER);
 
 							order = v->orders->GetOrderAt(index);
 							order->SetRefit(new_order.GetRefitCargo());

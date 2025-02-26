@@ -1962,12 +1962,12 @@ BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track trac
 }
 
 /**
- * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
+ * Helper function to perform parameter bit-packing and call DoCommandPOld, for instruction modification actions
  */
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text)
 {
 	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
-	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), nullptr, text);
+	DoCommandPOld(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), nullptr, text);
 }
 
 /**
@@ -2424,7 +2424,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 }
 
 /**
- * Helper function to perform parameter bit-packing and call DoCommandP, for program management actions
+ * Helper function to perform parameter bit-packing and call DoCommandPOld, for program management actions
  */
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
 		TileIndex source_tile, Track source_track, StringID error_msg)
@@ -2433,7 +2433,7 @@ void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, Trac
 	SB(p1, 0, 3, track);
 	SB(p1, 3, 5, type);
 	SB(p1, 8, 3, source_track);
-	DoCommandP(tile, p1, source_tile, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+	DoCommandPOld(tile, p1, source_tile, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
 }
 
 static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestrictProgramItem> instructions, TraceRestrictProgram *prog, const TraceRestrictProgram *source)
@@ -3457,7 +3457,7 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(TileIndex tile, DoCommandFlag flags,
 	/* Delete sub-groups */
 	for (const TraceRestrictSlotGroup *gp : TraceRestrictSlotGroup::Iterate()) {
 		if (gp->parent == slot_group->index) {
-			DoCommand(0, gp->index, 0, flags, CMD_DELETE_TRACERESTRICT_SLOT_GROUP);
+			DoCommandOld(0, gp->index, 0, flags, CMD_DELETE_TRACERESTRICT_SLOT_GROUP);
 		}
 	}
 
@@ -3753,7 +3753,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 			return CMD_ERROR;
 	}
 
-	return DoCommand(cmd, flags);
+	return DoCommandContainer(cmd, flags);
 }
 
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const

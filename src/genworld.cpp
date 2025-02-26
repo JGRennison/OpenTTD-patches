@@ -424,7 +424,7 @@ struct ExternalTownData {
 static bool TryFoundTownNearby(TileIndex tile, void *user_data)
 {
 	ExternalTownData &town = *static_cast<ExternalTownData *>(user_data);
-	CommandCost result = DoCommand(tile, TSZ_SMALL | town.is_city << 2 | _settings_game.economy.town_layout << 3, 0, DC_EXEC, CMD_FOUND_TOWN, town.name.c_str());
+	CommandCost result = DoCommandOld(tile, TSZ_SMALL | town.is_city << 2 | _settings_game.economy.town_layout << 3, 0, DC_EXEC, CMD_FOUND_TOWN, town.name.c_str());
 	if (result.HasResultData()) {
 		/* The command succeeded, send the ID back through user_data. */
 		town.town_id = result.GetResultData();
@@ -540,7 +540,7 @@ void LoadTownData()
 		/* If we still fail to found the town, we'll create a sign at the intended location and tell the player how many towns we failed to create in an error message.
 		 * This allows the player to diagnose a heightmap misalignment, if towns end up in the sea, or place towns manually, if in rough terrain. */
 		if (!success) {
-			DoCommandP(tile, 0, 0, CMD_PLACE_SIGN, nullptr, town.name.c_str());
+			DoCommandPOld(tile, 0, 0, CMD_PLACE_SIGN, nullptr, town.name.c_str());
 			failed_towns++;
 			continue;
 		}
@@ -572,7 +572,7 @@ void LoadTownData()
 
 		do {
 			uint before = t->cache.num_houses;
-			DoCommandP(0, t->index, HOUSES_TO_GROW, CMD_EXPAND_TOWN);
+			DoCommandPOld(0, t->index, HOUSES_TO_GROW, CMD_EXPAND_TOWN);
 			if (t->cache.num_houses <= before) fail_limit--;
 		} while (fail_limit > 0 && try_limit-- > 0 && t->cache.population < population);
 	}

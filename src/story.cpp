@@ -45,9 +45,9 @@ INSTANTIATE_POOL_METHODS(StoryPage)
  * element parameters are correct for the given page element type.
  * @param page_id The page id of the page which the page element (will) belong to
  * @param type The type of the page element to create/update
- * @param tile The tile parameter of the DoCommand proc
- * @param reference The reference parameter of the DoCommand proc (p2)
- * @param text The text parameter of the DoCommand proc
+ * @param tile The tile parameter of the DoCommandOld proc
+ * @param reference The reference parameter of the DoCommandOld proc (p2)
+ * @param text The text parameter of the DoCommandOld proc
  * @return true, if and only if the given parameters are valid for the given page element type and page id.
  */
 static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElementType type, TileIndex tile, uint32_t reference, const std::string &text)
@@ -93,9 +93,9 @@ static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElement
  * This helper for Create/Update PageElement Cmd procedure updates a page
  * element with new content data.
  * @param pe The page element to update
- * @param tile The tile parameter of the DoCommand proc
- * @param reference The reference parameter of the DoCommand proc (p2)
- * @param text The text parameter of the DoCommand proc
+ * @param tile The tile parameter of the DoCommandOld proc
+ * @param reference The reference parameter of the DoCommandOld proc (p2)
+ * @param text The text parameter of the DoCommandOld proc
  */
 static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32_t reference, const std::string &text)
 {

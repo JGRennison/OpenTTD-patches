@@ -210,7 +210,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 
 		/* If we are not in DC_EXEC undo everything */
 		if (flags != subflags) {
-			DoCommand(0, v->index, 0, DC_EXEC, GetCmdSellVeh(v));
+			DoCommandOld(0, v->index, 0, DC_EXEC, GetCmdSellVeh(v));
 		}
 	}
 
@@ -740,7 +740,7 @@ CommandCost CmdMassStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32_
 		if (!vehicle_list_window && !v->IsChainInDepot()) continue;
 
 		/* Just try and don't care if some vehicle's can't be stopped. */
-		DoCommand(tile, v->index, 0, flags, CMD_START_STOP_VEHICLE);
+		DoCommandOld(tile, v->index, 0, flags, CMD_START_STOP_VEHICLE);
 	}
 
 	return CommandCost();
@@ -774,7 +774,7 @@ CommandCost CmdDepotSellAllVehicles(TileIndex tile, DoCommandFlag flags, uint32_
 	bool had_success = false;
 	for (const Vehicle *v : list) {
 		if (v->owner != _current_company) continue;
-		CommandCost ret = DoCommand(tile, v->index | (1 << 20), 0, flags, sell_command);
+		CommandCost ret = DoCommandOld(tile, v->index | (1 << 20), 0, flags, sell_command);
 		if (ret.Succeeded()) {
 			cost.AddCost(ret);
 			had_success = true;
@@ -814,7 +814,7 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32_
 		if (v->type == VEH_TRAIN) {
 			_new_vehicle_id = INVALID_VEHICLE;
 
-			CommandCost ret = DoCommand(v->tile, v->index, 0, flags, CMD_TEMPLATE_REPLACE_VEHICLE);
+			CommandCost ret = DoCommandOld(v->tile, v->index, 0, flags, CMD_TEMPLATE_REPLACE_VEHICLE);
 			if (ret.Succeeded()) cost.AddCost(ret);
 
 			if (_new_vehicle_id != INVALID_VEHICLE) {
@@ -822,7 +822,7 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32_
 			}
 		}
 
-		CommandCost ret = DoCommand(0, v->index, 0, flags, CMD_AUTOREPLACE_VEHICLE);
+		CommandCost ret = DoCommandOld(0, v->index, 0, flags, CMD_AUTOREPLACE_VEHICLE);
 
 		if (ret.Succeeded()) cost.AddCost(ret);
 	}
@@ -1549,11 +1549,11 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		DoCommandFlag build_flags = flags;
 		if ((flags & DC_EXEC) && !v->IsPrimaryVehicle()) build_flags |= DC_AUTOREPLACE;
 
-		CommandCost cost = DoCommand(tile, v->engine_type | (1 << 16) | (INVALID_CARGO << 24), 0, build_flags, GetCmdBuildVeh(v));
+		CommandCost cost = DoCommandOld(tile, v->engine_type | (1 << 16) | (INVALID_CARGO << 24), 0, build_flags, GetCmdBuildVeh(v));
 
 		if (cost.Failed()) {
 			/* Can't build a part, then sell the stuff we already made; clear up the mess */
-			if (w_front != nullptr) DoCommand(w_front->tile, w_front->index | (1 << 20), 0, flags, GetCmdSellVeh(w_front));
+			if (w_front != nullptr) DoCommandOld(w_front->tile, w_front->index | (1 << 20), 0, flags, GetCmdSellVeh(w_front));
 			return cost;
 		}
 
@@ -1569,12 +1569,12 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			if (v->type == VEH_TRAIN && !v->IsFrontEngine()) {
 				/* this s a train car
 				 * add this unit to the end of the train */
-				CommandCost result = DoCommand(0, w->index | 1 << 20, w_rear->index, flags, CMD_MOVE_RAIL_VEHICLE);
+				CommandCost result = DoCommandOld(0, w->index | 1 << 20, w_rear->index, flags, CMD_MOVE_RAIL_VEHICLE);
 				if (result.Failed()) {
 					/* The train can't be joined to make the same consist as the original.
 					 * Sell what we already made (clean up) and return an error.           */
-					DoCommand(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
-					DoCommand(w_front->tile, w->index       | 1 << 20, 0, flags, GetCmdSellVeh(w));
+					DoCommandOld(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
+					DoCommandOld(w_front->tile, w->index       | 1 << 20, 0, flags, GetCmdSellVeh(w));
 					return result; // return error and the message returned from CMD_MOVE_RAIL_VEHICLE
 				}
 			} else {
@@ -1596,7 +1596,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 	const Company *owner = Company::GetIfValid(_current_company);
 	if ((flags & DC_EXEC) && ((p2 & 1) || owner == nullptr || owner->settings.copy_clone_add_to_group)) {
 		/* Cloned vehicles belong to the same group */
-		DoCommand(0, v_front->group_id, w_front->index, flags, CMD_ADD_VEHICLE_GROUP);
+		DoCommandOld(0, v_front->group_id, w_front->index, flags, CMD_ADD_VEHICLE_GROUP);
 	}
 
 
@@ -1618,7 +1618,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 				/* Find out what's the best sub type */
 				uint8_t subtype = GetBestFittingSubType(v, w, v->cargo_type);
 				if (w->cargo_type != v->cargo_type || w->cargo_subtype != subtype) {
-					CommandCost cost = DoCommand(0, w->index, v->cargo_type | 1U << 25 | (subtype << 8), flags, GetCmdRefitVeh(v));
+					CommandCost cost = DoCommandOld(0, w->index, v->cargo_type | 1U << 25 | (subtype << 8), flags, GetCmdRefitVeh(v));
 					if (cost.Succeeded()) total_cost.AddCost(cost);
 				}
 
@@ -1653,10 +1653,10 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		 * the vehicle refitted before doing this, otherwise the moved
 		 * cargo types might not match (passenger vs non-passenger)
 		 */
-		CommandCost result = DoCommand(0, w_front->index | (p2 & 1 ? CO_SHARE : CO_COPY) << 30, v_front->index, flags, CMD_CLONE_ORDER);
+		CommandCost result = DoCommandOld(0, w_front->index | (p2 & 1 ? CO_SHARE : CO_COPY) << 30, v_front->index, flags, CMD_CLONE_ORDER);
 		if (result.Failed()) {
 			/* The vehicle has already been bought, so now it must be sold again. */
-			DoCommand(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
+			DoCommandOld(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
 			return result;
 		}
 
@@ -1667,7 +1667,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		 * check whether the company has enough money manually. */
 		if (!CheckCompanyHasMoney(total_cost)) {
 			/* The vehicle has already been bought, so now it must be sold again. */
-			DoCommand(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
+			DoCommandOld(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
 			return total_cost;
 		}
 	}
@@ -1704,12 +1704,12 @@ CommandCost CmdCloneVehicleFromTemplate(TileIndex tile, DoCommandFlag flags, uin
 		if (!(flags & DC_EXEC)) RestoreRandomSeeds(saved_seeds);
 	});
 
-	ret = DoCommand(0, tv->index, 0, DC_EXEC, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+	ret = DoCommandOld(0, tv->index, 0, DC_EXEC, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
 	if (ret.Failed()) return ret;
 
 	Train* virt = Train::From(Vehicle::Get(_new_vehicle_id));
 
-	ret = DoCommand(tile, _new_vehicle_id, 0, flags, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+	ret = DoCommandOld(tile, _new_vehicle_id, 0, flags, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
 
 	delete virt;
 
@@ -1733,7 +1733,7 @@ static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depo
 	bool had_success = false;
 	for (uint i = 0; i < list.size(); i++) {
 		const Vehicle *v = list[i];
-		CommandCost ret = DoCommand(v->tile, v->index | depot_flags, 0, flags, GetCmdSendToDepot(vli.vtype));
+		CommandCost ret = DoCommandOld(v->tile, v->index | depot_flags, 0, flags, GetCmdSendToDepot(vli.vtype));
 
 		if (ret.Succeeded()) {
 			had_success = true;

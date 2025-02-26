@@ -513,7 +513,7 @@ static void CheckPauseHelper(bool pause, PauseMode pm)
 {
 	if (pause == ((_pause_mode & pm) != PM_UNPAUSED)) return;
 
-	DoCommandP(0, pm, pause ? 1 : 0, CMD_PAUSE);
+	DoCommandPOld(0, pm, pause ? 1 : 0, CMD_PAUSE);
 }
 
 /**
@@ -1417,7 +1417,7 @@ void NetworkGameLoop()
 		_record_sync_records = true;
 
 		NetworkExecuteLocalCommandQueue();
-		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 		/* Then we make the frame */
 		StateGameLoop();

@@ -95,7 +95,7 @@ struct CargoScalingProxy {
 
 	value = Clamp<SQInteger>(value, INT32_MIN, INT32_MAX);
 
-	return ScriptObject::DoCommand(0, 0, value, CMD_CHANGE_SETTING, sd->name);
+	return ScriptObject::DoCommandOld(0, 0, value, CMD_CHANGE_SETTING, sd->name);
 }
 
 /* static */ bool ScriptGameSettings::IsDisabledVehicleType(ScriptVehicle::VehicleType vehicle_type)

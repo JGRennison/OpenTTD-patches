@@ -281,7 +281,7 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 			}
 			CommandCost cost;
 			if (indirectly_cleared) {
-				cost = DoCommand(t, 0, 0, tile_flags, CMD_LANDSCAPE_CLEAR);
+				cost = DoCommandOld(t, 0, 0, tile_flags, CMD_LANDSCAPE_CLEAR);
 			} else {
 				cost = _tile_type_procs[GetTileType(t)]->terraform_tile_proc(t, tile_flags, z_min, tileh);
 			}
@@ -367,7 +367,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		TileIndex t = *iter;
 		uint curh = TileHeight(t);
 		while (curh != h) {
-			CommandCost ret = DoCommand(t, SLOPE_N, (curh > h) ? 0 : 1, flags & ~DC_EXEC, CMD_TERRAFORM_LAND);
+			CommandCost ret = DoCommandOld(t, SLOPE_N, (curh > h) ? 0 : 1, flags & ~DC_EXEC, CMD_TERRAFORM_LAND);
 			if (ret.Failed()) {
 				last_error = ret;
 
@@ -382,7 +382,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 					_additional_cash_required = ret.GetCost();
 					return cost;
 				}
-				DoCommand(t, SLOPE_N, (curh > h) ? 0 : 1, flags, CMD_TERRAFORM_LAND);
+				DoCommandOld(t, SLOPE_N, (curh > h) ? 0 : 1, flags, CMD_TERRAFORM_LAND);
 			} else {
 				/* When we're at the terraform limit we better bail (unneeded) testing as well.
 				 * This will probably cause the terraforming cost to be underestimated, but only

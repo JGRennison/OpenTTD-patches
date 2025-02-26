@@ -50,7 +50,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_COMPANY_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommand(0, 0, 0, CMD_RENAME_COMPANY, text);
+	return ScriptObject::DoCommandOld(0, 0, 0, CMD_RENAME_COMPANY, text);
 }
 
 /* static */ std::optional<std::string> ScriptCompany::GetName(ScriptCompany::CompanyID company)
@@ -72,7 +72,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_PRESIDENT_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommand(0, 0, 0, CMD_RENAME_PRESIDENT, text);
+	return ScriptObject::DoCommandOld(0, 0, 0, CMD_RENAME_PRESIDENT, text);
 }
 
 /* static */ std::optional<std::string> ScriptCompany::GetPresidentName(ScriptCompany::CompanyID company)
@@ -95,7 +95,7 @@
 	GenderEthnicity ge = (GenderEthnicity)((gender == GENDER_FEMALE ? (1 << ::GENDER_FEMALE) : 0) | (randomizer.Next() & (1 << ETHNICITY_BLACK)));
 	RandomCompanyManagerFaceBits(cmf, ge, false, randomizer);
 
-	return ScriptObject::DoCommand(0, 0, cmf, CMD_SET_COMPANY_MANAGER_FACE);
+	return ScriptObject::DoCommandOld(0, 0, cmf, CMD_SET_COMPANY_MANAGER_FACE);
 }
 
 /* static */ ScriptCompany::Gender ScriptCompany::GetPresidentGender(CompanyID company)
@@ -246,7 +246,7 @@
 
 	Money amount = abs(loan - GetLoanAmount());
 
-	return ScriptObject::DoCommand(0,
+	return ScriptObject::DoCommandOld(0,
 			amount >> 32, (amount & 0xFFFFFFFC) | 2,
 			(loan > GetLoanAmount()) ? CMD_INCREASE_LOAN : CMD_DECREASE_LOAN);
 }
@@ -284,7 +284,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommand(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT);
+	return ScriptObject::DoCommandOld(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT);
 }
 
 /* static */ TileIndex ScriptCompany::GetCompanyHQ(CompanyID company)
@@ -299,7 +299,7 @@
 /* static */ bool ScriptCompany::SetAutoRenewStatus(bool autorenew)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommand(0, 0, autorenew ? 1 : 0, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew");
+	return ScriptObject::DoCommandOld(0, 0, autorenew ? 1 : 0, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew");
 }
 
 /* static */ bool ScriptCompany::GetAutoRenewStatus(CompanyID company)
@@ -315,7 +315,7 @@
 	EnforceCompanyModeValid(false);
 	months = Clamp<SQInteger>(months, INT16_MIN, INT16_MAX);
 
-	return ScriptObject::DoCommand(0, 0, months, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_months");
+	return ScriptObject::DoCommandOld(0, 0, months, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_months");
 }
 
 /* static */ SQInteger ScriptCompany::GetAutoRenewMonths(CompanyID company)
@@ -331,7 +331,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, money >= 0);
 	EnforcePrecondition(false, (int64_t)money <= UINT32_MAX);
-	return ScriptObject::DoCommand(0, 0, money, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_money");
+	return ScriptObject::DoCommandOld(0, 0, money, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_money");
 }
 
 /* static */ Money ScriptCompany::GetAutoRenewMoney(CompanyID company)
@@ -345,13 +345,13 @@
 /* static */ bool ScriptCompany::SetPrimaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommand(0, scheme, colour, CMD_SET_COMPANY_COLOUR);
+	return ScriptObject::DoCommandOld(0, scheme, colour, CMD_SET_COMPANY_COLOUR);
 }
 
 /* static */ bool ScriptCompany::SetSecondaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommand(0, scheme | 1 << 8, colour, CMD_SET_COMPANY_COLOUR);
+	return ScriptObject::DoCommandOld(0, scheme | 1 << 8, colour, CMD_SET_COMPANY_COLOUR);
 }
 
 /* static */ ScriptCompany::Colours ScriptCompany::GetPrimaryLiveryColour(ScriptCompany::LiveryScheme scheme)

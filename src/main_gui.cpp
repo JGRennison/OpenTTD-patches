@@ -366,9 +366,9 @@ struct MainWindow : Window
 			case GHK_MONEY: // Gimme money
 				/* You can only cheat for money in single player or when otherwise suitably authorised. */
 				if (!_networking || _settings_game.difficulty.money_cheat_in_multiplayer) {
-					DoCommandP(0, 10000000, 0, CMD_MONEY_CHEAT);
+					DoCommandPOld(0, 10000000, 0, CMD_MONEY_CHEAT);
 				} else if (IsNetworkSettingsAdmin()) {
-					DoCommandP(0, 10000000, 0, CMD_MONEY_CHEAT_ADMIN);
+					DoCommandPOld(0, 10000000, 0, CMD_MONEY_CHEAT_ADMIN);
 				}
 				break;
 

@@ -52,7 +52,7 @@
 	EnforcePrecondition(GOAL_INVALID, company == ScriptCompany::COMPANY_INVALID || ScriptCompany::ResolveCompanyID(company) != ScriptCompany::COMPANY_INVALID);
 	EnforcePrecondition(GOAL_INVALID, IsValidGoalDestination(company, type, destination));
 
-	if (!ScriptObject::DoCommand(0, type | (company << 8), destination, CMD_CREATE_GOAL, text, &ScriptInstance::DoCommandReturnGoalID)) return GOAL_INVALID;
+	if (!ScriptObject::DoCommandOld(0, type | (company << 8), destination, CMD_CREATE_GOAL, text, &ScriptInstance::DoCommandReturnGoalID)) return GOAL_INVALID;
 
 	/* In case of test-mode, we return GoalID 0 */
 	return (ScriptGoal::GoalID)0;
@@ -63,7 +63,7 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 
-	return ScriptObject::DoCommand(0, goal_id, 0, CMD_REMOVE_GOAL);
+	return ScriptObject::DoCommandOld(0, goal_id, 0, CMD_REMOVE_GOAL);
 }
 
 /* static */ bool ScriptGoal::SetDestination(GoalID goal_id, GoalType type, SQInteger destination)
@@ -86,7 +86,7 @@
 	const std::string &text = goal->GetEncodedText();
 	EnforcePreconditionEncodedText(false, text);
 
-	return ScriptObject::DoCommand(0, goal_id, 0, CMD_SET_GOAL_TEXT, text);
+	return ScriptObject::DoCommandOld(0, goal_id, 0, CMD_SET_GOAL_TEXT, text);
 }
 
 /* static */ bool ScriptGoal::SetProgress(GoalID goal_id, Text *progress)
@@ -96,7 +96,7 @@
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 	EnforceDeityMode(false);
 
-	return ScriptObject::DoCommand(0, goal_id, 0, CMD_SET_GOAL_PROGRESS, progress != nullptr ? progress->GetEncodedText().c_str() : "");
+	return ScriptObject::DoCommandOld(0, goal_id, 0, CMD_SET_GOAL_PROGRESS, progress != nullptr ? progress->GetEncodedText().c_str() : "");
 }
 
 /* static */ bool ScriptGoal::SetCompleted(GoalID goal_id, bool completed)
@@ -104,7 +104,7 @@
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 	EnforceDeityMode(false);
 
-	return ScriptObject::DoCommand(0, goal_id, completed ? 1 : 0, CMD_SET_GOAL_COMPLETED);
+	return ScriptObject::DoCommandOld(0, goal_id, completed ? 1 : 0, CMD_SET_GOAL_COMPLETED);
 }
 
 /* static */ bool ScriptGoal::IsCompleted(GoalID goal_id)
@@ -154,5 +154,5 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, uniqueid >= 0 && uniqueid <= UINT16_MAX);
 
-	return ScriptObject::DoCommand(0, uniqueid, 0, CMD_GOAL_QUESTION_ANSWER);
+	return ScriptObject::DoCommandOld(0, uniqueid, 0, CMD_GOAL_QUESTION_ANSWER);
 }

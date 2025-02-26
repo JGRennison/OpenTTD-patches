@@ -689,7 +689,7 @@ TimeoutTimer<TimerGameTick> _new_competitor_timeout({ TimerGameTick::Priority::C
 
 	/* Send a command to all clients to start up a new AI.
 	 * Works fine for Multiplayer and Singleplayer */
-	DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+	DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
 });
 
 /** Start of a new game. */
@@ -765,7 +765,7 @@ static void HandleBankruptcyTakeover(Company *c)
 		if (_network_server && Company::IsValidHumanID(c->bankrupt_last_asked) && !NetworkCompanyHasClients(c->bankrupt_last_asked)) {
 			/* This company can no longer accept the offer as there are no clients connected, decline the offer on the company's behalf */
 			Backup<CompanyID> cur_company(_current_company, c->bankrupt_last_asked, FILE_LINE);
-			DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
+			DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
 			cur_company.Restore();
 		}
 		c->bankrupt_timeout -= MAX_COMPANIES;
@@ -815,7 +815,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
-		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
+		DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
 		cur_company.Restore();
 	}
 }
@@ -850,7 +850,7 @@ void OnTick_Companies(bool main_tick)
 			for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
 				if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) break;
 				if (n++ >= _settings_game.difficulty.max_no_competitors) break;
-				DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+				DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
 			}
 			timeout = 10 * 60 * TICKS_PER_SECOND;
 		}
@@ -1407,7 +1407,7 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 				format_buffer buf;
 
 				buf.format("{} Transport", text);
-				DoCommand(0, 0, 0, DC_EXEC, CMD_RENAME_COMPANY, buf.c_str());
+				DoCommandOld(0, 0, 0, DC_EXEC, CMD_RENAME_COMPANY, buf.c_str());
 			}
 		}
 

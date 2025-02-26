@@ -457,7 +457,7 @@ public:
 			}
 
 			case WID_TA_EXECUTE:
-				DoCommandP(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+				DoCommandPOld(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
 
 			case WID_TA_SETTING: {
@@ -524,7 +524,7 @@ public:
 					p2 |= (index - 1) << 8;
 				}
 				Commands cmd = IsNonAdminNetworkClient() ? CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN : CMD_TOWN_SETTING_OVERRIDE;
-				DoCommandP(this->town->xy, this->window_number, p2, cmd | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+				DoCommandPOld(this->town->xy, this->window_number, p2, cmd | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
 			}
 
@@ -723,12 +723,12 @@ public:
 				break;
 
 			case WID_TV_EXPAND: { // expand town - only available on Scenario editor
-				DoCommandP(0, this->window_number, 0, CMD_EXPAND_TOWN | CMD_MSG(STR_ERROR_CAN_T_EXPAND_TOWN));
+				DoCommandPOld(0, this->window_number, 0, CMD_EXPAND_TOWN | CMD_MSG(STR_ERROR_CAN_T_EXPAND_TOWN));
 				break;
 			}
 
 			case WID_TV_DELETE: // delete town - only available on Scenario editor
-				DoCommandP(0, this->window_number, 0, CMD_DELETE_TOWN | CMD_MSG(STR_ERROR_TOWN_CAN_T_DELETE));
+				DoCommandPOld(0, this->window_number, 0, CMD_DELETE_TOWN | CMD_MSG(STR_ERROR_TOWN_CAN_T_DELETE));
 				break;
 		}
 	}
@@ -817,7 +817,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandP(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str->c_str());
 	}
 
 	bool IsNewGRFInspectable() const override
@@ -1457,7 +1457,7 @@ public:
 			if (original_name != this->townname_editbox.text.GetText()) name = this->townname_editbox.text.GetText();
 		}
 
-		bool success = DoCommandP(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
+		bool success = DoCommandPOld(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
 				townnameparts, CMD_FOUND_TOWN | CMD_MSG(errstr), cc, name);
 
 		/* Rerandomise name, if success and no cost-estimation. */
@@ -1497,7 +1497,7 @@ public:
 
 			case WID_TF_EXPAND_ALL_TOWNS:
 				for (Town *t : Town::Iterate()) {
-					DoCommand(0, t->index, 0, DC_EXEC, CMD_EXPAND_TOWN);
+					DoCommandOld(0, t->index, 0, DC_EXEC, CMD_EXPAND_TOWN);
 				}
 				break;
 
@@ -1642,7 +1642,7 @@ struct SelectTownWindow : Window {
 
 		/* Place a house */
 		this->cmd.p2 = this->towns[pos];
-		DoCommandP(this->cmd);
+		DoCommandPContainer(this->cmd);
 
 		/* Close the window */
 		this->Close();
@@ -2084,7 +2084,7 @@ struct BuildHouseWindow : public PickerWindow {
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd);
 		} else {
-			DoCommandP(cmd);
+			DoCommandPContainer(cmd);
 		}
 	}
 

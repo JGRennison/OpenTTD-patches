@@ -52,7 +52,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	uint8_t c = company;
 	if (company == ScriptCompany::COMPANY_INVALID) c = INVALID_COMPANY;
 
-	if (!ScriptObject::DoCommand(0,
+	if (!ScriptObject::DoCommandOld(0,
 		c,
 		0,
 		CMD_CREATE_STORY_PAGE,
@@ -100,7 +100,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 			NOT_REACHED();
 	}
 
-	if (!ScriptObject::DoCommand(reftile,
+	if (!ScriptObject::DoCommandOld(reftile,
 			story_page_id + (type << 16),
 			refid,
 			CMD_CREATE_STORY_PAGE_ELEMENT,
@@ -150,7 +150,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 			NOT_REACHED();
 	}
 
-	return ScriptObject::DoCommand(reftile,
+	return ScriptObject::DoCommandOld(reftile,
 			story_page_element_id,
 			refid,
 			CMD_UPDATE_STORY_PAGE_ELEMENT,
@@ -178,7 +178,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 	EnforceDeityMode(false);
 
-	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != nullptr ? title->GetEncodedText().c_str() : "");
+	return ScriptObject::DoCommandOld(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != nullptr ? title->GetEncodedText().c_str() : "");
 }
 
 /* static */ ScriptCompany::CompanyID ScriptStoryPage::GetCompany(StoryPageID story_page_id)
@@ -204,7 +204,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 	EnforceDeityMode(false);
 
-	return ScriptObject::DoCommand(0, story_page_id, date, CMD_SET_STORY_PAGE_DATE, nullptr);
+	return ScriptObject::DoCommandOld(0, story_page_id, date, CMD_SET_STORY_PAGE_DATE, nullptr);
 }
 
 
@@ -213,7 +213,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 	EnforceDeityMode(false);
 
-	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SHOW_STORY_PAGE);
+	return ScriptObject::DoCommandOld(0, story_page_id, 0, CMD_SHOW_STORY_PAGE);
 }
 
 /* static */ bool ScriptStoryPage::Remove(StoryPageID story_page_id)
@@ -221,7 +221,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 
-	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_REMOVE_STORY_PAGE);
+	return ScriptObject::DoCommandOld(0, story_page_id, 0, CMD_REMOVE_STORY_PAGE);
 }
 
 /* static */ bool ScriptStoryPage::RemoveElement(StoryPageElementID story_page_element_id)
@@ -229,7 +229,7 @@ static inline bool StoryPageElementTypeRequiresText(StoryPageElementType type)
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
 
-	return ScriptObject::DoCommand(0, story_page_element_id, 0, CMD_REMOVE_STORY_PAGE_ELEMENT);
+	return ScriptObject::DoCommandOld(0, story_page_element_id, 0, CMD_REMOVE_STORY_PAGE_ELEMENT);
 }
 
 /* static */ bool ScriptStoryPage::IsValidStoryPageButtonColour(StoryPageButtonColour colour)

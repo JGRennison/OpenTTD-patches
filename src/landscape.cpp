@@ -659,7 +659,7 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = DoCommand(t, 0, 0, flags & ~DC_EXEC, CMD_LANDSCAPE_CLEAR);
+		CommandCost ret = DoCommandOld(t, 0, 0, flags & ~DC_EXEC, CMD_LANDSCAPE_CLEAR);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -675,7 +675,7 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 				_additional_cash_required = ret.GetCost();
 				return cost;
 			}
-			DoCommand(t, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+			DoCommandOld(t, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 
 			/* draw explosion animation...
 			 * Disable explosions when game is paused. Looks silly and blocks the view. */

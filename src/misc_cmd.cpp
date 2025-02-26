@@ -168,7 +168,7 @@ CommandCost CmdSetCompanyMaxLoan(TileIndex tile, DoCommandFlag flags, uint32_t p
 static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
-		DoCommandP(0, PM_PAUSED_ERROR, 0, CMD_PAUSE);
+		DoCommandPOld(0, PM_PAUSED_ERROR, 0, CMD_PAUSE);
 	}
 }
 

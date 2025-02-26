@@ -220,13 +220,13 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 
 	bool ToggleVisibilityByAll()
 	{
-		if (this->owner == _local_company) DoCommandP(0, this->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
+		if (this->owner == _local_company) DoCommandPOld(0, this->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
 	}
 
 	void SetPlanColour(Colours colour)
 	{
-		if (this->owner == _local_company) DoCommandP(0, this->index, colour, CMD_CHANGE_PLAN_COLOUR);
+		if (this->owner == _local_company) DoCommandPOld(0, this->index, colour, CMD_CHANGE_PLAN_COLOUR);
 	}
 
 	const std::string &GetName() const

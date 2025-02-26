@@ -80,7 +80,7 @@ extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uin
 
 	uint p2 = station_id == ScriptStation::STATION_JOIN_ADJACENT ? 0 : 1;
 	p2 |= (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16;
-	return ScriptObject::DoCommand(tile, type, p2, CMD_BUILD_AIRPORT);
+	return ScriptObject::DoCommandOld(tile, type, p2, CMD_BUILD_AIRPORT);
 }
 
 /* static */ bool ScriptAirport::RemoveAirport(TileIndex tile)
@@ -89,7 +89,7 @@ extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uin
 	EnforcePrecondition(false, ::IsValidTile(tile))
 	EnforcePrecondition(false, IsAirportTile(tile) || IsHangarTile(tile));
 
-	return ScriptObject::DoCommand(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 }
 
 /* static */ SQInteger ScriptAirport::GetNumHangars(TileIndex tile)

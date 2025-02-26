@@ -412,7 +412,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, nullptr);
+					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, nullptr);
 				}
 				break;
 			}
@@ -421,7 +421,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, nullptr);
+					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, nullptr);
 				}
 				break;
 			}
@@ -431,7 +431,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, (widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE) ? 1 : 0, CMD_SET_REFIT_AS_TEMPLATE, nullptr);
+					DoCommandPOld(0, template_index, (widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE) ? 1 : 0, CMD_SET_REFIT_AS_TEMPLATE, nullptr);
 				}
 				break;
 			}
@@ -440,7 +440,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, nullptr);
+					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, nullptr);
 				}
 				break;
 			}
@@ -479,7 +479,7 @@ public:
 
 					uint32_t template_index = ((this->templates)[selected_template_index])->index;
 
-					bool succeeded = DoCommandP(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE, nullptr);
+					bool succeeded = DoCommandPOld(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE, nullptr);
 
 					if (succeeded) {
 						this->templates.ForceRebuild();
@@ -551,7 +551,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != INVALID_GROUP) {
 					TemplateID tv_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, this->selected_group, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
+					DoCommandPOld(0, this->selected_group, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
 					this->UpdateButtonState();
 				}
 				break;
@@ -559,7 +559,7 @@ public:
 
 			case TRW_WIDGET_STOP: {
 				if (this->selected_group != INVALID_GROUP) {
-					DoCommandP(0, this->selected_group, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
+					DoCommandPOld(0, this->selected_group, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
 					this->UpdateButtonState();
 				}
 				break;
@@ -580,7 +580,7 @@ public:
 
 	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
-		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), nullptr);
+		bool succeeded = DoCommandPOld(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), nullptr);
 
 		if (!succeeded)	return false;
 
@@ -639,7 +639,7 @@ public:
 	{
 		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			DoCommandP(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str->c_str());
+			DoCommandPOld(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str->c_str());
 		}
 	}
 

@@ -30,7 +30,7 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, ScriptMap::IsValidTile(tile));
 
-	return ScriptObject::DoCommand(tile, VST_EVERYONE, 0, CMD_SCROLL_VIEWPORT);
+	return ScriptObject::DoCommandOld(tile, VST_EVERYONE, 0, CMD_SCROLL_VIEWPORT);
 }
 
 /* static */ bool ScriptViewport::ScrollCompanyClientsTo(ScriptCompany::CompanyID company, TileIndex tile)
@@ -41,7 +41,7 @@
 	company = ScriptCompany::ResolveCompanyID(company);
 	EnforcePrecondition(false, company != ScriptCompany::COMPANY_INVALID);
 
-	return ScriptObject::DoCommand(tile, VST_COMPANY, company, CMD_SCROLL_VIEWPORT);
+	return ScriptObject::DoCommandOld(tile, VST_COMPANY, company, CMD_SCROLL_VIEWPORT);
 }
 
 /* static */ bool ScriptViewport::ScrollClientTo(ScriptClient::ClientID client, TileIndex tile)
@@ -53,5 +53,5 @@
 	client = ScriptClient::ResolveClientID(client);
 	EnforcePrecondition(false, client != ScriptClient::CLIENT_INVALID);
 
-	return ScriptObject::DoCommand(tile, VST_CLIENT, client, CMD_SCROLL_VIEWPORT);
+	return ScriptObject::DoCommandOld(tile, VST_CLIENT, client, CMD_SCROLL_VIEWPORT);
 }

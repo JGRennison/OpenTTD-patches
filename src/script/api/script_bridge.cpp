@@ -98,12 +98,12 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 
 	/* For rail and water we do nothing special */
 	if (vehicle_type == ScriptVehicle::VT_RAIL || vehicle_type == ScriptVehicle::VT_WATER) {
-		return ScriptObject::DoCommand(end, start, type | bridge_type, CMD_BUILD_BRIDGE);
+		return ScriptObject::DoCommandOld(end, start, type | bridge_type, CMD_BUILD_BRIDGE);
 	}
 
 	ScriptObject::SetCallbackVariable(0, start);
 	ScriptObject::SetCallbackVariable(1, end);
-	return ScriptObject::DoCommand(end, start, type | bridge_type, CMD_BUILD_BRIDGE, nullptr, &::_DoCommandReturnBuildBridge1);
+	return ScriptObject::DoCommandOld(end, start, type | bridge_type, CMD_BUILD_BRIDGE, nullptr, &::_DoCommandReturnBuildBridge1);
 }
 
 /* static */ bool ScriptBridge::_BuildBridgeRoad1()
@@ -117,7 +117,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::DoCommand(start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2) | (ScriptRoad::GetCurrentRoadType() << 4) | (1 << 13), INVALID_TOWN, CMD_BUILD_ROAD, nullptr, &::_DoCommandReturnBuildBridge2);
+	return ScriptObject::DoCommandOld(start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2) | (ScriptRoad::GetCurrentRoadType() << 4) | (1 << 13), INVALID_TOWN, CMD_BUILD_ROAD, nullptr, &::_DoCommandReturnBuildBridge2);
 }
 
 /* static */ bool ScriptBridge::_BuildBridgeRoad2()
@@ -131,14 +131,14 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::DoCommand(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1) | (ScriptRoad::GetCurrentRoadType() << 4) | (1 << 13), INVALID_TOWN, CMD_BUILD_ROAD);
+	return ScriptObject::DoCommandOld(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1) | (ScriptRoad::GetCurrentRoadType() << 4) | (1 << 13), INVALID_TOWN, CMD_BUILD_ROAD);
 }
 
 /* static */ bool ScriptBridge::RemoveBridge(TileIndex tile)
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsBridgeTile(tile));
-	return ScriptObject::DoCommand(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 }
 
 /* static */ std::optional<std::string> ScriptBridge::GetName(BridgeType bridge_type, ScriptVehicle::VehicleType vehicle_type)

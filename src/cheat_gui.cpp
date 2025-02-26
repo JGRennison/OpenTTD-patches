@@ -545,7 +545,7 @@ struct CheatWindow : Window {
 				uint64_t oldvalue = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 				uint64_t value = oldvalue + (uint64_t)(get_arrow_button_value() << 16);
 				value = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
-				DoCommandP(0, (uint32_t)btn, (uint32_t)value, CMD_CHEAT_SETTING);
+				DoCommandPOld(0, (uint32_t)btn, (uint32_t)value, CMD_CHEAT_SETTING);
 				if (value != oldvalue) register_arrow_button_clicked();
 				break;
 			}
@@ -567,7 +567,7 @@ struct CheatWindow : Window {
 
 		if (value != oldvalue) {
 			if (_networking || btn == CHT_STATION_RATING || btn == CHT_TOWN_RATING) {
-				if (btn != CHT_MONEY) DoCommandP(0, static_cast<uint32_t>(btn), static_cast<uint32_t>(value), CMD_CHEAT_SETTING);
+				if (btn != CHT_MONEY) DoCommandPOld(0, static_cast<uint32_t>(btn), static_cast<uint32_t>(value), CMD_CHEAT_SETTING);
 			} else {
 				WriteValue(ce->variable, ce->type, static_cast<int64_t>(value));
 			}
@@ -721,7 +721,7 @@ struct CheatWindow : Window {
 			char tmp_buffer[32];
 			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-			DoCommandP(0, (uint32_t)clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			DoCommandPOld(0, (uint32_t)clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {

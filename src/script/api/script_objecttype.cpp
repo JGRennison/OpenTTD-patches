@@ -43,7 +43,7 @@
 	EnforcePrecondition(false, view >= 0 && view < GetViews(object_type));
 	EnforcePrecondition(false, ScriptMap::IsValidTile(tile));
 
-	return ScriptObject::DoCommand(tile, object_type, view, CMD_BUILD_OBJECT);
+	return ScriptObject::DoCommandOld(tile, object_type, view, CMD_BUILD_OBJECT);
 }
 
 /* static */ ObjectType ScriptObjectType::ResolveNewGRFID(SQInteger grfid, SQInteger grf_local_id)

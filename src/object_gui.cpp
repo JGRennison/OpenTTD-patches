@@ -318,7 +318,7 @@ public:
 		if (_settings_game.construction.build_object_area_permitted && spec->size == OBJECT_SIZE_1X1) {
 			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUILD_OBJECT);
 		} else {
-			DoCommandP(tile, spec->Index(), _object_gui.sel_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
+			DoCommandPOld(tile, spec->Index(), _object_gui.sel_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
 		}
 	}
 
@@ -339,7 +339,7 @@ public:
 			if (TileX(end_tile) == MapMaxX()) end_tile += TileDiffXY(-1, 0);
 			if (TileY(end_tile) == MapMaxY()) end_tile += TileDiffXY(0, -1);
 		}
-		DoCommandP(end_tile, start_tile,
+		DoCommandPOld(end_tile, start_tile,
 				( ObjectClass::Get(_object_gui.sel_class)->GetSpec(_object_gui.sel_type)->Index() << 3) | (_object_gui.sel_view << 1) | (_ctrl_pressed ? 1 : 0),
 				CMD_BUILD_OBJECT_AREA | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
 	}

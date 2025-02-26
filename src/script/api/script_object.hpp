@@ -84,7 +84,7 @@ protected:
 
 public:
 	/**
-	 * Store the latest result of a DoCommand per company.
+	 * Store the latest result of a DoCommandOld per company.
 	 * @param res The result of the last command.
 	 */
 	static void SetLastCommandRes(bool res);
@@ -109,7 +109,7 @@ public:
 
 protected:
 	/**
-	 * Executes a raw DoCommand for the script.
+	 * Executes a raw DoCommandOld for the script.
 	 */
 	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text = nullptr, const struct CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
 
@@ -118,12 +118,12 @@ protected:
 		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
 	}
 
-	static bool DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, nullptr, callback);
 	}
 
-	static bool DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
@@ -144,27 +144,27 @@ protected:
 	static bool CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd);
 
 	/**
-	 * Sets the DoCommand costs counter to a value.
+	 * Sets the DoCommandOld costs counter to a value.
 	 */
 	static void SetDoCommandCosts(Money value);
 
 	/**
-	 * Increase the current value of the DoCommand costs counter.
+	 * Increase the current value of the DoCommandOld costs counter.
 	 */
 	static void IncreaseDoCommandCosts(Money value);
 
 	/**
-	 * Get the current DoCommand costs counter.
+	 * Get the current DoCommandOld costs counter.
 	 */
 	static Money GetDoCommandCosts();
 
 	/**
-	 * Set the DoCommand last error.
+	 * Set the DoCommandOld last error.
 	 */
 	static void SetLastError(ScriptErrorType last_error);
 
 	/**
-	 * Get the DoCommand last error.
+	 * Get the DoCommandOld last error.
 	 */
 	static ScriptErrorType GetLastError();
 
@@ -219,17 +219,17 @@ protected:
 	static ScriptObject *GetDoCommandAsyncModeInstance();
 
 	/**
-	 * Set the delay of the DoCommand.
+	 * Set the delay of the DoCommandOld.
 	 */
 	static void SetDoCommandDelay(uint ticks);
 
 	/**
-	 * Get the delay of the DoCommand.
+	 * Get the delay of the DoCommandOld.
 	 */
 	static uint GetDoCommandDelay();
 
 	/**
-	 * Get the latest result of a DoCommand.
+	 * Get the latest result of a DoCommandOld.
 	 */
 	static bool GetLastCommandRes();
 
@@ -272,7 +272,7 @@ protected:
 	/**
 	 * Get the internal value of allow_do_command. This can differ
 	 * from CanSuspend() if the reason we are not allowed
-	 * to execute a DoCommand is in squirrel and not the API.
+	 * to execute a DoCommandOld is in squirrel and not the API.
 	 * In that case use this function to restore the previous value.
 	 * @return True iff DoCommands are allowed in the current scope.
 	 */

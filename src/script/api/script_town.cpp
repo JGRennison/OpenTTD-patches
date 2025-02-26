@@ -52,7 +52,7 @@
 		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 	}
 
-	return ScriptObject::DoCommand(0, town_id, 0, CMD_RENAME_TOWN, text);
+	return ScriptObject::DoCommandOld(0, town_id, 0, CMD_RENAME_TOWN, text);
 }
 
 /* static */ bool ScriptTown::SetText(TownID town_id, Text *text)
@@ -62,7 +62,7 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidTown(town_id));
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, 0, CMD_TOWN_SET_TEXT, text != nullptr ? text->GetEncodedText().c_str() : "");
+	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, 0, CMD_TOWN_SET_TEXT, text != nullptr ? text->GetEncodedText().c_str() : "");
 }
 
 /* static */ SQInteger ScriptTown::GetPopulation(TownID town_id)
@@ -133,7 +133,7 @@
 
 	goal = Clamp<SQInteger>(goal, 0, UINT32_MAX);
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id | (towneffect_id << 16), goal, CMD_TOWN_CARGO_GOAL);
+	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id | (towneffect_id << 16), goal, CMD_TOWN_CARGO_GOAL);
 }
 
 /* static */ SQInteger ScriptTown::GetCargoGoal(TownID town_id, ScriptCargo::TownEffect towneffect_id)
@@ -177,7 +177,7 @@
 			break;
 	}
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, growth_rate, CMD_TOWN_GROWTH_RATE);
+	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, growth_rate, CMD_TOWN_GROWTH_RATE);
 }
 
 /* static */ SQInteger ScriptTown::GetGrowthRate(TownID town_id)
@@ -267,7 +267,7 @@
 	EnforcePrecondition(false, IsValidTown(town_id));
 	EnforcePrecondition(false, IsActionAvailable(town_id, town_action));
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, town_action, CMD_DO_TOWN_ACTION);
+	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, town_action, CMD_DO_TOWN_ACTION);
 }
 
 /* static */ bool ScriptTown::ExpandTown(TownID town_id, SQInteger houses)
@@ -278,7 +278,7 @@
 
 	houses = std::min<SQInteger>(houses, UINT32_MAX);
 
-	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, houses, CMD_EXPAND_TOWN);
+	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, houses, CMD_EXPAND_TOWN);
 }
 
 /* static */ bool ScriptTown::FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name)
@@ -311,7 +311,7 @@
 		return false;
 	}
 
-	return ScriptObject::DoCommand(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text.c_str());
+	return ScriptObject::DoCommandOld(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text.c_str());
 }
 
 /* static */ ScriptTown::TownRating ScriptTown::GetRating(TownID town_id, ScriptCompany::CompanyID company_id)
@@ -363,7 +363,7 @@
 	int16_t new_rating = Clamp(t->ratings[company] + delta, RATING_MINIMUM, RATING_MAXIMUM);
 	if (new_rating == t->ratings[company]) return false;
 
-	return ScriptObject::DoCommand(0, town_id | (company_id << 16), new_rating, CMD_TOWN_RATING);
+	return ScriptObject::DoCommandOld(0, town_id | (company_id << 16), new_rating, CMD_TOWN_RATING);
 }
 
 /* static */ SQInteger ScriptTown::GetAllowedNoise(TownID town_id)
