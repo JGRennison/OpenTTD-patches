@@ -735,7 +735,7 @@ struct BaseCommandContainer {
 	const char *DeserialiseBaseCommandContainer(struct DeserialisationBuffer &b, bool allow_str_ctrl);
 };
 
-struct CommandPayload {
+struct CommandExecData {
 	TileIndex tile;
 	DoCommandFlag flags;
 	uint32_t p1;
@@ -851,7 +851,7 @@ template <typename T>
 using CommandProcAuxT = CommandCost(TileIndex tile, DoCommandFlag flags, const T &aux_data);
 
 template <typename T>
-CommandCost CommandExecHelperAuxT(void *target, const CommandPayload &payload)
+CommandCost CommandExecHelperAuxT(void *target, const CommandExecData &payload)
 {
 	CommandAuxData<T> data;
 	CommandCost ret = data.Load(payload.aux_data);

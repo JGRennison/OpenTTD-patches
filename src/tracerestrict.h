@@ -1511,7 +1511,7 @@ struct TraceRestrictCreateSlotCmdData final : public CommandAuxiliarySerialisabl
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-template CommandCost CommandExecHelperAuxT<TraceRestrictCreateSlotCmdData>(void *, const CommandPayload &);
+template CommandCost CommandExecHelperAuxT<TraceRestrictCreateSlotCmdData>(void *, const CommandExecData &);
 
 struct TraceRestrictCreateCounterCmdData final : public CommandAuxiliarySerialisable<TraceRestrictCreateCounterCmdData> {
 	std::string name;
@@ -1522,6 +1522,6 @@ struct TraceRestrictCreateCounterCmdData final : public CommandAuxiliarySerialis
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-template CommandCost CommandExecHelperAuxT<TraceRestrictCreateCounterCmdData>(void *, const CommandPayload &);
+template CommandCost CommandExecHelperAuxT<TraceRestrictCreateCounterCmdData>(void *, const CommandExecData &);
 
 #endif /* TRACERESTRICT_H */

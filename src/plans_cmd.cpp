@@ -68,7 +68,7 @@ struct PlanLineCmdData final : public CommandAuxiliarySerialisable<PlanLineCmdDa
 	}
 };
 
-template CommandCost CommandExecHelperAuxT<PlanLineCmdData>(void *, const CommandPayload &);
+template CommandCost CommandExecHelperAuxT<PlanLineCmdData>(void *, const CommandExecData &);
 
 bool AddPlanLine(PlanID plan, TileVector tiles)
 {

@@ -216,5 +216,5 @@ void LeagueTableElementCmdData::FormatDebugSummary(format_target &output) const
 	output.format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
 }
 
-template CommandCost CommandExecHelperAuxT<LeagueTableCmdData>(void *, const CommandPayload &);
-template CommandCost CommandExecHelperAuxT<LeagueTableElementCmdData>(void *, const CommandPayload &);
+template CommandCost CommandExecHelperAuxT<LeagueTableCmdData>(void *, const CommandExecData &);
+template CommandCost CommandExecHelperAuxT<LeagueTableElementCmdData>(void *, const CommandExecData &);

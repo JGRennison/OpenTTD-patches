@@ -63,15 +63,15 @@
 using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
 
-typedef CommandCost CommandExecHelper(void *target, const CommandPayload &payload);
+typedef CommandCost CommandExecHelper(void *target, const CommandExecData &payload);
 
-CommandCost CommandExecHelperStd(void *target, const CommandPayload &payload)
+CommandCost CommandExecHelperStd(void *target, const CommandExecData &payload)
 {
 	if (payload.p3 != 0 || payload.aux_data != nullptr) return CMD_ERROR;
 	return reinterpret_cast<CommandProc *>(target)(payload.tile, payload.flags, payload.p1, payload.p2, payload.text);
 }
 
-CommandCost CommandExecHelperEx(void *target, const CommandPayload &payload)
+CommandCost CommandExecHelperEx(void *target, const CommandExecData &payload)
 {
 	return reinterpret_cast<CommandProcEx *>(target)(payload.tile, payload.flags, payload.p1, payload.p2, payload.p3, payload.text, payload.aux_data);
 }
@@ -105,13 +105,13 @@ struct Command {
 	Command(CommandProcAuxT<T> *proc, const char *name, CommandFlags flags, CommandType type)
 			: helper(CommandExecHelperAuxT<T>), target(reinterpret_cast<void *>(proc)), name(name), flags(flags), type(type), logging(CMDLF_NONE) {}
 
-	inline CommandCost Execute(const CommandPayload &payload) const
+	inline CommandCost Execute(const CommandExecData &payload) const
 	{
 		return this->helper(this->target, payload);
 	}
 };
 
-#define CMD_PROC_AUXT(proc, auxtype) extern template CommandCost CommandExecHelperAuxT<struct auxtype>(void *, const CommandPayload &); CommandProcAuxT<struct auxtype> proc;
+#define CMD_PROC_AUXT(proc, auxtype) extern template CommandCost CommandExecHelperAuxT<struct auxtype>(void *, const CommandExecData &); CommandProcAuxT<struct auxtype> proc;
 
 CommandProc CmdBuildRailroadTrack;
 CommandProc CmdRemoveRailroadTrack;
