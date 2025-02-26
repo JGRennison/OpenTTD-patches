@@ -435,6 +435,7 @@ public:
 		this->SetWidgetDisabledState(WID_PLN_HIDE_ALL, this->vscroll->GetCount() == 0);
 		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
 		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
+		this->SetWidgetsDisabledState(_game_mode != GM_EDITOR && !Company::IsValidID(_local_company), WID_PLN_NEW);
 		if (_current_plan != nullptr) {
 			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->SetString(_current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC);
