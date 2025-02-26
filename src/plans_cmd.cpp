@@ -93,7 +93,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, const PlanLineCm
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 
-	if (data.tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
+	if (data.tiles.size() > (MAX_PLAN_PAYLOAD_SIZE / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
 	if (flags & DC_EXEC) {
 		PlanLine &pl = p->NewLine();
 		pl.tiles = data.tiles;

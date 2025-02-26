@@ -672,8 +672,6 @@ struct CommandAuxiliaryBase;
  */
 typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd);
 
-#define MAX_CMD_TEXT_LENGTH 32000
-
 struct CommandSerialisationBuffer;
 
 struct CommandAuxiliaryDeserialisationSrc {

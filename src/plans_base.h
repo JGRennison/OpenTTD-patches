@@ -26,6 +26,8 @@ typedef std::vector<TileIndex> TileVector;
 typedef std::vector<PlanLine> PlanLineVector;
 extern PlanPool _plan_pool;
 
+static constexpr size_t MAX_PLAN_PAYLOAD_SIZE = 32000;
+
 struct BasePlanLine {
 	TileVector tiles;
 	Rect viewport_extents;
@@ -76,7 +78,7 @@ struct BasePlanLine {
 			}
 		}
 
-		if (this->tiles.size() * sizeof(TileIndex) >= MAX_CMD_TEXT_LENGTH) return false;
+		if (this->tiles.size() * sizeof(TileIndex) >= MAX_PLAN_PAYLOAD_SIZE) return false;
 
 		this->tiles.push_back(tile);
 		_plan_update_counter++;
