@@ -23,6 +23,7 @@ void   BufferSend_uint8 (std::vector<uint8_t> &buffer, size_t limit, uint8_t  da
 void   BufferSend_uint16(std::vector<uint8_t> &buffer, size_t limit, uint16_t data);
 void   BufferSend_uint32(std::vector<uint8_t> &buffer, size_t limit, uint32_t data);
 void   BufferSend_uint64(std::vector<uint8_t> &buffer, size_t limit, uint64_t data);
+void   BufferSend_varuint(std::vector<uint8_t> &buffer, size_t limit, uint64_t data);
 void   BufferSend_string(std::vector<uint8_t> &buffer, size_t limit, const std::string_view data);
 size_t BufferSend_binary_until_full(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *begin, const uint8_t *end);
 void   BufferSend_binary(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size);
@@ -59,6 +60,12 @@ struct BufferSerialisationHelper {
 	{
 		T *self = static_cast<T *>(this);
 		BufferSend_uint64(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
+	}
+
+	void Send_varuint(uint64_t data)
+	{
+		T *self = static_cast<T *>(this);
+		BufferSend_varuint(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
 	}
 
 	void Send_string(const std::string_view data)
@@ -99,6 +106,29 @@ struct BufferSerialisationHelper {
 	{
 		T *self = static_cast<T *>(this);
 		BufferSendAtOffset_uint16(self->GetSerialisationBuffer(), offset, data);
+	}
+
+	template <typename V>
+	void Send_generic_integer(const V &data)
+	{
+		static_assert(sizeof(V) <= 8);
+		if constexpr (sizeof(V) <= 1) {
+			this->Send_uint8(static_cast<uint8_t>(data));
+		} else if constexpr (sizeof(V) == 2) {
+			this->Send_uint16(static_cast<uint16_t>(data));
+		} else {
+			this->Send_varuint(static_cast<uint64_t>(data));
+		}
+	}
+
+	template <typename V>
+	void Send_generic(const V &data)
+	{
+		if constexpr (std::is_same_v<V, std::string>) {
+			this->Send_string(data);
+		} else {
+			this->Send_generic_integer(data);
+		}
 	}
 
 	size_t GetSendOffset() const
@@ -218,6 +248,28 @@ public:
 		n += (uint64_t)this->GetBuffer()[pos++] << 48;
 		n += (uint64_t)this->GetBuffer()[pos++] << 56;
 		return n;
+	}
+
+	/**
+	 * Read a variable-size encoded bits integer from the packet.
+	 * @return The read data.
+	 */
+	uint64_t Recv_varuint()
+	{
+		uint8_t first_byte = this->Recv_uint8();
+		uint extra_bytes = std::countl_one<uint8_t>(first_byte);
+		if (extra_bytes == 0) return first_byte;
+
+		if (!this->CanRecvBytes(extra_bytes, true)) return 0;
+
+		uint64_t result = first_byte & (0x7F >> extra_bytes);
+
+		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
+		for (uint i = 0; i < extra_bytes; i++) {
+			result <<= 8;
+			result |= this->GetBuffer()[pos++];
+		}
+		return result;
 	}
 
 	/**
@@ -347,6 +399,33 @@ public:
 		std::span<const uint8_t> view = this->Recv_buffer_view();
 
 		return { view.begin(), view.end() };
+	}
+
+	template <typename V>
+	void Recv_generic_integer(V &data)
+	{
+		static_assert(sizeof(V) <= 8);
+		if constexpr (std::is_same_v<V, bool>) {
+			data = this->Recv_bool();
+		} else if constexpr (sizeof(V) <= 1) {
+			data = static_cast<V>(this->Recv_uint8());
+		} else if constexpr (sizeof(V) == 2) {
+			data = static_cast<V>(this->Recv_uint16());
+		} else {
+			uint64_t val = this->Recv_varuint();
+			if ((val & GetBitMaskSC<uint64_t>(0, sizeof(V) * 8)) != val) this->RaiseRecvError();
+			data = static_cast<V>(val);
+		}
+	}
+
+	template <typename V>
+	void Recv_generic(V &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	{
+		if constexpr (std::is_same_v<V, std::string>) {
+			this->Recv_string(data, settings);
+		} else {
+			this->Recv_generic_integer(data);
+		}
 	}
 
 	struct DeserialisationBuffer BorrowAsDeserialisationBuffer();

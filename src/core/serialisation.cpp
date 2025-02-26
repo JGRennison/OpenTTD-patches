@@ -99,6 +99,43 @@ void BufferSend_uint64(std::vector<uint8_t> &buffer, size_t limit, uint64_t data
 }
 
 /**
+ * Package a variable-size encoded 64 bits integer in the packet.
+ *
+ * 0xxxxxxx 7 bits
+ * 10xxxxxx xxxxxxxx 14 bits
+ * 110xxxxx xxxxxxxx xxxxxxxx 21 bits
+ * 1110xxxx xxxxxxxx xxxxxxxx xxxxxxxx 28 bits
+ * 11110xxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 35 bits
+ * 111110xx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 42 bits
+ * 1111110x xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 49 bits
+ * 11111110 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 56 bits
+ * 11111111 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 64 bits
+ *
+ * @param data The data to send.
+ */
+void BufferSend_varuint(std::vector<uint8_t> &buffer, size_t limit, uint64_t data)
+{
+	const uint8_t data_bits = std::min<uint8_t>(62, FindLastBit(data)); // Limit to 62, as we don't need a 0 bit spacer for 64 bits (bit 63 set)
+
+	uint8_t extra_bytes = data_bits / 7;
+	assert(BufferCanWriteToPacket(buffer, limit, 1 + extra_bytes));
+	buffer.resize(buffer.size() + 1 + extra_bytes);
+	uint8_t *b = buffer.data() + buffer.size();
+
+	uint8_t first_byte = 0;
+	while (extra_bytes > 0) {
+		first_byte >>= 1;
+		first_byte |= 0x80;
+		extra_bytes--;
+		b--;
+		*b = (uint8_t)data;
+		data >>= 8;
+	}
+	b--;
+	*b = first_byte | (uint8_t)data;
+}
+
+/**
  * Sends a string over the network. It sends out
  * the string + '\0'. No size-byte or something.
  * @param data The string to send
