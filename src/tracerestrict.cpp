@@ -3775,6 +3775,7 @@ void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) co
 {
 	buffer.Send_uint8(this->vehtype);
 	buffer.Send_uint16(this->parent);
+	buffer.Send_string(this->name);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
 	if (this->follow_up_cmd.has_value()) {
 		this->follow_up_cmd->Serialise(buffer);
@@ -3785,6 +3786,7 @@ bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, 
 {
 	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
 	this->parent = buffer.Recv_uint16();
+	buffer.Recv_string(this->name, default_string_validation);
 	if (buffer.Recv_bool()) {
 		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}
@@ -3803,6 +3805,7 @@ void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) c
 
 void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer) const
 {
+	buffer.Send_string(this->name);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
 	if (this->follow_up_cmd.has_value()) {
 		this->follow_up_cmd->Serialise(buffer);
@@ -3811,6 +3814,7 @@ void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer)
 
 bool TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
+	buffer.Recv_string(this->name, default_string_validation);
 	if (buffer.Recv_bool()) {
 		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}
