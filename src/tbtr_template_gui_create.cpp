@@ -709,7 +709,7 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 	new TemplateCreateWindow(_template_create_window_desc, to_edit, create_window_open);
 }
 
-void CcSetVirtualTrain(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcSetVirtualTrain(const CommandCost &result)
 {
 	if (result.Failed()) return;
 
@@ -721,7 +721,7 @@ void CcSetVirtualTrain(const CommandCost &result, Commands cmd, TileIndex tile, 
 	}
 }
 
-void CcVirtualTrainWagonsMoved(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcVirtualTrainWagonsMoved(const CommandCost &result)
 {
 	if (result.Failed()) return;
 

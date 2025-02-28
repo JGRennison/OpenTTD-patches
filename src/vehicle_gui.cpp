@@ -4649,12 +4649,8 @@ void StopGlobalFollowVehicle(const Vehicle *v)
 /**
  * This is the Callback method after the construction attempt of a primary vehicle
  * @param result indicates completion (or not) of the operation
- * @param tile unused
- * @param p1 unused
- * @param p2 unused
- * @param cmd unused
  */
-void CcBuildPrimaryVehicle(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcBuildPrimaryVehicle(const CommandCost &result)
 {
 	if (result.Failed()) return;
 

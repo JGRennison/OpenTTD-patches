@@ -4957,7 +4957,7 @@ public:
 	}
 };
 
-void CcCreateTraceRestrictSlot(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcCreateTraceRestrictSlot(const CommandCost &result)
 {
 	if (result.Succeeded() && result.HasResultData()) {
 		TraceRestrictRecordRecentSlot(static_cast<TraceRestrictSlotID>(result.GetResultData()));
@@ -5358,7 +5358,7 @@ public:
 	}
 };
 
-void CcCreateTraceRestrictCounter(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcCreateTraceRestrictCounter(const CommandCost &result)
 {
 	if (result.Succeeded() && result.HasResultData()) {
 		TraceRestrictRecordRecentCounter(static_cast<TraceRestrictCounterID>(result.GetResultData()));

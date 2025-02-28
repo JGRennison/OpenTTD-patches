@@ -26,7 +26,7 @@ uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, c
 /**
  * Callback for building wagons.
  */
-void CcBuildWagon(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcBuildWagon(const CommandCost &result, TileIndex tile)
 {
 	if (result.Failed()) return;
 

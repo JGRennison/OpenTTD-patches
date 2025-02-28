@@ -53,7 +53,7 @@ enum DemolishConfirmMode {
 	DCM_INDUSTRY_RAIL_STATION,
 };
 
-void CcTerraform(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcTerraform(const CommandCost &result, TileIndex tile)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);

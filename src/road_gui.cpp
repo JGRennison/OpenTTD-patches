@@ -128,7 +128,7 @@ static bool IsRoadStopAvailable(const RoadStopSpec *spec, StationType type)
 	return Convert8bitBooleanCallback(spec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, TileIndex tile)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 }
@@ -153,12 +153,8 @@ static void PlaceRoad_Bridge(TileIndex tile, Window *w)
  *
  * @param result Whether the build succeeded.
  * @param start_tile Starting tile of the tunnel.
- * @param p1 bit 0-3 railtype or roadtypes
- *           bit 8-9 transport type
- * @param p2 unused
- * @param cmd unused
  */
-void CcBuildRoadTunnel(const CommandCost &result, Commands cmd, TileIndex start_tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, start_tile);

@@ -116,7 +116,7 @@ CommandCost CmdRenameSign(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * @param p2 unused
  * @param cmd unused
  */
-void CcPlaceSign(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcPlaceSign(const CommandCost &result)
 {
 	if (result.Failed()) return;
 

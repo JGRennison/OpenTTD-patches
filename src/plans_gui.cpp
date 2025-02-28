@@ -701,7 +701,7 @@ void ShowPlansWindow()
  * Only the creator of a plan executes this function.
  * The other players should not be bothered with these changes.
  */
-void CcAddPlan(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcAddPlan(const CommandCost &result)
 {
 	if (result.Failed()) return;
 

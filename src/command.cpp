@@ -151,6 +151,8 @@ static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_int
  * @param payload Command payload
  */
 typedef void GeneralCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
+typedef void ResultCommandCallback(const CommandCost &result);
+typedef void ResultTileCommandCallback(const CommandCost &result, TileIndex tile);
 
 typedef bool CommandCallbackTrampoline(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
 
@@ -165,43 +167,61 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	}; \
 };
 
-DEF_CB_GENERAL(BuildPrimaryVehicle)
-DEF_CB_GENERAL(BuildAirport)
+#define DEF_CB_RES_TILE(cb_) \
+ResultTileCommandCallback Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		Cc ## cb_(result, tile); \
+		return true; \
+	}; \
+};
+
+#define DEF_CB_RES(cb_) \
+ResultCommandCallback Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		Cc ## cb_(result); \
+		return true; \
+	}; \
+};
+
+DEF_CB_RES(BuildPrimaryVehicle)
+DEF_CB_RES_TILE(BuildAirport)
 DEF_CB_GENERAL(BuildBridge)
-DEF_CB_GENERAL(PlaySound_CONSTRUCTION_WATER)
-DEF_CB_GENERAL(BuildDocks)
-DEF_CB_GENERAL(FoundTown)
-DEF_CB_GENERAL(BuildRoadTunnel)
-DEF_CB_GENERAL(BuildRailTunnel)
-DEF_CB_GENERAL(BuildWagon)
+DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_WATER)
+DEF_CB_RES_TILE(BuildDocks)
+DEF_CB_RES_TILE(FoundTown)
+DEF_CB_RES_TILE(BuildRoadTunnel)
+DEF_CB_RES_TILE(BuildRailTunnel)
+DEF_CB_RES_TILE(BuildWagon)
 DEF_CB_GENERAL(RoadDepot)
 DEF_CB_GENERAL(RailDepot)
-DEF_CB_GENERAL(PlaceSign)
-DEF_CB_GENERAL(PlaySound_EXPLOSION)
-DEF_CB_GENERAL(PlaySound_CONSTRUCTION_OTHER)
-DEF_CB_GENERAL(PlaySound_CONSTRUCTION_RAIL)
-DEF_CB_GENERAL(Station)
-DEF_CB_GENERAL(Terraform)
+DEF_CB_RES(PlaceSign)
+DEF_CB_RES_TILE(PlaySound_EXPLOSION)
+DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_OTHER)
+DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_RAIL)
+DEF_CB_RES_TILE(Station)
+DEF_CB_RES_TILE(Terraform)
 DEF_CB_GENERAL(AI)
-DEF_CB_GENERAL(CloneVehicle)
+DEF_CB_RES(CloneVehicle)
 DEF_CB_GENERAL(GiveMoney)
 DEF_CB_GENERAL(CreateGroup)
-DEF_CB_GENERAL(FoundRandomTown)
+DEF_CB_RES(FoundRandomTown)
 DEF_CB_GENERAL(RoadStop)
 DEF_CB_GENERAL(BuildIndustry)
 DEF_CB_GENERAL(StartStopVehicle)
 DEF_CB_GENERAL(Game)
 DEF_CB_GENERAL(AddVehicleNewGroup)
-DEF_CB_GENERAL(AddPlan)
-DEF_CB_GENERAL(SetVirtualTrain)
-DEF_CB_GENERAL(VirtualTrainWagonsMoved)
+DEF_CB_RES(AddPlan)
+DEF_CB_RES(SetVirtualTrain)
+DEF_CB_RES(VirtualTrainWagonsMoved)
 DEF_CB_GENERAL(DeleteVirtualTrain)
-DEF_CB_GENERAL(AddVirtualEngine)
-DEF_CB_GENERAL(MoveNewVirtualEngine)
+DEF_CB_RES(AddVirtualEngine)
+DEF_CB_RES(MoveNewVirtualEngine)
 DEF_CB_GENERAL(AddNewSchDispatchSchedule)
 DEF_CB_GENERAL(SwapSchDispatchSchedules)
-DEF_CB_GENERAL(CreateTraceRestrictSlot)
-DEF_CB_GENERAL(CreateTraceRestrictCounter)
+DEF_CB_RES(CreateTraceRestrictSlot)
+DEF_CB_RES(CreateTraceRestrictCounter)
 
 template <size_t... i>
 inline constexpr auto MakeCommandCallbackTable(std::index_sequence<i...>) noexcept {
