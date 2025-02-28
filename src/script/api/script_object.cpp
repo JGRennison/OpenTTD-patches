@@ -383,7 +383,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Try to perform the command. */
 	const bool use_cb = (_networking && !_generating_world && !asynchronous);
-	CommandCost res = ::DoCommandPScript(cmd, tile, payload, use_cb ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, use_cb ? cb_param : 0,
+	CommandCost res = ::DoCommandPScript(cmd, tile, payload, use_cb ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : CommandCallback::None, use_cb ? cb_param : 0,
 			intl_flags, estimate_only, asynchronous);
 
 	/* We failed; set the error and bail out */

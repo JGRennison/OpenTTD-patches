@@ -435,7 +435,7 @@ void RemoveAllTrees()
 
 	for (TileIndex tile = 0; tile < MapSize(); tile++) {
 		if (GetTileType(tile) == MP_TREES) {
-			DoCommandPOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+			DoCommandPOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
 		}
 	}
 }

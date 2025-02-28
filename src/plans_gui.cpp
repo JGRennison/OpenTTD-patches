@@ -260,7 +260,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS), CcAddPlan);
+				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS), CommandCallback::AddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -419,7 +419,7 @@ public:
 	{
 		if (_current_plan == nullptr || !str.has_value()) return;
 
-		DoCommandPOld(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str->c_str());
+		DoCommandPOld(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), CommandCallback::None, str->c_str());
 	}
 
 	bool AllPlansHidden() const

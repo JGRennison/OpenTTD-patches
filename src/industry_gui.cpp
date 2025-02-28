@@ -757,7 +757,7 @@ public:
 			_ignore_restrictions = true;
 
 			DoCommandPOld(tile, (layout_index << 8) | this->selected_type, seed,
-					CMD_BUILD_INDUSTRY | CMD_MSG(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY), &CcBuildIndustry);
+					CMD_BUILD_INDUSTRY | CMD_MSG(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY), CommandCallback::BuildIndustry);
 
 			cur_company.Restore();
 			old_generating_world.Restore();

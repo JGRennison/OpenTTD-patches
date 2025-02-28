@@ -817,7 +817,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), CommandCallback::None, str->c_str());
 	}
 
 	bool IsNewGRFInspectable() const override
@@ -1472,7 +1472,7 @@ public:
 				break;
 
 			case WID_TF_RANDOM_TOWN:
-				this->ExecuteFoundTownCommand(0, true, STR_ERROR_CAN_T_GENERATE_TOWN, CcFoundRandomTown);
+				this->ExecuteFoundTownCommand(0, true, STR_ERROR_CAN_T_GENERATE_TOWN, CommandCallback::FoundRandomTown);
 				break;
 
 			case WID_TF_TOWN_NAME_RANDOM:
@@ -1527,7 +1527,7 @@ public:
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		this->ExecuteFoundTownCommand(tile, false, STR_ERROR_CAN_T_FOUND_TOWN_HERE, CcFoundTown);
+		this->ExecuteFoundTownCommand(tile, false, STR_ERROR_CAN_T_FOUND_TOWN_HERE, CommandCallback::FoundTown);
 	}
 
 	void OnPlaceObjectAbort() override
@@ -2079,7 +2079,7 @@ struct BuildHouseWindow : public PickerWindow {
 			spec->Index(),
 			INVALID_TOWN,
 			CMD_PLACE_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE),
-			CcPlaySound_CONSTRUCTION_OTHER
+			CommandCallback::PlaySound_CONSTRUCTION_OTHER
 		);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd);

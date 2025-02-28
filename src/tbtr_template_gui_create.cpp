@@ -121,7 +121,7 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 	if (wagon == v) return;
 
 	DoCommandPOld(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == nullptr ? INVALID_VEHICLE : wagon->index,
-			CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWagonsMoved);
+			CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CommandCallback::VirtualTrainWagonsMoved);
 }
 
 class TemplateCreateWindow : public Window {
@@ -156,7 +156,7 @@ public:
 		this->sell_hovered = false;
 
 		if (to_edit != nullptr) {
-			DoCommandPOld(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
+			DoCommandPOld(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CommandCallback::SetVirtualTrain);
 		}
 
 		this->resize.step_height = 1;
@@ -268,7 +268,7 @@ public:
 		}
 
 		// create a new one
-		DoCommandPOld(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
+		DoCommandPOld(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), CommandCallback::SetVirtualTrain);
 		this->ToggleWidgetLoweredState(TCW_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
@@ -457,7 +457,7 @@ public:
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
 					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
 						DoCommandPOld(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
-								CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE), CcVirtualTrainWagonsMoved);
+								CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE), CommandCallback::VirtualTrainWagonsMoved);
 					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = INVALID_VEHICLE;
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
@@ -483,7 +483,7 @@ public:
 					}
 				}
 
-				DoCommandPOld(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, CMD_SELL_VIRTUAL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN), CcDeleteVirtualTrain);
+				DoCommandPOld(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, CMD_SELL_VIRTUAL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN), CommandCallback::DeleteVirtualTrain);
 
 				this->sel = INVALID_VEHICLE;
 

@@ -2552,7 +2552,7 @@ public:
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
-					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CcCreateTraceRestrictSlot);
+					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 				}
 				return;
 
@@ -2561,7 +2561,7 @@ public:
 					TraceRestrictCreateCounterCmdData data;
 					data.name = std::move(*str);
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
-					DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CcCreateTraceRestrictCounter);
+					DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 				}
 				return;
 
@@ -4803,15 +4803,15 @@ public:
 							data.vehtype = this->vli.vtype;
 							data.parent = this->slot_sel.GetClosestGroupID();
 							data.name = std::move(*str);
-							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CcCreateTraceRestrictSlot);
+							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 						} else {
-							DoCommandPOld(0, this->slot_query.id | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
+							DoCommandPOld(0, this->slot_query.id | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), CommandCallback::None, str->c_str());
 						}
 					} else if (this->slot_query.type == SlotItemType::Group) {
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_GROUP) {
-							DoCommandPOld(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str->c_str());
+							DoCommandPOld(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CommandCallback::None, str->c_str());
 						} else {
-							DoCommandPOld(0, this->slot_query.id, 0, CMD_ALTER_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
+							DoCommandPOld(0, this->slot_query.id, 0, CMD_ALTER_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), CommandCallback::None, str->c_str());
 						}
 					}
 					break;
@@ -5306,9 +5306,9 @@ public:
 					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
 						TraceRestrictCreateCounterCmdData data;
 						data.name = std::move(*str);
-						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CcCreateTraceRestrictCounter);
+						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 					} else {
-						DoCommandPOld(0, this->ctr_qt_op | (TRACO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
+						DoCommandPOld(0, this->ctr_qt_op | (TRACO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), CommandCallback::None, str->c_str());
 					}
 					break;
 

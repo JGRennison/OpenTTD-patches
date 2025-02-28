@@ -540,7 +540,7 @@ void LoadTownData()
 		/* If we still fail to found the town, we'll create a sign at the intended location and tell the player how many towns we failed to create in an error message.
 		 * This allows the player to diagnose a heightmap misalignment, if towns end up in the sea, or place towns manually, if in rough terrain. */
 		if (!success) {
-			DoCommandPOld(tile, 0, 0, CMD_PLACE_SIGN, nullptr, town.name.c_str());
+			DoCommandPOld(tile, 0, 0, CMD_PLACE_SIGN, CommandCallback::None, town.name.c_str());
 			failed_towns++;
 			continue;
 		}

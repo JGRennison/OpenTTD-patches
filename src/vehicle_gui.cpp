@@ -2731,7 +2731,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		DoCommandPOld(0, this->window_number, this->GetCargoFilter(), CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str.has_value() ? str->c_str() : nullptr);
+		DoCommandPOld(0, this->window_number, this->GetCargoFilter(), CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, str.has_value() ? str->c_str() : nullptr);
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
@@ -3854,7 +3854,7 @@ void CcStartStopVehicle(const CommandCost &result, Commands cmd, TileIndex tile,
 void StartStopVehicle(const Vehicle *v, bool texteffect)
 {
 	assert(v->IsPrimaryVehicle());
-	DoCommandPOld(v->tile, v->index, 0, _vehicle_command_translation_table[VCT_CMD_START_STOP][v->type], (texteffect && !IsHeadless()) ? CcStartStopVehicle : nullptr);
+	DoCommandPOld(v->tile, v->index, 0, _vehicle_command_translation_table[VCT_CMD_START_STOP][v->type], (texteffect && !IsHeadless()) ? CommandCallback::StartStopVehicle : CommandCallback::None);
 }
 
 /** Strings for aircraft breakdown types */
@@ -4360,7 +4360,7 @@ public:
 				 * most likely already open, but is also visible in the vehicle viewport. */
 				DoCommandPOld(v->tile, v->index, _ctrl_pressed ? 1 : 0,
 										_vehicle_command_translation_table[VCT_CMD_CLONE_VEH][v->type],
-										_ctrl_pressed ? nullptr : CcCloneVehicle);
+										_ctrl_pressed ? CommandCallback::None : CommandCallback::CloneVehicle);
 				break;
 			case WID_VV_TURN_AROUND: // turn around
 				assert(v->IsGroundVehicle());
@@ -4392,7 +4392,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, 0, CMD_RENAME_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN + Vehicle::Get(this->window_number)->type), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, 0, CMD_RENAME_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN + Vehicle::Get(this->window_number)->type), CommandCallback::None, str->c_str());
 	}
 
 	virtual void OnDropdownSelect(WidgetID widget, int index) override

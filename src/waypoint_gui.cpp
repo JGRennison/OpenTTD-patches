@@ -202,7 +202,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, 0, CMD_RENAME_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, 0, CMD_RENAME_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME), CommandCallback::None, str->c_str());
 	}
 
 	bool IsNewGRFInspectable() const override

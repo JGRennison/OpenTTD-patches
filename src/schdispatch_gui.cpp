@@ -73,7 +73,7 @@ enum SchdispatchWidgets {
  */
 static void SetScheduleStartDateIntl(uint32_t p1, StateTicks date)
 {
-	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
+	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 }
 
 /**
@@ -113,7 +113,7 @@ static void ScheduleAddIntl(uint32_t p1, StateTicks date, uint extra_slots, uint
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	DoCommandPEx(0, p1, (uint32_t)(date - start_tick).base(), (((uint64_t)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
+	DoCommandPEx(0, p1, (uint32_t)(date - start_tick).base(), (((uint64_t)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 }
 
 /**
@@ -186,7 +186,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
 	}
 
-	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr);
+	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CommandCallback::AddNewSchDispatchSchedule, nullptr);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {
@@ -1230,14 +1230,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MOVE_LEFT:
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index > 0) {
-					DoCommandPOld(0, this->vehicle->index, (this->schedule_index - 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcSwapSchDispatchSchedules);
+					DoCommandPOld(0, this->vehicle->index, (this->schedule_index - 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CommandCallback::SwapSchDispatchSchedules);
 				}
 				break;
 
 			case WID_SCHDISPATCH_MOVE_RIGHT:
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index < (int)(this->vehicle->orders->GetScheduledDispatchScheduleCount() - 1)) {
-					DoCommandPOld(0, this->vehicle->index, (this->schedule_index + 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcSwapSchDispatchSchedules);
+					DoCommandPOld(0, this->vehicle->index, (this->schedule_index + 1) | (this->schedule_index << 16), CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CommandCallback::SwapSchDispatchSchedules);
 				}
 				break;
 		}
@@ -1325,7 +1325,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				uint64_t p3 = 0;
 				SetBit(p3, index + 16);
 				if (!HasBit(selected_slot->flags, index)) SetBit(p3, index);
-				DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
+				DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
@@ -1398,7 +1398,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_RENAME: {
 				if (!this->IsScheduleSelected()) break;
 
-				DoCommandPOld(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), nullptr, str->c_str());
+				DoCommandPOld(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), CommandCallback::None, str->c_str());
 				break;
 			}
 
@@ -1415,7 +1415,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				switch (this->click_subaction & 0xFFFF) {
 					case SCH_MD_RENAME_TAG:
-						DoCommandPOld(0, v->index | (this->schedule_index << 20), this->click_subaction >> 16, CMD_SCHEDULED_DISPATCH_RENAME_TAG | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG), nullptr, str->c_str());
+						DoCommandPOld(0, v->index | (this->schedule_index << 20), this->click_subaction >> 16, CMD_SCHEDULED_DISPATCH_RENAME_TAG | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG), CommandCallback::None, str->c_str());
 						break;
 				}
 				break;

@@ -556,7 +556,7 @@ public:
 					DoCommandPOld(0, this->sel_group | (static_cast<uint32_t>(GroupFlags::ReplaceWagonRemoval) << 16), (HasFlag(g->flags, GroupFlags::ReplaceWagonRemoval) ? 0 : 1) | (_ctrl_pressed << 1), CMD_SET_GROUP_FLAG);
 				} else {
 					// toggle renew_keep_length
-					DoCommandPOld(0, 0, Company::Get(_local_company)->settings.renew_keep_length ? 0 : 1, CMD_CHANGE_COMPANY_SETTING, nullptr, "company.renew_keep_length");
+					DoCommandPOld(0, 0, Company::Get(_local_company)->settings.renew_keep_length ? 0 : 1, CMD_CHANGE_COMPANY_SETTING, CommandCallback::None, "company.renew_keep_length");
 				}
 				break;
 			}

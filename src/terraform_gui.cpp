@@ -159,7 +159,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 
 	switch (proc) {
 		case DDSP_DEMOLISH_AREA: {
-			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
 
 			if (!_shift_pressed && IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
 				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
@@ -169,13 +169,13 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			break;
 		}
 		case DDSP_RAISE_AND_LEVEL_AREA:
-			DoCommandPOld(end_tile, start_tile, LM_RAISE << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_RAISE_LAND_HERE), CcTerraform);
+			DoCommandPOld(end_tile, start_tile, LM_RAISE << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_RAISE_LAND_HERE), CommandCallback::Terraform);
 			break;
 		case DDSP_LOWER_AND_LEVEL_AREA:
-			DoCommandPOld(end_tile, start_tile, LM_LOWER << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_LOWER_LAND_HERE), CcTerraform);
+			DoCommandPOld(end_tile, start_tile, LM_LOWER << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_LOWER_LAND_HERE), CommandCallback::Terraform);
 			break;
 		case DDSP_LEVEL_AREA:
-			DoCommandPOld(end_tile, start_tile, LM_LEVEL << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_LEVEL_LAND_HERE), CcTerraform);
+			DoCommandPOld(end_tile, start_tile, LM_LEVEL << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_LEVEL_LAND_HERE), CommandCallback::Terraform);
 			break;
 		case DDSP_CREATE_ROCKS:
 			GenerateRockyArea(end_tile, start_tile);
@@ -184,7 +184,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			GenerateDesertArea(end_tile, start_tile);
 			break;
 		case DDSP_BUY_LAND:
-			DoCommandPOld(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_CONSTRUCTION_RAIL);
+			DoCommandPOld(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 			break;
 		default:
 			return false;
@@ -302,7 +302,7 @@ struct TerraformToolbarWindow : Window {
 				switch (_settings_game.construction.purchase_land_permitted) {
 					case 0:
 					case 1:
-						DoCommandPOld(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_CONSTRUCTION_RAIL);
+						DoCommandPOld(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 						break;
 
 					case 2:
@@ -478,7 +478,7 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 		StringID msg =
 			mode ? STR_ERROR_CAN_T_RAISE_LAND_HERE : STR_ERROR_CAN_T_LOWER_LAND_HERE;
 
-		DoCommandPOld(tile, SLOPE_N, (uint32_t)mode, CMD_TERRAFORM_LAND | CMD_MSG(msg), CcTerraform);
+		DoCommandPOld(tile, SLOPE_N, (uint32_t)mode, CMD_TERRAFORM_LAND | CMD_MSG(msg), CommandCallback::Terraform);
 	} else {
 		assert(_terraform_size != 0);
 		TileArea ta(tile, _terraform_size, _terraform_size);

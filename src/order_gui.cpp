@@ -73,7 +73,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 
 static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32_t p2, bool error_msg = true, const char *text = nullptr)
 {
-	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), nullptr, text);
+	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), CommandCallback::None, text);
 }
 
 struct CargoTypeOrdersWindow : public Window {
@@ -1616,7 +1616,7 @@ private:
 
 	bool InsertNewOrder(uint64_t order_pack)
 	{
-		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr);
+		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
 	}
 
 	bool ModifyOrder(VehicleOrderID sel_ord, uint32_t p2, bool error_msg = true, const char *text = nullptr)
@@ -3409,7 +3409,7 @@ public:
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
-			DoCommandPOld(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str.has_value() ? str->c_str() : nullptr);
+			DoCommandPOld(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, str.has_value() ? str->c_str() : nullptr);
 		}
 
 		if (this->query_text_widget == WID_O_TEXT_LABEL && str.has_value()) {
@@ -3440,14 +3440,14 @@ public:
 				TraceRestrictCreateCounterCmdData data;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(aux);
-				DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CcCreateTraceRestrictCounter);
+				DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 			} else {
 				TraceRestrictCreateSlotCmdData data;
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(aux);
-				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CcCreateTraceRestrictSlot);
+				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}
 		}
 	}

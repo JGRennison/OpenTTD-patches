@@ -554,6 +554,91 @@ enum Commands : uint16_t {
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 
+/*** All command callbacks that exist ***/
+
+enum class CommandCallback : uint8_t {
+	None, ///< No callback
+
+	/* ai/ai_instance.cpp */
+	AI,
+
+	/* airport_gui.cpp */
+	BuildAirport,
+
+	/* bridge_gui.cpp */
+	BuildBridge,
+
+	/* dock_gui.cpp */
+	BuildDocks,
+	PlaySound_CONSTRUCTION_WATER,
+
+	/* depot_gui.cpp */
+	CloneVehicle,
+
+	/* game/game_instance.cpp */
+	Game,
+
+	/* group_gui.cpp */
+	CreateGroup,
+	AddVehicleNewGroup,
+
+	/* industry_gui.cpp */
+	BuildIndustry,
+
+	/* main_gui.cpp */
+	PlaySound_EXPLOSION,
+	PlaceSign,
+	Terraform,
+	GiveMoney,
+
+	/* plans_gui.cpp */
+	AddPlan,
+
+	/* rail_gui.cpp */
+	PlaySound_CONSTRUCTION_RAIL,
+	RailDepot,
+	Station,
+	BuildRailTunnel,
+
+	/* road_gui.cpp */
+	PlaySound_CONSTRUCTION_OTHER,
+	BuildRoadTunnel,
+	RoadDepot,
+	RoadStop,
+
+	/* train_gui.cpp */
+	BuildWagon,
+
+	/* town_gui.cpp */
+	FoundTown,
+	FoundRandomTown,
+
+	/* vehicle_gui.cpp */
+	BuildPrimaryVehicle,
+	StartStopVehicle,
+
+	/* tbtr_template_gui_create.cpp */
+	SetVirtualTrain,
+	VirtualTrainWagonsMoved,
+	DeleteVirtualTrain,
+
+	/* build_vehicle_gui.cpp */
+	AddVirtualEngine,
+	MoveNewVirtualEngine,
+
+	/* schdispatch_gui.cpp */
+	AddNewSchDispatchSchedule,
+	SwapSchDispatchSchedules,
+
+	/* tracerestrict_gui.cpp */
+	CreateTraceRestrictSlot,
+	CreateTraceRestrictCounter,
+
+	End, ///< Must ALWAYS be on the end of this list
+};
+
+using CallbackParameter = uint32_t;
+
 /** Defines the traits of a command. */
 template <Commands Tcmd> struct CommandTraits;
 template <Commands Tcmd> struct CommandHandlerTraits;
@@ -715,22 +800,6 @@ struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-using CallbackParameter = uint32_t;
-
-/**
- * Define a callback function for the client, after the command is finished.
- *
- * Functions of this type are called after the command is finished. The parameters
- * are from the #CommandProc callback type. The boolean parameter indicates if the
- * command succeeded or failed.
- *
- * @param result The result of the executed command
- * @param cmd Executed command ID
- * @param tile The tile of the command action
- * @param payload Command payload
- */
-typedef void CommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
-
 template <typename T>
 struct BaseCommandContainer {
 	Commands cmd{};                              ///< command being executed.
@@ -741,7 +810,7 @@ struct BaseCommandContainer {
 
 template <typename T>
 struct CommandContainer : public BaseCommandContainer<T> {
-	CommandCallback *callback{};                 ///< any callback function executed upon successful completion of the command.
+	CommandCallback callback = CommandCallback::None; ///< any callback function executed upon successful completion of the command.
 	CallbackParameter callback_param{};
 };
 
@@ -779,7 +848,7 @@ struct DynBaseCommandContainer {
 
 struct DynCommandContainer {
 	DynBaseCommandContainer command{};
-	CommandCallback *callback{};                 ///< any callback function executed upon successful completion of the command.
+	CommandCallback callback = CommandCallback::None; ///< any callback function executed upon successful completion of the command.
 	CallbackParameter callback_param{};
 
 	DynCommandContainer() = default;
@@ -793,7 +862,7 @@ inline BaseCommandContainer<P123CmdData> NewBaseCommandContainerBasic(TileIndex 
 	return { static_cast<Commands>(cmd & 0xFFFF), static_cast<StringID>(cmd >> 16), tile, P123CmdData(p1, p2, 0) };
 }
 
-inline CommandContainer<P123CmdData> NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback *callback = nullptr)
+inline CommandContainer<P123CmdData> NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback callback = CommandCallback::None)
 {
 	return { NewBaseCommandContainerBasic(tile, p1, p2, cmd), callback, 0 };
 }

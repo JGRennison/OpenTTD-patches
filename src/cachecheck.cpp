@@ -270,7 +270,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 					cclog("  {}", line);
 				});
 				if (old_infrastructure[i].signal != c->infrastructure.signal && _network_server && !HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) {
-					DoCommandPOld(0, 0, _settings_game.debug.chicken_bits | (1 << DCBF_DESYNC_CHECK_PERIODIC_SIGNALS), CMD_CHANGE_SETTING, nullptr, "debug.chicken_bits");
+					DoCommandPOld(0, 0, _settings_game.debug.chicken_bits | (1 << DCBF_DESYNC_CHECK_PERIODIC_SIGNALS), CMD_CHANGE_SETTING, CommandCallback::None, "debug.chicken_bits");
 				}
 			}
 			i++;

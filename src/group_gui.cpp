@@ -907,7 +907,7 @@ public:
 			}
 
 			case WID_GL_CREATE_GROUP: { // Create a new group
-				DoCommandPOld(0, this->vli.vtype, this->vli.index, CMD_CREATE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CcCreateGroup);
+				DoCommandPOld(0, this->vli.vtype, this->vli.index, CMD_CREATE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::CreateGroup);
 				break;
 			}
 
@@ -924,7 +924,7 @@ public:
 					if (!this->vehgroups.empty()) {
 						std::string name = GenerateAutoNameForVehicleGroup(this->vehgroups[0].vehicles_begin[0]);
 						if (!name.empty()) {
-							DoCommandPOld(0, this->vli.index, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), nullptr, name.c_str());
+							DoCommandPOld(0, this->vli.index, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), CommandCallback::None, name.c_str());
 							return;
 						}
 					}
@@ -1033,7 +1033,7 @@ public:
 				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
 				GroupID new_g = it == this->groups.end() ? NEW_GROUP : it->group->index;
 
-				DoCommandPOld(0, new_g, vindex | (_ctrl_pressed || this->grouping == GB_SHARED_ORDERS ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE), new_g == NEW_GROUP ? CcAddVehicleNewGroup : nullptr);
+				DoCommandPOld(0, new_g, vindex | (_ctrl_pressed || this->grouping == GB_SHARED_ORDERS ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE), new_g == NEW_GROUP ? CommandCallback::AddVehicleNewGroup : CommandCallback::None);
 				break;
 			}
 
@@ -1089,7 +1089,7 @@ public:
 					vli_type = VL_SHARED_ORDERS;
 					v = v->FirstShared();
 				}
-				DoCommandPOld(0, VehicleListIdentifier(vli_type, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
+				DoCommandPOld(0, VehicleListIdentifier(vli_type, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, name.c_str());
 
 				break;
 			}
@@ -1106,7 +1106,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str.has_value()) DoCommandPOld(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), nullptr, str->c_str());
+		if (str.has_value()) DoCommandPOld(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), CommandCallback::None, str->c_str());
 		this->group_rename = INVALID_GROUP;
 	}
 

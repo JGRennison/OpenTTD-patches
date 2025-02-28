@@ -2353,7 +2353,7 @@ struct StationViewWindow : public Window {
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), nullptr, str->c_str());
+		DoCommandPOld(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), CommandCallback::None, str->c_str());
 	}
 
 	void OnResize() override

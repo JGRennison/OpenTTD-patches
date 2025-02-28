@@ -63,7 +63,7 @@ static void PlaceAirport(TileIndex tile)
 
 	uint32_t p1 = AirportClass::Get(_selected_airport_class)->GetSpec(_selected_airport_index)->GetIndex();
 	p1 |= _selected_airport_layout << 8;
-	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(tile, p1, p2, CMD_BUILD_AIRPORT | CMD_MSG(STR_ERROR_CAN_T_BUILD_AIRPORT_HERE), CcBuildAirport);
+	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(tile, p1, p2, CMD_BUILD_AIRPORT | CMD_MSG(STR_ERROR_CAN_T_BUILD_AIRPORT_HERE), CommandCallback::BuildAirport);
 	ShowSelectStationIfNeeded(cmdcont, TileArea(tile, _thd.size.x / TILE_SIZE, _thd.size.y / TILE_SIZE));
 }
 

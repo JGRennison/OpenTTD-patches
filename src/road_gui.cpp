@@ -274,7 +274,7 @@ static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32_t p2,
 	p2 |= INVALID_STATION << 16; // no station to join
 
 	TileArea ta(start_tile, end_tile);
-	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, (uint32_t)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
+	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, (uint32_t)(ta.w | ta.h << 8), p2, cmd, CommandCallback::RoadStop);
 	cmdcont.payload.p3 = (_roadstop_gui.sel_type << 16) | _roadstop_gui.sel_class;
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
@@ -668,7 +668,7 @@ struct BuildRoadToolbarWindow : Window {
 
 			case WID_ROT_DEPOT:
 				DoCommandPOld(tile, _cur_roadtype << 2 | _road_depot_orientation, 0,
-						CMD_BUILD_ROAD_DEPOT | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_depot), CcRoadDepot);
+						CMD_BUILD_ROAD_DEPOT | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_depot), CommandCallback::RoadDepot);
 				break;
 
 			case WID_ROT_BUILD_WAYPOINT:
@@ -689,7 +689,7 @@ struct BuildRoadToolbarWindow : Window {
 
 			case WID_ROT_BUILD_TUNNEL:
 				DoCommandPOld(tile, _cur_roadtype | (TRANSPORT_ROAD << 8), 0,
-						CMD_BUILD_TUNNEL | CMD_MSG(STR_ERROR_CAN_T_BUILD_TUNNEL_HERE), CcBuildRoadTunnel);
+						CMD_BUILD_TUNNEL | CMD_MSG(STR_ERROR_CAN_T_BUILD_TUNNEL_HERE), CommandCallback::BuildRoadTunnel);
 				break;
 
 			case WID_ROT_CONVERT_ROAD:
@@ -795,7 +795,7 @@ struct BuildRoadToolbarWindow : Window {
 					DoCommandPOld(start_tile, end_tile, _place_road_flag | (_cur_roadtype << 3) | (_one_way_button_clicked << 10),
 							_remove_button_clicked ?
 							CMD_REMOVE_LONG_ROAD | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_road) :
-							CMD_BUILD_LONG_ROAD | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_road), CcPlaySound_CONSTRUCTION_OTHER);
+							CMD_BUILD_LONG_ROAD | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_road), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 					break;
 
 				case DDSP_BUILD_ROAD_WAYPOINT:
@@ -803,12 +803,12 @@ struct BuildRoadToolbarWindow : Window {
 					if (this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) {
 						TileArea ta(start_tile, end_tile);
 						if (_remove_button_clicked) {
-							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (1 << 2), CMD_REMOVE_ROAD_STOP | CMD_MSG(STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
+							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (1 << 2), CMD_REMOVE_ROAD_STOP | CMD_MSG(STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 						} else {
 							uint32_t p1 = ta.w | ta.h << 8 | _ctrl_pressed << 16 | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 17;
 							uint32_t p2 = _waypoint_gui.sel_class | INVALID_STATION << 16;
 
-							CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
+							CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 							cmdcont.payload.p3 = _waypoint_gui.sel_type;
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
@@ -820,7 +820,7 @@ struct BuildRoadToolbarWindow : Window {
 					if (this->IsWidgetLowered(WID_ROT_BUS_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), RoadStopType::Bus, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
-							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Bus), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Bus)]), CcPlaySound_CONSTRUCTION_OTHER);
+							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Bus), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Bus)]), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 						} else {
 							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | to_underlying(RoadStopType::Bus), CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[to_underlying(RoadStopType::Bus)]));
 						}
@@ -832,7 +832,7 @@ struct BuildRoadToolbarWindow : Window {
 					if (this->IsWidgetLowered(WID_ROT_TRUCK_STATION) && GetIfClassHasNewStopsByType(RoadStopClass::Get(_roadstop_gui.sel_class), RoadStopType::Truck, _cur_roadtype)) {
 						if (_remove_button_clicked) {
 							TileArea ta(start_tile, end_tile);
-							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Truck), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Truck)]), CcPlaySound_CONSTRUCTION_OTHER);
+							DoCommandPOld(ta.tile, ta.w | ta.h << 8, (_ctrl_pressed << 1) | to_underlying(RoadStopType::Truck), CMD_REMOVE_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_remove_station[to_underlying(RoadStopType::Truck)]), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 						} else {
 							PlaceRoadStop(start_tile, end_tile, (_cur_roadtype << 5) | (_ctrl_pressed << 2) | to_underlying(RoadStopType::Truck), CMD_BUILD_ROAD_STOP | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_build_station[to_underlying(RoadStopType::Truck)]));
 						}
@@ -840,7 +840,7 @@ struct BuildRoadToolbarWindow : Window {
 					break;
 
 				case DDSP_CONVERT_ROAD:
-					DoCommandPOld(end_tile, start_tile, _cur_roadtype, CMD_CONVERT_ROAD | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_convert_road), CcPlaySound_CONSTRUCTION_OTHER);
+					DoCommandPOld(end_tile, start_tile, _cur_roadtype, CMD_CONVERT_ROAD | CMD_MSG(GetRoadTypeInfo(this->roadtype)->strings.err_convert_road), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 					break;
 			}
 		}

@@ -92,7 +92,7 @@ void CcGame(const CommandCost &result, Commands cmd, TileIndex tile, const Comma
 	}
 }
 
-CommandCallback *GameInstance::GetDoCommandCallback()
+CommandCallback GameInstance::GetDoCommandCallback()
 {
-	return &CcGame;
+	return CommandCallback::Game;
 }

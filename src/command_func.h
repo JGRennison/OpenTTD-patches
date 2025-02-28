@@ -49,7 +49,7 @@ inline CommandCost DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, DoComm
 
 /* DoCommandP and variants */
 
-bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags);
+bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags);
 
 inline bool DoCommandPContainer(const DynCommandContainer &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
@@ -62,7 +62,7 @@ inline bool DoCommandPContainer(const CommandContainer<T> &container, DoCommandI
 	return DoCommandPImplementation(container.cmd, container.tile, container.payload, container.error_msg, container.callback, container.callback_param, intl_flags);
 }
 
-inline bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback = nullptr, const char *text = nullptr)
+inline bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback callback = CommandCallback::None, const char *text = nullptr)
 {
 	CommandContainer<P123CmdData> cont = NewCommandContainerBasic(tile, p1, p2, cmd, callback);
 	cont.payload.p3 = p3;
@@ -70,23 +70,23 @@ inline bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, 
 	return DoCommandPContainer(cont);
 }
 
-inline bool DoCommandPOld(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback *callback = nullptr, const char *text = nullptr)
+inline bool DoCommandPOld(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback callback = CommandCallback::None, const char *text = nullptr)
 {
 	return DoCommandPEx(tile, p1, p2, 0, cmd, callback, text);
 }
 
 template <Commands cmd>
-bool DoCommandP(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, StringID error_msg, CommandCallback *callback = nullptr, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
+bool DoCommandP(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED);
 }
 
 /* Other command functions */
 
-CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous);
-CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only);
+CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous);
+CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only);
 
-void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, CompanyID company);
+void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
 
 extern Money _additional_cash_required;
 
@@ -112,82 +112,5 @@ inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
 void ExecuteCommandQueue();
 void ClearCommandQueue();
 void EnqueueDoCommandP(DynCommandContainer container, DoCommandIntlFlag intl_flags = DCIF_NONE);
-
-/*** All command callbacks that exist ***/
-
-/* ai/ai_instance.cpp */
-CommandCallback CcAI;
-
-/* airport_gui.cpp */
-CommandCallback CcBuildAirport;
-
-/* bridge_gui.cpp */
-CommandCallback CcBuildBridge;
-
-/* dock_gui.cpp */
-CommandCallback CcBuildDocks;
-CommandCallback CcPlaySound_CONSTRUCTION_WATER;
-
-/* depot_gui.cpp */
-CommandCallback CcCloneVehicle;
-
-/* game/game_instance.cpp */
-CommandCallback CcGame;
-
-/* group_gui.cpp */
-CommandCallback CcCreateGroup;
-CommandCallback CcAddVehicleNewGroup;
-
-/* industry_gui.cpp */
-CommandCallback CcBuildIndustry;
-
-/* main_gui.cpp */
-CommandCallback CcPlaySound_EXPLOSION;
-CommandCallback CcPlaceSign;
-CommandCallback CcTerraform;
-CommandCallback CcGiveMoney;
-
-/* plans_gui.cpp */
-CommandCallback CcAddPlan;
-
-/* rail_gui.cpp */
-CommandCallback CcPlaySound_CONSTRUCTION_RAIL;
-CommandCallback CcRailDepot;
-CommandCallback CcStation;
-CommandCallback CcBuildRailTunnel;
-
-/* road_gui.cpp */
-CommandCallback CcPlaySound_CONSTRUCTION_OTHER;
-CommandCallback CcBuildRoadTunnel;
-CommandCallback CcRoadDepot;
-CommandCallback CcRoadStop;
-
-/* train_gui.cpp */
-CommandCallback CcBuildWagon;
-
-/* town_gui.cpp */
-CommandCallback CcFoundTown;
-CommandCallback CcFoundRandomTown;
-
-/* vehicle_gui.cpp */
-CommandCallback CcBuildPrimaryVehicle;
-CommandCallback CcStartStopVehicle;
-
-/* tbtr_template_gui_create.cpp */
-CommandCallback CcSetVirtualTrain;
-CommandCallback CcVirtualTrainWagonsMoved;
-CommandCallback CcDeleteVirtualTrain;
-
-/* build_vehicle_gui.cpp */
-CommandCallback CcAddVirtualEngine;
-CommandCallback CcMoveNewVirtualEngine;
-
-/* schdispatch_gui.cpp */
-CommandCallback CcAddNewSchDispatchSchedule;
-CommandCallback CcSwapSchDispatchSchedules;
-
-/* tracerestrict_gui.cpp */
-CommandCallback CcCreateTraceRestrictSlot;
-CommandCallback CcCreateTraceRestrictCounter;
 
 #endif /* COMMAND_FUNC_H */

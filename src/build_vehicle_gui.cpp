@@ -1421,7 +1421,7 @@ struct BuildVehicleWindowBase : Window {
 		} else {
 			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
 
-			DoCommandPOld(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcMoveNewVirtualEngine);
+			DoCommandPOld(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CommandCallback::MoveNewVirtualEngine);
 		}
 	}
 
@@ -1961,14 +1961,14 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		EngineID sel_eng = this->sel_engine;
 		if (sel_eng == INVALID_ENGINE) return;
 
-		CommandCallback *callback;
+		CommandCallback callback;
 		uint32_t cmd;
 		if (this->virtual_train_mode) {
-			callback = CcAddVirtualEngine;
+			callback = CommandCallback::AddVirtualEngine;
 			cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
 		} else {
 			callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
-					? CcBuildWagon : CcBuildPrimaryVehicle;
+					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 			cmd = GetCmdBuildVeh(this->vehicle_type);
 		}
 		CargoID cargo = this->cargo_filter_criteria;
@@ -2223,7 +2223,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str->c_str());
+		DoCommandPOld(0, this->rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index) override
@@ -2725,14 +2725,14 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	void BuildEngine(const EngineID selected, CargoID cargo)
 	{
 		if (selected != INVALID_ENGINE) {
-			CommandCallback *callback;
+			CommandCallback callback;
 			uint32_t cmd;
 			if (this->virtual_train_mode) {
-				callback = CcAddVirtualEngine;
+				callback = CommandCallback::AddVirtualEngine;
 				cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
 			} else {
 				callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
-						? CcBuildWagon : CcBuildPrimaryVehicle;
+						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 				cmd = GetCmdBuildVeh(this->vehicle_type);
 			}
 			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
@@ -3166,9 +3166,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (!str.has_value()) return;
 
 		if (this->loco.rename_engine != INVALID_ENGINE) {
-			DoCommandPOld(0, this->loco.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str->c_str());
+			DoCommandPOld(0, this->loco.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
 		} else {
-			DoCommandPOld(0, this->wagon.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str->c_str());
+			DoCommandPOld(0, this->wagon.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
 		}
 	}
 

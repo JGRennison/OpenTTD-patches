@@ -1968,7 +1968,7 @@ BaseCommandContainer<P123CmdData> GetTraceRestrictCommandContainer(TileIndex til
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text)
 {
 	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
-	DoCommandPOld(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), nullptr, text);
+	DoCommandPOld(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), CommandCallback::None, text);
 }
 
 /**

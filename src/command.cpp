@@ -137,6 +137,93 @@ inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noe
  */
 static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, CMD_END>{});
 
+
+/**
+ * Define a callback function for the client, after the command is finished.
+ *
+ * Functions of this type are called after the command is finished. The parameters
+ * are from the #CommandProc callback type. The boolean parameter indicates if the
+ * command succeeded or failed.
+ *
+ * @param result The result of the executed command
+ * @param cmd Executed command ID
+ * @param tile The tile of the command action
+ * @param payload Command payload
+ */
+typedef void GeneralCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
+
+typedef bool CommandCallbackTrampoline(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
+
+template <CommandCallback Tcb> struct CommandCallbackTraits;
+
+#define DEF_CB_GENERAL(cb_) \
+GeneralCommandCallback Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		Cc ## cb_(result, cmd, tile, payload, param); \
+		return true; \
+	}; \
+};
+
+DEF_CB_GENERAL(BuildPrimaryVehicle)
+DEF_CB_GENERAL(BuildAirport)
+DEF_CB_GENERAL(BuildBridge)
+DEF_CB_GENERAL(PlaySound_CONSTRUCTION_WATER)
+DEF_CB_GENERAL(BuildDocks)
+DEF_CB_GENERAL(FoundTown)
+DEF_CB_GENERAL(BuildRoadTunnel)
+DEF_CB_GENERAL(BuildRailTunnel)
+DEF_CB_GENERAL(BuildWagon)
+DEF_CB_GENERAL(RoadDepot)
+DEF_CB_GENERAL(RailDepot)
+DEF_CB_GENERAL(PlaceSign)
+DEF_CB_GENERAL(PlaySound_EXPLOSION)
+DEF_CB_GENERAL(PlaySound_CONSTRUCTION_OTHER)
+DEF_CB_GENERAL(PlaySound_CONSTRUCTION_RAIL)
+DEF_CB_GENERAL(Station)
+DEF_CB_GENERAL(Terraform)
+DEF_CB_GENERAL(AI)
+DEF_CB_GENERAL(CloneVehicle)
+DEF_CB_GENERAL(GiveMoney)
+DEF_CB_GENERAL(CreateGroup)
+DEF_CB_GENERAL(FoundRandomTown)
+DEF_CB_GENERAL(RoadStop)
+DEF_CB_GENERAL(BuildIndustry)
+DEF_CB_GENERAL(StartStopVehicle)
+DEF_CB_GENERAL(Game)
+DEF_CB_GENERAL(AddVehicleNewGroup)
+DEF_CB_GENERAL(AddPlan)
+DEF_CB_GENERAL(SetVirtualTrain)
+DEF_CB_GENERAL(VirtualTrainWagonsMoved)
+DEF_CB_GENERAL(DeleteVirtualTrain)
+DEF_CB_GENERAL(AddVirtualEngine)
+DEF_CB_GENERAL(MoveNewVirtualEngine)
+DEF_CB_GENERAL(AddNewSchDispatchSchedule)
+DEF_CB_GENERAL(SwapSchDispatchSchedules)
+DEF_CB_GENERAL(CreateTraceRestrictSlot)
+DEF_CB_GENERAL(CreateTraceRestrictCounter)
+
+template <size_t... i>
+inline constexpr auto MakeCommandCallbackTable(std::index_sequence<i...>) noexcept {
+	return std::array<CommandCallbackTrampoline *, sizeof...(i)>{{ CommandCallbackTraits<static_cast<CommandCallback>(i + 1)>::handler... }};
+}
+
+/**
+ * The master callback table
+ *
+ * No entry for CommandCallback::None, so length reduced by 1.
+ */
+static constexpr auto _command_callback_table = MakeCommandCallbackTable(std::make_index_sequence<static_cast<size_t>(CommandCallback::End) - 1>{});
+
+static void ExecuteCallback(CommandCallback callback, CallbackParameter callback_param, const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload)
+{
+	if (callback != CommandCallback::None && to_underlying(callback) < to_underlying(CommandCallback::End)) {
+		if (_command_callback_table[to_underlying(callback) - 1](result, cmd, tile, payload, callback_param)) return;
+	}
+
+	Debug(misc, 0, "Failed to execute callback: {}, {}", callback, payload.GetDebugSummaryString());
+}
+
 ClientID _cmd_client_id = INVALID_CLIENT_ID;
 
 /**
@@ -470,7 +557,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
  *
  * @return \c true if the command succeeded, else \c false.
  */
-bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &orig_payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags)
+bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &orig_payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags)
 {
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &orig_payload](format_target &output) {
@@ -564,14 +651,14 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 		ShowCostOrIncomeAnimation(x, y, GetSlopePixelZ(x, y), res.GetCost());
 	}
 
-	if (!estimate_only && !only_sending && callback != nullptr) {
-		callback(res, cmd, tile, *use_payload, callback_param);
+	if (!estimate_only && !only_sending && callback != CommandCallback::None) {
+		ExecuteCallback(callback, callback_param, res, cmd, tile, *use_payload);
 	}
 
 	return res.Succeeded();
 }
 
-CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous)
+CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous)
 {
 	GameRandomSeedChecker random_state;
 	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
@@ -643,7 +730,7 @@ void EnqueueDoCommandP(DynCommandContainer container, DoCommandIntlFlag intl_fla
  * @param estimate_only whether to give only the estimate or also execute the command
  * @return the command cost of this function.
  */
-CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only)
+CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only)
 {
 	/* Prevent recursion; it gives a mess over the network */
 	assert(_docommand_recursive == 0);

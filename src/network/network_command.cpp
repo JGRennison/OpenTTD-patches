@@ -18,48 +18,6 @@
 
 #include "../safeguards.h"
 
-/** Table with all the callbacks we'll use for conversion*/
-static CommandCallback * const _callback_table[] = {
-	/* 0x00 */ nullptr,
-	/* 0x01 */ CcBuildPrimaryVehicle,
-	/* 0x02 */ CcBuildAirport,
-	/* 0x03 */ CcBuildBridge,
-	/* 0x04 */ CcPlaySound_CONSTRUCTION_WATER,
-	/* 0x05 */ CcBuildDocks,
-	/* 0x06 */ CcFoundTown,
-	/* 0x07 */ CcBuildRoadTunnel,
-	/* 0x08 */ CcBuildRailTunnel,
-	/* 0x09 */ CcBuildWagon,
-	/* 0x0A */ CcRoadDepot,
-	/* 0x0B */ CcRailDepot,
-	/* 0x0C */ CcPlaceSign,
-	/* 0x0D */ CcPlaySound_EXPLOSION,
-	/* 0x0E */ CcPlaySound_CONSTRUCTION_OTHER,
-	/* 0x0F */ CcPlaySound_CONSTRUCTION_RAIL,
-	/* 0x10 */ CcStation,
-	/* 0x11 */ CcTerraform,
-	/* 0x12 */ CcAI,
-	/* 0x13 */ CcCloneVehicle,
-	/* 0x14 */ CcGiveMoney,
-	/* 0x15 */ CcCreateGroup,
-	/* 0x16 */ CcFoundRandomTown,
-	/* 0x17 */ CcRoadStop,
-	/* 0x18 */ CcBuildIndustry,
-	/* 0x19 */ CcStartStopVehicle,
-	/* 0x1A */ CcGame,
-	/* 0x1B */ CcAddVehicleNewGroup,
-	/* 0x1C */ CcAddPlan,
-	/* 0x1D */ CcSetVirtualTrain,
-	/* 0x1E */ CcVirtualTrainWagonsMoved,
-	/* 0x1F */ CcDeleteVirtualTrain,
-	/* 0x20 */ CcAddVirtualEngine,
-	/* 0x21 */ CcMoveNewVirtualEngine,
-	/* 0x22 */ CcAddNewSchDispatchSchedule,
-	/* 0x23 */ CcSwapSchDispatchSchedules,
-	/* 0x24 */ CcCreateTraceRestrictSlot,
-	/* 0x25 */ CcCreateTraceRestrictCounter,
-};
-
 /** Local queue of packets waiting for handling. */
 static CommandQueue _local_wait_queue;
 /** Local queue of packets waiting for execution. */
@@ -75,7 +33,7 @@ static CommandQueue _local_execution_queue;
  * @param callback_param Parameter for the callback function
  * @param company The company that wants to send the command
  */
-void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, CompanyID company)
+void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
 {
 	assert(IsValidCommand(cmd));
 
@@ -125,7 +83,7 @@ void NetworkSyncCommandQueue(NetworkClientSocket *cs)
 	for (const CommandPacket &p : _local_execution_queue) {
 		OutgoingCommandPacket &c = cs->outgoing_queue.emplace_back();
 		c = SerialiseCommandPacket(p);
-		c.callback = nullptr;
+		c.callback = CommandCallback::None;
 	}
 }
 
@@ -185,20 +143,20 @@ void NetworkFreeLocalCommandQueue()
  */
 static void DistributeCommandPacket(CommandPacket cp, const NetworkClientSocket *owner)
 {
-	CommandCallback *callback = cp.callback;
+	CommandCallback callback = cp.callback;
 	cp.frame = _frame_counter_max + 1;
 
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= NetworkClientSocket::STATUS_MAP) {
 			/* Callbacks are only send back to the client who sent them in the
 			 *  first place. This filters that out. */
-			cp.callback = (cs != owner) ? nullptr : callback;
+			cp.callback = (cs != owner) ? CommandCallback::None : callback;
 			cp.my_cmd = (cs == owner);
 			cs->outgoing_queue.push_back(SerialiseCommandPacket(cp));
 		}
 	}
 
-	cp.callback = (nullptr != owner) ? nullptr : callback;
+	cp.callback = (nullptr != owner) ? CommandCallback::None : callback;
 	cp.my_cmd = (nullptr == owner);
 	_local_execution_queue.push_back(std::move(cp));
 }
@@ -265,9 +223,9 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &c
 	if (err != nullptr) return err;
 
 	uint8_t callback = p.Recv_uint8();
-	if (callback >= lengthof(_callback_table)) return "invalid callback";
+	if (callback >= static_cast<uint8_t>(CommandCallback::End)) return "invalid callback";
 
-	cp.callback = _callback_table[callback];
+	cp.callback = static_cast<CommandCallback>(callback);
 	if (callback != 0) {
 		cp.callback_param = p.Recv_uint32();
 	} else {
@@ -288,14 +246,10 @@ void NetworkGameSocketHandler::SendCommand(Packet &p, const OutgoingCommandPacke
 
 	cp.command_container.Serialise(p.AsBufferSerialisationRef());
 
-	uint8_t callback = 0;
-	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp.callback) {
-		callback++;
-	}
-
-	if (callback == lengthof(_callback_table)) {
+	uint8_t callback = static_cast<uint8_t>(cp.callback);
+	if (callback >= static_cast<uint8_t>(CommandCallback::End)) {
 		Debug(net, 0, "Unknown callback for command; no callback sent (command: {})", cp.command_container.cmd);
-		callback = 0; // _callback_table[0] == nullptr
+		callback = 0; // CommandCallback::None
 	}
 	p.Send_uint8(callback);
 	if (callback != 0) {

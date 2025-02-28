@@ -858,7 +858,7 @@ struct DepotWindow : Window {
 		if (!str.has_value()) return;
 
 		/* Do depot renaming */
-		DoCommandPOld(0, this->GetDepotIndex(), 0, CMD_RENAME_DEPOT | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPOT), nullptr, str->c_str());
+		DoCommandPOld(0, this->GetDepotIndex(), 0, CMD_RENAME_DEPOT | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPOT), CommandCallback::None, str->c_str());
 	}
 
 	bool OnRightClick([[maybe_unused]] Point pt, WidgetID widget) override
@@ -924,10 +924,10 @@ struct DepotWindow : Window {
 		if (_ctrl_pressed) {
 			/* Share-clone, do not open new viewport, and keep tool active */
 			DoCommandPOld(this->window_number, v->index, 1, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN + v->type),
-					_settings_client.gui.open_vehicle_gui_clone_share ? CcCloneVehicle : nullptr);
+					_settings_client.gui.open_vehicle_gui_clone_share ? CommandCallback::CloneVehicle : CommandCallback::None);
 		} else {
 			/* Copy-clone, open viewport for new vehicle, and deselect the tool (assume player wants to changs things on new vehicle) */
-			if (DoCommandPOld(this->window_number, v->index, 0, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN + v->type), CcCloneVehicle)) {
+			if (DoCommandPOld(this->window_number, v->index, 0, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN + v->type), CommandCallback::CloneVehicle)) {
 				ResetObjectToPlace();
 			}
 		}
@@ -943,7 +943,7 @@ struct DepotWindow : Window {
 	bool OnTemplateVehicleSelect(const TemplateVehicle *v) override
 	{
 		/* Copy-clone, open viewport for new vehicle, and deselect the tool (assume player wants to change things on new vehicle) */
-		if (DoCommandPOld(this->window_number, v->index, 0, CMD_CLONE_VEHICLE_FROM_TEMPLATE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN), CcCloneVehicle)) {
+		if (DoCommandPOld(this->window_number, v->index, 0, CMD_CLONE_VEHICLE_FROM_TEMPLATE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN), CommandCallback::CloneVehicle)) {
 			ResetObjectToPlace();
 		}
 

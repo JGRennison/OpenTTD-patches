@@ -119,7 +119,7 @@ struct GeneralCommandPacket {
 	bool my_cmd;         ///< did the command originate from "me"
 
 	T command_container;              ///< command being executed.
-	CommandCallback *callback;        ///< any callback function executed upon successful completion of the command.
+	CommandCallback callback;         ///< any callback function executed upon successful completion of the command.
 	CallbackParameter callback_param; ///< arbitrary data associated with callback.
 };
 

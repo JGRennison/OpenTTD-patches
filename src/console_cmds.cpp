@@ -2231,7 +2231,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Add(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandPOld(0, CALCA_ADD, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
+				DoCommandPOld(0, CALCA_ADD, 0, CMD_COMPANY_ALLOW_LIST_CTRL, CommandCallback::None, authorized_key.c_str());
 			}
 			IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			return;
@@ -2246,7 +2246,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Remove(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandPOld(0, CALCA_REMOVE, 0, CMD_COMPANY_ALLOW_LIST_CTRL, nullptr, authorized_key.c_str());
+				DoCommandPOld(0, CALCA_REMOVE, 0, CMD_COMPANY_ALLOW_LIST_CTRL, CommandCallback::None, authorized_key.c_str());
 			}
 			IConsolePrint(CC_INFO, "Removed {} from {}.", authorized_key, name);
 			return;

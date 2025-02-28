@@ -2729,15 +2729,15 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY:
-				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney);
+				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CommandCallback::GiveMoney);
 				break;
 
 			case WID_C_PRESIDENT_NAME:
-				DoCommandPOld(0, 0, 0, CMD_RENAME_PRESIDENT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_PRESIDENT), nullptr, str->c_str());
+				DoCommandPOld(0, 0, 0, CMD_RENAME_PRESIDENT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_PRESIDENT), CommandCallback::None, str->c_str());
 				break;
 
 			case WID_C_COMPANY_NAME:
-				DoCommandPOld(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), nullptr, str->c_str());
+				DoCommandPOld(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), CommandCallback::None, str->c_str());
 				break;
 
 			case WID_C_COMPANY_JOIN:
