@@ -3831,11 +3831,14 @@ static const uint32_t _vehicle_command_translation_table[][4] = {
  * @param p1 vehicle ID
  * @param p2 unused
  */
-void CcStartStopVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcStartStopVehicle(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
-	const Vehicle *v = Vehicle::GetIfValid(p1);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_START_STOP_VEHICLE>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	const Vehicle *v = Vehicle::GetIfValid(data->p1);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return;
 
 	StringID msg = (v->vehstatus & VS_STOPPED) ? STR_VEHICLE_COMMAND_STOPPED : STR_VEHICLE_COMMAND_STARTED;
@@ -4651,7 +4654,7 @@ void StopGlobalFollowVehicle(const Vehicle *v)
  * @param p2 unused
  * @param cmd unused
  */
-void CcBuildPrimaryVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcBuildPrimaryVehicle(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 

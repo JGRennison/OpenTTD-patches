@@ -372,6 +372,7 @@ add_files(
     plans.cpp
     plans_base.h
     plans_cmd.cpp
+    plans_cmd.h
     plans_func.h
     plans_gui.cpp
     plans_type.h
@@ -545,6 +546,7 @@ add_files(
     townname_type.h
     tracerestrict.cpp
     tracerestrict.h
+    tracerestrict_cmd.h
     tracerestrict_gui.cpp
     track_func.h
     track_type.h

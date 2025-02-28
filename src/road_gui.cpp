@@ -128,7 +128,7 @@ static bool IsRoadStopAvailable(const RoadStopSpec *spec, StationType type)
 	return Convert8bitBooleanCallback(spec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 }
@@ -158,7 +158,7 @@ static void PlaceRoad_Bridge(TileIndex tile, Window *w)
  * @param p2 unused
  * @param cmd unused
  */
-void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcBuildRoadTunnel(const CommandCost &result, Commands cmd, TileIndex start_tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, start_tile);
@@ -191,11 +191,14 @@ void ConnectRoadToStructure(TileIndex tile, DiagDirection direction)
 	}
 }
 
-void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcRoadDepot(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
-	DiagDirection dir = (DiagDirection)GB(p1, 0, 2);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_ROAD_DEPOT>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	DiagDirection dir = (DiagDirection)GB(data->p1, 0, 2);
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 	ConnectRoadToStructure(tile, dir);
@@ -219,29 +222,32 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_
  * @param cmd Unused.
  * @see CmdBuildRoadStop
  */
-void CcRoadStop(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcRoadStop(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
-	DiagDirection dir = (DiagDirection)GB(p2, 3, 2);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_ROAD_STOP>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	DiagDirection dir = (DiagDirection)GB(data->p2, 3, 2);
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 
 	bool connect_to_road = true;
 
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p3);
-	uint16_t spec_index        = GB(p3, 16, 16);
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(data->p3);
+	uint16_t spec_index        = GB(data->p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
 		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
 	}
 
 	if (connect_to_road) {
-		TileArea roadstop_area(tile, GB(p1, 0, 8), GB(p1, 8, 8));
+		TileArea roadstop_area(tile, GB(data->p1, 0, 8), GB(data->p1, 8, 8));
 		for (TileIndex cur_tile : roadstop_area) {
 			ConnectRoadToStructure(cur_tile, dir);
 			/* For a drive-through road stop build connecting road for other entrance. */
-			if (HasBit(p2, 1)) ConnectRoadToStructure(cur_tile, ReverseDiagDir(dir));
+			if (HasBit(data->p2, 1)) ConnectRoadToStructure(cur_tile, ReverseDiagDir(dir));
 		}
 	}
 }
@@ -268,8 +274,8 @@ static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32_t p2,
 	p2 |= INVALID_STATION << 16; // no station to join
 
 	TileArea ta(start_tile, end_tile);
-	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, (uint32_t)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
-	cmdcont.p3 = (_roadstop_gui.sel_type << 16) | _roadstop_gui.sel_class;
+	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, (uint32_t)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
+	cmdcont.payload.p3 = (_roadstop_gui.sel_type << 16) | _roadstop_gui.sel_class;
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
 
@@ -802,8 +808,8 @@ struct BuildRoadToolbarWindow : Window {
 							uint32_t p1 = ta.w | ta.h << 8 | _ctrl_pressed << 16 | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 17;
 							uint32_t p2 = _waypoint_gui.sel_class | INVALID_STATION << 16;
 
-							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
-							cmdcont.p3 = _waypoint_gui.sel_type;
+							CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
+							cmdcont.payload.p3 = _waypoint_gui.sel_type;
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
 					}

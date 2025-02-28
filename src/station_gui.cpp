@@ -64,7 +64,7 @@ template <typename T>
 struct IsSpecializedStationRightType {
 	IsSpecializedStationRightType() {}
 
-	IsSpecializedStationRightType(const CommandContainer &cmd) {}
+	IsSpecializedStationRightType(const CommandContainer<P123CmdData> &cmd) {}
 
 	bool operator()(const T*) const { return true; }
 };
@@ -75,9 +75,9 @@ struct IsSpecializedStationRightType<Waypoint> {
 
 	IsSpecializedStationRightType(bool is_road) : road_waypoint_search(is_road) {}
 
-	IsSpecializedStationRightType(const CommandContainer &cmd)
+	IsSpecializedStationRightType(const CommandContainer<P123CmdData> &cmd)
 	{
-		this->road_waypoint_search = (cmd.cmd & CMD_ID_MASK) == CMD_BUILD_ROAD_WAYPOINT;
+		this->road_waypoint_search = (cmd.cmd == CMD_BUILD_ROAD_WAYPOINT);
 	}
 
 	bool operator()(const Waypoint* wp) const { return HasBit(wp->waypoint_flags, WPF_ROAD) == this->road_waypoint_search; }
@@ -2533,11 +2533,11 @@ static constexpr NWidgetPart _nested_select_station_widgets[] = {
  */
 template <class T>
 struct SelectStationWindow : Window {
-	CommandContainer select_station_cmd; ///< Command to build new station
+	CommandContainer<P123CmdData> select_station_cmd; ///< Command to build new station
 	TileArea area; ///< Location of new station
 	Scrollbar *vscroll;
 
-	SelectStationWindow(WindowDesc &desc, const CommandContainer &cmd, TileArea ta) :
+	SelectStationWindow(WindowDesc &desc, const CommandContainer<P123CmdData> &cmd, TileArea ta) :
 		Window(desc),
 		select_station_cmd(cmd),
 		area(ta)
@@ -2611,7 +2611,7 @@ struct SelectStationWindow : Window {
 		if (distant_join && st_index >= _stations_nearby_list.size()) return;
 
 		/* Insert station to be joined into stored command */
-		SB(this->select_station_cmd.p2, 16, 16,
+		SB(this->select_station_cmd.payload.p2, 16, 16,
 		   (distant_join ? _stations_nearby_list[st_index] : NEW_STATION));
 
 		/* Execute stored Command */
@@ -2681,7 +2681,7 @@ static WindowDesc _select_station_desc(__FILE__, __LINE__,
  * @return whether we need to show the station selection window.
  */
 template <class T>
-static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
+static bool StationJoinerNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta)
 {
 	/* Only show selection if distant join is enabled in the settings */
 	if (!_settings_game.station.distant_join_stations) return false;
@@ -2711,7 +2711,7 @@ static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
  * @tparam the class to find stations for
  */
 template <class T>
-void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
+void ShowSelectBaseStationIfNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta)
 {
 	if (StationJoinerNeeded<T>(cmd, ta)) {
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
@@ -2726,7 +2726,7 @@ void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
  * @param cmd Command to build the station.
  * @param ta Area to build the station in
  */
-void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta)
+void ShowSelectStationIfNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta)
 {
 	ShowSelectBaseStationIfNeeded<Station>(cmd, ta);
 }
@@ -2736,7 +2736,7 @@ void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta)
  * @param cmd Command to build the waypoint.
  * @param ta Area to build the waypoint in
  */
-void ShowSelectWaypointIfNeeded(const CommandContainer &cmd, TileArea ta)
+void ShowSelectWaypointIfNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta)
 {
 	ShowSelectBaseStationIfNeeded<Waypoint>(cmd, ta);
 }

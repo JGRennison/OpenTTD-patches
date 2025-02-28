@@ -10,13 +10,11 @@
 #ifndef TRACERESTRICT_H
 #define TRACERESTRICT_H
 
-#include "stdafx.h"
 #include "core/bitmath_func.hpp"
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
 #include "core/container_func.hpp"
 #include "core/strong_typedef_type.hpp"
-#include "command_func.h"
 #include "rail_map.h"
 #include "tile_type.h"
 #include "group_type.h"
@@ -1316,7 +1314,7 @@ enum TraceRestrictDoCommandType : uint8_t {
 	TRDCT_PROG_RESET,                        ///< reset program state of signal
 };
 
-BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
+BaseCommandContainer<P123CmdData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text = nullptr);
 
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
@@ -1329,9 +1327,6 @@ inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRe
 {
 	TraceRestrictProgMgmtWithSourceDoCommandP(tile, track, type, static_cast<TileIndex>(0), static_cast<Track>(0), error_msg);
 }
-
-CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 
 CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset, bool shallow_mode);
 CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t &offset, bool up, bool shallow_mode);
@@ -1425,13 +1420,6 @@ bool TraceRestrictSlot::IsUsableByOwner(Owner using_owner) const
 	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
 }
 
-enum TraceRestrictAlterSlotOperation {
-	TRASO_RENAME,
-	TRASO_CHANGE_MAX_OCCUPANCY,
-	TRASO_SET_PUBLIC,
-	TRASO_SET_PARENT_GROUP,
-};
-
 /**
  * Slot group type
  */
@@ -1481,47 +1469,5 @@ bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
 {
 	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
 }
-
-enum TraceRestrictAlterCounterOperation {
-	TRACO_RENAME,
-	TRACO_CHANGE_VALUE,
-	TRACO_SET_PUBLIC,
-};
-
-struct TraceRestrictFollowUpCmdData final : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
-	BaseCommandContainer cmd;
-
-	TraceRestrictFollowUpCmdData() = default;
-	TraceRestrictFollowUpCmdData(BaseCommandContainer cmd) : cmd(cmd) {}
-
-	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
-	void FormatDebugSummary(struct format_target &) const override;
-};
-
-struct TraceRestrictCreateSlotCmdData final : public CommandAuxiliarySerialisable<TraceRestrictCreateSlotCmdData> {
-	VehicleType vehtype = VEH_INVALID;
-	TraceRestrictSlotGroupID parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
-	std::string name;
-	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
-
-	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(struct format_target &) const override;
-};
-
-template CommandCost CommandExecHelperAuxT<TraceRestrictCreateSlotCmdData>(void *, const CommandExecData &);
-
-struct TraceRestrictCreateCounterCmdData final : public CommandAuxiliarySerialisable<TraceRestrictCreateCounterCmdData> {
-	std::string name;
-	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
-
-	virtual void Serialise(BufferSerialisationRef buffer) const override;
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(struct format_target &) const override;
-};
-
-template CommandCost CommandExecHelperAuxT<TraceRestrictCreateCounterCmdData>(void *, const CommandExecData &);
 
 #endif /* TRACERESTRICT_H */

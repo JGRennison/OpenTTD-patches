@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "command_func.h"
 #include "plans_base.h"
+#include "plans_cmd.h"
 #include "plans_func.h"
 #include "window_func.h"
 #include "company_func.h"
@@ -37,45 +38,12 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_
 	return CommandCost();
 }
 
-struct PlanLineCmdData final : public CommandAuxiliarySerialisable<PlanLineCmdData> {
-	PlanID plan;
-	TileVector tiles;
-
-	virtual void Serialise(BufferSerialisationRef buffer) const override
-	{
-		buffer.Send_uint16(this->plan);
-		buffer.Send_uint32((uint32_t)this->tiles.size());
-		for (TileIndex t : this->tiles) {
-			buffer.Send_uint32(t);
-		}
-	}
-
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
-	{
-		this->plan = buffer.Recv_uint16();
-		uint32_t size = buffer.Recv_uint32();
-		if (!buffer.CanRecvBytes(size * 4)) return CMD_ERROR;
-		this->tiles.resize(size);
-		for (uint i = 0; i < size; i++) {
-			this->tiles[i] = buffer.Recv_uint32();
-		}
-		return CommandCost();
-	}
-
-	void FormatDebugSummary(format_target &output) const override
-	{
-		output.format("Plan {:X}, {} tiles", this->plan, this->tiles.size());
-	}
-};
-
-template CommandCost CommandExecHelperAuxT<PlanLineCmdData>(void *, const CommandExecData &);
-
-bool AddPlanLine(PlanID plan, TileVector tiles)
+bool AddPlanLine(PlanID plan, std::vector<TileIndex> tiles)
 {
 	PlanLineCmdData data;
 	data.plan = plan;
 	data.tiles = std::move(tiles);
-	return DoCommandPAux(0, data, CMD_ADD_PLAN_LINE);
+	return DoCommandP<CMD_ADD_PLAN_LINE>(0, data, STR_NULL);
 }
 
 /**
@@ -277,4 +245,30 @@ CommandCost CmdAcquireUnownedPlan(TileIndex tile, DoCommandFlag flags, uint32_t 
 	}
 
 	return CommandCost();
+}
+
+void PlanLineCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_uint16(this->plan);
+	buffer.Send_uint32((uint32_t)this->tiles.size());
+	for (TileIndex t : this->tiles) {
+		buffer.Send_uint32(t);
+	}
+}
+
+bool PlanLineCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	this->plan = buffer.Recv_uint16();
+	uint32_t size = buffer.Recv_uint32();
+	if (!buffer.CanRecvBytes(size * 4)) return false;
+	this->tiles.resize(size);
+	for (uint i = 0; i < size; i++) {
+		this->tiles[i] = buffer.Recv_uint32();
+	}
+	return true;
+}
+
+void PlanLineCmdData::FormatDebugSummary(format_target &output) const
+{
+	output.format("Plan {:X}, {} tiles", this->plan, this->tiles.size());
 }

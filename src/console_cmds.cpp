@@ -3530,7 +3530,7 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 
 	bool broadcast = (argc == 2 && atoi(argv[1]) > 0 && (!_networking || _network_server));
 	if (broadcast) {
-		DoCommandPOld(0, 0, 0, CMD_DESYNC_CHECK);
+		DoCommandP<CMD_DESYNC_CHECK>(0, CommandEmptyPayload{}, (StringID)0);
 	} else {
 		auto logger = [&](std::string_view str) {
 			IConsolePrint(CC_WARNING, std::string{str});

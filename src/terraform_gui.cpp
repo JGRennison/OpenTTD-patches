@@ -53,7 +53,7 @@ enum DemolishConfirmMode {
 	DCM_INDUSTRY_RAIL_STATION,
 };
 
-void CcTerraform(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcTerraform(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
@@ -131,7 +131,7 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 	return false;
 }
 
-static CommandContainer _demolish_area_command;
+static CommandContainer<P123CmdData> _demolish_area_command;
 
 static void DemolishAreaConfirmationCallback(Window *, bool confirmed) {
 	if (confirmed) {

@@ -765,7 +765,7 @@ static void HandleBankruptcyTakeover(Company *c)
 		if (_network_server && Company::IsValidHumanID(c->bankrupt_last_asked) && !NetworkCompanyHasClients(c->bankrupt_last_asked)) {
 			/* This company can no longer accept the offer as there are no clients connected, decline the offer on the company's behalf */
 			Backup<CompanyID> cur_company(_current_company, c->bankrupt_last_asked, FILE_LINE);
-			DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
+			DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
 			cur_company.Restore();
 		}
 		c->bankrupt_timeout -= MAX_COMPANIES;
@@ -815,7 +815,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
-		DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY | CMD_NO_SHIFT_ESTIMATE);
+		DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
 		cur_company.Restore();
 	}
 }
@@ -990,7 +990,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 				/* In network games, we need to try setting the company manager face here to sync it to all clients.
 				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face. */
-				if (_company_manager_face != 0) NetworkSendCommand(0, 0, _company_manager_face, 0, CMD_SET_COMPANY_MANAGER_FACE, nullptr, nullptr, _local_company, nullptr);
+				if (_company_manager_face != 0) NetworkSendCommand(CMD_SET_COMPANY_MANAGER_FACE, 0, P123CmdData(0, _company_manager_face, 0), (StringID)0, nullptr, 0, _local_company);
 
 				/* Now that we have a new company, broadcast our company settings to
 				 * all clients so everything is in sync */

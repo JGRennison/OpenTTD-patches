@@ -27,6 +27,7 @@
 #include "scope.h"
 #include "zoom_func.h"
 #include "tracerestrict.h"
+#include "tracerestrict_cmd.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -536,9 +537,12 @@ public:
 						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 						data.name = std::move(*str);
 						data.follow_up_cmd = std::move(aux);
-						DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
+						DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CcCreateTraceRestrictSlot);
 					} else {
-						DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+						TraceRestrictCreateCounterCmdData data;
+						data.name = std::move(*str);
+						data.follow_up_cmd = std::move(aux);
+						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CcCreateTraceRestrictCounter);
 					}
 					return;
 				}

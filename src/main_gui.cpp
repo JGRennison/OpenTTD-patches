@@ -48,24 +48,27 @@
 
 #include "safeguards.h"
 
-void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcGiveMoney(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed() || !_settings_game.economy.give_money || !_networking) return;
 
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_GIVE_MONEY>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
 	/* Inform the company of the action of one of its clients (controllers). */
-	SetDParam(0, p1);
+	SetDParam(0, data->p1);
 	std::string msg = GetString(STR_COMPANY_NAME);
 
 	/*
 	 * bits 31-16: source company
 	 * bits 15-0: target company
 	 */
-	uint64_t auxdata = (p1 & 0xFFFF) | (((uint64_t) _local_company) << 16);
+	uint64_t auxdata = (data->p1 & 0xFFFF) | (((uint64_t) _local_company) << 16);
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, data->p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, data->p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 
@@ -97,7 +100,7 @@ bool HandlePlacePushButton(Window *w, WidgetID widget, CursorID cursor, HighLigh
 }
 
 
-void CcPlaySound_EXPLOSION(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcPlaySound_EXPLOSION(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_12_EXPLOSION, tile);
 }

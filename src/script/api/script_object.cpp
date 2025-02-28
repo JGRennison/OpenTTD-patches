@@ -116,26 +116,23 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->async_mode_instance;
 }
 
-/* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+/* static */ void ScriptObject::SetLastCommand(Commands cmd, TileIndex tile, CallbackParameter cb_param)
 {
 	ScriptStorage *s = GetStorage();
-	Debug(script, 6, "SetLastCommand company={} tile={:X} p1={:X} p2={:X} p3={:X} cmd={:X}", s->root_company, tile, p1, p2, p3, cmd);
+	Debug(script, 6, "SetLastCommand company={} cmd={:X} tile={:X}, cb_param={:X}", s->root_company, cmd, tile, cb_param);
+	s->last_cmd = cmd;
 	s->last_tile = tile;
-	s->last_p1 = p1;
-	s->last_p2 = p2;
-	s->last_p3 = p3;
-	s->last_cmd = cmd & CMD_ID_MASK;
+	s->last_cb_param = cb_param;
 }
 
-/* static */ bool ScriptObject::CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+/* static */ bool ScriptObject::CheckLastCommand(Commands cmd, TileIndex tile, CallbackParameter cb_param)
 {
 	ScriptStorage *s = GetStorage();
-	Debug(script, 6, "CheckLastCommand company={} tile={:X} p1={:X} p2={:X} p3={:X} cmd={:X}", s->root_company, tile, p1, p2, p3, cmd);
+	Debug(script, 6, "CheckLastCommand company={} cmd={:X} tile={:X}, cb_param={:X}", s->root_company, cmd, tile, cb_param);
+	if (s->last_cmd != cmd) return false;
 	if (s->last_tile != tile) return false;
-	if (s->last_p1 != p1) return false;
-	if (s->last_p2 != p2) return false;
-	if (s->last_p3 != p3) return false;
-	if (s->last_cmd != (cmd & CMD_ID_MASK)) return false;
+	if (s->last_cb_param != cb_param) return false;
+
 	return true;
 }
 
@@ -341,7 +338,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->callback_value[index];
 }
 
-/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text, const CommandAuxiliaryBase *aux_data, Script_SuspendCallbackProc *callback)
+/* static */ bool ScriptObject::DoCommandImplementation(Commands cmd, TileIndex tile, CommandPayloadBase &&payload, Script_SuspendCallbackProc *callback, DoCommandIntlFlag intl_flags)
 {
 	if (!ScriptObject::CanSuspend()) {
 		throw Script_FatalError("You are not allowed to execute any DoCommand (even indirect) in your constructor, Save(), Load(), and any valuator.");
@@ -352,13 +349,10 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 		return false;
 	}
 
-	std::string text_validated;
-	if (!StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
+	if ((GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
-		text_validated = text;
-		::StrMakeValidInPlace(text_validated, SVS_NONE);
-		text = text_validated.c_str();
+		payload.SanitiseStrings(SVS_NONE);
 	}
 
 	/* Set the default callback to return a true/false result of the DoCommand */
@@ -370,19 +364,27 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	/* Should the command be executed asynchronously? */
 	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ScriptType::GS;
 
-	/* Only set p2 when the command does not come from the network. */
-	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
+	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) payload.SetClientID(UINT32_MAX);
 
-	SCOPE_INFO_FMT([=], "ScriptObject::DoCommandOld: tile: 0x{:X} ({} x {}), p1: 0x{:X}, p2: 0x{:X}, p3: 0x{:X}, company: {}, cmd: 0x{:X} ({}), estimate_only: {}",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
+#if !defined(DISABLE_SCOPE_INFO)
+	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
+		output.format("ScriptObject::DoCommand: tile: {:X} ({} x {}), intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, estimate_only: {}, payload: ",
+				tile, TileX(tile), TileY(tile), intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
+		payload.FormatDebugSummary(output);
+	});
+#endif
+
+	/* Rolling identifier for script callback identification */
+	static CallbackParameter _last_cb_param = 0;
+	CallbackParameter cb_param = ++_last_cb_param;
 
 	/* Store the command for command callback validation. */
-	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, p3, cmd);
+	if (!estimate_only && _networking && !_generating_world) SetLastCommand(cmd, tile, cb_param);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPScript(tile, p1, p2, p3, cmd,
-			(_networking && !_generating_world && !asynchronous) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr,
-			text, false, estimate_only, asynchronous, aux_data);
+	const bool use_cb = (_networking && !_generating_world && !asynchronous);
+	CommandCost res = ::DoCommandPScript(cmd, tile, payload, use_cb ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, use_cb ? cb_param : 0,
+			intl_flags, estimate_only, asynchronous);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {

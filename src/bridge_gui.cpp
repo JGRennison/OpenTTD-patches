@@ -59,23 +59,26 @@ typedef GUIList<BuildBridgeData> GUIBridgeList; ///< List of bridges, used in #B
  * - p2 = (bit 15-16) - transport type.
  * @param cmd unused
  */
-void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcBuildBridge(const CommandCost &result, Commands cmd, TileIndex end_tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_BRIDGE>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
 	if (result.Failed()) return;
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_27_CONSTRUCTION_BRIDGE, end_tile);
 
-	TransportType transport_type = Extract<TransportType, 15, 2>(p2);
+	TransportType transport_type = Extract<TransportType, 15, 2>(data->p2);
 
 	if (transport_type == TRANSPORT_ROAD) {
 		DiagDirection end_direction = ReverseDiagDir(GetTunnelBridgeDirection(end_tile));
 		ConnectRoadToStructure(end_tile, end_direction);
 
-		DiagDirection start_direction = ReverseDiagDir(GetTunnelBridgeDirection(p1));
-		ConnectRoadToStructure(p1, start_direction);
+		DiagDirection start_direction = ReverseDiagDir(GetTunnelBridgeDirection(data->p1));
+		ConnectRoadToStructure(data->p1, start_direction);
 	}
 
 	if (transport_type == TRANSPORT_RAIL) {
-		StoreRailPlacementEndpoints(p1, end_tile, (TileX(p1) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
+		StoreRailPlacementEndpoints(data->p1, end_tile, (TileX(data->p1) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
 	}
 }
 

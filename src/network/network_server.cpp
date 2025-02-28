@@ -743,7 +743,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSync()
  * Send a command to the client to execute.
  * @param cp The command to send.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendCommand(const CommandPacket &cp)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendCommand(const OutgoingCommandPacket &cp)
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_COMMAND, TCP_MTU);
 
@@ -1245,14 +1245,15 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
+	Commands cmd = cp.command_container.cmd;
 
-	if ((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
-		IConsolePrint(CC_ERROR, "WARNING: server only command {} from client {} (IP: {}), kicking...", cp.cmd & CMD_ID_MASK, ci->client_id, this->GetClientIP());
+	if ((GetCommandFlags(cmd) & (CMD_SERVER | CMD_SERVER_NS)) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+		IConsolePrint(CC_ERROR, "WARNING: server only command {} from client {} (IP: {}), kicking...", cmd, ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
-	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
-		IConsolePrint(CC_ERROR, "WARNING: spectator (client: {}, IP: {}) issued non-spectator command {}, kicking...", ci->client_id, this->GetClientIP(), cp.cmd & CMD_ID_MASK);
+	if ((GetCommandFlags(cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+		IConsolePrint(CC_ERROR, "WARNING: spectator (client: {}, IP: {}) issued non-spectator command {}, kicking...", ci->client_id, this->GetClientIP(), cmd);
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
@@ -1261,15 +1262,20 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	 * to match the company in the packet. If it doesn't, the client has done
 	 * something pretty naughty (or a bug), and will be kicked
 	 */
-	if (!(cp.cmd == CMD_COMPANY_CTRL && cp.p1 == 0 && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
-			!((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
+	CompanyCtrlAction cca = CCA_NEW;
+	if (cmd == CMD_COMPANY_CTRL) {
+		const auto &payload = static_cast<const typename CommandTraits<CMD_COMPANY_CTRL>::PayloadType &>(*cp.command_container.payload);
+		cca = static_cast<CompanyCtrlAction>(payload.p1);
+	}
+	if (!(cmd == CMD_COMPANY_CTRL && cca == CCA_NEW && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
+			!((GetCommandFlags(cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
 		IConsolePrint(CC_ERROR, "WARNING: client {} (IP: {}) tried to execute a command as company {}, kicking...",
 		               ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);
 	}
 
-	if (cp.cmd == CMD_COMPANY_CTRL) {
-		if (cp.p1 != 0 || cp.company != COMPANY_SPECTATOR) {
+	if (cmd == CMD_COMPANY_CTRL) {
+		if (cca != CCA_NEW || cp.company != COMPANY_SPECTATOR) {
 			return this->SendError(NETWORK_ERROR_CHEATER);
 		}
 
@@ -1282,7 +1288,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 	// Handling of CMD_COMPANY_ADD_ALLOW_LIST would go here
 
-	if (GetCommandFlags(cp.cmd) & CMD_CLIENT_ID) cp.p2 = this->client_id;
+	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) cp.command_container.payload->SetClientID(this->client_id);
 	cp.client_id = this->client_id;
 
 	this->incoming_queue.push_back(std::move(cp));
@@ -1333,7 +1339,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 		_settings_client.network.sync_freq = std::min<uint16_t>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
-		NetworkSendCommand(0, 0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, nullptr);
+		NetworkSendCommand(CMD_DESYNC_CHECK, 0, CommandEmptyPayload(), (StringID)0, nullptr, 0, _local_company);
 
 		SendPacketsState send_state = this->SendPackets(true);
 		if (send_state != SPS_CLOSED) {
@@ -2528,7 +2534,7 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		ci->client_playas = c->index;
 		NetworkUpdateClientInfo(ci->client_id);
 		// CMD_COMPANY_ADD_ALLOW_LIST would go here
-		NetworkSendCommand(0, 0, 0, 0, CMD_RENAME_PRESIDENT, nullptr, ci->client_name.c_str(), c->index, nullptr);
+		NetworkSendCommand(CMD_RENAME_PRESIDENT, 0, P123CmdData(0, 0, 0, ci->client_name), (StringID)0, nullptr, 0, c->index);
 	}
 
 	if (ci != nullptr) {

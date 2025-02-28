@@ -29,8 +29,8 @@ int DrawStationCoverageAreaText(int left, int right, int top, StationCoverageTyp
 void CheckRedrawStationCoverage(Window *w);
 void CheckRedrawWaypointCoverage(Window *w, bool is_road);
 
-void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta);
-void ShowSelectWaypointIfNeeded(const CommandContainer &cmd, TileArea ta);
+void ShowSelectStationIfNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta);
+void ShowSelectWaypointIfNeeded(const CommandContainer<P123CmdData> &cmd, TileArea ta);
 
 void GuiShowStationRatingTooltip(Window *parent, const Station *st, const CargoSpec *cs);
 

@@ -67,35 +67,27 @@ static CommandQueue _local_execution_queue;
 
 /**
  * Prepare a DoCommand to be send over the network
- * @param tile The tile to perform a command on (see #CommandProc)
- * @param p1 Additional data for the command (see #CommandProc)
- * @param p2 Additional data for the command (see #CommandProc)
- * @param p3 Additional data for the command (see #CommandProc)
  * @param cmd The command to execute (a CMD_* value)
+ * @param tile The tile to perform a command on
+ * @param payload The command payload
+ * @param err_message Message prefix to show on error
  * @param callback A callback function to call after the command is finished
- * @param text The text to pass
+ * @param callback_param Parameter for the callback function
  * @param company The company that wants to send the command
- * @param aux_data Auxiliary command data
  */
-void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data)
+void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback *callback, CallbackParameter callback_param, CompanyID company)
 {
-	assert((cmd & CMD_FLAGS_MASK) == 0);
+	assert(IsValidCommand(cmd));
 
 	CommandPacket c;
-	c.company  = company;
-	c.tile     = tile;
-	c.p1       = p1;
-	c.p2       = p2;
-	c.p3       = p3;
-	c.cmd      = cmd;
-	c.callback = callback;
-	if (aux_data != nullptr) c.aux_data.reset(aux_data->Clone());
+	c.company = company;
 
-	if (text != nullptr) {
-		c.text.assign(text);
-	} else {
-		c.text.clear();
-	}
+	c.command_container.cmd = cmd;
+	c.command_container.error_msg = error_msg;
+	c.command_container.tile = tile;
+
+	c.callback = callback;
+	c.callback_param = callback_param;
 
 	if (_network_server) {
 		/* If we are the server, we queue the command in our 'special' queue.
@@ -107,6 +99,8 @@ void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, u
 		c.frame = _frame_counter_max + 1;
 		c.my_cmd = true;
 
+		c.command_container.payload = payload.Clone();
+
 		_local_wait_queue.push_back(std::move(c));
 		return;
 	}
@@ -114,7 +108,7 @@ void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, u
 	c.frame = 0; // The client can't tell which frame, so just make it 0
 
 	/* Clients send their command to the server and forget all about the packet */
-	MyClient::SendCommand(c);
+	MyClient::SendCommand(SerialiseCommandPacketUsingPayload(c, payload));
 }
 
 /**
@@ -128,8 +122,9 @@ void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, u
  */
 void NetworkSyncCommandQueue(NetworkClientSocket *cs)
 {
-	for (CommandPacket &p : _local_execution_queue) {
-		CommandPacket &c = cs->outgoing_queue.emplace_back(p);
+	for (const CommandPacket &p : _local_execution_queue) {
+		OutgoingCommandPacket &c = cs->outgoing_queue.emplace_back();
+		c = SerialiseCommandPacket(p);
 		c.callback = nullptr;
 	}
 }
@@ -160,8 +155,8 @@ void NetworkExecuteLocalCommandQueue()
 		/* We can execute this command */
 		_current_company = cp->company;
 		_cmd_client_id = cp->client_id;
-		cp->cmd |= CMD_NETWORK_COMMAND;
-		DoCommandPContainer(*cp, cp->my_cmd);
+		DoCommandPImplementation(cp->command_container.cmd, cp->command_container.tile, *cp->command_container.payload, cp->command_container.error_msg,
+				cp->callback, cp->callback_param, DCIF_NETWORK_COMMAND | DCIF_TYPE_CHECKED | (cp->my_cmd ? DCIF_NONE : DCIF_NOT_MY_CMD));
 
 		record_sync_event = true;
 	}
@@ -188,7 +183,7 @@ void NetworkFreeLocalCommandQueue()
  * @param cp    The command that has to be distributed.
  * @param owner The client that owns the command,
  */
-static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket *owner)
+static void DistributeCommandPacket(CommandPacket cp, const NetworkClientSocket *owner)
 {
 	CommandCallback *callback = cp.callback;
 	cp.frame = _frame_counter_max + 1;
@@ -199,13 +194,13 @@ static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket
 			 *  first place. This filters that out. */
 			cp.callback = (cs != owner) ? nullptr : callback;
 			cp.my_cmd = (cs == owner);
-			cs->outgoing_queue.push_back(cp);
+			cs->outgoing_queue.push_back(SerialiseCommandPacket(cp));
 		}
 	}
 
 	cp.callback = (nullptr != owner) ? nullptr : callback;
 	cp.my_cmd = (nullptr == owner);
-	_local_execution_queue.push_back(cp);
+	_local_execution_queue.push_back(std::move(cp));
 }
 
 /**
@@ -229,7 +224,7 @@ static void DistributeQueue(CommandQueue &queue, const NetworkClientSocket *owne
 	/* Not technically the most performant way, but consider clients rarely click more than once per tick. */
 	for (auto cp = queue.begin(); cp != queue.end(); /* removing some items */) {
 		/* Do not distribute commands when paused and the command is not allowed while paused. */
-		if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cp->cmd)) {
+		if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cp->command_container.cmd)) {
 			++cp;
 			continue;
 		}
@@ -237,8 +232,8 @@ static void DistributeQueue(CommandQueue &queue, const NetworkClientSocket *owne
 		/* Limit the number of commands per client per tick. */
 		if (--to_go < 0) break;
 
-		DistributeCommandPacket(*cp, owner);
 		NetworkAdminCmdLogging(owner, *cp);
+		DistributeCommandPacket(std::move(*cp), owner);
 		cp = queue.erase(cp);
 	}
 }
@@ -264,18 +259,20 @@ void NetworkDistributeCommands()
 const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &cp)
 {
 	cp.company = (CompanyID)p.Recv_uint8();
-
 	DeserialisationBuffer buf = p.BorrowAsDeserialisationBuffer();
-	const char *err = cp.DeserialiseBaseCommandContainer(buf, !_network_server);
+	const char *err = cp.command_container.Deserialise(buf);
 	p.ReturnDeserialisationBuffer(std::move(buf));
 	if (err != nullptr) return err;
 
-	if (GetCommandFlags(cp.cmd) & CMD_OFFLINE) return "single-player only command";
-
 	uint8_t callback = p.Recv_uint8();
-	if (callback >= lengthof(_callback_table))  return "invalid callback";
+	if (callback >= lengthof(_callback_table)) return "invalid callback";
 
 	cp.callback = _callback_table[callback];
+	if (callback != 0) {
+		cp.callback_param = p.Recv_uint32();
+	} else {
+		cp.callback_param = 0;
+	}
 
 	return nullptr;
 }
@@ -285,10 +282,11 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &c
  * @param p the packet to send it in.
  * @param cp the packet to actually send.
  */
-void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
+void NetworkGameSocketHandler::SendCommand(Packet &p, const OutgoingCommandPacket &cp)
 {
-	p.Send_uint8 (cp.company);
-	cp.SerialiseBaseCommandContainer(p.AsBufferSerialisationRef());
+	p.Send_uint8(cp.company);
+
+	cp.command_container.Serialise(p.AsBufferSerialisationRef());
 
 	uint8_t callback = 0;
 	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp.callback) {
@@ -296,8 +294,11 @@ void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 	}
 
 	if (callback == lengthof(_callback_table)) {
-		Debug(net, 0, "Unknown callback for command; no callback sent (command: {})", cp.cmd);
+		Debug(net, 0, "Unknown callback for command; no callback sent (command: {})", cp.command_container.cmd);
 		callback = 0; // _callback_table[0] == nullptr
 	}
-	p.Send_uint8 (callback);
+	p.Send_uint8(callback);
+	if (callback != 0) {
+		p.Send_uint32(cp.callback_param);
+	}
 }

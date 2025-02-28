@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "tracerestrict.h"
+#include "tracerestrict_cmd.h"
 #include "debug.h"
 #include "train.h"
 #include "core/bitmath_func.hpp"
@@ -1955,7 +1956,7 @@ static uint32_t GetTraceRestrictCommandP1(Track track, TraceRestrictDoCommandTyp
 	return p1;
 }
 
-BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
+BaseCommandContainer<P123CmdData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
 {
 	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
 	return NewBaseCommandContainerBasic(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
@@ -2217,6 +2218,8 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictPr
 	CommandCost res = AdvanceItemEndIteratorForBlock(items, dup_start, dup_end, true);
 	return res.Succeeded();
 }
+
+CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 
 /**
  * The main command for editing a signal tracerestrict program.
@@ -3721,33 +3724,39 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 
 void TraceRestrictFollowUpCmdData::Serialise(BufferSerialisationRef buffer) const
 {
-	this->cmd.SerialiseBaseCommandContainer(buffer);
+	this->cmd.Serialise(buffer);
 }
 
-CommandCost TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+bool TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	const char *err = this->cmd.DeserialiseBaseCommandContainer(buffer, false);
-	if (err != nullptr) return CMD_ERROR;
-
-	return CommandCost();
+	const char *err = this->cmd.Deserialise(buffer);
+	return err == nullptr;
 }
 
 CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlag flags) const
 {
-	BaseCommandContainer cmd = this->cmd;
-	switch (cmd.cmd & CMD_ID_MASK) {
+	DynBaseCommandContainer cmd(this->cmd);
+	switch (cmd.cmd) {
 		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
-			TraceRestrictInstructionItemRef(cmd.p2).SetValue(value);
+			auto *data = dynamic_cast<typename CommandTraits<CMD_ADD_VEHICLE_GROUP>::PayloadType *>(cmd.payload.get());
+			if (data == nullptr) return CMD_ERROR;
+			TraceRestrictInstructionItemRef(data->p2).SetValue(value);
 			break;
 		}
 
-		case CMD_MODIFY_SIGNAL_INSTRUCTION:
-			SB(cmd.p2, 3, 27, value);
+		case CMD_MODIFY_SIGNAL_INSTRUCTION: {
+			auto *data = dynamic_cast<typename CommandTraits<CMD_MODIFY_SIGNAL_INSTRUCTION>::PayloadType *>(cmd.payload.get());
+			if (data == nullptr) return CMD_ERROR;
+			SB(data->p2, 3, 27, value);
 			break;
+		}
 
-		case CMD_MODIFY_ORDER:
-			SB(cmd.p2, 8, 16, value);
+		case CMD_MODIFY_ORDER: {
+			auto *data = dynamic_cast<typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType *>(cmd.payload.get());
+			if (data == nullptr) return CMD_ERROR;
+			SB(data->p2, 8, 16, value);
 			break;
+		}
 
 		default:
 			return CMD_ERROR;
@@ -3758,9 +3767,8 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("follow up: {} x {}, p1: 0x{:08X}, p2: 0x{:08X}", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.p1, this->cmd.p2);
-	if (this->cmd.p3 != 0) output.format(", p3: 0x{:016X}", this->cmd.p3);
-	output.format(", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
+	output.format("follow up: {} x {}, cmd: 0x{:X} ({}), ", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.cmd, GetCommandName(this->cmd.cmd));
+	this->cmd.payload->FormatDebugSummary(output);
 }
 
 void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) const
@@ -3773,16 +3781,15 @@ void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) co
 	}
 }
 
-CommandCost TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
 	this->parent = buffer.Recv_uint16();
 	if (buffer.Recv_bool()) {
-		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation);
-		if (res.Failed()) return res;
+		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}
 
-	return CommandCost();
+	return true;
 }
 
 void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) const
@@ -3802,14 +3809,13 @@ void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer)
 	}
 }
 
-CommandCost TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+bool TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	if (buffer.Recv_bool()) {
-		CommandCost res = this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation);
-		if (res.Failed()) return res;
+		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}
 
-	return CommandCost();
+	return true;
 }
 
 void TraceRestrictCreateCounterCmdData::FormatDebugSummary(format_target &output) const

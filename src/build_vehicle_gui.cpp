@@ -3255,7 +3255,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	}
 };
 
-void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcAddVirtualEngine(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
@@ -3269,7 +3269,7 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32_t p1, 
 	}
 }
 
-void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcMoveNewVirtualEngine(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 

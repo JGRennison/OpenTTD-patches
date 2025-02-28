@@ -10,6 +10,7 @@
 #ifndef SCRIPT_OBJECT_HPP
 #define SCRIPT_OBJECT_HPP
 
+#include "../../command_type.h"
 #include "../../road_type.h"
 #include "../../rail_type.h"
 #include "../../core/random_func.hpp"
@@ -107,41 +108,50 @@ public:
 	 */
 	static void InitializeRandomizers();
 
+private:
+	static bool DoCommandImplementation(Commands cmd, TileIndex tile, CommandPayloadBase &&payload, Script_SuspendCallbackProc *callback, DoCommandIntlFlag intl_flags);
+
 protected:
 	/**
 	 * Executes a raw DoCommandOld for the script.
 	 */
-	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text = nullptr, const struct CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
-
-	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const std::string &text, const struct CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, Commands cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
+		P123CmdData payload(p1, p2, p3);
+		if (text != nullptr) payload.text = text;
+		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_NONE);
 	}
 
-	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, Commands cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, nullptr, callback);
+		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), callback);
 	}
 
-	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, Commands cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, callback);
 	}
 
-	static bool DoCommandAux(TileIndex tile, const struct CommandAuxiliaryBase &aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandOld(TileIndex tile, uint32_t p1, uint32_t p2, Commands cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		return ScriptObject::DoCommandEx(tile, 0, 0, 0, cmd, nullptr, &aux_data, callback);
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), callback);
+	}
+
+	template <Commands cmd>
+	static bool DoCommand(TileIndex tile, typename CommandTraits<cmd>::PayloadType &&payload, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_TYPE_CHECKED);
 	}
 
 	/**
 	 * Store the latest command executed by the script.
 	 */
-	static void SetLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd);
+	static void SetLastCommand(Commands cmd, TileIndex tile, CallbackParameter cb_param);
 
 	/**
 	 * Check if it's the latest command executed by the script.
 	 */
-	static bool CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd);
+	static bool CheckLastCommand(Commands cmd, TileIndex tile, CallbackParameter cb_param);
 
 	/**
 	 * Sets the DoCommandOld costs counter to a value.

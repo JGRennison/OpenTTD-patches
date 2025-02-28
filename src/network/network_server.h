@@ -86,7 +86,7 @@ public:
 	uint8_t last_token;          ///< The last random token we did send to verify the client is listening
 	uint32_t last_token_frame;   ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
-	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
+	OutgoingCommandQueue outgoing_queue; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
 	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
 	bool settings_authed = false;///< Authorised to control all game settings
 	bool supports_zstd = false;  ///< Client supports zstd compression
@@ -127,7 +127,7 @@ public:
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();
-	NetworkRecvStatus SendCommand(const CommandPacket &cp);
+	NetworkRecvStatus SendCommand(const OutgoingCommandPacket &cp);
 	NetworkRecvStatus SendCompanyUpdate();
 	NetworkRecvStatus SendConfigUpdate();
 	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);

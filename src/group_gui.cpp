@@ -1408,12 +1408,16 @@ static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner o
  * @param cmd Unused.
  * @see CmdCreateGroup
  */
-void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcCreateGroup(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
-	assert(p1 <= VEH_AIRCRAFT);
 
-	VehicleGroupWindow *w = FindVehicleGroupWindow((VehicleType)p1, _current_company);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_CREATE_GROUP>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	assert(data->p1 <= VEH_AIRCRAFT);
+
+	VehicleGroupWindow *w = FindVehicleGroupWindow((VehicleType)data->p1, _current_company);
 	if (w != nullptr) w->ShowRenameGroupWindow(_new_group_id, true);
 }
 
@@ -1425,12 +1429,16 @@ void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32_t p1, uint3
  * @param p2 Bit 0-19: Vehicle ID.
  * @param cmd Unused.
  */
-void CcAddVehicleNewGroup(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcAddVehicleNewGroup(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
-	assert(Vehicle::IsValidID(GB(p2, 0, 20)));
 
-	CcCreateGroup(result, 0, Vehicle::Get(GB(p2, 0, 20))->type, 0, 0, cmd);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_ADD_VEHICLE_GROUP>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	assert(Vehicle::IsValidID(GB(data->p2, 0, 20)));
+
+	CcCreateGroup(result, CMD_CREATE_GROUP, 0, P123CmdData(Vehicle::Get(GB(data->p2, 0, 20))->type, 0, 0), 0);
 }
 
 /**

@@ -272,11 +272,14 @@ void SortIndustryTypes()
  * @param p2     Additional data of the #CMD_BUILD_INDUSTRY command.
  * @param cmd    Unused.
  */
-void CcBuildIndustry(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcBuildIndustry(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded()) return;
 
-	uint8_t indtype = GB(p1, 0, 8);
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_INDUSTRY>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	uint8_t indtype = GB(data->p1, 0, 8);
 	if (indtype < NUM_INDUSTRYTYPES) {
 		const IndustrySpec *indsp = GetIndustrySpec(indtype);
 		if (indsp->enabled) {

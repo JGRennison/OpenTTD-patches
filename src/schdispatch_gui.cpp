@@ -73,7 +73,7 @@ enum SchdispatchWidgets {
  */
 static void SetScheduleStartDateIntl(uint32_t p1, StateTicks date)
 {
-	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
 }
 
 /**
@@ -113,7 +113,7 @@ static void ScheduleAddIntl(uint32_t p1, StateTicks date, uint extra_slots, uint
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	DoCommandPEx(0, p1, (uint32_t)(date - start_tick).base(), (((uint64_t)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, (uint32_t)(date - start_tick).base(), (((uint64_t)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
 }
 
 /**
@@ -186,7 +186,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
 	}
 
-	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
+	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {
@@ -1325,7 +1325,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				uint64_t p3 = 0;
 				SetBit(p3, index + 16);
 				if (!HasBit(selected_slot->flags, index)) SetBit(p3, index);
-				DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+				DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
 				break;
 			}
 
@@ -1464,9 +1464,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	}
 };
 
-void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcAddNewSchDispatchSchedule(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, p1));
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, data->p1));
 	if (w != nullptr) {
 		w->schedule_index = INT_MAX;
 		w->AutoSelectSchedule();
@@ -1474,11 +1477,14 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint
 	}
 }
 
-void CcSwapSchDispatchSchedules(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcSwapSchDispatchSchedules(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, p1));
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, data->p1));
 	if (w != nullptr) {
-		w->schedule_index = GB(p2, 0, 16);
+		w->schedule_index = GB(data->p2, 0, 16);
 		w->AutoSelectSchedule();
 		w->ReInit();
 	}

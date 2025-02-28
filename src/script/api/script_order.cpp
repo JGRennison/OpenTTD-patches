@@ -105,7 +105,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 
 /* static */ bool ScriptOrder::ScriptOrderModifyOrder(VehicleID vehicle_id, VehicleOrderID order_position, uint32_t p2, Script_SuspendCallbackProc *callback)
 {
-	return ScriptObject::DoCommandEx(0, vehicle_id, p2, order_position, CMD_MODIFY_ORDER, nullptr, 0, callback);
+	return ScriptObject::DoCommandEx(0, vehicle_id, p2, order_position, CMD_MODIFY_ORDER, 0, callback);
 }
 
 /* static */ bool ScriptOrder::IsGotoStationOrder(VehicleID vehicle_id, OrderPosition order_position)

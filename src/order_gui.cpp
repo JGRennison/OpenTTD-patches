@@ -34,6 +34,7 @@
 #include "vehiclelist.h"
 #include "error.h"
 #include "tracerestrict.h"
+#include "tracerestrict_cmd.h"
 #include "scope.h"
 #include "zoom_func.h"
 #include "core/backup_type.hpp"
@@ -72,7 +73,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 
 static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32_t p2, bool error_msg = true, const char *text = nullptr)
 {
-	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), nullptr, text, nullptr);
+	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), nullptr, text);
 }
 
 struct CargoTypeOrdersWindow : public Window {
@@ -1615,7 +1616,7 @@ private:
 
 	bool InsertNewOrder(uint64_t order_pack)
 	{
-		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr);
 	}
 
 	bool ModifyOrder(VehicleOrderID sel_ord, uint32_t p2, bool error_msg = true, const char *text = nullptr)
@@ -3416,37 +3417,37 @@ public:
 		}
 
 		if ((this->query_text_widget == WID_O_COND_SLOT || this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_SLOT) && str.has_value() && !str->empty()) {
-			TraceRestrictFollowUpCmdData aux;
-			aux.cmd = NewBaseCommandContainerBasic(this->vehicle->tile, this->vehicle->index, 0, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
-			aux.cmd.p3 = this->OrderGetSel();
+			BaseCommandContainer<P123CmdData> follow_up = NewBaseCommandContainerBasic(this->vehicle->tile, this->vehicle->index, 0, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			follow_up.payload.p3 = this->OrderGetSel();
 			switch (this->query_text_widget) {
 				case WID_O_COND_SLOT:
-					aux.cmd.p2 = MOF_COND_VALUE;
+					follow_up.payload.p2 = MOF_COND_VALUE;
 					break;
 
 				case WID_O_COND_COUNTER:
-					aux.cmd.p2 = MOF_COND_VALUE_2;
+					follow_up.payload.p2 = MOF_COND_VALUE_2;
 					break;
 
 				case WID_O_SLOT:
-					aux.cmd.p2 = MOF_SLOT;
+					follow_up.payload.p2 = MOF_SLOT;
 					break;
 
 				default:
 					NOT_REACHED();
 			}
+			TraceRestrictFollowUpCmdData aux(follow_up);
 			if (this->query_text_widget == WID_O_COND_COUNTER) {
 				TraceRestrictCreateCounterCmdData data;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(aux);
-				DoCommandPAux(0, aux, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter);
+				DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CcCreateTraceRestrictCounter);
 			} else {
 				TraceRestrictCreateSlotCmdData data;
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(aux);
-				DoCommandPAux(0, data, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot);
+				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CcCreateTraceRestrictSlot);
 			}
 		}
 	}

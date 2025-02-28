@@ -265,7 +265,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  */
 static void ChangeTimetableStartIntl(uint32_t p1, StateTicks tick)
 {
-	DoCommandPEx(0, p1, 0, (uint64_t)tick.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64_t)tick.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
 }
 
 /**
@@ -936,7 +936,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		if (bulk) {
 			DoCommandPOld(0, p1, p2, CMD_BULK_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 		} else {
-			DoCommandPEx(0, p1, p2, order_number, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+			DoCommandPEx(0, p1, p2, order_number, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr);
 		}
 	}
 

@@ -222,14 +222,13 @@ public:
 	/**
 	 * DoCommand callback function for all commands executed by scripts.
 	 * @param result The result of the command.
-	 * @param tile The tile on which the command was executed.
-	 * @param p1 p1 as given to DoCommandPInternal.
-	 * @param p2 p2 as given to DoCommandPInternal.
-	 * @param p3 p3 as given to DoCommandPInternal.
 	 * @param cmd cmd as given to DoCommandPInternal.
+	 * @param tile The tile on which the command was executed.
+	 * @param payload Command payload as given to DoCommandPInternal.
+	 * @param param param Callback parameter given to DoCommandPInternal.
 	 * @return true if we handled result.
 	 */
-	bool DoCommandCallback(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd);
+	bool DoCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
 
 	/**
 	 * Insert an event for this script.

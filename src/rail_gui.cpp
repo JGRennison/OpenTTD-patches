@@ -99,14 +99,14 @@ static bool IsStationAvailable(const StationSpec *statspec)
 	return Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 }
 
-static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
+static CommandContainer<P123CmdData> GenericPlaceRailCmd(TileIndex tile, Track track)
 {
-	CommandContainer ret = NewCommandContainerBasic(
+	CommandContainer<P123CmdData> ret = NewCommandContainerBasic(
 		tile,          // tile
 		_cur_railtype, // p1
 		track | (_settings_client.gui.auto_remove_signals << 3), // p2
@@ -149,11 +149,14 @@ static const DiagDirection _place_depot_extra_dir[12] = {
 	DIAGDIR_NW, DIAGDIR_NE, DIAGDIR_NW, DIAGDIR_NE,
 };
 
-void CcRailDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcRailDepot(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
-	DiagDirection dir = (DiagDirection)p2;
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_TRAIN_DEPOT>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
+	DiagDirection dir = (DiagDirection)data->p2;
 
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
@@ -195,7 +198,7 @@ static void PlaceRail_Waypoint(TileIndex tile)
 	}
 }
 
-void CcStation(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcStation(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
@@ -226,8 +229,8 @@ static void PlaceRail_Station(TileIndex tile)
 		uint32_t p2 = params.sel_class | INVALID_STATION << 16;
 		uint64_t p3 = params.sel_type;
 
-		CommandContainer cmdcont = NewCommandContainerBasic(tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
-		cmdcont.p3 = p3;
+		CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
+		cmdcont.payload.p3 = p3;
 		ShowSelectStationIfNeeded(cmdcont, TileArea(tile, w, h));
 	}
 }
@@ -344,7 +347,7 @@ static void PlaceRail_Bridge(TileIndex tile, Window *w)
 }
 
 /** Command callback for building a tunnel */
-void CcBuildRailTunnel(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcBuildRailTunnel(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
@@ -427,9 +430,9 @@ static void BuildRailClick_Remove(Window *w)
 	}
 }
 
-static CommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
+static CommandContainer<P123CmdData> DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
 {
-	CommandContainer ret = NewCommandContainerBasic(
+	CommandContainer<P123CmdData> ret = NewCommandContainerBasic(
 		start_tile,                   // tile
 		end_tile,                     // p1
 		(uint32_t) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
@@ -448,7 +451,7 @@ static void HandleAutodirPlacement()
 	TileIndex start_tile = TileVirtXY(_thd.selstart.x, _thd.selstart.y);
 	TileIndex end_tile = TileVirtXY(_thd.selend.x, _thd.selend.y);
 
-	CommandContainer cmd = (_thd.drawstyle & HT_RAIL) ?
+	CommandContainer<P123CmdData> cmd = (_thd.drawstyle & HT_RAIL) ?
 			GenericPlaceRailCmd(end_tile, track) : // one tile case
 			DoRailroadTrackCmd(start_tile, end_tile, track); // multitile selection
 
@@ -966,8 +969,8 @@ struct BuildRailToolbarWindow : Window {
 							uint32_t p2 = _waypoint_gui.sel_class | INVALID_STATION << 16;
 							uint64_t p3 = _waypoint_gui.sel_type;
 
-							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_CONSTRUCTION_RAIL);
-							cmdcont.p3 = p3;
+							CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_CONSTRUCTION_RAIL);
+							cmdcont.payload.p3 = p3;
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
 					}
@@ -1142,8 +1145,8 @@ static void HandleStationPlacement(TileIndex start, TileIndex end)
 	uint32_t p2 = params.sel_class | INVALID_STATION << 16;
 	uint64_t p3 = params.sel_type;
 
-	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
-	cmdcont.p3 = p3;
+	CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
+	cmdcont.payload.p3 = p3;
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
 

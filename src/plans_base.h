@@ -22,14 +22,12 @@
 #include <vector>
 
 typedef Pool<Plan, PlanID, 16, 64000> PlanPool;
-typedef std::vector<TileIndex> TileVector;
-typedef std::vector<PlanLine> PlanLineVector;
 extern PlanPool _plan_pool;
 
 static constexpr size_t MAX_PLAN_PAYLOAD_SIZE = 32000;
 
 struct BasePlanLine {
-	TileVector tiles;
+	std::vector<TileIndex> tiles;
 	Rect viewport_extents;
 
 	BasePlanLine()
@@ -149,7 +147,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	Owner owner;
 	Colours colour;
 	CalTime::Date creation_date;
-	PlanLineVector lines;
+	std::vector<PlanLine> lines;
 	BasePlanLine temp_line{};
 	std::string name;
 	TileIndex last_tile;

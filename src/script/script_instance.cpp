@@ -758,11 +758,11 @@ uint32_t ScriptInstance::GetMaxOpsTillSuspend() const
 	return _settings_game.script.script_max_opcode_till_suspend;
 }
 
-bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+bool ScriptInstance::DoCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	ScriptObject::ActiveInstance active(this);
 
-	if (!ScriptObject::CheckLastCommand(tile, p1, p2, p3, cmd)) {
+	if (!ScriptObject::CheckLastCommand(cmd, tile, param)) {
 		Debug(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
 		return false;
 	}
@@ -777,7 +777,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile
 		ScriptObject::SetLastCommandResultData(result.GetResultData());
 	}
 
-	ScriptObject::SetLastCommand(INVALID_TILE, 0, 0, 0, CMD_END);
+	ScriptObject::SetLastCommand(CMD_END, INVALID_TILE, 0);
 
 	return true;
 }

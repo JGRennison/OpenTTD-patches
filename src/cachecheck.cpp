@@ -589,12 +589,9 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
  * Network-safe forced desync check.
  * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 unused
- * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, const CommandEmptyPayload &)
 {
 	if (flags & DC_EXEC) {
 		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);

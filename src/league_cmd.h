@@ -11,29 +11,30 @@
 #define LEAGUE_CMD_H
 
 #include "command_type.h"
+#include "league_type.h"
 
-struct LeagueTableCmdData final : public CommandAuxiliarySerialisable<LeagueTableCmdData> {
+struct LeagueTableCmdData final : public CommandPayloadSerialisable<LeagueTableCmdData> {
 	std::string title;
 	std::string header;
 	std::string footer;
 
-	virtual void Serialise(BufferSerialisationRef buffer) const override
+	void Serialise(BufferSerialisationRef buffer) const override
 	{
 		buffer.Send_string(this->title);
 		buffer.Send_string(this->header);
 		buffer.Send_string(this->footer);
 	}
 
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 	{
 		buffer.Recv_string(this->title,  SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
 		buffer.Recv_string(this->header, SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
 		buffer.Recv_string(this->footer, SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
-		return CommandCost();
+		return true;
 	}
 };
 
-struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<LeagueTableElementCmdData> {
+struct LeagueTableElementCmdData final : public CommandPayloadSerialisable<LeagueTableElementCmdData> {
 	LeagueTableID table;
 	int64_t rating;
 	CompanyID company;
@@ -42,7 +43,7 @@ struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<Lea
 	std::string text_str;
 	std::string score;
 
-	virtual void Serialise(BufferSerialisationRef buffer) const override
+	void Serialise(BufferSerialisationRef buffer) const override
 	{
 		buffer.Send_uint8(this->table);
 		buffer.Send_uint64(this->rating);
@@ -53,7 +54,7 @@ struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<Lea
 		buffer.Send_string(this->score);
 	}
 
-	CommandCost Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 	{
 		this->table = buffer.Recv_uint8();
 		this->rating = buffer.Recv_uint64();
@@ -62,10 +63,16 @@ struct LeagueTableElementCmdData final : public CommandAuxiliarySerialisable<Lea
 		this->link_target = (LinkTargetID)buffer.Recv_uint32();
 		buffer.Recv_string(this->text_str, SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
 		buffer.Recv_string(this->score,    SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
-		return CommandCost();
+		return true;
 	}
 
 	void FormatDebugSummary(struct format_target &) const override;
 };
+
+DEF_CMD_DIRECT(CMD_CREATE_LEAGUE_TABLE,               CmdCreateLeagueTable,             LeagueTableCmdData,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_DIRECT(CMD_CREATE_LEAGUE_TABLE_ELEMENT,       CmdCreateLeagueTableElement,      LeagueTableElementCmdData, CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC  (CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  CmdUpdateLeagueTableElementData,                             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROCEX(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, CmdUpdateLeagueTableElementScore,                            CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC  (CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       CmdRemoveLeagueTableElement,                                                CMD_DEITY, CMDT_OTHER_MANAGEMENT)
 
 #endif /* LEAGUE_CMD_H */

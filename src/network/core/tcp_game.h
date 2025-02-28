@@ -147,6 +147,7 @@ const char *GetPacketGameTypeName(PacketGameType type);
 
 /** Packet that wraps a command */
 struct CommandPacket;
+struct OutgoingCommandPacket;
 
 /**
  * A "queue" of CommandPackets.
@@ -154,6 +155,7 @@ struct CommandPacket;
  * In other words, you do not always pop the first element from this queue.
  */
 using CommandQueue = ring_buffer<CommandPacket>;
+using OutgoingCommandQueue = ring_buffer<OutgoingCommandPacket>;
 
 /** Base socket handler for all TCP sockets */
 class NetworkGameSocketHandler : public NetworkTCPSocketHandler {
@@ -599,7 +601,7 @@ public:
 	NetworkRecvStatus ReceivePackets();
 
 	const char *ReceiveCommand(Packet &p, CommandPacket &cp);
-	void SendCommand(Packet &p, const CommandPacket &cp);
+	void SendCommand(Packet &p, const OutgoingCommandPacket &cp);
 
 	virtual std::string GetDebugInfo() const;
 	virtual void LogSentPacket(const Packet &pkt) override;

@@ -10,9 +10,6 @@
 #ifndef PLANS_TYPE_H
 #define PLANS_TYPE_H
 
-#include "stdafx.h"
-#include "tile_type.h"
-
 typedef uint16_t PlanID;
 struct PlanLine;
 struct Plan;

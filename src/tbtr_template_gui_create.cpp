@@ -709,36 +709,39 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 	new TemplateCreateWindow(_template_create_window_desc, to_edit, create_window_open);
 }
 
-void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcSetVirtualTrain(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
 	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
-	if (window) {
-		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
-		((TemplateCreateWindow*)window)->SetVirtualTrain(train);
+	if (window!= nullptr) {
+		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
+		((TemplateCreateWindow *)window)->SetVirtualTrain(train);
 		window->InvalidateData();
 	}
 }
 
-void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcVirtualTrainWagonsMoved(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
 	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
-	if (window) {
-		((TemplateCreateWindow*)window)->RearrangeVirtualTrain();
+	if (window != nullptr) {
+		((TemplateCreateWindow *)window)->RearrangeVirtualTrain();
 		window->InvalidateData();
 	}
 }
 
-void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+void CcDeleteVirtualTrain(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
 	if (result.Failed()) return;
 
+	auto *data = dynamic_cast<const typename CommandTraits<CMD_SELL_VIRTUAL_VEHICLE>::PayloadType *>(&payload);
+	if (data == nullptr) return;
+
 	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
-	if (window) {
-		((TemplateCreateWindow*)window)->VirtualVehicleDeleted(GB(p1, 0, 20));
+	if (window!= nullptr) {
+		((TemplateCreateWindow *)window)->VirtualVehicleDeleted(GB(data->p1, 0, 20));
 		window->InvalidateData();
 	}
 }
