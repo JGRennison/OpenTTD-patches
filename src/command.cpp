@@ -14,6 +14,7 @@
 #include "error.h"
 #include "gui.h"
 #include "command_func.h"
+#include "command_serialisation.h"
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
@@ -38,7 +39,6 @@
 #include "core/ring_buffer.hpp"
 #include "core/checksum_func.hpp"
 #include "3rdparty/nlohmann/json.hpp"
-#include "3rdparty/fmt/ranges.h"
 #include <array>
 
 #include "league_cmd.h"
@@ -87,9 +87,9 @@ template <bool no_tile, typename F, typename T, size_t... Tindices>
 CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlag flags, const T &payload, std::index_sequence<Tindices...>)
 {
 	if constexpr (no_tile) {
-		return proc(flags, std::get<Tindices>(payload.values)...);
+		return proc(flags, std::get<Tindices>(payload.GetValues())...);
 	} else {
-		return proc(tile, flags, std::get<Tindices>(payload.values)...);
+		return proc(tile, flags, std::get<Tindices>(payload.GetValues())...);
 	}
 }
 
@@ -1164,94 +1164,4 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	if (this->payload == nullptr || expected_offset != buffer.GetDeserialisationPosition()) return "failed to deserialise command payload";
 
 	return nullptr;
-}
-
-namespace TupleCmdDataDetail {
-	template <typename T, size_t... Tindices>
-	void SerialiseTuple(const T &values, BufferSerialisationRef buffer, std::index_sequence<Tindices...>)
-	{
-		((buffer.Send_generic(std::get<Tindices>(values))), ...);
-	}
-
-	template <typename U>
-	void SanitiseGeneric(U &value, StringValidationSettings settings)
-	{
-		if constexpr (std::is_same_v<U, std::string>) {
-			StrMakeValidInPlace(value, settings);
-		}
-	}
-
-	template <typename T, size_t... Tindices>
-	void SanitiseStringsTuple(const T &values, StringValidationSettings settings, std::index_sequence<Tindices...>)
-	{
-		((SanitiseGeneric(std::get<Tindices>(values), settings)), ...);
-	}
-
-	template <typename T, size_t... Tindices>
-	void DeserialiseTuple(T &values, DeserialisationBuffer &buffer, StringValidationSettings default_string_validation, std::index_sequence<Tindices...>)
-	{
-		((buffer.Recv_generic(std::get<Tindices>(values), default_string_validation)), ...);
-	}
-
-	template<typename T, size_t Tindex>
-	constexpr auto MakeRefTupleWithoutStringsItem(const T &values)
-	{
-		const auto &val = std::get<Tindex>(values);
-		if constexpr (std::is_same_v<std::remove_cvref_t<decltype(val)>, std::string>) {
-			return std::tuple<>();
-		} else {
-			return std::forward_as_tuple(val);
-		}
-	}
-
-	template <typename T, size_t... Tindices>
-	constexpr auto MakeRefTupleWithoutStrings(const T &values, std::index_sequence<Tindices...>)
-	{
-		return std::tuple_cat(MakeRefTupleWithoutStringsItem<T, Tindices>(values)...);
-	}
-
-	template <auto fmt_str, typename T, size_t... Tindices>
-	void FmtTupleDataTuple(format_target &output, const T &values, std::index_sequence<Tindices...>)
-	{
-		output.format(fmt_str, std::get<Tindices>(values)...);
-	}
-
-	template <auto fmt_str, typename T>
-	void FmtTupleData(format_target &output, const T &values)
-	{
-		if constexpr (std::string_view(fmt_str).size() == 0) {
-			output.format("{}", fmt::join(values, ", "));
-		} else {
-			FmtTupleDataTuple<fmt_str, T>(output, values, std::make_index_sequence<std::tuple_size_v<T>>{});
-		}
-	}
-};
-
-template <typename... T>
-void TupleCmdDataDetail::BaseTupleCmdData<T...>::Serialise(BufferSerialisationRef buffer) const
-{
-	TupleCmdDataDetail::SerialiseTuple(this->values, buffer, std::index_sequence_for<T...>{});
-}
-
-template <typename... T>
-void TupleCmdDataDetail::BaseTupleCmdData<T...>::SanitiseStrings(StringValidationSettings settings)
-{
-	TupleCmdDataDetail::SanitiseStringsTuple(this->values, settings, std::index_sequence_for<T...>{});
-}
-
-template <typename... T>
-bool TupleCmdDataDetail::BaseTupleCmdData<T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
-{
-	TupleCmdDataDetail::DeserialiseTuple(this->values, buffer, default_string_validation, std::index_sequence_for<T...>{});
-	return true;
-}
-
-template <typename Parent, TupleCmdDataFlags flags, typename... T>
-void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
-{
-	if constexpr (flags & TCDF_STRINGS) {
-		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, this->values);
-	} else {
-		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}));
-	}
 }

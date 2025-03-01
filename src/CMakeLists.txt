@@ -101,6 +101,7 @@ add_files(
     command.cpp
     command_func.h
     command_log.h
+    command_serialisation.h
     command_type.h
     company_base.h
     company_cmd.cpp

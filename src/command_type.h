@@ -831,6 +831,9 @@ namespace TupleCmdDataDetail {
 		virtual void Serialise(BufferSerialisationRef buffer) const override;
 		virtual void SanitiseStrings(StringValidationSettings settings) override;
 		bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+
+		Tuple &GetValues() { return this->values; }
+		const Tuple &GetValues() const { return this->values; }
 	};
 };
 
@@ -869,6 +872,51 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 	static inline constexpr const char fmt_str[] = "";
 
 	void FormatDebugSummary(struct format_target &output) const override;
+};
+
+template <typename Parent, typename T>
+struct TupleRefCmdData : public CommandPayloadSerialisable<Parent>, public T, public BaseTupleCmdDataTag {
+private:
+	template <typename H> struct TupleHelper;
+
+	template <typename... Targs>
+	struct TupleHelper<std::tuple<Targs...>> {
+		using CommandProc = CommandCost(TileIndex, DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using ValueTuple = std::tuple<std::remove_cvref_t<Targs>...>;
+		using ConstRefTuple = std::tuple<const std::remove_reference_t<Targs> &...>;
+
+		static_assert((std::is_lvalue_reference_v<Targs> && ...));
+	};
+	using Helper = TupleHelper<decltype(std::declval<T>().GetRefTuple())>;
+
+public:
+	using Tuple = typename Helper::ValueTuple;
+	using CommandProc = typename Helper::CommandProc;
+	using CommandProcNoTile = typename Helper::CommandProcNoTile;
+
+private:
+	template <typename H> struct MakeHelper;
+
+	template <typename... Targs>
+	struct MakeHelper<std::tuple<Targs...>> {
+		Parent operator()(Targs... args) const
+		{
+			Parent out;
+			out.T::GetRefTuple() = std::forward_as_tuple(args...);
+			return out;
+		}
+	};
+
+public:
+	static inline constexpr MakeHelper<Tuple> Make{};
+
+	virtual void Serialise(BufferSerialisationRef buffer) const override;
+	virtual void SanitiseStrings(StringValidationSettings settings) override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+
+	auto GetValues() { return this->T::GetRefTuple(); }
+	typename Helper::ConstRefTuple GetValues() const { return typename Helper::ConstRefTuple(const_cast<TupleRefCmdData *>(this)->GetValues()); }
 };
 
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */
