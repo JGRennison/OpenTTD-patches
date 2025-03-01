@@ -467,13 +467,12 @@ static int _docommand_recursive = 0;
  * @param cmd The command-id to execute (a value of the CMD_* enums)
  * @param tile The tile to apply the command on
  * @param payload Command payload
- * @param error_msg Error message string ID
  * @param flags Flags for the command and how to execute the command
  * @param intl_flags Internal flags for the command and how to execute the command
 
  * @return the cost
  */
-CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, DoCommandFlag flags, DoCommandIntlFlag intl_flags)
+CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags)
 {
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {

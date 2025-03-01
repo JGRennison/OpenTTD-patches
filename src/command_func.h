@@ -15,23 +15,23 @@
 
 /* DoCommand and variants */
 
-CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, DoCommandFlag flags, DoCommandIntlFlag intl_flags);
+CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags);
 
 template <Commands cmd>
-CommandCost DoCommand(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, StringID error_msg, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
+CommandCost DoCommand(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
-	return DoCommandImplementation(cmd, tile, payload, error_msg, flags, intl_flags | DCIF_TYPE_CHECKED);
+	return DoCommandImplementation(cmd, tile, payload, flags, intl_flags | DCIF_TYPE_CHECKED);
 }
 
 inline CommandCost DoCommandContainer(const DynBaseCommandContainer &container, DoCommandFlag flags)
 {
-	return DoCommandImplementation(container.cmd, container.tile, *container.payload, container.error_msg, flags, DCIF_NONE);
+	return DoCommandImplementation(container.cmd, container.tile, *container.payload, flags, DCIF_NONE);
 }
 
 template <typename T>
 inline CommandCost DoCommandContainer(const BaseCommandContainer<T> &container, DoCommandFlag flags)
 {
-	return DoCommandImplementation(container.cmd, container.tile, container.payload, container.error_msg, flags, DCIF_NONE);
+	return DoCommandImplementation(container.cmd, container.tile, container.payload, flags, DCIF_NONE);
 }
 
 inline CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)
