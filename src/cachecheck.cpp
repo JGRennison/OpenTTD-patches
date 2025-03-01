@@ -287,12 +287,37 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			rs->GetEntry(DIAGDIR_NW)->CheckIntegrity(rs);
 		}
 
-		std::vector<NewGRFCache> grf_cache;
-		std::vector<VehicleCache> veh_cache;
+		struct SavedVehicleInfo {
+			NewGRFCache grf_cache;
+			VehicleCache vcache;
+			uint8_t acceleration;
+			uint8_t breakdown_ctr;
+			uint8_t breakdown_delay;
+			uint8_t breakdowns_since_last_service;
+			uint8_t breakdown_chance;
+			uint8_t breakdown_severity;
+			uint8_t breakdown_type;
+			uint32_t vehicle_flags;
+
+			SavedVehicleInfo(const Vehicle *v) :
+					grf_cache(v->grf_cache), vcache(v->vcache), acceleration(v->acceleration), breakdown_ctr(v->breakdown_ctr),
+					breakdown_delay(v->breakdown_delay), breakdowns_since_last_service(v->breakdowns_since_last_service),
+					breakdown_chance(v->breakdown_chance), breakdown_severity(v->breakdown_severity), breakdown_type(v->breakdown_type),
+					vehicle_flags(v->vehicle_flags) {}
+		};
+		std::vector<SavedVehicleInfo> veh_old;
+
+		struct SavedTrainInfo {
+			TrainCache tcache;
+			RailType railtype;
+			RailTypes compatible_railtypes;
+			uint32_t flags;
+			SavedTrainInfo(const Train *t) : tcache(t->tcache), railtype(t->railtype), compatible_railtypes(t->compatible_railtypes), flags(t->flags) {}
+		};
+		std::vector<SavedTrainInfo> train_old;
+
 		std::vector<GroundVehicleCache> gro_cache;
-		std::vector<TrainCache> tra_cache;
 		std::vector<AircraftCache> air_cache;
-		std::vector<std::unique_ptr<Vehicle, FreeDeleter>> veh_old;
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			extern bool ValidateVehicleTileHash(const Vehicle *v);
@@ -318,28 +343,19 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 
 			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				FillNewGRFVehicleCache(u);
-				grf_cache.push_back(u->grf_cache);
-				veh_cache.push_back(u->vcache);
+				veh_old.emplace_back(u);
 				switch (u->type) {
 					case VEH_TRAIN:
 						gro_cache.push_back(Train::From(u)->gcache);
-						tra_cache.push_back(Train::From(u)->tcache);
-						veh_old.emplace_back(MallocT<Train>(1));
-						memcpy((void *) veh_old.back().get(), (const void *) Train::From(u), sizeof(Train));
+						train_old.emplace_back(Train::From(u));
 						break;
 					case VEH_ROAD:
 						gro_cache.push_back(RoadVehicle::From(u)->gcache);
-						veh_old.emplace_back(MallocT<RoadVehicle>(1));
-						memcpy((void *) veh_old.back().get(), (const void *) RoadVehicle::From(u), sizeof(RoadVehicle));
 						break;
 					case VEH_AIRCRAFT:
 						air_cache.push_back(Aircraft::From(u)->acache);
-						veh_old.emplace_back(MallocT<Aircraft>(1));
-						memcpy((void *) veh_old.back().get(), (const void *) Aircraft::From(u), sizeof(Aircraft));
 						break;
 					default:
-						veh_old.emplace_back(MallocT<Vehicle>(1));
-						memcpy((void *) veh_old.back().get(), (const void *) u, sizeof(Vehicle));
 						break;
 				}
 			}
@@ -355,42 +371,43 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			length = 0;
 			for (const Vehicle *u = v; u != nullptr; u = u->Next(), length++) {
 				FillNewGRFVehicleCache(u);
-				if (grf_cache[length] != u->grf_cache) {
+				const SavedVehicleInfo &oldv = veh_old[length];
+				if (oldv.grf_cache != u->grf_cache) {
 					CCLOGV("newgrf cache mismatch");
 				}
-				if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
-						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
+				if (oldv.vcache.cached_max_speed != u->vcache.cached_max_speed || oldv.vcache.cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
+						oldv.vcache.cached_vis_effect != u->vcache.cached_vis_effect || HasBit(oldv.vcache.cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
 					CCLOGV("vehicle cache mismatch: {}{}{}{}",
-							veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
-							veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
-							veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
-							HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-');
+							oldv.vcache.cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
+							oldv.vcache.cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
+							oldv.vcache.cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
+							HasBit(oldv.vcache.cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-');
 				}
 				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2)");
 				}
-				if (veh_old[length]->acceleration != u->acceleration) {
+				if (oldv.acceleration != u->acceleration) {
 					CCLOGV("acceleration mismatch");
 				}
-				if (veh_old[length]->breakdown_chance != u->breakdown_chance) {
+				if (oldv.breakdown_chance != u->breakdown_chance) {
 					CCLOGV("breakdown_chance mismatch");
 				}
-				if (veh_old[length]->breakdown_ctr != u->breakdown_ctr) {
+				if (oldv.breakdown_ctr != u->breakdown_ctr) {
 					CCLOGV("breakdown_ctr mismatch");
 				}
-				if (veh_old[length]->breakdown_delay != u->breakdown_delay) {
+				if (oldv.breakdown_delay != u->breakdown_delay) {
 					CCLOGV("breakdown_delay mismatch");
 				}
-				if (veh_old[length]->breakdowns_since_last_service != u->breakdowns_since_last_service) {
+				if (oldv.breakdowns_since_last_service != u->breakdowns_since_last_service) {
 					CCLOGV("breakdowns_since_last_service mismatch");
 				}
-				if (veh_old[length]->breakdown_severity != u->breakdown_severity) {
+				if (oldv.breakdown_severity != u->breakdown_severity) {
 					CCLOGV("breakdown_severity mismatch");
 				}
-				if (veh_old[length]->breakdown_type != u->breakdown_type) {
+				if (oldv.breakdown_type != u->breakdown_type) {
 					CCLOGV("breakdown_type mismatch");
 				}
-				if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
+				if (oldv.vehicle_flags != u->vehicle_flags) {
 					CCLOGV("vehicle_flags mismatch");
 				}
 				auto print_gv_cache_diff = [&](const char *vtype, const GroundVehicleCache &a, const GroundVehicleCache &b) {
@@ -408,57 +425,62 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 							a.cached_veh_length != b.cached_veh_length ? 'L' : '-');
 				};
 				switch (u->type) {
-					case VEH_TRAIN:
+					case VEH_TRAIN: {
 						if (gro_cache[length] != Train::From(u)->gcache) {
 							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 						}
-						if (tra_cache[length] != Train::From(u)->tcache) {
+						const SavedTrainInfo &oldt = train_old[length];
+						if (oldt.tcache != Train::From(u)->tcache) {
 							CCLOGV("train cache mismatch: {}{}{}{}{}{}{}{}{}{}{}",
-									tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
-									tra_cache[length].cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
-									tra_cache[length].cached_tflags != Train::From(u)->tcache.cached_tflags ? 'f' : '-',
-									tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
-									tra_cache[length].cached_centre_mass != Train::From(u)->tcache.cached_centre_mass ? 'm' : '-',
-									tra_cache[length].cached_braking_length != Train::From(u)->tcache.cached_braking_length ? 'b' : '-',
-									tra_cache[length].cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
-									tra_cache[length].cached_uncapped_decel != Train::From(u)->tcache.cached_uncapped_decel ? 'D' : '-',
-									tra_cache[length].cached_deceleration != Train::From(u)->tcache.cached_deceleration ? 'd' : '-',
-									tra_cache[length].user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
-									tra_cache[length].cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
+									oldt.tcache.cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
+									oldt.tcache.cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
+									oldt.tcache.cached_tflags != Train::From(u)->tcache.cached_tflags ? 'f' : '-',
+									oldt.tcache.cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
+									oldt.tcache.cached_centre_mass != Train::From(u)->tcache.cached_centre_mass ? 'm' : '-',
+									oldt.tcache.cached_braking_length != Train::From(u)->tcache.cached_braking_length ? 'b' : '-',
+									oldt.tcache.cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
+									oldt.tcache.cached_uncapped_decel != Train::From(u)->tcache.cached_uncapped_decel ? 'D' : '-',
+									oldt.tcache.cached_deceleration != Train::From(u)->tcache.cached_deceleration ? 'd' : '-',
+									oldt.tcache.user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
+									oldt.tcache.cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
 						}
-						if (Train::From(veh_old[length].get())->railtype != Train::From(u)->railtype) {
+						if (oldt.railtype != Train::From(u)->railtype) {
 							CCLOGV("railtype mismatch");
 						}
-						if (Train::From(veh_old[length].get())->compatible_railtypes != Train::From(u)->compatible_railtypes) {
+						if (oldt.compatible_railtypes != Train::From(u)->compatible_railtypes) {
 							CCLOGV("compatible_railtypes mismatch");
 						}
-						if (Train::From(veh_old[length].get())->flags != Train::From(u)->flags) {
+						if (oldt.flags != Train::From(u)->flags) {
 							CCLOGV("train flags mismatch");
 						}
 						break;
-					case VEH_ROAD:
+					}
+
+					case VEH_ROAD: {
 						if (gro_cache[length] != RoadVehicle::From(u)->gcache) {
 							print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
 						}
 						break;
-					case VEH_AIRCRAFT:
+					}
+
+					case VEH_AIRCRAFT: {
 						if (air_cache[length] != Aircraft::From(u)->acache) {
 							CCLOGV("Aircraft vehicle cache mismatch: {}{}",
 									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
 									air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');
 						}
 						break;
+					}
+
 					default:
 						break;
 				}
 			}
 
-			grf_cache.clear();
-			veh_cache.clear();
+			veh_old.clear();
+			train_old.clear();
 			gro_cache.clear();
 			air_cache.clear();
-			tra_cache.clear();
-			veh_old.clear();
 		}
 
 		/* Check whether the caches are still valid */
