@@ -837,7 +837,7 @@ namespace TupleCmdDataDetail {
 template <typename Parent, typename... T>
 struct TupleCmdData : public TupleCmdDataDetail::BaseTupleCmdData<T...> {
 	using TupleCmdDataDetail::BaseTupleCmdData<T...>::BaseTupleCmdData;
-	using Tuple = TupleCmdDataDetail::BaseTupleCmdData<T...>::Tuple;
+	using Tuple = typename TupleCmdDataDetail::BaseTupleCmdData<T...>::Tuple;
 
 	std::unique_ptr<CommandPayloadBase> Clone() const override;
 
