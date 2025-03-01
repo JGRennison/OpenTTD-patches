@@ -45,6 +45,7 @@
 #include "tbtr_template_gui_main.h"
 #include "zoom_func.h"
 #include "tracerestrict.h"
+#include "tracerestrict_cmd.h"
 #include "depot_base.h"
 #include "hotkeys.h"
 #include "schdispatch.h"
@@ -3679,7 +3680,7 @@ struct VehicleDetailsWindow : Window {
 					}
 
 					case VDWDDA_REMOVE_FROM_SLOT: {
-						DoCommandPOld(0, GB(index, 8, 16), v->index, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+						Command<CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE, GB(index, 8, 16), v->index);
 						break;
 					}
 				}

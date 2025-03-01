@@ -4554,9 +4554,9 @@ public:
 		if (confirmed) {
 			TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow*)win;
 			if (w->slot_confirm.type == SlotItemType::Slot) {
-				DoCommandPOld(0, w->slot_confirm.id, 0, CMD_DELETE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE));
+				Command<CMD_DELETE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE, w->slot_confirm.id);
 			} else if (w->slot_confirm.type == SlotItemType::Group) {
-				DoCommandPOld(0, w->slot_confirm.id, 0, CMD_DELETE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE));
+				Command<CMD_DELETE_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE, w->slot_confirm.id);
 			}
 		}
 	}
@@ -4658,7 +4658,7 @@ public:
 			case WID_TRSL_SLOT_PUBLIC: { // Toggle public state of the selected slot
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(this->vli.index);
 				if (slot != nullptr) {
-					DoCommandPOld(0, this->vli.index | (TRASO_SET_PUBLIC << 16), HasFlag(slot->flags, TraceRestrictSlot::Flags::Public) ? 0 : 1, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME));
+					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_CAN_T_DO_THIS, this->vli.index, TRASO_SET_PUBLIC, HasFlag(slot->flags, TraceRestrictSlot::Flags::Public) ? 0 : 1, {});
 				}
 				break;
 			}
@@ -4686,7 +4686,7 @@ public:
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES: // All vehicles
 				if (this->slot_sel.type == SlotItemType::Slot) {
-					DoCommandPOld(0, this->slot_sel.id, this->vehicle_sel, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+					Command<CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE, this->slot_sel.id, this->vehicle_sel);
 
 					this->vehicle_sel = INVALID_VEHICLE;
 					this->slot_over = {};
@@ -4709,9 +4709,9 @@ public:
 
 				if (_ctrl_pressed && this->slot_sel.type == SlotItemType::Slot) {
 					/* Remove from old group */
-					DoCommandPOld(0, this->slot_sel.id, vindex, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+					Command<CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE, this->slot_sel.id, vindex);
 				}
-				DoCommandPOld(0, item.item.id, vindex, CMD_ADD_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE));
+				Command<CMD_ADD_VEHICLE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE, item.item.id, vindex);
 				break;
 			}
 
@@ -4744,9 +4744,9 @@ public:
 
 		auto set_parent = [&](TraceRestrictSlotGroupID parent) {
 			if (this->slot_drag.type == SlotItemType::Slot) {
-				DoCommandPOld(0, this->slot_drag.id | (TRASO_SET_PARENT_GROUP << 16), parent, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+				Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.id, TRASO_SET_PARENT_GROUP, parent, {});
 			} else if (this->slot_drag.type == SlotItemType::Group) {
-				DoCommandPOld(0, this->slot_drag.id | (1 << 16), parent, CMD_ALTER_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+				Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.id, TRASGO_SET_PARENT_GROUP, parent, {});
 			}
 		};
 
@@ -4805,20 +4805,20 @@ public:
 							data.name = std::move(*str);
 							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 						} else {
-							DoCommandPOld(0, this->slot_query.id | (TRASO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), CommandCallback::None, str->c_str());
+							Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.id, TRASO_RENAME, {}, std::move(*str));
 						}
 					} else if (this->slot_query.type == SlotItemType::Group) {
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_GROUP) {
-							DoCommandPOld(0, this->vli.vtype, this->slot_sel.GetClosestGroupID(), CMD_CREATE_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CommandCallback::None, str->c_str());
+							Command<CMD_CREATE_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, this->vli.vtype, this->slot_sel.GetClosestGroupID(), std::move(*str));
 						} else {
-							DoCommandPOld(0, this->slot_query.id, 0, CMD_ALTER_TRACERESTRICT_SLOT_GROUP | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), CommandCallback::None, str->c_str());
+							Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.id, TRASGO_RENAME, {}, std::move(*str));
 						}
 					}
 					break;
 
 				case QuerySelectorMode::SetMaxOccupancy:
 					if (this->slot_query.type == SlotItemType::Slot && !str->empty()) {
-						DoCommandPOld(0, this->slot_query.id | (TRASO_CHANGE_MAX_OCCUPANCY << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
+						Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, this->slot_query.id, TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
 					}
 					break;
 			}
@@ -5252,7 +5252,7 @@ public:
 		if (confirmed) {
 			TraceRestrictCounterWindow *w = (TraceRestrictCounterWindow*)win;
 			w->selected = INVALID_TRACE_RESTRICT_COUNTER_ID;
-			DoCommandPOld(0, w->ctr_confirm, 0, CMD_DELETE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE));
+			Command<CMD_DELETE_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE, w->ctr_confirm);
 		}
 	}
 
@@ -5287,7 +5287,7 @@ public:
 			case WID_TRCL_COUNTER_PUBLIC: { // Toggle public state of the selected counter
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(this->selected);
 				if (ctr != nullptr) {
-					DoCommandPOld(0, this->selected | (TRACO_SET_PUBLIC << 16), HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public) ? 0 : 1, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+					Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->selected, TRACO_SET_PUBLIC, HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public) ? 0 : 1, {});
 				}
 				break;
 			}
@@ -5308,12 +5308,14 @@ public:
 						data.name = std::move(*str);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 					} else {
-						DoCommandPOld(0, this->ctr_qt_op | (TRACO_RENAME << 16), 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), CommandCallback::None, str->c_str());
+						Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME, this->ctr_qt_op, TRACO_RENAME, {}, std::move(*str));
 					}
 					break;
 
 				case QTO_SET_VALUE:
-					if (!str->empty()) DoCommandPOld(0, this->ctr_qt_op | (TRACO_CHANGE_VALUE << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+					if (!str->empty()) {
+						Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->ctr_qt_op, TRACO_CHANGE_VALUE, atoi(str->c_str()), {});
+					}
 					break;
 			}
 		}
