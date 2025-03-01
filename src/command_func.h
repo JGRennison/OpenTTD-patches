@@ -81,6 +81,74 @@ bool DoCommandP(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &
 	return DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED);
 }
 
+template <Commands TCmd, typename T> struct DoCommandHelper;
+template <Commands TCmd, typename T> struct DoCommandHelperNoTile;
+
+template <Commands Tcmd, typename... Targs>
+struct DoCommandHelper<Tcmd, std::tuple<Targs...>> {
+	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+
+	static inline CommandCost Do(DoCommandFlag flags, TileIndex tile, Targs... args)
+	{
+		return DoCommand<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), flags);
+	}
+
+	static inline bool Post(TileIndex tile, Targs... args)
+	{
+		return DoCommandP<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), (StringID)0, CommandCallback::None);
+	}
+
+	static inline bool Post(StringID error_msg, TileIndex tile, Targs... args)
+	{
+		return DoCommandP<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), error_msg, CommandCallback::None);
+	}
+
+	static inline bool Post(CommandCallback callback, TileIndex tile, Targs... args)
+	{
+		return DoCommandP<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), (StringID)0, callback);
+	}
+
+	static inline bool Post(StringID error_msg, CommandCallback callback, TileIndex tile, Targs... args)
+	{
+		return DoCommandP<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), error_msg, callback);
+	}
+};
+
+template <Commands Tcmd, typename... Targs>
+struct DoCommandHelperNoTile<Tcmd, std::tuple<Targs...>> {
+	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+
+	static inline CommandCost Do(DoCommandFlag flags, Targs... args)
+	{
+		return DoCommand<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), flags);
+	}
+
+	static inline bool Post(Targs... args)
+	{
+		return DoCommandP<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), (StringID)0, CommandCallback::None);
+	}
+
+	static inline bool Post(StringID error_msg, Targs... args)
+	{
+		return DoCommandP<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), error_msg, CommandCallback::None);
+	}
+
+	static inline bool Post(CommandCallback callback, Targs... args)
+	{
+		return DoCommandP<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), (StringID)0, callback);
+	}
+
+	static inline bool Post(StringID error_msg, CommandCallback callback, Targs... args)
+	{
+		return DoCommandP<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), error_msg, callback);
+	}
+};
+
+template <Commands Tcmd>
+using Command = std::conditional_t<::CommandTraits<Tcmd>::no_tile,
+		DoCommandHelperNoTile<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>,
+		DoCommandHelper<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>>;
+
 /* Other command functions */
 
 CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous);
