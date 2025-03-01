@@ -871,6 +871,18 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 	void FormatDebugSummary(struct format_target &output) const override;
 };
 
+/** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */
+template <typename... T>
+struct CmdDataT final : public AutoFmtTupleCmdData<CmdDataT<T...>, TCDF_NONE, T...> {};
+
+/** Specialisation for string which doesn't bother implementing FormatDebugSummary at all. */
+template <>
+struct CmdDataT<std::string> final : public TupleCmdData<CmdDataT<std::string>, std::string> {};
+template <>
+struct CmdDataT<std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string>, std::string, std::string> {};
+template <>
+struct CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
+
 template <typename T>
 struct BaseCommandContainer {
 	Commands cmd{};                              ///< command being executed.
