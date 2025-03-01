@@ -987,9 +987,15 @@ template <> struct CommandTraits<cmd_> { \
 
 #define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_, false)
 #define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_, false)
-#define DEF_CMD_DIRECT(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_, false)
-#define DEF_CMD_TUPLE(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, payload_::CommandProc, proc_, payload_, flags_, type_, false)
-#define DEF_CMD_TUPLE_NT(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, payload_::CommandProcNoTile, proc_, payload_, flags_, type_, true)
+#define DEF_CMD_DIRECT(cmd_, proc_, flags_, type_, payload_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_, false)
+
+/* The .../__VA_ARGS__ part is the payload type, this is to support template types which include comma ',' characters. */
+#define DEF_CMD_TUPLE(cmd_, proc_, flags_, type_, ...) \
+namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
+DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProc, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, false)
+#define DEF_CMD_TUPLE_NT(cmd_, proc_, flags_, type_, ...) \
+namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
+DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, true)
 
 DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
@@ -1222,6 +1228,6 @@ DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES, CmdScheduledDispatchSwapSc
 DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS, CmdScheduledDispatchSetSlotFlags,                  {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_RENAME_TAG, CmdScheduledDispatchRenameTag,                     {}, CMDT_ROUTE_MANAGEMENT      )
 
-DEF_CMD_DIRECT(CMD_DESYNC_CHECK, CmdDesyncCheck, CommandEmptyPayload, CMD_SERVER, CMDT_SERVER_SETTING)
+DEF_CMD_DIRECT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, CommandEmptyPayload)
 
 #endif /* COMMAND_TYPE_H */

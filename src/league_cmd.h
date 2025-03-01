@@ -17,14 +17,10 @@ struct LeagueTableElementCmdData final : public AutoFmtTupleCmdData<LeagueTableE
 	static inline constexpr const char fmt_str[] = "t: {}, r: {}, c: {}, type: {}, targ: {}";
 };
 
-using LeagueTableCmdData = CmdDataT<std::string, std::string, std::string>;
-using LeagueTableElementDataCmdData = CmdDataT<LeagueTableElementID, CompanyID, std::string, LinkType, LinkTargetID>;
-using LeagueTableElementScoreCmdData = CmdDataT<LeagueTableElementID, int64_t, std::string>;
-
-DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE,               CmdCreateLeagueTable,             LeagueTableCmdData,              CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE_ELEMENT,       CmdCreateLeagueTableElement,      LeagueTableElementCmdData,       CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  CmdUpdateLeagueTableElementData,  LeagueTableElementDataCmdData,   CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, CmdUpdateLeagueTableElementScore, LeagueTableElementScoreCmdData,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_TUPLE_NT(CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       CmdRemoveLeagueTableElement,      CmdDataT<LeagueTableElementID>,                 CMD_DEITY, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE,               CmdCreateLeagueTable,             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<std::string, std::string, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE_ELEMENT,       CmdCreateLeagueTableElement,      CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, LeagueTableElementCmdData)
+DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  CmdUpdateLeagueTableElementData,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID, CompanyID, std::string, LinkType, LinkTargetID>)
+DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, CmdUpdateLeagueTableElementScore, CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID, int64_t, std::string>)
+DEF_CMD_TUPLE_NT(CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       CmdRemoveLeagueTableElement,                     CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID>)
 
 #endif /* LEAGUE_CMD_H */
