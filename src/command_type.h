@@ -866,6 +866,7 @@ DECLARE_ENUM_AS_BIT_SET(TupleCmdDataFlags)
 template <typename Parent, TupleCmdDataFlags flags, typename... T>
 struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 	using TupleCmdData<Parent, T...>::TupleCmdData;
+	static inline constexpr const char fmt_str[] = "";
 
 	void FormatDebugSummary(struct format_target &output) const override;
 };

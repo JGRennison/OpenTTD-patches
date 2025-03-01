@@ -17,8 +17,8 @@ struct LeagueTableCmdData final : public TupleCmdData<LeagueTableCmdData, std::s
 
 struct LeagueTableElementDataCmdData final : public AutoFmtTupleCmdData<LeagueTableElementDataCmdData, TCDF_NONE, LeagueTableElementID, CompanyID, std::string, LinkType, LinkTargetID> {};
 
-struct LeagueTableElementCmdData final : public TupleCmdData<LeagueTableElementCmdData, LeagueTableID, int64_t, CompanyID, std::string, std::string, LinkType, LinkTargetID> {
-	void FormatDebugSummary(struct format_target &) const override;
+struct LeagueTableElementCmdData final : public AutoFmtTupleCmdData<LeagueTableElementCmdData, TCDF_NONE, LeagueTableID, int64_t, CompanyID, std::string, std::string, LinkType, LinkTargetID> {
+	static inline constexpr const char fmt_str[] = "t: {}, r: {}, c: {}, type: {}, targ: {}";
 };
 
 struct LeagueTableElementScoreCmdData final : public AutoFmtTupleCmdData<LeagueTableElementScoreCmdData, TCDF_NONE, LeagueTableElementID, int64_t, std::string> {};

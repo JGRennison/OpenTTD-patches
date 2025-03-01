@@ -189,9 +189,3 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	}
 	return CommandCost();
 }
-
-void LeagueTableElementCmdData::FormatDebugSummary(format_target &output) const
-{
-	const auto &v = this->values;
-	output.format("t: {}, r: {}, c: {}, type: {}, targ: {}", std::get<0>(v), std::get<1>(v), std::get<2>(v), std::get<5>(v), std::get<6>(v));
-}

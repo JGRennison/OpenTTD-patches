@@ -1210,6 +1210,22 @@ namespace TupleCmdDataDetail {
 	{
 		return std::tuple_cat(MakeRefTupleWithoutStringsItem<T, Tindices>(values)...);
 	}
+
+	template <auto fmt_str, typename T, size_t... Tindices>
+	void FmtTupleDataTuple(format_target &output, const T &values, std::index_sequence<Tindices...>)
+	{
+		output.format(fmt_str, std::get<Tindices>(values)...);
+	}
+
+	template <auto fmt_str, typename T>
+	void FmtTupleData(format_target &output, const T &values)
+	{
+		if constexpr (std::string_view(fmt_str).size() == 0) {
+			output.format("{}", fmt::join(values, ", "));
+		} else {
+			FmtTupleDataTuple<fmt_str, T>(output, values, std::make_index_sequence<std::tuple_size_v<T>>{});
+		}
+	}
 };
 
 template <typename... T>
@@ -1235,8 +1251,8 @@ template <typename Parent, TupleCmdDataFlags flags, typename... T>
 void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
 {
 	if constexpr (flags & TCDF_STRINGS) {
-		output.format("{}", fmt::join(this->values, ", "));
+		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, this->values);
 	} else {
-		output.format("{}", fmt::join(TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}), ", "));
+		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}));
 	}
 }
