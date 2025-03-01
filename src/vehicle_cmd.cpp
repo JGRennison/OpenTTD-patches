@@ -1069,8 +1069,6 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 	return CommandCost();
 }
 
-CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-
 template <typename T>
 void UpdateNewVirtualTrainFromSource(Train *v, const T *src)
 {

@@ -31,8 +31,6 @@
 #include <map>
 #include <vector>
 
-CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32_t, uint32_t, const char*);
-
 /** Vehicle status bits in #Vehicle::vehstatus. */
 enum VehStatus {
 	VS_HIDDEN          = 0x01, ///< Vehicle is not visible.

@@ -945,15 +945,14 @@ struct CommandExecData {
 
 using CommandPayloadDeserialiser = std::unique_ptr<CommandPayloadBase>(DeserialisationBuffer &, StringValidationSettings default_string_validation);
 
-#ifdef CMD_DEFINE
 using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
 
 template <typename T>
 using CommandProcDirect = CommandCost(TileIndex tile, DoCommandFlag flags, const T &data);
 
+#ifdef CMD_DEFINE
 #define DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \
-proctype_ proc_; \
 template <> struct CommandHandlerTraits<cmd_> { \
 	static constexpr auto &proc = proc_; \
 	static inline constexpr const char *name = #proc_; \
@@ -963,6 +962,7 @@ template <> struct CommandHandlerTraits<cmd_> { \
 #endif
 
 #define DEF_CMD_PROC_GENERAL(cmd_, proctype_, proc_, payload_, flags_, type_, no_tile_) \
+proctype_ proc_; \
 DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \
 template <> struct CommandTraits<cmd_> { \
 	using PayloadType = payload_; \
