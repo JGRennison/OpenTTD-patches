@@ -737,7 +737,7 @@ void VideoDriver_CocoaQuartz::CheckPaletteAnim()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
-			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
+			case Blitter::PaletteAnimation::VideoBackend:
 				this->UpdatePalette(_cur_palette.first_dirty, _cur_palette.count_dirty);
 				break;
 
