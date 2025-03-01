@@ -765,11 +765,15 @@ struct CommandPayloadBase {
 
 template <typename T>
 struct CommandPayloadSerialisable : public CommandPayloadBase {
-	std::unique_ptr<CommandPayloadBase> Clone() const override
-	{
-		return std::make_unique<T>(*static_cast<const T *>(this));
-	}
+	std::unique_ptr<CommandPayloadBase> Clone() const override;
 };
+
+template <typename T>
+std::unique_ptr<CommandPayloadBase> CommandPayloadSerialisable<T>::Clone() const
+{
+	static_assert(std::is_final_v<T>);
+	return std::make_unique<T>(*static_cast<const T *>(this));
+}
 
 struct CommandPayloadSerialised final {
 	std::vector<uint8_t> serialised_data;
