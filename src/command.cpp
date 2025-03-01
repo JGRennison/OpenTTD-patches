@@ -38,6 +38,7 @@
 #include "core/ring_buffer.hpp"
 #include "core/checksum_func.hpp"
 #include "3rdparty/nlohmann/json.hpp"
+#include "3rdparty/fmt/ranges.h"
 #include <array>
 
 #include "league_cmd.h"
@@ -1193,25 +1194,21 @@ namespace TupleCmdDataDetail {
 		((buffer.Recv_generic(std::get<Tindices>(values), default_string_validation)), ...);
 	}
 
-	template <TupleCmdDataFlags flags, bool first, size_t Tindex, size_t Tend, typename T>
-	void FormatDebugSummaryTuple(const T &values, format_target &output);
-
-	template <TupleCmdDataFlags flags, bool first, size_t Tindex, size_t Tend, typename T>
-	void FormatDebugSummaryTuple(const T &values, format_target &output)
+	template<typename T, size_t Tindex>
+	constexpr auto MakeRefTupleWithoutStringsItem(const T &values)
 	{
-		if constexpr (Tindex < Tend) {
-			const auto &val = std::get<Tindex>(values);
-			if constexpr ((flags & TCDF_STRINGS) || !std::is_same_v<std::remove_cvref_t<decltype(val)>, std::string>) {
-				if constexpr (!first) {
-					output.append(", ");
-				}
-				output.format("{}", val);
-				FormatDebugSummaryTuple<flags, false, Tindex + 1, Tend, T>(values, output);
-			} else {
-				FormatDebugSummaryTuple<flags, first, Tindex + 1, Tend, T>(values, output);
-			}
+		const auto &val = std::get<Tindex>(values);
+		if constexpr (std::is_same_v<std::remove_cvref_t<decltype(val)>, std::string>) {
+			return std::tuple<>();
+		} else {
+			return std::forward_as_tuple(val);
 		}
+	}
 
+	template <typename T, size_t... Tindices>
+	constexpr auto MakeRefTupleWithoutStrings(const T &values, std::index_sequence<Tindices...>)
+	{
+		return std::tuple_cat(MakeRefTupleWithoutStringsItem<T, Tindices>(values)...);
 	}
 };
 
@@ -1237,5 +1234,9 @@ bool TupleCmdDataDetail::BaseTupleCmdData<T...>::Deserialise(DeserialisationBuff
 template <typename Parent, TupleCmdDataFlags flags, typename... T>
 void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
 {
-	TupleCmdDataDetail::FormatDebugSummaryTuple<flags, true, 0, sizeof...(T)>(this->values, output);
+	if constexpr (flags & TCDF_STRINGS) {
+		output.format("{}", fmt::join(this->values, ", "));
+	} else {
+		output.format("{}", fmt::join(TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}), ", "));
+	}
 }
