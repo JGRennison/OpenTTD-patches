@@ -143,6 +143,44 @@ protected:
 		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_TYPE_CHECKED);
 	}
 
+	template <Commands TCmd, typename T> struct ScriptDoCommandHelper;
+	template <Commands TCmd, typename T> struct ScriptDoCommandHelperNoTile;
+
+	template <Commands Tcmd, typename... Targs>
+	struct ScriptDoCommandHelper<Tcmd, std::tuple<Targs...>> {
+		using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+
+		static bool Do(Script_SuspendCallbackProc *callback, TileIndex tile, Targs... args)
+		{
+			return ScriptObject::DoCommandImplementation(Tcmd, tile, PayloadType::Make(std::forward<Targs>(args)...), callback, DCIF_TYPE_CHECKED);
+		}
+
+		static bool Do(TileIndex tile, Targs... args)
+		{
+			return ScriptObject::DoCommandImplementation(Tcmd, tile, PayloadType::Make(std::forward<Targs>(args)...), nullptr, DCIF_TYPE_CHECKED);
+		}
+	};
+
+	template <Commands Tcmd, typename... Targs>
+	struct ScriptDoCommandHelperNoTile<Tcmd, std::tuple<Targs...>> {
+		using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+
+		static bool Do(Script_SuspendCallbackProc *callback, Targs... args)
+		{
+			return ScriptObject::DoCommandImplementation(Tcmd, 0, PayloadType::Make(std::forward<Targs>(args)...), callback, DCIF_TYPE_CHECKED);
+		}
+
+		static bool Do(Targs... args)
+		{
+			return ScriptObject::DoCommandImplementation(Tcmd, 0, PayloadType::Make(std::forward<Targs>(args)...), nullptr, DCIF_TYPE_CHECKED);
+		}
+	};
+
+	template <Commands Tcmd>
+	using Command = std::conditional_t<::CommandTraits<Tcmd>::no_tile,
+			ScriptDoCommandHelperNoTile<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>,
+			ScriptDoCommandHelper<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>>;
+
 	/**
 	 * Store the latest command executed by the script.
 	 */

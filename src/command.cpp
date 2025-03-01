@@ -50,7 +50,7 @@
 
 using CommandExecTrampoline = CommandCost(const CommandExecData &);
 
-template <typename T, CommandProc proc>
+template <typename T, CommandProc proc, bool no_tile>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
 	return [](const CommandExecData &exec_data) -> CommandCost
@@ -61,7 +61,7 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 	};
 }
 
-template <typename T, CommandProcEx proc>
+template <typename T, CommandProcEx proc, bool no_tile>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
 	return [](const CommandExecData &exec_data) -> CommandCost
@@ -72,7 +72,7 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 	};
 }
 
-template <typename T, CommandProcDirect<T> proc>
+template <typename T, CommandProcDirect<T> proc, bool no_tile>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
 	return [](const CommandExecData &exec_data) -> CommandCost
@@ -82,6 +82,25 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 	};
 }
 
+template <bool no_tile, typename F, typename T, size_t... Tindices>
+CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlag flags, const T &payload, std::index_sequence<Tindices...>)
+{
+	if constexpr (no_tile) {
+		return proc(flags, std::get<Tindices>(payload.values)...);
+	} else {
+		return proc(tile, flags, std::get<Tindices>(payload.values)...);
+	}
+}
+
+template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<std::is_base_of_v<BaseTupleCmdDataTag, T>>>
+static constexpr CommandExecTrampoline *MakeTrampoline()
+{
+	return [](const CommandExecData &exec_data) -> CommandCost
+	{
+		const T &data = static_cast<const T &>(exec_data.payload);
+		return CommandExecTrampolineTuple<no_tile>(proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<std::tuple_size_v<typename T::Tuple>>{});
+	};
+}
 
 template <typename T>
 static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
@@ -120,7 +139,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 {
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type };
+	return { MakeTrampoline<Payload, H::proc, T::no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type };
 };
 
 template <typename T, T... i>
@@ -1145,4 +1164,78 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	if (this->payload == nullptr || expected_offset != buffer.GetDeserialisationPosition()) return "failed to deserialise command payload";
 
 	return nullptr;
+}
+
+namespace TupleCmdDataDetail {
+	template <typename T, size_t... Tindices>
+	void SerialiseTuple(const T &values, BufferSerialisationRef buffer, std::index_sequence<Tindices...>)
+	{
+		((buffer.Send_generic(std::get<Tindices>(values))), ...);
+	}
+
+	template <typename U>
+	void SanitiseGeneric(U &value, StringValidationSettings settings)
+	{
+		if constexpr (std::is_same_v<U, std::string>) {
+			StrMakeValidInPlace(value, settings);
+		}
+	}
+
+	template <typename T, size_t... Tindices>
+	void SanitiseStringsTuple(const T &values, StringValidationSettings settings, std::index_sequence<Tindices...>)
+	{
+		((SanitiseGeneric(std::get<Tindices>(values), settings)), ...);
+	}
+
+	template <typename T, size_t... Tindices>
+	void DeserialiseTuple(T &values, DeserialisationBuffer &buffer, StringValidationSettings default_string_validation, std::index_sequence<Tindices...>)
+	{
+		((buffer.Recv_generic(std::get<Tindices>(values), default_string_validation)), ...);
+	}
+
+	template <TupleCmdDataFlags flags, bool first, size_t Tindex, size_t Tend, typename T>
+	void FormatDebugSummaryTuple(const T &values, format_target &output);
+
+	template <TupleCmdDataFlags flags, bool first, size_t Tindex, size_t Tend, typename T>
+	void FormatDebugSummaryTuple(const T &values, format_target &output)
+	{
+		if constexpr (Tindex < Tend) {
+			const auto &val = std::get<Tindex>(values);
+			if constexpr ((flags & TCDF_STRINGS) || !std::is_same_v<std::remove_cvref_t<decltype(val)>, std::string>) {
+				if constexpr (!first) {
+					output.append(", ");
+				}
+				output.format("{}", val);
+				FormatDebugSummaryTuple<flags, false, Tindex + 1, Tend, T>(values, output);
+			} else {
+				FormatDebugSummaryTuple<flags, first, Tindex + 1, Tend, T>(values, output);
+			}
+		}
+
+	}
+};
+
+template <typename... T>
+void TupleCmdDataDetail::BaseTupleCmdData<T...>::Serialise(BufferSerialisationRef buffer) const
+{
+	TupleCmdDataDetail::SerialiseTuple(this->values, buffer, std::index_sequence_for<T...>{});
+}
+
+template <typename... T>
+void TupleCmdDataDetail::BaseTupleCmdData<T...>::SanitiseStrings(StringValidationSettings settings)
+{
+	TupleCmdDataDetail::SanitiseStringsTuple(this->values, settings, std::index_sequence_for<T...>{});
+}
+
+template <typename... T>
+bool TupleCmdDataDetail::BaseTupleCmdData<T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	TupleCmdDataDetail::DeserialiseTuple(this->values, buffer, default_string_validation, std::index_sequence_for<T...>{});
+	return true;
+}
+
+template <typename Parent, TupleCmdDataFlags flags, typename... T>
+void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
+{
+	TupleCmdDataDetail::FormatDebugSummaryTuple<flags, true, 0, sizeof...(T)>(this->values, output);
 }

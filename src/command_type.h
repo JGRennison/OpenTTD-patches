@@ -17,6 +17,7 @@
 #include "core/serialisation.hpp"
 #include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 
 struct GRFFile;
@@ -804,6 +805,71 @@ struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
+struct CommandProcTupleAdapter {
+	template <typename T>
+	using replace_string_t = std::conditional_t<std::is_same_v<std::string, T>, const std::string &, T>;
+};
+
+struct BaseTupleCmdDataTag{};
+
+namespace TupleCmdDataDetail {
+	/**
+	 * For internal use by TupleCmdData, AutoFmtTupleCmdData.
+	 */
+	template <typename... T>
+	struct BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
+		using CommandProc = CommandCost(TileIndex, DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using Tuple = std::tuple<T...>;
+		Tuple values;
+
+		template <typename... Args>
+		BaseTupleCmdData(Args&& ... args) : values(std::forward<Args>(args)...) {}
+
+		BaseTupleCmdData(Tuple&& values) : values(std::move(values)) {}
+
+		virtual void Serialise(BufferSerialisationRef buffer) const override;
+		virtual void SanitiseStrings(StringValidationSettings settings) override;
+		bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	};
+};
+
+template <typename Parent, typename... T>
+struct TupleCmdData : public TupleCmdDataDetail::BaseTupleCmdData<T...> {
+	using TupleCmdDataDetail::BaseTupleCmdData<T...>::BaseTupleCmdData;
+	using Tuple = TupleCmdDataDetail::BaseTupleCmdData<T...>::Tuple;
+
+	std::unique_ptr<CommandPayloadBase> Clone() const override;
+
+	template <typename... Args>
+	static Parent Make(Args&&... args)
+	{
+		Parent out;
+		out.values = Tuple(std::forward<Args>(args)...);
+		return out;
+	}
+};
+
+template <typename Parent, typename... T>
+std::unique_ptr<CommandPayloadBase> TupleCmdData<Parent, T...>::Clone() const
+{
+	static_assert(std::is_final_v<Parent>);
+	return std::make_unique<Parent>(*static_cast<const Parent *>(this));
+}
+
+enum TupleCmdDataFlags : uint8_t {
+	TCDF_NONE    =  0x0, ///< no flags
+	TCDF_STRINGS =  0x1, ///< include strings in summary
+};
+DECLARE_ENUM_AS_BIT_SET(TupleCmdDataFlags)
+
+template <typename Parent, TupleCmdDataFlags flags, typename... T>
+struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
+	using TupleCmdData<Parent, T...>::TupleCmdData;
+
+	void FormatDebugSummary(struct format_target &output) const override;
+};
+
 template <typename T>
 struct BaseCommandContainer {
 	Commands cmd{};                              ///< command being executed.
@@ -879,9 +945,6 @@ struct CommandExecData {
 
 using CommandPayloadDeserialiser = std::unique_ptr<CommandPayloadBase>(DeserialisationBuffer &, StringValidationSettings default_string_validation);
 
-
-/* Legacy command implementations */
-
 #ifdef CMD_DEFINE
 using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
@@ -899,18 +962,21 @@ template <> struct CommandHandlerTraits<cmd_> { \
 #define DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_)
 #endif
 
-#define DEF_CMD_PROC_GENERAL(cmd_, proctype_, proc_, payload_, flags_, type_) \
+#define DEF_CMD_PROC_GENERAL(cmd_, proctype_, proc_, payload_, flags_, type_, no_tile_) \
 DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \
 template <> struct CommandTraits<cmd_> { \
 	using PayloadType = payload_; \
 	static constexpr Commands cmd = cmd_; \
 	static constexpr CommandFlags flags = flags_; \
 	static constexpr CommandType type = type_; \
+	static constexpr bool no_tile = no_tile_; \
 };
 
-#define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_)
-#define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_)
-#define DEF_CMD_DIRECT(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_)
+#define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_, false)
+#define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_, false)
+#define DEF_CMD_DIRECT(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_, false)
+#define DEF_CMD_TUPLE(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, payload_::CommandProc, proc_, payload_, flags_, type_, false)
+#define DEF_CMD_TUPLE_NT(cmd_, proc_, payload_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, payload_::CommandProcNoTile, proc_, payload_, flags_, type_, true)
 
 DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
