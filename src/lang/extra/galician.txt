@@ -944,6 +944,9 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Reserva de ruta
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Reserva de ruta PBS remata aqui: Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1005,6 +1008,8 @@ STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :mes
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :atraso
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :adianto
 STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
+STR_TRACE_RESTRICT_GUI_LABEL                                    :Etiqueta de texto
+STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}Etiqueta:{POP_COLOUR} {STRING}
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :seguinte slot de saída
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :último slot de saída
@@ -1029,13 +1034,17 @@ STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - 
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Fai click para crear un slot
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Eliminar o slot seleccionado
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Renomear o slot seleccionado
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}Novo grupo de slots
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}Crear un novo grupo de slots
 STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}Establecer se a ranura seleccionada é pública.{}As ranuras públicas poden ser usadas por sinais e listas de orde doutras compañías se o uso compartido de infraestruturas está activado.
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Fixar a máxima ocupación do slot seleccionado
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Restrición de busca de rutas - Xestión dos slots ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Xestionar slots
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Renomear un slot
+STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}Renomear grupo de slots
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Crear un slot
+STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}Crear un grupo de slots
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Fixar a máxima ocupación dun slot
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Eliminar un slot
 STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}Estás seguro de que queres borrar este slot?
@@ -1191,6 +1200,7 @@ STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Non se p
 STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Non é un sinal de saída
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Non é un pre-sinal programable
 STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Non se pode copiar o programa de si mesmo
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}O sinal non pode depender condicionalmente de si mesmo
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Non se pode condicionalmente depender de sinais bidirecionais
 STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}O sinal non é válido
 
@@ -1810,6 +1820,7 @@ STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}Este hor
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}Este horario non se esta separando automáticamente porque só hai un vehículo
 STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}Non se pode autoseparar o horario: hai orde(s) condicionais
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Non se pode autoseparar o horario: faltan os tempos de espera ou de viaxe
+STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}Todas as ordes deben ser 'sen-parada' cando se usa autoseparación.
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}Non se recomenda a programación de ordes a carga completa
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}O enchemento automático só actualizará as ordes condicionais da rama escollida
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}Non todas as ordes da rama condicional escollida están programadas.
