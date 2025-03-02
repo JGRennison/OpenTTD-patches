@@ -1245,16 +1245,16 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :green signals
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Condition value
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Can't insert instruction
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Can't modify instruction
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Can't remove instruction
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Can't go to undefined signal
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Not an exit signal
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Not a programmable pre-signal
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Can't copy program to itself
-STR_ERROR_CAN_T_DEPEND_UPON_SELF                                :{WHITE}Cannot conditionally depend upon itself
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Cannot conditionally depend upon bidirectional signals
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Invalid signal
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}Can't insert instruction
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}Can't modify instruction
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}Can't remove instruction
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Can't go to undefined signal
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Not an exit signal
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Not a programmable pre-signal
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Can't copy program to itself
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}The signal cannot conditionally depend upon itself
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Cannot conditionally depend upon bidirectional signals
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}Invalid signal
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Place rivers
 

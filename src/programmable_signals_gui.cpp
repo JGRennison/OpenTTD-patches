@@ -295,7 +295,7 @@ public:
 				SignalInstruction *ins = GetSelected();
 				if (ins == nullptr) return;
 
-				Command<CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, ins->Id());
+				Command<CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, ins->Id());
 				break;
 			}
 
@@ -352,7 +352,7 @@ public:
 				if (sc->IsSignalValid()) {
 					ScrollMainWindowToTile(sc->sig_tile);
 				} else {
-					ShowErrorMessage(STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL, STR_EMPTY, WL_INFO);
+					ShowErrorMessage(STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL, STR_EMPTY, WL_INFO);
 				}
 				break;
 			}
@@ -401,7 +401,7 @@ public:
 			}
 
 			case PROGRAM_WIDGET_REMOVE_PROGRAM: {
-				Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, PPMGMTCT_REMOVE, {}, {});
+				Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, PPMGMTCT_REMOVE, {}, {});
 				break;
 			}
 
@@ -439,22 +439,22 @@ public:
 				return;
 
 			if (GetSignalType(tile1, track1) != SIGTYPE_PROG) {
-				ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_NOT_AN_PROG_SIGNAL, WL_INFO);
+				ShowErrorMessage(STR_PROGSIG_ERROR_INVALID_SIGNAL, STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL, WL_INFO);
 				return;
 			}
 			if (this->tile == tile1 && this->track == track1) {
-				ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_CANNOT_USE_SELF, WL_INFO);
+				ShowErrorMessage(STR_PROGSIG_ERROR_INVALID_SIGNAL, STR_PROGSIG_ERROR_CANNOT_USE_SELF, WL_INFO);
 				return;
 			}
 
 			SignalProgram *sp = GetExistingSignalProgram(SignalReference(tile1, track1));
 			if (sp == nullptr) {
-				ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
+				ShowErrorMessage(STR_PROGSIG_ERROR_INVALID_SIGNAL, STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
 				return;
 			}
 			ResetObjectToPlace();
 			this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
-			Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, PPMGMTCT_CLONE, tile1, track1);
+			Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, PPMGMTCT_CLONE, tile1, track1);
 			//OnPaint(); // this appears to cause visual artefacts
 			return;
 		}
@@ -485,7 +485,7 @@ public:
 		Trackdir tdr = ReverseTrackdir(td);
 
 		if (HasSignalOnTrackdir(tile1, td) && HasSignalOnTrackdir(tile1, tdr)) {
-			ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS, WL_INFO);
+			ShowErrorMessage(STR_PROGSIG_ERROR_INVALID_SIGNAL, STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS, WL_INFO);
 			return;
 		} else if (HasSignalOnTrackdir(tile1, tdr) && !HasSignalOnTrackdir(tile1, td)) {
 			td = tdr;
@@ -496,11 +496,11 @@ public:
 		}
 
 		if (!(GetSignalType(tile1, track1) == SIGTYPE_EXIT || GetSignalType(tile1, track1) == SIGTYPE_PROG)) {
-			ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
+			ShowErrorMessage(STR_PROGSIG_ERROR_INVALID_SIGNAL, STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
 			return;
 		}
 
-		Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
+		Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
 		ResetObjectToPlace();
 		this->RaiseWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		//OnPaint(); // this appears to cause visual artefacts
@@ -533,7 +533,7 @@ public:
 					SignalIf *sif = static_cast <SignalIf*>(si);
 					if (!IsConditionComparator(sif->condition)) break;
 
-					Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
+					Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
 					break;
 				}
 
@@ -568,22 +568,22 @@ public:
 
 		switch (widget) {
 			case PROGRAM_WIDGET_INSERT: {
-				Command<CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, ins->Id(), OpcodeForIndex(index));
+				Command<CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, ins->Id(), OpcodeForIndex(index));
 				break;
 			}
 
 			case PROGRAM_WIDGET_SET_STATE: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_SIGNAL_STATE, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_SIGNAL_STATE, index, {});
 				break;
 			}
 
 			case PROGRAM_WIDGET_COND_VARIABLE: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_CONDITION_CODE, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_CONDITION_CODE, index, {});
 				break;
 			}
 
 			case PROGRAM_WIDGET_COND_COMPARATOR: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_COMPARATOR, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_COMPARATOR, index, {});
 				break;
 			}
 
@@ -609,7 +609,7 @@ public:
 					TraceRestrictRecordRecentCounter(index);
 				}
 
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), mode, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), mode, index, {});
 			}
 		}
 	}

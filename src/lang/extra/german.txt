@@ -956,15 +956,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :grüne Signale
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Bedingungswert
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht einfügen
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht ändern
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht entfernen
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Kann nicht zu undefiniertem Signal gehen
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Kein Ausfahrsignal
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Kein programmierbares Signal
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Kann kein Programm von sich selbst kopieren
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Kann nicht bedingt von einem bidirektionalen Signal abhängen
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Ungültiges Signal
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}Kann Anweisungen nicht einfügen
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}Kann Anweisungen nicht ändern
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}Kann Anweisungen nicht entfernen
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Kann nicht zu undefiniertem Signal gehen
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Kein Ausfahrsignal
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Kein programmierbares Signal
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Kann kein Programm von sich selbst kopieren
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Kann nicht bedingt von einem bidirektionalen Signal abhängen
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}Ungültiges Signal
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Flüsse platzieren
 

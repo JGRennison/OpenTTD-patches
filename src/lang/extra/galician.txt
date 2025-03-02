@@ -1184,15 +1184,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :sinais verdes
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Valor da condición
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Non se pode insertar a instrución
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Non se pode modificar a instrución
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Non se pode eliminar a instrución
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Non se pode ir a un sinal sen definir
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Non é un sinal de saída
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Non é un pre-sinal programable
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Non se pode copiar o programa de si mesmo
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Non se pode condicionalmente depender de sinais bidirecionais
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}O sinal non é válido
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}Non se pode insertar a instrución
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}Non se pode modificar a instrución
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}Non se pode eliminar a instrución
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Non se pode ir a un sinal sen definir
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Non é un sinal de saída
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Non é un pre-sinal programable
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Non se pode copiar o programa de si mesmo
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Non se pode condicionalmente depender de sinais bidirecionais
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}O sinal non é válido
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Colocar ríos
 

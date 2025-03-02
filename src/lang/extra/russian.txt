@@ -1168,15 +1168,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :зелёные 
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Значение состояния
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Невозможно вставить инструкцию
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Невозможно изменить инструкцию
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Невозможно удалить инструкцию
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Невозможно перейти к неопределенному сигналу
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Не выходной сигнал
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Не программируемый пресигнал
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Невозможно скопировать программу от себя
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Не может условно зависеть от двунаправленных сигналов
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Недопустимый сигнал
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}Невозможно вставить инструкцию
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}Невозможно изменить инструкцию
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}Невозможно удалить инструкцию
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Невозможно перейти к неопределенному сигналу
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Не выходной сигнал
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Не программируемый пресигнал
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Невозможно скопировать программу от себя
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Не может условно зависеть от двунаправленных сигналов
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}Недопустимый сигнал
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Разместить реки
 

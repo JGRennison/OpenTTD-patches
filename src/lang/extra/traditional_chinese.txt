@@ -1176,15 +1176,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :綠燈
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}條件值
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入指令
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改指令
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除指令
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳轉到未命名的號誌
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}不是一個離開號誌
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}不是一個可編程入口號誌
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能從自己複製邏輯
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}不能有條件地依賴於雙向號誌
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}無效號誌
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}不能插入指令
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}不能修改指令
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}不能移除指令
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能跳轉到未命名的號誌
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一個離開號誌
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一個可編程入口號誌
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能從自己複製邏輯
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有條件地依賴於雙向號誌
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}無效號誌
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}放置河流
 

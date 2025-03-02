@@ -827,7 +827,7 @@ CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag f
 								|| GetTileOwner(ti) != _current_company) {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_SIGNAL);
 						}
-						if (ti == tile && TrackdirToTrack(target_td) == track) return CommandCost(STR_ERROR_CAN_T_DEPEND_UPON_SELF);
+						if (ti == tile && TrackdirToTrack(target_td) == track) return CommandCost(STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF);
 						if (!exec) return CommandCost();
 						sc->SetSignal(ti, target_td);
 						break;

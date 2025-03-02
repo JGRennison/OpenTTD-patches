@@ -1189,15 +1189,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :绿灯
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}条件值
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入命令
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改命令
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除命令
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳转到未定义的信号
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}不是一个退出信号
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}不是一个可编程入口信号
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能从自己复制程序
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}不能有条件地依赖于双向信号
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}无效信号
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}不能插入命令
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}不能修改命令
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}不能移除命令
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能跳转到未定义的信号
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一个退出信号
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一个可编程入口信号
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能从自己复制程序
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有条件地依赖于双向信号
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}无效信号
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}放置河流
 

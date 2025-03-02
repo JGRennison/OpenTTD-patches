@@ -1191,15 +1191,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :초록 신호
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}상태 값
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}구문을 삽입할 수 없습니다
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}구문을 수정할 수 없습니다
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}구문을 제거할 수 없습니다
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}정의되지 않은 신호기로 이동할 수 없습니다
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}출구 신호기가 아닙니다
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}프로그램 신호기가 아닙니다
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}자신의 프로그램을 복제해 올 수 없습니다
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}양방향 신호기를 설정할 수 없습니다
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}유효하지 않은 신호기
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}구문을 삽입할 수 없습니다
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}구문을 수정할 수 없습니다
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}구문을 제거할 수 없습니다
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}정의되지 않은 신호기로 이동할 수 없습니다
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}출구 신호기가 아닙니다
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}프로그램 신호기가 아닙니다
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}자신의 프로그램을 복제해 올 수 없습니다
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}양방향 신호기를 설정할 수 없습니다
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}유효하지 않은 신호기
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}강 만들기
 

@@ -1052,15 +1052,15 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :návěstí Voln
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Hodnota podmínky
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Instrukci nelze vložit
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Instrukci nelze upravit
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Instrukci nelze odstranit
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Nelze přejít na nedefinované návěstidlo
-STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Nejedná se o výjezdové návěstidlo
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Nejedná se o programovatelné před-návěstidlo
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Nelze kopírovat program ze sebe
-STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Nelze podmíněně záviset na obousměrných návěstidlech
-STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Neplatné návěstidlo
+STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}Instrukci nelze vložit
+STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}Instrukci nelze upravit
+STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}Instrukci nelze odstranit
+STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}Nelze přejít na nedefinované návěstidlo
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}Nejedná se o výjezdové návěstidlo
+STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}Nejedná se o programovatelné před-návěstidlo
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}Nelze kopírovat program ze sebe
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}Nelze podmíněně záviset na obousměrných návěstidlech
+STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}Neplatné návěstidlo
 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Vytvářet řeky
 
