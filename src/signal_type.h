@@ -60,7 +60,7 @@ struct SignalReference {
  * simple boolean logic will do. But do try to compare to this enum instead of
  * normal boolean evaluation, since that will make future additions easier.
  */
-enum SignalState {
+enum SignalState : uint8_t {
 	SIGNAL_STATE_RED   = 0, ///< The signal is red
 	SIGNAL_STATE_GREEN = 1, ///< The signal is green
 	SIGNAL_STATE_MAX = SIGNAL_STATE_GREEN,
