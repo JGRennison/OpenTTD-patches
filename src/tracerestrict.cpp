@@ -17,6 +17,7 @@
 #include "core/pool_func.hpp"
 #include "core/format.hpp"
 #include "command_func.h"
+#include "command_serialisation.h"
 #include "company_func.h"
 #include "viewport_func.h"
 #include "window_func.h"
@@ -1946,29 +1947,21 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
-static uint32_t GetTraceRestrictCommandP1(Track track, TraceRestrictDoCommandType type, uint32_t offset)
+BaseCommandContainer<TraceRestrictProgramSignalData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
 {
-	uint32_t p1 = 0;
-	SB(p1, 0, 3, track);
-	SB(p1, 3, 5, type);
-	assert(offset < (1 << 16));
-	SB(p1, 8, 16, offset);
-	return p1;
-}
-
-BaseCommandContainer<P123CmdData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
-{
-	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
-	return NewBaseCommandContainerBasic(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+	BaseCommandContainer<TraceRestrictProgramSignalData> cmd;
+	cmd.cmd = CMD_PROGRAM_TRACERESTRICT_SIGNAL;
+	cmd.tile = tile;
+	cmd.payload = TraceRestrictProgramSignalData::Make(track, type, offset, value, {});
+	return cmd;
 }
 
 /**
  * Helper function to perform parameter bit-packing and call DoCommandPOld, for instruction modification actions
  */
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text)
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, std::string text)
 {
-	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
-	DoCommandPOld(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg), CommandCallback::None, text);
+	Command<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Post(error_msg, tile, track, type, offset, value, std::move(text));
 }
 
 /**
@@ -2219,30 +2212,19 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictPr
 	return res.Succeeded();
 }
 
-CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-
 /**
  * The main command for editing a signal tracerestrict program.
  * @param tile The tile which contains the signal.
  * @param flags Internal command handler stuff.
- * Below apply for instruction modification actions only
- * @param p1 Bitstuffed items
- * @param p2 Item, for insert and modify operations. Flags for instruction move operations
+ * @param track Track on the tile to apply to
+ * @param type Operation type
+ * @param offset Instruction offset
+ * @param data Item, for insert and modify operations. Flags for instruction move operations
  * @param text Label text for TRDCT_SET_TEXT
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t data, const std::string &text)
 {
-	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
-
-	if (type >= TRDCT_PROG_COPY) {
-		return CmdProgramSignalTraceRestrictProgMgmt(tile, flags, p1, p2, text);
-	}
-
-	Track track = static_cast<Track>(GB(p1, 0, 3));
-	uint32_t offset = GB(p1, 8, 16);
-	TraceRestrictInstructionItem item(p2);
-
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
 	if (ret.Failed()) {
 		return ret;
@@ -2263,6 +2245,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	}
 
 	if (type == TRDCT_INSERT_ITEM || type == TRDCT_MODIFY_ITEM) {
+		const TraceRestrictInstructionItem item(data);
 		switch (GetTraceRestrictTypeProperties(item).value_type) {
 			case TRVT_SLOT_INDEX:
 			case TRVT_SLOT_INDEX_INT:
@@ -2293,6 +2276,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 	switch (type) {
 		case TRDCT_INSERT_ITEM: {
+			const TraceRestrictInstructionItem item(data);
 			TraceRestrictProgramItem values[3] = { item.AsProgramItem(), {}, {} };
 			uint value_count = 1;
 			if (item.IsDoubleItem()) {
@@ -2311,6 +2295,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		}
 
 		case TRDCT_MODIFY_ITEM: {
+			const TraceRestrictInstructionItem item(data);
 			auto old_iter = TraceRestrictInstructionIteratorAt(items, offset);
 			TraceRestrictInstructionItem old_item_value = old_iter.Instruction();
 			if (old_item_value.IsConditional() != item.IsConditional()) {
@@ -2334,7 +2319,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			if (!old_iter.Instruction().IsDoubleItem()) {
 				return CMD_ERROR;
 			}
-			old_iter.SecondaryRef() = p2;
+			old_iter.SecondaryRef() = data;
 			break;
 		}
 
@@ -2346,7 +2331,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		}
 
 		case TRDCT_MOVE_ITEM: {
-			CommandCost res = TraceRestrictProgramMoveItemAt(items, offset, p2 & 1, p2 & 2);
+			CommandCost res = TraceRestrictProgramMoveItemAt(items, offset, data & 1, data & 2);
 			if (res.Failed()) return res;
 			break;
 		}
@@ -2362,17 +2347,13 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			TraceRestrictInstructionItem old_item_value = old_iter.Instruction();
 			if (old_item_value.GetType() != TRIT_GUI_LABEL) return CMD_ERROR;
 
-			std::string_view label_text;
-			if (text != nullptr) {
-				if (Utf8StringLength(text) >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-				label_text = text;
-			}
+			if (Utf8StringLength(text) >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 
 			/* Setting the label before calling validate here is OK, only the instruction value field is changed */
 			if (flags & DC_EXEC) {
 				old_iter.InstructionRef().SetValue(UINT16_MAX); // Unreference the old label before calling TrimLabels
 				prog->TrimLabels(items);
-				old_iter.InstructionRef().SetValue(prog->AddLabel(label_text));
+				old_iter.InstructionRef().SetValue(prog->AddLabel(text));
 			}
 			break;
 		}
@@ -2429,14 +2410,10 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 /**
  * Helper function to perform parameter bit-packing and call DoCommandPOld, for program management actions
  */
-void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
+void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type,
 		TileIndex source_tile, Track source_track, StringID error_msg)
 {
-	uint32_t p1 = 0;
-	SB(p1, 0, 3, track);
-	SB(p1, 3, 5, type);
-	SB(p1, 8, 3, source_track);
-	DoCommandPOld(tile, p1, source_tile, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+	Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(error_msg, tile, track, type, source_tile, source_track);
 }
 
 static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestrictProgramItem> instructions, TraceRestrictProgram *prog, const TraceRestrictProgram *source)
@@ -2452,45 +2429,40 @@ static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestri
  * Sub command for copy/share/unshare operations on signal tracerestrict programs.
  * @param tile The tile which contains the signal.
  * @param flags Internal command handler stuff.
- * @param p1 Bitstuffed items
- * @param p2 Source tile, for share/copy operations
+ * @param track Track on the tile to apply to
+ * @param type Operation type
+ * @param source_tile Source tile, for share/copy operations
+ * @param source_track Source track, for share/copy operations
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgramSignalTraceRestrictMgmt(TileIndex tile, DoCommandFlag flags, Track track, TraceRestrictMgmtDoCommandType type, TileIndex source_tile, Track source_track)
 {
-	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
-	Track track = static_cast<Track>(GB(p1, 0, 3));
-	Track source_track = static_cast<Track>(GB(p1, 8, 3));
-	TileIndex source_tile = static_cast<TileIndex>(p2);
-
 	TraceRestrictRefId self = MakeTraceRestrictRefId(tile, track);
 	TraceRestrictRefId source = MakeTraceRestrictRefId(source_tile, source_track);
-
-	assert(type >= TRDCT_PROG_COPY);
 
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
 	if (ret.Failed()) {
 		return ret;
 	}
 
-	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY) {
+	if (type == TRMDCT_PROG_SHARE || type == TRMDCT_PROG_SHARE_IF_UNMAPPED || type == TRMDCT_PROG_COPY) {
 		if (self == source) {
 			return CommandCost(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
 		}
 	}
-	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
-		bool check_owner = type != TRDCT_PROG_COPY && type != TRDCT_PROG_COPY_APPEND;
+	if (type == TRMDCT_PROG_SHARE || type == TRMDCT_PROG_SHARE_IF_UNMAPPED || type == TRMDCT_PROG_COPY || type == TRMDCT_PROG_COPY_APPEND) {
+		bool check_owner = type != TRMDCT_PROG_COPY && type != TRMDCT_PROG_COPY_APPEND;
 		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track, check_owner);
 		if (ret.Failed()) {
 			return ret;
 		}
 	}
 
-	if (type == TRDCT_PROG_SHARE_IF_UNMAPPED && GetTraceRestrictProgram(self, false) != nullptr) {
+	if (type == TRMDCT_PROG_SHARE_IF_UNMAPPED && GetTraceRestrictProgram(self, false) != nullptr) {
 		return CommandCost(STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM);
 	}
 
-	if (type != TRDCT_PROG_RESET && !TraceRestrictProgram::CanAllocateItem()) {
+	if (type != TRMDCT_PROG_RESET && !TraceRestrictProgram::CanAllocateItem()) {
 		return CMD_ERROR;
 	}
 
@@ -2499,7 +2471,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	}
 
 	switch (type) {
-		case TRDCT_PROG_COPY: {
+		case TRMDCT_PROG_COPY: {
 			TraceRestrictRemoveProgramMapping(self);
 
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
@@ -2519,7 +2491,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			break;
 		}
 
-		case TRDCT_PROG_COPY_APPEND: {
+		case TRMDCT_PROG_COPY_APPEND: {
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
 			if (source_prog != nullptr && !source_prog->items.empty()) {
 				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
@@ -2545,8 +2517,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			break;
 		}
 
-		case TRDCT_PROG_SHARE:
-		case TRDCT_PROG_SHARE_IF_UNMAPPED: {
+		case TRMDCT_PROG_SHARE:
+		case TRMDCT_PROG_SHARE_IF_UNMAPPED: {
 			TraceRestrictRemoveProgramMapping(self);
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, true);
 			if (source_prog == nullptr) {
@@ -2559,7 +2531,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			break;
 		}
 
-		case TRDCT_PROG_UNSHARE: {
+		case TRMDCT_PROG_UNSHARE: {
 			std::vector<TraceRestrictProgramItem> items;
 			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, false);
 			if (prog != nullptr) {
@@ -2585,7 +2557,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			break;
 		}
 
-		case TRDCT_PROG_RESET: {
+		case TRMDCT_PROG_RESET: {
 			TraceRestrictRemoveProgramMapping(self);
 			break;
 		}
@@ -3667,34 +3639,42 @@ bool TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, St
 
 CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlag flags) const
 {
-	DynBaseCommandContainer cmd(this->cmd);
 	switch (cmd.cmd) {
 		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
-			auto *data = dynamic_cast<typename CommandTraits<CMD_ADD_VEHICLE_GROUP>::PayloadType *>(cmd.payload.get());
-			if (data == nullptr) return CMD_ERROR;
-			TraceRestrictInstructionItemRef(data->p2).SetValue(value);
+			using Payload = typename CommandTraits<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::PayloadType;
+			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+				Payload payload = *src;
+				TraceRestrictInstructionItemRef(payload.data).SetValue(value);
+				return DoCommand<CMD_PROGRAM_TRACERESTRICT_SIGNAL>(this->cmd.tile, payload, flags);
+			}
 			break;
 		}
 
 		case CMD_MODIFY_SIGNAL_INSTRUCTION: {
-			auto *data = dynamic_cast<typename CommandTraits<CMD_MODIFY_SIGNAL_INSTRUCTION>::PayloadType *>(cmd.payload.get());
-			if (data == nullptr) return CMD_ERROR;
-			SB(data->p2, 3, 27, value);
+			using Payload = typename CommandTraits<CMD_MODIFY_SIGNAL_INSTRUCTION>::PayloadType;
+			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+				Payload payload = *src;
+				SB(payload.p2, 3, 27, value);
+				return DoCommand<CMD_MODIFY_SIGNAL_INSTRUCTION>(this->cmd.tile, payload, flags);
+			}
 			break;
 		}
 
 		case CMD_MODIFY_ORDER: {
-			auto *data = dynamic_cast<typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType *>(cmd.payload.get());
-			if (data == nullptr) return CMD_ERROR;
-			SB(data->p2, 8, 16, value);
+			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
+			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+				Payload payload = *src;
+				SB(payload.p2, 8, 16, value);
+				return DoCommand<CMD_MODIFY_ORDER>(this->cmd.tile, payload, flags);
+			}
 			break;
 		}
 
 		default:
-			return CMD_ERROR;
+			break;
 	}
 
-	return DoCommandContainer(cmd, flags);
+	return CMD_ERROR;
 }
 
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
@@ -3759,6 +3739,46 @@ void TraceRestrictCreateCounterCmdData::FormatDebugSummary(format_target &output
 	if (this->follow_up_cmd.has_value()) {
 		this->follow_up_cmd->FormatDebugSummary(output);
 	}
+}
+
+const char *GetTraceRestrictDoCommandTypeName(TraceRestrictDoCommandType type)
+{
+	switch (type) {
+		case TRDCT_INSERT_ITEM: return "insert";
+		case TRDCT_MODIFY_ITEM: return "modify";
+		case TRDCT_MODIFY_DUAL_ITEM: return "modify_dual";
+		case TRDCT_REMOVE_ITEM: return "remove";
+		case TRDCT_SHALLOW_REMOVE_ITEM: return "shallow_remove";
+		case TRDCT_MOVE_ITEM: return "move";
+		case TRDCT_DUPLICATE_ITEM: return "duplicate";
+		case TRDCT_SET_TEXT: return "set_text";
+	}
+
+	return "???";
+}
+
+const char *GetTraceRestrictMgmtDoCommandTypeName(TraceRestrictMgmtDoCommandType type)
+{
+	switch (type) {
+		case TRMDCT_PROG_COPY: return "copy";
+		case TRMDCT_PROG_COPY_APPEND: return "copy_append";
+		case TRMDCT_PROG_SHARE: return "share";
+		case TRMDCT_PROG_SHARE_IF_UNMAPPED: return "share_if_unmapped";
+		case TRMDCT_PROG_UNSHARE: return "unshare";
+		case TRMDCT_PROG_RESET: return "reset";
+	}
+
+	return "???";
+}
+
+void TraceRestrictProgramSignalData::FormatDebugSummary(format_target &output) const
+{
+	output.format("track: {:X}, type: {} ({}), offset: {}, data: {:08X}", this->track, this->type, GetTraceRestrictDoCommandTypeName(this->type), this->offset, this->data);
+}
+
+void TraceRestrictManageSignalData::FormatDebugSummary(format_target &output) const
+{
+	output.format("track: {:X}, type: {} ({}), source: {} x {}, track: {:X}", this->track, this->type, GetTraceRestrictMgmtDoCommandTypeName(this->type), TileX(this->source_tile), TileY(this->source_tile), this->source_track);
 }
 
 void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner)

@@ -14,6 +14,30 @@
 #include "command_type.h"
 #include "tracerestrict.h"
 
+enum TraceRestrictDoCommandType : uint8_t {
+	TRDCT_INSERT_ITEM,                       ///< insert new instruction before offset field as given value
+	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
+	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value
+	TRDCT_REMOVE_ITEM,                       ///< remove instruction at offset field
+	TRDCT_SHALLOW_REMOVE_ITEM,               ///< shallow remove instruction at offset field, does not delete contents of block
+	TRDCT_MOVE_ITEM,                         ///< move instruction or block at offset field
+	TRDCT_DUPLICATE_ITEM,                    ///< duplicate instruction/block at offset field
+	TRDCT_SET_TEXT,                          ///< set text for label instruction
+};
+
+const char *GetTraceRestrictDoCommandTypeName(TraceRestrictDoCommandType type);
+
+enum TraceRestrictMgmtDoCommandType : uint8_t {
+	TRMDCT_PROG_COPY,                        ///< copy program operation
+	TRMDCT_PROG_COPY_APPEND,                 ///< copy and append program operation
+	TRMDCT_PROG_SHARE,                       ///< share program operation
+	TRMDCT_PROG_SHARE_IF_UNMAPPED,           ///< share program operation (if unmapped)
+	TRMDCT_PROG_UNSHARE,                     ///< unshare program (copy as a new program)
+	TRMDCT_PROG_RESET,                       ///< reset program state of signal
+};
+
+const char *GetTraceRestrictMgmtDoCommandTypeName(TraceRestrictMgmtDoCommandType type);
+
 enum TraceRestrictAlterSlotOperation : uint8_t {
 	TRASO_RENAME,
 	TRASO_CHANGE_MAX_OCCUPANCY,
@@ -64,7 +88,49 @@ struct TraceRestrictCreateCounterCmdData final : public CommandPayloadSerialisab
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-DEF_CMD_PROC    (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CMDT_OTHER_MANAGEMENT)
+struct TraceRestrictProgramSignalInnerData {
+	Track track;
+	TraceRestrictDoCommandType type;
+	uint32_t offset;
+	uint32_t data;
+	std::string name;
+
+	/* This must include all fields */
+	auto GetRefTuple() { return std::tie(this->track, this->type, this->offset, this->data, this->name); }
+};
+struct TraceRestrictProgramSignalData final : public TupleRefCmdData<TraceRestrictProgramSignalData, TraceRestrictProgramSignalInnerData> {
+	void FormatDebugSummary(struct format_target &) const override;
+};
+
+struct TraceRestrictManageSignalInnerData {
+	Track track;
+	TraceRestrictMgmtDoCommandType type;
+	TileIndex source_tile;
+	Track source_track;
+
+	/* This must include all fields */
+	auto GetRefTuple() { return std::tie(this->track, this->type, this->source_tile, this->source_track); }
+};
+struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestrictManageSignalData, TraceRestrictManageSignalInnerData> {
+	void FormatDebugSummary(struct format_target &) const override;
+};
+
+BaseCommandContainer<TraceRestrictProgramSignalData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, std::string text = {});
+
+void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type,
+		TileIndex source_tile, Track source_track, StringID error_msg);
+
+/**
+ * Short-hand to call TraceRestrictProgMgmtWithSourceDoCommandP with 0 for source tile/track
+ */
+inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type, StringID error_msg)
+{
+	TraceRestrictProgMgmtWithSourceDoCommandP(tile, track, type, static_cast<TileIndex>(0), static_cast<Track>(0), error_msg);
+}
+
+DEF_CMD_TUPLE   (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CMDT_OTHER_MANAGEMENT, TraceRestrictProgramSignalData)
+DEF_CMD_TUPLE   (CMD_MANAGE_TRACERESTRICT_SIGNAL,       CmdProgramSignalTraceRestrictMgmt, {}, CMDT_OTHER_MANAGEMENT, TraceRestrictManageSignalData)
 DEF_CMD_DIRECT  (CMD_CREATE_TRACERESTRICT_SLOT,         CmdCreateTraceRestrictSlot,        {}, CMDT_OTHER_MANAGEMENT, TraceRestrictCreateSlotCmdData)
 DEF_CMD_TUPLE_NT(CMD_ALTER_TRACERESTRICT_SLOT,          CmdAlterTraceRestrictSlot,         {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID, TraceRestrictAlterSlotOperation, uint32_t, std::string>)
 DEF_CMD_TUPLE_NT(CMD_DELETE_TRACERESTRICT_SLOT,         CmdDeleteTraceRestrictSlot,        {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID>)

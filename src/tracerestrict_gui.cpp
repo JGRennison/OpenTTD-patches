@@ -2477,7 +2477,7 @@ public:
 			}
 
 			case TR_WIDGET_RESET: {
-				TraceRestrictProgMgmtDoCommandP(tile, track, TRDCT_PROG_RESET, STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL);
+				TraceRestrictProgMgmtDoCommandP(tile, track, TRMDCT_PROG_RESET, STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL);
 				break;
 			}
 
@@ -2509,7 +2509,7 @@ public:
 				break;
 
 			case TR_WIDGET_UNSHARE: {
-				TraceRestrictProgMgmtDoCommandP(tile, track, TRDCT_PROG_UNSHARE, STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM);
+				TraceRestrictProgMgmtDoCommandP(tile, track, TRMDCT_PROG_UNSHARE, STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM);
 				break;
 			}
 
@@ -2551,7 +2551,7 @@ public:
 					data.vehtype = VEH_TRAIN;
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
-					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
+					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(0, data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 				}
 				return;
@@ -2560,7 +2560,7 @@ public:
 				if (type == TRVT_COUNTER_INDEX_INT) {
 					TraceRestrictCreateCounterCmdData data;
 					data.name = std::move(*str);
-					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM) };
+					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 				}
 				return;
@@ -2825,22 +2825,22 @@ public:
 
 		switch (widget) {
 			case TR_WIDGET_COPY:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_COPY,
+				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_COPY,
 						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM);
 				break;
 
 			case TR_WIDGET_COPY_APPEND:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_COPY_APPEND,
+				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_COPY_APPEND,
 						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM);
 				break;
 
 			case TR_WIDGET_SHARE:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_SHARE,
+				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_SHARE,
 						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
 				break;
 
 			case TR_WIDGET_SHARE_ONTO:
-				TraceRestrictProgMgmtWithSourceDoCommandP(source_tile, source_track, TRDCT_PROG_SHARE_IF_UNMAPPED,
+				TraceRestrictProgMgmtWithSourceDoCommandP(source_tile, source_track, TRMDCT_PROG_SHARE_IF_UNMAPPED,
 						this->tile, this->track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
 				break;
 

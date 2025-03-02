@@ -1293,41 +1293,6 @@ inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, 
 	}
 }
 
-/**
- * Enumeration for command action type field, indicates what command to do
- */
-enum TraceRestrictDoCommandType : uint8_t {
-	TRDCT_INSERT_ITEM,                       ///< insert new instruction before offset field as given value
-	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
-	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value
-	TRDCT_REMOVE_ITEM,                       ///< remove instruction at offset field
-	TRDCT_SHALLOW_REMOVE_ITEM,               ///< shallow remove instruction at offset field, does not delete contents of block
-	TRDCT_MOVE_ITEM,                         ///< move instruction or block at offset field
-	TRDCT_DUPLICATE_ITEM,                    ///< duplicate instruction/block at offset field
-	TRDCT_SET_TEXT,                          ///< set text for label instruction
-
-	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
-	TRDCT_PROG_COPY_APPEND,                  ///< copy and append program operation
-	TRDCT_PROG_SHARE,                        ///< share program operation
-	TRDCT_PROG_SHARE_IF_UNMAPPED,            ///< share program operation (if unmapped)
-	TRDCT_PROG_UNSHARE,                      ///< unshare program (copy as a new program)
-	TRDCT_PROG_RESET,                        ///< reset program state of signal
-};
-
-BaseCommandContainer<P123CmdData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, const char *text = nullptr);
-
-void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
-		TileIndex source_tile, Track source_track, StringID error_msg);
-
-/**
- * Short-hand to call TraceRestrictProgMgmtWithSourceDoCommandP with 0 for source tile/track
- */
-inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, StringID error_msg)
-{
-	TraceRestrictProgMgmtWithSourceDoCommandP(tile, track, type, static_cast<TileIndex>(0), static_cast<Track>(0), error_msg);
-}
-
 CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset, bool shallow_mode);
 CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t &offset, bool up, bool shallow_mode);
 CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictProgramItem> &items, uint32_t offset);
