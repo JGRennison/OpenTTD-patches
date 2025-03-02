@@ -1251,7 +1251,8 @@ STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Can't re
 STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Can't go to undefined signal
 STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Not an exit signal
 STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Not a programmable pre-signal
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Can't copy program from myself
+STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Can't copy program to itself
+STR_ERROR_CAN_T_DEPEND_UPON_SELF                                :{WHITE}Cannot conditionally depend upon itself
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Cannot conditionally depend upon bidirectional signals
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Invalid signal
 
