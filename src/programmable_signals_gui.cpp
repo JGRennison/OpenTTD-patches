@@ -843,6 +843,8 @@ private:
 		this->DisableWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		this->DisableWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
 
+		this->SetWidgetsDisabledState(this->GetOwner() != _local_company, PROGRAM_WIDGET_COPY_PROGRAM, PROGRAM_WIDGET_REMOVE_PROGRAM);
+
 		// Don't allow modifications if don't own, or have selected invalid instruction
 		if (this->GetOwner() != _local_company || this->selected_instruction < 1) {
 			this->DisableWidget(PROGRAM_WIDGET_INSERT);
