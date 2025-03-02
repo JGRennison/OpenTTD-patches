@@ -314,7 +314,6 @@ public:
 				SignalIf *sif = static_cast <SignalIf*>(si);
 
 				ShowDropDownMenu(this, _program_condvar, sif->condition->ConditionCode(), PROGRAM_WIDGET_COND_VARIABLE, 0, _settings_client.gui.show_adv_tracerestrict_features ? 0 : 0xE0, 0);
-				this->UpdateButtonState();
 				break;
 			}
 
@@ -337,9 +336,9 @@ public:
 				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(sif->condition);
 
 				SetDParam(0, vc->value);
-				this->query_submode = QSM_DEFAULT;
 				ShowQueryString(STR_JUST_INT, STR_PROGSIG_CONDITION_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
-				this->UpdateButtonState();
+				this->query_submode = QSM_SET_VALUE;
+				this->LowerWidget(PROGRAM_WIDGET_COND_VALUE);
 				break;
 			}
 
@@ -355,7 +354,6 @@ public:
 				} else {
 					ShowErrorMessage(STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL, STR_EMPTY, WL_INFO);
 				}
-				// this->RaiseWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
 				break;
 			}
 
@@ -518,13 +516,26 @@ public:
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		const auto qsm = this->query_submode;
+		this->query_submode = QSM_NONE;
+		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_VALUE);
+
 		if (str.has_value() && !str->empty()) {
 			SignalInstruction *si = this->GetSelected();
 			if (si == nullptr) return;
 
-			switch (this->query_submode) {
-				case QSM_DEFAULT:
+			switch (qsm) {
+				case QSM_NONE:
 					break;
+
+				case QSM_SET_VALUE: {
+					if (si->Opcode() != PSO_IF) break;
+					SignalIf *sif = static_cast <SignalIf*>(si);
+					if (!IsConditionComparator(sif->condition)) break;
+
+					Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
+					break;
+				}
 
 				case QSM_NEW_SLOT:
 				case QSM_NEW_COUNTER: {
@@ -545,15 +556,8 @@ public:
 						data.follow_up_cmd = std::move(follow_up);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(0, data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 					}
-					return;
 				}
 			}
-
-			if (si->Opcode() != PSO_IF) return;
-			SignalIf *sif = static_cast <SignalIf*>(si);
-			if (!IsConditionComparator(sif->condition)) return;
-
-			Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
 		}
 	}
 
@@ -815,13 +819,9 @@ private:
 	{
 		// Do not close the Signals GUI when opening the ProgrammableSignals GUI
 		// ResetObjectToPlace();
-		this->RaiseWidget(PROGRAM_WIDGET_INSERT);
-		this->RaiseWidget(PROGRAM_WIDGET_REMOVE);
-		this->RaiseWidget(PROGRAM_WIDGET_SET_STATE);
-		this->RaiseWidget(PROGRAM_WIDGET_COND_VARIABLE);
-		this->RaiseWidget(PROGRAM_WIDGET_COND_COMPARATOR);
-		this->RaiseWidget(PROGRAM_WIDGET_COND_VALUE);
-		this->RaiseWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
+		if (this->query_submode != QSM_SET_VALUE) {
+			this->RaiseWidget(PROGRAM_WIDGET_COND_VALUE);
+		}
 
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *aux_sel    = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX);
@@ -930,11 +930,12 @@ private:
 	int current_aux_plane;
 
 	enum QuerySubMode {
-		QSM_DEFAULT,
+		QSM_NONE,
+		QSM_SET_VALUE,
 		QSM_NEW_SLOT,
 		QSM_NEW_COUNTER,
 	};
-	QuerySubMode query_submode = QSM_DEFAULT;
+	QuerySubMode query_submode = QSM_NONE;
 };
 
 static constexpr NWidgetPart _nested_program_widgets[] = {
@@ -981,7 +982,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 														SetStringTip(STR_PROGSIG_COND_SET_SIGNAL, STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, PROGRAM_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetSpriteTip(SPR_ARROW_RIGHT, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, PROGRAM_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetSpriteTip(SPR_ARROW_RIGHT, STR_PROGSIG_GOTO_SIGNAL_TOOLTIP),
 	EndContainer(),
 
 	/* Second button row. */
@@ -989,14 +990,14 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_PROGSIG_INSERT, STR_PROGSIG_INSERT_TOOLTIP), SetResize(1, 0),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE), SetMinimalSize(186, 12), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE), SetMinimalSize(186, 12), SetFill(1, 0),
 														SetStringTip(STR_PROGSIG_REMOVE, STR_PROGSIG_REMOVE_TOOLTIP), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 
 	/* Third button row*/
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetStringTip(STR_PROGSIG_REMOVE_PROGRAM, STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP), SetResize(1, 0),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetStringTip(STR_PROGSIG_REMOVE_PROGRAM, STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP), SetResize(1, 0),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, PROGRAM_WIDGET_COPY_PROGRAM), SetMinimalSize(124, 12), SetFill(1, 0), SetStringTip(STR_PROGSIG_COPY_PROGRAM, STR_PROGSIG_COPY_PROGRAM_TOOLTIP), SetResize(1, 0),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
