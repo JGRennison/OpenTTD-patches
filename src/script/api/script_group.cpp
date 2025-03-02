@@ -14,6 +14,7 @@
 #include "../../string_func.h"
 #include "../../strings_func.h"
 #include "../../autoreplace_func.h"
+#include "../../settings_cmd.h"
 #include "../../settings_func.h"
 #include "../../vehicle_base.h"
 #include "table/strings.h"
@@ -140,7 +141,7 @@
 	EnforceCompanyModeValid(false);
 	if (HasWagonRemoval() == enable_removal) return true;
 
-	return ScriptObject::DoCommandOld(0, 0, enable_removal ? 1 : 0, CMD_CHANGE_COMPANY_SETTING, "company.renew_keep_length");
+	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.renew_keep_length", enable_removal ? 1 : 0);
 }
 
 /* static */ bool ScriptGroup::HasWagonRemoval()

@@ -423,6 +423,7 @@ add_files(
     scope_info.cpp
     scope_info.h
     settings.cpp
+    settings_cmd.h
     settings_func.h
     settings_gui.cpp
     settings_gui.h

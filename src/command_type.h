@@ -1166,7 +1166,6 @@ DEF_CMD_PROC  (CMD_CLEAR_AREA, CmdClearArea,                            CMD_NO_T
 DEF_CMD_PROCEX(CMD_MONEY_CHEAT, CmdMoneyCheat,                                     {}, CMDT_CHEAT                 )
 DEF_CMD_PROCEX(CMD_MONEY_CHEAT_ADMIN, CmdMoneyCheatAdmin,                    CMD_SERVER_NS, CMDT_CHEAT                 )
 DEF_CMD_PROCEX(CMD_CHANGE_BANK_BALANCE, CmdChangeBankBalance,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_CHEAT_SETTING, CmdCheatSetting,                          CMD_SERVER, CMDT_CHEAT                 )
 DEF_CMD_PROC  (CMD_BUILD_CANAL, CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CREATE_SUBSIDY, CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_COMPANY_CTRL, CmdCompanyCtrl, CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING  )
@@ -1199,8 +1198,6 @@ DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                     
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
 DEF_CMD_PROCEX(CMD_GIVE_MONEY, CmdGiveMoney,                                      {}, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_CHANGE_SETTING, CmdChangeSetting,                         CMD_SERVER, CMDT_SERVER_SETTING        )
-DEF_CMD_PROC  (CMD_CHANGE_COMPANY_SETTING, CmdChangeCompanySetting,                           {}, CMDT_COMPANY_SETTING       )
 DEF_CMD_PROC  (CMD_SET_AUTOREPLACE, CmdSetAutoReplace,                                 {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_TOGGLE_REUSE_DEPOT_VEHICLES, CmdToggleReuseDepotVehicles,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )

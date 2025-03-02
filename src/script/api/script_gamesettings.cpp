@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "script_gamesettings.hpp"
+#include "../../settings_cmd.h"
 #include "../../settings_internal.h"
 #include "../../settings_type.h"
 #include "../../command_type.h"
@@ -40,8 +41,8 @@ struct CargoScalingProxy {
 		CargoScalingMode mode = this->is_industry ? _settings_game.economy.industry_cargo_scale_mode : _settings_game.economy.town_cargo_scale_mode;
 		if (mode == CSM_DAYLENGTH) {
 			/* Asynchronous free command, don't bother halting the script or saving the result */
-			P123CmdData payload(0, (uint32_t)CSM_NORMAL, 0, this->is_industry ? "economy.industry_cargo_scale_mode" : "economy.town_cargo_scale_mode");
-			::DoCommandPScript(CMD_CHANGE_SETTING, 0, payload, CommandCallback::None, 0, DCIF_NONE, false, true);
+			auto payload = ChangeSettingCmdData::Make(this->is_industry ? "economy.industry_cargo_scale_mode" : "economy.town_cargo_scale_mode", (uint32_t)CSM_NORMAL);
+			::DoCommandPScript(CMD_CHANGE_SETTING, 0, std::move(payload), CommandCallback::None, 0, DCIF_NONE, false, true);
 		}
 
 		return ScriptGameSettings::SetValue(this->is_industry ? "economy.industry_cargo_scale" : "economy.town_cargo_scale", ScaleQuantity(100, (int)value));
@@ -95,7 +96,7 @@ struct CargoScalingProxy {
 
 	value = Clamp<SQInteger>(value, INT32_MIN, INT32_MAX);
 
-	return ScriptObject::DoCommandOld(0, 0, value, CMD_CHANGE_SETTING, sd->name);
+	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do(sd->name, value);
 }
 
 /* static */ bool ScriptGameSettings::IsDisabledVehicleType(ScriptVehicle::VehicleType vehicle_type)

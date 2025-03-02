@@ -23,6 +23,7 @@
 #include "texteff.hpp"
 #include "core/backup_type.hpp"
 #include "cheat_type.h"
+#include "settings_cmd.h"
 
 #include "table/strings.h"
 
@@ -281,10 +282,10 @@ CommandCost CmdMoneyCheatAdmin(TileIndex tile, DoCommandFlag flags, uint32_t p1,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCheatSetting(DoCommandFlag flags, CheatNumbers cheat, uint32_t value)
 {
 	Cheat *cht = nullptr;
-	switch ((CheatNumbers) p1) {
+	switch (cheat) {
 		case CHT_EXTRA_DYNAMITE:
 			cht = &_cheats.magic_bulldozer;
 			break;
@@ -300,7 +301,7 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		case CHT_INFLATION_INCOME:
 			if (flags & DC_EXEC) {
 				_cheats.inflation_income.been_used = true;
-				_economy.inflation_payment = Clamp<uint64_t>(p2, 1 << 16, MAX_INFLATION);
+				_economy.inflation_payment = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
 				if (_economy.inflation_payment > _economy.inflation_prices) {
 					_economy.inflation_prices = _economy.inflation_payment;
 					_cheats.inflation_cost.been_used = true;
@@ -313,7 +314,7 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		case CHT_INFLATION_COST:
 			if (flags & DC_EXEC) {
 				_cheats.inflation_cost.been_used = true;
-				_economy.inflation_prices = Clamp<uint64_t>(p2, 1 << 16, MAX_INFLATION);
+				_economy.inflation_prices = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
 				if (_economy.inflation_payment > _economy.inflation_prices) {
 					_economy.inflation_payment = _economy.inflation_prices;
 					_cheats.inflation_income.been_used = true;
@@ -335,15 +336,15 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			return CMD_ERROR;
 	}
 	if (flags & DC_EXEC) {
-		cht->value  = p2;
+		cht->value = value;
 		cht->been_used = true;
 		SetWindowDirty(WC_CHEATS, 0);
 
-		if (p1 == CHT_STATION_RATING) {
+		if (cheat == CHT_STATION_RATING) {
 			extern void UpdateAllStationRatings();
 			UpdateAllStationRatings();
 		}
-		if (p1 == CHT_TOWN_RATING) {
+		if (cheat == CHT_TOWN_RATING) {
 			extern void UpdateAllTownRatings();
 			UpdateAllTownRatings();
 		}

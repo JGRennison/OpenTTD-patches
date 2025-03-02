@@ -21,6 +21,7 @@
 #include "strings_func.h"
 #include "window_func.h"
 #include "rail_gui.h"
+#include "settings_cmd.h"
 #include "settings_gui.h"
 #include "company_gui.h"
 #include "linkgraph/linkgraphschedule.h"
@@ -250,7 +251,7 @@ static constexpr NWidgetPart _nested_cheat_widgets[] = {
 /** GUI for the cheats. */
 struct CheatWindow : Window {
 	int clicked;
-	int clicked_cheat;
+	CheatNumbers clicked_cheat;
 	uint line_height;
 	Dimension box;      ///< Dimension of box sprite
 	Dimension icon;     ///< Dimension of company icon sprite
@@ -492,32 +493,33 @@ struct CheatWindow : Window {
 
 		if (btn >= lengthof(_cheats_ui)) return;
 
-		const CheatEntry *ce = &_cheats_ui[btn];
+		CheatNumbers cheat = static_cast<CheatNumbers>(btn);
+		const CheatEntry *ce = &_cheats_ui[cheat];
 		int value = static_cast<int32_t>(ReadValue(ce->variable, ce->type));
 		int oldvalue = value;
 
-		if (btn == CHT_CHANGE_DATE && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
+		if (cheat == CHT_CHANGE_DATE && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
 			/* Click at the date text directly. */
 			clicked_cheat = CHT_CHANGE_DATE;
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_CHANGE_DATE_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
-		} else if (btn == CHT_EDIT_MAX_HL && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
+		} else if (cheat == CHT_EDIT_MAX_HL && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_cheat = CHT_EDIT_MAX_HL;
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
-		} else if (btn == CHT_MONEY && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
+		} else if (cheat == CHT_MONEY && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_cheat = CHT_MONEY;
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
 			return;
 		} else if (ce->type == SLF_ALLOW_CONTROL && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
-			clicked_cheat = btn;
+			clicked_cheat = cheat;
 			uint64_t val = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 			SetDParam(0, val * 1000 >> 16);
 			SetDParam(1, 3);
-			StringID str = (btn == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
+			StringID str = (cheat == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
 			std::string saved = std::move(_settings_game.locale.digit_group_separator);
 			_settings_game.locale.digit_group_separator = "";
 			ShowQueryString(STR_JUST_DECIMAL, str, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
@@ -545,7 +547,7 @@ struct CheatWindow : Window {
 				uint64_t oldvalue = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 				uint64_t value = oldvalue + (uint64_t)(get_arrow_button_value() << 16);
 				value = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
-				DoCommandPOld(0, (uint32_t)btn, (uint32_t)value, CMD_CHEAT_SETTING);
+				Command<CMD_CHEAT_SETTING>::Post(cheat, static_cast<uint32_t>(value));
 				if (value != oldvalue) register_arrow_button_clicked();
 				break;
 			}
@@ -566,8 +568,8 @@ struct CheatWindow : Window {
 		}
 
 		if (value != oldvalue) {
-			if (_networking || btn == CHT_STATION_RATING || btn == CHT_TOWN_RATING) {
-				if (btn != CHT_MONEY) DoCommandPOld(0, static_cast<uint32_t>(btn), static_cast<uint32_t>(value), CMD_CHEAT_SETTING);
+			if (_networking || cheat == CHT_STATION_RATING || cheat == CHT_TOWN_RATING) {
+				if (btn != CHT_MONEY) Command<CMD_CHEAT_SETTING>::Post(cheat, static_cast<uint32_t>(value));
 			} else {
 				WriteValue(ce->variable, ce->type, static_cast<int64_t>(value));
 			}

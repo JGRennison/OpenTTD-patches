@@ -19,6 +19,7 @@
 #include "../../strings_func.h"
 #include "../../tile_map.h"
 #include "../../string_func.h"
+#include "../../settings_cmd.h"
 #include "../../settings_func.h"
 #include "table/strings.h"
 
@@ -299,7 +300,7 @@
 /* static */ bool ScriptCompany::SetAutoRenewStatus(bool autorenew)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommandOld(0, 0, autorenew ? 1 : 0, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew");
+	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew", autorenew ? 1 : 0);
 }
 
 /* static */ bool ScriptCompany::GetAutoRenewStatus(CompanyID company)
@@ -315,7 +316,7 @@
 	EnforceCompanyModeValid(false);
 	months = Clamp<SQInteger>(months, INT16_MIN, INT16_MAX);
 
-	return ScriptObject::DoCommandOld(0, 0, months, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_months");
+	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew_months", months);
 }
 
 /* static */ SQInteger ScriptCompany::GetAutoRenewMonths(CompanyID company)
@@ -331,7 +332,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, money >= 0);
 	EnforcePrecondition(false, (int64_t)money <= UINT32_MAX);
-	return ScriptObject::DoCommandOld(0, 0, money, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_money");
+	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew_money", money);
 }
 
 /* static */ Money ScriptCompany::GetAutoRenewMoney(CompanyID company)

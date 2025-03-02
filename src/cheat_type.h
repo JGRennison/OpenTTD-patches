@@ -35,7 +35,7 @@ struct Cheats {
 };
 
 /** Available cheats. */
-enum CheatNumbers {
+enum CheatNumbers : uint8_t {
 	CHT_MONEY,           ///< Change amount of money.
 	CHT_CHANGE_COMPANY,  ///< Switch company.
 	CHT_EXTRA_DYNAMITE,  ///< Dynamite anything.

@@ -54,6 +54,7 @@
 #include "blitter/factory.hpp"
 #include "base_media_base.h"
 #include "gamelog.h"
+#include "settings_cmd.h"
 #include "settings_func.h"
 #include "ini_type.h"
 #include "ai/ai_config.hpp"
@@ -3288,19 +3289,17 @@ std::vector<const SettingDesc *> GetFilteredSettingCollection(std::function<bool
 
 /**
  * Network-safe changing of settings (server-only).
- * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 the new value for the setting
+ * @param name the name of the setting to change
+ * @param value the new value for the setting
  * The new value is properly clamped to its minimum/maximum when setting
- * @param text the name of the setting to change
  * @return the cost of this operation or an error
  * @see _settings
  */
-CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdChangeSetting(DoCommandFlag flags, const std::string &name, int32_t value)
 {
-	if (StrEmpty(text)) return CMD_ERROR;
-	const SettingDesc *sd = GetSettingFromName(text);
+	if (name.empty()) return CMD_ERROR;
+	const SettingDesc *sd = GetSettingFromName(name);
 
 	if (sd == nullptr) return CMD_ERROR;
 	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) return CMD_ERROR;
@@ -3309,9 +3308,9 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 	if (!sd->IsEditable(true)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		SCOPE_INFO_FMT([=], "CmdChangeSetting: {} -> {}", sd->name, p2);
+		SCOPE_INFO_FMT([=], "CmdChangeSetting: {} -> {}", sd->name, value);
 
-		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), p2, ConfigSaveFlagsUsingGameSettingsFor(sd));
+		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), value, ConfigSaveFlagsUsingGameSettingsFor(sd));
 	}
 
 	return CommandCost();
@@ -3319,26 +3318,24 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 
 /**
  * Change one of the per-company settings.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 the new value for the setting
+ * @param name the name of the setting to change
+ * @param value the new value for the setting
  * The new value is properly clamped to its minimum/maximum when setting
- * @param text the name of the company setting to change
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdChangeCompanySetting(DoCommandFlag flags, const std::string &name, int32_t value)
 {
-	if (StrEmpty(text)) return CMD_ERROR;
-	const SettingDesc *sd = GetCompanySettingFromName(text);
+	if (name.empty()) return CMD_ERROR;
+	const SettingDesc *sd = GetCompanySettingFromName(name);
 
 	if (sd == nullptr) return CMD_ERROR;
 	if (!sd->IsIntSetting()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: {} -> {}", sd->name, p2);
+		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: {} -> {}", sd->name, value);
 
-		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, p2, STCF_NONE);
+		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, value, STCF_NONE);
 	}
 
 	return CommandCost();
@@ -3363,7 +3360,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	const IntSettingDesc *setting = sd->AsIntSetting();
 	if ((setting->flags & SF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return DoCommandPOld(0, 0, value, CMD_CHANGE_COMPANY_SETTING, CommandCallback::None, setting->name);
+			return Command<CMD_CHANGE_COMPANY_SETTING>::Post(setting->name, value);
 		} else if (setting->flags & SF_NO_NEWGAME) {
 			return false;
 		}
@@ -3393,7 +3390,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 
 	/* send non-company-based settings over the network */
 	if (!IsNonAdminNetworkClient()) {
-		return DoCommandPOld(0, 0, value, CMD_CHANGE_SETTING, CommandCallback::None, setting->name);
+		return Command<CMD_CHANGE_SETTING>::Post(setting->name, value);
 	}
 	return false;
 }
@@ -3426,7 +3423,7 @@ void SyncCompanySettings()
 		uint32_t old_value = (uint32_t)sd->AsIntSetting()->Read(old_object);
 		uint32_t new_value = (uint32_t)sd->AsIntSetting()->Read(new_object);
 		if (old_value != new_value) {
-			NetworkSendCommand(CMD_CHANGE_COMPANY_SETTING, 0, P123CmdData(0, new_value, 0, sd->name), (StringID)0, CommandCallback::None, 0, _local_company);
+			NetworkSendCommand(CMD_CHANGE_COMPANY_SETTING, 0, ChangeSettingCmdData::Make(sd->name, new_value), (StringID)0, CommandCallback::None, 0, _local_company);
 		}
 	}
 }
