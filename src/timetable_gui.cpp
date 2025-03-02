@@ -316,7 +316,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 			}
 		}
 
-		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && !have_autoseparate_bad_non_stop_type) {
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && !have_autoseparate_bad_non_stop_type && v->IsGroundVehicle()) {
 			if (order->IsType(OT_IMPLICIT)) {
 				have_autoseparate_bad_non_stop_type = true;
 			} else if (order->IsGotoOrder() && (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) == 0) {
