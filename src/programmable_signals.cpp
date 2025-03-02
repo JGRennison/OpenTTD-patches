@@ -121,7 +121,6 @@ SignalVariableCondition::SignalVariableCondition(SignalConditionCode code)
 void AddSignalSlotDependency(TraceRestrictSlotID on, SignalReference dep)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::Get(on);
-	assert(slot->owner == GetTileOwner(dep.tile));
 	slot->progsig_dependants.push_back(dep);
 }
 
@@ -136,7 +135,6 @@ void RemoveSignalSlotDependency(TraceRestrictSlotID on, SignalReference dep)
 void AddSignalCounterDependency(TraceRestrictCounterID on, SignalReference dep)
 {
 	TraceRestrictCounter *ctr = TraceRestrictCounter::Get(on);
-	assert(ctr->owner == GetTileOwner(dep.tile));
 	ctr->progsig_dependants.push_back(dep);
 }
 
@@ -846,7 +844,10 @@ CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag f
 							sc->value = value;
 						} else if (mode == PPMCT_SLOT) {
 							TraceRestrictSlotID slot = (TraceRestrictSlotID)value;
-							if (slot != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(slot)) return CMD_ERROR;
+							if (slot != INVALID_TRACE_RESTRICT_SLOT_ID) {
+								const TraceRestrictSlot *s = TraceRestrictSlot::GetIfValid(slot);
+								if (s == nullptr || !s->IsUsableByOwner(_current_company)) return CMD_ERROR;
+							}
 							if (!exec) return CommandCost();
 							sc->SetSlot(slot);
 						} else {
@@ -866,7 +867,10 @@ CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag f
 							sc->value = value;
 						} else if (mode == PPMCT_COUNTER) {
 							TraceRestrictCounterID ctr = (TraceRestrictCounterID)value;
-							if (ctr != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(ctr)) return CMD_ERROR;
+							if (ctr != INVALID_TRACE_RESTRICT_SLOT_ID) {
+								const TraceRestrictCounter *c = TraceRestrictCounter::GetIfValid(ctr);
+								if (c == nullptr || !c->IsUsableByOwner(_current_company)) return CMD_ERROR;
+							}
 							if (!exec) return CommandCost();
 							sc->SetCounter(ctr);
 						} else {
