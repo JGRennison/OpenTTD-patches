@@ -595,6 +595,9 @@ struct CheatWindow : Window {
 		bool rtl = _current_text_dir == TD_RTL;
 		if (rtl) x = r.Width() - 1 - x;
 
+		x -= this->box.width + WidgetDimensions::scaled.hsep_wide * 2;
+		if (x < 0) return;
+
 		if (x < SETTING_BUTTON_WIDTH) {
 			ChangeSettingValue(sd, x);
 		} else {
