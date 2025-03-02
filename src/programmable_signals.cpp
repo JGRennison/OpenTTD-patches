@@ -270,10 +270,8 @@ void SignalCounterCondition::SetCounter(TraceRestrictCounterID ctr_id)
 	return this->EvaluateComparable(TraceRestrictCounter::Get(this->ctr_id)->value);
 }
 
-SignalStateCondition::SignalStateCondition(SignalReference this_sig,
-															TileIndex sig_tile, Trackdir sig_track)
-	: SignalCondition(PSC_SIGNAL_STATE), this_sig(this_sig), sig_tile(sig_tile)
-	, sig_track(sig_track)
+SignalStateCondition::SignalStateCondition(SignalReference this_sig, TileIndex sig_tile, Trackdir sig_track)
+	: SignalCondition(PSC_SIGNAL_STATE), this_sig(this_sig), sig_tile(sig_tile), sig_track(sig_track)
 {
 	if (this->CheckSignalValid()) {
 		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)), this->this_sig);
@@ -588,7 +586,7 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 		if (insn->Opcode() == PSO_IF) {
 			SignalIf *ifi = static_cast<SignalIf *>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SIGNAL_STATE) {
-				SignalStateCondition* c = static_cast<SignalStateCondition*>(ifi->condition);
+				SignalStateCondition* c = static_cast<SignalStateCondition *>(ifi->condition);
 				if (c->sig_tile == dependency_target.tile && TrackdirToTrack(c->sig_track) == dependency_target.track) {
 					c->Invalidate();
 				}
@@ -782,7 +780,8 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 			if (!exec) return CommandCost();
 			SignalSet *ss = static_cast<SignalSet*>(insn);
 			ss->to_state = state;
-		} break;
+			break;
+		}
 
 		case PSO_IF: {
 			SignalIf *si = static_cast<SignalIf *>(insn);
@@ -830,7 +829,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 					case PSC_NUM_GREEN:
 					case PSC_NUM_RED: {
-						SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(si->condition);
+						SignalVariableCondition *vc = static_cast<SignalVariableCondition *>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
@@ -843,10 +842,11 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
-					} break;
+						break;
+					}
 
 					case PSC_SIGNAL_STATE: {
-						SignalStateCondition *sc = static_cast<SignalStateCondition*>(si->condition);
+						SignalStateCondition *sc = static_cast<SignalStateCondition *>(si->condition);
 						Trackdir  td = (Trackdir)  GB(p2, 1, 4);
 						TileIndex ti = (TileIndex) GB(p2, 5, 27);
 
@@ -856,11 +856,12 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						}
 						if (!exec) return CommandCost();
 						sc->SetSignal(ti, td);
-					} break;
+						break;
+					}
 
 					case PSC_SLOT_OCC:
 					case PSC_SLOT_OCC_REM: {
-						SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(si->condition);
+						SignalSlotCondition *sc = static_cast<SignalSlotCondition *>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
@@ -877,7 +878,8 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
-					} break;
+						break;
+					}
 
 					case PSC_COUNTER: {
 						SignalCounterCondition *sc = static_cast<SignalCounterCondition *>(si->condition);
@@ -897,10 +899,12 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
-					} break;
+						break;
+					}
 				}
 			}
-		} break;
+			break;
+		}
 
 		case PSO_FIRST:
 		case PSO_LAST:

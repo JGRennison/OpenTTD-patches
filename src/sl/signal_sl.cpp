@@ -58,13 +58,15 @@ static void WriteCondition(Buffer &b, SignalCondition *c)
 			SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(c);
 			WriteVLI(b, vc->comparator);
 			WriteVLI(b, vc->value);
-		} break;
+			break;
+		}
 
 		case PSC_SIGNAL_STATE: {
 			SignalStateCondition *sc = static_cast<SignalStateCondition*>(c);
 			WriteVLI(b, sc->sig_tile);
 			WriteVLI(b, sc->sig_track);
-		} break;
+			break;
+		}
 
 		case PSC_SLOT_OCC:
 		case PSC_SLOT_OCC_REM: {
@@ -72,14 +74,16 @@ static void WriteCondition(Buffer &b, SignalCondition *c)
 			WriteVLI(b, cc->slot_id);
 			WriteVLI(b, cc->comparator);
 			WriteVLI(b, cc->value);
-		} break;
+			break;
+		}
 
 		case PSC_COUNTER: {
 			SignalCounterCondition *cc = static_cast<SignalCounterCondition*>(c);
 			WriteVLI(b, cc->ctr_id);
 			WriteVLI(b, cc->comparator);
 			WriteVLI(b, cc->value);
-		} break;
+			break;
+		}
 
 		default:
 			break;
@@ -113,7 +117,8 @@ static SignalCondition *ReadCondition(SignalReference this_sig)
 			if(c->comparator > SGC_LAST) NOT_REACHED();
 			c->value = ReadVLI();
 			return c;
-		} break;
+			break;
+		}
 
 		case PSC_COUNTER: {
 			TraceRestrictCounterID ctr_id = (TraceRestrictCounterID) ReadVLI();
