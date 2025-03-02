@@ -845,6 +845,8 @@ private:
 
 		this->SetWidgetsDisabledState(this->GetOwner() != _local_company, PROGRAM_WIDGET_COPY_PROGRAM, PROGRAM_WIDGET_REMOVE_PROGRAM);
 
+		aux_sel->SetDisplayedPlane(SZSP_NONE);
+
 		// Don't allow modifications if don't own, or have selected invalid instruction
 		if (this->GetOwner() != _local_company || this->selected_instruction < 1) {
 			this->DisableWidget(PROGRAM_WIDGET_INSERT);
@@ -858,8 +860,6 @@ private:
 
 		SignalInstruction *insn = GetSelected();
 		if (insn == nullptr) return;
-
-		aux_sel->SetDisplayedPlane(SZSP_NONE);
 
 		switch (insn->Opcode()) {
 			case PSO_IF: {
