@@ -508,6 +508,14 @@ public:
 		//OnPaint(); // this appears to cause visual artefacts
 	}
 
+	virtual void OnPlaceObjectAbort() override
+	{
+		this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
+		this->SetWidgetDirty(PROGRAM_WIDGET_COPY_PROGRAM);
+		this->RaiseWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
+		this->SetWidgetDirty(PROGRAM_WIDGET_COND_SET_SIGNAL);
+	}
+
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		if (str.has_value() && !str->empty()) {
