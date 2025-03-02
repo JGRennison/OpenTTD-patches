@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "programmable_signals.h"
+#include "programmable_signals_cmd.h"
 #include "debug.h"
 #include "command_func.h"
 #include "table/strings.h"
@@ -669,22 +670,13 @@ static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
 /** Insert a signal instruction into the signal program.
  *
  * @param tile The Tile on which to perform the operation
- * @param p1 Flags and information
- *   - Bits 0-2    Which track the signal sits on
- *   - Bits 3-18   ID of instruction to insert before
- *   - Bits 19-26  Which opcode to create
- *   - Bits 27-31  Reserved
- * @param p2 Depends upon instruction
- *   - PSO_SET_SIGNAL:
- *       - Colour to set the signal to
- * @param text unused
+ * @param flags Command flags
+ * @param track Which track the signal sits on
+ * @param instruction_id ID of instruction to insert before
+ * @param op Which opcode to create
  */
-CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgPresigInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id, SignalOpcode op)
 {
-	Track track         = Extract<Track,        0,   3>(p1);
-	uint instruction_id = GB(p1, 3, 16);
-	SignalOpcode op     = Extract<SignalOpcode, 19,  8>(p1);
-
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
 
@@ -708,11 +700,9 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 		}
 
 		case PSO_SET_SIGNAL: {
-			SignalState ss = (SignalState) p2;
-			if (ss > SIGNAL_STATE_MAX) return CommandCost(STR_ERR_PROGSIG_INVALID_OPCODE);
 			if (!exec) return CommandCost();
 
-			SignalSet *set = new SignalSet(prog, ss);
+			SignalSet *set = new SignalSet(prog, SIGNAL_STATE_RED);
 			set->Insert(insert_before);
 			break;
 		}
@@ -735,28 +725,15 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 /** Modify a signal instruction
  *
  * @param tile The Tile on which to perform the operation
- * @param p1 Flags and information
- *   - Bits 0-2    Which track the signal sits on
- *   - Bits 3-18   ID of instruction to insert before
- * @param p2 Depends upon instruction
- *   - PSO_SET_SIGNAL:
- *       - Colour to set the signal to
- *   - PSO_IF:
- *       - Bit 0 If 0, set the condidion code:
- *         - Bit 1-8:  Condition code to change to
- *       - Otherwise, if SignalVariableCondition:
- *        - Bits 1-2:  Which field to change (ConditionField)
- *        - Bits 3-31: Value to set field to
- *       - Otherwise, if SignalStateCondition:
- *        - Bits 1-4:  Trackdir on which signal is located
- *        - Bits 5-31: Tile on which signal is located
- * @param text unused
+ * @param flags Command flags
+ * @param track Which track the signal sits on
+ * @param instruction_id ID of instruction
+ * @param mode Mode of operation
+ * @param value Value
+ * @param target_td Target trackdir (for PPMCT_SIGNAL_LOCATION)
  */
-CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id, ProgPresigModifyCommandType mode, uint32_t value, Trackdir target_td)
 {
-	Track track         = Extract<Track, 0, 3 >(p1);
-	uint instruction_id = GB(p1, 3, 16);
-
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
 
@@ -773,21 +750,21 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	SignalInstruction *insn = prog->instructions[instruction_id];
 	switch (insn->Opcode()) {
 		case PSO_SET_SIGNAL: {
-			SignalState state = (SignalState) p2;
+			if (mode != PPMCT_SIGNAL_STATE) return CMD_ERROR;
+			SignalState state = (SignalState)value;
 			if (state > SIGNAL_STATE_MAX) {
 				return CommandCost(STR_ERR_PROGSIG_INVALID_SIGNAL_STATE);
 			}
 			if (!exec) return CommandCost();
-			SignalSet *ss = static_cast<SignalSet*>(insn);
+			SignalSet *ss = static_cast<SignalSet *>(insn);
 			ss->to_state = state;
 			break;
 		}
 
 		case PSO_IF: {
 			SignalIf *si = static_cast<SignalIf *>(insn);
-			uint8_t act = GB(p2, 0, 1);
-			if (act == 0) { // Set code
-				SignalConditionCode code = (SignalConditionCode) GB(p2, 1, 8);
+			if (mode == PPMCT_CONDITION_CODE) { // Set code
+				SignalConditionCode code = (SignalConditionCode)value;
 				if (code > PSC_MAX) {
 					return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION);
 				}
@@ -830,15 +807,13 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					case PSC_NUM_GREEN:
 					case PSC_NUM_RED: {
 						SignalVariableCondition *vc = static_cast<SignalVariableCondition *>(si->condition);
-						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32_t val = GB(p2, 3, 27);
-						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+						if (mode == PPMCT_COMPARATOR) {
+							if (value > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
-							vc->comparator = (SignalComparator) val;
-						} else if (f == SCF_VALUE) {
+							vc->comparator = (SignalComparator)value;
+						} else if (mode == PPMCT_VALUE) {
 							if (!exec) return CommandCost();
-							vc->value = val;
+							vc->value = value;
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
@@ -846,35 +821,34 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					}
 
 					case PSC_SIGNAL_STATE: {
+						if (mode != PPMCT_SIGNAL_LOCATION) return CMD_ERROR;
 						SignalStateCondition *sc = static_cast<SignalStateCondition *>(si->condition);
-						Trackdir  td = (Trackdir)  GB(p2, 1, 4);
-						TileIndex ti = (TileIndex) GB(p2, 5, 27);
+						TileIndex ti = (TileIndex)value;
 
-						if (!IsValidTile(ti) || !IsValidTrackdir(td) || !HasSignalOnTrackdir(ti, td)
+						if (!IsValidTile(ti) || !IsValidTrackdir(target_td) || !HasSignalOnTrackdir(ti, target_td)
 								|| GetTileOwner(ti) != _current_company) {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_SIGNAL);
 						}
 						if (!exec) return CommandCost();
-						sc->SetSignal(ti, td);
+						sc->SetSignal(ti, target_td);
 						break;
 					}
 
 					case PSC_SLOT_OCC:
 					case PSC_SLOT_OCC_REM: {
 						SignalSlotCondition *sc = static_cast<SignalSlotCondition *>(si->condition);
-						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32_t val = GB(p2, 3, 27);
-						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+						if (mode == PPMCT_COMPARATOR) {
+							if (value > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
-							sc->comparator = (SignalComparator) val;
-						} else if (f == SCF_VALUE) {
+							sc->comparator = (SignalComparator)value;
+						} else if (mode == PPMCT_COMPARATOR) {
 							if (!exec) return CommandCost();
-							sc->value = val;
-						} else if (f == SCF_SLOT_COUNTER) {
-							if (val != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(val)) return CMD_ERROR;
+							sc->value = value;
+						} else if (mode == PPMCT_SLOT) {
+							TraceRestrictSlotID slot = (TraceRestrictSlotID)value;
+							if (slot != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(slot)) return CMD_ERROR;
 							if (!exec) return CommandCost();
-							sc->SetSlot((TraceRestrictSlotID) val);
+							sc->SetSlot(slot);
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
@@ -883,19 +857,18 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 					case PSC_COUNTER: {
 						SignalCounterCondition *sc = static_cast<SignalCounterCondition *>(si->condition);
-						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32_t val = GB(p2, 3, 27);
-						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+						if (mode == PPMCT_COMPARATOR) {
+							if (value > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
-							sc->comparator = (SignalComparator) val;
-						} else if (f == SCF_VALUE) {
+							sc->comparator = (SignalComparator)value;
+						} else if (mode == PPMCT_COMPARATOR) {
 							if (!exec) return CommandCost();
-							sc->value = val;
-						} else if (f == SCF_SLOT_COUNTER) {
-							if (val != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(val)) return CMD_ERROR;
+							sc->value = value;
+						} else if (mode == PPMCT_COUNTER) {
+							TraceRestrictCounterID ctr = (TraceRestrictCounterID)value;
+							if (ctr != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(ctr)) return CMD_ERROR;
 							if (!exec) return CommandCost();
-							sc->SetCounter((TraceRestrictCounterID) val);
+							sc->SetCounter(ctr);
 						} else {
 							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
@@ -925,17 +898,12 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 /** Remove an instruction from a signal program
  *
  * @param tile The Tile on which to perform the operation
- * @param p1 Flags and information
- *   - Bits 0-2    Which track the signal sits on
- *   - Bits 3-18   ID of instruction to insert before
- * @param p2 unused
- * @param text unused
+ * @param flags Command flags
+ * @param track Which track the signal sits on
+ * @param instruction_id ID of instruction
  */
-CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgPresigRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id)
 {
-	Track track         = Extract<Track, 0, 3 >(p1);
-	uint instruction_id = GB(p1, 3, 16);
-
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
 
@@ -1055,28 +1023,21 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
 /** Insert a signal instruction into the signal program.
  *
  * @param tile The Tile on which to perform the operation
- * @param p1 Flags and information
- *   - Bits 0-2    Which track the signal sits on
- *   - Bits 3-6    Management code
- *   For clone action:
- *   - Bits 7-9    Which track the clone source signal sits on
- * @param p2
- *   For clone action:
- *   - Tile of clone source signal
- * @param text unused
+ * @param flags Command flags
+ * @param track Which track the signal sits on
+ * @param mgmt Management code
+ * @param src_tile Tile of clone source signal
+ * @param src_track Track of clone source signal
  */
-CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdProgPresigSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, Track track, ProgPresigMgmtCommandType mgmt, TileIndex src_tile, Track src_track)
 {
 	bool exec = (flags & DC_EXEC) != 0;
-
-	Track track = Extract<Track, 0, 3>(p1);
-	SignalProgramMgmtCode mgmt = static_cast<SignalProgramMgmtCode>(GB(p1, 3, 4));
 
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
 
 	switch (mgmt) {
-		case SPMC_REMOVE: {
+		case PPMGMTCT_REMOVE: {
 			SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
 			if (prog == nullptr) return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 			if (exec) {
@@ -1085,11 +1046,9 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 			break;
 		}
 
-		case SPMC_CLONE: {
+		case PPMGMTCT_CLONE: {
 			SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
 
-			TileIndex src_tile = p2;
-			Track src_track = Extract<Track, 7, 3>(p1);
 			if (!IsValidTrack(src_track) || !IsPlainRailTile(src_tile) || !HasTrack(src_tile, src_track)) {
 				return CMD_ERROR;
 			}

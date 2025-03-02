@@ -518,10 +518,10 @@ enum Commands : uint16_t {
 	CMD_ALTER_TRACERESTRICT_COUNTER,  ///< alter a tracerestrict counter
 	CMD_DELETE_TRACERESTRICT_COUNTER, ///< delete a tracerestrict counter
 
-	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
-	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
-	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
-	CMD_SIGNAL_PROGRAM_MGMT,          ///< signal program management command
+	CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION,   ///< insert a signal instruction
+	CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION,   ///< modifies a signal instruction
+	CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION,   ///< removes a signal instruction
+	CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT,         ///< signal program management command
 
 	CMD_SCHEDULED_DISPATCH,                     ///< scheduled dispatch start
 	CMD_SCHEDULED_DISPATCH_ADD,                 ///< scheduled dispatch add
@@ -1256,11 +1256,6 @@ DEF_CMD_PROC  (CMD_TIMETABLE_SEPARATION, CmdTimetableSeparation,                
 DEF_CMD_PROCEX(CMD_SET_TIMETABLE_START, CmdSetTimetableStart,                              {}, CMDT_ROUTE_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                               {}, CMDT_ROUTE_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_INSERT_SIGNAL_INSTRUCTION, CmdInsertSignalInstruction,                        {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_MODIFY_SIGNAL_INSTRUCTION, CmdModifySignalInstruction,                        {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_REMOVE_SIGNAL_INSTRUCTION, CmdRemoveSignalInstruction,                        {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SIGNAL_PROGRAM_MGMT, CmdSignalProgramMgmt,                              {}, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH, CmdScheduledDispatch,                              {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_ADD, CmdScheduledDispatchAdd,                           {}, CMDT_ROUTE_MANAGEMENT      )

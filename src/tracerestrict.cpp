@@ -31,6 +31,7 @@
 #include "vehicle_func.h"
 #include "date_func.h"
 #include "strings_func.h"
+#include "programmable_signals_cmd.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
@@ -3650,12 +3651,13 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 			break;
 		}
 
-		case CMD_MODIFY_SIGNAL_INSTRUCTION: {
-			using Payload = typename CommandTraits<CMD_MODIFY_SIGNAL_INSTRUCTION>::PayloadType;
+		case CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION: {
+			using Payload = typename CommandTraits<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::PayloadType;
 			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
 				Payload payload = *src;
-				SB(payload.p2, 3, 27, value);
-				return DoCommand<CMD_MODIFY_SIGNAL_INSTRUCTION>(this->cmd.tile, payload, flags);
+				uint32_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
+				cmd_value = value;
+				return DoCommand<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>(this->cmd.tile, payload, flags);
 			}
 			break;
 		}

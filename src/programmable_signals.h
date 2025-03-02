@@ -29,11 +29,6 @@ class SignalInstruction;
 class SignalSpecial;
 typedef std::vector<SignalInstruction*> InstructionList;
 
-enum SignalProgramMgmtCode {
-	SPMC_REMOVE,      ///< Remove program
-	SPMC_CLONE,       ///< Clone program
-};
-
 /** The actual programmable pre-signal information */
 struct SignalProgram {
 	SignalProgram(TileIndex tile, Track track, bool raw = false);
@@ -175,13 +170,6 @@ enum SignalComparator {
 	SGC_IS_FALSE = 7,          ///< the variable is false (zero)
 
 	SGC_LAST = SGC_IS_FALSE
-};
-
-/** Which field to modify in a condition. A parameter to CMD_MODIFY_SIGNAL_INSTRUCTION */
-enum SignalConditionField {
-	SCF_COMPARATOR = 0,       ///< the comparator (value from SignalComparator enum)
-	SCF_VALUE = 1,            ///< the value (integer value)
-	SCF_SLOT_COUNTER = 2,     ///< the slot or counter
 };
 
 class SignalConditionComparable: public SignalCondition {

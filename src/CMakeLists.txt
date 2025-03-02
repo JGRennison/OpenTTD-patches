@@ -378,6 +378,7 @@ add_files(
     plans_gui.cpp
     plans_type.h
     programmable_signals.cpp
+    programmable_signals_cmd.h
     programmable_signals_gui.cpp
     programmable_signals.h
     progress.cpp
