@@ -614,7 +614,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
  * @param flags operation to perform
  * @return the cost of this operation or an error
  */
-CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, const CommandEmptyPayload &)
+CommandCost CmdDesyncCheck(DoCommandFlag flags)
 {
 	if (flags & DC_EXEC) {
 		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);

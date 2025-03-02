@@ -783,11 +783,6 @@ struct CommandPayloadSerialised final {
 	void Serialise(BufferSerialisationRef buffer) const { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 };
 
-struct CommandEmptyPayload final : public CommandPayloadSerialisable<CommandEmptyPayload> {
-	void Serialise(BufferSerialisationRef buffer) const override {}
-	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) { return true; }
-};
-
 struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	uint32_t p1;
 	uint32_t p2;
@@ -931,6 +926,19 @@ template <>
 struct CmdDataT<std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string>, std::string, std::string> {};
 template <>
 struct CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
+
+template <>
+struct CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
+	using CommandProc = CommandCost(TileIndex, DoCommandFlag);
+	using CommandProcNoTile = CommandCost(DoCommandFlag);
+	using Tuple = std::tuple<>;
+
+	Tuple GetValues() const { return {}; }
+	void Serialise(BufferSerialisationRef buffer) const override {}
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) { return true; }
+	static inline CmdDataT<> Make() { return CmdDataT<>{}; }
+};
+using EmptyCmdData = CmdDataT<>;
 
 template <typename T>
 struct BaseCommandContainer {
@@ -1274,6 +1282,6 @@ DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES, CmdScheduledDispatchSwapSc
 DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS, CmdScheduledDispatchSetSlotFlags,                  {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_RENAME_TAG, CmdScheduledDispatchRenameTag,                     {}, CMDT_ROUTE_MANAGEMENT      )
 
-DEF_CMD_DIRECT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, CommandEmptyPayload)
+DEF_CMD_TUPLE_NT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, EmptyCmdData)
 
 #endif /* COMMAND_TYPE_H */
