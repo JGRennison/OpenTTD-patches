@@ -840,11 +840,10 @@ struct TupleCmdData : public TupleCmdDataDetail::BaseTupleCmdData<T...> {
 
 	std::unique_ptr<CommandPayloadBase> Clone() const override;
 
-	template <typename... Args>
-	static Parent Make(Args&&... args)
+	static Parent Make(T... args)
 	{
 		Parent out;
-		out.values = Tuple(std::forward<Args>(args)...);
+		out.values = Tuple(std::forward<T>(args)...);
 		return out;
 	}
 };
