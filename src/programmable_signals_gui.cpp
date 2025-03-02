@@ -396,7 +396,6 @@ public:
 
 			case PROGRAM_WIDGET_GOTO_SIGNAL: {
 				ScrollMainWindowToTile(this->tile);
-				// this->RaiseWidget(PROGRAM_WIDGET_GOTO_SIGNAL);
 				break;
 			}
 
@@ -453,7 +452,7 @@ public:
 				return;
 			}
 			ResetObjectToPlace();
-			this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
+			this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COPY_PROGRAM);
 			Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, PPMGMTCT_CLONE, tile1, track1);
 			//OnPaint(); // this appears to cause visual artefacts
 			return;
@@ -502,16 +501,14 @@ public:
 
 		Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
 		ResetObjectToPlace();
-		this->RaiseWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
+		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		//OnPaint(); // this appears to cause visual artefacts
 	}
 
 	virtual void OnPlaceObjectAbort() override
 	{
-		this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
-		this->SetWidgetDirty(PROGRAM_WIDGET_COPY_PROGRAM);
-		this->RaiseWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
-		this->SetWidgetDirty(PROGRAM_WIDGET_COND_SET_SIGNAL);
+		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COPY_PROGRAM);
+		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_SET_SIGNAL);
 	}
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
@@ -820,7 +817,7 @@ private:
 		// Do not close the Signals GUI when opening the ProgrammableSignals GUI
 		// ResetObjectToPlace();
 		if (this->query_submode != QSM_SET_VALUE) {
-			this->RaiseWidget(PROGRAM_WIDGET_COND_VALUE);
+			this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_VALUE);
 		}
 
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_LEFT);
