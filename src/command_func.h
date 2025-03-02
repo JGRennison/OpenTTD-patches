@@ -154,7 +154,12 @@ using Command = std::conditional_t<::CommandTraits<Tcmd>::no_tile,
 CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only, bool asynchronous);
 CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only);
 
-void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
+template <Commands Tcmd>
+void NetworkSendCommand(TileIndex tile, const typename CommandTraits<Tcmd>::PayloadType &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
+{
+	extern void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
+	return NetworkSendCommandImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, company);
+}
 
 extern Money _additional_cash_required;
 

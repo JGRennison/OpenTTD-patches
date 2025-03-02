@@ -27,13 +27,13 @@ static CommandQueue _local_execution_queue;
  * Prepare a DoCommand to be send over the network
  * @param cmd The command to execute (a CMD_* value)
  * @param tile The tile to perform a command on
- * @param payload The command payload
+ * @param payload The command payload (must be already validated as the correct type)
  * @param err_message Message prefix to show on error
  * @param callback A callback function to call after the command is finished
  * @param callback_param Parameter for the callback function
  * @param company The company that wants to send the command
  */
-void NetworkSendCommand(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
+void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
 {
 	assert(IsValidCommand(cmd));
 

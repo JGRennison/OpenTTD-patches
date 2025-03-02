@@ -874,7 +874,9 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	 * send it to the command-queue and abort execution
 	 */
 	if (_networking && !_generating_world && !(intl_flags & DCIF_NETWORK_COMMAND)) {
-		NetworkSendCommand(cmd, tile, payload, error_msg, callback, callback_param, _current_company);
+		/* Payload is already checked as being of the correct type */
+		extern void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
+		NetworkSendCommandImplementation(cmd, tile, payload, error_msg, callback, callback_param, _current_company);
 		cur_company.Restore();
 
 		/* Don't return anything special here; no error, no costs.

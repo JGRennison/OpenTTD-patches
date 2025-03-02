@@ -1339,7 +1339,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 		_settings_client.network.sync_freq = std::min<uint16_t>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
-		NetworkSendCommand(CMD_DESYNC_CHECK, 0, CommandEmptyPayload(), (StringID)0, CommandCallback::None, 0, _local_company);
+		NetworkSendCommand<CMD_DESYNC_CHECK>(0, CommandEmptyPayload(), (StringID)0, CommandCallback::None, 0, _local_company);
 
 		SendPacketsState send_state = this->SendPackets(true);
 		if (send_state != SPS_CLOSED) {
@@ -2534,7 +2534,7 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		ci->client_playas = c->index;
 		NetworkUpdateClientInfo(ci->client_id);
 		// CMD_COMPANY_ADD_ALLOW_LIST would go here
-		NetworkSendCommand(CMD_RENAME_PRESIDENT, 0, P123CmdData(0, 0, 0, ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
+		NetworkSendCommand<CMD_RENAME_PRESIDENT>(0, P123CmdData(0, 0, 0, ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
 	}
 
 	if (ci != nullptr) {

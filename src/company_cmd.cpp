@@ -990,7 +990,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 				/* In network games, we need to try setting the company manager face here to sync it to all clients.
 				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face. */
-				if (_company_manager_face != 0) NetworkSendCommand(CMD_SET_COMPANY_MANAGER_FACE, 0, P123CmdData(0, _company_manager_face, 0), (StringID)0, CommandCallback::None, 0, _local_company);
+				if (_company_manager_face != 0) NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>(0, P123CmdData(0, _company_manager_face, 0), (StringID)0, CommandCallback::None, 0, _local_company);
 
 				/* Now that we have a new company, broadcast our company settings to
 				 * all clients so everything is in sync */

@@ -1118,7 +1118,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 			 * the server will give us a client-id and let us in */
 			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
 			ShowJoinStatusWindow();
-			NetworkSendCommand(CMD_COMPANY_CTRL, 0, P123CmdData(CCA_NEW, 0, 0), (StringID)0, CommandCallback::None, 0, _local_company);
+			NetworkSendCommand<CMD_COMPANY_CTRL>(0, P123CmdData(CCA_NEW, 0, 0), (StringID)0, CommandCallback::None, 0, _local_company);
 		}
 	} else {
 		/* take control over an existing company */
