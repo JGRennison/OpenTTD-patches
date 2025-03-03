@@ -672,7 +672,7 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		if (flags & DC_EXEC) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
-				_additional_cash_required = ret.GetCost();
+				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
 			DoCommandOld(t, 0, 0, flags, CMD_LANDSCAPE_CLEAR);

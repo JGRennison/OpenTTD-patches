@@ -1756,7 +1756,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
 				if (flags & DC_EXEC) {
 					money_spent += ret.GetCost();
 					if (money_spent > 0 && money_spent > money_available) {
-						_additional_cash_required = DoCommandOld(start_tile, end_tile, p2, flags & ~DC_EXEC, CMD_REMOVE_LONG_ROAD).GetCost();
+						cost.SetAdditionalCashRequired(DoCommandOld(start_tile, end_tile, p2, flags & ~DC_EXEC, CMD_REMOVE_LONG_ROAD).GetCost());
 						return cost;
 					}
 					RemoveRoad(tile, flags, bits, rtt, false);

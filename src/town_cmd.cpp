@@ -2411,8 +2411,9 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	/* Create the town */
 	if (flags & DC_EXEC) {
 		if (cost.GetCost() > GetAvailableMoneyForCommand()) {
-			_additional_cash_required = cost.GetCost();
-			return CommandCost(EXPENSES_OTHER);
+			CommandCost result(EXPENSES_OTHER);
+			result.SetAdditionalCashRequired(cost.GetCost());
+			return result;
 		}
 
 		_record_house_coords = !_generating_world;

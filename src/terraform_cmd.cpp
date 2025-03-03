@@ -379,7 +379,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 			if (flags & DC_EXEC) {
 				money -= ret.GetCost();
 				if (money < 0) {
-					_additional_cash_required = ret.GetCost();
+					cost.SetAdditionalCashRequired(ret.GetCost());
 					return cost;
 				}
 				DoCommandOld(t, SLOPE_N, (curh > h) ? 0 : 1, flags, CMD_TERRAFORM_LAND);

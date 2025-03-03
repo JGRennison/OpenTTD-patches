@@ -777,9 +777,6 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	assert(_docommand_recursive == 0);
 	_docommand_recursive = 1;
 
-	/* Reset the state. */
-	_additional_cash_required = 0;
-
 	assert(IsValidCommand(cmd));
 
 	/* Get pointer to command handler */
@@ -921,12 +918,12 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 
 	/* If we're needing more money and we haven't done
 	 * anything yet, ask for the money! */
-	if (_additional_cash_required != 0 && res2.GetCost() == 0) {
+	if (res2.GetAdditionalCashRequired() != 0 && res2.GetCost() == 0) {
 		/* It could happen we removed rail, thus gained money, and deleted something else.
 		 * So make sure the signal buffer is empty even in this case */
 		UpdateSignalsInBuffer();
 		if (_extra_aspects > 0) FlushDeferredAspectUpdates();
-		SetDParam(0, _additional_cash_required);
+		SetDParam(0, res2.GetAdditionalCashRequired());
 		return_dcpi(CommandCost(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY));
 	}
 
@@ -1040,16 +1037,19 @@ void CommandCost::AllocAuxData()
 	} else if (this->flags & CCIF_INLINE_RESULT) {
 		this->aux_data->result = this->inl.result;
 		this->flags &= ~CCIF_INLINE_RESULT;
+	} else if (this->flags & CCIF_INLINE_ADDITIONAL_CASH) {
+		this->aux_data->additional_cash_required = this->inl.additional_cash_required;
+		this->flags &= ~CCIF_INLINE_ADDITIONAL_CASH;
 	}
 }
 
 bool CommandCost::AddInlineData(CommandCostIntlFlags inline_flag)
 {
-	if (this->aux_data) return true;
+	if (this->aux_data != nullptr) return true;
 	if (this->flags & inline_flag) {
 		return false;
 	}
-	if (this->flags & ~CCIF_SUCCESS) {
+	if (this->flags & CCIF_INLINE_MASK) {
 		this->AllocAuxData();
 		return true;
 	}
@@ -1065,6 +1065,17 @@ void CommandCost::SetTile(TileIndex tile)
 		this->aux_data->tile = tile;
 	} else {
 		this->inl.tile = tile;
+	}
+}
+
+void CommandCost::SetAdditionalCashRequired(Money cash)
+{
+	if (cash == this->GetAdditionalCashRequired()) return;
+
+	if (this->AddInlineData(CCIF_INLINE_ADDITIONAL_CASH)) {
+		this->aux_data->additional_cash_required = cash;
+	} else {
+		this->inl.additional_cash_required = static_cast<uint32_t>(cash);
 	}
 }
 

@@ -161,8 +161,6 @@ void NetworkSendCommand(TileIndex tile, const typename CommandTraits<Tcmd>::Payl
 	return NetworkSendCommandImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, company);
 }
 
-extern Money _additional_cash_required;
-
 inline bool IsValidCommand(Commands cmd) { return cmd < CMD_END; }
 CommandFlags GetCommandFlags(Commands cmd);
 const char *GetCommandName(Commands cmd);

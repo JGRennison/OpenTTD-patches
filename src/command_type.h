@@ -25,12 +25,15 @@ struct GRFFile;
 enum CommandCostIntlFlags : uint8_t {
 	CCIF_NONE                     = 0,
 	CCIF_SUCCESS                  = 1 << 0,
-	CCIF_INLINE_EXTRA_MSG         = 1 << 1,
-	CCIF_INLINE_TILE              = 1 << 2,
-	CCIF_INLINE_RESULT            = 1 << 3,
-	CCIF_VALID_RESULT             = 1 << 4,
+	CCIF_VALID_RESULT             = 1 << 1,
+	CCIF_INLINE_EXTRA_MSG         = 1 << 2,
+	CCIF_INLINE_TILE              = 1 << 3,
+	CCIF_INLINE_RESULT            = 1 << 4,
+	CCIF_INLINE_ADDITIONAL_CASH   = 1 << 5,
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
+
+static constexpr CommandCostIntlFlags CCIF_INLINE_MASK = CCIF_INLINE_EXTRA_MSG | CCIF_INLINE_TILE | CCIF_INLINE_RESULT | CCIF_INLINE_ADDITIONAL_CASH;
 
 /**
  * Common return value for all commands. Wraps the cost and
@@ -45,9 +48,11 @@ class CommandCost {
 		uint32_t result = 0;
 		StringID extra_message;                 ///< Additional warning message for when success is unset
 		TileIndex tile;
+		Money additional_cash_required;
 	} inl;
 
 	struct CommandCostAuxiliaryData {
+		Money additional_cash_required = 0;
 		uint32_t textref_stack[16] = {};
 		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
 		uint textref_stack_size = 0;                    ///< Number of uint32_t values to put on the #TextRefStack for the error message.
@@ -251,6 +256,14 @@ public:
 	}
 
 	void SetTile(TileIndex tile);
+
+	Money GetAdditionalCashRequired() const
+	{
+		if (this->flags & CCIF_INLINE_ADDITIONAL_CASH) return this->inl.additional_cash_required;
+		return this->aux_data != nullptr ? this->aux_data->additional_cash_required : 0;
+	}
+
+	void SetAdditionalCashRequired(Money cash);
 
 	bool HasResultData() const
 	{

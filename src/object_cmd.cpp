@@ -492,7 +492,7 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1
 		if (flags & DC_EXEC) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
-				_additional_cash_required = ret.GetCost();
+				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
 			DoCommandOld(t, OBJECT_OWNED_LAND, 0, flags, CMD_BUILD_OBJECT);
@@ -555,7 +555,7 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 		if (flags & DC_EXEC) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
-				_additional_cash_required = ret.GetCost();
+				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
 			DoCommandOld(t, type, view, flags, CMD_BUILD_OBJECT);
