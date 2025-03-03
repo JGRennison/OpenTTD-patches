@@ -26,14 +26,10 @@ enum CommandCostIntlFlags : uint8_t {
 	CCIF_NONE                     = 0,
 	CCIF_SUCCESS                  = 1 << 0,
 	CCIF_VALID_RESULT             = 1 << 1,
-	CCIF_INLINE_EXTRA_MSG         = 1 << 2,
-	CCIF_INLINE_TILE              = 1 << 3,
-	CCIF_INLINE_RESULT            = 1 << 4,
-	CCIF_INLINE_ADDITIONAL_CASH   = 1 << 5,
+
+	CCIF_TYPE_MASK                = 0xF0,
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
-
-static constexpr CommandCostIntlFlags CCIF_INLINE_MASK = CCIF_INLINE_EXTRA_MSG | CCIF_INLINE_TILE | CCIF_INLINE_RESULT | CCIF_INLINE_ADDITIONAL_CASH;
 
 /**
  * Common return value for all commands. Wraps the cost and
@@ -44,12 +40,23 @@ class CommandCost {
 	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
 	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
 	StringID message;                           ///< Warning message for when success is unset
-	union {
-		uint32_t result = 0;
-		StringID extra_message;                 ///< Additional warning message for when success is unset
-		TileIndex tile;
-		Money additional_cash_required;
-	} inl;
+
+	enum class CommandCostInlineType {
+		None,
+		AuxiliaryData,
+		ExtraMsg,
+		Tile,
+		Result,
+		AdditionalCash,
+	};
+
+	CommandCostInlineType GetInlineType() const { return static_cast<CommandCostInlineType>(this->flags >> 4); }
+
+	void SetInlineType(CommandCostInlineType inl_type)
+	{
+		this->flags &= ~CCIF_TYPE_MASK;
+		this->flags |= static_cast<CommandCostIntlFlags>(to_underlying(inl_type) << 4);
+	}
 
 	struct CommandCostAuxiliaryData {
 		Money additional_cash_required = 0;
@@ -60,10 +67,17 @@ class CommandCost {
 		TileIndex tile = INVALID_TILE;
 		uint32_t result = 0;
 	};
-	std::unique_ptr<CommandCostAuxiliaryData> aux_data;
+
+	union {
+		uint32_t result = 0;
+		StringID extra_message;                 ///< Additional warning message for when success is unset
+		TileIndex tile;
+		int64_t additional_cash_required;
+		CommandCostAuxiliaryData *aux_data;
+	} inl;
 
 	void AllocAuxData();
-	bool AddInlineData(CommandCostIntlFlags inline_flag);
+	bool AddInlineData(CommandCostInlineType inl_type);
 
 public:
 	/**
@@ -77,9 +91,28 @@ public:
 	explicit CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
 
 	CommandCost(const CommandCost &other);
-	CommandCost(CommandCost &&other) = default;
 	CommandCost &operator=(const CommandCost &other);
-	CommandCost &operator=(CommandCost &&other) = default;
+
+	CommandCost(CommandCost &&other)
+	{
+		*this = std::move(other);
+	}
+
+	CommandCost &operator=(CommandCost &&other)
+	{
+		this->cost = other.cost;
+		this->expense_type = other.expense_type;
+		this->flags = other.flags;
+		this->message = other.message;
+		this->inl = other.inl;
+		other.flags = CCIF_NONE; // Clear any ownership of other.inl.aux_data
+		return *this;
+	}
+
+	~CommandCost()
+	{
+		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) delete this->inl.aux_data;
+	}
 
 	/**
 	 * Creates a command return value the is failed with the given message
@@ -87,7 +120,7 @@ public:
 	static CommandCost DualErrorMessage(StringID msg, StringID extra_msg)
 	{
 		CommandCost cc(msg);
-		cc.flags |= CCIF_INLINE_EXTRA_MSG;
+		cc.SetInlineType(CommandCostInlineType::ExtraMsg);
 		cc.inl.extra_message = extra_msg;
 		return cc;
 	}
@@ -151,9 +184,15 @@ public:
 	void MakeError(StringID message)
 	{
 		assert(message != INVALID_STRING_ID);
-		this->flags &= ~(CCIF_SUCCESS | CCIF_INLINE_EXTRA_MSG);
+		this->flags &= ~CCIF_SUCCESS;
 		this->message = message;
-		if (this->aux_data) this->aux_data->extra_message = INVALID_STRING_ID;
+
+		/* Cleary any extra message */
+		if (this->GetInlineType() == CommandCostInlineType::ExtraMsg) {
+			this->SetInlineType(CommandCostInlineType::None);
+		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			this->inl.aux_data->extra_message = INVALID_STRING_ID;
+		}
 	}
 
 	void UseTextRefStack(const GRFFile *grffile, uint num_registers);
@@ -164,7 +203,7 @@ public:
 	 */
 	const GRFFile *GetTextRefStackGRF() const
 	{
-		return this->aux_data != nullptr ? this->aux_data->textref_stack_grffile : 0;
+		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack_grffile : 0;
 	}
 
 	/**
@@ -173,7 +212,7 @@ public:
 	 */
 	uint GetTextRefStackSize() const
 	{
-		return this->aux_data != nullptr ? this->aux_data->textref_stack_size : 0;
+		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack_size : 0;
 	}
 
 	/**
@@ -182,7 +221,7 @@ public:
 	 */
 	const uint32_t *GetTextRefStack() const
 	{
-		return this->aux_data != nullptr ? this->aux_data->textref_stack : nullptr;
+		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack : nullptr;
 	}
 
 	/**
@@ -202,8 +241,13 @@ public:
 	StringID GetExtraErrorMessage() const
 	{
 		if (this->Succeeded()) return INVALID_STRING_ID;
-		if (this->flags & CCIF_INLINE_EXTRA_MSG) return this->inl.extra_message;
-		return this->aux_data != nullptr ? this->aux_data->extra_message : INVALID_STRING_ID;
+		if (this->GetInlineType() == CommandCostInlineType::ExtraMsg) {
+			return this->inl.extra_message;
+		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			return this->inl.aux_data->extra_message;
+		} else {
+			return INVALID_STRING_ID;
+		}
 	}
 
 	/**
@@ -251,16 +295,26 @@ public:
 
 	TileIndex GetTile() const
 	{
-		if (this->flags & CCIF_INLINE_TILE) return this->inl.tile;
-		return this->aux_data != nullptr ? this->aux_data->tile : INVALID_TILE;
+		if (this->GetInlineType() == CommandCostInlineType::Tile) {
+			return this->inl.tile;
+		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			return this->inl.aux_data->tile;
+		} else {
+			return INVALID_TILE;
+		}
 	}
 
 	void SetTile(TileIndex tile);
 
 	Money GetAdditionalCashRequired() const
 	{
-		if (this->flags & CCIF_INLINE_ADDITIONAL_CASH) return this->inl.additional_cash_required;
-		return this->aux_data != nullptr ? this->aux_data->additional_cash_required : 0;
+		if (this->GetInlineType() == CommandCostInlineType::AdditionalCash) {
+			return this->inl.additional_cash_required;
+		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			return this->inl.aux_data->additional_cash_required;
+		} else {
+			return 0;
+		}
 	}
 
 	void SetAdditionalCashRequired(Money cash);
@@ -272,8 +326,13 @@ public:
 
 	uint32_t GetResultData() const
 	{
-		if (this->flags & CCIF_INLINE_RESULT) return this->inl.result;
-		return this->aux_data != nullptr ? this->aux_data->result : 0;
+		if (this->GetInlineType() == CommandCostInlineType::Result) {
+			return this->inl.result;
+		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			return this->inl.aux_data->result;
+		} else {
+			return 0;
+		}
 	}
 
 	void SetResultData(uint32_t result);
