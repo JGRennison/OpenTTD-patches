@@ -3706,6 +3706,11 @@ bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, 
 	return true;
 }
 
+void TraceRestrictCreateSlotCmdData::SanitiseStrings(StringValidationSettings settings)
+{
+	StrMakeValidInPlace(this->name, settings);
+}
+
 void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) const
 {
 	output.format("vt: {}, parent: {:X}", this->vehtype, this->parent);
@@ -3732,6 +3737,11 @@ bool TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffe
 	}
 
 	return true;
+}
+
+void TraceRestrictCreateCounterCmdData::SanitiseStrings(StringValidationSettings settings)
+{
+	StrMakeValidInPlace(this->name, settings);
 }
 
 void TraceRestrictCreateCounterCmdData::FormatDebugSummary(format_target &output) const

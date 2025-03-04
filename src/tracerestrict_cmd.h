@@ -76,6 +76,7 @@ struct TraceRestrictCreateSlotCmdData final : public CommandPayloadSerialisable<
 
 	void Serialise(BufferSerialisationRef buffer) const override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void SanitiseStrings(StringValidationSettings settings) override;
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
@@ -85,6 +86,7 @@ struct TraceRestrictCreateCounterCmdData final : public CommandPayloadSerialisab
 
 	void Serialise(BufferSerialisationRef buffer) const override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void SanitiseStrings(StringValidationSettings settings) override;
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
