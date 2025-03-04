@@ -14,7 +14,6 @@
 #include "core/pool_type.hpp"
 #include "company_type.h"
 #include "company_func.h"
-#include "command_func.h"
 #include "map_func.h"
 #include "date_func.h"
 #include "viewport_func.h"
@@ -216,17 +215,6 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	bool HasName() const
 	{
 		return !this->name.empty();
-	}
-
-	bool ToggleVisibilityByAll()
-	{
-		if (this->owner == _local_company) DoCommandPOld(0, this->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
-		return this->visible_by_all;
-	}
-
-	void SetPlanColour(Colours colour)
-	{
-		if (this->owner == _local_company) DoCommandPOld(0, this->index, colour, CMD_CHANGE_PLAN_COLOUR);
 	}
 
 	const std::string &GetName() const

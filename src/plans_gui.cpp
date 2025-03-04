@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "plans_func.h"
 #include "plans_base.h"
+#include "plans_cmd.h"
 #include "command_func.h"
 #include "company_func.h"
 #include "company_base.h"
@@ -260,7 +261,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				DoCommandPOld(0, 0, 0, CMD_ADD_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS), CommandCallback::AddPlan);
+				Command<CMD_ADD_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, CommandCallback::AddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -268,9 +269,9 @@ public:
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
 					if (this->list[this->selected].is_plan) {
-						DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_REMOVE_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+						Command<CMD_REMOVE_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
 					} else {
-						DoCommandPOld(0, this->list[this->selected].plan_id, this->list[this->selected].line_id, CMD_REMOVE_PLAN_LINE | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+						Command<CMD_REMOVE_PLAN_LINE>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id, this->list[this->selected].line_id);
 					}
 				}
 				break;
@@ -293,7 +294,7 @@ public:
 
 			case WID_PLN_TAKE_OWNERSHIP: {
 				if (_current_plan != nullptr && !IsNonAdminNetworkClient()) {
-					DoCommandPOld(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+					Command<CMD_ACQUIRE_UNOWNED_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
 				}
 				break;
 			}
@@ -306,7 +307,9 @@ public:
 				break;
 			}
 			case WID_PLN_VISIBILITY:
-				if (_current_plan != nullptr) _current_plan->ToggleVisibilityByAll();
+				if (_current_plan != nullptr) {
+					Command<CMD_CHANGE_PLAN_VISIBILITY>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, !_current_plan->visible_by_all);
+				}
 				break;
 			case WID_PLN_COLOUR: {
 				if (_current_plan != nullptr) {
@@ -401,7 +404,7 @@ public:
 		switch (widget) {
 			case WID_PLN_COLOUR:
 				if (_current_plan != nullptr && index < COLOUR_END) {
-					_current_plan->SetPlanColour((Colours)index);
+					Command<CMD_CHANGE_PLAN_COLOUR>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, (Colours)index);
 				}
 				break;
 
@@ -419,7 +422,7 @@ public:
 	{
 		if (_current_plan == nullptr || !str.has_value()) return;
 
-		DoCommandPOld(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), CommandCallback::None, str->c_str());
+		Command<CMD_RENAME_PLAN>::Post(STR_ERROR_CAN_T_RENAME_PLAN, _current_plan->index, *str);
 	}
 
 	bool AllPlansHidden() const
