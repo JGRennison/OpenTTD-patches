@@ -816,7 +816,7 @@ enum CommandPauseLevel : uint8_t {
  * - Have a FormatDebugSummary implementation where even remotely useful.
  * - Implement GetErrorMessageTile/SetClientID if required by commands using this payload type.
  */
-struct CommandPayloadBase {
+struct CommandPayloadBase : public fmt_formattable {
 	virtual ~CommandPayloadBase() {}
 
 	virtual std::unique_ptr<CommandPayloadBase> Clone() const = 0;
@@ -833,6 +833,12 @@ struct CommandPayloadBase {
 	virtual void FormatDebugSummary(struct format_target &) const {}
 
 	std::string GetDebugSummaryString() const;
+
+	/* To enable use as a format argument, see fmt_formattable */
+	inline void fmt_format_value(struct format_target &output) const
+	{
+		this->FormatDebugSummary(output);
+	}
 };
 
 template <typename T>

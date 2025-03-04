@@ -263,7 +263,7 @@ static void ExecuteCallback(CommandCallback callback, CallbackParameter callback
 		if (_command_callback_table[to_underlying(callback) - 1](result, cmd, tile, payload, callback_param)) return;
 	}
 
-	Debug(misc, 0, "Failed to execute callback: {}, {}", callback, payload.GetDebugSummaryString());
+	Debug(misc, 0, "Failed to execute callback: {}, {}", callback, payload);
 }
 
 ClientID _cmd_client_id = INVALID_CLIENT_ID;
