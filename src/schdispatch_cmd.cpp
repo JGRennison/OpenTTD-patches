@@ -75,7 +75,7 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -187,7 +187,7 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -360,7 +360,7 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -731,7 +731,7 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetSlotFlags(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchSetSlotFlags(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);

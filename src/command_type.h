@@ -806,8 +806,6 @@ enum CommandPauseLevel : uint8_t {
 	CMDPL_ALL_ACTIONS,     ///< All actions may be executed.
 };
 
-struct CommandAuxiliaryBase{}; // To be removed later
-
 /**
  * Abstract base type for command payloads.
  *
@@ -1087,7 +1085,7 @@ struct CommandExecData {
 using CommandPayloadDeserialiser = std::unique_ptr<CommandPayloadBase>(DeserialisationBuffer &, StringValidationSettings default_string_validation);
 
 using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
+using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text);
 
 template <typename T>
 using CommandProcDirect = CommandCost(TileIndex tile, DoCommandFlag flags, const T &data);

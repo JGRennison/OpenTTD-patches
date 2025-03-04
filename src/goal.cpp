@@ -157,7 +157,7 @@ CommandCost CmdRemoveGoal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * @param p2 GoalTypeID of destination.
  * @param text unused.
  */
-CommandCost CmdSetGoalDestination(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdSetGoalDestination(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	GoalID goal = p1;
 	GoalTypeID dest = p2;
@@ -284,7 +284,7 @@ CommandCost CmdSetGoalCompleted(TileIndex tile, DoCommandFlag flags, uint32_t p1
  * @param text Text of the question.
  * @return the cost of this operation or an error
  */
-CommandCost CmdGoalQuestion(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdGoalQuestion(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	uint16_t uniqueid = (uint16_t)GB(p1, 0, 16);
 	CompanyID company = (CompanyID)GB(p3, 0, 32);

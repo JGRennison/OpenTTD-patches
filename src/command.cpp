@@ -71,7 +71,7 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 	{
 		static_assert(std::is_same_v<T, P123CmdData>);
 		const P123CmdData &data = static_cast<const P123CmdData &>(exec_data.payload);
-		return proc(exec_data.tile, exec_data.flags, data.p1, data.p2, data.p3, data.text.c_str(), nullptr);
+		return proc(exec_data.tile, exec_data.flags, data.p1, data.p2, data.p3, data.text.c_str());
 	};
 }
 

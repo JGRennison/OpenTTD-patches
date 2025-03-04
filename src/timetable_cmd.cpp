@@ -166,7 +166,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32_t va
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -489,7 +489,7 @@ static bool VehicleTimetableSorter(Vehicle * const &a, Vehicle * const &b)
  * @param text Not used.
  * @return The error or cost of the operation.
  */
-CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	bool timetable_all = HasBit(p1, 20);
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));

@@ -1503,7 +1503,7 @@ void SetRailStationTileFlags(TileIndex tile, const StationSpec *statspec)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	/* Unpack parameters */
 	RailType rt       = Extract<RailType, 0, 6>(p1);
@@ -2130,7 +2130,7 @@ static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID statio
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	bool type = HasBit(p2, 0);
 	bool is_drive_through = HasBit(p2, 1);

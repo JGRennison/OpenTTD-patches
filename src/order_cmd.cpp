@@ -937,7 +937,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleID veh          = GB(p1,  0, 20);
 	VehicleOrderID sel_ord = GB(p2,  0, 16);
@@ -1789,7 +1789,7 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	VehicleOrderID sel_ord = GB(p3,  0, 16);
 	VehicleID veh          = GB(p1,  0, 20);

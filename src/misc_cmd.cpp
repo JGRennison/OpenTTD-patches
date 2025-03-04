@@ -139,7 +139,7 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
  * @param text unused
  * @return zero cost or an error
  */
-CommandCost CmdSetCompanyMaxLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdSetCompanyMaxLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
@@ -244,7 +244,7 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	if (_networking && !_settings_game.difficulty.money_cheat_in_multiplayer) return CMD_ERROR;
 	if (flags & DC_EXEC) {
@@ -264,7 +264,7 @@ CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoneyCheatAdmin(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdMoneyCheatAdmin(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	if (flags & DC_EXEC) {
 		_cheats.money.been_used = true;
@@ -363,7 +363,7 @@ CommandCost CmdCheatSetting(DoCommandFlag flags, CheatNumbers cheat, uint32_t va
  * @param text unused
  * @return zero cost or an error
  */
-CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	int64_t delta = (int64_t)p3;
 	CompanyID company = (CompanyID) GB(p1, 0, 8);
@@ -402,7 +402,7 @@ CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32_t p
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	if (!_settings_game.economy.give_money) return CMD_ERROR;
 

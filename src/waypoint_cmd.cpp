@@ -201,7 +201,7 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	/* Unpack parameters */
 	Axis axis      = Extract<Axis, 6, 1>(p1);
@@ -351,7 +351,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
 {
 	StationID station_to_join = GB(p2, 16, 16);
 	uint8_t width  = GB(p1, 0, 8);
