@@ -1138,9 +1138,9 @@ TileIndex P123CmdData::GetErrorMessageTile() const
 	return this->p1;
 }
 
-void P123CmdData::SetClientID(uint32_t client_id)
+void P123CmdData::SetClientID(ClientID client_id)
 {
-	if (this->p2 == 0) this->p2 = client_id;
+	if (this->p2 == 0) this->p2 = static_cast<uint32_t>(client_id);
 }
 
 void P123CmdData::FormatDebugSummary(format_target &output) const

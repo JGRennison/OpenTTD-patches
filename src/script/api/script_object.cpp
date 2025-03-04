@@ -364,7 +364,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	/* Should the command be executed asynchronously? */
 	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ScriptType::GS;
 
-	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) payload.SetClientID(UINT32_MAX);
+	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) payload.SetClientID((ClientID)UINT32_MAX);
 
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {

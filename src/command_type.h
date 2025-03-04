@@ -21,6 +21,7 @@
 #include <type_traits>
 
 struct GRFFile;
+enum ClientID : uint32_t;
 
 enum CommandCostIntlFlags : uint8_t {
 	CCIF_NONE                     = 0,
@@ -827,7 +828,7 @@ struct CommandPayloadBase : public fmt_formattable {
 
 	virtual TileIndex GetErrorMessageTile() const { return INVALID_TILE; }
 
-	virtual void SetClientID(uint32_t client_id) { NOT_REACHED(); }
+	virtual void SetClientID(ClientID client_id) { NOT_REACHED(); }
 
 	/* FormatDebugSummary may be called when populating the crash log so should not allocate */
 	virtual void FormatDebugSummary(struct format_target &) const {}
@@ -873,7 +874,7 @@ struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	void SanitiseStrings(StringValidationSettings settings) override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 	TileIndex GetErrorMessageTile() const override;
-	void SetClientID(uint32_t client_id) override;
+	void SetClientID(ClientID client_id) override;
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
