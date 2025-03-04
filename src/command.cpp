@@ -137,6 +137,12 @@ static constexpr CommandPayloadTypeChecker *MakePayloadTypeCheck()
 	};
 }
 
+enum CommandIntlFlags : uint8_t {
+	CIF_NONE                = 0x0, ///< no flag is set
+	CIF_NO_OUTPUT_TILE      = 0x1, ///< command does not take a tile at the output side (omit when logging)
+};
+DECLARE_ENUM_AS_BIT_SET(CommandIntlFlags)
+
 struct CommandInfo {
 	CommandExecTrampoline *exec;                      ///< Command proc exec trampoline function
 	CommandPayloadDeserialiser *payload_deserialiser; ///< Command payload deserialiser
@@ -144,6 +150,7 @@ struct CommandInfo {
 	const char *name;                                 ///< A human readable name for the procedure
 	CommandFlags flags;                               ///< The (command) flags to that apply to this command
 	CommandType type;                                 ///< The type of command
+	CommandIntlFlags intl_flags;                      ///< Internal flags
 };
 
 /* Helpers to generate the master command table from the command traits. */
@@ -152,7 +159,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 {
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type };
+	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
 };
 
 template <typename T, T... i>
@@ -354,36 +361,42 @@ void ClearCommandLog()
 
 static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry &entry)
 {
-		auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
-			return entry.log_flags & flag ? c : '-';
-		};
+	const CommandInfo &cmd_info = _command_proc_table[entry.cmd];
 
-		auto script_fc = [&]() -> char {
-			if (!(entry.log_flags & CLEF_SCRIPT)) return '-';
-			return (entry.log_flags & CLEF_SCRIPT_ASYNC) ? 'A' : 'a';
-		};
+	auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
+		return entry.log_flags & flag ? c : '-';
+	};
 
-		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
-		buffer.format("{:4}-{:02}-{:02}, {:2}, {:3}", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		if (_networking) {
-			buffer.format(", {:08X}", entry.frame_counter);
-		}
-		buffer.format(" | {}{}{}{}{}{}{}{}{}{} | ",
-				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
-				script_fc(), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
-				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_NETWORK, 'n'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f')
-				);
-		buffer.format("cc: {:3}, lc: {:3}", (uint) entry.current_company, (uint) entry.local_company);
-		if (_network_server) {
-			buffer.format(", client: {:4}", entry.client_id);
-		}
+	auto script_fc = [&]() -> char {
+		if (!(entry.log_flags & CLEF_SCRIPT)) return '-';
+		return (entry.log_flags & CLEF_SCRIPT_ASYNC) ? 'A' : 'a';
+	};
+
+	EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
+	buffer.format("{:4}-{:02}-{:02}, {:2}, {:3}", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+	if (_networking) {
+		buffer.format(", {:08X}", entry.frame_counter);
+	}
+	buffer.format(" | {}{}{}{}{}{}{}{}{}{} | ",
+			fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
+			script_fc(), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+			fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_NETWORK, 'n'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f')
+			);
+	buffer.format("cc: {:3}, lc: {:3}", (uint) entry.current_company, (uint) entry.local_company);
+	if (_network_server) {
+		buffer.format(", client: {:4}", entry.client_id);
+	}
+	if (entry.tile != 0 || !(cmd_info.intl_flags & CIF_NO_OUTPUT_TILE)) {
 		buffer.format(" | {:{}} x {:{}} | ", TileX(entry.tile), MapDigitsX(), TileY(entry.tile), MapDigitsY());
-		buffer.format("cmd: 0x{:03X} {:<50} |", entry.cmd, GetCommandName(entry.cmd));
+	} else {
+		buffer.format(" |{:{}}| ", "", MapDigitsX() + MapDigitsY() + 5);
+	}
+	buffer.format("cmd: 0x{:03X} {:<50} |", entry.cmd, cmd_info.name);
 
-		if (!entry.summary.empty()) {
-			buffer.push_back(' ');
-			buffer.append(entry.summary);
-		}
+	if (!entry.summary.empty()) {
+		buffer.push_back(' ');
+		buffer.append(entry.summary);
+	}
 }
 
 static void DumpSubCommandLog(format_target &buffer, const CommandLog &cmd_log, const unsigned int count)
