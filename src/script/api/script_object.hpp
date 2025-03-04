@@ -176,10 +176,11 @@ protected:
 		}
 	};
 
+	/* Note that output_no_tile is used here instead of input_no_tile, because a tile index used only for error messages is not useful */
 	template <Commands Tcmd>
-	using Command = std::conditional_t<::CommandTraits<Tcmd>::no_tile,
+	struct Command : public std::conditional_t<::CommandTraits<Tcmd>::output_no_tile,
 			ScriptDoCommandHelperNoTile<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>,
-			ScriptDoCommandHelper<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>>;
+			ScriptDoCommandHelper<Tcmd, typename ::CommandTraits<Tcmd>::PayloadType::Tuple>> {};
 
 	/**
 	 * Store the latest command executed by the script.

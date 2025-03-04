@@ -2224,7 +2224,7 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictPr
  * @param text Label text for TRDCT_SET_TEXT
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t data, const std::string &text)
+CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t data, const std::string &text)
 {
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
 	if (ret.Failed()) {
@@ -2427,16 +2427,16 @@ static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestri
 }
 
 /**
- * Sub command for copy/share/unshare operations on signal tracerestrict programs.
- * @param tile The tile which contains the signal.
+ * Copy/share/unshare and related management operations on signal tracerestrict programs.
  * @param flags Internal command handler stuff.
+ * @param tile The tile which contains the signal.
  * @param track Track on the tile to apply to
  * @param type Operation type
  * @param source_tile Source tile, for share/copy operations
  * @param source_track Source track, for share/copy operations
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrictMgmt(TileIndex tile, DoCommandFlag flags, Track track, TraceRestrictMgmtDoCommandType type, TileIndex source_tile, Track source_track)
+CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlag flags, TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type, TileIndex source_tile, Track source_track)
 {
 	TraceRestrictRefId self = MakeTraceRestrictRefId(tile, track);
 	TraceRestrictRefId source = MakeTraceRestrictRefId(source_tile, source_track);
@@ -3102,12 +3102,11 @@ static bool IsUniqueSlotName(std::string_view name)
 
 /**
  * Create a new slot.
- * @param tile unused
  * @param flags type of operation
  * @param data command data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, const TraceRestrictCreateSlotCmdData &data)
+CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictCreateSlotCmdData &data)
 {
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (data.name.empty()) return CMD_ERROR;
@@ -3508,12 +3507,11 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 
 /**
  * Create a new counter.
- * @param tile unused
  * @param flags type of operation
  * @param data new counter data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, const TraceRestrictCreateCounterCmdData &data)
+CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestrictCreateCounterCmdData &data)
 {
 	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
 	if (data.name.empty()) return CMD_ERROR;

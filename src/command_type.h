@@ -891,7 +891,7 @@ namespace TupleCmdDataDetail {
 	 */
 	template <typename... T>
 	struct BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
-		using CommandProc = CommandCost(TileIndex, DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using CommandProc = CommandCost(DoCommandFlag, TileIndex, typename CommandProcTupleAdapter::replace_string_t<T>...);
 		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
 		using Tuple = std::tuple<T...>;
 		Tuple values;
@@ -953,7 +953,7 @@ private:
 
 	template <typename... Targs>
 	struct TupleHelper<std::tuple<Targs...>> {
-		using CommandProc = CommandCost(TileIndex, DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using CommandProc = CommandCost(DoCommandFlag, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 		using ValueTuple = std::tuple<std::remove_cvref_t<Targs>...>;
 		using ConstRefTuple = std::tuple<const std::remove_reference_t<Targs> &...>;
@@ -1095,7 +1095,9 @@ using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1
 using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text);
 
 template <typename T>
-using CommandProcDirect = CommandCost(TileIndex tile, DoCommandFlag flags, const T &data);
+using CommandProcDirect = CommandCost(DoCommandFlag flags, TileIndex tile, const T &data);
+template <typename T>
+using CommandProcDirectNoTile = CommandCost(DoCommandFlag flags, const T &data);
 
 #ifdef CMD_DEFINE
 #define DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \
@@ -1107,7 +1109,7 @@ template <> struct CommandHandlerTraits<cmd_> { \
 #define DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_)
 #endif
 
-#define DEF_CMD_PROC_GENERAL(cmd_, proctype_, proc_, payload_, flags_, type_, no_tile_) \
+#define DEF_CMD_PROC_GENERAL(cmd_, proctype_, proc_, payload_, flags_, type_, input_no_tile_, output_no_tile_) \
 proctype_ proc_; \
 DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \
 template <> struct CommandTraits<cmd_> { \
@@ -1115,20 +1117,43 @@ template <> struct CommandTraits<cmd_> { \
 	static constexpr Commands cmd = cmd_; \
 	static constexpr CommandFlags flags = flags_; \
 	static constexpr CommandType type = type_; \
-	static constexpr bool no_tile = no_tile_; \
+	static constexpr bool input_no_tile = input_no_tile_; \
+	static constexpr bool output_no_tile = output_no_tile_; \
 };
 
-#define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_, false)
-#define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_, false)
-#define DEF_CMD_DIRECT(cmd_, proc_, flags_, type_, payload_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_, false)
+#define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_, false, false)
+#define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_, false, false)
+
+/*
+ * Command macro variants:
+ *
+ * DEF_CMD_TUPLE:
+ * Command<...>::Do/Post assemble the payload according the payload's Tuple typedef, using Payload::Make(...).
+ * The payload is unpacked at the other end for the call to the handler.
+ *
+ * DEF_CMD_DIRECT:
+ * The payload is passed to DoCommand/DoCommandP directly and forwarded to the command handler as a `const T &` with no packing/unpacking
+ *
+ * Suffixes:
+ * <none>: Normal command, call and handler both use the tile index
+ * _LT:    Location tile only, the call on the input side uses the tile index (for error message location, etc), but this is not passed to the command handler. For scripts the tile index is omitted.
+ * _NT:    No tile, neither the call nor handler use the tile index
+ */
+
+#define DEF_CMD_DIRECT(cmd_, proc_, flags_, type_, payload_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirect<payload_>, proc_, payload_, flags_, type_, false, false)
+#define DEF_CMD_DIRECT_LT(cmd_, proc_, flags_, type_, payload_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirectNoTile<payload_>, proc_, payload_, flags_, type_, false, true)
+#define DEF_CMD_DIRECT_NT(cmd_, proc_, flags_, type_, payload_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcDirectNoTile<payload_>, proc_, payload_, flags_, type_, true, true)
 
 /* The .../__VA_ARGS__ part is the payload type, this is to support template types which include comma ',' characters. */
 #define DEF_CMD_TUPLE(cmd_, proc_, flags_, type_, ...) \
 namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
-DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProc, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, false)
+DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProc, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, false, false)
+#define DEF_CMD_TUPLE_LT(cmd_, proc_, flags_, type_, ...) \
+namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
+DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, false, true)
 #define DEF_CMD_TUPLE_NT(cmd_, proc_, flags_, type_, ...) \
 namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
-DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, true)
+DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, true, true)
 
 DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)

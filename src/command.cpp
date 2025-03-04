@@ -81,7 +81,17 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 	return [](const CommandExecData &exec_data) -> CommandCost
 	{
 		const T &data = static_cast<const T &>(exec_data.payload);
-		return proc(exec_data.tile, exec_data.flags, data);
+		return proc(exec_data.flags, exec_data.tile, data);
+	};
+}
+
+template <typename T, CommandProcDirectNoTile<T> proc, bool no_tile>
+static constexpr CommandExecTrampoline *MakeTrampoline()
+{
+	return [](const CommandExecData &exec_data) -> CommandCost
+	{
+		const T &data = static_cast<const T &>(exec_data.payload);
+		return proc(exec_data.flags, data);
 	};
 }
 
@@ -91,7 +101,7 @@ CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlag fla
 	if constexpr (no_tile) {
 		return proc(flags, std::get<Tindices>(payload.GetValues())...);
 	} else {
-		return proc(tile, flags, std::get<Tindices>(payload.GetValues())...);
+		return proc(flags, tile, std::get<Tindices>(payload.GetValues())...);
 	}
 }
 
@@ -142,7 +152,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 {
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type };
+	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type };
 };
 
 template <typename T, T... i>

@@ -23,13 +23,13 @@ struct PlanLineCmdData final : public CommandPayloadSerialisable<PlanLineCmdData
 	void FormatDebugSummary(format_target &output) const override;
 };
 
-DEF_CMD_PROC  (CMD_ADD_PLAN,               CmdAddPlan,                         {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_DIRECT(CMD_ADD_PLAN_LINE,          CmdAddPlanLine,            CMD_NO_TEST, CMDT_OTHER_MANAGEMENT, PlanLineCmdData)
-DEF_CMD_PROC  (CMD_REMOVE_PLAN,            CmdRemovePlan,                      {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_PROC  (CMD_REMOVE_PLAN_LINE,       CmdRemovePlanLine,                  {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_PROC  (CMD_CHANGE_PLAN_VISIBILITY, CmdChangePlanVisibility,            {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_PROC  (CMD_CHANGE_PLAN_COLOUR,     CmdChangePlanColour,                {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_PROC  (CMD_RENAME_PLAN,            CmdRenamePlan,                      {}, CMDT_OTHER_MANAGEMENT)
-DEF_CMD_PROC  (CMD_ACQUIRE_UNOWNED_PLAN,   CmdAcquireUnownedPlan,   CMD_SERVER_NS, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_ADD_PLAN,               CmdAddPlan,                         {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_DIRECT_NT(CMD_ADD_PLAN_LINE,          CmdAddPlanLine,            CMD_NO_TEST, CMDT_OTHER_MANAGEMENT, PlanLineCmdData)
+DEF_CMD_PROC     (CMD_REMOVE_PLAN,            CmdRemovePlan,                      {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_REMOVE_PLAN_LINE,       CmdRemovePlanLine,                  {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_CHANGE_PLAN_VISIBILITY, CmdChangePlanVisibility,            {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_CHANGE_PLAN_COLOUR,     CmdChangePlanColour,                {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_RENAME_PLAN,            CmdRenamePlan,                      {}, CMDT_OTHER_MANAGEMENT)
+DEF_CMD_PROC     (CMD_ACQUIRE_UNOWNED_PLAN,   CmdAcquireUnownedPlan,   CMD_SERVER_NS, CMDT_OTHER_MANAGEMENT)
 
 #endif /* PLANS_CMD_H */

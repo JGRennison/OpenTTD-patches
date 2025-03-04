@@ -667,13 +667,13 @@ static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
 
 /** Insert a signal instruction into the signal program.
  *
- * @param tile The Tile on which to perform the operation
  * @param flags Command flags
+ * @param tile The Tile on which to perform the operation
  * @param track Which track the signal sits on
  * @param instruction_id ID of instruction to insert before
  * @param op Which opcode to create
  */
-CommandCost CmdProgPresigInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id, SignalOpcode op)
+CommandCost CmdProgPresigInsertSignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, SignalOpcode op)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -722,15 +722,15 @@ CommandCost CmdProgPresigInsertSignalInstruction(TileIndex tile, DoCommandFlag f
 
 /** Modify a signal instruction
  *
- * @param tile The Tile on which to perform the operation
  * @param flags Command flags
+ * @param tile The Tile on which to perform the operation
  * @param track Which track the signal sits on
  * @param instruction_id ID of instruction
  * @param mode Mode of operation
  * @param value Value
  * @param target_td Target trackdir (for PPMCT_SIGNAL_LOCATION)
  */
-CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id, ProgPresigModifyCommandType mode, uint32_t value, Trackdir target_td)
+CommandCost CmdProgPresigModifySignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, ProgPresigModifyCommandType mode, uint32_t value, Trackdir target_td)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -902,12 +902,12 @@ CommandCost CmdProgPresigModifySignalInstruction(TileIndex tile, DoCommandFlag f
 
 /** Remove an instruction from a signal program
  *
- * @param tile The Tile on which to perform the operation
  * @param flags Command flags
+ * @param tile The Tile on which to perform the operation
  * @param track Which track the signal sits on
  * @param instruction_id ID of instruction
  */
-CommandCost CmdProgPresigRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, Track track, uint32_t instruction_id)
+CommandCost CmdProgPresigRemoveSignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -1027,14 +1027,14 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
 
 /** Insert a signal instruction into the signal program.
  *
- * @param tile The Tile on which to perform the operation
  * @param flags Command flags
+ * @param tile The Tile on which to perform the operation
  * @param track Which track the signal sits on
  * @param mgmt Management code
  * @param src_tile Tile of clone source signal
  * @param src_track Track of clone source signal
  */
-CommandCost CmdProgPresigSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, Track track, ProgPresigMgmtCommandType mgmt, TileIndex src_tile, Track src_track)
+CommandCost CmdProgPresigSignalProgramMgmt(DoCommandFlag flags, TileIndex tile, Track track, ProgPresigMgmtCommandType mgmt, TileIndex src_tile, Track src_track)
 {
 	bool exec = (flags & DC_EXEC) != 0;
 

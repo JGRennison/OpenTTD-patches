@@ -43,17 +43,16 @@ bool AddPlanLine(PlanID plan, std::vector<TileIndex> tiles)
 	PlanLineCmdData data;
 	data.plan = plan;
 	data.tiles = std::move(tiles);
-	return DoCommandP<CMD_ADD_PLAN_LINE>(0, data, STR_NULL);
+	return DoCommandP<CMD_ADD_PLAN_LINE>(data, STR_NULL);
 }
 
 /**
  * Create a new line in a plan.
- * @param tile unused
  * @param flags type of operation
  * @param data plan data
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, const PlanLineCmdData &data)
+CommandCost CmdAddPlanLine(DoCommandFlag flags, const PlanLineCmdData &data)
 {
 	Plan *p = Plan::GetIfValid(data.plan);
 	if (p == nullptr) return CMD_ERROR;
