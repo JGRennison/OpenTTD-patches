@@ -300,7 +300,7 @@
 /* static */ bool ScriptCompany::SetAutoRenewStatus(bool autorenew)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew", autorenew ? 1 : 0);
+	return ScriptObject::Command<CMD_CHANGE_COMPANY_SETTING>::Do("company.engine_renew", autorenew ? 1 : 0);
 }
 
 /* static */ bool ScriptCompany::GetAutoRenewStatus(CompanyID company)
@@ -316,7 +316,7 @@
 	EnforceCompanyModeValid(false);
 	months = Clamp<SQInteger>(months, INT16_MIN, INT16_MAX);
 
-	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew_months", months);
+	return ScriptObject::Command<CMD_CHANGE_COMPANY_SETTING>::Do("company.engine_renew_months", months);
 }
 
 /* static */ SQInteger ScriptCompany::GetAutoRenewMonths(CompanyID company)
@@ -332,7 +332,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, money >= 0);
 	EnforcePrecondition(false, (int64_t)money <= UINT32_MAX);
-	return ScriptObject::Command<CMD_CHANGE_SETTING>::Do("company.engine_renew_money", money);
+	return ScriptObject::Command<CMD_CHANGE_COMPANY_SETTING>::Do("company.engine_renew_money", money);
 }
 
 /* static */ Money ScriptCompany::GetAutoRenewMoney(CompanyID company)
