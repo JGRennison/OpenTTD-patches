@@ -23,7 +23,7 @@
 #include "company_base.h"
 #include "string_func.h"
 #include "scope_info.h"
-#include "order_cmd.h"
+#include "order_dest_func.h"
 #include "strings_func.h"
 #include "scope.h"
 

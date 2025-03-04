@@ -35,7 +35,7 @@
 #include "order_backup.h"
 #include "cheat_type.h"
 #include "viewport_func.h"
-#include "order_cmd.h"
+#include "order_dest_func.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
 #include "train.h"

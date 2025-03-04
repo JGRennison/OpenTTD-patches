@@ -359,6 +359,7 @@ add_files(
     order_base.h
     order_cmd.cpp
     order_cmd.h
+    order_dest_func.h
     order_func.h
     order_gui.cpp
     order_type.h
