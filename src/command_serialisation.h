@@ -18,12 +18,6 @@
 #include "3rdparty/fmt/ranges.h"
 
 namespace TupleCmdDataDetail {
-	template <typename T, size_t... Tindices>
-	void SerialiseTuple(const T &values, BufferSerialisationRef buffer, std::index_sequence<Tindices...>)
-	{
-		((buffer.Send_generic(std::get<Tindices>(values))), ...);
-	}
-
 	template <typename U>
 	void SanitiseGeneric(U &value, StringValidationSettings settings)
 	{
@@ -36,12 +30,6 @@ namespace TupleCmdDataDetail {
 	void SanitiseStringsTuple(const T &values, StringValidationSettings settings, std::index_sequence<Tindices...>)
 	{
 		((SanitiseGeneric(std::get<Tindices>(values), settings)), ...);
-	}
-
-	template <typename T, size_t... Tindices>
-	void DeserialiseTuple(T &values, DeserialisationBuffer &buffer, StringValidationSettings default_string_validation, std::index_sequence<Tindices...>)
-	{
-		((buffer.Recv_generic(std::get<Tindices>(values), default_string_validation)), ...);
 	}
 
 	template<typename T, size_t Tindex>
@@ -81,7 +69,7 @@ namespace TupleCmdDataDetail {
 template <typename... T>
 void TupleCmdDataDetail::BaseTupleCmdData<T...>::Serialise(BufferSerialisationRef buffer) const
 {
-	TupleCmdDataDetail::SerialiseTuple(this->values, buffer, std::index_sequence_for<T...>{});
+	buffer.Send_generic(this->values);
 }
 
 template <typename... T>
@@ -93,14 +81,14 @@ void TupleCmdDataDetail::BaseTupleCmdData<T...>::SanitiseStrings(StringValidatio
 template <typename... T>
 bool TupleCmdDataDetail::BaseTupleCmdData<T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	TupleCmdDataDetail::DeserialiseTuple(this->values, buffer, default_string_validation, std::index_sequence_for<T...>{});
+	buffer.Recv_generic(this->values, default_string_validation);
 	return true;
 }
 
 template <typename Parent, typename T>
 void TupleRefCmdData<Parent, T>::Serialise(BufferSerialisationRef buffer) const
 {
-	TupleCmdDataDetail::SerialiseTuple(this->GetValues(), buffer, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
+	buffer.Send_generic(this->GetValues());
 }
 
 template <typename Parent, typename T>
@@ -113,7 +101,7 @@ template <typename Parent, typename T>
 bool TupleRefCmdData<Parent, T>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	auto values = this->GetValues(); // This is a std::tie type tuple
-	TupleCmdDataDetail::DeserialiseTuple(values, buffer, default_string_validation, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
+	buffer.Recv_generic(values, default_string_validation);
 	return true;
 }
 

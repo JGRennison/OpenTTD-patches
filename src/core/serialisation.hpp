@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <string>
+#include <tuple>
 #include <limits>
 
 void   BufferSend_bool  (std::vector<uint8_t> &buffer, size_t limit, bool     data);
@@ -129,6 +130,15 @@ struct BufferSerialisationHelper {
 		} else {
 			this->Send_generic_integer(data);
 		}
+	}
+
+	template <typename... V>
+	void Send_generic(const std::tuple<V...> &data)
+	{
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((this->Send_generic(std::get<Tindices>(data))), ...);
+		};
+		handler(std::index_sequence_for<V...>{});
 	}
 
 	size_t GetSendOffset() const
@@ -426,6 +436,15 @@ public:
 		} else {
 			this->Recv_generic_integer(data);
 		}
+	}
+
+	template <typename... V>
+	void Recv_generic(std::tuple<V...> &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	{
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((this->Recv_generic(std::get<Tindices>(data), settings)), ...);
+		};
+		handler(std::index_sequence_for<V...>{});
 	}
 
 	struct DeserialisationBuffer BorrowAsDeserialisationBuffer();
