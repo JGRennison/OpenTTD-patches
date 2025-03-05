@@ -829,7 +829,7 @@ public:
 						std::stringstream buffer;
 						buffer << t.rdbuf();
 
-						veh->orders->FromJSONString(veh, buffer.str());
+						veh->orders->FromJSONString(buffer.str());
 					}
 
 					this->Close();

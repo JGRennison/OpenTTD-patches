@@ -1182,7 +1182,7 @@ public:
 	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
 
 	std::string ToJSONString();
-	static void FromJSONString(const Vehicle* v,std::string str);
+	void FromJSONString(std::string str);
 
 	/**
 	 * Is this a shared order list?

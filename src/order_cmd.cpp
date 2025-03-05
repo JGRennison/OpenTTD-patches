@@ -1316,11 +1316,12 @@ std::string OrderList::ToJSONString()
 
 }
 
-void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
+void OrderList::FromJSONString(std::string json_str)
 {
+	const Vehicle *v = this->GetFirstSharedVehicle();
 
 	Order errOrder;
-
+	
 	errOrder.MakeLabel(OLST_TEXT);
 	errOrder.SetColour(COLOUR_RED);
 
