@@ -3417,33 +3417,13 @@ public:
 			Command<CMD_MODIFY_ORDER>::Post(STR_ERROR_CAN_T_MODIFY_THIS_ORDER, this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), MOF_LABEL_TEXT, {}, {}, *str);
 		}
 
-		if ((this->query_text_widget == WID_O_COND_SLOT || this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_SLOT || this->query_text_widget == WID_O_CHANGE_COUNTER)
-				&& str.has_value() && !str->empty()) {
-			ModifyOrderFlags mof;
-			switch (this->query_text_widget) {
-				case WID_O_COND_SLOT:
-					mof = MOF_COND_VALUE;
-					break;
+		if (!str.has_value() || str->empty()) return;
 
-				case WID_O_COND_COUNTER:
-					mof = MOF_COND_VALUE_2;
-					break;
-
-				case WID_O_SLOT:
-					mof = MOF_SLOT;
-					break;
-
-				case WID_O_CHANGE_COUNTER:
-					mof = MOF_COUNTER_ID;
-					break;
-
-				default:
-					NOT_REACHED();
-			}
+		auto create_slot_counter = [&](ModifyOrderFlags mof, bool counter) {
 			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
 			Payload follow_up_payload = Payload::Make(this->vehicle->index, this->OrderGetSel(), mof, {}, {}, {});
 			TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Payload>{ CMD_MODIFY_ORDER, (StringID)0, this->vehicle->tile, std::move(follow_up_payload) } };
-			if (this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_CHANGE_COUNTER) {
+			if (counter) {
 				TraceRestrictCreateCounterCmdData data;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(follow_up);
@@ -3456,6 +3436,26 @@ public:
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}
+		};
+		switch (this->query_text_widget) {
+			case WID_O_COND_SLOT:
+				create_slot_counter(MOF_COND_VALUE, false);
+				break;
+
+			case WID_O_COND_COUNTER:
+				create_slot_counter(MOF_COND_VALUE_2, true);
+				break;
+
+			case WID_O_SLOT:
+				create_slot_counter(MOF_SLOT, false);
+				break;
+
+			case WID_O_CHANGE_COUNTER:
+				create_slot_counter(MOF_COUNTER_ID, true);
+				break;
+
+			default:
+				break;
 		}
 	}
 
