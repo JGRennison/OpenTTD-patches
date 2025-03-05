@@ -42,10 +42,11 @@
 #include <array>
 
 #include "league_cmd.h"
+#include "order_cmd.h"
+#include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
 #include "settings_cmd.h"
 #include "tracerestrict_cmd.h"
-#include "plans_cmd.h"
 
 #include "table/strings.h"
 

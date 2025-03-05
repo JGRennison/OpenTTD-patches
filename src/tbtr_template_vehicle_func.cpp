@@ -19,6 +19,7 @@
 #include "debug.h"
 #include "depot_base.h"
 #include "gfx_func.h"
+#include "order_cmd.h"
 #include "newgrf.h"
 #include "spritecache.h"
 #include "strings_func.h"
@@ -269,7 +270,7 @@ Train *TemplateDepotVehicles::ContainsEngine(EngineID eid, Train *not_in)
 void NeutralizeStatus(Train *t)
 {
 	DoCommandOld(t->tile, DEFAULT_GROUP, t->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
-	DoCommandOld(0, t->index | CO_UNSHARE << 30, 0, DC_EXEC, CMD_CLONE_ORDER);
+	Command<CMD_CLONE_ORDER>::Do(DC_EXEC, CO_SHARE, t->index, INVALID_VEHICLE);
 	DoCommandOld(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, nullptr);
 }
 

@@ -604,9 +604,6 @@ public:
 	 * @see ScriptEngine::GetMaximumOrderDistance and ScriptVehicle::GetMaximumOrderDistance
 	 */
 	static SQInteger GetOrderDistance(ScriptVehicle::VehicleType vehicle_type, TileIndex origin_tile, TileIndex dest_tile);
-
-protected:
-	static bool ScriptOrderModifyOrder(VehicleID vehicle_id, VehicleOrderID order_position, uint32_t p2, Script_SuspendCallbackProc *callback = nullptr);
 };
 DECLARE_ENUM_AS_BIT_SET(ScriptOrder::ScriptOrderFlags)
 

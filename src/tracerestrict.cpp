@@ -23,6 +23,7 @@
 #include "window_func.h"
 #include "order_base.h"
 #include "order_backup.h"
+#include "order_cmd.h"
 #include "cargotype.h"
 #include "group.h"
 #include "string_func.h"
@@ -3664,7 +3665,8 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
 			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
 				Payload payload = *src;
-				SB(payload.p2, 8, 16, value);
+				uint16_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
+				cmd_value = value;
 				return DoCommand<CMD_MODIFY_ORDER>(this->cmd.tile, payload, flags);
 			}
 			break;

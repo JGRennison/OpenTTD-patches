@@ -5,11 +5,52 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file order_cmd.h Functions related to order commands. */
+/** @file order_cmd.h Command definitions related to orders. */
 
 #ifndef ORDER_CMD_H
 #define ORDER_CMD_H
 
+#include "command_type.h"
+#include "order_base.h"
+#include "order_type.h"
 
+enum class ReverseOrderOperation : uint8_t {
+	Reverse,
+	AppendReversed,
+};
+
+struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderCmdData> {
+	VehicleID veh;
+	VehicleOrderID sel_ord;
+	typename TupleTypeAdapter<decltype(std::declval<Order>().GetCmdRefTuple())>::Value new_order;
+
+	InsertOrderCmdData() = default;
+	InsertOrderCmdData(VehicleID veh, VehicleOrderID sel_ord, const Order &order) :
+			veh(veh), sel_ord(sel_ord), new_order(const_cast<Order &>(order).GetCmdRefTuple()) {}
+
+	void Serialise(BufferSerialisationRef buffer) const override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void FormatDebugSummary(struct format_target &) const override;
+};
+
+struct ClearOrderBackupCmdData final : public AutoFmtTupleCmdData<ClearOrderBackupCmdData, TCDF_NONE, ClientID> {
+	void SetClientID(ClientID client_id) override
+	{
+		ClientID &cid = std::get<0>(this->GetValues());
+		if (cid == (ClientID)0) cid = client_id;
+	}
+};
+
+DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,       CmdModifyOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoID, std::string>)
+DEF_CMD_TUPLE_LT (CMD_SKIP_TO_ORDER,      CmdSkipToOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_DELETE_ORDER,       CmdDeleteOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_DIRECT_LT(CMD_INSERT_ORDER,       CmdInsertOrder,                     {}, CMDT_ROUTE_MANAGEMENT, InsertOrderCmdData)
+DEF_CMD_TUPLE_LT (CMD_ORDER_REFIT,        CmdOrderRefit,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, CargoID>)
+DEF_CMD_TUPLE_LT (CMD_CLONE_ORDER,        CmdCloneOrder,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<CloneOptions, VehicleID, VehicleID>)
+DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,         CmdMoveOrder,                       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_REVERSE_ORDER_LIST, CmdReverseOrderList,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, ReverseOrderOperation>)
+DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,    CmdDuplicateOrder,                  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,  CmdMassChangeOrder,                 {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<DestinationID, VehicleType, OrderType, CargoID, DestinationID>)
+DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP, CmdClearOrderBackup,     CMD_CLIENT_ID, CMDT_SERVER_SETTING,   ClearOrderBackupCmdData)
 
 #endif /* ORDER_CMD_H */

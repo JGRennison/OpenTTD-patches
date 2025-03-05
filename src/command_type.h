@@ -1203,14 +1203,6 @@ DEF_CMD_PROC  (CMD_MOVE_RAIL_VEHICLE, CmdMoveRailVehicle,                       
 DEF_CMD_PROC  (CMD_FORCE_TRAIN_PROCEED, CmdForceTrainProceed,                              {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_REVERSE_TRAIN_DIRECTION, CmdReverseTrainDirection,                          {}, CMDT_VEHICLE_MANAGEMENT    )
 
-DEF_CMD_PROC  (CMD_CLEAR_ORDER_BACKUP, CmdClearOrderBackup,                   CMD_CLIENT_ID, CMDT_SERVER_SETTING        )
-DEF_CMD_PROCEX(CMD_MODIFY_ORDER, CmdModifyOrder,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SKIP_TO_ORDER, CmdSkipToOrder,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_DELETE_ORDER, CmdDeleteOrder,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_INSERT_ORDER, CmdInsertOrder,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_DUPLICATE_ORDER, CmdDuplicateOrder,                                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_MASS_CHANGE_ORDER, CmdMassChangeOrder,                                {}, CMDT_ROUTE_MANAGEMENT      )
-
 DEF_CMD_PROC  (CMD_CHANGE_SERVICE_INT, CmdChangeServiceInt,                               {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_BUILD_INDUSTRY, CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
@@ -1266,9 +1258,6 @@ DEF_CMD_PROC  (CMD_TOWN_SET_TEXT, CmdTownSetText,    CMD_LOG_AUX | CMD_STR_CTRL 
 DEF_CMD_PROC  (CMD_EXPAND_TOWN, CmdExpandTown,                             CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_DELETE_TOWN, CmdDeleteTown,                           CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PLACE_HOUSE, CmdPlaceHouse,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_ORDER_REFIT, CmdOrderRefit,                                     {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_CLONE_ORDER, CmdCloneOrder,                                     {}, CMDT_ROUTE_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_CLEAR_AREA, CmdClearArea,                            CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // destroying multi-tile houses makes town rating differ between test and execution
 
@@ -1347,8 +1336,6 @@ DEF_CMD_PROC  (CMD_ADD_SHARED_VEHICLE_GROUP, CmdAddSharedVehicleGroup,          
 DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,                         {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_MOVE_ORDER, CmdMoveOrder,                                      {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_REVERSE_ORDER_LIST, CmdReverseOrderList,                               {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROCEX(CMD_CHANGE_TIMETABLE, CmdChangeTimetable,                                {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_BULK_CHANGE_TIMETABLE, CmdBulkChangeTimetable,                            {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_VEHICLE_ON_TIME, CmdSetVehicleOnTime,                               {}, CMDT_ROUTE_MANAGEMENT      )

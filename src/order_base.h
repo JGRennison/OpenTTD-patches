@@ -234,6 +234,12 @@ public:
 		return *this;
 	}
 
+	auto GetCmdRefTuple()
+	{
+		return std::tie(this->type, this->flags, this->dest, this->refit_cargo, this->wait_time, this->travel_time, this->max_speed);
+	}
+	static constexpr char CMD_TUPLE_FMT[] = "t: {:X}, f: {:X}, d: {}, r: {}, ({}, {}, {})";
+
 	/**
 	 * Check whether this order is of the given type.
 	 * @param type the type to check against.
@@ -714,7 +720,7 @@ public:
 	}
 
 	const char *GetLabelText() const;
-	void SetLabelText(const char *text);
+	void SetLabelText(std::string_view text);
 
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;

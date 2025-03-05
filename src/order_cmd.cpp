@@ -33,6 +33,7 @@
 #include "company_base.h"
 #include "infrastructure_func.h"
 #include "order_backup.h"
+#include "order_cmd.h"
 #include "cheat_type.h"
 #include "viewport_func.h"
 #include "order_dest_func.h"
@@ -399,11 +400,11 @@ const char *Order::GetLabelText() const
 	return text;
 }
 
-void Order::SetLabelText(const char *text)
+void Order::SetLabelText(std::string_view text)
 {
 	assert(this->IsType(OT_LABEL) && this->GetLabelSubType() == OLST_TEXT);
 	this->CheckExtraInfoAlloced();
-	strecpy((char *)(this->extra->cargo_type_flags), text, (char *)(lastof(this->extra->cargo_type_flags)));
+	strecpy(std::span((char *)(this->extra->cargo_type_flags), lengthof(this->extra->cargo_type_flags)), text);
 }
 
 /**
@@ -926,42 +927,25 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
 
 /**
  * Add an order to the orderlist of a vehicle.
- * @param tile unused
- * @param flags operation to perform
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0 - 19) - ID of the vehicle
- * @param p2 various bitstuffed elements
- *  - p2 = (bit 0 - 15) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one
- * @param p3 packed order to insert
- * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdInsertOrder(DoCommandFlag flags, const InsertOrderCmdData &data)
 {
-	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p2,  0, 16);
-	Order new_order(p3);
+	Order new_order{};
+	new_order.GetCmdRefTuple() = data.new_order;
 
-	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, CIOIF_NONE);
+	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(data.veh), data.sel_ord, new_order, CIOIF_NONE);
 }
 
 /**
  * Duplicate an order in the orderlist of a vehicle.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0 - 19) - ID of the vehicle
- * @param p2 various bitstuffed elements
- *  - p2 = (bit 0 - 15) - The order to duplicate
- * @param text unused
+ * @param veh_id ID of the vehicle
+ * @param sel_ord The order to duplicate
  * @return the cost of this operation or an error
  */
-CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdDuplicateOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
-	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -1429,18 +1413,13 @@ static CargoID GetFirstValidCargo()
 
 /**
  * Delete an order from the orderlist of a vehicle.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 the ID of the vehicle
- * @param p2 the order to delete
- * @param text unused
+ * @param veh_id the ID of the vehicle
+ * @param sel_ord the order to delete
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdDeleteOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
-	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -1552,18 +1531,13 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 
 /**
  * Goto order of order-list.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 The ID of the vehicle which order is skipped
- * @param p2 the selected order to which we want to skip
- * @param text unused
+ * @param veh_id The ID of the vehicle which order is skipped
+ * @param sel_ord the selected order to which we want to skip
  * @return the cost of this operation or an error
  */
-CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSkipToOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
-	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
 	if (v == nullptr || !v->IsPrimaryVehicle() || sel_ord == v->cur_implicit_order_index || sel_ord >= v->GetNumOrders() || v->GetNumOrders() < 2) return CMD_ERROR;
@@ -1602,23 +1576,16 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 /**
  * Move an order inside the orderlist
- * @param tile unused
  * @param flags operation to perform
- * @param p1 the ID of the vehicle
- * @param p2 order to move and target
- *           bit 0-15  : the order to move
- *           bit 16-31 : the target order
- * @param text unused
+ * @param veh the ID of the vehicle
+ * @param moving_order the order to move
+ * @param target_order the target order
  * @return the cost of this operation or an error
  * @note The target order will move one place down in the orderlist
  *  if you move the order upwards else it'll move it one place down
  */
-CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdMoveOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID moving_order, VehicleOrderID target_order)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	VehicleOrderID moving_order = GB(p2,  0, 16);
-	VehicleOrderID target_order = GB(p2, 16, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -1708,36 +1675,30 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 /**
  * Reverse an orderlist
- * @param tile unused
  * @param flags operation to perform
- * @param p1 the ID of the vehicle
- * @param p2 subcommand
- *        0: reverse whole order list
- *        1: append reversed order list
- * @param text unused
+ * @param veh the ID of the vehicle
+ * @param op operation to perform
  * @return the cost of this operation or an error
  */
-CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdReverseOrderList(DoCommandFlag flags, VehicleID veh, ReverseOrderOperation op)
 {
-	VehicleID veh = GB(p1, 0, 20);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	uint order_count = v->GetNumOrders();
 
-	switch (p2) {
-		case 0: {
+	switch (op) {
+		case ReverseOrderOperation::Reverse: {
 			if (order_count < 2) return CMD_ERROR;
 			uint max_order = order_count - 1;
 			for (uint i = 0; i < max_order; i++) {
-				CommandCost cost = DoCommandOld(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
+				CommandCost cost = Command<CMD_MOVE_ORDER>::Do(flags, veh, max_order, i);
 				if (cost.Failed()) return cost;
 			}
 			break;
 		}
 
-		case 1: {
+		case ReverseOrderOperation::AppendReversed: {
 			if (order_count < 3) return CMD_ERROR;
 			uint max_order = order_count - 1;
 			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
@@ -1775,29 +1736,22 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 
 /**
  * Modify an order in the orderlist of a vehicle.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0  - 19) - ID of the vehicle
- * @param p2 various bitstuffed elements
- *  - p2 = (bit 0  -  7) - what data to modify (@see ModifyOrderFlags)
- *  - p2 = (bit 8  - 23) - the data to modify
- *  - p2 = (bit 24 - 31) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0  - 15) - the selected order (if any). If the last order is given,
- *                         the order will be inserted before that one
- * @param text unused
+ * @param veh ID of the vehicle
+ * @param sel_ord the selected order (if any). If the last order is given,
+ *                the order will be inserted before that one
+ *                the maximum vehicle order id is 254.
+ * @param mof what data to modify (@see ModifyOrderFlags)
+ * @param data the data to modify
+ * @param cargo for MOF_CARGO_TYPE_UNLOAD, MOF_CARGO_TYPE_LOAD
+ * @param text for MOF_LABEL_TEXT
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, CargoID cargo_id, const std::string &text)
 {
-	VehicleOrderID sel_ord = GB(p3,  0, 16);
-	VehicleID veh          = GB(p1,  0, 20);
-	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 8>(p2);
-	uint16_t data          = GB(p2,  8, 16);
-	CargoID cargo_id       = (mof == MOF_CARGO_TYPE_UNLOAD || mof == MOF_CARGO_TYPE_LOAD) ? (CargoID) GB(p2, 24, 8) : (CargoID) INVALID_CARGO;
-
 	if (mof >= MOF_END) return CMD_ERROR;
+
+	if (mof != MOF_LABEL_TEXT && !text.empty()) return CMD_ERROR;
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -2136,10 +2090,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 					order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
-						DoCommandEx(tile, v->index | (MTF_WAIT_TIME << 28) | (1 << 31), 0, p3, flags, CMD_CHANGE_TIMETABLE);
+						DoCommandEx(0, v->index | (MTF_WAIT_TIME << 28) | (1 << 31), 0, sel_ord, flags, CMD_CHANGE_TIMETABLE);
 					}
 					if (order->IsScheduledDispatchOrder(false)) {
-						DoCommandEx(tile, v->index | (MTF_ASSIGN_SCHEDULE << 28), -1, p3, flags, CMD_CHANGE_TIMETABLE);
+						DoCommandEx(0, v->index | (MTF_ASSIGN_SCHEDULE << 28), -1, sel_ord, flags, CMD_CHANGE_TIMETABLE);
 					}
 				}
 				break;
@@ -2409,7 +2363,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				break;
 
 			case MOF_LABEL_TEXT:
-				order->SetLabelText(text == nullptr ? "" : text);
+				order->SetLabelText(text);
 				break;
 
 			case MOF_DEPARTURES_SUBTYPE:
@@ -2534,7 +2488,7 @@ static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlag flags)
 	if (target_orders.empty()) return;
 
 	VehicleOrderID skip_to = target_orders[v->unitnumber % target_orders.size()];
-	DoCommandOld(v->tile, v->index, skip_to, flags, CMD_SKIP_TO_ORDER);
+	Command<CMD_SKIP_TO_ORDER>::Do(flags, v->index, skip_to);
 }
 
 static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle *dst)
@@ -2550,27 +2504,21 @@ static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle
 
 /**
  * Clone/share/copy an order-list of another vehicle.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0-19) - destination vehicle to clone orders to
- * - p1 = (bit 30-31) - action to perform
- * @param p2 source vehicle to clone orders from, if any (none for CO_UNSHARE)
- * @param text unused
+ * @param action action to perform
+ * @param veh_dst destination vehicle to clone orders to
+ * @param veh_src source vehicle to clone orders from, if any (none for CO_UNSHARE)
  * @return the cost of this operation or an error
  */
-CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID veh_dst, VehicleID veh_src)
 {
-	VehicleID veh_src = GB(p2, 0, 20);
-	VehicleID veh_dst = GB(p1, 0, 20);
-
 	Vehicle *dst = Vehicle::GetIfValid(veh_dst);
 	if (dst == nullptr || !dst->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(dst->owner);
 	if (ret.Failed()) return ret;
 
-	switch (GB(p1, 30, 2)) {
+	switch (action) {
 		case CO_SHARE: {
 			Vehicle *src = Vehicle::GetIfValid(veh_src);
 
@@ -2769,21 +2717,14 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 
 /**
  * Add/remove refit orders from an order
- * @param tile Not used
  * @param flags operation to perform
- * @param p1 VehicleIndex of the vehicle having the order
- * @param p2 bitmask
- *   - bit 0-7 CargoID
- *   - bit 16-31 number of order to modify
- * @param text unused
+ * @param veh VehicleIndex of the vehicle having the order
+ * @param order_number number of order to modify
+ * @param cargo CargoType
  * @return the cost of this operation or an error
  */
-CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdOrderRefit(DoCommandFlag flags, VehicleID veh, VehicleOrderID order_number, CargoID cargo)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	VehicleOrderID order_number  = GB(p2, 16, 16);
-	CargoID cargo = GB(p2, 0, 8);
-
 	if (cargo >= NUM_CARGO && cargo != CARGO_NO_REFIT && cargo != CARGO_AUTO_REFIT) return CMD_ERROR;
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
@@ -3915,26 +3856,16 @@ bool Order::CanLeaveWithCargo(bool has_cargo, CargoID cargo) const
 /**
  * Mass change the target of an order.
  * This implemented by adding a new order and if that succeeds deleting the previous one.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0 - 15) - The destination ID to change from
- * - p1 = (bit 16 - 18) - The vehicle type
- * - p1 = (bit 20 - 23) - The order type
- * - p1 = (bit 24 - 31) - Cargo filter
- * @param p2 various bitstuffed elements
-  * - p2 = (bit  0 - 15) - The destination ID to change to
- * @param text unused
+ * @param from_dest The destination ID to change from
+ * @param vehtype The vehicle type
+ * @param order_type The order type
+ * @param cargo_filter Cargo filter
+ * @param to_dest The destination ID to change to
  * @return the cost of this operation or an error
  */
-CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdMassChangeOrder(DoCommandFlag flags, DestinationID from_dest, VehicleType vehtype, OrderType order_type, CargoID cargo_filter, DestinationID to_dest)
 {
-	DestinationID from_dest = GB(p1, 0, 16);
-	VehicleType vehtype = Extract<VehicleType, 16, 3>(p1);
-	OrderType order_type = (OrderType) GB(p1, 20, 4);
-	CargoID cargo_filter = GB(p1, 24, 8);
-	DestinationID to_dest = GB(p2, 0, 16);
-
 	if (flags & DC_EXEC) {
 		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(vehtype)) {
 			if (v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
@@ -3950,7 +3881,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 						new_order.SetWaitTimetabled(false);
 						if (!new_order.IsTravelFixed()) new_order.SetTravelTimetabled(false);
 						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE | CIOIF_ALLOW_DUPLICATE_UNBUNCH).Succeeded()) {
-							DoCommandOld(0, v->index, index, flags, CMD_DELETE_ORDER);
+							Command<CMD_DELETE_ORDER>::Do(flags, v->index, index);
 
 							order = v->orders->GetOrderAt(index);
 							order->SetRefit(new_order.GetRefitCargo());
@@ -3997,4 +3928,30 @@ const char *GetOrderTypeName(OrderType order_type)
 	static_assert(lengthof(names) == OT_END);
 	if (order_type < OT_END) return names[order_type];
 	return "???";
+}
+
+void InsertOrderCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_generic(this->veh);
+	buffer.Send_generic(this->sel_ord);
+	buffer.Send_generic(this->new_order);
+}
+
+bool InsertOrderCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	buffer.Recv_generic(this->veh, default_string_validation);
+	buffer.Recv_generic(this->sel_ord, default_string_validation);
+	buffer.Recv_generic(this->new_order, default_string_validation);
+
+	return true;
+}
+
+void InsertOrderCmdData::FormatDebugSummary(format_target &output) const
+{
+	output.format("{}, {}, order: ", this->veh, this->sel_ord);
+
+	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+		output.format(Order::CMD_TUPLE_FMT, std::get<Tindices>(this->new_order)...);
+	};
+	handler(std::make_index_sequence<std::tuple_size_v<decltype(this->new_order)>>{});
 }

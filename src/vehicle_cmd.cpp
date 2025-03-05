@@ -26,6 +26,7 @@
 #include "autoreplace_gui.h"
 #include "group.h"
 #include "order_backup.h"
+#include "order_cmd.h"
 #include "infrastructure_func.h"
 #include "ship.h"
 #include "newgrf.h"
@@ -1651,7 +1652,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		 * the vehicle refitted before doing this, otherwise the moved
 		 * cargo types might not match (passenger vs non-passenger)
 		 */
-		CommandCost result = DoCommandOld(0, w_front->index | (p2 & 1 ? CO_SHARE : CO_COPY) << 30, v_front->index, flags, CMD_CLONE_ORDER);
+		CommandCost result = Command<CMD_CLONE_ORDER>::Do(flags, (p2 & 1 ? CO_SHARE : CO_COPY), w_front->index, v_front->index);
 		if (result.Failed()) {
 			/* The vehicle has already been bought, so now it must be sold again. */
 			DoCommandOld(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
