@@ -236,9 +236,9 @@ public:
 
 	auto GetCmdRefTuple()
 	{
-		return std::tie(this->type, this->flags, this->dest, this->refit_cargo, this->wait_time, this->travel_time, this->max_speed);
+		return std::tie(this->type, this->flags, this->dest);
 	}
-	static constexpr char CMD_TUPLE_FMT[] = "t: {:X}, f: {:X}, d: {}, r: {}, ({}, {}, {})";
+	static constexpr char CMD_TUPLE_FMT[] = "t: {:X}, f: {:X}, d: {}";
 
 	/**
 	 * Check whether this order is of the given type.
