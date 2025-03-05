@@ -591,10 +591,10 @@ enum Commands : uint16_t {
 	CMD_ALTER_TRACERESTRICT_COUNTER,  ///< alter a tracerestrict counter
 	CMD_DELETE_TRACERESTRICT_COUNTER, ///< delete a tracerestrict counter
 
-	CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION,   ///< insert a signal instruction
-	CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION,   ///< modifies a signal instruction
-	CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION,   ///< removes a signal instruction
-	CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT,         ///< signal program management command
+	CMD_PROGPRESIG_INSERT_INSTRUCTION,          ///< insert a signal instruction
+	CMD_PROGPRESIG_MODIFY_INSTRUCTION,          ///< modifies a signal instruction
+	CMD_PROGPRESIG_REMOVE_INSTRUCTION,          ///< removes a signal instruction
+	CMD_PROGPRESIG_PROGRAM_MGMT,                ///< signal program management command
 
 	CMD_SCH_DISPATCH,                           ///< scheduled dispatch start
 	CMD_SCH_DISPATCH_ADD,                       ///< scheduled dispatch add

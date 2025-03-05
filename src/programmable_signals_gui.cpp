@@ -295,7 +295,7 @@ public:
 				SignalInstruction *ins = GetSelected();
 				if (ins == nullptr) return;
 
-				Command<CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, ins->Id());
+				Command<CMD_PROGPRESIG_REMOVE_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, ins->Id());
 				break;
 			}
 
@@ -400,7 +400,7 @@ public:
 			}
 
 			case PROGRAM_WIDGET_REMOVE_PROGRAM: {
-				Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, PPMGMTCT_REMOVE, {}, {});
+				Command<CMD_PROGPRESIG_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION, this->tile, this->track, PPMGMTCT_REMOVE, {}, {});
 				break;
 			}
 
@@ -453,7 +453,7 @@ public:
 			}
 			ResetObjectToPlace();
 			this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COPY_PROGRAM);
-			Command<CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, PPMGMTCT_CLONE, tile1, track1);
+			Command<CMD_PROGPRESIG_PROGRAM_MGMT>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, PPMGMTCT_CLONE, tile1, track1);
 			//OnPaint(); // this appears to cause visual artefacts
 			return;
 		}
@@ -499,7 +499,7 @@ public:
 			return;
 		}
 
-		Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
+		Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
 		ResetObjectToPlace();
 		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		//OnPaint(); // this appears to cause visual artefacts
@@ -530,16 +530,16 @@ public:
 					SignalIf *sif = static_cast <SignalIf*>(si);
 					if (!IsConditionComparator(sif->condition)) break;
 
-					Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
+					Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
 					break;
 				}
 
 				case QSM_NEW_SLOT:
 				case QSM_NEW_COUNTER: {
-					using Payload = typename CommandTraits<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::PayloadType;
+					using Payload = typename CommandTraits<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::PayloadType;
 					ProgPresigModifyCommandType mode = (this->query_submode == QSM_NEW_SLOT) ? PPMCT_SLOT : PPMCT_COUNTER;
 					Payload follow_up_payload = Payload::Make(this->track, si->Id(), mode, {}, {});
-					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Payload>{ CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION, (StringID)0, this->tile, std::move(follow_up_payload) } };
+					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Payload>{ CMD_PROGPRESIG_MODIFY_INSTRUCTION, (StringID)0, this->tile, std::move(follow_up_payload) } };
 					if (this->query_submode == QSM_NEW_SLOT) {
 						TraceRestrictCreateSlotCmdData data;
 						data.vehtype = VEH_TRAIN;
@@ -565,22 +565,22 @@ public:
 
 		switch (widget) {
 			case PROGRAM_WIDGET_INSERT: {
-				Command<CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, ins->Id(), OpcodeForIndex(index));
+				Command<CMD_PROGPRESIG_INSERT_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION, this->tile, this->track, ins->Id(), OpcodeForIndex(index));
 				break;
 			}
 
 			case PROGRAM_WIDGET_SET_STATE: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_SIGNAL_STATE, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_SIGNAL_STATE, index, {});
 				break;
 			}
 
 			case PROGRAM_WIDGET_COND_VARIABLE: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_CONDITION_CODE, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_CONDITION_CODE, index, {});
 				break;
 			}
 
 			case PROGRAM_WIDGET_COND_COMPARATOR: {
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_COMPARATOR, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), PPMCT_COMPARATOR, index, {});
 				break;
 			}
 
@@ -606,7 +606,7 @@ public:
 					TraceRestrictRecordRecentCounter(index);
 				}
 
-				Command<CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), mode, index, {});
+				Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), mode, index, {});
 			}
 		}
 	}

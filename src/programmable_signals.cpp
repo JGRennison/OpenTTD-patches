@@ -673,7 +673,7 @@ static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
  * @param instruction_id ID of instruction to insert before
  * @param op Which opcode to create
  */
-CommandCost CmdProgPresigInsertSignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, SignalOpcode op)
+CommandCost CmdProgPresigInsertInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, SignalOpcode op)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -730,7 +730,7 @@ CommandCost CmdProgPresigInsertSignalInstruction(DoCommandFlag flags, TileIndex 
  * @param value Value
  * @param target_td Target trackdir (for PPMCT_SIGNAL_LOCATION)
  */
-CommandCost CmdProgPresigModifySignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, ProgPresigModifyCommandType mode, uint32_t value, Trackdir target_td)
+CommandCost CmdProgPresigModifyInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id, ProgPresigModifyCommandType mode, uint32_t value, Trackdir target_td)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -907,7 +907,7 @@ CommandCost CmdProgPresigModifySignalInstruction(DoCommandFlag flags, TileIndex 
  * @param track Which track the signal sits on
  * @param instruction_id ID of instruction
  */
-CommandCost CmdProgPresigRemoveSignalInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id)
+CommandCost CmdProgPresigRemoveInstruction(DoCommandFlag flags, TileIndex tile, Track track, uint32_t instruction_id)
 {
 	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
 	if (check_signal.Failed()) return check_signal;
@@ -1034,7 +1034,7 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
  * @param src_tile Tile of clone source signal
  * @param src_track Track of clone source signal
  */
-CommandCost CmdProgPresigSignalProgramMgmt(DoCommandFlag flags, TileIndex tile, Track track, ProgPresigMgmtCommandType mgmt, TileIndex src_tile, Track src_track)
+CommandCost CmdProgPresigProgramMgmt(DoCommandFlag flags, TileIndex tile, Track track, ProgPresigMgmtCommandType mgmt, TileIndex src_tile, Track src_track)
 {
 	bool exec = (flags & DC_EXEC) != 0;
 

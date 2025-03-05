@@ -28,9 +28,9 @@ enum ProgPresigMgmtCommandType : uint8_t {
 	PPMGMTCT_CLONE,                          ///< Clone program
 };
 
-DEF_CMD_TUPLE(CMD_PROGPRESIG_INSERT_SIGNAL_INSTRUCTION, CmdProgPresigInsertSignalInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t, SignalOpcode>)
-DEF_CMD_TUPLE(CMD_PROGPRESIG_MODIFY_SIGNAL_INSTRUCTION, CmdProgPresigModifySignalInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t, ProgPresigModifyCommandType, uint32_t, Trackdir>)
-DEF_CMD_TUPLE(CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION, CmdProgPresigRemoveSignalInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t>)
-DEF_CMD_TUPLE(CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT,       CmdProgPresigSignalProgramMgmt,       {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, ProgPresigMgmtCommandType, TileIndex, Track>)
+DEF_CMD_TUPLE(CMD_PROGPRESIG_INSERT_INSTRUCTION, CmdProgPresigInsertInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t, SignalOpcode>)
+DEF_CMD_TUPLE(CMD_PROGPRESIG_MODIFY_INSTRUCTION, CmdProgPresigModifyInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t, ProgPresigModifyCommandType, uint32_t, Trackdir>)
+DEF_CMD_TUPLE(CMD_PROGPRESIG_REMOVE_INSTRUCTION, CmdProgPresigRemoveInstruction, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, uint32_t>)
+DEF_CMD_TUPLE(CMD_PROGPRESIG_PROGRAM_MGMT,       CmdProgPresigProgramMgmt,       {}, CMDT_OTHER_MANAGEMENT, CmdDataT<Track, ProgPresigMgmtCommandType, TileIndex, Track>)
 
 #endif /* PROGRAMMABLE_SIGNALS_CMD_H */
