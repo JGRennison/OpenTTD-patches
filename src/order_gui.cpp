@@ -3417,7 +3417,8 @@ public:
 			Command<CMD_MODIFY_ORDER>::Post(STR_ERROR_CAN_T_MODIFY_THIS_ORDER, this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), MOF_LABEL_TEXT, {}, {}, *str);
 		}
 
-		if ((this->query_text_widget == WID_O_COND_SLOT || this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_SLOT) && str.has_value() && !str->empty()) {
+		if ((this->query_text_widget == WID_O_COND_SLOT || this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_SLOT || this->query_text_widget == WID_O_CHANGE_COUNTER)
+				&& str.has_value() && !str->empty()) {
 			ModifyOrderFlags mof;
 			switch (this->query_text_widget) {
 				case WID_O_COND_SLOT:
@@ -3432,13 +3433,17 @@ public:
 					mof = MOF_SLOT;
 					break;
 
+				case WID_O_CHANGE_COUNTER:
+					mof = MOF_COUNTER_ID;
+					break;
+
 				default:
 					NOT_REACHED();
 			}
 			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
 			Payload follow_up_payload = Payload::Make(this->vehicle->index, this->OrderGetSel(), mof, {}, {}, {});
 			TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Payload>{ CMD_MODIFY_ORDER, (StringID)0, this->vehicle->tile, std::move(follow_up_payload) } };
-			if (this->query_text_widget == WID_O_COND_COUNTER) {
+			if (this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_CHANGE_COUNTER) {
 				TraceRestrictCreateCounterCmdData data;
 				data.name = std::move(*str);
 				data.follow_up_cmd = std::move(follow_up);
@@ -3573,6 +3578,11 @@ public:
 				break;
 
 			case WID_O_CHANGE_COUNTER:
+				if (index == NEW_TRACE_RESTRICT_COUNTER_ID) {
+					this->query_text_widget = widget;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					break;
+				}
 				TraceRestrictRecordRecentCounter(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_ID, index);
 				break;
