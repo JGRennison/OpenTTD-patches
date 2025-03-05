@@ -80,8 +80,9 @@ static void SetScheduleStartDateIntl(uint32_t p1, StateTicks date)
  * Callback for when a time has been chosen to start the schedule
  * @param window the window related to the setting of the date
  * @param date the actually chosen date
+ * @param callback_data callback data
  */
-static void SetScheduleStartDateCallback(const Window *w, StateTicks date)
+static void SetScheduleStartDateCallback(const Window *w, StateTicks date, void *callback_data)
 {
 	SetScheduleStartDateIntl(w->window_number, date);
 }
@@ -120,8 +121,9 @@ static void ScheduleAddIntl(uint32_t p1, StateTicks date, uint extra_slots, uint
  * Callback for when a time has been chosen to add to the schedule
  * @param window the window related to the setting of the date
  * @param date the actually chosen date
+ * @param callback_data callback data
  */
-static void ScheduleAddCallback(const Window *w, StateTicks date)
+static void ScheduleAddCallback(const Window *w, StateTicks date, void *callback_data)
 {
 	ScheduleAddIntl(w->window_number, date, 0, 0);
 }
@@ -1101,7 +1103,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ScheduleAddCallback, nullptr, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
 			}
@@ -1120,7 +1122,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, SetScheduleStartDateCallback, nullptr, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
 			}

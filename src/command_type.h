@@ -1336,14 +1336,6 @@ DEF_CMD_PROC  (CMD_ADD_SHARED_VEHICLE_GROUP, CmdAddSharedVehicleGroup,          
 DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,                         {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_CHANGE_TIMETABLE, CmdChangeTimetable,                                {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_BULK_CHANGE_TIMETABLE, CmdBulkChangeTimetable,                            {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SET_VEHICLE_ON_TIME, CmdSetVehicleOnTime,                               {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_AUTOFILL_TIMETABLE, CmdAutofillTimetable,                              {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_AUTOMATE_TIMETABLE, CmdAutomateTimetable,                              {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_TIMETABLE_SEPARATION, CmdTimetableSeparation,                            {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SET_TIMETABLE_START, CmdSetTimetableStart,                              {}, CMDT_ROUTE_MANAGEMENT      )
-
 DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                               {}, CMDT_ROUTE_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH, CmdScheduledDispatch,                              {}, CMDT_ROUTE_MANAGEMENT      )

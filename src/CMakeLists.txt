@@ -536,6 +536,7 @@ add_files(
     tilehighlight_type.h
     timetable.h
     timetable_cmd.cpp
+    timetable_cmd.h
     timetable_gui.cpp
     toolbar_gui.cpp
     toolbar_gui.h

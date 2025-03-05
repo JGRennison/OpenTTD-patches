@@ -1,0 +1,48 @@
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file timetable_cmd.h Command definitions related to timetables. */
+
+#ifndef TIMETABLE_CMD_H
+#define TIMETABLE_CMD_H
+
+#include "command_type.h"
+#include "date_type.h"
+#include "order_type.h"
+
+/**
+ * Enumeration for the data to set in #CmdChangeTimetable.
+ */
+enum ModifyTimetableFlags : uint8_t {
+	MTF_WAIT_TIME,       ///< Set wait time.
+	MTF_TRAVEL_TIME,     ///< Set travel time.
+	MTF_TRAVEL_SPEED,    ///< Set max travel speed.
+	MTF_SET_WAIT_FIXED,  ///< Set wait time fixed flag state.
+	MTF_SET_TRAVEL_FIXED,///< Set travel time fixed flag state.
+	MTF_SET_LEAVE_TYPE,  ///< Passes an OrderLeaveType.
+	MTF_ASSIGN_SCHEDULE, ///< Assign a dispatch schedule.
+	MTF_END
+};
+
+/**
+ * Control flags for #CmdChangeTimetable.
+ */
+enum ModifyTimetableCtrlFlags : uint8_t {
+	MTCF_NONE        = 0,      ///< No flags set
+	MTCF_CLEAR_FIELD = 1 << 0, ///< Clear field
+};
+DECLARE_ENUM_AS_BIT_SET(ModifyTimetableCtrlFlags)
+
+DEF_CMD_TUPLE_NT(CMD_CHANGE_TIMETABLE,      CmdChangeTimetable,     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, ModifyTimetableFlags, uint32_t, ModifyTimetableCtrlFlags>)
+DEF_CMD_TUPLE_NT(CMD_BULK_CHANGE_TIMETABLE, CmdBulkChangeTimetable, {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, ModifyTimetableFlags, uint32_t, ModifyTimetableCtrlFlags>)
+DEF_CMD_TUPLE_NT(CMD_SET_VEHICLE_ON_TIME,   CmdSetVehicleOnTime,    {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE_NT(CMD_AUTOFILL_TIMETABLE,    CmdAutofillTimetable,   {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool, bool>)
+DEF_CMD_TUPLE_NT(CMD_AUTOMATE_TIMETABLE,    CmdAutomateTimetable,   {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE_NT(CMD_TIMETABLE_SEPARATION,  CmdTimetableSeparation, {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE_NT(CMD_SET_TIMETABLE_START,   CmdSetTimetableStart,   {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool, StateTicks>)
+
+#endif /* TIMETABLE_CMD_H */

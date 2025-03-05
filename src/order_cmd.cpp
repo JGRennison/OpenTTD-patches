@@ -42,6 +42,7 @@
 #include "train.h"
 #include "date_func.h"
 #include "schdispatch.h"
+#include "timetable_cmd.h"
 
 #include "table/strings.h"
 
@@ -2079,10 +2080,10 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 					order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
-						DoCommandEx(0, v->index | (MTF_WAIT_TIME << 28) | (1 << 31), 0, sel_ord, flags, CMD_CHANGE_TIMETABLE);
+						Command<CMD_CHANGE_TIMETABLE>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, MTCF_CLEAR_FIELD);
 					}
 					if (order->IsScheduledDispatchOrder(false)) {
-						DoCommandEx(0, v->index | (MTF_ASSIGN_SCHEDULE << 28), -1, sel_ord, flags, CMD_CHANGE_TIMETABLE);
+						Command<CMD_CHANGE_TIMETABLE>::Do(flags, v->index, sel_ord, MTF_ASSIGN_SCHEDULE, -1, MTCF_NONE);
 					}
 				}
 				break;

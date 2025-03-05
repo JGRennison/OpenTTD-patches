@@ -338,22 +338,6 @@ enum OrderDispatchTagConditionBits {
 	ODFLCB_TAG_COUNT         = 2,
 };
 
-/**
- * Enumeration for the data to set in #CmdChangeTimetable.
- */
-enum ModifyTimetableFlags : uint8_t {
-	MTF_WAIT_TIME,    ///< Set wait time.
-	MTF_TRAVEL_TIME,  ///< Set travel time.
-	MTF_TRAVEL_SPEED, ///< Set max travel speed.
-	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
-	MTF_SET_TRAVEL_FIXED,///< Set travel time fixed flag state.
-	MTF_SET_LEAVE_TYPE,///< Passes an OrderLeaveType.
-	MTF_ASSIGN_SCHEDULE, ///< Assign a dispatch schedule.
-	MTF_END
-};
-template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, uint8_t, MTF_WAIT_TIME, MTF_END, MTF_END, 3> {};
-
-
 /** Clone actions. */
 enum CloneOptions : uint8_t {
 	CO_SHARE   = 0,

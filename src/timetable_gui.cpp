@@ -27,6 +27,7 @@
 #include "vehiclelist.h"
 #include "tracerestrict.h"
 #include "scope.h"
+#include "timetable_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/timetable_widget.h"
@@ -260,22 +261,13 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 
 /**
  * Callback for when a time has been chosen to start the time table
- * @param p1 The p1 parameter to send to CmdSetTimetableStart
- * @param tick the actually chosen state tick
- */
-static void ChangeTimetableStartIntl(uint32_t p1, StateTicks tick)
-{
-	DoCommandPEx(0, p1, 0, (uint64_t)tick.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
-}
-
-/**
- * Callback for when a time has been chosen to start the time table
  * @param w the window related to the setting of the date
  * @param tick the actually chosen tick
+ * @param callback_data callback data
  */
-static void ChangeTimetableStartCallback(const Window *w, StateTicks tick)
+static void ChangeTimetableStartCallback(const Window *w, StateTicks tick, void *callback_data)
 {
-	ChangeTimetableStartIntl(w->window_number, tick);
+	Command<CMD_SET_TIMETABLE_START>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, reinterpret_cast<uintptr_t>(callback_data) != 0, tick);
 }
 
 void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, bool)> handler)
@@ -927,16 +919,15 @@ struct TimetableWindow : GeneralVehicleWindow {
 		}
 	}
 
-	static inline void ExecuteTimetableCommand(const Vehicle *v, bool bulk, uint selected, ModifyTimetableFlags mtf, uint p2, bool clear)
+	static inline void ExecuteTimetableCommand(const Vehicle *v, bool bulk, uint selected, ModifyTimetableFlags mtf, uint32_t data, bool clear)
 	{
 		uint order_number = (selected + 1) / 2;
 		if (order_number >= v->GetNumOrders()) order_number = 0;
 
-		uint p1 = v->index | (mtf << 28) | (clear ? 1 << 31 : 0);
 		if (bulk) {
-			DoCommandPOld(0, p1, p2, CMD_BULK_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			Command<CMD_BULK_CHANGE_TIMETABLE>::Post(v->index, mtf, data, clear ? MTCF_CLEAR_FIELD : MTCF_NONE);
 		} else {
-			DoCommandPEx(0, p1, p2, order_number, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			Command<CMD_CHANGE_TIMETABLE>::Post(v->index, order_number, mtf, data, clear ? MTCF_CLEAR_FIELD : MTCF_NONE);
 		}
 	}
 
@@ -982,8 +973,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(str, STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (set_all ? 1U << 20 : 0),
-							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback);
+					ShowSetDateWindow(this, v->index,
+							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback, reinterpret_cast<void *>(set_all ? 1 : 0));
 				}
 				break;
 			}
@@ -1062,14 +1053,11 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_RESET_LATENESS: // Reset the vehicle's late counter.
-				DoCommandPOld(0, v->index | (_ctrl_pressed ? 1 << 20 : 0), 0, CMD_SET_VEHICLE_ON_TIME | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				Command<CMD_SET_VEHICLE_ON_TIME>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, _ctrl_pressed);
 				break;
 
 			case WID_VT_AUTOFILL: { // Autofill the timetable.
-				uint32_t p2 = 0;
-				if (!HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(p2, 0);
-				if (_ctrl_pressed) SetBit(p2, 1);
-				DoCommandPOld(0, v->index, p2, CMD_AUTOFILL_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				Command<CMD_AUTOFILL_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE), _ctrl_pressed);
 				break;
 			}
 
@@ -1079,16 +1067,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_AUTOMATE: {
-				uint32_t p2 = 0;
-				if (!HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) SetBit(p2, 0);
-				DoCommandPOld(0, v->index, p2, CMD_AUTOMATE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				Command<CMD_AUTOMATE_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 				break;
 			}
 
 			case WID_VT_AUTO_SEPARATION: {
-				uint32_t p2 = 0;
-				if (!HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) SetBit(p2, 0);
-				DoCommandPOld(0, v->index, p2, CMD_TIMETABLE_SEPARATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				Command<CMD_TIMETABLE_SEPARATION>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 				break;
 			}
 
@@ -1192,7 +1176,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				int32_t val = std::strtol(str->c_str(), &end, 10);
 				if (!(end != nullptr && *end == 0)) break;
 				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
-					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _state_ticks + (val * TICKS_PER_SECOND));
+					Command<CMD_SET_TIMETABLE_START>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->set_start_date_all, _state_ticks + (val * TICKS_PER_SECOND));
 					break;
 				}
 				if (val >= 0) {
@@ -1203,7 +1187,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 					if (time < (now - 60)) time += TickMinutes{60 * 24};
 
-					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _settings_time.FromTickMinutes(time));
+					Command<CMD_SET_TIMETABLE_START>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->set_start_date_all, _settings_time.FromTickMinutes(time));
 				}
 				break;
 			}
