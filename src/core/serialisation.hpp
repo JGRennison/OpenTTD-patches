@@ -127,6 +127,8 @@ struct BufferSerialisationHelper {
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Send_string(data);
+		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V>) {
+			this->Send_generic_integer(data.base());
 		} else {
 			this->Send_generic_integer(data);
 		}
@@ -433,6 +435,8 @@ public:
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Recv_string(data, settings);
+		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V>) {
+			this->Recv_generic_integer(data.edit_base());
 		} else {
 			this->Recv_generic_integer(data);
 		}
