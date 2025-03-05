@@ -525,4 +525,23 @@ void BufferDeserialisationHelper<T>::ReturnDeserialisationBuffer(Deserialisation
 	b.buffer = nullptr;
 }
 
+template <typename T>
+struct TupleTypeAdapter {
+private:
+	template <typename H> struct TupleHelper;
+
+	template <typename... Targs>
+	struct TupleHelper<std::tuple<Targs...>> {
+		using Value = std::tuple<std::remove_cvref_t<Targs>...>;
+		using Reference = std::tuple<std::remove_cvref_t<Targs> &...>;
+		using ConstReference = std::tuple<const std::remove_cvref_t<Targs> &...>;
+	};
+	using Helper = TupleHelper<T>;
+
+public:
+	using Value = typename Helper::Value;
+	using Reference = typename Helper::Reference;
+	using ConstReference = typename Helper::ConstReference;
+};
+
 #endif /* SERIALISATION_HPP */
