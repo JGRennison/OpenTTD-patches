@@ -171,6 +171,8 @@ enum SlXvFeatureIndex {
 	XSLFI_ENCODED_STRING_FORMAT,                  ///< See: SLV_ENCODED_STRING_FORMAT (PR #13499) (v1), SLV_FIX_SCC_ENCODED_NEGATIVE (PR #14049) (v2)
 	XSLFI_PROTECT_PLACED_HOUSES,                  ///< See: SLV_PROTECT_PLACED_HOUSES (PR #13270)
 
+	XSLFI_PR_13745_APPLIED,                       ///< Tag to indicate that the fix in PR #13745 has been already applied
+
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
 	XSLFI_TABLE_PLYR,                             ///< Use table format for PLYR
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:

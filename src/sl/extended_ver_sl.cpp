@@ -222,6 +222,8 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_ENCODED_STRING_FORMAT,            XSCF_NULL,                2,   2, "slv_encoded_string_format",        nullptr, nullptr, nullptr          },
 	{ XSLFI_PROTECT_PLACED_HOUSES,            XSCF_NULL,                1,   1, "slv_protect_placed_houses",        nullptr, nullptr, nullptr          },
 
+	{ XSLFI_PR_13745_APPLIED,                 XSCF_IGNORABLE_ALL,       1,   1, "pr_13745",                         nullptr, nullptr, nullptr          },
+
 	{ XSLFI_TABLE_PATS,                       XSCF_NULL,                1,   1, "table_pats",                       nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_PLYR,                       XSCF_NULL,                1,   1, "table_plyr",                       nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_MISC_SL,                    XSCF_NULL,                3,   3, "table_misc_sl",                    nullptr, nullptr, nullptr          },

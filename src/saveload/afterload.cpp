@@ -4485,6 +4485,22 @@ bool AfterLoadGame()
 		_settings_game.construction.flood_from_edges = false;
 	}
 
+	if ((!IsSavegameVersionBefore(SLV_INCREASE_HOUSE_LIMIT) && IsSavegameVersionBeforeOrAt(SLV_SCRIPT_SAVE_INSTANCES)) ||
+			((SlXvGetUpstreamVersion() == SLV_FIX_SCC_ENCODED_NEGATIVE || SlXvGetUpstreamVersion() == SLV_ORDERS_OWNED_BY_ORDERLIST) && SlXvIsFeatureMissing(XSLFI_PR_13745_APPLIED))) {
+		/* Between these two versions (actually from f8b1e303 to 77236258) EngineFlags had an off-by-one. Depending
+		 * on when the save was started, this may or may not affect existing engines. Here we try to detect invalid flags
+		 * and reset them to what they should be. */
+		uint changed = 0;
+		for (Engine *e : Engine::Iterate()) {
+			if (e->flags.Test(EngineFlag::Available)) continue;
+			if (e->flags.Test(EngineFlag{2}) || (e->flags.Test(EngineFlag::ExclusivePreview) && e->preview_asked.None())) {
+				e->flags = EngineFlags(e->flags.base() >> 1U);
+				changed++;
+			}
+		}
+		Debug(sl, 1, "Fixing: PR #13745 engine flag adjustment, {} changed", changed);
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}
