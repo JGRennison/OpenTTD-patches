@@ -20,6 +20,7 @@
 #include "settings_type.h"
 #include "schdispatch.h"
 #include "vehicle_gui.h"
+#include "timetable_cmd.h"
 
 #include <algorithm>
 
@@ -29,33 +30,24 @@
 
 /**
  * Enable or disable scheduled dispatch
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index.
- * @param p2 Various bitstuffed elements
- * - p2 = (bit 0) - Set to 1 to enable, 0 to disable scheduled dispatch.
- * @param text unused
+ * @param veh Vehicle index.
+ * @param enable Whether to enable scheduled dispatch.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatch(DoCommandFlag flags, VehicleID veh, bool enable)
 {
-	VehicleID veh = GB(p1, 0, 20);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (HasBit(p2, 0) && (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
+	if (enable && (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
 
 	if (flags & DC_EXEC) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-			if (HasBit(p2, 0)) {
-				SetBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH);
-			} else {
-				ClrBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH);
-			}
+			AssignBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH, enable);
 		}
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -65,23 +57,16 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 /**
  * Add scheduled dispatch time offset
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index.
- * @param p2 Offset time to add.
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 31)  - the offset for additional slots
- *  - p3 = (bit 32 - 47) - the number of additional slots to add
- * @param text unused
+ * @param veh Vehicle index.
+ * @param schedule_index Schedule index.
+ * @param time Time to add.
+ * @param offset The offset for additional slots
+ * @param extra_slots The number of additional slots to add
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdSchDispatchAdd(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t time, uint32_t offset, uint32_t extra_slots)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-	uint32_t offset = GB(p3, 0, 32);
-	uint32_t extra_slots = GB(p3, 32, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -97,11 +82,11 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_
 
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.AddScheduledDispatch(p2);
+		ds.AddScheduledDispatch(time);
 		for (uint i = 0; i < extra_slots; i++) {
-			p2 += offset;
-			if (p2 >= ds.GetScheduledDispatchDuration()) p2 -= ds.GetScheduledDispatchDuration();
-			ds.AddScheduledDispatch(p2);
+			time += offset;
+			if (time >= ds.GetScheduledDispatchDuration()) time -= ds.GetScheduledDispatchDuration();
+			ds.AddScheduledDispatch(time);
 		}
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -111,18 +96,14 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_
 
 /**
  * Remove scheduled dispatch time offset
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index.
- * @param p2 Offset time to remove
- * @param text unused
+ * @param veh Vehicle index.
+ * @param schedule_index Schedule index.
+ * @param time Time to remove.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchRemove(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t time)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -134,7 +115,7 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).RemoveScheduledDispatch(p2);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).RemoveScheduledDispatch(time);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -144,20 +125,16 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
 /**
  * Set scheduled dispatch duration
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Duration, in scaled tick
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param duration Duration, in scaled tick
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchSetDuration(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t duration)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || p2 == 0) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle() || duration == 0) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -168,7 +145,7 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.SetScheduledDispatchDuration(p2);
+		ds.SetScheduledDispatchDuration(duration);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -179,19 +156,14 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 /**
  * Set scheduled dispatch start date
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Unused.
- * @param p3 Start tick
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param start_tick Start tick.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdSchDispatchSetStartDate(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, StateTicks start_tick)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -204,7 +176,7 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.SetScheduledDispatchStartTick((StateTicks)p3);
+		ds.SetScheduledDispatchStartTick(start_tick);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -215,18 +187,14 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 /**
  * Set scheduled dispatch maximum allow delay
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Maximum Delay, in scaled tick
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param max_delay Maximum Delay, in scaled tick
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchSetDelay(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t max_delay)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -238,7 +206,7 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchDelay(p2);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchDelay(max_delay);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -248,18 +216,14 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 /**
  * Set scheduled dispatch maximum allow delay
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Whether to re-use slots
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param re_use_slots Whether to re-use slots
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetReuseSlots(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchSetReuseSlots(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, bool re_use_slots)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -271,7 +235,7 @@ CommandCost CmdScheduledDispatchSetReuseSlots(TileIndex tile, DoCommandFlag flag
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchReuseSlots(p2 != 0);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchReuseSlots(re_use_slots);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -286,18 +250,13 @@ CommandCost CmdScheduledDispatchSetReuseSlots(TileIndex tile, DoCommandFlag flag
  * By resetting this you set the last dispatch time to the current timetable start time,
  * allowing new vehicle to be dispatched immediately.
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Not used
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchResetLastDispatch(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -319,18 +278,13 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 /**
  * Clear scheduled dispatch schedule
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Not used
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchClear(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -352,20 +306,16 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
 /**
  * Add a new scheduled dispatch schedule
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Duration, in scaled tick
- * @param p3 Start tick
- * @param text unused
+ * @param veh Vehicle index
+ * @param start_tick Start tick
+ * @param duration Duration, in scaled tick
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdSchDispatchAddNewSchedule(DoCommandFlag flags, VehicleID veh, StateTicks start_tick, uint32_t duration)
 {
-	VehicleID veh = GB(p1, 0, 20);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || p2 == 0) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle() || duration == 0) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -376,8 +326,8 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 	if (flags & DC_EXEC) {
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
-		ds.SetScheduledDispatchDuration(p2);
-		ds.SetScheduledDispatchStartTick((StateTicks)p3);
+		ds.SetScheduledDispatchDuration(duration);
+		ds.SetScheduledDispatchStartTick(start_tick);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -388,18 +338,13 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 /**
  * Remove scheduled dispatch schedule
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Not used
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchRemoveSchedule(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -453,18 +398,14 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 /**
  * Rename scheduled dispatch schedule
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Not used
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchRenameSchedule(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, const std::string &name)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -475,17 +416,17 @@ CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag fla
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
-	bool reset = StrEmpty(text);
+	bool reset = name.empty();
 
 	if (!reset) {
-		if (Utf8StringLength(text) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
+		if (Utf8StringLength(name) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
 	}
 
 	if (flags & DC_EXEC) {
 		if (reset) {
 			v->orders->GetDispatchScheduleByIndex(schedule_index).ScheduleName().clear();
 		} else {
-			v->orders->GetDispatchScheduleByIndex(schedule_index).ScheduleName() = text;
+			v->orders->GetDispatchScheduleByIndex(schedule_index).ScheduleName() = name;
 		}
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
 	}
@@ -496,18 +437,15 @@ CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag fla
 /**
  * Rename scheduled dispatch departure tag
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Tag ID
- * @param text name
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param tag_id Tag ID
+ * @param name name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRenameTag(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchRenameTag(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint16_t tag_id, const std::string &name)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -517,16 +455,12 @@ CommandCost CmdScheduledDispatchRenameTag(TileIndex tile, DoCommandFlag flags, u
 	if (v->orders == nullptr) return CMD_ERROR;
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
-	if (p2 >= DispatchSchedule::DEPARTURE_TAG_COUNT) return CMD_ERROR;
+	if (tag_id >= DispatchSchedule::DEPARTURE_TAG_COUNT) return CMD_ERROR;
 
-	std::string name;
-	if (!StrEmpty(text)) {
-		if (Utf8StringLength(text) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
-		name = text;
-	}
+	if (Utf8StringLength(name) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).SetSupplementaryName(SDSNT_DEPARTURE_TAG, static_cast<uint16_t>(p2), std::move(name));
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetSupplementaryName(SDSNT_DEPARTURE_TAG, tag_id, name);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
 	}
 
@@ -536,18 +470,13 @@ CommandCost CmdScheduledDispatchRenameTag(TileIndex tile, DoCommandFlag flags, u
 /**
  * Duplicate scheduled dispatch schedule
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Not used
- * @param text name
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchDuplicateSchedule(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -572,22 +501,17 @@ CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag 
 /**
  * Append scheduled dispatch schedules from another vehicle
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index to append to
- * @param p2 Vehicle index to copy from
- * @param text name
+ * @param dst_veh Vehicle index to append to
+ * @param src_veh Vehicle index to copy from
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchAppendVehSchedules(DoCommandFlag flags, VehicleID dst_veh, VehicleID src_veh)
 {
-	VehicleID veh1 = GB(p1, 0, 20);
-	VehicleID veh2 = GB(p2, 0, 20);
-
-	Vehicle *v1 = Vehicle::GetIfValid(veh1);
+	Vehicle *v1 = Vehicle::GetIfValid(dst_veh);
 	if (v1 == nullptr || !v1->IsPrimaryVehicle()) return CMD_ERROR;
 
-	const Vehicle *v2 = Vehicle::GetIfValid(veh2);
+	const Vehicle *v2 = Vehicle::GetIfValid(src_veh);
 	if (v2 == nullptr || !v2->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v1->owner);
@@ -612,19 +536,15 @@ CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommand
 /**
  * Adjust scheduled dispatch time offsets
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 Signed adjustment
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param adjustment Signed adjustment
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchAdjust(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, int32_t adjustment)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-	int32_t adjustment = p2;
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -650,21 +570,14 @@ CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint
 /**
  * Swap two schedules in dispatch schedule list
  *
- * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle index
- * @param p2 various bitstuffed elements
- *  - p2 = (bit 0 - 15)  - Schedule index 1
- *  - p2 = (bit 16 - 31) - Schedule index 2
- * @param unused
+ * @param veh Vehicle index
+ * @param schedule_index_1 Schedule index.
+ * @param schedule_index_2 Schedule index.
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSchDispatchSwapSchedules(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index_1, uint32_t schedule_index_2)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index_1 = GB(p2, 0, 16);
-	uint schedule_index_2 = GB(p2, 16, 16);
-
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -721,24 +634,17 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 
 /**
  * Add scheduled dispatch time offset
- * @param tile Not used.
+ *
  * @param flags Operation to perform.
- * @param p1 Vehicle index.
- * @param p2 Slot offset.
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 15)  - flag values
- *  - p3 = (bit 16 - 31) - flag mask
- * @param text unused
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param offset Slot offset.
+ * @param values flag values
+ * @param mask flag mask
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetSlotFlags(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, uint16_t values, uint16_t mask)
 {
-	VehicleID veh = GB(p1, 0, 20);
-	uint schedule_index = GB(p1, 20, 12);
-	uint32_t offset = p2;
-	uint16_t values = (uint16_t)GB(p3, 0, 16);
-	uint16_t mask = (uint16_t)GB(p3, 16, 16);
-
 	const uint16_t permitted_mask = GetBitMaskSC<uint16_t>(DispatchSlot::SDSF_REUSE_SLOT, 1) | GetBitMaskFL<uint16_t>(DispatchSlot::SDSF_FIRST_TAG, DispatchSlot::SDSF_LAST_TAG);
 	if ((mask & permitted_mask) != mask) return CMD_ERROR;
 	if ((values & (~mask)) != 0) return CMD_ERROR;

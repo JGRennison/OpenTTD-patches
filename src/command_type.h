@@ -596,24 +596,24 @@ enum Commands : uint16_t {
 	CMD_PROGPRESIG_REMOVE_SIGNAL_INSTRUCTION,   ///< removes a signal instruction
 	CMD_PROGPRESIG_SIGNAL_PROGRAM_MGMT,         ///< signal program management command
 
-	CMD_SCHEDULED_DISPATCH,                     ///< scheduled dispatch start
-	CMD_SCHEDULED_DISPATCH_ADD,                 ///< scheduled dispatch add
-	CMD_SCHEDULED_DISPATCH_REMOVE,              ///< scheduled dispatch remove
-	CMD_SCHEDULED_DISPATCH_SET_DURATION,        ///< scheduled dispatch set schedule duration
-	CMD_SCHEDULED_DISPATCH_SET_START_DATE,      ///< scheduled dispatch set start date
-	CMD_SCHEDULED_DISPATCH_SET_DELAY,           ///< scheduled dispatch set maximum allow delay
-	CMD_SCHEDULED_DISPATCH_SET_REUSE_SLOTS,     ///< scheduled dispatch set whether to re-use dispatch slots
-	CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH, ///< scheduled dispatch reset last dispatch date
-	CMD_SCHEDULED_DISPATCH_CLEAR,               ///< scheduled dispatch clear schedule
-	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE,    ///< scheduled dispatch add new schedule
-	CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE,     ///< scheduled dispatch remove schedule
-	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE,     ///< scheduled dispatch rename schedule
-	CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE,  ///< scheduled dispatch duplicate schedule
-	CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE, ///< scheduled dispatch append schedules from another vehicle
-	CMD_SCHEDULED_DISPATCH_ADJUST,              ///< scheduled dispatch adjust time offsets in schedule
-	CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES,      ///< scheduled dispatch swap schedules in order
-	CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS,      ///< scheduled dispatch set flags of dispatch slot
-	CMD_SCHEDULED_DISPATCH_RENAME_TAG,          ///< scheduled dispatch rename departure tag
+	CMD_SCH_DISPATCH,                           ///< scheduled dispatch start
+	CMD_SCH_DISPATCH_ADD,                       ///< scheduled dispatch add
+	CMD_SCH_DISPATCH_REMOVE,                    ///< scheduled dispatch remove
+	CMD_SCH_DISPATCH_SET_DURATION,              ///< scheduled dispatch set schedule duration
+	CMD_SCH_DISPATCH_SET_START_DATE,            ///< scheduled dispatch set start date
+	CMD_SCH_DISPATCH_SET_DELAY,                 ///< scheduled dispatch set maximum allow delay
+	CMD_SCH_DISPATCH_SET_REUSE_SLOTS,           ///< scheduled dispatch set whether to re-use dispatch slots
+	CMD_SCH_DISPATCH_RESET_LAST_DISPATCH,       ///< scheduled dispatch reset last dispatch date
+	CMD_SCH_DISPATCH_CLEAR,                     ///< scheduled dispatch clear schedule
+	CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE,          ///< scheduled dispatch add new schedule
+	CMD_SCH_DISPATCH_REMOVE_SCHEDULE,           ///< scheduled dispatch remove schedule
+	CMD_SCH_DISPATCH_RENAME_SCHEDULE,           ///< scheduled dispatch rename schedule
+	CMD_SCH_DISPATCH_DUPLICATE_SCHEDULE,        ///< scheduled dispatch duplicate schedule
+	CMD_SCH_DISPATCH_APPEND_VEH_SCHEDULE,       ///< scheduled dispatch append schedules from another vehicle
+	CMD_SCH_DISPATCH_ADJUST,                    ///< scheduled dispatch adjust time offsets in schedule
+	CMD_SCH_DISPATCH_SWAP_SCHEDULES,            ///< scheduled dispatch swap schedules in order
+	CMD_SCH_DISPATCH_SET_SLOT_FLAGS,            ///< scheduled dispatch set flags of dispatch slot
+	CMD_SCH_DISPATCH_RENAME_TAG,                ///< scheduled dispatch rename departure tag
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
@@ -1337,25 +1337,6 @@ DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,        
 DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                               {}, CMDT_ROUTE_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH, CmdScheduledDispatch,                              {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_ADD, CmdScheduledDispatchAdd,                           {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_REMOVE, CmdScheduledDispatchRemove,                        {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SET_DURATION, CmdScheduledDispatchSetDuration,                   {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_SET_START_DATE, CmdScheduledDispatchSetStartDate,                  {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SET_DELAY, CmdScheduledDispatchSetDelay,                      {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SET_REUSE_SLOTS, CmdScheduledDispatchSetReuseSlots,                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH, CmdScheduledDispatchResetLastDispatch,             {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_CLEAR, CmdScheduledDispatchClear,                         {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE, CmdScheduledDispatchAddNewSchedule,                {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE, CmdScheduledDispatchRemoveSchedule,                {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE, CmdScheduledDispatchRenameSchedule,                {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_DUPLICATE_SCHEDULE, CmdScheduledDispatchDuplicateSchedule,             {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE, CmdScheduledDispatchAppendVehicleSchedules,        {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_ADJUST, CmdScheduledDispatchAdjust,                        {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES, CmdScheduledDispatchSwapSchedules,                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS, CmdScheduledDispatchSetSlotFlags,                  {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SCHEDULED_DISPATCH_RENAME_TAG, CmdScheduledDispatchRenameTag,                     {}, CMDT_ROUTE_MANAGEMENT      )
 
 DEF_CMD_TUPLE_NT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, EmptyCmdData)
 
