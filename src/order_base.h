@@ -725,7 +725,6 @@ public:
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;
 
-	uint64_t Pack() const;
 	uint16_t MapOldOrder() const;
 	void ConvertFromOldSavegame();
 };
