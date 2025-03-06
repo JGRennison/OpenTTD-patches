@@ -1453,13 +1453,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	}
 };
 
-void CcAddNewSchDispatchSchedule(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcAddNewSchDispatchSchedule(const CommandCost &result, VehicleID veh, StateTicks start_tick, uint32_t duration)
 {
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
-	const VehicleID &veh = std::get<0>(data->GetValues()); // Check that type matches
-
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
 	if (w != nullptr) {
 		w->schedule_index = INT_MAX;
@@ -1468,14 +1463,8 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, Commands cmd, TileIn
 	}
 }
 
-void CcSwapSchDispatchSchedules(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32_t schedule_index_1, uint32_t schedule_index_2)
 {
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_SCH_DISPATCH_SWAP_SCHEDULES>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
-	const VehicleID &veh = std::get<0>(data->GetValues());
-	const uint32_t &schedule_index_1 = std::get<1>(data->GetValues());
-
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
 	if (w != nullptr) {
 		w->schedule_index = schedule_index_1;

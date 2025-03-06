@@ -191,11 +191,14 @@ static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_int
  * @param tile The tile of the command action
  * @param payload Command payload
  */
-typedef void GeneralCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
-typedef void ResultCommandCallback(const CommandCost &result);
-typedef void ResultTileCommandCallback(const CommandCost &result, TileIndex tile);
+using GeneralCommandCallback = void(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
+using ResultTileCommandCallback = void(const CommandCost &result, TileIndex tile);
+using ResultCommandCallback = void(const CommandCost &result);
 
-typedef bool CommandCallbackTrampoline(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
+template <typename T>
+using ResultPayloadCommandCallback = void(const CommandCost &result, const T &payload);
+
+using CommandCallbackTrampoline = bool(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param);
 
 template <CommandCallback Tcb> struct CommandCallbackTraits;
 
@@ -223,6 +226,44 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
 		Cc ## cb_(result); \
 		return true; \
+	}; \
+};
+
+#define DEF_CB_RES_PAYLOADT(cb_, T_) \
+ResultPayloadCommandCallback<T_> Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		auto *data = dynamic_cast<const T_ *>(&payload); \
+		if (data == nullptr) return false; \
+		Cc ## cb_(result, *data); \
+		return true; \
+	}; \
+};
+
+template <typename T, typename S> struct CommandCallbackTupleHelper;
+
+template <typename PayloadT, typename... Targs>
+struct CommandCallbackTupleHelper<PayloadT, std::tuple<Targs...>> {
+	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+
+	static inline bool ResultExecute(ResultTupleCommandCallback *cb, const CommandCost &result, const CommandPayloadBase &payload)
+	{
+		auto *data = dynamic_cast<const PayloadT *>(&payload);
+		if (data == nullptr) return false;
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			cb(result, std::get<Tindices>(data->GetValues())...);
+		};
+		handler(std::index_sequence_for<Targs...>{});
+		return true;
+	}
+};
+
+#define DEF_CB_RES_TUPLE(cb_, T_) \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<T_, std::remove_cvref_t<decltype(std::declval<T_>().GetValues())>>; } \
+typename cmd_detail::cc_helper_ ## cb_ ::ResultTupleCommandCallback Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		return cmd_detail::cc_helper_ ## cb_ ::ResultExecute(Cc ## cb_, result, payload); \
 	}; \
 };
 
@@ -259,8 +300,8 @@ DEF_CB_RES(VirtualTrainWagonsMoved)
 DEF_CB_GENERAL(DeleteVirtualTrain)
 DEF_CB_RES(AddVirtualEngine)
 DEF_CB_RES(MoveNewVirtualEngine)
-DEF_CB_GENERAL(AddNewSchDispatchSchedule)
-DEF_CB_GENERAL(SwapSchDispatchSchedules)
+DEF_CB_RES_TUPLE(AddNewSchDispatchSchedule, CmdPayload<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>)
+DEF_CB_RES_TUPLE(SwapSchDispatchSchedules, CmdPayload<CMD_SCH_DISPATCH_SWAP_SCHEDULES>)
 DEF_CB_RES(CreateTraceRestrictSlot)
 DEF_CB_RES(CreateTraceRestrictCounter)
 
