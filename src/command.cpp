@@ -526,6 +526,11 @@ bool IsCommandAllowedWhilePaused(Commands cmd)
 	return _game_mode == GM_EDITOR || command_type_lookup[_command_proc_table[cmd].type] <= _settings_game.construction.command_pause_level;
 }
 
+bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase *payload)
+{
+	assert(IsValidCommand(cmd));
+	return _command_proc_table[cmd].payload_check(payload);
+}
 
 static int _docommand_recursive = 0;
 
@@ -554,7 +559,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	assert(IsValidCommand(cmd));
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!_command_proc_table[cmd].payload_check(&payload)) return CMD_ERROR;
+		if (!IsCorrectCommandPayloadType(cmd, &payload)) return CMD_ERROR;
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
@@ -678,7 +683,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	assert(IsValidCommand(cmd));
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!_command_proc_table[cmd].payload_check(&orig_payload)) return false;
+		if (!IsCorrectCommandPayloadType(cmd, &orig_payload)) return false;
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
@@ -717,7 +722,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	/* Only set p2 when the command does not come from the network. */
 	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID) {
 		modified_payload = orig_payload.Clone();
-		assert(_command_proc_table[cmd].payload_check(modified_payload.get()));
+		assert(IsCorrectCommandPayloadType(cmd, modified_payload.get()));
 		modified_payload->SetClientID(CLIENT_ID_SERVER);
 		use_payload = modified_payload.get();
 	}
@@ -853,7 +858,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	assert(command.exec != nullptr);
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!command.payload_check(&payload)) return_dcpi(CMD_ERROR);
+		if (!IsCorrectCommandPayloadType(cmd, &payload)) return_dcpi(CMD_ERROR);
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
