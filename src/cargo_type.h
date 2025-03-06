@@ -14,7 +14,8 @@
 #include "core/strong_typedef_type.hpp"
 
 /** Globally unique label of a cargo type. */
-using CargoLabel = StrongType::Typedef<uint32_t, struct CargoLabelTag, StrongType::Compare>;
+struct CargoLabelTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare> {};
+using CargoLabel = StrongType::Typedef<CargoLabelTag>;
 
 #include <algorithm>
 #include <array>

@@ -99,7 +99,8 @@ void ClearTraceRestrictMapping();
  * Each instruction is formed of a TraceRestrictInstructionItem value, optionally followed by
  * a free-form item in the next slot (if TraceRestrictInstructionItem::IsDoubleItem() is true).
  */
-using TraceRestrictProgramItem = StrongType::Typedef<uint32_t, struct TraceRestrictProgramItemTag, StrongType::Compare>;
+struct TraceRestrictProgramItemTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare> {};
+using TraceRestrictProgramItem = StrongType::Typedef<TraceRestrictProgramItemTag>;
 
 /**
  * Describes the allocation of bits to fields in TraceRestrictInstructionItem.
@@ -568,10 +569,11 @@ namespace TracerestrictDetail {
 /**
  * Type of a single instruction item. Instructions are bit-packed as per TraceRestrictItemFlagAllocation.
  */
-using TraceRestrictInstructionItem = StrongType::Typedef<uint32_t, struct TraceRestrictInstructionItemTag, StrongType::Compare, TracerestrictDetail::InstructionItemOperations>;
+struct TraceRestrictInstructionItemTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare, TracerestrictDetail::InstructionItemOperations> {};
+using TraceRestrictInstructionItem = StrongType::Typedef<TraceRestrictInstructionItemTag>;
 
 /** Reference wrapper type for TraceRestrictInstructionItem */
-using TraceRestrictInstructionItemRef = StrongType::BaseRefTypedef<TraceRestrictInstructionItem, StrongType::Compare, TracerestrictDetail::InstructionItemOperations>;
+using TraceRestrictInstructionItemRef = StrongType::BaseRefTypedef<TraceRestrictInstructionItemTag>;
 
 template <typename ITER>
 struct TraceRestrictInstructionEndSentinel {

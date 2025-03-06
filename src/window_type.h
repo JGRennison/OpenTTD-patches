@@ -840,6 +840,7 @@ enum EventState {
 	ES_NOT_HANDLED, ///< The passed event is not handled.
 };
 
-using WindowToken = StrongType::Typedef<uint64_t, struct WindowTokenTag, StrongType::Compare>;
+struct WindowTokenTag : public StrongType::TypedefTraits<uint64_t, StrongType::Compare> {};
+using WindowToken = StrongType::Typedef<WindowTokenTag>;
 
 #endif /* WINDOW_TYPE_H */

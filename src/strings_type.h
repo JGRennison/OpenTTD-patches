@@ -44,7 +44,8 @@ enum StringTab {
 };
 
 /** The index/offset of a string within a #StringTab. */
-using StringIndexInTab = StrongType::Typedef<uint32_t, struct StringIndexInTabTag, StrongType::Compare, StrongType::Integer>;
+struct StringIndexInTabTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare, StrongType::Integer> {};
+using StringIndexInTab = StrongType::Typedef<StringIndexInTabTag>;
 
 /** Number of bits for the StringIndex within a StringTab */
 static const uint TAB_SIZE_BITS       = 11;
