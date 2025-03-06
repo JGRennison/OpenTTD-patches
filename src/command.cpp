@@ -435,7 +435,7 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 	} else {
 		buffer.format(" |{:{}}| ", "", MapDigitsX() + MapDigitsY() + 5);
 	}
-	buffer.format("cmd: 0x{:03X} {:<34} |", entry.cmd, cmd_info.name);
+	buffer.format("cmd: {:03X} {:<34} |", entry.cmd, cmd_info.name);
 
 	if (!entry.summary.empty()) {
 		buffer.push_back(' ');

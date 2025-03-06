@@ -3681,7 +3681,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("follow up: {} x {}, cmd: 0x{:X} ({}), ", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.cmd, GetCommandName(this->cmd.cmd));
+	output.format("follow up: {} x {}, cmd: {:X} ({}), ", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.cmd, GetCommandName(this->cmd.cmd));
 	this->cmd.payload->FormatDebugSummary(output);
 }
 
