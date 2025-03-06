@@ -288,6 +288,8 @@ struct ViewportData : Viewport {
 	int32_t next_scrollpos_x;          ///< Next x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
 	int32_t next_scrollpos_y;          ///< Next y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
 	bool force_update_overlay_pending; ///< Forced overlay update is pending (see SetViewportPosition)
+
+	void CancelFollow(const Window &viewport_window);
 };
 
 struct QueryString;

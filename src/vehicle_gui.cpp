@@ -4639,7 +4639,7 @@ void StopGlobalFollowVehicle(const Vehicle *v)
 	Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
 	if (w != nullptr && w->viewport->follow_vehicle == v->index) {
 		ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos, true); // lock the main view on the vehicle's last position
-		w->viewport->follow_vehicle = INVALID_VEHICLE;
+		w->viewport->CancelFollow(*w);
 	}
 }
 
