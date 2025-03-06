@@ -3641,7 +3641,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 {
 	switch (cmd.cmd) {
 		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
-			using Payload = typename CommandTraits<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::PayloadType;
+			using Payload = CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>;
 			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
 				Payload payload = *src;
 				TraceRestrictInstructionItemRef(payload.data).SetValue(value);
@@ -3651,7 +3651,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 		}
 
 		case CMD_PROGPRESIG_MODIFY_INSTRUCTION: {
-			using Payload = typename CommandTraits<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::PayloadType;
+			using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
 			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
 				Payload payload = *src;
 				uint32_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
@@ -3662,7 +3662,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 		}
 
 		case CMD_MODIFY_ORDER: {
-			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
+			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
 			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
 				Payload payload = *src;
 				uint16_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type

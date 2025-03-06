@@ -1340,4 +1340,7 @@ DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                     
 
 DEF_CMD_TUPLE_NT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, EmptyCmdData)
 
+template <Commands Tcmd>
+using CmdPayload = typename CommandTraits<Tcmd>::PayloadType;
+
 #endif /* COMMAND_TYPE_H */

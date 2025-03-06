@@ -19,13 +19,13 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 
 /* Note that output_no_tile is used here instead of input_no_tile, because a tile index used only for error messages is not useful */
 template <Commands cmd, typename = typename std::enable_if<!CommandTraits<cmd>::output_no_tile>>
-CommandCost DoCommand(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
+CommandCost DoCommand(TileIndex tile, const CmdPayload<cmd> &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandImplementation(cmd, tile, payload, flags, intl_flags | DCIF_TYPE_CHECKED);
 }
 
 template <Commands cmd, typename = typename std::enable_if<CommandTraits<cmd>::output_no_tile>>
-CommandCost DoCommand(const typename CommandTraits<cmd>::PayloadType &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
+CommandCost DoCommand(const CmdPayload<cmd> &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandImplementation(cmd, 0, payload, flags, intl_flags | DCIF_TYPE_CHECKED);
 }
@@ -83,13 +83,13 @@ inline bool DoCommandPOld(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd
 }
 
 template <Commands cmd, typename = typename std::enable_if<!CommandTraits<cmd>::input_no_tile>>
-bool DoCommandP(TileIndex tile, const typename CommandTraits<cmd>::PayloadType &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
+bool DoCommandP(TileIndex tile, const CmdPayload<cmd> &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED);
 }
 
 template <Commands cmd, typename = typename std::enable_if<CommandTraits<cmd>::input_no_tile>>
-bool DoCommandP(const typename CommandTraits<cmd>::PayloadType &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
+bool DoCommandP(const CmdPayload<cmd> &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandPImplementation(cmd, 0, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED);
 }
@@ -99,21 +99,17 @@ template <Commands TCmd, typename T> struct DoCommandHelperNoTile;
 
 template <Commands Tcmd, typename... Targs>
 struct DoCommandHelper<Tcmd, std::tuple<Targs...>> {
-	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
-
 	static inline CommandCost Do(DoCommandFlag flags, TileIndex tile, Targs... args)
 	{
-		return DoCommand<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), flags);
+		return DoCommand<Tcmd>(tile, CmdPayload<Tcmd>::Make(std::forward<Targs>(args)...), flags);
 	}
 };
 
 template <Commands Tcmd, typename... Targs>
 struct DoCommandHelperNoTile<Tcmd, std::tuple<Targs...>> {
-	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
-
 	static inline CommandCost Do(DoCommandFlag flags, Targs... args)
 	{
-		return DoCommand<Tcmd>(PayloadType::Make(std::forward<Targs>(args)...), flags);
+		return DoCommand<Tcmd>(CmdPayload<Tcmd>::Make(std::forward<Targs>(args)...), flags);
 	}
 };
 
@@ -122,7 +118,7 @@ template <Commands TCmd, typename T> struct DoCommandPHelperNoTile;
 
 template <Commands Tcmd, typename... Targs>
 struct DoCommandPHelper<Tcmd, std::tuple<Targs...>> {
-	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+	using PayloadType = CmdPayload<Tcmd>;
 
 	static inline bool Post(TileIndex tile, Targs... args)
 	{
@@ -147,7 +143,7 @@ struct DoCommandPHelper<Tcmd, std::tuple<Targs...>> {
 
 template <Commands Tcmd, typename... Targs>
 struct DoCommandPHelperNoTile<Tcmd, std::tuple<Targs...>> {
-	using PayloadType = typename CommandTraits<Tcmd>::PayloadType;
+	using PayloadType = CmdPayload<Tcmd>;
 
 	static inline bool Post(Targs... args)
 	{
@@ -173,11 +169,11 @@ struct DoCommandPHelperNoTile<Tcmd, std::tuple<Targs...>> {
 template <Commands Tcmd>
 struct Command :
 		public std::conditional_t<CommandTraits<Tcmd>::output_no_tile,
-			DoCommandHelperNoTile<Tcmd, typename CommandTraits<Tcmd>::PayloadType::Tuple>,
-			DoCommandHelper<Tcmd, typename CommandTraits<Tcmd>::PayloadType::Tuple>>,
+			DoCommandHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Tuple>,
+			DoCommandHelper<Tcmd, typename CmdPayload<Tcmd>::Tuple>>,
 		public std::conditional_t<CommandTraits<Tcmd>::input_no_tile,
-			DoCommandPHelperNoTile<Tcmd, typename CommandTraits<Tcmd>::PayloadType::Tuple>,
-			DoCommandPHelper<Tcmd, typename CommandTraits<Tcmd>::PayloadType::Tuple>> {};
+			DoCommandPHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Tuple>,
+			DoCommandPHelper<Tcmd, typename CmdPayload<Tcmd>::Tuple>> {};
 
 /* Other command functions */
 
@@ -185,7 +181,7 @@ CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadB
 CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags, bool estimate_only);
 
 template <Commands Tcmd>
-void NetworkSendCommand(TileIndex tile, const typename CommandTraits<Tcmd>::PayloadType &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
+void NetworkSendCommand(TileIndex tile, const CmdPayload<Tcmd> &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company)
 {
 	extern void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
 	return NetworkSendCommandImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, company);

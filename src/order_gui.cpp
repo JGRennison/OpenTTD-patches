@@ -3420,7 +3420,7 @@ public:
 		if (!str.has_value() || str->empty()) return;
 
 		auto create_slot_counter = [&](ModifyOrderFlags mof, bool counter) {
-			using Payload = typename CommandTraits<CMD_MODIFY_ORDER>::PayloadType;
+			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
 			Payload follow_up_payload = Payload::Make(this->vehicle->index, this->OrderGetSel(), mof, {}, {}, {});
 			TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Payload>{ CMD_MODIFY_ORDER, (StringID)0, this->vehicle->tile, std::move(follow_up_payload) } };
 			if (counter) {
