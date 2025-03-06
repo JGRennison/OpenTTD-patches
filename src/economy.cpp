@@ -8,6 +8,7 @@
 /** @file economy.cpp Handling of the economy. */
 
 #include "stdafx.h"
+#include "company_cmd.h"
 #include "company_func.h"
 #include "command_func.h"
 #include "industry.h"
@@ -760,7 +761,7 @@ static void CompanyCheckBankrupt(Company *c)
 			 * player we are sure (the above check) that we are not the local
 			 * company and thus we won't be moved. */
 			if (!_networking || _network_server) {
-				DoCommandPOld(0, CCA_DELETE | (c->index << 16) | (CRR_BANKRUPT << 24), 0, CMD_COMPANY_CTRL);
+				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, c->index, CRR_BANKRUPT, INVALID_CLIENT_ID, {});
 				return;
 			}
 			break;
@@ -2559,17 +2560,13 @@ void PostAcquireCompany(Company *c)
 
 /**
  * Acquire shares in an opposing company.
- * @param tile unused
  * @param flags type of operation
- * @param p1 company to buy the shares from
- * @param p2 unused
- * @param text unused
+ * @param target_company company to buy the shares from
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuyShareInCompany(DoCommandFlag flags, CompanyID target_company)
 {
 	CommandCost cost(EXPENSES_OTHER);
-	CompanyID target_company = (CompanyID)p1;
 	Company *c = Company::GetIfValid(target_company);
 
 	/* Check if buying shares is allowed (protection against modified clients)
@@ -2607,16 +2604,12 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 /**
  * Sell shares in an opposing company.
- * @param tile unused
  * @param flags type of operation
- * @param p1 company to sell the shares from
- * @param p2 unused
- * @param text unused
+ * @param target_company company to sell the shares from
  * @return the cost of this operation or an error
  */
-CommandCost CmdSellShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
 {
-	CompanyID target_company = (CompanyID)p1;
 	Company *c = Company::GetIfValid(target_company);
 
 	/* Cannot sell own shares */

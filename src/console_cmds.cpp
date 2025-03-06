@@ -70,6 +70,7 @@
 #include "roadstop_base.h"
 #include "core/backup_type.hpp"
 #include "3rdparty/fmt/chrono.h"
+#include "company_cmd.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -1169,7 +1170,7 @@ DEF_CONSOLE_CMD(ConResetCompany)
 	}
 
 	/* It is safe to remove this company */
-	DoCommandPOld(0, CCA_DELETE | index << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, index, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;
@@ -1193,7 +1194,7 @@ DEF_CONSOLE_CMD(ConOfferCompanySale)
 		return true;
 	}
 
-	DoCommandPOld(0, CCA_SALE | index << 16, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_SALE, index, CRR_NONE, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
 
 	return true;
@@ -1222,7 +1223,7 @@ DEF_CONSOLE_CMD(ConMergeCompanies)
 		return true;
 	}
 
-	DoCommandPOld(0, CCA_MERGE | (main_company << 16) | (to_merge_company << 24), 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_MERGE, main_company, CRR_NONE, INVALID_CLIENT_ID, to_merge_company);
 	IConsolePrint(CC_DEFAULT, "Companies merged.");
 
 	return true;
@@ -1610,7 +1611,7 @@ DEF_CONSOLE_CMD(ConStartAI)
 	}
 
 	/* Start a new AI company */
-	DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
 
 	return true;
 }
@@ -1646,8 +1647,8 @@ DEF_CONSOLE_CMD(ConReloadAI)
 	}
 
 	/* First kill the company of the AI, then start a new one. This should start the current AI again */
-	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
-	DoCommandPOld(0, CCA_NEW_AI | company_id << 16, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, company_id, CRR_NONE, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI reloaded.");
 
 	return true;
@@ -1684,7 +1685,7 @@ DEF_CONSOLE_CMD(ConStopAI)
 	}
 
 	/* Now kill the company of the AI. */
-	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI stopped, company deleted.");
 
 	return true;
@@ -2231,7 +2232,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Add(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandPOld(0, CALCA_ADD, 0, CMD_COMPANY_ALLOW_LIST_CTRL, CommandCallback::None, authorized_key.c_str());
+				Command<CMD_COMPANY_ALLOW_LIST_CTRL>::Post(CALCA_ADD, authorized_key);
 			}
 			IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			return;
@@ -2246,7 +2247,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Remove(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				DoCommandPOld(0, CALCA_REMOVE, 0, CMD_COMPANY_ALLOW_LIST_CTRL, CommandCallback::None, authorized_key.c_str());
+				Command<CMD_COMPANY_ALLOW_LIST_CTRL>::Post(CALCA_REMOVE, authorized_key);
 			}
 			IConsolePrint(CC_INFO, "Removed {} from {}.", authorized_key, name);
 			return;
@@ -3833,7 +3834,7 @@ DEF_CONSOLE_CMD(ConDeleteCompany)
 		return true;
 	}
 
-	DoCommandPOld(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;

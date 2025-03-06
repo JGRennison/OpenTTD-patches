@@ -29,6 +29,7 @@
 #include "../querystring_gui.h"
 #include "../sortlist_type.h"
 #include "../company_func.h"
+#include "../company_cmd.h"
 #include "../command_func.h"
 #include "../core/geometry_func.hpp"
 #include "../genworld.h"
@@ -1357,7 +1358,7 @@ static void AdminCompanyResetCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
 		if (NetworkCompanyHasClients(_admin_company_id)) return;
-		DoCommandPOld(0, CCA_DELETE | _admin_company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+		Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, _admin_company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	}
 }
 
@@ -1492,11 +1493,7 @@ private:
 	 */
 	static void OnClickCompanyNew([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID)
 	{
-		if (_network_server) {
-			DoCommandPOld(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
-		} else {
-			NetworkSendCommand<CMD_COMPANY_CTRL>(0, P123CmdData(CCA_NEW, 0, 0), (StringID)0, CommandCallback::None, 0, _local_company);
-		}
+		Command<CMD_COMPANY_CTRL>::Post(CCA_NEW, INVALID_COMPANY, CRR_NONE, _network_own_client_id, {});
 	}
 
 	/**

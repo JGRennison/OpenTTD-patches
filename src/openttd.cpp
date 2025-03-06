@@ -22,6 +22,7 @@
 
 #include "base_media_base.h"
 #include "sl/saveload.h"
+#include "company_cmd.h"
 #include "company_func.h"
 #include "command_func.h"
 #include "command_log.h"
@@ -1122,7 +1123,7 @@ static void MakeNewGameDone()
 	}
 
 	if (_settings_client.gui.starting_colour_secondary != COLOUR_END && HasBit(_loaded_newgrf_features.used_liveries, LS_DEFAULT)) {
-		DoCommandPOld(0, LS_DEFAULT | 1 << 8, _settings_client.gui.starting_colour_secondary, CMD_SET_COMPANY_COLOUR);
+		Command<CMD_SET_COMPANY_COLOUR>::Post(LS_DEFAULT, false, _settings_client.gui.starting_colour_secondary);
 	}
 
 	OnStartGame(false);

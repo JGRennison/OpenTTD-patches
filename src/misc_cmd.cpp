@@ -394,21 +394,17 @@ CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32_t p
  * To prevent abuse in multiplayer games you can only send money to other
  * companies if you have paid off your loan (either explicitly, or implicitly
  * given the fact that you have more money than loan).
- * @param tile unused
  * @param flags operation to perform
- * @param p1 the company to transfer the money to
- * @param p2 unused
- * @param p3 the amount of money to transfer; max 20.000.000
- * @param text unused
+ * @param money the amount of money to transfer; max 20.000.000
+ * @param dest_company the company to transfer the money to
  * @return the cost of this operation or an error
  */
-CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdGiveMoney(DoCommandFlag flags, Money money, CompanyID dest_company)
 {
 	if (!_settings_game.economy.give_money) return CMD_ERROR;
 
 	const Company *c = Company::Get(_current_company);
-	CommandCost amount(EXPENSES_OTHER, (int64_t)p3);
-	CompanyID dest_company = (CompanyID)p1;
+	CommandCost amount(EXPENSES_OTHER, money);
 
 	/* You can only transfer funds that is in excess of your loan */
 	if (c->money - c->current_loan < amount.GetCost() || amount.GetCost() < 0) return CommandCost(STR_ERROR_INSUFFICIENT_FUNDS);

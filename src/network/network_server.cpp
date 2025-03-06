@@ -17,6 +17,7 @@
 #include "network_base.h"
 #include "../console_func.h"
 #include "../company_base.h"
+#include "../company_cmd.h"
 #include "../command_func.h"
 #include "../sl/saveload.h"
 #include "../sl/saveload_filter.h"
@@ -1264,8 +1265,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	 */
 	CompanyCtrlAction cca = CCA_NEW;
 	if (cmd == CMD_COMPANY_CTRL) {
-		const auto &payload = static_cast<const typename CommandTraits<CMD_COMPANY_CTRL>::PayloadType &>(*cp.command_container.payload);
-		cca = static_cast<CompanyCtrlAction>(payload.p1);
+		cca = static_cast<const CmdPayload<CMD_COMPANY_CTRL> &>(*cp.command_container.payload).cca;
 	}
 	if (!(cmd == CMD_COMPANY_CTRL && cca == CCA_NEW && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
 			!((GetCommandFlags(cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
@@ -1917,7 +1917,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_unprotected-months, and is there no protection? */
 			if (_settings_client.network.autoclean_unprotected != 0 && c->months_empty > _settings_client.network.autoclean_unprotected && _network_company_states[c->index].password.empty()) {
 				/* Shut the company down */
-				DoCommandPOld(0, CCA_DELETE | c->index << 16 | CRR_AUTOCLEAN << 24, 0, CMD_COMPANY_CTRL);
+				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no password", c->index + 1);
 			}
 			/* Is the company empty for autoclean_protected-months, and there is a protection? */
@@ -1931,7 +1931,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_novehicles-months, and has no vehicles? */
 			if (_settings_client.network.autoclean_novehicles != 0 && c->months_empty > _settings_client.network.autoclean_novehicles && !HasBit(has_vehicles, c->index)) {
 				/* Shut the company down */
-				DoCommandPOld(0, CCA_DELETE | c->index << 16 | CRR_AUTOCLEAN << 24, 0, CMD_COMPANY_CTRL);
+				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no vehicles", c->index + 1);
 			}
 		} else {
@@ -2534,7 +2534,7 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		ci->client_playas = c->index;
 		NetworkUpdateClientInfo(ci->client_id);
 		// CMD_COMPANY_ADD_ALLOW_LIST would go here
-		NetworkSendCommand<CMD_RENAME_PRESIDENT>(0, P123CmdData(0, 0, 0, ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
+		NetworkSendCommand<CMD_RENAME_PRESIDENT>(0, CmdPayload<CMD_RENAME_PRESIDENT>::Make(ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
 	}
 
 	if (ci != nullptr) {

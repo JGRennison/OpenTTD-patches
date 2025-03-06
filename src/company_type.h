@@ -57,16 +57,18 @@ struct Company;
 typedef uint32_t CompanyManagerFace; ///< Company manager face bits, info see in company_manager_face.h
 
 /** The reason why the company was removed. */
-enum CompanyRemoveReason {
+enum CompanyRemoveReason : uint8_t {
 	CRR_MANUAL,    ///< The company is manually removed.
 	CRR_AUTOCLEAN, ///< The company is removed due to autoclean.
 	CRR_BANKRUPT,  ///< The company went belly-up.
 
 	CRR_END,       ///< Sentinel for end.
+
+	CRR_NONE = CRR_MANUAL, ///< Dummy reason for actions that don't need one.
 };
 
 /** The action to do with CMD_COMPANY_CTRL. */
-enum CompanyCtrlAction {
+enum CompanyCtrlAction : uint8_t {
 	CCA_NEW,    ///< Create a new company.
 	CCA_NEW_AI, ///< Create a new AI company.
 	CCA_DELETE, ///< Delete a company.

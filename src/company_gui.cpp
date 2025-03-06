@@ -27,6 +27,7 @@
 #include "dropdown_common_type.h"
 #include "tilehighlight_func.h"
 #include "company_base.h"
+#include "company_cmd.h"
 #include "core/geometry_func.hpp"
 #include "object_type.h"
 #include "rail.h"
@@ -1055,7 +1056,7 @@ public:
 			for (LiveryScheme scheme = LS_DEFAULT; scheme < LS_END; scheme++) {
 				/* Changed colour for the selected scheme, or all visible schemes if CTRL is pressed. */
 				if (HasBit(this->sel, scheme) || (_ctrl_pressed && _livery_class[scheme] == this->livery_class && HasBit(_loaded_newgrf_features.used_liveries, scheme))) {
-					DoCommandPOld(0, scheme | (widget == WID_SCL_PRI_COL_DROPDOWN ? 0 : 256), index, CMD_SET_COMPANY_COLOUR);
+					Command<CMD_SET_COMPANY_COLOUR>::Post(scheme, widget == WID_SCL_PRI_COL_DROPDOWN, colour);
 				}
 			}
 		} else {
@@ -1655,7 +1656,7 @@ public:
 
 			/* OK button */
 			case WID_SCMF_ACCEPT:
-				DoCommandPOld(0, 0, this->face, CMD_SET_COMPANY_MANAGER_FACE);
+				Command<CMD_SET_COMPANY_MANAGER_FACE>::Post(this->face);
 				[[fallthrough]];
 
 			/* Cancel button */
@@ -2669,11 +2670,11 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_BUY_SHARE:
-				DoCommandPOld(0, this->window_number, 0, CMD_BUY_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS));
+				Command<CMD_BUY_SHARE_IN_COMPANY>::Post(STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS, (CompanyID)this->window_number);
 				break;
 
 			case WID_C_SELL_SHARE:
-				DoCommandPOld(0, this->window_number, 0, CMD_SELL_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_SELL_25_SHARE_IN));
+				Command<CMD_SELL_SHARE_IN_COMPANY>::Post(STR_ERROR_CAN_T_SELL_25_SHARE_IN, (CompanyID)this->window_number);
 				break;
 
 			case WID_C_HOSTILE_TAKEOVER:
@@ -2728,16 +2729,18 @@ struct CompanyWindow : Window
 		switch (this->query_widget) {
 			default: NOT_REACHED();
 
-			case WID_C_GIVE_MONEY:
-				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CommandCallback::GiveMoney);
+			case WID_C_GIVE_MONEY: {
+				Money money = std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate;
+				Command<CMD_GIVE_MONEY>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);
 				break;
+			}
 
 			case WID_C_PRESIDENT_NAME:
-				DoCommandPOld(0, 0, 0, CMD_RENAME_PRESIDENT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_PRESIDENT), CommandCallback::None, str->c_str());
+				Command<CMD_RENAME_PRESIDENT>::Post(STR_ERROR_CAN_T_CHANGE_PRESIDENT, *str);
 				break;
 
 			case WID_C_COMPANY_NAME:
-				DoCommandPOld(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), CommandCallback::None, str->c_str());
+				Command<CMD_RENAME_COMPANY>::Post(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME, *str);
 				break;
 
 			case WID_C_COMPANY_JOIN:

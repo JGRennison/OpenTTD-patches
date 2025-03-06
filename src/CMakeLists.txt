@@ -105,6 +105,7 @@ add_files(
     command_type.h
     company_base.h
     company_cmd.cpp
+    company_cmd.h
     company_func.h
     company_gui.cpp
     company_gui.h

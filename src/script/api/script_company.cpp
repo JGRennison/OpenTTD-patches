@@ -13,6 +13,7 @@
 #include "script_companymode.hpp"
 #include "../../company_func.h"
 #include "../../company_base.h"
+#include "../../company_cmd.h"
 #include "../../company_manager_face.h"
 #include "../../economy_func.h"
 #include "../../object_type.h"
@@ -51,7 +52,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_COMPANY_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommandOld(0, 0, 0, CMD_RENAME_COMPANY, text);
+	return ScriptObject::Command<CMD_RENAME_COMPANY>::Do(text);
 }
 
 /* static */ std::optional<std::string> ScriptCompany::GetName(ScriptCompany::CompanyID company)
@@ -73,7 +74,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_PRESIDENT_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommandOld(0, 0, 0, CMD_RENAME_PRESIDENT, text);
+	return ScriptObject::Command<CMD_RENAME_PRESIDENT>::Do(text);
 }
 
 /* static */ std::optional<std::string> ScriptCompany::GetPresidentName(ScriptCompany::CompanyID company)
@@ -96,7 +97,7 @@
 	GenderEthnicity ge = (GenderEthnicity)((gender == GENDER_FEMALE ? (1 << ::GENDER_FEMALE) : 0) | (randomizer.Next() & (1 << ETHNICITY_BLACK)));
 	RandomCompanyManagerFaceBits(cmf, ge, false, randomizer);
 
-	return ScriptObject::DoCommandOld(0, 0, cmf, CMD_SET_COMPANY_MANAGER_FACE);
+	return ScriptObject::Command<CMD_SET_COMPANY_MANAGER_FACE>::Do(cmf);
 }
 
 /* static */ ScriptCompany::Gender ScriptCompany::GetPresidentGender(CompanyID company)
@@ -346,13 +347,13 @@
 /* static */ bool ScriptCompany::SetPrimaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommandOld(0, scheme, colour, CMD_SET_COMPANY_COLOUR);
+	return ScriptObject::Command<CMD_SET_COMPANY_COLOUR>::Do((::LiveryScheme)scheme, true, (::Colours)colour);
 }
 
 /* static */ bool ScriptCompany::SetSecondaryLiveryColour(LiveryScheme scheme, Colours colour)
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommandOld(0, scheme | 1 << 8, colour, CMD_SET_COMPANY_COLOUR);
+	return ScriptObject::Command<CMD_SET_COMPANY_COLOUR>::Do((::LiveryScheme)scheme, false, (::Colours)colour);
 }
 
 /* static */ ScriptCompany::Colours ScriptCompany::GetPrimaryLiveryColour(ScriptCompany::LiveryScheme scheme)

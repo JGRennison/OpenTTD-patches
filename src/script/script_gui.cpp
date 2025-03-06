@@ -14,6 +14,7 @@
 #include "../querystring_gui.h"
 #include "../stringfilter_type.h"
 #include "../company_base.h"
+#include "../company_cmd.h"
 #include "../company_gui.h"
 #include "../dropdown_type.h"
 #include "../dropdown_func.h"
@@ -1078,8 +1079,8 @@ struct ScriptDebugWindow : public Window {
 					break;
 				}
 				/* First kill the company of the AI, then start a new one. This should start the current AI again */
-				DoCommandPOld(0, CCA_DELETE | this->filter.script_debug_company << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
-				DoCommandPOld(0, CCA_NEW_AI | this->filter.script_debug_company << 16, 0, CMD_COMPANY_CTRL);
+				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, this->filter.script_debug_company, CRR_MANUAL, INVALID_CLIENT_ID, {});
+				Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, this->filter.script_debug_company, CRR_NONE, INVALID_CLIENT_ID, {});
 				break;
 
 			case WID_SCRD_SETTINGS:

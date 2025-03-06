@@ -41,6 +41,7 @@
 #include "3rdparty/nlohmann/json.hpp"
 #include <array>
 
+#include "company_cmd.h"
 #include "league_cmd.h"
 #include "order_cmd.h"
 #include "plans_cmd.h"
@@ -286,7 +287,7 @@ DEF_CB_RES_TILE(Station)
 DEF_CB_RES_TILE(Terraform)
 DEF_CB_GENERAL(AI)
 DEF_CB_RES(CloneVehicle)
-DEF_CB_GENERAL(GiveMoney)
+DEF_CB_RES_TUPLE(GiveMoney, CmdPayload<CMD_GIVE_MONEY>)
 DEF_CB_GENERAL(CreateGroup)
 DEF_CB_RES(FoundRandomTown)
 DEF_CB_GENERAL(RoadStop)

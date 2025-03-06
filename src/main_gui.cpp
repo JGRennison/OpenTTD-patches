@@ -24,6 +24,7 @@
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "company_base.h"
+#include "company_cmd.h"
 #include "company_func.h"
 #include "toolbar_gui.h"
 #include "statusbar_gui.h"
@@ -48,27 +49,24 @@
 
 #include "safeguards.h"
 
-void CcGiveMoney(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcGiveMoney(const CommandCost &result, Money money, CompanyID dest_company)
 {
 	if (result.Failed() || !_settings_game.economy.give_money || !_networking) return;
 
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_GIVE_MONEY>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
 	/* Inform the company of the action of one of its clients (controllers). */
-	SetDParam(0, data->p1);
+	SetDParam(0, dest_company);
 	std::string msg = GetString(STR_COMPANY_NAME);
 
 	/*
 	 * bits 31-16: source company
 	 * bits 15-0: target company
 	 */
-	uint64_t auxdata = (data->p1 & 0xFFFF) | (((uint64_t) _local_company) << 16);
+	uint64_t auxdata = (uint64_t)dest_company | (((uint64_t) _local_company) << 16);
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, data->p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, dest_company, msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, data->p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, dest_company, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 

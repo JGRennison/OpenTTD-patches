@@ -9,12 +9,14 @@
 
 #include "stdafx.h"
 #include "company_base.h"
+#include "company_cmd.h"
 #include "company_func.h"
 #include "company_gui.h"
 #include "town.h"
 #include "news_func.h"
 #include "cmd_helper.h"
 #include "command_func.h"
+#include "command_serialisation.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/network_base.h"
@@ -689,7 +691,7 @@ TimeoutTimer<TimerGameTick> _new_competitor_timeout({ TimerGameTick::Priority::C
 
 	/* Send a command to all clients to start up a new AI.
 	 * Works fine for Multiplayer and Singleplayer */
-	DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
 });
 
 /** Start of a new game. */
@@ -850,7 +852,7 @@ void OnTick_Companies(bool main_tick)
 			for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
 				if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) break;
 				if (n++ >= _settings_game.difficulty.max_no_competitors) break;
-				DoCommandPOld(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+				Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
 			}
 			timeout = 10 * 60 * TICKS_PER_SECOND;
 		}
@@ -932,23 +934,19 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
 
 /**
  * Control the companies: add, delete, etc.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 various functionality
- * - bits 0..15: CompanyCtrlAction
- * - bits 16..23: CompanyID
- * - bits 24..31: CompanyRemoveReason (with CCA_DELETE)
- * - bits 24..31: CompanyID to merge (with CCA_MERGE)
- * @param p2 ClientID
- * @param text unused
+ * @param cca action to perform
+ * @param company_id company to perform the action on
+ * @param reason company remove reason (with CCA_DELETE)
+ * @param client_id ClientID
+ * @param to_merge_id CompanyID to merge (with CCA_MERGE)
  * @return the cost of this operation or an error
  */
-CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID company_id, CompanyRemoveReason reason, ClientID client_id, CompanyID to_merge_id)
 {
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
-	CompanyID company_id = (CompanyID)GB(p1, 16, 8);
 
-	switch ((CompanyCtrlAction)GB(p1, 0, 16)) {
+	switch (cca) {
 		case CCA_NEW: { // Create a new company
 			/* This command is only executed in a multiplayer game */
 			if (!_networking) return CMD_ERROR;
@@ -956,7 +954,6 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			/* Has the network client a correct ClientIndex? */
 			if (!(flags & DC_EXEC)) return CommandCost();
 
-			ClientID client_id = (ClientID)p2;
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 
 			/* Delete multiplayer progress bar */
@@ -990,7 +987,9 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 				/* In network games, we need to try setting the company manager face here to sync it to all clients.
 				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face. */
-				if (_company_manager_face != 0) NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>(0, P123CmdData(0, _company_manager_face, 0), (StringID)0, CommandCallback::None, 0, _local_company);
+				if (_company_manager_face != 0) {
+					NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>(0, CmdPayload<CMD_SET_COMPANY_MANAGER_FACE>::Make(_company_manager_face), (StringID)0, CommandCallback::None, 0, _local_company);
+				}
 
 				/* Now that we have a new company, broadcast our company settings to
 				 * all clients so everything is in sync */
@@ -1024,7 +1023,6 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		}
 
 		case CCA_DELETE: { // Delete a company
-			CompanyRemoveReason reason = (CompanyRemoveReason)GB(p1, 24, 8);
 			if (reason >= CRR_END) return CMD_ERROR;
 
 			/* We can't delete the last existing company in singleplayer mode. */
@@ -1083,7 +1081,6 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
 
-			CompanyID to_merge_id = (CompanyID)GB(p1, 24, 8);
 			if (to_merge_id == company_id) return CMD_ERROR;
 
 			Company *to_merge = Company::GetIfValid(to_merge_id);
@@ -1169,25 +1166,14 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlag flags, CompanyAllowListCtrlAct
 	return CommandCost();
 }
 
-CommandCost CmdCompanyAllowListCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
-{
-	if (StrEmpty(text)) return CMD_ERROR;
-	return CmdCompanyAllowListCtrl(flags, static_cast<CompanyAllowListCtrlAction>(p1), std::string{text});
-}
-
 /**
  * Change the company manager's face.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 face bitmasked
- * @param text unused
+ * @param cmf face bitmasked
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyManagerFace(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSetCompanyManagerFace(DoCommandFlag flags, CompanyManagerFace cmf)
 {
-	CompanyManagerFace cmf = (CompanyManagerFace)p2;
-
 	if (!IsValidCompanyManagerFace(cmf)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
@@ -1213,21 +1199,14 @@ void UpdateCompanyLiveries(Company *c)
 
 /**
  * Change the company's company-colour
- * @param tile unused
  * @param flags operation to perform
- * @param p1 bitstuffed:
- * p1 bits 0-7 scheme to set
- * p1 bit 8 set first/second colour
- * @param p2 new colour for vehicles, property, etc.
- * @param text unused
+ * @param scheme scheme to set
+ * @param primary set first/second colour
+ * @param colour new colour for vehicles, property, etc.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSetCompanyColour(DoCommandFlag flags, LiveryScheme scheme, bool primary, Colours colour)
 {
-	Colours colour = Extract<Colours, 0, 8>(p2);
-	LiveryScheme scheme = Extract<LiveryScheme, 0, 8>(p1);
-	bool second = HasBit(p1, 8);
-
 	if (scheme >= LS_END || (colour >= COLOUR_END && colour != INVALID_COLOUR)) return CMD_ERROR;
 
 	/* Default scheme can't be reset to invalid. */
@@ -1236,14 +1215,14 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	Company *c = Company::Get(_current_company);
 
 	/* Ensure no two companies have the same primary colour */
-	if (scheme == LS_DEFAULT && !second) {
+	if (scheme == LS_DEFAULT && primary) {
 		for (const Company *cc : Company::Iterate()) {
 			if (cc != c && cc->colour == colour) return CMD_ERROR;
 		}
 	}
 
 	if (flags & DC_EXEC) {
-		if (!second) {
+		if (primary) {
 			if (scheme != LS_DEFAULT) AssignBit(c->livery[scheme].in_use, 0, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour1;
 			c->livery[scheme].colour1 = colour;
@@ -1317,7 +1296,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
  * @param name Name to search.
  * @return \c true if the name us unique (that is, not in use), else \c false.
  */
-static bool IsUniqueCompanyName(const char *name)
+static bool IsUniqueCompanyName(std::string_view name)
 {
 	for (const Company *c : Company::Iterate()) {
 		if (!c->name.empty() && c->name == name) return false;
@@ -1328,16 +1307,13 @@ static bool IsUniqueCompanyName(const char *name)
 
 /**
  * Change the name of the company.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 unused
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdRenameCompany(DoCommandFlag flags, const std::string &text)
 {
-	bool reset = StrEmpty(text);
+	bool reset = text.empty();
 
 	if (!reset) {
 		if (Utf8StringLength(text) >= MAX_LENGTH_COMPANY_NAME_CHARS) return CMD_ERROR;
@@ -1368,7 +1344,7 @@ CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
  * @param name Name to search.
  * @return \c true if the name us unique (that is, not in use), else \c false.
  */
-static bool IsUniquePresidentName(const char *name)
+static bool IsUniquePresidentName(std::string_view name)
 {
 	for (const Company *c : Company::Iterate()) {
 		if (!c->president_name.empty() && c->president_name == name) return false;
@@ -1379,16 +1355,13 @@ static bool IsUniquePresidentName(const char *name)
 
 /**
  * Change the name of the president.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 unused
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdRenamePresident(DoCommandFlag flags, const std::string &text)
 {
-	bool reset = StrEmpty(text);
+	bool reset = text.empty();
 
 	if (!reset) {
 		if (Utf8StringLength(text) >= MAX_LENGTH_PRESIDENT_NAME_CHARS) return CMD_ERROR;
@@ -1404,10 +1377,7 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			c->president_name = text;
 
 			if (c->name_1 == STR_SV_UNNAMED && c->name.empty()) {
-				format_buffer buf;
-
-				buf.format("{} Transport", text);
-				DoCommandOld(0, 0, 0, DC_EXEC, CMD_RENAME_COMPANY, buf.c_str());
+				Command<CMD_RENAME_COMPANY>::Do(DC_EXEC, text + " Transport");
 			}
 		}
 
@@ -1499,4 +1469,27 @@ void CompanyInfrastructure::Dump(format_target &buffer) const
 	buffer.format("Water: {}\n", water);
 	buffer.format("Station: {}\n", station);
 	buffer.format("Airport: {}\n", airport);
+}
+
+void CmdCompanyCtrlData::SetClientID(ClientID client_id)
+{
+	if (this->client_id == INVALID_CLIENT_ID) this->client_id = client_id;
+}
+
+void CmdCompanyCtrlData::FormatDebugSummary(format_target &output) const
+{
+	auto cca_name = [&]() -> const char * {
+		switch (this->cca) {
+			case CCA_NEW: return "new";
+			case CCA_NEW_AI: return "new_ai";
+			case CCA_DELETE: return "delete";
+			case CCA_SALE: return "sale";
+			case CCA_MERGE: return "merge";
+			default: return "???";
+		}
+	};
+
+	output.format("cca: {} ({}), cid: {}, client: {}", this->cca, cca_name(), this->company_id, this->client_id);
+	if (this->cca == CCA_DELETE) output.format(", reason: {}", this->reason);
+	if (this->cca == CCA_MERGE) output.format(", to_merge: {}", this->to_merge_id);
 }

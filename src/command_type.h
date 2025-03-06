@@ -1211,9 +1211,6 @@ DEF_CMD_PROC  (CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_TEXT, CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 
-DEF_CMD_PROC  (CMD_SET_COMPANY_MANAGER_FACE, CmdSetCompanyManagerFace,                          {}, CMDT_COMPANY_SETTING       )
-DEF_CMD_PROC  (CMD_SET_COMPANY_COLOUR, CmdSetCompanyColour,                               {}, CMDT_COMPANY_SETTING       )
-
 DEF_CMD_PROC  (CMD_INCREASE_LOAN, CmdIncreaseLoan,                                   {}, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_DECREASE_LOAN, CmdDecreaseLoan,                                   {}, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROCEX(CMD_SET_COMPANY_MAX_LOAN, CmdSetCompanyMaxLoan,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      )
@@ -1223,9 +1220,6 @@ DEF_CMD_PROC  (CMD_ENGINE_CTRL, CmdEngineCtrl,                             CMD_D
 
 DEF_CMD_PROC  (CMD_RENAME_VEHICLE, CmdRenameVehicle,                                  {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_ENGINE, CmdRenameEngine,                          CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_RENAME_COMPANY, CmdRenameCompany,                                  {}, CMDT_COMPANY_SETTING       )
-DEF_CMD_PROC  (CMD_RENAME_PRESIDENT, CmdRenamePresident,                                {}, CMDT_COMPANY_SETTING       )
 
 DEF_CMD_PROC  (CMD_RENAME_STATION, CmdRenameStation,                                  {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_DEPOT, CmdRenameDepot,                                    {}, CMDT_OTHER_MANAGEMENT      )
@@ -1240,8 +1234,6 @@ DEF_CMD_PROC  (CMD_TURN_ROADVEH, CmdTurnRoadVeh,                                
 
 DEF_CMD_PROC  (CMD_PAUSE, CmdPause,                    CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING        )
 
-DEF_CMD_PROC  (CMD_BUY_SHARE_IN_COMPANY, CmdBuyShareInCompany,                              {}, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SELL_SHARE_IN_COMPANY, CmdSellShareInCompany,                             {}, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_BUY_COMPANY, CmdBuyCompany,                                     {}, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_DECLINE_BUY_COMPANY, CmdDeclineBuyCompany,                     CMD_NO_EST, CMDT_SERVER_SETTING        )
 
@@ -1266,8 +1258,6 @@ DEF_CMD_PROCEX(CMD_MONEY_CHEAT_ADMIN, CmdMoneyCheatAdmin,                    CMD
 DEF_CMD_PROCEX(CMD_CHANGE_BANK_BALANCE, CmdChangeBankBalance,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_BUILD_CANAL, CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CREATE_SUBSIDY, CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_COMPANY_CTRL, CmdCompanyCtrl, CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING  )
-DEF_CMD_PROC  (CMD_COMPANY_ALLOW_LIST_CTRL, CmdCompanyAllowListCtrl,                               CMD_NO_TEST, CMDT_SERVER_SETTING        )
 DEF_CMD_PROC  (CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_CREATE_GOAL, CmdCreateGoal,              CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_REMOVE_GOAL, CmdRemoveGoal,                             CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
@@ -1295,7 +1285,6 @@ DEF_CMD_PROC  (CMD_BUILD_LOCK, CmdBuildLock,                               CMD_A
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROCEX(CMD_GIVE_MONEY, CmdGiveMoney,                                      {}, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_AUTOREPLACE, CmdSetAutoReplace,                                 {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_TOGGLE_REUSE_DEPOT_VEHICLES, CmdToggleReuseDepotVehicles,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
