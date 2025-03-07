@@ -37,6 +37,8 @@
 #include "querystring_gui.h"
 #include "stringfilter_type.h"
 #include "hotkeys.h"
+#include "vehicle_cmd.h"
+#include "tbtr_template_vehicle_cmd.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -1408,7 +1410,7 @@ struct BuildVehicleWindowBase : Window {
 		this->virtual_train_out = virtual_train_out;
 		this->virtual_train_mode = (virtual_train_out != nullptr);
 		if (this->virtual_train_mode) this->window_number = 0;
-		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
+		this->listview_mode = (tile == INVALID_TILE) && !this->virtual_train_mode;
 	}
 
 	void AddVirtualEngine(Train *toadd)
@@ -1417,12 +1419,17 @@ struct BuildVehicleWindowBase : Window {
 
 		if (*(this->virtual_train_out) == nullptr) {
 			*(this->virtual_train_out) = toadd;
-			InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
-		} else {
-			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
-
-			DoCommandPOld(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_VIRTUAL_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CommandCallback::MoveNewVirtualEngine);
 		}
+
+		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
+	}
+
+	VehicleID GetNewVirtualEngineMoveTarget() const
+	{
+		assert(this->virtual_train_out != nullptr);
+
+		Train *current = *(this->virtual_train_out);
+		return (current != nullptr) ? current->index : INVALID_VEHICLE;
 	}
 
 	StringID GetCargoFilterLabel(CargoID cid) const
@@ -1477,9 +1484,9 @@ struct BuildVehicleWindowBase : Window {
 				SavedRandomSeeds saved_seeds;
 				SaveRandomSeeds(&saved_seeds);
 				StringID err;
-				Train *t = BuildVirtualRailVehicle(engine, err, 0, false);
+				Train *t = BuildVirtualRailVehicle(engine, err, (ClientID)0, false);
 				if (t != nullptr) {
-					const CommandCost ret = CmdRefitVehicle(0, DC_QUERY_COST, t->index, cargo | (1 << 16), nullptr);
+					const CommandCost ret = Command<CMD_REFIT_VEHICLE>::Do(DC_QUERY_COST, t->index, cargo, 0, false, false, 1);
 					te.cost          = ret.GetCost();
 					te.capacity      = _returned_refit_capacity;
 					te.mail_capacity = _returned_mail_refit_capacity;
@@ -1494,7 +1501,7 @@ struct BuildVehicleWindowBase : Window {
 			}
 		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
-			CommandCost ret = DoCommandOld(this->window_number, engine | (cargo << 24), 0, DC_QUERY_COST, GetCmdBuildVeh(this->vehicle_type), nullptr);
+			CommandCost ret = Command<CMD_BUILD_VEHICLE>::Do(DC_QUERY_COST, this->window_number, engine, true, cargo, INVALID_CLIENT_ID);
 			if (ret.Succeeded()) {
 				te.cost          = ret.GetCost() - e->GetCost();
 				te.capacity      = _returned_refit_capacity;
@@ -1961,19 +1968,15 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		EngineID sel_eng = this->sel_engine;
 		if (sel_eng == INVALID_ENGINE) return;
 
-		CommandCallback callback;
-		uint32_t cmd;
-		if (this->virtual_train_mode) {
-			callback = CommandCallback::AddVirtualEngine;
-			cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
-		} else {
-			callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
-					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-			cmd = GetCmdBuildVeh(this->vehicle_type);
-		}
 		CargoID cargo = this->cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
-		DoCommandPOld(this->window_number, sel_eng | (cargo << 24), 0, cmd, callback);
+		if (this->virtual_train_mode) {
+			Command<CMD_BUILD_VIRTUAL_RAIL_VEHICLE>::Post(GetCmdBuildVehMsg(VEH_TRAIN), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+		} else {
+			CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
+					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
+			DoCommandPOld(this->window_number, sel_eng | (cargo << 24), 0, CMD_BUILD_VEHICLE | CMD_MSG(GetCmdBuildVehMsg(this->vehicle_type)), callback);
+		}
 
 		/* Update last used variant in hierarchy and refresh if necessary. */
 		bool refresh = false;
@@ -2725,18 +2728,14 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	void BuildEngine(const EngineID selected, CargoID cargo)
 	{
 		if (selected != INVALID_ENGINE) {
-			CommandCallback callback;
-			uint32_t cmd;
-			if (this->virtual_train_mode) {
-				callback = CommandCallback::AddVirtualEngine;
-				cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
-			} else {
-				callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
-						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-				cmd = GetCmdBuildVeh(this->vehicle_type);
-			}
 			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
-			DoCommandPOld(this->window_number, selected | (cargo << 24), 0, cmd, callback);
+			if (this->virtual_train_mode) {
+				Command<CMD_BUILD_VIRTUAL_RAIL_VEHICLE>::Post(GetCmdBuildVehMsg(VEH_TRAIN), CommandCallback::AddVirtualEngine, selected, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+			} else {
+				CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
+						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
+				DoCommandPOld(this->window_number, selected | (cargo << 24), 0, CMD_BUILD_VEHICLE | CMD_MSG(GetCmdBuildVehMsg(this->vehicle_type)), callback);
+			}
 
 			/* Update last used variant in hierarchy and refresh if necessary. */
 			bool refresh = false;
@@ -3265,22 +3264,13 @@ void CcAddVirtualEngine(const CommandCost &result)
 		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
 		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
-		DoCommandPOld(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
+		Command<CMD_SELL_VEHICLE>::Post(0, _new_vehicle_id, SellVehicleFlags::VirtualOnly, INVALID_CLIENT_ID);
 	}
 }
 
 void CcMoveNewVirtualEngine(const CommandCost &result)
 {
 	if (result.Failed()) return;
-
-	Window *window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
-
-	if (window != nullptr) {
-		if (result.IsSuccessWithMessage()) {
-			const CommandCost res = result.UnwrapSuccessWithMessage();
-			ShowErrorMessage(STR_ERROR_CAN_T_MOVE_VEHICLE, res.GetErrorMessage(), WL_INFO, 0, 0, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
-		}
-	}
 
 	InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 }

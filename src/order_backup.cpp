@@ -84,7 +84,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 	}
 
 	/* Remove backed up name if it's no longer unique. */
-	if (!this->name.empty() && !IsUniqueVehicleName(this->name.c_str())) this->name.clear();
+	if (!this->name.empty() && !IsUniqueVehicleName(this->name)) this->name.clear();
 
 	v->CopyConsistPropertiesFrom(this);
 

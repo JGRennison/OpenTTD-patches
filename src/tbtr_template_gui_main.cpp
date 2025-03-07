@@ -44,6 +44,7 @@
 #include "tbtr_template_gui_main.h"
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
+#include "tbtr_template_vehicle_cmd.h"
 #include "tbtr_template_vehicle_func.h"
 
 #include "safeguards.h"
@@ -410,18 +411,18 @@ public:
 		switch (widget) {
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
-					uint32_t template_index = ((this->templates)[selected_template_index])->index;
+					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES);
+					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReuseDepotVehicles, !tv->IsSetReuseDepotVehicles());
 				}
 				break;
 			}
 
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
-					uint32_t template_index = ((this->templates)[selected_template_index])->index;
+					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES);
+					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::KeepRemaining, !tv->IsSetKeepRemainingVehicles());
 				}
 				break;
 			}
@@ -429,18 +430,18 @@ public:
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE:
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_INCOMING: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
-					uint32_t template_index = ((this->templates)[selected_template_index])->index;
+					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					DoCommandPOld(0, template_index, (widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE) ? 1 : 0, CMD_SET_REFIT_AS_TEMPLATE);
+					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::RefitAsTemplate, widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE);
 				}
 				break;
 			}
 
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
-					uint32_t template_index = ((this->templates)[selected_template_index])->index;
+					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					DoCommandPOld(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY);
+					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReplaceOldOnly, !tv->IsReplaceOldOnly());
 				}
 				break;
 			}
@@ -476,11 +477,8 @@ public:
 
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
-
-					uint32_t template_index = ((this->templates)[selected_template_index])->index;
-
-					bool succeeded = DoCommandPOld(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
-
+					TemplateID template_index = ((this->templates)[selected_template_index])->index;
+					bool succeeded = Command<CMD_DELETE_TEMPLATE_VEHICLE>::Post(template_index);
 					if (succeeded) {
 						this->templates.ForceRebuild();
 						selected_template_index = -1;
@@ -551,7 +549,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != INVALID_GROUP) {
 					TemplateID tv_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandPOld(0, this->selected_group, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT);
+					Command<CMD_ISSUE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group, tv_index);
 					this->UpdateButtonState();
 				}
 				break;
@@ -559,7 +557,7 @@ public:
 
 			case TRW_WIDGET_STOP: {
 				if (this->selected_group != INVALID_GROUP) {
-					DoCommandPOld(0, this->selected_group, 0, CMD_DELETE_TEMPLATE_REPLACEMENT);
+					Command<CMD_DELETE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group);
 					this->UpdateButtonState();
 				}
 				break;
@@ -580,7 +578,7 @@ public:
 
 	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
-		bool succeeded = DoCommandPOld(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE));
+		bool succeeded = Command<CMD_CLONE_TEMPLATE_FROM_TRAIN>::Post(STR_TMPL_CANT_CREATE, v->index);
 
 		if (!succeeded)	return false;
 
@@ -639,7 +637,7 @@ public:
 	{
 		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			DoCommandPOld(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), CommandCallback::None, str->c_str());
+			Command<CMD_RENAME_TEMPLATE>::Post(STR_TMPL_CANT_RENAME, tmp->index, *str);
 		}
 	}
 

@@ -15,7 +15,9 @@
 #include "tbtr_template_vehicle.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
-Train *VirtualTrainFromTemplateVehicle(const TemplateVehicle *tv, StringID &err, uint32_t user);
+enum ClientID : uint32_t;
+
+Train *VirtualTrainFromTemplateVehicle(const TemplateVehicle *tv, StringID &err, ClientID user);
 
 void BuildTemplateGuiList(GUITemplateList *, Scrollbar *, Owner, RailType);
 
@@ -27,8 +29,6 @@ void DrawTemplate(const TemplateVehicle *, int, int, int, int);
 TemplateVehicle *TemplateVehicleFromVirtualTrain(Train *virt);
 Train* DeleteVirtualTrain(Train *, Train *);
 void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt);
-
-CommandCost CmdTemplateReplaceVehicle(Train *, bool, DoCommandFlag);
 
 TemplateVehicle *GetTemplateVehicleByGroupID(GroupID gid);
 TemplateVehicle *GetTemplateVehicleByGroupIDRecursive(GroupID gid);

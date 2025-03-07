@@ -198,50 +198,50 @@ SpriteID GetEnginePalette(EngineID engine_type, CompanyID company);
 SpriteID GetVehiclePalette(const Vehicle *v);
 SpriteID GetUncachedTrainPaletteIgnoringGroup(const Train *v);
 
-extern const uint32_t _veh_build_proc_table[];
-extern const uint32_t _veh_sell_proc_table[];
-extern const uint32_t _veh_refit_proc_table[];
-extern const uint32_t _send_to_depot_proc_table[];
+extern const StringID _veh_build_msg_table[];
+extern const StringID _veh_sell_msg_table[];
+extern const StringID _veh_refit_msg_table[];
+extern const StringID _send_to_depot_msg_table[];
 
 /* Functions to find the right command for certain vehicle type */
-inline uint32_t GetCmdBuildVeh(VehicleType type)
+inline StringID GetCmdBuildVehMsg(VehicleType type)
 {
-	return _veh_build_proc_table[type];
+	return _veh_build_msg_table[type];
 }
 
-inline uint32_t GetCmdBuildVeh(const BaseVehicle *v)
+inline StringID GetCmdBuildVehMsg(const BaseVehicle *v)
 {
-	return GetCmdBuildVeh(v->type);
+	return GetCmdBuildVehMsg(v->type);
 }
 
-inline uint32_t GetCmdSellVeh(VehicleType type)
+inline StringID GetCmdSellVehMsg(VehicleType type)
 {
-	return _veh_sell_proc_table[type];
+	return _veh_sell_msg_table[type];
 }
 
-inline uint32_t GetCmdSellVeh(const BaseVehicle *v)
+inline StringID GetCmdSellVehMsg(const BaseVehicle *v)
 {
-	return GetCmdSellVeh(v->type);
+	return GetCmdSellVehMsg(v->type);
 }
 
-inline uint32_t GetCmdRefitVeh(VehicleType type)
+inline StringID GetCmdRefitVehMsg(VehicleType type)
 {
-	return _veh_refit_proc_table[type];
+	return _veh_refit_msg_table[type];
 }
 
-inline uint32_t GetCmdRefitVeh(const BaseVehicle *v)
+inline StringID GetCmdRefitVehMsg(const BaseVehicle *v)
 {
-	return GetCmdRefitVeh(v->type);
+	return GetCmdRefitVehMsg(v->type);
 }
 
-inline uint32_t GetCmdSendToDepot(VehicleType type)
+inline StringID GetCmdSendToDepotMsg(VehicleType type)
 {
-	return _send_to_depot_proc_table[type];
+	return _send_to_depot_msg_table[type];
 }
 
-inline uint32_t GetCmdSendToDepot(const BaseVehicle *v)
+inline StringID GetCmdSendToDepotMsg(const BaseVehicle *v)
 {
-	return GetCmdSendToDepot(v->type);
+	return GetCmdSendToDepotMsg(v->type);
 }
 
 CommandCost EnsureNoVehicleOnGround(TileIndex tile);
@@ -269,7 +269,7 @@ void CheckCargoCapacity(Vehicle *v);
 bool VehiclesHaveSameEngineList(const Vehicle *v1, const Vehicle *v2);
 bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2);
 
-bool IsUniqueVehicleName(const char *name);
+bool IsUniqueVehicleName(std::string_view name);
 
 void ShowTrainTooHeavyAdviceMessage(const Vehicle *v);
 

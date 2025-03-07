@@ -154,6 +154,7 @@ bool VehicleCargoFilter(const Vehicle *v, const CargoID cid)
  * Generate a list of vehicles based on window type.
  * @param list Pointer to list to add vehicles to
  * @param vli  The identifier of this vehicle list.
+ * @param cid Cargo filter (or CargoFilterCriteria::CF_ANY)
  * @return false if invalid list is requested
  */
 bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli, const CargoID cid)

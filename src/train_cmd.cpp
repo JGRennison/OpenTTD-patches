@@ -47,6 +47,9 @@
 #include "train_speed_adaptation.h"
 #include "event_logs.h"
 #include "misc_cmd.h"
+#include "train_cmd.h"
+#include "vehicle_cmd.h"
+#include "tbtr_template_vehicle_cmd.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
@@ -1533,7 +1536,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 			return a->index < b->index;
 		});
 		for (Train *w : candidates) {
-			if (DoCommandOld(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Succeeded()) {
+			if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DC_EXEC, v->index, w->Last()->index, MoveRailVehicleFlags::MoveChain).Succeeded()) {
 				break;
 			}
 		}
@@ -1560,7 +1563,9 @@ void NormalizeTrainVehInDepot(const Train *u)
 		return a->index < b->index;
 	});
 	for (Train *v : candidates) {
-		if (DoCommandOld(0, v->index | 1 << 20, u->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Failed()) break;
+		if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DC_EXEC, v->index, u->index, MoveRailVehicleFlags::MoveChain).Failed()) {
+			break;
+		}
 	}
 }
 
@@ -2064,87 +2069,68 @@ static void NormaliseTrainHead(Train *head)
 	head->unitnumber = Company::Get(head->owner)->freeunits[head->type].UseID(GetFreeUnitNumber(VEH_TRAIN));
 }
 
-CommandCost CmdMoveVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdMoveVirtualRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
 {
-	Train *src = Train::GetIfValid(GB(p1, 0, 20));
+	Train *src = Train::GetIfValid(src_veh);
 	if (src == nullptr || !src->IsVirtual()) return CMD_ERROR;
 
-	return CmdMoveRailVehicle(tile, flags, p1, p2, text);
+	return CmdMoveRailVehicle(flags, src_veh, dest_veh, move_flags | MoveRailVehicleFlags::Virtual);
 }
 
 /**
  * Move a rail vehicle around inside the depot.
- * @param tile unused
  * @param flags type of operation
  *              Note: DC_AUTOREPLACE is set when autoreplace tries to undo its modifications or moves vehicles to temporary locations inside the depot.
- * @param p1 various bitstuffed elements
- * - p1 (bit  0 - 19) source vehicle index
- * - p1 (bit      20) move all vehicles following the source vehicle
- * - p1 (bit      21) this is a virtual vehicle (for creating TemplateVehicles)
- * - p1 (bit      22) when moving a head vehicle, always reset the head state
- * - p1 (bit      23) if move fails, and source vehicle is virtual, delete it
- * @param p2 what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
- * @param text unused
+ * @param src_veh source vehicle index
+ * @param dest_veh what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
+ * @param move_chain move all vehicles following the source vehicle
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
 {
-	VehicleID s = GB(p1, 0, 20);
-	VehicleID d = GB(p2, 0, 20);
-	bool move_chain = HasBit(p1, 20);
-	bool new_head = HasBit(p1, 22);
-	bool delete_failed_virtual = HasBit(p1, 23);
+	bool move_chain = HasFlag(move_flags, MoveRailVehicleFlags::MoveChain);
+	bool new_head = HasFlag(move_flags, MoveRailVehicleFlags::NewHead);
 
-	Train *src = Train::GetIfValid(s);
+	Train *src = Train::GetIfValid(src_veh);
 	if (src == nullptr) return CMD_ERROR;
 
-	auto check_on_failure = [&](CommandCost cost) -> CommandCost {
-		if (delete_failed_virtual && src->IsVirtual()) {
-			CommandCost res = DoCommandOld(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
-			if (res.Failed() || cost.GetErrorMessage() == INVALID_STRING_ID) return res;
-			cost.MakeSuccessWithMessage();
-			return cost;
-		} else {
-			return cost;
-		}
-	};
-
 	CommandCost ret = CheckOwnership(src->owner);
-	if (ret.Failed()) return check_on_failure(ret);
+	if (ret.Failed()) return ret;
 
 	/* Do not allow moving crashed vehicles inside the depot, it is likely to cause asserts later */
 	if (src->vehstatus & VS_CRASHED) return CMD_ERROR;
 
+	if (src->IsVirtual() != HasFlag(move_flags, MoveRailVehicleFlags::Virtual)) return CMD_ERROR;
+
 	/* if nothing is selected as destination, try and find a matching vehicle to drag to. */
 	Train *dst;
-	if (d == INVALID_VEHICLE) {
+	if (dest_veh == INVALID_VEHICLE) {
 		if (!src->IsEngine() && !src->IsVirtual() && !(flags & DC_AUTOREPLACE)) {
 			/* Try each possible destination target, if none succeed do not append to a free wagon chain */
 			std::vector<Train *> destination_candidates = FindGoodVehiclePosList(src);
 			for (Train *try_dest : destination_candidates) {
-				uint32_t try_p2 = p2;
-				SB(try_p2, 0, 20, try_dest->index);
-				CommandCost cost = CmdMoveRailVehicle(tile, flags, p1, try_p2, text);
+				CommandCost cost = CmdMoveRailVehicle(flags, src_veh, try_dest->index, move_flags);
 				if (cost.Succeeded()) return cost;
 			}
 		}
 		dst = nullptr;
 	} else {
-		dst = Train::GetIfValid(d);
-		if (dst == nullptr) return check_on_failure(CMD_ERROR);
+		dst = Train::GetIfValid(dest_veh);
+		if (dst == nullptr) return CMD_ERROR;
 
 		CommandCost ret = CheckOwnership(dst->owner);
-		if (ret.Failed()) return check_on_failure(ret);
+		if (ret.Failed()) return ret;
 
 		/* Do not allow appending to crashed vehicles, too */
 		if (dst->vehstatus & VS_CRASHED) return CMD_ERROR;
+
+		if (dst->IsVirtual() != HasFlag(move_flags, MoveRailVehicleFlags::Virtual)) return CMD_ERROR;
 	}
 
 	/* if an articulated part is being handled, deal with its parent vehicle */
 	src = src->GetFirstEnginePart();
 	if (dst != nullptr) {
 		dst = dst->GetFirstEnginePart();
-		if (HasBit(dst->subtype, GVSF_VIRTUAL) != HasBit(src->subtype, GVSF_VIRTUAL)) return CMD_ERROR;
 	}
 
 	/* don't move the same vehicle.. */
@@ -2174,13 +2160,13 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 
 	/* Check if all vehicles in the source train are stopped inside a depot. */
 	/* Do this check only if the vehicle to be moved is non-virtual */
-	if (!HasBit(p1, 21)) {
+	if (!HasFlag(move_flags, MoveRailVehicleFlags::Virtual)) {
 		if (!src_head->IsStoppedInDepot()) return CommandCost(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 	}
 
 	/* Check if all vehicles in the destination train are stopped inside a depot. */
 	/* Do this check only if the destination vehicle is non-virtual */
-	if (!HasBit(p1, 21)) {
+	if (!HasFlag(move_flags, MoveRailVehicleFlags::Virtual)) {
 		if (dst_head != nullptr && !dst_head->IsStoppedInDepot()) return CommandCost(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 	}
 
@@ -2216,7 +2202,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			/* Restore the train we had. */
 			RestoreTrainBackup(original_src);
 			RestoreTrainBackup(original_dst);
-			return check_on_failure(ret);
+			return ret;
 		}
 	}
 
@@ -2339,18 +2325,16 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
  * Sell a (single) train wagon/engine.
  * @param flags type of operation
  * @param t     the train wagon to sell
- * @param data  the selling mode
- * - data = 0: only sell the single dragged wagon/engine (and any belonging rear-engines)
- * - data = 1: sell the vehicle and all vehicles following it in the chain
- *             if the wagon is dragged, don't delete the possibly belonging rear-engine to some front
+ * @param sell_chain  the selling mode
+ * - sell_chain = false: only sell the single dragged wagon/engine (and any belonging rear-engines)
+ * - sell_chain = true:  sell the vehicle and all vehicles following it in the chain
+ *                       if the wagon is dragged, don't delete the possibly belonging rear-engine to some front
+ * @param backup_order make order backup?
  * @param user  the user for the order backup.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uint32_t user)
+CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, bool backup_order, ClientID user)
 {
-	/* Sell a chain of vehicles or not? */
-	bool sell_chain = HasBit(data, 0);
-
 	Train *v = Train::From(t)->GetFirstEnginePart();
 	Train *first = v->First();
 
@@ -2404,7 +2388,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uin
 				AssignBit(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, HasBit(Train::From(first)->flags, VRF_SPEED_ADAPTATION_EXEMPT));
 			}
 			GroupStatistics::CountVehicle(new_head, 1); // after copying over the profit, if required
-		} else if (v->IsPrimaryVehicle() && data & (MAKE_ORDER_BACKUP_FLAG >> 20)) {
+		} else if (v->IsPrimaryVehicle() && backup_order) {
 			OrderBackup::Backup(v, user);
 		}
 
@@ -3184,22 +3168,20 @@ void ReverseTrainDirection(Train *v)
 
 /**
  * Reverse train.
- * @param tile unused
  * @param flags type of operation
- * @param p1 train to reverse
- * @param p2 if true, reverse a unit in a train (needs to be in a depot)
- * @param text unused
+ * @param veh_id train to reverse
+ * @param reverse_single_veh if true, reverse a unit in a train (needs to be in a depot)
  * @return the cost of this operation or an error
  */
-CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool reverse_single_veh)
 {
-	Train *v = Train::GetIfValid(p1);
+	Train *v = Train::GetIfValid(veh_id);
 	if (v == nullptr) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (p2 != 0) {
+	if (reverse_single_veh) {
 		/* turn a single unit around */
 
 		if (v->IsMultiheaded() || HasBit(EngInfo(v->engine_type)->callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) {
@@ -3263,16 +3245,13 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 
 /**
  * Force a train through a red signal
- * @param tile unused
  * @param flags type of operation
- * @param p1 train to ignore the red signal
- * @param p2 unused
- * @param text unused
+ * @param veh_id train to ignore the red signal
  * @return the cost of this operation or an error
  */
-CommandCost CmdForceTrainProceed(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdForceTrainProceed(DoCommandFlag flags, VehicleID veh_id)
 {
-	Train *t = Train::GetIfValid(p1);
+	Train *t = Train::GetIfValid(veh_id);
 	if (t == nullptr) return CMD_ERROR;
 
 	if (!t->IsPrimaryVehicle()) return CMD_ERROR;
@@ -7089,7 +7068,7 @@ void DeleteVisibleTrain(Train *v)
 	UpdateSignalsInBuffer();
 }
 
-Train* CmdBuildVirtualRailWagon(const Engine *e, uint32_t user, bool no_consist_change)
+static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_consist_change)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -7110,7 +7089,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32_t user, bool no_consist_
 	v->track = TRACK_BIT_DEPOT;
 	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 	v->vehstatus = VS_HIDDEN | VS_DEFPAL;
-	v->motion_counter = user;
+	v->motion_counter = (uint32_t)user;
 
 	v->SetWagon();
 	v->SetFreeWagon();
@@ -7130,7 +7109,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32_t user, bool no_consist_
 	AddArticulatedParts(v);
 
 	// Make sure we set EVERYTHING to virtual, even articulated parts.
-	for (Train* train_part = v; train_part != nullptr; train_part = train_part->Next()) {
+	for (Train *train_part = v; train_part != nullptr; train_part = train_part->Next()) {
 		train_part->SetVirtual();
 	}
 
@@ -7147,7 +7126,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32_t user, bool no_consist_
 	return v;
 }
 
-Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, bool no_consist_change)
+Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, bool no_consist_change)
 {
 	const Engine *e = Engine::GetIfValid(eid);
 	if (e == nullptr || e->type != VEH_TRAIN) {
@@ -7184,7 +7163,7 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, boo
 	v->cargo_type = e->GetDefaultCargoType();
 	v->cargo_cap = rvi->capacity;
 	v->last_station_visited = INVALID_STATION;
-	v->motion_counter = user;
+	v->motion_counter = (uint32_t)user;
 
 	v->engine_type = e->index;
 	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -7218,7 +7197,7 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, boo
 	}
 
 	// Make sure we set EVERYTHING to virtual, even articulated parts.
-	for (Train* train_part = v; train_part != nullptr; train_part = train_part->Next()) {
+	for (Train *train_part = v; train_part != nullptr; train_part = train_part->Next()) {
 		train_part->SetVirtual();
 	}
 
@@ -7235,32 +7214,25 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, boo
 
 /**
  * Build a virtual train vehicle.
- * @param tile unused
- * @param flags type of operation
- * @param p1 various bitstuffed data
- *  bits  0-15: vehicle type being built.
- *  bits 24-31: refit cargo type.
- * @param p2 user
- * @param text unused
+ * @param flags for command
+ * @param eid vehicle type being built.
+ * @param cargo refit cargo type.
+ * @param client_id User
+ * @param move_target Where to move the virtual train vehicle after construction
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoID cargo, ClientID client, VehicleID move_target)
 {
-	EngineID eid = GB(p1, 0, 16);
-
 	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
 		return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
 	}
 
 	/* Validate the cargo type. */
-	CargoID cargo = GB(p1, 24, 8);
 	if (cargo >= NUM_CARGO && cargo != INVALID_CARGO) return CMD_ERROR;
 
-	bool should_execute = (flags & DC_EXEC) != 0;
-
-	if (should_execute) {
+	if (flags & DC_EXEC) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = BuildVirtualRailVehicle(eid, err, p2, false);
+		Train *train = BuildVirtualRailVehicle(eid, err, client, false);
 
 		if (train == nullptr) {
 			return CommandCost(err);
@@ -7269,8 +7241,25 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 		if (cargo != INVALID_CARGO) {
 			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
 			if (default_cargo != cargo) {
-				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo, nullptr);
-				if (!refit_res.Succeeded()) return refit_res;
+				CommandCost refit_res = CmdRefitVehicle(flags, train->index, cargo, 0, false, false, 0);
+				if (!refit_res.Succeeded()) {
+					Command<CMD_SELL_VEHICLE>::Do(flags, train->index, SellVehicleFlags::VirtualOnly, client);
+					return refit_res;
+				}
+			}
+		}
+
+		if (move_target != INVALID_VEHICLE) {
+			Train *move_target_train = Train::GetIfValid(move_target);
+
+			CommandCost move_result = CMD_ERROR;
+			if (move_target_train != nullptr) {
+				move_result = Command<CMD_MOVE_VIRTUAL_RAIL_VEHICLE>::Do(flags, train->index, move_target_train->GetLastUnit()->index, MoveRailVehicleFlags::Virtual);
+			}
+
+			if (move_result.Failed()) {
+				Command<CMD_SELL_VEHICLE>::Do(flags, train->index, SellVehicleFlags::VirtualOnly, client);
+				return move_result;
 			}
 		}
 	}
@@ -7300,21 +7289,18 @@ void ClearVehicleWindows(const Train *v)
  */
 static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_callback)
 {
-	return DoCommandOld(0, v->index, evaluate_callback ? 1 : 0, DC_EXEC | DC_AUTOREPLACE, CMD_START_STOP_VEHICLE);
+	return CmdStartStopVehicle(DC_EXEC | DC_AUTOREPLACE, v->index, evaluate_callback);
 }
 
 /**
 * Replace a vehicle based on a template replacement order.
-* @param tile unused
 * @param flags type of operation
-* @param p1 the ID of the vehicle to replace.
-* @param p2 unused
-* @param text unused
+* @param veh_id the ID of the vehicle to replace.
 * @return the cost of this operation or an error
 */
-CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 {
-	Train *incoming = Train::GetIfValid(p1);
+	Train *incoming = Train::GetIfValid(veh_id);
 
 	if (incoming == nullptr || !incoming->IsPrimaryVehicle() || !incoming->IsChainInDepot()) {
 		return CMD_ERROR;
@@ -7353,6 +7339,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	const bool need_replacement = (diff & TBTRDF_CONSIST);
 	const bool need_refit = (diff & TBTRDF_REFIT);
 	const bool refit_to_template = tv->refit_as_template;
+	const TileIndex tile = incoming->tile;
 
 	CargoID store_refit_ct = INVALID_CARGO;
 	uint16_t store_refit_csubt = 0;
@@ -7380,7 +7367,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
 
 	auto refit_unit = [&](const Train *unit, CargoID cid, uint16_t csubt) {
-		CommandCost refit_cost = DoCommandOld(unit->tile, unit->index, cid | csubt << 8 | (1 << 16), flags, GetCmdRefitVeh(unit));
+		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(flags, unit->index, cid, csubt, false, false, 1);
 		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
 	};
 
@@ -7398,7 +7385,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 						/* use existing engine */
 						in.erase(iter);
 						if (refit_to_template) {
-							buy.AddCost(DoCommandOld(u->tile, u->index, cur_tmpl->cargo_type | cur_tmpl->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(u)));
+							buy.AddCost(Command<CMD_REFIT_VEHICLE>::Do(flags, u->index, cur_tmpl->cargo_type, cur_tmpl->cargo_subtype, false, false, 1));
 						} else {
 							refit_unit(u, store_refit_ct, store_refit_csubt);
 						}
@@ -7411,7 +7398,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 					if (depot_eng != nullptr) {
 						depot_vehicles.RemoveVehicle(depot_eng->index);
 						if (refit_to_template) {
-							buy.AddCost(DoCommandOld(depot_eng->tile, depot_eng->index, cur_tmpl->cargo_type | cur_tmpl->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, GetCmdRefitVeh(depot_eng)));
+							buy.AddCost(Command<CMD_REFIT_VEHICLE>::Do(flags, depot_eng->index, cur_tmpl->cargo_type, cur_tmpl->cargo_subtype, false, false, 1));
 						} else {
 							refit_unit(depot_eng, store_refit_ct, store_refit_csubt);
 						}
@@ -7457,7 +7444,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				new_chain = incoming;
 				remainder_chain = incoming->GetNextUnit();
 				if (remainder_chain) {
-					CommandCost move_cost = CmdMoveRailVehicle(tile, flags, remainder_chain->index | (1 << 20), INVALID_VEHICLE, 0);
+					CommandCost move_cost = CmdMoveRailVehicle(flags, remainder_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::MoveChain);
 					if (move_cost.Failed()) {
 						/* This should not fail, if it does give up immediately */
 						return move_cost;
@@ -7470,7 +7457,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			new_chain = ChainContainsEngine(eid, incoming);
 			if (new_chain != nullptr) {
 				/* new_chain is the needed engine, move it to an empty spot in the depot */
-				CommandCost move_cost = DoCommandOld(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE);
+				CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					remainder_chain = incoming;
 					return CommandCost();
@@ -7482,7 +7469,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				new_chain = depot_vehicles.ContainsEngine(eid, incoming);
 				if (new_chain != nullptr) {
 					ClearVehicleWindows(new_chain);
-					CommandCost move_cost = DoCommandOld(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE);
+					CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::None);
 					if (move_cost.Succeeded()) {
 						depot_vehicles.RemoveVehicle(new_chain->index);
 						remainder_chain = incoming;
@@ -7534,7 +7521,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 					if (new_part == remainder_chain) {
 						remainder_chain_next = remainder_chain->GetNextUnit();
 					}
-					CommandCost move_cost = CmdMoveRailVehicle(tile, flags, new_part->index, last_veh->index, 0);
+					CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 					if (move_cost.Succeeded()) {
 						remainder_chain = remainder_chain_next;
 						return;
@@ -7545,7 +7532,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				if (tv->IsSetReuseDepotVehicles()) {
 					new_part = depot_vehicles.ContainsEngine(cur_tmpl->engine_type, new_chain);
 					if (new_part != nullptr) {
-						CommandCost move_cost = CmdMoveRailVehicle(tile, flags, new_part->index, last_veh->index, 0);
+						CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 						if (move_cost.Succeeded()) {
 							depot_vehicles.RemoveVehicle(new_part->index);
 							return;
@@ -7560,11 +7547,11 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 					return;
 				}
 				new_part = Train::Get(_new_vehicle_id);
-				CommandCost move_cost = CmdMoveRailVehicle(tile, flags, new_part->index, last_veh->index, 0);
+				CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost);
 				} else {
-					DoCommandOld(tile, new_part->index, 0, flags, CMD_SELL_VEHICLE);
+					Command<CMD_SELL_VEHICLE>::Do(flags, new_part->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					new_part = nullptr;
 				}
 			};
@@ -7594,7 +7581,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	buy.AddCost(CmdSetTrainUnitDirectionFromTemplate(new_chain, tv, flags));
 
-	if (new_chain && remainder_chain) {
+	if (new_chain != nullptr && remainder_chain != nullptr) {
 		for (Train *ct = remainder_chain; ct != nullptr; ct = ct->Next()) {
 			TransferCargoForTrain(ct, new_chain);
 		}
@@ -7603,10 +7590,10 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	// point incoming to the newly created train so that starting/stopping affects the replacement train
 	incoming = new_chain;
 
-	if (remainder_chain && tv->IsSetKeepRemainingVehicles()) {
+	if (remainder_chain != nullptr && tv->IsSetKeepRemainingVehicles()) {
 		BreakUpRemainders(remainder_chain);
-	} else if (remainder_chain) {
-		buy.AddCost(DoCommandOld(tile, remainder_chain->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE));
+	} else if (remainder_chain != nullptr) {
+		buy.AddCost(Command<CMD_SELL_VEHICLE>::Do(flags, remainder_chain->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID));
 	}
 
 	/* Redraw main gui for changed statistics */
@@ -7811,16 +7798,14 @@ void Train::UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed)
 
 /**
  * Set train speed restriction
- * @param tile unused
  * @param flags type of operation
- * @param p1 vehicle
- * @param p2 new speed restriction value
- * @param text unused
+ * @param veh_id vehicle
+ * @param speed new speed restriction value
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetTrainSpeedRestriction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSetTrainSpeedRestriction(DoCommandFlag flags, VehicleID veh_id, uint16_t speed)
 {
-	Vehicle *v = Vehicle::GetIfValid(p1);
+	Vehicle *v = Vehicle::GetIfValid(veh_id);
 	if (v == nullptr || v->type != VEH_TRAIN || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckVehicleControlAllowed(v);
@@ -7834,7 +7819,7 @@ CommandCost CmdSetTrainSpeedRestriction(TileIndex tile, DoCommandFlag flags, uin
 			_pending_speed_restriction_change_map.erase(t->index);
 			ClrBit(t->flags, VRF_PENDING_SPEED_RESTRICTION);
 		}
-		t->speed_restriction = (uint16_t)p2;
+		t->speed_restriction = speed;
 
 		SetWindowDirty(WC_VEHICLE_DETAILS, t->index);
 	}

@@ -406,6 +406,7 @@ enum Commands : uint16_t {
 	CMD_SELL_VEHICLE,                 ///< sell a vehicle
 	CMD_REFIT_VEHICLE,                ///< refit the cargo space of a vehicle
 	CMD_SEND_VEHICLE_TO_DEPOT,        ///< send a vehicle to a depot
+	CMD_MASS_SEND_VEHICLE_TO_DEPOT,   ///< mass send vehicles to depots
 	CMD_SET_VEHICLE_VISIBILITY,       ///< hide or unhide a vehicle in the build vehicle and autoreplace GUIs
 
 	CMD_MOVE_RAIL_VEHICLE,            ///< move a rail vehicle (in the depot)
@@ -519,21 +520,18 @@ enum Commands : uint16_t {
 
 	CMD_SET_AUTOREPLACE,              ///< set an autoreplace entry
 
-	CMD_TOGGLE_REUSE_DEPOT_VEHICLES,  ///< toggle 'reuse depot vehicles' on template
-	CMD_TOGGLE_KEEP_REMAINING_VEHICLES, ///< toggle 'keep remaining vehicles' on template
-	CMD_SET_REFIT_AS_TEMPLATE,        ///< set/unset 'refit as template' on template
-	CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, ///< toggle 'replace old vehicles only' on template
-	CMD_RENAME_TMPL_REPLACE,          ///< rename a template
+	CMD_CHANGE_TEMPLATE_FLAG,         ///< change template flag
+	CMD_RENAME_TEMPLATE,              ///< rename a template
 
-	CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, ///< Creates a virtual train from a template
+	CMD_VIRTUAL_TRAIN_FROM_TEMPLATE,  ///< Creates a virtual train from a template
 	CMD_VIRTUAL_TRAIN_FROM_TRAIN,     ///< Creates a virtual train from a regular train
 	CMD_DELETE_VIRTUAL_TRAIN,         ///< Delete a virtual train
 	CMD_BUILD_VIRTUAL_RAIL_VEHICLE,   ///< Build a virtual train
-	CMD_REPLACE_TEMPLATE_VEHICLE,     ///< Replace a template vehicle with another one based on a virtual train
+	CMD_REPLACE_TEMPLATE,             ///< Replace a template vehicle with another one based on a virtual train
 	CMD_MOVE_VIRTUAL_RAIL_VEHICLE,    ///< Move a virtual rail vehicle
 	CMD_SELL_VIRTUAL_VEHICLE,         ///< Sell a virtual vehicle
 
-	CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, ///< clone a train and create a new template vehicle based on it
+	CMD_CLONE_TEMPLATE_FROM_TRAIN,    ///< clone a train and create a new template vehicle based on it
 	CMD_DELETE_TEMPLATE_VEHICLE,      ///< delete a template vehicle
 
 	CMD_ISSUE_TEMPLATE_REPLACEMENT,   ///< issue a template replacement for a vehicle group
@@ -1211,17 +1209,7 @@ DEF_CMD_PROC  (CMD_BUILD_SHIP_DEPOT, CmdBuildShipDepot,                         
 DEF_CMD_PROC  (CMD_BUILD_BUOY, CmdBuildBuoy,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PLANT_TREE, CmdPlantTree,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_BUILD_VEHICLE, CmdBuildVehicle,                       CMD_CLIENT_ID, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_SELL_VEHICLE, CmdSellVehicle,                        CMD_CLIENT_ID, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_REFIT_VEHICLE, CmdRefitVehicle,                                   {}, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_SEND_VEHICLE_TO_DEPOT, CmdSendVehicleToDepot,                             {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_SET_VEHICLE_VISIBILITY, CmdSetVehicleVisibility,                           {}, CMDT_COMPANY_SETTING       )
-
-DEF_CMD_PROC  (CMD_MOVE_RAIL_VEHICLE, CmdMoveRailVehicle,                                {}, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_FORCE_TRAIN_PROCEED, CmdForceTrainProceed,                              {}, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_REVERSE_TRAIN_DIRECTION, CmdReverseTrainDirection,                          {}, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_CHANGE_SERVICE_INT, CmdChangeServiceInt,                               {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_BUILD_INDUSTRY, CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_FLAGS, CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
@@ -1232,7 +1220,6 @@ DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,           
 DEF_CMD_PROC  (CMD_WANT_ENGINE_PREVIEW, CmdWantEnginePreview,                              {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_ENGINE_CTRL, CmdEngineCtrl,                             CMD_DEITY, CMDT_VEHICLE_MANAGEMENT    )
 
-DEF_CMD_PROC  (CMD_RENAME_VEHICLE, CmdRenameVehicle,                                  {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_ENGINE, CmdRenameEngine,                          CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_RENAME_STATION, CmdRenameStation,                                  {}, CMDT_OTHER_MANAGEMENT      )
@@ -1243,8 +1230,6 @@ DEF_CMD_PROC  (CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSu
 
 DEF_CMD_PROC  (CMD_PLACE_SIGN, CmdPlaceSign,                CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_SIGN, CmdRenameSign,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_TURN_ROADVEH, CmdTurnRoadVeh,                                    {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_FOUND_TOWN, CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // founding random town can fail only in exec run
 DEF_CMD_PROC  (CMD_RENAME_TOWN, CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
@@ -1293,35 +1278,7 @@ DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                   
 
 DEF_CMD_PROC  (CMD_SET_AUTOREPLACE, CmdSetAutoReplace,                                 {}, CMDT_VEHICLE_MANAGEMENT    )
 
-DEF_CMD_PROC  (CMD_TOGGLE_REUSE_DEPOT_VEHICLES, CmdToggleReuseDepotVehicles,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_TOGGLE_KEEP_REMAINING_VEHICLES, CmdToggleKeepRemainingVehicles,        CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_SET_REFIT_AS_TEMPLATE, CmdSetRefitAsTemplate,                 CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, CmdToggleTemplateReplaceOldOnly,       CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_RENAME_TMPL_REPLACE, CmdRenameTemplateReplace,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, CmdVirtualTrainFromTemplateVehicle,   CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_VIRTUAL_TRAIN_FROM_TRAIN, CmdVirtualTrainFromTrain,             CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_DELETE_VIRTUAL_TRAIN, CmdDeleteVirtualTrain,                                              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_BUILD_VIRTUAL_RAIL_VEHICLE, CmdBuildVirtualRailVehicle,           CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_REPLACE_TEMPLATE_VEHICLE, CmdReplaceTemplateVehicle,                                          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_MOVE_VIRTUAL_RAIL_VEHICLE, CmdMoveVirtualRailVehicle,                                          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-DEF_CMD_PROC  (CMD_SELL_VIRTUAL_VEHICLE, CmdSellVirtualVehicle,                              CMD_CLIENT_ID | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT)
-
-DEF_CMD_PROC  (CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, CmdTemplateVehicleFromTrain,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_DELETE_TEMPLATE_VEHICLE, CmdDeleteTemplateVehicle,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_ISSUE_TEMPLATE_REPLACEMENT, CmdIssueTemplateReplacement,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_DELETE_TEMPLATE_REPLACEMENT, CmdDeleteTemplateReplacement,          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_CLONE_VEHICLE, CmdCloneVehicle,                         CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ) // NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
-DEF_CMD_PROC  (CMD_CLONE_VEHICLE_FROM_TEMPLATE, CmdCloneVehicleFromTemplate,             CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ) // NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
-DEF_CMD_PROC  (CMD_START_STOP_VEHICLE, CmdStartStopVehicle,                               {}, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_MASS_START_STOP, CmdMassStartStopVehicle,                           {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_AUTOREPLACE_VEHICLE, CmdAutoreplaceVehicle,                             {}, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_TEMPLATE_REPLACE_VEHICLE, CmdTemplateReplaceVehicle,               CMD_NO_TEST, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_DEPOT_SELL_ALL_VEHICLES, CmdDepotSellAllVehicles,                           {}, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_DEPOT_MASS_AUTOREPLACE, CmdDepotMassAutoReplace,                 CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  )
-DEF_CMD_PROC  (CMD_SET_TRAIN_SPEED_RESTRICTION, CmdSetTrainSpeedRestriction,                       {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_CREATE_GROUP, CmdCreateGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_DELETE_GROUP, CmdDeleteGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_ALTER_GROUP, CmdAlterGroup,                                     {}, CMDT_OTHER_MANAGEMENT      )

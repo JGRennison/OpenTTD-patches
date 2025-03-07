@@ -135,7 +135,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err, (ClientID)0);
 			if (t != nullptr) {
 				uint32_t full_cargo_weight = 0;
 				for (Train *u = t; u != nullptr; u = u->Next()) {

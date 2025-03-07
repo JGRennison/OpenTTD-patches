@@ -7,8 +7,10 @@
 
 /** @file tbtr_template_vehicle.h Template-based train replacement: template vehicle header. */
 
-#ifndef TEMPLATE_VEH_H
-#define TEMPLATE_VEH_H
+#ifndef TBTR_TEMPLATE_VEHICLE_H
+#define TBTR_TEMPLATE_VEHICLE_H
+
+#include "tbtr_template_vehicle_type.h"
 
 #include "company_func.h"
 
@@ -30,12 +32,6 @@
 #include "sl/saveload_common.h"
 
 #include "zoom_func.h"
-
-struct TemplateVehicle;
-struct TemplateReplacement;
-
-typedef uint16_t TemplateID;
-static const TemplateID INVALID_TEMPLATE = 0xFFFF;
 
 /** A pool allowing to store up to ~64k templates */
 typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
@@ -155,10 +151,10 @@ public:
 	bool IsSetKeepRemainingVehicles() const { return this->keep_remaining_vehicles; }
 	bool IsSetRefitAsTemplate() const { return this->refit_as_template; }
 	bool IsReplaceOldOnly() const { return this->replace_old_only; }
-	void ToggleReuseDepotVehicles() { this->reuse_depot_vehicles = !this->reuse_depot_vehicles; }
-	void ToggleKeepRemainingVehicles() { this->keep_remaining_vehicles = !this->keep_remaining_vehicles; }
+	void SetReuseDepotVehicles(bool reuse) { this->reuse_depot_vehicles = reuse; }
+	void SetKeepRemainingVehicles(bool keep) { this->keep_remaining_vehicles = keep; }
 	void SetRefitAsTemplate(bool as_template) { this->refit_as_template = as_template; }
-	void ToggleReplaceOldOnly() { this->replace_old_only = !this->replace_old_only; }
+	void SetReplaceOldOnly(bool old_only) { this->replace_old_only = old_only; }
 
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
 	inline bool IsFrontEngine() const { return HasBit(this->subtype, GVSF_FRONT); }
@@ -244,4 +240,4 @@ struct ReindexTemplateReplacementsRecursiveGuard {
 
 int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int mass, const int speed_cap);
 
-#endif /* TEMPLATE_VEH_H */
+#endif /* TBTR_TEMPLATE_VEHICLE_H */

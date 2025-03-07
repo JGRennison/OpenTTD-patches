@@ -28,9 +28,6 @@ typedef Pool<OrderBackup, OrderBackupID, 1, 256> OrderBackupPool;
 /** The pool with order backups. */
 extern OrderBackupPool _order_backup_pool;
 
-/** Flag to pass to the vehicle construction command when an order should be preserved. */
-static const uint32_t MAKE_ORDER_BACKUP_FLAG = 1U << 31;
-
 namespace upstream_sl {
 	SaveLoadTable GetOrderBackupDescription();
 	struct BKORChunkHandler;

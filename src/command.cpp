@@ -48,8 +48,11 @@
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
 #include "settings_cmd.h"
+#include "tbtr_template_vehicle_cmd.h"
 #include "timetable_cmd.h"
 #include "tracerestrict_cmd.h"
+#include "train_cmd.h"
+#include "vehicle_cmd.h"
 
 #include "table/strings.h"
 
@@ -293,13 +296,13 @@ DEF_CB_GENERAL(CreateGroup)
 DEF_CB_RES(FoundRandomTown)
 DEF_CB_GENERAL(RoadStop)
 DEF_CB_GENERAL(BuildIndustry)
-DEF_CB_GENERAL(StartStopVehicle)
+DEF_CB_RES_TUPLE(StartStopVehicle, CmdPayload<CMD_START_STOP_VEHICLE>)
 DEF_CB_GENERAL(Game)
 DEF_CB_GENERAL(AddVehicleNewGroup)
 DEF_CB_RES(AddPlan)
 DEF_CB_RES(SetVirtualTrain)
 DEF_CB_RES(VirtualTrainWagonsMoved)
-DEF_CB_GENERAL(DeleteVirtualTrain)
+DEF_CB_RES_TUPLE(DeleteVirtualTrain, CmdPayload<CMD_SELL_VIRTUAL_VEHICLE>)
 DEF_CB_RES(AddVirtualEngine)
 DEF_CB_RES(MoveNewVirtualEngine)
 DEF_CB_RES_TUPLE(AddNewSchDispatchSchedule, CmdPayload<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>)

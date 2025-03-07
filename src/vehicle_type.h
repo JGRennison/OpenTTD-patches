@@ -58,17 +58,16 @@ struct BaseVehicle
 
 static const VehicleID INVALID_VEHICLE = 0xFFFFF; ///< Constant representing a non-existing vehicle.
 
-/** Flags to add to p1 for goto depot commands. */
-enum DepotCommand {
-	DEPOT_SELL          = (1U << 25), ///< Go to depot and sell order
-	DEPOT_CANCEL        = (1U << 26), ///< Cancel depot/service order
-	DEPOT_SPECIFIC      = (1U << 27), ///< Send vehicle to specific depot
-	DEPOT_SERVICE       = (1U << 28), ///< The vehicle will leave the depot right after arrival (service only)
-	DEPOT_MASS_SEND     = (1U << 29), ///< Tells that it's a mass send to depot command (type in VLW flag)
-	DEPOT_DONT_CANCEL   = (1U << 30), ///< Don't cancel current goto depot command if any
-	DEPOT_LOCATE_HANGAR = (1U << 31), ///< Find another airport if the target one lacks a hangar
-	DEPOT_COMMAND_MASK  = 0x7FU << 25,
+/** Flags for goto depot commands. */
+enum class DepotCommand : uint8_t {
+	None         = 0,         ///< No special flags.
+	Service      = (1U << 0), ///< The vehicle will leave the depot right after arrival (service only)
+	Cancel       = (1U << 1), ///< Cancel depot/service order
+	DontCancel   = (1U << 2), ///< Don't cancel current goto depot command if any
+	Specific     = (1U << 3), ///< Send vehicle to specific depot
+	Sell         = (1U << 4), ///< Go to depot and sell order
 };
+DECLARE_ENUM_AS_BIT_SET(DepotCommand)
 
 static const uint MAX_LENGTH_VEHICLE_NAME_CHARS = 128; ///< The maximum length of a vehicle name in characters including '\0'
 

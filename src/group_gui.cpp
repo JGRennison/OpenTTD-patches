@@ -31,6 +31,7 @@
 #include "newgrf_debug.h"
 #include "group_gui.h"
 #include "zoom_func.h"
+#include "vehicle_cmd.h"
 
 #include "widgets/group_widget.h"
 
@@ -960,7 +961,7 @@ public:
 
 			case WID_GL_START_ALL:
 			case WID_GL_STOP_ALL: { // Start/stop all vehicles of the list
-				DoCommandPOld(0, (1 << 1) | (widget == WID_GL_START_ALL ? (1 << 0) : 0) | (this->GetCargoFilter() << 8), this->vli.Pack(), CMD_MASS_START_STOP);
+				Command<CMD_MASS_START_STOP>::Post(TileIndex{}, widget == WID_GL_START_ALL, true, this->vli, this->GetCargoFilter());
 				break;
 			}
 
@@ -1143,15 +1144,16 @@ public:
 						ShowReplaceGroupVehicleWindow(this->vli.index, this->vli.vtype);
 						break;
 					case ADI_SERVICE: // Send for servicing
-					case ADI_DEPOT: { // Send to Depots
-						DoCommandPOld(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : 0U) | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Service, this->vli, this->GetCargoFilter());
 						break;
-					}
+					case ADI_DEPOT: // Send to Depots
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::None, this->vli, this->GetCargoFilter());
+						break;
 					case ADI_DEPOT_SELL:
-						DoCommandPOld(0, DEPOT_MASS_SEND | DEPOT_SELL | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Sell, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_CANCEL_DEPOT:
-						DoCommandPOld(0, DEPOT_MASS_SEND | DEPOT_CANCEL | this->GetCargoFilter(), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Cancel, this->vli, this->GetCargoFilter());
 						break;
 
 					case ADI_ADD_SHARED: // Add shared Vehicles

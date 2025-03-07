@@ -57,6 +57,7 @@
 #include "framerate_type.h"
 #include "blitter/factory.hpp"
 #include "tbtr_template_vehicle_func.h"
+#include "tbtr_template_vehicle_cmd.h"
 #include "string_func.h"
 #include "scope_info.h"
 #include "debug_settings.h"
@@ -64,6 +65,8 @@
 #include "pathfinder/water_regions.h"
 #include "event_logs.h"
 #include "misc_cmd.h"
+#include "train_cmd.h"
+#include "vehicle_cmd.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
@@ -1764,7 +1767,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = DoCommandOld(v->tile, v->index | (1 << 20), 0, DC_EXEC, GetCmdSellVeh(v));
+		CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(DC_EXEC, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -1801,7 +1804,7 @@ void CallVehicleTicks()
 
 		_new_vehicle_id = INVALID_VEHICLE;
 
-		CommandCost res = DoCommandOld(t->tile, t->index, 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DC_EXEC, t->index);
 
 		if (_new_vehicle_id != INVALID_VEHICLE) {
 			VehicleID t_new = _new_vehicle_id;
@@ -1920,7 +1923,7 @@ void RemoveVirtualTrainsOfUser(uint32_t user)
 	for (const Train *front : _tick_train_front_cache) {
 		if (front->IsVirtual() && front->motion_counter == user) {
 			cur_company.Change(front->owner);
-			DoCommandPOld(0, front->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+			Command<CMD_DELETE_VIRTUAL_TRAIN>::Post(front->index);
 		}
 	}
 	cur_company.Restore();
@@ -2783,7 +2786,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		if (v->current_order.IsRefit()) {
 			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
-			CommandCost cost = DoCommandOld(v->tile, v->index, v->current_order.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
+			CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DC_EXEC, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
 			cur_company.Restore();
 
 			if (cost.Failed()) {
@@ -4004,7 +4007,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
 	if (this->IsStoppedInDepot()) {
-		if ((command & DEPOT_SELL) && !(command & DEPOT_CANCEL) && (!(command & DEPOT_SPECIFIC) || specific_depot == this->tile)) {
+		if (HasFlag(command, DepotCommand::Sell) && !HasFlag(command, DepotCommand::Cancel) && (!HasFlag(command, DepotCommand::Specific) || specific_depot == this->tile)) {
 			/* Sell vehicle immediately */
 
 			if (flags & DC_EXEC) {
@@ -4012,7 +4015,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				int y = this->y_pos;
 				int z = this->z_pos;
 
-				CommandCost cost = DoCommandOld(this->tile, this->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE);
+				CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(flags, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 				if (cost.Succeeded()) {
 					if (IsLocalCompany()) {
 						if (cost.GetCost() != 0) {
@@ -4057,7 +4060,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		}
 	};
 
-	if (command & DEPOT_CANCEL) {
+	if (HasFlag(command, DepotCommand::Cancel)) {
 		if (this->current_order.IsType(OT_GOTO_DEPOT)) {
 			cancel_order();
 			return CommandCost();
@@ -4066,16 +4069,16 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		}
 	}
 
-	if (this->current_order.IsType(OT_GOTO_DEPOT) && !(command & DEPOT_SPECIFIC)) {
+	if (this->current_order.IsType(OT_GOTO_DEPOT) && !HasFlag(command, DepotCommand::Specific)) {
 		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
 		bool sell_in_depot = (this->current_order.GetDepotActionType() & ODATFB_SELL) != 0;
-		if (!!(command & DEPOT_SERVICE) == halt_in_depot || !!(command & DEPOT_SELL) != sell_in_depot) {
-			/* We called with a different DEPOT_SERVICE or DEPOT_SELL setting.
+		if (HasFlag(command, DepotCommand::Service) == halt_in_depot || HasFlag(command, DepotCommand::Sell) != sell_in_depot) {
+			/* We called with a different DepotCommand::Service or DepotCommand::Sell setting.
 			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
 			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
 			if (flags & DC_EXEC) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
-				this->current_order.SetDepotActionType((command & DEPOT_SELL) ? ODATFB_HALT | ODATFB_SELL : ((command & DEPOT_SERVICE) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
+				this->current_order.SetDepotActionType(HasFlag(command, DepotCommand::Sell) ? ODATFB_HALT | ODATFB_SELL : (HasFlag(command, DepotCommand::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4083,14 +4086,14 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			return CommandCost();
 		}
 
-		if (command & DEPOT_DONT_CANCEL) return CMD_ERROR; // Requested no cancellation of depot orders
+		if (HasFlag(command, DepotCommand::DontCancel)) return CMD_ERROR; // Requested no cancellation of depot orders
 		cancel_order();
 		return CommandCost();
 	}
 
 	ClosestDepot closestDepot;
 	static const StringID no_depot[] = {STR_ERROR_UNABLE_TO_FIND_ROUTE_TO, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR};
-	if (command & DEPOT_SPECIFIC) {
+	if (HasFlag(command, DepotCommand::Specific)) {
 		if (!(IsDepotTile(specific_depot) && GetDepotVehicleType(specific_depot) == this->type &&
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
 			return CommandCost(no_depot[this->type]);
@@ -4124,12 +4127,12 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 		this->SetDestTile(closestDepot.location);
 		this->current_order.MakeGoToDepot(closestDepot.destination, ODTF_MANUAL);
-		if (command & DEPOT_SELL) {
+		if (HasFlag(command, DepotCommand::Sell)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
-		} else if (!(command & DEPOT_SERVICE)) {
+		} else if (!HasFlag(command, DepotCommand::Service)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT);
 		}
-		if (command & DEPOT_SPECIFIC) {
+		if (HasFlag(command, DepotCommand::Specific)) {
 			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
 		}
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4139,7 +4142,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
 		if (this->type == VEH_TRAIN && (closestDepot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
-			DoCommandOld(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
+			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DC_EXEC, this->index, false);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {

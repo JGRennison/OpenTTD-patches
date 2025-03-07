@@ -540,7 +540,7 @@ struct TrainDecelerationStats {
 	TrainDecelerationStats(const Train *t, int z_pos);
 };
 
-Train* BuildVirtualRailVehicle(EngineID, StringID &error, uint32_t user, bool no_consist_change);
+Train *BuildVirtualRailVehicle(EngineID, StringID &error, ClientID user, bool no_consist_change);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 

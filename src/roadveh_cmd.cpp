@@ -393,16 +393,13 @@ static bool MayReverseOnOneWayRoadTile(TileIndex tile, DiagDirection dir)
 
 /**
  * Turn a roadvehicle around.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 vehicle ID to turn
- * @param p2 unused
- * @param text unused
+ * @param veh_id vehicle ID to turn
  * @return the cost of this operation or an error
  */
-CommandCost CmdTurnRoadVeh(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdTurnRoadVeh(DoCommandFlag flags, VehicleID veh_id)
 {
-	RoadVehicle *v = RoadVehicle::GetIfValid(p1);
+	RoadVehicle *v = RoadVehicle::GetIfValid(veh_id);
 	if (v == nullptr) return CMD_ERROR;
 
 	if (!v->IsPrimaryVehicle()) return CMD_ERROR;

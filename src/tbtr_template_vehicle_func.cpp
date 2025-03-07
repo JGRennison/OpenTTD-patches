@@ -25,6 +25,7 @@
 #include "strings_func.h"
 #include "table/sprites.h"
 #include "table/strings.h"
+#include "tbtr_template_vehicle_cmd.h"
 #include "tbtr_template_vehicle_func.h"
 #include "tbtr_template_vehicle.h"
 #include "train.h"
@@ -156,16 +157,16 @@ TemplateVehicle *TemplateVehicleFromVirtualTrain(Train *virt)
 	return tmp->First();
 }
 
-CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uint32_t user);
+CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, bool backup_order, ClientID user);
 
 Train *DeleteVirtualTrain(Train *chain, Train *to_del)
 {
 	if (chain != to_del) {
-		CmdSellRailWagon(DC_EXEC, to_del, 0, 0);
+		CmdSellRailWagon(DC_EXEC, to_del, false, false, INVALID_CLIENT_ID);
 		return chain;
 	} else {
 		chain = chain->GetNextUnit();
-		CmdSellRailWagon(DC_EXEC, to_del, 0, 0);
+		CmdSellRailWagon(DC_EXEC, to_del, false, false, INVALID_CLIENT_ID);
 		return chain;
 	}
 }
@@ -303,7 +304,7 @@ void BreakUpRemainders(Train *t)
 		if (HasBit(t->subtype, GVSF_ENGINE)) {
 			Train *move = t;
 			t = t->Next();
-			DoCommandOld(move->tile, move->index | (1 << 22), INVALID_VEHICLE, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
+			Command<CMD_MOVE_RAIL_VEHICLE>::Do(DC_EXEC, move->index, INVALID_VEHICLE, MoveRailVehicleFlags::NewHead);
 			NeutralizeStatus(move);
 		} else {
 			t = t->Next();
@@ -331,9 +332,7 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, const TemplateVehicle *tv, DoCom
 
 	while (t != nullptr && tv != nullptr) {
 		/* Refit t as tv */
-		uint32_t cb = GetCmdRefitVeh(t);
-
-		cost.AddCost(DoCommandOld(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
+		cost.AddCost(Command<CMD_REFIT_VEHICLE>::Do(flags, t->index, tv->cargo_type, tv->cargo_subtype, false, false, 1));
 
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
@@ -349,7 +348,7 @@ CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle
 	while (t != nullptr && tv != nullptr) {
 		/* Refit t as tv */
 		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
-			cost.AddCost(DoCommandOld(t->tile, t->index, true, flags, CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE)));
+			cost.AddCost(Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(flags, t->index, true));
 		}
 
 		t = t->GetNextUnit();
@@ -417,7 +416,7 @@ void UpdateAllTemplateVehicleImages()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train *t = VirtualTrainFromTemplateVehicle(tv, err, 0);
+			Train *t = VirtualTrainFromTemplateVehicle(tv, err, (ClientID)0);
 			if (t != nullptr) {
 				int tv_len = 0;
 				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {

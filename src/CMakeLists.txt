@@ -509,11 +509,13 @@ add_files(
     tbtr_template_gui_main.cpp
     tbtr_template_gui_create.cpp
     tbtr_template_vehicle.cpp
+    tbtr_template_vehicle_cmd.h
     tbtr_template_vehicle_func.cpp
     tbtr_template_gui_main.h
     tbtr_template_gui_create.h
     tbtr_template_vehicle.h
     tbtr_template_vehicle_func.h
+    tbtr_template_vehicle_type.h
     terraform_cmd.cpp
     terraform_gui.cpp
     terraform_gui.h
@@ -559,6 +561,7 @@ add_files(
     track_type.h
     train.h
     train_cmd.cpp
+    train_cmd.h
     train_gui.cpp
     train_speed_adaptation.h
     transparency.h
@@ -578,6 +581,7 @@ add_files(
     vehicle.cpp
     vehicle_base.h
     vehicle_cmd.cpp
+    vehicle_cmd.h
     vehicle_func.h
     vehicle_gui.cpp
     vehicle_gui.h

@@ -11,6 +11,7 @@
 #include "window_gui.h"
 #include "command_func.h"
 #include "train.h"
+#include "train_cmd.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
 #include "vehicle_gui_base.h"
@@ -43,7 +44,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 	if (found != nullptr) {
 		found = found->Last();
 		/* put the new wagon at the end of the loco. */
-		DoCommandPOld(0, _new_vehicle_id, found->index, CMD_MOVE_RAIL_VEHICLE);
+		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, _new_vehicle_id, found->index, MoveRailVehicleFlags::None);
 		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
