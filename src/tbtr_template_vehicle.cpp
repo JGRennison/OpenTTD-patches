@@ -47,6 +47,7 @@ INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
+static constexpr uint32_t INDEX_RECURSIVE_GUARD_REINDEX_PENDING = 0x80000000;
 static uint32_t _template_replacement_index_recursive_guard = 0;
 
 static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv);
@@ -319,7 +320,8 @@ void ReindexTemplateReplacements()
 void ReindexTemplateReplacementsRecursive()
 {
 	if (_template_replacement_index_recursive_guard != 0) {
-		_template_replacement_index_recursive_guard |= 0x80000000;
+		/* Perform the reindex later when the refcount falls to zero */
+		_template_replacement_index_recursive_guard |= INDEX_RECURSIVE_GUARD_REINDEX_PENDING;
 		return;
 	}
 
@@ -348,7 +350,8 @@ ReindexTemplateReplacementsRecursiveGuard::ReindexTemplateReplacementsRecursiveG
 ReindexTemplateReplacementsRecursiveGuard::~ReindexTemplateReplacementsRecursiveGuard()
 {
 	_template_replacement_index_recursive_guard--;
-	if (_template_replacement_index_recursive_guard == 0x80000000) {
+	if (_template_replacement_index_recursive_guard == INDEX_RECURSIVE_GUARD_REINDEX_PENDING) {
+		/* The refcount is now 0 | the reindex pending bit, clear the bit and do the reindex. */
 		_template_replacement_index_recursive_guard = 0;
 		ReindexTemplateReplacementsRecursive();
 	}
