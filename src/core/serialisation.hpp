@@ -548,4 +548,56 @@ public:
 	using ConstReference = typename Helper::ConstReference;
 };
 
+namespace TupleDetail {
+	template <typename TFind, typename... T>
+	constexpr size_t GetTypePackIndexIgnoreCvRefOrSize()
+	{
+		constexpr size_t count = sizeof...(T);
+		constexpr bool found[count] = { std::is_same_v<std::remove_cvref_t<T>, TFind> ... };
+		size_t n = count;
+		for (size_t i = 0; i < count; ++i) {
+			if (found[i]) {
+				if (n < count) return count; // more than one TFind found
+				n = i;
+			}
+		}
+		return n;
+	}
+}
+
+/**
+ * Returns the index of type TFind in typename pack T..., ignoring all cvref qualifiers.
+ * static_asserts unless exactly one instance of TFind is found.
+ */
+template <typename TFind, typename... T>
+constexpr size_t GetTypePackIndexIgnoreCvRef()
+{
+	constexpr size_t result = TupleDetail::GetTypePackIndexIgnoreCvRefOrSize<TFind, T...>();
+	static_assert(result < sizeof...(T));
+	return result;
+}
+
+namespace TupleDetail {
+	template <typename TFind, typename H> struct GetTupleIndexIgnoreCvRefHelper;
+
+	template <typename TFind, typename... Targs>
+	struct GetTupleIndexIgnoreCvRefHelper<TFind, std::tuple<Targs...>> {
+		static constexpr size_t Get()
+		{
+			return GetTypePackIndexIgnoreCvRef<TFind, Targs...>();
+		}
+	};
+}
+
+/**
+ * Returns the index of type TFind in std::tuple type T, ignoring all cvref qualifiers.
+ * static_asserts unless exactly one instance of TFind is found.
+ */
+template <typename TFind, typename T>
+constexpr size_t GetTupleIndexIgnoreCvRef()
+{
+	using Helper = typename TupleDetail::GetTupleIndexIgnoreCvRefHelper<TFind, std::remove_cvref_t<T>>;
+	return Helper::Get();
+}
+
 #endif /* SERIALISATION_HPP */

@@ -33,10 +33,6 @@ struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderC
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-struct ClearOrderBackupCmdData final : public AutoFmtTupleCmdData<ClearOrderBackupCmdData, TCDF_NONE, ClientID> {
-	ClientID &GetClientIDField() { return std::get<0>(this->GetValues()); }
-};
-
 DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,       CmdModifyOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoID, std::string>)
 DEF_CMD_TUPLE_LT (CMD_SKIP_TO_ORDER,      CmdSkipToOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
 DEF_CMD_TUPLE_LT (CMD_DELETE_ORDER,       CmdDeleteOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
@@ -47,6 +43,6 @@ DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,         CmdMoveOrder,                       {}
 DEF_CMD_TUPLE_LT (CMD_REVERSE_ORDER_LIST, CmdReverseOrderList,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, ReverseOrderOperation>)
 DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,    CmdDuplicateOrder,                  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
 DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,  CmdMassChangeOrder,                 {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<DestinationID, VehicleType, OrderType, CargoID, DestinationID>)
-DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP, CmdClearOrderBackup,     CMD_CLIENT_ID, CMDT_SERVER_SETTING,   ClearOrderBackupCmdData)
+DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP, CmdClearOrderBackup,     CMD_CLIENT_ID, CMDT_SERVER_SETTING,   CmdDataT<ClientID>)
 
 #endif /* ORDER_CMD_H */

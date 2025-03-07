@@ -27,7 +27,6 @@ struct CmdCompanyCtrlInnerData {
 	auto GetRefTuple() { return std::tie(this->cca, this->company_id, this->reason, this->client_id, this->to_merge_id); }
 };
 struct CmdCompanyCtrlData final : public TupleRefCmdData<CmdCompanyCtrlData, CmdCompanyCtrlInnerData> {
-	ClientID &GetClientIDField() { return this->client_id; }
 	void FormatDebugSummary(struct format_target &) const override;
 };
 

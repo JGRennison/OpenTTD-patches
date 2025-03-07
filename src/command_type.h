@@ -882,8 +882,13 @@ void SetCommandPayloadClientID(T &payload, ClientID client_id)
 	if constexpr (std::is_same_v<T, P123CmdData>) {
 		// This case will disappear when P123CmdData is removed
 		if (payload.p2 == 0) payload.p2 = (uint32_t)client_id;
-	} else {
+	} else if constexpr (requires { payload.GetClientIDField(); }) {
 		if (payload.GetClientIDField() == (ClientID)0) payload.GetClientIDField() = client_id;
+	} else {
+		constexpr size_t idx = GetTupleIndexIgnoreCvRef<ClientID, decltype(payload.GetValues())>();
+		static_assert(idx < std::tuple_size_v<std::remove_cvref_t<decltype(payload.GetValues())>>,
+				"There must be exactly one ClientID value in the command payload tuple unless a GetClientIDField method is present");
+		if (std::get<idx>(payload.GetValues()) == (ClientID)0) std::get<idx>(payload.GetValues()) = client_id;
 	}
 }
 
