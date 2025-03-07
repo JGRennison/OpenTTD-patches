@@ -15,6 +15,7 @@
 #include "flowmapper.h"
 #include "../framerate_type.h"
 #include "../command_func.h"
+#include "../misc_cmd.h"
 #include "../network/network.h"
 #include <algorithm>
 
@@ -315,7 +316,7 @@ void StateGameLoop_LinkGraphPauseControl()
 	if (_pause_mode & PM_PAUSED_LINK_GRAPH) {
 		/* We are paused waiting on a job, check the job every tick */
 		if (!LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
-			DoCommandPOld(0, PM_PAUSED_LINK_GRAPH, 0, CMD_PAUSE);
+			Command<CMD_PAUSE>::Post(PM_PAUSED_LINK_GRAPH, false);
 		}
 	} else if (_pause_mode == PM_UNPAUSED) {
 		int interval = _settings_game.linkgraph.recalc_interval * DAY_TICKS / SECONDS_PER_DAY;
@@ -323,7 +324,7 @@ void StateGameLoop_LinkGraphPauseControl()
 		if (offset == (interval / 2) - 2) {
 			/* perform check 2 ticks before we would join */
 			if (LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
-				DoCommandPOld(0, PM_PAUSED_LINK_GRAPH, 1, CMD_PAUSE);
+				Command<CMD_PAUSE>::Post(PM_PAUSED_LINK_GRAPH, true);
 			}
 		}
 	}

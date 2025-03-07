@@ -34,6 +34,7 @@
 #include "../timer/timer_game_realtime.h"
 #include "../crashlog.h"
 #include "../error_func.h"
+#include "../misc_cmd.h"
 #include "../3rdparty/monocypher/monocypher.h"
 #include <mutex>
 #include <condition_variable>

@@ -34,6 +34,7 @@
 #include "guitimer_func.h"
 #include "error.h"
 #include "news_gui.h"
+#include "misc_cmd.h"
 
 #include "sl/saveload.h"
 
@@ -367,9 +368,9 @@ struct MainWindow : Window
 			case GHK_MONEY: // Gimme money
 				/* You can only cheat for money in single player or when otherwise suitably authorised. */
 				if (!_networking || _settings_game.difficulty.money_cheat_in_multiplayer) {
-					DoCommandPOld(0, 10000000, 0, CMD_MONEY_CHEAT);
+					Command<CMD_MONEY_CHEAT>::Post(10000000);
 				} else if (IsNetworkSettingsAdmin()) {
-					DoCommandPOld(0, 10000000, 0, CMD_MONEY_CHEAT_ADMIN);
+					Command<CMD_MONEY_CHEAT_ADMIN>::Post(10000000);
 				}
 				break;
 

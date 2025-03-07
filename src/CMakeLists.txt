@@ -266,6 +266,7 @@ add_files(
     map_type.h
     misc.cpp
     misc_cmd.cpp
+    misc_cmd.h
     misc_gui.cpp
     mixer.cpp
     mixer.h

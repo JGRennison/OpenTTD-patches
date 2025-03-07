@@ -37,6 +37,7 @@
 #include "core/geometry_func.hpp"
 #include "settings_type.h"
 #include "settings_internal.h"
+#include "misc_cmd.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -61,9 +62,13 @@ static int32_t _money_cheat_amount = 10000000;
  * @param p2 is -1 or +1 (down/up)
  * @return Amount of money cheat.
  */
-static int32_t ClickMoneyCheat(int32_t p1, int32_t p2)
+static int32_t ClickMoneyCheat(int32_t, int32_t change_direction)
 {
-	DoCommandPEx(0, 0, 0, (uint64_t)(p2 * _money_cheat_amount), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+	if (IsNetworkSettingsAdmin()) {
+		Command<CMD_MONEY_CHEAT_ADMIN>::Post(Money(_money_cheat_amount) * change_direction);
+	} else {
+		Command<CMD_MONEY_CHEAT>::Post(Money(_money_cheat_amount) * change_direction);
+	}
 	return _money_cheat_amount;
 }
 
@@ -731,7 +736,12 @@ struct CheatWindow : Window {
 		}
 		if (ce->mode == CNM_MONEY) {
 			if (!_networking) *ce->been_used = true;
-			DoCommandPEx(0, 0, 0, (std::strtoll(str->c_str(), nullptr, 10) / GetCurrency().rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+			Money money = std::strtoll(str->c_str(), nullptr, 10) / GetCurrency().rate;
+			if (IsNetworkSettingsAdmin()) {
+				Command<CMD_MONEY_CHEAT_ADMIN>::Post(money);
+			} else {
+				Command<CMD_MONEY_CHEAT>::Post(money);
+			}
 			return;
 		}
 

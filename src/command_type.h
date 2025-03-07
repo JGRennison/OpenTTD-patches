@@ -1224,10 +1224,6 @@ DEF_CMD_PROC  (CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_TEXT, CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 
-DEF_CMD_PROC  (CMD_INCREASE_LOAN, CmdIncreaseLoan,                                   {}, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_DECREASE_LOAN, CmdDecreaseLoan,                                   {}, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROCEX(CMD_SET_COMPANY_MAX_LOAN, CmdSetCompanyMaxLoan,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      )
-
 DEF_CMD_PROC  (CMD_WANT_ENGINE_PREVIEW, CmdWantEnginePreview,                              {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_ENGINE_CTRL, CmdEngineCtrl,                             CMD_DEITY, CMDT_VEHICLE_MANAGEMENT    )
 
@@ -1245,8 +1241,6 @@ DEF_CMD_PROC  (CMD_RENAME_SIGN, CmdRenameSign,               CMD_LOG_AUX | CMD_D
 
 DEF_CMD_PROC  (CMD_TURN_ROADVEH, CmdTurnRoadVeh,                                    {}, CMDT_VEHICLE_MANAGEMENT    )
 
-DEF_CMD_PROC  (CMD_PAUSE, CmdPause,                    CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING        )
-
 DEF_CMD_PROC  (CMD_FOUND_TOWN, CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // founding random town can fail only in exec run
 DEF_CMD_PROC  (CMD_RENAME_TOWN, CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_TOWN_NON_ADMIN, CmdRenameTownNonAdmin,                             {}, CMDT_OTHER_MANAGEMENT      )
@@ -1263,9 +1257,6 @@ DEF_CMD_PROC  (CMD_PLACE_HOUSE, CmdPlaceHouse,                             CMD_D
 
 DEF_CMD_PROC  (CMD_CLEAR_AREA, CmdClearArea,                            CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // destroying multi-tile houses makes town rating differ between test and execution
 
-DEF_CMD_PROCEX(CMD_MONEY_CHEAT, CmdMoneyCheat,                                     {}, CMDT_CHEAT                 )
-DEF_CMD_PROCEX(CMD_MONEY_CHEAT_ADMIN, CmdMoneyCheatAdmin,                    CMD_SERVER_NS, CMDT_CHEAT                 )
-DEF_CMD_PROCEX(CMD_CHANGE_BANK_BALANCE, CmdChangeBankBalance,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_BUILD_CANAL, CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CREATE_SUBSIDY, CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
@@ -1336,8 +1327,6 @@ DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,        
 DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                               {}, CMDT_ROUTE_MANAGEMENT      )
-
-DEF_CMD_TUPLE_NT(CMD_DESYNC_CHECK, CmdDesyncCheck, CMD_SERVER, CMDT_SERVER_SETTING, EmptyCmdData)
 
 template <Commands Tcmd>
 using CmdPayload = typename CommandTraits<Tcmd>::PayloadType;

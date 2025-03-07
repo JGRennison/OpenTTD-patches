@@ -95,6 +95,7 @@
 #include "social_integration.h"
 #include "network/network_sync.h"
 #include "plans_func.h"
+#include "misc_cmd.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -1083,7 +1084,7 @@ static void OnStartGame(bool dedicated_server)
 		SetLocalCompany(dedicated_server ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
 	}
 	if (_ctrl_pressed && !dedicated_server) {
-		DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
 	}
 
 	NetworkOnGameStart();
@@ -1102,7 +1103,7 @@ static void MakeNewGameDone()
 	/* In a dedicated server, the server does not play */
 	if (!VideoDriver::GetInstance()->HasGUI()) {
 		OnStartGame(true);
-		if (_settings_client.gui.pause_on_newgame) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
 		return;
 	}
 
@@ -1137,7 +1138,7 @@ static void MakeNewGameDone()
 		NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 	}
 
-	if (_settings_client.gui.pause_on_newgame) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+	if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
 
 	CheckEngines();
 	CheckIndustries();
@@ -1382,7 +1383,7 @@ void SwitchToMode(SwitchMode new_mode)
 				}
 				OnStartGame(_network_dedicated);
 				/* Decrease pause counter (was increased from opening load dialog) */
-				DoCommandPOld(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
+				Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
 			}
 
 			UpdateSocialIntegration(GM_NORMAL);
@@ -1416,7 +1417,7 @@ void SwitchToMode(SwitchMode new_mode)
 				GenerateSavegameId();
 				_settings_newgame.game_creation.starting_year = CalTime::CurYear();
 				/* Cancel the saveload pausing */
-				DoCommandPOld(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
+				Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
 			} else {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			}

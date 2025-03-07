@@ -20,6 +20,7 @@
 #include "script_log.hpp"
 #include "../script_gui.h"
 #include "../../settings_type.h"
+#include "../../misc_cmd.h"
 #include "../../network/network.h"
 #include "../../core/format.hpp"
 
@@ -58,7 +59,7 @@
 	ShowScriptDebugWindow(ScriptObject::GetRootCompany());
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-		ScriptObject::DoCommandOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		ScriptObject::Command<CMD_PAUSE>::Do(PM_PAUSED_NORMAL, true);
 	}
 }
 

@@ -24,6 +24,7 @@
 #include "../string_func.h"
 #include "../settings_type.h"
 #include "../command_func.h"
+#include "../misc_cmd.h"
 #include "../core/backup_type.hpp"
 
 #include "script_gui.h"
@@ -1119,7 +1120,7 @@ struct ScriptDebugWindow : public Window {
 						}
 						if (all_unpaused) {
 							/* All scripts have been unpaused => unpause the game. */
-							DoCommandPOld(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
+							Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, false);
 						}
 					}
 				}
@@ -1172,7 +1173,7 @@ struct ScriptDebugWindow : public Window {
 
 					/* Pause the game. */
 					if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-						DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+						Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
 					}
 
 					/* Highlight row that matched */

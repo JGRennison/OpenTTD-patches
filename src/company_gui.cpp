@@ -40,6 +40,7 @@
 #include "zoom_func.h"
 #include "sortlist_type.h"
 #include "group_gui.h"
+#include "misc_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/company_widget.h"
@@ -509,7 +510,7 @@ struct CompanyFinancesWindow : Window {
 					SetDParam(0, 0);
 					ShowQueryString(STR_JUST_INT, STR_FINANCES_BORROW_QUERY_CAPT, 20, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					DoCommandPOld(0, 0, _ctrl_pressed, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
+					Command<CMD_INCREASE_LOAN>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
 				}
 				break;
 
@@ -519,7 +520,7 @@ struct CompanyFinancesWindow : Window {
 					SetDParam(0, 0);
 					ShowQueryString(STR_JUST_INT, STR_FINANCES_REPAY_QUERY_CAPT, 20, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					DoCommandPOld(0, 0, _ctrl_pressed, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
+					Command<CMD_DECREASE_LOAN>::Post(STR_ERROR_CAN_T_REPAY_LOAN, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
 				}
 				break;
 
@@ -538,12 +539,12 @@ struct CompanyFinancesWindow : Window {
 			const Company *c = Company::Get((CompanyID)this->window_number);
 			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, _economy.max_loan - c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
-			DoCommandPOld(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
+			Command<CMD_INCREASE_LOAN>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, LoanCommand::Amount, amount);
 		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
 			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
-			DoCommandPOld(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
+			Command<CMD_DECREASE_LOAN>::Post(STR_ERROR_CAN_T_REPAY_LOAN, LoanCommand::Amount, amount);
 		}
 	}
 

@@ -66,6 +66,7 @@
 #include "zoom_func.h"
 #include "help_gui.h"
 #include "industry_map.h"
+#include "misc_cmd.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -220,7 +221,7 @@ static CallBackFunction ToolbarPauseClick(Window *)
 {
 	if (IsNonAdminNetworkClient()) return CBF_NONE; // only server can pause the game
 
-	if (DoCommandPOld(0, PM_PAUSED_NORMAL, _pause_mode == PM_UNPAUSED, CMD_PAUSE)) {
+	if (Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, _pause_mode == PM_UNPAUSED)) {
 		if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
 	}
 	return CBF_NONE;

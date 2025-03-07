@@ -42,6 +42,7 @@
 #include "../core/serialisation.hpp"
 #include "../3rdparty/monocypher/monocypher.h"
 #include "../settings_internal.h"
+#include "../misc_cmd.h"
 #ifdef DEBUG_DUMP_COMMANDS
 #	include "../fileio_func.h"
 #	include "../3rdparty/nlohmann/json.hpp"
@@ -513,7 +514,7 @@ static void CheckPauseHelper(bool pause, PauseMode pm)
 {
 	if (pause == ((_pause_mode & pm) != PM_UNPAUSED)) return;
 
-	DoCommandPOld(0, pm, pause ? 1 : 0, CMD_PAUSE);
+	Command<CMD_PAUSE>::Post(pm, pause);
 }
 
 /**
@@ -1417,7 +1418,6 @@ void NetworkGameLoop()
 		_record_sync_records = true;
 
 		NetworkExecuteLocalCommandQueue();
-		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 		/* Then we make the frame */
 		StateGameLoop();

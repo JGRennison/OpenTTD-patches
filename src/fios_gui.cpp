@@ -30,6 +30,7 @@
 #include "gamelog.h"
 #include "stringfilter_type.h"
 #include "gamelog.h"
+#include "misc_cmd.h"
 
 #include "widgets/fios_widget.h"
 
@@ -429,7 +430,7 @@ public:
 		/* pause is only used in single-player, non-editor mode, non-menu mode. It
 		 * will be unpaused in the WE_DESTROY event handler. */
 		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR) {
-			DoCommandPOld(0, PM_PAUSED_SAVELOAD, 1, CMD_PAUSE);
+			Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, true);
 		}
 		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
 
@@ -472,7 +473,7 @@ public:
 	{
 		/* pause is only used in single-player, non-editor mode, non menu mode */
 		if (!_networking && _game_mode != GM_EDITOR && _game_mode != GM_MENU) {
-			DoCommandPOld(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
+			Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
 		}
 		this->Window::Close();
 	}

@@ -71,6 +71,7 @@
 #include "core/backup_type.hpp"
 #include "3rdparty/fmt/chrono.h"
 #include "company_cmd.h"
+#include "misc_cmd.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -899,7 +900,7 @@ DEF_CONSOLE_CMD(ConPauseGame)
 	}
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-		DoCommandPOld(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
 		if (!_networking) IConsolePrint(CC_DEFAULT, "Game paused.");
 	} else {
 		IConsolePrint(CC_DEFAULT, "Game is already paused.");
@@ -921,7 +922,7 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 	}
 
 	if ((_pause_mode & PM_PAUSED_NORMAL) != PM_UNPAUSED) {
-		DoCommandPOld(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE);
+		Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, false);
 		if (!_networking) IConsolePrint(CC_DEFAULT, "Game unpaused.");
 	} else if ((_pause_mode & PM_PAUSED_ERROR) != PM_UNPAUSED) {
 		IConsolePrint(CC_DEFAULT, "Game is in error state and cannot be unpaused via console.");
@@ -942,7 +943,8 @@ DEF_CONSOLE_CMD(ConStepGame)
 	}
 	auto n = (argc > 1 ? atoi(argv[1]) : 1);
 
-	DoCommandPOld(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
+	extern void UnpauseStepGame(uint32_t steps);
+	UnpauseStepGame(n);
 
 	return true;
 }
