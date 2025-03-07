@@ -37,9 +37,6 @@ struct TemplateReplacement;
 typedef uint16_t TemplateID;
 static const TemplateID INVALID_TEMPLATE = 0xFFFF;
 
-static const uint16_t CONSIST_HEAD = 0x0;
-static const uint16_t CONSIST_TAIL = 0xffff;
-
 /** A pool allowing to store up to ~64k templates */
 typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
 extern TemplatePool _template_pool;
@@ -186,8 +183,6 @@ public:
 
 	inline uint16_t GetRealLength() const { return this->real_consist_length; }
 	inline void SetRealLength(uint16_t len) { this->real_consist_length = len; }
-
-	int Length() const;
 
 	SpriteID GetImage(Direction) const;
 	SpriteID GetSpriteID() const;

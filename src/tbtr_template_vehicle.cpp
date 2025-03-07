@@ -92,7 +92,8 @@ TemplateVehicle::TemplateVehicle(VehicleType type, EngineID eid, Owner current_o
 	this->ctrl_flags = 0;
 }
 
-TemplateVehicle::~TemplateVehicle() {
+TemplateVehicle::~TemplateVehicle()
+{
 	TemplateVehicle *v = this->Next();
 	this->SetNext(nullptr);
 
@@ -122,20 +123,6 @@ TemplateVehicle* TemplateVehicle::GetPrevUnit()
 	}
 	if (tv && HasBit(tv->subtype, GVSF_MULTIHEADED|GVSF_ENGINE)) tv = tv->Prev();
 	return tv;
-}
-
-/** Length()
- * @return: length of vehicle, including current part
- */
-int TemplateVehicle::Length() const
-{
-	int l = 1;
-	const TemplateVehicle *tmp = this;
-	while (tmp->Next()) {
-		tmp = tmp->Next();
-		l++;
-	}
-	return l;
 }
 
 TemplateReplacement::~TemplateReplacement()
