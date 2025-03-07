@@ -767,7 +767,7 @@ static void HandleBankruptcyTakeover(Company *c)
 		if (_network_server && Company::IsValidHumanID(c->bankrupt_last_asked) && !NetworkCompanyHasClients(c->bankrupt_last_asked)) {
 			/* This company can no longer accept the offer as there are no clients connected, decline the offer on the company's behalf */
 			Backup<CompanyID> cur_company(_current_company, c->bankrupt_last_asked, FILE_LINE);
-			DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
+			Command<CMD_DECLINE_BUY_COMPANY>::Post(c->index);
 			cur_company.Restore();
 		}
 		c->bankrupt_timeout -= MAX_COMPANIES;
@@ -817,7 +817,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	} else if ((!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) && !best->is_ai) {
 		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
 		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
-		DoCommandPOld(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
+		Command<CMD_DECLINE_BUY_COMPANY>::Post(c->index);
 		cur_company.Restore();
 	}
 }

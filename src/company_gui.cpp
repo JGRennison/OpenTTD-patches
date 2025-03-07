@@ -2834,7 +2834,7 @@ struct BuyCompanyWindow : Window {
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
 		if (!this->hostile_takeover && c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
-			EnqueueDoCommandP(NewCommandContainerBasic(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY));
+			EnqueueDoCommandP<CMD_DECLINE_BUY_COMPANY>(0, CmdPayload<CMD_DECLINE_BUY_COMPANY>::Make((CompanyID)this->window_number), (StringID)0);
 		}
 		this->Window::Close();
 	}
@@ -2892,7 +2892,7 @@ struct BuyCompanyWindow : Window {
 				break;
 
 			case WID_BC_YES:
-				DoCommandPOld(0, this->window_number, (this->hostile_takeover ? 1 : 0), CMD_BUY_COMPANY | CMD_MSG(STR_ERROR_CAN_T_BUY_COMPANY));
+				Command<CMD_BUY_COMPANY>::Post(STR_ERROR_CAN_T_BUY_COMPANY, (CompanyID)this->window_number, this->hostile_takeover);
 				break;
 		}
 	}

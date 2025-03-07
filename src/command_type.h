@@ -1050,6 +1050,8 @@ struct DynBaseCommandContainer {
 	std::unique_ptr<CommandPayloadBase> payload; ///< payload
 
 	DynBaseCommandContainer() = default;
+	DynBaseCommandContainer(Commands cmd, TileIndex tile, std::unique_ptr<CommandPayloadBase> payload, StringID error_msg)
+			: cmd(cmd), error_msg(error_msg), tile(tile), payload(std::move(payload)) {}
 
 	template <typename T>
 	DynBaseCommandContainer(const BaseCommandContainer<T> &src) : cmd(src.cmd), error_msg(src.error_msg), tile(src.tile), payload(src.payload.Clone()) {}
@@ -1077,6 +1079,8 @@ struct DynCommandContainer {
 	CallbackParameter callback_param{};
 
 	DynCommandContainer() = default;
+	DynCommandContainer(Commands cmd, TileIndex tile, std::unique_ptr<CommandPayloadBase> payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param)
+			: command(cmd, tile, std::move(payload), error_msg), callback(callback), callback_param(callback_param) {}
 
 	template <typename T>
 	DynCommandContainer(const CommandContainer<T> &src) : command(src), callback(src.callback), callback_param(src.callback_param) {}
@@ -1242,9 +1246,6 @@ DEF_CMD_PROC  (CMD_RENAME_SIGN, CmdRenameSign,               CMD_LOG_AUX | CMD_D
 DEF_CMD_PROC  (CMD_TURN_ROADVEH, CmdTurnRoadVeh,                                    {}, CMDT_VEHICLE_MANAGEMENT    )
 
 DEF_CMD_PROC  (CMD_PAUSE, CmdPause,                    CMD_SERVER | CMD_NO_EST, CMDT_SERVER_SETTING        )
-
-DEF_CMD_PROC  (CMD_BUY_COMPANY, CmdBuyCompany,                                     {}, CMDT_MONEY_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_DECLINE_BUY_COMPANY, CmdDeclineBuyCompany,                     CMD_NO_EST, CMDT_SERVER_SETTING        )
 
 DEF_CMD_PROC  (CMD_FOUND_TOWN, CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // founding random town can fail only in exec run
 DEF_CMD_PROC  (CMD_RENAME_TOWN, CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      )

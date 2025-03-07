@@ -2641,21 +2641,16 @@ CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
  * When a competing company is gone bankrupt you get the chance to purchase
  * that company.
  * @todo currently this only works for AI companies
- * @param tile unused
  * @param flags type of operation
- * @param p1 company to buy up
- * @param p2 various bitstuffed elements
- * - p2 = (bit 0) - hostile_takeover whether to buy up the company even if it is not bankrupt
- * @param text unused
+ * @param target_company company to buy up
+ * @param hostile_takeover whether to buy up the company even if it is not bankrupt
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool hostile_takeover)
 {
-	CompanyID target_company = (CompanyID)p1;
 	Company *c = Company::GetIfValid(target_company);
 	if (c == nullptr) return CMD_ERROR;
 
-	bool hostile_takeover = HasBit(p2, 0);
 	if (hostile_takeover && _settings_game.economy.allow_shares) return CMD_ERROR;
 
 	/* If you do a hostile takeover but the company went bankrupt, buy it via bankruptcy rules. */
@@ -2692,16 +2687,12 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * Decline to buy up another company.
  * When a competing company is gone bankrupt you get the chance to purchase
  * that company, actively decline the offer.
- * @param tile unused
  * @param flags type of operation
- * @param p1 company to buy up
- * @param p2 unused
- * @param text unused
+ * @param target_company company to decline to buy up
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeclineBuyCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdDeclineBuyCompany(DoCommandFlag flags, CompanyID target_company)
 {
-	CompanyID target_company = (CompanyID)p1;
 	Company *c = Company::GetIfValid(target_company);
 	if (c == nullptr) return CommandCost();
 

@@ -16,6 +16,7 @@
 #include "../../engine_base.h"
 #include "../../articulated_vehicles.h"
 #include "../../string_func.h"
+#include "../../company_cmd.h"
 #include "../../3rdparty/nlohmann/json.hpp"
 #include "table/strings.h"
 
@@ -111,7 +112,7 @@ bool ScriptEventEnginePreview::AcceptPreview()
 bool ScriptEventCompanyAskMerger::AcceptMerger()
 {
 	EnforceCompanyModeValid(false);
-	return ScriptObject::DoCommandOld(0, this->owner, 0, CMD_BUY_COMPANY);
+	return ScriptObject::Command<CMD_BUY_COMPANY>::Do((::CompanyID)this->owner, false);
 }
 
 ScriptEventAdminPort::ScriptEventAdminPort(const std::string &json) :

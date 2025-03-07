@@ -43,6 +43,7 @@
 
 #include "company_cmd.h"
 #include "league_cmd.h"
+#include "misc_cmd.h"
 #include "order_cmd.h"
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
@@ -865,13 +866,13 @@ void ClearCommandQueue()
 	_command_queue.clear();
 }
 
-void EnqueueDoCommandP(DynCommandContainer container, DoCommandIntlFlag intl_flags)
+void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags)
 {
 	if (_docommand_recursive == 0) {
-		DoCommandPContainer(container, intl_flags);
+		DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags);
 	} else {
 		CommandQueueItem &item = _command_queue.emplace_back();
-		item.cmd = std::move(container);
+		item.cmd = DynCommandContainer(cmd, tile, payload.Clone(), error_msg, callback, callback_param);
 		item.company = _current_company;
 		item.intl_flags = intl_flags;
 	}
