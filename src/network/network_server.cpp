@@ -1288,7 +1288,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 	// Handling of CMD_COMPANY_ADD_ALLOW_LIST would go here
 
-	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) cp.command_container.payload->SetClientID(this->client_id);
+	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) SetPreCheckedCommandPayloadClientID(cmd, *cp.command_container.payload, this->client_id);
 	cp.client_id = this->client_id;
 
 	this->incoming_queue.push_back(std::move(cp));

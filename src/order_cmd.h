@@ -34,11 +34,7 @@ struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderC
 };
 
 struct ClearOrderBackupCmdData final : public AutoFmtTupleCmdData<ClearOrderBackupCmdData, TCDF_NONE, ClientID> {
-	void SetClientID(ClientID client_id) override
-	{
-		ClientID &cid = std::get<0>(this->GetValues());
-		if (cid == (ClientID)0) cid = client_id;
-	}
+	ClientID &GetClientIDField() { return std::get<0>(this->GetValues()); }
 };
 
 DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,       CmdModifyOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoID, std::string>)

@@ -655,6 +655,59 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 }
 
 /**
+ * Get error message tile for this command payload using Payload::GetErrorMessageTile().
+ * This provided payload must have already been type-checked as valid for cmd.
+ * Not many commands set CMD_ERR_TILE so a series of ifs is not too onerous.
+ */
+static TileIndex GetCmdPayloadErrorMessageTile(Commands cmd, const CommandPayloadBase &payload)
+{
+	TileIndex result = INVALID_TILE;
+	auto cmd_check = [&]<Commands Tcmd>() -> bool {
+		if constexpr (CommandTraits<Tcmd>::flags & CMD_ERR_TILE) {
+			if (cmd == Tcmd) {
+				result = static_cast<const CmdPayload<Tcmd> &>(payload).GetErrorMessageTile();
+				return true;
+			}
+		}
+		return false;
+	};
+
+	using Tseq = std::underlying_type_t<Commands>;
+	auto cmd_loop = [&]<Tseq... Tindices>(std::integer_sequence<Tseq, Tindices...>) {
+		(cmd_check.template operator()<static_cast<Commands>(Tindices)>() || ...);
+	};
+	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
+
+	return result;
+}
+
+/**
+ * Set client ID for this command payload using the field returned by Payload::GetClientIDField().
+ * This provided payload must have already been type-checked as valid for cmd.
+ * Not many commands set CMD_CLIENT_ID so a series of ifs is not too onerous.
+ */
+void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &payload, ClientID client_id)
+{
+	static_assert(INVALID_CLIENT_ID == (ClientID)0);
+
+	auto cmd_check = [&]<Commands Tcmd>() -> bool {
+		if constexpr (CommandTraits<Tcmd>::flags & CMD_CLIENT_ID) {
+			if (cmd == Tcmd) {
+				SetCommandPayloadClientID(static_cast<CmdPayload<Tcmd> &>(payload), client_id);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	using Tseq = std::underlying_type_t<Commands>;
+	auto cmd_loop = [&]<Tseq... Tindices>(std::integer_sequence<Tseq, Tindices...>) {
+		(cmd_check.template operator()<static_cast<Commands>(Tindices)>() || ...);
+	};
+	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
+}
+
+/**
  * Toplevel network safe docommand function for the current company. Must not be called recursively.
  * The callback is called when the command succeeded or failed. The parameters
  * \a tile, \a p1, and \a p2 are from the #CommandProc function. The parameter \a cmd is the command to execute.
@@ -705,7 +758,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 
 	TileIndex msg_tile = tile;
 	if (GetCommandFlags(cmd) & CMD_ERR_TILE) {
-		TileIndex t = orig_payload.GetErrorMessageTile();
+		TileIndex t = GetCmdPayloadErrorMessageTile(cmd, orig_payload);
 		if (IsValidTile(t)) msg_tile = t;
 	}
 	int x = TileX(msg_tile) * TILE_SIZE;
@@ -719,11 +772,11 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	std::unique_ptr<CommandPayloadBase> modified_payload;
 	const CommandPayloadBase *use_payload = &orig_payload;
 
-	/* Only set p2 when the command does not come from the network. */
+	/* Only set client ID when the command does not come from the network. */
 	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID) {
 		modified_payload = orig_payload.Clone();
 		assert(IsCorrectCommandPayloadType(cmd, modified_payload.get()));
-		modified_payload->SetClientID(CLIENT_ID_SERVER);
+		SetPreCheckedCommandPayloadClientID(cmd, *modified_payload, CLIENT_ID_SERVER);
 		use_payload = modified_payload.get();
 	}
 
@@ -1208,11 +1261,6 @@ bool P123CmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSet
 TileIndex P123CmdData::GetErrorMessageTile() const
 {
 	return this->p1;
-}
-
-void P123CmdData::SetClientID(ClientID client_id)
-{
-	if (this->p2 == 0) this->p2 = static_cast<uint32_t>(client_id);
 }
 
 void P123CmdData::FormatDebugSummary(format_target &output) const

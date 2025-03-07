@@ -815,7 +815,8 @@ enum CommandPauseLevel : uint8_t {
  * - Have a deserialisation function of the form below, which returns true on success:
  *   bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
  * - Have a FormatDebugSummary implementation where even remotely useful.
- * - Implement GetErrorMessageTile/SetClientID if required by commands using this payload type.
+ * - Have a `TileIndex GetErrorMessageTile() const` function if used by commands with CMD_ERR_TILE.
+ * - Have a `ClientID &GetClientIDField()` function if used by commands with CMD_CLIENT_ID.
  */
 struct CommandPayloadBase : public fmt_formattable {
 	virtual ~CommandPayloadBase() {}
@@ -825,10 +826,6 @@ struct CommandPayloadBase : public fmt_formattable {
 	virtual void Serialise(struct BufferSerialisationRef buffer) const = 0;
 
 	virtual void SanitiseStrings(StringValidationSettings settings) {}
-
-	virtual TileIndex GetErrorMessageTile() const { return INVALID_TILE; }
-
-	virtual void SetClientID(ClientID client_id) { NOT_REACHED(); }
 
 	/* FormatDebugSummary may be called when populating the crash log so should not allocate */
 	virtual void FormatDebugSummary(struct format_target &) const {}
@@ -873,10 +870,22 @@ struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	void Serialise(BufferSerialisationRef buffer) const override;
 	void SanitiseStrings(StringValidationSettings settings) override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	TileIndex GetErrorMessageTile() const override;
-	void SetClientID(ClientID client_id) override;
+	TileIndex GetErrorMessageTile() const;
 	void FormatDebugSummary(struct format_target &) const override;
 };
+
+void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &payload, ClientID client_id);
+
+template <typename T>
+void SetCommandPayloadClientID(T &payload, ClientID client_id)
+{
+	if constexpr (std::is_same_v<T, P123CmdData>) {
+		// This case will disappear when P123CmdData is removed
+		if (payload.p2 == 0) payload.p2 = (uint32_t)client_id;
+	} else {
+		if (payload.GetClientIDField() == (ClientID)0) payload.GetClientIDField() = client_id;
+	}
+}
 
 struct CommandProcTupleAdapter {
 	template <typename T>

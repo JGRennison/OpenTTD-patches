@@ -1471,11 +1471,6 @@ void CompanyInfrastructure::Dump(format_target &buffer) const
 	buffer.format("Airport: {}\n", airport);
 }
 
-void CmdCompanyCtrlData::SetClientID(ClientID client_id)
-{
-	if (this->client_id == INVALID_CLIENT_ID) this->client_id = client_id;
-}
-
 void CmdCompanyCtrlData::FormatDebugSummary(format_target &output) const
 {
 	auto cca_name = [&]() -> const char * {

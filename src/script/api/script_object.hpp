@@ -117,7 +117,10 @@ protected:
 	 */
 	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, Commands cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
+		extern CommandFlags GetCommandFlags(Commands cmd);
+
 		P123CmdData payload(p1, p2, p3);
+		if (GetCommandFlags(cmd) & CMD_CLIENT_ID) SetCommandPayloadClientID(payload, (ClientID)UINT32_MAX);
 		if (text != nullptr) payload.text = text;
 		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_NONE);
 	}
@@ -140,6 +143,9 @@ protected:
 	template <Commands cmd>
 	static bool DoCommand(TileIndex tile, typename CommandTraits<cmd>::PayloadType &&payload, Script_SuspendCallbackProc *callback = nullptr)
 	{
+		if constexpr (CommandTraits<cmd>::flags & CMD_CLIENT_ID) {
+			SetCommandPayloadClientID(payload, (ClientID)UINT32_MAX);
+		}
 		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_TYPE_CHECKED);
 	}
 
@@ -152,12 +158,12 @@ protected:
 
 		static bool Do(Script_SuspendCallbackProc *callback, TileIndex tile, Targs... args)
 		{
-			return ScriptObject::DoCommandImplementation(Tcmd, tile, PayloadType::Make(std::forward<Targs>(args)...), callback, DCIF_TYPE_CHECKED);
+			return ScriptObject::DoCommand<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), callback);
 		}
 
 		static bool Do(TileIndex tile, Targs... args)
 		{
-			return ScriptObject::DoCommandImplementation(Tcmd, tile, PayloadType::Make(std::forward<Targs>(args)...), nullptr, DCIF_TYPE_CHECKED);
+			return ScriptObject::DoCommand<Tcmd>(tile, PayloadType::Make(std::forward<Targs>(args)...), nullptr);
 		}
 	};
 
@@ -167,12 +173,12 @@ protected:
 
 		static bool Do(Script_SuspendCallbackProc *callback, Targs... args)
 		{
-			return ScriptObject::DoCommandImplementation(Tcmd, 0, PayloadType::Make(std::forward<Targs>(args)...), callback, DCIF_TYPE_CHECKED);
+			return ScriptObject::DoCommand<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), callback);
 		}
 
 		static bool Do(Targs... args)
 		{
-			return ScriptObject::DoCommandImplementation(Tcmd, 0, PayloadType::Make(std::forward<Targs>(args)...), nullptr, DCIF_TYPE_CHECKED);
+			return ScriptObject::DoCommand<Tcmd>(0, PayloadType::Make(std::forward<Targs>(args)...), nullptr);
 		}
 	};
 
