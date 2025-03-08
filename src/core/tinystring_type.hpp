@@ -105,6 +105,7 @@ public:
 	inline bool empty() const { return this->storage == nullptr || *this->storage == 0; }
 	inline const char *c_str() const { return this->storage; }
 	inline const char *data() const { return this->storage; }
+	operator std::string_view() const { return this->storage != nullptr ? std::string_view(this->storage) : std::string_view{}; }
 };
 
 
