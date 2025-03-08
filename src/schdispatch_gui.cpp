@@ -1090,7 +1090,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
 					ShowSetDateWindow(this, v->index, _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
-							ScheduleAddCallback, reinterpret_cast<void *>(this->schedule_index), STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
+							ScheduleAddCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(this->schedule_index)), STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
 			}
@@ -1110,7 +1110,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index, _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
-							SetScheduleStartDateCallback, reinterpret_cast<void *>(this->schedule_index), STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
+							SetScheduleStartDateCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(this->schedule_index)), STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
 			}
