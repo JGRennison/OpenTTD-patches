@@ -296,10 +296,10 @@ namespace StrongType {
 	};
 
 	namespace detail {
-		template <typename TParent, typename TTraits, typename TProperties> struct TypedefTraitHelper;
+		template <typename TParent, typename TTraits, typename TProperties> struct EMPTY_BASES TypedefTraitHelper;
 
 		template <typename TParent, typename TTraits, typename... TProperties>
-		struct TypedefTraitHelper<TParent, TTraits, detail::Properties<TProperties...>> : public TProperties::template mixin<TParent, typename TTraits::BaseType>... {};
+		struct EMPTY_BASES TypedefTraitHelper<TParent, TTraits, detail::Properties<TProperties...>> : public TProperties::template mixin<TParent, typename TTraits::BaseType>... {};
 	}
 }
 
