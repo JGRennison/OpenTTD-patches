@@ -341,23 +341,6 @@ uint16_t Order::MapOldOrder() const
 }
 
 /**
- * Create an order based on a packed representation of that order.
- * @param packed the packed representation.
- */
-Order::Order(uint64_t packed)
-{
-	this->type    = (OrderType)GB(packed,  0,  8);
-	this->flags   = GB(packed,  8,  16);
-	this->dest    = GB(packed, 24, 16);
-	this->extra   = nullptr;
-	this->refit_cargo   = CARGO_NO_REFIT;
-	this->occupancy     = 0;
-	this->wait_time     = 0;
-	this->travel_time   = 0;
-	this->max_speed     = UINT16_MAX;
-}
-
-/**
  *
  * Updates the widgets of a vehicle which contains the order-data
  *

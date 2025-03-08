@@ -101,7 +101,7 @@ void Order::ConvertFromOldSavegame()
  */
 static Order UnpackVersion4Order(uint16_t packed)
 {
-	return Order(((uint64_t) GB(packed, 8, 8)) << 24 | ((uint64_t) GB(packed, 4, 4)) << 8 | ((uint64_t) GB(packed, 0, 4)));
+	return Order(GB(packed, 0, 4), GB(packed, 4, 4), GB(packed, 8, 8));
 }
 
 /**
@@ -111,7 +111,7 @@ static Order UnpackVersion4Order(uint16_t packed)
  */
 static Order UnpackVersion5Order(uint32_t packed)
 {
-	return Order(((uint64_t) GB(packed, 16, 16)) << 24 | ((uint64_t) GB(packed, 8, 8)) << 8 | ((uint64_t) GB(packed, 0, 8)));
+	return Order(GB(packed, 0, 8), GB(packed, 8, 8), GB(packed, 16, 16));
 }
 
 /**
