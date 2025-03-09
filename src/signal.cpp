@@ -43,7 +43,7 @@ struct SignalDependencyRecord {
 	bool operator==(const SignalDependencyRecord &) const = default;
 	auto operator<=>(const SignalDependencyRecord &) const = default;
 
-	SignalDependencyRecord(SignalReference src) : src(src), dependant(SignalReference(0, (Track)0)) {}
+	SignalDependencyRecord(SignalReference src) : src(src), dependant(SignalReference({}, {})) {}
 	SignalDependencyRecord(SignalReference src, SignalReference dependant) : src(src), dependant(dependant) {}
 };
 static btree::btree_set<SignalDependencyRecord> _signal_dependencies;
@@ -537,8 +537,8 @@ static SigInfo ExploreSegment(Owner owner)
 					if (enterdir == INVALID_DIAGDIR) {
 						/* Incoming from the wormhole, onto signal */
 						if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) { // tunnel entrance is ignored
-							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
-							if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 						}
 						if (IsTunnelBridgeSignalSimulationExit(tile) && !_tbuset.Add(tile, INVALID_TRACKDIR)) {
 							info.flags |= SF_FULL;
@@ -568,9 +568,9 @@ static SigInfo ExploreSegment(Owner owner)
 						}
 						if (IsTunnelBridgeSignalSimulationEntrance(tile)) handle_entrance();
 						if (!(info.flags & SF_TRAIN)) {
-							if (HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) {
-								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							}
 						}
 						continue;
@@ -1794,7 +1794,7 @@ void FlushDeferredDetermineCombineNormalShuntMode(Train *v)
 
 void UpdateAllSignalAspects()
 {
-	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
+	for (TileIndex tile(0); tile != MapSize(); ++tile) {
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
 			do {
@@ -1850,8 +1850,8 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 	auto populate_usage_table = [&]() {
 		usage_table_populated = true;
 
-		const TileIndex map_size = MapSize();
-		for (TileIndex t = 0; t < map_size; t++) {
+		const uint32_t map_size = MapSize();
+		for (TileIndex t(0); t < map_size; t++) {
 			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
 				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
 					uint8_t old_style = GetSignalStyle(t, track);
@@ -1908,8 +1908,8 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 
 	bool signal_remapped = false;
 	if (do_remap) {
-		const TileIndex map_size = MapSize();
-		for (TileIndex t = 0; t < map_size; t++) {
+		const uint32_t map_size = MapSize();
+		for (TileIndex t(0); t < map_size; t++) {
 			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
 				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
 					uint8_t old_style = GetSignalStyle(t, track);
@@ -2104,7 +2104,7 @@ void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_sign
 
 void UpdateAllSignalReserveThroughBits()
 {
-	TileIndex tile = 0;
+	TileIndex tile(0);
 	do {
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
@@ -2163,7 +2163,7 @@ void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, Track track,
 
 void UpdateAllSignalsSpecialPropagationFlag()
 {
-	TileIndex tile = 0;
+	TileIndex tile(0);
 	do {
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);

@@ -234,7 +234,7 @@ constexpr To ClampTo(From value)
  * @return The absolute difference between the given scalars
  */
 template <typename T>
-constexpr T Delta(const T a, const T b)
+constexpr auto Delta(const T a, const T b)
 {
 	return (a < b) ? b - a : a - b;
 }

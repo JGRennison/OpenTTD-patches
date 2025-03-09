@@ -34,7 +34,7 @@ static uint64_t GetTunnelAxisHeightCacheKey(TileIndex tile, uint8_t height, bool
 }
 
 static inline uint64_t GetTunnelAxisHeightCacheKey(const Tunnel* t) {
-	return GetTunnelAxisHeightCacheKey(t->tile_n, t->height, t->tile_s - t->tile_n > MapMaxX());
+	return GetTunnelAxisHeightCacheKey(t->tile_n, t->height, t->tile_s - t->tile_n > (TileIndexDiff)MapMaxX());
 }
 
 /**

@@ -3505,7 +3505,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 {
 	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) {
 		v->current_order.Free();
-		v->SetDestTile(0);
+		v->SetDestTile({});
 		return false;
 	}
 
@@ -3638,7 +3638,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			break;
 
 		default:
-			v->SetDestTile(0);
+			v->SetDestTile({});
 			return false;
 	}
 
@@ -3654,7 +3654,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 	if (order == nullptr) {
 		v->current_order.Free();
-		v->SetDestTile(0);
+		v->SetDestTile({});
 		return false;
 	}
 
@@ -3738,7 +3738,7 @@ bool ProcessOrders(Vehicle *v)
 		}
 
 		v->current_order.Free();
-		v->SetDestTile(0);
+		v->SetDestTile({});
 		return false;
 	}
 

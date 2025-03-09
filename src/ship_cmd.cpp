@@ -351,7 +351,7 @@ TileIndex Ship::GetOrderStationLocation(StationID station)
 		return st->xy;
 	} else {
 		this->IncrementRealOrderIndex();
-		return 0;
+		return {};
 	}
 }
 
@@ -487,12 +487,12 @@ static bool CheckShipLeaveDepot(Ship *v)
 
 	v->cur_speed = 0;
 	v->UpdateViewport(true, true);
-	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
+	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
 
 	VehicleServiceInDepot(v);
 	v->LeaveUnbunchingDepot();
 	v->PlayLeaveStationSound();
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 	DirtyVehicleListWindowForVehicle(v);
 
 	return false;

@@ -353,7 +353,6 @@ struct fmt_format_as_base{};
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr, std::string_view str);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const char *str);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr);
-[[noreturn]] void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile);
 [[noreturn]] void not_reached_error(int line, const char *file);
 #define NOT_REACHED() not_reached_error(__LINE__, __FILE__);
 

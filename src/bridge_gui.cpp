@@ -73,12 +73,12 @@ void CcBuildBridge(const CommandCost &result, Commands cmd, TileIndex end_tile, 
 		DiagDirection end_direction = ReverseDiagDir(GetTunnelBridgeDirection(end_tile));
 		ConnectRoadToStructure(end_tile, end_direction);
 
-		DiagDirection start_direction = ReverseDiagDir(GetTunnelBridgeDirection(data->p1));
-		ConnectRoadToStructure(data->p1, start_direction);
+		DiagDirection start_direction = ReverseDiagDir(GetTunnelBridgeDirection(TileIndex(data->p1)));
+		ConnectRoadToStructure(TileIndex(data->p1), start_direction);
 	}
 
 	if (transport_type == TRANSPORT_RAIL) {
-		StoreRailPlacementEndpoints(data->p1, end_tile, (TileX(data->p1) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
+		StoreRailPlacementEndpoints(TileIndex(data->p1), end_tile, (TileX(TileIndex(data->p1)) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
 	}
 }
 

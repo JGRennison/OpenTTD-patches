@@ -48,12 +48,12 @@ void FixOldMapArray()
 {
 	/* TTO/TTD/TTDP savegames could have buoys at tile 0
 	 * (without assigned station struct) */
-	MakeSea(0);
+	MakeSea(TileIndex(0));
 }
 
 static void FixTTDMapArray()
 {
-	for (TileIndex t = 0; t < OLD_MAP_SIZE; t++) {
+	for (TileIndex t(0); t < OLD_MAP_SIZE; t++) {
 		switch (GetTileType(t)) {
 			case MP_STATION:
 				_m[t].m4 = 0; // We do not understand this TTDP station mapping (yet)
@@ -212,7 +212,7 @@ void FixOldVehicles()
 
 static bool FixTTOMapArray()
 {
-	for (TileIndex t = 0; t < OLD_MAP_SIZE; t++) {
+	for (TileIndex t(0); t < OLD_MAP_SIZE; t++) {
 		TileType tt = GetTileType(t);
 		if (tt == 11) {
 			/* TTO has a different way of storing monorail.
@@ -524,7 +524,7 @@ static void ReadTTDPatchFlags()
 	if (_savegame_type == SGT_TTO) return;
 
 	/* TTDPatch misuses _old_map3 for flags.. read them! */
-	_old_vehicle_multiplier = _m[0].m3;
+	_old_vehicle_multiplier = _m[TileIndex(0)].m3;
 	/* Somehow.... there was an error in some savegames, so 0 becomes 1
 	 * and 1 becomes 2. The rest of the values are okay */
 	if (_old_vehicle_multiplier < 2) _old_vehicle_multiplier++;
@@ -539,23 +539,23 @@ static void ReadTTDPatchFlags()
 	_bump_assert_value = (_old_vehicle_multiplier - 1) * 850 * 128;
 
 	/* The first 17 bytes are used by TTDP1, which translates to the first 9 m3s and first 8 m4s. */
-	for (TileIndex i = 0; i <= 8; i++) { // check tile 0, too
+	for (TileIndex i(0); i <= 8; i++) { // check tile 0, too
 		if (_m[i].m3 != 0 || (i != 8 && _m[i].m4 != 0)) _savegame_type = SGT_TTDP1;
 	}
 
 	/* Check if we have a modern TTDPatch savegame (has extra data all around) */
-	TileIndex ttdp2_header_first = MapSize() - 3;
-	TileIndex ttdp2_header_second = MapSize() - 2;
+	TileIndex ttdp2_header_first(MapSize() - 3);
+	TileIndex ttdp2_header_second(MapSize() - 2);
 	if (_m[ttdp2_header_first].m3 == 'T' && _m[ttdp2_header_first].m4 == 'T' &&
 		_m[ttdp2_header_second].m3 == 'D' && _m[ttdp2_header_second].m4 == 'p') {
 		_savegame_type = SGT_TTDP2;
 	}
 
-	TileIndex extra_chunk_tile = _savegame_type == SGT_TTDP2 ? MapSize() - 1 : 1;
+	TileIndex extra_chunk_tile(_savegame_type == SGT_TTDP2 ? MapSize() - 1 : 1);
 	_old_extra_chunk_nums = _m[extra_chunk_tile].m3 | (_m[extra_chunk_tile].m4 << 8);
 
 	/* Clean the misused places */
-	for (TileIndex i = 0; i < 9; i++) ClearOldMap3(i);
+	for (TileIndex i(0); i < 9; i++) ClearOldMap3(i);
 	for (TileIndex i = TileXY(0, MapMaxY()); i < MapSize(); i++) ClearOldMap3(i);
 
 	if (_savegame_type == SGT_TTDP2) Debug(oldloader, 2, "Found TTDPatch game");
@@ -1511,25 +1511,25 @@ static bool LoadOldMapPart1(LoadgameState *ls, int)
 		AllocateMap(256, 256);
 	}
 
-	for (uint i = 0; i < OLD_MAP_SIZE; i++) {
+	for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 		_m[i].m1 = ReadByte(ls);
 	}
-	for (uint i = 0; i < OLD_MAP_SIZE; i++) {
+	for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 		_m[i].m2 = ReadByte(ls);
 	}
 
 	if (_savegame_type != SGT_TTO) {
 		/* old map3 is split into to m3 and m4 */
-		for (uint i = 0; i < OLD_MAP_SIZE; i++) {
+		for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 			_m[i].m3 = ReadByte(ls);
 			_m[i].m4 = ReadByte(ls);
 		}
 		for (uint i = 0; i < OLD_MAP_SIZE / 4; i++) {
 			uint8_t b = ReadByte(ls);
-			_me[i * 4 + 0].m6 = GB(b, 0, 2);
-			_me[i * 4 + 1].m6 = GB(b, 2, 2);
-			_me[i * 4 + 2].m6 = GB(b, 4, 2);
-			_me[i * 4 + 3].m6 = GB(b, 6, 2);
+			_me[TileIndex(i * 4 + 0)].m6 = GB(b, 0, 2);
+			_me[TileIndex(i * 4 + 1)].m6 = GB(b, 2, 2);
+			_me[TileIndex(i * 4 + 2)].m6 = GB(b, 4, 2);
+			_me[TileIndex(i * 4 + 3)].m6 = GB(b, 6, 2);
 		}
 	}
 
@@ -1538,12 +1538,10 @@ static bool LoadOldMapPart1(LoadgameState *ls, int)
 
 static bool LoadOldMapPart2(LoadgameState *ls, int)
 {
-	uint i;
-
-	for (i = 0; i < OLD_MAP_SIZE; i++) {
+	for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 		_m[i].type = ReadByte(ls);
 	}
-	for (i = 0; i < OLD_MAP_SIZE; i++) {
+	for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 		_m[i].m5 = ReadByte(ls);
 	}
 

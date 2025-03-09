@@ -17,13 +17,29 @@
 
 extern uint _map_tile_mask;
 
-/**
- * 'Wraps' the given tile to it is within the map. It does
- * this by masking the 'high' bits of.
- * @param x the tile to 'wrap'
- */
+struct Map {
+	/**
+	 * 'Wraps' the given "tile" so it is within the map.
+	 * It does this by masking the 'high' bits of.
+	 * @param tile the tile to 'wrap'
+	 */
+	static inline TileIndex WrapToMap(TileIndex tile)
+	{
+		return TileIndex{tile.base() & _map_tile_mask};
+	}
+};
 
-#define TILE_MASK(x) ((x) & _map_tile_mask)
+template <typename T>
+struct MapTilePtr {
+	T *tile_data;
+
+	/**
+	 * Get a node abstraction with the specified id.
+	 * @param num ID of the node.
+	 * @return the Requested node.
+	 */
+	debug_inline T &operator[](TileIndex tile) { return this->tile_data[tile.base()]; }
+};
 
 /**
  * Pointer to the tile-array.
@@ -31,7 +47,7 @@ extern uint _map_tile_mask;
  * This variable points to the tile-array which contains the tiles of
  * the map.
  */
-extern Tile *_m;
+extern MapTilePtr<Tile> _m;
 
 /**
  * Pointer to the extended tile-array.
@@ -39,7 +55,7 @@ extern Tile *_m;
  * This variable points to the extended tile-array which contains the tiles
  * of the map.
  */
-extern TileExtended *_me;
+extern MapTilePtr<TileExtended> _me;
 
 bool ValidateMapSize(uint size_x, uint size_y);
 void AllocateMap(uint size_x, uint size_y);
@@ -171,7 +187,7 @@ inline uint ScaleByMapSize1D(uint n)
  */
 debug_inline static TileIndex TileXY(uint x, uint y)
 {
-	return (y << MapLogX()) + x;
+	return TileIndex{(y << MapLogX()) + x};
 }
 
 /**
@@ -202,7 +218,7 @@ inline TileIndexDiff TileDiffXY(int x, int y)
  */
 debug_inline static TileIndex TileVirtXY(uint x, uint y)
 {
-	return (y >> 4 << MapLogX()) + (x >> 4);
+	return TileIndex{(y >> 4 << MapLogX()) + (x >> 4)};
 }
 
 /**
@@ -226,7 +242,7 @@ inline TileIndex TileVirtXYClampedToMap(int x, int y)
  */
 debug_inline static uint TileX(TileIndex tile)
 {
-	return tile & MapMaxX();
+	return tile.base() & MapMaxX();
 }
 
 /**
@@ -236,7 +252,7 @@ debug_inline static uint TileX(TileIndex tile)
  */
 debug_inline static uint TileY(TileIndex tile)
 {
-	return tile >> MapLogX();
+	return tile.base() >> MapLogX();
 }
 
 /**
@@ -253,7 +269,6 @@ inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 {
 	return TileDiffXY(tidc.x, tidc.y);
 }
-
 
 /**
  * Adds a given offset to a tile.
@@ -346,6 +361,20 @@ inline TileIndexDiffC TileIndexToTileIndexDiffC(TileIndex tile_a, TileIndex tile
 	difference.y = TileY(tile_a) - TileY(tile_b);
 
 	return difference;
+}
+
+/**
+ * Returns the diff between two tiles, as in tile_a - tile_b
+ *
+ * @param tile_a from tile
+ * @param tile_b to tile
+ * @return the difference between tila_a and tile_b
+ * @pre tile_a >= tile_b
+ */
+inline TileIndexDiffCUnsigned TileIndexToTileIndexDiffCUnsigned(TileIndex tile_a, TileIndex tile_b)
+{
+	TileIndex difference{tile_a.base() - tile_b.base()};
+	return { TileX(difference), TileY(difference) };
 }
 
 /* Functions to calculate distances */
@@ -482,7 +511,7 @@ void IterateCurvedCircularTileArea(TileIndex centre_tile, uint diameter, TileIte
  */
 inline TileIndex RandomTileSeed(uint32_t r)
 {
-	return TILE_MASK(r);
+	return Map::WrapToMap(TileIndex(r));
 }
 
 /**

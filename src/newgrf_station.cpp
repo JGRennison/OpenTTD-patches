@@ -686,12 +686,12 @@ uint16_t GetStationCallback(CallbackID callback, uint32_t param1, uint32_t param
  */
 CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_tile, RailType rt, const StationSpec *statspec, Axis axis, uint8_t plat_len, uint8_t numtracks)
 {
-	TileIndexDiff diff = cur_tile - north_tile;
+	TileIndexDiffCUnsigned diff = TileIndexToTileIndexDiffCUnsigned(cur_tile, north_tile);
 	Slope slope = GetTileSlope(cur_tile);
 
 	StationResolverObject object(statspec, nullptr, cur_tile, rt, CBID_STATION_LAND_SLOPE_CHECK,
 			(slope << 4) | (slope ^ (axis == AXIS_Y && HasBit(slope, CORNER_W) != HasBit(slope, CORNER_E) ? SLOPE_EW : 0)),
-			(numtracks << 24) | (plat_len << 16) | (axis == AXIS_Y ? TileX(diff) << 8 | TileY(diff) : TileY(diff) << 8 | TileX(diff)));
+			(numtracks << 24) | (plat_len << 16) | (axis == AXIS_Y ? diff.x << 8 | diff.y : diff.y << 8 | diff.x));
 	object.station_scope.axis = axis;
 
 	uint16_t cb_res = object.ResolveCallback();
@@ -1105,7 +1105,7 @@ void UpdateStationTileCacheFlags(bool force_update)
 	if (checksum.state != _station_tile_cache_hash || force_update) {
 		_station_tile_cache_hash = checksum.state;
 
-		for (TileIndex t = 0; t < MapSize(); t++) {
+		for (TileIndex t(0); t < MapSize(); t++) {
 			if (HasStationTileRail(t)) SetRailStationTileFlags(t, GetStationSpec(t));
 		}
 	}

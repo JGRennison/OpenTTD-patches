@@ -1294,7 +1294,7 @@ void FillTrainReservationLookAhead(Train *v)
 	if (_settings_game.vehicle.train_speed_adaptation && v->signal_speed_restriction > 0 && v->lookahead->reservation_end_position > old_reservation_end_position) {
 		for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 			if (item.type == TRLIT_SPEED_ADAPTATION && item.end + 1 >= old_reservation_end_position && item.end + 1 < v->lookahead->reservation_end_position) {
-				uint16_t signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(item.data_id, item.data_aux);
+				uint16_t signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex{item.data_id}, item.data_aux);
 
 				if (signal_speed == 0) {
 					/* unrestricted signal ahead, remove current speed adaptation */

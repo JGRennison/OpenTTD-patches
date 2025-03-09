@@ -279,7 +279,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
-	buffer.format("Map size: 0x{:X} ({} x {}){}\n\n", MapSize(), MapSizeX(), MapSizeY(), (!_m || !_me) ? ", NO MAP ALLOCATED" : "");
+	buffer.format("Map size: 0x{:X} ({} x {}){}\n\n", MapSize(), MapSizeX(), MapSizeY(), (_m.tile_data == nullptr || _me.tile_data == nullptr) ? ", NO MAP ALLOCATED" : "");
 
 	if (_settings_game.debug.chicken_bits != 0) {
 		buffer.format("Chicken bits: 0x{:08X}\n\n", _settings_game.debug.chicken_bits);
@@ -833,7 +833,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 {
 	/* If the map array doesn't exist, saving will fail too. If the map got
 	 * initialised, there is a big chance the rest is initialised too. */
-	if (_m == nullptr) return false;
+	if (_m.tile_data == nullptr) return false;
 
 	try {
 		GamelogEmergency();
@@ -859,7 +859,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 {
 	/* If the map array doesn't exist, saving will fail too. If the map got
 	 * initialised, there is a big chance the rest is initialised too. */
-	if (_m == nullptr) return false;
+	if (_m.tile_data == nullptr) return false;
 
 	try {
 		format_to_fixed_z::format_to(filename, filename_last, "{}{}.sav", _personal_dir, name);

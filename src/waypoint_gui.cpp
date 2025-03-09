@@ -101,7 +101,7 @@ public:
 		this->flags |= WF_DISABLE_VP_SCROLL;
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_W_VIEWPORT);
-		nvp->InitializeViewport(this, this->GetCenterTile(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		nvp->InitializeViewport(this, this->GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
 
 		this->OnInvalidateData(0);
 	}

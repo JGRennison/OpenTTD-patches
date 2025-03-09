@@ -1493,7 +1493,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->SetWagon();
 
 		v->SetFreeWagon();
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 
 		v->cargo_type = e->GetDefaultCargoType();
 		assert(IsValidCargoID(v->cargo_type));
@@ -2305,7 +2305,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
 		/* We are undoubtedly changing something in the depot and train list. */
 		/* But only if the moved vehicle is not virtual */
 		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
-			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile.base());
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
@@ -2398,7 +2398,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, b
 		/* We are undoubtedly changing something in the depot and train list. */
 		/* Unless its a virtual train */
 		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
@@ -2691,12 +2691,12 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainApproachingCrossingEnum)) return true;
+	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainApproachingCrossingEnum)) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainApproachingCrossingEnum);
+	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainApproachingCrossingEnum);
 }
 
 /** Check if the crossing should be closed
@@ -2947,7 +2947,7 @@ void ReverseTrainDirection(Train *v)
 {
 	if (IsRailDepotTile(v->tile)) {
 		if (IsWholeTrainInsideDepot(v)) return;
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 	}
 
 	if (_local_company == v->owner && (v->current_order.IsType(OT_LOADING_ADVANCE) || HasBit(v->flags, VRF_BEYOND_PLATFORM_END))) {
@@ -3052,7 +3052,7 @@ void ReverseTrainDirection(Train *v)
 	ClrBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 
 	if (IsRailDepotTile(v->tile)) {
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 	}
 
 	ToggleBit(v->flags, VRF_TOGGLE_REVERSE);
@@ -3198,7 +3198,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool
 			ToggleBit(v->flags, VRF_REVERSE_DIRECTION);
 
 			front->ConsistChanged(CCF_ARRANGE);
-			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile);
+			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile.base());
 			SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
 			SetWindowDirty(WC_VEHICLE_VIEW, front->index);
 			DirtyVehicleListWindowForVehicle(front);
@@ -3401,7 +3401,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	/* if the train got no power, then keep it in the depot */
 	if (v->gcache.cached_power == 0) {
 		v->vehstatus |= VS_STOPPED;
-		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
+		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
 		return true;
 	}
 
@@ -3492,8 +3492,8 @@ static bool CheckTrainStayInDepot(Train *v)
 				u->Vehicle::UpdateViewport(false);
 			}
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile);
-			InvalidateWindowData(WC_VEHICLE_DEPOT, behind_depot_tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile.base());
+			InvalidateWindowData(WC_VEHICLE_DEPOT, behind_depot_tile.base());
 			return true;
 		}
 	}
@@ -3526,7 +3526,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	v->UpdatePosition();
 	UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 	v->UpdateAcceleration();
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 
 	return false;
 }
@@ -4813,7 +4813,7 @@ TileIndex Train::GetOrderStationLocation(StationID station)
 	if (!(st->facilities & FACIL_TRAIN)) {
 		/* The destination station has no trainstation tiles. */
 		this->IncrementRealOrderIndex();
-		return 0;
+		return {};
 	}
 
 	return st->xy;
@@ -6336,7 +6336,7 @@ static void DeleteLastWagon(Train *v)
 		/* Update the depot window if the first vehicle is in depot -
 		 * if v == first, then it is updated in PreDestructor() */
 		if (first->track == TRACK_BIT_DEPOT) {
-			SetWindowDirty(WC_VEHICLE_DEPOT, first->tile);
+			SetWindowDirty(WC_VEHICLE_DEPOT, first->tile.base());
 		}
 		v->last_station_visited = first->last_station_visited; // for PreDestructor
 	}
@@ -7083,7 +7083,7 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
 
 	v->direction = DIR_W;
-	v->tile = 0; // INVALID_TILE;
+	v->tile = {};
 
 	v->owner = _current_company;
 	v->track = TRACK_BIT_DEPOT;
@@ -7154,7 +7154,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->y_pos = 0;
 
 	v->direction = DIR_W;
-	v->tile = 0; // INVALID_TILE;
+	v->tile = {};
 	v->owner = _current_company;
 	v->track = TRACK_BIT_DEPOT;
 	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
@@ -7709,11 +7709,7 @@ void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16_t trac
 
 static uint16_t GetTrainAdaptationSpeed(TileIndex tile, uint16_t track, Trackdir last_passing_train_dir)
 {
-	SignalSpeedKey speed_key = {
-		speed_key.signal_tile = tile,
-		speed_key.signal_track = track,
-		speed_key.last_passing_train_dir = last_passing_train_dir
-	};
+	SignalSpeedKey speed_key = { tile, track, last_passing_train_dir };
 	const auto found_speed_restriction = _signal_speeds.find(speed_key);
 
 	if (found_speed_restriction != _signal_speeds.end()) {
@@ -7735,7 +7731,7 @@ void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16_t track)
 	if (speed > 0 && v->lookahead != nullptr) {
 		for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
 			if (item.type == TRLIT_SPEED_ADAPTATION && item.end + 1 < v->lookahead->reservation_end_position) {
-				uint16_t signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(item.data_id, item.data_aux);
+				uint16_t signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex{item.data_id}, item.data_aux);
 
 				if (signal_speed == 0) {
 					/* unrestricted signal ahead, disregard speed adaptation at earlier signal */

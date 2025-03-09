@@ -993,7 +993,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR;
 				DirtyCompanyInfrastructureWindows(owner);
 				MakeRoadNormal(tile, GetCrossingRoadBits(tile), GetRoadTypeRoad(tile), GetRoadTypeTram(tile), GetTownIndex(tile), GetRoadOwner(tile, RTT_ROAD), GetRoadOwner(tile, RTT_TRAM));
-				DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
+				DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
 				UpdateRoadCachedOneWayStatesAroundTile(tile);
 			}
 			break;
@@ -1065,7 +1065,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1
 					} else {
 						DoClearSquare(tile);
 					}
-					DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
+					DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
 				} else {
 					SetTrackBits(tile, present);
 					SetTrackReservation(tile, GetRailReservationTrackBits(tile) & present);
@@ -1302,7 +1302,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 
 	if ((!remove && !ValParamRailType(railtype)) || !ValParamTrackOrientation(track)) return CMD_ERROR;
 	if (p1 >= MapSize()) return CMD_ERROR;
-	TileIndex end_tile = p1;
+	TileIndex end_tile{p1};
 	Trackdir trackdir = TrackToTrackdir(track);
 
 	CommandCost ret = ValidateAutoDrag(&trackdir, tile, end_tile);
@@ -2136,7 +2136,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	bool no_remove_restricted_signal = HasBit(p3, 1);
 
 	if (p1 >= MapSize() || !ValParamTrackOrientation(track)) return CMD_ERROR;
-	TileIndex end_tile = p1;
+	TileIndex end_tile{p1};
 	if (signal_density == 0 || signal_density > MAX_SIGNAL_DRAG_DISTANCE) return CMD_ERROR;
 
 	if (!IsPlainRailTile(tile)) return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -2596,7 +2596,7 @@ CommandCost EnsureNoIncompatibleRailtypeTrainOnTrackBits(TileIndex tile, TrackBi
 CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	RailType totype = Extract<RailType, 0, 6>(p2);
-	TileIndex area_start = p1;
+	TileIndex area_start{p1};
 	TileIndex area_end = tile;
 	bool diagonal = HasBit(p2, 6);
 
@@ -2738,8 +2738,8 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 							YapfNotifyTrackLayoutChange(tile, GetRailDepotTrack(tile));
 
 							/* Update build vehicle window related to this depot */
-							InvalidateWindowData(WC_VEHICLE_DEPOT, tile);
-							InvalidateWindowData(WC_BUILD_VEHICLE, tile);
+							InvalidateWindowData(WC_VEHICLE_DEPOT, tile.base());
+							InvalidateWindowData(WC_BUILD_VEHICLE, tile.base());
 						}
 						found_convertible_track = true;
 						cost.AddCost(RailConvertCost(type, totype));
@@ -2865,7 +2865,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	const RailType totype = Extract<RailType, 0, 6>(p2);
-	const TileIndex end_tile = p1;
+	const TileIndex end_tile{p1};
 
 	if (!ValParamRailType(totype)) return CMD_ERROR;
 	if (end_tile >= MapSize()) return CMD_ERROR;
@@ -3044,8 +3044,8 @@ CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1
 							YapfNotifyTrackLayoutChange(tile, GetRailDepotTrack(tile));
 
 							/* Update build vehicle window related to this depot */
-							InvalidateWindowData(WC_VEHICLE_DEPOT, tile);
-							InvalidateWindowData(WC_BUILD_VEHICLE, tile);
+							InvalidateWindowData(WC_VEHICLE_DEPOT, tile.base());
+							InvalidateWindowData(WC_BUILD_VEHICLE, tile.base());
 						}
 						found_convertible_track = true;
 						cost.AddCost(RailConvertCost(type, totype));
@@ -3199,7 +3199,7 @@ static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlag flags)
 		AddSideToSignalBuffer(tile, dir, owner);
 		YapfNotifyTrackLayoutChange(tile, DiagDirToDiagTrack(dir));
 		if (v != nullptr) ReReserveTrainPath(v);
-		DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
+		DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_TRAIN]);
@@ -4825,7 +4825,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			if (v->Next() == nullptr) VehicleEnterDepot(v->First());
 			v->tile = tile;
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 			return VETSB_ENTERED_WORMHOLE;
 		}
 	} else if (fract_coord_leave == fract_coord) {

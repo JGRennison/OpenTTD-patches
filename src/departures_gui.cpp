@@ -339,7 +339,7 @@ public:
 	static WindowNumber GetDepotWindowNumber(TileIndex tile)
 	{
 		static constexpr WindowNumber DEPARTURE_WINDOW_NUMBER_DEPOT_TAG = 1 << 31;
-		return tile | DEPARTURE_WINDOW_NUMBER_DEPOT_TAG;
+		return tile.base() | DEPARTURE_WINDOW_NUMBER_DEPOT_TAG;
 	}
 
 	struct DepotTag{};
@@ -612,7 +612,7 @@ public:
 			case WID_DB_LOCATION: {
 				TileIndex tile;
 				if (this->source_type == DST_DEPOT) {
-					tile = this->window_number & (MapSize() - 1);
+					tile = TileIndex(this->window_number & (MapSize() - 1));
 				} else {
 					tile = BaseStation::Get(this->window_number)->xy;
 				}
@@ -832,7 +832,7 @@ public:
 					break;
 				}
 			}
-			new DeparturesWindow(_departures_desc, DeparturesWindow::DepotTag{}, this->window_number & (MapSize() - 1), vt);
+			new DeparturesWindow(_departures_desc, DeparturesWindow::DepotTag{}, TileIndex(this->window_number & (MapSize() - 1)), vt);
 		} else {
 			new DeparturesWindow(_departures_desc, (StationID)this->window_number);
 		}

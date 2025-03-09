@@ -479,7 +479,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 			/* Extract tile offset. */
 			int8_t x_offs = GB(GetRegister(0x100), 0, 8);
 			int8_t y_offs = GB(GetRegister(0x100), 8, 8);
-			TileIndex testtile = TILE_MASK(this->tile + TileDiffXY(x_offs, y_offs));
+			TileIndex testtile = Map::WrapToMap(this->tile + TileDiffXY(x_offs, y_offs));
 
 			StationFinder stations(TileArea(testtile, 1, 1));
 

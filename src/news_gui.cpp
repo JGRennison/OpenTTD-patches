@@ -392,7 +392,7 @@ struct NewsWindow : Window {
 		/* Initialize viewport if it exists. */
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
 		if (nvp != nullptr) {
-			nvp->InitializeViewport(this, ni->reftype1 == NR_VEHICLE ? 0x80000000 | ni->ref1 : GetReferenceTile(ni->reftype1, ni->ref1), ScaleZoomGUI(ZOOM_LVL_NEWS));
+			nvp->InitializeViewport(this, ni->reftype1 == NR_VEHICLE ? 0x80000000 | ni->ref1 : GetReferenceTile(ni->reftype1, ni->ref1).base(), ScaleZoomGUI(ZOOM_LVL_NEWS));
 			if (this->ni->flags & NF_NO_TRANSPARENT) nvp->disp_flags |= ND_NO_TRANSPARENCY;
 			if ((this->ni->flags & NF_INCOLOUR) == 0) {
 				nvp->disp_flags |= ND_SHADE_GREY;
@@ -940,7 +940,7 @@ CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	switch (reftype1) {
 		case NR_NONE: break;
 		case NR_TILE:
-			if (!IsValidTile(p2)) return CMD_ERROR;
+			if (!IsValidTile(TileIndex{p2})) return CMD_ERROR;
 			break;
 
 		case NR_VEHICLE:

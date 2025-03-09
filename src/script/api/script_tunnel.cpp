@@ -99,7 +99,7 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 		return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL);
 	}
 
-	ScriptObject::SetCallbackVariable(0, start);
+	ScriptObject::SetCallbackVariable(0, start.base());
 	return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL, nullptr, &::_DoCommandReturnBuildTunnel1);
 }
 
@@ -108,8 +108,8 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforceDeityOrCompanyModeValid(false);
 
 	/* Build the piece of road on the 'start' side of the tunnel */
-	TileIndex end = ScriptObject::GetCallbackVariable(0);
-	TileIndex start = ScriptTunnel::GetOtherTunnelEnd(end);
+	TileIndex end(ScriptObject::GetCallbackVariable(0));
+	TileIndex start{ScriptTunnel::GetOtherTunnelEnd(end)};
 
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
@@ -122,8 +122,8 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforceDeityOrCompanyModeValid(false);
 
 	/* Build the piece of road on the 'end' side of the tunnel */
-	TileIndex end = ScriptObject::GetCallbackVariable(0);
-	TileIndex start = ScriptTunnel::GetOtherTunnelEnd(end);
+	TileIndex end(ScriptObject::GetCallbackVariable(0));
+	TileIndex start{ScriptTunnel::GetOtherTunnelEnd(end)};
 
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);

@@ -317,10 +317,8 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 	switch (variable) {
 		/* Relative position. */
 		case 0x40: {
-			uint offset = this->tile - this->obj->location.tile;
-			uint offset_x = TileX(offset);
-			uint offset_y = TileY(offset);
-			return offset_y << 20 | offset_x << 16 | offset_y << 8 | offset_x;
+			TileIndexDiffCUnsigned offset = TileIndexToTileIndexDiffCUnsigned(this->tile, this->obj->location.tile);
+			return offset.y << 20 | offset.x << 16 | offset.y << 8 | offset.x;
 		}
 
 		/* Tile information. */

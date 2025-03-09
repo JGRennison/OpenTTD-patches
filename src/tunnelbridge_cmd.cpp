@@ -385,7 +385,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 	/* unpack parameters */
 	BridgeType bridge_type = GB(p2, 0, 8);
 
-	if (!IsValidTile(p1)) return CommandCost(STR_ERROR_BRIDGE_THROUGH_MAP_BORDER);
+	if (!IsValidTile(TileIndex{p1})) return CommandCost(STR_ERROR_BRIDGE_THROUGH_MAP_BORDER);
 
 	TransportType transport_type = Extract<TransportType, 15, 2>(p2);
 
@@ -410,7 +410,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 			/* Airports don't have bridges. */
 			return CMD_ERROR;
 	}
-	TileIndex tile_start = p1;
+	TileIndex tile_start{p1};
 	TileIndex tile_end = end_tile;
 
 	if ((flags & DC_TOWN) && !(MayTownModifyRoad(tile_start) && MayTownModifyRoad(tile_end))) return CMD_ERROR;
@@ -860,9 +860,9 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
  */
 static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile, TileIndexDiff delta)
 {
-	uint min_length = 4;
-	uint max_length = 9;
-	if (Delta(ramp_start, tile) < (uint)abs(delta) * min_length || (uint)abs(delta) * max_length < Delta(ramp_start, tile)) {
+	int min_length = 4;
+	int max_length = 9;
+	if (Delta(ramp_start, tile) < abs(delta) * min_length || abs(delta) * max_length < Delta(ramp_start, tile)) {
 		/* Add 1 in message to have consistency with cursor count in game. */
 		SetDParam(0, min_length - 1);
 		SetDParam(1, max_length - 1);

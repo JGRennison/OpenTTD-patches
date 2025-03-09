@@ -760,7 +760,7 @@ void SetupScreenshotViewport(ScreenshotType t, Viewport *vp, uint32_t width, uin
 			}
 
 			TileIndex north_tile = _settings_game.construction.freeform_edges ? TileXY(1, 1) : TileXY(0, 0);
-			TileIndex south_tile = MapSize() - 1;
+			TileIndex south_tile{MapSize() - 1};
 
 			/* We need to account for a hill or high building at tile 0,0. */
 			int extra_height_top = TilePixelHeight(north_tile) + 150;
@@ -861,7 +861,7 @@ bool MakeHeightmapScreenshot(const char *filename)
 	}
 
 	_heightmap_highest_peak = 0;
-	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		uint h = TileHeight(tile);
 		_heightmap_highest_peak = std::max(h, _heightmap_highest_peak);
 	}

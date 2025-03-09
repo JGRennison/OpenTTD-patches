@@ -37,7 +37,7 @@ namespace SQConvert {
 	template <> struct Return<int32_t>      { static inline int Set(HSQUIRRELVM vm, int32_t res)     { sq_pushinteger(vm, res); return 1; } };
 	template <> struct Return<int64_t>      { static inline int Set(HSQUIRRELVM vm, int64_t res)     { sq_pushinteger(vm, res); return 1; } };
 	template <> struct Return<Money>        { static inline int Set(HSQUIRRELVM vm, Money res)       { sq_pushinteger(vm, res); return 1; } };
-	//template <> struct Return<TileIndex>  { static inline int Set(HSQUIRRELVM vm, TileIndex res)   { sq_pushinteger(vm, (int32_t)res.value); return 1; } };
+	template <> struct Return<TileIndex>    { static inline int Set(HSQUIRRELVM vm, TileIndex res)   { sq_pushinteger(vm, (int32_t)res.base()); return 1; } };
 	template <> struct Return<bool>         { static inline int Set(HSQUIRRELVM vm, bool res)        { sq_pushbool   (vm, res); return 1; } };
 	template <> struct Return<char *>       { /* Do not use char *, use std::optional<std::string> instead. */ };
 	template <> struct Return<const char *> { /* Do not use const char *, use std::optional<std::string> instead. */ };
@@ -69,7 +69,7 @@ namespace SQConvert {
 	template <> struct Param<int16_t>      { static inline int16_t     Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return tmp; } };
 	template <> struct Param<int32_t>      { static inline int32_t     Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return tmp; } };
 	template <> struct Param<int64_t>      { static inline int64_t     Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return tmp; } };
-	//template <> struct Param<TileIndex>  { static inline TileIndex   Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return TileIndex((uint32_t)(int32_t)tmp); } };
+	template <> struct Param<TileIndex>    { static inline TileIndex   Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return TileIndex((uint32_t)(int32_t)tmp); } };
 	template <> struct Param<Money>        { static inline Money       Get(HSQUIRRELVM vm, int index) { SQInteger     tmp; sq_getinteger    (vm, index, &tmp); return tmp; } };
 	template <> struct Param<bool>         { static inline bool        Get(HSQUIRRELVM vm, int index) { SQBool        tmp; sq_getbool       (vm, index, &tmp); return tmp != 0; } };
 	template <> struct Param<const char *> { /* Do not use const char *, use std::string& instead. */ };

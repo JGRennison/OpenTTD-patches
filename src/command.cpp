@@ -1170,7 +1170,7 @@ void CommandCost::AllocAuxData()
 			break;
 
 		case CommandCostInlineType::Tile:
-			aux_data->tile = this->inl.tile;
+			aux_data->tile = TileIndex(this->inl.tile);
 			break;
 
 		case CommandCostInlineType::Result:
@@ -1205,7 +1205,7 @@ void CommandCost::SetTile(TileIndex tile)
 	if (this->AddInlineData(CommandCostInlineType::Tile)) {
 		this->inl.aux_data->tile = tile;
 	} else {
-		this->inl.tile = tile;
+		this->inl.tile = tile.base();
 	}
 }
 
@@ -1264,7 +1264,7 @@ bool P123CmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSet
 
 TileIndex P123CmdData::GetErrorMessageTile() const
 {
-	return this->p1;
+	return TileIndex(this->p1);
 }
 
 void P123CmdData::FormatDebugSummary(format_target &output) const
@@ -1286,7 +1286,7 @@ void SerialisedBaseCommandContainer::Serialise(BufferSerialisationRef buffer) co
 {
 	buffer.Send_uint16(this->cmd);
 	buffer.Send_uint16(this->error_msg);
-	buffer.Send_uint32(this->tile);
+	buffer.Send_uint32(this->tile.base());
 	SerialisePayload(buffer, this->payload);
 }
 
@@ -1294,7 +1294,7 @@ void DynBaseCommandContainer::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint16(this->cmd);
 	buffer.Send_uint16(this->error_msg);
-	buffer.Send_uint32(this->tile);
+	buffer.Send_uint32(this->tile.base());
 	SerialisePayload(buffer, *this->payload);
 }
 
@@ -1305,7 +1305,7 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	if (GetCommandFlags(this->cmd) & CMD_OFFLINE) return "single-player only command";
 
 	this->error_msg = buffer.Recv_uint16();
-	this->tile = buffer.Recv_uint32();
+	this->tile = TileIndex(buffer.Recv_uint32());
 
 	StringValidationSettings default_settings = (!_network_server && (GetCommandFlags(this->cmd) & CMD_STR_CTRL) != 0) ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
 

@@ -706,8 +706,8 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		veh = Vehicle::Get(vp->follow_vehicle);
 		pt = MapXYZToViewport(vp, veh->x_pos, veh->y_pos, veh->z_pos);
 	} else {
-		x = TileX(follow_flags) * TILE_SIZE;
-		y = TileY(follow_flags) * TILE_SIZE;
+		x = TileX(TileIndex{follow_flags}) * TILE_SIZE;
+		y = TileY(TileIndex{follow_flags}) * TILE_SIZE;
 
 		vp->follow_vehicle = INVALID_VEHICLE;
 		pt = MapXYZToViewport(vp, x, y, GetSlopePixelZ(x, y));
@@ -3093,7 +3093,7 @@ static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, 
 		if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
 			return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
 		} else {
-			const uint rnd = std::min<uint>(tc ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
+			const uint rnd = std::min<uint>(tc ^ (((tile.base() & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
 			return _vp_map_vegetation_tree_colours[slope][tg][rnd];
 		}
 	}

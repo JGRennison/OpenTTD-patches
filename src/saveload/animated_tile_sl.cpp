@@ -54,7 +54,7 @@ struct ANITChunkHandler : ChunkHandler {
 			size_t count = SlGetFieldLength() / sizeof(uint32_t);
 			_animated_tiles.clear();
 			for (uint i = 0; i < count; i++) {
-				_animated_tiles[SlReadUint32()] = {};
+				_animated_tiles[TileIndex(SlReadUint32())] = {};
 			}
 			return;
 		}

@@ -40,7 +40,7 @@ INSTANTIATE_POOL_METHODS(Goal)
 			break;
 
 		case GT_TILE:
-			if (!IsValidTile(dest)) return false;
+			if (!IsValidTile(TileIndex(dest))) return false;
 			break;
 
 		case GT_INDUSTRY:

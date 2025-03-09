@@ -349,12 +349,12 @@ public:
 
 	bool IsNewGRFInspectable() const override
 	{
-		return ::IsNewGRFInspectable(GetGrfSpecFeature(this->tile), this->tile);
+		return ::IsNewGRFInspectable(GetGrfSpecFeature(this->tile), this->tile.base());
 	}
 
 	void ShowNewGRFInspectWindow() const override
 	{
-		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile);
+		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile.base());
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override

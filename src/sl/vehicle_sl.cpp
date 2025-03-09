@@ -202,7 +202,7 @@ void UpdateOldAircraft()
 			a->state = FLYING;
 			AircraftNextAirportPos_and_Order(a); // move it to the entry point of the airport
 			GetNewVehiclePosResult gp = GetNewVehiclePos(a);
-			a->tile = 0; // aircraft in air is tile=0
+			a->tile = TileIndex{0}; // aircraft in air is tile=0
 
 			/* correct speed of helicopter-rotors */
 			if (a->subtype == AIR_HELICOPTER) a->Next()->Next()->cur_speed = 32;
@@ -593,7 +593,7 @@ void AfterLoadVehiclesPhase2(bool part_of_load)
 			case VEH_DISASTER: {
 				auto *dv = DisasterVehicle::From(v);
 				if (dv->subtype == ST_SMALL_UFO && dv->state != 0) {
-					RoadVehicle *u = RoadVehicle::GetIfValid(v->dest_tile);
+					RoadVehicle *u = RoadVehicle::GetIfValid(v->dest_tile.base());
 					if (u != nullptr && u->IsFrontEngine()) {
 						/* Delete UFO targeting a vehicle which is already a target. */
 						if (!SetDisasterVehicleTargetingVehicle(u->index, dv->index)) {
@@ -1455,7 +1455,7 @@ void Load_VEHS()
 
 		if (_cargo_count != 0 && IsCompanyBuildableVehicleType(v) && CargoPacket::CanAllocateItem()) {
 			/* Don't construct the packet with station here, because that'll fail with old savegames */
-			CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_periods, _cargo_source, _cargo_source_xy, _cargo_feeder_share);
+			CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_periods, _cargo_source, TileIndex{_cargo_source_xy}, _cargo_feeder_share);
 			v->cargo.Append(cp);
 		}
 

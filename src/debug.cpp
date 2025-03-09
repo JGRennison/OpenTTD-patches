@@ -461,14 +461,14 @@ void TicToc::PrintAndReset()
 [[noreturn]] void AssertMsgTileErrorVFmt(int line, const char *file, const char *expr, uint32_t tile, fmt::string_view msg, fmt::format_args args)
 {
 	format_buffer out;
-	DumpTileInfo(out, tile);
+	DumpTileInfo(out, TileIndex(tile));
 	out.append(", ");
 	out.vformat(msg, args);
 
 	assert_str_error(line, file, expr, out);
 }
 
-void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile)
+void assert_tile_error(int line, const char *file, const char *expr, TileIndex tile)
 {
 	format_buffer out;
 	DumpTileInfo(out, tile);

@@ -42,7 +42,7 @@ struct CargoScalingProxy {
 		if (mode == CSM_DAYLENGTH) {
 			/* Asynchronous free command, don't bother halting the script or saving the result */
 			auto payload = ChangeSettingCmdData::Make(this->is_industry ? "economy.industry_cargo_scale_mode" : "economy.town_cargo_scale_mode", (uint32_t)CSM_NORMAL);
-			::DoCommandPScript(CMD_CHANGE_SETTING, 0, std::move(payload), CommandCallback::None, 0, DCIF_NONE, false, true);
+			::DoCommandPScript(CMD_CHANGE_SETTING, TileIndex{}, std::move(payload), CommandCallback::None, 0, DCIF_NONE, false, true);
 		}
 
 		return ScriptGameSettings::SetValue(this->is_industry ? "economy.industry_cargo_scale" : "economy.town_cargo_scale", ScaleQuantity(100, (int)value));

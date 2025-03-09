@@ -371,7 +371,7 @@ void GroundVehicle<T, Type>::UpdateZPositionInWormhole()
 	int north_coord, south_coord, pos_coord;
 	bool going_north;
 	Slope slope_north;
-	if (t->tile_s - t->tile_n > MapMaxX()) {
+	if (t->tile_s - t->tile_n > (TileIndexDiff)MapMaxX()) {
 		// tunnel extends along Y axis (DIAGDIR_SE from north end), has same X values
 		north_coord = TileY(t->tile_n);
 		south_coord = TileY(t->tile_s);

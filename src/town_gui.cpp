@@ -572,7 +572,7 @@ public:
 
 		this->flags |= WF_DISABLE_VP_SCROLL;
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_TV_VIEWPORT);
-		nvp->InitializeViewport(this, this->town->xy, ScaleZoomGUI(ZOOM_LVL_TOWN));
+		nvp->InitializeViewport(this, this->town->xy.base(), ScaleZoomGUI(ZOOM_LVL_TOWN));
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -1472,7 +1472,7 @@ public:
 				break;
 
 			case WID_TF_RANDOM_TOWN:
-				this->ExecuteFoundTownCommand(0, true, STR_ERROR_CAN_T_GENERATE_TOWN, CommandCallback::FoundRandomTown);
+				this->ExecuteFoundTownCommand({}, true, STR_ERROR_CAN_T_GENERATE_TOWN, CommandCallback::FoundRandomTown);
 				break;
 
 			case WID_TF_TOWN_NAME_RANDOM:

@@ -276,11 +276,11 @@
 
 	if (tile - from == 1) {
 		if (to - tile == 1) return (GetRailTracks(tile) & RAILTRACK_NE_SW) != 0;
-		if (to - tile == (uint)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NE_SE) != 0;
-	} else if (tile - from == (uint)ScriptMap::GetMapSizeX()) {
+		if (to - tile == (TileIndexDiff)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NE_SE) != 0;
+	} else if (tile - from == (TileIndexDiff)ScriptMap::GetMapSizeX()) {
 		if (tile - to == 1) return (GetRailTracks(tile) & RAILTRACK_NW_NE) != 0;
 		if (to - tile == 1) return (GetRailTracks(tile) & RAILTRACK_NW_SW) != 0;
-		if (to - tile == (uint)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NW_SE) != 0;
+		if (to - tile == (TileIndexDiff)ScriptMap::GetMapSizeX()) return (GetRailTracks(tile) & RAILTRACK_NW_SE) != 0;
 	} else {
 		return (GetRailTracks(tile) & RAILTRACK_SW_SE) != 0;
 	}

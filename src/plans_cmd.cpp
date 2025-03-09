@@ -232,7 +232,7 @@ void PlanLineCmdData::Serialise(BufferSerialisationRef buffer) const
 	buffer.Send_uint16(this->plan);
 	buffer.Send_uint32((uint32_t)this->tiles.size());
 	for (TileIndex t : this->tiles) {
-		buffer.Send_uint32(t);
+		buffer.Send_uint32(t.base());
 	}
 }
 
@@ -243,7 +243,7 @@ bool PlanLineCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidatio
 	if (!buffer.CanRecvBytes(size * 4)) return false;
 	this->tiles.resize(size);
 	for (uint i = 0; i < size; i++) {
-		this->tiles[i] = buffer.Recv_uint32();
+		this->tiles[i] = TileIndex{buffer.Recv_uint32()};
 	}
 	return true;
 }

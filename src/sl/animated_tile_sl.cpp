@@ -37,7 +37,7 @@ struct AnimatedTileStructHandler : public SaveLoadStructHandler {
 		SlSetStructListLength(count);
 		for (const auto &it : _animated_tiles) {
 			if (it.second.pending_deletion) continue;
-			SlWriteUint32(it.first);
+			SlWriteUint32(it.first.base());
 			SlWriteByte(it.second.speed);
 		}
 	}
@@ -51,7 +51,7 @@ struct AnimatedTileStructHandler : public SaveLoadStructHandler {
 
 		size_t count = SlGetStructListLength(MAX_MAP_TILES);
 		for (size_t i = 0; i < count; i++) {
-			TileIndex tile = SlReadUint32();
+			TileIndex tile(SlReadUint32());
 			AnimatedTileInfo info = {};
 			info.speed = SlReadByte();
 			_animated_tiles[tile] = info;
@@ -100,7 +100,7 @@ static void Load_ANIT()
 	if (SlXvIsFeaturePresent(XSLFI_ANIMATED_TILE_EXTRA)) {
 		uint count = (uint)SlGetFieldLength() / 5;
 		for (uint i = 0; i < count; i++) {
-			TileIndex tile = SlReadUint32();
+			TileIndex tile(SlReadUint32());
 			AnimatedTileInfo info = {};
 			info.speed = SlReadByte();
 			_animated_tiles[tile] = info;
@@ -108,7 +108,7 @@ static void Load_ANIT()
 	} else {
 		uint count = (uint)SlGetFieldLength() / 4;
 		for (uint i = 0; i < count; i++) {
-			_animated_tiles[SlReadUint32()] = {};
+			_animated_tiles[TileIndex(SlReadUint32())] = {};
 		}
 	}
 }

@@ -48,7 +48,7 @@ static bool SignalInfraTotalMatches()
 	}
 
 	std::array<int, MAX_COMPANIES> new_signal_totals = {};
-	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_RAILWAY:
 				if (HasSignals(tile)) {
@@ -538,7 +538,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			}
 			for (TileIndex tile : ta) {
 				if ((docking_tiles.find(tile) != docking_tiles.end()) != IsDockingTile(tile)) {
-					cclog("docking tile mismatch: tile {}", (int)tile);
+					cclog("docking tile mismatch: tile {}", tile);
 				}
 			}
 		}

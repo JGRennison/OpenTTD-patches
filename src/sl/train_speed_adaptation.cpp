@@ -31,7 +31,7 @@ static void Load_TSAS()
 	SignalSpeedType data;
 	while ((index = SlIterateArray()) != -1) {
 		if (!table_mode) {
-			const_cast<SignalSpeedKey &>(data.first).signal_tile = index;
+			const_cast<SignalSpeedKey &>(data.first).signal_tile = TileIndex(index);
 		}
 		SlObjectLoadFiltered(&data, slt);
 		_signal_speeds.insert(data);

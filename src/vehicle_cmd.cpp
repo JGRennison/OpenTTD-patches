@@ -184,7 +184,7 @@ CommandCost CmdBuildVehicle(DoCommandFlag flags, TileIndex tile, EngineID eid, b
 				NormalizeTrainVehInDepot(Train::From(v));
 			}
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 			InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 			SetWindowDirty(WC_COMPANY, _current_company);
@@ -579,7 +579,7 @@ CommandCost CmdRefitVehicle(DoCommandFlag flags, VehicleID veh_id, CargoID new_c
 		if (HasBit(front->subtype, GVSF_VIRTUAL)) {
 			SetWindowClassesDirty(WC_CREATE_TEMPLATE);
 		} else {
-			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile);
+			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile.base());
 		}
 	} else {
 		/* Always invalidate the cache; querycost might have filled it. */
@@ -683,7 +683,7 @@ CommandCost CmdStartStopVehicle(DoCommandFlag flags, VehicleID veh_id, bool eval
 
 		v->MarkDirty();
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
-		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
+		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
 		DirtyVehicleListWindowForVehicle(v);
 		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 	}

@@ -377,7 +377,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 					return false;
 				}
 				/* Target it. */
-				v->dest_tile = u->index;
+				v->dest_tile = TileIndex{u->index};
 				v->age = DateDelta{0};
 				break;
 			}
@@ -386,7 +386,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 		return true;
 	} else {
 		/* Target a vehicle */
-		RoadVehicle *u = RoadVehicle::Get(v->dest_tile);
+		RoadVehicle *u = RoadVehicle::Get(v->dest_tile.base());
 		assert(u != nullptr && u->type == VEH_ROAD && u->IsFrontEngine());
 
 		uint dist = Delta(v->x_pos, u->x_pos) + Delta(v->y_pos, u->y_pos);
@@ -430,7 +430,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 
 static void DestructIndustry(Industry *i)
 {
-	for (TileIndex tile = 0; tile != MapSize(); tile++) {
+	for (TileIndex tile(0); tile != MapSize(); tile++) {
 		if (i->TileBelongsToIndustry(tile)) {
 			ResetIndustryConstructionStage(tile);
 			MarkTileDirtyByTile(tile);
@@ -466,7 +466,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 
 	if (v->state == 2) {
 		if (GB(v->tick_counter, 0, 2) == 0) {
-			Industry *i = Industry::Get(v->dest_tile); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
+			Industry *i = Industry::Get(v->dest_tile.base()); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
 			int x = TileX(i->location.tile) * TILE_SIZE;
 			int y = TileY(i->location.tile) * TILE_SIZE;
 			uint32_t r = Random();
@@ -484,7 +484,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 			v->state = 2;
 			v->age = DateDelta{0};
 
-			Industry *i = Industry::Get(v->dest_tile); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
+			Industry *i = Industry::Get(v->dest_tile.base()); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
 			DestructIndustry(i);
 
 			SetDParam(0, i->town->index);

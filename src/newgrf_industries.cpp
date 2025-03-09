@@ -201,8 +201,8 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		/* Variables available during construction check. */
 
 		switch (variable) {
-			case 0x80: return this->tile;
-			case 0x81: return GB(this->tile, 8, 8);
+			case 0x80: return this->tile.base();
+			case 0x81: return GB(this->tile.base(), 8, 8);
 
 			/* Pointer to the town the industry is associated with */
 			case 0x82: return this->industry->town->index;
@@ -393,8 +393,8 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		case 0x7C: return (this->industry->psa != nullptr) ? this->industry->psa->GetValue(parameter) : 0;
 
 		/* Industry structure access*/
-		case 0x80: return this->industry->location.tile;
-		case 0x81: return GB(this->industry->location.tile, 8, 8);
+		case 0x80: return this->industry->location.tile.base();
+		case 0x81: return GB(this->industry->location.tile.base(), 8, 8);
 		/* Pointer to the town the industry is associated with */
 		case 0x82: return this->industry->town->index;
 		case 0x83:

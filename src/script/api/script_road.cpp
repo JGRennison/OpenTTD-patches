@@ -426,16 +426,16 @@ static int32_t LookupWithBuildOnSlopes(::Slope slope, const Array<RoadPartOrient
  * @param tile The tile to get the orientation from.
  * @return The orientation or an empty optional when the input is invalid..
  */
-static std::optional<RoadPartOrientation> ToRoadPartOrientation(const TileIndex &tile)
+static std::optional<RoadPartOrientation> ToRoadPartOrientation(TileIndexDiff delta)
 {
-	if (tile == ScriptMap::GetTileIndex(0, -1)) return RoadPartOrientation::NW;
-	if (tile == ScriptMap::GetTileIndex(1, 0)) return RoadPartOrientation::SW;
-	if (tile == ScriptMap::GetTileIndex(0, 1)) return RoadPartOrientation::SE;
-	if (tile == ScriptMap::GetTileIndex(-1, 0)) return RoadPartOrientation::NE;
+	if (delta == ::TileDiffXY(0, -1)) return RoadPartOrientation::NW;
+	if (delta == ::TileDiffXY(1, 0)) return RoadPartOrientation::SW;
+	if (delta == ::TileDiffXY(0, 1)) return RoadPartOrientation::SE;
+	if (delta == ::TileDiffXY(-1, 0)) return RoadPartOrientation::NE;
 	return std::nullopt;
 }
 
-/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array<TileIndex> &&existing, TileIndex start, TileIndex end)
+/* static */ SQInteger ScriptRoad::CanBuildConnectedRoadParts(ScriptTile::Slope slope_, Array<TileIndexDiff> &&existing, TileIndexDiff start, TileIndexDiff end)
 {
 	::Slope slope = (::Slope)slope_;
 
@@ -466,11 +466,11 @@ static std::optional<RoadPartOrientation> ToRoadPartOrientation(const TileIndex 
 	if (!::IsValidTile(tile) || !::IsValidTile(start) || !::IsValidTile(end)) return -1;
 	if (::DistanceManhattan(tile, start) != 1 || ::DistanceManhattan(tile, end) != 1) return -1;
 
-	const TileIndex neighbours[] = {
-		ScriptMap::GetTileIndex(0, -1), // ROAD_NW
-		ScriptMap::GetTileIndex(1, 0),  // ROAD_SW
-		ScriptMap::GetTileIndex(0, 1),  // ROAD_SE
-		ScriptMap::GetTileIndex(-1, 0), // ROAD_NE
+	const TileIndexDiff neighbours[] = {
+		::TileDiffXY(0, -1), // ROAD_NW
+		::TileDiffXY(1, 0),  // ROAD_SW
+		::TileDiffXY(0, 1),  // ROAD_SE
+		::TileDiffXY(-1, 0), // ROAD_NE
 	};
 
 	::RoadBits rb = ::ROAD_NONE;
@@ -480,7 +480,7 @@ static std::optional<RoadPartOrientation> ToRoadPartOrientation(const TileIndex 
 		rb = ::GetAnyRoadBits(tile, RTT_ROAD) | ::GetAnyRoadBits(tile, RTT_TRAM);
 	}
 
-	Array<TileIndex> existing;
+	Array<TileIndexDiff> existing;
 	for (uint i = 0; i < lengthof(neighbours); i++) {
 		if (HasBit(rb, i)) existing.emplace_back(neighbours[i]);
 	}

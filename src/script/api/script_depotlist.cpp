@@ -32,7 +32,7 @@ ScriptDepotList::ScriptDepotList(ScriptTile::TransportType transport_type)
 			for (const Station *st : Station::Iterate()) {
 				if (is_deity || st->owner == owner) {
 					for (uint i = 0; i < st->airport.GetNumHangars(); i++) {
-						this->AddItem(st->airport.GetHangarTile(i));
+						this->AddItem(st->airport.GetHangarTile(i).base());
 					}
 				}
 			}
@@ -44,6 +44,6 @@ ScriptDepotList::ScriptDepotList(ScriptTile::TransportType transport_type)
 	bool is_deity = ScriptCompanyMode::IsDeity();
 	CompanyID owner = ScriptObject::GetCompany();
 	for (const Depot *depot : Depot::Iterate()) {
-		if ((is_deity || ::GetTileOwner(depot->xy) == owner) && ::IsTileType(depot->xy, tile_type)) this->AddItem(depot->xy);
+		if ((is_deity || ::GetTileOwner(depot->xy) == owner) && ::IsTileType(depot->xy, tile_type)) this->AddItem(depot->xy.base());
 	}
 }

@@ -33,6 +33,11 @@ static void WriteVLI(Buffer &b, uint i)
 	b.push_back((uint8_t) i);
 }
 
+static inline void WriteVLI(Buffer &b, TileIndex t)
+{
+	WriteVLI(b, t.base());
+}
+
 static uint ReadVLI()
 {
 	uint shift = 0;
@@ -253,7 +258,7 @@ static void Load_SPRG()
 	uint count = ReadVLI();
 	for(uint i = 0; i < count; i++) {
 		FixupList l;
-		TileIndex tile    = ReadVLI();
+		TileIndex tile    = (TileIndex) ReadVLI();
 		Track     track   = (Track) ReadVLI();
 		uint instructions = ReadVLI();
 		SignalReference ref(tile, track);

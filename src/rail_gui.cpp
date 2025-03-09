@@ -434,7 +434,7 @@ static CommandContainer<P123CmdData> DoRailroadTrackCmd(TileIndex start_tile, Ti
 {
 	CommandContainer<P123CmdData> ret = NewCommandContainerBasic(
 		start_tile,                   // tile
-		end_tile,                     // p1
+		end_tile.base(),              // p1
 		(uint32_t) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
 		(uint32_t) (_remove_button_clicked ?
 				CMD_REMOVE_RAILROAD_TRACK | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
@@ -2359,7 +2359,7 @@ static void SetDefaultRailGui()
 			/* Find the most used rail type */
 			uint count[RAILTYPE_END];
 			memset(count, 0, sizeof(count));
-			for (TileIndex t = 0; t < MapSize(); t++) {
+			for (TileIndex t(0); t < MapSize(); t++) {
 				if (IsTileType(t, MP_RAILWAY) || IsLevelCrossingTile(t) || HasStationTileRail(t) ||
 						(IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL)) {
 					count[GetRailType(t)]++;

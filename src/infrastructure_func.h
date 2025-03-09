@@ -57,7 +57,7 @@ inline bool IsInfraTileUsageAllowed(VehicleType type, Owner veh_owner, TileIndex
  * @param tile        Tile of the infrastructure.
  * @return            CommandCost indicating success or failure.
  */
-inline CommandCost CheckInfraUsageAllowed(VehicleType type, Owner infra_owner, TileIndex tile = 0)
+inline CommandCost CheckInfraUsageAllowed(VehicleType type, Owner infra_owner, TileIndex tile = {})
 {
 	if (infra_owner == OWNER_NONE || _settings_game.economy.infrastructure_sharing[type]) return CommandCost();
 	return CheckOwnership(infra_owner, tile);

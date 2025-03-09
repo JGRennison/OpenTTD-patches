@@ -249,10 +249,10 @@ struct BuildDocksToolbarWindow : Window {
 					GUIPlaceProcDragXY(select_proc, start_tile, end_tile);
 					break;
 				case DDSP_CREATE_WATER:
-					DoCommandPOld(end_tile, start_tile, (_game_mode == GM_EDITOR && _ctrl_pressed) ? WATER_CLASS_SEA : WATER_CLASS_CANAL, CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_BUILD_CANALS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
+					DoCommandPOld(end_tile, start_tile.base(), (_game_mode == GM_EDITOR && _ctrl_pressed) ? WATER_CLASS_SEA : WATER_CLASS_CANAL, CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_BUILD_CANALS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
 					break;
 				case DDSP_CREATE_RIVER:
-					DoCommandPOld(end_tile, start_tile, WATER_CLASS_RIVER | (_ctrl_pressed ? 1 << 2 : 0), CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_PLACE_RIVERS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
+					DoCommandPOld(end_tile, start_tile.base(), WATER_CLASS_RIVER | (_ctrl_pressed ? 1 << 2 : 0), CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_PLACE_RIVERS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
 					break;
 
 				default: break;

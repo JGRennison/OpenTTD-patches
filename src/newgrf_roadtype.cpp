@@ -21,7 +21,7 @@
 
 /* virtual */ uint32_t RoadTypeScopeResolver::GetRandomBits() const
 {
-	uint tmp = CountBits(this->tile + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
+	uint tmp = CountBits(this->tile.base() + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
 	return GB(tmp, 0, 2);
 }
 
@@ -193,7 +193,7 @@ void ConvertRoadTypes()
 	}
 	if (!needs_conversion) return;
 
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		switch (GetTileType(t)) {
 			case MP_ROAD:
 				if (RoadType rt = GetRoadTypeRoad(t); rt != INVALID_ROADTYPE) SetRoadTypeRoad(t, roadtype_conversion_map[rt]);

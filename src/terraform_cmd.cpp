@@ -338,7 +338,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	if (p1 >= MapSize()) return CMD_ERROR;
 
 	/* remember level height */
-	uint oldh = TileHeight(p1);
+	uint oldh = TileHeight(TileIndex{p1});
 
 	/* compute new height */
 	uint h = oldh;
@@ -362,7 +362,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	int limit = (c == nullptr ? INT32_MAX : GB(c->terraform_limit, 16, 16));
 	if (limit == 0) return CommandCost(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		uint curh = TileHeight(t);

@@ -869,7 +869,7 @@ static uint8_t AircraftGetEntryPoint(const Aircraft *v, const AirportFTAClass *a
 	/* In the case the station doesn't exit anymore, set target tile 0.
 	 * It doesn't hurt much, aircraft will go to next order, nearest hangar
 	 * or it will simply crash in next tick */
-	TileIndex tile = 0;
+	TileIndex tile(0);
 
 	const Station *st = Station::GetIfValid(v->targetairport);
 	if (st != nullptr) {
@@ -1396,7 +1396,7 @@ TileIndex Aircraft::GetOrderStationLocation(StationID)
 	}
 
 	/* Aircraft do not use dest-tile */
-	return 0;
+	return {};
 }
 
 void Aircraft::MarkDirty()
@@ -1587,7 +1587,7 @@ void AircraftLeaveHangar(Aircraft *v, Direction exit_dir)
 	VehicleServiceInDepot(v);
 	v->LeaveUnbunchingDepot();
 	SetAircraftPosition(v, v->x_pos, v->y_pos, v->z_pos);
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 	DirtyVehicleListWindowForVehicle(v);
 }
 

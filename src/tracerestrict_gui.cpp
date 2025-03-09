@@ -1511,7 +1511,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_TILE_INDEX: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_PBS_ENTRY_SIGNAL);
-					TileIndex tile = instruction_record.secondary;
+					TileIndex tile{instruction_record.secondary};
 					if (tile == INVALID_TILE) {
 						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 					} else {
@@ -1556,7 +1556,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_TILE_INDEX_THROUGH: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_RESERVATION_THROUGH);
-					TileIndex tile = instruction_record.secondary;
+					TileIndex tile{instruction_record.secondary};
 					if (tile == INVALID_TILE) {
 						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 					} else {
@@ -2108,7 +2108,7 @@ public:
 							}
 						}
 					} else if (val_type == TRVT_TILE_INDEX || val_type == TRVT_TILE_INDEX_THROUGH) {
-						TileIndex tile = item.secondary;
+						TileIndex tile{item.secondary};
 						if (tile != INVALID_TILE) {
 							ScrollMainWindowToTile(tile);
 						}
@@ -2919,7 +2919,7 @@ public:
 			}
 		}
 
-		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	/**
@@ -2931,7 +2931,7 @@ public:
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
-		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	virtual void OnPlaceObjectAbort() override

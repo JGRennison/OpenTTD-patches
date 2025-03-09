@@ -672,7 +672,7 @@ TileIndex RoadVehicle::GetOrderStationLocation(StationID station)
 	if (!CanVehicleUseStation(this, st)) {
 		/* There is no stop left at the station, so don't even TRY to go there */
 		this->IncrementRealOrderIndex();
-		return 0;
+		return {};
 	}
 
 	return st->xy;
@@ -1348,7 +1348,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 	v->UpdatePosition();
 	v->UpdateInclination(true, true);
 
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 
 	return true;
 }

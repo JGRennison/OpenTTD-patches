@@ -69,7 +69,7 @@ CommandCost CmdRenameDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 		/* Update the orders and depot */
 		SetWindowClassesDirty(WC_VEHICLE_ORDERS);
-		SetWindowDirty(WC_VEHICLE_DEPOT, d->xy);
+		SetWindowDirty(WC_VEHICLE_DEPOT, d->xy.base());
 
 		/* Update the depot list */
 		VehicleType vt = GetDepotVehicleType(d->xy);

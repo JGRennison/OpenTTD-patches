@@ -257,7 +257,7 @@ public:
 		this->vscroll = this->GetScrollbar(PROGRAM_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX)->SetDisplayedPlane(SZSP_NONE);
 		this->current_aux_plane = SZSP_NONE;
-		this->FinishInitNested((ref.tile << 3) | ref.track);
+		this->FinishInitNested((ref.tile.base() << 3) | ref.track);
 
 		program = GetSignalProgram(ref);
 		this->RebuildInstructionList();
@@ -499,7 +499,7 @@ public:
 			return;
 		}
 
-		Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1, td);
+		Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_SIGNAL_LOCATION, tile1.base(), td);
 		ResetObjectToPlace();
 		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_SET_SIGNAL);
 		//OnPaint(); // this appears to cause visual artefacts
@@ -1009,7 +1009,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
 
 void ShowSignalProgramWindow(SignalReference ref)
 {
-	uint32_t window_id = (ref.tile << 3) | ref.track;
+	uint32_t window_id = (ref.tile.base() << 3) | ref.track;
 	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != nullptr) return;
 
 	new ProgramWindow(_program_desc, ref);

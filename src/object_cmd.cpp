@@ -338,8 +338,8 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		for (TileIndex t : ta) {
 			uint16_t callback = CALLBACK_FAILED;
 			if (HasBit(spec->callback_mask, CBM_OBJ_SLOPE_CHECK)) {
-				TileIndex diff = t - tile;
-				callback = GetObjectCallback(CBID_OBJECT_LAND_SLOPE_CHECK, GetTileSlope(t), TileY(diff) << 4 | TileX(diff), spec, nullptr, t, view);
+				TileIndexDiffCUnsigned diff = TileIndexToTileIndexDiffCUnsigned(t, tile);
+				callback = GetObjectCallback(CBID_OBJECT_LAND_SLOPE_CHECK, GetTileSlope(t), diff.y << 4 | diff.x, spec, nullptr, t, view);
 			}
 
 			if (callback == CALLBACK_FAILED) {
@@ -476,7 +476,7 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->purchase_land_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommandOld(t, OBJECT_OWNED_LAND, 0, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
@@ -539,7 +539,7 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->build_object_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommandOld(t, type, view, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
@@ -623,8 +623,8 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 		PaletteID palette = to == OWNER_NONE ? PAL_NONE : COMPANY_SPRITE_COLOUR(to);
 
 		if (type == OBJECT_HQ) {
-			TileIndex diff = ti->tile - Object::GetByTile(ti->tile)->location.tile;
-			dts = &_object_hq[GetCompanyHQSize(ti->tile) << 2 | TileY(diff) << 1 | TileX(diff)];
+			TileIndexDiffCUnsigned diff = TileIndexToTileIndexDiffCUnsigned(ti->tile, Object::GetByTile(ti->tile)->location.tile);
+			dts = &_object_hq[GetCompanyHQSize(ti->tile) << 2 | diff.y << 1 | diff.x];
 		} else {
 			dts = &_objects[type];
 		}
@@ -704,7 +704,7 @@ static void ReallyClearObjectTile(Object *o)
 {
 	Object::DecTypeCount(o->type);
 	for (TileIndex tile_cur : o->location) {
-		DeleteNewGRFInspectWindow(GSF_OBJECTS, tile_cur);
+		DeleteNewGRFInspectWindow(GSF_OBJECTS, tile_cur.base());
 
 		MakeWaterKeepingClass(tile_cur, GetTileOwner(tile_cur));
 	}
@@ -1297,7 +1297,7 @@ extern const TileTypeProcs _tile_type_object_procs = {
 
 TileIndex FindMissingObjectTile()
 {
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if (IsTileType(t, MP_OBJECT)) {
 			const Object *obj = Object::GetByTile(t);
 			const ObjectSpec *spec = ObjectSpec::Get(obj->type);

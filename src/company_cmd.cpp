@@ -464,7 +464,7 @@ set_name:;
 			SetDParam(1, STR_NEWS_COMPANY_LAUNCH_DESCRIPTION);
 			SetDParamStr(2, cni->company_name);
 			SetDParam(3, t->index);
-			AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_COMPANY_INFO, NF_COMPANY, NR_TILE, c->last_build_coordinate, NR_NONE, UINT32_MAX, std::move(cni));
+			AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_COMPANY_INFO, NF_COMPANY, NR_TILE, c->last_build_coordinate.base(), NR_NONE, UINT32_MAX, std::move(cni));
 		}
 		return;
 	}
@@ -988,7 +988,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 				/* In network games, we need to try setting the company manager face here to sync it to all clients.
 				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face. */
 				if (_company_manager_face != 0) {
-					NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>(0, CmdPayload<CMD_SET_COMPANY_MANAGER_FACE>::Make(_company_manager_face), (StringID)0, CommandCallback::None, 0, _local_company);
+					NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>({}, CmdPayload<CMD_SET_COMPANY_MANAGER_FACE>::Make(_company_manager_face), (StringID)0, CommandCallback::None, 0, _local_company);
 				}
 
 				/* Now that we have a new company, broadcast our company settings to

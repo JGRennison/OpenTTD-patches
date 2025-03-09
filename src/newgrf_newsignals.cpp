@@ -27,7 +27,7 @@ uint16_t _enabled_new_signal_styles_mask = 0;
 
 /* virtual */ uint32_t NewSignalsScopeResolver::GetRandomBits() const
 {
-	uint tmp = CountBits(this->tile + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
+	uint tmp = CountBits(this->tile.base() + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
 	return GB(tmp, 0, 2);
 }
 

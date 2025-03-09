@@ -357,7 +357,7 @@ class NIHVehicle : public NIHelper {
 
 							break;
 						case TRLIT_SPEED_ADAPTATION: {
-							TileIndex tile = item.data_id;
+							TileIndex tile(item.data_id);
 							uint16_t td = item.data_aux;
 							output.buffer.format("speed adaptation: tile: {:X}, trackdir: {:X}", tile, td);
 							if (item.end + 1 < l.reservation_end_position) {
@@ -724,23 +724,25 @@ static const NIVariable _niv_stations[] = {
 };
 
 class NIHStation : public NIHelper {
-	bool IsInspectable(uint index) const override        { return GetStationSpec(index) != nullptr; }
-	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(BaseStation::GetByTile(index)->town); }
+	bool IsInspectable(uint index) const override        { return GetStationSpec(TileIndex{index}) != nullptr; }
+	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(BaseStation::GetByTile(TileIndex{index})->town); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
-	const void *GetSpec(uint index) const override       { return GetStationSpec(index); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
-	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetStationSpec(index)->grf_prop.grfid : 0; }
+	const void *GetSpec(uint index) const override       { return GetStationSpec(TileIndex{index}); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetStationSpec(TileIndex{index})->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		StationResolverObject ro(GetStationSpec(index), BaseStation::GetByTile(index), index, INVALID_RAILTYPE);
+		TileIndex tile{index};
+		StationResolverObject ro(GetStationSpec(tile), BaseStation::GetByTile(tile), tile, INVALID_RAILTYPE);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	/* virtual */ void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		const StationSpec *statspec = GetStationSpec(index);
+		TileIndex tile{index};
+		const StationSpec *statspec = GetStationSpec(tile);
 		if (statspec == nullptr) return;
 
 		if (statspec->grf_prop.grffile != nullptr) {
@@ -816,8 +818,9 @@ class NIHStation : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
+		TileIndex tile{index};
 		extern void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, SpriteGroupDumper &dumper);
-		DumpStationSpriteGroup(GetStationSpec(index), BaseStation::GetByTile(index), dumper);
+		DumpStationSpriteGroup(GetStationSpec(tile), BaseStation::GetByTile(tile), dumper);
 	}
 };
 
@@ -883,25 +886,27 @@ static const NIVariable _niv_house[] = {
 
 class NIHHouse : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
-	bool ShowExtraInfoOnly(uint index) const override    { return !HouseSpec::Get(GetHouseType(index))->grf_prop.HasGrfFile(); }
+	bool ShowExtraInfoOnly(uint index) const override    { return !HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.HasGrfFile(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, GetTownIndex(index)); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, GetTownIndex(TileIndex{index})); }
 	const void *GetInstance(uint)const override          { return nullptr; }
-	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(index)); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_TOWN_NAME, GetTownIndex(index), index); }
-	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? HouseSpec::Get(GetHouseType(index))->grf_prop.grfid : 0; }
+	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(TileIndex{index})); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_TOWN_NAME, GetTownIndex(TileIndex{index}), TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		HouseResolverObject ro(GetHouseType(index), index, Town::GetByTile(index));
+		TileIndex tile{index};
+		HouseResolverObject ro(GetHouseType(tile), tile, Town::GetByTile(tile));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
+		TileIndex tile{index};
+		const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
 		output.Print("Debug Info:");
-		output.buffer.format("  House Type: {}", GetHouseType(index));
+		output.buffer.format("  House Type: {}", GetHouseType(tile));
 		if (hs->grf_prop.grffile != nullptr) {
 			output.buffer.format("  (local ID: {})", hs->grf_prop.local_id);
 		}
@@ -927,9 +932,9 @@ class NIHHouse : public NIHelper {
 			output.FinishPrint();
 		}
 
-		if (GetCleanHouseType(index) != GetHouseType(index)) {
-			hs = HouseSpec::Get(GetCleanHouseType(index));
-			output.buffer.format("  Untranslated House Type: {}", GetCleanHouseType(index));
+		if (GetCleanHouseType(tile) != GetHouseType(tile)) {
+			hs = HouseSpec::Get(GetCleanHouseType(tile));
+			output.buffer.format("  Untranslated House Type: {}", GetCleanHouseType(tile));
 			if (hs->grf_prop.grffile != nullptr) {
 				output.buffer.format("  (local ID: {})", hs->grf_prop.local_id);
 			}
@@ -940,7 +945,7 @@ class NIHHouse : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(index))->grf_prop.spritegroup[0], 0);
+		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.spritegroup[0], 0);
 	}
 };
 
@@ -980,26 +985,28 @@ static const NIVariable _niv_industrytiles[] = {
 };
 
 class NIHIndustryTile : public NIHelper {
-	bool IsInspectable(uint index) const override        { return GetIndustryTileSpec(GetIndustryGfx(index))->grf_prop.HasGrfFile(); }
+	bool IsInspectable(uint index) const override        { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}))->grf_prop.HasGrfFile(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_INDUSTRIES, GetIndustryIndex(index)); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_INDUSTRIES, GetIndustryIndex(TileIndex{index})); }
 	const void *GetInstance(uint)const override          { return nullptr; }
-	const void *GetSpec(uint index) const override       { return GetIndustryTileSpec(GetIndustryGfx(index)); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_INDUSTRY_NAME, GetIndustryIndex(index), index); }
-	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetIndustryTileSpec(GetIndustryGfx(index))->grf_prop.grfid : 0; }
+	const void *GetSpec(uint index) const override       { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index})); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_INDUSTRY_NAME, GetIndustryIndex(TileIndex{index}), TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}))->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		IndustryTileResolverObject ro(GetIndustryGfx(index), index, Industry::GetByTile(index));
+		TileIndex tile{index};
+		IndustryTileResolverObject ro(GetIndustryGfx(tile), tile, Industry::GetByTile(tile));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
-		output.Print("  Gfx Index: {}, animated tile: {}", GetIndustryGfx(index), _animated_tiles.find(index) != _animated_tiles.end());
-		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
-		if (indts) {
+		output.Print("  Gfx Index: {}, animated tile: {}", GetIndustryGfx(tile), _animated_tiles.find(tile) != _animated_tiles.end());
+		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(tile));
+		if (indts != nullptr) {
 			output.Print("  anim_production: {}, anim_next: {}, anim_state: {}, ", indts->anim_production, indts->anim_next, indts->anim_state);
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
 			output.Print("  special_flags: 0x{:X}, enabled: {}", indts->special_flags, indts->enabled);
@@ -1008,8 +1015,8 @@ class NIHIndustryTile : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
-		if (indts) {
+		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}));
+		if (indts != nullptr) {
 			extern void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper);
 			DumpIndustryTileSpriteGroup(indts, dumper);
 		}
@@ -1315,44 +1322,44 @@ static const NIFeature _nif_cargo = {
 
 
 /*** NewGRF signals ***/
-void DumpTileSignalsInfo(uint index, NIExtraInfoOutput &output)
+void DumpTileSignalsInfo(TileIndex tile, NIExtraInfoOutput &output)
 {
 	for (Trackdir td = TRACKDIR_BEGIN; td < TRACKDIR_END; td = (Trackdir)(td + 1)) {
 		if (!IsValidTrackdir(td)) continue;
-		if (HasTrack(index, TrackdirToTrack(td)) && HasSignalOnTrackdir(index, td)) {
-			const SignalState state = GetSignalStateByTrackdir(index, td);
+		if (HasTrack(tile, TrackdirToTrack(td)) && HasSignalOnTrackdir(tile, td)) {
+			const SignalState state = GetSignalStateByTrackdir(tile, td);
 			output.buffer.format("  trackdir: {}, state: {}", td, state);
-			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetSignalAspect(index, TrackdirToTrack(td)));
-			if (GetSignalAlwaysReserveThrough(index, TrackdirToTrack(td))) output.buffer.append(", always reserve through");
-			if (GetSignalSpecialPropagationFlag(index, TrackdirToTrack(td))) output.buffer.append(", special propagation flag");
+			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetSignalAspect(tile, TrackdirToTrack(td)));
+			if (GetSignalAlwaysReserveThrough(tile, TrackdirToTrack(td))) output.buffer.append(", always reserve through");
+			if (GetSignalSpecialPropagationFlag(tile, TrackdirToTrack(td))) output.buffer.append(", special propagation flag");
 			output.FinishPrint();
 		}
 	}
 }
 
-void DumpTunnelBridgeSignalsInfo(uint index, NIExtraInfoOutput &output)
+void DumpTunnelBridgeSignalsInfo(TileIndex tile, NIExtraInfoOutput &output)
 {
-	if (IsTunnelBridgeSignalSimulationEntrance(index)) {
-		const SignalState state = GetTunnelBridgeEntranceSignalState(index);
+	if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
+		const SignalState state = GetTunnelBridgeEntranceSignalState(tile);
 		output.buffer.format("  Entrance: state: {}", state);
-		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeEntranceSignalAspect(index));
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeEntranceSignalAspect(tile));
 		output.FinishPrint();
 	}
-	if (IsTunnelBridgeSignalSimulationExit(index)) {
-		const SignalState state = GetTunnelBridgeExitSignalState(index);
+	if (IsTunnelBridgeSignalSimulationExit(tile)) {
+		const SignalState state = GetTunnelBridgeExitSignalState(tile);
 		output.buffer.format("  Exit: state: {}", state);
-		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeExitSignalAspect(index));
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeExitSignalAspect(tile));
 		output.FinishPrint();
 	}
-	if (GetTunnelBridgeSignalSpecialPropagationFlag(index)) {
+	if (GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
 		output.Print("  Special propagation flag");
 	}
-	if (IsTunnelBridgeCombinedNormalShuntSignalStyle(index)) {
+	if (IsTunnelBridgeCombinedNormalShuntSignalStyle(tile)) {
 		output.Print("  Combined normal/shunt signal style flag");
 	}
-	TileIndex end = GetOtherTunnelBridgeEnd(index);
+	TileIndex end = GetOtherTunnelBridgeEnd(tile);
 	extern uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
-	output.Print("  Spacing: {}, total signals: {}", GetTunnelBridgeSignalSimulationSpacing(index), GetTunnelBridgeSignalSimulationSignalCount(index, end));
+	output.Print("  Spacing: {}, total signals: {}", GetTunnelBridgeSignalSimulationSpacing(tile), GetTunnelBridgeSignalSimulationSignalCount(tile, end));
 }
 
 static const NIVariable _niv_signals[] = {
@@ -1372,53 +1379,55 @@ class NIHSignals : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
+		TileIndex tile{index};
 		extern TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t);
 		CustomSignalSpriteContext ctx = { CSSC_TRACK };
 		uint8_t style = 0;
 		uint z = 0;
-		if (IsTunnelBridgeWithSignalSimulation(index)) {
-			ctx = { IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT };
-			if (IsTunnel(index)) ctx.ctx_flags |= CSSCF_TUNNEL;
-			style = GetTunnelBridgeSignalStyle(index);
-			z = GetTunnelBridgeSignalZ(index, !IsTunnelBridgeSignalSimulationEntrance(index));
-		} else if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
-			TrackBits bits = GetTrackBits(index);
+		if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			ctx = { IsTunnelBridgeSignalSimulationEntrance(tile) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT };
+			if (IsTunnel(tile)) ctx.ctx_flags |= CSSCF_TUNNEL;
+			style = GetTunnelBridgeSignalStyle(tile);
+			z = GetTunnelBridgeSignalZ(tile, !IsTunnelBridgeSignalSimulationEntrance(tile));
+		} else if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);
-				if (HasSignalOnTrack(index, track)) {
-					style = GetSignalStyle(index, track);
+				if (HasSignalOnTrack(tile, track)) {
+					style = GetSignalStyle(tile, track);
 					Trackdir td = TrackToTrackdir(track);
-					if (!HasSignalOnTrackdir(index, td)) td = ReverseTrackdir(td);
+					if (!HasSignalOnTrackdir(tile, td)) td = ReverseTrackdir(td);
 
 					uint x, y;
-					GetSignalXYZByTrackdir(index, td, HasBit(_signal_style_masks.signal_opposite_side, style), x, y, z);
+					GetSignalXYZByTrackdir(tile, td, HasBit(_signal_style_masks.signal_opposite_side, style), x, y, z);
 					break;
 				}
 			} while (bits != TRACK_BIT_NONE);
 		}
-		NewSignalsResolverObject ro(nullptr, index, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(index), z);
+		NewSignalsResolverObject ro(nullptr, tile, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(tile), z);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
-		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
+		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			output.Print("Signals:");
-			DumpTileSignalsInfo(index, output);
+			DumpTileSignalsInfo(TileIndex{tile}, output);
 		}
-		if (IsTunnelBridgeWithSignalSimulation(index)) {
+		if (IsTunnelBridgeWithSignalSimulation(tile)) {
 			output.Print("Signals:");
-			DumpTunnelBridgeSignalsInfo(index, output);
+			DumpTunnelBridgeSignalsInfo(TileIndex{tile}, output);
 		}
 		if (_settings_game.vehicle.train_speed_adaptation) {
-			SignalSpeedKey speed_key = { index, 0, (Trackdir)0 };
-			for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == index; ++iter) {
+			SignalSpeedKey speed_key = { tile, 0, (Trackdir)0 };
+			for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == tile; ++iter) {
 				const auto &it = *iter;
 				output.buffer.format("Speed adaptation: Track: {:X}, last dir: {:X} --> speed: {}",
 						it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
@@ -1445,7 +1454,7 @@ class NIHSignals : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(index, MP_RAILWAY)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(TileIndex{index}, MP_RAILWAY)));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -1501,28 +1510,30 @@ static const NIVariable _niv_objects[] = {
 
 class NIHObject : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
-	bool ShowExtraInfoOnly(uint index) const override    { return !ObjectSpec::GetByTile(index)->grf_prop.HasGrfFile(); }
+	bool ShowExtraInfoOnly(uint index) const override    { return !ObjectSpec::GetByTile(TileIndex{index})->grf_prop.HasGrfFile(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(Object::GetByTile(index)->town); }
-	const void *GetInstance(uint index)const override    { return Object::GetByTile(index); }
-	const void *GetSpec(uint index) const override       { return ObjectSpec::GetByTile(index); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT, INVALID_STRING_ID, index); }
-	uint32_t GetGRFID(uint index) const override         { return (!this->ShowExtraInfoOnly(index)) ? ObjectSpec::GetByTile(index)->grf_prop.grfid : 0; }
+	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(Object::GetByTile(TileIndex{index})->town); }
+	const void *GetInstance(uint index)const override    { return Object::GetByTile(TileIndex{index}); }
+	const void *GetSpec(uint index) const override       { return ObjectSpec::GetByTile(TileIndex{index}); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT, INVALID_STRING_ID, TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (!this->ShowExtraInfoOnly(index)) ? ObjectSpec::GetByTile(TileIndex{index})->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		ObjectResolverObject ro(ObjectSpec::GetByTile(index), Object::GetByTile(index), index);
+		TileIndex tile{index};
+		ObjectResolverObject ro(ObjectSpec::GetByTile(tile), Object::GetByTile(tile), tile);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
-		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
+		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
 		if (spec != nullptr) {
-			ObjectID id = GetObjectIndex(index);
+			ObjectID id = GetObjectIndex(tile);
 			const Object *obj = Object::Get(id);
-			output.buffer.format("  index: {}, type ID: {}", id, GetObjectType(index));
+			output.buffer.format("  tile: {}, type ID: {}", id, GetObjectType(tile));
 			if (spec->grf_prop.grffile != nullptr) {
 				output.buffer.format("  (local ID: {})", spec->grf_prop.local_id);
 			}
@@ -1532,9 +1543,9 @@ class NIHObject : public NIHelper {
 			}
 			output.FinishPrint();
 
-			output.Print("  view: {}, colour: {}, effective foundation: {}", obj->view, obj->colour, GetObjectEffectiveFoundationType(index));
+			output.Print("  view: {}, colour: {}, effective foundation: {}", obj->view, obj->colour, GetObjectEffectiveFoundationType(tile));
 			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
-				output.Print("  ground type: {}, density: {}, counter: {}, water class: {}", GetObjectGroundType(index), GetObjectGroundDensity(index), GetObjectGroundCounter(index), GetWaterClass(index));
+				output.Print("  ground type: {}, density: {}, counter: {}, water class: {}", GetObjectGroundType(tile), GetObjectGroundDensity(tile), GetObjectGroundCounter(tile), GetWaterClass(tile));
 			}
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.Print("  size: {}x{}, height: {}, views: {}", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);
@@ -1588,7 +1599,7 @@ class NIHObject : public NIHelper {
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		extern void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper);
-		DumpObjectSpriteGroup(ObjectSpec::GetByTile(index), dumper);
+		DumpObjectSpriteGroup(ObjectSpec::GetByTile(TileIndex{index}), dumper);
 	}
 };
 
@@ -1631,21 +1642,22 @@ class NIHRailType : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
 		/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
 		 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-		RailTypeResolverObject ro(nullptr, index, TCX_NORMAL, RTSG_END);
+		RailTypeResolverObject ro(nullptr, TileIndex{index}, TCX_NORMAL, RTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		RailType primary = GetTileRailType(index);
-		RailType secondary = GetTileSecondaryRailTypeIfValid(index);
+		TileIndex tile{index};
+		RailType primary = GetTileRailType(tile);
+		RailType secondary = GetTileSecondaryRailTypeIfValid(tile);
 
 		auto writeRailType = [&](RailType type) {
 			const RailTypeInfo *info = GetRailTypeInfo(type);
@@ -1692,19 +1704,19 @@ class NIHRailType : public NIHelper {
 			writeRailType(secondary);
 		}
 
-		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
+		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
 			output.Print("Signals:");
-			DumpTileSignalsInfo(index, output);
+			DumpTileSignalsInfo(tile, output);
 		}
-		if (IsTileType(index, MP_RAILWAY) && IsRailDepot(index)) {
-			output.Print("Depot: reserved: {}", HasDepotReservation(index));
+		if (IsTileType(tile, MP_RAILWAY) && IsRailDepot(tile)) {
+			output.Print("Depot: reserved: {}", HasDepotReservation(tile));
 		}
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		extern void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper);
-		DumpRailTypeSpriteGroup(GetTileRailType(index), dumper);
+		DumpRailTypeSpriteGroup(GetTileRailType(TileIndex{index}), dumper);
 	}
 
 	/* virtual */ bool ShowOptionsDropDown(uint index) const override
@@ -1714,8 +1726,9 @@ class NIHRailType : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(index)));
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(index, MP_RAILWAY) && HasSignals(index))));
+		TileIndex tile{index};
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(tile)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(tile, MP_RAILWAY) && HasSignals(tile))));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -1765,25 +1778,27 @@ static const NIVariable _niv_airporttiles[] = {
 };
 
 class NIHAirportTile : public NIHelper {
-	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.HasGrfFile(); }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(index)); }
+	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->grf_prop.HasGrfFile(); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(TileIndex{index})); }
 	const void *GetInstance(uint)const override          { return nullptr; }
-	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(index)); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
-	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? AirportTileSpec::Get(GetAirportGfx(index))->grf_prop.grfid : 0; }
+	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index})); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		AirportTileResolverObject ro(AirportTileSpec::GetByTile(index), index, Station::GetByTile(index));
+		TileIndex tile{index};
+		AirportTileResolverObject ro(AirportTileSpec::GetByTile(tile), tile, Station::GetByTile(tile));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
-		output.Print("  Gfx Index: {}", GetAirportGfx(index));
-		const AirportTileSpec *spec = AirportTileSpec::Get(GetAirportGfx(index));
-		if (spec) {
+		output.Print("  Gfx Index: {}", GetAirportGfx(tile));
+		const AirportTileSpec *spec = AirportTileSpec::Get(GetAirportGfx(tile));
+		if (spec != nullptr) {
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 		}
 	}
@@ -2004,7 +2019,7 @@ class NIHStationStruct : public NIHelper {
 			output.Print("  rect: left: {}, right: {}, top: {}, bottom: {}", bst->rect.left, bst->rect.right, bst->rect.top, bst->rect.bottom);
 		}
 		const Station *st = Station::GetIfValid(index);
-		if (st) {
+		if (st != nullptr) {
 			if (st->industry) {
 				output.Print("  Neutral industry: {}: {}", st->industry->index, st->industry->GetCachedName().c_str());
 			}
@@ -2071,7 +2086,7 @@ class NIHStationStruct : public NIHelper {
 			}
 		}
 		const Waypoint *wp = Waypoint::GetIfValid(index);
-		if (wp) {
+		if (wp != nullptr) {
 			output.register_next_line_click_flag_toggle(1);
 			output.Print("  [{}] flags: 0x{:X}", output.flags & 1 ? '-' : '+', wp->waypoint_flags);
 			if (output.flags & 1) {
@@ -2213,22 +2228,23 @@ class NIHRoadType : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index) const override   { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
 		/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
 		 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-		RoadTypeResolverObject ro(nullptr, index, TCX_NORMAL, ROTSG_END);
+		RoadTypeResolverObject ro(nullptr, TileIndex{index}, TCX_NORMAL, ROTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
 		auto writeInfo = [&](RoadTramType rtt) {
-			RoadType type = GetRoadType(index, rtt);
+			RoadType type = GetRoadType(tile, rtt);
 			if (type == INVALID_ROADTYPE) return;
 
 			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
@@ -2260,8 +2276,9 @@ class NIHRoadType : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
+		TileIndex tile{index};
 		for (RoadTramType rtt : { RTT_ROAD, RTT_TRAM }) {
-			RoadType rt = GetRoadType(index, rtt);
+			RoadType rt = GetRoadType(tile, rtt);
 			if (rt == INVALID_ROADTYPE) continue;
 
 			extern void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper);
@@ -2276,7 +2293,7 @@ class NIHRoadType : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsLevelCrossingTile(index)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsLevelCrossingTile(TileIndex{index})));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -2336,25 +2353,27 @@ static const NIVariable _nif_roadstops[] = {
 };
 
 class NIHRoadStop : public NIHelper {
-	bool IsInspectable(uint index) const override        { return GetRoadStopSpec(index) != nullptr; }
+	bool IsInspectable(uint index) const override        { return GetRoadStopSpec(TileIndex{index}) != nullptr; }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(BaseStation::GetByTile(index)->town); }
+	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(BaseStation::GetByTile(TileIndex{index})->town); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
-	const void *GetSpec(uint index) const override       { return GetRoadStopSpec(index); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(index), index); }
-	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetRoadStopSpec(index)->grf_prop.grfid : 0; }
+	const void *GetSpec(uint index) const override       { return GetRoadStopSpec(TileIndex{index}); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetRoadStopSpec(TileIndex{index})->grf_prop.grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		StationGfx view = GetStationGfx(index);
-		RoadStopResolverObject ro(GetRoadStopSpec(index), BaseStation::GetByTile(index), index, INVALID_ROADTYPE, GetStationType(index), view);
+		TileIndex tile{index};
+		StationGfx view = GetStationGfx(tile);
+		RoadStopResolverObject ro(GetRoadStopSpec(tile), BaseStation::GetByTile(tile), tile, INVALID_ROADTYPE, GetStationType(tile), view);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
+		TileIndex tile{index};
 		output.Print("Debug Info:");
-		const RoadStopSpec *spec = GetRoadStopSpec(index);
+		const RoadStopSpec *spec = GetRoadStopSpec(tile);
 		if (spec != nullptr) {
 			uint class_id = RoadStopClass::Get(spec->class_index)->global_id;
 			output.buffer.format("  class ID: {}", label_dumper().Label(class_id));
@@ -2368,15 +2387,16 @@ class NIHRoadStop : public NIHelper {
 			output.Print("  spec: build: {}, clear: {}, height: {}", spec->build_cost_multiplier, spec->clear_cost_multiplier, spec->height);
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 
-			const BaseStation *st = BaseStation::GetByTile(index);
-			output.Print("  road stop: random bits: {:02X}, animation frame: {:02X}", st->GetRoadStopRandomBits(index), st->GetRoadStopAnimationFrame(index));
+			const BaseStation *st = BaseStation::GetByTile(tile);
+			output.Print("  road stop: random bits: {:02X}, animation frame: {:02X}", st->GetRoadStopRandomBits(tile), st->GetRoadStopAnimationFrame(tile));
 		}
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
+		TileIndex tile{index};
 		extern void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper);
-		DumpRoadStopSpriteGroup(BaseStation::GetByTile(index), GetRoadStopSpec(index), dumper);
+		DumpRoadStopSpriteGroup(BaseStation::GetByTile(tile), GetRoadStopSpec(tile), dumper);
 	}
 };
 
@@ -2405,18 +2425,19 @@ class NIHNewLandscape : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_LAI_CLEAR_DESCRIPTION_ROCKS, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_LAI_CLEAR_DESCRIPTION_ROCKS, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
-		if (!IsTileType(index, MP_CLEAR)) return 0;
+		TileIndex tile{index};
+		if (!IsTileType(tile, MP_CLEAR)) return 0;
 
 		TileInfo ti;
-		ti.x = TileX(index);
-		ti.y = TileY(index);
-		std::tie(ti.tileh, ti.z) = GetTilePixelSlope(index);
-		ti.tile = index;
+		ti.x = TileX(tile);
+		ti.y = TileY(tile);
+		std::tie(ti.tileh, ti.z) = GetTilePixelSlope(tile);
+		ti.tile = tile;
 
 		NewLandscapeResolverObject ro(nullptr, &ti, NEW_LANDSCAPE_ROCKS);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);

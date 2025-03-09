@@ -226,7 +226,7 @@ public:
 		if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_145) && st->facilities & FACIL_AIRPORT) {
 			/* Store the old persistent storage. The GRFID will be added later. */
 			assert(PersistentStorage::CanAllocateItem());
-			st->airport.psa = new PersistentStorage(0, 0, 0);
+			st->airport.psa = new PersistentStorage(0, 0, {});
 			std::copy(std::begin(_old_st_persistent_storage.storage), std::end(_old_st_persistent_storage.storage), std::begin(st->airport.psa->storage));
 		}
 
@@ -258,7 +258,7 @@ public:
 					assert(CargoPacket::CanAllocateItem());
 
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
-					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_periods, source, _cargo_source_xy, _cargo_feeder_share);
+					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_periods, source, TileIndex{_cargo_source_xy}, _cargo_feeder_share);
 					ge.data->cargo.Append(cp, INVALID_STATION);
 					AssignBit(ge.status, GoodsEntry::GES_RATING, true);
 				}

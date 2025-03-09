@@ -57,7 +57,7 @@ static void Check_MAPS()
 
 static void Load_MAPT()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->type = val;
 		m++;
@@ -86,7 +86,7 @@ static void Load_MAPH()
 		if (SlGetFieldLength() != 0) {
 			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
 
-			Tile *m = _m;
+			Tile *m = _m.tile_data;
 			ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
 				m->height = val;
 				m++;
@@ -95,7 +95,7 @@ static void Load_MAPH()
 		return;
 	}
 
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->height = val;
 		m++;
@@ -104,7 +104,7 @@ static void Load_MAPH()
 
 static void Load_MAP1()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->m1 = val;
 		m++;
@@ -113,7 +113,7 @@ static void Load_MAP1()
 
 static void Load_MAP2()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	if (IsSavegameVersionBefore(SLV_5)) {
 		/* In those versions the m2 was 8 bits */
 		ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
@@ -130,7 +130,7 @@ static void Load_MAP2()
 
 static void Load_MAP3()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->m3 = val;
 		m++;
@@ -139,7 +139,7 @@ static void Load_MAP3()
 
 static void Load_MAP4()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->m4 = val;
 		m++;
@@ -148,7 +148,7 @@ static void Load_MAP4()
 
 static void Load_MAP5()
 {
-	Tile *m = _m;
+	Tile *m = _m.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		m->m5 = val;
 		m++;
@@ -157,9 +157,9 @@ static void Load_MAP5()
 
 static void Load_MAP6()
 {
-	TileIndex size = MapSize();
+	const uint32_t size = MapSize();
 
-	TileExtended *me = _me;
+	TileExtended *me = _me.tile_data;
 	if (IsSavegameVersionBefore(SLV_42)) {
 		ReadBuffer::GetCurrent()->ReadBytesToHandler(size / 4, [&](uint8_t val) {
 			me[0].m6 = GB(val, 0, 2);
@@ -178,7 +178,7 @@ static void Load_MAP6()
 
 static void Load_MAP7()
 {
-	TileExtended *me = _me;
+	TileExtended *me = _me.tile_data;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
 		me->m7 = val;
 		me++;
@@ -187,7 +187,7 @@ static void Load_MAP7()
 
 static void Load_MAP8()
 {
-	TileExtended *me = _me;
+	TileExtended *me = _me.tile_data;
 	ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
 		me->m8 = val;
 		me++;
@@ -201,13 +201,13 @@ static void Load_WMAP()
 	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1 || _sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
-	const TileIndex size = MapSize();
+	const uint32_t size = MapSize();
 
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	reader->CopyBytes((uint8_t *) _m, size * 8);
+	reader->CopyBytes((uint8_t *) _m.tile_data, size * 8);
 #else
-	Tile *m_start = _m;
-	Tile *m_end = _m + size;
+	Tile *m_start = _m.tile_data;
+	Tile *m_end = _m.tile_data + size;
 	for (Tile *m = m_start; m != m_end; m++) {
 		RawReadBuffer buf = reader->ReadRawBytes(8);
 		m->type = buf.RawReadByte();
@@ -222,8 +222,8 @@ static void Load_WMAP()
 	}
 #endif
 
-	TileExtended *me_start = _me;
-	TileExtended *me_end = _me + size;
+	TileExtended *me_start = _me.tile_data;
+	TileExtended *me_end = _me.tile_data + size;
 	if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1) {
 		for (TileExtended *me = me_start; me != me_end; me++) {
 			RawReadBuffer buf = reader->ReadRawBytes(2);
@@ -232,7 +232,7 @@ static void Load_WMAP()
 		}
 	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-		reader->CopyBytes((uint8_t *) _me, size * 4);
+		reader->CopyBytes((uint8_t *) _me.tile_data, size * 4);
 #else
 		for (TileExtended *me = me_start; me != me_end; me++) {
 			RawReadBuffer buf = reader->ReadRawBytes(4);
@@ -255,15 +255,15 @@ static void Save_WMAP()
 	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	MemoryDumper *dumper = MemoryDumper::GetCurrent();
-	const TileIndex size = MapSize();
+	const uint32_t size = MapSize();
 	SlSetLength(size * 12);
 
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	dumper->CopyBytes((uint8_t *) _m, size * 8);
-	dumper->CopyBytes((uint8_t *) _me, size * 4);
+	dumper->CopyBytes((uint8_t *) _m.tile_data, size * 8);
+	dumper->CopyBytes((uint8_t *) _me.tile_data, size * 4);
 #else
-	Tile *m_start = _m;
-	Tile *m_end = _m + size;
+	Tile *m_start = _m.tile_data;
+	Tile *m_end = _m.tile_data + size;
 	for (Tile *m = m_start; m != m_end; m++) {
 		RawMemoryDumper dump = dumper->RawWriteBytes(8);
 		dump.RawWriteByte(m->type);
@@ -275,8 +275,8 @@ static void Save_WMAP()
 		dump.RawWriteByte(m->m4);
 		dump.RawWriteByte(m->m5);
 	}
-	TileExtended *me_start = _me;
-	TileExtended *me_end = _me + size;
+	TileExtended *me_start = _me.tile_data;
+	TileExtended *me_end = _me.tile_data + size;
 	for (TileExtended *me = me_start; me != me_end; me++) {
 		RawMemoryDumper dump = dumper->RawWriteBytes(4);
 		dump.RawWriteByte(me->m6);
@@ -290,14 +290,14 @@ static void Save_WMAP()
 struct MapTileReader {
 	Tile *m;
 
-	MapTileReader() { this->m = _m; }
+	MapTileReader() { this->m = _m.tile_data; }
 	Tile *Next() { return this->m++; }
 };
 
 struct MapTileExtendedReader {
 	TileExtended *me;
 
-	MapTileExtendedReader() { this->me = _me; }
+	MapTileExtendedReader() { this->me = _me.tile_data; }
 	TileExtended *Next() { return this->me++; }
 };
 
@@ -358,7 +358,7 @@ static void Save_MAP()
 
 	static_assert(std::is_same_v<typename T::FieldT, uint8_t> || std::is_same_v<typename T::FieldT, uint16_t>);
 
-	TileIndex size = MapSize();
+	const uint32_t size = MapSize();
 	SlSetLength(size * sizeof(typename T::FieldT));
 
 	T map_reader{};

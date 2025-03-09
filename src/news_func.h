@@ -44,7 +44,7 @@ inline void AddVehicleAdviceNewsItem(AdviceType advice_type, StringID string, Ve
 
 inline void AddTileNewsItem(StringID string, NewsType type, TileIndex tile, std::unique_ptr<NewsAllocatedData> data = nullptr, StationID station = INVALID_STATION)
 {
-	AddNewsItem(string, type, NF_NO_TRANSPARENT | NF_SHADE | NF_THIN, NR_TILE, tile, station == INVALID_STATION ? NR_NONE : NR_STATION, station, std::move(data));
+	AddNewsItem(string, type, NF_NO_TRANSPARENT | NF_SHADE | NF_THIN, NR_TILE, tile.base(), station == INVALID_STATION ? NR_NONE : NR_STATION, station, std::move(data));
 }
 
 inline void AddIndustryNewsItem(StringID string, NewsType type, IndustryID industry, std::unique_ptr<NewsAllocatedData> data = nullptr)

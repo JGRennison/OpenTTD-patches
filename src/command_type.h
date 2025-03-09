@@ -72,7 +72,7 @@ class CommandCost {
 	union {
 		uint32_t result = 0;
 		StringID extra_message;                 ///< Additional warning message for when success is unset
-		TileIndex tile;
+		uint32_t tile;
 		int64_t additional_cash_required;
 		CommandCostAuxiliaryData *aux_data;
 	} inl;
@@ -297,7 +297,7 @@ public:
 	TileIndex GetTile() const
 	{
 		if (this->GetInlineType() == CommandCostInlineType::Tile) {
-			return this->inl.tile;
+			return TileIndex(this->inl.tile);
 		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
 			return this->inl.aux_data->tile;
 		} else {

@@ -1440,7 +1440,7 @@ void CcAddVehicleNewGroup(const CommandCost &result, Commands cmd, TileIndex til
 
 	assert(Vehicle::IsValidID(GB(data->p2, 0, 20)));
 
-	CcCreateGroup(result, CMD_CREATE_GROUP, 0, P123CmdData(Vehicle::Get(GB(data->p2, 0, 20))->type, 0, 0), 0);
+	CcCreateGroup(result, CMD_CREATE_GROUP, {}, P123CmdData(Vehicle::Get(GB(data->p2, 0, 20))->type, 0, 0), 0);
 }
 
 /**

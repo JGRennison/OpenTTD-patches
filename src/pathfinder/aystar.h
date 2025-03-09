@@ -158,7 +158,7 @@ struct AyStar {
 
 protected:
 
-	inline uint32_t HashKey(TileIndex tile, Trackdir td) const { return tile | (td << 28); }
+	inline uint32_t HashKey(TileIndex tile, Trackdir td) const { return tile.base() | (td << 28); }
 
 	PodPool<PathNode*, sizeof(PathNode), 8192> closedlist_nodes;
 	robin_hood::unordered_flat_map<uint32_t, uint32_t> closedlist_hash;

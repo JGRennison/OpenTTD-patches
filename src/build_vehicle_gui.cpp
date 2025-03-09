@@ -1406,7 +1406,7 @@ struct BuildVehicleWindowBase : Window {
 	{
 		this->vehicle_type = type;
 		this->tile = tile;
-		this->window_number = tile == INVALID_TILE ? (int)type : tile;
+		this->window_number = tile == INVALID_TILE ? (uint)type : tile.base();
 		this->virtual_train_out = virtual_train_out;
 		this->virtual_train_mode = (virtual_train_out != nullptr);
 		if (this->virtual_train_mode) this->window_number = 0;
@@ -1501,7 +1501,7 @@ struct BuildVehicleWindowBase : Window {
 			}
 		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
-			CommandCost ret = Command<CMD_BUILD_VEHICLE>::Do(DC_QUERY_COST, this->window_number, engine, true, cargo, INVALID_CLIENT_ID);
+			CommandCost ret = Command<CMD_BUILD_VEHICLE>::Do(DC_QUERY_COST, TileIndex(this->window_number), engine, true, cargo, INVALID_CLIENT_ID);
 			if (ret.Succeeded()) {
 				te.cost          = ret.GetCost() - e->GetCost();
 				te.capacity      = _returned_refit_capacity;
@@ -1671,7 +1671,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				if (this->listview_mode || this->virtual_train_mode) {
 					this->filter.railtype = INVALID_RAILTYPE;
 				} else {
-					this->filter.railtype = GetRailType(this->window_number);
+					this->filter.railtype = GetRailType(TileIndex(this->window_number));
 				}
 				break;
 
@@ -1679,9 +1679,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				if (this->listview_mode || this->virtual_train_mode) {
 					this->filter.roadtype = INVALID_ROADTYPE;
 				} else {
-					this->filter.roadtype = GetRoadTypeRoad(this->window_number);
+					this->filter.roadtype = GetRoadTypeRoad(TileIndex(this->window_number));
 					if (this->filter.roadtype == INVALID_ROADTYPE) {
-						this->filter.roadtype = GetRoadTypeTram(this->window_number);
+						this->filter.roadtype = GetRoadTypeTram(TileIndex(this->window_number));
 					}
 				}
 				break;
@@ -1879,7 +1879,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		this->eng_list.clear();
 
-		const Station *st = this->listview_mode ? nullptr : Station::GetByTile(this->window_number);
+		const Station *st = this->listview_mode ? nullptr : Station::GetByTile(TileIndex(this->window_number));
 
 		/* Make list of all available planes.
 		 * Also check to see if the previously selected plane is still available,
@@ -2538,7 +2538,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (this->listview_mode || this->virtual_train_mode) {
 			this->railtype = INVALID_RAILTYPE;
 		} else {
-			this->railtype = GetRailType(this->window_number);
+			this->railtype = GetRailType(TileIndex(this->window_number));
 		}
 	}
 
@@ -2705,7 +2705,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		/* Update filter type in case the rail type of the depot got converted */
 		this->UpdateFilterByTile();
 
-		this->railtype = (this->listview_mode || this->virtual_train_mode) ? RAILTYPE_END : GetRailType(this->window_number);
+		this->railtype = (this->listview_mode || this->virtual_train_mode) ? RAILTYPE_END : GetRailType(TileIndex(this->window_number));
 
 		this->loco.eng_list.clear();
 		this->wagon.eng_list.clear();
@@ -3264,7 +3264,7 @@ void CcAddVirtualEngine(const CommandCost &result)
 		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
 		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
-		Command<CMD_SELL_VEHICLE>::Post(0, _new_vehicle_id, SellVehicleFlags::VirtualOnly, INVALID_CLIENT_ID);
+		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(_new_vehicle_id, SellVehicleFlags::None, INVALID_CLIENT_ID);
 	}
 }
 
@@ -3314,7 +3314,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 	 *  so if tile == INVALID_TILE (Available XXX Window), use 'type' as unique number.
 	 *  As it always is a low value, it won't collide with any real tile
 	 *  number. */
-	const uint num = (tile == INVALID_TILE) ? static_cast<int>(type) : tile;
+	const uint num = (tile == INVALID_TILE) ? static_cast<uint>(type) : tile.base();
 
 	assert(IsCompanyBuildableVehicleType(type));
 

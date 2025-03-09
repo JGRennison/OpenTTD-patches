@@ -650,7 +650,7 @@ public:
 		for (Industry *industry : Industry::Iterate()) delete industry;
 
 		/* Clear farmland. */
-		for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		for (TileIndex tile(0); tile < MapSize(); ++tile) {
 			if (IsTileType(tile, MP_CLEAR) && GetRawClearGround(tile) == CLEAR_FIELDS) {
 				MakeClear(tile, CLEAR_GRASS, 3);
 			}
@@ -883,7 +883,7 @@ public:
 
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
-		nvp->InitializeViewport(this, i->location.GetCenterTile(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
+		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
 
 		if (!i->IsCargoProduced()) this->DisableWidget(WID_IV_GRAPH);
 

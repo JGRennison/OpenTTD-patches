@@ -130,7 +130,7 @@ template <typename... T>
 
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
 #	define assert_msg(expression, ...) do { if (unlikely(!(expression))) AssertMsgError(__LINE__, __FILE__, #expression, __VA_ARGS__); } while (false)
-#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) AssertMsgTileError(__LINE__, __FILE__, #expression, tile, __VA_ARGS__); } while (false)
+#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) AssertMsgTileError(__LINE__, __FILE__, #expression, debug_tile_index_type_erasure(tile), __VA_ARGS__); } while (false)
 #else
 #	define assert_msg(expression, ...)
 #	define assert_msg_tile(expression, tile, ...)

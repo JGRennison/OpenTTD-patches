@@ -45,7 +45,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 			return this->ti->z / TILE_HEIGHT;
 
 		case 0x43:
-			return SimpleHash32(this->ti->tile);
+			return SimpleHash32(this->ti->tile.base());
 
 		case 0x44:
 			return this->landscape_type;

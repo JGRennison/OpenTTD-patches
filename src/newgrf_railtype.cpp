@@ -25,7 +25,7 @@
 
 /* virtual */ uint32_t RailTypeScopeResolver::GetRandomBits() const
 {
-	uint tmp = CountBits(this->tile + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
+	uint tmp = CountBits(this->tile.base() + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
 	return GB(tmp, 0, 2);
 }
 
@@ -305,7 +305,7 @@ void ConvertRailTypes()
 		if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, railtype_conversion_map[secondary]);
 	};
 
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		switch (GetTileType(t)) {
 			case MP_RAILWAY:
 				convert(t);

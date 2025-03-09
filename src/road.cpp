@@ -387,45 +387,8 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	return end_tile;
 }
 
-static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
+static TileIndex BuildBridge(const TileIndex start_tile, const TileIndex end_tile, const bool build_bridge)
 {
-	const TileIndex start_tile = current->node.tile;
-
-	// We are not building yet, so we still need to find the end_tile.
-	// We will only build a bridge if we need to cross a river, so first check for that.
-	if (!build_bridge) {
-		const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
-
-		TileIndex tile = start_tile + TileOffsByDiagDir(direction);
-		const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
-		uint bridge_length = 0;
-		const uint bridge_length_limit = std::min<uint>(_settings_game.construction.max_bridge_length, is_over_water ? 20 : 10);
-
-		// We are not building yet, so we still need to find the end_tile.
-		for (;
-			IsValidTile(tile) &&
-			(bridge_length <= bridge_length_limit) &&
-			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
-			(GetTileZ(tile) <= GetTileZ(start_tile));
-			tile += TileOffsByDiagDir(direction), bridge_length++) {
-
-			auto is_complementary_slope =
-				!IsSteepSlope(GetTileSlope(tile)) &&
-				!IsHalftileSlope(GetTileSlope(tile)) &&
-				GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(tile));
-
-			// No super-short bridges and always ending up on a matching upwards slope.
-			if (!AreTilesAdjacent(start_tile, tile) && is_complementary_slope) {
-				end_tile = tile;
-				break;
-			}
-		}
-
-		if (!IsValidTile(end_tile)) return INVALID_TILE;
-		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
-		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
-	}
-
 	assert(!build_bridge || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
 
 	const uint length = GetTunnelBridgeLength(start_tile, end_tile);
@@ -443,7 +406,7 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile.base(), bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -452,6 +415,44 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 	if (!build_bridge_cmd.Succeeded()) return INVALID_TILE;
 
 	return end_tile;
+}
+
+static TileIndex DryRunBuildBridge(const TileIndex start_tile)
+{
+	const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
+
+	TileIndex tile = start_tile + TileOffsByDiagDir(direction);
+	const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
+	uint bridge_length = 0;
+	const uint bridge_length_limit = std::min<uint>(_settings_game.construction.max_bridge_length, is_over_water ? 20 : 10);
+
+	TileIndex end_tile = INVALID_TILE;
+
+	// We are not building yet, so we still need to find the end_tile.
+	for (;
+		IsValidTile(tile) &&
+		(bridge_length <= bridge_length_limit) &&
+		(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
+		(GetTileZ(tile) <= GetTileZ(start_tile));
+		tile += TileOffsByDiagDir(direction), bridge_length++) {
+
+		auto is_complementary_slope =
+			!IsSteepSlope(GetTileSlope(tile)) &&
+			!IsHalftileSlope(GetTileSlope(tile)) &&
+			GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(tile));
+
+		// No super-short bridges and always ending up on a matching upwards slope.
+		if (!AreTilesAdjacent(start_tile, tile) && is_complementary_slope) {
+			end_tile = tile;
+			break;
+		}
+	}
+
+	if (!IsValidTile(end_tile)) return INVALID_TILE;
+	if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
+	if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
+
+	return BuildBridge(start_tile, end_tile, false);
 }
 
 static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_direction, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
@@ -502,7 +503,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile.base(), bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -740,7 +741,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 					}
 				}
 			} else if (IsDownwardsSlope(current_tile_slope, forward_direction)) {
-				const TileIndex bridge_end = BuildBridge(&current->path, forward_direction);
+				const TileIndex bridge_end = DryRunBuildBridge(current->path.node.tile);
 
 				if (IsValidTile(bridge_end)) {
 					const Slope bridge_end_slope = GetTileSlope(bridge_end);
@@ -834,7 +835,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				assert(IsValidTile(end_tile) && IsDownwardsSlope(GetTileSlope(end_tile), road_direction));
 			} else if (IsDownwardsSlope(tile_slope, road_direction)) {
 				// Provide the function with the end tile, since we already know it, but still check the result.
-				end_tile = BuildBridge(path, path->parent->node.tile, true);
+				end_tile = BuildBridge(path->node.tile, path->parent->node.tile, true);
 				assert(IsValidTile(end_tile) && IsUpwardsSlope(GetTileSlope(end_tile), road_direction));
 			} else {
 				// River bridge is the last possibility.
@@ -924,7 +925,7 @@ static AyStar PublicRoadAyStar()
 
 static bool PublicRoadFindPath(AyStar& finder, const TileIndex from, TileIndex to)
 {
-	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to));
+	finder.user_target = reinterpret_cast<void *>(static_cast<uintptr_t>(to.base()));
 
 	AyStarNode start {};
 	start.tile = from;

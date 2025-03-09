@@ -3672,7 +3672,7 @@ struct VehicleDetailsWindow : Window {
 				const Vehicle *v = Vehicle::Get(this->window_number);
 				switch (GB(index, 0, 8)) {
 					case VDWDDA_CLEAR_SPEED_RESTRICTION:
-						Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, v->index, 0);
+						Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, v->tile, v->index, 0);
 						break;
 
 					case VDWDDA_SET_SPEED_RESTRICTION: {
@@ -3695,7 +3695,8 @@ struct VehicleDetailsWindow : Window {
 	{
 		if (!str.has_value() || str->empty()) return;
 
-		Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, this->window_number, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str->c_str(), nullptr, 10), VEH_TRAIN));
+		const Vehicle *v = Vehicle::Get(this->window_number);
+		Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str->c_str(), nullptr, 10), VEH_TRAIN));
 	}
 
 	void OnResize() override

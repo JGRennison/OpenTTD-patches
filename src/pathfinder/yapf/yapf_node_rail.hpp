@@ -34,7 +34,7 @@ struct CYapfRailSegmentKey
 
 	inline void Set(const CYapfNodeKeyTrackDir &node_key)
 	{
-		this->value = (((int)node_key.tile) << 4) | node_key.td;
+		this->value = (node_key.tile.base() << 4) | node_key.td;
 	}
 
 	inline HashKey GetHashKey() const

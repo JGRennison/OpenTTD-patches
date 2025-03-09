@@ -298,7 +298,7 @@ struct DepotWindow : Window {
 		this->GetWidget<NWidgetStacked>(WID_D_SHOW_H_SCROLL)->SetDisplayedPlane(type == VEH_TRAIN ? 0 : SZSP_HORIZONTAL);
 		this->GetWidget<NWidgetStacked>(WID_D_SHOW_SELL_CHAIN)->SetDisplayedPlane(type == VEH_TRAIN ? 0 : SZSP_NONE);
 		this->SetupWidgetData(type);
-		this->FinishInitNested(tile);
+		this->FinishInitNested(tile.base());
 
 		this->owner = GetTileOwner(tile);
 		OrderBackup::Reset();
@@ -308,7 +308,7 @@ struct DepotWindow : Window {
 	{
 		CloseWindowById(WC_BUILD_VEHICLE, this->window_number);
 		CloseWindowById(GetWindowClassForVehicleType(this->type), VehicleListIdentifier(VL_DEPOT_LIST, this->type, this->owner, this->GetDepotIndex()).Pack(), false);
-		OrderBackup::Reset(this->window_number);
+		OrderBackup::Reset(TileIndex(this->window_number));
 		this->Window::Close();
 	}
 
@@ -723,7 +723,7 @@ struct DepotWindow : Window {
 		if (this->generate_list) {
 			/* Generate the vehicle list
 			 * It's ok to use the wagon pointers for non-trains as they will be ignored */
-			BuildDepotVehicleList(this->type, this->window_number, &this->vehicle_list, &this->wagon_list);
+			BuildDepotVehicleList(this->type, TileIndex(this->window_number), &this->vehicle_list, &this->wagon_list);
 			this->generate_list = false;
 			DepotSortList(&this->vehicle_list);
 
@@ -764,7 +764,7 @@ struct DepotWindow : Window {
 		}
 
 		/* Setup disabled buttons. */
-		TileIndex tile = this->window_number;
+		TileIndex tile(this->window_number);
 		this->SetWidgetsDisabledState(!Company::IsValidID(_local_company) || !IsInfraTileUsageAllowed(this->type, _local_company, tile),
 			WID_D_STOP_ALL,
 			WID_D_START_ALL,
@@ -788,7 +788,7 @@ struct DepotWindow : Window {
 
 			case WID_D_BUILD: // Build vehicle
 				ResetObjectToPlace();
-				ShowBuildVehicleWindow(this->window_number, this->type);
+				ShowBuildVehicleWindow(TileIndex(this->window_number), this->type);
 				break;
 
 			case WID_D_CLONE: // Clone button
@@ -809,9 +809,9 @@ struct DepotWindow : Window {
 
 			case WID_D_LOCATION:
 				if (_ctrl_pressed) {
-					ShowExtraViewportWindow(this->window_number);
+					ShowExtraViewportWindow(TileIndex(this->window_number));
 				} else {
-					ScrollMainWindowToTile(this->window_number);
+					ScrollMainWindowToTile(TileIndex(this->window_number));
 				}
 				break;
 
@@ -843,7 +843,7 @@ struct DepotWindow : Window {
 				break;
 
 			case WID_D_VEHICLE_LIST:
-				ShowVehicleListWindow(GetTileOwner(this->window_number), this->type, (TileIndex)this->window_number);
+				ShowVehicleListWindow(GetTileOwner(TileIndex(this->window_number)), this->type, TileIndex(this->window_number));
 				break;
 
 			case WID_D_AUTOREPLACE:
@@ -851,7 +851,7 @@ struct DepotWindow : Window {
 				break;
 
 			case WID_D_DEPARTURES:
-				ShowDepotDeparturesWindow((TileIndex)this->window_number, this->type);
+				ShowDepotDeparturesWindow(TileIndex(this->window_number), this->type);
 				break;
 		}
 	}
@@ -945,7 +945,7 @@ struct DepotWindow : Window {
 	bool OnTemplateVehicleSelect(const TemplateVehicle *tv) override
 	{
 		/* Copy-clone, open viewport for new vehicle, and deselect the tool (assume player wants to change things on new vehicle) */
-		if (Command<CMD_CLONE_VEHICLE_FROM_TEMPLATE>::Post(STR_ERROR_CAN_T_BUY_TRAIN, CommandCallback::CloneVehicle, this->window_number, tv->index)) {
+		if (Command<CMD_CLONE_VEHICLE_FROM_TEMPLATE>::Post(STR_ERROR_CAN_T_BUY_TRAIN, CommandCallback::CloneVehicle, TileIndex(this->window_number), tv->index)) {
 			ResetObjectToPlace();
 		}
 
@@ -1168,7 +1168,7 @@ struct DepotWindow : Window {
 	 */
 	inline uint16_t GetDepotIndex() const
 	{
-		return (this->type == VEH_AIRCRAFT) ? ::GetStationIndex(this->window_number) : ::GetDepotIndex(this->window_number);
+		return (this->type == VEH_AIRCRAFT) ? ::GetStationIndex(TileIndex(this->window_number)) : ::GetDepotIndex(TileIndex(this->window_number));
 	}
 };
 
@@ -1189,7 +1189,7 @@ static void DepotSellAllConfirmationCallback(Window *win, bool confirmed)
  */
 void ShowDepotWindow(TileIndex tile, VehicleType type)
 {
-	if (BringWindowToFrontById(WC_VEHICLE_DEPOT, tile) != nullptr) return;
+	if (BringWindowToFrontById(WC_VEHICLE_DEPOT, tile.base()) != nullptr) return;
 
 	switch (type) {
 		default: NOT_REACHED();
@@ -1213,7 +1213,7 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 	 */
 	if (_special_mouse_mode != WSM_DRAGDROP) return;
 
-	w = dynamic_cast<DepotWindow*>(FindWindowById(WC_VEHICLE_DEPOT, v->tile));
+	w = dynamic_cast<DepotWindow*>(FindWindowById(WC_VEHICLE_DEPOT, v->tile.base()));
 	if (w != nullptr) {
 		if (w->sel == v->index) ResetObjectToPlace();
 	}

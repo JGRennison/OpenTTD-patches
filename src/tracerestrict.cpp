@@ -663,7 +663,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_RESERVATION_THROUGH: {
 						/* TRIT_COND_RESERVATION_THROUGH value type uses the next slot */
-						uint32_t test_tile = iter.Secondary();
+						TileIndex test_tile{iter.Secondary()};
 						result = TestBinaryConditionCommon(item, TrainReservationPassesThroughTile(v, test_tile));
 						break;
 					}
@@ -2015,7 +2015,7 @@ static uint32_t GetDualInstructionInitialValue(TraceRestrictInstructionItem item
 	switch (item.GetType()) {
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
 		case TRIT_COND_RESERVATION_THROUGH:
-			return INVALID_TILE;
+			return INVALID_TILE.base();
 
 		case TRIT_COND_SLOT_OCCUPANCY:
 		case TRIT_COND_COUNTER_VALUE:

@@ -628,7 +628,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdLogging(ClientID clien
 
 	size_t payload_pos = p->GetSendOffset();
 	p->Send_uint16(0);
-	p->Send_uint32(cp.command_container.tile);
+	p->Send_uint32(cp.command_container.tile.base());
 	cp.command_container.payload->Serialise(p->AsBufferSerialisationRef());
 	p->SendAtOffset_uint16(payload_pos, (uint16_t)(p->GetSendOffset() - payload_pos - 2));
 

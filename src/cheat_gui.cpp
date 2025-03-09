@@ -160,7 +160,7 @@ static int32_t ClickChangeMaxHlCheat(int32_t p1, int32_t p2)
 
 	/* Check if at least one mountain on the map is higher than the new value.
 	 * If yes, disallow the change. */
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if ((int32_t)TileHeight(t) > p1) {
 			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
 			/* Return old, unchanged value */

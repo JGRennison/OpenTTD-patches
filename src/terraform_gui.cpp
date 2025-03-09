@@ -159,7 +159,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 
 	switch (proc) {
 		case DDSP_DEMOLISH_AREA: {
-			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
+			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile.base(), _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
 
 			if (!_shift_pressed && IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
 				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);

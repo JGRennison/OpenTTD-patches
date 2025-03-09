@@ -416,7 +416,7 @@ static void InterpolateRoadCachedOneWayStates()
 
 void RecalculateRoadCachedOneWayStates()
 {
-	for (TileIndex tile = 0; tile != MapSize(); tile++) {
+	for (TileIndex tile(0); tile != MapSize(); tile++) {
 		if (MayHaveRoad(tile)) UpdateTileRoadCachedOneWayState(tile);
 	}
 	InterpolateRoadCachedOneWayStates();
@@ -434,10 +434,10 @@ void UpdateRoadCachedOneWayStatesAroundTile(TileIndex tile)
 		}
 	};
 	check_tile(tile);
-	uint x_offset = TileXY(1, 0);
+	TileIndexDiff x_offset = TileDiffXY(1, 0);
 	if (tile >= x_offset) check_tile(tile - x_offset);
 	if (tile + x_offset < MapSize()) check_tile(tile + x_offset);
-	uint y_offset = TileXY(0, 1);
+	TileIndexDiff y_offset = TileDiffXY(0, 1);
 	if (tile >= y_offset) check_tile(tile - y_offset);
 	if (tile + y_offset < MapSize()) check_tile(tile + y_offset);
 	if (!_defer_update_road_cache_one_way_state) InterpolateRoadCachedOneWayStates();
@@ -823,7 +823,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					if (GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) {
 						/* Includes MarkTileDirtyByTile() */
 						DoClearSquare(tile);
-						DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
+						DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile.base());
 					} else {
 						if (rtt == RTT_ROAD && IsRoadOwner(tile, rtt, OWNER_TOWN)) {
 							/* Update nearest-town index */
@@ -887,7 +887,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 						UpdateSignalsInBuffer();
 					}
 
-					DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
+					DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile.base());
 				} else {
 					SetRoadType(tile, rtt, INVALID_ROADTYPE);
 				}
@@ -1611,7 +1611,7 @@ CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t
 	DisallowedRoadDirections drd = DRD_NORTHBOUND;
 
 	if (p1 >= MapSize()) return CMD_ERROR;
-	TileIndex end_tile = p1;
+	TileIndex end_tile{p1};
 
 	RoadType rt = Extract<RoadType, 3, 6>(p2);
 	if (!ValParamRoadType(rt)) return CMD_ERROR;
@@ -1714,7 +1714,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
 
 	if (p1 >= MapSize()) return CMD_ERROR;
 
-	TileIndex end_tile = p1;
+	TileIndex end_tile{p1};
 	RoadType rt = Extract<RoadType, 3, 6>(p2);
 	if (!ValParamRoadType(rt)) return CMD_ERROR;
 
@@ -1861,7 +1861,7 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
 		DoClearSquare(tile);
 
 		NotifyRoadLayoutChanged(false);
-		DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
+		DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile.base());
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_ROAD]);
@@ -2570,7 +2570,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 {
 	assert(!invalidate || _generating_world);
 
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if (IsTileType(t, MP_ROAD) && !IsRoadDepot(t) && !HasTownOwnedRoad(t)) {
 			TownID tid = INVALID_TOWN;
 			if (!invalidate) {
@@ -2959,7 +2959,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int,
 				rv->tile = tile;
 				rv->UpdateIsDrawn();
 
-				InvalidateWindowData(WC_VEHICLE_DEPOT, rv->tile);
+				InvalidateWindowData(WC_VEHICLE_DEPOT, rv->tile.base());
 				return VETSB_ENTERED_WORMHOLE;
 			}
 			break;
@@ -3133,7 +3133,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 {
 	RoadType to_type = Extract<RoadType, 0, 6>(p2);
 
-	TileIndex area_start = p1;
+	TileIndex area_start{p1};
 	TileIndex area_end = tile;
 
 	if (!ValParamRoadType(to_type)) return CMD_ERROR;
@@ -3251,8 +3251,8 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 				if (IsRoadDepotTile(tile)) {
 					/* Update build vehicle window related to this depot */
-					InvalidateWindowData(WC_VEHICLE_DEPOT, tile);
-					InvalidateWindowData(WC_BUILD_VEHICLE, tile);
+					InvalidateWindowData(WC_VEHICLE_DEPOT, tile.base());
+					InvalidateWindowData(WC_BUILD_VEHICLE, tile.base());
 				}
 			}
 		} else {

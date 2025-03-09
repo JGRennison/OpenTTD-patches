@@ -1801,7 +1801,7 @@ static void SetDefaultRoadGui()
 			/* Find the most used types */
 			std::array<uint, ROADTYPE_END> road_count = {};
 			std::array<uint, ROADTYPE_END> tram_count = {};
-			for (TileIndex t = 0; t < MapSize(); t++) {
+			for (TileIndex t(0); t < MapSize(); t++) {
 				if (MayHaveRoad(t)) {
 					if (IsTileType(t, MP_STATION) && !IsAnyRoadStop(t)) continue;
 					RoadType road_type = GetRoadTypeRoad(t);

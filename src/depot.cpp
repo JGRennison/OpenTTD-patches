@@ -45,7 +45,7 @@ Depot::~Depot()
 	TraceRestrictRemoveDestinationID(TROCAF_DEPOT, this->index);
 
 	/* Delete the depot-window */
-	CloseWindowById(WC_VEHICLE_DEPOT, this->xy);
+	CloseWindowById(WC_VEHICLE_DEPOT, this->xy.base());
 
 	/* Delete the depot list */
 	VehicleType vt = GetDepotVehicleType(this->xy);

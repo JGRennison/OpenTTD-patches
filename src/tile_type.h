@@ -10,6 +10,8 @@
 #ifndef TILE_TYPE_H
 #define TILE_TYPE_H
 
+#include "core/strong_typedef_type.hpp"
+
 static const uint TILE_SIZE           = 16;                    ///< Tile size in world coordinates.
 static const uint TILE_UNIT_MASK      = TILE_SIZE - 1;         ///< For masking in/out the inner-tile world coordinate units.
 static const uint TILE_PIXELS         = 32;                    ///< Pixel distance between tile columns/rows in #ZOOM_BASE.
@@ -82,13 +84,137 @@ enum TropicZone {
 };
 
 /**
- * The index/ID of a Tile.
+ * An offset value between two tiles.
+ *
+ * This value is used for the difference between
+ * two tiles. It can be added to a TileIndex to get
+ * the resulting TileIndex of the start tile applied
+ * with this saved difference.
+ *
+ * @see TileDiffXY(int, int)
  */
-typedef uint32_t TileIndex;
+typedef int32_t TileIndexDiff;
+
+/**
+ * Instead of using StrongType::Integer, implement delta behaviour with TileIndexDiff.
+ * As TileIndexDiff is not a strong type, StrongType::IntegerDelta can't be used.
+ * Instead of using many semi-overlapping mixins, which creates problems with ambiguous overloads, provide a single one which spells out exactly what is and isn't wanted.
+ */
+struct TileIndexIntegerMixin {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+		friend constexpr TType &operator ++(TType &lhs) { lhs.edit_base()++; return lhs; }
+		friend constexpr TType &operator --(TType &lhs) { lhs.edit_base()--; return lhs; }
+		friend constexpr TType operator ++(TType &lhs, int) { TType res = lhs; lhs.edit_base()++; return res; }
+		friend constexpr TType operator --(TType &lhs, int) { TType res = lhs; lhs.edit_base()--; return res; }
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr TType &operator +=(TType &lhs, T rhs) { lhs.edit_base() += rhs; return lhs; }
+
+		template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+		friend constexpr TType &operator +=(TType &lhs, const T &rhs) = delete;
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr TType operator +(const TType &lhs, T rhs) { return TType(lhs.base() + rhs); }
+
+		template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+		friend constexpr TType operator +(const TType &lhs, const T &rhs) = delete;
+
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr TType &operator -=(TType &lhs, T rhs) { lhs.edit_base() -= rhs; return lhs; }
+
+		template <class T, typename std::enable_if<std::is_same<T, TType>::value>::type>
+		friend constexpr TType &operator -=(TType &lhs, const T &rhs) = delete;
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr TType operator -(const TType &lhs, T rhs) { return TType(lhs.base() - rhs); }
+
+		template <class T, std::enable_if_t<std::is_same<T, TType>::value, int> = 0>
+		friend constexpr TileIndexDiff operator -(const TType &lhs, const T &rhs) { return static_cast<TileIndexDiff>(lhs.base() - rhs.base()); }
+
+
+		friend constexpr bool operator ==(const TType &lhs, const TType &rhs) { return lhs.base() == rhs.base(); }
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr bool operator ==(const TType &lhs, T rhs) { return lhs.base() == static_cast<TBaseType>(rhs); }
+
+		template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+		friend constexpr auto operator <=>(const TType &lhs, T rhs) { return lhs.base() <=> static_cast<TBaseType>(rhs); }
+
+		friend constexpr auto operator <=>(const TType &lhs, const TType &rhs) { return lhs.base() <=> rhs.base(); }
+
+		/* For most new types, the rest of the operators make no sense. For example,
+		 * what does it actually mean to multiply a Year with a value. Or to do a
+		 * bitwise OR on a Date. Or to divide a TileIndex by 2. Conceptually, they
+		 * don't really mean anything. So force the user to first cast it to the
+		 * base type, so the operation no longer returns the new Typedef. */
+
+		constexpr TType &operator *=(const TType &rhs) = delete;
+		constexpr TType operator *(const TType &rhs) = delete;
+		constexpr TType operator *(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator /=(const TType &rhs) = delete;
+		constexpr TType operator /(const TType &rhs) = delete;
+		constexpr TType operator /(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator %=(const TType &rhs) = delete;
+		constexpr TType operator %(const TType &rhs) = delete;
+		constexpr TType operator %(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator &=(const TType &rhs) = delete;
+		constexpr TType operator &(const TType &rhs) = delete;
+		constexpr TType operator &(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator |=(const TType &rhs) = delete;
+		constexpr TType operator |(const TType &rhs) = delete;
+		constexpr TType operator |(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator ^=(const TType &rhs) = delete;
+		constexpr TType operator ^(const TType &rhs) = delete;
+		constexpr TType operator ^(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator <<=(const TType &rhs) = delete;
+		constexpr TType operator <<(const TType &rhs) = delete;
+		constexpr TType operator <<(const TBaseType &rhs) = delete;
+
+		constexpr TType &operator >>=(const TType &rhs) = delete;
+		constexpr TType operator >>(const TType &rhs) = delete;
+		constexpr TType operator >>(const TBaseType &rhs) = delete;
+
+		constexpr TType operator ~() = delete;
+		constexpr TType operator -() = delete;
+	};
+};
+
+/**
+ * The index/ID of a Tile.
+ *
+ * This type represents an absolute tile ID, TileIndexDiff is used for relative values.
+ *
+ * Subtracting a TileIndex from another TileIndex results in a TileIndexDiff.
+ * Adding a TileIndex to another TileIndex is not allowd.
+ *
+ * TileIndex - TileIndex --> TileIndexDiff
+ * TileIndex + TileIndex --> delete
+ *
+ * Integer values can be added/subtracted tofrom TileIndex to produce an offsetted TileIndex.
+ *
+ * TileIndex + int/int32_t/uint/etc --> TileIndex
+ * TileIndex - int/int32_t/uint/etc --> TileIndex
+ */
+struct TileIndexTag : public StrongType::TypedefTraits<uint32_t, TileIndexIntegerMixin> {};
+using TileIndex = StrongType::Typedef<TileIndexTag>;
+
+/* Make sure the size is as expected. */
+static_assert(sizeof(TileIndex) == 4);
 
 /**
  * The very nice invalid tile marker
  */
-inline constexpr TileIndex INVALID_TILE = (TileIndex)-1;
+inline constexpr TileIndex INVALID_TILE = TileIndex{ (uint32_t)-1 };
+
+debug_inline uint32_t debug_tile_index_type_erasure(TileIndex tile) { return tile.base(); }
+[[noreturn]] void assert_tile_error(int line, const char *file, const char *expr, TileIndex tile);
 
 #endif /* TILE_TYPE_H */

@@ -106,6 +106,7 @@
 
 #include "../../core/overflowsafe_type.hpp"
 #include "../../company_type.h"
+#include "../../tile_type.h"
 #include <squirrel.h>
 
 /* Define all types here, so they are added to the API docs. */
@@ -128,7 +129,6 @@ typedef uint32_t StringID;           ///< The ID of a string.
 typedef uint16_t SubsidyID;          ///< The ID of a subsidy.
 typedef uint16_t StoryPageID;        ///< The ID of a story page.
 typedef uint16_t StoryPageElementID; ///< The ID of a story page element.
-typedef uint32_t TileIndex;          ///< The ID of a tile (just named differently).
 typedef uint16_t TownID;             ///< The ID of a town.
 typedef uint32_t VehicleID;          ///< The ID of a vehicle.
 

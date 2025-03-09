@@ -133,8 +133,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_scaled_tick_counter = 0;
 	_state_ticks = INITIAL_STATE_TICKS_VALUE;
 	DateDetail::_state_ticks_offset = StateTicksDelta{0};
-	_cur_tileloop_tile = 1;
-	_aux_tileloop_tile = 1;
+	_cur_tileloop_tile = TileIndex{1};
+	_aux_tileloop_tile = TileIndex{1};
 	_thd.redsq = INVALID_TILE;
 	_road_layout_change_counter = 0;
 	_loaded_local_company = COMPANY_SPECTATOR;

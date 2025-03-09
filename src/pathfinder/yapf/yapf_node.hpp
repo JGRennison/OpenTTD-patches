@@ -29,7 +29,7 @@ struct CYapfNodeKeyExitDir {
 
 	inline HashKey GetHashKey() const
 	{
-		return this->exitdir | (this->tile << 2);
+		return this->exitdir | (this->tile.base() << 2);
 	}
 
 	inline bool operator==(const CYapfNodeKeyExitDir &other) const
@@ -51,7 +51,7 @@ struct CYapfNodeKeyTrackDir : public CYapfNodeKeyExitDir
 
 	inline HashKey GetHashKey() const
 	{
-		return this->td | (this->tile << 4);
+		return this->td | (this->tile.base() << 4);
 	}
 
 	inline bool operator==(const CYapfNodeKeyTrackDir &other) const

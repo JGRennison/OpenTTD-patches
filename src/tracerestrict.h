@@ -1248,7 +1248,7 @@ inline bool IsTraceRestrictTypeNonMatchingVehicleTypeSlot(TraceRestrictItemType 
 /** Get mapping ref ID from tile and track */
 inline TraceRestrictRefId MakeTraceRestrictRefId(TileIndex t, Track track)
 {
-	return (t << 3) | track;
+	return (t.base() << 3) | track;
 }
 
 /** Get tile from mapping ref ID */

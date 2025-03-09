@@ -694,7 +694,7 @@ CommandCost CmdAddVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 
 	if (new_g == NEW_GROUP) {
 		/* Create new group. */
-		CommandCost ret = CmdCreateGroup(0, flags, v->type, INVALID_GROUP, nullptr);
+		CommandCost ret = CmdCreateGroup({}, flags, v->type, INVALID_GROUP, nullptr);
 		if (ret.Failed()) return ret;
 
 		new_g = _new_group_id;
@@ -714,7 +714,7 @@ CommandCost CmdAddVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 
 		/* Update the Replace Vehicle Windows */
 		SetWindowDirty(WC_REPLACE_VEHICLE, v->type);
-		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
+		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
 		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 		InvalidateWindowData(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_GROUP_LIST, v->type, _current_company).Pack());

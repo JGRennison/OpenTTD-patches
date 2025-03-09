@@ -433,7 +433,7 @@ void RemoveAllTrees()
 {
 	if (_game_mode != GM_EDITOR) return;
 
-	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		if (GetTileType(tile) == MP_TREES) {
 			DoCommandPOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
 		}
@@ -556,7 +556,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(end_tile, p2, HasBit(p1, 8));
+	OrthogonalOrDiagonalTileIterator iter(end_tile, TileIndex{p2}, HasBit(p1, 8));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
@@ -699,7 +699,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 	/* Do not draw trees when the invisible trees setting is set */
 	if (IsInvisibilitySet(TO_TREES)) return;
 
-	uint tmp = CountBits(ti->tile + ti->x + ti->y);
+	uint tmp = CountBits(ti->tile.base() + ti->x + ti->y);
 	uint index = GB(tmp, 0, 2) + (GetTreeType(ti->tile) << 2);
 
 	/* different tree styles above one of the grounds */
@@ -906,7 +906,7 @@ static void TileLoop_Trees(TileIndex tile)
 	/* _tick_counter is incremented by 256 between each call, so ignore lower 8 bits.
 	 * Also, we add tile % 31 to spread the updates evenly over the map,
 	 * where 31 is just some prime number that looks ok. */
-	uint32_t cycle = (uint32_t)((tile % 31) + (_tick_counter >> 8));
+	uint32_t cycle = (uint32_t)((tile.base() % 31) + (_tick_counter >> 8));
 
 	/* Handle growth of grass (under trees/on MP_TREES tiles) at every 8th processings, like it's done for grass on MP_CLEAR tiles. */
 	if ((cycle & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {

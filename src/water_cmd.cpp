@@ -504,7 +504,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 2));
+	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 2));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex current_tile = *iter;
 		CommandCost ret;
@@ -1414,7 +1414,7 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 
 void ConvertGroundTilesIntoWaterTiles()
 {
-	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		auto [slope, z] = GetTileSlopeZ(tile);
 		if (IsTileType(tile, MP_CLEAR) && z == 0) {
 			/* Make both water for tiles at level 0

@@ -37,8 +37,8 @@ uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
 uint _map_digits_x;  ///< Number of base-10 digits for _map_size_x
 uint _map_digits_y;  ///< Number of base-10 digits for _map_size_y
 
-Tile *_m = nullptr;          ///< Tiles of the map
-TileExtended *_me = nullptr; ///< Extended Tiles of the map
+MapTilePtr<Tile> _m{nullptr};          ///< Tiles of the map
+MapTilePtr<TileExtended> _me{nullptr}; ///< Extended Tiles of the map
 
 #if defined(__linux__) && defined(MADV_HUGEPAGE)
 static size_t _munmap_size = 0;
@@ -89,13 +89,13 @@ void AllocateMap(uint size_x, uint size_y)
 
 #if defined(__linux__) && defined(MADV_HUGEPAGE)
 	if (_munmap_size != 0) {
-		munmap(_m, _munmap_size);
+		munmap(_m.tile_data, _munmap_size);
 		_munmap_size = 0;
-		_m = nullptr;
+		_m.tile_data = nullptr;
 	}
 #endif
 
-	free(_m);
+	free(_m.tile_data);
 
 	const size_t total_size = (sizeof(Tile) + sizeof(TileExtended)) * _map_size;
 
@@ -133,8 +133,8 @@ void AllocateMap(uint size_x, uint size_y)
 
 	if (buf == nullptr) buf = CallocT<uint8_t>(total_size);
 
-	_m = reinterpret_cast<Tile *>(buf);
-	_me = reinterpret_cast<TileExtended *>(buf + (_map_size * sizeof(Tile)));
+	_m.tile_data = reinterpret_cast<Tile *>(buf);
+	_me.tile_data = reinterpret_cast<TileExtended *>(buf + (_map_size * sizeof(Tile)));
 
 	InitializeWaterRegions();
 }
@@ -152,7 +152,7 @@ TileIndex TileAdd(TileIndex tile, TileIndexDiff offset)
 
 	assert(x < MapSizeX());
 	assert(y < MapSizeY());
-	assert(TileXY(x, y) == TILE_MASK(tile + offset));
+	assert(TileXY(x, y) == Map::WrapToMap(tile + offset));
 
 	return TileXY(x, y);
 }
@@ -435,7 +435,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 
 	static_assert(MAX_MAP_TILES_BITS <= 30);
 
-	robin_hood::unordered_flat_set<uint32_t> processed_tiles;
+	robin_hood::unordered_flat_set<TileIndex> processed_tiles;
 	ring_buffer<uint32_t> candidates;
 	uint matching_count = 0;
 
@@ -449,7 +449,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 					if (dir == exclude_onward_dir) continue;
 					TileIndex neighbour_tile = AddTileIndexDiffCWrap(t, TileIndexDiffCByDiagDir(dir));
 					if (IsValidTile(neighbour_tile)) {
-						candidates.push_back(neighbour_tile | (ReverseDiagDir(dir) << 30));
+						candidates.push_back(neighbour_tile.base() | (ReverseDiagDir(dir) << 30));
 					}
 				}
 			}
@@ -460,7 +460,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 	while (matching_count < threshold && !candidates.empty()) {
 		uint32_t next = candidates.front();
 		candidates.pop_front();
-		TileIndex t = GB(next, 0, 30);
+		TileIndex t(GB(next, 0, 30));
 		DiagDirection exclude_onward_dir = (DiagDirection)GB(next, 30, 2);
 		process_tile(t, exclude_onward_dir);
 	}
@@ -547,7 +547,7 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 
 	if (!water) {
 		/* no land found - is this a water-only map? */
-		for (TileIndex t = 0; t < MapSize(); t++) {
+		for (TileIndex t(0); t < MapSize(); t++) {
 			if (!IsTileType(t, MP_VOID) && !IsTileType(t, MP_WATER)) return 0x1FF;
 		}
 	}
@@ -581,7 +581,7 @@ void DumpTileInfo(format_target &buffer, TileIndex tile)
 	} else {
 		buffer.format("tile: {:X} ({} x {})", tile, TileX(tile), TileY(tile));
 	}
-	if (!_m || !_me) {
+	if (_m.tile_data == nullptr || _me.tile_data == nullptr) {
 		buffer.append(", NO MAP ALLOCATED");
 	} else {
 		if (tile >= MapSize()) {
@@ -619,7 +619,7 @@ void DumpMapStats(format_target &buffer)
 		tile_types[type] = 0;
 	}
 
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		tile_types[GetTileType(t)]++;
 
 		if (IsTileType(t, MP_RAILWAY)) {

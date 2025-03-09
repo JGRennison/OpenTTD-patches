@@ -147,7 +147,7 @@ struct TrainReservationLookAhead {
 	void AddSpeedAdaptation(TileIndex signal_tile, uint16_t signal_track, int offset, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end + offset, end + offset, z_pos, signal_tile, signal_track, TRLIT_SPEED_ADAPTATION });
+		this->items.push_back({ end + offset, end + offset, z_pos, signal_tile.base(), signal_track, TRLIT_SPEED_ADAPTATION });
 	}
 
 	void SetNextExtendPosition();

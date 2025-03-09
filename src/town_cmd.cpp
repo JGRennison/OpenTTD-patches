@@ -132,7 +132,7 @@ Town::~Town()
 	}
 
 	/* Check no tile is related to us. */
-	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_HOUSE:
 				assert_tile(GetTownIndex(tile) != this->index, tile);
@@ -718,7 +718,7 @@ static void TileLoop_Town(TileIndex tile)
 				/* Binomial distribution per tick, by a series of coin flips */
 				/* Reduce generation rate to a 1/4, using tile bits to spread out distribution.
 				 * As tick counter is incremented by 256 between each call, we ignore the lower 8 bits. */
-				if (GB(_tick_counter, 8, 2) == GB(tile, 0, 2)) {
+				if (GB(_tick_counter, 8, 2) == GB(tile.base(), 0, 2)) {
 					TownGenerateCargoBinomial(t, TPE_PASSENGERS, hs->population, stations);
 					TownGenerateCargoBinomial(t, TPE_MAIL, hs->mail_generation, stations);
 				}
@@ -3191,7 +3191,7 @@ static void DoClearTownHouseHelper(TileIndex tile, Town *t, HouseID house)
 	DoClearSquare(tile);
 	DeleteAnimatedTile(tile);
 
-	DeleteNewGRFInspectWindow(GSF_HOUSES, tile);
+	DeleteNewGRFInspectWindow(GSF_HOUSES, tile.base());
 }
 
 /**
@@ -3541,7 +3541,7 @@ CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 	 * these do not directly have an owner so we need to check adjacent
 	 * tiles. This won't work correctly in the same loop if the adjacent
 	 * tile was already deleted earlier in the loop. */
-	for (TileIndex current_tile = 0; current_tile < MapSize(); ++current_tile) {
+	for (TileIndex current_tile{0}; current_tile < MapSize(); ++current_tile) {
 		if (IsTileType(current_tile, MP_TUNNELBRIDGE) && TestTownOwnsBridge(current_tile, t)) {
 			CommandCost ret = DoCommandOld(current_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 			if (ret.Failed()) return ret;
@@ -3549,7 +3549,7 @@ CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 	}
 
 	/* Check all remaining tiles for town ownership. */
-	for (TileIndex current_tile = 0; current_tile < MapSize(); ++current_tile) {
+	for (TileIndex current_tile{0}; current_tile < MapSize(); ++current_tile) {
 		bool try_clear = false;
 		switch (GetTileType(current_tile)) {
 			case MP_ROAD:
@@ -4541,7 +4541,7 @@ void TownsMonthlyLoop()
 void TownsYearlyLoop()
 {
 	/* Increment house ages */
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 		IncrementHouseAge(t);
 	}

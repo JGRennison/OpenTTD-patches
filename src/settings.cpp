@@ -1452,7 +1452,7 @@ static void TrainAccelerationModelChanged(int32_t new_value)
 static bool CheckTrainBrakingModelChange(int32_t &new_value)
 {
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
-		for (TileIndex t = 0; t < MapSize(); t++) {
+		for (TileIndex t(0); t < MapSize(); t++) {
 			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
 				uint signals = GetPresentSignals(t);
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
@@ -1488,7 +1488,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 		}
 	}
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
-		for (TileIndex t = 0; t < MapSize(); t++) {
+		for (TileIndex t(0); t < MapSize(); t++) {
 			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
 				TrackBits bits = GetTrackBits(t);
 				do {
@@ -2056,7 +2056,7 @@ static bool CheckMaxHeightLevel(int32_t &new_value)
 
 	/* Check if at least one mountain on the map is higher than the new value.
 	 * If yes, disallow the change. */
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if ((int32_t)TileHeight(t) > new_value) {
 			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
 			/* Return old, unchanged value */
@@ -3423,7 +3423,7 @@ void SyncCompanySettings()
 		uint32_t old_value = (uint32_t)sd->AsIntSetting()->Read(old_object);
 		uint32_t new_value = (uint32_t)sd->AsIntSetting()->Read(new_object);
 		if (old_value != new_value) {
-			NetworkSendCommand<CMD_CHANGE_COMPANY_SETTING>(0, ChangeSettingCmdData::Make(sd->name, new_value), (StringID)0, CommandCallback::None, 0, _local_company);
+			NetworkSendCommand<CMD_CHANGE_COMPANY_SETTING>({}, ChangeSettingCmdData::Make(sd->name, new_value), (StringID)0, CommandCallback::None, 0, _local_company);
 		}
 	}
 }

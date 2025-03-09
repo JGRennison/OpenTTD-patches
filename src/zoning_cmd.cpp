@@ -416,8 +416,8 @@ inline SpriteID TileZoningSpriteEvaluationCached(TileIndex tile, Owner owner, Zo
 	if (ev_mode >= ZEM_STA_CATCH && ev_mode <= ZEM_IND_UNSER) {
 		// cacheable
 		btree::btree_set<uint32_t> &cache = is_inner ? _zoning_cache_inner : _zoning_cache_outer;
-		auto iter = cache.lower_bound(tile << 3);
-		if (iter != cache.end() && *iter >> 3 == tile) {
+		auto iter = cache.lower_bound(tile.base() << 3);
+		if (iter != cache.end() && *iter >> 3 == tile.base()) {
 			switch (*iter & 7) {
 				case 0: return ZONING_INVALID_SPRITE_ID;
 				case 1: return SPR_ZONING_INNER_HIGHLIGHT_RED;
@@ -428,7 +428,7 @@ inline SpriteID TileZoningSpriteEvaluationCached(TileIndex tile, Owner owner, Zo
 			}
 		} else {
 			SpriteID s = TileZoningSpriteEvaluation(tile, owner, ev_mode);
-			uint val = tile << 3;
+			uint val = tile.base() << 3;
 			switch (s) {
 				case ZONING_INVALID_SPRITE_ID:              val |= 0; break;
 				case SPR_ZONING_INNER_HIGHLIGHT_RED:        val |= 1; break;
@@ -528,9 +528,9 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 		}
 		auto invalidate_cache_rect = [&](btree::btree_set<uint32_t> &cache) {
 			for (int y = rect.top; y <= rect.bottom; y++) {
-				auto iter = cache.lower_bound(TileXY(rect.left, y) << 3);
+				auto iter = cache.lower_bound(TileXY(rect.left, y).base() << 3);
 				auto end_iter = iter;
-				uint end = (TileXY(rect.right, y) + 1) << 3;
+				uint end = (TileXY(rect.right, y).base() + 1) << 3;
 				while (end_iter != cache.end() && *end_iter < end) ++end_iter;
 				cache.erase(iter, end_iter);
 			}

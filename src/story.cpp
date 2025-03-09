@@ -105,7 +105,7 @@ static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32_t referen
 			break;
 		case SPET_LOCATION:
 			pe.text = text;
-			pe.referenced_id = tile;
+			pe.referenced_id = tile.base();
 			break;
 		case SPET_GOAL:
 			pe.referenced_id = (GoalID)reference;

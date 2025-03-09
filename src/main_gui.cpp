@@ -254,7 +254,7 @@ struct MainWindow : Window
 		ResizeWindow(this, _screen.width, _screen.height);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
-		nvp->InitializeViewport(this, TileXY(32, 32), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		nvp->InitializeViewport(this, TileXY(32, 32).base(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
 
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
 		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 2);

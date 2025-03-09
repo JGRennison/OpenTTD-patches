@@ -152,7 +152,7 @@ Industry::~Industry()
 	for (TileIndex tile_cur : this->location) {
 		if (IsTileType(tile_cur, MP_INDUSTRY)) {
 			if (GetIndustryIndex(tile_cur) == this->index) {
-				DeleteNewGRFInspectWindow(GSF_INDUSTRYTILES, tile_cur);
+				DeleteNewGRFInspectWindow(GSF_INDUSTRYTILES, tile_cur.base());
 
 				/* MakeWaterKeepingClass() can also handle 'land' */
 				MakeWaterKeepingClass(tile_cur, OWNER_NONE);
@@ -1063,7 +1063,7 @@ static void SetupFarmFieldFence(TileIndex tile, int size, uint8_t type, DiagDire
 	TileIndexDiff neighbour_diff = TileOffsByDiagDir(side);
 
 	do {
-		tile = TILE_MASK(tile);
+		tile = Map::WrapToMap(tile);
 
 		if (IsTileType(tile, MP_CLEAR) && IsClearGround(tile, CLEAR_FIELDS)) {
 			TileIndex neighbour = tile + neighbour_diff;

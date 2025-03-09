@@ -2872,7 +2872,7 @@ DEF_CONSOLE_CMD(ConRunTileLoopTile)
 			if (!GetArgumentInteger(&count, argv[2])) return false;
 		}
 		for (uint32_t i = 0; i < count; i++) {
-			_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
+			_tile_type_procs[GetTileType(TileIndex{tile})]->tile_loop_proc(TileIndex{tile});
 		}
 		return true;
 	}
@@ -4119,7 +4119,7 @@ DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 		return true;
 	}
 
-	for (TileIndex t = 0; t < MapSize(); t++) {
+	for (TileIndex t(0); t < MapSize(); t++) {
 		if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
 			uint signals = GetPresentSignals(t);
 			if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {

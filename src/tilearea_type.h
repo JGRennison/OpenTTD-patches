@@ -148,6 +148,9 @@ public:
 	 */
 	virtual TileIterator& operator ++() = 0;
 
+	bool operator==(const TileIterator&) const = default;
+	bool operator==(const TileIndex &other) const { return this->tile == other; }
+
 	/**
 	 * Allocate a new iterator that is a copy of this one.
 	 */

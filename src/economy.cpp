@@ -588,7 +588,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	/*  Change ownership of tiles */
 	StartRemoveOrderFromAllVehiclesBatch();
 	{
-		TileIndex tile = 0;
+		TileIndex tile(0);
 		do {
 			ChangeTileOwner(tile, old_owner, new_owner);
 		} while (++tile != MapSize());

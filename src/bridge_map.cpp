@@ -196,20 +196,20 @@ void SetBridgeSignalStyle(TileIndex t, uint8_t style)
 		/* No style allocated before */
 		if (!HasBit(_m[t].m3, 7)) return;
 
-		auto iter = _bridge_signal_style_map.lower_bound(t << 4);
+		auto iter = _bridge_signal_style_map.lower_bound(t.base() << 4);
 		if (iter != _bridge_signal_style_map.end() && *iter >> 4 == t) _bridge_signal_style_map.erase(iter);
 		ClrBit(_m[t].m3, 7);
 	} else {
-		auto iter = _bridge_signal_style_map.lower_bound(t << 4);
+		auto iter = _bridge_signal_style_map.lower_bound(t.base() << 4);
 		if (iter != _bridge_signal_style_map.end() && *iter >> 4 == t) iter = _bridge_signal_style_map.erase(iter);
-		_bridge_signal_style_map.insert(iter, (t << 4) | style);
+		_bridge_signal_style_map.insert(iter, (t.base() << 4) | style);
 		SetBit(_m[t].m3, 7);
 	}
 }
 
 uint8_t GetBridgeSignalStyleExtended(TileIndex t)
 {
-	auto iter = _bridge_signal_style_map.lower_bound(t << 4);
+	auto iter = _bridge_signal_style_map.lower_bound(t.base() << 4);
 	if (iter != _bridge_signal_style_map.end() && *iter >> 4 == t) return (*iter) & 0xF;
 	return 0;
 }

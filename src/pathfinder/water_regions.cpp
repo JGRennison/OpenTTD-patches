@@ -70,6 +70,8 @@ struct WaterRegionTileIterator {
 		}
 		return *this;
 	}
+
+	bool operator==(const WaterRegionTileIterator&) const = default;
 };
 
 using TWaterRegionPatchLabelArray = std::array<TWaterRegionPatchLabel, WATER_REGION_NUMBER_OF_TILES>;

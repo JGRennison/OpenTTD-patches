@@ -37,18 +37,6 @@ struct TileExtended {
 };
 
 /**
- * An offset value between two tiles.
- *
- * This value is used for the difference between
- * two tiles. It can be added to a TileIndex to get
- * the resulting TileIndex of the start tile applied
- * with this saved difference.
- *
- * @see TileDiffXY(int, int)
- */
-typedef int32_t TileIndexDiff;
-
-/**
  * A pair-construct of a TileIndexDiff.
  *
  * This can be used to save the difference between to
@@ -59,6 +47,19 @@ struct TileIndexDiffC {
 	int16_t y;      ///< The y value of the coordinate
 
 	bool operator==(const TileIndexDiffC &) const = default;
+};
+
+/**
+ * An unsigned pair-construct of a TileIndexDiff.
+ *
+ * This can be used to save the difference between to
+ * tiles as a pair of x and y value.
+ */
+struct TileIndexDiffCUnsigned {
+	uint32_t x;      ///< The x value of the coordinate
+	uint32_t y;      ///< The y value of the coordinate
+
+	bool operator==(const TileIndexDiffCUnsigned &) const = default;
 };
 
 /** Minimal and maximal map width and height */

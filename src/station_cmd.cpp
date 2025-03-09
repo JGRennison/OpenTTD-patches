@@ -1902,7 +1902,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 			if (!build_rail && !IsStationTileBlocked(tile)) Company::Get(owner)->infrastructure.rail[rt]--;
 
 			DoClearSquare(tile);
-			DeleteNewGRFInspectWindow(GSF_STATIONS, tile);
+			DeleteNewGRFInspectWindow(GSF_STATIONS, tile.base());
 			if (build_rail) MakeRailNormal(tile, owner, TrackToTrackBits(track), rt);
 			Company::Get(owner)->infrastructure.station--;
 			DirtyCompanyInfrastructureWindows(owner);
@@ -1954,7 +1954,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
  */
 CommandCost CmdRemoveFromRailStation(TileIndex start, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
-	TileIndex end = p1 == 0 ? start : p1;
+	TileIndex end = p1 == 0 ? start : TileIndex{p1};
 	if (start >= MapSize() || end >= MapSize()) return CMD_ERROR;
 
 	TileArea ta(start, end);
@@ -1988,7 +1988,7 @@ CommandCost CmdRemoveFromRailStation(TileIndex start, DoCommandFlag flags, uint3
  */
 CommandCost CmdRemoveFromRailWaypoint(TileIndex start, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
-	TileIndex end = p1 == 0 ? start : p1;
+	TileIndex end = p1 == 0 ? start : TileIndex{p1};
 	if (start >= MapSize() || end >= MapSize()) return CMD_ERROR;
 
 	TileArea ta(start, end);
@@ -2359,7 +2359,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int repl
 
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
 
-		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile.base());
 
 		DoClearSquare(tile);
 
@@ -2463,7 +2463,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_
 
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
 
-		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile.base());
 
 		if (IsDriveThroughStopTile(tile)) {
 			/* Clears the tile for us */
@@ -2860,7 +2860,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 				TileIndex tile_cur = st->airport.GetHangarTile(i);
 				OrderBackup::Reset(tile_cur, false);
-				CloseWindowById(WC_VEHICLE_DEPOT, tile_cur);
+				CloseWindowById(WC_VEHICLE_DEPOT, tile_cur.base());
 			}
 
 			uint old_dist;
@@ -2876,7 +2876,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			for (TileIndex tile_cur : st->airport) {
 				DeleteAnimatedTile(tile_cur);
 				DoClearSquare(tile_cur);
-				DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
+				DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur.base());
 			}
 
 			st->rect.AfterRemoveRect(st, st->airport);
@@ -2949,7 +2949,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 			TileIndex tile_cur = st->airport.GetHangarTile(i);
 			OrderBackup::Reset(tile_cur, false);
-			CloseWindowById(WC_VEHICLE_DEPOT, tile_cur);
+			CloseWindowById(WC_VEHICLE_DEPOT, tile_cur.base());
 		}
 
 		ZoningMarkDirtyStationCoverageArea(st);
@@ -2969,7 +2969,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 
 			DeleteAnimatedTile(tile_cur);
 			DoClearSquare(tile_cur);
-			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
+			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur.base());
 		}
 
 		/* Clear the persistent storage. */

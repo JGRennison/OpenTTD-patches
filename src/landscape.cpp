@@ -654,9 +654,9 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	const Company *c = (flags & (DC_AUTO | DC_BANKRUPT)) ? nullptr : Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->clear_limit, 16, 16));
 
-	if (tile != p1) flags |= DC_FORCE_CLEAR_TILE;
+	if (tile != TileIndex(p1)) flags |= DC_FORCE_CLEAR_TILE;
 
-	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex(p1), HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		CommandCost ret = DoCommandOld(t, 0, 0, flags & ~DC_EXEC, CMD_LANDSCAPE_CLEAR);
@@ -682,7 +682,7 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 			if ((t == tile || t == p1) && _pause_mode == PM_UNPAUSED) {
 				/* big explosion in two corners, or small explosion for single tiles */
 				CreateEffectVehicleAbove(TileX(t) * TILE_SIZE + TILE_SIZE / 2, TileY(t) * TILE_SIZE + TILE_SIZE / 2, 2,
-					TileX(tile) == TileX(p1) && TileY(tile) == TileY(p1) ? EV_EXPLOSION_SMALL : EV_EXPLOSION_LARGE
+					TileX(tile) == TileX(TileIndex(p1)) && TileY(tile) == TileY(TileIndex(p1)) ? EV_EXPLOSION_SMALL : EV_EXPLOSION_LARGE
 				);
 			}
 		} else {
@@ -758,13 +758,13 @@ void RunTileLoop(bool apply_day_length)
 
 	/* Manually update tile 0 every TILE_UPDATE_FREQUENCY ticks - the LFSR never iterates over it itself.  */
 	if (_tick_counter % TILE_UPDATE_FREQUENCY == 0) {
-		_tile_type_procs[GetTileType(0)]->tile_loop_proc(0);
+		_tile_type_procs[GetTileType(TileIndex(0))]->tile_loop_proc(TileIndex(0));
 		count--;
 	}
 
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
-		TileIndex next = (tile >> 1) ^ (-(int32_t)(tile & 1) & feedback);
+		TileIndex next = TileIndex((tile.base() >> 1) ^ (-(int32_t)(tile.base() & 1) & feedback));
 		if (count > 0) {
 			PREFETCH_NTA(&_m[next]);
 		}
@@ -791,7 +791,7 @@ void RunAuxiliaryTileLoop()
 
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
-		TileIndex next = (tile >> 1) ^ (-(int32_t)(tile & 1) & feedback);
+		TileIndex next = TileIndex((tile.base() >> 1) ^ (-(int32_t)(tile.base() & 1) & feedback));
 		if (count > 0) {
 			PREFETCH_NTA(&_m[next]);
 		}
@@ -985,8 +985,8 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 
 	const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data = GetDesertOrRainforestData();
 
-	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
-		if ((tile % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
+	for (TileIndex tile(0); tile != MapSize(); ++tile) {
+		if ((tile.base() % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 		if (!IsValidTile(tile)) continue;
 
@@ -1004,8 +1004,8 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		RunTileLoop();
 	}
 
-	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
-		if ((tile % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
+	for (TileIndex tile(0); tile != MapSize(); ++tile) {
+		if ((tile.base() % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 		if (!IsValidTile(tile)) continue;
 
@@ -1290,7 +1290,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 		found = FlowRiver(spring, end, min_river_length);
 	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
-		TileIndex lake_centre = 0;
+		TileIndex lake_centre(0);
 		int i = RandomRange(count - 1) + 1;
 		btree::btree_set<TileIndex>::const_iterator cit = marks.begin();
 		while (--i) cit++;
@@ -1413,7 +1413,7 @@ static uint CalculateCoverageLine(uint coverage, uint edge_multiplier)
 	std::array<int, MAX_TILE_HEIGHT + 1> edge_histogram = {};
 
 	/* Build a histogram of the map height. */
-	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		uint h = TileHeight(tile);
 		histogram[h]++;
 

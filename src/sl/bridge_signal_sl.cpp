@@ -30,7 +30,7 @@ static void Load_XBSS()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		LongBridgeSignalStorage &lbss = _long_bridge_signal_sim_map[index];
+		LongBridgeSignalStorage &lbss = _long_bridge_signal_sim_map[TileIndex(index)];
 		SlObjectLoadFiltered(&lbss, slt);
 	}
 }
@@ -41,7 +41,7 @@ static void Save_XBSS()
 
 	for (auto &it : _long_bridge_signal_sim_map) {
 		LongBridgeSignalStorage &lbss = it.second;
-		SlSetArrayIndex(it.first);
+		SlSetArrayIndex(it.first.base());
 		SlObjectSaveFiltered(&lbss, slt);
 	}
 }
