@@ -129,6 +129,8 @@ struct BufferSerialisationHelper {
 			this->Send_string(data);
 		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V>) {
 			this->Send_generic_integer(data.base());
+		} else if constexpr (requires { data.Serialise(*this); }) {
+			data.Serialise(*this);
 		} else {
 			this->Send_generic_integer(data);
 		}
@@ -437,6 +439,8 @@ public:
 			this->Recv_string(data, settings);
 		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V>) {
 			this->Recv_generic_integer(data.edit_base());
+		} else if constexpr (requires { data.Deserialise(*this, settings); }) {
+			data.Deserialise(*this, settings);
 		} else {
 			this->Recv_generic_integer(data);
 		}

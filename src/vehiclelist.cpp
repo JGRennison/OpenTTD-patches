@@ -14,6 +14,7 @@
 #include "vehiclelist_func.h"
 #include "group.h"
 #include "tracerestrict.h"
+#include "core/serialisation.hpp"
 
 #include "safeguards.h"
 
@@ -59,6 +60,11 @@ bool VehicleListIdentifier::UnpackIfValid(uint32_t data)
 	[[maybe_unused]] bool ret = result.UnpackIfValid(data);
 	assert(ret);
 	return result;
+}
+
+void VehicleListIdentifier::fmt_format_value(format_target &output) const
+{
+	output.format("vli({}, {}, {}, {})", this->type, this->vtype, this->company, this->index);
 }
 
 /** Data for building a depot vehicle list. */

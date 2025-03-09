@@ -29,7 +29,7 @@ enum VehicleListType : uint8_t {
 };
 
 /** The information about a vehicle list. */
-struct VehicleListIdentifier {
+struct VehicleListIdentifier : public fmt_formattable {
 	VehicleListType type; ///< The type of vehicle list.
 	VehicleType vtype;    ///< The vehicle type associated with this list.
 	CompanyID company;    ///< The company associated with this list.
@@ -38,6 +38,14 @@ struct VehicleListIdentifier {
 	uint32_t Pack() const;
 	bool UnpackIfValid(uint32_t data);
 	static VehicleListIdentifier UnPack(uint32_t data);
+
+	template <typename T>
+	void Serialise(T &&buffer) const { buffer.Send_uint32(this->Pack()); }
+
+	template <typename T, typename V>
+	bool Deserialise(T &buffer, V &&default_string_validation) { return this->UnpackIfValid(buffer.Recv_uint32()); }
+
+	void fmt_format_value(struct format_target &output) const;
 
 	/**
 	 * Create a simple vehicle list.
