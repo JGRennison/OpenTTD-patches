@@ -1259,7 +1259,7 @@ void NetworkGameLoop()
 #ifdef DEBUG_DUMP_COMMANDS
 		/* Loading of the debug commands from -ddesync>=1 */
 		static auto f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
-		static EconTime::Date next_date = 0;
+		static EconTime::Date next_date = {};
 		static uint next_date_fract;
 		static uint next_tick_skip_counter;
 		static std::unique_ptr<CommandPacket> cp;
@@ -1267,15 +1267,16 @@ void NetworkGameLoop()
 		static uint32_t sync_state[2];
 		if (!f.has_value() && next_date == 0) {
 			Debug(desync, 0, "Cannot open commands.log");
-			next_date = 1;
+			next_date = EconTime::Date{1};
 		}
 
 		while (f.has_value() && !feof(*f)) {
 			if (EconTime::CurDate() == next_date && EconTime::CurDateFract() == next_date_fract && TickSkipCounter() == next_tick_skip_counter) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data.get());
-					Debug(net, 0, "injecting: {}; {:02x}; {:06x}; {:08x}; {:08x}; {:016x} {:08x}; \"{}\"{} ({})",
-							debug_date_dumper().HexDate(), (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->aux_data != nullptr ? " (aux data present)" : "", GetCommandName(cp->cmd));
+					extern void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
+					NetworkSendCommandImplementation(cp->command_container.cmd, cp->command_container.tile, *cp->command_container.payload, (StringID)0, CommandCallback::None, 0, cp->company);
+					Debug(net, 0, "injecting: {}; {:02x}; {:06x}; {:08x} ({})",
+							debug_date_dumper().HexDate(), (int)_current_company, cp->command_container.tile, cp->command_container.cmd, GetCommandName(cp->command_container.cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
@@ -1317,42 +1318,57 @@ void NetworkGameLoop()
 				) {
 				p += 5;
 				if (*p == ' ') p++;
-				cp.reset(new CommandPacket());
+				uint cmd;
 				int company;
+				uint tile;
 				int offset;
-				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; p3: " OTTD_PRINTFHEX64 "; cmd: %x; %n\"",
-						&next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->p3, &cp->cmd, &offset);
-				assert(ret == 9);
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); cmd: %x; %n\"",
+						&next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &company, &tile, &cmd, &offset);
+				assert(ret == 6);
+				if (!IsValidCommand(static_cast<Commands>(cmd))) {
+					Debug(desync, 0, "Trying to parse: {}, invalid command: {}", p, cmd);
+					NOT_REACHED();
+				}
+
+				cp.reset(new CommandPacket());
 				cp->company = (CompanyID)company;
 
-				const char *text_start = p + offset;
-				const char *text_end = text_start + 1;
-				while (*text_end != 0) {
-					char current = *text_end;
-					text_end++;
-					if (current == '"') break;
-					if (current == '\\' && *text_end != 0) {
-						text_end++;
-					}
+				const char *payload_start = p + offset;
+				while (*payload_start != 0 && *payload_start != '<') payload_start++;
+				if (*payload_start != '<') {
+					Debug(desync, 0, "Trying to parse: {}", p);
+					NOT_REACHED();
 				}
-				auto json = nlohmann::json::parse(text_start, text_end, nullptr, false);
-				if (json.is_string()) {
-					cp->text = json.get<std::string>();
+				payload_start++;
+
+				const char *payload_end = payload_start;
+				while (*payload_end != 0 && *payload_end != '>') payload_end++;
+				if (*payload_end != '>' || ((payload_end - payload_start) & 1) != 0) {
+					Debug(desync, 0, "Trying to parse: {}", p);
+					NOT_REACHED();
 				}
 
-				const char *aux_str = text_end;
-				while (*aux_str != 0 && *aux_str != '<') aux_str++;
+				std::vector<uint8_t> cmd_buffer;
+				/* Prepend the fields expected by DynBaseCommandContainer::Deserialise */
+				BufferSerialisationRef write_buffer(cmd_buffer);
+				write_buffer.Send_uint16(static_cast<uint16_t>(cmd));
+				write_buffer.Send_uint16(0);
+				write_buffer.Send_uint32(tile);
 
-				if (aux_str[0] == '<' && aux_str[1] != '>') {
-					auto aux = std::make_unique<CommandAuxiliarySerialised>();
-					for (const char *data = aux_str + 1; data[0] != 0 && data[1] != 0 && data[0] != '>'; data += 2) {
-						uint8_t e = 0;
-						std::from_chars(data, data + 2, e, 16);
-						aux->serialised_data.emplace_back(e);
-					}
-					cp->aux_data = std::move(aux);
-				} else {
-					cp->aux_data = nullptr;
+				size_t payload_size_pos = write_buffer.GetSendOffset();
+				write_buffer.Send_uint16(0);
+				for (const char *data = payload_start; data < payload_end; data += 2) {
+					uint8_t e = 0;
+					std::from_chars(data, data + 2, e, 16);
+					write_buffer.Send_uint8(e);
+				}
+				write_buffer.SendAtOffset_uint16(payload_size_pos, (uint16_t)(write_buffer.GetSendOffset() - payload_size_pos - 2));
+
+				DeserialisationBuffer read_buffer(cmd_buffer.data(), cmd_buffer.size());
+				const char *error = cp->command_container.Deserialise(read_buffer);
+				if (error != nullptr) {
+					Debug(desync, 0, "Trying to parse: {} --> {}", p, error);
+					NOT_REACHED();
 				}
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
@@ -1360,14 +1376,10 @@ void NetworkGameLoop()
 				assert(ret == 3);
 				Debug(net, 0, "injecting pause for join at {}; please join when paused", debug_date_dumper().HexDate(next_date, next_date_fract, next_tick_skip_counter));
 				cp.reset(new CommandPacket());
-				cp->tile = 0;
+				cp->command_container.tile = {};
 				cp->company = COMPANY_SPECTATOR;
-				cp->cmd = CMD_PAUSE;
-				cp->p1 = PM_PAUSED_NORMAL;
-				cp->p2 = 1;
-				cp->p3 = 0;
-				cp->callback = nullptr;
-				cp->aux_data = nullptr;
+				cp->command_container.cmd = CMD_PAUSE;
+				cp->command_container.payload = CmdPayload<CMD_PAUSE>::Make(PM_PAUSED_NORMAL, true).Clone();
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);
