@@ -29,6 +29,7 @@
 #include "../fileio_func.h"
 #include "../league_type.h"
 #include "../goal_type.h"
+#include "../story_type.h"
 
 #include "../core/format.hpp"
 
@@ -328,12 +329,12 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewStoryPageID());
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageID>(::INVALID_STORY_PAGE));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageElementID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewStoryPageElementID());
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageElementID>(::INVALID_STORY_PAGE_ELEMENT));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance *instance)

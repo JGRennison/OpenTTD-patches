@@ -216,8 +216,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	SetNewVehicleID(_new_vehicle_id);
 	SetNewSignID(_new_sign_id);
 	SetNewGroupID(_new_group_id);
-	SetNewStoryPageID(_new_story_page_id);
-	SetNewStoryPageElementID(_new_story_page_element_id);
 }
 
 /* static */ bool ScriptObject::GetLastCommandRes()
@@ -253,26 +251,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ GroupID ScriptObject::GetNewGroupID()
 {
 	return GetStorage()->new_group_id;
-}
-
-/* static */ void ScriptObject::SetNewStoryPageID(StoryPageID story_page_id)
-{
-	GetStorage()->new_story_page_id = story_page_id;
-}
-
-/* static */ GroupID ScriptObject::GetNewStoryPageID()
-{
-	return GetStorage()->new_story_page_id;
-}
-
-/* static */ void ScriptObject::SetNewStoryPageElementID(StoryPageElementID story_page_element_id)
-{
-	GetStorage()->new_story_page_element_id = story_page_element_id;
-}
-
-/* static */ GroupID ScriptObject::GetNewStoryPageElementID()
-{
-	return GetStorage()->new_story_page_element_id;
 }
 
 /* static */ void ScriptObject::SetAllowDoCommand(bool allow)

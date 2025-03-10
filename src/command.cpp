@@ -49,11 +49,13 @@
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
 #include "settings_cmd.h"
+#include "story_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
 #include "timetable_cmd.h"
 #include "tracerestrict_cmd.h"
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
+#include "viewport_cmd.h"
 
 #include "table/strings.h"
 

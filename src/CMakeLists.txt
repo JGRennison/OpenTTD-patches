@@ -484,6 +484,7 @@ add_files(
     stdafx.h
     story.cpp
     story_base.h
+    story_cmd.h
     story_gui.cpp
     story_type.h
     string.cpp
@@ -592,6 +593,7 @@ add_files(
     vehiclelist.h
     vehiclelist_func.h
     viewport.cpp
+    viewport_cmd.h
     viewport_func.h
     viewport_gui.cpp
     viewport_kdtree.h

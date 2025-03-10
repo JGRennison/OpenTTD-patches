@@ -310,15 +310,6 @@ protected:
 	 * Get the latest stored new_group_id.
 	 */
 	static GroupID GetNewGroupID();
-	/**
-	 * Get the latest stored new_story_page_id.
-	 */
-	static StoryPageID GetNewStoryPageID();
-
-	/**
-	 * Get the latest stored new_story_page_id.
-	 */
-	static StoryPageID GetNewStoryPageElementID();
 
 	/**
 	 * Store a allow_do_command per company.
@@ -440,18 +431,6 @@ private:
 	 * @param group_id The new GroupID.
 	 */
 	static void SetNewGroupID(GroupID group_id);
-
-	/**
-	 * Store a new_story_page_id per company.
-	 * @param story_page_id The new StoryPageID.
-	 */
-	static void SetNewStoryPageID(StoryPageID story_page_id);
-
-	/**
-	 * Store a new_story_page_id per company.
-	 * @param story_page_id The new StoryPageID.
-	 */
-	static void SetNewStoryPageElementID(StoryPageElementID story_page_element_id);
 
 	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
 };

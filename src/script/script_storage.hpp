@@ -14,7 +14,6 @@
 #include "../vehicle_func.h"
 #include "../road_type.h"
 #include "../group.h"
-#include "../story_type.h"
 #include "../3rdparty/robin_hood/robin_hood.h"
 
 #include "script_types.hpp"
@@ -63,8 +62,6 @@ private:
 	VehicleID new_vehicle_id;        ///< The ID of the new Vehicle.
 	SignID new_sign_id;              ///< The ID of the new Sign.
 	GroupID new_group_id;            ///< The ID of the new Group.
-	StoryPageID new_story_page_id;   ///< The ID of the new StoryPage.
-	StoryPageID new_story_page_element_id; ///< The ID of the new StoryPageElement.
 
 	std::vector<int> callback_value; ///< The values which need to survive a callback.
 
@@ -97,8 +94,6 @@ public:
 		new_vehicle_id    (0),
 		new_sign_id       (0),
 		new_group_id      (0),
-		new_story_page_id (0),
-		new_story_page_element_id(0),
 		/* calback_value (can't be set) */
 		road_type         (INVALID_ROADTYPE),
 		rail_type         (INVALID_RAILTYPE),

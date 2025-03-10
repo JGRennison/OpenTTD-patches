@@ -26,6 +26,7 @@
 #include "tilehighlight_func.h"
 #include "vehicle_base.h"
 #include "core/backup_type.hpp"
+#include "story_cmd.h"
 
 #include "widgets/story_widget.h"
 
@@ -560,7 +561,7 @@ protected:
 				this->SetTimeout();
 				this->SetWidgetDirty(WID_SB_PAGE_PANEL);
 
-				DoCommandPOld(0, pe.index, 0, CMD_STORY_PAGE_BUTTON);
+				Command<CMD_STORY_PAGE_BUTTON>::Post(TileIndex{}, pe.index, INVALID_VEHICLE);
 				break;
 
 			case SPET_BUTTON_TILE:
@@ -909,7 +910,7 @@ public:
 			return;
 		}
 
-		DoCommandPOld(tile, pe->index, 0, CMD_STORY_PAGE_BUTTON);
+		Command<CMD_STORY_PAGE_BUTTON>::Post(tile, pe->index, INVALID_VEHICLE);
 		ResetObjectToPlace();
 	}
 
@@ -928,7 +929,7 @@ public:
 		VehicleType wanted_vehtype = data.GetVehicleType();
 		if (wanted_vehtype != VEH_INVALID && wanted_vehtype != v->type) return false;
 
-		DoCommandPOld(0, pe->index, v->index, CMD_STORY_PAGE_BUTTON);
+		Command<CMD_STORY_PAGE_BUTTON>::Post(TileIndex{}, pe->index, v->index);
 		ResetObjectToPlace();
 		return true;
 	}

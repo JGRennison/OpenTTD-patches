@@ -6841,25 +6841,23 @@ void InitializeSpriteSorter()
 
 /**
  * Scroll players main viewport.
- * @param tile tile to center viewport on
  * @param flags type of operation
- * @param p1 ViewportScrollTarget of scroll target
- * @param p2 company or client id depending on the target
- * @param text unused
+ * @param tile tile to center viewport on
+ * @param target ViewportScrollTarget of scroll target
+ * @param ref company or client id depending on the target
  * @return the cost of this operation or an error
  */
-CommandCost CmdScrollViewport(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdScrollViewport(DoCommandFlag flags, TileIndex tile, ViewportScrollTarget target, uint32_t ref)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
-	ViewportScrollTarget target = (ViewportScrollTarget)p1;
 	switch (target) {
 		case VST_EVERYONE:
 			break;
 		case VST_COMPANY:
-			if (_local_company != (CompanyID)p2) return CommandCost();
+			if (_local_company != (CompanyID)ref) return CommandCost();
 			break;
 		case VST_CLIENT:
-			if (_network_own_client_id != (ClientID)p2) return CommandCost();
+			if (_network_own_client_id != (ClientID)ref) return CommandCost();
 			break;
 		default:
 			return CMD_ERROR;
