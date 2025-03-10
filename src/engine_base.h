@@ -145,7 +145,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint GetPower() const;
 	uint GetDisplayWeight() const;
 	uint GetDisplayMaxTractiveEffort() const;
-	DateDelta GetLifeLengthInDays() const;
+	CalTime::DateDelta GetLifeLengthInDays() const;
 	uint16_t GetRange() const;
 	StringID GetAircraftTypeText() const;
 

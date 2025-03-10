@@ -57,7 +57,7 @@
 	ymd.day = 1;
 	auto m = ymd.month + ::Subsidy::Get(subsidy_id)->remaining;
 	ymd.month = (m - 1) % 12 + 1;
-	ymd.year += YearDelta{(m - 1) / 12};
+	ymd.year += EconTime::YearDelta{(m - 1) / 12};
 
 	return (ScriptDate::Date)EconTime::ConvertYMDToDate(ymd.year, ymd.month, ymd.day).base();
 }

@@ -50,32 +50,34 @@ namespace DateDetail {
 	};
 };
 
-struct YearDeltaTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerScalable> {};
-using YearDelta = StrongType::Typedef<YearDeltaTag>;
-
+template <typename T>
 struct DateDeltaTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerScalable> {};
-using DateDelta = StrongType::Typedef<DateDeltaTag>;
 
+template <typename T>
 struct DateTicksDeltaTag : public StrongType::TypedefTraits<int64_t, StrongType::Compare, StrongType::IntegerScalable> {};
-using DateTicksDelta = StrongType::Typedef<DateTicksDeltaTag>;
 
 template <typename T>
-struct DateTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerDelta<DateDelta>> {};
+struct YearDeltaTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerScalable> {};
 
 template <typename T>
-struct DateTicksTag : public StrongType::TypedefTraits<int64_t, StrongType::Compare, StrongType::IntegerDelta<DateTicksDelta>, DateDetail::DateTicksOperations<StrongType::Typedef<DateTag<T>>, uint16_t>> {};
+struct DateTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerDelta<StrongType::Typedef<DateDeltaTag<T>>>> {};
 
 template <typename T>
-struct YearTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerDelta<YearDelta>> {};
+struct DateTicksTag : public StrongType::TypedefTraits<int64_t, StrongType::Compare, StrongType::IntegerDelta<StrongType::Typedef<DateTicksDeltaTag<T>>>, DateDetail::DateTicksOperations<StrongType::Typedef<DateTag<T>>, uint16_t>> {};
+
+template <typename T>
+struct YearTag : public StrongType::TypedefTraits<int32_t, StrongType::Compare, StrongType::IntegerDelta<StrongType::Typedef<YearDeltaTag<T>>>> {};
 
 namespace DateDetail {
 	template <typename T>
 	struct BaseTime {
+		using DateDelta = StrongType::Typedef<DateDeltaTag<T>>;
 		using Date = StrongType::Typedef<DateTag<T>>;
-		using DateDelta = StrongType::Typedef<DateTag<T>>;
+
 		using DateFract = uint16_t; ///< The fraction of a date we're in, i.e. the number of ticks since the last date changeover
 
 		/* The type to store dates in when tick-precision is required */
+		using DateTicksDelta = StrongType::Typedef<DateTicksDeltaTag<T>>;
 		using DateTicks = StrongType::Typedef<DateTicksTag<T>>;
 
 		static constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
@@ -84,6 +86,7 @@ namespace DateDetail {
 		}
 
 		/* Year type */
+		using YearDelta = StrongType::Typedef<YearDeltaTag<T>>;
 		using Year = StrongType::Typedef<YearTag<T>>;
 
 		using Month = uint8_t;     ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.

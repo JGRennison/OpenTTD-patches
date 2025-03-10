@@ -36,8 +36,8 @@ uint32_t _quit_after_days;                 ///< Quit after this many days of run
 
 CalTime::State CalTime::Detail::now;
 EconTime::State EconTime::Detail::now;
-YearDelta EconTime::Detail::years_elapsed;
-YearDelta EconTime::Detail::period_display_offset;
+EconTime::YearDelta EconTime::Detail::years_elapsed;
+EconTime::YearDelta EconTime::Detail::period_display_offset;
 
 namespace DateDetail {
 	StateTicksDelta _state_ticks_offset;   ///< Offset to add when calculating a StateTicks value from an economy date, date fract and tick skip counter
@@ -396,7 +396,7 @@ static void OnNewEconomyYear()
 	if (EconTime::CurYear() == EconTime::MAX_YEAR + 1) {
 		EconTime::Detail::period_display_offset++;
 		EconTime::Detail::now.econ_ymd.year--;
-		DateDelta days_this_year = DateDelta{EconTime::IsLeapYear(EconTime::Detail::now.econ_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR};
+		const EconTime::DateDelta days_this_year{EconTime::IsLeapYear(EconTime::Detail::now.econ_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR};
 		EconTime::Detail::now.econ_date -= days_this_year;
 		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		UpdateOrderUIOnDateChange();

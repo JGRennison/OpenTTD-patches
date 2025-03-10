@@ -38,7 +38,7 @@ inline void LinkGraph::BaseNode::Init(TileIndex xy, StationID st, uint demand)
  * This is useful if the date has been modified with the cheat menu.
  * @param interval Number of days to be added or subtracted.
  */
-void LinkGraph::ShiftDates(DateDelta interval)
+void LinkGraph::ShiftDates(EconTime::DateDelta interval)
 {
 	for (NodeID node1 = 0; node1 < this->Size(); ++node1) {
 		BaseNode &source = this->nodes[node1];

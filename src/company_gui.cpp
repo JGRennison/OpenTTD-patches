@@ -435,7 +435,7 @@ struct CompanyFinancesWindow : Window {
 
 				const Company *c = Company::Get((CompanyID)this->window_number);
 				const auto &expenses = c->yearly_expenses[NUM_PERIODS - period - 1];
-				DrawYearColumn(r, EconTime::YearToDisplay(EconTime::CurYear() - YearDelta{NUM_PERIODS - period - 1}), expenses);
+				DrawYearColumn(r, EconTime::YearToDisplay(EconTime::CurYear() - EconTime::YearDelta{NUM_PERIODS - period - 1}), expenses);
 				break;
 			}
 

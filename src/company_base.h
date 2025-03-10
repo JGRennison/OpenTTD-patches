@@ -106,7 +106,7 @@ struct CompanyProperties {
 
 	CalTime::Year inaugurated_year;  ///< Year of starting the company.
 	int32_t display_inaugurated_period;///< Wallclock display period of starting the company.
-	YearDelta age_years;             ///< Number of economy years that the company has been operational.
+	EconTime::YearDelta age_years;   ///< Number of economy years that the company has been operational.
 
 	uint8_t months_empty = 0;        ///< NOSAVE: Number of months this company has not had a client in multiplayer.
 	uint8_t months_of_bankruptcy;    ///< Number of months that the company is unable to pay its debts

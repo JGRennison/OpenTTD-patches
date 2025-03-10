@@ -258,7 +258,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		if (v->state == 1) {
 			if (++v->age == 38) {
 				v->state = 2;
-				v->age = DateDelta{0};
+				v->age = CalTime::DateDelta{0};
 			}
 
 			if (GB(v->tick_counter, 0, 3) == 0) CreateEffectVehicleRel(v, 0, -17, 2, EV_CRASH_SMOKE);
@@ -266,7 +266,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		} else if (v->state == 0) {
 			if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
 				v->state = 1;
-				v->age = DateDelta{0};
+				v->age = CalTime::DateDelta{0};
 
 				SetDParam(0, GetStationIndex(v->tile));
 				AddTileNewsItem(STR_NEWS_DISASTER_ZEPPELIN, NT_ACCIDENT, v->tile);
@@ -320,7 +320,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		}
 	} else if (v->age == 350) {
 		v->state = 3;
-		v->age = DateDelta{0};
+		v->age = CalTime::DateDelta{0};
 	}
 
 	if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
@@ -378,7 +378,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 				}
 				/* Target it. */
 				v->dest_tile = TileIndex{u->index};
-				v->age = DateDelta{0};
+				v->age = CalTime::DateDelta{0};
 				break;
 			}
 		}
@@ -482,7 +482,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 	} else if (v->state == 1) {
 		if (++v->age == 112) {
 			v->state = 2;
-			v->age = DateDelta{0};
+			v->age = CalTime::DateDelta{0};
 
 			Industry *i = Industry::Get(v->dest_tile.base()); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
 			DestructIndustry(i);
@@ -505,7 +505,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 
 		if (GetIndustrySpec(Industry::Get(ind)->type)->behaviour & industry_flag) {
 			v->state = 1;
-			v->age = DateDelta{0};
+			v->age = CalTime::DateDelta{0};
 		}
 	}
 
@@ -635,7 +635,7 @@ static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 			if (is_valid_target(t) && (n-- == 0)) {
 				/* Target it. */
 				v->dest_tile = t->tile;
-				v->age = DateDelta{0};
+				v->age = CalTime::DateDelta{0};
 				break;
 			}
 		}
@@ -1038,7 +1038,7 @@ void ReleaseDisasterVehicleTargetingVehicle(VehicleID vehicle)
 	v->state = 0;
 	v->dest_tile = RandomTile();
 	GetAircraftFlightLevelBounds(v, &v->z_pos, nullptr);
-	v->age = DateDelta{0};
+	v->age = CalTime::DateDelta{0};
 }
 
 void ResetDisasterVehicleTargeting()

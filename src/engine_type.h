@@ -147,9 +147,9 @@ DECLARE_ENUM_AS_BIT_SET(ExtraEngineFlags);
  *  @see table/engines.h
  */
 struct EngineInfo {
-	CalTime::Date base_intro;  ///< Basic date of engine introduction (without random parts).
-	YearDelta lifelength;      ///< Lifetime of a single vehicle
-	YearDelta base_life;       ///< Basic duration of engine availability (without random parts). \c 0xFF means infinite life.
+	CalTime::Date base_intro;      ///< Basic date of engine introduction (without random parts).
+	CalTime::YearDelta lifelength; ///< Lifetime of a single vehicle
+	CalTime::YearDelta base_life;  ///< Basic duration of engine availability (without random parts). \c 0xFF means infinite life.
 	uint8_t decay_speed;
 	uint8_t load_amount;
 	uint8_t climates;          ///< Climates supported by the engine.

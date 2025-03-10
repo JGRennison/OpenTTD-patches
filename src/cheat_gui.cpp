@@ -131,7 +131,7 @@ static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 		/* Shift cached dates. */
 		LinkGraphSchedule::instance.ShiftDates(new_econ_date - EconTime::CurDate());
 		ShiftVehicleDates(new_econ_date - EconTime::CurDate());
-		EconTime::Detail::period_display_offset -= YearDelta{year.base() - EconTime::CurYear().base()};
+		EconTime::Detail::period_display_offset -= EconTime::YearDelta{year.base() - EconTime::CurYear().base()};
 
 		EconTime::Detail::SetDate(new_econ_date, new_econ_date_fract);
 		UpdateOrderUIOnDateChange();

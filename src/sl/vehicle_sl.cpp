@@ -25,6 +25,7 @@
 #include "../strings_func.h"
 #include "../economy_base.h"
 #include "../event_logs.h"
+#include "../date_func.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include "../3rdparty/robin_hood/robin_hood.h"
 #include "../core/format.hpp"
@@ -450,7 +451,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 		if (IsSavegameVersionBefore(SLV_VEHICLE_ECONOMY_AGE) && SlXvIsFeatureMissing(XSLFI_VEHICLE_ECONOMY_AGE)) {
 			/* Set vehicle economy age based on calendar age. */
 			for (Vehicle *v : Vehicle::Iterate()) {
-				v->economy_age = v->age;
+				v->economy_age = ToEconTimeCast(v->age);
 			}
 		}
 	}

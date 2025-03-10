@@ -201,7 +201,7 @@ void LinkGraphSchedule::SpawnAll()
  * graph jobs by the number of days given.
  * @param interval Number of days to be added or subtracted.
  */
-void LinkGraphSchedule::ShiftDates(DateDelta interval)
+void LinkGraphSchedule::ShiftDates(EconTime::DateDelta interval)
 {
 	for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(interval);
 }

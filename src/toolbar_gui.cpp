@@ -1305,7 +1305,7 @@ void SetStartingYear(CalTime::Year year)
 		/* If you open a savegame as scenario there may already be link graphs.*/
 		LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
 		ShiftVehicleDates(new_economy_date - EconTime::CurDate());
-		EconTime::Detail::period_display_offset -= YearDelta{year.base() - EconTime::CurYear().base()};
+		EconTime::Detail::period_display_offset -= EconTime::YearDelta{year.base() - EconTime::CurYear().base()};
 
 		EconTime::Detail::SetDate(new_economy_date, 0);
 	}

@@ -81,7 +81,7 @@ Engine::Engine(VehicleType type, uint16_t local_id)
 		/* 'power' defaults to zero, so we also have to default to 'wagon' */
 		if (type == VEH_TRAIN) this->u.rail.railveh_type = RAILVEH_WAGON;
 		/* Set model life to maximum to make wagons available */
-		this->info.base_life = YearDelta{0xFF};
+		this->info.base_life = CalTime::YearDelta{0xFF};
 		/* Set road vehicle tractive effort to the default value */
 		if (type == VEH_ROAD) this->u.road.tractive_effort = 0x4C;
 		/* Aircraft must have CT_INVALID as default, as there is no property */
@@ -116,7 +116,7 @@ Engine::Engine(VehicleType type, uint16_t local_id)
 			this->info.string_id = STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM + local_id;
 
 			/* Set the default model life of original wagons to "infinite" */
-			if (this->u.rail.railveh_type == RAILVEH_WAGON) this->info.base_life = YearDelta{0xFF};
+			if (this->u.rail.railveh_type == RAILVEH_WAGON) this->info.base_life = CalTime::YearDelta{0xFF};
 
 			break;
 
@@ -502,10 +502,10 @@ uint Engine::GetDisplayMaxTractiveEffort() const
  * Returns the vehicle's (not model's!) life length in days.
  * @return the life length
  */
-DateDelta Engine::GetLifeLengthInDays() const
+CalTime::DateDelta Engine::GetLifeLengthInDays() const
 {
 	/* Assume leap years; this gives the player a bit more than the given amount of years, but never less. */
-	return DateDelta{(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life).base() * DAYS_IN_LEAP_YEAR};
+	return CalTime::DateDelta{(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life).base() * DAYS_IN_LEAP_YEAR};
 }
 
 /**
@@ -800,7 +800,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
-	e->intro_date = ei->base_intro <= CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (DateDelta)GB(r, 0, 9) + ei->base_intro;
+	e->intro_date = ei->base_intro <= CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : CalTime::DateDelta{(int)GB(r, 0, 9)} + ei->base_intro;
 
 	/* Get parent variant index for syncing reliability via random seed. */
 	const Engine *re = e;

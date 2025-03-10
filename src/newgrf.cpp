@@ -1028,11 +1028,11 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 			break;
 
 		case 0x03: // Vehicle life
-			ei->lifelength = YearDelta{buf.ReadByte()};
+			ei->lifelength = CalTime::YearDelta{buf.ReadByte()};
 			break;
 
 		case 0x04: // Model life
-			ei->base_life = YearDelta{buf.ReadByte()};
+			ei->base_life = CalTime::YearDelta{buf.ReadByte()};
 			break;
 
 		case 0x06: // Climates available
@@ -7562,7 +7562,7 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 
 	switch (param) {
 		case 0x00: // current date
-			*value = std::max<DateDelta>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR, DateDelta{0}).base();
+			*value = std::max<CalTime::DateDelta>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR, CalTime::DateDelta{0}).base();
 			return true;
 
 		case 0x01: // current year

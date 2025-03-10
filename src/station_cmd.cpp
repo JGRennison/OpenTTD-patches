@@ -4495,7 +4495,7 @@ void DeleteStaleLinks(Station *from)
 			Station *to = Station::Get((*lg)[to_id].Station());
 			assert(to->goods[c].node == to_id);
 			assert(EconTime::CurDate() >= edge.LastUpdate());
-			const DateDelta timeout = DateDelta{std::max<int>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / DayLengthFactor(), 1)};
+			const EconTime::DateDelta timeout{std::max<int>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / DayLengthFactor(), 1)};
 			if (edge.LastAircraftUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastAircraftUpdate()) > timeout) {
 				edge.ClearAircraft();
 			}

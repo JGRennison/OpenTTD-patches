@@ -2563,7 +2563,7 @@ void AgeVehicle(Vehicle *v)
 
 	if (!v->IsPrimaryVehicle() && (v->type != VEH_TRAIN || !Train::From(v)->IsEngine())) return;
 
-	DateDelta age = v->age - v->max_age;
+	CalTime::DateDelta age = v->age - v->max_age;
 	for (int i = 0; i <= 4; i++) {
 		if (age == CalTime::DateAtStartOfYear(CalTime::Year{i}).AsDelta()) {
 			v->reliability_spd_dec <<= 1;
@@ -5017,7 +5017,7 @@ void AdjustVehicleStateTicksBase(StateTicksDelta delta)
 	}
 }
 
-void ShiftVehicleDates(DateDelta interval)
+void ShiftVehicleDates(EconTime::DateDelta interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->date_of_last_service = std::max<EconTime::Date>(v->date_of_last_service + interval, EconTime::Date{0});
