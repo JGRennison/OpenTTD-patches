@@ -173,12 +173,20 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 /* static */ void ScriptObject::SetLastCommandResultData(uint32_t last_result)
 {
-	GetStorage()->last_result = last_result;
+	auto *storage = GetStorage();
+	storage->last_result = last_result;
+	storage->last_result_valid = true;
 }
 
-/* static */ uint32_t ScriptObject::GetLastCommandResultData()
+/* static */ void ScriptObject::ClearLastCommandResultData()
 {
-	return GetStorage()->last_result;
+	GetStorage()->last_result_valid = false;
+}
+
+/* static */ std::pair<uint32_t, bool> ScriptObject::GetLastCommandResultDataRaw()
+{
+	auto *storage = GetStorage();
+	return { storage->last_result, storage->last_result_valid };
 }
 
 /* static */ void ScriptObject::SetRoadType(RoadType road_type)
@@ -390,7 +398,11 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Costs of this operation. */
 	SetLastCost(res.GetCost());
-	SetLastCommandResultData(res.GetResultData());
+	if (res.HasResultData()) {
+		SetLastCommandResultData(res.GetResultData());
+	} else {
+		ClearLastCommandResultData();
+	}
 	SetLastCommandRes(true);
 
 	if (_generating_world || asynchronous) {

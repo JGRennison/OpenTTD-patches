@@ -372,9 +372,19 @@ protected:
 	static void SetLastCommandResultData(uint32_t last_result);
 
 	/**
-	 * Get the result data of the last command.
+	 * Clear the result data of the last command.
 	 */
-	static uint32_t GetLastCommandResultData();
+	static void ClearLastCommandResultData();
+
+	/**
+	 * Get the result data of the last command, or a default value if there wasn't any.
+	 */
+	template <typename T>
+	static T GetLastCommandResultData(T default_value)
+	{
+		auto res = ScriptObject::GetLastCommandResultDataRaw();
+		return res.second ? static_cast<T>(res.first) : default_value;
+	}
 
 	/**
 	 * Set a variable that can be used by callback functions to pass information.
@@ -411,6 +421,8 @@ protected:
 	static void RegisterUniqueLogMessage(std::string &&msg);
 
 private:
+	static std::pair<uint32_t, bool> GetLastCommandResultDataRaw();
+
 	/**
 	 * Store a new_vehicle_id per company.
 	 * @param vehicle_id The new VehicleID.

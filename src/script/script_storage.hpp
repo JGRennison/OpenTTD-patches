@@ -52,6 +52,7 @@ private:
 	CommandCost costs;               ///< The costs the script is tracking.
 	Money last_cost;                 ///< The last cost of the command.
 	uint32_t last_result;            ///< The last result data of the command.
+	uint32_t last_result_valid;      ///< The last result data of the command is valid.
 	ScriptErrorType last_error{};    ///< The last error of the command.
 	bool last_command_res;           ///< The last result of the command.
 
@@ -88,6 +89,7 @@ public:
 		/* costs (can't be set) */
 		last_cost         (0),
 		last_result       (0),
+		last_result_valid (false),
 		last_command_res  (true),
 		last_cmd          (CMD_END),
 		last_tile         (INVALID_TILE),

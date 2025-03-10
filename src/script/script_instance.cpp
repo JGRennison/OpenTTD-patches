@@ -323,7 +323,7 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(static_cast<GoalID>(ScriptObject::GetLastCommandResultData()));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GoalID>(::INVALID_GOAL));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)
@@ -338,12 +338,12 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(static_cast<LeagueTableElementID>(ScriptObject::GetLastCommandResultData()));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableElementID>(::INVALID_LEAGUE_TABLE_ELEMENT));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnLeagueTableID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(static_cast<LeagueTableID>(ScriptObject::GetLastCommandResultData()));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableID>(::INVALID_LEAGUE_TABLE));
 }
 
 
