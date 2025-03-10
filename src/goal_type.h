@@ -38,6 +38,4 @@ typedef uint16_t GoalID; ///< ID of a goal
 struct Goal;
 static const GoalID INVALID_GOAL = 0xFFFF; ///< Constant representing a non-existing goal.
 
-extern GoalID _new_goal_id;
-
 #endif /* GOAL_TYPE_H */

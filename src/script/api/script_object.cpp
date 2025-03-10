@@ -208,7 +208,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	SetNewVehicleID(_new_vehicle_id);
 	SetNewSignID(_new_sign_id);
 	SetNewGroupID(_new_group_id);
-	SetNewGoalID(_new_goal_id);
 	SetNewStoryPageID(_new_story_page_id);
 	SetNewStoryPageElementID(_new_story_page_element_id);
 }
@@ -246,16 +245,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ GroupID ScriptObject::GetNewGroupID()
 {
 	return GetStorage()->new_group_id;
-}
-
-/* static */ void ScriptObject::SetNewGoalID(GoalID goal_id)
-{
-	GetStorage()->new_goal_id = goal_id;
-}
-
-/* static */ GroupID ScriptObject::GetNewGoalID()
-{
-	return GetStorage()->new_goal_id;
 }
 
 /* static */ void ScriptObject::SetNewStoryPageID(StoryPageID story_page_id)

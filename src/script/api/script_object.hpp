@@ -310,12 +310,6 @@ protected:
 	 * Get the latest stored new_group_id.
 	 */
 	static GroupID GetNewGroupID();
-
-	/**
-	 * Get the latest stored new_goal_id.
-	 */
-	static GoalID GetNewGoalID();
-
 	/**
 	 * Get the latest stored new_story_page_id.
 	 */
@@ -434,12 +428,6 @@ private:
 	 * @param group_id The new GroupID.
 	 */
 	static void SetNewGroupID(GroupID group_id);
-
-	/**
-	 * Store a new_goal_id per company.
-	 * @param goal_id The new GoalID.
-	 */
-	static void SetNewGoalID(GoalID goal_id);
 
 	/**
 	 * Store a new_story_page_id per company.

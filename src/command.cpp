@@ -42,6 +42,7 @@
 #include <array>
 
 #include "company_cmd.h"
+#include "goal_cmd.h"
 #include "league_cmd.h"
 #include "misc_cmd.h"
 #include "order_cmd.h"

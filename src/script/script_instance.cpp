@@ -28,6 +28,7 @@
 #include "../company_func.h"
 #include "../fileio_func.h"
 #include "../league_type.h"
+#include "../goal_type.h"
 
 #include "../core/format.hpp"
 
@@ -322,7 +323,7 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewGoalID());
+	instance->engine->InsertResult(static_cast<GoalID>(ScriptObject::GetLastCommandResultData()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)

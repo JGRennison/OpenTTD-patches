@@ -210,6 +210,7 @@ add_files(
     gfxinit.h
     goal.cpp
     goal_base.h
+    goal_cmd.h
     goal_gui.cpp
     goal_type.h
     graph_gui.cpp
