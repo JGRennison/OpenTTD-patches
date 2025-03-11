@@ -281,6 +281,14 @@ namespace StrongType {
 		};
 	};
 
+	/**
+	 * Mix-in to disable the default formatting behaviour (fmt_format_as_base).
+	 */
+	struct NoDefaultFormat {
+		template <typename TType, typename TBaseType>
+		struct mixin {};
+	};
+
 	namespace detail {
 		template <typename... TProperties>
 		struct Properties {};
@@ -296,6 +304,9 @@ namespace StrongType {
 	struct TypedefTraits {
 		using BaseType = TBaseType;
 		using Properties = detail::Properties<TProperties...>;
+
+		struct dummy{};
+		using FmtTag = std::conditional_t<(std::is_same_v<TProperties, NoDefaultFormat> || ...), dummy, fmt_format_as_base>;
 	};
 
 	namespace detail {
@@ -307,7 +318,7 @@ namespace StrongType {
 }
 
 template <typename TTraits>
-struct EMPTY_BASES ST : public StrongTypedefBase, public fmt_format_as_base, public StrongType::detail::TypedefTraitHelper<ST<TTraits>, TTraits, typename TTraits::Properties> {
+struct EMPTY_BASES ST : public StrongTypedefBase, public TTraits::FmtTag, public StrongType::detail::TypedefTraitHelper<ST<TTraits>, TTraits, typename TTraits::Properties> {
 	using BaseType = typename TTraits::BaseType;
 
 	constexpr ST() = default;
@@ -341,7 +352,7 @@ protected:
 };
 
 template <typename TTraits>
-struct EMPTY_BASES STRef : public StrongTypedefBase, public fmt_format_as_base, public StrongType::detail::TypedefTraitHelper<STRef<TTraits>, TTraits, typename TTraits::Properties> {
+struct EMPTY_BASES STRef : public StrongTypedefBase, public TTraits::FmtTag, public StrongType::detail::TypedefTraitHelper<STRef<TTraits>, TTraits, typename TTraits::Properties> {
 	using ValueType = ST<TTraits>;
 	using BaseType = typename TTraits::BaseType;
 
