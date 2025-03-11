@@ -55,6 +55,7 @@
 #include "timetable_cmd.h"
 #include "tracerestrict_cmd.h"
 #include "train_cmd.h"
+#include "tunnelbridge_cmd.h"
 #include "vehicle_cmd.h"
 #include "viewport_cmd.h"
 
@@ -254,6 +255,7 @@ template <typename T, typename S> struct CommandCallbackTupleHelper;
 template <typename PayloadT, typename... Targs>
 struct CommandCallbackTupleHelper<PayloadT, std::tuple<Targs...>> {
 	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+	using ResultTileTupleCommandCallback = void(const CommandCost &, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 
 	static inline bool ResultExecute(ResultTupleCommandCallback *cb, const CommandCost &result, const CommandPayloadBase &payload)
 	{
@@ -261,6 +263,17 @@ struct CommandCallbackTupleHelper<PayloadT, std::tuple<Targs...>> {
 		if (data == nullptr) return false;
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
 			cb(result, std::get<Tindices>(data->GetValues())...);
+		};
+		handler(std::index_sequence_for<Targs...>{});
+		return true;
+	}
+
+	static inline bool ResultTileExecute(ResultTileTupleCommandCallback *cb, const CommandCost &result, TileIndex tile, const CommandPayloadBase &payload)
+	{
+		auto *data = dynamic_cast<const PayloadT *>(&payload);
+		if (data == nullptr) return false;
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			cb(result, tile, std::get<Tindices>(data->GetValues())...);
 		};
 		handler(std::index_sequence_for<Targs...>{});
 		return true;
@@ -276,9 +289,18 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	}; \
 };
 
+#define DEF_CB_RES_TILE_TUPLE(cb_, T_) \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<T_, std::remove_cvref_t<decltype(std::declval<T_>().GetValues())>>; } \
+typename cmd_detail::cc_helper_ ## cb_ ::ResultTileTupleCommandCallback Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		return cmd_detail::cc_helper_ ## cb_ ::ResultTileExecute(Cc ## cb_, result, tile, payload); \
+	}; \
+};
+
 DEF_CB_RES(BuildPrimaryVehicle)
 DEF_CB_RES_TILE(BuildAirport)
-DEF_CB_GENERAL(BuildBridge)
+DEF_CB_RES_TILE_TUPLE(BuildBridge, CmdPayload<CMD_BUILD_BRIDGE>)
 DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_WATER)
 DEF_CB_RES_TILE(BuildDocks)
 DEF_CB_RES_TILE(FoundTown)

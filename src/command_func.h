@@ -201,6 +201,12 @@ const char *GetCommandName(Commands cmd);
 bool IsCommandAllowedWhilePaused(Commands cmd);
 bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase *payload);
 
+template <Commands Tcmd>
+constexpr CommandFlags GetCommandFlags()
+{
+	return CommandTraits<Tcmd>::flags;
+}
+
 /**
  * Extracts the DC flags needed for DoCommand from the flags returned by GetCommandFlags
  * @param cmd_flags Flags from GetCommandFlags

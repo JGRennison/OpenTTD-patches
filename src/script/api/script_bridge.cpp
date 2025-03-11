@@ -14,6 +14,7 @@
 #include "../../bridge_map.h"
 #include "../../strings_func.h"
 #include "../../date_func.h"
+#include "../../tunnelbridge_cmd.h"
 #include "table/strings.h"
 
 #include "../../safeguards.h"
@@ -96,14 +97,17 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 		default: NOT_REACHED();
 	}
 
-	/* For rail and water we do nothing special */
-	if (vehicle_type == ScriptVehicle::VT_RAIL || vehicle_type == ScriptVehicle::VT_WATER) {
-		return ScriptObject::DoCommandOld(end, start, type | bridge_type, CMD_BUILD_BRIDGE);
+	switch (vehicle_type) {
+		case ScriptVehicle::VT_ROAD:
+			ScriptObject::SetCallbackVariable(0, start.base());
+			ScriptObject::SetCallbackVariable(1, end.base());
+			return ScriptObject::Command<CMD_BUILD_BRIDGE>::Do(&::_DoCommandReturnBuildBridge1, end, start, TRANSPORT_ROAD, bridge_type, ScriptRoad::GetCurrentRoadType(), BuildBridgeFlags::ScriptCommand);
+		case ScriptVehicle::VT_RAIL:
+			return ScriptObject::Command<CMD_BUILD_BRIDGE>::Do(end, start, TRANSPORT_RAIL, bridge_type, ScriptRail::GetCurrentRailType(), BuildBridgeFlags::ScriptCommand);
+		case ScriptVehicle::VT_WATER:
+			return ScriptObject::Command<CMD_BUILD_BRIDGE>::Do(end, start, TRANSPORT_WATER, bridge_type, 0, BuildBridgeFlags::ScriptCommand);
+		default: NOT_REACHED();
 	}
-
-	ScriptObject::SetCallbackVariable(0, start.base());
-	ScriptObject::SetCallbackVariable(1, end.base());
-	return ScriptObject::DoCommandOld(end, start.base(), type | bridge_type, CMD_BUILD_BRIDGE, nullptr, &::_DoCommandReturnBuildBridge1);
 }
 
 /* static */ bool ScriptBridge::_BuildBridgeRoad1()

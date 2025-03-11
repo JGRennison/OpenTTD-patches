@@ -25,6 +25,7 @@
 #include "newgrf_sound.h"
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
+#include "tunnelbridge_cmd.h"
 #include "bridge_signal_map.h"
 #include "tunnel_base.h"
 #include "strings_func.h"
@@ -364,42 +365,33 @@ static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)
 
 /**
  * Build a Bridge
- * @param end_tile end tile
  * @param flags type of operation
- * @param p1 packed start tile coords (~ dx)
- * @param p2 various bitstuffed elements
- * - p2 = (bit  0- 7) - bridge type (hi bh)
- * - p2 = (bit  8-13) - rail type or road types.
- * - p2 = (bit 15-16) - transport type.
- * - p2 = (bit 17)    - script command
- * @param text unused
+ * @param tile_end end tile
+ * @param tile_start start tile
+ * @param transport_type transport type.
+ * @param bridge_type bridge type (hi bh)
+ * @param road_rail_type rail type or road types.
+ * @param build_flags build bridge flags.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex tile_start, TransportType transport_type, BridgeType bridge_type, uint8_t road_rail_type, BuildBridgeFlags build_flags)
 {
 	CompanyID company = _current_company;
 
 	RailType railtype = INVALID_RAILTYPE;
 	RoadType roadtype = INVALID_ROADTYPE;
 
-	/* unpack parameters */
-	BridgeType bridge_type = GB(p2, 0, 8);
-
-	if (!IsValidTile(TileIndex{p1})) return CommandCost(STR_ERROR_BRIDGE_THROUGH_MAP_BORDER);
-
-	TransportType transport_type = Extract<TransportType, 15, 2>(p2);
-
-	bool script_cmd = HasBit(p2, 17);
+	if (!IsValidTile(tile_start)) return CommandCost(STR_ERROR_BRIDGE_THROUGH_MAP_BORDER);
 
 	/* type of bridge */
 	switch (transport_type) {
 		case TRANSPORT_ROAD:
-			roadtype = Extract<RoadType, 8, 6>(p2);
+			roadtype = (RoadType)road_rail_type;
 			if (!ValParamRoadType(roadtype)) return CMD_ERROR;
 			break;
 
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 8, 6>(p2);
+			railtype = (RailType)road_rail_type;
 			if (!ValParamRailType(railtype)) return CMD_ERROR;
 			break;
 
@@ -410,8 +402,6 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 			/* Airports don't have bridges. */
 			return CMD_ERROR;
 	}
-	TileIndex tile_start{p1};
-	TileIndex tile_end = end_tile;
 
 	if ((flags & DC_TOWN) && !(MayTownModifyRoad(tile_start) && MayTownModifyRoad(tile_end))) return CMD_ERROR;
 
@@ -447,7 +437,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 		/* set and test bridge length, availability */
 		CommandCost ret = CheckBridgeAvailability(bridge_type, bridge_len, flags);
 		if (ret.Failed()) return ret;
-		if (script_cmd && HasBit(GetBridgeSpec(bridge_type)->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS)) return CMD_ERROR;
+		if (HasFlag(build_flags, BuildBridgeFlags::ScriptCommand) && HasBit(GetBridgeSpec(bridge_type)->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS)) return CMD_ERROR;
 	} else {
 		if (bridge_len > _settings_game.construction.max_bridge_length) return CommandCost(STR_ERROR_BRIDGE_TOO_LONG);
 	}
@@ -955,30 +945,27 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 
 /**
  * Build Tunnel.
- * @param start_tile start tile of tunnel
  * @param flags type of operation
- * @param p1 bit 0-5 railtype or roadtype
- *           bit 8-9 transport type
- * @param p2 unused
- * @param text unused
+ * @param start_tile start tile of tunnel
+ * @param transport_type transport type
+ * @param road_rail_type railtype or roadtype
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildTunnel(DoCommandFlag flags, TileIndex start_tile, TransportType transport_type, uint8_t road_rail_type)
 {
 	CompanyID company = _current_company;
 
-	TransportType transport_type = Extract<TransportType, 8, 2>(p1);
 	RailType railtype = INVALID_RAILTYPE;
 	RoadType roadtype = INVALID_ROADTYPE;
 	_build_tunnel_endtile = TileIndex{};
 	switch (transport_type) {
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 0, 6>(p1);
+			railtype = (RailType)road_rail_type;
 			if (!ValParamRailType(railtype)) return CMD_ERROR;
 			break;
 
 		case TRANSPORT_ROAD:
-			roadtype = Extract<RoadType, 0, 6>(p1);
+			roadtype = (RoadType)road_rail_type;
 			if (!ValParamRoadType(roadtype)) return CMD_ERROR;
 			if (RoadNoTunnels(roadtype)) return CommandCost(STR_ERROR_TUNNEL_DISALLOWED_ROAD);
 			break;

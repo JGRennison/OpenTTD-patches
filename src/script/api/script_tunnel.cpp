@@ -12,6 +12,7 @@
 #include "script_rail.hpp"
 #include "../script_instance.hpp"
 #include "../../tunnel_map.h"
+#include "../../tunnelbridge_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -96,11 +97,11 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 
 	/* For rail we do nothing special */
 	if (vehicle_type == ScriptVehicle::VT_RAIL) {
-		return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL);
+		return ScriptObject::Command<CMD_BUILD_TUNNEL>::Do(start, TRANSPORT_RAIL, ScriptRail::GetCurrentRailType());
 	}
 
 	ScriptObject::SetCallbackVariable(0, start.base());
-	return ScriptObject::DoCommandOld(start, type, 0, CMD_BUILD_TUNNEL, nullptr, &::_DoCommandReturnBuildTunnel1);
+	return ScriptObject::Command<CMD_BUILD_TUNNEL>::Do(&::_DoCommandReturnBuildTunnel1, start, TRANSPORT_ROAD, ScriptRoad::GetCurrentRoadType());
 }
 
 /* static */ bool ScriptTunnel::_BuildTunnelRoad1()

@@ -25,6 +25,7 @@
 #include "hotkeys.h"
 #include "gui.h"
 #include "zoom_func.h"
+#include "tunnelbridge_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/dock_widget.h"
@@ -229,7 +230,7 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_BUILD_AQUEDUCT: // Build aqueduct button
-				DoCommandPOld(tile, GetOtherAqueductEnd(tile), TRANSPORT_WATER << 15, CMD_BUILD_BRIDGE | CMD_MSG(STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE), CommandCallback::BuildBridge);
+				Command<CMD_BUILD_BRIDGE>::Post(STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE, CommandCallback::BuildBridge, tile, GetOtherAqueductEnd(tile), TRANSPORT_WATER, 0, 0, BuildBridgeFlags::None);
 				break;
 
 			default: NOT_REACHED();

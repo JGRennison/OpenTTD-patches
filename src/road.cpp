@@ -25,6 +25,7 @@
 #include "town.h"
 #include "pathfinder/aystar.h"
 #include "tunnelbridge.h"
+#include "tunnelbridge_cmd.h"
 #include "road_func.h"
 #include "roadveh.h"
 #include "map_func.h"
@@ -376,7 +377,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	assert(!build_tunnel || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_tunnel_cmd = CmdBuildTunnel(start_tile, DC_AUTO | (build_tunnel ? DC_EXEC : DC_NONE), _public_road_type | (TRANSPORT_ROAD << 8), 0, nullptr);
+	const CommandCost build_tunnel_cmd = CmdBuildTunnel(DC_AUTO | (build_tunnel ? DC_EXEC : DC_NONE), start_tile, TRANSPORT_ROAD, _public_road_type);
 	cur_company.Restore();
 
 	assert(!build_tunnel || build_tunnel_cmd.Succeeded());
@@ -406,7 +407,7 @@ static TileIndex BuildBridge(const TileIndex start_tile, const TileIndex end_til
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile.base(), bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
+	const CommandCost  build_bridge_cmd = CmdBuildBridge(DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), end_tile, start_tile, TRANSPORT_ROAD, bridge_type, _public_road_type, BuildBridgeFlags::None);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -503,7 +504,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile.base(), bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15), nullptr);
+	const CommandCost  build_bridge_cmd = CmdBuildBridge(DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), end_tile, start_tile, TRANSPORT_ROAD, bridge_type, _public_road_type, BuildBridgeFlags::None);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());

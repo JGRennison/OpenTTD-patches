@@ -579,6 +579,7 @@ add_files(
     tunnel_map.h
     tunnelbridge.h
     tunnelbridge_cmd.cpp
+    tunnelbridge_cmd.h
     tunnelbridge_map.h
     unit_conversion.h
     vehicle.cpp
