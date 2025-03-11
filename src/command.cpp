@@ -49,6 +49,7 @@
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
 #include "settings_cmd.h"
+#include "signs_cmd.h"
 #include "story_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
 #include "timetable_cmd.h"

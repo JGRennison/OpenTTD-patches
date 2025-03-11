@@ -302,11 +302,6 @@ protected:
 	static VehicleID GetNewVehicleID();
 
 	/**
-	 * Get the latest stored new_sign_id.
-	 */
-	static SignID GetNewSignID();
-
-	/**
 	 * Get the latest stored new_group_id.
 	 */
 	static GroupID GetNewGroupID();
@@ -419,12 +414,6 @@ private:
 	 * @param vehicle_id The new VehicleID.
 	 */
 	static void SetNewVehicleID(VehicleID vehicle_id);
-
-	/**
-	 * Store a new_sign_id per company.
-	 * @param sign_id The new SignID.
-	 */
-	static void SetNewSignID(SignID sign_id);
 
 	/**
 	 * Store a new_group_id per company.

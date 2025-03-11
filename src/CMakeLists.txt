@@ -445,6 +445,7 @@ add_files(
     signs.cpp
     signs_base.h
     signs_cmd.cpp
+    signs_cmd.h
     signs_func.h
     signs_gui.cpp
     signs_type.h

@@ -29,6 +29,7 @@
 #include "../fileio_func.h"
 #include "../league_type.h"
 #include "../goal_type.h"
+#include "../signs_type.h"
 #include "../story_type.h"
 
 #include "../core/format.hpp"
@@ -314,7 +315,7 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnSignID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewSignID());
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<SignID>(::INVALID_SIGN));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnGroupID(ScriptInstance *instance)

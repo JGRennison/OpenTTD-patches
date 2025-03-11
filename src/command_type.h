@@ -1228,9 +1228,6 @@ DEF_CMD_PROC  (CMD_RENAME_DEPOT, CmdRenameDepot,                                
 DEF_CMD_PROC  (CMD_EXCHANGE_STATION_NAMES, CmdExchangeStationNames,                           {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,                   {}, CMDT_OTHER_MANAGEMENT      )
 
-DEF_CMD_PROC  (CMD_PLACE_SIGN, CmdPlaceSign,                CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_RENAME_SIGN, CmdRenameSign,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-
 DEF_CMD_PROC  (CMD_FOUND_TOWN, CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // founding random town can fail only in exec run
 DEF_CMD_PROC  (CMD_RENAME_TOWN, CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_TOWN_NON_ADMIN, CmdRenameTownNonAdmin,                             {}, CMDT_OTHER_MANAGEMENT      )

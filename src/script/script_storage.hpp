@@ -10,7 +10,6 @@
 #ifndef SCRIPT_STORAGE_HPP
 #define SCRIPT_STORAGE_HPP
 
-#include "../signs_func.h"
 #include "../vehicle_func.h"
 #include "../road_type.h"
 #include "../group.h"
@@ -60,7 +59,6 @@ private:
 	CallbackParameter last_cb_param; ///< The last callback parameter passed to a command.
 
 	VehicleID new_vehicle_id;        ///< The ID of the new Vehicle.
-	SignID new_sign_id;              ///< The ID of the new Sign.
 	GroupID new_group_id;            ///< The ID of the new Group.
 
 	std::vector<int> callback_value; ///< The values which need to survive a callback.
@@ -92,7 +90,6 @@ public:
 		last_tile         (INVALID_TILE),
 		last_cb_param     (0),
 		new_vehicle_id    (0),
-		new_sign_id       (0),
 		new_group_id      (0),
 		/* calback_value (can't be set) */
 		road_type         (INVALID_ROADTYPE),

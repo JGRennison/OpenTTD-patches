@@ -214,7 +214,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	GetStorage()->last_command_res = res;
 	/* Also store the results of various global variables */
 	SetNewVehicleID(_new_vehicle_id);
-	SetNewSignID(_new_sign_id);
 	SetNewGroupID(_new_group_id);
 }
 
@@ -231,16 +230,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ VehicleID ScriptObject::GetNewVehicleID()
 {
 	return GetStorage()->new_vehicle_id;
-}
-
-/* static */ void ScriptObject::SetNewSignID(SignID sign_id)
-{
-	GetStorage()->new_sign_id = sign_id;
-}
-
-/* static */ SignID ScriptObject::GetNewSignID()
-{
-	return GetStorage()->new_sign_id;
 }
 
 /* static */ void ScriptObject::SetNewGroupID(GroupID group_id)

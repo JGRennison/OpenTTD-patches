@@ -11,6 +11,7 @@
 #include "company_gui.h"
 #include "company_func.h"
 #include "signs_base.h"
+#include "signs_cmd.h"
 #include "signs_func.h"
 #include "debug.h"
 #include "command_func.h"
@@ -407,7 +408,7 @@ Window *ShowSignList()
 static bool RenameSign(SignID index, const char *text)
 {
 	bool remove = StrEmpty(text);
-	DoCommandPOld(0, index, 0, CMD_RENAME_SIGN | (StrEmpty(text) ? CMD_MSG(STR_ERROR_CAN_T_DELETE_SIGN) : CMD_MSG(STR_ERROR_CAN_T_CHANGE_SIGN_NAME)), CommandCallback::None, text);
+	Command<CMD_RENAME_SIGN>::Post(StrEmpty(text) ? STR_ERROR_CAN_T_DELETE_SIGN : STR_ERROR_CAN_T_CHANGE_SIGN_NAME, index, text);
 	return remove;
 }
 

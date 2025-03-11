@@ -12,6 +12,7 @@
 #include "table/strings.h"
 #include "../script_instance.hpp"
 #include "../../signs_base.h"
+#include "../../signs_cmd.h"
 #include "../../string_func.h"
 #include "../../strings_func.h"
 #include "../../tile_map.h"
@@ -43,7 +44,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommandOld(0, sign_id, 0, CMD_RENAME_SIGN, text);
+	return ScriptObject::Command<CMD_RENAME_SIGN>::Do(sign_id, text);
 }
 
 /* static */ std::optional<std::string> ScriptSign::GetName(SignID sign_id)
@@ -66,7 +67,7 @@
 {
 	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidSign(sign_id));
-	return ScriptObject::DoCommandOld(0, sign_id, 0, CMD_RENAME_SIGN, "");
+	return ScriptObject::Command<CMD_RENAME_SIGN>::Do(sign_id, "");
 }
 
 /* static */ SignID ScriptSign::BuildSign(TileIndex location, Text *name)
@@ -80,7 +81,7 @@
 	EnforcePreconditionEncodedText(INVALID_SIGN, text);
 	EnforcePreconditionCustomError(INVALID_SIGN, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	if (!ScriptObject::DoCommandOld(location, 0, 0, CMD_PLACE_SIGN, text, &ScriptInstance::DoCommandReturnSignID)) return INVALID_SIGN;
+	if (!ScriptObject::Command<CMD_PLACE_SIGN>::Do(&ScriptInstance::DoCommandReturnSignID, location, text)) return INVALID_SIGN;
 
 	/* In case of test-mode, we return SignID 0 */
 	return 0;
