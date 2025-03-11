@@ -828,8 +828,6 @@ struct CommandPayloadBase : public fmt_formattable {
 	/* FormatDebugSummary may be called when populating the crash log so should not allocate */
 	virtual void FormatDebugSummary(struct format_target &) const {}
 
-	std::string GetDebugSummaryString() const;
-
 	/* To enable use as a format argument, see fmt_formattable */
 	inline void fmt_format_value(struct format_target &output) const
 	{

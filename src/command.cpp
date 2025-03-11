@@ -638,6 +638,12 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 
 	CommandLog &cmd_log = (GetCommandFlags(cmd) & CMD_LOG_AUX) ? _command_log_aux : _command_log;
 
+	format_buffer summary;
+	payload.FormatDebugSummary(summary);
+	if (res.HasResultData()) {
+		summary.format(" --> {}", res.GetResultData());
+	}
+
 	if (_networking && cmd_log.count > 0) {
 		CommandLogEntry &current = cmd_log.log[(cmd_log.next - 1) % cmd_log.log.size()];
 		if (current.log_flags & CLEF_ONLY_SENDING &&
@@ -647,16 +653,17 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 				current.date == EconTime::CurDate() && current.date_fract == EconTime::CurDateFract() &&
 				current.tick_skip_counter == TickSkipCounter() &&
 				current.frame_counter == _frame_counter &&
-				current.current_company == _current_company && current.local_company == _local_company) {
+				current.current_company == _current_company &&
+				current.local_company == _local_company &&
+				current.summary == (std::string_view)summary) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
-			if (current.summary.empty()) current.summary = payload.GetDebugSummaryString();
 			DebugLogCommandLogEntry(current);
 			return;
 		}
 	}
 
-	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, cmd, log_flags, payload.GetDebugSummaryString());
+	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, cmd, log_flags, summary.to_string());
 	DebugLogCommandLogEntry(cmd_log.log[cmd_log.next]);
 	cmd_log.next = (cmd_log.next + 1) % cmd_log.log.size();
 	cmd_log.count++;
@@ -1235,13 +1242,6 @@ void CommandCost::SetResultData(uint32_t result)
 	} else {
 		this->inl.result = result;
 	}
-}
-
-std::string CommandPayloadBase::GetDebugSummaryString() const
-{
-	format_buffer dbg;
-	this->FormatDebugSummary(dbg);
-	return dbg.to_string();
 }
 
 void P123CmdData::Serialise(BufferSerialisationRef buffer) const
