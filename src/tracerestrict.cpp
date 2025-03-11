@@ -3681,7 +3681,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("follow up: {} x {}, cmd: {:X} ({}), ", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.cmd, GetCommandName(this->cmd.cmd));
+	output.format("follow up: {}, cmd: {:X} ({}), ", this->cmd.tile, this->cmd.cmd, GetCommandName(this->cmd.cmd));
 	this->cmd.payload->FormatDebugSummary(output);
 }
 
@@ -3790,7 +3790,7 @@ void TraceRestrictProgramSignalData::FormatDebugSummary(format_target &output) c
 
 void TraceRestrictManageSignalData::FormatDebugSummary(format_target &output) const
 {
-	output.format("track: {:X}, type: {} ({}), source: {} x {}, track: {:X}", this->track, this->type, GetTraceRestrictMgmtDoCommandTypeName(this->type), TileX(this->source_tile), TileY(this->source_tile), this->source_track);
+	output.format("track: {:X}, type: {} ({}), source: {}, track: {:X}", this->track, this->type, GetTraceRestrictMgmtDoCommandTypeName(this->type), this->source_tile, this->source_track);
 }
 
 void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner)

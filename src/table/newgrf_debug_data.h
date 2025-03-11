@@ -195,7 +195,7 @@ class NIHVehicle : public NIHelper {
 
 		TileIndex vtile = TileVirtXY(v->x_pos, v->y_pos);
 		if (v->tile != vtile) {
-			output.Print("  VirtXYTile: {:X} ({} x {})", vtile, TileX(vtile), TileY(vtile));
+			output.Print("  VirtXYTile: {}", vtile);
 		}
 		output.buffer.format("  Position: {:X}, {:X}, {:X}, Direction: {}", v->x_pos, v->y_pos, v->z_pos, v->direction);
 		if (v->type == VEH_TRAIN) output.buffer.format(", tile margin: {}", GetTileMarginInFrontOfTrain(Train::From(v)));
@@ -294,8 +294,8 @@ class NIHVehicle : public NIHelper {
 				output.Print("    Cached zpos: {} (actual: {}, delta: {}), positions to refresh: {}",
 						l.cached_zpos, overall_zpos, (l.cached_zpos - overall_zpos), l.zpos_refresh_remaining);
 
-				output.buffer.format("    Reservation ends at {:X} ({} x {}), trackdir: {:02X}, z: {}",
-						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
+				output.buffer.format("    Reservation ends at {}, trackdir: {:02X}, z: {}",
+						l.reservation_end_tile, l.reservation_end_trackdir, l.reservation_end_z);
 				if (HasBit(l.flags, TRLF_DEPOT_END)) {
 					print_braking_speed(l.reservation_end_position - TILE_SIZE, _settings_game.vehicle.rail_depot_speed_limit, l.reservation_end_z);
 				} else {
@@ -2012,7 +2012,7 @@ class NIHStationStruct : public NIHelper {
 		output.Print("  Index: {}", index);
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (!bst) return;
-		output.Print("  Tile: {:X} ({} x {})", bst->xy, TileX(bst->xy), TileY(bst->xy));
+		output.Print("  Tile: {}", bst->xy);
 		if (bst->rect.IsEmpty()) {
 			output.Print("  rect: empty");
 		} else {
@@ -2029,7 +2029,7 @@ class NIHStationStruct : public NIHelper {
 			}
 			output.Print("  Station tiles: {}", st->station_tiles);
 			output.Print("  Delete counter: {}", st->delete_ctr);
-			output.Print("  Docking tiles: {:X}, {} x {}", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+			output.Print("  Docking tiles: {}", st->docking_station.tile);
 			output.Print("  Time since: load: {}, unload: {}", st->time_since_load, st->time_since_unload);
 
 			if (st->airport.tile != INVALID_TILE) {
@@ -2097,8 +2097,8 @@ class NIHStationStruct : public NIHelper {
 				check_flag(WPF_ROAD,         "WPF_ROAD");
 			}
 
-			output.Print("  road_waypoint_area: tile: {:X} ({} x {}), width: {}, height: {}",
-					wp->road_waypoint_area.tile, TileX(wp->road_waypoint_area.tile), TileY(wp->road_waypoint_area.tile), wp->road_waypoint_area.w, wp->road_waypoint_area.h);
+			output.Print("  road_waypoint_area: tile: {}, width: {}, height: {}",
+					wp->road_waypoint_area.tile, wp->road_waypoint_area.w, wp->road_waypoint_area.h);
 		}
 	}
 };

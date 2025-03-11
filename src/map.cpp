@@ -686,3 +686,15 @@ void DumpMapStats(format_target &buffer)
 		buffer.format(": {}\n", it.second);
 	}
 }
+
+fmt::format_context::iterator FmtTileIndexValueIntl(fmt::format_context &ctx, uint32_t value)
+{
+	TileIndex tile{value};
+
+	/* Do not recursively fmt the TileIndex type here */
+	if (tile == INVALID_TILE) {
+		return fmt::format_to(ctx.out(), "{:X} (INVALID_TILE)", value);
+	} else {
+		return fmt::format_to(ctx.out(), "{:X} ({} x {})", value, TileX(tile), TileY(tile));
+	}
+}

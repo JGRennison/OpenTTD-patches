@@ -580,8 +580,8 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 {
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
-		output.format("DoCommand: tile: {:X} ({} x {}), flags: 0x{:X}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
-				tile, TileX(tile), TileY(tile), flags, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
+		output.format("DoCommand: tile: {}, flags: 0x{:X}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
+				tile, flags, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
 		payload.FormatDebugSummary(output);
 	});
 #endif
@@ -764,8 +764,8 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 {
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &orig_payload](format_target &output) {
-		output.format("DoCommandP: tile: {:X} ({} x {}), intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
-				tile, TileX(tile), TileY(tile), intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
+		output.format("DoCommandP: tile: {}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
+				tile, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
 		orig_payload.FormatDebugSummary(output);
 	});
 #endif

@@ -913,7 +913,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
 			/* too many cascades */
 			newstate = SIGNAL_STATE_RED;
-			Debug(misc, 0, "Number of programmable pre-signal evaluations exceeded limit at tile: {} x {}", TileX(tile), TileY(tile));
+			Debug(misc, 0, "Number of programmable pre-signal evaluations exceeded limit at tile: {}", tile);
 		} else {
 			/* is it a bidir combo? - then do not count its other signal direction as exit */
 			if (IsComboSignal(sig) && HasSignalOnTrackdir(tile, ReverseTrackdir(trackdir))) {

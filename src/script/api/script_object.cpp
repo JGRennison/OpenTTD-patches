@@ -330,8 +330,8 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
-		output.format("ScriptObject::DoCommand: tile: {:X} ({} x {}), intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, estimate_only: {}, payload: ",
-				tile, TileX(tile), TileY(tile), intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
+		output.format("ScriptObject::DoCommand: tile: {}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, estimate_only: {}, payload: ",
+				tile, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
 		payload.FormatDebugSummary(output);
 	});
 #endif
