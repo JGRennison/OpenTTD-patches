@@ -1976,7 +1976,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		} else {
 			CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
 					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-			DoCommandPOld(this->window_number, sel_eng | (cargo << 24), 0, CMD_BUILD_VEHICLE | CMD_MSG(GetCmdBuildVehMsg(this->vehicle_type)), callback);
+			Command<CMD_BUILD_VEHICLE>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), sel_eng, true, cargo, INVALID_CLIENT_ID);
 		}
 
 		/* Update last used variant in hierarchy and refresh if necessary. */
@@ -2735,7 +2735,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			} else {
 				CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
 						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-				DoCommandPOld(this->window_number, selected | (cargo << 24), 0, CMD_BUILD_VEHICLE | CMD_MSG(GetCmdBuildVehMsg(this->vehicle_type)), callback);
+				Command<CMD_BUILD_VEHICLE>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), selected, true, cargo, INVALID_CLIENT_ID);
 			}
 
 			/* Update last used variant in hierarchy and refresh if necessary. */

@@ -7412,8 +7412,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 				}
 
 				CargoID refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
-				uint32_t refit_cmd = (refit_cargo != INVALID_CARGO) ? (refit_cargo << 24) : 0;
-				buy.AddCost(DoCommandOld(tile, cur_tmpl->engine_type | (1 << 16) | refit_cmd, 0, flags, CMD_BUILD_VEHICLE));
+				buy.AddCost(Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, refit_cargo, INVALID_CLIENT_ID));
 			};
 			for (const TemplateVehicle *cur_tmpl = tv; cur_tmpl != nullptr; cur_tmpl = cur_tmpl->GetNextUnit()) {
 				process_unit(cur_tmpl);
@@ -7484,7 +7483,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 			}
 
 			/* Case 4 */
-			CommandCost buy_cost = DoCommandOld(tile, eid | (1 << 16), 0, flags, CMD_BUILD_VEHICLE);
+			CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
 			/* break up in case buying the vehicle didn't succeed */
 			if (buy_cost.Failed()) {
 				return buy_cost;
@@ -7546,7 +7545,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 				}
 
 				/* Case 3: must buy new engine */
-				CommandCost buy_cost = DoCommandOld(tile, cur_tmpl->engine_type | (1 << 16), 0, flags, CMD_BUILD_VEHICLE);
+				CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
 				if (buy_cost.Failed()) {
 					new_part = nullptr;
 					return;

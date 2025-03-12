@@ -366,7 +366,7 @@ CommandCost TestBuyAllTemplateVehiclesInChain(const TemplateVehicle *tv, TileInd
 	CommandCost cost(EXPENSES_NEW_VEHICLES);
 
 	for (; tv != nullptr; tv = tv->GetNextUnit()) {
-		cost.AddCost(DoCommandOld(tile, tv->engine_type, 0, DC_NONE, CMD_BUILD_VEHICLE));
+		cost.AddCost(Command<CMD_BUILD_VEHICLE>::Do(DC_NONE, tile, tv->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID));
 	}
 
 	return cost;
