@@ -47,7 +47,6 @@ This document does not describe the player-visible changes/additions described i
 * Cache inferred one-way state of road tiles.
 * De-virtualise calls to AnimateTile().
 * Cache animated tile speed.
-* Cache whether water tiles have water for all neighbouring tiles.
 * Improve performance of arctic snow line checks.
 
 ### Viewport
@@ -68,7 +67,6 @@ This document does not describe the player-visible changes/additions described i
 * Clip drawing of window widgets which are not in the redraw area.
 * Reduce unnecessary status bar and vehicle list window redraws.
 * Filter out tile parts which are entirely outside the drawing area, within DrawTileProc handlers.
-* Improve performance of drawing rail catenary.
 * Cache which window types are currently shown.
 
 ### Data structures
@@ -77,11 +75,8 @@ This document does not describe the player-visible changes/additions described i
 * Various lists have been replaced with vectors, or other data structures.
 * Various deques and queues have been replaced with ring buffers.
 * Remove mutexes from SmallStack, only used from the main thread.
-* Add a third parameter p3, and an auxiliary data mechanism to DoCommand/CommandContainer.
 * Maintain free list for text effect entries.
-* Many fields have been widened.
 * Change underlying data structures for ScriptList, create reverse mapping on demand instead of unconditionally.
-* Split GoodsEntry structure.
 * Use row-aligned bitmap for BitmapTileArea.
 
 ### Vehicles
@@ -182,9 +177,6 @@ This document does not describe the player-visible changes/additions described i
 
 * Use of __builtin_expect, byte-swap builtins, overflow builtins, and various bitmath builtins.
 * Add various debug console commands.
-* Cache font heights.
-* Cache resolved names for stations, towns and industries.
-* Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
 * Various other misc changes and fixes to reduce UndefinedBehaviorSanitizer and ThreadSanitizer spam.
 * Add a chicken bits setting, just in case.
 
