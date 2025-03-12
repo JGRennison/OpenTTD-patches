@@ -1205,18 +1205,11 @@ DEF_CMD_PROC  (CMD_BUILD_SHIP_DEPOT, CmdBuildShipDepot,                         
 DEF_CMD_PROC  (CMD_BUILD_BUOY, CmdBuildBuoy,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PLANT_TREE, CmdPlantTree,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_SET_VEHICLE_VISIBILITY, CmdSetVehicleVisibility,                           {}, CMDT_COMPANY_SETTING       )
-
 DEF_CMD_PROC  (CMD_BUILD_INDUSTRY, CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_FLAGS, CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_TEXT, CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_WANT_ENGINE_PREVIEW, CmdWantEnginePreview,                              {}, CMDT_VEHICLE_MANAGEMENT    )
-DEF_CMD_PROC  (CMD_ENGINE_CTRL, CmdEngineCtrl,                             CMD_DEITY, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_RENAME_ENGINE, CmdRenameEngine,                          CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_RENAME_STATION, CmdRenameStation,                                  {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_RENAME_DEPOT, CmdRenameDepot,                                    {}, CMDT_OTHER_MANAGEMENT      )

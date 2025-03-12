@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "window_gui.h"
 #include "engine_base.h"
+#include "engine_cmd.h"
 #include "command_func.h"
 #include "strings_builder.h"
 #include "strings_func.h"
@@ -128,7 +129,7 @@ struct EnginePreviewWindow : Window {
 	{
 		switch (widget) {
 			case WID_EP_YES:
-				DoCommandPOld(0, this->window_number, 0, CMD_WANT_ENGINE_PREVIEW);
+				Command<CMD_WANT_ENGINE_PREVIEW>::Post(this->window_number);
 				[[fallthrough]];
 			case WID_EP_NO:
 				if (!_shift_pressed) this->Close();

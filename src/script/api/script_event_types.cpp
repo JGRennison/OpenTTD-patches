@@ -14,6 +14,7 @@
 #include "../../strings_func.h"
 #include "../../settings_type.h"
 #include "../../engine_base.h"
+#include "../../engine_cmd.h"
 #include "../../articulated_vehicles.h"
 #include "../../string_func.h"
 #include "../../company_cmd.h"
@@ -106,7 +107,7 @@ bool ScriptEventEnginePreview::AcceptPreview()
 {
 	EnforceCompanyModeValid(false);
 	if (!this->IsEngineValid()) return false;
-	return ScriptObject::DoCommandOld(0, this->engine, 0, CMD_WANT_ENGINE_PREVIEW);
+	return ScriptObject::Command<CMD_WANT_ENGINE_PREVIEW>::Do(this->engine);
 }
 
 bool ScriptEventCompanyAskMerger::AcceptMerger()

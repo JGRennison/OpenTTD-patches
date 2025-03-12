@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "engine_base.h"
+#include "engine_cmd.h"
 #include "engine_func.h"
 #include "station_base.h"
 #include "network/network.h"
@@ -2052,7 +2053,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE: {
 				const Engine *e = (this->sel_engine == INVALID_ENGINE) ? nullptr : Engine::Get(this->sel_engine);
 				if (e != nullptr) {
-					DoCommandPOld(0, 0, this->sel_engine | (e->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
+					Command<CMD_SET_VEHICLE_VISIBILITY>::Post(this->sel_engine, !e->IsHidden(_current_company));
 				}
 				break;
 			}
@@ -2226,7 +2227,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
+		Command<CMD_RENAME_ENGINE>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->rename_engine, *str);
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index) override
@@ -2841,7 +2842,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE_LOCO: {
 				const Engine *engine = (this->loco.sel_engine == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->loco.sel_engine);
 				if (engine != nullptr) {
-					DoCommandPOld(0, 0, this->loco.sel_engine | (engine->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
+					Command<CMD_SET_VEHICLE_VISIBILITY>::Post(this->loco.sel_engine, !engine->IsHidden(_current_company));
 				}
 				break;
 			}
@@ -2905,7 +2906,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE_WAGON: {
 				const Engine *engine = (this->wagon.sel_engine == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->wagon.sel_engine);
 				if (engine != nullptr) {
-					DoCommandPOld(0, 0, this->wagon.sel_engine | (engine->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
+					Command<CMD_SET_VEHICLE_VISIBILITY>::Post(this->wagon.sel_engine, !engine->IsHidden(_current_company));
 				}
 				break;
 			}
@@ -3165,9 +3166,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (!str.has_value()) return;
 
 		if (this->loco.rename_engine != INVALID_ENGINE) {
-			DoCommandPOld(0, this->loco.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
+			Command<CMD_RENAME_ENGINE>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->loco.rename_engine, *str);
 		} else {
-			DoCommandPOld(0, this->wagon.rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), CommandCallback::None, str->c_str());
+			Command<CMD_RENAME_ENGINE>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->wagon.rename_engine, *str);
 		}
 	}
 

@@ -171,6 +171,7 @@ add_files(
     elrail_func.h
     engine.cpp
     engine_base.h
+    engine_cmd.h
     engine_func.h
     engine_gui.cpp
     engine_gui.h

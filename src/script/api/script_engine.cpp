@@ -15,6 +15,7 @@
 #include "../../rail.h"
 #include "../../road.h"
 #include "../../engine_base.h"
+#include "../../engine_cmd.h"
 #include "../../engine_func.h"
 #include "../../articulated_vehicles.h"
 #include "table/strings.h"
@@ -275,7 +276,7 @@
 	EnforcePrecondition(false, IsValidEngine(engine_id));
 	EnforcePrecondition(false, company != ScriptCompany::COMPANY_INVALID);
 
-	return ScriptObject::DoCommandOld(0, engine_id, (uint32_t)company | (1 << 31), CMD_ENGINE_CTRL);
+	return ScriptObject::Command<CMD_ENGINE_CTRL>::Do(engine_id, (::CompanyID)company, true);
 }
 
 /* static */ bool ScriptEngine::DisableForCompany(EngineID engine_id, ScriptCompany::CompanyID company)
@@ -286,5 +287,5 @@
 	EnforcePrecondition(false, IsValidEngine(engine_id));
 	EnforcePrecondition(false, company != ScriptCompany::COMPANY_INVALID);
 
-	return ScriptObject::DoCommandOld(0, engine_id, company, CMD_ENGINE_CTRL);
+	return ScriptObject::Command<CMD_ENGINE_CTRL>::Do(engine_id, (::CompanyID)company, false);
 }
