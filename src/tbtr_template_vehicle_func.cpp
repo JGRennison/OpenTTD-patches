@@ -272,7 +272,7 @@ void NeutralizeStatus(Train *t)
 {
 	DoCommandOld(t->tile, DEFAULT_GROUP, t->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
 	Command<CMD_CLONE_ORDER>::Do(DC_EXEC, CO_SHARE, t->index, INVALID_VEHICLE);
-	DoCommandOld(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, nullptr);
+	Command<CMD_RENAME_VEHICLE>::Do(DC_EXEC, t->index, {});
 }
 
 TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
