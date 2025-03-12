@@ -26,6 +26,7 @@
 #include "gui.h"
 #include "zoom_func.h"
 #include "tunnelbridge_cmd.h"
+#include "water_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/dock_widget.h"
@@ -196,7 +197,7 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_LOCK: // Build lock button
-				DoCommandPOld(tile, 0, 0, CMD_BUILD_LOCK | CMD_MSG(STR_ERROR_CAN_T_BUILD_LOCKS), CommandCallback::BuildDocks);
+				Command<CMD_BUILD_LOCK>::Post(STR_ERROR_CAN_T_BUILD_LOCKS, CommandCallback::BuildDocks, tile);
 				break;
 
 			case WID_DT_DEMOLISH: // Demolish aka dynamite button
@@ -204,7 +205,7 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_DEPOT: // Build depot button
-				DoCommandPOld(tile, _ship_depot_direction, 0, CMD_BUILD_SHIP_DEPOT | CMD_MSG(STR_ERROR_CAN_T_BUILD_SHIP_DEPOT), CommandCallback::BuildDocks);
+				Command<CMD_BUILD_SHIP_DEPOT>::Post(STR_ERROR_CAN_T_BUILD_SHIP_DEPOT, CommandCallback::BuildDocks, tile, _ship_depot_direction);
 				break;
 
 			case WID_DT_STATION: { // Build station button
@@ -250,10 +251,10 @@ struct BuildDocksToolbarWindow : Window {
 					GUIPlaceProcDragXY(select_proc, start_tile, end_tile);
 					break;
 				case DDSP_CREATE_WATER:
-					DoCommandPOld(end_tile, start_tile.base(), (_game_mode == GM_EDITOR && _ctrl_pressed) ? WATER_CLASS_SEA : WATER_CLASS_CANAL, CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_BUILD_CANALS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
+					Command<CMD_BUILD_CANAL>::Post(STR_ERROR_CAN_T_BUILD_CANALS, CommandCallback::PlaySound_CONSTRUCTION_WATER, end_tile, start_tile, (_game_mode == GM_EDITOR && _ctrl_pressed) ? WATER_CLASS_SEA : WATER_CLASS_CANAL, false);
 					break;
 				case DDSP_CREATE_RIVER:
-					DoCommandPOld(end_tile, start_tile.base(), WATER_CLASS_RIVER | (_ctrl_pressed ? 1 << 2 : 0), CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_PLACE_RIVERS), CommandCallback::PlaySound_CONSTRUCTION_WATER);
+					Command<CMD_BUILD_CANAL>::Post(STR_ERROR_CAN_T_PLACE_RIVERS, CommandCallback::PlaySound_CONSTRUCTION_WATER, end_tile, start_tile, WATER_CLASS_RIVER, _ctrl_pressed);
 					break;
 
 				default: break;

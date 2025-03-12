@@ -608,6 +608,7 @@ add_files(
     walltime_func.h
     water.h
     water_cmd.cpp
+    water_cmd.h
     water_map.h
     waypoint.cpp
     waypoint_base.h

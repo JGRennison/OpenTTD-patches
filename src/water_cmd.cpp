@@ -17,6 +17,7 @@
 #include "depot_base.h"
 #include "depot_func.h"
 #include "water.h"
+#include "water_cmd.h"
 #include "industry_map.h"
 #include "newgrf_canal.h"
 #include "strings_func.h"
@@ -102,17 +103,14 @@ void ClearNeighbourNonFloodingStates(TileIndex tile)
 
 /**
  * Build a ship depot.
- * @param tile tile where ship depot is built
  * @param flags type of operation
- * @param p1 bit 0 depot orientation (Axis)
- * @param p2 unused
- * @param text unused
+ * @param tile tile where ship depot is built
+ * @param axis depot orientation (Axis)
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildShipDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildShipDepot(DoCommandFlag flags, TileIndex tile, Axis axis)
 {
-	Axis axis = Extract<Axis, 0, 1>(p1);
-
+	if (!IsValidAxis(axis)) return CMD_ERROR;
 	TileIndex tile2 = tile + TileOffsByAxis(axis);
 
 	if (!HasTileWaterGround(tile) || !HasTileWaterGround(tile2)) {
@@ -440,14 +438,11 @@ static CommandCost RemoveLock(TileIndex tile, DoCommandFlag flags)
 
 /**
  * Builds a lock.
- * @param tile tile where to place the lock
  * @param flags type of operation
- * @param p1 unused
- * @param p2 unused
- * @param text unused
+ * @param tile tile where to place the lock
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildLock(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildLock(DoCommandFlag flags, TileIndex tile)
 {
 	DiagDirection dir = GetInclinedSlopeDirection(GetTileSlope(tile));
 	if (dir == INVALID_DIAGDIR) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -476,23 +471,20 @@ void MakeRiverAndModifyDesertZoneAround(TileIndex tile)
 
 /**
  * Build a piece of canal.
- * @param tile end tile of stretch-dragging
  * @param flags type of operation
- * @param p1 start tile of stretch-dragging
- * @param p2 various bitstuffed data
- *  bits  0-1: waterclass to build. sea and river can only be built in scenario editor, unless enable_build_river is enabled
- *  bit     2: Whether to use the Orthogonal (0) or Diagonal (1) iterator.
- * @param text unused
+ * @param tile end tile of stretch-dragging
+ * @param start_tile start tile of stretch-dragging
+ * @param wc waterclass to build. sea and river can only be built in scenario editor
+ * @param diagonal Whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildCanal(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, WaterClass wc, bool diagonal)
 {
-	WaterClass wc = Extract<WaterClass, 0, 2>(p2);
-	if (p1 >= MapSize() || wc == WATER_CLASS_INVALID) return CMD_ERROR;
+	if (start_tile >= MapSize() || wc == WATER_CLASS_INVALID) return CMD_ERROR;
 
 	/* Outside of the editor you can only build canals, not oceans */
 	if (_game_mode != GM_EDITOR) {
-		if (HasBit(p2, 2)) return CMD_ERROR;
+		if (diagonal) return CMD_ERROR;
 		if (wc == WATER_CLASS_RIVER) {
 			if (!_settings_game.construction.enable_build_river && _current_company != OWNER_DEITY) {
 				return CMD_ERROR;
@@ -504,7 +496,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 2));
+	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex current_tile = *iter;
 		CommandCost ret;

@@ -1015,7 +1015,7 @@ struct CmdDataT<std::string, std::string, std::string> final : public TupleCmdDa
 
 template <>
 struct CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
-	using CommandProc = CommandCost(TileIndex, DoCommandFlag);
+	using CommandProc = CommandCost(DoCommandFlag, TileIndex);
 	using CommandProcNoTile = CommandCost(DoCommandFlag);
 	using Tuple = std::tuple<>;
 
@@ -1201,7 +1201,6 @@ DEF_CMD_PROC  (CMD_CONVERT_ROAD, CmdConvertRoad,                                
 
 DEF_CMD_PROC  (CMD_BUILD_AIRPORT, CmdBuildAirport,             CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_DOCK, CmdBuildDock,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_SHIP_DEPOT, CmdBuildShipDepot,                          CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_BUOY, CmdBuildBuoy,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PLANT_TREE, CmdPlantTree,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
@@ -1233,13 +1232,10 @@ DEF_CMD_PROC  (CMD_PLACE_HOUSE, CmdPlaceHouse,                             CMD_D
 
 DEF_CMD_PROC  (CMD_CLEAR_AREA, CmdClearArea,                            CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // destroying multi-tile houses makes town rating differ between test and execution
 
-DEF_CMD_PROC  (CMD_BUILD_CANAL, CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CREATE_SUBSIDY, CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_LEVEL_LAND, CmdLevelLand, CMD_ALL_TILES | CMD_NO_TEST | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION) // test run might clear tiles multiple times, in execution that only happens once
-
-DEF_CMD_PROC  (CMD_BUILD_LOCK, CmdBuildLock,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)

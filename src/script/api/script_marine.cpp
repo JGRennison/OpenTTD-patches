@@ -12,6 +12,7 @@
 #include "script_station.hpp"
 #include "../../station_base.h"
 #include "../../tile_cmd.h"
+#include "../../water_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -78,7 +79,7 @@
 	EnforcePrecondition(false, ::IsValidTile(front));
 	EnforcePrecondition(false, (::TileX(front) == ::TileX(tile)) != (::TileY(front) == ::TileY(tile)));
 
-	return ScriptObject::DoCommandOld(tile, ::TileX(front) == ::TileX(tile), 0, CMD_BUILD_SHIP_DEPOT);
+	return ScriptObject::Command<CMD_BUILD_SHIP_DEPOT>::Do(tile, ::TileX(front) == ::TileX(tile) ? AXIS_Y : AXIS_X);
 }
 
 /* static */ bool ScriptMarine::BuildDock(TileIndex tile, StationID station_id)
@@ -105,7 +106,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_BUILD_LOCK);
+	return ScriptObject::Command<CMD_BUILD_LOCK>::Do(tile);
 }
 
 /* static */ bool ScriptMarine::BuildCanal(TileIndex tile)
@@ -113,14 +114,14 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, tile, WATER_CLASS_CANAL, CMD_BUILD_CANAL);
+	return ScriptObject::Command<CMD_BUILD_CANAL>::Do(tile, tile, WATER_CLASS_CANAL, false);
 }
 
 /* static */ bool ScriptMarine::BuildRiver(TileIndex tile)
 {
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, tile, WATER_CLASS_RIVER, CMD_BUILD_CANAL);
+	return ScriptObject::Command<CMD_BUILD_CANAL>::Do(tile, tile, WATER_CLASS_RIVER, false);
 }
 
 /* static */ bool ScriptMarine::RemoveWaterDepot(TileIndex tile)
