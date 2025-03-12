@@ -1092,7 +1092,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 
 			Debug(desync, 1, "merge_companies: {}, company_id: {}, merged_company_id: {}", debug_date_dumper().HexDate(), company_id, to_merge_id);
 
-			auto cni = std::make_unique<CompanyNewsInformation>(c);
+			auto cni = std::make_unique<CompanyNewsInformation>(to_merge, c);
 
 			SetDParam(0, STR_NEWS_COMPANY_MERGER_TITLE);
 			SetDParam(1, STR_NEWS_MERGER_TAKEOVER_TITLE);
