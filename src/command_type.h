@@ -1211,7 +1211,6 @@ DEF_CMD_PROC  (CMD_INDUSTRY_SET_TEXT, CmdIndustrySetText,         CMD_STR_CTRL |
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_RENAME_STATION, CmdRenameStation,                                  {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_RENAME_DEPOT, CmdRenameDepot,                                    {}, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_EXCHANGE_STATION_NAMES, CmdExchangeStationNames,                           {}, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,                   {}, CMDT_OTHER_MANAGEMENT      )

@@ -17,6 +17,7 @@
 #include "viewport_func.h"
 #include "command_func.h"
 #include "depot_base.h"
+#include "depot_cmd.h"
 #include "spritecache.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
@@ -861,7 +862,7 @@ struct DepotWindow : Window {
 		if (!str.has_value()) return;
 
 		/* Do depot renaming */
-		DoCommandPOld(0, this->GetDepotIndex(), 0, CMD_RENAME_DEPOT | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPOT), CommandCallback::None, str->c_str());
+		Command<CMD_RENAME_DEPOT>::Post(STR_ERROR_CAN_T_RENAME_DEPOT, this->GetDepotIndex(), *str);
 	}
 
 	bool OnRightClick([[maybe_unused]] Point pt, WidgetID widget) override
