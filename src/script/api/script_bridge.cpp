@@ -81,22 +81,6 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	EnforcePrecondition(false, vehicle_type != ScriptVehicle::VT_ROAD || ScriptRoad::IsRoadTypeAvailable(ScriptRoad::GetCurrentRoadType()));
 	EnforcePrecondition(false, ScriptCompanyMode::IsValid() || vehicle_type == ScriptVehicle::VT_ROAD);
 
-	uint type = (1 << 17);
-	switch (vehicle_type) {
-		case ScriptVehicle::VT_ROAD:
-			type |= (TRANSPORT_ROAD << 15);
-			type |= (ScriptRoad::GetCurrentRoadType() << 8);
-			break;
-		case ScriptVehicle::VT_RAIL:
-			type |= (TRANSPORT_RAIL << 15);
-			type |= (ScriptRail::GetCurrentRailType() << 8);
-			break;
-		case ScriptVehicle::VT_WATER:
-			type |= (TRANSPORT_WATER << 15);
-			break;
-		default: NOT_REACHED();
-	}
-
 	switch (vehicle_type) {
 		case ScriptVehicle::VT_ROAD:
 			ScriptObject::SetCallbackVariable(0, start.base());

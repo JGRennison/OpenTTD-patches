@@ -86,15 +86,6 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforcePrecondition(false, vehicle_type != ScriptVehicle::VT_ROAD || ScriptRoad::IsRoadTypeAvailable(ScriptRoad::GetCurrentRoadType()));
 	EnforcePrecondition(false, ScriptCompanyMode::IsValid() || vehicle_type == ScriptVehicle::VT_ROAD);
 
-	uint type = 0;
-	if (vehicle_type == ScriptVehicle::VT_ROAD) {
-		type |= (TRANSPORT_ROAD << 8);
-		type |= ScriptRoad::GetCurrentRoadType();
-	} else {
-		type |= (TRANSPORT_RAIL << 8);
-		type |= ScriptRail::GetCurrentRailType();
-	}
-
 	/* For rail we do nothing special */
 	if (vehicle_type == ScriptVehicle::VT_RAIL) {
 		return ScriptObject::Command<CMD_BUILD_TUNNEL>::Do(start, TRANSPORT_RAIL, ScriptRail::GetCurrentRailType());
