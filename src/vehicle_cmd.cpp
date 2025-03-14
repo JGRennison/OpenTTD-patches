@@ -23,6 +23,7 @@
 #include "vehiclelist.h"
 #include "engine_func.h"
 #include "articulated_vehicles.h"
+#include "autoreplace_cmd.h"
 #include "autoreplace_gui.h"
 #include "group.h"
 #include "order_backup.h"
@@ -794,7 +795,7 @@ CommandCost CmdDepotMassAutoReplace(DoCommandFlag flags, TileIndex tile, Vehicle
 			}
 		}
 
-		CommandCost ret = DoCommandOld(0, v->index, 0, flags, CMD_AUTOREPLACE_VEHICLE);
+		CommandCost ret = Command<CMD_AUTOREPLACE_VEHICLE>::Do(flags, v->index, false);
 
 		if (ret.Succeeded()) cost.AddCost(ret);
 	}

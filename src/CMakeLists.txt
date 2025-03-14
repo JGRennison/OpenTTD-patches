@@ -60,6 +60,7 @@ add_files(
     autoreplace.cpp
     autoreplace_base.h
     autoreplace_cmd.cpp
+    autoreplace_cmd.h
     autoreplace_func.h
     autoreplace_gui.cpp
     autoreplace_gui.h

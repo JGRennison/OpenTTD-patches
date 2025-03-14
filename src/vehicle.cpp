@@ -28,6 +28,7 @@
 #include "zoom_func.h"
 #include "date_func.h"
 #include "vehicle_func.h"
+#include "autoreplace_cmd.h"
 #include "autoreplace_func.h"
 #include "autoreplace_gui.h"
 #include "station_base.h"
@@ -1811,7 +1812,7 @@ void CallVehicleTicks()
 			t = Train::Get(t_new);
 			const Company *c = Company::Get(_current_company);
 			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-			CommandCost res2 = DoCommandOld(0, t_new, 1, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
+			CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t_new, true);
 			if (res2.HasResultData()) {
 				t = Train::Get(res2.GetResultData());
 			}
@@ -1855,7 +1856,7 @@ void CallVehicleTicks()
 
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res = DoCommandOld(0, v->index, 0, DC_EXEC, CMD_AUTOREPLACE_VEHICLE);
+		CommandCost res = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, v->index, false);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;

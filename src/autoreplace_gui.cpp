@@ -15,6 +15,7 @@
 #include "road.h"
 #include "strings_func.h"
 #include "window_func.h"
+#include "autoreplace_cmd.h"
 #include "autoreplace_func.h"
 #include "company_func.h"
 #include "engine_base.h"
@@ -245,7 +246,7 @@ class ReplaceVehicleWindow : public Window {
 	{
 		EngineID veh_from = this->sel_engine[0];
 		EngineID veh_to = this->sel_engine[1];
-		DoCommandPOld(0, (replace_when_old ? 1 : 0) | (this->sel_group << 16), veh_from + (veh_to << 16), CMD_SET_AUTOREPLACE);
+		Command<CMD_SET_AUTOREPLACE>::Post(this->sel_group, veh_from, veh_to, replace_when_old);
 	}
 
 	/**
@@ -575,7 +576,7 @@ public:
 
 			case WID_RV_STOP_REPLACE: { // Stop replacing
 				EngineID veh_from = this->sel_engine[0];
-				DoCommandPOld(0, this->sel_group << 16, veh_from + (INVALID_ENGINE << 16), CMD_SET_AUTOREPLACE);
+				Command<CMD_SET_AUTOREPLACE>::Post(this->sel_group, veh_from, INVALID_ENGINE, false);
 				break;
 			}
 
@@ -612,7 +613,7 @@ public:
 				if (click_side == 0 && _ctrl_pressed && e != INVALID_ENGINE &&
 					(GetGroupNumEngines(_local_company, sel_group, e) == 0 || GetGroupNumEngines(_local_company, ALL_GROUP, e) == 0)) {
 						EngineID veh_from = e;
-						DoCommandPOld(0, this->sel_group << 16, veh_from + (INVALID_ENGINE << 16), CMD_SET_AUTOREPLACE);
+						Command<CMD_SET_AUTOREPLACE>::Post(this->sel_group, veh_from, INVALID_ENGINE, false);
 						break;
 				}
 

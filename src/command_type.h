@@ -1225,9 +1225,6 @@ DEF_CMD_PROC  (CMD_LEVEL_LAND, CmdLevelLand, CMD_ALL_TILES | CMD_NO_TEST | CMD_A
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_SET_AUTOREPLACE, CmdSetAutoReplace,                                 {}, CMDT_VEHICLE_MANAGEMENT    )
-
-DEF_CMD_PROC  (CMD_AUTOREPLACE_VEHICLE, CmdAutoreplaceVehicle,                             {}, CMDT_VEHICLE_MANAGEMENT    )
 DEF_CMD_PROC  (CMD_CREATE_GROUP, CmdCreateGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_DELETE_GROUP, CmdDeleteGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_ALTER_GROUP, CmdAlterGroup,                                     {}, CMDT_OTHER_MANAGEMENT      )

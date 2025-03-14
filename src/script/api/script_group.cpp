@@ -13,6 +13,7 @@
 #include "../script_instance.hpp"
 #include "../../string_func.h"
 #include "../../strings_func.h"
+#include "../../autoreplace_cmd.h"
 #include "../../autoreplace_func.h"
 #include "../../settings_cmd.h"
 #include "../../settings_func.h"
@@ -156,7 +157,7 @@
 	EnforcePrecondition(false, IsValidGroup(group_id) || group_id == GROUP_DEFAULT || group_id == GROUP_ALL);
 	EnforcePrecondition(false, ScriptEngine::IsBuildable(engine_id_new));
 
-	return ScriptObject::DoCommandOld(0, group_id << 16, (engine_id_new << 16) | engine_id_old, CMD_SET_AUTOREPLACE);
+	return ScriptObject::Command<CMD_SET_AUTOREPLACE>::Do(group_id, engine_id_old, engine_id_new, false);
 }
 
 /* static */ EngineID ScriptGroup::GetEngineReplacement(GroupID group_id, EngineID engine_id)
@@ -172,7 +173,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidGroup(group_id) || group_id == GROUP_DEFAULT || group_id == GROUP_ALL);
 
-	return ScriptObject::DoCommandOld(0, group_id << 16, (::INVALID_ENGINE << 16) | engine_id, CMD_SET_AUTOREPLACE);
+	return ScriptObject::Command<CMD_SET_AUTOREPLACE>::Do(group_id, engine_id, ::INVALID_ENGINE, false);
 }
 
 /* static */ Money ScriptGroup::GetProfitThisYear(GroupID group_id)

@@ -41,6 +41,7 @@
 #include "3rdparty/nlohmann/json.hpp"
 #include <array>
 
+#include "autoreplace_cmd.h"
 #include "company_cmd.h"
 #include "depot_cmd.h"
 #include "engine_cmd.h"
