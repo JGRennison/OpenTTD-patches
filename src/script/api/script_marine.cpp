@@ -11,8 +11,10 @@
 #include "script_marine.hpp"
 #include "script_station.hpp"
 #include "../../station_base.h"
+#include "../../station_cmd.h"
 #include "../../tile_cmd.h"
 #include "../../water_cmd.h"
+#include "../../waypoint_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -88,9 +90,7 @@
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id));
 
-	uint p1 = station_id == ScriptStation::STATION_JOIN_ADJACENT ? 0 : 1;
-	uint p2 = (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16;
-	return ScriptObject::DoCommandOld(tile, p1, p2, CMD_BUILD_DOCK);
+	return ScriptObject::Command<CMD_BUILD_DOCK>::Do(tile, ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION, station_id != ScriptStation::STATION_JOIN_ADJACENT);
 }
 
 /* static */ bool ScriptMarine::BuildBuoy(TileIndex tile)
@@ -98,7 +98,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_BUILD_BUOY);
+	return ScriptObject::Command<CMD_BUILD_BUOY>::Do(tile);
 }
 
 /* static */ bool ScriptMarine::BuildLock(TileIndex tile)

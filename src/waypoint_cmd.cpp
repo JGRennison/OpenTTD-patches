@@ -30,6 +30,7 @@
 #include "company_base.h"
 #include "water.h"
 #include "company_gui.h"
+#include "waypoint_cmd.h"
 
 #include "table/strings.h"
 
@@ -185,35 +186,20 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
 /**
  * Convert existing rail to waypoint. Eg build a waypoint station over
  * piece of rail
- * @param start_tile northern most tile where waypoint will be built
  * @param flags type of operation
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0- 5) - railtype (not used)
- * - p1 = (bit  6)    - orientation (Axis)
- * - p1 = (bit  8-15) - width of waypoint
- * - p1 = (bit 16-23) - height of waypoint
- * - p1 = (bit 24)    - allow waypoints directly adjacent to other waypoints.
- * @param p2 various bitstuffed elements
- * - p2 = (bit  0-15) - custom station class
- * - p2 = (bit 31-16) - station ID to join
- * @param p3 various bitstuffed elements
- * - p3 = (bit  0-31) - custom station id
- * @param text unused
+ * @param start_tile northern most tile where waypoint will be built
+ * @param axis orientation (Axis)
+ * @param width width of waypoint
+ * @param height height of waypoint
+ * @param spec_class custom station class
+ * @param spec_index custom station id
+ * @param station_to_join station ID to join (NEW_STATION if build new one)
+ * @param adjacent allow waypoints directly adjacent to other waypoints.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdBuildRailWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, StationClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
 {
-	/* Unpack parameters */
-	Axis axis      = Extract<Axis, 6, 1>(p1);
-	uint8_t width  = GB(p1,  8, 8);
-	uint8_t height = GB(p1, 16, 8);
-	bool adjacent  = HasBit(p1, 24);
-
-	StationClassID spec_class = Extract<StationClassID, 0, 16>(p2);
-	StationID station_to_join = GB(p2, 16, 16);
-
-	uint spec_index           = GB(p3, 0, 32);
-
+	if (!IsValidAxis(axis)) return CMD_ERROR;
 	/* Check if the given station class is valid */
 	if (static_cast<uint>(spec_class) >= StationClass::GetClassCount()) return CMD_ERROR;
 	const StationClass *cls = StationClass::Get(spec_class);
@@ -336,32 +322,21 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 }
 
 /**
- * Convert existing road to waypoint. Eg build a waypoint station over
- * piece of road
- * @param start_tile northern most tile where waypoint will be built
- * @param flags Operation to perform.
- * @param p1 bit 0..7: Width of the road stop.
- *           bit 8..15: Length of the road stop.
- *           bit 16: Allow stations directly adjacent to other stations.
- *           bit 17: #Axis of the road.
- * @param p2 bit  0..15: Custom road stop class
- *           bit 16..31: Station ID to join (NEW_STATION if build new one).
- * @param p3 various bitstuffed elements
- * - p3 = (bit  0-31) - custom road stop id
- * @param text Unused.
- * @return The cost of this operation or an error.
+ * Build a road waypoint on an existing road.
+ * @param flags type of operation.
+ * @param start_tile northern most tile where waypoint will be built.
+ * @param axis orientation (Axis).
+ * @param width width of waypoint.
+ * @param height height of waypoint.
+ * @param spec_class custom road stop class.
+ * @param spec_index custom road stop id.
+ * @param station_to_join station ID to join (NEW_STATION if build new one).
+ * @param adjacent allow waypoints directly adjacent to other waypoints.
+ * @return the cost of this operation or an error.
  */
-CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text)
+CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, RoadStopClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
 {
-	StationID station_to_join = GB(p2, 16, 16);
-	uint8_t width  = GB(p1, 0, 8);
-	uint8_t height = GB(p1, 8, 8);
-	bool adjacent = HasBit(p1, 16);
-	Axis axis = Extract<Axis, 17, 1>(p1);
-
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p2);
-	uint spec_index            = GB(p3, 0, 32);
-
+	if (!IsValidAxis(axis)) return CMD_ERROR;
 	/* Check if the given road stop class is valid */
 	if (static_cast<uint>(spec_class) >= RoadStopClass::GetClassCount()) return CMD_ERROR;
 	const RoadStopClass *cls = RoadStopClass::Get(spec_class);
@@ -506,14 +481,11 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 /**
  * Build a buoy.
- * @param tile tile where to place the buoy
  * @param flags operation to perform
- * @param p1 unused
- * @param p2 unused
- * @param text unused
+ * @param tile tile where to place the buoy
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildBuoy(DoCommandFlag flags, TileIndex tile)
 {
 	if (tile == 0 || !HasTileWaterGround(tile)) return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 
@@ -607,7 +579,7 @@ CommandCost RemoveBuoy(TileIndex tile, DoCommandFlag flags)
  * @param name The name to check.
  * @return True iff the name is unique.
  */
-static bool IsUniqueWaypointName(const char *name)
+static bool IsUniqueWaypointName(std::string_view name)
 {
 	for (const Waypoint *wp : Waypoint::Iterate()) {
 		if (!wp->name.empty() && wp->name == name) return false;
@@ -618,16 +590,14 @@ static bool IsUniqueWaypointName(const char *name)
 
 /**
  * Rename a waypoint.
- * @param tile unused
  * @param flags type of operation
- * @param p1 id of waypoint
- * @param p2 unused
+ * @param waypoint_id id of waypoint
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameWaypoint(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdRenameWaypoint(DoCommandFlag flags, StationID waypoint_id, const std::string &text)
 {
-	Waypoint *wp = Waypoint::GetIfValid(p1);
+	Waypoint *wp = Waypoint::GetIfValid(waypoint_id);
 	if (wp == nullptr) return CMD_ERROR;
 
 	if (wp->owner != OWNER_NONE) {
@@ -635,7 +605,7 @@ CommandCost CmdRenameWaypoint(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 		if (ret.Failed()) return ret;
 	}
 
-	bool reset = StrEmpty(text);
+	bool reset = text.empty();
 
 	if (!reset) {
 		if (Utf8StringLength(text) >= MAX_LENGTH_STATION_NAME_CHARS) return CMD_ERROR;
@@ -656,16 +626,14 @@ CommandCost CmdRenameWaypoint(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 
 /**
  * Set whether waypoint label is hidden
- * @param tile unused
  * @param flags type of operation
- * @param p1 id of waypoint
- * @param p2 hidden state
- * @param text the new name or an empty string when resetting to the default
+ * @param waypoint_id id of waypoint
+ * @param hidden hidden state
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetWaypointLabelHidden(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdSetWaypointLabelHidden(DoCommandFlag flags, StationID waypoint_id, bool hidden)
 {
-	Waypoint *wp = Waypoint::GetIfValid(p1);
+	Waypoint *wp = Waypoint::GetIfValid(waypoint_id);
 	if (wp == nullptr) return CMD_ERROR;
 
 	if (wp->owner != OWNER_NONE) {
@@ -674,7 +642,7 @@ CommandCost CmdSetWaypointLabelHidden(TileIndex tile, DoCommandFlag flags, uint3
 	}
 
 	if (flags & DC_EXEC) {
-		AssignBit(wp->waypoint_flags, WPF_HIDE_LABEL, p2 != 0);
+		AssignBit(wp->waypoint_flags, WPF_HIDE_LABEL, hidden);
 
 		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
 				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {

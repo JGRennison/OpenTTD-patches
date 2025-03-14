@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "terraform_gui.h"
 #include "window_gui.h"
+#include "station_cmd.h"
 #include "station_gui.h"
 #include "command_func.h"
 #include "water.h"
@@ -27,6 +28,7 @@
 #include "zoom_func.h"
 #include "tunnelbridge_cmd.h"
 #include "water_cmd.h"
+#include "waypoint_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/dock_widget.h"
@@ -209,21 +211,25 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_STATION: { // Build station button
-				uint32_t p2 = (uint32_t)INVALID_STATION << 16; // no station to join
-
-				/* tile is always the land tile, so need to evaluate _thd.pos */
-				CommandContainer<P123CmdData> cmdcont = NewCommandContainerBasic(tile, _ctrl_pressed, p2, CMD_BUILD_DOCK | CMD_MSG(STR_ERROR_CAN_T_BUILD_DOCK_HERE), CommandCallback::BuildDocks);
-
 				/* Determine the watery part of the dock. */
 				DiagDirection dir = GetInclinedSlopeDirection(GetTileSlope(tile));
 				TileIndex tile_to = (dir != INVALID_DIAGDIR ? TileAddByDiagDir(tile, ReverseDiagDir(dir)) : tile);
 
-				ShowSelectStationIfNeeded(cmdcont, TileArea(tile, tile_to));
+				bool adjacent = _ctrl_pressed;
+				auto proc = [=](bool test, StationID to_join) -> bool {
+					if (test) {
+						return Command<CMD_BUILD_DOCK>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_DOCK>()), tile, INVALID_STATION, adjacent).Succeeded();
+					} else {
+						return Command<CMD_BUILD_DOCK>::Post(STR_ERROR_CAN_T_BUILD_DOCK_HERE, CommandCallback::BuildDocks, tile, to_join, adjacent);
+					}
+				};
+
+				ShowSelectStationIfNeeded(TileArea(tile, tile_to), proc);
 				break;
 			}
 
 			case WID_DT_BUOY: // Build buoy button
-				DoCommandPOld(tile, 0, 0, CMD_BUILD_BUOY | CMD_MSG(STR_ERROR_CAN_T_POSITION_BUOY_HERE), CommandCallback::BuildDocks);
+				Command<CMD_BUILD_BUOY>::Post(STR_ERROR_CAN_T_POSITION_BUOY_HERE, CommandCallback::BuildDocks, tile);
 				break;
 
 			case WID_DT_RIVER: // Build river button (in scenario editor)

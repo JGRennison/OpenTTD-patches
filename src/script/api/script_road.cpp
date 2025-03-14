@@ -11,7 +11,9 @@
 #include "script_map.hpp"
 #include "script_station.hpp"
 #include "script_cargo.hpp"
+#include "../../newgrf_roadstop.h"
 #include "../../station_base.h"
+#include "../../station_cmd.h"
 #include "../../script/squirrel_helper_type.hpp"
 
 #include "../../safeguards.h"
@@ -615,20 +617,10 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	EnforcePrecondition(false, road_veh_type == ROADVEHTYPE_BUS || road_veh_type == ROADVEHTYPE_TRUCK);
 	EnforcePrecondition(false, IsRoadTypeAvailable(GetCurrentRoadType()));
 
-	uint entrance_dir;
-	if (drive_through) {
-		entrance_dir = ::TileY(tile) != ::TileY(front);
-	} else {
-		entrance_dir = (::TileX(tile) == ::TileX(front)) ? (::TileY(tile) < ::TileY(front) ? 1 : 3) : (::TileX(tile) < ::TileX(front) ? 2 : 0);
-	}
-
-	uint p2 = station_id == ScriptStation::STATION_JOIN_ADJACENT ? 0 : 4;
-	p2 |= drive_through ? 2 : 0;
-	p2 |= road_veh_type == ROADVEHTYPE_TRUCK ? 1 : 0;
-	p2 |= ScriptObject::GetRoadType() << 5;
-	p2 |= entrance_dir << 3;
-	p2 |= (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16;
-	return ScriptObject::DoCommandOld(tile, 1 | 1 << 8, p2, CMD_BUILD_ROAD_STOP);
+	DiagDirection entrance_dir = DiagdirBetweenTiles(tile, front);
+	RoadStopType stop_type = road_veh_type == ROADVEHTYPE_TRUCK ? RoadStopType::Truck : RoadStopType::Bus;
+	StationID to_join = ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION;
+	return ScriptObject::Command<CMD_BUILD_ROAD_STOP>::Do(tile, 1, 1, stop_type, drive_through, entrance_dir, ScriptObject::GetRoadType(), ROADSTOP_CLASS_DFLT, 0, to_join, station_id != ScriptStation::STATION_JOIN_ADJACENT);
 }
 
 /* static */ bool ScriptRoad::BuildRoadStation(TileIndex tile, TileIndex front, RoadVehicleType road_veh_type, StationID station_id)
@@ -682,7 +674,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	EnforcePrecondition(false, IsTileType(tile, MP_STATION));
 	EnforcePrecondition(false, IsStationRoadStop(tile));
 
-	return ScriptObject::DoCommandOld(tile, 1 | 1 << 8, to_underlying(GetRoadStopType(tile)), CMD_REMOVE_ROAD_STOP);
+	return ScriptObject::Command<CMD_REMOVE_ROAD_STOP>::Do(tile, 1, 1, GetRoadStopType(tile), false);
 }
 
 /* static */ Money ScriptRoad::GetBuildCost(RoadType roadtype, BuildType build_type)

@@ -23,6 +23,7 @@
 #include "departures_gui.h"
 #include "newgrf_debug.h"
 #include "zoom_func.h"
+#include "waypoint_cmd.h"
 
 #include "widgets/waypoint_widget.h"
 
@@ -156,7 +157,7 @@ public:
 				break;
 
 			case WID_W_TOGGLE_HIDDEN:
-				DoCommandPOld(0, this->window_number, HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL) ? 0 : 1, CMD_SET_WAYPOINT_LABEL_HIDDEN | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME));
+				Command<CMD_SET_WAYPOINT_LABEL_HIDDEN>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, !HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL));
 				break;
 		}
 	}
@@ -202,7 +203,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, 0, CMD_RENAME_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME), CommandCallback::None, str->c_str());
+		Command<CMD_RENAME_WAYPOINT>::Post(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME, this->window_number, *str);
 	}
 
 	bool IsNewGRFInspectable() const override

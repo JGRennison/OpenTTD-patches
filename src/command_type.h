@@ -380,10 +380,13 @@ enum Commands : uint16_t {
 	CMD_CONVERT_RAIL_TRACK,           ///< convert a rail type (track)
 
 	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
-	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
 	CMD_RENAME_WAYPOINT,              ///< rename a waypoint
-	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
 	CMD_REMOVE_FROM_RAIL_WAYPOINT,    ///< remove a (rectangle of) tiles from a rail waypoint
+
+	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
+	CMD_REMOVE_FROM_ROAD_WAYPOINT,    ///< remove a (rectangle of) tiles from a road waypoint
+
+	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
 
 	CMD_BUILD_ROAD_STOP,              ///< build a road stop
 	CMD_REMOVE_ROAD_STOP,             ///< remove a road stop
@@ -1174,7 +1177,6 @@ DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,               
 DEF_CMD_PROC  (CMD_BUILD_SINGLE_RAIL, CmdBuildSingleRail,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_SINGLE_RAIL, CmdRemoveSingleRail,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_LANDSCAPE_CLEAR, CmdLandscapeClear,                         CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROCEX(CMD_BUILD_RAIL_STATION, CmdBuildRailStation,         CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_TRAIN_DEPOT, CmdBuildTrainDepot,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_SIGNALS, CmdBuildSingleSignal,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_SIGNALS, CmdRemoveSingleSignal,                      CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
@@ -1182,26 +1184,15 @@ DEF_CMD_PROC  (CMD_TERRAFORM_LAND, CmdTerraformLand,           CMD_ALL_TILES | C
 DEF_CMD_PROC  (CMD_BUILD_OBJECT, CmdBuildObject,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PURCHASE_LAND_AREA, CmdPurchaseLandArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_OBJECT_AREA, CmdBuildObjectArea,  CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_FROM_RAIL_STATION, CmdRemoveFromRailStation,                          {}, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CONVERT_RAIL, CmdConvertRail,                                    {}, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CONVERT_RAIL_TRACK, CmdConvertRailTrack,                               {}, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROCEX(CMD_BUILD_RAIL_WAYPOINT, CmdBuildRailWaypoint,                              {}, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROCEX(CMD_BUILD_ROAD_WAYPOINT, CmdBuildRoadWaypoint,                              {}, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_RENAME_WAYPOINT, CmdRenameWaypoint,                                 {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SET_WAYPOINT_LABEL_HIDDEN, CmdSetWaypointLabelHidden,                         {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_REMOVE_FROM_RAIL_WAYPOINT, CmdRemoveFromRailWaypoint,                         {}, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROCEX(CMD_BUILD_ROAD_STOP, CmdBuildRoadStop,            CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_ROAD_STOP, CmdRemoveRoadStop,                                 {}, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_LONG_ROAD, CmdBuildLongRoad,CMD_DEITY | CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_LONG_ROAD, CmdRemoveLongRoad,            CMD_NO_TEST | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION) // towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
 DEF_CMD_PROC  (CMD_BUILD_ROAD, CmdBuildRoad,    CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_ROAD_DEPOT, CmdBuildRoadDepot,           CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CONVERT_ROAD, CmdConvertRoad,                                    {}, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_BUILD_AIRPORT, CmdBuildAirport,             CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_DOCK, CmdBuildDock,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_BUOY, CmdBuildBuoy,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_PLANT_TREE, CmdPlantTree,                               CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
 DEF_CMD_PROC  (CMD_BUILD_INDUSTRY, CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION)
@@ -1209,11 +1200,6 @@ DEF_CMD_PROC  (CMD_INDUSTRY_SET_FLAGS, CmdIndustrySetFlags,        CMD_STR_CTRL 
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_TEXT, CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_INDUSTRY_SET_PRODUCTION, CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_RENAME_STATION, CmdRenameStation,                                  {}, CMDT_OTHER_MANAGEMENT      )
-
-DEF_CMD_PROC  (CMD_EXCHANGE_STATION_NAMES, CmdExchangeStationNames,                           {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,                   {}, CMDT_OTHER_MANAGEMENT      )
 
 DEF_CMD_PROC  (CMD_FOUND_TOWN, CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // founding random town can fail only in exec run
 DEF_CMD_PROC  (CMD_RENAME_TOWN, CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      )
@@ -1251,7 +1237,6 @@ DEF_CMD_PROC  (CMD_ADD_SHARED_VEHICLE_GROUP, CmdAddSharedVehicleGroup,          
 DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,                         {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
 DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_OPEN_CLOSE_AIRPORT, CmdOpenCloseAirport,                               {}, CMDT_ROUTE_MANAGEMENT      )
 
 template <Commands Tcmd>
 using CmdPayload = typename CommandTraits<Tcmd>::PayloadType;

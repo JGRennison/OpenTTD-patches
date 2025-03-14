@@ -15,9 +15,11 @@
 #include "script_cargo.hpp"
 #include "../../debug.h"
 #include "../../station_base.h"
+#include "../../station_cmd.h"
 #include "../../newgrf_generic.h"
 #include "../../newgrf_station.h"
 #include "../../strings_func.h"
+#include "../../waypoint_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -155,10 +157,8 @@
 	EnforcePrecondition(false, IsRailTypeAvailable(GetCurrentRailType()));
 	EnforcePrecondition(false, station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id));
 
-	uint32_t p1 = GetCurrentRailType() | (platform_length << 16) | (num_platforms << 8);
-	if (direction == RAILTRACK_NW_SE) p1 |= (1 << 6);
-	if (station_id != ScriptStation::STATION_JOIN_ADJACENT) p1 |= (1 << 24);
-	return ScriptObject::DoCommandOld(tile, p1, (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16, CMD_BUILD_RAIL_STATION);
+	bool adjacent = station_id != ScriptStation::STATION_JOIN_ADJACENT;
+	return ScriptObject::Command<CMD_BUILD_RAIL_STATION>::Do(tile, (::RailType)GetCurrentRailType(), direction == RAILTRACK_NW_SE ? AXIS_Y : AXIS_X, num_platforms, platform_length, STAT_CLASS_DFLT, 0, ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION, adjacent);
 }
 
 /* static */ bool ScriptRail::BuildNewGRFRailStation(TileIndex tile, RailTrack direction, SQInteger num_platforms, SQInteger platform_length, StationID station_id, CargoID cargo_id, IndustryType source_industry, IndustryType goal_industry, SQInteger distance, bool source_station)
@@ -174,10 +174,6 @@
 	EnforcePrecondition(false, source_industry == ScriptIndustryType::INDUSTRYTYPE_UNKNOWN || source_industry == ScriptIndustryType::INDUSTRYTYPE_TOWN || ScriptIndustryType::IsValidIndustryType(source_industry));
 	EnforcePrecondition(false, goal_industry   == ScriptIndustryType::INDUSTRYTYPE_UNKNOWN || goal_industry   == ScriptIndustryType::INDUSTRYTYPE_TOWN || ScriptIndustryType::IsValidIndustryType(goal_industry));
 
-	uint32_t p1 = GetCurrentRailType() | (platform_length << 16) | (num_platforms << 8);
-	if (direction == RAILTRACK_NW_SE) p1 |= 1 << 6;
-	if (station_id != ScriptStation::STATION_JOIN_ADJACENT) p1 |= (1 << 24);
-
 	const GRFFile *file;
 	uint16_t res = GetAiPurchaseCallbackResult(
 		GSF_STATIONS,
@@ -191,18 +187,21 @@
 		std::min<SQInteger>(15u, num_platforms) << 4 | std::min<SQInteger>(15u, platform_length),
 		&file
 	);
-	uint32_t p2 = (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16;
+
+	Axis axis = direction == RAILTRACK_NW_SE ? AXIS_Y : AXIS_X;
+	bool adjacent = station_id != ScriptStation::STATION_JOIN_ADJACENT;
+	StationID to_join = ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION;
 	if (res != CALLBACK_FAILED) {
 		const StationSpec *spec = StationClass::GetByGrf(file->grfid, res);
 		if (spec == nullptr) {
 			Debug(grf, 1, "{} returned an invalid station ID for 'AI construction/purchase selection (18)' callback", file->filename);
 		} else {
 			/* We might have gotten an usable station spec. Try to build it, but if it fails we'll fall back to the original station. */
-			if (ScriptObject::DoCommandEx(tile, p1, p2 | spec->class_index, spec->index, CMD_BUILD_RAIL_STATION)) return true;
+			if (ScriptObject::Command<CMD_BUILD_RAIL_STATION>::Do(tile, (::RailType)GetCurrentRailType(), axis, num_platforms, platform_length, spec->class_index, spec->index, to_join, adjacent)) return true;
 		}
 	}
 
-	return ScriptObject::DoCommandOld(tile, p1, p2, CMD_BUILD_RAIL_STATION);
+	return ScriptObject::Command<CMD_BUILD_RAIL_STATION>::Do(tile, (::RailType)GetCurrentRailType(), axis, num_platforms, platform_length, STAT_CLASS_DFLT, 0, to_join, adjacent);
 }
 
 /* static */ bool ScriptRail::BuildRailWaypoint(TileIndex tile)
@@ -213,7 +212,7 @@
 	EnforcePrecondition(false, GetRailTracks(tile) == RAILTRACK_NE_SW || GetRailTracks(tile) == RAILTRACK_NW_SE);
 	EnforcePrecondition(false, IsRailTypeAvailable(GetCurrentRailType()));
 
-	return ScriptObject::DoCommandEx(tile, GetCurrentRailType() | (GetRailTracks(tile) == RAILTRACK_NE_SW ? AXIS_X : AXIS_Y) << 6 | 1 << 8 | 1 << 16, STAT_CLASS_WAYP | INVALID_STATION << 16, 0, CMD_BUILD_RAIL_WAYPOINT);
+	return ScriptObject::Command<CMD_BUILD_RAIL_WAYPOINT>::Do(tile, GetRailTracks(tile) == RAILTRACK_NE_SW ? AXIS_X : AXIS_Y, 1, 1, STAT_CLASS_WAYP, 0, INVALID_STATION, false);
 }
 
 /* static */ bool ScriptRail::RemoveRailWaypointTileRectangle(TileIndex tile, TileIndex tile2, bool keep_rail)
@@ -222,7 +221,7 @@
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, ::IsValidTile(tile2));
 
-	return ScriptObject::DoCommandOld(tile, tile2, keep_rail ? 1 : 0, CMD_REMOVE_FROM_RAIL_WAYPOINT);
+	return ScriptObject::Command<CMD_REMOVE_FROM_RAIL_WAYPOINT>::Do(tile, tile2, keep_rail);
 }
 
 /* static */ bool ScriptRail::RemoveRailStationTileRectangle(TileIndex tile, TileIndex tile2, bool keep_rail)
@@ -231,7 +230,7 @@
 	EnforcePrecondition(false, ::IsValidTile(tile));
 	EnforcePrecondition(false, ::IsValidTile(tile2));
 
-	return ScriptObject::DoCommandOld(tile, tile2, keep_rail ? 1 : 0, CMD_REMOVE_FROM_RAIL_STATION);
+	return ScriptObject::Command<CMD_REMOVE_FROM_RAIL_STATION>::Do(tile, tile2, keep_rail);
 }
 
 /* static */ uint ScriptRail::GetRailTracks(TileIndex tile)

@@ -475,6 +475,7 @@ add_files(
     station.cpp
     station_base.h
     station_cmd.cpp
+    station_cmd.h
     station_func.h
     station_gui.cpp
     station_gui.h
@@ -613,6 +614,7 @@ add_files(
     waypoint.cpp
     waypoint_base.h
     waypoint_cmd.cpp
+    waypoint_cmd.h
     waypoint_func.h
     waypoint_gui.cpp
     widget.cpp

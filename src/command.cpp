@@ -52,6 +52,7 @@
 #include "programmable_signals_cmd.h"
 #include "settings_cmd.h"
 #include "signs_cmd.h"
+#include "station_cmd.h"
 #include "story_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
 #include "timetable_cmd.h"
@@ -61,6 +62,7 @@
 #include "vehicle_cmd.h"
 #include "viewport_cmd.h"
 #include "water_cmd.h"
+#include "waypoint_cmd.h"
 
 #include "table/strings.h"
 
@@ -323,7 +325,7 @@ DEF_CB_RES(CloneVehicle)
 DEF_CB_RES_TUPLE(GiveMoney, CmdPayload<CMD_GIVE_MONEY>)
 DEF_CB_GENERAL(CreateGroup)
 DEF_CB_RES(FoundRandomTown)
-DEF_CB_GENERAL(RoadStop)
+DEF_CB_RES_TILE_TUPLE(RoadStop, CmdPayload<CMD_BUILD_ROAD_STOP>)
 DEF_CB_GENERAL(BuildIndustry)
 DEF_CB_RES_TUPLE(StartStopVehicle, CmdPayload<CMD_START_STOP_VEHICLE>)
 DEF_CB_GENERAL(Game)
