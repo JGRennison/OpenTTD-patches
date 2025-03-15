@@ -18,6 +18,7 @@
 #include "../../town.h"
 #include "../../landscape.h"
 #include "../../landscape_cmd.h"
+#include "../../terraform_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -253,7 +254,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, tile < ScriptMap::GetMapSize());
 
-	return ScriptObject::DoCommandOld(tile, slope, 1, CMD_TERRAFORM_LAND);
+	return ScriptObject::Command<CMD_TERRAFORM_LAND>::Do(tile, (::Slope)slope, true);
 }
 
 /* static */ bool ScriptTile::LowerTile(TileIndex tile, Slope slope)
@@ -261,7 +262,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, tile < ScriptMap::GetMapSize());
 
-	return ScriptObject::DoCommandOld(tile, slope, 0, CMD_TERRAFORM_LAND);
+	return ScriptObject::Command<CMD_TERRAFORM_LAND>::Do(tile, (::Slope)slope, false);
 }
 
 /* static */ bool ScriptTile::LevelTiles(TileIndex start_tile, TileIndex end_tile)
@@ -270,7 +271,7 @@
 	EnforcePrecondition(false, start_tile < ScriptMap::GetMapSize());
 	EnforcePrecondition(false, end_tile < ScriptMap::GetMapSize());
 
-	return ScriptObject::DoCommandOld(end_tile, start_tile, LM_LEVEL << 1, CMD_LEVEL_LAND);
+	return ScriptObject::Command<CMD_LEVEL_LAND>::Do(end_tile, start_tile, false, LM_LEVEL);
 }
 
 /* static */ bool ScriptTile::DemolishTile(TileIndex tile)

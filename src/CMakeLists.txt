@@ -526,6 +526,7 @@ add_files(
     tbtr_template_vehicle_func.h
     tbtr_template_vehicle_type.h
     terraform_cmd.cpp
+    terraform_cmd.h
     terraform_gui.cpp
     terraform_gui.h
     textbuf.cpp

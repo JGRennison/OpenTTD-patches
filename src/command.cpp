@@ -59,6 +59,7 @@
 #include "story_cmd.h"
 #include "subsidy_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
+#include "terraform_cmd.h"
 #include "timetable_cmd.h"
 #include "tracerestrict_cmd.h"
 #include "train_cmd.h"

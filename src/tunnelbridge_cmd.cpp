@@ -56,6 +56,7 @@
 #include "spritecache.h"
 #include "debug.h"
 #include "landscape_cmd.h"
+#include "terraform_cmd.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -1099,7 +1100,7 @@ CommandCost CmdBuildTunnel(DoCommandFlag flags, TileIndex start_tile, TransportT
 		assert(coa_index < UINT_MAX); // more than 2**32 cleared areas would be a bug in itself
 		coa = nullptr;
 
-		ret = DoCommandOld(end_tile, end_tileh & start_tileh, 0, flags, CMD_TERRAFORM_LAND);
+		ret = Command<CMD_TERRAFORM_LAND>::Do(flags, end_tile, end_tileh & start_tileh, false);
 		_cleared_object_areas[(uint)coa_index].first_tile = old_first_tile;
 		if (ret.Failed()) return CommandCost(STR_ERROR_UNABLE_TO_EXCAVATE_LAND);
 		cost.AddCost(ret);

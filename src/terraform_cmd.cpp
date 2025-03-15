@@ -17,6 +17,7 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "landscape_cmd.h"
+#include "terraform_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "table/strings.h"
@@ -164,42 +165,41 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 
 /**
  * Terraform land
- * @param tile tile to terraform
  * @param flags for this command type
- * @param p1 corners to terraform (SLOPE_xxx)
- * @param p2 direction; eg up (non-zero) or down (zero)
- * @param text unused
+ * @param tile tile to terraform
+ * @param slope corners to terraform (SLOPE_xxx)
+ * @param dir_up direction; eg up (true) or down (false)
  * @return the cost of this operation or an error
  */
-CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, bool dir_up)
 {
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
-	int direction = (p2 != 0 ? 1 : -1);
+	int direction = (dir_up ? 1 : -1);
 	TerraformerState ts;
 
 	/* Compute the costs and the terraforming result in a model of the landscape */
-	if ((p1 & SLOPE_W) != 0 && tile + TileDiffXY(1, 0) < MapSize()) {
+	if ((slope & SLOPE_W) != 0 && tile + TileDiffXY(1, 0) < MapSize()) {
 		TileIndex t = tile + TileDiffXY(1, 0);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
 		total_cost.AddCost(cost);
 	}
 
-	if ((p1 & SLOPE_S) != 0 && tile + TileDiffXY(1, 1) < MapSize()) {
+	if ((slope & SLOPE_S) != 0 && tile + TileDiffXY(1, 1) < MapSize()) {
 		TileIndex t = tile + TileDiffXY(1, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
 		total_cost.AddCost(cost);
 	}
 
-	if ((p1 & SLOPE_E) != 0 && tile + TileDiffXY(0, 1) < MapSize()) {
+	if ((slope & SLOPE_E) != 0 && tile + TileDiffXY(0, 1) < MapSize()) {
 		TileIndex t = tile + TileDiffXY(0, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
 		total_cost.AddCost(cost);
 	}
 
-	if ((p1 & SLOPE_N) != 0) {
+	if ((slope & SLOPE_N) != 0) {
 		TileIndex t = tile + TileDiffXY(0, 0);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
@@ -334,16 +334,15 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal, LevelMode lm)
 {
-	if (p1 >= MapSize()) return CMD_ERROR;
+	if (start_tile >= MapSize()) return CMD_ERROR;
 
 	/* remember level height */
-	uint oldh = TileHeight(TileIndex{p1});
+	uint oldh = TileHeight(start_tile);
 
 	/* compute new height */
 	uint h = oldh;
-	LevelMode lm = (LevelMode)GB(p2, 1, 2);
 	switch (lm) {
 		case LM_LEVEL: break;
 		case LM_RAISE: h++; break;
@@ -363,12 +362,12 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	int limit = (c == nullptr ? INT32_MAX : GB(c->terraform_limit, 16, 16));
 	if (limit == 0) return CommandCost(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 
-	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
 		uint curh = TileHeight(t);
 		while (curh != h) {
-			CommandCost ret = DoCommandOld(t, SLOPE_N, (curh > h) ? 0 : 1, flags & ~DC_EXEC, CMD_TERRAFORM_LAND);
+			CommandCost ret = Command<CMD_TERRAFORM_LAND>::Do(flags & ~DC_EXEC, t, SLOPE_N, curh <= h);
 			if (ret.Failed()) {
 				last_error = ret;
 
@@ -383,7 +382,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 					cost.SetAdditionalCashRequired(ret.GetCost());
 					return cost;
 				}
-				DoCommandOld(t, SLOPE_N, (curh > h) ? 0 : 1, flags, CMD_TERRAFORM_LAND);
+				Command<CMD_TERRAFORM_LAND>::Do(flags, t, SLOPE_N, curh <= h);
 			} else {
 				/* When we're at the terraform limit we better bail (unneeded) testing as well.
 				 * This will probably cause the terraforming cost to be underestimated, but only
