@@ -214,7 +214,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	GetStorage()->last_command_res = res;
 	/* Also store the results of various global variables */
 	SetNewVehicleID(_new_vehicle_id);
-	SetNewGroupID(_new_group_id);
 }
 
 /* static */ bool ScriptObject::GetLastCommandRes()
@@ -230,16 +229,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ VehicleID ScriptObject::GetNewVehicleID()
 {
 	return GetStorage()->new_vehicle_id;
-}
-
-/* static */ void ScriptObject::SetNewGroupID(GroupID group_id)
-{
-	GetStorage()->new_group_id = group_id;
-}
-
-/* static */ GroupID ScriptObject::GetNewGroupID()
-{
-	return GetStorage()->new_group_id;
 }
 
 /* static */ void ScriptObject::SetAllowDoCommand(bool allow)

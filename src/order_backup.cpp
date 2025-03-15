@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "station_map.h"
 #include "vehicle_func.h"
+#include "group_cmd.h"
 
 #include "safeguards.h"
 
@@ -94,7 +95,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 	if (v->cur_timetable_order_index >= v->GetNumOrders()) v->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 
 	/* Restore vehicle group */
-	DoCommandOld(0, this->group, v->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
+	Command<CMD_ADD_VEHICLE_GROUP>::Do(DC_EXEC, this->group, v->index, false);
 }
 
 /**

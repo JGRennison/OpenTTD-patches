@@ -38,6 +38,7 @@
 #include "scope.h"
 #include "zoom_func.h"
 #include "order_cmd.h"
+#include "group_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/order_widget.h"
@@ -3410,7 +3411,7 @@ public:
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
-			DoCommandPOld(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, str.has_value() ? str->c_str() : nullptr);
+			Command<CMD_CREATE_GROUP_FROM_LIST>::Post(STR_ERROR_GROUP_CAN_T_CREATE, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index), CargoFilterCriteria::CF_ANY, str.has_value() ? *str : std::string{});
 		}
 
 		if (this->query_text_widget == WID_O_TEXT_LABEL && str.has_value()) {

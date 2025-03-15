@@ -25,6 +25,7 @@
 #include "ai/ai.hpp"
 #include "news_func.h"
 #include "strings_func.h"
+#include "group_cmd.h"
 #include "order_cmd.h"
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
@@ -571,7 +572,7 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<CMD_CLONE_ORDER>::Do(DC_EXEC, CO_SHARE, new_head->index, old_head->index));
 
 	/* Copy group membership */
-	if (cost.Succeeded() && old_head != new_head) cost.AddCost(DoCommandOld(0, old_head->group_id, new_head->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP));
+	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<CMD_ADD_VEHICLE_GROUP>::Do(DC_EXEC, old_head->group_id, new_head->index, false));
 
 	/* Perform start/stop check whether the new vehicle suits newgrf restrictions etc. */
 	if (start_stop_check && cost.Succeeded()) {

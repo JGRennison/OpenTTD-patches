@@ -46,6 +46,7 @@
 #include "depot_cmd.h"
 #include "engine_cmd.h"
 #include "goal_cmd.h"
+#include "group_cmd.h"
 #include "landscape_cmd.h"
 #include "league_cmd.h"
 #include "misc_cmd.h"
@@ -328,13 +329,13 @@ DEF_CB_RES_TILE(Terraform)
 DEF_CB_GENERAL(AI)
 DEF_CB_RES(CloneVehicle)
 DEF_CB_RES_TUPLE(GiveMoney, CmdPayload<CMD_GIVE_MONEY>)
-DEF_CB_GENERAL(CreateGroup)
+DEF_CB_RES_TUPLE(CreateGroup, CmdPayload<CMD_CREATE_GROUP>)
 DEF_CB_RES(FoundRandomTown)
 DEF_CB_RES_TILE_TUPLE(RoadStop, CmdPayload<CMD_BUILD_ROAD_STOP>)
 DEF_CB_GENERAL(BuildIndustry)
 DEF_CB_RES_TUPLE(StartStopVehicle, CmdPayload<CMD_START_STOP_VEHICLE>)
 DEF_CB_GENERAL(Game)
-DEF_CB_GENERAL(AddVehicleNewGroup)
+DEF_CB_RES(AddVehicleNewGroup)
 DEF_CB_RES(AddPlan)
 DEF_CB_RES(SetVirtualTrain)
 DEF_CB_RES(VirtualTrainWagonsMoved)

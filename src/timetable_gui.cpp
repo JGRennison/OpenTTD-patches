@@ -28,6 +28,7 @@
 #include "tracerestrict.h"
 #include "scope.h"
 #include "timetable_cmd.h"
+#include "group_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/timetable_widget.h"
@@ -1193,7 +1194,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_ADD_VEH_GROUP: {
-				DoCommandPOld(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, str->c_str());
+				Command<CMD_CREATE_GROUP_FROM_LIST>::Post(STR_ERROR_GROUP_CAN_T_CREATE, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index), CargoFilterCriteria::CF_ANY, *str);
 				break;
 			}
 		}

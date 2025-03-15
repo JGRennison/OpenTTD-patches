@@ -22,6 +22,7 @@
 #include "train_cmd.h"
 #include "aircraft.h"
 #include "depot_map.h"
+#include "group_cmd.h"
 #include "group_gui.h"
 #include "strings_func.h"
 #include "strings_internal.h"
@@ -2734,7 +2735,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		DoCommandPOld(0, this->window_number, this->GetCargoFilter(), CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, str.has_value() ? str->c_str() : nullptr);
+		Command<CMD_CREATE_GROUP_FROM_LIST>::Post(STR_ERROR_GROUP_CAN_T_CREATE, this->vli, this->GetCargoFilter(), str.has_value() ? *str : std::string{});
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override

@@ -302,11 +302,6 @@ protected:
 	static VehicleID GetNewVehicleID();
 
 	/**
-	 * Get the latest stored new_group_id.
-	 */
-	static GroupID GetNewGroupID();
-
-	/**
 	 * Store a allow_do_command per company.
 	 * @param allow The new allow.
 	 */
@@ -414,12 +409,6 @@ private:
 	 * @param vehicle_id The new VehicleID.
 	 */
 	static void SetNewVehicleID(VehicleID vehicle_id);
-
-	/**
-	 * Store a new_group_id per company.
-	 * @param group_id The new GroupID.
-	 */
-	static void SetNewGroupID(GroupID group_id);
 
 	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
 };

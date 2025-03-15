@@ -1233,16 +1233,6 @@ DEF_CMD_PROC  (CMD_PLACE_HOUSE, CmdPlaceHouse,                             CMD_D
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_CREATE_GROUP, CmdCreateGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_DELETE_GROUP, CmdDeleteGroup,                                    {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_ALTER_GROUP, CmdAlterGroup,                                     {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_CREATE_GROUP_FROM_LIST, CmdCreateGroupFromList,                            {}, CMDT_OTHER_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_ADD_VEHICLE_GROUP, CmdAddVehicleGroup,                                {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_ADD_SHARED_VEHICLE_GROUP, CmdAddSharedVehicleGroup,                          {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,                         {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SET_GROUP_FLAG, CmdSetGroupFlag,                                   {}, CMDT_ROUTE_MANAGEMENT      )
-DEF_CMD_PROC  (CMD_SET_GROUP_LIVERY, CmdSetGroupLivery,                                 {}, CMDT_ROUTE_MANAGEMENT      )
-
 template <Commands Tcmd>
 using CmdPayload = typename CommandTraits<Tcmd>::PayloadType;
 

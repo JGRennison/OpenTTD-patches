@@ -29,6 +29,7 @@
 #include "gfx_func.h"
 #include "tbtr_template_gui_main.h"
 #include "newgrf_debug.h"
+#include "group_cmd.h"
 #include "group_gui.h"
 #include "zoom_func.h"
 #include "vehicle_cmd.h"
@@ -761,7 +762,7 @@ public:
 		if (confirmed) {
 			VehicleGroupWindow *w = (VehicleGroupWindow*)win;
 			w->vli.index = ALL_GROUP;
-			DoCommandPOld(0, w->group_confirm, 0, CMD_DELETE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_DELETE));
+			Command<CMD_DELETE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_DELETE, w->group_confirm);
 		}
 	}
 
@@ -908,7 +909,7 @@ public:
 			}
 
 			case WID_GL_CREATE_GROUP: { // Create a new group
-				DoCommandPOld(0, this->vli.vtype, this->vli.index, CMD_CREATE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::CreateGroup);
+				Command<CMD_CREATE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_CREATE, CommandCallback::CreateGroup, this->vli.vtype, this->vli.index);
 				break;
 			}
 
@@ -925,7 +926,7 @@ public:
 					if (!this->vehgroups.empty()) {
 						std::string name = GenerateAutoNameForVehicleGroup(this->vehgroups[0].vehicles_begin[0]);
 						if (!name.empty()) {
-							DoCommandPOld(0, this->vli.index, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), CommandCallback::None, name.c_str());
+							Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->vli.index, 0, name);
 							return;
 						}
 					}
@@ -968,7 +969,7 @@ public:
 			case WID_GL_REPLACE_PROTECTION: {
 				const Group *g = Group::GetIfValid(this->vli.index);
 				if (g != nullptr) {
-					DoCommandPOld(0, this->vli.index | (static_cast<uint32_t>(GroupFlags::ReplaceProtection) << 16), (HasFlag(g->flags, GroupFlags::ReplaceProtection) ? 0 : 1) | (_ctrl_pressed << 1), CMD_SET_GROUP_FLAG);
+					Command<CMD_SET_GROUP_FLAG>::Post(this->vli.index, GroupFlags::ReplaceProtection, !HasFlag(g->flags, GroupFlags::ReplaceProtection), _ctrl_pressed);
 				}
 				break;
 			}
@@ -989,7 +990,7 @@ public:
 			case WID_GL_ALL_VEHICLES: // All vehicles
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles
 				if (g->parent != INVALID_GROUP) {
-					DoCommandPOld(0, this->group_sel | (1 << 16), INVALID_GROUP, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+					Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, AlterGroupMode::SetParent, this->group_sel, INVALID_GROUP, {});
 				}
 
 				this->group_sel = INVALID_GROUP;
@@ -1002,7 +1003,7 @@ public:
 				GroupID new_g = it == this->groups.end() ? INVALID_GROUP : it->group->index;
 
 				if (this->group_sel != new_g && g->parent != new_g) {
-					DoCommandPOld(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+					Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, AlterGroupMode::SetParent, this->group_sel, new_g, {});
 				}
 
 				this->group_sel = INVALID_GROUP;
@@ -1017,7 +1018,7 @@ public:
 	{
 		switch (widget) {
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles
-				DoCommandPOld(0, DEFAULT_GROUP, this->vehicle_sel | (_ctrl_pressed || this->grouping == GB_SHARED_ORDERS ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE));
+				Command<CMD_ADD_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE, DEFAULT_GROUP, this->vehicle_sel, _ctrl_pressed || this->grouping == GB_SHARED_ORDERS);
 
 				this->vehicle_sel = INVALID_VEHICLE;
 				this->group_over = INVALID_GROUP;
@@ -1034,7 +1035,7 @@ public:
 				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
 				GroupID new_g = it == this->groups.end() ? NEW_GROUP : it->group->index;
 
-				DoCommandPOld(0, new_g, vindex | (_ctrl_pressed || this->grouping == GB_SHARED_ORDERS ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE), new_g == NEW_GROUP ? CommandCallback::AddVehicleNewGroup : CommandCallback::None);
+				Command<CMD_ADD_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE, new_g == NEW_GROUP ? CommandCallback::AddVehicleNewGroup : CommandCallback::None, new_g, vindex, _ctrl_pressed || this->grouping == GB_SHARED_ORDERS);
 				break;
 			}
 
@@ -1090,7 +1091,7 @@ public:
 					vli_type = VL_SHARED_ORDERS;
 					v = v->FirstShared();
 				}
-				DoCommandPOld(0, VehicleListIdentifier(vli_type, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), CommandCallback::None, name.c_str());
+				Command<CMD_CREATE_GROUP_FROM_LIST>::Post(STR_ERROR_GROUP_CAN_T_CREATE, VehicleListIdentifier(vli_type, v->type, v->owner, v->index), CargoFilterCriteria::CF_ANY, name);
 
 				break;
 			}
@@ -1107,7 +1108,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str.has_value()) DoCommandPOld(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), CommandCallback::None, str->c_str());
+		if (str.has_value()) Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->group_rename, 0, *str);
 		this->group_rename = INVALID_GROUP;
 	}
 
@@ -1159,12 +1160,12 @@ public:
 					case ADI_ADD_SHARED: // Add shared Vehicles
 						assert(Group::IsValidID(this->vli.index));
 
-						DoCommandPOld(0, this->vli.index, this->vli.vtype, CMD_ADD_SHARED_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE));
+						Command<CMD_ADD_SHARED_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE, this->vli.index, this->vli.vtype);
 						break;
 					case ADI_REMOVE_ALL: // Remove all Vehicles from the selected group
 						assert(Group::IsValidID(this->vli.index));
 
-						DoCommandPOld(0, this->vli.index, 0, CMD_REMOVE_ALL_VEHICLES_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES));
+						Command<CMD_REMOVE_ALL_VEHICLES_GROUP>::Post(STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES, this->vli.index);
 						break;
 
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
@@ -1404,43 +1405,30 @@ static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner o
 /**
  * Opens a 'Rename group' window for newly created group.
  * @param result Did command succeed?
- * @param tile Unused.
- * @param p1 Vehicle type.
- * @param p2 Unused.
- * @param cmd Unused.
+ * @param new_group ID of the created group.
+ * @param vt Vehicle type.
  * @see CmdCreateGroup
  */
-void CcCreateGroup(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcCreateGroup(const CommandCost &result, VehicleType vt, GroupID parent_group)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData() || vt >= VEH_COMPANY_END) return;
 
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_CREATE_GROUP>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
-	assert(data->p1 <= VEH_AIRCRAFT);
-
-	VehicleGroupWindow *w = FindVehicleGroupWindow((VehicleType)data->p1, _current_company);
-	if (w != nullptr) w->ShowRenameGroupWindow(_new_group_id, true);
+	VehicleGroupWindow *w = FindVehicleGroupWindow(vt, _current_company);
+	if (w != nullptr) w->ShowRenameGroupWindow(result.GetResultData(), true);
 }
 
 /**
  * Open rename window after adding a vehicle to a new group via drag and drop.
  * @param result Did command succeed?
- * @param tile Unused.
- * @param p1 Unused.
- * @param p2 Bit 0-19: Vehicle ID.
- * @param cmd Unused.
  */
-void CcAddVehicleNewGroup(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcAddVehicleNewGroup(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_ADD_VEHICLE_GROUP>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
-	assert(Vehicle::IsValidID(GB(data->p2, 0, 20)));
-
-	CcCreateGroup(result, CMD_CREATE_GROUP, {}, P123CmdData(Vehicle::Get(GB(data->p2, 0, 20))->type, 0, 0), 0);
+	const Group *g = Group::GetIfValid(result.GetResultData());
+	if (g != nullptr) {
+		CcCreateGroup(result, g->vehicle_type, INVALID_GROUP);
+	}
 }
 
 /**

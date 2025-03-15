@@ -132,6 +132,4 @@ void UpdateCompanyGroupLiveries(const Company *c);
 
 std::string GenerateAutoNameForVehicleGroup(const Vehicle *v);
 
-extern GroupID _new_group_id;
-
 #endif /* GROUP_H */

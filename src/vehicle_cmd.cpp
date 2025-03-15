@@ -26,6 +26,7 @@
 #include "autoreplace_cmd.h"
 #include "autoreplace_gui.h"
 #include "group.h"
+#include "group_cmd.h"
 #include "order_backup.h"
 #include "order_cmd.h"
 #include "infrastructure_func.h"
@@ -1435,7 +1436,7 @@ CommandCost CmdCloneVehicle(DoCommandFlag flags, TileIndex tile, VehicleID veh_i
 	const Company *owner = Company::GetIfValid(_current_company);
 	if ((flags & DC_EXEC) && (share_orders || owner == nullptr || owner->settings.copy_clone_add_to_group)) {
 		/* Cloned vehicles belong to the same group */
-		DoCommandOld(0, v_front->group_id, w_front->index, flags, CMD_ADD_VEHICLE_GROUP);
+		Command<CMD_ADD_VEHICLE_GROUP>::Do(flags, v_front->group_id, w_front->index, false);
 	}
 
 

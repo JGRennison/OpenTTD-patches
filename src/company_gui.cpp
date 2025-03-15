@@ -39,6 +39,7 @@
 #include "station_func.h"
 #include "zoom_func.h"
 #include "sortlist_type.h"
+#include "group_cmd.h"
 #include "group_gui.h"
 #include "misc_cmd.h"
 #include "core/backup_type.hpp"
@@ -1062,7 +1063,7 @@ public:
 			}
 		} else {
 			/* Setting group livery */
-			DoCommandPOld(0, this->sel, (widget == WID_SCL_PRI_COL_DROPDOWN ? 0 : 256) | (index << 16), CMD_SET_GROUP_LIVERY);
+			Command<CMD_SET_GROUP_LIVERY>::Post(this->sel, widget == WID_SCL_PRI_COL_DROPDOWN, colour);
 		}
 	}
 

@@ -29,6 +29,7 @@
 #include "../fileio_func.h"
 #include "../league_type.h"
 #include "../goal_type.h"
+#include "../group_type.h"
 #include "../signs_type.h"
 #include "../story_type.h"
 
@@ -320,7 +321,7 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnGroupID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewGroupID());
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GroupID>(::INVALID_GROUP));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance *instance)

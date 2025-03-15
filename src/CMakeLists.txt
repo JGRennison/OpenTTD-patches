@@ -221,6 +221,7 @@ add_files(
     ground_vehicle.hpp
     group.h
     group_cmd.cpp
+    group_cmd.h
     group_gui.cpp
     group_gui.h
     group_type.h
