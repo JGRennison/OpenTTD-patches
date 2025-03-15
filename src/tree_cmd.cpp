@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "clear_map.h"
 #include "landscape.h"
+#include "landscape_cmd.h"
 #include "tree_map.h"
 #include "viewport_func.h"
 #include "command_func.h"
@@ -435,7 +436,7 @@ void RemoveAllTrees()
 
 	for (TileIndex tile(0); tile < MapSize(); ++tile) {
 		if (GetTileType(tile) == MP_TREES) {
-			DoCommandPOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CommandCallback::PlaySound_EXPLOSION);
+			Command<CMD_LANDSCAPE_CLEAR>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CommandCallback::PlaySound_EXPLOSION, tile);
 		}
 	}
 }
@@ -620,7 +621,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 					switch (GetRawClearGround(tile)) {
 						case CLEAR_FIELDS:
 						case CLEAR_ROCKS: {
-							CommandCost ret = DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 							if (ret.Failed()) return ret;
 							cost.AddCost(ret);
 							break;
@@ -1120,7 +1121,7 @@ void InitializeTrees()
 
 static CommandCost TerraformTile_Trees(TileIndex tile, DoCommandFlag flags, int, Slope)
 {
-	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
 

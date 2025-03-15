@@ -16,6 +16,7 @@
 #include "object_base.h"
 #include "company_base.h"
 #include "company_func.h"
+#include "landscape_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "table/strings.h"
@@ -281,7 +282,7 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 			}
 			CommandCost cost;
 			if (indirectly_cleared) {
-				cost = DoCommandOld(t, 0, 0, tile_flags, CMD_LANDSCAPE_CLEAR);
+				cost = Command<CMD_LANDSCAPE_CLEAR>::Do(tile_flags, t);
 			} else {
 				cost = _tile_type_procs[GetTileType(t)]->terraform_tile_proc(t, tile_flags, z_min, tileh);
 			}

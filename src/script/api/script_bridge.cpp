@@ -12,6 +12,7 @@
 #include "script_rail.hpp"
 #include "../script_instance.hpp"
 #include "../../bridge_map.h"
+#include "../../landscape_cmd.h"
 #include "../../strings_func.h"
 #include "../../date_func.h"
 #include "../../tunnelbridge_cmd.h"
@@ -126,7 +127,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsBridgeTile(tile));
-	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::Command<CMD_LANDSCAPE_CLEAR>::Do(tile);
 }
 
 /* static */ std::optional<std::string> ScriptBridge::GetName(BridgeType bridge_type, ScriptVehicle::VehicleType vehicle_type)

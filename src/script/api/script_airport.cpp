@@ -10,6 +10,7 @@
 #include "../../stdafx.h"
 #include "script_airport.hpp"
 #include "script_station.hpp"
+#include "../../landscape_cmd.h"
 #include "../../station_base.h"
 #include "../../station_cmd.h"
 #include "../../town.h"
@@ -88,7 +89,7 @@ extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uin
 	EnforcePrecondition(false, ::IsValidTile(tile))
 	EnforcePrecondition(false, IsAirportTile(tile) || IsHangarTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::Command<CMD_LANDSCAPE_CLEAR>::Do(tile);
 }
 
 /* static */ SQInteger ScriptAirport::GetNumHangars(TileIndex tile)

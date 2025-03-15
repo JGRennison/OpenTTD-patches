@@ -12,6 +12,7 @@
 #include "industry.h"
 #include "station_base.h"
 #include "landscape.h"
+#include "landscape_cmd.h"
 #include "viewport_func.h"
 #include "command_func.h"
 #include "town.h"
@@ -1158,7 +1159,7 @@ static bool SearchLumberMillTrees(TileIndex tile, void *)
 		_industry_sound_tile = tile;
 		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_LUMBER_MILL_1, tile);
 
-		DoCommandOld(tile, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR);
+		Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC, tile);
 
 		cur_company.Restore();
 		return true;
@@ -1547,7 +1548,7 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 
 				/* Clear the tiles as OWNER_TOWN to not affect town rating, and to not clear protected buildings */
 				Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
-				CommandCost ret = DoCommandOld(cur_tile, 0, 0, DC_NONE, CMD_LANDSCAPE_CLEAR);
+				CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(DC_NONE, cur_tile);
 				cur_company.Restore();
 
 				if (ret.Failed()) return ret;
@@ -1555,7 +1556,7 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 				/* Clear the tiles, but do not affect town ratings */
 				DoCommandFlag flags = DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING;
 				if ((ind_behav & INDUSTRYBEH_BUILT_ONWATER) && IsWaterTile(cur_tile)) flags |= DC_ALLOW_REMOVE_WATER;
-				CommandCost ret = DoCommandOld(cur_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+				CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, cur_tile);
 				if (ret.Failed()) return ret;
 			}
 		}
@@ -2020,7 +2021,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 			WaterClass wc = (IsWaterTile(cur_tile) ? GetWaterClass(cur_tile) : WATER_CLASS_INVALID);
 
-			DoCommandOld(cur_tile, 0, 0, DC_EXEC | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, CMD_LANDSCAPE_CLEAR);
+			Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, cur_tile);
 
 			MakeIndustry(cur_tile, i->index, it.gfx, Random(), wc);
 
@@ -3319,7 +3320,7 @@ static CommandCost TerraformTile_Industry(TileIndex tile, DoCommandFlag flags, i
 			}
 		}
 	}
-	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
 extern const TileTypeProcs _tile_type_industry_procs = {

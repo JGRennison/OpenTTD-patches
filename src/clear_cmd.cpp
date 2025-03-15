@@ -11,6 +11,7 @@
 #include "clear_map.h"
 #include "command_func.h"
 #include "landscape.h"
+#include "landscape_cmd.h"
 #include "genworld.h"
 #include "viewport_func.h"
 #include "core/random_func.hpp"
@@ -438,7 +439,7 @@ static void ChangeTileOwner_Clear(TileIndex, Owner, Owner)
 
 static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlag flags, int, Slope)
 {
-	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
 extern const TileTypeProcs _tile_type_clear_procs = {

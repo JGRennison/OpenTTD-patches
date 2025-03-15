@@ -42,6 +42,7 @@
 #include "road_func.h"
 #include "roadstop_base.h"
 #include "scope.h"
+#include "landscape_cmd.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"
@@ -666,7 +667,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				(_settings_game.construction.road_custom_bridge_heads || IsRoadCustomBridgeHead(tile));
 
 		/* If it's the last roadtype, just clear the whole tile */
-		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 
 		CommandCost cost(EXPENSES_CONSTRUCTION);
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -699,7 +700,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				pieces_count += middle_len * 2;
 				if (custom_bridge_head && ((GetCustomBridgeHeadRoadBits(tile, OtherRoadTramType(rtt)) & entrance_piece) == ROAD_NONE)) {
 					/* can't leave no entrance pieces for any road type */
-					return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+					return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 				}
 			}
 			pieces_count += CountBits(pieces & existing);
@@ -1436,7 +1437,7 @@ do_clear:;
 	}
 
 	if (need_to_clear) {
-		CommandCost ret = DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 	}
@@ -1813,7 +1814,7 @@ CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 		cost.AddCost(_price[PR_BUILD_FOUNDATION]);
 	}
 
-	cost.AddCost(DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR));
+	cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile));
 	if (cost.Failed()) return cost;
 
 	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -1904,7 +1905,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 			}
 
 			if (flags & DC_EXEC) {
-				DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+				Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 			}
 			return ret;
 		}
@@ -2983,7 +2984,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	if (IsRoadDepot(tile)) {
 		if (GetTileOwner(tile) == old_owner) {
 			if (new_owner == INVALID_OWNER) {
-				DoCommandOld(tile, 0, 0, DC_EXEC | DC_BANKRUPT, CMD_LANDSCAPE_CLEAR);
+				Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_BANKRUPT, tile);
 			} else {
 				/* A road depot has two road bits. No need to dirty windows here, we'll redraw the whole screen anyway. */
 				RoadType rt = GetRoadTypeRoad(tile);
@@ -3068,7 +3069,7 @@ static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlag flags, int z
 		}
 	}
 
-	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
 /** Update power of road vehicle under which is the roadtype being converted */

@@ -41,6 +41,7 @@
 #include "scope.h"
 #include "newgrf_newsignals.h"
 #include "pathfinder/water_regions.h"
+#include "landscape_cmd.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -694,7 +695,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
-			if (!IsPlainRail(tile)) return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
+			if (!IsPlainRail(tile)) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile); // just get appropriate error message
 
 			CheckTrackCombinationRailTypeChanges changes;
 			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags, auto_remove_signals, changes);
@@ -758,7 +759,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
-			if (disable_custom_bridge_heads || !_settings_game.construction.rail_custom_bridge_heads || !IsFlatRailBridgeHeadTile(tile)) return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
+			if (disable_custom_bridge_heads || !_settings_game.construction.rail_custom_bridge_heads || !IsFlatRailBridgeHeadTile(tile)) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile); // just get appropriate error message
 
 			const DiagDirection entrance_dir = GetTunnelBridgeDirection(tile);
 			const TrackBits axial_track = DiagDirToDiagTrackBits(entrance_dir);
@@ -900,7 +901,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret);
 
-			ret = DoCommandOld(tile, 0, 0, flags | DC_ALLOW_REMOVE_WATER, CMD_LANDSCAPE_CLEAR);
+			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DC_ALLOW_REMOVE_WATER, tile);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret);
 
@@ -1083,7 +1084,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			if (ret.Failed()) return ret;
 
 			if (!IsFlatRailBridgeHeadTile(tile) || GetCustomBridgeHeadTrackBits(tile) == DiagDirToDiagTrackBits(GetTunnelBridgeDirection(tile))) {
-				return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
+				return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile); // just get appropriate error message
 			}
 
 			const TrackBits present = GetCustomBridgeHeadTrackBits(tile);
@@ -1092,7 +1093,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1
 
 			const TrackBits future = present ^ trackbit;
 
-			if ((GetAcrossBridgePossibleTrackBits(tile) & future) == 0) return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
+			if ((GetAcrossBridgePossibleTrackBits(tile) & future) == 0) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile); // just get appropriate error message
 
 			const TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			if (present == TRACK_BIT_HORZ || present == TRACK_BIT_VERT) {
@@ -1425,7 +1426,7 @@ CommandCost CmdBuildTrainDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 		cost.AddCost(_price[PR_BUILD_FOUNDATION]);
 	}
 
-	cost.AddCost(DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR));
+	cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile));
 	if (cost.Failed()) return cost;
 
 	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -4721,7 +4722,7 @@ static void ChangeTileOwner_Track(TileIndex tile, Owner old_owner, Owner new_own
 
 		SetTileOwner(tile, new_owner);
 	} else {
-		DoCommandOld(tile, 0, 0, DC_EXEC | DC_BANKRUPT, CMD_LANDSCAPE_CLEAR);
+		Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_BANKRUPT, tile);
 	}
 }
 
@@ -4949,7 +4950,7 @@ static CommandCost TerraformTile_Track(TileIndex tile, DoCommandFlag flags, int 
 			AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, GetRailDepotDirection(tile))) {
 		return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 	}
-	return DoCommandOld(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
 

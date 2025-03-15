@@ -252,6 +252,7 @@ add_files(
     landscape.cpp
     landscape_ppz.cpp
     landscape.h
+    landscape_cmd.h
     landscape_type.h
     language.h
     league_base.h

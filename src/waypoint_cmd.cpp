@@ -12,6 +12,7 @@
 #include "cmd_helper.h"
 #include "command_func.h"
 #include "landscape.h"
+#include "landscape_cmd.h"
 #include "bridge_map.h"
 #include "town.h"
 #include "waypoint_base.h"
@@ -497,7 +498,7 @@ CommandCost CmdBuildBuoy(DoCommandFlag flags, TileIndex tile)
 
 	CommandCost cost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_WAYPOINT_BUOY]);
 	if (!IsWaterTile(tile)) {
-		CommandCost ret = DoCommandOld(tile, 0, 0, flags | DC_AUTO, CMD_LANDSCAPE_CLEAR);
+		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DC_AUTO, tile);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 	}

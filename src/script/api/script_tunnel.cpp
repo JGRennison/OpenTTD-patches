@@ -11,6 +11,7 @@
 #include "script_tunnel.hpp"
 #include "script_rail.hpp"
 #include "../script_instance.hpp"
+#include "../../landscape_cmd.h"
 #include "../../tunnel_map.h"
 #include "../../tunnelbridge_cmd.h"
 
@@ -128,5 +129,5 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsTunnelTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
+	return ScriptObject::Command<CMD_LANDSCAPE_CLEAR>::Do(tile);
 }
