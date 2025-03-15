@@ -43,15 +43,20 @@ inline CommandCost DoCommandContainer(const DynBaseCommandContainer &container, 
 	return DoCommandImplementation(container.cmd, container.tile, *container.payload, flags, DCIF_NONE);
 }
 
-template <typename T>
-inline CommandCost DoCommandContainer(const BaseCommandContainer<T> &container, DoCommandFlag flags)
+inline CommandCost DoCommandContainer(const BaseCommandContainerPayloadT<P123CmdData> &container, DoCommandFlag flags)
 {
 	return DoCommandImplementation(container.cmd, container.tile, container.payload, flags, DCIF_NONE);
 }
 
+template <Commands cmd>
+inline CommandCost DoCommandContainer(const BaseCommandContainer<cmd> &container, DoCommandFlag flags)
+{
+	return DoCommandImplementation(cmd, container.tile, container.payload, flags, DCIF_TYPE_CHECKED);
+}
+
 inline CommandCost DoCommandEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)
 {
-	BaseCommandContainer<P123CmdData> cont = NewBaseCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd);
+	BaseCommandContainerPayloadT<P123CmdData> cont = NewBaseCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd);
 	cont.payload.p3 = p3;
 	if (text != nullptr) cont.payload.text = text;
 	return DoCommandContainer(cont, flags);
@@ -71,15 +76,20 @@ inline bool DoCommandPContainer(const DynCommandContainer &container, DoCommandI
 	return DoCommandPImplementation(container.command.cmd, container.command.tile, *container.command.payload, container.command.error_msg, container.callback, container.callback_param, intl_flags);
 }
 
-template <typename T>
-inline bool DoCommandPContainer(const CommandContainer<T> &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
+inline bool DoCommandPContainer(const CommandContainerPayloadT<P123CmdData> &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandPImplementation(container.cmd, container.tile, container.payload, container.error_msg, container.callback, container.callback_param, intl_flags);
 }
 
+template <Commands cmd>
+inline bool DoCommandPContainer(const CommandContainer<cmd> &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
+{
+	return DoCommandPImplementation(cmd, container.tile, container.payload, container.error_msg, container.callback, container.callback_param, intl_flags | DCIF_TYPE_CHECKED);
+}
+
 inline bool DoCommandPEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, uint32_t cmd, CommandCallback callback = CommandCallback::None, const char *text = nullptr)
 {
-	CommandContainer<P123CmdData> cont = NewCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd, callback);
+	CommandContainerPayloadT<P123CmdData> cont = NewCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd, callback);
 	cont.payload.p3 = p3;
 	if (text != nullptr) cont.payload.text = text;
 	return DoCommandPContainer(cont);

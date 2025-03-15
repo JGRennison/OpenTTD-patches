@@ -117,7 +117,7 @@ struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestric
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-BaseCommandContainer<TraceRestrictProgramSignalData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
+BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, std::string text = {});
 
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type,

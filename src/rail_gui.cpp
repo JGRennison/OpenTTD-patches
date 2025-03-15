@@ -107,9 +107,9 @@ void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, TileIndex tile)
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 }
 
-static CommandContainer<P123CmdData> GenericPlaceRailCmd(TileIndex tile, Track track)
+static CommandContainerPayloadT<P123CmdData> GenericPlaceRailCmd(TileIndex tile, Track track)
 {
-	CommandContainer<P123CmdData> ret = NewCommandContainerBasic(
+	CommandContainerPayloadT<P123CmdData> ret = NewCommandContainerBasic(
 		tile,          // tile
 		_cur_railtype, // p1
 		track | (_settings_client.gui.auto_remove_signals << 3), // p2
@@ -440,9 +440,9 @@ static void BuildRailClick_Remove(Window *w)
 	}
 }
 
-static CommandContainer<P123CmdData> DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
+static CommandContainerPayloadT<P123CmdData> DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
 {
-	CommandContainer<P123CmdData> ret = NewCommandContainerBasic(
+	CommandContainerPayloadT<P123CmdData> ret = NewCommandContainerBasic(
 		start_tile,                   // tile
 		end_tile.base(),              // p1
 		(uint32_t) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
@@ -461,7 +461,7 @@ static void HandleAutodirPlacement()
 	TileIndex start_tile = TileVirtXY(_thd.selstart.x, _thd.selstart.y);
 	TileIndex end_tile = TileVirtXY(_thd.selend.x, _thd.selend.y);
 
-	CommandContainer<P123CmdData> cmd = (_thd.drawstyle & HT_RAIL) ?
+	CommandContainerPayloadT<P123CmdData> cmd = (_thd.drawstyle & HT_RAIL) ?
 			GenericPlaceRailCmd(end_tile, track) : // one tile case
 			DoRailroadTrackCmd(start_tile, end_tile, track); // multitile selection
 

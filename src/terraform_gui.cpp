@@ -131,7 +131,7 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 	return false;
 }
 
-static CommandContainer<P123CmdData> _demolish_area_command;
+static CommandContainerPayloadT<P123CmdData> _demolish_area_command;
 
 static void DemolishAreaConfirmationCallback(Window *, bool confirmed) {
 	if (confirmed) {

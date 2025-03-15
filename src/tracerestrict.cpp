@@ -1949,10 +1949,9 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
-BaseCommandContainer<TraceRestrictProgramSignalData> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
+BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
 {
-	BaseCommandContainer<TraceRestrictProgramSignalData> cmd;
-	cmd.cmd = CMD_PROGRAM_TRACERESTRICT_SIGNAL;
+	BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> cmd;
 	cmd.tile = tile;
 	cmd.payload = TraceRestrictProgramSignalData::Make(track, type, offset, value, {});
 	return cmd;

@@ -1566,10 +1566,10 @@ void ShowFoundTownWindow()
  */
 struct SelectTownWindow : Window {
 	TownList towns;       ///< list of towns
-	CommandContainer<P123CmdData> cmd; ///< command to build the house (CMD_PLACE_HOUSE)
+	CommandContainerPayloadT<P123CmdData> cmd; ///< command to build the house (CMD_PLACE_HOUSE)
 	Scrollbar *vscroll;   ///< scrollbar for the town list
 
-	SelectTownWindow(WindowDesc &desc, const CommandContainer<P123CmdData> &cmd) : Window(desc), cmd(cmd)
+	SelectTownWindow(WindowDesc &desc, const CommandContainerPayloadT<P123CmdData> &cmd) : Window(desc), cmd(cmd)
 	{
 		std::vector<std::pair<uint, TownID>> town_set;
 		constexpr uint MAX_TOWN_COUNT = 16;
@@ -1676,7 +1676,7 @@ static WindowDesc _select_town_desc(__FILE__, __LINE__,
 	_nested_select_town_widgets
 );
 
-static void ShowSelectTownWindow(const CommandContainer<P123CmdData> &cmd)
+static void ShowSelectTownWindow(const CommandContainerPayloadT<P123CmdData> &cmd)
 {
 	CloseWindowByClass(WC_SELECT_TOWN);
 	new SelectTownWindow(_select_town_desc, cmd);
@@ -2074,7 +2074,7 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
-		CommandContainer<P123CmdData> cmd = NewCommandContainerBasic(
+		CommandContainerPayloadT<P123CmdData> cmd = NewCommandContainerBasic(
 			tile,
 			spec->Index(),
 			INVALID_TOWN,

@@ -1029,8 +1029,16 @@ struct CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public 
 };
 using EmptyCmdData = CmdDataT<>;
 
-template <typename T>
+template <Commands Tcmd>
 struct BaseCommandContainer {
+	static inline constexpr Commands cmd = Tcmd;
+	StringID error_msg{};                                ///< error message
+	TileIndex tile{};                                    ///< tile command being executed on.
+	typename CommandTraits<Tcmd>::PayloadType payload{}; ///< payload
+};
+
+template <typename T>
+struct BaseCommandContainerPayloadT {
 	Commands cmd{};                              ///< command being executed.
 	StringID error_msg{};                        ///< error message
 	TileIndex tile{};                            ///< tile command being executed on.
@@ -1038,12 +1046,18 @@ struct BaseCommandContainer {
 };
 
 template <typename T>
-struct CommandContainer : public BaseCommandContainer<T> {
+struct CommandCallbackFields : public T {
 	CommandCallback callback = CommandCallback::None; ///< any callback function executed upon successful completion of the command.
 	CallbackParameter callback_param{};
 };
 
-struct SerialisedBaseCommandContainer : public BaseCommandContainer<CommandPayloadSerialised> {
+template <Commands Tcmd>
+using CommandContainer = CommandCallbackFields<BaseCommandContainer<Tcmd>>;
+
+template <typename T>
+using CommandContainerPayloadT = CommandCallbackFields<BaseCommandContainerPayloadT<T>>;
+
+struct SerialisedBaseCommandContainer : public BaseCommandContainerPayloadT<CommandPayloadSerialised> {
 	void Serialise(BufferSerialisationRef buffer) const;
 };
 
@@ -1058,7 +1072,10 @@ struct DynBaseCommandContainer {
 			: cmd(cmd), error_msg(error_msg), tile(tile), payload(std::move(payload)) {}
 
 	template <typename T>
-	DynBaseCommandContainer(const BaseCommandContainer<T> &src) : cmd(src.cmd), error_msg(src.error_msg), tile(src.tile), payload(src.payload.Clone()) {}
+	DynBaseCommandContainer(const BaseCommandContainerPayloadT<T> &src) : cmd(src.cmd), error_msg(src.error_msg), tile(src.tile), payload(src.payload.Clone()) {}
+
+	template <Commands Tcmd>
+	DynBaseCommandContainer(const BaseCommandContainer<Tcmd> &src) : cmd(Tcmd), error_msg(src.error_msg), tile(src.tile), payload(src.payload.Clone()) {}
 
 	DynBaseCommandContainer(DynBaseCommandContainer &&) = default;
 	DynBaseCommandContainer(const DynBaseCommandContainer &src) { *this = src; }
@@ -1087,15 +1104,15 @@ struct DynCommandContainer {
 			: command(cmd, tile, std::move(payload), error_msg), callback(callback), callback_param(callback_param) {}
 
 	template <typename T>
-	DynCommandContainer(const CommandContainer<T> &src) : command(src), callback(src.callback), callback_param(src.callback_param) {}
+	DynCommandContainer(const CommandCallbackFields<T> &src) : command(src), callback(src.callback), callback_param(src.callback_param) {}
 };
 
-inline BaseCommandContainer<P123CmdData> NewBaseCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd)
+inline BaseCommandContainerPayloadT<P123CmdData> NewBaseCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd)
 {
 	return { static_cast<Commands>(cmd & 0xFFFF), static_cast<StringID>(cmd >> 16), tile, P123CmdData(p1, p2, 0) };
 }
 
-inline CommandContainer<P123CmdData> NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback callback = CommandCallback::None)
+inline CommandContainerPayloadT<P123CmdData> NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback callback = CommandCallback::None)
 {
 	return { NewBaseCommandContainerBasic(tile, p1, p2, cmd), callback, 0 };
 }
