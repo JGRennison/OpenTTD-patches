@@ -17,6 +17,7 @@
 #include "command_func.h"
 #include "viewport_func.h"
 #include "industry.h"
+#include "industry_cmd.h"
 #include "town.h"
 #include "cheat_type.h"
 #include "newgrf_industries.h"
@@ -268,18 +269,12 @@ void SortIndustryTypes()
  * Command callback. In case of failure to build an industry, show an error message.
  * @param result Result of the command.
  * @param tile   Tile where the industry is placed.
- * @param p1     Additional data of the #CMD_BUILD_INDUSTRY command.
- * @param p2     Additional data of the #CMD_BUILD_INDUSTRY command.
- * @param cmd    Unused.
+ * @param indtype Industry type.
  */
-void CcBuildIndustry(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
+void CcBuildIndustry(const CommandCost &result, TileIndex tile, IndustryType indtype, uint32_t first_layout, bool fund, uint32_t seed)
 {
 	if (result.Succeeded()) return;
 
-	auto *data = dynamic_cast<const typename CommandTraits<CMD_BUILD_INDUSTRY>::PayloadType *>(&payload);
-	if (data == nullptr) return;
-
-	uint8_t indtype = GB(data->p1, 0, 8);
 	if (indtype < NUM_INDUSTRYTYPES) {
 		const IndustrySpec *indsp = GetIndustrySpec(indtype);
 		if (indsp->enabled) {
@@ -692,7 +687,7 @@ public:
 			case WID_DPI_FUND_WIDGET: {
 				if (this->selected_type != IT_INVALID) {
 					if (_game_mode != GM_EDITOR && _settings_game.construction.raw_industry_construction == 2 && GetIndustrySpec(this->selected_type)->IsRawIndustry()) {
-						DoCommandPOld(0, this->selected_type, InteractiveRandom(), CMD_BUILD_INDUSTRY | CMD_MSG(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY));
+						Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, TileIndex{}, this->selected_type, 0, false, InteractiveRandom());
 						this->HandleButtonClick(WID_DPI_FUND_WIDGET);
 					} else {
 						HandlePlacePushButton(this, WID_DPI_FUND_WIDGET, SPR_CURSOR_INDUSTRY, HT_RECT);
@@ -756,14 +751,13 @@ public:
 			Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 			_ignore_restrictions = true;
 
-			DoCommandPOld(tile, (layout_index << 8) | this->selected_type, seed,
-					CMD_BUILD_INDUSTRY | CMD_MSG(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY), CommandCallback::BuildIndustry);
+			Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, CommandCallback::BuildIndustry, tile, this->selected_type, layout_index, false, seed);
 
 			cur_company.Restore();
 			old_generating_world.Restore();
 			_ignore_restrictions = false;
 		} else {
-			success = DoCommandPOld(tile, (layout_index << 8) | this->selected_type, seed, CMD_BUILD_INDUSTRY | CMD_MSG(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY));
+			success = Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
 		}
 
 		/* If an industry has been built, just reset the cursor and the system */

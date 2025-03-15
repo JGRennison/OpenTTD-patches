@@ -240,6 +240,7 @@ add_files(
     house_type.h
     industry.h
     industry_cmd.cpp
+    industry_cmd.h
     industry_gui.cpp
     industry_map.h
     industry_type.h

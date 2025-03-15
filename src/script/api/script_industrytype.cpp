@@ -14,6 +14,7 @@
 #include "script_error.hpp"
 #include "../../strings_func.h"
 #include "../../industry.h"
+#include "../../industry_cmd.h"
 #include "../../newgrf_industries.h"
 #include "../../core/random_func.hpp"
 
@@ -124,7 +125,7 @@
 
 	uint32_t seed = ScriptBase::Rand();
 	uint32_t layout_index = ScriptBase::RandRange((uint32_t)::GetIndustrySpec(industry_type)->layouts.size());
-	return ScriptObject::DoCommandOld(tile, (1 << 16) | (layout_index << 8) | industry_type, seed, CMD_BUILD_INDUSTRY);
+	return ScriptObject::Command<CMD_BUILD_INDUSTRY>::Do(tile, industry_type, layout_index, true, seed);
 }
 
 /* static */ bool ScriptIndustryType::ProspectIndustry(IndustryType industry_type)
@@ -133,7 +134,7 @@
 	EnforcePrecondition(false, CanProspectIndustry(industry_type));
 
 	uint32_t seed = ScriptBase::Rand();
-	return ScriptObject::DoCommandOld(0, industry_type, seed, CMD_BUILD_INDUSTRY);
+	return ScriptObject::Command<CMD_BUILD_INDUSTRY>::Do(TileIndex{}, industry_type, 0, false, seed);
 }
 
 /* static */ bool ScriptIndustryType::IsBuiltOnWater(IndustryType industry_type)
