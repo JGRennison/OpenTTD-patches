@@ -62,7 +62,7 @@ extern fmt::format_context::iterator FmtTileIndexValueIntl(fmt::format_context &
 
 template <typename T, typename Char>
 struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<struct fmt_tile_index_tag, T>::value>> : fmt::formatter<uint32_t> {
-	bool use_custom_fmt{};
+	bool use_base_fmt{};
 
 	using underlying_type = uint32_t;
 	using parent = typename fmt::formatter<underlying_type>;
@@ -71,18 +71,18 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<struct fmt_tile_
 	{
 		auto it = ctx.begin();
 		if (it == ctx.end() || *it == '}') {
-			this->use_custom_fmt = true;
 			return ctx.begin();
 		}
+		this->use_base_fmt = true;
 		return parent::parse(ctx);
 	}
 
 	fmt::format_context::iterator format(const T &t, format_context &ctx) const
 	{
-		if (this->use_custom_fmt) {
-			return FmtTileIndexValueIntl(ctx, t.base());
+		if (this->use_base_fmt) {
+			return parent::format(t.base(), ctx);
 		}
-		return parent::format(t.base(), ctx);
+		return FmtTileIndexValueIntl(ctx, t.base());
 	}
 };
 
