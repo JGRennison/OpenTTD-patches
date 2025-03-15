@@ -85,7 +85,7 @@ protected:
 
 public:
 	/**
-	 * Store the latest result of a DoCommandOld per company.
+	 * Store the latest result of a DoCommand per company.
 	 * @param res The result of the last command.
 	 */
 	static void SetLastCommandRes(bool res);
@@ -207,27 +207,27 @@ protected:
 	static bool CheckLastCommand(Commands cmd, TileIndex tile, CallbackParameter cb_param);
 
 	/**
-	 * Sets the DoCommandOld costs counter to a value.
+	 * Sets the DoCommand costs counter to a value.
 	 */
 	static void SetDoCommandCosts(Money value);
 
 	/**
-	 * Increase the current value of the DoCommandOld costs counter.
+	 * Increase the current value of the DoCommand costs counter.
 	 */
 	static void IncreaseDoCommandCosts(Money value);
 
 	/**
-	 * Get the current DoCommandOld costs counter.
+	 * Get the current DoCommand costs counter.
 	 */
 	static Money GetDoCommandCosts();
 
 	/**
-	 * Set the DoCommandOld last error.
+	 * Set the DoCommand last error.
 	 */
 	static void SetLastError(ScriptErrorType last_error);
 
 	/**
-	 * Get the DoCommandOld last error.
+	 * Get the DoCommand last error.
 	 */
 	static ScriptErrorType GetLastError();
 
@@ -282,17 +282,17 @@ protected:
 	static ScriptObject *GetDoCommandAsyncModeInstance();
 
 	/**
-	 * Set the delay of the DoCommandOld.
+	 * Set the delay of the DoCommand.
 	 */
 	static void SetDoCommandDelay(uint ticks);
 
 	/**
-	 * Get the delay of the DoCommandOld.
+	 * Get the delay of the DoCommand.
 	 */
 	static uint GetDoCommandDelay();
 
 	/**
-	 * Get the latest result of a DoCommandOld.
+	 * Get the latest result of a DoCommand.
 	 */
 	static bool GetLastCommandRes();
 
@@ -315,7 +315,7 @@ protected:
 	/**
 	 * Get the internal value of allow_do_command. This can differ
 	 * from CanSuspend() if the reason we are not allowed
-	 * to execute a DoCommandOld is in squirrel and not the API.
+	 * to execute a DoCommand is in squirrel and not the API.
 	 * In that case use this function to restore the previous value.
 	 * @return True iff DoCommands are allowed in the current scope.
 	 */

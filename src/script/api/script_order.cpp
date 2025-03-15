@@ -561,7 +561,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 }
 
 /**
- * Callback handler as SetOrderFlags possibly needs multiple DoCommandOld calls
+ * Callback handler as SetOrderFlags possibly needs multiple DoCommand calls
  * to be able to set all order flags correctly. As we need to wait till the
  * command has completed before we know the next bits to change we need to
  * call the function multiple times. Each time it'll reduce the difference

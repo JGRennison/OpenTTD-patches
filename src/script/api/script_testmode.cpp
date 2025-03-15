@@ -16,7 +16,7 @@
 
 bool ScriptTestMode::ModeProc()
 {
-	/* In test mode we only return 'false', telling the DoCommandOld it
+	/* In test mode we only return 'false', telling the DoCommand it
 	 *  should stop after testing the command and return with that result. */
 	return false;
 }
