@@ -302,7 +302,7 @@ class OrthogonalOrDiagonalTileIterator {
 		OrthogonalTileIterator ortho;
 		DiagonalTileIterator diag;
 	};
-	bool diagonal;
+	const bool diagonal;
 
 public:
 
@@ -317,7 +317,7 @@ public:
 
 	~OrthogonalOrDiagonalTileIterator()
 	{
-		if (diagonal) {
+		if (this->diagonal) {
 			this->diag.~DiagonalTileIterator();
 		} else {
 			this->ortho.~OrthogonalTileIterator();
@@ -326,7 +326,7 @@ public:
 
 	inline operator TileIndex () const
 	{
-		if (diagonal) {
+		if (this->diagonal) {
 			return *(this->diag);
 		} else {
 			return *(this->ortho);
@@ -340,7 +340,7 @@ public:
 
 	OrthogonalOrDiagonalTileIterator& operator ++()
 	{
-		if (diagonal) {
+		if (this->diagonal) {
 			++this->diag;
 		} else {
 			++this->ortho;
