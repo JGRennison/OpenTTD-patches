@@ -506,6 +506,7 @@ add_files(
     strings_type.h
     subsidy.cpp
     subsidy_base.h
+    subsidy_cmd.h
     subsidy_func.h
     subsidy_gui.cpp
     subsidy_type.h

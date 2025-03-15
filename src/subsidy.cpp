@@ -17,6 +17,7 @@
 #include "strings_func.h"
 #include "window_func.h"
 #include "subsidy_base.h"
+#include "subsidy_cmd.h"
 #include "subsidy_func.h"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
@@ -230,27 +231,17 @@ void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType ds
 
 /**
  * Create a new subsidy.
- * @param tile unused.
  * @param flags type of operation
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0 -  7) - SourceType of source.
- * - p1 = (bit  8 - 23) - SourceID of source.
- * - p1 = (bit 24 - 31) - CargoID of subsidy.
- * @param p2 various bitstuffed elements
- * - p2 = (bit  0 -  7) - SourceType of destination.
- * - p2 = (bit  8 - 23) - SourceID of destination.
- * @param text unused.
+ * @param cid CargoID of subsidy.
+ * @param src_type SourceType of source.
+ * @param src SourceID of source.
+ * @param dst_type SourceType of destination.
+ * @param dst SourceID of destination.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateSubsidy(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCreateSubsidy(DoCommandFlag flags, CargoID cid, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
 {
 	if (!Subsidy::CanAllocateItem()) return CMD_ERROR;
-
-	CargoID cid = GB(p1, 24, 8);
-	SourceType src_type = (SourceType)GB(p1, 0, 8);
-	SourceID src = GB(p1, 8, 16);
-	SourceType dst_type = (SourceType)GB(p2, 0, 8);
-	SourceID dst = GB(p2, 8, 16);
 
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
