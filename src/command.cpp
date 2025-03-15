@@ -64,6 +64,7 @@
 #include "timetable_cmd.h"
 #include "tracerestrict_cmd.h"
 #include "train_cmd.h"
+#include "tree_cmd.h"
 #include "tunnelbridge_cmd.h"
 #include "vehicle_cmd.h"
 #include "viewport_cmd.h"

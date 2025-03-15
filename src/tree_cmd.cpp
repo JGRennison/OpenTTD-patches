@@ -24,6 +24,7 @@
 #include "core/random_func.hpp"
 #include "newgrf_generic.h"
 #include "date_func.h"
+#include "tree_cmd.h"
 
 #include "table/strings.h"
 #include "table/tree_land.h"
@@ -535,29 +536,26 @@ void GenerateTrees()
 
 /**
  * Plant a tree.
- * @param end_tile end tile of area-drag
  * @param flags type of operation
- * @param p1 various bitstuffed data.
- * - p1 = (bit 0 -  7) - tree type, TREE_INVALID means random.
- * - p1 = (bit      8) - whether to use the Orthogonal (0) or Diagonal (1) iterator.
- * @param p2 start tile of area-drag of tree plantation
- * @param text unused
+ * @param tile end tile of area-drag
+ * @param start_tile start tile of area-drag of tree plantation
+ * @param tree_to_plant tree type, TREE_INVALID means random.
+ * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, uint8_t tree_to_plant, bool diagonal)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
-	const uint8_t tree_to_plant = GB(p1, 0, 8); // We cannot use Extract as min and max are climate specific.
 
-	if (p2 >= MapSize()) return CMD_ERROR;
+	if (start_tile >= MapSize()) return CMD_ERROR;
 	/* Check the tree type within the current climate */
 	if (tree_to_plant != TREE_INVALID && !IsInsideBS(tree_to_plant, _tree_base_by_landscape[_settings_game.game_creation.landscape], _tree_count_by_landscape[_settings_game.game_creation.landscape])) return CMD_ERROR;
 
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(end_tile, TileIndex{p2}, HasBit(p1, 8));
+	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {

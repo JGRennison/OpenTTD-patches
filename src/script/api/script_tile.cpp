@@ -19,6 +19,7 @@
 #include "../../landscape.h"
 #include "../../landscape_cmd.h"
 #include "../../terraform_cmd.h"
+#include "../../tree_cmd.h"
 
 #include "../../safeguards.h"
 
@@ -287,7 +288,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, TREE_INVALID, tile, CMD_PLANT_TREE);
+	return ScriptObject::Command<CMD_PLANT_TREE>::Do(tile, tile, TREE_INVALID, false);
 }
 
 /* static */ bool ScriptTile::PlantTreeRectangle(TileIndex tile, SQInteger width, SQInteger height)
@@ -299,7 +300,7 @@
 	TileIndex end_tile = TileAddWrap(tile, width - 1, height - 1);
 	EnforcePrecondition(false, ::IsValidTile(end_tile));
 
-	return ScriptObject::DoCommandOld(tile, TREE_INVALID, end_tile, CMD_PLANT_TREE);
+	return ScriptObject::Command<CMD_PLANT_TREE>::Do(tile, end_tile, TREE_INVALID, false);
 }
 
 /* static */ bool ScriptTile::IsWithinTownInfluence(TileIndex tile, TownID town_id)
