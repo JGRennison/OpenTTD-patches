@@ -48,6 +48,7 @@
 #include "goal_cmd.h"
 #include "league_cmd.h"
 #include "misc_cmd.h"
+#include "news_cmd.h"
 #include "order_cmd.h"
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"

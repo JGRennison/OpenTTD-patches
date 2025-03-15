@@ -34,6 +34,7 @@
 #include "guitimer_func.h"
 #include "group_gui.h"
 #include "zoom_func.h"
+#include "news_cmd.h"
 #include "news_func.h"
 
 #include "widgets/news_widget.h"
@@ -915,52 +916,46 @@ void AddNewsItem(StringID string, NewsType type, NewsFlag flags, NewsReferenceTy
 
 /**
  * Create a new custom news item.
- * @param tile unused
  * @param flags type of operation
- * @param p1 various bitstuffed elements
- * - p1 = (bit  0 -  7) - NewsType of the message.
- * - p1 = (bit  8 - 15) - NewsReferenceType of first reference.
- * - p1 = (bit 16 - 23) - Company this news message is for.
- * @param p2 First reference of the news message.
+ * @aram type NewsType of the message.
+ * @param reftype1 NewsReferenceType of first reference.
+ * @param company Company this news message is for.
+ * @param reference First reference of the news message.
  * @param text The text of the news message.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCustomNewsItem(DoCommandFlag flags, NewsType type, NewsReferenceType reftype1, CompanyID company, uint32_t reference, const std::string &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
-	NewsType type = (NewsType)GB(p1, 0, 8);
-	NewsReferenceType reftype1 = (NewsReferenceType)GB(p1, 8, 8);
-	CompanyID company = (CompanyID)GB(p1, 16, 8);
-
 	if (company != INVALID_OWNER && !Company::IsValidID(company)) return CMD_ERROR;
 	if (type >= NT_END) return CMD_ERROR;
-	if (StrEmpty(text)) return CMD_ERROR;
+	if (text.empty()) return CMD_ERROR;
 
 	switch (reftype1) {
 		case NR_NONE: break;
 		case NR_TILE:
-			if (!IsValidTile(TileIndex{p2})) return CMD_ERROR;
+			if (!IsValidTile(TileIndex{reference})) return CMD_ERROR;
 			break;
 
 		case NR_VEHICLE:
-			if (!Vehicle::IsValidID(p2)) return CMD_ERROR;
+			if (!Vehicle::IsValidID(reference)) return CMD_ERROR;
 			break;
 
 		case NR_STATION:
-			if (!Station::IsValidID(p2)) return CMD_ERROR;
+			if (!Station::IsValidID(reference)) return CMD_ERROR;
 			break;
 
 		case NR_INDUSTRY:
-			if (!Industry::IsValidID(p2)) return CMD_ERROR;
+			if (!Industry::IsValidID(reference)) return CMD_ERROR;
 			break;
 
 		case NR_TOWN:
-			if (!Town::IsValidID(p2)) return CMD_ERROR;
+			if (!Town::IsValidID(reference)) return CMD_ERROR;
 			break;
 
 		case NR_ENGINE:
-			if (!Engine::IsValidID(p2)) return CMD_ERROR;
+			if (!Engine::IsValidID(reference)) return CMD_ERROR;
 			break;
 
 		default: return CMD_ERROR;
@@ -970,7 +965,7 @@ CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 
 	if (flags & DC_EXEC) {
 		SetDParamStr(0, text);
-		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, p2, NR_NONE, UINT32_MAX);
+		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, reference, NR_NONE, UINT32_MAX);
 	}
 
 	return CommandCost();

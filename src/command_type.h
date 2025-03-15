@@ -1217,8 +1217,6 @@ DEF_CMD_PROC  (CMD_PLACE_HOUSE, CmdPlaceHouse,                             CMD_D
 
 DEF_CMD_PROC  (CMD_CLEAR_AREA, CmdClearArea,                            CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION) // destroying multi-tile houses makes town rating differ between test and execution
 
-DEF_CMD_PROC  (CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      )
-
 DEF_CMD_PROC  (CMD_LEVEL_LAND, CmdLevelLand, CMD_ALL_TILES | CMD_NO_TEST | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION) // test run might clear tiles multiple times, in execution that only happens once
 
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
