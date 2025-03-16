@@ -781,7 +781,6 @@ enum CommandFlags : uint16_t {
 	CMD_NO_EST    =  0x400, ///< the command is never estimated.
 	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
 	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
-	CMD_ERR_TILE  = 0x4000, ///< use payload error message tile for money text and error tile
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 
@@ -816,7 +815,6 @@ enum CommandPauseLevel : uint8_t {
  * - Have a deserialisation function of the form below, which returns true on success:
  *   bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
  * - Have a FormatDebugSummary implementation where even remotely useful.
- * - Have a `TileIndex GetErrorMessageTile() const` function if used by commands with CMD_ERR_TILE.
  * - Have a `ClientID &GetClientIDField()` function if used by commands with CMD_CLIENT_ID.
  */
 struct CommandPayloadBase : public fmt_formattable {
@@ -869,7 +867,6 @@ struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
 	void Serialise(BufferSerialisationRef buffer) const override;
 	void SanitiseStrings(StringValidationSettings settings) override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	TileIndex GetErrorMessageTile() const;
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
@@ -1189,8 +1186,8 @@ DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, pro
 namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
 DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, true, true)
 
-DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
+DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
+DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_SINGLE_RAIL, CmdBuildSingleRail,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_REMOVE_SINGLE_RAIL, CmdRemoveSingleRail,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_BUILD_TRAIN_DEPOT, CmdBuildTrainDepot,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)

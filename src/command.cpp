@@ -708,33 +708,6 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 }
 
 /**
- * Get error message tile for this command payload using Payload::GetErrorMessageTile().
- * This provided payload must have already been type-checked as valid for cmd.
- * Not many commands set CMD_ERR_TILE so a series of ifs is not too onerous.
- */
-static TileIndex GetCmdPayloadErrorMessageTile(Commands cmd, const CommandPayloadBase &payload)
-{
-	TileIndex result = INVALID_TILE;
-	auto cmd_check = [&]<Commands Tcmd>() -> bool {
-		if constexpr (CommandTraits<Tcmd>::flags & CMD_ERR_TILE) {
-			if (cmd == Tcmd) {
-				result = static_cast<const CmdPayload<Tcmd> &>(payload).GetErrorMessageTile();
-				return true;
-			}
-		}
-		return false;
-	};
-
-	using Tseq = std::underlying_type_t<Commands>;
-	auto cmd_loop = [&]<Tseq... Tindices>(std::integer_sequence<Tseq, Tindices...>) {
-		(cmd_check.template operator()<static_cast<Commands>(Tindices)>() || ...);
-	};
-	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
-
-	return result;
-}
-
-/**
  * Set client ID for this command payload using the field returned by Payload::GetClientIDField().
  * This provided payload must have already been type-checked as valid for cmd.
  * Not many commands set CMD_CLIENT_ID so a series of ifs is not too onerous.
@@ -809,13 +782,8 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 
 	/* Where to show the message? */
 
-	TileIndex msg_tile = tile;
-	if (GetCommandFlags(cmd) & CMD_ERR_TILE) {
-		TileIndex t = GetCmdPayloadErrorMessageTile(cmd, orig_payload);
-		if (IsValidTile(t)) msg_tile = t;
-	}
-	int x = TileX(msg_tile) * TILE_SIZE;
-	int y = TileY(msg_tile) * TILE_SIZE;
+	int x = TileX(tile) * TILE_SIZE;
+	int y = TileY(tile) * TILE_SIZE;
 
 	if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
 		ShowErrorMessage(error_msg, STR_ERROR_NOT_ALLOWED_WHILE_PAUSED, WL_INFO, x, y);
@@ -1302,11 +1270,6 @@ bool P123CmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSet
 	this->p3 = buffer.Recv_uint64();
 	buffer.Recv_string(this->text, default_string_validation);
 	return true;
-}
-
-TileIndex P123CmdData::GetErrorMessageTile() const
-{
-	return TileIndex(this->p1);
 }
 
 void P123CmdData::FormatDebugSummary(format_target &output) const
