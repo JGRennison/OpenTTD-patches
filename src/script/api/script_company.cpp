@@ -16,6 +16,7 @@
 #include "../../company_cmd.h"
 #include "../../company_manager_face.h"
 #include "../../economy_func.h"
+#include "../../object_cmd.h"
 #include "../../object_type.h"
 #include "../../strings_func.h"
 #include "../../tile_map.h"
@@ -289,7 +290,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
-	return ScriptObject::DoCommandOld(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT);
+	return ScriptObject::Command<CMD_BUILD_OBJECT>::Do(tile, OBJECT_HQ, 0);
 }
 
 /* static */ TileIndex ScriptCompany::GetCompanyHQ(CompanyID company)

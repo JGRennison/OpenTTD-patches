@@ -30,6 +30,7 @@
 #include "strings_func.h"
 #include "newgrf_object.h"
 #include "object.h"
+#include "object_cmd.h"
 #include "hotkeys.h"
 #include "engine_base.h"
 #include "engine_override.h"
@@ -186,7 +187,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			GenerateDesertArea(end_tile, start_tile);
 			break;
 		case DDSP_BUY_LAND:
-			DoCommandPOld(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
+			Command<CMD_PURCHASE_LAND_AREA>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, _ctrl_pressed);
 			break;
 		default:
 			return false;
@@ -304,7 +305,7 @@ struct TerraformToolbarWindow : Window {
 				switch (_settings_game.construction.purchase_land_permitted) {
 					case 0:
 					case 1:
-						DoCommandPOld(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
+						Command<CMD_BUILD_OBJECT>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, OBJECT_OWNED_LAND, 0);
 						break;
 
 					case 2:

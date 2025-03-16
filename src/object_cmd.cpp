@@ -24,6 +24,7 @@
 #include "company_gui.h"
 #include "cheat_type.h"
 #include "object.h"
+#include "object_cmd.h"
 #include "cargopacket.h"
 #include "core/random_func.hpp"
 #include "core/pool_func.hpp"
@@ -261,20 +262,17 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags);
 
 /**
  * Build an object object
- * @param tile tile where the object will be located
  * @param flags type of operation
- * @param p1 the object type to build
- * @param p2 the view for the object
- * @param text unused
+ * @param tile tile where the object will be located
+ * @param type the object type to build
+ * @param view the view for the object
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type, uint8_t view)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	ObjectType type = (ObjectType)GB(p1, 0, 16);
 	if (type >= ObjectSpec::Count()) return CMD_ERROR;
-	uint8_t view = GB(p2, 0, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (_game_mode == GM_NORMAL && !spec->IsAvailable() && !_generating_world) return CMD_ERROR;
 	if ((_game_mode == GM_EDITOR || _generating_world) && !spec->WasEverAvailable()) return CMD_ERROR;
@@ -455,17 +453,15 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 /**
  * Buy a big piece of landscape
- * @param tile end tile of area dragging
  * @param flags of operation to conduct
- * @param p1 start tile of area dragging
- * @param p2 various bitstuffed data.
- *  bit      0: Whether to use the Orthogonal (0) or Diagonal (1) iterator.
- * @param text unused
+ * @param tile end tile of area dragging
+ * @param start_tile start tile of area dragging
+ * @param diagonal Whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdPurchaseLandArea(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal)
 {
-	if (p1 >= MapSize()) return CMD_ERROR;
+	if (start_tile >= MapSize()) return CMD_ERROR;
 	if (_settings_game.construction.purchase_land_permitted == 0) return CommandCost(STR_PURCHASE_LAND_NOT_PERMITTED);
 	if (_settings_game.construction.purchase_land_permitted != 2) return CommandCost(STR_PURCHASE_LAND_NOT_PERMITTED_BULK);
 
@@ -477,10 +473,10 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->purchase_land_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = DoCommandOld(t, OBJECT_OWNED_LAND, 0, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
+		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(flags & ~DC_EXEC, t, OBJECT_OWNED_LAND, 0);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -496,7 +492,7 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
-			DoCommandOld(t, OBJECT_OWNED_LAND, 0, flags, CMD_BUILD_OBJECT);
+			Command<CMD_BUILD_OBJECT>::Do(flags, t, OBJECT_OWNED_LAND, 0);
 		} else {
 			/* When we're at the clearing limit we better bail (unneed) testing as well. */
 			if (ret.GetCost() != 0 && --limit <= 0) break;
@@ -509,24 +505,20 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1
 
 /**
  * Construct multiple objects in an area
- * @param tile end tile of area dragging
  * @param flags of operation to conduct
- * @param p1 start tile of area dragging
- * @param p2 various bitstuffed data.
- * - p2 = (bit      0) - Whether to use the Orthogonal (0) or Diagonal (1) iterator.
- * - p2 = (bit 1 -  2) - Object view
- * - p2 = (bit 3 - 19) - Object type
- * @param text unused
+ * @param tile end tile of area dragging
+ * @param start_tile start tile of area dragging
+ * @param type the object type to build
+ * @param view the view for the object
+ * @param diagonal Whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildObjectArea(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, ObjectType type, uint8_t view, bool diagonal)
 {
-	if (p1 >= MapSize()) return CMD_ERROR;
+	if (start_tile >= MapSize() || type == OBJECT_OWNED_LAND) return CMD_ERROR;
 	if (!_settings_game.construction.build_object_area_permitted) return CommandCost(STR_BUILD_OBJECT_NOT_PERMITTED_BULK);
 
-	ObjectType type = (ObjectType)GB(p2, 3, 16);
 	if (type >= ObjectSpec::Count()) return CMD_ERROR;
-	uint8_t view = GB(p2, 1, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (view >= spec->views) return CMD_ERROR;
 
@@ -540,10 +532,10 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->build_object_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, TileIndex{p1}, HasBit(p2, 0));
+	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = DoCommandOld(t, type, view, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
+		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(flags & ~DC_EXEC, t, type, view);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -559,7 +551,7 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
-			DoCommandOld(t, type, view, flags, CMD_BUILD_OBJECT);
+			Command<CMD_BUILD_OBJECT>::Do(flags, t, type, view);
 		} else {
 			/* When we're at the clearing limit we better bail (unneed) testing as well. */
 			if (ret.GetCost() != 0 && --limit <= 0) break;
@@ -1157,7 +1149,7 @@ void GenerateObjects()
 
 				default:
 					uint8_t view = RandomRange(spec.views);
-					if (CmdBuildObject(RandomTile(), DC_EXEC | DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, spec.Index(), view, nullptr).Succeeded()) amount--;
+					if (CmdBuildObject(DC_EXEC | DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, RandomTile(), spec.Index(), view).Succeeded()) amount--;
 					break;
 			}
 		}

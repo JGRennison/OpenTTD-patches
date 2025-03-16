@@ -29,6 +29,7 @@
 #include "company_base.h"
 #include "company_cmd.h"
 #include "core/geometry_func.hpp"
+#include "object_cmd.h"
 #include "object_type.h"
 #include "rail.h"
 #include "road.h"
@@ -2713,7 +2714,7 @@ struct CompanyWindow : Window
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		if (DoCommandPOld(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS)) && !_shift_pressed) {
+		if (Command<CMD_BUILD_OBJECT>::Post(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS, tile, OBJECT_HQ, 0) && !_shift_pressed) {
 			ResetObjectToPlace();
 			this->RaiseButtons();
 		}

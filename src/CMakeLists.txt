@@ -358,6 +358,7 @@ add_files(
     object.h
     object_base.h
     object_cmd.cpp
+    object_cmd.h
     object_gui.cpp
     object_map.h
     object_type.h
