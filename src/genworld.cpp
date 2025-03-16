@@ -44,6 +44,7 @@
 #include "newgrf_industrytiles.h"
 #include "station_func.h"
 #include "town_cmd.h"
+#include "signs_cmd.h"
 
 #include "safeguards.h"
 
@@ -541,7 +542,7 @@ void LoadTownData()
 		/* If we still fail to found the town, we'll create a sign at the intended location and tell the player how many towns we failed to create in an error message.
 		 * This allows the player to diagnose a heightmap misalignment, if towns end up in the sea, or place towns manually, if in rough terrain. */
 		if (!success) {
-			DoCommandPOld(tile, 0, 0, CMD_PLACE_SIGN, CommandCallback::None, town.name.c_str());
+			Command<CMD_PLACE_SIGN>::Post(tile, town.name);
 			failed_towns++;
 			continue;
 		}
