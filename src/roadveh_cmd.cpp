@@ -39,6 +39,7 @@
 #include "string_func.h"
 #include "core/checksum_func.hpp"
 #include "newgrf_roadstop.h"
+#include "road_cmd.h"
 
 #include "table/strings.h"
 
@@ -1432,7 +1433,7 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadType rt, RoadB
 	/* The 'current' company is not necessarily the owner of the vehicle. */
 	Backup<CompanyID> cur_company(_current_company, c, FILE_LINE);
 
-	CommandCost ret = DoCommandOld(t, rt << 4 | r, INVALID_TOWN, DC_NO_WATER, CMD_BUILD_ROAD);
+	CommandCost ret = Command<CMD_BUILD_ROAD>::Do(DC_NO_WATER, t, r, rt, DRD_NONE, INVALID_TOWN, BuildRoadFlags::None);
 
 	cur_company.Restore();
 	return ret.Succeeded();

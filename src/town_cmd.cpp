@@ -1152,7 +1152,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 		 * If that fails clear the land, and if that fails exit.
 		 * This is to make sure that we can build a road here later. */
 		RoadType rt = GetTownRoadType();
-		if (DoCommandOld(tile, ((dir == DIAGDIR_NW || dir == DIAGDIR_SE) ? ROAD_Y : ROAD_X) | (rt << 4), t->index, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_BUILD_ROAD).Failed() &&
+		if (Command<CMD_BUILD_ROAD>::Do(DC_AUTO | DC_NO_WATER, tile, (dir == DIAGDIR_NW || dir == DIAGDIR_SE) ? ROAD_Y : ROAD_X, rt, DRD_NONE, INVALID_TOWN, BuildRoadFlags::None).Failed() &&
 				Command<CMD_LANDSCAPE_CLEAR>::Do(DC_AUTO | DC_NO_WATER | DC_TOWN, tile).Failed()) {
 			return false;
 		}
@@ -1320,7 +1320,7 @@ static bool GrowTownWithExtraHouse(Town *t, TileIndex tile)
 static bool GrowTownWithRoad(const Town *t, TileIndex tile, RoadBits rcmd)
 {
 	RoadType rt = GetTownRoadType();
-	if (DoCommandOld(tile, rcmd | (rt << 4), t->index, DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_BUILD_ROAD).Succeeded()) {
+	if (Command<CMD_BUILD_ROAD>::Do(DC_EXEC | DC_AUTO | DC_NO_WATER, tile, rcmd, rt, DRD_NONE, t->index, BuildRoadFlags::None).Succeeded()) {
 		_grow_town_result = GROWTH_SUCCEED;
 		return true;
 	}
@@ -1370,7 +1370,7 @@ static bool CanRoadContinueIntoNextTile(const Town *t, const TileIndex tile, con
 	RoadType rt = GetTownRoadType();
 
 	/* If a road tile can be built, the construction is allowed. */
-	return DoCommandOld(next_tile, rcmd | (rt << 4), t->index, DC_AUTO | DC_NO_WATER, CMD_BUILD_ROAD).Succeeded();
+	return Command<CMD_BUILD_ROAD>::Do(DC_AUTO | DC_NO_WATER, next_tile, rcmd, rt, DRD_NONE, t->index, BuildRoadFlags::None).Succeeded();
 }
 
 /**
@@ -2099,7 +2099,7 @@ static bool GrowTown(Town *t)
 			if (!IsTileType(tile, MP_HOUSE) && IsTileFlat(tile)) {
 				if (Command<CMD_LANDSCAPE_CLEAR>::Do(DC_AUTO | DC_NO_WATER | DC_TOWN, tile).Succeeded()) {
 					RoadType rt = GetTownRoadType();
-					DoCommandOld(tile, GenRandomRoadBits() | (rt << 4), t->index, DC_EXEC | DC_AUTO | DC_TOWN, CMD_BUILD_ROAD);
+					Command<CMD_BUILD_ROAD>::Do(DC_EXEC | DC_AUTO, tile, GenRandomRoadBits(), rt, DRD_NONE, t->index, BuildRoadFlags::None);
 					cur_company.Restore();
 					return true;
 				}

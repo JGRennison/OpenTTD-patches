@@ -13,6 +13,7 @@
 #include <numeric>
 #include <vector>
 #include "rail_map.h"
+#include "road_cmd.h"
 #include "road_map.h"
 #include "water_map.h"
 #include "genworld.h"
@@ -820,7 +821,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				// If it is already a road and has the right bits, we are good. Otherwise build the needed ones.
 				if (need_to_build_road) {
 					Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-					CmdBuildRoad(tile, DC_EXEC, _public_road_type << 4 | road_bits, INVALID_TOWN, nullptr);
+					CmdBuildRoad(DC_EXEC, tile, road_bits, _public_road_type, DRD_NONE, INVALID_TOWN, BuildRoadFlags::None);
 					cur_company.Restore();
 				}
 			}

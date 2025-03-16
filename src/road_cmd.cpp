@@ -39,6 +39,7 @@
 #include "date_func.h"
 #include "genworld.h"
 #include "company_gui.h"
+#include "road_cmd.h"
 #include "road_func.h"
 #include "roadstop_base.h"
 #include "scope.h"
@@ -987,17 +988,16 @@ static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
 
 /**
  * Build a piece of road.
- * @param tile tile where to build road
  * @param flags operation to perform
- * @param p1 bit 0..3 road pieces to build (RoadBits)
- *           bit 4..9 road type
- *           bit 11..12 disallowed directions to toggle
- *           bit 13   disable custom bridge heads
- * @param p2 the town that is building the road (INVALID_TOWN if not applicable)
- * @param text unused
+ * @param tile tile where to build road
+ * @param pieces road pieces to build (RoadBits)
+ * @param rt road type
+ * @param toggle_drd disallowed directions to toggle
+ * @param town_id the town that is building the road (INVALID_TOWN if not applicable)
+ * @param build_flags build road flags
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, RoadType rt, DisallowedRoadDirections toggle_drd, TownID town_id, BuildRoadFlags build_flags)
 {
 	CompanyID company = _current_company;
 	CommandCost cost(EXPENSES_CONSTRUCTION);
@@ -1007,10 +1007,10 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 	/* Road pieces are max 4 bitset values (NE, NW, SE, SW) and town can only be non-zero
 	 * if a non-company is building the road */
-	if ((Company::IsValidID(company) && p2 != INVALID_TOWN) || (company == OWNER_TOWN && !Town::IsValidID(p2)) || (company == OWNER_DEITY && p2 != INVALID_TOWN)) return CMD_ERROR;
+	if ((Company::IsValidID(company) && town_id != INVALID_TOWN) || (company == OWNER_TOWN && !Town::IsValidID(town_id)) || (company == OWNER_DEITY && town_id != INVALID_TOWN)) return CMD_ERROR;
 	if (company != OWNER_TOWN) {
 		const Town *town = CalcClosestTownFromTile(tile);
-		p2 = (town != nullptr) ? town->index : INVALID_TOWN;
+		town_id = (town != nullptr) ? town->index : INVALID_TOWN;
 
 		if (company == OWNER_DEITY) {
 			company = OWNER_TOWN;
@@ -1022,18 +1022,9 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		}
 	}
 
-	RoadBits pieces = Extract<RoadBits, 0, 4>(p1);
-
 	/* do not allow building 'zero' road bits, code wouldn't handle it */
-	if (pieces == ROAD_NONE) return CMD_ERROR;
-
-	RoadType rt = Extract<RoadType, 4, 6>(p1);
+	if (pieces == ROAD_NONE || !IsValidRoadBits(pieces) || !IsValidDisallowedRoadDirections(toggle_drd)) return CMD_ERROR;
 	if (!ValParamRoadType(rt)) return CMD_ERROR;
-
-	DisallowedRoadDirections toggle_drd = Extract<DisallowedRoadDirections, 11, 2>(p1);
-
-	bool disable_custom_bridge_heads = HasBit(p1, 13);
-
 	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
 
 	Slope tileh = GetTileSlope(tile);
@@ -1180,7 +1171,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 				/* Always add road to the roadtypes (can't draw without it) */
 				bool reserved = HasBit(GetRailReservationTrackBits(tile), railtrack);
-				MakeRoadCrossing(tile, company, company, GetTileOwner(tile), roaddir, GetRailType(tile), rtt == RTT_ROAD ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, p2);
+				MakeRoadCrossing(tile, company, company, GetTileOwner(tile), roaddir, GetRailType(tile), rtt == RTT_ROAD ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, town_id);
 				SetCrossingReservation(tile, reserved);
 				UpdateLevelCrossing(tile, false);
 				MarkDirtyAdjacentLevelCrossingTilesOnAdd(tile, GetCrossingRoadAxis(tile));
@@ -1251,7 +1242,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 				const RoadBits axial_pieces = AxisToRoadBits(DiagDirToAxis(entrance_dir));
 				existing = GetCustomBridgeHeadRoadBits(tile, rtt);
 
-				if (!(_settings_game.construction.road_custom_bridge_heads && HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir))) || disable_custom_bridge_heads) {
+				if (!(_settings_game.construction.road_custom_bridge_heads && HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir))) || HasFlag(build_flags, BuildRoadFlags::NoCustomBridgeHeads)) {
 					/* Ordinary bridge heads only */
 					/* Only allow building the outer roadbit, so building long roads stops at existing bridges */
 					if (MirrorRoadBits(entrance_piece) != pieces) goto do_clear;
@@ -1483,7 +1474,7 @@ do_clear:;
 				if (HasPowerOnRoad(rt, existing_rt)) {
 					rt = existing_rt;
 				} else if (HasPowerOnRoad(existing_rt, rt)) {
-					CommandCost ret = DoCommandOld(tile, tile, rt, flags, CMD_CONVERT_ROAD);
+					CommandCost ret = Command<CMD_CONVERT_ROAD>::Do(flags, tile, tile, rt);
 					if (ret.Failed()) return ret;
 					cost.AddCost(ret);
 				} else {
@@ -1508,7 +1499,7 @@ do_clear:;
 				if (existing == ROAD_NONE || rttype == ROAD_TILE_CROSSING) {
 					SetRoadType(tile, rtt, rt);
 					SetRoadOwner(tile, rtt, company);
-					if (rtt == RTT_ROAD) SetTownIndex(tile, p2);
+					if (rtt == RTT_ROAD) SetTownIndex(tile, town_id);
 				}
 				if (rttype != ROAD_TILE_CROSSING) SetRoadBits(tile, existing | pieces, rtt);
 				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, existing | pieces);
@@ -1546,7 +1537,7 @@ do_clear:;
 			}
 
 			default:
-				MakeRoadNormal(tile, pieces, (rtt == RTT_ROAD) ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, p2, company, company);
+				MakeRoadNormal(tile, pieces, (rtt == RTT_ROAD) ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, town_id, company, company);
 				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, pieces);
 				break;
 		}
@@ -1592,57 +1583,48 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
 
 /**
  * Build a long piece of road.
- * @param start_tile start tile of drag (the building cost will appear over this tile)
  * @param flags operation to perform
- * @param p1 end tile of drag
- * @param p2 various bitstuffed elements
- * - p2 = (bit 0) - start tile starts in the 2nd half of tile (p2 & 1). Only used if bit 6 is set or if we are building a single tile
- * - p2 = (bit 1) - end tile starts in the 2nd half of tile (p2 & 2). Only used if bit 6 is set or if we are building a single tile
- * - p2 = (bit 2) - direction: 0 = along x-axis, 1 = along y-axis (p2 & 4)
- * - p2 = (bit 3..8) - road type
- * - p2 = (bit 10) - set road direction
- * - p2 = (bit 11) - defines two different behaviors for this command:
- *      - 0 = Build up to an obstacle. Do not build the first and last roadbits unless they can be connected to something, or if we are building a single tile
- *      - 1 = Fail if an obstacle is found. Always take into account bit 0 and 1. Disable custom bridge heads. This behavior is used for scripts
- * @param text unused
+ * @param end_tile end tile of drag
+ * @param start_tile start tile of drag
+ * @param rt road type
+ * @param axis direction
+ * @param drd set road direction
+ * @param start_half start tile starts in the 2nd half of tile (p2 & 1). Only used if \c is_ai is set or if we are building a single tile
+ * @param end_half end tile starts in the 2nd half of tile (p2 & 2). Only used if \c is_ai is set or if we are building a single tile
+ * @param is_ai defines two different behaviors for this command:
+ *      - false = Build up to an obstacle. Do not build the first and last roadbits unless they can be connected to something, or if we are building a single tile
+ *      - true = Fail if an obstacle is found. Always take into account start_half and end_half. This behavior is used for scripts
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, DisallowedRoadDirections drd, bool start_half, bool end_half, bool is_ai)
 {
-	DisallowedRoadDirections drd = DRD_NORTHBOUND;
+	if (start_tile >= MapSize()) return CMD_ERROR;
 
-	if (p1 >= MapSize()) return CMD_ERROR;
-	TileIndex end_tile{p1};
+	if (!ValParamRoadType(rt) || !IsValidAxis(axis) || !IsValidDisallowedRoadDirections(drd)) return CMD_ERROR;
 
-	RoadType rt = Extract<RoadType, 3, 6>(p2);
-	if (!ValParamRoadType(rt)) return CMD_ERROR;
-
-	Axis axis = Extract<Axis, 2, 1>(p2);
 	/* Only drag in X or Y direction dictated by the direction variable */
 	if (axis == AXIS_X && TileY(start_tile) != TileY(end_tile)) return CMD_ERROR; // x-axis
 	if (axis == AXIS_Y && TileX(start_tile) != TileX(end_tile)) return CMD_ERROR; // y-axis
 
 	DiagDirection dir = AxisToDiagDir(axis);
 
-	/* Swap direction, also the half-tile drag var (bit 0 and 1) */
-	if (start_tile > end_tile || (start_tile == end_tile && HasBit(p2, 0))) {
+	/* Swap direction, also the half-tile drag vars. */
+	if (start_tile > end_tile || (start_tile == end_tile && start_half)) {
 		dir = ReverseDiagDir(dir);
-		p2 ^= 3;
-		drd = DRD_SOUTHBOUND;
+		start_half = !start_half;
+		end_half = !end_half;
+		if (drd == DRD_NORTHBOUND || drd == DRD_SOUTHBOUND) drd ^= DRD_BOTH;
 	}
 
 	/* On the X-axis, we have to swap the initial bits, so they
 	 * will be interpreted correctly in the GTTS. Furthermore
 	 * when you just 'click' on one tile to build them. */
-	if ((axis == AXIS_Y) == (start_tile == end_tile && HasBit(p2, 0) == HasBit(p2, 1))) drd ^= DRD_BOTH;
-	/* No disallowed direction bits have to be toggled */
-	if (!HasBit(p2, 10)) drd = DRD_NONE;
+	if ((drd == DRD_NORTHBOUND || drd == DRD_SOUTHBOUND) && (axis == AXIS_Y) == (start_tile == end_tile && start_half == end_half)) drd ^= DRD_BOTH;
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	CommandCost last_error = CMD_ERROR;
 	TileIndex tile = start_tile;
 	bool had_success = false;
-	bool is_ai = HasBit(p2, 11);
 
 	_defer_update_road_cache_one_way_state = true;
 	auto guard = scope_guard([]() {
@@ -1663,11 +1645,11 @@ CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t
 			}
 		} else {
 			/* Road parts only have to be built at the start tile or at the end tile. */
-			if (tile == end_tile && !HasBit(p2, 1)) bits &= DiagDirToRoadBits(ReverseDiagDir(dir));
-			if (tile == start_tile && HasBit(p2, 0)) bits &= DiagDirToRoadBits(dir);
+			if (tile == end_tile && !end_half) bits &= DiagDirToRoadBits(ReverseDiagDir(dir));
+			if (tile == start_tile && start_half) bits &= DiagDirToRoadBits(dir);
 		}
 
-		CommandCost ret = DoCommandOld(tile, drd << 11 | rt << 4 | bits | (is_ai ? 1 << 13 : 0), INVALID_TOWN, flags, CMD_BUILD_ROAD);
+		CommandCost ret = Command<CMD_BUILD_ROAD>::Do(flags, tile, bits, rt, drd, INVALID_TOWN, is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
 		if (ret.Failed()) {
 			last_error = ret;
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
@@ -1698,38 +1680,30 @@ CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t
 
 /**
  * Remove a long piece of road.
- * @param start_tile start tile of drag
  * @param flags operation to perform
- * @param p1 end tile of drag
- * @param p2 various bitstuffed elements
- * - p2 = (bit 0) - start tile starts in the 2nd half of tile (p2 & 1)
- * - p2 = (bit 1) - end tile starts in the 2nd half of tile (p2 & 2)
- * - p2 = (bit 2) - direction: 0 = along x-axis, 1 = along y-axis (p2 & 4)
- * - p2 = (bit 3 - 8) - road type
- * @param text unused
+ * @param end_tile end tile of drag
+ * @param start_tile start tile of drag
+ * @param rt road type
+ * @param axis direction
+ * @param start_half start tile starts in the 2nd half of tile
+ * @param end_half end tile starts in the 2nd half of tile (p2 & 2)
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, bool start_half, bool end_half)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	if (p1 >= MapSize()) return CMD_ERROR;
+	if (start_tile >= MapSize()) return CMD_ERROR;
+	if (!ValParamRoadType(rt) || !IsValidAxis(axis)) return CMD_ERROR;
 
-	TileIndex end_tile{p1};
-	RoadType rt = Extract<RoadType, 3, 6>(p2);
-	if (!ValParamRoadType(rt)) return CMD_ERROR;
-
-	Axis axis = Extract<Axis, 2, 1>(p2);
 	/* Only drag in X or Y direction dictated by the direction variable */
 	if (axis == AXIS_X && TileY(start_tile) != TileY(end_tile)) return CMD_ERROR; // x-axis
 	if (axis == AXIS_Y && TileX(start_tile) != TileX(end_tile)) return CMD_ERROR; // y-axis
 
-	/* Swap start and ending tile, also the half-tile drag var (bit 0 and 1) */
-	if (start_tile > end_tile || (start_tile == end_tile && HasBit(p2, 0))) {
-		TileIndex t = start_tile;
-		start_tile = end_tile;
-		end_tile = t;
-		p2 ^= IsInsideMM(p2 & 3, 1, 3) ? 3 : 0;
+	/* Swap start and ending tile, also the half-tile drag vars. */
+	if (start_tile > end_tile || (start_tile == end_tile && start_half)) {
+		std::swap(start_tile, end_tile);
+		std::swap(start_half, end_half);
 	}
 
 	_defer_update_road_cache_one_way_state = true;
@@ -1746,8 +1720,8 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
 	for (;;) {
 		RoadBits bits = AxisToRoadBits(axis);
 
-		if (tile == end_tile && !HasBit(p2, 1)) bits &= ROAD_NW | ROAD_NE;
-		if (tile == start_tile && HasBit(p2, 0)) bits &= ROAD_SE | ROAD_SW;
+		if (tile == end_tile && !end_half) bits &= ROAD_NW | ROAD_NE;
+		if (tile == start_tile && start_half) bits &= ROAD_SE | ROAD_SW;
 
 		/* try to remove the halves. */
 		if (bits != 0) {
@@ -1757,7 +1731,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
 				if (flags & DC_EXEC) {
 					money_spent += ret.GetCost();
 					if (money_spent > 0 && money_spent > money_available) {
-						cost.SetAdditionalCashRequired(DoCommandOld(start_tile, end_tile, p2, flags & ~DC_EXEC, CMD_REMOVE_LONG_ROAD).GetCost());
+						cost.SetAdditionalCashRequired(Command<CMD_REMOVE_LONG_ROAD>::Do(flags & ~DC_EXEC, end_tile, start_tile, rt, axis, start_half, end_half).GetCost());
 						return cost;
 					}
 					RemoveRoad(tile, flags, bits, rtt, false);
@@ -1788,21 +1762,16 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
  * Build a road depot.
  * @param tile tile where to build the depot
  * @param flags operation to perform
- * @param p1 bit 0..1 entrance direction (DiagDirection)
- *           bit 2..7 road type
- * @param p2 unused
- * @param text unused
+ * @param rt road type
+ * @param dir entrance direction
  * @return the cost of this operation or an error
  *
  * @todo When checking for the tile slope,
  * distinguish between "Flat land required" and "land sloped in wrong direction"
  */
-CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdBuildRoadDepot(DoCommandFlag flags, TileIndex tile, RoadType rt, DiagDirection dir)
 {
-	DiagDirection dir = Extract<DiagDirection, 0, 2>(p1);
-
-	RoadType rt = Extract<RoadType, 2, 6>(p1);
-	if (!ValParamRoadType(rt)) return CMD_ERROR;
+	if (!ValParamRoadType(rt) || !IsValidDiagDirection(dir)) return CMD_ERROR;
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
@@ -3122,19 +3091,14 @@ static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, R
  * Convert one road subtype to another.
  * Not meant to convert from road to tram.
  *
- * @param tile end tile of road conversion drag
  * @param flags operation to perform
- * @param p1 start tile of drag
- * @param p2 various bitstuffed elements:
- * - p2 = (bit  0..5) new roadtype to convert to.
- * @param text unused
+ * @param tile end tile of road conversion drag
+ * @param area_start start tile of drag
+ * @param to_type new roadtype to convert to.
  * @return the cost of this operation or an error
  */
-CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_start, RoadType to_type)
 {
-	RoadType to_type = Extract<RoadType, 0, 6>(p2);
-
-	TileIndex area_start{p1};
 	TileIndex area_end = tile;
 
 	if (!ValParamRoadType(to_type)) return CMD_ERROR;

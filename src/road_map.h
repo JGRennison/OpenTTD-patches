@@ -318,17 +318,16 @@ inline bool HasTownOwnedRoad(TileIndex t)
 	return HasTileRoadType(t, RTT_ROAD) && IsRoadOwner(t, RTT_ROAD, OWNER_TOWN);
 }
 
-/** Which directions are disallowed ? */
-enum DisallowedRoadDirections : uint8_t {
-	DRD_NONE,       ///< None of the directions are disallowed
-	DRD_SOUTHBOUND, ///< All southbound traffic is disallowed (Trackdir 8-13 is allowed)
-	DRD_NORTHBOUND, ///< All northbound traffic is disallowed (Trackdir 0-5 is allowed)
-	DRD_BOTH,       ///< All directions are disallowed
-	DRD_END,        ///< Sentinel
-};
-DECLARE_ENUM_AS_BIT_SET(DisallowedRoadDirections)
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<DisallowedRoadDirections> : MakeEnumPropsT<DisallowedRoadDirections, uint8_t, DRD_NONE, DRD_END, DRD_END, 2> {};
+/**
+ * Checks if a DisallowedRoadDirections is valid.
+ *
+ * @param wc The value to check
+ * @return true if the given value is a valid DisallowedRoadDirections.
+ */
+inline bool IsValidDisallowedRoadDirections(DisallowedRoadDirections drt)
+{
+	return drt < DRD_END;
+}
 
 /**
  * Gets the disallowed directions

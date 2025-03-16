@@ -1199,12 +1199,6 @@ DEF_CMD_PROC  (CMD_REMOVE_SIGNALS, CmdRemoveSingleSignal,                      C
 DEF_CMD_PROC  (CMD_CONVERT_RAIL, CmdConvertRail,                                    {}, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROC  (CMD_CONVERT_RAIL_TRACK, CmdConvertRailTrack,                               {}, CMDT_LANDSCAPE_CONSTRUCTION)
 
-DEF_CMD_PROC  (CMD_BUILD_LONG_ROAD, CmdBuildLongRoad,CMD_DEITY | CMD_NO_WATER | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_LONG_ROAD, CmdRemoveLongRoad,            CMD_NO_TEST | CMD_AUTO | CMD_ERR_TILE, CMDT_LANDSCAPE_CONSTRUCTION) // towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
-DEF_CMD_PROC  (CMD_BUILD_ROAD, CmdBuildRoad,    CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_ROAD_DEPOT, CmdBuildRoadDepot,           CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_CONVERT_ROAD, CmdConvertRoad,                                    {}, CMDT_LANDSCAPE_CONSTRUCTION)
-
 DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 

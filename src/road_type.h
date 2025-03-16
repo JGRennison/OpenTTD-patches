@@ -73,4 +73,14 @@ enum RoadBits : uint8_t {
 DECLARE_ENUM_AS_BIT_SET(RoadBits)
 template <> struct EnumPropsT<RoadBits> : MakeEnumPropsT<RoadBits, uint8_t, ROAD_NONE, ROAD_END, ROAD_NONE, 4> {};
 
+/** Which directions are disallowed ? */
+enum DisallowedRoadDirections : uint8_t {
+	DRD_NONE,       ///< None of the directions are disallowed
+	DRD_SOUTHBOUND, ///< All southbound traffic is disallowed
+	DRD_NORTHBOUND, ///< All northbound traffic is disallowed
+	DRD_BOTH,       ///< All directions are disallowed
+	DRD_END,        ///< Sentinel
+};
+DECLARE_ENUM_AS_BIT_SET(DisallowedRoadDirections)
+
 #endif /* ROAD_TYPE_H */
