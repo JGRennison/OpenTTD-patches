@@ -45,6 +45,7 @@
 #include "town_kdtree.h"
 #include "zoom_func.h"
 #include "hotkeys.h"
+#include "town_cmd.h"
 
 #include "widgets/town_widget.h"
 #include "table/strings.h"
@@ -457,7 +458,7 @@ public:
 			}
 
 			case WID_TA_EXECUTE:
-				DoCommandPOld(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
+				Command<CMD_DO_TOWN_ACTION>::Post(STR_ERROR_CAN_T_DO_THIS, this->town->xy, this->window_number, this->sel_index);
 				break;
 
 			case WID_TA_SETTING: {
@@ -518,13 +519,12 @@ public:
 		switch (widget) {
 			case WID_TA_SETTING: {
 				if (index < 0) break;
-				uint32_t p2 = this->sel_index - 0x100;
-				if (index > 0) {
-					SetBit(p2, 16);
-					p2 |= (index - 1) << 8;
+				auto payload = CmdPayload<CMD_TOWN_SETTING_OVERRIDE>::Make(this->window_number, static_cast<TownSettingOverrideFlags>(this->sel_index - 0x100), index > 0, (index > 0) ? index - 1 : 0);
+				if (IsNonAdminNetworkClient()) {
+					DoCommandP<CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN>(payload, STR_ERROR_CAN_T_DO_THIS);
+				} else {
+					DoCommandP<CMD_TOWN_SETTING_OVERRIDE>(payload, STR_ERROR_CAN_T_DO_THIS);
 				}
-				Commands cmd = IsNonAdminNetworkClient() ? CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN : CMD_TOWN_SETTING_OVERRIDE;
-				DoCommandPOld(this->town->xy, this->window_number, p2, cmd | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
 			}
 
@@ -723,12 +723,12 @@ public:
 				break;
 
 			case WID_TV_EXPAND: { // expand town - only available on Scenario editor
-				DoCommandPOld(0, this->window_number, 0, CMD_EXPAND_TOWN | CMD_MSG(STR_ERROR_CAN_T_EXPAND_TOWN));
+				Command<CMD_EXPAND_TOWN>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, this->window_number, 0);
 				break;
 			}
 
 			case WID_TV_DELETE: // delete town - only available on Scenario editor
-				DoCommandPOld(0, this->window_number, 0, CMD_DELETE_TOWN | CMD_MSG(STR_ERROR_TOWN_CAN_T_DELETE));
+				Command<CMD_DELETE_TOWN>::Post(STR_ERROR_TOWN_CAN_T_DELETE, this->window_number);
 				break;
 		}
 	}
@@ -817,7 +817,11 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		DoCommandPOld(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), CommandCallback::None, str->c_str());
+		if (IsNonAdminNetworkClient()) {
+			Command<CMD_RENAME_TOWN_NON_ADMIN>::Post(STR_ERROR_CAN_T_RENAME_TOWN, this->window_number, *str);
+		} else {
+			Command<CMD_RENAME_TOWN>::Post(STR_ERROR_CAN_T_RENAME_TOWN, this->window_number, *str);
+		}
 	}
 
 	bool IsNewGRFInspectable() const override
@@ -1447,7 +1451,7 @@ public:
 
 	void ExecuteFoundTownCommand(TileIndex tile, bool random, StringID errstr, CommandCallback cc)
 	{
-		const char *name = nullptr;
+		std::string name;
 
 		if (!this->townnamevalid) {
 			name = this->townname_editbox.text.GetText();
@@ -1457,8 +1461,8 @@ public:
 			if (original_name != this->townname_editbox.text.GetText()) name = this->townname_editbox.text.GetText();
 		}
 
-		bool success = DoCommandPOld(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
-				townnameparts, CMD_FOUND_TOWN | CMD_MSG(errstr), cc, name);
+		bool success = Command<CMD_FOUND_TOWN>::Post(errstr, cc,
+				tile, this->town_size, this->city, this->town_layout, random, townnameparts, std::move(name));
 
 		/* Rerandomise name, if success and no cost-estimation. */
 		if (success && !_shift_pressed) this->RandomTownName();
@@ -1497,7 +1501,7 @@ public:
 
 			case WID_TF_EXPAND_ALL_TOWNS:
 				for (Town *t : Town::Iterate()) {
-					DoCommandOld(0, t->index, 0, DC_EXEC, CMD_EXPAND_TOWN);
+					Command<CMD_EXPAND_TOWN>::Do(DC_EXEC, t->index, 0);
 				}
 				break;
 
@@ -1566,10 +1570,10 @@ void ShowFoundTownWindow()
  */
 struct SelectTownWindow : Window {
 	TownList towns;       ///< list of towns
-	CommandContainerPayloadT<P123CmdData> cmd; ///< command to build the house (CMD_PLACE_HOUSE)
+	CommandContainer<CMD_PLACE_HOUSE> cmd; ///< command to build the house
 	Scrollbar *vscroll;   ///< scrollbar for the town list
 
-	SelectTownWindow(WindowDesc &desc, const CommandContainerPayloadT<P123CmdData> &cmd) : Window(desc), cmd(cmd)
+	SelectTownWindow(WindowDesc &desc, const CommandContainer<CMD_PLACE_HOUSE> &cmd) : Window(desc), cmd(cmd)
 	{
 		std::vector<std::pair<uint, TownID>> town_set;
 		constexpr uint MAX_TOWN_COUNT = 16;
@@ -1641,7 +1645,8 @@ struct SelectTownWindow : Window {
 		if (pos >= this->towns.size()) return;
 
 		/* Place a house */
-		this->cmd.payload.p2 = this->towns[pos];
+		TownID &town_id = std::get<1>(this->cmd.payload.GetValues());
+		town_id = this->towns[pos];
 		DoCommandPContainer(this->cmd);
 
 		/* Close the window */
@@ -1676,7 +1681,7 @@ static WindowDesc _select_town_desc(__FILE__, __LINE__,
 	_nested_select_town_widgets
 );
 
-static void ShowSelectTownWindow(const CommandContainerPayloadT<P123CmdData> &cmd)
+static void ShowSelectTownWindow(const CommandContainer<CMD_PLACE_HOUSE> &cmd)
 {
 	CloseWindowByClass(WC_SELECT_TOWN);
 	new SelectTownWindow(_select_town_desc, cmd);
@@ -2074,17 +2079,15 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
-		CommandContainerPayloadT<P123CmdData> cmd = NewCommandContainerBasic(
-			tile,
-			spec->Index(),
-			INVALID_TOWN,
-			CMD_PLACE_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE),
-			CommandCallback::PlaySound_CONSTRUCTION_OTHER
-		);
+		CommandContainer<CMD_PLACE_HOUSE> cmd_container;
+		cmd_container.error_msg = STR_ERROR_CAN_T_BUILD_HOUSE;
+		cmd_container.tile = tile;
+		cmd_container.payload = CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), INVALID_TOWN);
+		cmd_container.callback = CommandCallback::PlaySound_CONSTRUCTION_OTHER;
 		if (_ctrl_pressed) {
-			ShowSelectTownWindow(cmd);
+			ShowSelectTownWindow(cmd_container);
 		} else {
-			DoCommandPContainer(cmd);
+			DoCommandPContainer(cmd_container);
 		}
 	}
 

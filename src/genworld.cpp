@@ -43,6 +43,7 @@
 #include "signal_func.h"
 #include "newgrf_industrytiles.h"
 #include "station_func.h"
+#include "town_cmd.h"
 
 #include "safeguards.h"
 
@@ -424,7 +425,7 @@ struct ExternalTownData {
 static bool TryFoundTownNearby(TileIndex tile, void *user_data)
 {
 	ExternalTownData &town = *static_cast<ExternalTownData *>(user_data);
-	CommandCost result = DoCommandOld(tile, TSZ_SMALL | town.is_city << 2 | _settings_game.economy.town_layout << 3, 0, DC_EXEC, CMD_FOUND_TOWN, town.name.c_str());
+	CommandCost result = Command<CMD_FOUND_TOWN>::Do(DC_EXEC, tile, TSZ_SMALL, town.is_city, _settings_game.economy.town_layout, false, 0, town.name);
 	if (result.HasResultData()) {
 		/* The command succeeded, send the ID back through user_data. */
 		town.town_id = result.GetResultData();
@@ -572,7 +573,7 @@ void LoadTownData()
 
 		do {
 			uint before = t->cache.num_houses;
-			DoCommandPOld(0, t->index, HOUSES_TO_GROW, CMD_EXPAND_TOWN);
+			Command<CMD_EXPAND_TOWN>::Post(t->index, HOUSES_TO_GROW);
 			if (t->cache.num_houses <= before) fail_limit--;
 		} while (fail_limit > 0 && try_limit-- > 0 && t->cache.population < population);
 	}

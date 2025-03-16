@@ -60,7 +60,7 @@ struct TownCache {
 };
 
 /** Town setting override flags */
-enum TownSettingOverrideFlags {
+enum TownSettingOverrideFlags : uint8_t {
 	TSOF_OVERRIDE_BEGIN                     = 0, // Begin marker
 	TSOF_OVERRIDE_BUILD_ROADS               = 0,
 	TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS     = 1,

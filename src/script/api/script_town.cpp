@@ -13,6 +13,7 @@
 #include "script_error.hpp"
 #include "script_controller.hpp"
 #include "../../town.h"
+#include "../../town_cmd.h"
 #include "../../townname_func.h"
 #include "../../string_func.h"
 #include "../../strings_func.h"
@@ -52,7 +53,7 @@
 		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 	}
 
-	return ScriptObject::DoCommandOld(0, town_id, 0, CMD_RENAME_TOWN, text);
+	return ScriptObject::Command<CMD_RENAME_TOWN>::Do(town_id, text);
 }
 
 /* static */ bool ScriptTown::SetText(TownID town_id, Text *text)
@@ -62,7 +63,7 @@
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidTown(town_id));
 
-	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, 0, CMD_TOWN_SET_TEXT, text != nullptr ? text->GetEncodedText().c_str() : "");
+	return ScriptObject::Command<CMD_TOWN_SET_TEXT>::Do(town_id, text != nullptr ? text->GetEncodedText() : std::string{});
 }
 
 /* static */ SQInteger ScriptTown::GetPopulation(TownID town_id)
@@ -133,7 +134,7 @@
 
 	goal = Clamp<SQInteger>(goal, 0, UINT32_MAX);
 
-	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id | (towneffect_id << 16), goal, CMD_TOWN_CARGO_GOAL);
+	return ScriptObject::Command<CMD_TOWN_CARGO_GOAL>::Do(town_id, (::TownAcceptanceEffect)towneffect_id, goal);
 }
 
 /* static */ SQInteger ScriptTown::GetCargoGoal(TownID town_id, ScriptCargo::TownEffect towneffect_id)
@@ -177,7 +178,7 @@
 			break;
 	}
 
-	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, growth_rate, CMD_TOWN_GROWTH_RATE);
+	return ScriptObject::Command<CMD_TOWN_GROWTH_RATE>::Do(town_id, growth_rate);
 }
 
 /* static */ SQInteger ScriptTown::GetGrowthRate(TownID town_id)
@@ -267,7 +268,7 @@
 	EnforcePrecondition(false, IsValidTown(town_id));
 	EnforcePrecondition(false, IsActionAvailable(town_id, town_action));
 
-	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, town_action, CMD_DO_TOWN_ACTION);
+	return ScriptObject::Command<CMD_DO_TOWN_ACTION>::Do(town_id, town_action);
 }
 
 /* static */ bool ScriptTown::ExpandTown(TownID town_id, SQInteger houses)
@@ -278,7 +279,7 @@
 
 	houses = std::min<SQInteger>(houses, UINT32_MAX);
 
-	return ScriptObject::DoCommandOld(::Town::Get(town_id)->xy, town_id, houses, CMD_EXPAND_TOWN);
+	return ScriptObject::Command<CMD_EXPAND_TOWN>::Do(town_id, houses);
 }
 
 /* static */ bool ScriptTown::FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name)
@@ -311,7 +312,7 @@
 		return false;
 	}
 
-	return ScriptObject::DoCommandOld(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text.c_str());
+	return ScriptObject::Command<CMD_FOUND_TOWN>::Do(tile, (::TownSize)size, city, (::TownLayout)layout, false, townnameparts, text);
 }
 
 /* static */ ScriptTown::TownRating ScriptTown::GetRating(TownID town_id, ScriptCompany::CompanyID company_id)
@@ -363,7 +364,7 @@
 	int16_t new_rating = Clamp(t->ratings[company] + delta, RATING_MINIMUM, RATING_MAXIMUM);
 	if (new_rating == t->ratings[company]) return false;
 
-	return ScriptObject::DoCommandOld(0, town_id | (company_id << 16), new_rating, CMD_TOWN_RATING);
+	return ScriptObject::Command<CMD_TOWN_RATING>::Do(town_id, (::CompanyID)company_id, new_rating);
 }
 
 /* static */ SQInteger ScriptTown::GetAllowedNoise(TownID town_id)
