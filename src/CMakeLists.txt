@@ -399,6 +399,7 @@ add_files(
     rail.cpp
     rail.h
     rail_cmd.cpp
+    rail_cmd.h
     rail_gui.cpp
     rail_gui.h
     rail_gui_type.h

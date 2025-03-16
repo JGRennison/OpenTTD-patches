@@ -367,8 +367,8 @@ enum Commands : uint16_t {
 	CMD_BUILD_BRIDGE,                 ///< build a bridge
 	CMD_BUILD_RAIL_STATION,           ///< build a rail station
 	CMD_BUILD_TRAIN_DEPOT,            ///< build a train depot
-	CMD_BUILD_SIGNALS,                ///< build a signal
-	CMD_REMOVE_SIGNALS,               ///< remove a signal
+	CMD_BUILD_SINGLE_SIGNAL,          ///< build a signal
+	CMD_REMOVE_SINGLE_SIGNAL,         ///< remove a signal
 	CMD_TERRAFORM_LAND,               ///< terraform a tile
 	CMD_BUILD_OBJECT,                 ///< build an object
 	CMD_PURCHASE_LAND_AREA,           ///< purchase an area of landscape
@@ -1185,19 +1185,6 @@ DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, pro
 #define DEF_CMD_TUPLE_NT(cmd_, proc_, flags_, type_, ...) \
 namespace cmd_detail { using payload_ ## cmd_ = __VA_ARGS__ ; }; \
 DEF_CMD_PROC_GENERAL(cmd_, cmd_detail::payload_ ## cmd_ ::CommandProcNoTile, proc_, cmd_detail::payload_ ## cmd_, flags_, type_, true, true)
-
-DEF_CMD_PROC  (CMD_BUILD_RAILROAD_TRACK, CmdBuildRailroadTrack,       CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_RAILROAD_TRACK, CmdRemoveRailroadTrack,                     CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_SINGLE_RAIL, CmdBuildSingleRail,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_SINGLE_RAIL, CmdRemoveSingleRail,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_TRAIN_DEPOT, CmdBuildTrainDepot,          CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_BUILD_SIGNALS, CmdBuildSingleSignal,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_REMOVE_SIGNALS, CmdRemoveSingleSignal,                      CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_CONVERT_RAIL, CmdConvertRail,                                    {}, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROC  (CMD_CONVERT_RAIL_TRACK, CmdConvertRailTrack,                               {}, CMDT_LANDSCAPE_CONSTRUCTION)
-
-DEF_CMD_PROCEX(CMD_BUILD_SIGNAL_TRACK, CmdBuildSignalTrack,                        CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
-DEF_CMD_PROCEX(CMD_REMOVE_SIGNAL_TRACK, CmdRemoveSignalTrack,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION)
 
 template <Commands Tcmd>
 using CmdPayload = typename CommandTraits<Tcmd>::PayloadType;

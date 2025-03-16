@@ -56,6 +56,7 @@
 #include "order_cmd.h"
 #include "plans_cmd.h"
 #include "programmable_signals_cmd.h"
+#include "rail_cmd.h"
 #include "road_cmd.h"
 #include "settings_cmd.h"
 #include "signs_cmd.h"
@@ -324,7 +325,7 @@ DEF_CB_RES_TILE(BuildRoadTunnel)
 DEF_CB_RES_TILE(BuildRailTunnel)
 DEF_CB_RES_TILE(BuildWagon)
 DEF_CB_RES_TILE_TUPLE(RoadDepot, CmdPayload<CMD_BUILD_ROAD_DEPOT>)
-DEF_CB_GENERAL(RailDepot)
+DEF_CB_RES_TILE_TUPLE(RailDepot, CmdPayload<CMD_BUILD_TRAIN_DEPOT>)
 DEF_CB_RES(PlaceSign)
 DEF_CB_RES_TILE(PlaySound_EXPLOSION)
 DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_OTHER)
