@@ -168,7 +168,7 @@ size_t BufferSend_binary_until_full(std::vector<uint8_t> &buffer, size_t limit, 
  */
 void BufferSend_binary(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size)
 {
-	assert(data != nullptr);
+	if (size == 0) return;
 	assert(BufferCanWriteToPacket(buffer, limit, size));
 	buffer.insert(buffer.end(), data, data + size);
 }
