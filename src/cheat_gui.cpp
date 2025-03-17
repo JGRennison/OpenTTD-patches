@@ -731,7 +731,7 @@ struct CheatWindow : Window {
 			char tmp_buffer[32];
 			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-			DoCommandPOld(0, (uint32_t)clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			Command<CMD_CHEAT_SETTING>::Post(clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION));
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {

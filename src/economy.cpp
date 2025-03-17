@@ -395,7 +395,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			for (i = 0; i < 4; i++) {
 				if (c->share_owners[i] == old_owner) {
 					/* Sell its shares */
-					CommandCost res = DoCommandOld(0, c->index, 0, DC_EXEC | DC_BANKRUPT, CMD_SELL_SHARE_IN_COMPANY);
+					CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do(DC_EXEC | DC_BANKRUPT, c->index);
 					/* Because we are in a DoCommand, we can't just execute another one and
 					 *  expect the money to be removed. We need to do it ourself! */
 					SubtractMoneyFromCompany(res);
@@ -415,7 +415,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			} else {
 				cur_company2.Change(c->share_owners[i]);
 				/* Sell the shares */
-				CommandCost res = DoCommandOld(0, old_owner, 0, DC_EXEC | DC_BANKRUPT, CMD_SELL_SHARE_IN_COMPANY);
+				CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do(DC_EXEC | DC_BANKRUPT, old_owner);
 				/* Because we are in a DoCommand, we can't just execute another one and
 				 *  expect the money to be removed. We need to do it ourself! */
 				SubtractMoneyFromCompany(res);
