@@ -70,6 +70,11 @@ macro(compile_flags)
                 -Wno-multichar
             )
         endif()
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            add_compile_options(
+                "$<$<CONFIG:Debug>:/bigobj>" # Switch to bigobj as x64 Debug builds run into error C1128: number of sections exceeded object file format limit
+            )
+        endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         add_compile_options(
             -W
