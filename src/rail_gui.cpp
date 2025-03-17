@@ -120,19 +120,11 @@ static BuildRailTrackFlags GetBaseBuildRailTrackFlags()
 static RailTrackCommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 {
 	if (_remove_button_clicked) {
-		CommandContainer<CMD_REMOVE_SINGLE_RAIL> cmd;
-		cmd.error_msg = STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK;
-		cmd.tile = tile;
-		cmd.callback = CommandCallback::PlaySound_CONSTRUCTION_RAIL;
-		cmd.payload = CmdPayload<CMD_REMOVE_SINGLE_RAIL>::Make(track);
-		return cmd;
+		return CommandContainer<CMD_REMOVE_SINGLE_RAIL>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, tile,
+				CmdPayload<CMD_REMOVE_SINGLE_RAIL>::Make(track), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	} else {
-		CommandContainer<CMD_BUILD_SINGLE_RAIL> cmd;
-		cmd.error_msg = STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK;
-		cmd.tile = tile;
-		cmd.callback = CommandCallback::PlaySound_CONSTRUCTION_RAIL;
-		cmd.payload = CmdPayload<CMD_BUILD_SINGLE_RAIL>::Make(_cur_railtype, track, GetBaseBuildRailTrackFlags());
-		return cmd;
+		return CommandContainer<CMD_BUILD_SINGLE_RAIL>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, tile,
+				CmdPayload<CMD_BUILD_SINGLE_RAIL>::Make(_cur_railtype, track, GetBaseBuildRailTrackFlags()), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	}
 }
 
@@ -450,19 +442,13 @@ static void BuildRailClick_Remove(Window *w)
 static RailTrackCommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
 {
 	if (_remove_button_clicked) {
-		CommandContainer<CMD_REMOVE_RAILROAD_TRACK> cmd;
-		cmd.error_msg = STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK;
-		cmd.tile = end_tile;
-		cmd.callback = CommandCallback::PlaySound_CONSTRUCTION_RAIL;
-		cmd.payload = CmdPayload<CMD_REMOVE_RAILROAD_TRACK>::Make(start_tile, track);
-		return cmd;
+		return CommandContainer<CMD_REMOVE_RAILROAD_TRACK>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, end_tile,
+				CmdPayload<CMD_REMOVE_RAILROAD_TRACK>::Make(start_tile, track),
+				CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	} else {
-		CommandContainer<CMD_BUILD_RAILROAD_TRACK> cmd;
-		cmd.error_msg = STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK;
-		cmd.tile = end_tile;
-		cmd.callback = CommandCallback::PlaySound_CONSTRUCTION_RAIL;
-		cmd.payload = CmdPayload<CMD_BUILD_RAILROAD_TRACK>::Make(start_tile, _cur_railtype, track, GetBaseBuildRailTrackFlags(), false);
-		return cmd;
+		return CommandContainer<CMD_BUILD_RAILROAD_TRACK>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, end_tile,
+				CmdPayload<CMD_BUILD_RAILROAD_TRACK>::Make(start_tile, _cur_railtype, track, GetBaseBuildRailTrackFlags(), false),
+				CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	}
 }
 

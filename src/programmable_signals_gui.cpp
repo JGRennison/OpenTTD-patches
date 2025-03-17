@@ -539,7 +539,7 @@ public:
 					using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
 					ProgPresigModifyCommandType mode = (this->query_submode == QSM_NEW_SLOT) ? PPMCT_SLOT : PPMCT_COUNTER;
 					Payload follow_up_payload = Payload::Make(this->track, si->Id(), mode, {}, {});
-					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<CMD_PROGPRESIG_MODIFY_INSTRUCTION>{ (StringID)0, this->tile, std::move(follow_up_payload) } };
+					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<CMD_PROGPRESIG_MODIFY_INSTRUCTION>((StringID)0, this->tile, std::move(follow_up_payload)) };
 					if (this->query_submode == QSM_NEW_SLOT) {
 						TraceRestrictCreateSlotCmdData data;
 						data.vehtype = VEH_TRAIN;

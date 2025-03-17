@@ -2079,11 +2079,8 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
-		CommandContainer<CMD_PLACE_HOUSE> cmd_container;
-		cmd_container.error_msg = STR_ERROR_CAN_T_BUILD_HOUSE;
-		cmd_container.tile = tile;
-		cmd_container.payload = CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), INVALID_TOWN);
-		cmd_container.callback = CommandCallback::PlaySound_CONSTRUCTION_OTHER;
+		CommandContainer<CMD_PLACE_HOUSE> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
+				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), INVALID_TOWN), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd_container);
 		} else {

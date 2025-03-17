@@ -869,7 +869,7 @@ void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const Command
 		DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags);
 	} else {
 		CommandQueueItem &item = _command_queue.emplace_back();
-		item.cmd = DynCommandContainer(cmd, tile, payload.Clone(), error_msg, callback, callback_param);
+		item.cmd = DynCommandContainer(cmd, error_msg, tile, payload.Clone(), callback, callback_param);
 		item.company = _current_company;
 		item.intl_flags = intl_flags;
 	}
