@@ -82,28 +82,6 @@
 
 using CommandExecTrampoline = CommandCost(const CommandExecData &);
 
-template <typename T, CommandProc proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		static_assert(std::is_same_v<T, P123CmdData>);
-		const P123CmdData &data = static_cast<const P123CmdData &>(exec_data.payload);
-		return proc(exec_data.tile, exec_data.flags, data.p1, data.p2, data.text.c_str());
-	};
-}
-
-template <typename T, CommandProcEx proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		static_assert(std::is_same_v<T, P123CmdData>);
-		const P123CmdData &data = static_cast<const P123CmdData &>(exec_data.payload);
-		return proc(exec_data.tile, exec_data.flags, data.p1, data.p2, data.p3, data.text.c_str());
-	};
-}
-
 template <typename T, CommandProcDirect<T> proc, bool no_tile>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
@@ -736,9 +714,7 @@ void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &paylo
 
 /**
  * Toplevel network safe docommand function for the current company. Must not be called recursively.
- * The callback is called when the command succeeded or failed. The parameters
- * \a tile, \a p1, and \a p2 are from the #CommandProc function. The parameter \a cmd is the command to execute.
- * The parameter \a my_cmd is used to indicate if the command is from a company or the server.
+ * The callback is called when the command succeeded or failed.
  *
  * @param cmd The command-id to execute (a value of the CMD_* enums)
  * @param tile The tile to apply the command on
@@ -1249,34 +1225,6 @@ void CommandCost::SetResultData(uint32_t result)
 	} else {
 		this->inl.result = result;
 	}
-}
-
-void P123CmdData::Serialise(BufferSerialisationRef buffer) const
-{
-	buffer.Send_uint32(this->p1);
-	buffer.Send_uint32(this->p2);
-	buffer.Send_uint64(this->p3);
-	buffer.Send_string(this->text);
-}
-
-void P123CmdData::SanitiseStrings(StringValidationSettings settings)
-{
-	StrMakeValidInPlace(this->text, settings);
-}
-
-bool P123CmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
-{
-	this->p1 = buffer.Recv_uint32();
-	this->p2 = buffer.Recv_uint32();
-	this->p3 = buffer.Recv_uint64();
-	buffer.Recv_string(this->text, default_string_validation);
-	return true;
-}
-
-void P123CmdData::FormatDebugSummary(format_target &output) const
-{
-	output.format("p1: {:08X}, p2: {:08X}", this->p1, this->p2);
-	if (this->p3 != 0) output.format(", p3: {:X}", this->p3);
 }
 
 template <typename T>

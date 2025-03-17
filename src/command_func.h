@@ -13,14 +13,6 @@
 #include "command_type.h"
 #include "company_type.h"
 
-struct OldCommandValueWrapper {
-	uint32_t value;
-
-	template <typename T>
-	OldCommandValueWrapper(const T &value) : value((uint32_t)value) {}
-	OldCommandValueWrapper(TileIndex tile) : value(tile.base()) {}
-};
-
 /* DoCommand and variants */
 
 CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags);
@@ -43,28 +35,10 @@ inline CommandCost DoCommandContainer(const DynBaseCommandContainer &container, 
 	return DoCommandImplementation(container.cmd, container.tile, *container.payload, flags, DCIF_NONE);
 }
 
-inline CommandCost DoCommandContainer(const BaseCommandContainerPayloadT<P123CmdData> &container, DoCommandFlag flags)
-{
-	return DoCommandImplementation(container.cmd, container.tile, container.payload, flags, DCIF_NONE);
-}
-
 template <Commands cmd>
 inline CommandCost DoCommandContainer(const BaseCommandContainer<cmd> &container, DoCommandFlag flags)
 {
 	return DoCommandImplementation(cmd, container.tile, container.payload, flags, DCIF_TYPE_CHECKED);
-}
-
-inline CommandCost DoCommandEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)
-{
-	BaseCommandContainerPayloadT<P123CmdData> cont = NewBaseCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd);
-	cont.payload.p3 = p3;
-	if (text != nullptr) cont.payload.text = text;
-	return DoCommandContainer(cont, flags);
-}
-
-inline CommandCost DoCommandOld(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)
-{
-	return DoCommandEx(tile, p1, p2, 0, flags, cmd, text);
 }
 
 /* DoCommandP and variants */
@@ -76,28 +50,10 @@ inline bool DoCommandPContainer(const DynCommandContainer &container, DoCommandI
 	return DoCommandPImplementation(container.command.cmd, container.command.tile, *container.command.payload, container.command.error_msg, container.callback, container.callback_param, intl_flags);
 }
 
-inline bool DoCommandPContainer(const CommandContainerPayloadT<P123CmdData> &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
-{
-	return DoCommandPImplementation(container.cmd, container.tile, container.payload, container.error_msg, container.callback, container.callback_param, intl_flags);
-}
-
 template <Commands cmd>
 inline bool DoCommandPContainer(const CommandContainer<cmd> &container, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	return DoCommandPImplementation(cmd, container.tile, container.payload, container.error_msg, container.callback, container.callback_param, intl_flags | DCIF_TYPE_CHECKED);
-}
-
-inline bool DoCommandPEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, uint32_t cmd, CommandCallback callback = CommandCallback::None, const char *text = nullptr)
-{
-	CommandContainerPayloadT<P123CmdData> cont = NewCommandContainerBasic(TileIndex(tile.value), p1.value, p2.value, cmd, callback);
-	cont.payload.p3 = p3;
-	if (text != nullptr) cont.payload.text = text;
-	return DoCommandPContainer(cont);
-}
-
-inline bool DoCommandPOld(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint32_t cmd, CommandCallback callback = CommandCallback::None, const char *text = nullptr)
-{
-	return DoCommandPEx(tile, p1, p2, 0, cmd, callback, text);
 }
 
 template <Commands cmd, typename = typename std::enable_if<!CommandTraits<cmd>::input_no_tile>>

@@ -854,31 +854,12 @@ struct CommandPayloadSerialised final {
 	void Serialise(BufferSerialisationRef buffer) const { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 };
 
-struct P123CmdData final : public CommandPayloadSerialisable<P123CmdData> {
-	uint32_t p1;
-	uint32_t p2;
-	uint64_t p3;
-	std::string text;
-
-	P123CmdData() : p1(0), p2(0), p3(0) {}
-	P123CmdData(uint32_t p1, uint32_t p2, uint64_t p3) : p1(p1), p2(p2), p3(p3) {}
-	P123CmdData(uint32_t p1, uint32_t p2, uint64_t p3, std::string text) : p1(p1), p2(p2), p3(p3), text(std::move(text)) {}
-
-	void Serialise(BufferSerialisationRef buffer) const override;
-	void SanitiseStrings(StringValidationSettings settings) override;
-	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(struct format_target &) const override;
-};
-
 void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &payload, ClientID client_id);
 
 template <typename T>
 void SetCommandPayloadClientID(T &payload, ClientID client_id)
 {
-	if constexpr (std::is_same_v<T, P123CmdData>) {
-		// This case will disappear when P123CmdData is removed
-		if (payload.p2 == 0) payload.p2 = (uint32_t)client_id;
-	} else if constexpr (requires { payload.GetClientIDField(); }) {
+	if constexpr (requires { payload.GetClientIDField(); }) {
 		if (payload.GetClientIDField() == (ClientID)0) payload.GetClientIDField() = client_id;
 	} else {
 		constexpr size_t idx = GetTupleIndexIgnoreCvRef<ClientID, decltype(payload.GetValues())>();
@@ -1104,16 +1085,6 @@ struct DynCommandContainer {
 	DynCommandContainer(const CommandCallbackFields<T> &src) : command(src), callback(src.callback), callback_param(src.callback_param) {}
 };
 
-inline BaseCommandContainerPayloadT<P123CmdData> NewBaseCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd)
-{
-	return { static_cast<Commands>(cmd & 0xFFFF), static_cast<StringID>(cmd >> 16), tile, P123CmdData(p1, p2, 0) };
-}
-
-inline CommandContainerPayloadT<P123CmdData> NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback callback = CommandCallback::None)
-{
-	return { NewBaseCommandContainerBasic(tile, p1, p2, cmd), callback, 0 };
-}
-
 struct CommandExecData {
 	TileIndex tile;
 	DoCommandFlag flags;
@@ -1121,9 +1092,6 @@ struct CommandExecData {
 };
 
 using CommandPayloadDeserialiser = std::unique_ptr<CommandPayloadBase>(DeserialisationBuffer &, StringValidationSettings default_string_validation);
-
-using CommandProc = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
-using CommandProcEx = CommandCost(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text);
 
 template <typename T>
 using CommandProcDirect = CommandCost(DoCommandFlag flags, TileIndex tile, const T &data);
@@ -1151,9 +1119,6 @@ template <> struct CommandTraits<cmd_> { \
 	static constexpr bool input_no_tile = input_no_tile_; \
 	static constexpr bool output_no_tile = output_no_tile_; \
 };
-
-#define DEF_CMD_PROC(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProc, proc_, P123CmdData, flags_, type_, false, false)
-#define DEF_CMD_PROCEX(cmd_, proc_, flags_, type_) DEF_CMD_PROC_GENERAL(cmd_, CommandProcEx, proc_, P123CmdData, flags_, type_, false, false)
 
 /*
  * Command macro variants:

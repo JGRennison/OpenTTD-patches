@@ -112,42 +112,6 @@ private:
 	static bool DoCommandImplementation(Commands cmd, TileIndex tile, CommandPayloadBase &&payload, Script_SuspendCallbackProc *callback, DoCommandIntlFlag intl_flags);
 
 protected:
-	struct OldCommandValueWrapper {
-		uint32_t value;
-
-		template <typename T>
-		OldCommandValueWrapper(const T &value) : value((uint32_t)value) {}
-		OldCommandValueWrapper(TileIndex tile) : value(tile.base()) {}
-	};
-
-	/**
-	 * Executes a raw DoCommandOld for the script.
-	 */
-	static bool DoCommandEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, Commands cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
-	{
-		extern CommandFlags GetCommandFlags(Commands cmd);
-
-		P123CmdData payload(p1.value, p2.value, p3);
-		if (GetCommandFlags(cmd) & CMD_CLIENT_ID) SetCommandPayloadClientID(payload, (ClientID)UINT32_MAX);
-		if (text != nullptr) payload.text = text;
-		return ScriptObject::DoCommandImplementation(cmd, TileIndex(tile.value), std::move(payload), callback, DCIF_NONE);
-	}
-
-	static bool DoCommandEx(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, uint64_t p3, Commands cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
-	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), callback);
-	}
-
-	static bool DoCommandOld(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, Commands cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
-	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, callback);
-	}
-
-	static bool DoCommandOld(OldCommandValueWrapper tile, OldCommandValueWrapper p1, OldCommandValueWrapper p2, Commands cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
-	{
-		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), callback);
-	}
-
 	template <Commands cmd>
 	static bool DoCommand(TileIndex tile, typename CommandTraits<cmd>::PayloadType &&payload, Script_SuspendCallbackProc *callback = nullptr)
 	{
