@@ -165,7 +165,7 @@ inline bool IsValidCommand(Commands cmd) { return cmd < CMD_END; }
 CommandFlags GetCommandFlags(Commands cmd);
 const char *GetCommandName(Commands cmd);
 bool IsCommandAllowedWhilePaused(Commands cmd);
-bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase *payload);
+bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase &payload);
 
 template <Commands Tcmd>
 constexpr CommandFlags GetCommandFlags()

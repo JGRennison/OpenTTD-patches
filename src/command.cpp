@@ -40,6 +40,7 @@
 #include "core/checksum_func.hpp"
 #include "3rdparty/nlohmann/json.hpp"
 #include <array>
+#include <typeinfo>
 
 #include "autoreplace_cmd.h"
 #include "company_cmd.h"
@@ -133,17 +134,6 @@ static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
 	};
 }
 
-using CommandPayloadTypeChecker = bool(const CommandPayloadBase *);
-
-template <typename T>
-static constexpr CommandPayloadTypeChecker *MakePayloadTypeCheck()
-{
-	return [](const CommandPayloadBase *payload) -> bool
-	{
-		return dynamic_cast<const T *>(payload) != nullptr;
-	};
-}
-
 enum CommandIntlFlags : uint8_t {
 	CIF_NONE                = 0x0, ///< no flag is set
 	CIF_NO_OUTPUT_TILE      = 0x1, ///< command does not take a tile at the output side (omit when logging)
@@ -153,7 +143,7 @@ DECLARE_ENUM_AS_BIT_SET(CommandIntlFlags)
 struct CommandInfo {
 	CommandExecTrampoline *exec;                      ///< Command proc exec trampoline function
 	CommandPayloadDeserialiser *payload_deserialiser; ///< Command payload deserialiser
-	CommandPayloadTypeChecker *payload_check;         ///< Command payload type check
+	const std::type_info &payload_type_info;          ///< Command payload type info
 	const char *name;                                 ///< A human readable name for the procedure
 	CommandFlags flags;                               ///< The (command) flags to that apply to this command
 	CommandType type;                                 ///< The type of command
@@ -166,7 +156,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 {
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), MakePayloadTypeCheck<Payload>(), H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
+	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), typeid(Payload), H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
 };
 
 template <typename T, T... i>
@@ -551,10 +541,10 @@ bool IsCommandAllowedWhilePaused(Commands cmd)
 	return _game_mode == GM_EDITOR || command_type_lookup[_command_proc_table[cmd].type] <= _settings_game.construction.command_pause_level;
 }
 
-bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase *payload)
+bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase &payload)
 {
 	assert(IsValidCommand(cmd));
-	return _command_proc_table[cmd].payload_check(payload);
+	return typeid(payload) == _command_proc_table[cmd].payload_type_info;
 }
 
 static int _docommand_recursive = 0;
@@ -584,7 +574,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	assert(IsValidCommand(cmd));
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!IsCorrectCommandPayloadType(cmd, &payload)) return CMD_ERROR;
+		if (!IsCorrectCommandPayloadType(cmd, payload)) return CMD_ERROR;
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
@@ -739,7 +729,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	assert(IsValidCommand(cmd));
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!IsCorrectCommandPayloadType(cmd, &orig_payload)) return false;
+		if (!IsCorrectCommandPayloadType(cmd, orig_payload)) return false;
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
@@ -773,7 +763,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	/* Only set client ID when the command does not come from the network. */
 	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID) {
 		modified_payload = orig_payload.Clone();
-		assert(IsCorrectCommandPayloadType(cmd, modified_payload.get()));
+		assert(IsCorrectCommandPayloadType(cmd, *modified_payload));
 		SetPreCheckedCommandPayloadClientID(cmd, *modified_payload, CLIENT_ID_SERVER);
 		use_payload = modified_payload.get();
 	}
@@ -909,7 +899,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	assert(command.exec != nullptr);
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!IsCorrectCommandPayloadType(cmd, &payload)) return_dcpi(CMD_ERROR);
+		if (!IsCorrectCommandPayloadType(cmd, payload)) return_dcpi(CMD_ERROR);
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
