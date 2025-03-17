@@ -416,7 +416,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 		case 1: {
 			uint32_t result;
 			if (GetArgumentInteger(&result, argv[arg_index])) {
-				if (result >= MapSize()) {
+				if (result >= Map::Size()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -429,7 +429,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 		case 2: {
 			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[arg_index]) && GetArgumentInteger(&y, argv[arg_index + 1])) {
-				if (x >= MapSizeX() || y >= MapSizeY()) {
+				if (x >= Map::SizeX() || y >= Map::SizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -464,7 +464,7 @@ DEF_CONSOLE_CMD(ConHighlightTile)
 		case 2: {
 			uint32_t result;
 			if (GetArgumentInteger(&result, argv[1])) {
-				if (result >= MapSize()) {
+				if (result >= Map::Size()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -477,7 +477,7 @@ DEF_CONSOLE_CMD(ConHighlightTile)
 		case 3: {
 			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
-				if (x >= MapSizeX() || y >= MapSizeY()) {
+				if (x >= Map::SizeX() || y >= Map::SizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -1463,8 +1463,8 @@ DEF_CONSOLE_CMD(ConRestart)
 	if (argc == 1 || std::string_view(argv[1]) == "newgame") {
 		StartNewGameWithoutGUI(_settings_game.game_creation.generation_seed);
 	} else {
-		_settings_game.game_creation.map_x = MapLogX();
-		_settings_game.game_creation.map_y = MapLogY();
+		_settings_game.game_creation.map_x = Map::LogX();
+		_settings_game.game_creation.map_y = Map::LogY();
 		_switch_mode = SM_RESTARTGAME;
 	}
 
@@ -1485,8 +1485,8 @@ DEF_CONSOLE_CMD(ConReload)
 	}
 
 	/* Use a switch-mode to prevent copying over newgame settings to active settings. */
-	_settings_game.game_creation.map_x = MapLogX();
-	_settings_game.game_creation.map_y = MapLogY();
+	_settings_game.game_creation.map_x = Map::LogX();
+	_settings_game.game_creation.map_y = Map::LogY();
 	_switch_mode = SM_RELOADGAME;
 	return true;
 }
@@ -2863,7 +2863,7 @@ DEF_CONSOLE_CMD(ConRunTileLoopTile)
 		uint32_t tile;
 		if (!GetArgumentInteger(&tile, argv[1])) return false;
 
-		if (tile >= MapSize()) {
+		if (tile >= Map::Size()) {
 			IConsolePrint(CC_ERROR, "Tile does not exist.");
 			return true;
 		}
@@ -3379,7 +3379,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 		case 2: {
 			uint32_t result;
 			if (GetArgumentInteger(&result, argv[1])) {
-				if (result >= MapSize()) {
+				if (result >= Map::Size()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -3395,7 +3395,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 		case 3: {
 			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
-				if (x >= MapSizeX() || y >= MapSizeY()) {
+				if (x >= Map::SizeX() || y >= Map::SizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
@@ -4119,7 +4119,7 @@ DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 		return true;
 	}
 
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
 			uint signals = GetPresentSignals(t);
 			if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {

@@ -402,7 +402,7 @@ static const int NUM_TRACK_DIRECTIONS = 3; ///< The number of directions you can
 /**
  * List information about the trackdir and number of needed cycles for building signals when
  *   entering a track from a specific direction. The first index is the difference between the
- *   TileIndex of the previous and current tile, where (-)MapSizeX is replaced with -2 / 2 and
+ *   TileIndex of the previous and current tile, where (-)Map::SizeX is replaced with -2 / 2 and
  *   2 it added.
  */
 static const ScriptRailSignalData _possible_trackdirs[5][NUM_TRACK_DIRECTIONS] = {

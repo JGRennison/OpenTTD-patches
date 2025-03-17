@@ -141,8 +141,8 @@ static void _GenerateWorld()
 
 			/* Make sure the tiles at the north border are void tiles if needed. */
 			if (_settings_game.construction.freeform_edges) {
-				for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, 0));
-				for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(0, y));
+				for (uint x = 0; x < Map::SizeX(); x++) MakeVoid(TileXY(x, 0));
+				for (uint y = 0; y < Map::SizeY(); y++) MakeVoid(TileXY(0, y));
 			}
 
 			/* Make the map the height of the setting */
@@ -367,7 +367,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 
 	/* Centre the view on the map */
 	if (FindWindowById(WC_MAIN_WINDOW, 0) != nullptr) {
-		ScrollMainWindowToTile(TileXY(MapSizeX() / 2, MapSizeY() / 2), true);
+		ScrollMainWindowToTile(TileXY(Map::SizeX() / 2, Map::SizeY() / 2), true);
 	}
 
 	_GenerateWorld();
@@ -525,11 +525,11 @@ void LoadTownData()
 		switch (_settings_game.game_creation.heightmap_rotation) {
 			case HM_CLOCKWISE:
 				/* Tile coordinates align with what we expect. */
-				tile = TileXY(town.x_proportion * MapMaxX(), town.y_proportion * MapMaxY());
+				tile = TileXY(town.x_proportion * Map::MaxX(), town.y_proportion * Map::MaxY());
 				break;
 			case HM_COUNTER_CLOCKWISE:
 				/* Tile coordinates are rotated and must be adjusted. */
-				tile = TileXY((1 - town.y_proportion * MapMaxX()), town.x_proportion * MapMaxY());
+				tile = TileXY((1 - town.y_proportion * Map::MaxX()), town.x_proportion * Map::MaxY());
 				break;
 			default: NOT_REACHED();
 		}

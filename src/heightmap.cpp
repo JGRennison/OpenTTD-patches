@@ -318,12 +318,12 @@ static void GrayscaleToMapHeights(uint img_width, uint img_height, std::span<con
 	switch (_settings_game.game_creation.heightmap_rotation) {
 		default: NOT_REACHED();
 		case HM_COUNTER_CLOCKWISE:
-			width   = MapSizeX();
-			height  = MapSizeY();
+			width   = Map::SizeX();
+			height  = Map::SizeY();
 			break;
 		case HM_CLOCKWISE:
-			width   = MapSizeY();
-			height  = MapSizeX();
+			width   = Map::SizeY();
+			height  = Map::SizeX();
 			break;
 	}
 
@@ -338,8 +338,8 @@ static void GrayscaleToMapHeights(uint img_width, uint img_height, std::span<con
 	}
 
 	if (_settings_game.construction.freeform_edges) {
-		for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, 0));
-		for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(0, y));
+		for (uint x = 0; x < Map::SizeX(); x++) MakeVoid(TileXY(x, 0));
+		for (uint y = 0; y < Map::SizeY(); y++) MakeVoid(TileXY(0, y));
 	}
 
 	/* Form the landscape */
@@ -403,8 +403,8 @@ void FixSlopes()
 	uint8_t current_tile;
 
 	/* Adjust height difference to maximum one horizontal/vertical change. */
-	width   = MapSizeX();
-	height  = MapSizeY();
+	width   = Map::SizeX();
+	height  = Map::SizeY();
 
 	/* Top and left edge */
 	for (row = 0; (uint)row < height; row++) {
@@ -526,8 +526,8 @@ bool LoadHeightmap(DetailedFileType dft, const char *filename)
 void FlatEmptyWorld(uint8_t tile_height)
 {
 	int edge_distance = _settings_game.construction.freeform_edges ? 0 : 2;
-	for (uint row = edge_distance; row < MapSizeY() - edge_distance; row++) {
-		for (uint col = edge_distance; col < MapSizeX() - edge_distance; col++) {
+	for (uint row = edge_distance; row < Map::SizeY() - edge_distance; row++) {
+		for (uint col = edge_distance; col < Map::SizeX() - edge_distance; col++) {
 			SetTileHeight(TileXY(col, row), tile_height);
 		}
 	}

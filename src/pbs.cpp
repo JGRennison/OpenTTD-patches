@@ -133,10 +133,10 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 					if (IsCrossingOccupiedByRoadVehicle(tile)) return false;
 					if (_settings_game.vehicle.adjacent_crossings) {
 						const Axis axis = GetCrossingRoadAxis(tile);
-						for (TileIndex t = tile; t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+						for (TileIndex t = tile; t < Map::Size() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
 							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
 						}
-						for (TileIndex t = tile; t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+						for (TileIndex t = tile; t < Map::Size() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
 							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
 						}
 					}

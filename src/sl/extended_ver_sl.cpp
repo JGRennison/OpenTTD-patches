@@ -311,7 +311,7 @@ void SlXvSetCurrentState()
 	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
 		_sl_xv_feature_versions[info.index] = info.save_version;
 	}
-	if (MapSizeX() > 8192 || MapSizeY() > 8192) {
+	if (Map::SizeX() > 8192 || Map::SizeY() > 8192) {
 		_sl_xv_feature_versions[XSLFI_EXTRA_LARGE_MAP] = 1;
 	}
 	if (IsScenarioSave()) {

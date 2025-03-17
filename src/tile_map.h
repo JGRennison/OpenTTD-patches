@@ -24,13 +24,13 @@
  *
  * @param tile The tile to get the height from
  * @return the height of the tile
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  */
 debug_inline static uint TileHeight(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 #endif
 	return _m[tile].height;
 }
@@ -44,7 +44,7 @@ debug_inline static uint TileHeight(TileIndex tile)
  */
 inline uint TileHeightOutsideMap(int x, int y)
 {
-	return TileHeight(TileXY(Clamp(x, 0, MapMaxX()), Clamp(y, 0, MapMaxY())));
+	return TileHeight(TileXY(Clamp(x, 0, Map::MaxX()), Clamp(y, 0, Map::MaxY())));
 }
 
 /**
@@ -54,12 +54,12 @@ inline uint TileHeightOutsideMap(int x, int y)
  *
  * @param tile The tile to change the height
  * @param height The new height value of the tile
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  * @pre height <= MAX_TILE_HEIGHT
  */
 inline void SetTileHeight(TileIndex tile, uint height)
 {
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 	dbg_assert(height <= MAX_TILE_HEIGHT);
 	_m[tile].height = height;
 }
@@ -94,13 +94,13 @@ inline uint TilePixelHeightOutsideMap(int x, int y)
  *
  * @param tile The tile to get the TileType
  * @return The tiletype of the tile
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  */
 debug_inline static TileType GetTileType(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 #endif
 	return (TileType)GB(_m[tile].type, 4, 4);
 }
@@ -110,16 +110,16 @@ debug_inline static TileType GetTileType(TileIndex tile)
  *
  * @param tile The tile to check
  * @return Whether the tile is in the interior of the map
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  */
 inline bool IsInnerTile(TileIndex tile)
 {
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 
 	uint x = TileX(tile);
 	uint y = TileY(tile);
 
-	return x < MapMaxX() && y < MapMaxY() && ((x > 0 && y > 0) || !_settings_game.construction.freeform_edges);
+	return x < Map::MaxX() && y < Map::MaxY() && ((x > 0 && y > 0) || !_settings_game.construction.freeform_edges);
 }
 
 /**
@@ -131,12 +131,12 @@ inline bool IsInnerTile(TileIndex tile)
  *
  * @param tile The tile to save the new type
  * @param type The type to save
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  * @pre type MP_VOID <=> tile is on the south-east or south-west edge.
  */
 inline void SetTileType(TileIndex tile, TileType type)
 {
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 	/* VOID tiles (and no others) are exactly allowed at the lower left and right
 	 * edges of the map. If _settings_game.construction.freeform_edges is true,
 	 * the upper edges of the map are also VOID tiles. */
@@ -166,7 +166,7 @@ debug_inline static bool IsTileType(TileIndex tile, TileType type)
  */
 inline bool IsValidTile(TileIndex tile)
 {
-	return tile < MapSize() && !IsTileType(tile, MP_VOID);
+	return tile < Map::Size() && !IsTileType(tile, MP_VOID);
 }
 
 /**
@@ -224,11 +224,11 @@ inline bool IsTileOwner(TileIndex tile, Owner owner)
  * Set the tropic zone
  * @param tile the tile to set the zone of
  * @param type the new type
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  */
 inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 	dbg_assert_tile(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL, tile);
 	SB(_m[tile].type, 0, 2, type);
 }
@@ -236,12 +236,12 @@ inline void SetTropicZone(TileIndex tile, TropicZone type)
 /**
  * Get the tropic zone
  * @param tile the tile to get the zone of
- * @pre tile < MapSize()
+ * @pre tile < Map::Size()
  * @return the zone type
  */
 inline TropicZone GetTropicZone(TileIndex tile)
 {
-	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(tile < Map::Size(), tile);
 	return (TropicZone)GB(_m[tile].type, 0, 2);
 }
 

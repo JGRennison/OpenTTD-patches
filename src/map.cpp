@@ -143,15 +143,15 @@ void AllocateMap(uint size_x, uint size_y)
 #ifdef _DEBUG
 TileIndex TileAdd(TileIndex tile, TileIndexDiff offset)
 {
-	int dx = offset & MapMaxX();
-	if (dx >= (int)MapSizeX() / 2) dx -= MapSizeX();
-	int dy = (offset - dx) / (int)MapSizeX();
+	int dx = offset & Map::MaxX();
+	if (dx >= (int)Map::SizeX() / 2) dx -= Map::SizeX();
+	int dy = (offset - dx) / (int)Map::SizeX();
 
 	uint32_t x = TileX(tile) + dx;
 	uint32_t y = TileY(tile) + dy;
 
-	assert(x < MapSizeX());
-	assert(y < MapSizeY());
+	assert(x < Map::SizeX());
+	assert(y < Map::SizeY());
 	assert(TileXY(x, y) == Map::WrapToMap(tile + offset));
 
 	return TileXY(x, y);
@@ -180,7 +180,7 @@ TileIndex TileAddWrap(TileIndex tile, int addx, int addy)
 	if ((x == 0 || y == 0) && _settings_game.construction.freeform_edges) return INVALID_TILE;
 
 	/* Are we about to wrap? */
-	if (x >= MapMaxX() || y >= MapMaxY()) return INVALID_TILE;
+	if (x >= Map::MaxX() || y >= Map::MaxY()) return INVALID_TILE;
 
 	return TileXY(x, y);
 }
@@ -202,7 +202,7 @@ TileIndex TileAddSaturating(TileIndex tile, int addx, int addy)
 	auto clamp = [&](int coord, int map_max) -> uint {
 		return Clamp<int>(coord, _settings_game.construction.freeform_edges ? 1 : 0, map_max - 1);
 	};
-	return TileXY(clamp(x,  MapMaxX()), clamp(y,  MapMaxY()));
+	return TileXY(clamp(x,  Map::MaxX()), clamp(y,  Map::MaxY()));
 }
 
 /** 'Lookup table' for tile offsets given an Axis */
@@ -304,8 +304,8 @@ uint DistanceFromEdge(TileIndex tile)
 {
 	const uint xl = TileX(tile);
 	const uint yl = TileY(tile);
-	const uint xh = MapSizeX() - 1 - xl;
-	const uint yh = MapSizeY() - 1 - yl;
+	const uint xh = Map::SizeX() - 1 - xl;
+	const uint yh = Map::SizeY() - 1 - yl;
 	const uint minl = std::min(xl, yl);
 	const uint minh = std::min(xh, yh);
 	return std::min(minl, minh);
@@ -322,8 +322,8 @@ uint DistanceFromEdgeDir(TileIndex tile, DiagDirection dir)
 	switch (dir) {
 		case DIAGDIR_NE: return             TileX(tile) - (_settings_game.construction.freeform_edges ? 1 : 0);
 		case DIAGDIR_NW: return             TileY(tile) - (_settings_game.construction.freeform_edges ? 1 : 0);
-		case DIAGDIR_SW: return MapMaxX() - TileX(tile) - 1;
-		case DIAGDIR_SE: return MapMaxY() - TileY(tile) - 1;
+		case DIAGDIR_SW: return Map::MaxX() - TileX(tile) - 1;
+		case DIAGDIR_SE: return Map::MaxY() - TileY(tile) - 1;
 		default: NOT_REACHED();
 	}
 }
@@ -393,7 +393,7 @@ bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOn
 		for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 			/* Is the tile within the map? */
 			for (uint j = extent[dir] + n * 2 + 1; j != 0; j--) {
-				if (x < MapSizeX() && y < MapSizeY()) {
+				if (x < Map::SizeX() && y < Map::SizeY()) {
 					TileIndex t = TileXY(x, y);
 					/* Is the callback successful? */
 					if (proc(t, user_data)) {
@@ -476,7 +476,7 @@ void IterateCurvedCircularTileArea(TileIndex centre_tile, uint diameter, TileIte
 	const int centre_y = TileY(centre_tile);
 
 	/* Centre row */
-	for (int x = std::max<int>(0, centre_x - centre_radius); x <= std::min<int>(MapMaxX(), centre_x + centre_radius); x++) {
+	for (int x = std::max<int>(0, centre_x - centre_radius); x <= std::min<int>(Map::MaxX(), centre_x + centre_radius); x++) {
 		proc(TileXY(x, centre_y), user_data);
 	}
 
@@ -488,9 +488,9 @@ void IterateCurvedCircularTileArea(TileIndex centre_tile, uint diameter, TileIte
 			half_width++;
 		}
 		const int x_left = std::max<int>(0, centre_x - half_width);
-		const int x_right = std::min<int>(MapMaxX(), centre_x + half_width);
+		const int x_right = std::min<int>(Map::MaxX(), centre_x + half_width);
 		auto iterate_row = [&](int y) {
-			if (y < 0 || y > (int)MapMaxY()) return;
+			if (y < 0 || y > (int)Map::MaxY()) return;
 			for (int x = x_left; x <= x_right; x++) {
 				proc(TileXY(x, y), user_data);
 			}
@@ -515,8 +515,8 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 	int x = TileX(tile);
 	int y = TileY(tile);
 
-	uint max_x = MapMaxX();
-	uint max_y = MapMaxY();
+	uint max_x = Map::MaxX();
+	uint max_y = Map::MaxY();
 	uint min_xy = _settings_game.construction.freeform_edges ? 1 : 0;
 
 	/* go in a 'spiral' with increasing manhattan distance in each iteration */
@@ -547,7 +547,7 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 
 	if (!water) {
 		/* no land found - is this a water-only map? */
-		for (TileIndex t(0); t < MapSize(); t++) {
+		for (TileIndex t(0); t < Map::Size(); t++) {
 			if (!IsTileType(t, MP_VOID) && !IsTileType(t, MP_WATER)) return 0x1FF;
 		}
 	}
@@ -584,8 +584,8 @@ void DumpTileInfo(format_target &buffer, TileIndex tile)
 	if (_m.tile_data == nullptr || _me.tile_data == nullptr) {
 		buffer.append(", NO MAP ALLOCATED");
 	} else {
-		if (tile >= MapSize()) {
-			buffer.format(", TILE OUTSIDE MAP (map size: 0x{:X})", MapSize());
+		if (tile >= Map::Size()) {
+			buffer.format(", TILE OUTSIDE MAP (map size: 0x{:X})", Map::Size());
 		} else {
 			buffer.format(", type: {:02X} ({}), height: {:02X}, data: {:02X} {:04X} {:02X} {:02X} {:02X} {:02X} {:02X} {:04X}",
 					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
@@ -619,7 +619,7 @@ void DumpMapStats(format_target &buffer)
 		tile_types[type] = 0;
 	}
 
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		tile_types[GetTileType(t)]++;
 
 		if (IsTileType(t, MP_RAILWAY)) {

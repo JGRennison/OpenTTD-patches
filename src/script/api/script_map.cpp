@@ -20,17 +20,17 @@
 
 /* static */ SQInteger ScriptMap::GetMapSize()
 {
-	return ::MapSize();
+	return ::Map::Size();
 }
 
 /* static */ SQInteger ScriptMap::GetMapSizeX()
 {
-	return ::MapSizeX();
+	return ::Map::SizeX();
 }
 
 /* static */ SQInteger ScriptMap::GetMapSizeY()
 {
-	return ::MapSizeY();
+	return ::Map::SizeY();
 }
 
 /* static */ SQInteger ScriptMap::GetTileX(TileIndex t)

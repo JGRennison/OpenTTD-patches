@@ -158,15 +158,15 @@ static const int HEIGHT_DECIMAL_BITS = 4;
 using Amplitude = int;
 static const int AMPLITUDE_DECIMAL_BITS = 10;
 
-/** Height map - allocated array of heights (MapSizeX() + 1) x (MapSizeY() + 1) */
+/** Height map - allocated array of heights (Map::SizeX() + 1) x (Map::SizeY() + 1) */
 struct HeightMap
 {
 	std::vector<Height> h; //< array of heights
 	/* Even though the sizes are always positive, there are many cases where
 	 * X and Y need to be signed integers due to subtractions. */
-	int      dim_x;      //< height map size_x MapSizeX() + 1
-	int      size_x;     //< MapSizeX()
-	int      size_y;     //< MapSizeY()
+	int      dim_x;      //< height map size_x Map::SizeX() + 1
+	int      size_x;     //< Map::SizeX()
+	int      size_y;     //< Map::SizeY()
 
 	/**
 	 * Height map accessor
@@ -227,7 +227,7 @@ static Height TGPGetMaxHeight()
 	/**
 	 * Desired maximum height - indexed by:
 	 *  - _settings_game.difficulty.terrain_type
-	 *  - min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS, up to a maximum of 4096
+	 *  - min(Map::LogX(), Map::LogY()) - MIN_MAP_SIZE_BITS, up to a maximum of 4096
 	 *
 	 * It is indexed by map size as well as terrain type since the map size limits the height of
 	 * a usable mountain. For example, on a 64x64 map a 24 high single peak mountain (as if you
@@ -244,7 +244,7 @@ static Height TGPGetMaxHeight()
 		{  12,  19,  25,  31,  67,  75,  87 }, ///< Alpinist
 	};
 
-	int map_size_bucket = std::min<int>(std::min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS, max_height_array_size - 1);
+	int map_size_bucket = std::min<int>(std::min(Map::LogX(), Map::LogY()) - MIN_MAP_SIZE_BITS, max_height_array_size - 1);
 	int max_height_from_table = max_height[_settings_game.difficulty.terrain_type][map_size_bucket];
 
 	/* If there is a manual map height limit, clamp to it. */
@@ -323,15 +323,15 @@ static inline bool IsValidXY(int x, int y)
 
 
 /**
- * Allocate array of (MapSizeX()+1)*(MapSizeY()+1) heights and init the _height_map structure members
+ * Allocate array of (Map::SizeX()+1)*(Map::SizeY()+1) heights and init the _height_map structure members
  * @return true on success
  */
 static inline bool AllocHeightMap()
 {
 	assert(_height_map.h.empty());
 
-	_height_map.size_x = MapSizeX();
-	_height_map.size_y = MapSizeY();
+	_height_map.size_x = Map::SizeX();
+	_height_map.size_y = Map::SizeY();
 
 	/* Allocate memory block for height map row pointers */
 	size_t total_size = static_cast<size_t>(_height_map.size_x + 1) * (_height_map.size_y + 1);
@@ -370,7 +370,7 @@ static void HeightMapGenerate()
 	/* Trying to apply noise to uninitialized height map */
 	assert(!_height_map.h.empty());
 
-	int start = std::max(MAX_TGP_FREQUENCIES - (int)std::min(MapLogX(), MapLogY()), 0);
+	int start = std::max(MAX_TGP_FREQUENCIES - (int)std::min(Map::LogX(), Map::LogY()), 0);
 	bool first = true;
 
 	for (int frequency = start; frequency < MAX_TGP_FREQUENCIES; frequency++) {
@@ -998,8 +998,8 @@ void GenerateTerrainPerlin()
 
 	/* First make sure the tiles at the north border are void tiles if needed. */
 	if (_settings_game.construction.freeform_edges) {
-		for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, 0));
-		for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(0, y));
+		for (uint x = 0; x < Map::SizeX(); x++) MakeVoid(TileXY(x, 0));
+		for (uint y = 0; y < Map::SizeY(); y++) MakeVoid(TileXY(0, y));
 	}
 
 	int max_height = H2I(TGPGetMaxHeight());

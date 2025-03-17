@@ -39,7 +39,7 @@ void RebuildTownCaches(bool cargo_update_required)
 		town->cache.num_houses = 0;
 	}
 
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
 		HouseID house_id = GetTranslatedHouseID(GetCleanHouseType(t));
@@ -68,7 +68,7 @@ static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool translate
 	};
 
 	/* Check for cases when a NewGRF has set a wrong house substitute type. */
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
 		HouseID house_type = get_clean_house_type(t);
@@ -116,7 +116,7 @@ static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool translate
  */
 void UpdateHousesAndTowns(bool cargo_update_required)
 {
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
 		HouseID house_id = GetCleanHouseType(t);

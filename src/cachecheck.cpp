@@ -48,7 +48,7 @@ static bool SignalInfraTotalMatches()
 	}
 
 	std::array<int, MAX_COMPANIES> new_signal_totals = {};
-	for (TileIndex tile(0); tile < MapSize(); ++tile) {
+	for (TileIndex tile(0); tile < Map::Size(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_RAILWAY:
 				if (HasSignals(tile)) {

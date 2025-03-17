@@ -591,7 +591,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		TileIndex tile(0);
 		do {
 			ChangeTileOwner(tile, old_owner, new_owner);
-		} while (++tile != MapSize());
+		} while (++tile != Map::Size());
 
 		if (new_owner != INVALID_OWNER) {
 			/* Update all signals because there can be new segment that was owned by two companies
@@ -1040,7 +1040,7 @@ void StartupIndustryDailyChanges(bool init_counter)
 	 * would not be needed.
 	 * Since it is based on "fractional parts", the leftover days will not make much of a difference
 	 * on the overall total number of changes performed */
-	_economy.industry_daily_increment = (MapSize() * _settings_game.economy.industry_event_rate) / (31 * 100);
+	_economy.industry_daily_increment = (Map::Size() * _settings_game.economy.industry_event_rate) / (31 * 100);
 
 	if (init_counter) {
 		/* A new game or a savegame from an older version will require the counter to be initialized */

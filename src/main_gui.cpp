@@ -552,7 +552,7 @@ struct MainWindow : Window
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);
-			if (tile < MapSize()) ShowTooltipForTile(this, tile);
+			if (tile < Map::Size()) ShowTooltipForTile(this, tile);
 		}
 	}
 

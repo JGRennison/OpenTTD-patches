@@ -819,7 +819,7 @@ void SmallMapWindow::DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, 
 
 	do {
 		/* Check if the tile (xc,yc) is within the map range */
-		if (xc >= MapMaxX() || yc >= MapMaxY()) continue;
+		if (xc >= Map::MaxX() || yc >= Map::MaxY()) continue;
 
 		/* Check if the dst pointer points to a pixel inside the screen buffer */
 		if (dst < _screen.dst_ptr) continue;
@@ -1759,8 +1759,8 @@ Point SmallMapWindow::GetStationMiddle(const Station *st) const
  */
 void SmallMapWindow::TakeScreenshot()
 {
-	int32_t width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
-	int32_t height = ((MapMaxX() + MapMaxY() + 1) * this->ui_zoom) / this->tile_zoom;
+	int32_t width = (((Map::MaxX() + Map::MaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
+	int32_t height = ((Map::MaxX() + Map::MaxY() + 1) * this->ui_zoom) / this->tile_zoom;
 
 	int32_t saved_scroll_x = this->scroll_x;
 	int32_t saved_scroll_y = this->scroll_y;
@@ -1792,13 +1792,13 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 
 	dpi.dst_ptr = buf;
 	dpi.height = n;
-	dpi.width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
+	dpi.width = (((Map::MaxX() + Map::MaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
 	dpi.pitch = pitch;
 	dpi.zoom = ZOOM_LVL_MIN;
 	dpi.left = 0;
 	dpi.top = y;
 
-	this->scroll_x = (dpi.width / 2) - ((16 * ((int)MapSizeY() - (int)MapSizeX())) / this->zoom);
+	this->scroll_x = (dpi.width / 2) - ((16 * ((int)Map::SizeY() - (int)Map::SizeX())) / this->zoom);
 	this->scroll_y = 0;
 
 	/* make the screenshot */

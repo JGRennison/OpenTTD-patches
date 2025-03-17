@@ -279,7 +279,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
-	buffer.format("Map size: 0x{:X} ({} x {}){}\n\n", MapSize(), MapSizeX(), MapSizeY(), (_m.tile_data == nullptr || _me.tile_data == nullptr) ? ", NO MAP ALLOCATED" : "");
+	buffer.format("Map size: 0x{:X} ({} x {}){}\n\n", Map::Size(), Map::SizeX(), Map::SizeY(), (_m.tile_data == nullptr || _me.tile_data == nullptr) ? ", NO MAP ALLOCATED" : "");
 
 	if (_settings_game.debug.chicken_bits != 0) {
 		buffer.format("Chicken bits: 0x{:08X}\n\n", _settings_game.debug.chicken_bits);

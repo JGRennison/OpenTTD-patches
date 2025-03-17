@@ -456,9 +456,9 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 		buffer.format(", client: {:4}", entry.client_id);
 	}
 	if (entry.tile != 0 || !(cmd_info.intl_flags & CIF_NO_OUTPUT_TILE)) {
-		buffer.format(" | {:{}} x {:{}} | ", TileX(entry.tile), MapDigitsX(), TileY(entry.tile), MapDigitsY());
+		buffer.format(" | {:{}} x {:{}} | ", TileX(entry.tile), Map::DigitsX(), TileY(entry.tile), Map::DigitsY());
 	} else {
-		buffer.format(" |{:{}}| ", "", MapDigitsX() + MapDigitsY() + 5);
+		buffer.format(" |{:{}}| ", "", Map::DigitsX() + Map::DigitsY() + 5);
 	}
 	buffer.format("cmd: {:03X} {:<34} |", entry.cmd, cmd_info.name);
 
@@ -591,7 +591,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	CommandCost res;
 
 	/* Do not even think about executing out-of-bounds tile-commands */
-	if (tile != 0 && (tile >= MapSize() || (!IsValidTile(tile) && (flags & DC_ALL_TILES) == 0))) return CMD_ERROR;
+	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && (flags & DC_ALL_TILES) == 0))) return CMD_ERROR;
 
 	const CommandInfo &command = _command_proc_table[cmd];
 
@@ -919,7 +919,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	DoCommandFlag flags = CommandFlagsToDCFlags(cmd_flags);
 
 	/* Do not even think about executing out-of-bounds tile-commands */
-	if (tile != 0 && (tile >= MapSize() || (!IsValidTile(tile) && (cmd_flags & CMD_ALL_TILES) == 0))) return_dcpi(CMD_ERROR);
+	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && (cmd_flags & CMD_ALL_TILES) == 0))) return_dcpi(CMD_ERROR);
 
 	/* Always execute server and spectator commands as spectator */
 	bool exec_as_spectator = (cmd_flags & (CMD_SPECTATOR | CMD_SERVER)) != 0;

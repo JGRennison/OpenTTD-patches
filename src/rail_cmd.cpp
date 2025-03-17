@@ -1282,7 +1282,7 @@ static CommandCost CmdRailTrackHelper(DoCommandFlag flags, TileIndex tile, TileI
 	_rail_track_endtile = INVALID_TILE;
 
 	if ((!remove && !ValParamRailType(railtype)) || !ValParamTrackOrientation(track)) return CMD_ERROR;
-	if (end_tile >= MapSize()) return CMD_ERROR;
+	if (end_tile >= Map::Size()) return CMD_ERROR;
 	Trackdir trackdir = TrackToTrackdir(track);
 
 	CommandCost ret = ValidateAutoDrag(&trackdir, tile, end_tile);
@@ -2082,7 +2082,7 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlag flags, TileIndex tile, Til
 {
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
 
-	if (end_tile >= MapSize() || !ValParamTrackOrientation(track)) return CMD_ERROR;
+	if (end_tile >= Map::Size() || !ValParamTrackOrientation(track)) return CMD_ERROR;
 	if (signal_density == 0 || signal_density > MAX_SIGNAL_DRAG_DISTANCE) return CMD_ERROR;
 
 	if (!remove) {
@@ -2529,7 +2529,7 @@ CommandCost CmdConvertRail(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 	TileIndex area_end = tile;
 
 	if (!ValParamRailType(totype)) return CMD_ERROR;
-	if (area_start >= MapSize()) return CMD_ERROR;
+	if (area_start >= Map::Size()) return CMD_ERROR;
 
 	TrainList affected_trains;
 
@@ -2792,7 +2792,7 @@ CommandCost CmdConvertRail(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 CommandCost CmdConvertRailTrack(DoCommandFlag flags, TileIndex end_tile, TileIndex tile, Track start_track, RailType totype)
 {
 	if (!ValParamRailType(totype)) return CMD_ERROR;
-	if (tile >= MapSize()) return CMD_ERROR;
+	if (tile >= Map::Size()) return CMD_ERROR;
 
 	Trackdir trackdir = TrackToTrackdir(start_track);
 

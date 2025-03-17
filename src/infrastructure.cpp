@@ -341,7 +341,7 @@ void HandleSharingCompanyDeletion(Owner owner)
 	}
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
-		for (TileIndex t(0); t < MapSize(); t++) {
+		for (TileIndex t(0); t < Map::Size(); t++) {
 			switch (GetTileType(t)) {
 				case MP_RAILWAY:
 				case MP_ROAD:
@@ -413,7 +413,7 @@ void UpdateAllBlockSignals(Owner owner)
 				UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));
 			}
 		}
-	} while (++tile != MapSize());
+	} while (++tile != Map::Size());
 
 	UpdateSignalsInBuffer();
 	FlushDeferredAspectUpdates();

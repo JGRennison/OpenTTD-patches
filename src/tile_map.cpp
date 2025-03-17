@@ -56,8 +56,8 @@ std::tuple<Slope, int> GetTileSlopeZ(TileIndex tile)
 {
 	uint x1 = TileX(tile);
 	uint y1 = TileY(tile);
-	uint x2 = std::min(x1 + 1, MapMaxX());
-	uint y2 = std::min(y1 + 1, MapMaxY());
+	uint x2 = std::min(x1 + 1, Map::MaxX());
+	uint y2 = std::min(y1 + 1, Map::MaxY());
 
 	int hnorth = TileHeight(tile);           // Height of the North corner.
 	int hwest  = TileHeight(TileXY(x2, y1)); // Height of the West corner.
@@ -96,8 +96,8 @@ bool IsTileFlat(TileIndex tile, int *h)
 {
 	uint x1 = TileX(tile);
 	uint y1 = TileY(tile);
-	uint x2 = std::min(x1 + 1, MapMaxX());
-	uint y2 = std::min(y1 + 1, MapMaxY());
+	uint x2 = std::min(x1 + 1, Map::MaxX());
+	uint y2 = std::min(y1 + 1, Map::MaxY());
 
 	uint z = TileHeight(tile);
 	if (TileHeight(TileXY(x2, y1)) != z) return false;
@@ -117,8 +117,8 @@ int GetTileZ(TileIndex tile)
 {
 	uint x1 = TileX(tile);
 	uint y1 = TileY(tile);
-	uint x2 = std::min(x1 + 1, MapMaxX());
-	uint y2 = std::min(y1 + 1, MapMaxY());
+	uint x2 = std::min(x1 + 1, Map::MaxX());
+	uint y2 = std::min(y1 + 1, Map::MaxY());
 
 	return std::min({
 		TileHeight(tile),           // N corner
@@ -137,8 +137,8 @@ int GetTileMaxZ(TileIndex t)
 {
 	uint x1 = TileX(t);
 	uint y1 = TileY(t);
-	uint x2 = std::min(x1 + 1, MapMaxX());
-	uint y2 = std::min(y1 + 1, MapMaxY());
+	uint x2 = std::min(x1 + 1, Map::MaxX());
+	uint y2 = std::min(y1 + 1, Map::MaxY());
 
 	return std::max({
 		TileHeight(t),              // N corner

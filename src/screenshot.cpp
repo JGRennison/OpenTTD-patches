@@ -760,7 +760,7 @@ void SetupScreenshotViewport(ScreenshotType t, Viewport *vp, uint32_t width, uin
 			}
 
 			TileIndex north_tile = _settings_game.construction.freeform_edges ? TileXY(1, 1) : TileXY(0, 0);
-			TileIndex south_tile{MapSize() - 1};
+			TileIndex south_tile{Map::Size() - 1};
 
 			/* We need to account for a hill or high building at tile 0,0. */
 			int extra_height_top = TilePixelHeight(north_tile) + 150;
@@ -834,8 +834,8 @@ static void HeightmapCallback(void *, void *buffer, uint y, uint, uint n)
 {
 	uint8_t *buf = (uint8_t *)buffer;
 	while (n > 0) {
-		TileIndex ti = TileXY(MapMaxX(), y);
-		for (uint x = MapMaxX(); true; x--) {
+		TileIndex ti = TileXY(Map::MaxX(), y);
+		for (uint x = Map::MaxX(); true; x--) {
 			*buf = 256 * TileHeight(ti) / (1 + _heightmap_highest_peak);
 			buf++;
 			if (x == 0) break;
@@ -861,12 +861,12 @@ bool MakeHeightmapScreenshot(const char *filename)
 	}
 
 	_heightmap_highest_peak = 0;
-	for (TileIndex tile(0); tile < MapSize(); ++tile) {
+	for (TileIndex tile(0); tile < Map::Size(); ++tile) {
 		uint h = TileHeight(tile);
 		_heightmap_highest_peak = std::max(h, _heightmap_highest_peak);
 	}
 
-	return _cur_screenshot_format->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
+	return _cur_screenshot_format->proc(filename, HeightmapCallback, nullptr, Map::SizeX(), Map::SizeY(), 8, palette);
 }
 
 static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the current query is about to confirm.
@@ -892,8 +892,8 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 	SetupScreenshotViewport(t, &vp);
 
 	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP || t == SC_TOPOGRAPHY || t == SC_INDUSTRY;
-	uint64_t width = (heightmap_or_minimap ? MapSizeX() : vp.width);
-	uint64_t height = (heightmap_or_minimap ? MapSizeY() : vp.height);
+	uint64_t width = (heightmap_or_minimap ? Map::SizeX() : vp.width);
+	uint64_t height = (heightmap_or_minimap ? Map::SizeY() : vp.height);
 
 	if (width * height > 8192 * 8192) {
 		/* Ask for confirmation */
@@ -1238,7 +1238,7 @@ void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n
 	uint num = (pitch * n);
 	for (uint i = 0; i < num; i++) {
 		uint row = y + (int)(i / pitch);
-		uint col = (MapSizeX() - 1) - (i % pitch);
+		uint col = (Map::SizeX() - 1) - (i % pitch);
 
 		TileIndex tile = TileXY(col, row);
 		uint8_t val = colorCallback(tile);
@@ -1297,7 +1297,7 @@ bool MakeMinimapWorldScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), MinimapScreenCallback, nullptr, Map::SizeX(), Map::SizeY(), 32, _cur_palette.palette);
 }
 
 /**
@@ -1308,7 +1308,7 @@ bool MakeTopographyScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), TopographyScreenCallback, nullptr, Map::SizeX(), Map::SizeY(), 32, _cur_palette.palette);
 }
 
 /**
@@ -1319,5 +1319,5 @@ bool MakeIndustryScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), IndustryScreenCallback, nullptr, Map::SizeX(), Map::SizeY(), 32, _cur_palette.palette);
 }

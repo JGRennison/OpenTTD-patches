@@ -1126,7 +1126,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 		SetLocalCompany(_network_join.company);
 	}
 
-	SocialIntegration::EventEnterMultiplayer(MapSizeX(), MapSizeY());
+	SocialIntegration::EventEnterMultiplayer(Map::SizeX(), Map::SizeY());
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

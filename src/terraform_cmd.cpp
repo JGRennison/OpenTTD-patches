@@ -84,7 +84,7 @@ static void TerraformAddDirtyTile(TerraformerState *ts, TileIndex tile)
  */
 static void TerraformAddDirtyTileAround(TerraformerState *ts, TileIndex tile)
 {
-	/* Make sure all tiles passed to TerraformAddDirtyTile are within [0, MapSize()] */
+	/* Make sure all tiles passed to TerraformAddDirtyTile are within [0, Map::Size()] */
 	if (TileY(tile) >= 1) TerraformAddDirtyTile(ts, tile + TileDiffXY( 0, -1));
 	if (TileY(tile) >= 1 && TileX(tile) >= 1) TerraformAddDirtyTile(ts, tile + TileDiffXY(-1, -1));
 	if (TileX(tile) >= 1) TerraformAddDirtyTile(ts, tile + TileDiffXY(-1,  0));
@@ -101,7 +101,7 @@ static void TerraformAddDirtyTileAround(TerraformerState *ts, TileIndex tile)
  */
 static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int height)
 {
-	assert(tile < MapSize());
+	assert(tile < Map::Size());
 
 	/* Check range of destination height */
 	if (height < 0) return CommandCost(STR_ERROR_ALREADY_AT_SEA_LEVEL);
@@ -117,7 +117,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 	/* Check "too close to edge of map". Only possible when freeform-edges is off. */
 	uint x = TileX(tile);
 	uint y = TileY(tile);
-	if (!_settings_game.construction.freeform_edges && ((x <= 1) || (y <= 1) || (x >= MapMaxX() - 1) || (y >= MapMaxY() - 1))) {
+	if (!_settings_game.construction.freeform_edges && ((x <= 1) || (y <= 1) || (x >= Map::MaxX() - 1) || (y >= Map::MaxY() - 1))) {
 		/*
 		 * Determine a sensible error tile
 		 */
@@ -178,21 +178,21 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
 	TerraformerState ts;
 
 	/* Compute the costs and the terraforming result in a model of the landscape */
-	if ((slope & SLOPE_W) != 0 && tile + TileDiffXY(1, 0) < MapSize()) {
+	if ((slope & SLOPE_W) != 0 && tile + TileDiffXY(1, 0) < Map::Size()) {
 		TileIndex t = tile + TileDiffXY(1, 0);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
 		total_cost.AddCost(cost);
 	}
 
-	if ((slope & SLOPE_S) != 0 && tile + TileDiffXY(1, 1) < MapSize()) {
+	if ((slope & SLOPE_S) != 0 && tile + TileDiffXY(1, 1) < Map::Size()) {
 		TileIndex t = tile + TileDiffXY(1, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
 		total_cost.AddCost(cost);
 	}
 
-	if ((slope & SLOPE_E) != 0 && tile + TileDiffXY(0, 1) < MapSize()) {
+	if ((slope & SLOPE_E) != 0 && tile + TileDiffXY(0, 1) < Map::Size()) {
 		TileIndex t = tile + TileDiffXY(0, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
@@ -211,7 +211,7 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
 	 * Pass == 1: Collect the actual cost. */
 	for (int pass = 0; pass < 2; pass++) {
 		for (const auto &t : ts.dirty_tiles) {
-			assert(t < MapSize());
+			assert(t < Map::Size());
 			/* MP_VOID tiles can be terraformed but as tunnels and bridges
 			 * cannot go under / over these tiles they don't need checking. */
 			if (IsTileType(t, MP_VOID)) {
@@ -336,7 +336,7 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
  */
 CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal, LevelMode lm)
 {
-	if (start_tile >= MapSize()) return CMD_ERROR;
+	if (start_tile >= Map::Size()) return CMD_ERROR;
 
 	/* remember level height */
 	uint oldh = TileHeight(start_tile);

@@ -1278,14 +1278,14 @@ static void UpdateSocialIntegration(GameMode game_mode)
 
 		case GM_NORMAL:
 			if (_networking) {
-				SocialIntegration::EventEnterMultiplayer(MapSizeX(), MapSizeY());
+				SocialIntegration::EventEnterMultiplayer(Map::SizeX(), Map::SizeY());
 			} else {
-				SocialIntegration::EventEnterSingleplayer(MapSizeX(), MapSizeY());
+				SocialIntegration::EventEnterSingleplayer(Map::SizeX(), Map::SizeY());
 			}
 			break;
 
 		case GM_EDITOR:
-			SocialIntegration::EventEnterScenarioEditor(MapSizeX(), MapSizeY());
+			SocialIntegration::EventEnterScenarioEditor(Map::SizeX(), Map::SizeY());
 			break;
 	}
 }

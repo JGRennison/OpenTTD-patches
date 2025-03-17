@@ -38,10 +38,10 @@ static inline bool IsAqueductTile(TileIndex tile) { return IsBridgeTile(tile) &&
 static inline uint32_t GetWaterRegionX(TileIndex tile) { return TileX(tile) / WATER_REGION_EDGE_LENGTH; }
 static inline uint32_t GetWaterRegionY(TileIndex tile) { return TileY(tile) / WATER_REGION_EDGE_LENGTH; }
 
-static inline uint32_t GetWaterRegionMapSizeX() { return MapSizeX() / WATER_REGION_EDGE_LENGTH; }
-static inline uint32_t GetWaterRegionMapSizeY() { return MapSizeY() / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionMapSizeX() { return Map::SizeX() / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionMapSizeY() { return Map::SizeY() / WATER_REGION_EDGE_LENGTH; }
 
-static inline uint32_t GetWaterRegionYShift() { return MapLogX() - WATER_REGION_EDGE_LENGTH_LOG; }
+static inline uint32_t GetWaterRegionYShift() { return Map::LogX() - WATER_REGION_EDGE_LENGTH_LOG; }
 
 static inline TWaterRegionIndex GetWaterRegionIndex(uint32_t region_x, uint32_t region_y) { return (region_y << GetWaterRegionYShift()) + region_x; }
 static inline TWaterRegionIndex GetWaterRegionIndex(TileIndex tile) { return GetWaterRegionIndex(GetWaterRegionX(tile), GetWaterRegionY(tile)); }
@@ -419,7 +419,7 @@ WaterRegionPatchDesc GetWaterRegionPatchInfo(TileIndex tile)
  */
 void InvalidateWaterRegion(TileIndex tile)
 {
-	if (tile >= MapSize()) return;
+	if (tile >= Map::Size()) return;
 
 	const TWaterRegionIndex region = GetWaterRegionIndex(tile);
 	WaterRegion::Invalidate(region);
@@ -430,9 +430,9 @@ void InvalidateWaterRegion(TileIndex tile)
 	const uint x = TileX(tile);
 	const uint y = TileY(tile);
 	if ((x & WATER_REGION_EDGE_MASK) ==                      0 && x >         0) WaterRegion::Invalidate(region - 1);
-	if ((x & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && x < MapMaxX()) WaterRegion::Invalidate(region + 1);
+	if ((x & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && x < Map::MaxX()) WaterRegion::Invalidate(region + 1);
 	if ((y & WATER_REGION_EDGE_MASK) ==                      0 && y >         0) WaterRegion::Invalidate(region - GetWaterRegionMapSizeX());
-	if ((y & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && y < MapMaxY()) WaterRegion::Invalidate(region + GetWaterRegionMapSizeX());
+	if ((y & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && y < Map::MaxY()) WaterRegion::Invalidate(region + GetWaterRegionMapSizeX());
 }
 
 /**

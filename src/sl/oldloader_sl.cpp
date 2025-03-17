@@ -544,19 +544,19 @@ static void ReadTTDPatchFlags()
 	}
 
 	/* Check if we have a modern TTDPatch savegame (has extra data all around) */
-	TileIndex ttdp2_header_first(MapSize() - 3);
-	TileIndex ttdp2_header_second(MapSize() - 2);
+	TileIndex ttdp2_header_first(Map::Size() - 3);
+	TileIndex ttdp2_header_second(Map::Size() - 2);
 	if (_m[ttdp2_header_first].m3 == 'T' && _m[ttdp2_header_first].m4 == 'T' &&
 		_m[ttdp2_header_second].m3 == 'D' && _m[ttdp2_header_second].m4 == 'p') {
 		_savegame_type = SGT_TTDP2;
 	}
 
-	TileIndex extra_chunk_tile(_savegame_type == SGT_TTDP2 ? MapSize() - 1 : 1);
+	TileIndex extra_chunk_tile(_savegame_type == SGT_TTDP2 ? Map::Size() - 1 : 1);
 	_old_extra_chunk_nums = _m[extra_chunk_tile].m3 | (_m[extra_chunk_tile].m4 << 8);
 
 	/* Clean the misused places */
 	for (TileIndex i(0); i < 9; i++) ClearOldMap3(i);
-	for (TileIndex i = TileXY(0, MapMaxY()); i < MapSize(); i++) ClearOldMap3(i);
+	for (TileIndex i = TileXY(0, Map::MaxY()); i < Map::Size(); i++) ClearOldMap3(i);
 
 	if (_savegame_type == SGT_TTDP2) Debug(oldloader, 2, "Found TTDPatch game");
 

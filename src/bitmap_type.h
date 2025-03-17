@@ -155,7 +155,7 @@ protected:
 					return;
 				}
 				this->block_x = 0;
-				this->row_start += MapSizeX();
+				this->row_start += Map::SizeX();
 			}
 			/* Read next block and advance next pointer */
 			this->block = *this->next;

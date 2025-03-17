@@ -1105,7 +1105,7 @@ void UpdateStationTileCacheFlags(bool force_update)
 	if (checksum.state != _station_tile_cache_hash || force_update) {
 		_station_tile_cache_hash = checksum.state;
 
-		for (TileIndex t(0); t < MapSize(); t++) {
+		for (TileIndex t(0); t < Map::Size(); t++) {
 			if (HasStationTileRail(t)) SetRailStationTileFlags(t, GetStationSpec(t));
 		}
 	}

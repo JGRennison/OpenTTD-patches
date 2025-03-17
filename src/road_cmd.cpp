@@ -419,7 +419,7 @@ static void InterpolateRoadCachedOneWayStates()
 
 void RecalculateRoadCachedOneWayStates()
 {
-	for (TileIndex tile(0); tile != MapSize(); tile++) {
+	for (TileIndex tile(0); tile != Map::Size(); tile++) {
 		if (MayHaveRoad(tile)) UpdateTileRoadCachedOneWayState(tile);
 	}
 	InterpolateRoadCachedOneWayStates();
@@ -439,10 +439,10 @@ void UpdateRoadCachedOneWayStatesAroundTile(TileIndex tile)
 	check_tile(tile);
 	TileIndexDiff x_offset = TileDiffXY(1, 0);
 	if (tile >= x_offset) check_tile(tile - x_offset);
-	if (tile + x_offset < MapSize()) check_tile(tile + x_offset);
+	if (tile + x_offset < Map::Size()) check_tile(tile + x_offset);
 	TileIndexDiff y_offset = TileDiffXY(0, 1);
 	if (tile >= y_offset) check_tile(tile - y_offset);
-	if (tile + y_offset < MapSize()) check_tile(tile + y_offset);
+	if (tile + y_offset < Map::Size()) check_tile(tile + y_offset);
 	if (!_defer_update_road_cache_one_way_state) InterpolateRoadCachedOneWayStates();
 }
 
@@ -1599,7 +1599,7 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
  */
 CommandCost CmdBuildLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, DisallowedRoadDirections drd, bool start_half, bool end_half, bool is_ai)
 {
-	if (start_tile >= MapSize()) return CMD_ERROR;
+	if (start_tile >= Map::Size()) return CMD_ERROR;
 
 	if (!ValParamRoadType(rt) || !IsValidAxis(axis) || !IsValidDisallowedRoadDirections(drd)) return CMD_ERROR;
 
@@ -1694,7 +1694,7 @@ CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	if (start_tile >= MapSize()) return CMD_ERROR;
+	if (start_tile >= Map::Size()) return CMD_ERROR;
 	if (!ValParamRoadType(rt) || !IsValidAxis(axis)) return CMD_ERROR;
 
 	/* Only drag in X or Y direction dictated by the direction variable */
@@ -2390,7 +2390,7 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 					uint adjacent_diagdirs = 0;
 					for (DiagDirection dir : { dir1, dir2 }) {
 						const TileIndex t = TileAddByDiagDir(ti->tile, dir);
-						if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis && is_usable_crossing(t)) {
+						if (t < Map::Size() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis && is_usable_crossing(t)) {
 							SetBit(adjacent_diagdirs, dir);
 						}
 					}
@@ -2541,7 +2541,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 {
 	assert(!invalidate || _generating_world);
 
-	for (TileIndex t(0); t < MapSize(); t++) {
+	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (IsTileType(t, MP_ROAD) && !IsRoadDepot(t) && !HasTownOwnedRoad(t)) {
 			TownID tid = INVALID_TOWN;
 			if (!invalidate) {
@@ -3103,7 +3103,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 	TileIndex area_end = tile;
 
 	if (!ValParamRoadType(to_type)) return CMD_ERROR;
-	if (area_start >= MapSize()) return CMD_ERROR;
+	if (area_start >= Map::Size()) return CMD_ERROR;
 
 	RoadVehicleList affected_rvs;
 	RoadTramType rtt = GetRoadTramType(to_type);
