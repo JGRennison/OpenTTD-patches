@@ -720,7 +720,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlag flags, TileIndex tile, RailType rai
 			if (flags & DC_EXEC) {
 				if (changes.convert_to != INVALID_RAILTYPE) {
 					/* The cost is already accounted for and a test already done in CheckTrackCombination */
-					CommandCost ret = ret = Command<CMD_CONVERT_RAIL>::Do(flags, tile, tile, changes.convert_to, false);
+					CommandCost ret = Command<CMD_CONVERT_RAIL>::Do(flags, tile, tile, changes.convert_to, false);
 					assert(ret.Succeeded());
 				}
 				if (changes.primary != INVALID_RAILTYPE) SetRailType(tile, changes.primary);
