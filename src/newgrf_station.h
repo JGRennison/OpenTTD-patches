@@ -28,7 +28,7 @@ struct StationScopeResolver : public ScopeResolver {
 	TileIndex tile;                     ///< %Tile of the station.
 	struct BaseStation *st;             ///< Instance of the station.
 	const struct StationSpec *statspec; ///< Station (type) specification.
-	CargoID cargo_type;                 ///< Type of cargo of the station.
+	CargoType cargo_type;               ///< Type of cargo of the station.
 	Axis axis;                          ///< Station axis, used only for the slope check callback.
 	RailType rt;                        ///< %RailType of the station (unbuilt stations only).
 
@@ -251,8 +251,8 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 
 void AnimateStationTile(TileIndex tile);
 uint8_t GetStationTileAnimationSpeed(TileIndex tile);
-void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type = INVALID_CARGO);
-void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoID cargo_type = INVALID_CARGO);
+void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoType cargo_type = INVALID_CARGO);
+void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoType cargo_type = INVALID_CARGO);
 void StationUpdateCachedTriggers(BaseStation *st);
 
 void UpdateStationTileCacheFlags(bool force_update);

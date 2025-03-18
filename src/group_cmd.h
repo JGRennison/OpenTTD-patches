@@ -32,6 +32,6 @@ DEF_CMD_TUPLE_NT(CMD_ADD_SHARED_VEHICLE_GROUP,  CmdAddSharedVehicleGroup,   {}, 
 DEF_CMD_TUPLE_NT(CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<GroupID>)
 DEF_CMD_TUPLE_NT(CMD_SET_GROUP_FLAG,            CmdSetGroupFlag,            {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<GroupID, GroupFlags, bool, bool>)
 DEF_CMD_TUPLE_NT(CMD_SET_GROUP_LIVERY,          CmdSetGroupLivery,          {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<GroupID, bool, Colours>)
-DEF_CMD_TUPLE_NT(CMD_CREATE_GROUP_FROM_LIST,    CmdCreateGroupFromList,     {}, CMDT_OTHER_MANAGEMENT, CmdDataT<VehicleListIdentifier, CargoID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_GROUP_FROM_LIST,    CmdCreateGroupFromList,     {}, CMDT_OTHER_MANAGEMENT, CmdDataT<VehicleListIdentifier, CargoType, std::string>)
 
 #endif /* GROUP_CMD_H */

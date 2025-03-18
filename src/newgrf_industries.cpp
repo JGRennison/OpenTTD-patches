@@ -359,7 +359,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		case 0x6D:
 		case 0x70:
 		case 0x71: {
-			CargoID cargo = GetCargoTranslation(parameter, this->ro.grffile);
+			CargoType cargo = GetCargoTranslation(parameter, this->ro.grffile);
 			if (cargo == INVALID_CARGO) return 0;
 			int index = this->industry->GetCargoProducedIndex(cargo);
 			if (index < 0) return 0; // invalid cargo
@@ -379,7 +379,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 
 		case 0x6E:
 		case 0x6F: {
-			CargoID cargo = GetCargoTranslation(parameter, this->ro.grffile);
+			CargoType cargo = GetCargoTranslation(parameter, this->ro.grffile);
 			if (cargo == INVALID_CARGO) return 0;
 			int index = this->industry->GetCargoAcceptedIndex(cargo);
 			if (index < 0) return 0; // invalid cargo
@@ -722,7 +722,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
  * @pre cargo_type is in ind->accepts_cargo.
  * @return Whether the given industry refuses to accept this cargo type.
  */
-bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
+bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoType cargo_type)
 {
 	assert(ind->IsCargoAccepted(cargo_type));
 

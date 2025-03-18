@@ -937,8 +937,8 @@ static CargoTypes TranslateRefitMask(uint32_t refit_mask)
 {
 	CargoTypes result = 0;
 	for (uint8_t bit : SetBitIterator(refit_mask)) {
-		CargoID cargo = GetCargoTranslation(bit, _cur.grffile, true);
-		if (IsValidCargoID(cargo)) SetBit(result, cargo);
+		CargoType cargo = GetCargoTranslation(bit, _cur.grffile, true);
+		if (IsValidCargoType(cargo)) SetBit(result, cargo);
 	}
 	return result;
 }
@@ -1325,8 +1325,8 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				CargoTypes &ctt = prop == 0x2C ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
-					CargoID ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-					if (IsValidCargoID(ctype)) SetBit(ctt, ctype);
+					CargoType ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					if (IsValidCargoType(ctype)) SetBit(ctt, ctype);
 				}
 				break;
 			}
@@ -1535,8 +1535,8 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, c
 				CargoTypes &ctt = prop == 0x24 ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
-					CargoID ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-					if (IsValidCargoID(ctype)) SetBit(ctt, ctype);
+					CargoType ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					if (IsValidCargoType(ctype)) SetBit(ctt, ctype);
 				}
 				break;
 			}
@@ -1718,8 +1718,8 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint first, uint last, int prop, c
 				CargoTypes &ctt = prop == 0x1E ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
-					CargoID ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-					if (IsValidCargoID(ctype)) SetBit(ctt, ctype);
+					CargoType ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					if (IsValidCargoType(ctype)) SetBit(ctt, ctype);
 				}
 				break;
 			}
@@ -1891,8 +1891,8 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint first, uint last, int pro
 				CargoTypes &ctt = prop == 0x1D ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
-					CargoID ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-					if (IsValidCargoID(ctype)) SetBit(ctt, ctype);
+					CargoType ctype = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					if (IsValidCargoType(ctype)) SetBit(ctt, ctype);
 				}
 				break;
 			}
@@ -2538,9 +2538,9 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 					 * climate. This can cause problems when copying the properties
 					 * of a house that accepts food, where the new house is valid
 					 * in the temperate climate. */
-					CargoID cid = housespec->accepts_cargo[2];
-					if (!IsValidCargoID(cid)) cid = GetCargoIDByLabel(housespec->accepts_cargo_label[2]);
-					if (!IsValidCargoID(cid)) {
+					CargoType cargo_type = housespec->accepts_cargo[2];
+					if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(housespec->accepts_cargo_label[2]);
+					if (!IsValidCargoType(cargo_type)) {
 						housespec->cargo_acceptance[2] = 0;
 					}
 				}
@@ -2576,13 +2576,13 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 
 				/* If value of goods is negative, it means in fact food or, if in toyland, fizzy_drink acceptance.
 				 * Else, we have "standard" 3rd cargo type, goods or candy, for toyland once more */
-				CargoID cid = (goods >= 0) ? ((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoIDByLabel(CT_CANDY) : GetCargoIDByLabel(CT_GOODS)) :
-						((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoIDByLabel(CT_FIZZY_DRINKS) : GetCargoIDByLabel(CT_FOOD));
+				CargoType cargo_type = (goods >= 0) ? ((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoTypeByLabel(CT_CANDY) : GetCargoTypeByLabel(CT_GOODS)) :
+						((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoTypeByLabel(CT_FIZZY_DRINKS) : GetCargoTypeByLabel(CT_FOOD));
 
 				/* Make sure the cargo type is valid in this climate. */
-				if (!IsValidCargoID(cid)) goods = 0;
+				if (!IsValidCargoType(cargo_type)) goods = 0;
 
-				housespec->accepts_cargo[2] = cid;
+				housespec->accepts_cargo[2] = cargo_type;
 				housespec->accepts_cargo_label[2] = CT_INVALID;
 				housespec->cargo_acceptance[2] = abs(goods); // but we do need positive value here
 				break;
@@ -2664,9 +2664,9 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				for (uint j = 0; j < HOUSE_ORIGINAL_NUM_ACCEPTS; j++) {
 					/* Get the cargo number from the 'list' */
 					uint8_t cargo_part = GB(cargotypes, 8 * j, 8);
-					CargoID cargo = GetCargoTranslation(cargo_part, _cur.grffile);
+					CargoType cargo = GetCargoTranslation(cargo_part, _cur.grffile);
 
-					if (!IsValidCargoID(cargo)) {
+					if (!IsValidCargoType(cargo)) {
 						/* Disable acceptance of invalid cargo type */
 						housespec->cargo_acceptance[j] = 0;
 					} else {
@@ -2684,8 +2684,8 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 			case 0x20: { // Cargo acceptance watch list
 				uint8_t count = buf.ReadByte();
 				for (uint8_t j = 0; j < count; j++) {
-					CargoID cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-					if (IsValidCargoID(cargo)) SetBit(housespec->watched_cargoes, cargo);
+					CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					if (IsValidCargoType(cargo)) SetBit(housespec->watched_cargoes, cargo);
 				}
 				break;
 			}
@@ -3959,7 +3959,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				}
 				for (uint i = 0; i < std::size(indsp->produced_cargo); i++) {
 					if (i < num_cargoes) {
-						CargoID cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
 						indsp->produced_cargo[i] = cargo;
 					} else {
 						indsp->produced_cargo[i] = INVALID_CARGO;
@@ -3978,7 +3978,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				}
 				for (uint i = 0; i < std::size(indsp->accepts_cargo); i++) {
 					if (i < num_cargoes) {
-						CargoID cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
 						indsp->accepts_cargo[i] = cargo;
 					} else {
 						indsp->accepts_cargo[i] = INVALID_CARGO;
@@ -6394,8 +6394,8 @@ static void NewSpriteGroup(ByteReader &buf)
 						}
 						for (uint i = 0; i < group->num_input; i++) {
 							uint8_t rawcargo = buf.ReadByte();
-							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
-							if (!IsValidCargoID(cargo)) {
+							CargoType cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (!IsValidCargoType(cargo)) {
 								/* The mapped cargo is invalid. This is permitted at this point,
 								 * as long as the result is not used. Mark it invalid so this
 								 * can be tested later. */
@@ -6416,8 +6416,8 @@ static void NewSpriteGroup(ByteReader &buf)
 						}
 						for (uint i = 0; i < group->num_output; i++) {
 							uint8_t rawcargo = buf.ReadByte();
-							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
-							if (!IsValidCargoID(cargo)) {
+							CargoType cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (!IsValidCargoType(cargo)) {
 								/* Mark this result as invalid to use */
 								group->version = 0xFF;
 							} else if (std::find(group->cargo_output, group->cargo_output + i, cargo) != group->cargo_output + i) {
@@ -6466,7 +6466,7 @@ std::span<const CargoLabel> GetCargoTranslationTable(const GRFFile &grffile)
 	return GetClimateIndependentCargoTranslationTable();
 }
 
-static CargoID TranslateCargo(uint8_t feature, uint8_t ctype)
+static CargoType TranslateCargo(uint8_t feature, uint8_t ctype)
 {
 	/* Special cargo types for purchase list and stations */
 	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return SpriteGroupCargo::SG_DEFAULT_NA;
@@ -6487,14 +6487,14 @@ static CargoID TranslateCargo(uint8_t feature, uint8_t ctype)
 		return INVALID_CARGO;
 	}
 
-	CargoID cid = GetCargoIDByLabel(cl);
-	if (!IsValidCargoID(cid)) {
+	CargoType cargo_type = GetCargoTypeByLabel(cl);
+	if (!IsValidCargoType(cargo_type)) {
 		GrfMsg(5, "TranslateCargo: Cargo '{:c}{:c}{:c}{:c}' unsupported, skipping.", GB(cl.base(), 24, 8), GB(cl.base(), 16, 8), GB(cl.base(), 8, 8), GB(cl.base(), 0, 8));
 		return INVALID_CARGO;
 	}
 
-	GrfMsg(6, "TranslateCargo: Cargo '{:c}{:c}{:c}{:c}' mapped to cargo type {}.", GB(cl.base(), 24, 8), GB(cl.base(), 16, 8), GB(cl.base(), 8, 8), GB(cl.base(), 0, 8), cid);
-	return cid;
+	GrfMsg(6, "TranslateCargo: Cargo '{:c}{:c}{:c}{:c}' mapped to cargo type {}.", GB(cl.base(), 24, 8), GB(cl.base(), 16, 8), GB(cl.base(), 8, 8), GB(cl.base(), 0, 8), cargo_type);
+	return cargo_type;
 }
 
 
@@ -6552,8 +6552,8 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 
 		GrfMsg(8, "VehicleMapSpriteGroup: * [{}] Cargo type 0x{:X}, group id 0x{:02X}", c, ctype, groupid);
 
-		CargoID cid = TranslateCargo(feature, ctype);
-		if (!IsValidCargoID(cid)) continue;
+		CargoType cargo_type = TranslateCargo(feature, ctype);
+		if (!IsValidCargoType(cargo_type)) continue;
 
 		for (uint i = 0; i < idcount; i++) {
 			EngineID engine = engines[i];
@@ -6561,9 +6561,9 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 			GrfMsg(7, "VehicleMapSpriteGroup: [{}] Engine {}...", i, engine);
 
 			if (wagover) {
-				SetWagonOverrideSprites(engine, cid, GetGroupByID(groupid), last_engines);
+				SetWagonOverrideSprites(engine, cargo_type, GetGroupByID(groupid), last_engines);
 			} else {
-				SetCustomEngineSprites(engine, cid, GetGroupByID(groupid));
+				SetCustomEngineSprites(engine, cargo_type, GetGroupByID(groupid));
 			}
 		}
 	}
@@ -6779,14 +6779,14 @@ static void CargoMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 	if (!IsValidGroupID(groupid, "CargoMapSpriteGroup")) return;
 
 	for (uint i = 0; i < idcount; i++) {
-		uint16_t cid = cargoes[i];
+		uint16_t cargo_type = cargoes[i];
 
-		if (cid >= NUM_CARGO) {
-			GrfMsg(1, "CargoMapSpriteGroup: Cargo ID {} out of range, skipping", cid);
+		if (cargo_type >= NUM_CARGO) {
+			GrfMsg(1, "CargoMapSpriteGroup: Cargo ID {} out of range, skipping", cargo_type);
 			continue;
 		}
 
-		CargoSpec *cs = CargoSpec::Get(cid);
+		CargoSpec *cs = CargoSpec::Get(cargo_type);
 		cs->grffile = _cur.grffile;
 		cs->group = GetGroupByID(groupid);
 	}
@@ -7840,9 +7840,9 @@ static void CfgApply(ByteReader &buf)
  * best result as no NewGRF author can complain about that.
  * @param c The NewGRF to disable.
  */
-static void DisableStaticNewGRFInfluencingNonStaticNewGRFs(GRFConfig *c)
+static void DisableStaticNewGRFInfluencingNonStaticNewGRFs(GRFConfig &c)
 {
-	GRFError *error = DisableGrf(STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC, c);
+	GRFError *error = DisableGrf(STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC, &c);
 	error->data = _cur.grfconfig->GetName();
 }
 
@@ -7891,9 +7891,9 @@ static void SkipIf(ByteReader &buf)
 	if (condtype >= 0x0B) {
 		/* Tests that ignore 'param' */
 		switch (condtype) {
-			case 0x0B: result = !IsValidCargoID(GetCargoIDByLabel(CargoLabel(BSWAP32(cond_val))));
+			case 0x0B: result = !IsValidCargoType(GetCargoTypeByLabel(CargoLabel(BSWAP32(cond_val))));
 				break;
-			case 0x0C: result = IsValidCargoID(GetCargoIDByLabel(CargoLabel(BSWAP32(cond_val))));
+			case 0x0C: result = IsValidCargoType(GetCargoTypeByLabel(CargoLabel(BSWAP32(cond_val))));
 				break;
 			case 0x0D: result = GetRailTypeByLabel(BSWAP32(cond_val)) == INVALID_RAILTYPE;
 				break;
@@ -7927,7 +7927,7 @@ static void SkipIf(ByteReader &buf)
 		GRFConfig *c = GetGRFConfig(cond_val, mask);
 
 		if (c != nullptr && HasBit(c->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_STATIC) && _networking) {
-			DisableStaticNewGRFInfluencingNonStaticNewGRFs(c);
+			DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
 			c = nullptr;
 		}
 
@@ -8587,7 +8587,7 @@ static void ParamSet(ByteReader &buf)
 			GRFConfig *c = GetGRFConfig(data);
 			if (c != nullptr && HasBit(c->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_STATIC) && _networking) {
 				/* Disable the read GRF if it is a static NewGRF. */
-				DisableStaticNewGRFInfluencingNonStaticNewGRFs(c);
+				DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
 				src1 = 0;
 			} else if (file == nullptr || c == nullptr || c->status == GCS_DISABLED) {
 				src1 = 0;
@@ -10628,9 +10628,9 @@ static void BuildCargoTranslationMap()
  * Prepare loading a NewGRF file with its config
  * @param config The NewGRF configuration struct with name, id, parameters and alike.
  */
-static void InitNewGRFFile(const GRFConfig *config)
+static void InitNewGRFFile(const GRFConfig &config)
 {
-	GRFFile *newfile = GetFileByFilename(config->filename);
+	GRFFile *newfile = GetFileByFilename(config.filename);
 	if (newfile != nullptr) {
 		/* We already loaded it once. */
 		_cur.grffile = newfile;
@@ -10647,10 +10647,10 @@ static void InitNewGRFFile(const GRFConfig *config)
  * Constructor for GRFFile
  * @param config GRFConfig to copy name, grfid and parameters from.
  */
-GRFFile::GRFFile(const GRFConfig *config)
+GRFFile::GRFFile(const GRFConfig &config)
 {
-	this->filename = config->filename;
-	this->grfid = config->ident.grfid;
+	this->filename = config.filename;
+	this->grfid = config.ident.grfid;
 
 	/* Initialise local settings to defaults */
 	this->traininfo_vehicle_pitch = 0;
@@ -10686,7 +10686,7 @@ GRFFile::GRFFile(const GRFConfig *config)
 	this->tramtype_map[0] = ROADTYPE_TRAM;
 
 	/* Copy the initial parameter list */
-	this->param = config->param;
+	this->param = config.param;
 }
 
 /**
@@ -10697,8 +10697,8 @@ GRFFile::GRFFile(const GRFConfig *config)
 static CargoLabel GetActiveCargoLabel(const std::initializer_list<CargoLabel> &labels)
 {
 	for (const CargoLabel &label : labels) {
-		CargoID cid = GetCargoIDByLabel(label);
-		if (cid != INVALID_CARGO) return label;
+		CargoType cargo_type = GetCargoTypeByLabel(label);
+		if (cargo_type != INVALID_CARGO) return label;
 	}
 	return CT_INVALID;
 }
@@ -10732,8 +10732,8 @@ static CargoLabel GetActiveCargoLabel(const std::variant<CargoLabel, MixedCargoT
 static void CalculateRefitMasks()
 {
 	CargoTypes original_known_cargoes = 0;
-	for (CargoID cid = 0; cid != NUM_CARGO; ++cid) {
-		if (IsDefaultCargo(cid)) SetBit(original_known_cargoes, cid);
+	for (CargoType cargo_type = 0; cargo_type != NUM_CARGO; ++cargo_type) {
+		if (IsDefaultCargo(cargo_type)) SetBit(original_known_cargoes, cargo_type);
 	}
 
 	for (Engine *e : Engine::Iterate()) {
@@ -10742,8 +10742,8 @@ static void CalculateRefitMasks()
 		bool only_defaultcargo; ///< Set if the vehicle shall carry only the default cargo
 
 		/* Apply default cargo translation map if cargo type hasn't been set, either explicitly or by aircraft cargo handling. */
-		if (!IsValidCargoID(e->info.cargo_type)) {
-			e->info.cargo_type = GetCargoIDByLabel(GetActiveCargoLabel(e->info.cargo_label));
+		if (!IsValidCargoType(e->info.cargo_type)) {
+			e->info.cargo_type = GetCargoTypeByLabel(GetActiveCargoLabel(e->info.cargo_label));
 		}
 
 		/* If the NewGRF did not set any cargo properties, we apply default values. */
@@ -10828,7 +10828,7 @@ static void CalculateRefitMasks()
 			}
 			_gted[engine].UpdateRefittability(_gted[engine].cargo_allowed != 0);
 
-			if (IsValidCargoID(ei->cargo_type)) ClrBit(_gted[engine].ctt_exclude_mask, ei->cargo_type);
+			if (IsValidCargoType(ei->cargo_type)) ClrBit(_gted[engine].ctt_exclude_mask, ei->cargo_type);
 		}
 
 		/* Compute refittability */
@@ -10876,24 +10876,24 @@ static void CalculateRefitMasks()
 		}
 
 		/* Clear invalid cargoslots (from default vehicles or pre-NewCargo GRFs) */
-		if (IsValidCargoID(ei->cargo_type) && !HasBit(_cargo_mask, ei->cargo_type)) ei->cargo_type = INVALID_CARGO;
+		if (IsValidCargoType(ei->cargo_type) && !HasBit(_cargo_mask, ei->cargo_type)) ei->cargo_type = INVALID_CARGO;
 
 		/* Ensure that the vehicle is either not refittable, or that the default cargo is one of the refittable cargoes.
 		 * Note: Vehicles refittable to no cargo are handle differently to vehicle refittable to a single cargo. The latter might have subtypes. */
-		if (!only_defaultcargo && (e->type != VEH_SHIP || e->u.ship.old_refittable) && IsValidCargoID(ei->cargo_type) && !HasBit(ei->refit_mask, ei->cargo_type)) {
+		if (!only_defaultcargo && (e->type != VEH_SHIP || e->u.ship.old_refittable) && IsValidCargoType(ei->cargo_type) && !HasBit(ei->refit_mask, ei->cargo_type)) {
 			ei->cargo_type = INVALID_CARGO;
 		}
 
 		/* Check if this engine's cargo type is valid. If not, set to the first refittable
 		 * cargo type. Finally disable the vehicle, if there is still no cargo. */
-		if (!IsValidCargoID(ei->cargo_type) && ei->refit_mask != 0) {
+		if (!IsValidCargoType(ei->cargo_type) && ei->refit_mask != 0) {
 			/* Figure out which CTT to use for the default cargo, if it is 'first refittable'. */
 			const GRFFile *file = _gted[engine].defaultcargo_grf;
 			if (file == nullptr) file = e->GetGRF();
 			if (file != nullptr && file->grf_version >= 8 && !file->cargo_list.empty()) {
 				/* Use first refittable cargo from cargo translation table */
 				uint8_t best_local_slot = UINT8_MAX;
-				for (CargoID cargo_type : SetCargoBitIterator(ei->refit_mask)) {
+				for (CargoType cargo_type : SetCargoBitIterator(ei->refit_mask)) {
 					uint8_t local_slot = file->cargo_map[cargo_type];
 					if (local_slot < best_local_slot) {
 						best_local_slot = local_slot;
@@ -10902,20 +10902,20 @@ static void CalculateRefitMasks()
 				}
 			}
 
-			if (!IsValidCargoID(ei->cargo_type)) {
+			if (!IsValidCargoType(ei->cargo_type)) {
 				/* Use first refittable cargo slot */
-				ei->cargo_type = (CargoID)FindFirstBit(ei->refit_mask);
+				ei->cargo_type = (CargoType)FindFirstBit(ei->refit_mask);
 			}
 		}
-		if (!IsValidCargoID(ei->cargo_type) && e->type == VEH_TRAIN && e->u.rail.railveh_type != RAILVEH_WAGON && e->u.rail.capacity == 0) {
+		if (!IsValidCargoType(ei->cargo_type) && e->type == VEH_TRAIN && e->u.rail.railveh_type != RAILVEH_WAGON && e->u.rail.capacity == 0) {
 			/* For train engines which do not carry cargo it does not matter if their cargo type is invalid.
 			 * Fallback to the first available instead, if the cargo type has not been changed (as indicated by
 			 * cargo_label not being CT_INVALID). */
 			if (GetActiveCargoLabel(ei->cargo_label) != CT_INVALID) {
-				ei->cargo_type = static_cast<CargoID>(FindFirstBit(_standard_cargo_mask));
+				ei->cargo_type = static_cast<CargoType>(FindFirstBit(_standard_cargo_mask));
 			}
 		}
-		if (!IsValidCargoID(ei->cargo_type)) ei->climates = 0;
+		if (!IsValidCargoType(ei->cargo_type)) ei->climates = 0;
 
 		/* Clear refit_mask for not refittable ships */
 		if (e->type == VEH_SHIP && !e->u.ship.old_refittable) {
@@ -11155,9 +11155,9 @@ static void FinaliseHouseArray()
 
 		/* Apply default cargo translation map for unset cargo slots */
 		for (uint i = 0; i < lengthof(hs->accepts_cargo_label); ++i) {
-			if (!IsValidCargoID(hs->accepts_cargo[i])) hs->accepts_cargo[i] = GetCargoIDByLabel(hs->accepts_cargo_label[i]);
+			if (!IsValidCargoType(hs->accepts_cargo[i])) hs->accepts_cargo[i] = GetCargoTypeByLabel(hs->accepts_cargo_label[i]);
 			/* Disable acceptance if cargo type is invalid. */
-			if (!IsValidCargoID(hs->accepts_cargo[i])) hs->cargo_acceptance[i] = 0;
+			if (!IsValidCargoType(hs->accepts_cargo[i])) hs->cargo_acceptance[i] = 0;
 		}
 	}
 
@@ -11210,17 +11210,17 @@ static void FinaliseIndustriesArray()
 
 		/* Apply default cargo translation map for unset cargo slots */
 		for (size_t i = 0; i < std::size(indsp.produced_cargo_label); ++i) {
-			if (!IsValidCargoID(indsp.produced_cargo[i])) indsp.produced_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.produced_cargo_label[i]));
+			if (!IsValidCargoType(indsp.produced_cargo[i])) indsp.produced_cargo[i] = GetCargoTypeByLabel(GetActiveCargoLabel(indsp.produced_cargo_label[i]));
 		}
 		for (size_t i = 0; i < std::size(indsp.accepts_cargo_label); ++i) {
-			if (!IsValidCargoID(indsp.accepts_cargo[i])) indsp.accepts_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.accepts_cargo_label[i]));
+			if (!IsValidCargoType(indsp.accepts_cargo[i])) indsp.accepts_cargo[i] = GetCargoTypeByLabel(GetActiveCargoLabel(indsp.accepts_cargo_label[i]));
 		}
 	}
 
 	for (auto &indtsp : _industry_tile_specs) {
 		/* Apply default cargo translation map for unset cargo slots */
 		for (size_t i = 0; i < std::size(indtsp.accepts_cargo_label); ++i) {
-			if (!IsValidCargoID(indtsp.accepts_cargo[i])) indtsp.accepts_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indtsp.accepts_cargo_label[i]));
+			if (!IsValidCargoType(indtsp.accepts_cargo[i])) indtsp.accepts_cargo[i] = GetCargoTypeByLabel(GetActiveCargoLabel(indtsp.accepts_cargo_label[i]));
 		}
 	}
 }
@@ -11355,12 +11355,12 @@ static void DecodeSpecialSprite(uint8_t *buf, uint num, GrfLoadingStage stage)
  * @param stage  The loading stage of the NewGRF.
  * @param file   The file to load the GRF data from.
  */
-static void LoadNewGRFFileFromFile(GRFConfig *config, GrfLoadingStage stage, SpriteFile &file)
+static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, SpriteFile &file)
 {
 	_cur.file = &file;
-	_cur.grfconfig = config;
+	_cur.grfconfig = &config;
 
-	Debug(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '{}'", config->GetDisplayPath());
+	Debug(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '{}'", config.GetDisplayPath());
 
 	uint8_t grf_container_version = file.GetContainerVersion();
 	if (grf_container_version == 0) {
@@ -11444,9 +11444,9 @@ static void LoadNewGRFFileFromFile(GRFConfig *config, GrfLoadingStage stage, Spr
  * @param temporary  The NewGRF/sprite file is to be loaded temporarily and should be closed immediately,
  *                   contrary to loading the SpriteFile and having it cached by the SpriteCache.
  */
-void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdir, bool temporary)
+void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdir, bool temporary)
 {
-	const std::string &filename = config->filename;
+	const std::string &filename = config.filename;
 
 	/* A .grf file is activated only if it was active when the game was
 	 * started.  If a game is loaded, only its active .grfs will be
@@ -11460,19 +11460,19 @@ void LoadNewGRFFile(GRFConfig *config, GrfLoadingStage stage, Subdirectory subdi
 	if (stage != GLS_FILESCAN && stage != GLS_SAFETYSCAN && stage != GLS_LABELSCAN) {
 		_cur.grffile = GetFileByFilename(filename);
 		if (_cur.grffile == nullptr) UserError("File '{}' lost in cache.\n", filename);
-		if (stage == GLS_RESERVE && config->status != GCS_INITIALISED) return;
-		if (stage == GLS_ACTIVATION && !HasBit(config->flags, GCF_RESERVED)) return;
+		if (stage == GLS_RESERVE && config.status != GCS_INITIALISED) return;
+		if (stage == GLS_ACTIVATION && !HasBit(config.flags, GCF_RESERVED)) return;
 	}
 
-	bool needs_palette_remap = config->palette & GRFP_USE_MASK;
+	bool needs_palette_remap = config.palette & GRFP_USE_MASK;
 	if (temporary) {
 		SpriteFile temporarySpriteFile(filename, subdir, needs_palette_remap);
 		LoadNewGRFFileFromFile(config, stage, temporarySpriteFile);
 	} else {
 		SpriteFile &file = OpenCachedSpriteFile(filename, subdir, needs_palette_remap);
 		LoadNewGRFFileFromFile(config, stage, file);
-		if (!HasBit(config->flags, GCF_SYSTEM)) file.flags |= SFF_USERGRF;
-		if (config->ident.grfid == BSWAP32(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
+		if (!HasBit(config.flags, GCF_SYSTEM)) file.flags |= SFF_USERGRF;
+		if (config.ident.grfid == BSWAP32(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
 	}
 }
 
@@ -11867,7 +11867,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 				continue;
 			}
 
-			if (stage == GLS_LABELSCAN) InitNewGRFFile(c);
+			if (stage == GLS_LABELSCAN) InitNewGRFFile(*c);
 
 			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
 				if (num_non_static == MAX_NON_STATIC_GRF_COUNT) {
@@ -11881,7 +11881,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 
 			num_grfs++;
 
-			LoadNewGRFFile(c, stage, subdir, false);
+			LoadNewGRFFile(*c, stage, subdir, false);
 			if (stage == GLS_RESERVE) {
 				SetBit(c->flags, GCF_RESERVED);
 			} else if (stage == GLS_ACTIVATION) {

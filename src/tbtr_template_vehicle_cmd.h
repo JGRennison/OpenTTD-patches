@@ -29,7 +29,7 @@ DEF_CMD_TUPLE_NT (CMD_RENAME_TEMPLATE,             CmdRenameTemplateReplace,    
 DEF_CMD_TUPLE_NT (CMD_VIRTUAL_TRAIN_FROM_TEMPLATE, CmdVirtualTrainFromTemplate,  CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<TemplateID, ClientID>)
 DEF_CMD_TUPLE_NT (CMD_VIRTUAL_TRAIN_FROM_TRAIN,    CmdVirtualTrainFromTrain,     CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, ClientID>)
 DEF_CMD_TUPLE_NT (CMD_DELETE_VIRTUAL_TRAIN,        CmdDeleteVirtualTrain,                                      CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID>)
-DEF_CMD_TUPLE_NT (CMD_BUILD_VIRTUAL_RAIL_VEHICLE,  CmdBuildVirtualRailVehicle,   CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<EngineID, CargoID, ClientID, VehicleID>)
+DEF_CMD_TUPLE_NT (CMD_BUILD_VIRTUAL_RAIL_VEHICLE,  CmdBuildVirtualRailVehicle,   CMD_CLIENT_ID | CMD_NO_TEST | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<EngineID, CargoType, ClientID, VehicleID>)
 DEF_CMD_TUPLE_NT (CMD_REPLACE_TEMPLATE,            CmdReplaceTemplateVehicle,                                  CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<TemplateID, VehicleID>)
 DEF_CMD_TUPLE_NT (CMD_MOVE_VIRTUAL_RAIL_VEHICLE,   CmdMoveVirtualRailVehicle,                                  CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, VehicleID, MoveRailVehicleFlags>)
 DEF_CMD_TUPLE_NT (CMD_SELL_VIRTUAL_VEHICLE,        CmdSellVirtualVehicle,                      CMD_CLIENT_ID | CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, SellVehicleFlags, ClientID>)

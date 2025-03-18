@@ -615,7 +615,7 @@ public:
 		}
 
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
-			for (CargoID cid : CargoSpec::town_production_cargoes[tpe]) {
+			for (CargoType cid : CargoSpec::town_production_cargoes[tpe]) {
 				SetDParam(0, 1ULL << cid);
 				SetDParam(1, this->town->supplied[cid].old_act);
 				SetDParam(2, this->town->supplied[cid].old_max);

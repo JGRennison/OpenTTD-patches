@@ -24,7 +24,8 @@ struct RoadStop;
 struct StationSpec;
 struct Waypoint;
 
-static const StationID NEW_STATION = 0xFFFE;
+static const StationID NEW_STATION = 0xFFFD;
+static const StationID ADJACENT_STATION = 0xFFFE;
 static const StationID INVALID_STATION = 0xFFFF;
 
 static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;

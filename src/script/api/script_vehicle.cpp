@@ -70,7 +70,7 @@
 	return v->IsGroundVehicle() ? v->GetGroundVehicleCache()->cached_total_length : -1;
 }
 
-/* static */ VehicleID ScriptVehicle::_BuildVehicleInternal(TileIndex depot, EngineID engine_id, CargoID cargo)
+/* static */ VehicleID ScriptVehicle::_BuildVehicleInternal(TileIndex depot, EngineID engine_id, CargoType cargo)
 {
 	EnforceCompanyModeValid(VEHICLE_INVALID);
 	EnforcePrecondition(VEHICLE_INVALID, ScriptEngine::IsBuildable(engine_id));
@@ -91,13 +91,13 @@
 	return _BuildVehicleInternal(depot, engine_id, INVALID_CARGO);
 }
 
-/* static */ VehicleID ScriptVehicle::BuildVehicleWithRefit(TileIndex depot, EngineID engine_id, CargoID cargo)
+/* static */ VehicleID ScriptVehicle::BuildVehicleWithRefit(TileIndex depot, EngineID engine_id, CargoType cargo)
 {
 	EnforcePrecondition(VEHICLE_INVALID, ScriptCargo::IsValidCargo(cargo));
 	return _BuildVehicleInternal(depot, engine_id, cargo);
 }
 
-/* static */ SQInteger ScriptVehicle::GetBuildWithRefitCapacity(TileIndex depot, EngineID engine_id, CargoID cargo)
+/* static */ SQInteger ScriptVehicle::GetBuildWithRefitCapacity(TileIndex depot, EngineID engine_id, CargoType cargo)
 {
 	if (!ScriptEngine::IsBuildable(engine_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
@@ -146,7 +146,7 @@
 	return _MoveWagonInternal(source_vehicle_id, source_wagon, true, dest_vehicle_id, dest_wagon);
 }
 
-/* static */ SQInteger ScriptVehicle::GetRefitCapacity(VehicleID vehicle_id, CargoID cargo)
+/* static */ SQInteger ScriptVehicle::GetRefitCapacity(VehicleID vehicle_id, CargoType cargo)
 {
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
@@ -155,7 +155,7 @@
 	return res.Succeeded() ? _returned_refit_capacity : -1;
 }
 
-/* static */ bool ScriptVehicle::RefitVehicle(VehicleID vehicle_id, CargoID cargo)
+/* static */ bool ScriptVehicle::RefitVehicle(VehicleID vehicle_id, CargoType cargo)
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidVehicle(vehicle_id) && ScriptCargo::IsValidCargo(cargo));
@@ -411,7 +411,7 @@
 	return (ScriptRoad::RoadType)(int)(::RoadVehicle::Get(vehicle_id))->roadtype;
 }
 
-/* static */ SQInteger ScriptVehicle::GetCapacity(VehicleID vehicle_id, CargoID cargo)
+/* static */ SQInteger ScriptVehicle::GetCapacity(VehicleID vehicle_id, CargoType cargo)
 {
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
@@ -424,7 +424,7 @@
 	return amount;
 }
 
-/* static */ SQInteger ScriptVehicle::GetCargoLoad(VehicleID vehicle_id, CargoID cargo)
+/* static */ SQInteger ScriptVehicle::GetCargoLoad(VehicleID vehicle_id, CargoType cargo)
 {
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;

@@ -23,10 +23,10 @@ struct BuildVehicleWindowBase;
 
 struct GUIEngineListSortCache {
 	const BuildVehicleWindowBase *parent = nullptr;
-	CargoID current_cargo = INVALID_CARGO;
+	CargoType current_cargo = INVALID_CARGO;
 	mutable btree::btree_map<EngineID, uint> capacities;
 
-	void UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoID cargo_filter_criteria);
+	void UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoType cargo_filter_criteria);
 	uint GetArticulatedCapacity(EngineID eng, bool dual_headed = false) const;
 };
 
@@ -47,7 +47,7 @@ struct GUIEngineListItem {
 	GUIEngineListItem(EngineID engine_id, EngineID variant_id, EngineDisplayFlags flags, uint8_t indent) : engine_id(engine_id), variant_id(variant_id), flags(flags), indent(indent), level_mask(0) {}
 };
 
-typedef GUIList<GUIEngineListItem, GUIEngineListSortCache, CargoID> GUIEngineList;
+typedef GUIList<GUIEngineListItem, GUIEngineListSortCache, CargoType> GUIEngineList;
 
 typedef bool EngList_SortTypeFunction(const GUIEngineListItem&, const GUIEngineListItem&, const GUIEngineListSortCache &); ///< argument type for #EngList_Sort.
 void EngList_Sort(GUIEngineList &el, EngList_SortTypeFunction compare);

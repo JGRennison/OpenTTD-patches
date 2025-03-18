@@ -36,7 +36,7 @@
 bool _sprite_group_resolve_check_veh_check = false;
 bool _sprite_group_resolve_check_veh_curvature_check = false;
 
-void SetWagonOverrideSprites(EngineID engine, CargoID cargo, const SpriteGroup *group, std::span<EngineID> engine_ids)
+void SetWagonOverrideSprites(EngineID engine, CargoType cargo, const SpriteGroup *group, std::span<EngineID> engine_ids)
 {
 	Engine *e = Engine::Get(engine);
 
@@ -48,7 +48,7 @@ void SetWagonOverrideSprites(EngineID engine, CargoID cargo, const SpriteGroup *
 	wo->engines.assign(engine_ids.begin(), engine_ids.end());
 }
 
-const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoID cargo, EngineID overriding_engine)
+const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoType cargo, EngineID overriding_engine)
 {
 	const Engine *e = Engine::Get(engine);
 
@@ -59,7 +59,7 @@ const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoID cargo, Eng
 	return nullptr;
 }
 
-void SetCustomEngineSprites(EngineID engine, CargoID cargo, const SpriteGroup *group)
+void SetCustomEngineSprites(EngineID engine, CargoType cargo, const SpriteGroup *group)
 {
 	Engine *e = Engine::Get(engine);
 	assert(cargo < std::size(e->grf_prop.spritegroup));
@@ -595,7 +595,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				/* Pick the most common cargo type */
 				auto cargo_it = std::max_element(std::begin(common_cargoes), std::end(common_cargoes));
 				/* Return INVALID_CARGO if nothing is carried */
-				CargoID common_cargo_type = (*cargo_it == 0) ? INVALID_CARGO : static_cast<CargoID>(std::distance(std::begin(common_cargoes), cargo_it));
+				CargoType common_cargo_type = (*cargo_it == 0) ? INVALID_CARGO : static_cast<CargoType>(std::distance(std::begin(common_cargoes), cargo_it));
 
 				/* Count subcargo types of common_cargo_type */
 				std::array<uint8_t, UINT8_MAX + 1> common_subtypes{};
@@ -619,7 +619,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			}
 
 			/* The cargo translation is specific to the accessing GRF, and thus cannot be cached. */
-			CargoID common_cargo_type = (v->grf_cache.consist_cargo_information >> 8) & 0xFF;
+			CargoType common_cargo_type = (v->grf_cache.consist_cargo_information >> 8) & 0xFF;
 
 			/* Note:
 			 *  - Unlike everywhere else the cargo translation table is only used since grf version 8, not 7.
@@ -1116,7 +1116,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			case 0x46: return 0;               // Motion counter
 			case 0x47: { // Vehicle cargo info
 				const Engine *e = Engine::Get(this->self_type);
-				CargoID cargo_type = e->GetDefaultCargoType();
+				CargoType cargo_type = e->GetDefaultCargoType();
 				if (cargo_type != INVALID_CARGO) {
 					const CargoSpec *cs = CargoSpec::Get(cargo_type);
 					return (cs->classes << 16) | (cs->weight << 8) | this->ro.grffile->cargo_map[cargo_type];
@@ -1239,7 +1239,7 @@ VehicleResolverObject::VehicleResolverObject(EngineID engine_type, const Vehicle
 
 		if (this->root_spritegroup == nullptr) {
 			const Engine *e = Engine::Get(engine_type);
-			CargoID cargo = v != nullptr ? v->cargo_type : SpriteGroupCargo::SG_PURCHASE;
+			CargoType cargo = v != nullptr ? v->cargo_type : SpriteGroupCargo::SG_PURCHASE;
 			assert(cargo < std::size(e->grf_prop.spritegroup));
 			this->root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
 		}
@@ -1648,8 +1648,8 @@ void AnalyseEngineCallbacks()
 			if (refit_cap_no_var_47) {
 				cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] = ALL_CARGOTYPES;
 			} else {
-				const CargoID default_cb = e->info.cargo_type;
-				for (CargoID c = 0; c < NUM_CARGO; c++) {
+				const CargoType default_cb = e->info.cargo_type;
+				for (CargoType c = 0; c < NUM_CARGO; c++) {
 					e->info.cargo_type = c;
 					cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] |= (static_cast<CargoTypes>(1) << c);
 				}
@@ -1684,7 +1684,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 	}
 
 	if (root_spritegroup == nullptr) {
-		CargoID cargo = v->cargo_type;
+		CargoType cargo = v->cargo_type;
 		assert(cargo < std::size(e->grf_prop.spritegroup));
 		if (e->grf_prop.spritegroup[cargo] != nullptr) {
 			root_spritegroup = e->grf_prop.spritegroup[cargo];

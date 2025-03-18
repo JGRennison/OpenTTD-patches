@@ -587,7 +587,7 @@ CommandCost CmdAlterGroup(DoCommandFlag flags, AlterGroupMode mode, GroupID grou
  * @param name the new name or an empty string when setting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateGroupFromList(DoCommandFlag flags, VehicleListIdentifier vli, CargoID cargo, const std::string &name)
+CommandCost CmdCreateGroupFromList(DoCommandFlag flags, VehicleListIdentifier vli, CargoType cargo, const std::string &name)
 {
 	VehicleList list;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;

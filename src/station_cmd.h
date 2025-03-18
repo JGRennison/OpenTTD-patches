@@ -28,6 +28,6 @@ DEF_CMD_TUPLE   (CMD_REMOVE_ROAD_STOP,                 CmdRemoveRoadStop,       
 DEF_CMD_TUPLE_NT(CMD_RENAME_STATION,                   CmdRenameStation,                         {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, bool, std::string>)
 DEF_CMD_TUPLE_NT(CMD_OPEN_CLOSE_AIRPORT,               CmdOpenCloseAirport,                      {}, CMDT_ROUTE_MANAGEMENT,       CmdDataT<StationID>)
 DEF_CMD_TUPLE_NT(CMD_EXCHANGE_STATION_NAMES,           CmdExchangeStationNames,                  {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, StationID>)
-DEF_CMD_TUPLE_NT(CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,          {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, CargoID, bool>)
+DEF_CMD_TUPLE_NT(CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,          {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, CargoType, bool>)
 
 #endif /* STATION_CMD_H */

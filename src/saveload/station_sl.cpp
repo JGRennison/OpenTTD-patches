@@ -392,7 +392,7 @@ public:
 		if ((bst->facilities & FACIL_WAYPOINT) != 0) return;
 		SlObject(bst, this->GetLoadDescription());
 
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
+		for (CargoType i = 0; i < NUM_CARGO; i++) {
 			Station::From(bst)->goods[i].last_vehicle_type = _old_last_vehicle_type;
 		}
 	}

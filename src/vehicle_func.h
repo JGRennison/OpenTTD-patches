@@ -125,14 +125,14 @@ inline bool HasVehicleOnPosXY(int x, int y, VehicleType type, void *data, Vehicl
 
 void CallVehicleTicks();
 uint8_t CalcPercentVehicleFilled(const Vehicle *v, StringID *colour);
-uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoID cargo);
+uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoType cargo);
 
 void VehicleLengthChanged(const Vehicle *u);
 
 void ResetVehicleHash();
 void ResetVehicleColourMap();
 
-uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type);
+uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoType dest_cargo_type);
 
 void ViewportAddVehicles(DrawPixelInfo *dpi, bool update_vehicles);
 void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);

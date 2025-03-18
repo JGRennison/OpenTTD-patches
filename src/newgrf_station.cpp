@@ -450,7 +450,7 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 
 	/* Handle cargo variables with parameter, 0x60 to 0x65 and 0x69 */
 	if ((variable >= 0x60 && variable <= 0x65) || variable == 0x69) {
-		CargoID c = GetCargoTranslation(parameter, object.grffile);
+		CargoType c = GetCargoTranslation(parameter, object.grffile);
 
 		if (c == INVALID_CARGO) {
 			switch (variable) {
@@ -603,7 +603,7 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	/* Invalidate all cached vars */
 	_svc.valid = 0;
 
-	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+	CargoType ctype = SpriteGroupCargo::SG_DEFAULT_NA;
 
 	if (this->station_scope.st == nullptr) {
 		/* No station, so we are in a purchase list */
@@ -913,7 +913,7 @@ uint8_t GetStationTileAnimationSpeed(TileIndex tile)
 	return StationAnimationBase::GetAnimationSpeed(ss);
 }
 
-void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoID cargo_type)
+void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoType cargo_type)
 {
 	/* List of coverage areas for each animation trigger */
 	static const TriggerArea tas[] = {
@@ -935,7 +935,7 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
 		if (st->TileBelongsToRailStation(tile)) {
 			const StationSpec *ss = GetStationSpec(tile);
 			if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
-				CargoID cargo;
+				CargoType cargo;
 				if (cargo_type == INVALID_CARGO) {
 					cargo = INVALID_CARGO;
 				} else {
@@ -954,7 +954,7 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
  * @param trigger trigger type
  * @param cargo_type cargo type causing trigger
  */
-void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRandomTrigger trigger, CargoID cargo_type)
+void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRandomTrigger trigger, CargoType cargo_type)
 {
 	/* List of coverage areas for each animation trigger */
 	static const TriggerArea tas[] = {

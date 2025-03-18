@@ -97,7 +97,7 @@ ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID in
 		CargoArray acceptance = ::GetAcceptanceAroundTiles(cur_tile, 1, 1, radius);
 		{
 			const auto &accepted = i->Accepted();
-			if (std::none_of(std::begin(accepted), std::end(accepted), [&acceptance](const auto &a) { return ::IsValidCargoID(a.cargo) && acceptance[a.cargo] != 0; })) continue;
+			if (std::none_of(std::begin(accepted), std::end(accepted), [&acceptance](const auto &a) { return ::IsValidCargoType(a.cargo) && acceptance[a.cargo] != 0; })) continue;
 		}
 
 		this->AddTile(cur_tile);

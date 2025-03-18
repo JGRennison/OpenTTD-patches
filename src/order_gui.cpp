@@ -125,7 +125,7 @@ private:
 		const Order *order = this->vehicle->GetOrder(this->order_id);
 		for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 			const CargoSpec *cs = _sorted_cargo_specs[i];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 			uint8_t order_type = (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
 			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetStringTip(this->cargo_type_order_dropdown[order_type], tooltip);
 		}
@@ -137,7 +137,7 @@ private:
 	 * @param cargo_id The cargo index for which we want the load/unload type.
 	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
 	 */
-	uint8_t GetOrderActionTypeForCargo(CargoID cargo_id)
+	uint8_t GetOrderActionTypeForCargo(CargoType cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
 		return (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
@@ -238,7 +238,7 @@ public:
 			this->Close();
 		} else if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 
 			ShowDropDownMenu(this, this->cargo_type_order_dropdown, this->GetOrderActionTypeForCargo(cargo_id), widget, 0, this->cargo_type_order_dropdown_hmask);
 		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
@@ -255,7 +255,7 @@ public:
 		ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
 		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 			uint8_t order_action_type = this->GetOrderActionTypeForCargo(cargo_id);
 
 			if (action_type == order_action_type) return;
@@ -269,7 +269,7 @@ public:
 
 			for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 				const CargoSpec *cs = _sorted_cargo_specs[i];
-				const CargoID cargo_id = cs->Index();
+				const CargoType cargo_id = cs->Index();
 				if (action_type != this->GetOrderActionTypeForCargo(cargo_id)) {
 					this->GetWidget<NWidgetCore>(i + WID_CTO_CARGO_DROPDOWN_FIRST)->SetStringTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 					this->SetWidgetDirty(i + WID_CTO_CARGO_DROPDOWN_FIRST);

@@ -25,7 +25,7 @@
  *                           <td> introduction \ref newgrf_changes "(1)"            </td>
  *                           <td> never \ref newgrf_changes "(1)"                   </td>
  *                           <td> no \ref newgrf_changes "(1)"                      </td></tr>
- * <tr><td>#CargoID     </td><td> cargo type                                        </td>
+ * <tr><td>#CargoType   </td><td> cargo type                                        </td>
  *                           <td> game start \ref newgrf_changes "(1)"              </td>
  *                           <td> never \ref newgrf_changes "(1)"                   </td>
  *                           <td> no \ref newgrf_changes "(1)"                      </td></tr>
@@ -111,7 +111,7 @@
 
 /* Define all types here, so they are added to the API docs. */
 typedef uint BridgeType;             ///< The ID of a bridge type.
-typedef uint8_t CargoID;             ///< The ID of a cargo.
+typedef uint8_t CargoType;           ///< The ID of a cargo type.
 typedef uint16_t EngineID;           ///< The ID of an engine.
 typedef uint16_t GoalID;             ///< The ID of a goal.
 typedef uint16_t GroupID;            ///< The ID of a group.
@@ -122,7 +122,7 @@ typedef int64_t Money;               ///< Money, stored in a 32bit/64bit safe wa
 #else
 typedef OverflowSafeInt64 Money;
 #endif /* DOXYGEN_API */
-typedef uint16_t ObjectType;          ///< The ID of an object-type.
+typedef uint16_t ObjectType;         ///< The ID of an object-type.
 typedef uint16_t SignID;             ///< The ID of a sign.
 typedef uint16_t StationID;          ///< The ID of a station.
 typedef uint32_t StringID;           ///< The ID of a string.

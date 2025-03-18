@@ -583,7 +583,7 @@ CargoTypes GetAcceptanceMask(const Station *st)
 {
 	CargoTypes mask = 0;
 
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(mask, i);
 	}
 	return mask;
@@ -598,7 +598,7 @@ CargoTypes GetEmptyMask(const Station *st)
 {
 	CargoTypes mask = 0;
 
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		if (st->goods[i].CargoTotalCount() == 0) SetBit(mask, i);
 	}
 	return mask;
@@ -716,7 +716,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Adjust in case our station only accepts fewer kinds of goods */
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		uint amt = acceptance[i];
 
 		/* Make sure the station can accept the goods type. */
@@ -4066,8 +4066,8 @@ void TriggerWatchedCargoCallbacks(Station *st)
 {
 	/* Collect cargoes accepted since the last big tick. */
 	CargoTypes cargoes = 0;
-	for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
-		if (HasBit(st->goods[cid].status, GoodsEntry::GES_ACCEPTED_BIGTICK)) SetBit(cargoes, cid);
+	for (CargoType cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
+		if (HasBit(st->goods[cargo_type].status, GoodsEntry::GES_ACCEPTED_BIGTICK)) SetBit(cargoes, cargo_type);
 	}
 
 	/* Anything to do? */
@@ -4396,7 +4396,7 @@ static void UpdateStationRating(Station *st)
  * @param avoid Original next hop of cargo, avoid this.
  * @param avoid2 Another station to be avoided when rerouting.
  */
-void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
+void RerouteCargo(Station *st, CargoType c, StationID avoid, StationID avoid2)
 {
 	GoodsEntry &ge = st->goods[c];
 
@@ -4421,7 +4421,7 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
  * @param avoid Original next hop of cargo, avoid this.
  * @param avoid2 Another station to be avoided when rerouting.
  */
-void RerouteCargoFromSource(Station *st, CargoID c, StationID source, StationID avoid, StationID avoid2)
+void RerouteCargoFromSource(Station *st, CargoType c, StationID source, StationID avoid, StationID avoid2)
 {
 	GoodsEntry &ge = st->goods[c];
 
@@ -4454,7 +4454,7 @@ void ClearDeleteStaleLinksVehicleCache()
  */
 void DeleteStaleLinks(Station *from)
 {
-	for (CargoID c = 0; c < NUM_CARGO; ++c) {
+	for (CargoType c = 0; c < NUM_CARGO; ++c) {
 		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(c) != DT_MANUAL);
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
@@ -4562,7 +4562,7 @@ void DeleteStaleLinks(Station *from)
  * @param usage Usage to add to link stat.
  * @param mode Update mode to be applied.
  */
-void IncreaseStats(Station *st, CargoID cargo, StationID next_station_id, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode)
+void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode)
 {
 	GoodsEntry &ge1 = st->goods[cargo];
 	Station *st2 = Station::Get(next_station_id);
@@ -4692,7 +4692,7 @@ void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint rad
 	});
 }
 
-static uint UpdateStationWaiting(Station *st, CargoID type, uint amount, SourceType source_type, SourceID source_id)
+static uint UpdateStationWaiting(Station *st, CargoType type, uint amount, SourceType source_type, SourceID source_id)
 {
 	/* We can't allocate a CargoPacket? Then don't do anything
 	 * at all; i.e. just discard the incoming cargo. */
@@ -4852,7 +4852,7 @@ CommandCost CmdExchangeStationNames(DoCommandFlag flags, StationID station_id1, 
  * @param allow whether to allow supply
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetStationCargoAllowedSupply(DoCommandFlag flags, StationID station_id, CargoID cargo, bool allow)
+CommandCost CmdSetStationCargoAllowedSupply(DoCommandFlag flags, StationID station_id, CargoType cargo, bool allow)
 {
 	Station *st = Station::GetIfValid(station_id);
 	if (st == nullptr) return CMD_ERROR;
@@ -4901,7 +4901,7 @@ const StationList &StationFinder::GetStations()
 }
 
 
-static bool CanMoveGoodsToStation(const Station *st, CargoID type)
+static bool CanMoveGoodsToStation(const Station *st, CargoType type)
 {
 	/* Is the station reserved exclusively for somebody else? */
 	if (st->owner != OWNER_NONE && st->town->exclusive_counter > 0 && st->town->exclusivity != st->owner) return false;
@@ -4924,7 +4924,7 @@ static bool CanMoveGoodsToStation(const Station *st, CargoID type)
 	return true;
 }
 
-uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, SourceID source_id, const StationList &all_stations, Owner exclusivity)
+uint MoveGoodsToStation(CargoType type, uint amount, SourceType source_type, SourceID source_id, const StationList &all_stations, Owner exclusivity)
 {
 	/* Return if nothing to do. Also the rounding below fails for 0. */
 	if (all_stations.empty()) return 0;
@@ -5701,7 +5701,7 @@ void DumpStationFlowStats(format_target &buffer)
 	btree::btree_map<uint, uint> count_map;
 	btree::btree_map<uint, uint> invalid_map;
 	for (const Station *st : Station::Iterate()) {
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
+		for (CargoType i = 0; i < NUM_CARGO; i++) {
 			const GoodsEntry &ge = st->goods[i];
 			if (ge.data == nullptr) continue;
 			for (FlowStatMap::const_iterator it(ge.data->flows.begin()); it != ge.data->flows.end(); ++it) {

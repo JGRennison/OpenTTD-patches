@@ -956,7 +956,7 @@ enum TraceRestrictValueType : uint8_t {
 	TRVT_DENY,                     ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
 	TRVT_SPEED,                    ///< takes an integer speed value
 	TRVT_ORDER,                    ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
-	TRVT_CARGO_ID,                 ///< takes a CargoID
+	TRVT_CARGO_ID,                 ///< takes a CargoType
 	TRVT_DIRECTION,                ///< takes a TraceRestrictDirectionTypeSpecialValue
 	TRVT_TILE_INDEX,               ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY,               ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField

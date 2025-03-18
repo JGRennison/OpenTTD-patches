@@ -108,7 +108,7 @@ struct CargoSpec {
 	 * Determines index of this cargospec
 	 * @return index (in the CargoSpec::array array)
 	 */
-	inline CargoID Index() const
+	inline CargoType Index() const
 	{
 		return this - CargoSpec::array;
 	}
@@ -142,9 +142,9 @@ struct CargoSpec {
 	}
 
 	/**
-	 * Retrieve cargo details for the given cargo ID
+	 * Retrieve cargo details for the given cargo type
 	 * @param index ID of cargo
-	 * @pre index is a valid cargo ID
+	 * @pre index is a valid cargo type
 	 */
 	static inline CargoSpec *Get(size_t index)
 	{
@@ -205,7 +205,7 @@ struct CargoSpec {
 	static IterateWrapper Iterate(size_t from = 0) { return IterateWrapper(from); }
 
 	/** List of cargo specs for each Town Product Effect. */
-	static std::array<std::vector<CargoID>, NUM_TPE> town_production_cargoes;
+	static std::array<std::vector<CargoType>, NUM_TPE> town_production_cargoes;
 
 	/** Mask of cargo IDs for each Town Product Effect. */
 	static std::array<CargoTypes, NUM_TPE> town_production_cargo_mask;
@@ -222,17 +222,17 @@ extern CargoTypes _cargo_mask;
 extern CargoTypes _standard_cargo_mask;
 
 void SetupCargoForClimate(LandscapeID l);
-bool IsDefaultCargo(CargoID cid);
+bool IsDefaultCargo(CargoType cargo_type);
 void BuildCargoLabelMap();
 
 std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptance, StringID label);
 
-CargoID GetCargoIDByLabelUsingMap(CargoLabel label);
+CargoType GetCargoIDByLabelUsingMap(CargoLabel label);
 
-inline CargoID GetCargoIDByLabel(CargoLabel label)
+inline CargoType GetCargoTypeByLabel(CargoLabel label)
 {
-	extern CargoID _cargo_id_passengers;
-	extern CargoID _cargo_id_mail;
+	extern CargoType _cargo_id_passengers;
+	extern CargoType _cargo_id_mail;
 	if (label == CT_PASSENGERS) return _cargo_id_passengers;
 	if (label == CT_MAIL) return _cargo_id_mail;
 	return GetCargoIDByLabelUsingMap(label);
@@ -245,8 +245,8 @@ extern std::array<uint8_t, NUM_CARGO> _sorted_cargo_types;
 extern std::vector<const CargoSpec *> _sorted_cargo_specs;
 extern std::span<const CargoSpec *> _sorted_standard_cargo_specs;
 
-uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity);
-uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity);
+uint ConvertCargoQuantityToDisplayQuantity(CargoType cargo, uint quantity);
+uint ConvertDisplayQuantityToCargoQuantity(CargoType cargo, uint quantity);
 
 /**
  * Does cargo \a c have cargo class \a cc?
@@ -254,16 +254,16 @@ uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity);
  * @param cc Cargo class.
  * @return The type fits in the class.
  */
-inline bool IsCargoInClass(CargoID c, CargoClass cc)
+inline bool IsCargoInClass(CargoType c, CargoClass cc)
 {
 	return (CargoSpec::Get(c)->classes & cc) != 0;
 }
 
-using SetCargoBitIterator = SetBitIterator<CargoID, CargoTypes>;
+using SetCargoBitIterator = SetBitIterator<CargoType, CargoTypes>;
 
-/** Comparator to sort CargoID by according to desired order. */
-struct CargoIDComparator {
-	bool operator() (const CargoID &lhs, const CargoID &rhs) const { return _sorted_cargo_types[lhs] < _sorted_cargo_types[rhs]; }
+/** Comparator to sort CargoType by according to desired order. */
+struct CargoTypeComparator {
+	bool operator() (const CargoType &lhs, const CargoType &rhs) const { return _sorted_cargo_types[lhs] < _sorted_cargo_types[rhs]; }
 };
 
 #endif /* CARGOTYPE_H */

@@ -379,7 +379,7 @@ public:
 				cargo_caps[u->cargo_type] += u->cargo_cap;
 			}
 
-			for (CargoID i = 0; i < NUM_CARGO; ++i) {
+			for (CargoType i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
 					if (count_columns % max_columns == 0) {
 						height += GetCharacterHeight(FS_NORMAL);
@@ -961,7 +961,7 @@ public:
 		int x = 0;
 		int step = ScaleGUITrad(250);
 		bool rtl = _current_text_dir == TD_RTL;
-		for (CargoID i = 0; i < NUM_CARGO; ++i) {
+		for (CargoType i = 0; i < NUM_CARGO; ++i) {
 			if (cargo_caps[i] > 0) {
 				count_columns++;
 				SetDParam(0, i);

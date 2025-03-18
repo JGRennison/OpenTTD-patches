@@ -176,7 +176,7 @@ bool IsValidImageIndex<VEH_TRAIN>(uint8_t image_index)
  * @param cargo Cargo type to get multiplier for
  * @return Cargo weight multiplier
  */
-uint8_t FreightWagonMult(CargoID cargo)
+uint8_t FreightWagonMult(CargoType cargo)
 {
 	if (!CargoSpec::Get(cargo)->is_freight) return 1;
 	return _settings_game.vehicle.freight_trains;
@@ -1496,7 +1496,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 
 		v->cargo_type = e->GetDefaultCargoType();
-		assert(IsValidCargoID(v->cargo_type));
+		assert(IsValidCargoType(v->cargo_type));
 		v->cargo_cap = rvi->capacity;
 		v->refit_cap = 0;
 
@@ -1644,7 +1644,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
 		v->spritenum = rvi->image_index;
 		v->cargo_type = e->GetDefaultCargoType();
-		assert(IsValidCargoID(v->cargo_type));
+		assert(IsValidCargoType(v->cargo_type));
 		v->cargo_cap = rvi->capacity;
 		v->refit_cap = 0;
 		v->last_station_visited = INVALID_STATION;
@@ -7226,7 +7226,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
  * @param move_target Where to move the virtual train vehicle after construction
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoID cargo, ClientID client, VehicleID move_target)
+CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoType cargo, ClientID client, VehicleID move_target)
 {
 	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
 		return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
@@ -7244,7 +7244,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoI
 		}
 
 		if (cargo != INVALID_CARGO) {
-			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
+			CargoType default_cargo = Engine::Get(eid)->GetDefaultCargoType();
 			if (default_cargo != cargo) {
 				CommandCost refit_res = CmdRefitVehicle(flags, train->index, cargo, 0, false, false, 0);
 				if (!refit_res.Succeeded()) {
@@ -7346,7 +7346,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 	const bool refit_to_template = tv->refit_as_template;
 	const TileIndex tile = incoming->tile;
 
-	CargoID store_refit_ct = INVALID_CARGO;
+	CargoType store_refit_ct = INVALID_CARGO;
 	uint16_t store_refit_csubt = 0;
 	// if a train shall keep its old refit, store the refit setting of its first vehicle
 	if (!refit_to_template) {
@@ -7371,7 +7371,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 	TemplateDepotVehicles depot_vehicles;
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
 
-	auto refit_unit = [&](const Train *unit, CargoID cid, uint16_t csubt) {
+	auto refit_unit = [&](const Train *unit, CargoType cid, uint16_t csubt) {
 		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(flags, unit->index, cid, csubt, false, false, 1);
 		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
 	};
@@ -7411,7 +7411,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 					}
 				}
 
-				CargoID refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
+				CargoType refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
 				buy.AddCost(Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, refit_cargo, INVALID_CLIENT_ID));
 			};
 			for (const TemplateVehicle *cur_tmpl = tv; cur_tmpl != nullptr; cur_tmpl = cur_tmpl->GetNextUnit()) {

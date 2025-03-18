@@ -600,7 +600,7 @@ static void AdvanceHouseConstruction(TileIndex tile)
  * @param stations available stations for this house
  * @param economy_adjust true if amount should be reduced during recession
  */
-static void TownGenerateCargo(Town *t, CargoID ct, uint amount, StationFinder &stations, bool economy_adjust)
+static void TownGenerateCargo(Town *t, CargoType ct, uint amount, StationFinder &stations, bool economy_adjust)
 {
 	/* When the economy flunctuates, everyone wants to stay at home */
 	if (economy_adjust && EconomyIsInRecession()) {
@@ -624,14 +624,14 @@ static void TownGenerateCargo(Town *t, CargoID ct, uint amount, StationFinder &s
  */
 static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
 		const CargoSpec *cs = CargoSpec::Get(cid);
 		uint32_t r = Random();
 		if (GB(r, 0, 8) < rate) {
-			CargoID cid = cs->Index();
+			CargoType cargo_type = cs->Index();
 			uint amt = (GB(r, 0, 8) * cs->town_production_multiplier / TOWN_PRODUCTION_DIVISOR) / 8 + 1;
 
-			TownGenerateCargo(t, cid, amt, stations, true);
+			TownGenerateCargo(t, cargo_type, amt, stations, true);
 		}
 	}
 }
@@ -645,8 +645,8 @@ static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t
  */
 static void TownGenerateCargoBinomial(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
-		const CargoSpec *cs = CargoSpec::Get(cid);
+	for (CargoType cargo_type : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+		const CargoSpec *cs = CargoSpec::Get(cargo_type);
 		uint32_t r = Random();
 
 		/* Make a bitmask with up to 32 bits set, one for each potential pax. */
@@ -656,7 +656,7 @@ static void TownGenerateCargoBinomial(Town *t, TownProductionEffect tpe, uint8_t
 		/* Mask random value by potential pax and count number of actual pax. */
 		uint amt = CountBits(r & genmask) * cs->town_production_multiplier / TOWN_PRODUCTION_DIVISOR;
 
-		TownGenerateCargo(t, cid, amt, stations, true);
+		TownGenerateCargo(t, cargo_type, amt, stations, true);
 	}
 }
 
@@ -701,7 +701,7 @@ static void TileLoop_Town(TileIndex tile)
 
 			if (callback == CALLBACK_FAILED || callback == CALLBACK_HOUSEPRODCARGO_END) break;
 
-			CargoID cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
+			CargoType cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
 			if (cargo == INVALID_CARGO) continue;
 
 			uint amt = GB(callback, 0, 8);
@@ -825,19 +825,19 @@ static void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 
 			if (callback == CALLBACK_FAILED || callback == CALLBACK_HOUSEPRODCARGO_END) break;
 
-			CargoID cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
+			CargoType cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
 
 			if (cargo == INVALID_CARGO) continue;
 			produced[cargo]++;
 		}
 	} else {
 		if (hs->population > 0) {
-			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
 				produced[cid]++;
 			}
 		}
 		if (hs->mail_generation > 0) {
-			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
 				produced[cid]++;
 			}
 		}
@@ -850,13 +850,13 @@ static void AddProducedCargo_Town(TileIndex tile, CargoArray &produced)
 }
 
 /**
- * Fill cargo acceptance array and always_accepted mask, if cargo ID is valid.
+ * Fill cargo acceptance array and always_accepted mask, if cargo type is valid.
  * @param cargo Cargo type to add.
  * @param amount Amount of cargo to add.
  * @param[out] acceptance Output array containing amount of cargo accepted.
  * @param[out] always_accepted Output mask of accepted cargo types.
  */
-static void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acceptance, CargoTypes &always_accepted)
+static void AddAcceptedCargoSetMask(CargoType cargo, uint amount, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	if (cargo == INVALID_CARGO || amount == 0) return;
 	acceptance[cargo] += amount;
@@ -874,7 +874,7 @@ static void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acce
  */
 void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs, Town *t, CargoArray &acceptance, CargoTypes &always_accepted)
 {
-	CargoID accepts[lengthof(hs->accepts_cargo)];
+	CargoType accepts[lengthof(hs->accepts_cargo)];
 
 	/* Set the initial accepted cargo types */
 	for (uint8_t i = 0; i < lengthof(accepts); i++) {
@@ -900,7 +900,7 @@ void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs,
 			AddAcceptedCargoSetMask(accepts[1], GB(callback, 4, 4), acceptance, always_accepted);
 			if (_settings_game.game_creation.landscape != LT_TEMPERATE && HasBit(callback, 12)) {
 				/* The 'S' bit indicates food instead of goods */
-				AddAcceptedCargoSetMask(GetCargoIDByLabel(CT_FOOD), GB(callback, 8, 4), acceptance, always_accepted);
+				AddAcceptedCargoSetMask(GetCargoTypeByLabel(CT_FOOD), GB(callback, 8, 4), acceptance, always_accepted);
 			} else {
 				AddAcceptedCargoSetMask(accepts[2], GB(callback, 8, 4), acceptance, always_accepted);
 			}
@@ -2198,10 +2198,10 @@ void UpdateTownRadii()
 
 void UpdateTownMaxPass(Town *t)
 {
-	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
 		t->supplied[cid].old_max = _town_cargo_scaler.Scale(t->cache.population >> 3);
 	}
-	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
 		t->supplied[cid].old_max = _town_cargo_scaler.Scale(t->cache.population >> 4);
 	}
 }
@@ -4156,7 +4156,7 @@ static uint GetNormalGrowthRate(Town *t)
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
 			uint32_t old_max = 0;
 			uint32_t old_act = 0;
-			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
 				const TransportedCargoStat<uint32_t> &stat = t->supplied[cid];
 				old_max += stat.old_max;
 				old_act += stat.old_act;

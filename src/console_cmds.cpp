@@ -3293,7 +3293,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	static const char tae_char[NUM_TAE] = { '-', 'P', 'M', 'G', 'W', 'F' };
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
 		if (!spec->IsValid()) continue;
 		uint32_t grfid = 0;

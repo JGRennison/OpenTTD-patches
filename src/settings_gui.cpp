@@ -847,7 +847,7 @@ struct GameOptionsWindow : Window {
 				if (used_set == nullptr || !used_set->IsConfigurable()) break;
 				GRFConfig &extra_cfg = used_set->GetOrCreateExtraConfig();
 				if (extra_cfg.param.empty()) extra_cfg.SetParameterDefaults();
-				OpenGRFParameterWindow(true, &extra_cfg, _game_mode == GM_MENU);
+				OpenGRFParameterWindow(true, extra_cfg, _game_mode == GM_MENU);
 				if (_game_mode == GM_MENU) this->reload = true;
 				break;
 			}
@@ -1374,9 +1374,9 @@ private:
 
 /** Cargodist per-cargo setting */
 struct CargoDestPerCargoSettingEntry : SettingEntry {
-	CargoID cargo;
+	CargoType cargo;
 
-	CargoDestPerCargoSettingEntry(CargoID cargo, const IntSettingDesc *setting);
+	CargoDestPerCargoSettingEntry(CargoType cargo, const IntSettingDesc *setting);
 	void Init(uint8_t level = 0) override;
 	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
@@ -1784,7 +1784,7 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 
 /* == CargoDestPerCargoSettingEntry methods == */
 
-CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoID cargo, const IntSettingDesc *setting)
+CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoType cargo, const IntSettingDesc *setting)
 	: SettingEntry(setting), cargo(cargo) {}
 
 void CargoDestPerCargoSettingEntry::Init(uint8_t level)
@@ -2689,7 +2689,7 @@ static SettingsContainer &GetSettingsTree()
 					const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
 					uint base_index = GetSettingIndexByFullName(linkgraph_table, "linkgraph.distribution_per_cargo[0]");
 					assert(base_index != UINT32_MAX);
-					for (CargoID c = 0; c < NUM_CARGO; c++) {
+					for (CargoType c = 0; c < NUM_CARGO; c++) {
 						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, GetSettingDescription(linkgraph_table, base_index + c)->AsIntSetting()));
 					}
 				}

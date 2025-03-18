@@ -306,7 +306,7 @@ struct VehicleUnbunchState {
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 	/* These are here for structure packing purposes */
 
-	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
+	CargoType cargo_type;               ///< type of cargo this vehicle is carrying
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
 	TileIndex tile;                     ///< Current tile index
 

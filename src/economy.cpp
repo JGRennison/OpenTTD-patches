@@ -1104,7 +1104,7 @@ Money GetPrice(Price index, uint cost_factor, const GRFFile *grf_file, int shift
 	return cost;
 }
 
-Money GetTransportedGoodsIncome(uint num_pieces, uint dist, uint16_t transit_periods, CargoID cargo_type)
+Money GetTransportedGoodsIncome(uint num_pieces, uint dist, uint16_t transit_periods, CargoType cargo_type)
 {
 	const CargoSpec *cs = CargoSpec::Get(cargo_type);
 	if (!cs->IsValid()) {
@@ -1171,7 +1171,7 @@ Money GetTransportedGoodsIncome(uint num_pieces, uint dist, uint16_t transit_per
 static SmallIndustryList _cargo_delivery_destinations;
 
 template <class F>
-void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID source, CompanyID company, F&& f) {
+void ForAcceptingIndustries(const Station *st, CargoType cargo_type, IndustryID source, CompanyID company, F&& f) {
 	for (const auto &i : st->industries_near) {
 		Industry *ind = i.industry;
 		if (ind->index == source) continue;
@@ -1189,7 +1189,7 @@ void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID so
 	}
 }
 
-uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoType cargo_type, uint num_pieces, IndustryID source, CompanyID company)
 {
 	/* Find the nearest industrytile to the station sign inside the catchment area, whose industry accepts the cargo.
 	 * This fails in three cases:
@@ -1219,7 +1219,7 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoID cargo_type, u
 	return accepted;
 }
 
-uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+uint DeliverGoodsToIndustryEqually(const Station *st, CargoType cargo_type, uint num_pieces, IndustryID source, CompanyID company)
 {
 	struct AcceptingIndustry {
 		Industry *ind;
@@ -1323,7 +1323,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint n
  * @param company The company delivering the cargo
  * @return actually accepted pieces of cargo
  */
-static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+static uint DeliverGoodsToIndustry(const Station *st, CargoType cargo_type, uint num_pieces, IndustryID source, CompanyID company)
 {
 	switch (_settings_game.station.station_delivery_mode) {
 		case SD_BALANCED:
@@ -1346,7 +1346,7 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
  * @return Revenue for delivering cargo
  * @note The cargo is just added to the stockpile of the industry. It is due to the caller to trigger the industry's production machinery
  */
-static Money DeliverGoods(int num_pieces, CargoID cargo_type, StationID dest, uint distance, uint16_t periods_in_transit, Company *company, SourceType src_type, SourceID src)
+static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, uint distance, uint16_t periods_in_transit, Company *company, SourceType src_type, SourceID src)
 {
 	assert(num_pieces > 0);
 
@@ -1473,7 +1473,7 @@ CargoPayment::~CargoPayment()
  * @param count The number of packets to pay for.
  * @param current_tile Current tile the payment is happening on.
  */
-void CargoPayment::PayFinalDelivery(CargoID cargo, CargoPacket *cp, uint count, TileIndex current_tile)
+void CargoPayment::PayFinalDelivery(CargoType cargo, CargoPacket *cp, uint count, TileIndex current_tile)
 {
 	if (this->owner == nullptr) {
 		this->owner = Company::Get(this->front->owner);
@@ -1500,7 +1500,7 @@ void CargoPayment::PayFinalDelivery(CargoID cargo, CargoPacket *cp, uint count, 
  * @param current_tile Current tile the payment is happening on.
  * @return The amount of money paid for the transfer.
  */
-Money CargoPayment::PayTransfer(CargoID cargo, CargoPacket *cp, uint count, TileIndex current_tile)
+Money CargoPayment::PayTransfer(CargoType cargo, CargoPacket *cp, uint count, TileIndex current_tile)
 {
 	/* Pay transfer vehicle the difference between the payment for the journey from
 	 * the source to the current point, and the sum of the previous transfer payments */
@@ -1802,9 +1802,9 @@ struct FinalizeRefitAction
  * @param consist_capleft Added cargo capacities in the consist.
  * @param st Station the vehicle is loading at.
  * @param next_station Possible next stations the vehicle can travel to.
- * @param new_cid Target cargo for refit.
+ * @param new_cargo_type Target cargo for refit.
  */
-static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist_capleft, Station *st, CargoStationIDStackSet next_station, CargoID new_cid)
+static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist_capleft, Station *st, CargoStationIDStackSet next_station, CargoType new_cid)
 {
 	if (!IterateVehicleParts(v_start, IsEmptyAction())) return;
 	if (v->type == VEH_TRAIN && !IterateVehicleParts(v_start, ThroughLoadTrainInPlatformAction())) return;
@@ -1821,7 +1821,7 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 	if (is_auto_refit) {
 		/* Get a refittable cargo type with waiting cargo for next_station or INVALID_STATION. */
 		new_cid = v_start->cargo_type;
-		for (CargoID cid : SetCargoBitIterator(refit_mask)) {
+		for (CargoType cid : SetCargoBitIterator(refit_mask)) {
 			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OLFB_NO_LOAD) continue;
 			if (st->goods[cid].data != nullptr && st->goods[cid].data->cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,

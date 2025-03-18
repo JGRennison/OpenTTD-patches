@@ -1146,7 +1146,7 @@ uint ConvertDisplayToForceWeightRatio(double in)
 	return ConvertDisplayToWeightRatio(_units_force[_settings_game.locale.units_force], in);
 }
 
-uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity)
+uint ConvertCargoQuantityToDisplayQuantity(CargoType cargo, uint quantity)
 {
 	switch (CargoSpec::Get(cargo)->units_volume) {
 		case STR_TONS:
@@ -1161,7 +1161,7 @@ uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity)
 	return quantity;
 }
 
-uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity)
+uint ConvertDisplayQuantityToCargoQuantity(CargoType cargo, uint quantity)
 {
 	switch (CargoSpec::Get(cargo)->units_volume) {
 		case STR_TONS:
@@ -1529,7 +1529,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					/* Tiny description of cargotypes. Layout:
 					 * param 1: cargo type
 					 * param 2: cargo count */
-					CargoID cargo = args.GetNextParameter<CargoID>();
+					CargoType cargo = args.GetNextParameter<CargoType>();
 					if (cargo >= CargoSpec::GetArraySize()) break;
 
 					StringID cargo_str = CargoSpec::Get(cargo)->units_volume;
@@ -1557,7 +1557,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					/* Short description of cargotypes. Layout:
 					 * param 1: cargo type
 					 * param 2: cargo count */
-					CargoID cargo = args.GetNextParameter<CargoID>();
+					CargoType cargo = args.GetNextParameter<CargoType>();
 					if (cargo >= CargoSpec::GetArraySize()) break;
 
 					StringID cargo_str = CargoSpec::Get(cargo)->units_volume;
@@ -1589,7 +1589,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 				case SCC_CARGO_LONG: { // {CARGO_LONG}
 					/* First parameter is cargo type, second parameter is cargo count */
-					CargoID cargo = args.GetNextParameter<CargoID>();
+					CargoType cargo = args.GetNextParameter<CargoType>();
 					if (cargo != INVALID_CARGO && cargo >= CargoSpec::GetArraySize()) break;
 
 					StringID cargo_str = (cargo == INVALID_CARGO) ? STR_QUANTITY_N_A : CargoSpec::Get(cargo)->quantifier;

@@ -385,7 +385,7 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 {
 	assert(new_head->IsPrimaryVehicle() || new_head->IsFreeWagon());
 
-	const CargoID cargo_type = old_veh->cargo_type;
+	const CargoType cargo_type = old_veh->cargo_type;
 	const uint8_t cargo_subtype = old_veh->cargo_subtype;
 
 	/* How much cargo has to be moved (if possible) */

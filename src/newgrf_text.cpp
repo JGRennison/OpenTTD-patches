@@ -1033,7 +1033,7 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, StringBuilder builder, const
 				break;
 
 			case SCC_NEWGRF_PRINT_WORD_CARGO_NAME: {
-				CargoID cargo = GetCargoTranslation(_newgrf_textrefstack.PopUnsignedWord(), _newgrf_textrefstack.grffile);
+				CargoType cargo = GetCargoTranslation(_newgrf_textrefstack.PopUnsignedWord(), _newgrf_textrefstack.grffile);
 				parameters.SetParam(0, cargo < NUM_CARGO ? 1ULL << cargo : 0);
 				break;
 			}

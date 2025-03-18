@@ -28,12 +28,12 @@ struct LinkProperties {
 	/** Return the usage of the link to display. */
 	uint Usage() const { return std::max(this->usage, this->planned); }
 
-	uint capacity; ///< Capacity of the link.
-	uint usage;    ///< Actual usage of the link.
-	uint planned;  ///< Planned usage of the link.
-	CargoID cargo; ///< Cargo type of the link.
-	uint32_t time; ///< Travel time of the link.
-	bool shared;   ///< If this is a shared link to be drawn dashed.
+	uint capacity;     ///< Capacity of the link.
+	uint usage;        ///< Actual usage of the link.
+	uint planned;      ///< Planned usage of the link.
+	CargoType cargo;   ///< Cargo type of the link.
+	uint32_t time;     ///< Travel time of the link.
+	bool shared;       ///< If this is a shared link to be drawn dashed.
 
 	bool operator==(const LinkProperties&) const = default;
 };
@@ -124,7 +124,7 @@ protected:
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
-	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32_t time, bool new_shared, LinkProperties &cargo);
+	static void AddStats(CargoType new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32_t time, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(class Blitter *blitter, const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
 };
 

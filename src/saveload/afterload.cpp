@@ -1817,7 +1817,7 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_26)) {
 		for (Station *st : Station::Iterate()) {
-			for (CargoID c = 0; c < NUM_CARGO; c++) {
+			for (CargoType c = 0; c < NUM_CARGO; c++) {
 				st->goods[c].last_vehicle_type = VEH_INVALID;
 			}
 		}

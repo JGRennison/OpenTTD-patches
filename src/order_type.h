@@ -236,8 +236,8 @@ enum ModifyOrderFlags : uint8_t {
 	MOF_COND_STATION_ID, ///< The station ID to set the condition to.
 	MOF_COND_DESTINATION,///< Change the destination of a conditional order.
 	MOF_WAYPOINT_FLAGS,  ///< Change the waypoint flags
-	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoID.
-	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoID.
+	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoType.
+	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoType.
 	MOF_SLOT,            ///< Change the slot value
 	MOF_RV_TRAVEL_DIR,   ///< Change the road vehicle travel direction.
 	MOF_COUNTER_ID,      ///< Change the counter ID

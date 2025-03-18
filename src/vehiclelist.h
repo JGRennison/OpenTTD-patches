@@ -63,8 +63,8 @@ struct VehicleListIdentifier : public fmt_formattable {
 /** A list of vehicles. */
 typedef std::vector<const Vehicle *> VehicleList;
 
-bool VehicleCargoFilter(const Vehicle *v, const CargoID cid);
-bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &identifier, const CargoID cid = CargoFilterCriteria::CF_ANY);
+bool VehicleCargoFilter(const Vehicle *v, const CargoType cid);
+bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &identifier, const CargoType cid = CargoFilterCriteria::CF_ANY);
 void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine_list, VehicleList *wagon_list, bool individual_wagons = false);
 uint GetUnitNumberDigits(VehicleList &vehicles);
 

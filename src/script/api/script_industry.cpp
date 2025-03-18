@@ -66,67 +66,67 @@
 	return ScriptObject::Command<CMD_INDUSTRY_SET_TEXT>::Do(industry_id, text != nullptr ? text->GetEncodedText() : std::string{});
 }
 
-/* static */ ScriptIndustry::CargoAcceptState ScriptIndustry::IsCargoAccepted(IndustryID industry_id, CargoID cargo_id)
+/* static */ ScriptIndustry::CargoAcceptState ScriptIndustry::IsCargoAccepted(IndustryID industry_id, CargoType cargo_type)
 {
 	if (!IsValidIndustry(industry_id)) return CAS_NOT_ACCEPTED;
-	if (!ScriptCargo::IsValidCargo(cargo_id)) return CAS_NOT_ACCEPTED;
+	if (!ScriptCargo::IsValidCargo(cargo_type)) return CAS_NOT_ACCEPTED;
 
 	/* Not const because IndustryTemporarilyRefusesCargo tests a callback which needs a non-const object. */
 	Industry *i = ::Industry::Get(industry_id);
 
-	if (!i->IsCargoAccepted(cargo_id)) return CAS_NOT_ACCEPTED;
-	if (IndustryTemporarilyRefusesCargo(i, cargo_id)) return CAS_TEMP_REFUSED;
+	if (!i->IsCargoAccepted(cargo_type)) return CAS_NOT_ACCEPTED;
+	if (IndustryTemporarilyRefusesCargo(i, cargo_type)) return CAS_TEMP_REFUSED;
 
 	return CAS_ACCEPTED;
 }
 
-/* static */ SQInteger ScriptIndustry::GetStockpiledCargo(IndustryID industry_id, CargoID cargo_id)
+/* static */ SQInteger ScriptIndustry::GetStockpiledCargo(IndustryID industry_id, CargoType cargo_type)
 {
 	if (!IsValidIndustry(industry_id)) return -1;
-	if (!ScriptCargo::IsValidCargo(cargo_id)) return -1;
+	if (!ScriptCargo::IsValidCargo(cargo_type)) return -1;
 
 	const Industry *i = ::Industry::Get(industry_id);
 
-	int j = i->GetCargoAcceptedIndex(cargo_id);
+	int j = i->GetCargoAcceptedIndex(cargo_type);
 	if (j < 0) return -1;
 
 	return i->accepted[j].waiting;
 }
 
-/* static */ SQInteger ScriptIndustry::GetLastMonthProduction(IndustryID industry_id, CargoID cargo_id)
+/* static */ SQInteger ScriptIndustry::GetLastMonthProduction(IndustryID industry_id, CargoType cargo_type)
 {
 	if (!IsValidIndustry(industry_id)) return -1;
-	if (!ScriptCargo::IsValidCargo(cargo_id)) return -1;
+	if (!ScriptCargo::IsValidCargo(cargo_type)) return -1;
 
 	const Industry *i = ::Industry::Get(industry_id);
 
-	int j = i->GetCargoProducedIndex(cargo_id);
+	int j = i->GetCargoProducedIndex(cargo_type);
 	if (j < 0) return -1;
 
 	return i->produced[j].history[LAST_MONTH].production;
 }
 
-/* static */ SQInteger ScriptIndustry::GetLastMonthTransported(IndustryID industry_id, CargoID cargo_id)
+/* static */ SQInteger ScriptIndustry::GetLastMonthTransported(IndustryID industry_id, CargoType cargo_type)
 {
 	if (!IsValidIndustry(industry_id)) return -1;
-	if (!ScriptCargo::IsValidCargo(cargo_id)) return -1;
+	if (!ScriptCargo::IsValidCargo(cargo_type)) return -1;
 
 	const Industry *i = ::Industry::Get(industry_id);
 
-	int j = i->GetCargoProducedIndex(cargo_id);
+	int j = i->GetCargoProducedIndex(cargo_type);
 	if (j < 0) return -1;
 
 	return i->produced[j].history[LAST_MONTH].transported;
 }
 
-/* static */ SQInteger ScriptIndustry::GetLastMonthTransportedPercentage(IndustryID industry_id, CargoID cargo_id)
+/* static */ SQInteger ScriptIndustry::GetLastMonthTransportedPercentage(IndustryID industry_id, CargoType cargo_type)
 {
 	if (!IsValidIndustry(industry_id)) return -1;
-	if (!ScriptCargo::IsValidCargo(cargo_id)) return -1;
+	if (!ScriptCargo::IsValidCargo(cargo_type)) return -1;
 
 	const Industry *i = ::Industry::Get(industry_id);
 
-	int j = i->GetCargoProducedIndex(cargo_id);
+	int j = i->GetCargoProducedIndex(cargo_type);
 	if (j < 0) return -1;
 
 	return ::ToPercent8(i->produced[j].history[LAST_MONTH].PctTransported());
@@ -226,7 +226,7 @@
 	return i->last_prod_year.base();
 }
 
-/* static */ ScriptDate::Date ScriptIndustry::GetCargoLastAcceptedDate(IndustryID industry_id, CargoID cargo_type)
+/* static */ ScriptDate::Date ScriptIndustry::GetCargoLastAcceptedDate(IndustryID industry_id, CargoType cargo_type)
 {
 	const Industry *i = Industry::GetIfValid(industry_id);
 	if (i == nullptr) return ScriptDate::DATE_INVALID;

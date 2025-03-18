@@ -117,7 +117,7 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 }
 
 /** Cargo filter functions */
-bool VehicleCargoFilter(const Vehicle *v, const CargoID cid)
+bool VehicleCargoFilter(const Vehicle *v, const CargoType cid)
 {
 	if (cid == CargoFilterCriteria::CF_ANY) {
 		return true;
@@ -157,7 +157,7 @@ bool VehicleCargoFilter(const Vehicle *v, const CargoID cid)
  * @param cid Cargo filter (or CargoFilterCriteria::CF_ANY)
  * @return false if invalid list is requested
  */
-bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli, const CargoID cid)
+bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli, const CargoType cid)
 {
 	list->clear();
 

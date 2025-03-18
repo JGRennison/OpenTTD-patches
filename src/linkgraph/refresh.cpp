@@ -37,12 +37,12 @@
 		for (const Order *o : v->Orders()) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
-					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
+					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoType cargo) -> uint {
 						return o->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD);
 					});
 				}
 				if (o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
+					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoType cargo) -> uint {
 						return o->GetCargoLoadType(cargo) & (OLFB_NO_LOAD);
 					});
 				}
@@ -92,7 +92,7 @@ LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_mer
  * @param refit_cargo Cargo to refit to.
  * @return True if any vehicle was refit; false if none was.
  */
-bool LinkRefresher::HandleRefit(CargoID refit_cargo)
+bool LinkRefresher::HandleRefit(CargoType refit_cargo)
 {
 	this->cargo = refit_cargo;
 	RefitList::iterator refit_it = this->refit_capacities.begin();
@@ -106,7 +106,7 @@ bool LinkRefresher::HandleRefit(CargoID refit_cargo)
 		any_refit = true;
 
 		/* Back up the vehicle's cargo type */
-		CargoID temp_cid = v->cargo_type;
+		CargoType temp_cargo_type = v->cargo_type;
 		uint8_t temp_subtype = v->cargo_subtype;
 		v->cargo_type = this->cargo;
 		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(this->cargo, CC_PASSENGERS))) {
@@ -118,7 +118,7 @@ bool LinkRefresher::HandleRefit(CargoID refit_cargo)
 		uint amount = e->DetermineCapacity(v, &mail_capacity);
 
 		/* Restore the original cargo type */
-		v->cargo_type = temp_cid;
+		v->cargo_type = temp_cargo_type;
 		v->cargo_subtype = temp_subtype;
 
 		/* Skip on next refit. */
@@ -302,7 +302,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 	Station *st = Station::GetIfValid(cur->GetDestination());
 	if (st != nullptr && next_station != INVALID_STATION && next_station != st->index) {
 		Station *st_to = Station::Get(next_station);
-		for (CargoID c = 0; c < NUM_CARGO; c++) {
+		for (CargoType c = 0; c < NUM_CARGO; c++) {
 			/* Refresh the link and give it a minimum capacity. */
 
 			if (!HasBit(this->cargo_mask, c)) continue;
@@ -384,7 +384,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 			} else if (!HasBit(flags, IN_AUTOREFIT)) {
 				SetBit(flags, IN_AUTOREFIT);
 				LinkRefresher backup(*this);
-				for (CargoID c = 0; c != NUM_CARGO; ++c) {
+				for (CargoType c = 0; c != NUM_CARGO; ++c) {
 					if (!CargoSpec::Get(c)->IsValid()) continue;
 					if (next->GetCargoLoadType(c) == OLFB_NO_LOAD) continue;
 					if (this->HandleRefit(c)) {

@@ -341,7 +341,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<GRFLabel> labels;                   ///< List of labels
 
 	std::vector<CargoLabel> cargo_list;             ///< Cargo translation table (local ID -> label)
-	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoID -> local ID)
+	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoType -> local ID)
 
 	std::vector<RailTypeLabel> railtype_list;       ///< Railtype translation table
 	std::array<RailType, RAILTYPE_END> railtype_map{};
@@ -381,7 +381,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	btree::btree_map<GRFStringID, StringIndexInTab> string_map; ///< Map of local GRF string ID to string ID
 
-	GRFFile(const struct GRFConfig *config);
+	GRFFile(const struct GRFConfig &config);
 
 	/** Get GRF Parameter with range checking */
 	uint32_t GetParam(uint number) const
@@ -426,7 +426,7 @@ inline bool HasGrfMiscBit(GrfMiscBit bit)
 /* Indicates which are the newgrf features currently loaded ingame */
 extern GRFLoadedFeatures _loaded_newgrf_features;
 
-void LoadNewGRFFile(struct GRFConfig *config, GrfLoadingStage stage, Subdirectory subdir, bool temporary);
+void LoadNewGRFFile(struct GRFConfig &config, GrfLoadingStage stage, Subdirectory subdir, bool temporary);
 void LoadNewGRF(SpriteID load_index, uint num_baseset);
 void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
