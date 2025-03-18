@@ -224,76 +224,63 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	}; \
 };
 
-#define DEF_CB_RES_PAYLOADT(cb_, T_) \
-ResultPayloadCommandCallback<T_> Cc ## cb_; \
-template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
-	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
-		auto *data = dynamic_cast<const T_ *>(&payload); \
-		if (data == nullptr) return false; \
-		Cc ## cb_(result, *data); \
-		return true; \
-	}; \
-};
+template <Commands Tcmd, typename S> struct CommandCallbackTupleHelper;
 
-template <typename T, typename S> struct CommandCallbackTupleHelper;
-
-template <typename PayloadT, typename... Targs>
-struct CommandCallbackTupleHelper<PayloadT, std::tuple<Targs...>> {
+template <Commands Tcmd, typename... Targs>
+struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
 	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 	using ResultTileTupleCommandCallback = void(const CommandCost &, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 
-	static inline bool ResultExecute(ResultTupleCommandCallback *cb, const CommandCost &result, const CommandPayloadBase &payload)
+	static inline bool ResultExecute(ResultTupleCommandCallback *cb, Commands cmd, const CommandCost &result, const CommandPayloadBase &payload)
 	{
-		auto *data = dynamic_cast<const PayloadT *>(&payload);
-		if (data == nullptr) return false;
+		if (cmd != Tcmd) return false;
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-			cb(result, std::get<Tindices>(data->GetValues())...);
+			cb(result, std::get<Tindices>(static_cast<const CmdPayload<Tcmd> &>(payload).GetValues())...);
 		};
 		handler(std::index_sequence_for<Targs...>{});
 		return true;
 	}
 
-	static inline bool ResultTileExecute(ResultTileTupleCommandCallback *cb, const CommandCost &result, TileIndex tile, const CommandPayloadBase &payload)
+	static inline bool ResultTileExecute(ResultTileTupleCommandCallback *cb, Commands cmd, const CommandCost &result, TileIndex tile, const CommandPayloadBase &payload)
 	{
-		auto *data = dynamic_cast<const PayloadT *>(&payload);
-		if (data == nullptr) return false;
+		if (cmd != Tcmd) return false;
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-			cb(result, tile, std::get<Tindices>(data->GetValues())...);
+			cb(result, tile, std::get<Tindices>(static_cast<const CmdPayload<Tcmd> &>(payload).GetValues())...);
 		};
 		handler(std::index_sequence_for<Targs...>{});
 		return true;
 	}
 };
 
-#define DEF_CB_RES_TUPLE(cb_, T_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<T_, std::remove_cvref_t<decltype(std::declval<T_>().GetValues())>>; } \
+#define DEF_CB_RES_TUPLE(cb_, cmd_) \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, std::remove_cvref_t<decltype(std::declval<CmdPayload<cmd_>>().GetValues())>>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
-		return cmd_detail::cc_helper_ ## cb_ ::ResultExecute(Cc ## cb_, result, payload); \
+		return cmd_detail::cc_helper_ ## cb_ ::ResultExecute(Cc ## cb_, cmd, result, payload); \
 	}; \
 };
 
-#define DEF_CB_RES_TILE_TUPLE(cb_, T_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<T_, std::remove_cvref_t<decltype(std::declval<T_>().GetValues())>>; } \
+#define DEF_CB_RES_TILE_TUPLE(cb_, cmd_) \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, std::remove_cvref_t<decltype(std::declval<CmdPayload<cmd_>>().GetValues())>>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTileTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
-		return cmd_detail::cc_helper_ ## cb_ ::ResultTileExecute(Cc ## cb_, result, tile, payload); \
+		return cmd_detail::cc_helper_ ## cb_ ::ResultTileExecute(Cc ## cb_, cmd, result, tile, payload); \
 	}; \
 };
 
 DEF_CB_RES(BuildPrimaryVehicle)
 DEF_CB_RES_TILE(BuildAirport)
-DEF_CB_RES_TILE_TUPLE(BuildBridge, CmdPayload<CMD_BUILD_BRIDGE>)
+DEF_CB_RES_TILE_TUPLE(BuildBridge, CMD_BUILD_BRIDGE)
 DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_WATER)
 DEF_CB_RES_TILE(BuildDocks)
 DEF_CB_RES_TILE(FoundTown)
 DEF_CB_RES_TILE(BuildRoadTunnel)
 DEF_CB_RES_TILE(BuildRailTunnel)
 DEF_CB_RES_TILE(BuildWagon)
-DEF_CB_RES_TILE_TUPLE(RoadDepot, CmdPayload<CMD_BUILD_ROAD_DEPOT>)
-DEF_CB_RES_TILE_TUPLE(RailDepot, CmdPayload<CMD_BUILD_TRAIN_DEPOT>)
+DEF_CB_RES_TILE_TUPLE(RoadDepot, CMD_BUILD_ROAD_DEPOT)
+DEF_CB_RES_TILE_TUPLE(RailDepot, CMD_BUILD_TRAIN_DEPOT)
 DEF_CB_RES(PlaceSign)
 DEF_CB_RES_TILE(PlaySound_EXPLOSION)
 DEF_CB_RES_TILE(PlaySound_CONSTRUCTION_OTHER)
@@ -302,22 +289,22 @@ DEF_CB_RES_TILE(Station)
 DEF_CB_RES_TILE(Terraform)
 DEF_CB_GENERAL(AI)
 DEF_CB_RES(CloneVehicle)
-DEF_CB_RES_TUPLE(GiveMoney, CmdPayload<CMD_GIVE_MONEY>)
-DEF_CB_RES_TUPLE(CreateGroup, CmdPayload<CMD_CREATE_GROUP>)
+DEF_CB_RES_TUPLE(GiveMoney, CMD_GIVE_MONEY)
+DEF_CB_RES_TUPLE(CreateGroup, CMD_CREATE_GROUP)
 DEF_CB_RES(FoundRandomTown)
-DEF_CB_RES_TILE_TUPLE(RoadStop, CmdPayload<CMD_BUILD_ROAD_STOP>)
-DEF_CB_RES_TILE_TUPLE(BuildIndustry, CmdPayload<CMD_BUILD_INDUSTRY>)
-DEF_CB_RES_TUPLE(StartStopVehicle, CmdPayload<CMD_START_STOP_VEHICLE>)
+DEF_CB_RES_TILE_TUPLE(RoadStop, CMD_BUILD_ROAD_STOP)
+DEF_CB_RES_TILE_TUPLE(BuildIndustry, CMD_BUILD_INDUSTRY)
+DEF_CB_RES_TUPLE(StartStopVehicle, CMD_START_STOP_VEHICLE)
 DEF_CB_GENERAL(Game)
 DEF_CB_RES(AddVehicleNewGroup)
 DEF_CB_RES(AddPlan)
 DEF_CB_RES(SetVirtualTrain)
 DEF_CB_RES(VirtualTrainWagonsMoved)
-DEF_CB_RES_TUPLE(DeleteVirtualTrain, CmdPayload<CMD_SELL_VIRTUAL_VEHICLE>)
+DEF_CB_RES_TUPLE(DeleteVirtualTrain, CMD_SELL_VIRTUAL_VEHICLE)
 DEF_CB_RES(AddVirtualEngine)
 DEF_CB_RES(MoveNewVirtualEngine)
-DEF_CB_RES_TUPLE(AddNewSchDispatchSchedule, CmdPayload<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>)
-DEF_CB_RES_TUPLE(SwapSchDispatchSchedules, CmdPayload<CMD_SCH_DISPATCH_SWAP_SCHEDULES>)
+DEF_CB_RES_TUPLE(AddNewSchDispatchSchedule, CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE)
+DEF_CB_RES_TUPLE(SwapSchDispatchSchedules, CMD_SCH_DISPATCH_SWAP_SCHEDULES)
 DEF_CB_RES(CreateTraceRestrictSlot)
 DEF_CB_RES(CreateTraceRestrictCounter)
 
