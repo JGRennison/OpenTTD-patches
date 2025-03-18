@@ -1179,7 +1179,6 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, V
 		v->reliability_spd_dec = e->reliability_spd_dec;
 		v->breakdown_chance_factor = 64; // ships have a 50% lower breakdown chance than normal
 		v->max_age = e->GetLifeLengthInDays();
-		_new_vehicle_id = v->index;
 
 		v->state = TRACK_BIT_DEPOT;
 

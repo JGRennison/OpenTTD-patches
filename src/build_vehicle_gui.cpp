@@ -3257,15 +3257,15 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 void CcAddVirtualEngine(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
 	Window *window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
 	if (window != nullptr) {
-		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
+		Train *train = Train::Get(result.GetResultData());
 		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
-		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(_new_vehicle_id, SellVehicleFlags::None, INVALID_CLIENT_ID);
+		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(result.GetResultData(), SellVehicleFlags::None, INVALID_CLIENT_ID);
 	}
 }
 

@@ -248,7 +248,6 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile);
 bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile);
 CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits);
 
-extern VehicleID _new_vehicle_id;
 extern uint _returned_refit_capacity;
 extern uint16_t _returned_mail_refit_capacity;
 extern CargoArray _returned_vehicle_capacities;

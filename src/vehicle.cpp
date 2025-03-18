@@ -103,7 +103,6 @@ static const uint GEN_HASHY_BUCKET_BITS = 6;
 //static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
 //static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
-VehicleID _new_vehicle_id;
 uint _returned_refit_capacity;        ///< Stores the capacity after a refit operation.
 uint16_t _returned_mail_refit_capacity; ///< Stores the mail capacity after a refit operation (Aircraft only).
 CargoArray _returned_vehicle_capacities; ///< Stores the cargo capacities after a vehicle build operation
@@ -1803,22 +1802,19 @@ void CallVehicleTicks()
 
 		tmpl_cur_company.Change(t->owner);
 
-		_new_vehicle_id = INVALID_VEHICLE;
 
 		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DC_EXEC, t->index);
-
-		if (_new_vehicle_id != INVALID_VEHICLE) {
-			VehicleID t_new = _new_vehicle_id;
-			t = Train::Get(t_new);
-			const Company *c = Company::Get(_current_company);
-			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-			CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t_new, true);
-			if (res2.HasResultData()) {
-				t = Train::Get(res2.GetResultData());
-			}
-			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
-			if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
+		if (res.HasResultData()) {
+			t = Train::Get(res.GetResultData());
 		}
+		const Company *c = Company::Get(_current_company);
+		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t->index, true);
+		if (res2.HasResultData()) {
+			t = Train::Get(res2.GetResultData());
+		}
+		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
 
 		if (!IsLocalCompany()) continue;
 

@@ -159,6 +159,7 @@ CommandCost CmdBuildVehicle(DoCommandFlag flags, TileIndex tile, EngineID eid, b
 		if (subflags & DC_EXEC) {
 			v->unitnumber = unit_num;
 			v->value      = value.GetCost();
+			value.SetResultData(v->index);
 		}
 
 		if (refitting) {
@@ -786,13 +787,10 @@ CommandCost CmdDepotMassAutoReplace(DoCommandFlag flags, TileIndex tile, Vehicle
 		if (!v->IsChainInDepot()) continue;
 
 		if (v->type == VEH_TRAIN) {
-			_new_vehicle_id = INVALID_VEHICLE;
-
 			CommandCost ret = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(flags, v->index);
 			if (ret.Succeeded()) cost.AddCost(ret);
-
-			if (_new_vehicle_id != INVALID_VEHICLE) {
-				v = Vehicle::Get(_new_vehicle_id);
+			if (ret.HasResultData()) {
+				v = Vehicle::Get(ret.GetResultData());
 			}
 		}
 
@@ -971,11 +969,15 @@ CommandCost CmdVirtualTrainFromTemplate(DoCommandFlag flags, TemplateID template
 
 	if (flags & DC_EXEC) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = VirtualTrainFromTemplateVehicle(tv, err, client);
+		Train *train = VirtualTrainFromTemplateVehicle(tv, err, client);
 
 		if (train == nullptr) {
 			return CommandCost(err);
 		}
+
+		CommandCost cost;
+		cost.SetResultData(train->index);
+		return cost;
 	}
 
 	return CommandCost();
@@ -1055,8 +1057,6 @@ Train *VirtualTrainFromTemplateVehicle(const TemplateVehicle *tv, StringID &err,
 		tmp->cargo_subtype = tv->cargo_subtype;
 	}
 
-	_new_vehicle_id = head->index;
-
 	return head;
 }
 
@@ -1097,7 +1097,9 @@ CommandCost CmdVirtualTrainFromTrain(DoCommandFlag flags, VehicleID vehicle_id, 
 			train = train->GetNextUnit();
 		}
 
-		_new_vehicle_id = head->index;
+		CommandCost cost;
+		cost.SetResultData(head->index);
+		return cost;
 	}
 
 	return CommandCost();
@@ -1398,7 +1400,7 @@ CommandCost CmdCloneVehicle(DoCommandFlag flags, TileIndex tile, VehicleID veh_i
 		total_cost.AddCost(cost);
 
 		if (flags & DC_EXEC) {
-			w = Vehicle::Get(_new_vehicle_id);
+			w = Vehicle::Get(cost.GetResultData());
 
 			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
 				SetBit(Train::From(w)->flags, VRF_REVERSE_DIRECTION);
@@ -1426,9 +1428,9 @@ CommandCost CmdCloneVehicle(DoCommandFlag flags, TileIndex tile, VehicleID veh_i
 		}
 	} while (v->type == VEH_TRAIN && (v = v->GetNextVehicle()) != nullptr);
 
-	if ((flags & DC_EXEC) && v_front->type == VEH_TRAIN) {
+	if (flags & DC_EXEC) {
 		/* for trains this needs to be the front engine due to the callback function */
-		_new_vehicle_id = w_front->index;
+		total_cost.SetResultData(w_front->index);
 	}
 
 	const Company *owner = Company::GetIfValid(_current_company);
@@ -1541,10 +1543,11 @@ CommandCost CmdCloneVehicleFromTemplate(DoCommandFlag flags, TileIndex tile, Tem
 
 	ret = Command<CMD_VIRTUAL_TRAIN_FROM_TEMPLATE>::Do(DC_EXEC, tv->index, INVALID_CLIENT_ID);
 	if (ret.Failed()) return ret;
+	if (!ret.HasResultData()) return CMD_ERROR;
 
-	Train *virt = Train::From(Vehicle::Get(_new_vehicle_id));
+	Train *virt = Train::Get(ret.GetResultData());
 
-	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, _new_vehicle_id, false);
+	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, ret.GetResultData(), false);
 
 	delete virt;
 

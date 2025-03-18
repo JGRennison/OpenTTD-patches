@@ -353,8 +353,6 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 		v->max_age = e->GetLifeLengthInDays();
 
-		_new_vehicle_id = v->index;
-
 		v->pos = GetVehiclePosOnBuild(tile);
 
 		v->state = HANGAR;

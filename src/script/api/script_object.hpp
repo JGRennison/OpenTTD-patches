@@ -261,11 +261,6 @@ protected:
 	static bool GetLastCommandRes();
 
 	/**
-	 * Get the latest stored new_vehicle_id.
-	 */
-	static VehicleID GetNewVehicleID();
-
-	/**
 	 * Store a allow_do_command per company.
 	 * @param allow The new allow.
 	 */
@@ -367,12 +362,6 @@ protected:
 
 private:
 	static std::pair<uint32_t, bool> GetLastCommandResultDataRaw();
-
-	/**
-	 * Store a new_vehicle_id per company.
-	 * @param vehicle_id The new VehicleID.
-	 */
-	static void SetNewVehicleID(VehicleID vehicle_id);
 
 	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
 };

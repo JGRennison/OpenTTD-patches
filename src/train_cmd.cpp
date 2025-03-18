@@ -1513,8 +1513,6 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		if (TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed)) SetBit(v->flags, VRF_REVERSE_DIRECTION);
 		AddArticulatedParts(v);
 
-		_new_vehicle_id = v->index;
-
 		v->UpdatePosition();
 		v->First()->ConsistChanged(CCF_ARRANGE);
 		UpdateTrainGroupID(v->First());
@@ -1661,7 +1659,6 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->max_age = e->GetLifeLengthInDays();
 
 		v->railtype = rvi->railtype;
-		_new_vehicle_id = v->index;
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 		v->date_of_last_service = EconTime::CurDate();
@@ -7118,8 +7115,6 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 		train_part->SetVirtual();
 	}
 
-	_new_vehicle_id = v->index;
-
 	if (no_consist_change) return v;
 
 	v->First()->ConsistChanged(CCF_ARRANGE);
@@ -7183,7 +7178,6 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
 	v->railtype = rvi->railtype;
-	_new_vehicle_id = v->index;
 
 	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
@@ -7300,17 +7294,12 @@ static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_ca
 /**
 * Replace a vehicle based on a template replacement order.
 * @param flags type of operation
-* @param veh_id the ID of the vehicle to replace.
+* @param incoming the incoming train to replace.
+* @param outgoing the replaced train, or incoming.
 * @return the cost of this operation or an error
 */
-CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
+static CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, Train *incoming, Train *&outgoing)
 {
-	Train *incoming = Train::GetIfValid(veh_id);
-
-	if (incoming == nullptr || !incoming->IsPrimaryVehicle() || !incoming->IsChainInDepot()) {
-		return CMD_ERROR;
-	}
-
 	CommandCost buy(EXPENSES_NEW_VEHICLES);
 
 	const bool was_stopped = (incoming->vehstatus & VS_STOPPED) != 0;
@@ -7319,7 +7308,7 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 		if (cost.Failed()) return cost;
 	}
 	auto guard = scope_guard([&]() {
-		_new_vehicle_id = incoming->index;
+		outgoing = incoming;
 		if (!was_stopped) buy.AddCost(CmdStartStopVehicle(incoming, false));
 	});
 
@@ -7485,11 +7474,11 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 			/* Case 4 */
 			CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
 			/* break up in case buying the vehicle didn't succeed */
-			if (buy_cost.Failed()) {
+			if (buy_cost.Failed() || !buy_cost.HasResultData()) {
 				return buy_cost;
 			}
 			buy.AddCost(buy_cost);
-			new_chain = Train::Get(_new_vehicle_id);
+			new_chain = Train::Get(buy_cost.GetResultData());
 			/* prepare the remainder chain */
 			remainder_chain = incoming;
 			return CommandCost();
@@ -7546,11 +7535,11 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 
 				/* Case 3: must buy new engine */
 				CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
-				if (buy_cost.Failed()) {
+				if (buy_cost.Failed() || !buy_cost.HasResultData()) {
 					new_part = nullptr;
 					return;
 				}
-				new_part = Train::Get(_new_vehicle_id);
+				new_part = Train::Get(buy_cost.GetResultData());
 				CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost);
@@ -7604,6 +7593,26 @@ CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
 	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 
 	return buy;
+}
+
+/**
+* Replace a vehicle based on a template replacement order.
+* @param flags type of operation
+* @param veh_id the ID of the vehicle to replace.
+* @return the cost of this operation or an error
+*/
+CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
+{
+	Train *incoming = Train::GetIfValid(veh_id);
+
+	if (incoming == nullptr || !incoming->IsPrimaryVehicle() || !incoming->IsChainInDepot()) {
+		return CMD_ERROR;
+	}
+
+	Train *outgoing = incoming;
+	CommandCost cost = CmdTemplateReplaceVehicle(flags, incoming, outgoing);
+	cost.SetResultData(outgoing->index);
+	return cost;
 }
 
 void TrainRoadVehicleCrashBreakdown(Vehicle *v)

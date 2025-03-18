@@ -4655,9 +4655,9 @@ void StopGlobalFollowVehicle(const Vehicle *v)
  */
 void CcBuildPrimaryVehicle(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
-	const Vehicle *v = Vehicle::Get(_new_vehicle_id);
+	const Vehicle *v = Vehicle::Get(result.GetResultData());
 	ShowVehicleViewWindow(v);
 }
 

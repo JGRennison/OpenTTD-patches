@@ -29,7 +29,7 @@ uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, c
  */
 void CcBuildWagon(const CommandCost &result, TileIndex tile)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
 	/* find a locomotive in the depot. */
 	const Vehicle *found = nullptr;
@@ -44,7 +44,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 	if (found != nullptr) {
 		found = found->Last();
 		/* put the new wagon at the end of the loco. */
-		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, _new_vehicle_id, found->index, MoveRailVehicleFlags::None);
+		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, result.GetResultData(), found->index, MoveRailVehicleFlags::None);
 		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);

@@ -32,6 +32,7 @@
 #include "../group_type.h"
 #include "../signs_type.h"
 #include "../story_type.h"
+#include "../vehicle_type.h"
 
 #include "../core/format.hpp"
 
@@ -311,7 +312,7 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnVehicleID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetNewVehicleID());
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<VehicleID>(::INVALID_VEHICLE));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnSignID(ScriptInstance *instance)
