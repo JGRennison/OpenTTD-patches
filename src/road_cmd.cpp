@@ -1590,8 +1590,8 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
  * @param rt road type
  * @param axis direction
  * @param drd set road direction
- * @param start_half start tile starts in the 2nd half of tile (p2 & 1). Only used if \c is_ai is set or if we are building a single tile
- * @param end_half end tile starts in the 2nd half of tile (p2 & 2). Only used if \c is_ai is set or if we are building a single tile
+ * @param start_half start tile starts in the 2nd half of tile. Only used if \c is_ai is set or if we are building a single tile
+ * @param end_half end tile starts in the 2nd half of tile. Only used if \c is_ai is set or if we are building a single tile
  * @param is_ai defines two different behaviors for this command:
  *      - false = Build up to an obstacle. Do not build the first and last roadbits unless they can be connected to something, or if we are building a single tile
  *      - true = Fail if an obstacle is found. Always take into account start_half and end_half. This behavior is used for scripts
@@ -1687,7 +1687,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex 
  * @param rt road type
  * @param axis direction
  * @param start_half start tile starts in the 2nd half of tile
- * @param end_half end tile starts in the 2nd half of tile (p2 & 2)
+ * @param end_half end tile starts in the 2nd half of tile
  * @return the cost of this operation or an error
  */
 CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, bool start_half, bool end_half)

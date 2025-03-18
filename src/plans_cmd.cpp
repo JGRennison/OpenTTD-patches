@@ -204,7 +204,7 @@ CommandCost CmdRenamePlan(DoCommandFlag flags, PlanID plan, const std::string &t
 /**
 * Acquire an unowned plan
 * @param flags type of operation
-* @param p1 ID of plan
+* @param plan ID of plan
 * @return the cost of this operation or an error
 */
 CommandCost CmdAcquireUnownedPlan(DoCommandFlag flags, PlanID plan)
@@ -250,5 +250,5 @@ bool PlanLineCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidatio
 
 void PlanLineCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("Plan {:X}, {} tiles", this->plan, this->tiles.size());
+	output.format("Plan {}, {} tiles", this->plan, this->tiles.size());
 }

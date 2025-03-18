@@ -1170,7 +1170,7 @@ static void v_PositionStatusbar(int32_t new_value)
 
 /**
  * Redraw the smallmap after a colour scheme change.
- * @param p1 Callback parameter.
+ * @param new_value Callback parameter.
  */
 static void RedrawSmallmap(int32_t new_value)
 {
@@ -1737,7 +1737,7 @@ static void ScriptMaxMemoryChange(int32_t new_value)
 
 /**
  * Invalidate the company details window after the shares setting changed.
- * @param p1 Unused.
+ * @param new_value Unused.
  * @return Always true.
  */
 static void InvalidateCompanyWindow(int32_t new_value)

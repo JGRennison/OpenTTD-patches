@@ -3831,9 +3831,8 @@ static const StringID _vehicle_msg_translation_table[][4] = {
 /**
  * This is the Callback method after attempting to start/stop a vehicle
  * @param result the result of the start/stop command
- * @param tile unused
- * @param p1 vehicle ID
- * @param p2 unused
+ * @param veh_id vehicle ID
+ * @param evaluate_startstop_cb unused
  */
 void CcStartStopVehicle(const CommandCost &result, VehicleID veh_id, bool evaluate_startstop_cb)
 {

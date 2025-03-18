@@ -2202,7 +2202,7 @@ CommandCost CmdBuildIndustry(DoCommandFlag flags, TileIndex tile, IndustryType i
 		size_t layout = first_layout;
 		if (layout >= num_layouts) return CMD_ERROR;
 
-		/* Check subsequently each layout, starting with the given layout in p1 */
+		/* Check subsequently each layout, starting with the given layout in first_layout */
 		for (size_t i = 0; i < num_layouts; i++) {
 			layout = (layout + 1) % num_layouts;
 			ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, _current_company, _current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_USERCREATION, &ind);

@@ -600,7 +600,7 @@ CommandCost CmdRefitVehicle(DoCommandFlag flags, VehicleID veh_id, CargoID new_c
  */
 CommandCost CmdStartStopVehicle(DoCommandFlag flags, VehicleID veh_id, bool evaluate_startstop_cb)
 {
-	/* Disable the effect of p2 bit 0, when DC_AUTOREPLACE is not set */
+	/* Disable the effect of evaluate_startstop_cb, when DC_AUTOREPLACE is not set */
 	if ((flags & DC_AUTOREPLACE) == 0) evaluate_startstop_cb = true;
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
@@ -1129,11 +1129,9 @@ CommandCost CmdDeleteVirtualTrain(DoCommandFlag flags, VehicleID vehicle_id)
 
 /**
  * Replace a template vehicle with another one based on a virtual train.
- * @param tile unused
  * @param flags type of operation
- * @param p1 the template vehicle's index
- * @param p2 the virtual train's index
- * @param text unused
+ * @param template_id the template vehicle's index
+ * @param virtual_train_id the virtual train's index
  * @return the cost of this operation or an error
  */
 CommandCost CmdReplaceTemplateVehicle(DoCommandFlag flags, TemplateID template_id, VehicleID virtual_train_id)
