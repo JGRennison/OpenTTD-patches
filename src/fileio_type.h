@@ -14,7 +14,7 @@
 #include <optional>
 
 /** The different abstract types of files that the system knows about. */
-enum AbstractFileType {
+enum AbstractFileType : uint8_t {
 	FT_NONE,      ///< nothing to do
 	FT_SAVEGAME,  ///< old or new savegame
 	FT_SCENARIO,  ///< old or new scenario
@@ -27,7 +27,7 @@ enum AbstractFileType {
 };
 
 /** Kinds of files in each #AbstractFileType. */
-enum DetailedFileType {
+enum DetailedFileType : uint8_t {
 	/* Save game and scenario files. */
 	DFT_OLD_GAME_FILE, ///< Old save game or scenario file.
 	DFT_GAME_FILE,     ///< Save game or scenario file.
@@ -51,7 +51,7 @@ enum DetailedFileType {
 };
 
 /** Operation performed on the file. */
-enum SaveLoadOperation {
+enum SaveLoadOperation : uint8_t {
 	SLO_CHECK,   ///< Load file for checking and/or preview.
 	SLO_LOAD,    ///< File is being loaded.
 	SLO_SAVE,    ///< File is being saved.
@@ -71,7 +71,7 @@ enum SaveLoadOperation {
  * Values are a combination of #AbstractFileType and #DetailedFileType.
  * @see GetAbstractFileType GetDetailedFileType
  */
-enum FiosType {
+enum FiosType : uint16_t {
 	FIOS_TYPE_DRIVE  = MAKE_FIOS_TYPE(FT_NONE, DFT_FIOS_DRIVE),
 	FIOS_TYPE_PARENT = MAKE_FIOS_TYPE(FT_NONE, DFT_FIOS_PARENT),
 	FIOS_TYPE_DIR    = MAKE_FIOS_TYPE(FT_NONE, DFT_FIOS_DIR),
@@ -113,7 +113,7 @@ inline DetailedFileType GetDetailedFileType(FiosType fios_type)
 /**
  * The different kinds of subdirectories OpenTTD uses
  */
-enum Subdirectory {
+enum Subdirectory : uint8_t {
 	BASE_DIR,      ///< Base directory for all subdirectories
 	SAVE_DIR,      ///< Base directory for all savegames
 	AUTOSAVE_DIR,  ///< Subdirectory of save for autosaves
@@ -137,7 +137,7 @@ enum Subdirectory {
 /**
  * Types of searchpaths OpenTTD might use
  */
-enum Searchpath : unsigned {
+enum Searchpath : uint8_t {
 	SP_FIRST_DIR,
 	SP_WORKING_DIR = SP_FIRST_DIR, ///< Search in the working directory
 #ifdef USE_XDG
@@ -154,7 +154,7 @@ enum Searchpath : unsigned {
 	NUM_SEARCHPATHS
 };
 
-DECLARE_POSTFIX_INCREMENT(Searchpath)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(Searchpath)
 
 class FileHandle {
 public:

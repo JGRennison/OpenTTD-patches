@@ -1,4 +1,5 @@
 add_files(
+    alignment.hpp
     alloc_func.cpp
     alloc_func.hpp
     alloc_type.hpp
@@ -9,7 +10,6 @@ add_files(
     container_func.hpp
     dyn_arena_alloc.hpp
     endian_func.hpp
-    endian_type.hpp
     enum_type.hpp
     hash_func.hpp
     format.cpp

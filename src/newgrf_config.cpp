@@ -555,7 +555,7 @@ GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
 				if (name != nullptr) buf.format(", name: '{}'", name);
 			});
 			if (f != nullptr) {
-				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 				if (!HasBit(c->flags, GCF_COMPATIBLE)) {
 					/* Preserve original_md5sum after it has been assigned */
 					SetBit(c->flags, GCF_COMPATIBLE);
@@ -568,13 +568,13 @@ GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
 			}
 
 			/* No compatible grf was found, mark it as disabled */
-			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 
 			c->status = GCS_NOT_FOUND;
 			res = GLC_NOT_FOUND;
 		} else {
 compatible_grf:
-			Debug(grf, 1, "Loading GRF {:08X} from {}", BSWAP32(f->ident.grfid), f->GetDisplayPath());
+			Debug(grf, 1, "Loading GRF {:08X} from {}", std::byteswap(f->ident.grfid), f->GetDisplayPath());
 			/* The filename could be the filename as in the savegame. As we need
 			 * to load the GRF here, we need the correct filename, so overwrite that
 			 * in any case and set the name and info when it is not set already.

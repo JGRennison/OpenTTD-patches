@@ -23,7 +23,7 @@
 struct Train;
 
 /** Rail vehicle flags. */
-enum VehicleRailFlags {
+enum VehicleRailFlags : uint8_t {
 	VRF_REVERSING                     = 0,
 	VRF_WAITING_RESTRICTION           = 1, ///< Train is waiting due to a routing restriction, only valid when VRF_TRAIN_STUCK is also set.
 	/* gap, was VRF_HAVE_SLOT */
@@ -46,9 +46,9 @@ enum VehicleRailFlags {
 	VRF_CONSIST_SPEED_REDUCTION       = 20,///< one or more vehicles in this consist may be in a depot or on a bridge (may be false positive but not false negative)
 	VRF_PENDING_SPEED_RESTRICTION     = 21,///< This vehicle has one or more pending speed restriction changes
 	VRF_SPEED_ADAPTATION_EXEMPT       = 22,///< This vehicle is exempt from train speed adaptation
-
-	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED), ///< Bitmask of all flags that indicate a broken train (braking is not included)
 };
+
+static constexpr uint32_t VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED); ///< Bitmask of all flags that indicate a broken train (braking is not included)
 
 /** Modes for ignoring signals. */
 enum TrainForceProceeding : uint8_t {
@@ -58,7 +58,7 @@ enum TrainForceProceeding : uint8_t {
 };
 
 /** Flags for Train::ConsistChanged */
-enum ConsistChangeFlags {
+enum ConsistChangeFlags : uint8_t {
 	CCF_LENGTH     = 0x01,     ///< Allow vehicles to change length.
 	CCF_CAPACITY   = 0x02,     ///< Allow vehicles to change capacity.
 

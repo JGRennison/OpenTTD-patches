@@ -150,9 +150,8 @@ void ClientNetworkEmergencySave()
  * Create a new socket for the client side of the game connection.
  * @param s The socket to connect with.
  */
-ClientNetworkGameSocketHandler::ClientNetworkGameSocketHandler (SOCKET s, std::string connection_string)
-	: NetworkGameSocketHandler(s),
-	  connection_string(std::move(connection_string)), savegame(nullptr), token(0), status(STATUS_INACTIVE)
+ClientNetworkGameSocketHandler::ClientNetworkGameSocketHandler(SOCKET s, std::string connection_string)
+	: NetworkGameSocketHandler(s), connection_string(std::move(connection_string))
 {
 	assert(ClientNetworkGameSocketHandler::my_client == nullptr);
 	ClientNetworkGameSocketHandler::my_client = this;
@@ -900,7 +899,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 		const GRFConfig *f = FindGRFConfig(c.grfid, FGCM_EXACT, &c.md5sum);
 		if (f == nullptr) {
 			/* We do not know this GRF, bail out of initialization */
-			Debug(grf, 0, "NewGRF {:08X} not found; checksum {}", BSWAP32(c.grfid), c.md5sum);
+			Debug(grf, 0, "NewGRF {:08X} not found; checksum {}", std::byteswap(c.grfid), c.md5sum);
 			ret = NETWORK_RECV_STATUS_NEWGRF_MISMATCH;
 		}
 	}

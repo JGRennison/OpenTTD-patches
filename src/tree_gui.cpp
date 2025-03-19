@@ -70,7 +70,7 @@ class BuildTreesWindow : public Window
 	/** Visual Y offset of tree root from the bottom of the tree type buttons */
 	static const int BUTTON_BOTTOM_OFFSET = 7;
 
-	enum PlantingMode {
+	enum PlantingMode : uint8_t {
 		PM_NORMAL,
 		PM_FOREST_SM,
 		PM_FOREST_LG,

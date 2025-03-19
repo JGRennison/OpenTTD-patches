@@ -2360,7 +2360,7 @@ uint BaseVehicleListWindow::GetSorterDisableMask(VehicleType type) const
 struct VehicleListWindow : public BaseVehicleListWindow {
 private:
 	/** Enumeration of planes of the button row at the bottom. */
-	enum ButtonPlanes {
+	enum ButtonPlanes : uint8_t {
 		BP_SHOW_BUTTONS, ///< Show the buttons.
 		BP_HIDE_BUTTONS, ///< Show the empty panel.
 	};
@@ -2377,7 +2377,7 @@ private:
 	}
 
 	/** Enumeration of planes of the title row at the top. */
-	enum CaptionPlanes {
+	enum CaptionPlanes : uint8_t {
 		BP_NORMAL,        ///< Show shared orders caption and buttons.
 		BP_SHARED_ORDERS, ///< Show the normal caption.
 	};
@@ -3800,7 +3800,7 @@ static const int VV_INITIAL_VIEWPORT_HEIGHT = 84;
 static const int VV_INITIAL_VIEWPORT_HEIGHT_TRAIN = 102;
 
 /** Command indices for the _vehicle_command_translation_table. */
-enum VehicleCommandTranslation {
+enum VehicleCommandTranslation : uint8_t {
 	VCT_CMD_START_STOP = 0,
 	VCT_CMD_CLONE_VEH,
 	VCT_CMD_TURN_AROUND,
@@ -3913,7 +3913,7 @@ private:
 	bool fixed_route_overlay_active = false;
 
 	/** Display planes available in the vehicle view window. */
-	enum PlaneSelections {
+	enum PlaneSelections : uint8_t {
 		SEL_DC_GOTO_DEPOT,  ///< Display 'goto depot' button in #WID_VV_SELECT_DEPOT_CLONE stacked widget.
 		SEL_DC_CLONE,       ///< Display 'clone vehicle' button in #WID_VV_SELECT_DEPOT_CLONE stacked widget.
 

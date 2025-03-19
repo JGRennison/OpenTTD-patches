@@ -12,6 +12,8 @@
 
 #include "script_company.hpp"
 #include "script_date.hpp"
+#include "../../cargo_type.h"
+#include "../../subsidy_type.h"
 
 /**
  * Class that handles all subsidy related functions.

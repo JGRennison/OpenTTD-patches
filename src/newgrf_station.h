@@ -102,9 +102,9 @@ enum StationClassID : uint16_t {
 };
 
 /** Allow incrementing of StationClassID variables */
-DECLARE_POSTFIX_INCREMENT(StationClassID)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(StationClassID)
 
-enum StationSpecFlags {
+enum StationSpecFlags : uint8_t {
 	SSF_SEPARATE_GROUND,      ///< Use different sprite set for ground sprites.
 	SSF_DIV_BY_STATION_SIZE,  ///< Divide cargo amount by station size.
 	SSF_CB141_RANDOM_BITS,    ///< Callback 141 needs random bits.
@@ -113,7 +113,7 @@ enum StationSpecFlags {
 };
 
 /** Randomisation triggers for stations */
-enum StationRandomTrigger {
+enum StationRandomTrigger : uint8_t {
 	SRT_NEW_CARGO,        ///< Trigger station on new cargo arrival.
 	SRT_CARGO_TAKEN,      ///< Trigger station when cargo is completely taken.
 	SRT_TRAIN_ARRIVES,    ///< Trigger platform when train arrives.

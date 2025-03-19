@@ -11,6 +11,7 @@
 #define SCRIPT_OBJECT_HPP
 
 #include "../../command_type.h"
+#include "../../company_type.h"
 #include "../../road_type.h"
 #include "../../rail_type.h"
 #include "../../core/random_func.hpp"

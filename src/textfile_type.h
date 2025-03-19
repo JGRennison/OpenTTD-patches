@@ -11,7 +11,7 @@
 #define TEXTFILE_TYPE_H
 
 /** Additional text files accompanying Tar archives */
-enum TextfileType {
+enum TextfileType : uint8_t {
 	TFT_CONTENT_BEGIN,
 
 	TFT_README = TFT_CONTENT_BEGIN, ///< Content readme
@@ -25,7 +25,7 @@ enum TextfileType {
 
 	TFT_END,
 };
-DECLARE_POSTFIX_INCREMENT(TextfileType)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(TextfileType)
 DECLARE_ENUM_AS_ADDABLE(TextfileType)
 
 #endif /* TEXTFILE_TYPE_H */

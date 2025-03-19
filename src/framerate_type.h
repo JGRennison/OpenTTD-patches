@@ -44,7 +44,7 @@
  * @note When adding new elements here, make sure to also update all other locations depending on the length and order of this enum.
  * See <em>Adding new measurements</em> above.
  */
-enum PerformanceElement {
+enum PerformanceElement : uint8_t {
 	PFE_FIRST = 0,
 	PFE_GAMELOOP = 0,  ///< Speed of gameloop processing.
 	PFE_GL_ECONOMY,    ///< Time spent processing cargo movement
@@ -77,7 +77,7 @@ enum PerformanceElement {
 	PFE_AI14,          ///< AI execution for player slot 15
 	PFE_MAX,           ///< End of enum, must be last.
 };
-DECLARE_POSTFIX_INCREMENT(PerformanceElement)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(PerformanceElement)
 
 /** Type used to hold a performance timing measurement */
 typedef uint64_t TimingMeasurement;

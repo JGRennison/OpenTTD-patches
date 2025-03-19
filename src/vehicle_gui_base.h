@@ -114,7 +114,7 @@ public:
 
 	inline CargoType GetCargoFilter() const { return this->cargo_filter_criteria; }
 
-	enum ActionDropdownItem {
+	enum ActionDropdownItem : uint8_t {
 		ADI_TEMPLATE_REPLACE,
 		ADI_REPLACE,
 		ADI_SERVICE,

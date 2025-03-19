@@ -39,14 +39,14 @@ public:
 	static_assert(sizeof(MapValue) == 2);
 
 	/** Helper for creating specialised functions for specific optimisations. */
-	enum ReadMode {
+	enum ReadMode : uint8_t {
 		RM_WITH_SKIP,   ///< Use normal code for skipping empty pixels.
 		RM_WITH_MARGIN, ///< Use cached number of empty pixels at begin and end of line to reduce work.
 		RM_NONE,        ///< No specialisation.
 	};
 
 	/** Helper for creating specialised functions for the case where the sprite width is odd or even. */
-	enum BlockType {
+	enum BlockType : uint8_t {
 		BT_EVEN, ///< An even number of pixels in the width; no need for a special case for the last pixel.
 		BT_ODD,  ///< An odd number of pixels in the width; special case for the last pixel.
 		BT_NONE, ///< No specialisation for either case.

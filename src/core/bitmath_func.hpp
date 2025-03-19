@@ -419,66 +419,28 @@ private:
 	Tbitset bitset;
 };
 
-#if defined(__APPLE__)
-	/* Make endian swapping use Apple's macros to increase speed
-	 * (since it will use hardware swapping if available).
-	 * Even though they should return uint16_t and uint32_t, we get
-	 * warnings if we don't cast those (why?) */
-	#define BSWAP64(x) ((uint64_t)CFSwapInt64((uint64_t)(x)))
-	#define BSWAP32(x) ((uint32_t)CFSwapInt32((uint32_t)(x)))
-	#define BSWAP16(x) ((uint16_t)CFSwapInt16((uint16_t)(x)))
-#elif defined(_MSC_VER)
-	/* MSVC has intrinsics for swapping, resulting in faster code */
-	#define BSWAP64(x) ((uint64_t)_byteswap_uint64((uint64_t)(x)))
-	#define BSWAP32(x) ((uint32_t)_byteswap_ulong((uint32_t)(x)))
-	#define BSWAP16(x) ((uint16_t)_byteswap_ushort((uint16_t)(x)))
-#else
+namespace std {
 	/**
-	 * Perform a 64 bits endianness bitswap on x.
+	 * Custom implementation of std::byteswap; remove once we build with C++23.
+	 * Perform an endianness bitswap on x.
 	 * @param x the variable to bitswap
 	 * @return the bitswapped value.
 	 */
-	static inline uint64_t BSWAP64(uint64_t x)
+	template <typename T>
+	[[nodiscard]] constexpr enable_if_t<is_integral_v<T>, T> byteswap(T x) noexcept
 	{
+		if constexpr (sizeof(T) == 1) return x;
 #if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
-		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint64_t)__builtin_bswap64((uint64_t)x);
+		if constexpr (sizeof(T) == 2) return static_cast<T>(__builtin_bswap16((uint16_t)x));
+		if constexpr (sizeof(T) == 4) return static_cast<T>(__builtin_bswap32((uint32_t)x));
+		if constexpr (sizeof(T) == 8) return static_cast<T>(__builtin_bswap64((uint64_t)x));
 #else
-		return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
-				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL);
-				;
-#endif /* __GNUC__ || __clang__ */
+		if constexpr (sizeof(T) == 2) return (x >> 8) | (x << 8);
+		if constexpr (sizeof(T) == 4) return ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | ((x << 24) & 0xFF000000);
+		if constexpr (sizeof(T) == 8) return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
+				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL)
+#endif
 	}
-
-	/**
-	 * Perform a 32 bits endianness bitswap on x.
-	 * @param x the variable to bitswap
-	 * @return the bitswapped value.
-	 */
-	static inline uint32_t BSWAP32(uint32_t x)
-	{
-#if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
-		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint32_t)__builtin_bswap32((uint32_t)x);
-#else
-		return ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | ((x << 24) & 0xFF000000);
-#endif /* __GNUC__ || __clang__ */
-	}
-
-	/**
-	 * Perform a 16 bits endianness bitswap on x.
-	 * @param x the variable to bitswap
-	 * @return the bitswapped value.
-	 */
-	static inline uint16_t BSWAP16(uint16_t x)
-	{
-#if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
-		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint16_t)__builtin_bswap16((uint16_t)x);
-#else
-		return (x >> 8) | (x << 8);
-#endif /* __GNUC__ || __clang__ */
-	}
-#endif /* __APPLE__ */
+}
 
 #endif /* BITMATH_FUNC_HPP */

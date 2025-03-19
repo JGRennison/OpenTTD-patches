@@ -30,7 +30,7 @@ enum TileContext : uint8_t {
 /**
  * Flags to enable register usage in sprite layouts.
  */
-enum TileLayoutFlags : uint16_t {
+enum TileLayoutFlags : uint8_t {
 	TLF_NOTHING           = 0x00,
 
 	TLF_DODRAW            = 0x01,   ///< Only draw sprite if value of register TileLayoutRegisters::dodraw is non-zero.
@@ -50,7 +50,7 @@ enum TileLayoutFlags : uint16_t {
 	TLF_KNOWN_FLAGS       = 0xFF,   ///< Known flags. Any unknown set flag will disable the GRF.
 
 	/** Flags which are still required after loading the GRF. */
-	TLF_DRAWING_FLAGS     = (uint16_t)~TLF_CUSTOM_PALETTE,
+	TLF_DRAWING_FLAGS     = TLF_KNOWN_FLAGS & ~TLF_CUSTOM_PALETTE,
 
 	/** Flags which do not work for the (first) ground sprite. */
 	TLF_NON_GROUND_FLAGS  = TLF_BB_XY_OFFSET | TLF_BB_Z_OFFSET | TLF_CHILD_X_OFFSET | TLF_CHILD_Y_OFFSET,

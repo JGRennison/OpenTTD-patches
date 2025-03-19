@@ -17,7 +17,7 @@
 #include <vector>
 
 /** Flags of the sort list. */
-enum SortListFlags {
+enum SortListFlags : uint8_t {
 	VL_NONE       = 0,      ///< no sort
 	VL_DESC       = 1 << 0, ///< sort descending or ascending
 	VL_RESORT     = 1 << 1, ///< instruct the code to resort the list in the next loop

@@ -12,6 +12,8 @@
 
 #include "script_object.hpp"
 #include "../../airport.h"
+#include "../../town_type.h"
+#include "../../station_type.h"
 
 /**
  * Class that handles all airport related functions.

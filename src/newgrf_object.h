@@ -69,7 +69,7 @@ enum ObjectClassID : uint16_t {
 	INVALID_OBJECT_CLASS = UINT16_MAX, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
-DECLARE_POSTFIX_INCREMENT(ObjectClassID)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(ObjectClassID)
 
 enum ObjectViewportMapType {
 	OVMT_DEFAULT = 0,

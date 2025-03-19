@@ -31,10 +31,10 @@ enum RoadStopClassID : uint16_t {
 	ROADSTOP_CLASS_WAYP,               ///< Waypoint class (unimplemented: this is reserved for future use with road waypoints).
 	ROADSTOP_CLASS_MAX   = UINT16_MAX, ///< Maximum number of classes.
 };
-DECLARE_POSTFIX_INCREMENT(RoadStopClassID)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(RoadStopClassID)
 
 /* Some Triggers etc. */
-enum RoadStopRandomTrigger {
+enum RoadStopRandomTrigger : uint8_t {
 	RSRT_NEW_CARGO,       ///< Trigger roadstop on arrival of new cargo.
 	RSRT_CARGO_TAKEN,     ///< Trigger roadstop when cargo is completely taken.
 	RSRT_VEH_ARRIVES,     ///< Trigger roadstop when road vehicle arrives.
@@ -66,24 +66,24 @@ enum RoadStopDrawMode : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(RoadStopDrawMode)
 
-enum RoadStopSpecFlags {
-	RSF_CB141_RANDOM_BITS,    ///< Callback 141 needs random bits.
-	RSF_NO_ONE_WAY_OVERLAY,   ///< Do not show one-way road overlays.
-	RSF_NO_CATENARY,          ///< Do not show catenary.
-	RSF_DRIVE_THROUGH_ONLY,   ///< Stop is drive-through only.
-	RSF_NO_AUTO_ROAD_CONNECTION, ///< No auto road connection.
-	RSF_BUILD_MENU_ROAD_ONLY, ///< Only show in the road build menu (not tram).
-	RSF_BUILD_MENU_TRAM_ONLY, ///< Only show in the tram build menu (not road).
-	RSF_BUILD_MENU_DRAW_DISABLED_VIEWS, ///< Use custom road stop graphics for disabled views.
-	RSF_DRAW_MODE_REGISTER,   ///< Read draw mode from register 0x100.
+enum RoadStopSpecFlags : uint8_t {
+	RSF_CB141_RANDOM_BITS              = 0, ///< Callback 141 needs random bits.
+	RSF_NO_ONE_WAY_OVERLAY             = 1, ///< Do not show one-way road overlays.
+	RSF_NO_CATENARY                    = 2, ///< Do not show catenary.
+	RSF_DRIVE_THROUGH_ONLY             = 3, ///< Stop is drive-through only.
+	RSF_NO_AUTO_ROAD_CONNECTION        = 4, ///< No auto road connection.
+	RSF_BUILD_MENU_ROAD_ONLY           = 5, ///< Only show in the road build menu (not tram).
+	RSF_BUILD_MENU_TRAM_ONLY           = 6, ///< Only show in the tram build menu (not road).
+	RSF_BUILD_MENU_DRAW_DISABLED_VIEWS = 7, ///< Use custom road stop graphics for disabled views.
+	RSF_DRAW_MODE_REGISTER             = 8, ///< Read draw mode from register 0x100.
 };
 
-enum RoadStopSpecIntlFlags {
+enum RoadStopSpecIntlFlags : uint8_t {
 	RSIF_BRIDGE_HEIGHTS_SET,            ///< bridge_height[6] is set.
 	RSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< bridge_disallowed_pillars[6] is set.
 };
 
-enum RoadStopView {
+enum RoadStopView : uint8_t {
 	RSV_BAY_NE                  = 0, ///< Bay road stop, facing Northeast
 	RSV_BAY_SE                  = 1, ///< Bay road stop, facing Southeast
 	RSV_BAY_SW                  = 2, ///< Bay road stop, facing Southwest

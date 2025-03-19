@@ -314,12 +314,12 @@ static inline bool MaybeAddToTodoSet(TileIndex t1, DiagDirection d1, TileIndex t
 
 
 /** Current signal block state flags */
-enum SigFlags {
-	SF_NONE    = 0,
-	SF_TRAIN   = 1 << 0, ///< train found in segment
-	SF_FULL    = 1 << 1, ///< some of buffers was full, do not continue
-	SF_PBS     = 1 << 2, ///< pbs signal found
-	SF_JUNCTION= 1 << 3, ///< junction found
+enum SigFlags : uint8_t {
+	SF_NONE     = 0,
+	SF_TRAIN    = 1 << 0, ///< train found in segment
+	SF_FULL     = 1 << 1, ///< some of buffers was full, do not continue
+	SF_PBS      = 1 << 2, ///< pbs signal found
+	SF_JUNCTION = 1 << 3, ///< junction found
 };
 
 DECLARE_ENUM_AS_BIT_SET(SigFlags)

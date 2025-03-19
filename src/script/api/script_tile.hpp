@@ -12,7 +12,9 @@
 
 #include "script_error.hpp"
 #include "script_company.hpp"
+#include "../../cargo_type.h"
 #include "../../slope_type.h"
+#include "../../town_type.h"
 #include "../../transport_type.h"
 
 /**

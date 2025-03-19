@@ -441,7 +441,7 @@ struct DepotWindow : Window {
 		const Vehicle *wagon;
 	};
 
-	enum DepotGUIAction {
+	enum DepotGUIAction : uint8_t {
 		MODE_ERROR,
 		MODE_DRAG_VEHICLE,
 		MODE_SHOW_VEHICLE,

@@ -14,7 +14,7 @@
 #include <vector>
 
 /** Class for handling the client side of querying a game server. */
-class QueryNetworkGameSocketHandler : public ZeroedMemoryAllocator, public NetworkGameSocketHandler {
+class QueryNetworkGameSocketHandler : public NetworkGameSocketHandler {
 private:
 	static std::vector<std::unique_ptr<QueryNetworkGameSocketHandler>> queries; ///< Pending queries.
 	std::string connection_string; ///< Address we are connected to.

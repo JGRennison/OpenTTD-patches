@@ -14,21 +14,54 @@
 template <typename enum_type>
 constexpr std::underlying_type_t<enum_type> to_underlying(enum_type e) { return static_cast<std::underlying_type_t<enum_type>>(e); }
 
-/** Some enums need to have allowed incrementing (i.e. StationClassID) */
-#define DECLARE_POSTFIX_INCREMENT(enum_type) \
-	inline enum_type operator ++(enum_type& e, int) \
-	{ \
-		enum_type e_org = e; \
-		e = static_cast<enum_type>(to_underlying(e) + 1); \
-		return e_org; \
-	} \
-	inline enum_type operator --(enum_type& e, int) \
-	{ \
-		enum_type e_org = e; \
-		e = static_cast<enum_type>(to_underlying(e) - 1); \
-		return e_org; \
-	}
+/** Trait to enable prefix/postfix incrementing operators. */
+template <typename enum_type>
+struct is_enum_incrementable {
+	static constexpr bool value = false;
+};
 
+template <typename enum_type>
+constexpr bool is_enum_incrementable_v = is_enum_incrementable<enum_type>::value;
+
+/** Prefix increment. */
+template <typename enum_type, std::enable_if_t<is_enum_incrementable_v<enum_type>, bool> = true>
+inline constexpr enum_type &operator ++(enum_type &e)
+{
+	e = static_cast<enum_type>(to_underlying(e) + 1);
+	return e;
+}
+
+/** Postfix increment, uses prefix increment. */
+template <typename enum_type, std::enable_if_t<is_enum_incrementable_v<enum_type>, bool> = true>
+inline constexpr enum_type operator ++(enum_type &e, int)
+{
+	enum_type e_org = e;
+	++e;
+	return e_org;
+}
+
+/** Prefix decrement. */
+template <typename enum_type, std::enable_if_t<is_enum_incrementable_v<enum_type>, bool> = true>
+inline constexpr enum_type &operator --(enum_type &e)
+{
+	e = static_cast<enum_type>(to_underlying(e) - 1);
+	return e;
+}
+
+/** Postfix decrement, uses prefix decrement. */
+template <typename enum_type, std::enable_if_t<is_enum_incrementable_v<enum_type>, bool> = true>
+inline constexpr enum_type operator --(enum_type &e, int)
+{
+	enum_type e_org = e;
+	--e;
+	return e_org;
+}
+
+/** For some enums it is useful to have pre/post increment/decrement operators */
+#define DECLARE_INCREMENT_DECREMENT_OPERATORS(enum_type) \
+	template <> struct is_enum_incrementable<enum_type> { \
+		static const bool value = true; \
+	};
 
 
 /** Operators to allow to work with enum as with type safe bit set in C++ */
@@ -86,5 +119,99 @@ debug_inline constexpr void SetFlagState(T &x, const T y, bool set)
 		x &= ~y;
 	}
 }
+
+struct EnumBitSetBase {};
+
+/**
+ * Enum-as-bit-set wrapper.
+ * Allows wrapping enum values as a bit set. Methods are loosely modelled on std::bitset.
+ * @tparam Tenum Enum values to wrap.
+ * @tparam Tsorage Storage type required to hold eenum values.
+ */
+template <typename Tenum, typename Tstorage>
+class EnumBitSet : public EnumBitSetBase {
+public:
+	using enum_type = Tenum; ///< Enum type of this EnumBitSet.
+	using storage_type = Tstorage; ///< Storage type of this EnumBitSet.
+
+	constexpr EnumBitSet() : data(0) {}
+	constexpr EnumBitSet(Tenum value) : data(0) { this->Set(value); }
+	explicit constexpr EnumBitSet(Tstorage data) : data(data) {}
+
+	/**
+	 * Construct an EnumBitSet from a list of enum values.
+	 * @param values List of enum values.
+	 */
+	constexpr EnumBitSet(std::initializer_list<const Tenum> values) : data(0)
+	{
+		for (const Tenum &value : values) {
+			this->Set(value);
+		}
+	}
+
+	constexpr auto operator <=>(const EnumBitSet &) const noexcept = default;
+
+	/**
+	 * Set the enum value.
+	 * @param value Enum value to set.
+	 * @returns The EnumBitset
+	 */
+	inline constexpr EnumBitSet &Set(Tenum value)
+	{
+		this->data |= (1U << to_underlying(value));
+		return *this;
+	}
+
+	/**
+	 * Reset the enum value to not set.
+	 * @param value Enum value to reset.
+	 * @returns The EnumBitset
+	 */
+	inline constexpr EnumBitSet &Reset(Tenum value)
+	{
+		this->data &= ~(1U << to_underlying(value));
+		return *this;
+	}
+
+	/**
+	 * Flip the enum value.
+	 * @param value Enum value to flip.
+	 * @returns The EnumBitset
+	 */
+	inline constexpr EnumBitSet &Flip(Tenum value)
+	{
+		if (this->Test(value)) {
+			return this->Reset(value);
+		} else {
+			return this->Set(value);
+		}
+	}
+
+	/**
+	 * Test if the enum value is set.
+	 * @param value Enum value to check.
+	 * @returns true iff the requested value is set.
+	 */
+	inline constexpr bool Test(Tenum value) const
+	{
+		return (this->data & (1U << to_underlying(value))) != 0;
+	}
+
+	inline constexpr EnumBitSet operator |(const EnumBitSet &other) const
+	{
+		return EnumBitSet{static_cast<Tstorage>(this->data | other.data)};
+	}
+
+	inline constexpr EnumBitSet operator &(const EnumBitSet &other) const
+	{
+		return EnumBitSet{static_cast<Tstorage>(this->data & other.data)};
+	}
+
+	inline constexpr Tstorage base() const { return this->data; }
+	inline constexpr Tstorage &edit_base() { return this->data; }
+
+private:
+	Tstorage data; ///< Bitmask of enum values.
+};
 
 #endif /* ENUM_TYPE_HPP */

@@ -12,6 +12,7 @@
 
 #include "script_list.hpp"
 #include "script_waypoint.hpp"
+#include "../../vehicle_type.h"
 
 /**
  * Creates a list of waypoints of which you are the owner.

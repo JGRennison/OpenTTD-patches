@@ -13,7 +13,7 @@
 #include "company_type.h"
 #include "dropdown_type.h"
 
-enum MainToolbarHotkeys {
+enum MainToolbarHotkeys : int32_t {
 	MTHK_PAUSE,
 	MTHK_FASTFORWARD,
 	MTHK_SETTINGS,

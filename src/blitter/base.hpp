@@ -33,7 +33,7 @@ enum class BlitterMode : uint8_t {
  *  - calculations (alpha blending),
  *  - heavy branching (remap lookups and animation buffer handling).
  */
-enum BlitterSpriteFlags {
+enum BlitterSpriteFlags : uint8_t {
 	BSF_NONE        = 0,
 	BSF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
 	BSF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.

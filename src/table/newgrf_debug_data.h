@@ -2447,7 +2447,7 @@ class NIHNewLandscape : public NIHelper {
 	{
 		output.Print("New Landscape GRFs:");
 		for (const GRFFile *grf : _new_landscape_rocks_grfs) {
-			output.Print("  GRF: {:08X}", BSWAP32(grf->grfid));
+			output.Print("  GRF: {:08X}", std::byteswap(grf->grfid));
 			output.Print("    Enable rocks recolour: {}, Enable drawing snowy rocks: {}",
 					HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED), HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED));
 		}

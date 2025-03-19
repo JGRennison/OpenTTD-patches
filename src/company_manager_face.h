@@ -16,7 +16,7 @@
 #include "company_type.h"
 
 /** The gender/race combinations that we have faces for */
-enum GenderEthnicity {
+enum GenderEthnicity : uint8_t {
 	GENDER_FEMALE    = 0, ///< This bit set means a female, otherwise male
 	ETHNICITY_BLACK  = 1, ///< This bit set means black, otherwise white
 
@@ -29,7 +29,7 @@ enum GenderEthnicity {
 DECLARE_ENUM_AS_BIT_SET(GenderEthnicity) ///< See GenderRace as a bitset
 
 /** Bitgroups of the CompanyManagerFace variable */
-enum CompanyManagerFaceVariable {
+enum CompanyManagerFaceVariable : uint8_t {
 	CMFV_GENDER,
 	CMFV_ETHNICITY,
 	CMFV_GEN_ETHN,
@@ -50,7 +50,7 @@ enum CompanyManagerFaceVariable {
 	CMFV_GLASSES,
 	CMFV_END,
 };
-DECLARE_POSTFIX_INCREMENT(CompanyManagerFaceVariable)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(CompanyManagerFaceVariable)
 
 /** Information about the valid values of CompanyManagerFace bitgroups as well as the sprites to draw */
 struct CompanyManagerFaceBitsInfo {

@@ -39,7 +39,7 @@ static const uint32_t FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 typedef class ServerNetworkGameSocketHandler NetworkClientSocket;
 
 /** Status of the clients during joining. */
-enum NetworkJoinStatus {
+enum NetworkJoinStatus : uint8_t {
 	NETWORK_JOIN_STATUS_CONNECTING,
 	NETWORK_JOIN_STATUS_AUTHORIZING,
 	NETWORK_JOIN_STATUS_WAITING,

@@ -95,7 +95,7 @@ struct InspectTargetId {
  * The type of a property to show. This is used to
  * provide an appropriate representation in the GUI.
  */
-enum NIType {
+enum NIType : uint8_t {
 	NIT_INT,   ///< The property is a simple integer
 	NIT_CARGO, ///< The property is a cargo
 };
@@ -738,7 +738,7 @@ struct NewGRFInspectWindow final : Window {
 		uint32_t grfid = nih->GetGRFID(index);
 		if (grfid) {
 			this->DrawString(r, i++, "GRF:");
-			this->DrawString(r, i++, "  ID: {:08X}", BSWAP32(grfid));
+			this->DrawString(r, i++, "  ID: {:08X}", std::byteswap(grfid));
 			GRFConfig *grfconfig = GetGRFConfig(grfid);
 			if (grfconfig) {
 				this->DrawString(r, i++, "  Name: {}", grfconfig->GetName());
@@ -822,7 +822,7 @@ struct NewGRFInspectWindow final : Window {
 			auto psa = nih->GetPSA(index, grfid);
 			if (!psa.empty()) {
 				if (nih->PSAWithParameter()) {
-					this->DrawString(r, i++, "Persistent storage [{:08X}]:", BSWAP32(grfid));
+					this->DrawString(r, i++, "Persistent storage [{:08X}]:", std::byteswap(grfid));
 				} else {
 					this->DrawString(r, i++, "Persistent storage:");
 				}

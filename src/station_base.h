@@ -20,8 +20,8 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
+#include "core/alignment.hpp"
 #include "core/alloc_type.hpp"
-#include "core/endian_type.hpp"
 #include "strings_type.h"
 #include <map>
 #include <vector>
@@ -532,7 +532,7 @@ struct GoodsEntryData : ZeroedMemoryAllocator {
  */
 struct GoodsEntry {
 	/** Status of this cargo for the station. */
-	enum GoodsEntryStatus {
+	enum GoodsEntryStatus : uint8_t {
 		/**
 		 * Set when the station accepts the cargo currently for final deliveries.
 		 * It is updated every STATION_ACCEPTANCE_TICKS ticks by checking surrounding tiles for acceptance >= 8/8.

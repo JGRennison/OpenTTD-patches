@@ -11,6 +11,7 @@
 #define SCRIPT_INDUSTRYLIST_HPP
 
 #include "script_list.hpp"
+#include "../../cargo_type.h"
 
 /**
  * Creates a list of industries that are currently on the map.

@@ -15,7 +15,7 @@
 /**
  * Enum to handle waypoint flags.
  */
-enum WaypointFlags {
+enum WaypointFlags : uint8_t {
 	WPF_HIDE_LABEL              = 0, ///< Hide waypoint label
 	WPF_ROAD                    = 1, ///< This is a road waypoint
 };

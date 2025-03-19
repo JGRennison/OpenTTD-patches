@@ -161,7 +161,7 @@ using OutgoingCommandQueue = ring_buffer<OutgoingCommandPacket>;
 class NetworkGameSocketHandler : public NetworkTCPSocketHandler {
 /* TODO: rewrite into a proper class */
 private:
-	NetworkClientInfo *info;          ///< Client info related to this socket
+	NetworkClientInfo *info = nullptr; ///< Client info related to this socket
 	bool is_pending_deletion = false; ///< Whether this socket is pending deletion
 
 protected:
@@ -563,12 +563,12 @@ protected:
 
 	NetworkGameSocketHandler(SOCKET s);
 public:
-	ClientID client_id;            ///< Client identifier
-	uint32_t last_frame;           ///< Last frame we have executed
-	uint32_t last_frame_server;    ///< Last frame the server has executed
-	CommandQueue incoming_queue;   ///< The command-queue awaiting handling
-	std::chrono::steady_clock::time_point last_packet; ///< Time we received the last frame.
-	PacketGameType last_pkt_type;  ///< Last received packet type
+	ClientID client_id = INVALID_CLIENT_ID;              ///< Client identifier
+	uint32_t last_frame = 0;                             ///< Last frame we have executed
+	uint32_t last_frame_server = 0;                      ///< Last frame the server has executed
+	CommandQueue incoming_queue;                         ///< The command-queue awaiting handling
+	std::chrono::steady_clock::time_point last_packet{}; ///< Time we received the last frame.
+	PacketGameType last_pkt_type = PACKET_END;           ///< Last received packet type
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
 

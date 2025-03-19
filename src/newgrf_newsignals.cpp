@@ -134,7 +134,7 @@ void DumpNewSignalsSpriteGroups(SpriteGroupDumper &dumper)
 	bool first = true;
 	for (const GRFFile *grf : _new_signals_grfs) {
 		if (!first) dumper.Print("");
-		dumper.Print(fmt::format("GRF: {:08X}", BSWAP32(grf->grfid)));
+		dumper.Print(fmt::format("GRF: {:08X}", std::byteswap(grf->grfid)));
 		first = false;
 		dumper.DumpSpriteGroup(grf->new_signals_group, 0);
 	}

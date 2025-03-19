@@ -28,7 +28,7 @@
 template <class T>
 class TimerGame {
 public:
-	enum Trigger {
+	enum Trigger  : uint8_t {
 		DAY,
 		WEEK,
 		MONTH,
@@ -36,7 +36,7 @@ public:
 		YEAR,
 	};
 
-	enum Priority {
+	enum Priority : uint8_t {
 		NONE, ///< These timers can be executed in any order; there is no Random() in them, so order is not relevant.
 
 		/* All other may have a Random() call in them, so order is important.

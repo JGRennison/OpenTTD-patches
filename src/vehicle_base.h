@@ -25,14 +25,14 @@
 #include "landscape.h"
 #include "network/network.h"
 #include "core/mem_func.hpp"
-#include "core/endian_type.hpp"
+#include "core/alignment.hpp"
 #include "sl/saveload_common.h"
 #include <list>
 #include <map>
 #include <vector>
 
 /** Vehicle status bits in #Vehicle::vehstatus. */
-enum VehStatus {
+enum VehStatus : uint8_t {
 	VS_HIDDEN          = 0x01, ///< Vehicle is not visible.
 	VS_STOPPED         = 0x02, ///< Vehicle is stopped by the player.
 	VS_UNCLICKABLE     = 0x04, ///< Vehicle is not clickable by the user (shadow vehicles).
@@ -44,7 +44,7 @@ enum VehStatus {
 };
 
 /** Bit numbers in #Vehicle::vehicle_flags. */
-enum VehicleFlags {
+enum VehicleFlags : uint8_t {
 	VF_LOADING_FINISHED         =  0, ///< Vehicle has finished loading.
 	VF_CARGO_UNLOADING          =  1, ///< Vehicle is unloading cargo.
 	VF_BUILT_AS_PROTOTYPE       =  2, ///< Vehicle is a prototype (accepted as exclusive preview).
@@ -67,7 +67,7 @@ enum VehicleFlags {
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
-enum NewGRFCacheValidValues {
+enum NewGRFCacheValidValues : uint8_t {
 	NCVV_POSITION_CONSIST_LENGTH   = 0, ///< This bit will be set if the NewGRF var 40 currently stored is valid.
 	NCVV_POSITION_SAME_ID_LENGTH   = 1, ///< This bit will be set if the NewGRF var 41 currently stored is valid.
 	NCVV_CONSIST_CARGO_INFORMATION = 2, ///< This bit will be set if the NewGRF var 42 currently stored is valid.
@@ -91,7 +91,7 @@ struct NewGRFCache {
 };
 
 /** Meaning of the various bits of the visual effect. */
-enum VisualEffect {
+enum VisualEffect : uint8_t {
 	VE_OFFSET_START        = 0, ///< First bit that contains the offset (0 = front, 8 = centre, 15 = rear)
 	VE_OFFSET_COUNT        = 4, ///< Number of bits used for the offset
 	VE_OFFSET_CENTRE       = 8, ///< Value of offset corresponding to a position above the centre of the vehicle
@@ -111,7 +111,7 @@ enum VisualEffect {
 };
 
 /** Models for spawning visual effects. */
-enum VisualEffectSpawnModel {
+enum VisualEffectSpawnModel : uint8_t {
 	VESM_NONE              = 0, ///< No visual effect
 	VESM_STEAM,                 ///< Steam model
 	VESM_DIESEL,                ///< Diesel model
@@ -125,7 +125,7 @@ enum VisualEffectSpawnModel {
  * This is defined here instead of at #GroundVehicle because some common function require access to these flags.
  * Do not access it directly unless you have to. Use the subtype access functions.
  */
-enum GroundVehicleSubtypeFlags {
+enum GroundVehicleSubtypeFlags : uint8_t {
 	GVSF_FRONT            = 0, ///< Leading engine of a consist.
 	GVSF_ARTICULATED_PART = 1, ///< Articulated part of an engine.
 	GVSF_WAGON            = 2, ///< Wagon (not used for road vehicles).

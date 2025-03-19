@@ -358,7 +358,7 @@ static const CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
  *
  * @see _command_proc_table
  */
-enum Commands : uint16_t {
+enum Commands : uint8_t {
 	CMD_BUILD_RAILROAD_TRACK,         ///< build a rail track
 	CMD_REMOVE_RAILROAD_TRACK,        ///< remove a rail track
 	CMD_BUILD_SINGLE_RAIL,            ///< build a single rail track
@@ -724,7 +724,7 @@ template <Commands Tcmd> struct CommandHandlerTraits;
  *
  * This enums defines some flags which can be used for the commands.
  */
-enum DoCommandFlag {
+enum DoCommandFlag : uint16_t {
 	DC_NONE                  = 0x000, ///< no flag is set
 	DC_EXEC                  = 0x001, ///< execute the given command
 	DC_AUTO                  = 0x002, ///< don't allow building on structures

@@ -198,7 +198,7 @@ struct ChildScreenSpriteToDraw {
  * Mode of "sprite combining"
  * @see StartSpriteCombine
  */
-enum SpriteCombineMode {
+enum SpriteCombineMode : uint8_t {
 	SPRITE_COMBINE_NONE,     ///< Every #AddSortableSpriteToDraw start its own bounding box
 	SPRITE_COMBINE_PENDING,  ///< %Sprite combining will start with the next unclipped sprite.
 	SPRITE_COMBINE_ACTIVE,   ///< %Sprite combining is active. #AddSortableSpriteToDraw outputs child sprites.
@@ -1643,7 +1643,7 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_ty
 	}
 }
 
-enum TileHighlightType {
+enum TileHighlightType : uint8_t {
 	THT_NONE,
 	THT_WHITE,
 	THT_BLUE,
@@ -2117,7 +2117,12 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 			case ViewportSignKdtreeItem::VKI_STATION: {
 				if (!show_stations) break;
 				const BaseStation *st = BaseStation::Get(item.id.station);
-				if ((_facility_display_opt & st->facilities) == 0) break;
+
+				/* If no facilities are present the station is a ghost station. */
+				StationFacility facilities = st->facilities;
+				if (facilities == FACIL_NONE) facilities = FACIL_GHOST;
+
+				if ((_facility_display_opt & facilities) == 0) break;
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;

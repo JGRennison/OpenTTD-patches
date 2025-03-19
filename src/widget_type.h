@@ -120,7 +120,7 @@ enum WidgetBaseFlags : uint8_t {
 DECLARE_ENUM_AS_BIT_SET(WidgetBaseFlags)
 
 /** Different forms of sizing nested widgets, using NWidgetBase::AssignSizePosition() */
-enum SizingType {
+enum SizingType : uint8_t {
 	ST_SMALLEST, ///< Initialize nested widget tree to smallest size. Also updates \e current_x and \e current_y.
 	ST_RESIZE,   ///< Resize the nested widget tree.
 };
@@ -345,7 +345,7 @@ public:
 };
 
 /** Nested widget flags that affect display and interaction with 'real' widgets. */
-enum NWidgetDisplay {
+enum NWidgetDisplay : uint16_t {
 	/* Generic. */
 	NDB_LOWERED         = 0, ///< Widget is lowered (pressed down) bit.
 	NDB_DISABLED        = 1, ///< Widget is disabled (greyed out) bit.
@@ -649,7 +649,7 @@ protected:
 };
 
 /** Display planes with zero size for #NWidgetStacked. */
-enum StackedZeroSizePlanes {
+enum StackedZeroSizePlanes : int {
 	SZSP_VERTICAL = INT_MAX / 2, ///< Display plane with zero size horizontally, and filling and resizing vertically.
 	SZSP_HORIZONTAL,             ///< Display plane with zero size vertically, and filling and resizing horizontally.
 	SZSP_NONE,                   ///< Display plane with zero size in both directions (none filling and resizing).
@@ -692,7 +692,7 @@ private:
 };
 
 /** Nested widget container flags, */
-enum NWidContainerFlags {
+enum NWidContainerFlags : uint8_t {
 	NCB_EQUALSIZE = 0, ///< Containers should keep all their (resizing) children equally large.
 	NCB_BIGFIRST  = 1, ///< Allocate space to biggest resize first.
 
@@ -886,7 +886,7 @@ private:
 
 public:
 	/** Stepping sizes when scrolling */
-	enum ScrollbarStepping {
+	enum ScrollbarStepping : uint8_t {
 		SS_RAW,             ///< Step in single units.
 		SS_SMALL,           ///< Step in #stepsize units.
 		SS_BIG,             ///< Step in #cap units.
