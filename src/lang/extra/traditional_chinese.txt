@@ -1007,6 +1007,7 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :日
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :月
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :晚點
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :早點
+STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
 STR_TRACE_RESTRICT_GUI_LABEL                                    :文字標籤
 STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}標籤：{POP_COLOUR}{STRING}
 
@@ -1198,7 +1199,8 @@ STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}不能�
 STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能跳轉到未命名的號誌
 STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一個離開號誌
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一個可編程入口號誌
-STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能從自己複製邏輯
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能將邏輯複製到自身
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}該號誌不能有條件地依賴自身
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有條件地依賴於雙向號誌
 STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}無效號誌
 
