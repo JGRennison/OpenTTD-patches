@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 
-#include "cmd_helper.h"
 #include "command_func.h"
 #include "landscape.h"
 #include "landscape_cmd.h"

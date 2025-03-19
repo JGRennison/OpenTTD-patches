@@ -18,7 +18,6 @@
 #include "landscape_cmd.h"
 #include "viewport_func.h"
 #include "viewport_kdtree.h"
-#include "cmd_helper.h"
 #include "command_func.h"
 #include "company_func.h"
 #include "industry.h"

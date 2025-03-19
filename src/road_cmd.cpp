@@ -8,7 +8,6 @@
 /** @file road_cmd.cpp Commands related to road tiles. */
 
 #include "stdafx.h"
-#include "cmd_helper.h"
 #include "road.h"
 #include "road_internal.h"
 #include "viewport_func.h"

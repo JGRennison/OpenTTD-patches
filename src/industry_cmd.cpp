@@ -42,7 +42,6 @@
 #include "object_base.h"
 #include "game/game.hpp"
 #include "error.h"
-#include "cmd_helper.h"
 #include "string_func.h"
 #include "event_logs.h"
 #include "core/container_func.hpp"

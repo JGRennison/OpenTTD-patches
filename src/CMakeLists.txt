@@ -98,7 +98,6 @@ add_files(
     clear_cmd.cpp
     clear_func.h
     clear_map.h
-    cmd_helper.h
     command.cpp
     command_func.h
     command_log.h

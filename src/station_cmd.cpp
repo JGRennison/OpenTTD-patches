@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "aircraft.h"
 #include "bridge_map.h"
-#include "cmd_helper.h"
 #include "viewport_func.h"
 #include "viewport_kdtree.h"
 #include "command_func.h"
