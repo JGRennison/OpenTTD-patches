@@ -248,7 +248,6 @@ enum ModifyOrderFlags : uint8_t {
 	MOF_DEPARTURES_SUBTYPE, ///< Change the label departures subtype
 	MOF_END
 };
-template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, uint8_t, MOF_NON_STOP, MOF_END, MOF_END, 8> {};
 
 /**
  * Depot action to switch to when doing a #MOF_DEPOT_ACTION.

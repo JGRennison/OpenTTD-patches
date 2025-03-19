@@ -29,7 +29,6 @@ enum TownSize : uint8_t {
 
 	TSZ_END,    ///< Number of available town sizes.
 };
-template <> struct EnumPropsT<TownSize> : MakeEnumPropsT<TownSize, uint8_t, TSZ_SMALL, TSZ_END, TSZ_END, 2> {};
 DECLARE_ENUM_AS_ADDABLE(TownSize)
 
 /* These refer to the maximums, so Appalling is -1000 to -400
@@ -93,7 +92,6 @@ enum TownLayout : uint8_t {
 
 	NUM_TLS,             ///< Number of town layouts
 };
-template <> struct EnumPropsT<TownLayout> : MakeEnumPropsT<TownLayout, uint8_t, TL_BEGIN, NUM_TLS, NUM_TLS, 3> {};
 DECLARE_ENUM_AS_ADDABLE(TownLayout)
 
 /** Town founding setting values. It needs to be 8bits, because we save and load it as such */

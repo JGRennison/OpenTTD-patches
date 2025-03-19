@@ -35,8 +35,6 @@ enum VehicleType : uint8_t {
 	VEH_INVALID = 0xFF,           ///< Non-existing type of vehicle.
 };
 DECLARE_POSTFIX_INCREMENT(VehicleType)
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<VehicleType> : MakeEnumPropsT<VehicleType, uint8_t, VEH_TRAIN, VEH_END, VEH_INVALID, 3> {};
 DECLARE_ENUM_AS_ADDABLE(VehicleType)
 
 using VehicleTypeMask = uint8_t;

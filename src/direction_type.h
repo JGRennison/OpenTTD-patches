@@ -38,9 +38,6 @@ enum Direction : uint8_t {
 /** Allow incrementing of Direction variables */
 DECLARE_POSTFIX_INCREMENT(Direction)
 
-/** Define basic enum properties */
-template <> struct EnumPropsT<Direction> : MakeEnumPropsT<Direction, uint8_t, DIR_BEGIN, DIR_END, INVALID_DIR, 3> {};
-
 
 /**
  * Enumeration for the difference between two directions.
@@ -86,9 +83,6 @@ enum DiagDirection : uint8_t {
 DECLARE_POSTFIX_INCREMENT(DiagDirection)
 DECLARE_ENUM_AS_ADDABLE(DiagDirection)
 
-/** Define basic enum properties */
-template <> struct EnumPropsT<DiagDirection> : MakeEnumPropsT<DiagDirection, uint8_t, DIAGDIR_BEGIN, DIAGDIR_END, INVALID_DIAGDIR, 2> {};
-
 
 /**
  * Enumeration for the difference between to DiagDirection.
@@ -125,8 +119,6 @@ enum Axis : uint8_t {
 	AXIS_END,            ///< Used for iterations
 	INVALID_AXIS = 0xFF, ///< Flag for an invalid Axis
 };
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<Axis> : MakeEnumPropsT<Axis, uint8_t, AXIS_X, AXIS_END, INVALID_AXIS, 1> {};
 DECLARE_ENUM_AS_ADDABLE(Axis)
 
 #endif /* DIRECTION_TYPE_H */

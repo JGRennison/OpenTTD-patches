@@ -175,9 +175,6 @@ enum ExpensesType : uint8_t {
 	INVALID_EXPENSES      = 0xFF, ///< Invalid expense type.
 };
 
-/** Define basic enum properties for ExpensesType */
-template <> struct EnumPropsT<ExpensesType> : MakeEnumPropsT<ExpensesType, uint8_t, EXPENSES_CONSTRUCTION, EXPENSES_END, INVALID_EXPENSES, 8> {};
-
 /**
  * Data type for storage of Money for each #ExpensesType category.
  */

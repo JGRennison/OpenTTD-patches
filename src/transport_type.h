@@ -31,7 +31,5 @@ enum TransportType : uint8_t {
 	TRANSPORT_END,   ///< End of iterations.
 	INVALID_TRANSPORT = 0xff, ///< Sentinel for invalid transport types.
 };
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<TransportType> : MakeEnumPropsT<TransportType, uint8_t, TRANSPORT_BEGIN, TRANSPORT_END, INVALID_TRANSPORT, 2> {};
 
 #endif /* TRANSPORT_TYPE_H */

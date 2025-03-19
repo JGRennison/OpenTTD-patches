@@ -58,8 +58,6 @@ enum LiveryScheme : uint8_t {
 };
 
 DECLARE_POSTFIX_INCREMENT(LiveryScheme)
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<LiveryScheme> : MakeEnumPropsT<LiveryScheme, uint8_t, LS_BEGIN, LS_END, LS_END, 8> {};
 
 /** List of different livery classes, used only by the livery GUI. */
 enum LiveryClass : uint8_t {

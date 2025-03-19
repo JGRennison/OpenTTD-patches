@@ -37,8 +37,6 @@ enum SignalType : uint8_t {
 	SIGTYPE_LAST       = SIGTYPE_NO_ENTRY,
 	SIGTYPE_FIRST_PBS_SPRITE = SIGTYPE_PBS,
 };
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, uint8_t, SIGTYPE_BLOCK, SIGTYPE_END, SIGTYPE_END, 3> {};
 DECLARE_ENUM_AS_ADDABLE(SignalType)
 
 /** Reference to a signal

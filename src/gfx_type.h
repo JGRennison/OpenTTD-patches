@@ -255,7 +255,6 @@ enum Colours : uint8_t {
 	COLOUR_END,
 	INVALID_COLOUR = 0xFF,
 };
-template <> struct EnumPropsT<Colours> : MakeEnumPropsT<Colours, uint8_t, COLOUR_BEGIN, COLOUR_END, INVALID_COLOUR, 8> {};
 DECLARE_POSTFIX_INCREMENT(Colours)
 DECLARE_ENUM_AS_ADDABLE(Colours)
 

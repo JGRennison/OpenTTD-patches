@@ -42,8 +42,6 @@ enum WaterClass : uint8_t {
 	WATER_CLASS_RIVER,   ///< River.
 	WATER_CLASS_INVALID, ///< Used for industry tiles on land (also for oilrig if newgrf says so).
 };
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<WaterClass> : MakeEnumPropsT<WaterClass, uint8_t, WATER_CLASS_SEA, WATER_CLASS_INVALID, WATER_CLASS_INVALID, 2> {};
 
 /** Sections of the water depot. */
 enum DepotPart {

@@ -33,9 +33,6 @@ enum RoadStopClassID : uint16_t {
 };
 DECLARE_POSTFIX_INCREMENT(RoadStopClassID)
 
-template <>
-struct EnumPropsT<RoadStopClassID> : MakeEnumPropsT<RoadStopClassID, uint8_t, ROADSTOP_CLASS_BEGIN, ROADSTOP_CLASS_MAX, ROADSTOP_CLASS_MAX, 16> {};
-
 /* Some Triggers etc. */
 enum RoadStopRandomTrigger {
 	RSRT_NEW_CARGO,       ///< Trigger roadstop on arrival of new cargo.

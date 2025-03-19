@@ -100,7 +100,6 @@ enum StationClassID : uint16_t {
 	STAT_CLASS_WAYP,         ///< Waypoint class.
 	STAT_CLASS_MAX = UINT16_MAX, ///< Maximum number of classes.
 };
-template <> struct EnumPropsT<StationClassID> : MakeEnumPropsT<StationClassID, uint8_t, STAT_CLASS_BEGIN, STAT_CLASS_MAX, STAT_CLASS_MAX, 16> {};
 
 /** Allow incrementing of StationClassID variables */
 DECLARE_POSTFIX_INCREMENT(StationClassID)
