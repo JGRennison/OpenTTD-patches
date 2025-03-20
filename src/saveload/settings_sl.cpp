@@ -104,9 +104,6 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 			case ::SLE_VAR_NULL:
 				new_type |= SLE_VAR_NULL;
 				break;
-			case ::SLE_VAR_STRB:
-				new_type |= SLE_VAR_STRB;
-				break;
 			case ::SLE_VAR_STR:
 				new_type |= SLE_VAR_STR;
 				break;

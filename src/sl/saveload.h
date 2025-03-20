@@ -432,10 +432,7 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			return sizeof(T) == sizeof(void *);
 
 		case SL_STR:
-			/* These should be pointer sized, or fixed array. */
-			if (GetVarMemType(type) == SLE_VAR_STRB) {
-				return sizeof(T) == length;
-			}
+			/* These should be pointer sized. */
 			return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
 
 		case SL_STDSTR:

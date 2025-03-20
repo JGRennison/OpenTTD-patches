@@ -354,7 +354,6 @@ static inline uint SlCalcConvMemLen(VarType conv)
 		case SLE_VAR_U64: return sizeof(uint64_t);
 		case SLE_VAR_NULL: return 0;
 
-		case SLE_VAR_STRB:
 		case SLE_VAR_STR:
 		case SLE_VAR_STRQ:
 			return SlReadArrayLength();
@@ -678,10 +677,6 @@ static inline size_t SlCalcStringLen(const void *ptr, size_t length, VarType con
 			str = *(const char * const *)ptr;
 			len = SIZE_MAX;
 			break;
-		case SLE_VAR_STRB:
-			str = (const char *)ptr;
-			len = length;
-			break;
 	}
 
 	len = SlCalcNetStringLen(str, len);
@@ -716,9 +711,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			size_t len;
 			switch (GetVarMemType(conv)) {
 				default: NOT_REACHED();
-				case SLE_VAR_STRB:
-					len = SlCalcNetStringLen((char *)ptr, length);
-					break;
 				case SLE_VAR_STR:
 				case SLE_VAR_STRQ:
 					ptr = *(char **)ptr;
@@ -739,16 +731,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 				case SLE_VAR_NULL:
 					SlSkipBytes(len);
 					return;
-				case SLE_VAR_STRB:
-					if (len >= length) {
-						Debug(sl, 1, "String length in savegame is bigger than buffer, truncating");
-						SlCopyBytes(ptr, length);
-						SlSkipBytes(len - length);
-						len = length - 1;
-					} else {
-						SlCopyBytes(ptr, len);
-					}
-					break;
 				case SLE_VAR_STR:
 				case SLE_VAR_STRQ: // Malloc'd string, free previous incarnation, and allocate
 					free(*(char **)ptr);
