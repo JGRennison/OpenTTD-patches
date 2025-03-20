@@ -13,6 +13,7 @@
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "zoom_type.h"
+#include <bit>
 #include <vector>
 
 typedef uint32_t SpriteID;  ///< The number of a sprite, without mapping bits and colourtables
