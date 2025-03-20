@@ -325,13 +325,11 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
 
 /**
  * Levels a selected (rectangle) area of land
- * @param tile end tile of area-drag
  * @param flags for this command type
- * @param p1 start tile of area drag
- * @param p2 various bitstuffed data.
- *  bit      0: Whether to use the Orthogonal (0) or Diagonal (1) iterator.
- *  bits 1 - 2: Mode of leveling \c LevelMode.
- * @param text unused
+ * @param tile end tile of area-drag
+ * @param start_tile start tile of area drag
+ * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
+ * @param LevelMode Mode of leveling \c LevelMode.
  * @return the cost of this operation or an error
  */
 CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal, LevelMode lm)

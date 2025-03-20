@@ -921,7 +921,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
 			print("Industry Production (version {:X}) [{}]", ipsg->version, ipsg->nfo_line);
 			emit_start();
-			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
+			auto log_io = [&](const char *prefix, int i, int quantity, CargoType cargo) {
 				if (ipsg->version >= 1) highlight_tag = (1 << 16) | quantity;
 				if (ipsg->version >= 2) {
 					print("  {} {:X}: reg {:X}, cargo ID: {:X}", prefix, i, quantity, cargo);

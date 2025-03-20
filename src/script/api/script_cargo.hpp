@@ -54,7 +54,7 @@ public:
 	/**
 	 * Special cargo types.
 	 */
-	enum SpecialCargoID {
+	enum SpecialCargoType {
 		/* Note: these values represent part of the in-game CargoTypes enum */
 		CT_AUTO_REFIT = ::CARGO_AUTO_REFIT, ///< Automatically choose cargo type when doing auto-refitting.
 		CT_NO_REFIT   = ::CARGO_NO_REFIT, ///< Do not refit cargo of a vehicle.
@@ -76,7 +76,7 @@ public:
 	 * @param cargo_type The cargo to check.
 	 * @return True if and only if the cargo type is valid.
 	 */
-	static bool IsValidCargo(CargoID cargo_type);
+	static bool IsValidCargo(CargoType cargo_type);
 
 	/**
 	 * Checks whether the given town effect type is valid.
@@ -91,7 +91,7 @@ public:
 	 * @pre IsValidCargo(cargo_type).
 	 * @return The name of the cargo type.
 	 */
-	static std::optional<std::string> GetName(CargoID cargo_type);
+	static std::optional<std::string> GetName(CargoType cargo_type);
 
 	/**
 	 * Gets the string representation of the cargo label.
@@ -108,7 +108,7 @@ public:
 	 *  - In other words: Only use the cargo label, if you know more about the behaviour
 	 *    of a specific cargo from a specific industry set, than the API methods can tell you.
 	 */
-	static std::optional<std::string> GetCargoLabel(CargoID cargo_type);
+	static std::optional<std::string> GetCargoLabel(CargoType cargo_type);
 
 	/**
 	 * Checks whether the give cargo is a freight or not.
@@ -118,7 +118,7 @@ public:
 	 * @pre ScriptCargo::IsValidCargo(cargo_type).
 	 * @return True if and only if the cargo is freight.
 	 */
-	static bool IsFreight(CargoID cargo_type);
+	static bool IsFreight(CargoType cargo_type);
 
 	/**
 	 * Check if this cargo is in the requested cargo class.
@@ -127,7 +127,7 @@ public:
 	 * @param cargo_class The class to check for.
 	 * @return True if and only if the cargo is in the cargo class.
 	 */
-	static bool HasCargoClass(CargoID cargo_type, CargoClass cargo_class);
+	static bool HasCargoClass(CargoType cargo_type, CargoClass cargo_class);
 
 	/**
 	 * Get the effect this cargo has on a town.
@@ -135,7 +135,7 @@ public:
 	 * @pre ScriptCargo::IsValidCargo(cargo_type).
 	 * @return The effect this cargo has on a town, or TE_NONE if it has no effect.
 	 */
-	static TownEffect GetTownEffect(CargoID cargo_type);
+	static TownEffect GetTownEffect(CargoType cargo_type);
 
 	/**
 	 * Get the income for transporting a piece of cargo over the
@@ -148,14 +148,14 @@ public:
 	 *                        The max value of this variable is 637. Any value higher returns the same as 637 would.
 	 * @return The amount of money that would be earned by this trip.
 	 */
-	static Money GetCargoIncome(CargoID cargo_type, SQInteger distance, SQInteger days_in_transit);
+	static Money GetCargoIncome(CargoType cargo_type, SQInteger distance, SQInteger days_in_transit);
 
 	/**
 	 * Get the cargo distribution type for a cargo.
 	 * @param cargo_type The cargo to check on.
 	 * @return The cargo distribution type for the given cargo.
 	 */
-	static DistributionType GetDistributionType(CargoID cargo_type);
+	static DistributionType GetDistributionType(CargoType cargo_type);
 
 	/**
 	 * Get the weight in tonnes for the given amount of
@@ -166,7 +166,7 @@ public:
 	 * @pre ScriptCargo::IsValidCargo(cargo_type).
 	 * @return The weight in tonnes for that quantity of cargo.
 	 */
-	static SQInteger GetWeight(CargoID cargo_type, SQInteger amount);
+	static SQInteger GetWeight(CargoType cargo_type, SQInteger amount);
 };
 
 #endif /* SCRIPT_CARGO_HPP */

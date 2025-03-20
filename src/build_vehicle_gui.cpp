@@ -211,15 +211,15 @@ bool _engine_sort_last_order[]          = {false, false, false, false}; ///< Las
 bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
 bool _engine_sort_show_hidden_locos     = false;                        ///< Last set 'show hidden locos' setting.
 bool _engine_sort_show_hidden_wagons    = false;                        ///< Last set 'show hidden wagons' setting.
-static CargoID _engine_sort_last_cargo_criteria[] = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
+static CargoType _engine_sort_last_cargo_criteria[] = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
 
 static uint8_t _last_sort_criteria_loco   = 0;
 static bool _last_sort_order_loco         = false;
-static CargoID _last_filter_criteria_loco = CargoFilterCriteria::CF_ANY;
+static CargoType _last_filter_criteria_loco = CargoFilterCriteria::CF_ANY;
 
 static uint8_t _last_sort_criteria_wagon   = 0;
 static bool _last_sort_order_wagon         = false;
-static CargoID _last_filter_criteria_wagon = CargoFilterCriteria::CF_ANY;
+static CargoType _last_filter_criteria_wagon = CargoFilterCriteria::CF_ANY;
 
 /**
  * Determines order of engines by engineID
@@ -749,15 +749,15 @@ const std::initializer_list<const StringID> _engine_sort_listing[] = {{
 }};
 
 /** Filters vehicles by cargo and engine (in case of rail vehicle). */
-static bool CargoAndEngineFilter(const GUIEngineListItem *item, const CargoID cid)
+static bool CargoAndEngineFilter(const GUIEngineListItem *item, const CargoType cargo_type)
 {
-	if (cid == CargoFilterCriteria::CF_ANY) {
+	if (cargo_type == CargoFilterCriteria::CF_ANY) {
 		return true;
-	} else if (cid == CargoFilterCriteria::CF_ENGINES) {
+	} else if (cargo_type == CargoFilterCriteria::CF_ENGINES) {
 		return Engine::Get(item->engine_id)->GetPower() != 0;
 	} else {
 		CargoTypes refit_mask = GetUnionOfArticulatedRefitMasks(item->engine_id, true) & _standard_cargo_mask;
-		return (cid == CargoFilterCriteria::CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cid));
+		return (cargo_type == CargoFilterCriteria::CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cargo_type));
 	}
 }
 
@@ -768,7 +768,7 @@ static GUIEngineList::FilterFunction * const _engine_filter_funcs[] = {
 static uint GetCargoWeight(const CargoArray &cap, VehicleType vtype)
 {
 	uint weight = 0;
-	for (CargoID c = 0; c < NUM_CARGO; c++) {
+	for (CargoType c = 0; c < NUM_CARGO; c++) {
 		if (cap[c] != 0) {
 			if (vtype == VEH_TRAIN) {
 				weight += CargoSpec::Get(c)->WeightOfNUnitsInTrain(cap[c]);
@@ -783,11 +783,11 @@ static uint GetCargoWeight(const CargoArray &cap, VehicleType vtype)
 static int DrawCargoCapacityInfo(int left, int right, int y, TestedEngineDetails &te, bool refittable)
 {
 	for (const CargoSpec *cs : _sorted_cargo_specs) {
-		CargoID cid = cs->Index();
-		if (te.all_capacities[cid] == 0) continue;
+		CargoType cargo_type = cs->Index();
+		if (te.all_capacities[cargo_type] == 0) continue;
 
-		SetDParam(0, cid);
-		SetDParam(1, te.all_capacities[cid]);
+		SetDParam(0, cargo_type);
+		SetDParam(1, te.all_capacities[cargo_type]);
 		SetDParam(2, refittable ? STR_PURCHASE_INFO_REFITTABLE : STR_EMPTY);
 		DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
 		y += GetCharacterHeight(FS_NORMAL);
@@ -1045,7 +1045,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 	if (te.mail_capacity > 0) {
 		SetDParam(0, te.cargo);
 		SetDParam(1, te.capacity);
-		SetDParam(2, GetCargoIDByLabel(CT_MAIL));
+		SetDParam(2, GetCargoTypeByLabel(CT_MAIL));
 		SetDParam(3, te.mail_capacity);
 		DrawString(left, right, y, STR_PURCHASE_INFO_AIRCRAFT_CAPACITY);
 	} else {
@@ -1127,8 +1127,8 @@ void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 	} else {
 		this->capacity = e->GetDisplayDefaultCapacity(&this->mail_capacity);
 		this->all_capacities[this->cargo] = this->capacity;
-		if (IsValidCargoID(GetCargoIDByLabel(CT_MAIL))) {
-			this->all_capacities[GetCargoIDByLabel(CT_MAIL)] = this->mail_capacity;
+		if (IsValidCargoType(GetCargoTypeByLabel(CT_MAIL))) {
+			this->all_capacities[GetCargoTypeByLabel(CT_MAIL)] = this->mail_capacity;
 		} else {
 			this->mail_capacity = 0;
 		}
@@ -1392,7 +1392,7 @@ void GUIEngineListAddChildren(GUIEngineList &dst, const GUIEngineList &src, Engi
 }
 
 /** Enum referring to the Hotkeys in the build vehicle window */
-enum BuildVehicleHotkeys {
+enum BuildVehicleHotkeys : int32_t {
 	BVHK_FOCUS_FILTER_BOX, ///< Focus the edit box for editing the filter string
 };
 
@@ -1433,7 +1433,7 @@ struct BuildVehicleWindowBase : Window {
 		return (current != nullptr) ? current->index : INVALID_VEHICLE;
 	}
 
-	StringID GetCargoFilterLabel(CargoID cid) const
+	StringID GetCargoFilterLabel(CargoType cid) const
 	{
 		switch (cid) {
 			case CargoFilterCriteria::CF_ANY: return STR_PURCHASE_INFO_ALL_TYPES;
@@ -1470,7 +1470,7 @@ struct BuildVehicleWindowBase : Window {
 		return list;
 	}
 
-	void FillTestedEngineCapacity(EngineID engine, CargoID cargo, TestedEngineDetails &te) const
+	void FillTestedEngineCapacity(EngineID engine, CargoType cargo, TestedEngineDetails &te) const
 	{
 		const Engine *e = Engine::Get(engine);
 		if (!e->CanPossiblyCarryCargo()) {
@@ -1536,7 +1536,7 @@ struct BuildVehicleWindowBase : Window {
  * @param parent parent window, may be nullptr
  * @param cargo_filter_criteria cargo filter criteria
  */
-void GUIEngineListSortCache::UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoID cargo_filter_criteria)
+void GUIEngineListSortCache::UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoType cargo_filter_criteria)
 {
 	this->parent = parent;
 
@@ -1578,7 +1578,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	EngineID sel_engine;                        ///< Currently selected engine, or #INVALID_ENGINE
 	EngineID rename_engine;                     ///< Engine being renamed.
 	GUIEngineList eng_list;
-	CargoID cargo_filter_criteria;              ///< Selected cargo filter
+	CargoType cargo_filter_criteria;              ///< Selected cargo filter
 	int details_height;                         ///< Minimal needed height of the details panels, in text lines (found so far).
 	Scrollbar *vscroll;
 	TestedEngineDetails te;                     ///< Tested cost and capacity after refit.
@@ -1706,7 +1706,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 	void SelectEngine(EngineID engine)
 	{
-		CargoID cargo = this->cargo_filter_criteria;
+		CargoType cargo = this->cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 
 		this->sel_engine = engine;
@@ -1969,7 +1969,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		EngineID sel_eng = this->sel_engine;
 		if (sel_eng == INVALID_ENGINE) return;
 
-		CargoID cargo = this->cargo_filter_criteria;
+		CargoType cargo = this->cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 		if (this->virtual_train_mode) {
 			Command<CMD_BUILD_VIRTUAL_RAIL_VEHICLE>::Post(GetCmdBuildVehMsg(VEH_TRAIN), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
@@ -2391,7 +2391,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		EngineID rename_engine {};  ///< Engine being renamed.
 		GUIEngineList eng_list;
 		Scrollbar *vscroll;
-		CargoID cargo_filter_criteria;                 ///< Selected cargo filter
+		CargoType cargo_filter_criteria;                 ///< Selected cargo filter
 		bool show_hidden;                              ///< State of the 'show hidden' button.
 		int details_height;                            ///< Minimal needed height of the details panels (found so far).
 		TestedEngineDetails te;                        ///< Tested cost and capacity after refit.
@@ -2544,7 +2544,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	}
 
 	/** Populate the filter list and set the cargo filter criteria. */
-	void SetCargoFilterArray(PanelState &state, const CargoID last_filter)
+	void SetCargoFilterArray(PanelState &state, const CargoType last_filter)
 	{
 		/* Set the last cargo filter criteria. */
 		state.cargo_filter_criteria = last_filter;
@@ -2564,7 +2564,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void SelectEngine(PanelState &state, const EngineID engine)
 	{
-		CargoID cargo = state.cargo_filter_criteria;
+		CargoType cargo = state.cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 
 		state.sel_engine = engine;
@@ -2726,7 +2726,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->wagon.eng_list.RebuildDone();
 	}
 
-	void BuildEngine(const EngineID selected, CargoID cargo)
+	void BuildEngine(const EngineID selected, CargoType cargo)
 	{
 		if (selected != INVALID_ENGINE) {
 			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
@@ -3257,15 +3257,15 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 void CcAddVirtualEngine(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
 	Window *window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
 	if (window != nullptr) {
-		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
+		Train *train = Train::Get(result.GetResultData());
 		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
-		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(_new_vehicle_id, SellVehicleFlags::None, INVALID_CLIENT_ID);
+		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(result.GetResultData(), SellVehicleFlags::None, INVALID_CLIENT_ID);
 	}
 }
 

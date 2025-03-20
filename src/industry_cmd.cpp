@@ -42,7 +42,6 @@
 #include "object_base.h"
 #include "game/game.hpp"
 #include "error.h"
-#include "cmd_helper.h"
 #include "string_func.h"
 #include "event_logs.h"
 #include "core/container_func.hpp"
@@ -454,7 +453,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 	}
 
 	for (uint8_t i = 0; i < std::size(itspec->accepts_cargo); i++) {
-		CargoID a = accepts_cargo[i];
+		CargoType a = accepts_cargo[i];
 		if (a == INVALID_CARGO || cargo_acceptance[i] <= 0) continue; // work only with valid cargoes
 
 		/* Add accepted cargo */
@@ -1821,7 +1820,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	i->produced_cargo_count = 0;
 	for (size_t index = 0; index < std::size(indspec->produced_cargo); ++index) {
-		if (!IsValidCargoID(indspec->produced_cargo[index])) break;
+		if (!IsValidCargoType(indspec->produced_cargo[index])) break;
 		i->produced_cargo_count++;
 	}
 	i->produced = std::make_unique<Industry::ProducedCargo[]>(i->produced_cargo_count);
@@ -1833,7 +1832,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	i->accepted_cargo_count = 0;
 	for (size_t index = 0; index < std::size(indspec->accepts_cargo); ++index) {
-		if (!IsValidCargoID(indspec->accepts_cargo[index])) break;
+		if (!IsValidCargoType(indspec->accepts_cargo[index])) break;
 		i->accepted_cargo_count++;
 	}
 	i->accepted = std::make_unique<Industry::AcceptedCargo[]>(i->accepted_cargo_count);
@@ -1917,7 +1916,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		i->accepted.reset();
 
 		uint8_t cargo_count = 0;
-		std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{};
+		std::array<CargoType, INDUSTRY_NUM_INPUTS> accepts_cargo{};
 
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? INDUSTRY_NUM_INPUTS : 3;
@@ -1928,11 +1927,11 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 				ErrorUnknownCallbackResult(indspec->grf_prop.grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
 			}
-			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			CargoType cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
 			/* Industries without "unlimited" cargo types support depend on the specific order/slots of cargo types.
 			 * They need to be able to blank out specific slots without aborting the callback sequence,
 			 * and solve this by returning undefined cargo indexes. Skip these. */
-			if (!IsValidCargoID(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
+			if (!IsValidCargoType(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
 				/* As slots are allocated as needed now, this means we do need to add a slot for the invalid cargo. */
 				accepts_cargo[cargo_count] = INVALID_CARGO;
 				cargo_count++;
@@ -1967,7 +1966,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		i->produced.reset();
 
 		uint8_t cargo_count = 0;
-		std::array<CargoID, INDUSTRY_NUM_INPUTS> produced_cargo{};
+		std::array<CargoType, INDUSTRY_NUM_INPUTS> produced_cargo{};
 
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? INDUSTRY_NUM_OUTPUTS : 2;
@@ -1978,9 +1977,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 				ErrorUnknownCallbackResult(indspec->grf_prop.grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
 			}
-			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			CargoType cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
 			/* Allow older GRFs to skip slots. */
-			if (!IsValidCargoID(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
+			if (!IsValidCargoType(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
 				/* As slots are allocated as needed now, this means we do need to add a slot for the invalid cargo. */
 				produced_cargo[cargo_count] = INVALID_CARGO;
 				cargo_count++;
@@ -2202,7 +2201,7 @@ CommandCost CmdBuildIndustry(DoCommandFlag flags, TileIndex tile, IndustryType i
 		size_t layout = first_layout;
 		if (layout >= num_layouts) return CMD_ERROR;
 
-		/* Check subsequently each layout, starting with the given layout in p1 */
+		/* Check subsequently each layout, starting with the given layout in first_layout */
 		for (size_t i = 0; i < num_layouts; i++) {
 			layout = (layout + 1) % num_layouts;
 			ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, _current_company, _current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_USERCREATION, &ind);
@@ -2807,7 +2806,7 @@ static bool CheckIndustryCloseDownProtection(IndustryType type)
  * @return: \c *c_accepts is set when industry accepts the cargo type,
  *          \c *c_produces is set when the industry produces the cargo type
  */
-static void CanCargoServiceIndustry(CargoID cargo, Industry *ind, bool *c_accepts, bool *c_produces)
+static void CanCargoServiceIndustry(CargoType cargo, Industry *ind, bool *c_accepts, bool *c_produces)
 {
 	if (cargo == INVALID_CARGO) return;
 
@@ -2884,7 +2883,7 @@ int WhoCanServiceIndustry(Industry *ind)
  * @param type: Cargo type that has changed
  * @param percent: Percentage of change (>0 means increase, <0 means decrease)
  */
-static void ReportNewsProductionChangeIndustry(Industry *ind, CargoID type, int percent)
+static void ReportNewsProductionChangeIndustry(Industry *ind, CargoType type, int percent)
 {
 	NewsType nt;
 
@@ -3003,7 +3002,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 
 				/* Prevent production to overflow or Oil Rig passengers to be over-"produced" */
 				new_prod = Clamp(new_prod, 1, 255);
-				if (IsValidCargoID(p.cargo) && p.cargo == GetCargoIDByLabel(CT_PASSENGERS) && !(indspec->behaviour & INDUSTRYBEH_NO_PAX_PROD_CLAMP)) {
+				if (IsValidCargoType(p.cargo) && p.cargo == GetCargoTypeByLabel(CT_PASSENGERS) && !(indspec->behaviour & INDUSTRYBEH_NO_PAX_PROD_CLAMP)) {
 					new_prod = Clamp(new_prod, 0, 16);
 				}
 

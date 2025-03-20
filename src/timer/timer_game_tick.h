@@ -21,7 +21,7 @@
  */
 class TimerGameTick {
 public:
-	enum Priority {
+	enum Priority : uint8_t {
 		NONE, ///< These timers can be executed in any order; the order is not relevant.
 
 		/* For all other priorities, the order is important.

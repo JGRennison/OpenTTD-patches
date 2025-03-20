@@ -505,7 +505,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		}
 
 		for (Station *st : Station::Iterate()) {
-			for (CargoID c = 0; c < NUM_CARGO; c++) {
+			for (CargoType c = 0; c < NUM_CARGO; c++) {
 				if (st->goods[c].data == nullptr) continue;
 
 				uint old_count = st->goods[c].data->cargo.TotalCount();

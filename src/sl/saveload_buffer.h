@@ -10,8 +10,8 @@
 #ifndef SL_SAVELOAD_BUFFER_H
 #define SL_SAVELOAD_BUFFER_H
 
+#include "../core/alignment.hpp"
 #include "../core/alloc_func.hpp"
-#include "../core/endian_type.hpp"
 #include "../core/endian_func.hpp"
 #include "../core/math_func.hpp"
 

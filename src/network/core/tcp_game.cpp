@@ -93,12 +93,8 @@ const char *GetPacketGameTypeName(PacketGameType type)
  * Create a new socket for the game connection.
  * @param s The socket to connect with.
  */
-NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : info(nullptr), client_id(INVALID_CLIENT_ID),
-		last_frame(_frame_counter), last_frame_server(_frame_counter), last_pkt_type(PACKET_END)
-{
-	this->sock = s;
-	this->last_packet = std::chrono::steady_clock::now();
-}
+NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : NetworkTCPSocketHandler(s),
+		last_frame(_frame_counter), last_frame_server(_frame_counter), last_packet(std::chrono::steady_clock::now()) {}
 
 /**
  * Functions to help ReceivePacket/SendPacket a bit

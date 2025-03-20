@@ -1170,7 +1170,7 @@ static void v_PositionStatusbar(int32_t new_value)
 
 /**
  * Redraw the smallmap after a colour scheme change.
- * @param p1 Callback parameter.
+ * @param new_value Callback parameter.
  */
 static void RedrawSmallmap(int32_t new_value)
 {
@@ -1737,7 +1737,7 @@ static void ScriptMaxMemoryChange(int32_t new_value)
 
 /**
  * Invalidate the company details window after the shares setting changed.
- * @param p1 Unused.
+ * @param new_value Unused.
  * @return Always true.
  */
 static void InvalidateCompanyWindow(int32_t new_value)
@@ -2530,7 +2530,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 		if (const IniItem *item = group->GetItem("name"); item != nullptr && item->value) BaseGraphics::ini_data.name = *item->value;
 
 		if (const IniItem *item = group->GetItem("shortname"); item != nullptr && item->value && item->value->size() == 8) {
-			BaseGraphics::ini_data.shortname = BSWAP32(std::strtoul(item->value->c_str(), nullptr, 16));
+			BaseGraphics::ini_data.shortname = std::byteswap<uint32_t>(std::strtoul(item->value->c_str(), nullptr, 16));
 		}
 
 		if (const IniItem *item = group->GetItem("extra_version"); item != nullptr && item->value) BaseGraphics::ini_data.extra_version = std::strtoul(item->value->c_str(), nullptr, 10);
@@ -2613,7 +2613,7 @@ static GRFConfig *GRFLoadConfig(const IniFile &ini, const char *grpname, bool is
 		}
 
 		/* Check if item is valid */
-		if (!FillGRFDetails(c, is_static) || HasBit(c->flags, GCF_INVALID)) {
+		if (!FillGRFDetails(*c, is_static) || HasBit(c->flags, GCF_INVALID)) {
 			if (c->status == GCS_NOT_FOUND) {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND);
 			} else if (HasBit(c->flags, GCF_UNSAFE)) {
@@ -2742,12 +2742,12 @@ static void GraphicsSetSaveConfig(IniFile &ini)
 	group.Clear();
 
 	group.GetOrCreateItem("name").SetValue(used_set->name);
-	group.GetOrCreateItem("shortname").SetValue(fmt::format("{:08X}", BSWAP32(used_set->shortname)));
+	group.GetOrCreateItem("shortname").SetValue(fmt::format("{:08X}", std::byteswap(used_set->shortname)));
 
 	const GRFConfig *extra_cfg = used_set->GetExtraConfig();
 	if (extra_cfg != nullptr && !extra_cfg->param.empty()) {
 		group.GetOrCreateItem("extra_version").SetValue(fmt::format("{}", extra_cfg->version));
-		group.GetOrCreateItem("extra_params").SetValue(GRFBuildParamList(extra_cfg));
+		group.GetOrCreateItem("extra_params").SetValue(GRFBuildParamList(*extra_cfg));
 	}
 }
 
@@ -2756,13 +2756,12 @@ static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *li
 {
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
-	const GRFConfig *c;
 
-	for (c = list; c != nullptr; c = c->next) {
+	for (const GRFConfig *c = list; c != nullptr; c = c->next) {
 		/* Hex grfid (4 bytes in nibbles), "|", hex md5sum (16 bytes in nibbles), "|", file system path. */
 		format_buffer key;
-		key.format("{:08X}|{}|{}", BSWAP32(c->ident.grfid), c->ident.md5sum, c->filename);
-		group.GetOrCreateItem(key).SetValue(GRFBuildParamList(c));
+		key.format("{:08X}|{}|{}", std::byteswap(c->ident.grfid), c->ident.md5sum, c->filename);
+		group.GetOrCreateItem(key).SetValue(GRFBuildParamList(*c));
 	}
 }
 

@@ -35,9 +35,7 @@ enum RailType : uint8_t {
 };
 
 /** Allow incrementing of Track variables */
-DECLARE_POSTFIX_INCREMENT(RailType)
-/** Define basic enum properties */
-template <> struct EnumPropsT<RailType> : MakeEnumPropsT<RailType, uint8_t, RAILTYPE_BEGIN, RAILTYPE_END, INVALID_RAILTYPE, 6> {};
+DECLARE_INCREMENT_DECREMENT_OPERATORS(RailType)
 
 /**
  * The different railtypes we support, but then a bitmask of them.

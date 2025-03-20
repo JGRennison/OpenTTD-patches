@@ -71,8 +71,8 @@
 	const IndustrySpec *ins = ::GetIndustrySpec(industry_type);
 
 	ScriptList *list = new ScriptList();
-	for (const CargoID &c : ins->produced_cargo) {
-		if (::IsValidCargoID(c)) list->AddItem(c);
+	for (const CargoType &c : ins->produced_cargo) {
+		if (::IsValidCargoType(c)) list->AddItem(c);
 	}
 
 	return list;
@@ -85,8 +85,8 @@
 	const IndustrySpec *ins = ::GetIndustrySpec(industry_type);
 
 	ScriptList *list = new ScriptList();
-	for (const CargoID &c : ins->accepts_cargo) {
-		if (::IsValidCargoID(c)) list->AddItem(c);
+	for (const CargoType &c : ins->accepts_cargo) {
+		if (::IsValidCargoType(c)) list->AddItem(c);
 	}
 
 	return list;
@@ -162,6 +162,6 @@
 {
 	EnforcePrecondition(IT_INVALID, IsInsideBS(grf_local_id, 0x00, NUM_INDUSTRYTYPES_PER_GRF));
 
-	grfid = BSWAP32(GB(grfid, 0, 32)); // Match people's expectations.
+	grfid = std::byteswap(GB(grfid, 0, 32)); // Match people's expectations.
 	return _industry_mngr.GetID(grf_local_id, grfid);
 }

@@ -15,7 +15,6 @@
 #include "window_func.h"
 #include "vehicle_base.h"
 #include "settings_type.h"
-#include "cmd_helper.h"
 #include "company_base.h"
 #include "settings_type.h"
 #include "schdispatch.h"

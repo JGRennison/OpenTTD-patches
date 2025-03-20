@@ -188,7 +188,7 @@ static bool VerifyAutoreplaceRefitForOrders(const Vehicle *v, EngineID engine_ty
 	const Vehicle *u = (v->type == VEH_TRAIN) ? v->First() : v;
 	for (const Order *o : u->Orders()) {
 		if (!o->IsRefit() || o->IsAutoRefit()) continue;
-		CargoID cargo_type = o->GetRefitCargo();
+		CargoType cargo_type = o->GetRefitCargo();
 
 		if (!HasBit(union_refit_mask_a, cargo_type)) continue;
 		if (!HasBit(union_refit_mask_b, cargo_type)) return false;
@@ -230,14 +230,14 @@ static int GetIncompatibleRefitOrderIdForAutoreplace(const Vehicle *v, EngineID 
  *    CARGO_NO_REFIT is returned if no refit is needed
  *    INVALID_CARGO is returned when both old and new vehicle got cargo capacity and refitting the new one to the old one's cargo type isn't possible
  */
-static CargoID GetNewCargoTypeForReplace(const Vehicle *v, EngineID engine_type, bool part_of_chain)
+static CargoType GetNewCargoTypeForReplace(const Vehicle *v, EngineID engine_type, bool part_of_chain)
 {
 	CargoTypes available_cargo_types, union_mask;
 	GetArticulatedRefitMasks(engine_type, true, &union_mask, &available_cargo_types);
 
 	if (union_mask == 0) return CARGO_NO_REFIT; // Don't try to refit an engine with no cargo capacity
 
-	CargoID cargo_type;
+	CargoType cargo_type;
 	CargoTypes cargo_mask = GetCargoTypesOfArticulatedVehicle(v, &cargo_type);
 	if (!HasAtMostOneBit(cargo_mask)) {
 		CargoTypes new_engine_default_cargoes = GetCargoTypesOfArticulatedParts(engine_type);
@@ -338,9 +338,9 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
 {
 	/* Build the new vehicle */
 	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do(DC_EXEC | DC_AUTOREPLACE, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed()) return cost;
+	if (cost.Failed() || !cost.HasResultData()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
+	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
 	*new_vehicle = new_veh;
 
 	Vehicle *v = new_veh;
@@ -398,7 +398,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 				CargoTypes available = all_cargoes & refit_mask_list[refit_idx];
 				if (available == 0) continue;
-				CargoID c = FindFirstBit(available);
+				CargoType c = FindFirstBit(available);
 				assert(old_cargo_vehs[c] != nullptr);
 
 				uint8_t subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
@@ -414,7 +414,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 		return BuildReplacementVehicleRefitFailure(e, old_veh, flags);
 	}
 
-	std::vector <CargoID> output_cargoes;
+	std::vector <CargoType> output_cargoes;
 	CargoTypes remaining = all_cargoes;
 	CargoTypes todo = all_cargoes;
 	for (size_t i = 0; i < refit_mask_list.size(); i++) {
@@ -425,7 +425,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 			continue;
 		}
 
-		CargoID c = FindFirstBit(available);
+		CargoType c = FindFirstBit(available);
 		output_cargoes.push_back(c);
 		ClrBit(remaining, c);
 		ClrBit(todo, c);
@@ -447,14 +447,14 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 	/* Build the new vehicle */
 	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do(DC_EXEC | DC_AUTOREPLACE, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed()) return cost;
+	if (cost.Failed() || !cost.HasResultData()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
+	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
 	*new_vehicle = new_veh;
 
 	size_t i = 0;
 	for (Vehicle *v = new_veh; v != nullptr && i < output_cargoes.size(); v = v->Next(), i++) {
-		CargoID c = output_cargoes[i];
+		CargoType c = output_cargoes[i];
 		if (c == INVALID_CARGO) continue;
 
 		assert(old_cargo_vehs[c] != nullptr);
@@ -505,16 +505,16 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 	}
 
 	/* Does it need to be refitted */
-	CargoID refit_cargo = GetNewCargoTypeForReplace(old_veh, e, part_of_chain);
-	if (!IsValidCargoID(refit_cargo)) {
+	CargoType refit_cargo = GetNewCargoTypeForReplace(old_veh, e, part_of_chain);
+	if (!IsValidCargoType(refit_cargo)) {
 		return BuildReplacementVehicleRefitFailure(e, old_veh, flags);
 	}
 
 	/* Build the new vehicle */
 	cost = Command<CMD_BUILD_VEHICLE>::Do(DC_EXEC | DC_AUTOREPLACE, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed()) return cost;
+	if (cost.Failed() || !cost.HasResultData()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
+	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
 	*new_vehicle = new_veh;
 
 	/* Refit the vehicle if needed */

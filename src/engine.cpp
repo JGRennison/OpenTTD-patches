@@ -229,7 +229,7 @@ bool Engine::CanPossiblyCarryCargo() const
  * @param attempt_refit cargo ID to attempt to use, when v is nullptr
  * @return Capacity
  */
-uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoID attempt_refit) const
+uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoType attempt_refit) const
 {
 	assert(v == nullptr || this->index == v->engine_type);
 	if (mail_capacity != nullptr) *mail_capacity = 0;
@@ -237,8 +237,8 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoI
 	if (!this->CanCarryCargo()) return 0;
 
 	bool new_multipliers = HasBit(this->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER);
-	CargoID default_cargo = this->GetDefaultCargoType();
-	CargoID cargo_type;
+	CargoType default_cargo = this->GetDefaultCargoType();
+	CargoType cargo_type;
 	if (v != nullptr) {
 		cargo_type = v->cargo_type;
 	} else {
@@ -296,10 +296,10 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoI
 			if (!IsCargoInClass(cargo_type, CC_PASSENGERS)) {
 				extra_mail_cap = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->u.air.mail_capacity, v);
 			}
-			if (IsValidCargoID(GetCargoIDByLabel(CT_MAIL))) {
-				if (!new_multipliers && cargo_type == GetCargoIDByLabel(CT_MAIL)) return capacity + extra_mail_cap;
+			if (IsValidCargoType(GetCargoTypeByLabel(CT_MAIL))) {
+				if (!new_multipliers && cargo_type == GetCargoTypeByLabel(CT_MAIL)) return capacity + extra_mail_cap;
 			}
-			default_cargo = GetCargoIDByLabel(CT_PASSENGERS); // Always use 'passengers' wrt. cargo multipliers
+			default_cargo = GetCargoTypeByLabel(CT_PASSENGERS); // Always use 'passengers' wrt. cargo multipliers
 			break;
 
 		default: NOT_REACHED();
@@ -316,8 +316,8 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoI
 		uint16_t default_multiplier = new_multipliers ? 0x100 : CargoSpec::Get(default_cargo)->multiplier;
 		uint16_t cargo_multiplier = CargoSpec::Get(cargo_type)->multiplier;
 		capacity *= cargo_multiplier;
-		if (extra_mail_cap > 0 && IsValidCargoID(GetCargoIDByLabel(CT_MAIL))) {
-			uint mail_multiplier = CargoSpec::Get(GetCargoIDByLabel(CT_MAIL))->multiplier;
+		if (extra_mail_cap > 0 && IsValidCargoType(GetCargoTypeByLabel(CT_MAIL))) {
+			uint mail_multiplier = CargoSpec::Get(GetCargoTypeByLabel(CT_MAIL))->multiplier;
 			capacity += (default_multiplier * extra_mail_cap * cargo_multiplier + mail_multiplier / 2) / mail_multiplier;
 		}
 		capacity = (capacity + default_multiplier / 2) / default_multiplier;
@@ -1393,7 +1393,7 @@ bool IsEngineRefittable(EngineID engine)
 	if (HasBit(ei->callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) return true;
 
 	/* Is there any cargo except the default cargo? */
-	CargoID default_cargo = e->GetDefaultCargoType();
+	CargoType default_cargo = e->GetDefaultCargoType();
 	CargoTypes default_cargo_mask = 0;
 	SetBit(default_cargo_mask, default_cargo);
 	return default_cargo != INVALID_CARGO && ei->refit_mask != default_cargo_mask;

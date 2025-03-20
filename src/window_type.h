@@ -20,7 +20,7 @@
 using WidgetID = int;
 
 /** %Window numbers. */
-enum WindowNumberEnum {
+enum WindowNumberEnum : uint8_t {
 	WN_GAME_OPTIONS_AI = 0,          ///< AI settings.
 	WN_GAME_OPTIONS_GS,              ///< GS settings.
 	WN_GAME_OPTIONS_ABOUT,           ///< About window.
@@ -43,7 +43,7 @@ enum WindowNumberEnum {
 };
 
 /** %Window classes. */
-enum WindowClass {
+enum WindowClass : uint16_t {
 	WC_NONE, ///< No window, redirects to WC_MAIN_WINDOW.
 
 	/**
@@ -819,7 +819,7 @@ enum WindowClass {
 };
 
 /** Data value for #Window::OnInvalidateData() of windows with class #WC_GAME_OPTIONS. */
-enum GameOptionsInvalidationData {
+enum GameOptionsInvalidationData : uint8_t {
 	GOID_DEFAULT = 0,
 	GOID_NEWGRF_RESCANNED,       ///< NewGRFs were just rescanned.
 	GOID_NEWGRF_CURRENT_LOADED,  ///< The current list of active NewGRF has been loaded.
@@ -835,7 +835,7 @@ struct WindowBase;
 typedef int32_t WindowNumber;
 
 /** State of handling an event. */
-enum EventState {
+enum EventState : uint8_t {
 	ES_HANDLED,     ///< The passed event is handled.
 	ES_NOT_HANDLED, ///< The passed event is not handled.
 };

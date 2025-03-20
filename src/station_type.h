@@ -24,7 +24,8 @@ struct RoadStop;
 struct StationSpec;
 struct Waypoint;
 
-static const StationID NEW_STATION = 0xFFFE;
+static const StationID NEW_STATION = 0xFFFD;
+static const StationID ADJACENT_STATION = 0xFFFE;
 static const StationID INVALID_STATION = 0xFFFF;
 
 static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;
@@ -63,6 +64,9 @@ enum StationFacility : uint8_t {
 	FACIL_WAYPOINT   = 1 << 7, ///< Station is a waypoint
 };
 DECLARE_ENUM_AS_BIT_SET(StationFacility)
+
+/** Fake 'facility' to allow toggling display of recently-removed station signs. */
+static constexpr StationFacility FACIL_GHOST{1U << 6};
 
 /** The vehicles that may have visited a station */
 enum StationHadVehicleOfType : uint8_t {

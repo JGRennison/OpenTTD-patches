@@ -2305,7 +2305,7 @@ struct CompanyWindow : Window
 	CompanyWidgets query_widget;
 
 	/** Display planes in the company window. */
-	enum CompanyWindowPlanes {
+	enum CompanyWindowPlanes : uint8_t {
 		/* Display planes of the #WID_C_SELECT_MULTIPLAYER selection widget. */
 		CWP_MP_C_PWD = 0, ///< Display the company password button.
 		CWP_MP_C_JOIN,    ///< Display the join company button.

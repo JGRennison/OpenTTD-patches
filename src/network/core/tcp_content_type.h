@@ -18,7 +18,7 @@
 #include <vector>
 
 /** The values in the enum are important; they are used as database 'keys' */
-enum ContentType {
+enum ContentType : uint8_t {
 	CONTENT_TYPE_BEGIN         = 1, ///< Helper to mark the begin of the types
 	CONTENT_TYPE_BASE_GRAPHICS = 1, ///< The content consists of base graphics
 	CONTENT_TYPE_NEWGRF        = 2, ///< The content consists of a NewGRF
@@ -47,14 +47,14 @@ enum PacketContentType : uint8_t {
 };
 
 /** Unique identifier for the content. */
-enum ContentID {
-	INVALID_CONTENT_ID = UINT32_MAX, ///< Sentinel for invalid content.
-};
+using ContentID = uint32_t;
+
+static constexpr ContentID INVALID_CONTENT_ID = UINT32_MAX; ///< Sentinel for invalid content.
 
 /** Container for all important information about a piece of content. */
 struct ContentInfo {
 	/** The state the content can be in. */
-	enum State {
+	enum State : uint8_t {
 		UNSELECTED,     ///< The content has not been selected
 		SELECTED,       ///< The content has been manually selected
 		AUTOSELECTED,   ///< The content has been selected as dependency

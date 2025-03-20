@@ -493,7 +493,7 @@ static void Load_STNS()
 
 		_waiting_acceptance = 0;
 
-		for (CargoID i = 0; i < num_cargo; i++) {
+		for (CargoType i = 0; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
 			SlObjectLoadFiltered(ge, goods_desc);
 			if (_cargo_reserved_count) ge->CreateData().cargo.LoadSetReservedCount(_cargo_reserved_count);
@@ -539,7 +539,7 @@ static void Ptrs_STNS()
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	for (Station *st : Station::Iterate()) {
 		if (!IsSavegameVersionBefore(SLV_68)) {
-			for (CargoID i = 0; i < num_cargo; i++) {
+			for (CargoType i = 0; i < num_cargo; i++) {
 				GoodsEntry *ge = &st->goods[i];
 				SwapPackets(ge);
 				SlObject(ge, goods_desc);
@@ -645,7 +645,7 @@ struct StationGoodsStructHandler final : public TypedSaveLoadStructHandler<Stati
 	{
 		uint num_cargo = static_cast<uint>(SlGetStructListLength(NUM_CARGO));
 
-		for (CargoID i = 0; i < num_cargo; i++) {
+		for (CargoType i = 0; i < num_cargo; i++) {
 			GoodsEntry &ge = st->goods[i];
 			if (ge.data == nullptr) {
 				if (this->spare_ged != nullptr) {
@@ -984,7 +984,7 @@ static void Load_STNN()
 				std::copy(std::begin(_old_st_persistent_storage.storage), std::end(_old_st_persistent_storage.storage), std::begin(st->airport.psa->storage));
 			}
 
-			for (CargoID i = 0; i < num_cargo; i++) {
+			for (CargoType i = 0; i < num_cargo; i++) {
 				GoodsEntry &ge = st->goods[i];
 				if (ge.data == nullptr) {
 					if (spare_ged != nullptr) {
@@ -1110,7 +1110,7 @@ static void Ptrs_STNN()
 
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	for (Station *st : Station::Iterate()) {
-		for (CargoID i = 0; i < num_cargo; i++) {
+		for (CargoType i = 0; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
 			if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 				SwapPackets(ge);

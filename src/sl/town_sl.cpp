@@ -384,7 +384,7 @@ static void Load_TOWN()
 
 		if (SlIsTableChunk()) continue;
 
-		for (CargoID i = 0; i < num_cargo; i++) {
+		for (CargoType i = 0; i < num_cargo; i++) {
 			SlObjectLoadFiltered(&t->supplied[i], supplied_desc);
 		}
 		for (int i = TAE_BEGIN; i < NUM_TAE; i++) {

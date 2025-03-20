@@ -21,7 +21,7 @@
 static const uint MAX_NON_STATIC_GRF_COUNT = 256;
 
 /** GRF config bit flags */
-enum GCF_Flags {
+enum GCF_Flags : uint8_t {
 	GCF_SYSTEM,     ///< GRF file is an openttd-internal system grf
 	GCF_UNSAFE,     ///< GRF file is unsafe for static usage
 	GCF_STATIC,     ///< GRF file is used statically (can be used in any MP game)
@@ -33,7 +33,7 @@ enum GCF_Flags {
 };
 
 /** Status of GRF */
-enum GRFStatus {
+enum GRFStatus : uint8_t {
 	GCS_UNKNOWN,      ///< The status of this grf file is unknown
 	GCS_DISABLED,     ///< GRF file is disabled
 	GCS_NOT_FOUND,    ///< GRF file was not found in the local cache
@@ -42,7 +42,7 @@ enum GRFStatus {
 };
 
 /** Encountered GRF bugs */
-enum GRFBugs {
+enum GRFBugs : uint8_t {
 	GBUG_VEH_LENGTH,        ///< Length of rail vehicle changes when not inside a depot
 	GBUG_VEH_REFIT,         ///< Articulated vehicles carry different cargoes resp. are differently refittable than specified in purchase list
 	GBUG_VEH_POWERED_WAGON, ///< Powered wagon changed poweredness state when not inside a depot
@@ -51,14 +51,14 @@ enum GRFBugs {
 };
 
 /** Status of post-gameload GRF compatibility check */
-enum GRFListCompatibility {
+enum GRFListCompatibility : uint8_t {
 	GLC_ALL_GOOD,   ///< All GRF needed by game are present
 	GLC_COMPATIBLE, ///< Compatible (eg. the same ID, but different checksum) GRF found in at least one case
 	GLC_NOT_FOUND,  ///< At least one GRF couldn't be found (higher priority than GLC_COMPATIBLE)
 };
 
 /** Information that can/has to be stored about a GRF's palette. */
-enum GRFPalette {
+enum GRFPalette : uint8_t {
 	GRFP_USE_BIT     = 0,   ///< The bit used for storing the palette to use.
 	GRFP_GRF_OFFSET  = 2,   ///< The offset of the GRFP_GRF data.
 	GRFP_GRF_SIZE    = 2,   ///< The size of the GRFP_GRF data.
@@ -212,7 +212,7 @@ struct GRFConfig {
 using GRFConfigList = GRFConfig *;
 
 /** Method to find GRFs using FindGRFConfig */
-enum FindGRFConfigMode {
+enum FindGRFConfigMode : uint8_t {
 	FGCM_EXACT,       ///< Only find Grfs matching md5sum
 	FGCM_COMPATIBLE,  ///< Find best compatible Grf wrt. desired_version
 	FGCM_NEWEST,      ///< Find newest Grf
@@ -248,12 +248,12 @@ void ClearGRFConfigList(GRFConfigList &config);
 void ResetGRFConfig(bool defaults);
 uint GetGRFConfigListNonStaticCount(const GRFConfigList config);
 GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig);
-bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir = NEWGRF_DIR);
-std::string GRFBuildParamList(const GRFConfig *c);
+bool FillGRFDetails(GRFConfig &config, bool is_static, Subdirectory subdir = NEWGRF_DIR);
+std::string GRFBuildParamList(const GRFConfig &c);
 
 /* In newgrf_gui.cpp */
 void ShowNewGRFSettings(bool editable, bool show_params, bool exec_changes, GRFConfigList &config);
-void OpenGRFParameterWindow(bool is_baseset, GRFConfig *c, bool editable);
+void OpenGRFParameterWindow(bool is_baseset, GRFConfig &c, bool editable);
 
 void UpdateNewGRFScanStatus(uint num, const char *name);
 void UpdateNewGRFConfigPalette(int32_t new_value = 0);

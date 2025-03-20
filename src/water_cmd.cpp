@@ -8,7 +8,6 @@
 /** @file water_cmd.cpp Handling of water tiles. */
 
 #include "stdafx.h"
-#include "cmd_helper.h"
 #include "landscape.h"
 #include "landscape_cmd.h"
 #include "viewport_func.h"

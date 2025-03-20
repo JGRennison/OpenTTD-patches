@@ -194,11 +194,7 @@ void CrashLog::LogOpenTTDVersion(format_target &buffer) const
 #else
 			32,
 #endif
-#if (TTD_ENDIAN == TTD_LITTLE_ENDIAN)
-			"little",
-#else
-			"big",
-#endif
+			(std::endian::native == std::endian::little) ? "little" : "big",
 #ifdef DEDICATED
 			"yes",
 #else
@@ -309,7 +305,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 	if (_grfconfig_static != nullptr) {
 		buffer.append("Static NewGRFs present:\n");
 		for (GRFConfig *c = _grfconfig_static; c != nullptr; c = c->next) {
-			buffer.format(" GRF ID: {:08X}, checksum {}, {}", BSWAP32(c->ident.grfid), c->ident.md5sum, c->GetDisplayPath());
+			buffer.format(" GRF ID: {:08X}, checksum {}, {}", std::byteswap(c->ident.grfid), c->ident.md5sum, c->GetDisplayPath());
 			const char *name = GetDefaultLangGRFStringFromGRFText(c->name);
 			if (name != nullptr) buffer.format(", '{}'", name);
 			buffer.push_back('\n');

@@ -541,7 +541,7 @@ class NIHVehicle : public NIHelper {
 					const SpriteGroup *root_spritegroup = nullptr;
 					if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
 					if (root_spritegroup == nullptr) {
-						CargoID cargo = v->cargo_type;
+						CargoType cargo = v->cargo_type;
 						assert(cargo < std::size(e->grf_prop.spritegroup));
 						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
 					}
@@ -2447,7 +2447,7 @@ class NIHNewLandscape : public NIHelper {
 	{
 		output.Print("New Landscape GRFs:");
 		for (const GRFFile *grf : _new_landscape_rocks_grfs) {
-			output.Print("  GRF: {:08X}", BSWAP32(grf->grfid));
+			output.Print("  GRF: {:08X}", std::byteswap(grf->grfid));
 			output.Print("    Enable rocks recolour: {}, Enable drawing snowy rocks: {}",
 					HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED), HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED));
 		}

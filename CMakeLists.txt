@@ -45,9 +45,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 # An empty target for the tools
 add_custom_target(tools)
 
-include(Endian)
-add_endian_definition()
-
 include(CompileFlags)
 compile_flags()
 
@@ -130,7 +127,9 @@ else()
 endif()
 
 if(NOT OPTION_DEDICATED)
-    if(NOT WIN32)
+    if(WIN32)
+        find_package(Xaudio2)
+    else()
         find_package(Allegro)
         if(NOT APPLE)
             find_package(Freetype)
@@ -196,7 +195,6 @@ if (MINGW)
 endif (MINGW)
 
 find_package(SSE)
-find_package(Xaudio2)
 
 find_package(Grfcodec)
 

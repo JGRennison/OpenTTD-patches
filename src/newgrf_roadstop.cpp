@@ -278,7 +278,7 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 		CallbackID callback, uint32_t param1, uint32_t param2)
 	: ResolverObject(roadstopspec->grf_prop.grffile, callback, param1, param2), roadstop_scope(*this, st, roadstopspec, tile, roadtype, type, view)
 {
-	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+	CargoType ctype = SpriteGroupCargo::SG_DEFAULT_NA;
 
 	if (st == nullptr) {
 		/* No station, so we are in a purchase list */
@@ -429,7 +429,7 @@ uint8_t GetRoadStopTileAnimationSpeed(TileIndex tile)
 	return RoadStopAnimationBase::GetAnimationSpeed(ss);
 }
 
-void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoID cargo_type)
+void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoType cargo_type)
 {
 	/* Get Station if it wasn't supplied */
 	if (st == nullptr) st = BaseStation::GetByTile(trigger_tile);
@@ -442,7 +442,7 @@ void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAn
 	auto process_tile = [&](TileIndex cur_tile) {
 		const RoadStopSpec *ss = GetRoadStopSpec(cur_tile);
 		if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
-			CargoID cargo;
+			CargoType cargo;
 			if (cargo_type == INVALID_CARGO) {
 				cargo = INVALID_CARGO;
 			} else {
@@ -469,7 +469,7 @@ void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAn
  * @param trigger trigger type
  * @param cargo_type cargo type causing the trigger
  */
-void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTrigger trigger, CargoID cargo_type)
+void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTrigger trigger, CargoType cargo_type)
 {
 	if (st == nullptr) st = Station::GetByTile(tile);
 

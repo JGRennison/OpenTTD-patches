@@ -28,7 +28,7 @@ static constexpr uint8_t WBL_DEPOT_PART = 0; ///< Depot part flag.
 static constexpr uint8_t WBL_DEPOT_AXIS = 1; ///< Depot axis flag.
 
 /** Available water tile types. */
-enum WaterTileType {
+enum WaterTileType : uint8_t {
 	WATER_TILE_CLEAR, ///< Plain water.
 	WATER_TILE_COAST, ///< Coast.
 	WATER_TILE_LOCK,  ///< Water lock.
@@ -42,18 +42,16 @@ enum WaterClass : uint8_t {
 	WATER_CLASS_RIVER,   ///< River.
 	WATER_CLASS_INVALID, ///< Used for industry tiles on land (also for oilrig if newgrf says so).
 };
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<WaterClass> : MakeEnumPropsT<WaterClass, uint8_t, WATER_CLASS_SEA, WATER_CLASS_INVALID, WATER_CLASS_INVALID, 2> {};
 
 /** Sections of the water depot. */
-enum DepotPart {
+enum DepotPart : uint8_t {
 	DEPOT_PART_NORTH = 0, ///< Northern part of a depot.
 	DEPOT_PART_SOUTH = 1, ///< Southern part of a depot.
 	DEPOT_PART_END
 };
 
 /** Sections of the water lock. */
-enum LockPart {
+enum LockPart : uint8_t {
 	LOCK_PART_MIDDLE = 0, ///< Middle part of a lock.
 	LOCK_PART_LOWER  = 1, ///< Lower part of a lock.
 	LOCK_PART_UPPER  = 2, ///< Upper part of a lock.

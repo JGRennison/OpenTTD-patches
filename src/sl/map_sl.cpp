@@ -9,9 +9,9 @@
 
 #include "../stdafx.h"
 #include "../map_func.h"
+#include "../core/alignment.hpp"
 #include "../core/bitmath_func.hpp"
 #include "../core/endian_func.hpp"
-#include "../core/endian_type.hpp"
 #include "../fios.h"
 #include "../load_check.h"
 #include "../debug.h"
@@ -203,24 +203,24 @@ static void Load_WMAP()
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	const uint32_t size = Map::Size();
 
-#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	reader->CopyBytes((uint8_t *) _m.tile_data, size * 8);
-#else
-	Tile *m_start = _m.tile_data;
-	Tile *m_end = _m.tile_data + size;
-	for (Tile *m = m_start; m != m_end; m++) {
-		RawReadBuffer buf = reader->ReadRawBytes(8);
-		m->type = buf.RawReadByte();
-		m->height = buf.RawReadByte();
-		uint16_t m2 = buf.RawReadByte();
-		m2 |= ((uint16_t) buf.RawReadByte()) << 8;
-		m->m2 = m2;
-		m->m1 = buf.RawReadByte();
-		m->m3 = buf.RawReadByte();
-		m->m4 = buf.RawReadByte();
-		m->m5 = buf.RawReadByte();
+	if constexpr (std::endian::native == std::endian::little) {
+		reader->CopyBytes((uint8_t *) _m.tile_data, size * 8);
+	} else {
+		Tile *m_start = _m.tile_data;
+		Tile *m_end = _m.tile_data + size;
+		for (Tile *m = m_start; m != m_end; m++) {
+			RawReadBuffer buf = reader->ReadRawBytes(8);
+			m->type = buf.RawReadByte();
+			m->height = buf.RawReadByte();
+			uint16_t m2 = buf.RawReadByte();
+			m2 |= ((uint16_t) buf.RawReadByte()) << 8;
+			m->m2 = m2;
+			m->m1 = buf.RawReadByte();
+			m->m3 = buf.RawReadByte();
+			m->m4 = buf.RawReadByte();
+			m->m5 = buf.RawReadByte();
+		}
 	}
-#endif
 
 	TileExtended *me_start = _me.tile_data;
 	TileExtended *me_end = _me.tile_data + size;
@@ -231,18 +231,18 @@ static void Load_WMAP()
 			me->m7 = buf.RawReadByte();
 		}
 	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
-#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-		reader->CopyBytes((uint8_t *) _me.tile_data, size * 4);
-#else
-		for (TileExtended *me = me_start; me != me_end; me++) {
-			RawReadBuffer buf = reader->ReadRawBytes(4);
-			me->m6 = buf.RawReadByte();
-			me->m7 = buf.RawReadByte();
-			uint16_t m8 = buf.RawReadByte();
-			m8 |= ((uint16_t) buf.RawReadByte()) << 8;
-			me->m8 = m8;
+		if constexpr (std::endian::native == std::endian::little) {
+			reader->CopyBytes((uint8_t *) _me.tile_data, size * 4);
+		} else {
+			for (TileExtended *me = me_start; me != me_end; me++) {
+				RawReadBuffer buf = reader->ReadRawBytes(4);
+				me->m6 = buf.RawReadByte();
+				me->m7 = buf.RawReadByte();
+				uint16_t m8 = buf.RawReadByte();
+				m8 |= ((uint16_t) buf.RawReadByte()) << 8;
+				me->m8 = m8;
+			}
 		}
-#endif
 	} else {
 		NOT_REACHED();
 	}
@@ -258,33 +258,33 @@ static void Save_WMAP()
 	const uint32_t size = Map::Size();
 	SlSetLength(size * 12);
 
-#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	dumper->CopyBytes((uint8_t *) _m.tile_data, size * 8);
-	dumper->CopyBytes((uint8_t *) _me.tile_data, size * 4);
-#else
-	Tile *m_start = _m.tile_data;
-	Tile *m_end = _m.tile_data + size;
-	for (Tile *m = m_start; m != m_end; m++) {
-		RawMemoryDumper dump = dumper->RawWriteBytes(8);
-		dump.RawWriteByte(m->type);
-		dump.RawWriteByte(m->height);
-		dump.RawWriteByte(GB(m->m2, 0, 8));
-		dump.RawWriteByte(GB(m->m2, 8, 8));
-		dump.RawWriteByte(m->m1);
-		dump.RawWriteByte(m->m3);
-		dump.RawWriteByte(m->m4);
-		dump.RawWriteByte(m->m5);
+	if constexpr (std::endian::native == std::endian::little) {
+		dumper->CopyBytes((uint8_t *) _m.tile_data, size * 8);
+		dumper->CopyBytes((uint8_t *) _me.tile_data, size * 4);
+	} else {
+		Tile *m_start = _m.tile_data;
+		Tile *m_end = _m.tile_data + size;
+		for (Tile *m = m_start; m != m_end; m++) {
+			RawMemoryDumper dump = dumper->RawWriteBytes(8);
+			dump.RawWriteByte(m->type);
+			dump.RawWriteByte(m->height);
+			dump.RawWriteByte(GB(m->m2, 0, 8));
+			dump.RawWriteByte(GB(m->m2, 8, 8));
+			dump.RawWriteByte(m->m1);
+			dump.RawWriteByte(m->m3);
+			dump.RawWriteByte(m->m4);
+			dump.RawWriteByte(m->m5);
+		}
+		TileExtended *me_start = _me.tile_data;
+		TileExtended *me_end = _me.tile_data + size;
+		for (TileExtended *me = me_start; me != me_end; me++) {
+			RawMemoryDumper dump = dumper->RawWriteBytes(4);
+			dump.RawWriteByte(me->m6);
+			dump.RawWriteByte(me->m7);
+			dump.RawWriteByte(GB(me->m8, 0, 8));
+			dump.RawWriteByte(GB(me->m8, 8, 8));
+		}
 	}
-	TileExtended *me_start = _me.tile_data;
-	TileExtended *me_end = _me.tile_data + size;
-	for (TileExtended *me = me_start; me != me_end; me++) {
-		RawMemoryDumper dump = dumper->RawWriteBytes(4);
-		dump.RawWriteByte(me->m6);
-		dump.RawWriteByte(me->m7);
-		dump.RawWriteByte(GB(me->m8, 0, 8));
-		dump.RawWriteByte(GB(me->m8, 8, 8));
-	}
-#endif
 }
 
 struct MapTileReader {

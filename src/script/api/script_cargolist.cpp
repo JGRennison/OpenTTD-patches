@@ -30,7 +30,7 @@ ScriptCargoList_IndustryAccepting::ScriptCargoList_IndustryAccepting(IndustryID 
 
 	const Industry *ind = ::Industry::Get(industry_id);
 	for (const auto &a : ind->Accepted()) {
-		if (::IsValidCargoID(a.cargo)) {
+		if (::IsValidCargoType(a.cargo)) {
 			this->AddItem(a.cargo);
 		}
 	}
@@ -42,7 +42,7 @@ ScriptCargoList_IndustryProducing::ScriptCargoList_IndustryProducing(IndustryID 
 
 	const Industry *ind = ::Industry::Get(industry_id);
 	for (const auto &p : ind->Produced()) {
-		if (::IsValidCargoID(p.cargo)) {
+		if (::IsValidCargoType(p.cargo)) {
 			this->AddItem(p.cargo);
 		}
 	}
@@ -53,7 +53,7 @@ ScriptCargoList_StationAccepting::ScriptCargoList_StationAccepting(StationID sta
 	if (!ScriptStation::IsValidStation(station_id)) return;
 
 	const Station *st = ::Station::Get(station_id);
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) this->AddItem(i);
 	}
 }

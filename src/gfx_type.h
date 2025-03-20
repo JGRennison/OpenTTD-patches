@@ -10,7 +10,6 @@
 #ifndef GFX_TYPE_H
 #define GFX_TYPE_H
 
-#include "core/endian_type.hpp"
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "zoom_type.h"
@@ -26,7 +25,7 @@ struct PalSpriteID {
 	PaletteID pal;    ///< The palette (use \c PAL_NONE) if not needed)
 };
 
-enum WindowKeyCodes {
+enum WindowKeyCodes : uint16_t {
 	WKC_SHIFT = 0x8000,
 	WKC_CTRL  = 0x4000,
 	WKC_ALT   = 0x2000,
@@ -163,17 +162,11 @@ struct DrawPixelInfo {
 	ZoomLevel zoom;
 };
 
-/** Structure to access the alpha, red, green, and blue channels from a 32 bit number. */
-union Colour {
+/** Packed colour union to access the alpha, red, green, and blue channels from a 32 bit number for Emscripten build. */
+union ColourRGBA {
 	uint32_t data; ///< Conversion of the channel information to a 32 bit number.
 	struct {
-#if defined(__EMSCRIPTEN__)
-		uint8_t r, g, b, a;  ///< colour channels as used in browsers
-#elif TTD_ENDIAN == TTD_BIG_ENDIAN
-		uint8_t a, r, g, b; ///< colour channels in BE order
-#else
-		uint8_t b, g, r, a; ///< colour channels in LE order
-#endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
+		uint8_t r, g, b, a; ///< colour channels as used in browsers
 	};
 
 	/**
@@ -183,31 +176,72 @@ union Colour {
 	 * @param b The channel for the blue colour.
 	 * @param a The channel for the alpha/transparency.
 	 */
-	constexpr Colour(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) :
-#if defined(__EMSCRIPTEN__)
-		r(r), g(g), b(b), a(a)
-#elif TTD_ENDIAN == TTD_BIG_ENDIAN
-		a(a), r(r), g(g), b(b)
-#else
-		b(b), g(g), r(r), a(a)
-#endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
-	{
-	}
+	constexpr ColourRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : r(r), g(g), b(b), a(a) { }
 
 	/**
 	 * Create a new colour.
 	 * @param data The colour in the correct packed format.
 	 */
-	constexpr Colour(uint data = 0) : data(data)
-	{
-	}
+	constexpr ColourRGBA(uint data = 0) : data(data) { }
 };
+
+/** Packed colour union to access the alpha, red, green, and blue channels from a 32 bit number for big-endian systems. */
+union ColourARGB {
+	uint32_t data; ///< Conversion of the channel information to a 32 bit number.
+	struct {
+		uint8_t a, r, g, b; ///< colour channels in BE order
+	};
+
+	/**
+	 * Create a new colour.
+	 * @param r The channel for the red colour.
+	 * @param g The channel for the green colour.
+	 * @param b The channel for the blue colour.
+	 * @param a The channel for the alpha/transparency.
+	 */
+	constexpr ColourARGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : a(a), r(r), g(g), b(b) { }
+
+	/**
+	 * Create a new colour.
+	 * @param data The colour in the correct packed format.
+	 */
+	constexpr ColourARGB(uint data = 0) : data(data) { }
+};
+
+/** Packed colour union to access the alpha, red, green, and blue channels from a 32 bit number for little-endian systems. */
+union ColourBGRA {
+	uint32_t data; ///< Conversion of the channel information to a 32 bit number.
+	struct {
+		uint8_t b, g, r, a; ///< colour channels in LE order
+	};
+
+	/**
+	 * Create a new colour.
+	 * @param r The channel for the red colour.
+	 * @param g The channel for the green colour.
+	 * @param b The channel for the blue colour.
+	 * @param a The channel for the alpha/transparency.
+	 */
+	constexpr ColourBGRA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : b(b), g(g), r(r), a(a) { }
+
+	/**
+	 * Create a new colour.
+	 * @param data The colour in the correct packed format.
+	 */
+	constexpr ColourBGRA(uint data = 0) : data(data) { }
+};
+
+#if defined(__EMSCRIPTEN__)
+using Colour = ColourRGBA;
+#else
+using Colour = std::conditional_t<std::endian::native == std::endian::little, ColourBGRA, ColourARGB>;
+#endif /* defined(__EMSCRIPTEN__) */
 
 static_assert(sizeof(Colour) == sizeof(uint32_t));
 
 
 /** Available font sizes */
-enum FontSize {
+enum FontSize : uint8_t {
 	FS_NORMAL, ///< Index of the normal font in the font tables.
 	FS_SMALL,  ///< Index of the small font in the font tables.
 	FS_LARGE,  ///< Index of the large font in the font tables.
@@ -216,7 +250,7 @@ enum FontSize {
 
 	FS_BEGIN = FS_NORMAL, ///< First font.
 };
-DECLARE_POSTFIX_INCREMENT(FontSize)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(FontSize)
 
 inline const char *FontSizeToName(FontSize fs)
 {
@@ -255,12 +289,11 @@ enum Colours : uint8_t {
 	COLOUR_END,
 	INVALID_COLOUR = 0xFF,
 };
-template <> struct EnumPropsT<Colours> : MakeEnumPropsT<Colours, uint8_t, COLOUR_BEGIN, COLOUR_END, INVALID_COLOUR, 8> {};
-DECLARE_POSTFIX_INCREMENT(Colours)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(Colours)
 DECLARE_ENUM_AS_ADDABLE(Colours)
 
 /** Colour of the strings, see _string_colourmap in table/string_colours.h or docs/ottd-colourtext-palette.png */
-enum TextColour {
+enum TextColour : uint16_t {
 	TC_BEGIN       = 0x00,
 	TC_FROMSTRING  = 0x00,
 	TC_BLUE        = 0x00,
@@ -297,7 +330,7 @@ static constexpr uint8_t PALETTE_ANIM_SIZE = 28; ///< number of animated colours
 static constexpr uint8_t PALETTE_ANIM_START = 227; ///< Index in  the _palettes array from which all animations are taking places (table/palettes.h)
 
 /** Define the operation GfxFillRect performs */
-enum FillRectMode {
+enum FillRectMode : uint8_t {
 	FILLRECT_OPAQUE,  ///< Fill rectangle with a single colour
 	FILLRECT_CHECKER, ///< Draw only every second pixel, used for greying-out
 	FILLRECT_RECOLOUR, ///< Apply a recolour sprite to the screen content
@@ -307,7 +340,7 @@ enum FillRectMode {
 typedef void GfxFillRectModeFunctor(void *pixel, int count);
 
 /** Palettes OpenTTD supports. */
-enum PaletteType {
+enum PaletteType : uint8_t {
 	PAL_DOS,        ///< Use the DOS palette.
 	PAL_WINDOWS,    ///< Use the Windows palette.
 };
@@ -336,14 +369,14 @@ struct Palette {
 };
 
 /** Modes for 8bpp support */
-enum Support8bpp {
+enum Support8bpp : uint8_t {
 	S8BPP_NONE = 0, ///< No support for 8bpp by OS or hardware, force 32bpp blitters.
 	S8BPP_SYSTEM,   ///< No 8bpp support by hardware, do not try to use 8bpp video modes or hardware palettes.
 	S8BPP_HARDWARE, ///< Full 8bpp support by OS and hardware.
 };
 
 	/** How to align the to-be drawn text. */
-enum StringAlignment {
+enum StringAlignment : uint8_t {
 	SA_LEFT        = 0 << 0, ///< Left align the text.
 	SA_HOR_CENTER  = 1 << 0, ///< Horizontally center the text.
 	SA_RIGHT       = 2 << 0, ///< Right align the text (must be a single bit).

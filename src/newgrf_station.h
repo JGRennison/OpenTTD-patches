@@ -28,7 +28,7 @@ struct StationScopeResolver : public ScopeResolver {
 	TileIndex tile;                     ///< %Tile of the station.
 	struct BaseStation *st;             ///< Instance of the station.
 	const struct StationSpec *statspec; ///< Station (type) specification.
-	CargoID cargo_type;                 ///< Type of cargo of the station.
+	CargoType cargo_type;               ///< Type of cargo of the station.
 	Axis axis;                          ///< Station axis, used only for the slope check callback.
 	RailType rt;                        ///< %RailType of the station (unbuilt stations only).
 
@@ -100,12 +100,11 @@ enum StationClassID : uint16_t {
 	STAT_CLASS_WAYP,         ///< Waypoint class.
 	STAT_CLASS_MAX = UINT16_MAX, ///< Maximum number of classes.
 };
-template <> struct EnumPropsT<StationClassID> : MakeEnumPropsT<StationClassID, uint8_t, STAT_CLASS_BEGIN, STAT_CLASS_MAX, STAT_CLASS_MAX, 16> {};
 
 /** Allow incrementing of StationClassID variables */
-DECLARE_POSTFIX_INCREMENT(StationClassID)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(StationClassID)
 
-enum StationSpecFlags {
+enum StationSpecFlags : uint8_t {
 	SSF_SEPARATE_GROUND,      ///< Use different sprite set for ground sprites.
 	SSF_DIV_BY_STATION_SIZE,  ///< Divide cargo amount by station size.
 	SSF_CB141_RANDOM_BITS,    ///< Callback 141 needs random bits.
@@ -114,7 +113,7 @@ enum StationSpecFlags {
 };
 
 /** Randomisation triggers for stations */
-enum StationRandomTrigger {
+enum StationRandomTrigger : uint8_t {
 	SRT_NEW_CARGO,        ///< Trigger station on new cargo arrival.
 	SRT_CARGO_TAKEN,      ///< Trigger station when cargo is completely taken.
 	SRT_TRAIN_ARRIVES,    ///< Trigger platform when train arrives.
@@ -251,8 +250,8 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 
 void AnimateStationTile(TileIndex tile);
 uint8_t GetStationTileAnimationSpeed(TileIndex tile);
-void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type = INVALID_CARGO);
-void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoID cargo_type = INVALID_CARGO);
+void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoType cargo_type = INVALID_CARGO);
+void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoType cargo_type = INVALID_CARGO);
 void StationUpdateCachedTriggers(BaseStation *st);
 
 void UpdateStationTileCacheFlags(bool force_update);

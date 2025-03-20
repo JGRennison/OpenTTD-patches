@@ -1372,7 +1372,7 @@ void SlArray(void *array, size_t length, VarType conv)
 		/* used for conversion of Money 32bit->64bit */
 		if (conv == (SLE_FILE_I32 | SLE_VAR_I64)) {
 			for (uint i = 0; i < length; i++) {
-				((int64_t*)array)[i] = (int32_t)BSWAP32(SlReadUint32());
+				((int64_t*)array)[i] = (int32_t)std::byteswap<uint32_t>(SlReadUint32());
 			}
 			return;
 		}
@@ -3647,19 +3647,19 @@ struct SaveLoadFormat {
 static const SaveLoadFormat _saveload_formats[] = {
 #if defined(WITH_LZO)
 	/* Roughly 75% larger than zlib level 6 at only ~7% of the CPU usage. */
-	{"lzo",    TO_BE32X('OTTD'), CreateLoadFilter<LZOLoadFilter>,    CreateSaveFilter<LZOSaveFilter>,    0, 0, 0, SLF_NO_THREADED_LOAD},
+	{"lzo",    TO_BE32('OTTD'), CreateLoadFilter<LZOLoadFilter>,    CreateSaveFilter<LZOSaveFilter>,    0, 0, 0, SLF_NO_THREADED_LOAD},
 #else
-	{"lzo",    TO_BE32X('OTTD'), nullptr,                            nullptr,                            0, 0, 0, SLF_NO_THREADED_LOAD},
+	{"lzo",    TO_BE32('OTTD'), nullptr,                            nullptr,                            0, 0, 0, SLF_NO_THREADED_LOAD},
 #endif
 	/* Roughly 5 times larger at only 1% of the CPU usage over zlib level 6. */
-	{"none",   TO_BE32X('OTTN'), CreateLoadFilter<NoCompLoadFilter>, CreateSaveFilter<NoCompSaveFilter>, 0, 0, 0, SLF_NONE},
+	{"none",   TO_BE32('OTTN'), CreateLoadFilter<NoCompLoadFilter>, CreateSaveFilter<NoCompSaveFilter>, 0, 0, 0, SLF_NONE},
 #if defined(WITH_ZLIB)
 	/* After level 6 the speed reduction is significant (1.5x to 2.5x slower per level), but the reduction in filesize is
 	 * fairly insignificant (~1% for each step). Lower levels become ~5-10% bigger by each level than level 6 while level
 	 * 1 is "only" 3 times as fast. Level 0 results in uncompressed savegames at about 8 times the cost of "none". */
-	{"zlib",   TO_BE32X('OTTZ'), CreateLoadFilter<ZlibLoadFilter>,   CreateSaveFilter<ZlibSaveFilter>,   0, 6, 9, SLF_NONE},
+	{"zlib",   TO_BE32('OTTZ'), CreateLoadFilter<ZlibLoadFilter>,   CreateSaveFilter<ZlibSaveFilter>,   0, 6, 9, SLF_NONE},
 #else
-	{"zlib",   TO_BE32X('OTTZ'), nullptr,                            nullptr,                            0, 0, 0, SLF_NONE},
+	{"zlib",   TO_BE32('OTTZ'), nullptr,                            nullptr,                            0, 0, 0, SLF_NONE},
 #endif
 #if defined(WITH_LIBLZMA)
 	/* Level 2 compression is speed wise as fast as zlib level 6 compression (old default), but results in ~10% smaller saves.
@@ -3667,9 +3667,9 @@ static const SaveLoadFormat _saveload_formats[] = {
 	 * The next significant reduction in file size is at level 4, but that is already 4 times slower. Level 3 is primarily 50%
 	 * slower while not improving the filesize, while level 0 and 1 are faster, but don't reduce savegame size much.
 	 * It's OTTX and not e.g. OTTL because liblzma is part of xz-utils and .tar.xz is preferred over .tar.lzma. */
-	{"lzma",   TO_BE32X('OTTX'), CreateLoadFilter<LZMALoadFilter>,   CreateSaveFilter<LZMASaveFilter>,   0, 2, 9, SLF_NONE},
+	{"lzma",   TO_BE32('OTTX'), CreateLoadFilter<LZMALoadFilter>,   CreateSaveFilter<LZMASaveFilter>,   0, 2, 9, SLF_NONE},
 #else
-	{"lzma",   TO_BE32X('OTTX'), nullptr,                            nullptr,                            0, 0, 0, SLF_NONE},
+	{"lzma",   TO_BE32('OTTX'), nullptr,                            nullptr,                            0, 0, 0, SLF_NONE},
 #endif
 #if defined(WITH_ZSTD)
 	/* Zstd provides a decent compression rate at a very high compression/decompression speed. Compared to lzma level 2
@@ -3678,9 +3678,9 @@ static const SaveLoadFormat _saveload_formats[] = {
 	 * (compress + 10 MB/s download + decompress time), about 3x faster than lzma:2 and 1.5x than zlib:2 and lzo.
 	 * As zstd has negative compression levels the values were increased by 100 moving zstd level range -100..22 into
 	 * openttd 0..122. Also note that value 100 matches zstd level 0 which is a special value for default level 3 (openttd 103) */
-	{"zstd",   TO_BE32X('OTTS'), CreateLoadFilter<ZSTDLoadFilter>,   CreateSaveFilter<ZSTDSaveFilter>,   0, 101, 122, SLF_REQUIRES_ZSTD},
+	{"zstd",   TO_BE32('OTTS'), CreateLoadFilter<ZSTDLoadFilter>,   CreateSaveFilter<ZSTDSaveFilter>,   0, 101, 122, SLF_REQUIRES_ZSTD},
 #else
-	{"zstd",   TO_BE32X('OTTS'), nullptr,                            nullptr,                            0, 0, 0, SLF_REQUIRES_ZSTD},
+	{"zstd",   TO_BE32('OTTS'), nullptr,                            nullptr,                            0, 0, 0, SLF_REQUIRES_ZSTD},
 #endif
 };
 
@@ -4088,7 +4088,7 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 					/* Who removed LZO support? */
 					NOT_REACHED();
 				}
-				if (fmt->tag == TO_BE32X('OTTD')) break;
+				if (fmt->tag == TO_BE32('OTTD')) break;
 				fmt++;
 			}
 			break;

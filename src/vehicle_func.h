@@ -125,14 +125,14 @@ inline bool HasVehicleOnPosXY(int x, int y, VehicleType type, void *data, Vehicl
 
 void CallVehicleTicks();
 uint8_t CalcPercentVehicleFilled(const Vehicle *v, StringID *colour);
-uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoID cargo);
+uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoType cargo);
 
 void VehicleLengthChanged(const Vehicle *u);
 
 void ResetVehicleHash();
 void ResetVehicleColourMap();
 
-uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type);
+uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoType dest_cargo_type);
 
 void ViewportAddVehicles(DrawPixelInfo *dpi, bool update_vehicles);
 void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);
@@ -248,7 +248,6 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile);
 bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile);
 CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits);
 
-extern VehicleID _new_vehicle_id;
 extern uint _returned_refit_capacity;
 extern uint16_t _returned_mail_refit_capacity;
 extern CargoArray _returned_vehicle_capacities;

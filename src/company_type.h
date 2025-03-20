@@ -34,7 +34,7 @@ enum Owner : uint8_t {
 	COMPANY_NEW_COMPANY     = 254, ///< The client wants a new company
 	COMPANY_SPECTATOR       = 255, ///< The client is spectating
 };
-DECLARE_POSTFIX_INCREMENT(Owner)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(Owner)
 DECLARE_ENUM_AS_ADDABLE(Owner)
 
 static const uint MAX_LENGTH_PRESIDENT_NAME_CHARS = 32; ///< The maximum length of a president name in characters including '\0'
@@ -45,9 +45,6 @@ static const uint MAX_COMPANY_SHARE_OWNERS        =  4; ///< The maximum number 
 
 static const uint MIN_COMPETITORS_INTERVAL = 0;   ///< The minimum interval (in minutes) between competitors.
 static const uint MAX_COMPETITORS_INTERVAL = 500; ///< The maximum interval (in minutes) between competitors.
-
-/** Define basic enum properties */
-template <> struct EnumPropsT<Owner> : MakeEnumPropsT<Owner, uint8_t, OWNER_BEGIN, OWNER_END, INVALID_OWNER> {};
 
 typedef Owner CompanyID;
 

@@ -16,7 +16,7 @@
 #include "company_type.h"
 
 /** The gender/race combinations that we have faces for */
-enum GenderEthnicity {
+enum GenderEthnicity : uint8_t {
 	GENDER_FEMALE    = 0, ///< This bit set means a female, otherwise male
 	ETHNICITY_BLACK  = 1, ///< This bit set means black, otherwise white
 
@@ -29,7 +29,7 @@ enum GenderEthnicity {
 DECLARE_ENUM_AS_BIT_SET(GenderEthnicity) ///< See GenderRace as a bitset
 
 /** Bitgroups of the CompanyManagerFace variable */
-enum CompanyManagerFaceVariable {
+enum CompanyManagerFaceVariable : uint8_t {
 	CMFV_GENDER,
 	CMFV_ETHNICITY,
 	CMFV_GEN_ETHN,
@@ -44,13 +44,13 @@ enum CompanyManagerFaceVariable {
 	CMFV_LIPS,
 	CMFV_NOSE,
 	CMFV_HAIR,
-	CMFV_JACKET,
 	CMFV_COLLAR,
+	CMFV_JACKET,
 	CMFV_TIE_EARRING,
 	CMFV_GLASSES,
 	CMFV_END,
 };
-DECLARE_POSTFIX_INCREMENT(CompanyManagerFaceVariable)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(CompanyManagerFaceVariable)
 
 /** Information about the valid values of CompanyManagerFace bitgroups as well as the sprites to draw */
 struct CompanyManagerFaceBitsInfo {
@@ -77,8 +77,8 @@ static const CompanyManagerFaceBitsInfo _cmf_info[] = {
 	/* CMFV_LIPS            */ { 13, 4, { 12, 10,  9,  9 }, { 0x35B, 0x351, 0x3A5, 0x3C8 } }, ///< Depends on !CMFV_HAS_MOUSTACHE
 	/* CMFV_NOSE            */ { 17, 3, {  8,  4,  4,  5 }, { 0x349, 0x34C, 0x393, 0x3B3 } }, ///< Depends on !CMFV_HAS_MOUSTACHE
 	/* CMFV_HAIR            */ { 20, 4, {  9,  5,  5,  5 }, { 0x382, 0x38B, 0x3D4, 0x3D9 } },
-	/* CMFV_JACKET          */ { 24, 2, {  3,  3,  3,  3 }, { 0x36B, 0x378, 0x36B, 0x378 } },
 	/* CMFV_COLLAR          */ { 26, 2, {  4,  4,  4,  4 }, { 0x36E, 0x37B, 0x36E, 0x37B } },
+	/* CMFV_JACKET          */ { 24, 2, {  3,  3,  3,  3 }, { 0x36B, 0x378, 0x36B, 0x378 } },
 	/* CMFV_TIE_EARRING     */ { 28, 3, {  6,  3,  6,  3 }, { 0x372, 0x37F, 0x372, 0x3D1 } }, ///< Depends on CMFV_HAS_TIE_EARRING
 	/* CMFV_GLASSES         */ { 31, 1, {  2,  2,  2,  2 }, { 0x347, 0x347, 0x3AE, 0x3AE } }  ///< Depends on CMFV_HAS_GLASSES
 };

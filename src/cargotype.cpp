@@ -27,7 +27,7 @@
 #include "safeguards.h"
 
 CargoSpec CargoSpec::array[NUM_CARGO];
-std::array<std::vector<CargoID>, NUM_TPE> CargoSpec::town_production_cargoes{};
+std::array<std::vector<CargoType>, NUM_TPE> CargoSpec::town_production_cargoes{};
 std::array<CargoTypes, NUM_TPE> CargoSpec::town_production_cargo_mask{};
 
 /**
@@ -47,14 +47,14 @@ CargoTypes _standard_cargo_mask;
  */
 static std::vector<CargoLabel> _default_cargo_labels;
 
-static btree::btree_map<CargoLabel, CargoID> _cargo_label_map; ///< Translation map from CargoLabel to Cargo ID.
-CargoID _cargo_id_passengers = INVALID_CARGO;
-CargoID _cargo_id_mail = INVALID_CARGO;
+static btree::btree_map<CargoLabel, CargoType> _cargo_label_map; ///< Translation map from CargoLabel to Cargo ID.
+CargoType _cargo_id_passengers = INVALID_CARGO;
+CargoType _cargo_id_mail = INVALID_CARGO;
 
 /**
  * Default cargo translation for up to version 7 NewGRFs.
  * This maps the original 12 cargo slots to their original label. If a climate dependent cargo is not present it will
- * map to CT_INVALID. For default cargoes this ends up as a 1:1 mapping via climate slot -> label -> cargo ID.
+ * map to CT_INVALID. For default cargoes this ends up as a 1:1 mapping via climate slot -> label -> cargo type.
  */
 static std::array<CargoLabel, 12> _climate_dependent_cargo_labels;
 
@@ -156,12 +156,12 @@ void BuildCargoLabelMap()
 
 /**
  * Test if a cargo is a default cargo type.
- * @param cid Cargo ID.
+ * @param cargo_type Cargo type.
  * @returns true iff the cargo type is a default cargo type.
  */
-bool IsDefaultCargo(CargoID cid)
+bool IsDefaultCargo(CargoType cargo_type)
 {
-	auto cs = CargoSpec::Get(cid);
+	auto cs = CargoSpec::Get(cargo_type);
 	if (!cs->IsValid()) return false;
 
 	CargoLabel label = cs->label;
@@ -181,7 +181,7 @@ Dimension GetLargestCargoIconSize()
 	return size;
 }
 
-CargoID GetCargoIDByLabelUsingMap(CargoLabel label)
+CargoType GetCargoIDByLabelUsingMap(CargoLabel label)
 {
 	auto found = _cargo_label_map.find(label);
 	if (found != _cargo_label_map.end()) return found->second;
@@ -297,15 +297,15 @@ std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptan
 
 	bool found = false;
 	for (const CargoSpec *cs : _sorted_cargo_specs) {
-		CargoID cid = cs->Index();
-		if (acceptance[cid] > 0) {
+		CargoType cargo_type = cs->Index();
+		if (acceptance[cargo_type] > 0) {
 			/* Add a comma between each item. */
 			if (found) line.append(list_separator);
 			found = true;
 
 			/* If the accepted value is less than 8, show it in 1/8:ths */
-			if (acceptance[cid] < 8) {
-				SetDParam(0, acceptance[cid]);
+			if (acceptance[cargo_type] < 8) {
+				SetDParam(0, acceptance[cargo_type]);
 				SetDParam(1, cs->name);
 				AppendStringInPlace(line, STR_LAND_AREA_INFORMATION_CARGO_EIGHTS);
 			} else {

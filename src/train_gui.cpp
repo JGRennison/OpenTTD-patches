@@ -29,7 +29,7 @@ uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, c
  */
 void CcBuildWagon(const CommandCost &result, TileIndex tile)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
 	/* find a locomotive in the depot. */
 	const Vehicle *found = nullptr;
@@ -44,7 +44,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 	if (found != nullptr) {
 		found = found->Last();
 		/* put the new wagon at the end of the loco. */
-		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, _new_vehicle_id, found->index, MoveRailVehicleFlags::None);
+		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, result.GetResultData(), found->index, MoveRailVehicleFlags::None);
 		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
@@ -176,7 +176,7 @@ void DrawTrainImage(const Train *v, const Rect &r, VehicleID selection, EngineIm
 
 /** Helper struct for the cargo details information */
 struct CargoSummaryItem {
-	CargoID cargo;    ///< The cargo that is carried
+	CargoType cargo;  ///< The cargo that is carried
 	StringID subtype; ///< STR_EMPTY if none
 	uint capacity;    ///< Amount that can be carried
 	uint amount;      ///< Amount that is carried
@@ -557,14 +557,14 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 		/* Indent the total cargo capacity details */
 		Rect ir = r.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			CargoID cid = cs->Index();
-			if (max_cargo[cid] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-				SetDParam(0, cid);            // {CARGO} #1
-				SetDParam(1, act_cargo[cid]); // {CARGO} #2
-				SetDParam(2, cid);            // {SHORTCARGO} #1
-				SetDParam(3, max_cargo[cid]); // {SHORTCARGO} #2
+			CargoType c = cs->Index();
+			if (max_cargo[c] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, c);            // {CARGO} #1
+				SetDParam(1, act_cargo[c]); // {CARGO} #2
+				SetDParam(2, c);            // {SHORTCARGO} #1
+				SetDParam(3, max_cargo[c]); // {SHORTCARGO} #2
 				SetDParam(4, _settings_game.vehicle.freight_trains);
-				DrawString(ir.left, ir.right, y + text_y_offset, FreightWagonMult(cid) > 1 ? STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT : STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY);
+				DrawString(ir.left, ir.right, y + text_y_offset, FreightWagonMult(c) > 1 ? STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT : STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY);
 				y += line_height;
 			}
 		}

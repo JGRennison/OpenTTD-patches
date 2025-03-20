@@ -55,7 +55,7 @@ extern void SlCopyBytesWrite(void *ptr, size_t length);
 namespace upstream_sl {
 
 /** What are we currently doing? */
-enum SaveLoadAction {
+enum SaveLoadAction : uint8_t {
 	SLA_LOAD,        ///< loading
 	SLA_SAVE,        ///< saving
 	SLA_PTRS,        ///< fixing pointers
@@ -63,7 +63,7 @@ enum SaveLoadAction {
 	SLA_LOAD_CHECK,  ///< partial loading into #_load_check_data
 };
 
-enum NeedLength {
+enum NeedLength : uint8_t {
 	NL_NONE = 0,       ///< not working in NeedLength mode
 	NL_WANTLENGTH = 1, ///< writing length and data
 	NL_CALCLENGTH = 2, ///< need to calculate the length
@@ -860,7 +860,7 @@ static void SlCopyInternal(void *object, size_t length, VarType conv)
 		/* used for conversion of Money 32bit->64bit */
 		if (conv == (SLE_FILE_I32 | SLE_VAR_I64)) {
 			for (uint i = 0; i < length; i++) {
-				((int64_t*)object)[i] = (int32_t)BSWAP32(SlReadUint32());
+				((int64_t*)object)[i] = (int32_t)std::byteswap(SlReadUint32());
 			}
 			return;
 		}

@@ -5,10 +5,10 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file endian_type.hpp Definition of various endian-dependant macros. */
+/** @file alignment.hpp Definition of various alignment-related macros. */
 
-#ifndef ENDIAN_TYPE_HPP
-#define ENDIAN_TYPE_HPP
+#ifndef ALIGNMENT_HPP
+#define ALIGNMENT_HPP
 
 #if defined(ARM) || defined(__arm__) || defined(__alpha__)
 	/** The architecture requires aligned access. */
@@ -18,15 +18,6 @@
 #	define OTTD_ALIGNMENT 0
 #endif
 
-/** Little endian builds use this for TTD_ENDIAN. */
-#define TTD_LITTLE_ENDIAN 0
-/** Big endian builds use this for TTD_ENDIAN. */
-#define TTD_BIG_ENDIAN 1
-
-#if !defined(TTD_ENDIAN)
-#	error "TTD_ENDIAN is not defined; please set it to either TTD_LITTLE_ENDIAN or TTD_BIG_ENDIAN"
-#endif /* !TTD_ENDIAN */
-
 #if !defined(NO_TAGGED_PTRS) && (defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(_M_ARM64))
 	/** Tagged pointers (upper bits) may be used on this architecture */
 #	define OTTD_UPPER_TAGGED_PTR 1
@@ -35,4 +26,4 @@
 #	define OTTD_UPPER_TAGGED_PTR 0
 #endif
 
-#endif /* ENDIAN_TYPE_HPP */
+#endif /* ALIGNMENT_HPP */

@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "debug.h"
-#include "cmd_helper.h"
 #include "command_func.h"
 #include "company_func.h"
 #include "news_func.h"
@@ -148,7 +147,7 @@ void Order::MakeGoToStation(StationID destination)
  * @param action        what to do in the depot?
  * @param cargo         the cargo type to change to.
  */
-void Order::MakeGoToDepot(DepotID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type, OrderDepotActionFlags action, CargoID cargo)
+void Order::MakeGoToDepot(DepotID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type, OrderDepotActionFlags action, CargoType cargo)
 {
 	this->type = OT_GOTO_DEPOT;
 	this->SetDepotOrderType(order);
@@ -287,7 +286,7 @@ void Order::MakeLabel(OrderLabelSubType subtype)
  * @param cargo   the cargo type to change to.
  * @pre IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION).
  */
-void Order::SetRefit(CargoID cargo)
+void Order::SetRefit(CargoType cargo)
 {
 	this->refit_cargo = cargo;
 }
@@ -548,7 +547,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 			/* This is a cargo-specific load/unload order.
 			 * If the first cargo is both a no-load and no-unload order, skip it.
 			 * Drop cargoes which don't match the first one. */
-			can_load_or_unload = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+			can_load_or_unload = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
 				return ((next->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (next->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
 			});
 		} else if ((next->GetLoadType() & OLFB_NO_LOAD) == 0 || (next->GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
@@ -642,7 +641,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			/* This is a cargo-specific load/unload order.
 			 * Don't return a next stop if first cargo has transfer or unload set.
 			 * Drop cargoes which don't match the first one. */
-			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
 				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
@@ -1376,9 +1375,9 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 /**
  * Get the first cargoID that points to a valid cargo (usually 0)
  */
-static CargoID GetFirstValidCargo()
+static CargoType GetFirstValidCargo()
 {
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		if (CargoSpec::Get(i)->IsValid()) return i;
 	}
 	/* No cargos defined -> 'Houston, we have a problem!' */
@@ -1721,7 +1720,7 @@ CommandCost CmdReverseOrderList(DoCommandFlag flags, VehicleID veh, ReverseOrder
  * @param text for MOF_LABEL_TEXT
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, CargoID cargo_id, const std::string &text)
+CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, CargoType cargo_id, const std::string &text)
 {
 	if (mof >= MOF_END) return CMD_ERROR;
 
@@ -2082,7 +2081,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 			case MOF_CARGO_TYPE_UNLOAD:
 				if (cargo_id == INVALID_CARGO) {
-					for (CargoID i = 0; i < NUM_CARGO; i++) {
+					for (CargoType i = 0; i < NUM_CARGO; i++) {
 						order->SetUnloadType((OrderUnloadFlags)data, i);
 					}
 				} else {
@@ -2097,7 +2096,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 			case MOF_CARGO_TYPE_LOAD:
 				if (cargo_id == INVALID_CARGO) {
-					for (CargoID i = 0; i < NUM_CARGO; i++) {
+					for (CargoType i = 0; i < NUM_CARGO; i++) {
 						order->SetLoadType((OrderLoadFlags)data, i);
 					}
 				} else {
@@ -2371,7 +2370,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				switch (mof) {
 					case MOF_CARGO_TYPE_UNLOAD:
 						if (cargo_id == INVALID_CARGO) {
-							for (CargoID i = 0; i < NUM_CARGO; i++) {
+							for (CargoType i = 0; i < NUM_CARGO; i++) {
 								u->current_order.SetUnloadType((OrderUnloadFlags)data, i);
 							}
 						} else {
@@ -2381,7 +2380,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 					case MOF_CARGO_TYPE_LOAD:
 						if (cargo_id == INVALID_CARGO) {
-							for (CargoID i = 0; i < NUM_CARGO; i++) {
+							for (CargoType i = 0; i < NUM_CARGO; i++) {
 								u->current_order.SetLoadType((OrderLoadFlags)data, i);
 							}
 						} else {
@@ -2697,7 +2696,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
  * @param cargo CargoType
  * @return the cost of this operation or an error
  */
-CommandCost CmdOrderRefit(DoCommandFlag flags, VehicleID veh, VehicleOrderID order_number, CargoID cargo)
+CommandCost CmdOrderRefit(DoCommandFlag flags, VehicleID veh, VehicleOrderID order_number, CargoType cargo)
 {
 	if (cargo >= NUM_CARGO && cargo != CARGO_NO_REFIT && cargo != CARGO_AUTO_REFIT) return CMD_ERROR;
 
@@ -3226,7 +3225,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 	// OrderConditionCompare ignores the last parameter for occ == OCC_IS_TRUE or occ == OCC_IS_FALSE.
 	switch (order->GetConditionVariable()) {
 		case OCV_LOAD_PERCENTAGE:    skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilled(v, nullptr), value); break;
-		case OCV_CARGO_LOAD_PERCENTAGE: skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilledOfCargo(v, (CargoID)value), order->GetXData()); break;
+		case OCV_CARGO_LOAD_PERCENTAGE: skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilledOfCargo(v, (CargoType)value), order->GetXData()); break;
 		case OCV_RELIABILITY:        skip_order = OrderConditionCompare(occ, ToPercent16(v->reliability),       value); break;
 		case OCV_MAX_RELIABILITY:    skip_order = OrderConditionCompare(occ, ToPercent16(v->GetEngine()->reliability),   value); break;
 		case OCV_MAX_SPEED:          skip_order = OrderConditionCompare(occ, v->GetDisplayMaxSpeed() * 10 / 16, value); break;
@@ -3253,7 +3252,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			StationID next_station = order->GetConditionStationID();
 			if (Station::IsValidID(next_station)) {
 				const bool refit_mode = HasBit(order->GetXData2(), 16);
-				const CargoID cargo = static_cast<CargoID>(value);
+				const CargoType cargo = static_cast<CargoType>(value);
 				uint32_t waiting;
 				if (!order->HasConditionViaStation()) {
 					waiting = Station::Get(next_station)->goods[cargo].CargoAvailableCount();
@@ -3272,7 +3271,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 						}
 
 						/* Back up the vehicle's cargo type */
-						const CargoID temp_cid = u->cargo_type;
+						const CargoType temp_cid = u->cargo_type;
 						const uint8_t temp_subtype = u->cargo_subtype;
 
 						const_cast<Vehicle *>(u)->cargo_type = value;
@@ -3821,7 +3820,7 @@ bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoi
  * 2a. it could leave the last station with cargo AND
  * 2b. it doesn't have to unload all cargo here.
  */
-bool Order::CanLeaveWithCargo(bool has_cargo, CargoID cargo) const
+bool Order::CanLeaveWithCargo(bool has_cargo, CargoType cargo) const
 {
 	return (this->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (has_cargo &&
 			(this->GetCargoUnloadType(cargo) & (OUFB_UNLOAD | OUFB_TRANSFER)) == 0);
@@ -3838,7 +3837,7 @@ bool Order::CanLeaveWithCargo(bool has_cargo, CargoID cargo) const
  * @param to_dest The destination ID to change to
  * @return the cost of this operation or an error
  */
-CommandCost CmdMassChangeOrder(DoCommandFlag flags, DestinationID from_dest, VehicleType vehtype, OrderType order_type, CargoID cargo_filter, DestinationID to_dest)
+CommandCost CmdMassChangeOrder(DoCommandFlag flags, DestinationID from_dest, VehicleType vehtype, OrderType order_type, CargoType cargo_filter, DestinationID to_dest)
 {
 	if (flags & DC_EXEC) {
 		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(vehtype)) {

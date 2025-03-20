@@ -11,6 +11,7 @@
 #define SCRIPT_INDUSTRYLIST_HPP
 
 #include "script_list.hpp"
+#include "../../cargo_type.h"
 
 /**
  * Creates a list of industries that are currently on the map.
@@ -58,9 +59,9 @@ public:
 class ScriptIndustryList_CargoAccepting : public ScriptList {
 public:
 	/**
-	 * @param cargo_id The cargo this industry should accept.
+	 * @param cargo_type The cargo this industry should accept.
 	 */
-	ScriptIndustryList_CargoAccepting(CargoID cargo_id);
+	ScriptIndustryList_CargoAccepting(CargoType cargo_type);
 };
 
 /**
@@ -72,9 +73,9 @@ public:
 class ScriptIndustryList_CargoProducing : public ScriptList {
 public:
 	/**
-	 * @param cargo_id The cargo this industry should produce.
+	 * @param cargo_type The cargo this industry should produce.
 	 */
-	ScriptIndustryList_CargoProducing(CargoID cargo_id);
+	ScriptIndustryList_CargoProducing(CargoType cargo_type);
 };
 
 #endif /* SCRIPT_INDUSTRYLIST_HPP */

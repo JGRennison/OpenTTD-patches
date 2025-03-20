@@ -15,7 +15,7 @@
 #include <vector>
 
 /** Various types of a pool. */
-enum PoolType {
+enum PoolType : uint8_t {
 	PT_NONE    = 0x00, ///< No pool is selected.
 	PT_NORMAL  = 0x01, ///< Normal pool containing game objects.
 	PT_NCLIENT = 0x02, ///< Network client pools.

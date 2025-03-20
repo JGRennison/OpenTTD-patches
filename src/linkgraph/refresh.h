@@ -28,7 +28,7 @@ protected:
 	 * Various flags about properties of the last examined link that might have
 	 * an influence on the next one.
 	 */
-	enum RefreshFlags {
+	enum RefreshFlags : uint8_t {
 		USE_NEXT,     ///< There was a conditional jump. Try to use the given next order when looking for a new one.
 		HAS_CARGO,    ///< Consist could leave the last stop where it could interact with cargo carrying cargo (i.e. not an "unload all" + "no loading" order).
 		WAS_REFIT,    ///< Consist was refit since the last stop where it could interact with cargo.
@@ -41,10 +41,10 @@ protected:
 	 * Simulated cargo type and capacity for prediction of future links.
 	 */
 	struct RefitDesc {
-		CargoID cargo;      ///< Cargo type the vehicle will be carrying.
+		CargoType cargo;    ///< Cargo type the vehicle will be carrying.
 		uint16_t capacity;  ///< Capacity the vehicle will have.
 		uint16_t remaining; ///< Capacity remaining from before the previous refit.
-		RefitDesc(CargoID cargo, uint16_t capacity, uint16_t remaining) :
+		RefitDesc(CargoType cargo, uint16_t capacity, uint16_t remaining) :
 				cargo(cargo), capacity(capacity), remaining(remaining) {}
 	};
 
@@ -60,8 +60,8 @@ protected:
 	struct Hop {
 		VehicleOrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
 		VehicleOrderID to;    ///< Next order to be processed.
-		CargoID cargo; ///< Cargo the consist is probably carrying or INVALID_CARGO if unknown.
-		uint8_t flags; ///< Flags, for branches
+		CargoType cargo;      ///< Cargo the consist is probably carrying or INVALID_CARGO if unknown.
+		uint8_t flags;        ///< Flags, for branches
 
 		/**
 		 * Default constructor should not be called but has to be visible for
@@ -75,7 +75,7 @@ protected:
 		 * @param to Second order of the hop.
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
-		Hop(VehicleOrderID from, VehicleOrderID to, CargoID cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
+		Hop(VehicleOrderID from, VehicleOrderID to, CargoType cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
 		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator!=(const Hop &other) const { return !(*this == other); }
@@ -101,14 +101,14 @@ protected:
 	CargoArray capacities{};    ///< Current added capacities per cargo ID in the consist.
 	RefitList refit_capacities; ///< Current state of capacity remaining from previous refits versus overall capacity per vehicle in the consist.
 	HopSet *seen_hops;          ///< Hops already seen. If the same hop is seen twice we stop the algorithm. This is shared between all Refreshers of the same run.
-	CargoID cargo;              ///< Cargo given in last refit order.
+	CargoType cargo;            ///< Cargo given in last refit order.
 	bool allow_merge;           ///< If the refresher is allowed to merge or extend link graphs.
 	bool is_full_loading;       ///< If the vehicle is full loading.
 	CargoTypes cargo_mask;      ///< Bit-mask of cargo IDs to refresh.
 
 	LinkRefresher(Vehicle *v, HopSet *seen_hops, bool allow_merge, bool is_full_loading, CargoTypes cargo_mask);
 
-	bool HandleRefit(CargoID refit_cargo);
+	bool HandleRefit(CargoType refit_cargo);
 	void ResetRefit();
 	void RefreshStats(const Order *cur, const Order *next,uint32_t travel_estimate, uint8_t flags);
 	TimetableTravelTime UpdateTimetableTravelSoFar(const Order *from, const Order *to, TimetableTravelTime travel);

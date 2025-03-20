@@ -12,6 +12,8 @@
 
 #include "script_company.hpp"
 #include "script_date.hpp"
+#include "../../cargo_type.h"
+#include "../../subsidy_type.h"
 
 /**
  * Class that handles all subsidy related functions.
@@ -63,7 +65,7 @@ public:
 	 * @pre (to_type   == SPT_INDUSTRY && ScriptIndustry::IsValidIndustry(to_id))   || (to_type   == SPT_TOWN && ScriptTown::IsValidTown(to_id))
 	 * @api -ai
 	 */
-	static bool Create(CargoID cargo_type, SubsidyParticipantType from_type, SQInteger from_id, SubsidyParticipantType to_type, SQInteger to_id);
+	static bool Create(CargoType cargo_type, SubsidyParticipantType from_type, SQInteger from_id, SubsidyParticipantType to_type, SQInteger to_id);
 
 	/**
 	 * Get the company index of the company this subsidy is awarded to.
@@ -93,7 +95,7 @@ public:
 	 * @pre IsValidSubsidy(subsidy_id).
 	 * @return The cargo type to transport.
 	 */
-	static CargoID GetCargoType(SubsidyID subsidy_id);
+	static CargoType GetCargoType(SubsidyID subsidy_id);
 
 	/**
 	 * Returns the type of source of subsidy.

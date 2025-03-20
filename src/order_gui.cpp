@@ -125,7 +125,7 @@ private:
 		const Order *order = this->vehicle->GetOrder(this->order_id);
 		for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 			const CargoSpec *cs = _sorted_cargo_specs[i];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 			uint8_t order_type = (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
 			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetStringTip(this->cargo_type_order_dropdown[order_type], tooltip);
 		}
@@ -137,7 +137,7 @@ private:
 	 * @param cargo_id The cargo index for which we want the load/unload type.
 	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
 	 */
-	uint8_t GetOrderActionTypeForCargo(CargoID cargo_id)
+	uint8_t GetOrderActionTypeForCargo(CargoType cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
 		return (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
@@ -238,7 +238,7 @@ public:
 			this->Close();
 		} else if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 
 			ShowDropDownMenu(this, this->cargo_type_order_dropdown, this->GetOrderActionTypeForCargo(cargo_id), widget, 0, this->cargo_type_order_dropdown_hmask);
 		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
@@ -255,7 +255,7 @@ public:
 		ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
 		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
-			const CargoID cargo_id = cs->Index();
+			const CargoType cargo_id = cs->Index();
 			uint8_t order_action_type = this->GetOrderActionTypeForCargo(cargo_id);
 
 			if (action_type == order_action_type) return;
@@ -269,7 +269,7 @@ public:
 
 			for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 				const CargoSpec *cs = _sorted_cargo_specs[i];
-				const CargoID cargo_id = cs->Index();
+				const CargoType cargo_id = cs->Index();
 				if (action_type != this->GetOrderActionTypeForCargo(cargo_id)) {
 					this->GetWidget<NWidgetCore>(i + WID_CTO_CARGO_DROPDOWN_FIRST)->SetStringTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 					this->SetWidgetDirty(i + WID_CTO_CARGO_DROPDOWN_FIRST);
@@ -1391,7 +1391,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 }
 
 /** Hotkeys for order window. */
-enum {
+enum OrderHotKeys : int32_t {
 	OHK_SKIP,
 	OHK_DELETE,
 	OHK_GOTO,
@@ -1453,7 +1453,7 @@ enum {
 struct OrdersWindow : public GeneralVehicleWindow {
 private:
 	/** Under what reason are we using the PlaceObject functionality? */
-	enum OrderPlaceObjectState {
+	enum OrderPlaceObjectState : uint8_t {
 		OPOS_NONE,
 		OPOS_GOTO,
 		OPOS_CONDITIONAL,
@@ -1466,7 +1466,7 @@ private:
 	};
 
 	/** Displayed planes of the #NWID_SELECTION widgets. */
-	enum DisplayPane {
+	enum DisplayPane : uint8_t {
 		/* WID_O_SEL_TOP_ROW_GROUNDVEHICLE */
 		DP_GROUNDVEHICLE_ROW_NORMAL      = 0, ///< Display the row for normal/depot orders in the top row of the train/rv order window.
 		DP_GROUNDVEHICLE_ROW_CONDITIONAL = 1, ///< Display the row for conditional orders in the top row of the train/rv order window.

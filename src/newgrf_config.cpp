@@ -259,7 +259,7 @@ size_t GRFGetSizeOfDataSection(FileHandle &f)
 }
 
 struct GRFMD5SumState {
-	GRFConfig *config;
+	GRFConfig &config;
 	size_t size;
 	FileHandle f;
 };
@@ -283,7 +283,7 @@ static void CalcGRFMD5SumFromState(const GRFMD5SumState &state)
 		size -= len;
 		checksum.Append(buffer, len);
 	}
-	checksum.Finish(state.config->ident.md5sum);
+	checksum.Finish(state.config.ident.md5sum);
 }
 
 void CalcGRFMD5Thread()
@@ -330,12 +330,12 @@ void CalcGRFMD5ThreadingEnd()
  * @param subdir The subdirectory to look in.
  * @return MD5 sum was successfully computed
  */
-static bool CalcGRFMD5Sum(GRFConfig *config, Subdirectory subdir)
+static bool CalcGRFMD5Sum(GRFConfig &config, Subdirectory subdir)
 {
 	size_t size;
 
 	/* open the file */
-	auto f = FioFOpenFile(config->filename, "rb", subdir, &size);
+	auto f = FioFOpenFile(config.filename, "rb", subdir, &size);
 	if (!f.has_value()) return false;
 
 	long start = ftell(*f);
@@ -380,27 +380,27 @@ static bool CalcGRFMD5Sum(GRFConfig *config, Subdirectory subdir)
  * @param subdir    the subdirectory to search in.
  * @return Operation was successfully completed.
  */
-bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir)
+bool FillGRFDetails(GRFConfig &config, bool is_static, Subdirectory subdir)
 {
-	if (!FioCheckFileExists(config->filename, subdir)) {
-		config->status = GCS_NOT_FOUND;
+	if (!FioCheckFileExists(config.filename, subdir)) {
+		config.status = GCS_NOT_FOUND;
 		return false;
 	}
 
 	/* Find and load the Action 8 information */
 	LoadNewGRFFile(config, GLS_FILESCAN, subdir, true);
-	config->SetSuitablePalette();
-	config->FinalizeParameterInfo();
+	config.SetSuitablePalette();
+	config.FinalizeParameterInfo();
 
 	/* Skip if the grfid is 0 (not read) or if it is an internal GRF */
-	if (config->ident.grfid == 0 || HasBit(config->flags, GCF_SYSTEM)) return false;
+	if (config.ident.grfid == 0 || HasBit(config.flags, GCF_SYSTEM)) return false;
 
 	if (is_static) {
 		/* Perform a 'safety scan' for static GRFs */
 		LoadNewGRFFile(config, GLS_SAFETYSCAN, subdir, true);
 
 		/* GCF_UNSAFE is set if GLS_SAFETYSCAN finds unsafe actions */
-		if (HasBit(config->flags, GCF_UNSAFE)) return false;
+		if (HasBit(config.flags, GCF_UNSAFE)) return false;
 	}
 
 	return CalcGRFMD5Sum(config, subdir);
@@ -555,7 +555,7 @@ GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
 				if (name != nullptr) buf.format(", name: '{}'", name);
 			});
 			if (f != nullptr) {
-				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 				if (!HasBit(c->flags, GCF_COMPATIBLE)) {
 					/* Preserve original_md5sum after it has been assigned */
 					SetBit(c->flags, GCF_COMPATIBLE);
@@ -568,13 +568,13 @@ GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
 			}
 
 			/* No compatible grf was found, mark it as disabled */
-			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 
 			c->status = GCS_NOT_FOUND;
 			res = GLC_NOT_FOUND;
 		} else {
 compatible_grf:
-			Debug(grf, 1, "Loading GRF {:08X} from {}", BSWAP32(f->ident.grfid), f->GetDisplayPath());
+			Debug(grf, 1, "Loading GRF {:08X} from {}", std::byteswap(f->ident.grfid), f->GetDisplayPath());
 			/* The filename could be the filename as in the savegame. As we need
 			 * to load the GRF here, we need the correct filename, so overwrite that
 			 * in any case and set the name and info when it is not set already.
@@ -674,7 +674,7 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
 
 	GRFConfig *c = new GRFConfig(filename.c_str() + basepath_length);
 
-	bool added = FillGRFDetails(c, false);
+	bool added = FillGRFDetails(*c, false);
 	if (added) {
 		this->grfs.push_back(c);
 	}
@@ -815,10 +815,10 @@ GRFConfig *GetGRFConfig(uint32_t grfid, uint32_t mask)
 
 
 /** Build a string containing space separated parameter values, and terminate */
-std::string GRFBuildParamList(const GRFConfig *c)
+std::string GRFBuildParamList(const GRFConfig &c)
 {
 	std::string result;
-	for (const uint32_t &value : c->param) {
+	for (const uint32_t &value : c.param) {
 		if (!result.empty()) result += ' ';
 		result += std::to_string(value);
 	}

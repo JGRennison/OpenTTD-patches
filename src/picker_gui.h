@@ -150,13 +150,13 @@ using PickerTypeList = GUIList<PickerItem, std::nullptr_t, PickerFilterData &>; 
 
 class PickerWindow : public PickerWindowBase {
 public:
-	enum PickerFilterModes {
+	enum PickerFilterModes : uint8_t {
 		PFM_ALL = 0, ///< Show all classes.
 		PFM_USED = 1, ///< Show used types.
 		PFM_SAVED = 2, ///< Show saved types.
 	};
 
-	enum PickerFilterInvalidation {
+	enum PickerFilterInvalidation : uint8_t {
 		PFI_CLASS = 1U << 0, ///< Refresh the class list.
 		PFI_TYPE = 1U << 1, ///< Refresh the type list.
 		PFI_POSITION = 1U << 2, ///< Update scroll positions.
@@ -186,7 +186,7 @@ public:
 	void PickItem(int cls_id, int id);
 
 	/** Enum referring to the Hotkeys in the picker window */
-	enum PickerClassWindowHotkeys {
+	enum PickerClassWindowHotkeys : int32_t {
 		PCWHK_FOCUS_FILTER_BOX, ///< Focus the edit box for editing the filter string
 	};
 

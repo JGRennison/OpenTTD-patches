@@ -8,7 +8,6 @@
 /** @file group_cmd.cpp Handling of the engine groups */
 
 #include "stdafx.h"
-#include "cmd_helper.h"
 #include "command_func.h"
 #include "train.h"
 #include "vehiclelist.h"
@@ -581,15 +580,13 @@ CommandCost CmdAlterGroup(DoCommandFlag flags, AlterGroupMode mode, GroupID grou
 
 /**
  * Create a new vehicle group.
- * @param tile unused
  * @param flags type of operation
- * @param p1 packed VehicleListIdentifier
- * @param p2 bitmask
- *   - bit 0-7 Cargo filter
- * @param text the new name or an empty string when setting to the default
+ * @param vli packed VehicleListIdentifier
+ * @param cargo Cargo filter
+ * @param name the new name or an empty string when setting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateGroupFromList(DoCommandFlag flags, VehicleListIdentifier vli, CargoID cargo, const std::string &name)
+CommandCost CmdCreateGroupFromList(DoCommandFlag flags, VehicleListIdentifier vli, CargoType cargo, const std::string &name)
 {
 	VehicleList list;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;

@@ -16,14 +16,14 @@
 
 uint CountArticulatedParts(EngineID engine_type, bool purchase_window);
 void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, std::vector<EngineID> &ids);
-CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit = INVALID_CARGO);
+CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoType attempt_refit = INVALID_CARGO);
 CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine);
 void AddArticulatedParts(Vehicle *first);
 void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, CargoTypes *union_mask, CargoTypes *intersection_mask);
 std::vector<CargoTypes> GetArticulatedRefitMaskVector(EngineID engine, bool include_initial_cargo_type);
 CargoTypes GetUnionOfArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type);
-CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_type);
-CargoID GetOverallCargoOfArticulatedVehicle(const Vehicle *v);
+CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoType *cargo_type);
+CargoType GetOverallCargoOfArticulatedVehicle(const Vehicle *v);
 bool IsArticulatedVehicleRefittable(EngineID engine);
 bool IsArticulatedEngine(EngineID engine_type);
 void CheckConsistencyOfArticulatedVehicle(const Vehicle *v);

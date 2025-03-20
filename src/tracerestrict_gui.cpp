@@ -1090,9 +1090,9 @@ static const TraceRestrictDropDownListSet _counter_op_cond_ops = {
 };
 
 /**
- * Get the StringID for a given CargoID @p cargo, or STR_NEWGRF_INVALID_CARGO
+ * Get the StringID for a given CargoType @p cargo, or STR_NEWGRF_INVALID_CARGO
  */
-static StringID GetCargoStringByID(CargoID cargo)
+static StringID GetCargoStringByID(CargoType cargo)
 {
 	const CargoSpec *cs = CargoSpec::Get(cargo);
 	return cs->IsValid() ? cs->name : STR_NEWGRF_INVALID_CARGO;

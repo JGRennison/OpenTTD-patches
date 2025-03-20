@@ -60,7 +60,6 @@ enum SignalOpcode {
 	PSO_END,
 	PSO_INVALID   = 0xFF
 };
-template <> struct EnumPropsT<SignalOpcode> : MakeEnumPropsT<SignalOpcode, uint8_t, PSO_FIRST, PSO_END, PSO_INVALID, 8> {};
 
 /** Signal instruction base class. All instructions must derive from this. */
 class SignalInstruction {

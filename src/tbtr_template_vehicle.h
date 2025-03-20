@@ -94,7 +94,7 @@ public:
 	Owner owner;
 
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
-	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
+	CargoType cargo_type;               ///< type of cargo this vehicle is carrying
 	uint16_t cargo_cap;                 ///< total capacity
 	uint8_t cargo_subtype;
 

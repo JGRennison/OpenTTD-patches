@@ -85,14 +85,14 @@ RoadType _last_built_roadtype;
 RoadType _last_built_tramtype;
 
 /** Toobar modes */
-enum ToolbarMode {
+enum ToolbarMode : uint8_t {
 	TB_NORMAL,
 	TB_UPPER,
 	TB_LOWER
 };
 
 /** Callback functions. */
-enum CallBackFunction {
+enum CallBackFunction : uint8_t {
 	CBF_NONE,
 	CBF_PLACE_SIGN,
 	CBF_PLACE_LANDINFO,
@@ -245,7 +245,7 @@ static CallBackFunction ToolbarFastForwardClick(Window *)
 /**
  * Game Option button menu entries.
  */
-enum OptionMenuEntries {
+enum OptionMenuEntries : uint8_t {
 	OME_GAMEOPTIONS,
 	OME_SETTINGS,
 	OME_AI_SETTINGS,
@@ -261,6 +261,7 @@ enum OptionMenuEntries {
 	OME_SHOW_STATIONNAMES_BUS,
 	OME_SHOW_STATIONNAMES_SHIP,
 	OME_SHOW_STATIONNAMES_PLANE,
+	OME_SHOW_STATIONNAMES_GHOST,
 	OME_SHOW_WAYPOINTNAMES,
 	OME_SHOW_SIGNS,
 	OME_SHOW_COMPETITOR_SIGNS,
@@ -304,6 +305,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	list.push_back(MakeDropDownListCheckedItem((_facility_display_opt & FACIL_BUS_STOP) != 0,    STR_SETTINGS_MENU_STATION_NAMES_BUS,       OME_SHOW_STATIONNAMES_BUS, false, false, 1));
 	list.push_back(MakeDropDownListCheckedItem((_facility_display_opt & FACIL_DOCK) != 0,        STR_SETTINGS_MENU_STATION_NAMES_SHIP,      OME_SHOW_STATIONNAMES_SHIP, false, false, 1));
 	list.push_back(MakeDropDownListCheckedItem((_facility_display_opt & FACIL_AIRPORT) != 0,     STR_SETTINGS_MENU_STATION_NAMES_PLANE,     OME_SHOW_STATIONNAMES_PLANE, false, false, 1));
+	list.push_back(MakeDropDownListCheckedItem((_facility_display_opt & FACIL_GHOST) != 0,       STR_SETTINGS_MENU_STATION_NAMES_GHOST,     OME_SHOW_STATIONNAMES_GHOST, false, false, 1));
 	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES),   STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false));
 	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_SIGNS),            STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false));
 	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS), STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false));
@@ -359,6 +361,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OME_SHOW_STATIONNAMES_BUS: ToggleFacilityDisplay(FACIL_BUS_STOP); break;
 		case OME_SHOW_STATIONNAMES_SHIP: ToggleFacilityDisplay(FACIL_DOCK); break;
 		case OME_SHOW_STATIONNAMES_PLANE: ToggleFacilityDisplay(FACIL_AIRPORT); break;
+		case OME_SHOW_STATIONNAMES_GHOST: ToggleFacilityDisplay(FACIL_GHOST); break;
 		case OME_SHOW_WAYPOINTNAMES:   ToggleBit(_display_opt, DO_SHOW_WAYPOINT_NAMES); break;
 		case OME_SHOW_SIGNS:           ToggleBit(_display_opt, DO_SHOW_SIGNS);          break;
 		case OME_SHOW_COMPETITOR_SIGNS:
@@ -379,7 +382,7 @@ static CallBackFunction MenuClickSettings(int index)
 /**
  * SaveLoad entries in scenario editor mode.
  */
-enum SaveLoadEditorMenuEntries {
+enum SaveLoadEditorMenuEntries : uint8_t {
 	SLEME_SAVE_SCENARIO = 0,
 	SLEME_LOAD_SCENARIO,
 	SLEME_SAVE_HEIGHTMAP,
@@ -391,7 +394,7 @@ enum SaveLoadEditorMenuEntries {
 /**
  * SaveLoad entries in normal game mode.
  */
-enum SaveLoadNormalMenuEntries {
+enum SaveLoadNormalMenuEntries : uint8_t {
 	SLNME_SAVE_GAME = 0,
 	SLNME_LOAD_GAME,
 	SLNME_EXIT_TOINTRO,
@@ -455,7 +458,7 @@ static CallBackFunction MenuClickSaveLoad(int index = 0)
 
 /* --- Map button menu --- */
 
-enum MapMenuEntries {
+enum MapMenuEntries : uint8_t {
 	MME_SHOW_SMALLMAP        = 0,
 	MME_SHOW_EXTRAVIEWPORTS,
 	MME_SHOW_LINKGRAPH,
@@ -2514,7 +2517,7 @@ static ToolbarButtonProc * const _scen_toolbar_button_procs[] = {
 	ToolbarSwitchClick,
 };
 
-enum MainToolbarEditorHotkeys {
+enum MainToolbarEditorHotkeys : int32_t {
 	MTEHK_PAUSE,
 	MTEHK_FASTFORWARD,
 	MTEHK_SETTINGS,

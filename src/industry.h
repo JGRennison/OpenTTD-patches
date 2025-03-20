@@ -82,14 +82,14 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	};
 
 	struct ProducedCargo {
-		CargoID cargo;                           ///< Cargo type
+		CargoType cargo;                         ///< Cargo type
 		uint8_t rate;                            ///< Production rate
 		uint16_t waiting;                        ///< Amount of cargo produced
 		std::array<ProducedHistory, 25> history; ///< History of cargo produced and transported
 	};
 
 	struct AcceptedCargo {
-		CargoID cargo;                ///< Cargo type
+		CargoType cargo;              ///< Cargo type
 		uint16_t waiting;             ///< Amount of cargo waiting to processed
 		EconTime::Date last_accepted; ///< Last day cargo was accepted by this industry
 	};
@@ -171,7 +171,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 		return slot < (size_t)this->accepted_cargo_count ? this->accepted[slot] : empty;
 	}
 
-	inline int GetCargoProducedIndex(CargoID cargo) const
+	inline int GetCargoProducedIndex(CargoType cargo) const
 	{
 		if (cargo == INVALID_CARGO) return -1;
 		for (uint8_t i = 0; i < this->produced_cargo_count; i++) {
@@ -180,7 +180,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 		return -1;
 	}
 
-	inline int GetCargoAcceptedIndex(CargoID cargo) const
+	inline int GetCargoAcceptedIndex(CargoType cargo) const
 	{
 		if (cargo == INVALID_CARGO) return -1;
 		for (uint8_t i = 0; i < this->accepted_cargo_count; i++) {
@@ -193,27 +193,27 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	 * Test if this industry accepts any cargo.
 	 * @return true iff the industry accepts any cargo.
 	 */
-	bool IsCargoAccepted() const { return std::any_of(this->accepted.get(), this->accepted.get() + this->accepted_cargo_count, [](const AcceptedCargo &a) { return IsValidCargoID(a.cargo); }); }
+	bool IsCargoAccepted() const { return std::any_of(this->accepted.get(), this->accepted.get() + this->accepted_cargo_count, [](const AcceptedCargo &a) { return IsValidCargoType(a.cargo); }); }
 
 	/**
 	 * Test if this industry produces any cargo.
 	 * @return true iff the industry produces any cargo.
 	 */
-	bool IsCargoProduced() const { return std::any_of(this->produced.get(), this->produced.get() + this->produced_cargo_count, [](const ProducedCargo &p) { return IsValidCargoID(p.cargo); }); }
+	bool IsCargoProduced() const { return std::any_of(this->produced.get(), this->produced.get() + this->produced_cargo_count, [](const ProducedCargo &p) { return IsValidCargoType(p.cargo); }); }
 
 	/**
 	 * Test if this industry accepts a specific cargo.
 	 * @param cargo Cargo type to test.
 	 * @return true iff the industry accepts the given cargo type.
 	 */
-	bool IsCargoAccepted(CargoID cargo) const { return std::any_of(this->accepted.get(), this->accepted.get() + this->accepted_cargo_count, [&cargo](const AcceptedCargo &a) { return a.cargo == cargo; }); }
+	bool IsCargoAccepted(CargoType cargo) const { return std::any_of(this->accepted.get(), this->accepted.get() + this->accepted_cargo_count, [&cargo](const AcceptedCargo &a) { return a.cargo == cargo; }); }
 
 	/**
 	 * Test if this industry produces a specific cargo.
 	 * @param cargo Cargo type to test.
 	 * @return true iff the industry produces the given cargo types.
 	 */
-	bool IsCargoProduced(CargoID cargo) const { return std::any_of(this->produced.get(), this->produced.get() + this->produced_cargo_count, [&cargo](const ProducedCargo &p) { return p.cargo == cargo; }); }
+	bool IsCargoProduced(CargoType cargo) const { return std::any_of(this->produced.get(), this->produced.get() + this->produced_cargo_count, [&cargo](const ProducedCargo &p) { return p.cargo == cargo; }); }
 
 	/**
 	 * Get the industry of the given tile
@@ -297,7 +297,7 @@ extern IndustryBuildData _industry_builder;
 
 
 /** Special values for the industry list window for the data parameter of #InvalidateWindowData. */
-enum IndustryDirectoryInvalidateWindowData {
+enum IndustryDirectoryInvalidateWindowData : uint8_t {
 	IDIWD_FORCE_REBUILD,
 	IDIWD_PRODUCTION_CHANGE,
 	IDIWD_FORCE_RESORT,
@@ -307,7 +307,7 @@ void TrimIndustryAcceptedProduced(Industry *ind);
 
 /* Old array structure used for savegames before SLV_INDUSTRY_CARGO_REORGANISE. */
 struct OldIndustryAccepted {
-	std::array<CargoID, INDUSTRY_NUM_INPUTS> old_cargo;
+	std::array<CargoType, INDUSTRY_NUM_INPUTS> old_cargo;
 	std::array<uint16_t, INDUSTRY_NUM_INPUTS> old_waiting;
 	std::array<EconTime::Date, INDUSTRY_NUM_INPUTS> old_last_accepted;
 
@@ -316,7 +316,7 @@ struct OldIndustryAccepted {
 
 /* Old array structure used for savegames before SLV_INDUSTRY_CARGO_REORGANISE. */
 struct OldIndustryProduced {
-	std::array<CargoID, INDUSTRY_NUM_OUTPUTS> old_cargo;
+	std::array<CargoType, INDUSTRY_NUM_OUTPUTS> old_cargo;
 	std::array<uint16_t, INDUSTRY_NUM_OUTPUTS> old_waiting;
 	std::array<uint8_t, INDUSTRY_NUM_OUTPUTS> old_rate;
 	std::array<uint32_t, INDUSTRY_NUM_OUTPUTS> old_this_month_production;

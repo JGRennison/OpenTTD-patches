@@ -11,6 +11,7 @@
 #define RANDOM_ACCESS_FILE_TYPE_H
 
 #include "fileio_type.h"
+#include "core/alignment.hpp"
 #include "core/endian_func.hpp"
 #include <string>
 

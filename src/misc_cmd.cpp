@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "command_func.h"
 #include "economy_func.h"
-#include "cmd_helper.h"
 #include "window_func.h"
 #include "textbuf_gui.h"
 #include "network/network.h"
@@ -256,11 +255,9 @@ CommandCost CmdMoneyCheatAdmin(DoCommandFlag flags, Money amount)
 
 /**
  * Change the value of a cheat setting.
- * @param tile unused
  * @param flags operation to perform
- * @param p1 the cheat number
- * @param p2 the cheat value
- * @param text unused
+ * @param cheat the cheat number
+ * @param value the cheat value
  * @return the cost of this operation or an error
  */
 CommandCost CmdCheatSetting(DoCommandFlag flags, CheatNumbers cheat, uint32_t value)

@@ -103,7 +103,6 @@ static const uint GEN_HASHY_BUCKET_BITS = 6;
 //static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
 //static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
-VehicleID _new_vehicle_id;
 uint _returned_refit_capacity;        ///< Stores the capacity after a refit operation.
 uint16_t _returned_mail_refit_capacity; ///< Stores the mail capacity after a refit operation (Aircraft only).
 CargoArray _returned_vehicle_capacities; ///< Stores the cargo capacities after a vehicle build operation
@@ -325,7 +324,7 @@ bool Vehicle::NeedsServicing() const
 
 		/* Is there anything to refit? */
 		if (union_mask != 0) {
-			CargoID cargo_type;
+			CargoType cargo_type;
 			CargoTypes cargo_mask = GetCargoTypesOfArticulatedVehicle(v, &cargo_type);
 			if (!HasAtMostOneBit(cargo_mask)) {
 				CargoTypes new_engine_default_cargoes = GetCargoTypesOfArticulatedParts(new_engine);
@@ -1803,22 +1802,19 @@ void CallVehicleTicks()
 
 		tmpl_cur_company.Change(t->owner);
 
-		_new_vehicle_id = INVALID_VEHICLE;
 
 		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DC_EXEC, t->index);
-
-		if (_new_vehicle_id != INVALID_VEHICLE) {
-			VehicleID t_new = _new_vehicle_id;
-			t = Train::Get(t_new);
-			const Company *c = Company::Get(_current_company);
-			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-			CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t_new, true);
-			if (res2.HasResultData()) {
-				t = Train::Get(res2.GetResultData());
-			}
-			SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
-			if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
+		if (res.HasResultData()) {
+			t = Train::Get(res.GetResultData());
 		}
+		const Company *c = Company::Get(_current_company);
+		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t->index, true);
+		if (res2.HasResultData()) {
+			t = Train::Get(res2.GetResultData());
+		}
+		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
 
 		if (!IsLocalCompany()) continue;
 
@@ -2665,7 +2661,7 @@ uint8_t CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	}
 }
 
-uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *front, CargoID cargo)
+uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *front, CargoType cargo)
 {
 	int count = 0;
 	int max = 0;
@@ -3135,7 +3131,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
  */
 LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_type, const Vehicle *v)
 {
-	CargoID cargo_type = v == nullptr ? INVALID_CARGO : v->cargo_type;
+	CargoType cargo_type = v == nullptr ? INVALID_CARGO : v->cargo_type;
 	const Engine *e = Engine::Get(engine_type);
 	switch (e->type) {
 		default: NOT_REACHED();
@@ -3148,9 +3144,9 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 				/* Note: Luckily cargo_type is not needed for engines */
 			}
 
-			if (!IsValidCargoID(cargo_type)) cargo_type = e->GetDefaultCargoType();
-			if (!IsValidCargoID(cargo_type)) cargo_type = GetCargoIDByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
-			assert(IsValidCargoID(cargo_type));
+			if (!IsValidCargoType(cargo_type)) cargo_type = e->GetDefaultCargoType();
+			if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
+			assert(IsValidCargoType(cargo_type));
 			if (e->u.rail.railveh_type == RAILVEH_WAGON) {
 				if (!CargoSpec::Get(cargo_type)->is_freight) {
 					if (parent_engine_type == INVALID_ENGINE) {
@@ -3189,9 +3185,9 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 				e = Engine::Get(engine_type);
 				cargo_type = v->First()->cargo_type;
 			}
-			if (!IsValidCargoID(cargo_type)) cargo_type = e->GetDefaultCargoType();
-			if (!IsValidCargoID(cargo_type)) cargo_type = GetCargoIDByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
-			assert(IsValidCargoID(cargo_type));
+			if (!IsValidCargoType(cargo_type)) cargo_type = e->GetDefaultCargoType();
+			if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
+			assert(IsValidCargoType(cargo_type));
 
 			/* Important: Use Tram Flag of front part. Luckily engine_type refers to the front part here. */
 			if (HasBit(e->info.misc_flags, EF_ROAD_TRAM)) {
@@ -3203,9 +3199,9 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			}
 
 		case VEH_SHIP:
-			if (!IsValidCargoID(cargo_type)) cargo_type = e->GetDefaultCargoType();
-			if (!IsValidCargoID(cargo_type)) cargo_type = GetCargoIDByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
-			assert(IsValidCargoID(cargo_type));
+			if (!IsValidCargoType(cargo_type)) cargo_type = e->GetDefaultCargoType();
+			if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
+			assert(IsValidCargoType(cargo_type));
 			return IsCargoInClass(cargo_type, CC_PASSENGERS) ? LS_PASSENGER_SHIP : LS_FREIGHT_SHIP;
 
 		case VEH_AIRCRAFT:
@@ -3598,11 +3594,11 @@ void Vehicle::LeaveStation()
 	/* Only update the timetable if the vehicle was supposed to stop here. */
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
 
-	CargoTypes cargoes_can_load_unload = this->current_order.FilterLoadUnloadTypeCargoMask([&](const Order *o, CargoID cargo) {
+	CargoTypes cargoes_can_load_unload = this->current_order.FilterLoadUnloadTypeCargoMask([&](const Order *o, CargoType cargo) {
 		return ((o->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0) || ((o->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
 	});
 	CargoTypes has_cargo_mask = this->GetLastLoadingStationValidCargoMask();
-	CargoTypes cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoID cargo) {
+	CargoTypes cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoType cargo) {
 		return this->current_order.CanLeaveWithCargo(HasBit(has_cargo_mask, cargo), cargo);
 	}, cargoes_can_load_unload);
 
@@ -3880,7 +3876,7 @@ bool Vehicle::HasFullLoadOrder() const
 	for (const Order *o : this->Orders()) {
 		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
 		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-			for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
+			for (CargoType cid = 0; cid < NUM_CARGO; cid++) {
 				if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
 			}
 		}

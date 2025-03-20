@@ -23,7 +23,7 @@
 /**
  * Valid filter types for IsValidChar.
  */
-enum CharSetFilter {
+enum CharSetFilter : uint8_t {
 	CS_ALPHANUMERAL,      ///< Both numeric and alphabetic and spaces and stuff
 	CS_NUMERAL,           ///< Only numeric ones
 	CS_NUMERAL_SIGNED,    ///< Only numeric ones, and minus/negative

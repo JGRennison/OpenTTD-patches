@@ -350,7 +350,7 @@ public:
 	 * Get the cargo of the underlying link graph.
 	 * @return Cargo.
 	 */
-	inline CargoID Cargo() const { return this->link_graph.Cargo(); }
+	inline CargoType Cargo() const { return this->link_graph.Cargo(); }
 
 	/**
 	 * Get the state tick when the underlying link graph was last compressed.
@@ -473,7 +473,7 @@ public:
 };
 static_assert(std::is_trivially_destructible_v<Path>);
 
-inline bool IsLinkGraphCargoExpress(CargoID cargo)
+inline bool IsLinkGraphCargoExpress(CargoType cargo)
 {
 	return IsCargoInClass(cargo, CC_PASSENGERS) ||
 			IsCargoInClass(cargo, CC_MAIL) ||

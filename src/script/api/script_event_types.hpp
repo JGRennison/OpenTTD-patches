@@ -13,6 +13,13 @@
 #include "script_event.hpp"
 #include "script_goal.hpp"
 #include "script_window.hpp"
+#include "../../engine_type.h"
+#include "../../industry_type.h"
+#include "../../station_type.h"
+#include "../../story_type.h"
+#include "../../subsidy_type.h"
+#include "../../town_type.h"
+#include "../../vehicle_type.h"
 #include <optional>
 
 /**
@@ -256,7 +263,7 @@ public:
 	 *  returns the first/main.
 	 * @return The cargo-type of the engine.
 	 */
-	CargoID GetCargoType();
+	CargoType GetCargoType();
 
 	/**
 	 * Get the capacity of the offered engine. In case it can transport multiple cargoes, it

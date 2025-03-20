@@ -34,9 +34,7 @@ enum VehicleType : uint8_t {
 	VEH_END,
 	VEH_INVALID = 0xFF,           ///< Non-existing type of vehicle.
 };
-DECLARE_POSTFIX_INCREMENT(VehicleType)
-/** Helper information for extract tool. */
-template <> struct EnumPropsT<VehicleType> : MakeEnumPropsT<VehicleType, uint8_t, VEH_TRAIN, VEH_END, VEH_INVALID, 3> {};
+DECLARE_INCREMENT_DECREMENT_OPERATORS(VehicleType)
 DECLARE_ENUM_AS_ADDABLE(VehicleType)
 
 using VehicleTypeMask = uint8_t;
@@ -93,7 +91,7 @@ enum BreakdownType {
 };
 
 /** Vehicle acceleration models. */
-enum AccelerationModel {
+enum AccelerationModel : uint8_t {
 	AM_ORIGINAL,
 	AM_REALISTIC,
 };
@@ -111,7 +109,7 @@ enum TrainRealisticBrakingAspectLimitedMode {
 };
 
 /** Visualisation contexts of vehicles and engines. */
-enum EngineImageType {
+enum EngineImageType : uint8_t {
 	EIT_ON_MAP     = 0x00,  ///< Vehicle drawn in viewport.
 	EIT_IN_DEPOT   = 0x10,  ///< Vehicle drawn in depot.
 	EIT_IN_DETAILS = 0x11,  ///< Vehicle drawn in vehicle details, refit window, ...

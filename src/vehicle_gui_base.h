@@ -22,7 +22,7 @@
 #include <iterator>
 #include <numeric>
 
-typedef GUIList<const Vehicle*, std::nullptr_t, CargoID> GUIVehicleList;
+typedef GUIList<const Vehicle*, std::nullptr_t, CargoType> GUIVehicleList;
 
 inline uint32_t GetVehicleTimetableTypeSortKey(const Vehicle *v)
 {
@@ -83,7 +83,7 @@ struct GUIVehicleGroup {
 	}
 };
 
-typedef GUIList<GUIVehicleGroup, std::nullptr_t, CargoID> GUIVehicleGroupList;
+typedef GUIList<GUIVehicleGroup, std::nullptr_t, CargoType> GUIVehicleGroupList;
 
 struct BaseVehicleListWindow : public Window {
 	enum GroupBy : uint8_t {
@@ -103,18 +103,18 @@ public:
 	Listing *sorting;                         ///< Pointer to the vehicle type related sorting.
 	uint8_t unitnumber_digits;                ///< The number of digits of the highest unit number.
 	Scrollbar *vscroll;
-	VehicleListIdentifier vli;                  ///< Identifier of the vehicle list we want to currently show.
-	VehicleID vehicle_sel;                      ///< Selected vehicle
-	CargoID cargo_filter_criteria;              ///< Selected cargo filter index
-	uint order_arrow_width;                     ///< Width of the arrow in the small order list.
+	VehicleListIdentifier vli;                ///< Identifier of the vehicle list we want to currently show.
+	VehicleID vehicle_sel;                    ///< Selected vehicle
+	CargoType cargo_filter_criteria;          ///< Selected cargo filter index
+	uint order_arrow_width;                   ///< Width of the arrow in the small order list.
 	CargoTypes used_cargoes;
 
 	typedef GUIVehicleGroupList::SortFunction VehicleGroupSortFunction;
 	typedef GUIVehicleList::SortFunction VehicleIndividualSortFunction;
 
-	inline CargoID GetCargoFilter() const { return this->cargo_filter_criteria; }
+	inline CargoType GetCargoFilter() const { return this->cargo_filter_criteria; }
 
-	enum ActionDropdownItem {
+	enum ActionDropdownItem : uint8_t {
 		ADI_TEMPLATE_REPLACE,
 		ADI_REPLACE,
 		ADI_SERVICE,
@@ -155,7 +155,7 @@ public:
 	void SetCargoFilter(uint8_t index);
 	void SetCargoFilterArray();
 	void FilterVehicleList();
-	StringID GetCargoFilterLabel(CargoID cid) const;
+	StringID GetCargoFilterLabel(CargoType cargo_type) const;
 	DropDownList BuildCargoDropDownList(bool full) const;
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
@@ -192,17 +192,17 @@ public:
 struct CargoIconOverlay {
 	int left;
 	int right;
-	CargoID cargo_type;
+	CargoType cargo_type;
 	uint cargo_cap;
 
-	constexpr CargoIconOverlay(int left, int right, CargoID cargo_type, uint cargo_cap)
+	constexpr CargoIconOverlay(int left, int right, CargoType cargo_type, uint cargo_cap)
 		: left(left), right(right), cargo_type(cargo_type), cargo_cap(cargo_cap)
 	{ }
 };
 
 bool ShowCargoIconOverlay();
 void AddCargoIconOverlay(std::vector<CargoIconOverlay> &overlays, int x, int width, const Vehicle *v);
-void DrawCargoIconOverlay(int x, int y, CargoID cid);
+void DrawCargoIconOverlay(int x, int y, CargoType cargo_type);
 void DrawCargoIconOverlays(std::span<const CargoIconOverlay> overlays, int y);
 
 uint GetVehicleListHeight(VehicleType type, uint divisor = 1);

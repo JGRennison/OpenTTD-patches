@@ -8,7 +8,6 @@
 /** @file rail_cmd.cpp Handling of rail tiles. */
 
 #include "stdafx.h"
-#include "cmd_helper.h"
 #include "viewport_func.h"
 #include "command_func.h"
 #include "depot_base.h"

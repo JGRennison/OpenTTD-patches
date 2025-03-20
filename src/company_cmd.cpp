@@ -14,7 +14,6 @@
 #include "company_gui.h"
 #include "town.h"
 #include "news_func.h"
-#include "cmd_helper.h"
 #include "command_func.h"
 #include "command_serialisation.h"
 #include "network/network.h"

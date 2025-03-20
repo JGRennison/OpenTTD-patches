@@ -12,7 +12,6 @@
 
 #include "bridge_map.h"
 #include "tunnel_base.h"
-#include "cmd_helper.h"
 #include "signal_type.h"
 #include "tunnel_map.h"
 #include "track_func.h"
@@ -74,7 +73,7 @@ inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 */
 inline bool IsRailTunnelBridgeTile(TileIndex t)
 {
-	return IsTileType(t, MP_TUNNELBRIDGE) && (Extract<TransportType, 2, 2>(_m[t].m5) == TRANSPORT_RAIL);
+	return IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL;
 }
 
 inline void SetTunnelBridgeGroundBits(TileIndex t, uint8_t bits)

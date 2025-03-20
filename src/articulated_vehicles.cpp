@@ -144,10 +144,10 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
  * @param attempt_refit cargo ID to attempt to use
  * @return cargo and capacity
  */
-static inline std::pair<CargoID, uint16_t> GetVehicleDefaultCapacity(EngineID engine, CargoID attempt_refit = INVALID_CARGO)
+static inline std::pair<CargoType, uint16_t> GetVehicleDefaultCapacity(EngineID engine, CargoType attempt_refit = INVALID_CARGO)
 {
 	const Engine *e = Engine::Get(engine);
-	CargoID cargo = INVALID_CARGO;
+	CargoType cargo = INVALID_CARGO;
 	if (e->CanCarryCargo()) {
 		if (attempt_refit != INVALID_CARGO && HasBit(e->info.refit_mask, attempt_refit)) {
 			cargo = attempt_refit;
@@ -155,14 +155,14 @@ static inline std::pair<CargoID, uint16_t> GetVehicleDefaultCapacity(EngineID en
 			cargo = e->GetDefaultCargoType();
 		}
 	}
-	return {cargo, IsValidCargoID(cargo) ? e->GetDisplayDefaultCapacity(nullptr, cargo) : 0};
+	return {cargo, IsValidCargoType(cargo) ? e->GetDisplayDefaultCapacity(nullptr, cargo) : 0};
 }
 
 /**
  * Returns all cargoes a vehicle can carry.
  * @param engine the EngineID of interest
  * @param include_initial_cargo_type if true the default cargo type of the vehicle is included; if false only the refit_mask
- * @return bit set of CargoIDs
+ * @return bit set of CargoTypes
  */
 static inline CargoTypes GetAvailableVehicleCargoTypes(EngineID engine, bool include_initial_cargo_type)
 {
@@ -184,13 +184,13 @@ static inline CargoTypes GetAvailableVehicleCargoTypes(EngineID engine, bool inc
  * @param attempt_refit Attempt to get capacity when refitting to this cargo.
  * @return The cargo capacities.
  */
-CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit)
+CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoType attempt_refit)
 {
 	CargoArray capacity{};
 	const Engine *e = Engine::Get(engine);
 
 	auto get_engine_cargo = [&capacity, attempt_refit](EngineID eng) {
-		if (auto [cargo, cap] = GetVehicleDefaultCapacity(eng, attempt_refit); IsValidCargoID(cargo)) {
+		if (auto [cargo, cap] = GetVehicleDefaultCapacity(eng, attempt_refit); IsValidCargoType(cargo)) {
 			capacity[cargo] += cap;
 		}
 	};
@@ -220,7 +220,7 @@ CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
 	CargoTypes cargoes = 0;
 	const Engine *e = Engine::Get(engine);
 
-	if (auto [cargo, cap] = GetVehicleDefaultCapacity(engine); IsValidCargoID(cargo) && cap > 0) {
+	if (auto [cargo, cap] = GetVehicleDefaultCapacity(engine); IsValidCargoType(cargo) && cap > 0) {
 		SetBit(cargoes, cargo);
 	}
 
@@ -232,7 +232,7 @@ CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
 		EngineID artic_engine = GetNextArticulatedPart(i, engine);
 		if (artic_engine == INVALID_ENGINE) break;
 
-		if (auto [cargo, cap] = GetVehicleDefaultCapacity(artic_engine); IsValidCargoID(cargo) && cap > 0) {
+		if (auto [cargo, cap] = GetVehicleDefaultCapacity(artic_engine); IsValidCargoType(cargo) && cap > 0) {
 			SetBit(cargoes, cargo);
 		}
 	}
@@ -268,8 +268,8 @@ bool IsArticulatedVehicleRefittable(EngineID engine)
  * Merges the refit_masks of all articulated parts.
  * @param engine the first part
  * @param include_initial_cargo_type if true the default cargo type of the vehicle is included; if false only the refit_mask
- * @param union_mask returns bit mask of CargoIDs which are a refit option for at least one articulated part
- * @param intersection_mask returns bit mask of CargoIDs which are a refit option for every articulated part (with default capacity > 0)
+ * @param union_mask returns bit mask of CargoTypes which are a refit option for at least one articulated part
+ * @param intersection_mask returns bit mask of CargoTypes which are a refit option for every articulated part (with default capacity > 0)
  */
 void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, CargoTypes *union_mask, CargoTypes *intersection_mask)
 {
@@ -319,7 +319,7 @@ std::vector<CargoTypes> GetArticulatedRefitMaskVector(EngineID engine, bool incl
  * Ors the refit_masks of all articulated parts.
  * @param engine the first part
  * @param include_initial_cargo_type if true the default cargo type of the vehicle is included; if false only the refit_mask
- * @return bit mask of CargoIDs which are a refit option for at least one articulated part
+ * @return bit mask of CargoTypes which are a refit option for at least one articulated part
  */
 CargoTypes GetUnionOfArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type)
 {
@@ -332,13 +332,13 @@ CargoTypes GetUnionOfArticulatedRefitMasks(EngineID engine, bool include_initial
  * Get cargo mask of all cargoes carried by an articulated vehicle.
  * Note: Vehicles not carrying anything are ignored
  * @param v the first vehicle in the chain
- * @param cargo_type returns the common CargoID if needed. (INVALID_CARGO if no part is carrying something or they are carrying different things)
+ * @param cargo_type returns the common CargoType if needed. (INVALID_CARGO if no part is carrying something or they are carrying different things)
  * @return cargo mask, may be 0 if the no vehicle parts have cargo capacity
  */
-CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_type)
+CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoType *cargo_type)
 {
 	CargoTypes cargoes = 0;
-	CargoID first_cargo = INVALID_CARGO;
+	CargoType first_cargo = INVALID_CARGO;
 
 	do {
 		if (v->cargo_type != INVALID_CARGO && v->GetEngine()->CanCarryCargo()) {
@@ -363,11 +363,11 @@ CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_ty
  * Returns the overall cargo of an articulated vehicle if all parts are refitted to the same cargo.
  * Note: Vehicles not carrying anything are ignored
  * @param v the first vehicle in the chain
- * @return the common CargoID. (INVALID_CARGO if no part is carrying something or they are carrying different things)
+ * @return the common CargoType. (INVALID_CARGO if no part is carrying something or they are carrying different things)
  */
-CargoID GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
+CargoType GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
 {
-	CargoID cargo_id;
+	CargoType cargo_id;
 	GetCargoTypesOfArticulatedVehicle(v, &cargo_id);
 	return cargo_id;
 }
@@ -405,8 +405,8 @@ void CheckConsistencyOfArticulatedVehicle(const Vehicle *v)
 
 	/* Check whether the vehicle carries more cargoes than expected */
 	bool carries_more = false;
-	for (CargoID cid : SetCargoBitIterator(real_default_cargoes)) {
-		if (purchase_default_capacity[cid] == 0) {
+	for (CargoType cargo_type : SetCargoBitIterator(real_default_cargoes)) {
+		if (purchase_default_capacity[cargo_type] == 0) {
 			carries_more = true;
 			break;
 		}
@@ -489,7 +489,7 @@ void AddArticulatedParts(Vehicle *first)
 				rv->spritenum = e_artic->u.road.image_index;
 				if (e_artic->CanCarryCargo()) {
 					rv->cargo_type = e_artic->GetDefaultCargoType();
-					assert(IsValidCargoID(rv->cargo_type));
+					assert(IsValidCargoType(rv->cargo_type));
 					rv->cargo_cap = e_artic->u.road.capacity;  // Callback 36 is called when the consist is finished
 				} else {
 					rv->cargo_type = front->cargo_type; // Needed for livery selection

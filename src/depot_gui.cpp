@@ -124,16 +124,12 @@ extern void DepotSortList(VehicleList *list);
 /**
  * This is the Callback method after the cloning attempt of a vehicle
  * @param result the result of the cloning command
- * @param tile unused
- * @param p1 unused
- * @param p2 unused
- * @param cmd unused
  */
 void CcCloneVehicle(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
-	const Vehicle *v = Vehicle::Get(_new_vehicle_id);
+	const Vehicle *v = Vehicle::Get(result.GetResultData());
 
 	ShowVehicleViewWindow(v);
 }
@@ -445,7 +441,7 @@ struct DepotWindow : Window {
 		const Vehicle *wagon;
 	};
 
-	enum DepotGUIAction {
+	enum DepotGUIAction : uint8_t {
 		MODE_ERROR,
 		MODE_DRAG_VEHICLE,
 		MODE_SHOW_VEHICLE,
@@ -900,7 +896,7 @@ struct DepotWindow : Window {
 		std::string details;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			CargoID cargo_type = cs->Index();
+			CargoType cargo_type = cs->Index();
 			if (capacity[cargo_type] == 0) continue;
 
 			SetDParam(0, cargo_type);           // {CARGO} #1

@@ -21,7 +21,7 @@
 
 struct WagonOverride {
 	std::vector<EngineID> engines;
-	CargoID cargo;
+	CargoType cargo;
 	const SpriteGroup *group;
 };
 
@@ -111,12 +111,12 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * @return The default cargo type.
 	 * @see CanCarryCargo
 	 */
-	CargoID GetDefaultCargoType() const
+	CargoType GetDefaultCargoType() const
 	{
 		return this->info.cargo_type;
 	}
 
-	uint DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity = nullptr, CargoID attempt_refit = INVALID_CARGO) const;
+	uint DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity = nullptr, CargoType attempt_refit = INVALID_CARGO) const;
 
 	bool CanCarryCargo() const;
 	bool CanPossiblyCarryCargo() const;
@@ -133,7 +133,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * @return The default capacity
 	 * @see GetDefaultCargoType
 	 */
-	uint GetDisplayDefaultCapacity(uint16_t *mail_capacity = nullptr, CargoID attempt_refit = INVALID_CARGO) const
+	uint GetDisplayDefaultCapacity(uint16_t *mail_capacity = nullptr, CargoType attempt_refit = INVALID_CARGO) const
 	{
 		return this->DetermineCapacity(nullptr, mail_capacity, attempt_refit);
 	}

@@ -108,7 +108,7 @@ bool IsValidImageIndex<VEH_AIRCRAFT>(uint8_t image_index)
 }
 
 /** Helicopter rotor animation states */
-enum HelicopterRotorStates {
+enum HelicopterRotorStates : uint8_t {
 	HRS_ROTOR_STOPPED,
 	HRS_ROTOR_MOVING_1,
 	HRS_ROTOR_MOVING_2,
@@ -324,10 +324,10 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		u->refit_cap = 0;
 
 		v->cargo_type = e->GetDefaultCargoType();
-		assert(IsValidCargoID(v->cargo_type));
+		assert(IsValidCargoType(v->cargo_type));
 
-		CargoID mail = GetCargoIDByLabel(CT_MAIL);
-		if (IsValidCargoID(mail)) {
+		CargoType mail = GetCargoTypeByLabel(CT_MAIL);
+		if (IsValidCargoType(mail)) {
 			u->cargo_type = mail;
 			u->cargo_cap = avi->mail_capacity;
 		}
@@ -352,8 +352,6 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		/* to somewhat compensate for the fact that fast aircraft spend less time in the air */
 		v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 		v->max_age = e->GetLifeLengthInDays();
-
-		_new_vehicle_id = v->index;
 
 		v->pos = GetVehiclePosOnBuild(tile);
 

@@ -172,7 +172,7 @@ void DeleteSubsidyWith(SourceType type, SourceID index)
  * @param dst Id of the destination.
  * @return \c true if the subsidy already exists, \c false if not.
  */
-static bool CheckSubsidyDuplicate(CargoID cargo, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
+static bool CheckSubsidyDuplicate(CargoType cargo, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
 {
 	for (const Subsidy *s : Subsidy::Iterate()) {
 		if (s->cargo_type == cargo &&
@@ -202,16 +202,16 @@ static bool CheckSubsidyDistance(SourceType src_type, SourceID src, SourceType d
 
 /**
  * Creates a subsidy with the given parameters.
- * @param cid      Subsidised cargo.
+ * @param cargo_type Subsidised cargo.
  * @param src_type Type of \a src.
  * @param src      Index of source.
  * @param dst_type Type of \a dst.
  * @param dst      Index of destination.
  */
-void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
+void CreateSubsidy(CargoType cargo_type, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
 {
 	Subsidy *s = new Subsidy();
-	s->cargo_type = cid;
+	s->cargo_type = cargo_type;
 	s->src_type = src_type;
 	s->src = src;
 	s->dst_type = dst_type;
@@ -232,20 +232,20 @@ void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType ds
 /**
  * Create a new subsidy.
  * @param flags type of operation
- * @param cid CargoID of subsidy.
+ * @param cargo_type CargoType of subsidy.
  * @param src_type SourceType of source.
  * @param src SourceID of source.
  * @param dst_type SourceType of destination.
  * @param dst SourceID of destination.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateSubsidy(DoCommandFlag flags, CargoID cid, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
+CommandCost CmdCreateSubsidy(DoCommandFlag flags, CargoType cargo_type, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
 {
 	if (!Subsidy::CanAllocateItem()) return CMD_ERROR;
 
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
-	if (cid >= NUM_CARGO || !::CargoSpec::Get(cid)->IsValid()) return CMD_ERROR;
+	if (cargo_type >= NUM_CARGO || !::CargoSpec::Get(cargo_type)->IsValid()) return CMD_ERROR;
 
 	switch (src_type) {
 		case SourceType::Town:
@@ -269,7 +269,7 @@ CommandCost CmdCreateSubsidy(DoCommandFlag flags, CargoID cid, SourceType src_ty
 	}
 
 	if (flags & DC_EXEC) {
-		CreateSubsidy(cid, src_type, src, dst_type, dst);
+		CreateSubsidy(cargo_type, src_type, src, dst_type, dst);
 	}
 
 	return CommandCost();
@@ -287,10 +287,10 @@ bool FindSubsidyPassengerRoute()
 
 	/* Pick a random TPE_PASSENGER type */
 	uint32_t r = RandomRange(CountBits(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS]));
-	CargoID cid{};
-	for (CargoID cargo_id : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+	CargoType cargo_type{};
+	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
 		if (r == 0) {
-			cid = cargo_id;
+			cargo_type = c;
 			break;
 		}
 		r--;
@@ -298,7 +298,7 @@ bool FindSubsidyPassengerRoute()
 
 	const Town *src = Town::GetRandom();
 	if (src->cache.population < SUBSIDY_PAX_MIN_POPULATION ||
-			src->GetPercentTransported(cid) > SUBSIDY_MAX_PCT_TRANSPORTED) {
+			src->GetPercentTransported(cargo_type) > SUBSIDY_MAX_PCT_TRANSPORTED) {
 		return false;
 	}
 
@@ -308,14 +308,14 @@ bool FindSubsidyPassengerRoute()
 	}
 
 	if (DistanceManhattan(src->xy, dst->xy) > SUBSIDY_MAX_DISTANCE) return false;
-	if (CheckSubsidyDuplicate(cid, SourceType::Town, src->index, SourceType::Town, dst->index)) return false;
+	if (CheckSubsidyDuplicate(cargo_type, SourceType::Town, src->index, SourceType::Town, dst->index)) return false;
 
-	CreateSubsidy(cid, SourceType::Town, src->index, SourceType::Town, dst->index);
+	CreateSubsidy(cargo_type, SourceType::Town, src->index, SourceType::Town, dst->index);
 
 	return true;
 }
 
-bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src);
+bool FindSubsidyCargoDestination(CargoType cargo_type, SourceType src_type, SourceID src);
 
 
 /**
@@ -342,8 +342,8 @@ bool FindSubsidyTownCargoRoute()
 	}
 
 	/* Passenger subsidies are not handled here. */
-	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
-		town_cargo_produced[cid] = 0;
+	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+		town_cargo_produced[c] = 0;
 	}
 
 	uint8_t cargo_count = town_cargo_produced.GetCount();
@@ -353,26 +353,26 @@ bool FindSubsidyTownCargoRoute()
 
 	/* Choose a random cargo that is produced in the town. */
 	uint8_t cargo_number = RandomRange(cargo_count);
-	CargoID cid;
-	for (cid = 0; cid < NUM_CARGO; cid++) {
-		if (town_cargo_produced[cid] > 0) {
+	CargoType cargo_type;
+	for (cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
+		if (town_cargo_produced[cargo_type] > 0) {
 			if (cargo_number == 0) break;
 			cargo_number--;
 		}
 	}
 
 	/* Avoid using invalid NewGRF cargoes. */
-	if (!CargoSpec::Get(cid)->IsValid() ||
-			_settings_game.linkgraph.GetDistributionType(cid) != DT_MANUAL) {
+	if (!CargoSpec::Get(cargo_type)->IsValid() ||
+			_settings_game.linkgraph.GetDistributionType(cargo_type) != DT_MANUAL) {
 		return false;
 	}
 
 	/* Quit if the percentage transported is large enough. */
-	if (src_town->GetPercentTransported(cid) > SUBSIDY_MAX_PCT_TRANSPORTED) return false;
+	if (src_town->GetPercentTransported(cargo_type) > SUBSIDY_MAX_PCT_TRANSPORTED) return false;
 
 	SourceID src = src_town->index;
 
-	return FindSubsidyCargoDestination(cid, src_type, src);
+	return FindSubsidyCargoDestination(cargo_type, src_type, src);
 }
 
 /**
@@ -391,7 +391,7 @@ bool FindSubsidyIndustryCargoRoute()
 
 	uint trans = 0;
 	uint total = 0;
-	CargoID cid = INVALID_CARGO;
+	CargoType cargo_type = INVALID_CARGO;
 
 	/* Randomize cargo type */
 	int num_cargos = 0;
@@ -404,7 +404,7 @@ bool FindSubsidyIndustryCargoRoute()
 	for (const auto &p : src_ind->Produced()) {
 		if (p.cargo != INVALID_CARGO) cargo_num--;
 		if (cargo_num == 0) {
-			cid = p.cargo;
+			cargo_type = p.cargo;
 			trans = p.history[LAST_MONTH].PctTransported();
 			total = p.history[LAST_MONTH].production;
 			break;
@@ -416,24 +416,24 @@ bool FindSubsidyIndustryCargoRoute()
 	 * or if the pct transported is already large enough
 	 * or if the cargo is automatically distributed */
 	if (total == 0 || trans > SUBSIDY_MAX_PCT_TRANSPORTED ||
-			cid == INVALID_CARGO ||
-			_settings_game.linkgraph.GetDistributionType(cid) != DT_MANUAL) {
+			cargo_type == INVALID_CARGO ||
+			_settings_game.linkgraph.GetDistributionType(cargo_type) != DT_MANUAL) {
 		return false;
 	}
 
 	SourceID src = src_ind->index;
 
-	return FindSubsidyCargoDestination(cid, src_type, src);
+	return FindSubsidyCargoDestination(cargo_type, src_type, src);
 }
 
 /**
  * Tries to find a suitable destination for the given source and cargo.
- * @param cid      Subsidized cargo.
+ * @param cargo_type Subsidized cargo.
  * @param src_type Type of \a src.
  * @param src      Index of source.
  * @return True iff the subsidy was created.
  */
-bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
+bool FindSubsidyCargoDestination(CargoType cargo_type, SourceType src_type, SourceID src)
 {
 	/* Choose a random destination. */
 	SourceType dst_type = Chance16(1, 2) ? SourceType::Town : SourceType::Industry;
@@ -454,7 +454,7 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 			}
 
 			/* Check if the town can accept this cargo. */
-			if (town_cargo_accepted[cid] < 8) return false;
+			if (town_cargo_accepted[cargo_type] < 8) return false;
 
 			dst = dst_town->index;
 			break;
@@ -466,7 +466,7 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 			if (dst_ind == nullptr) return false;
 
 			/* The industry must accept the cargo */
-			if (!dst_ind->IsCargoAccepted(cid)) return false;
+			if (!dst_ind->IsCargoAccepted(cargo_type)) return false;
 
 			dst = dst_ind->index;
 			break;
@@ -482,9 +482,9 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 	if (!CheckSubsidyDistance(src_type, src, dst_type, dst)) return false;
 
 	/* Avoid duplicate subsidies. */
-	if (CheckSubsidyDuplicate(cid, src_type, src, dst_type, dst)) return false;
+	if (CheckSubsidyDuplicate(cargo_type, src_type, src, dst_type, dst)) return false;
 
-	CreateSubsidy(cid, src_type, src, dst_type, dst);
+	CreateSubsidy(cargo_type, src_type, src, dst_type, dst);
 
 	return true;
 }
@@ -571,7 +571,7 @@ void SubsidyMonthlyLoop()
  * @param st station where the cargo is delivered to
  * @return is the delivery subsidised?
  */
-bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type, SourceID src, const Station *st)
+bool CheckSubsidised(CargoType cargo_type, CompanyID company, SourceType src_type, SourceID src, const Station *st)
 {
 	/* If the source isn't subsidised, don't continue */
 	if (src == INVALID_SOURCE) return false;

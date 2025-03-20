@@ -29,7 +29,7 @@
  * List of different canal 'features'.
  * Each feature gets an entry in the canal spritegroup table
  */
-enum CanalFeature {
+enum CanalFeature : uint8_t {
 	CF_WATERSLOPE,
 	CF_LOCKS,
 	CF_DIKES,
@@ -48,7 +48,7 @@ struct CanalProperties {
 	uint8_t flags;          ///< Flags controlling display.
 };
 
-enum GrfLoadingStage {
+enum GrfLoadingStage : uint8_t {
 	GLS_FILESCAN,
 	GLS_SAFETYSCAN,
 	GLS_LABELSCAN,
@@ -58,9 +58,9 @@ enum GrfLoadingStage {
 	GLS_END,
 };
 
-DECLARE_POSTFIX_INCREMENT(GrfLoadingStage)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(GrfLoadingStage)
 
-enum GrfMiscBit {
+enum GrfMiscBit : uint8_t {
 	GMB_DESERT_TREES_FIELDS    = 0, // Unsupported.
 	GMB_DESERT_PAVED_ROADS     = 1,
 	GMB_FIELD_BOUNDING_BOX     = 2, // Unsupported.
@@ -341,7 +341,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<GRFLabel> labels;                   ///< List of labels
 
 	std::vector<CargoLabel> cargo_list;             ///< Cargo translation table (local ID -> label)
-	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoID -> local ID)
+	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoType -> local ID)
 
 	std::vector<RailTypeLabel> railtype_list;       ///< Railtype translation table
 	std::array<RailType, RAILTYPE_END> railtype_map{};
@@ -381,7 +381,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	btree::btree_map<GRFStringID, StringIndexInTab> string_map; ///< Map of local GRF string ID to string ID
 
-	GRFFile(const struct GRFConfig *config);
+	GRFFile(const struct GRFConfig &config);
 
 	/** Get GRF Parameter with range checking */
 	uint32_t GetParam(uint number) const
@@ -392,14 +392,14 @@ struct GRFFile : ZeroedMemoryAllocator {
 	}
 };
 
-enum ShoreReplacement {
+enum ShoreReplacement : uint8_t {
 	SHORE_REPLACE_NONE,       ///< No shore sprites were replaced.
 	SHORE_REPLACE_ACTION_5,   ///< Shore sprites were replaced by Action5.
 	SHORE_REPLACE_ACTION_A,   ///< Shore sprites were replaced by ActionA (using grass tiles for the corner-shores).
 	SHORE_REPLACE_ONLY_NEW,   ///< Only corner-shores were loaded by Action5 (openttd(w/d).grf only).
 };
 
-enum TramReplacement {
+enum TramReplacement : uint8_t {
 	TRAMWAY_REPLACE_DEPOT_NONE,       ///< No tram depot graphics were loaded.
 	TRAMWAY_REPLACE_DEPOT_WITH_TRACK, ///< Electrified depot graphics with tram track were loaded.
 	TRAMWAY_REPLACE_DEPOT_NO_TRACK,   ///< Electrified depot graphics without tram track were loaded.
@@ -426,7 +426,7 @@ inline bool HasGrfMiscBit(GrfMiscBit bit)
 /* Indicates which are the newgrf features currently loaded ingame */
 extern GRFLoadedFeatures _loaded_newgrf_features;
 
-void LoadNewGRFFile(struct GRFConfig *config, GrfLoadingStage stage, Subdirectory subdir, bool temporary);
+void LoadNewGRFFile(struct GRFConfig &config, GrfLoadingStage stage, Subdirectory subdir, bool temporary);
 void LoadNewGRF(SpriteID load_index, uint num_baseset);
 void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();

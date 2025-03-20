@@ -12,7 +12,9 @@
 
 #include "script_error.hpp"
 #include "script_company.hpp"
+#include "../../cargo_type.h"
 #include "../../slope_type.h"
+#include "../../town_type.h"
 #include "../../transport_type.h"
 
 /**
@@ -376,7 +378,7 @@ public:
 	 * @pre radius >= 0.
 	 * @return Values below 8 mean no acceptance; the more the better.
 	 */
-	static SQInteger GetCargoAcceptance(TileIndex tile, CargoID cargo_type, SQInteger width, SQInteger height, SQInteger radius);
+	static SQInteger GetCargoAcceptance(TileIndex tile, CargoType cargo_type, SQInteger width, SQInteger height, SQInteger radius);
 
 	/**
 	 * Checks how many producers in the radius produces this cargo.
@@ -393,7 +395,7 @@ public:
 	 * @pre radius >= 0.
 	 * @return The number of producers that produce this cargo within radius of the tile.
 	 */
-	static SQInteger GetCargoProduction(TileIndex tile, CargoID cargo_type, SQInteger width, SQInteger height, SQInteger radius);
+	static SQInteger GetCargoProduction(TileIndex tile, CargoType cargo_type, SQInteger width, SQInteger height, SQInteger radius);
 
 	/**
 	 * Get the manhattan distance from the tile to the tile.

@@ -847,7 +847,7 @@ struct GameOptionsWindow : Window {
 				if (used_set == nullptr || !used_set->IsConfigurable()) break;
 				GRFConfig &extra_cfg = used_set->GetOrCreateExtraConfig();
 				if (extra_cfg.param.empty()) extra_cfg.SetParameterDefaults();
-				OpenGRFParameterWindow(true, &extra_cfg, _game_mode == GM_MENU);
+				OpenGRFParameterWindow(true, extra_cfg, _game_mode == GM_MENU);
 				if (_game_mode == GM_MENU) this->reload = true;
 				break;
 			}
@@ -1278,7 +1278,7 @@ static int SETTING_HEIGHT = 11;    ///< Height of a single setting in the tree v
  * Flags for #SettingEntry
  * @note The #SEF_BUTTONS_MASK matches expectations of the formal parameter 'state' of #DrawArrowButtons
  */
-enum SettingEntryFlags {
+enum SettingEntryFlags : uint8_t {
 	SEF_LEFT_DEPRESSED  = 0x01, ///< Of a numeric setting entry, the left button is depressed
 	SEF_RIGHT_DEPRESSED = 0x02, ///< Of a numeric setting entry, the right button is depressed
 	SEF_BUTTONS_MASK = (SEF_LEFT_DEPRESSED | SEF_RIGHT_DEPRESSED), ///< Bit-mask for button flags
@@ -1288,7 +1288,7 @@ enum SettingEntryFlags {
 };
 
 /** How the list of advanced settings is filtered. */
-enum RestrictionMode {
+enum RestrictionMode : uint8_t {
 	RM_BASIC,                            ///< Display settings associated to the "basic" list.
 	RM_ADVANCED,                         ///< Display settings associated to the "advanced" list.
 	RM_ALL,                              ///< List all settings regardless of the default/newgame/... values.
@@ -1297,7 +1297,7 @@ enum RestrictionMode {
 	RM_PATCH,                            ///< Show only "patch" settings which are not in vanilla.
 	RM_END,                              ///< End for iteration.
 };
-DECLARE_POSTFIX_INCREMENT(RestrictionMode)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(RestrictionMode)
 
 /** Filter for settings list. */
 struct SettingFilter {
@@ -1374,9 +1374,9 @@ private:
 
 /** Cargodist per-cargo setting */
 struct CargoDestPerCargoSettingEntry : SettingEntry {
-	CargoID cargo;
+	CargoType cargo;
 
-	CargoDestPerCargoSettingEntry(CargoID cargo, const IntSettingDesc *setting);
+	CargoDestPerCargoSettingEntry(CargoType cargo, const IntSettingDesc *setting);
 	void Init(uint8_t level = 0) override;
 	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
@@ -1784,7 +1784,7 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 
 /* == CargoDestPerCargoSettingEntry methods == */
 
-CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoID cargo, const IntSettingDesc *setting)
+CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoType cargo, const IntSettingDesc *setting)
 	: SettingEntry(setting), cargo(cargo) {}
 
 void CargoDestPerCargoSettingEntry::Init(uint8_t level)
@@ -2689,7 +2689,7 @@ static SettingsContainer &GetSettingsTree()
 					const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
 					uint base_index = GetSettingIndexByFullName(linkgraph_table, "linkgraph.distribution_per_cargo[0]");
 					assert(base_index != UINT32_MAX);
-					for (CargoID c = 0; c < NUM_CARGO; c++) {
+					for (CargoType c = 0; c < NUM_CARGO; c++) {
 						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, GetSettingDescription(linkgraph_table, base_index + c)->AsIntSetting()));
 					}
 				}
@@ -2773,7 +2773,7 @@ static const StringID _game_settings_restrict_dropdown[] = {
 static_assert(lengthof(_game_settings_restrict_dropdown) == RM_END);
 
 /** Warnings about hidden search results. */
-enum WarnHiddenResult {
+enum WarnHiddenResult : uint8_t {
 	WHR_NONE,          ///< Nothing was filtering matches away.
 	WHR_CATEGORY,      ///< Category setting filtered matches away.
 	WHR_TYPE,          ///< Type setting filtered matches away.

@@ -11,7 +11,9 @@
 #define SCRIPT_RAIL_HPP
 
 #include "script_tile.hpp"
+#include "../../industry_type.h"
 #include "../../signal_type.h"
+#include "../../station_type.h"
 #include "../../track_type.h"
 #include <optional>
 
@@ -277,7 +279,7 @@ public:
 	 * @param num_platforms The number of platforms to build.
 	 * @param platform_length The length of each platform.
 	 * @param station_id The station to join, ScriptStation::STATION_NEW or ScriptStation::STATION_JOIN_ADJACENT.
-	 * @param cargo_id The CargoID of the cargo that will be transported from / to this station.
+	 * @param cargo_type The CargoType of the cargo that will be transported from / to this station.
 	 * @param source_industry The IndustryType of the industry you'll transport goods from, ScriptIndustryType::INDUSTRYTYPE_UNKNOWN or ScriptIndustryType::INDUSTRYTYPE_TOWN.
 	 * @param goal_industry The IndustryType of the industry you'll transport goods to, ScriptIndustryType::INDUSTRYTYPE_UNKNOWN or ScriptIndustryType::INDUSTRYTYPE_TOWN.
 	 * @param distance The manhattan distance you'll transport the cargo over.
@@ -300,7 +302,7 @@ public:
 	 * @exception ScriptStation::ERR_STATION_TOO_MANY_STATIONS_IN_TOWN
 	 * @return Whether the station has been/can be build or not.
 	 */
-	static bool BuildNewGRFRailStation(TileIndex tile, RailTrack direction, SQInteger num_platforms, SQInteger platform_length, StationID station_id, CargoID cargo_id, IndustryType source_industry, IndustryType goal_industry, SQInteger distance, bool source_station);
+	static bool BuildNewGRFRailStation(TileIndex tile, RailTrack direction, SQInteger num_platforms, SQInteger platform_length, StationID station_id, CargoType cargo_type, IndustryType source_industry, IndustryType goal_industry, SQInteger distance, bool source_station);
 
 	/**
 	 * Build a rail waypoint.

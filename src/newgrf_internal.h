@@ -23,7 +23,7 @@
 #include <vector>
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
-static const uint32_t OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
+static const uint32_t OPENTTD_GRAPHICS_BASE_GRF_ID = std::byteswap<uint32_t>(0xFF4F5400);
 
 struct VarAction2GroupVariableTracking {
 	std::bitset<256> in;

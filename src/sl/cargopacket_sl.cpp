@@ -46,7 +46,7 @@ extern btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
 		 * information is lost. In that case we set it to the position of this
 		 * station */
 		for (Station *st : Station::Iterate()) {
-			for (CargoID c = 0; c < NUM_CARGO; c++) {
+			for (CargoType c = 0; c < NUM_CARGO; c++) {
 				GoodsEntry *ge = &st->goods[c];
 
 				if (ge->data == nullptr) continue;
@@ -73,7 +73,7 @@ extern btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
 		for (Vehicle *v : Vehicle::Iterate()) v->cargo.InvalidateCache();
 
 		for (Station *st : Station::Iterate()) {
-			for (CargoID c = 0; c < NUM_CARGO; c++) {
+			for (CargoType c = 0; c < NUM_CARGO; c++) {
 				if (st->goods[c].data != nullptr) st->goods[c].data->cargo.InvalidateCache();
 			}
 		}

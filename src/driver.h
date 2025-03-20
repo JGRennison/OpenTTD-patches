@@ -36,7 +36,7 @@ public:
 	virtual ~Driver() = default;
 
 	/** The type of driver */
-	enum Type {
+	enum Type : uint8_t {
 		DT_BEGIN = 0, ///< Helper for iteration
 		DT_MUSIC = 0, ///< A music driver, needs to be before sound to properly shut down extmidi forked music players
 		DT_SOUND,     ///< A sound driver
@@ -51,7 +51,7 @@ public:
 	virtual const char *GetName() const = 0;
 };
 
-DECLARE_POSTFIX_INCREMENT(Driver::Type)
+DECLARE_INCREMENT_DECREMENT_OPERATORS(Driver::Type)
 
 
 /** Base for all driver factories. */

@@ -37,7 +37,7 @@ const size_t MAX_SLE_INT = INT_MAX;
 static constexpr uint MAX_SIGNAL_DRAG_DISTANCE = 40;
 
 /** Settings profiles and highscore tables. */
-enum SettingsProfile {
+enum SettingsProfile : uint8_t {
 	SP_BEGIN = 0,
 	SP_EASY = SP_BEGIN,                       ///< Easy difficulty.
 	SP_MEDIUM,                                ///< Medium difficulty.
@@ -53,7 +53,7 @@ enum SettingsProfile {
 };
 
 /** Available industry map generation densities. */
-enum IndustryDensity {
+enum IndustryDensity : uint8_t {
 	ID_FUND_ONLY, ///< The game does not build industries.
 	ID_MINIMAL,   ///< Start with just the industries that must be present.
 	ID_VERY_LOW,  ///< Very few industries at game start.
@@ -125,7 +125,7 @@ struct DifficultySettings {
 };
 
 /** Settings relating to viewport/smallmap scrolling. */
-enum ViewportScrollMode {
+enum ViewportScrollMode : uint8_t {
 	VSM_VIEWPORT_RMB_FIXED, ///< Viewport moves with mouse movement on holding right mouse button, cursor position is fixed.
 	VSM_MAP_RMB_FIXED,      ///< Map moves with mouse movement on holding right mouse button, cursor position is fixed.
 	VSM_MAP_RMB,            ///< Map moves with mouse movement on holding right mouse button, cursor moves.
@@ -134,7 +134,7 @@ enum ViewportScrollMode {
 };
 
 /** Settings related to scroll wheel behavior. */
-enum ScrollWheelScrollingSetting {
+enum ScrollWheelScrollingSetting : uint8_t {
 	SWS_ZOOM_MAP = 0,       ///< Scroll wheel zooms the map.
 	SWS_SCROLL_MAP = 1,     ///< Scroll wheel scrolls the map.
 	SWS_OFF = 2             ///< Scroll wheel has no effect.
@@ -811,7 +811,7 @@ struct LinkGraphSettings {
 	uint8_t short_path_saturation;                      ///< percentage up to which short paths are saturated before saturating most capacious paths
 	uint16_t aircraft_link_scale;                       ///< scale effective distance of aircraft links
 
-	inline DistributionType GetDistributionType(CargoID cargo) const
+	inline DistributionType GetDistributionType(CargoType cargo) const
 	{
 		if (this->distribution_per_cargo[cargo] != DT_PER_CARGO_DEFAULT) return this->distribution_per_cargo[cargo];
 		if (IsCargoInClass(cargo, CC_PASSENGERS)) return this->distribution_pax;
