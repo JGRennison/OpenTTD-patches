@@ -1690,9 +1690,8 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 	}
 
 	if (_viewport_highlight_tracerestrict_program != nullptr) {
-		const TraceRestrictRefId *refs = _viewport_highlight_tracerestrict_program->GetRefIdsPtr();
-		for (uint i = 0; i < _viewport_highlight_tracerestrict_program->refcount; i++) {
-			if (GetTraceRestrictRefIdTileIndex(refs[i]) == t) return THT_LIGHT_BLUE;
+		for (TraceRestrictRefId ref : _viewport_highlight_tracerestrict_program->GetReferences()) {
+			if (GetTraceRestrictRefIdTileIndex(ref) == t) return THT_LIGHT_BLUE;
 		}
 	}
 

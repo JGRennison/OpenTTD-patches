@@ -3044,7 +3044,7 @@ public:
 			case TR_WIDGET_CAPTION: {
 				const TraceRestrictProgram *prog = this->GetProgram();
 				if (prog != nullptr) {
-					SetDParam(0, prog->refcount);
+					SetDParam(0, prog->GetReferenceCount());
 				} else {
 					SetDParam(0, 1);
 				}
@@ -3395,7 +3395,7 @@ private:
 
 		const TraceRestrictProgram *prog = this->GetProgram();
 
-		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->SetString((prog != nullptr && prog->refcount > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION);
+		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->SetString((prog != nullptr && prog->GetReferenceCount() > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION);
 
 		this->SetWidgetDisabledState(TR_WIDGET_HIGHLIGHT, prog == nullptr);
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
@@ -3420,7 +3420,7 @@ private:
 		this->base_copy_plane = DPC_DUPLICATE;
 		this->base_share_plane = DPS_SHARE;
 
-		if (prog != nullptr && prog->refcount > 1) {
+		if (prog != nullptr && prog->GetReferenceCount() > 1) {
 			/* Program is shared, show and enable unshare button, and reset button */
 			this->base_share_plane = DPS_UNSHARE;
 			this->EnableWidget(TR_WIDGET_UNSHARE);

@@ -2189,11 +2189,10 @@ class NIHTraceRestrict : public NIHelper {
 #undef CA
 		output.Print("");
 
-		output.Print("Ref count: {}", prog->refcount);
-		const TraceRestrictRefId *refs = prog->GetRefIdsPtr();
-		for (uint32_t i = 0; i < prog->refcount; i++) {
-			TileIndex tile = GetTraceRestrictRefIdTileIndex(refs[i]);
-			output.Print("  {:X} x {:X}, track: {:X}", TileX(tile), TileY(tile), GetTraceRestrictRefIdTrack(refs[i]));
+		output.Print("Ref count: {}", prog->GetReferenceCount());
+		for (TraceRestrictRefId ref : prog->GetReferences()) {
+			TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
+			output.Print("  {:X} x {:X}, track: {:X}", TileX(tile), TileY(tile), GetTraceRestrictRefIdTrack(ref));
 		}
 		output.Print("");
 
