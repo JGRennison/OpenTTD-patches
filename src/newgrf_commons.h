@@ -18,6 +18,7 @@
 #include "command_type.h"
 #include "direction_type.h"
 #include "company_type.h"
+#include "3rdparty/svector/svector.h"
 #include <vector>
 
 /** Context for tile accesses */
@@ -346,7 +347,7 @@ struct FixedGRFFileProps : GRFFilePropsBase {
  */
 struct VariableGRFFileProps : GRFFilePropsBase {
 	using CargoSpriteGroup = std::pair<size_t, const struct SpriteGroup *>;
-	std::vector<CargoSpriteGroup> spritegroups; ///< pointers to the different sprite groups of the entity
+	ankerl::svector<CargoSpriteGroup, 2> spritegroups; ///< pointers to the different sprite groups of the entity
 
 	const struct SpriteGroup *GetSpriteGroup(size_t index) const;
 	const struct SpriteGroup **GetSpriteGroupPtr(size_t index);
