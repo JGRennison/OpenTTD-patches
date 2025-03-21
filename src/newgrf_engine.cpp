@@ -31,6 +31,8 @@
 #include "newgrf_analysis.h"
 #include "newgrf_dump.h"
 #include "engine_override.h"
+#include "core/format.hpp"
+#include "3rdparty/fmt/ranges.h"
 
 #include "safeguards.h"
 
@@ -1748,7 +1750,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 	for (const WagonOverride &wo : e->overrides) {
 		if (wo.group != root_spritegroup && wo.group != nullptr) {
 			dumper.Print("");
-			dumper.Print("OTHER SPRITE GROUP: Wagon override");
+			dumper.Print(fmt::format("OTHER SPRITE GROUP: Wagon override, cargo: {}, engines: {}", wo.cargo, wo.engines));
 			dumper.DumpSpriteGroup(wo.group, 0);
 		}
 	}
