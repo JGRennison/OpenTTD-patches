@@ -74,6 +74,7 @@
 #include "../newgrf_industrytiles.h"
 #include "../timer/timer.h"
 #include "../timer/timer_game_tick.h"
+#include "../picker_func.h"
 #include "../pathfinder/water_regions.h"
 
 
@@ -1964,6 +1965,16 @@ bool AfterLoadGame()
 					SetHouseType(t, _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8));
 					ClrBit(_m[t].m3, 6);
 				}
+			}
+		}
+	}
+
+	if (IsSavegameVersionBefore(SLV_PROTECT_PLACED_HOUSES) && SlXvIsFeatureMissing(XSLFI_PROTECT_PLACED_HOUSES)) {
+		for (TileIndex t(0); t < map_size; t++) {
+			if (IsTileType(t, MP_HOUSE)) {
+				/* We now store house protection status in the map. Set this based on the house spec flags. */
+				const HouseSpec *hs = HouseSpec::Get(GetHouseType(t));
+				SetHouseProtected(t, HasFlag(hs->extra_flags, BUILDING_IS_PROTECTED));
 			}
 		}
 	}
@@ -4666,6 +4677,7 @@ void ReloadNewGRFData()
 	/* Update company infrastructure counts. */
 	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
 	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	InvalidateAllPickerWindows();
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();

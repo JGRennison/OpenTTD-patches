@@ -45,7 +45,7 @@
 {
 	if (!IsValidVehicle(vehicle_id)) return ScriptCompany::COMPANY_INVALID;
 
-	return static_cast<ScriptCompany::CompanyID>((int)::Vehicle::Get(vehicle_id)->owner);
+	return ScriptCompany::ToScriptCompanyID(::Vehicle::Get(vehicle_id)->owner);
 }
 
 /* static */ SQInteger ScriptVehicle::GetNumWagons(VehicleID vehicle_id)
@@ -108,8 +108,8 @@
 
 /* static */ VehicleID ScriptVehicle::CloneVehicle(TileIndex depot, VehicleID vehicle_id, bool share_orders)
 {
-	EnforceCompanyModeValid(false);
-	EnforcePrecondition(false, IsPrimaryVehicle(vehicle_id));
+	EnforceCompanyModeValid(VEHICLE_INVALID);
+	EnforcePrecondition(VEHICLE_INVALID, IsPrimaryVehicle(vehicle_id));
 
 	if (!ScriptObject::Command<CMD_CLONE_VEHICLE>::Do(&ScriptInstance::DoCommandReturnVehicleID, depot, vehicle_id, share_orders)) return VEHICLE_INVALID;
 

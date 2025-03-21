@@ -672,7 +672,7 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :पौंड
 STR_GAME_OPTIONS_CURRENCY_USD                                   :डोल्लर
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :युरो
@@ -1001,6 +1001,8 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 
 ###length 3
 
+###length 3
+
 ###length 2
 
 ###length 4
@@ -1198,6 +1200,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 
@@ -1846,6 +1849,10 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 # Group related errors
 
 # Generic vehicle errors
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
 

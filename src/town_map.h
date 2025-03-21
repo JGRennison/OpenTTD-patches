@@ -74,6 +74,28 @@ inline void SetHouseType(TileIndex t, HouseID house_id)
 }
 
 /**
+ * Check if the house is protected from removal by towns.
+ * @param t The tile.
+ * @return If the house is protected from the town upgrading it.
+ */
+inline bool IsHouseProtected(TileIndex t)
+{
+	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	return HasBit(_m[t].m3, 5);
+}
+
+/**
+ * Set a house as protected from removal by towns.
+ * @param t The tile.
+ * @param house_protected Whether the house is protected from the town upgrading it.
+ */
+inline void SetHouseProtected(TileIndex t, bool house_protected)
+{
+	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	AssignBit(_m[t].m3, 5, house_protected);
+}
+
+/**
  * Check if the lift of this animated house has a destination
  * @param t the tile
  * @return has destination
@@ -346,9 +368,10 @@ inline void DecHouseProcessingTime(TileIndex t)
  * @param stage of construction (used for drawing)
  * @param type of house.  Index into house specs array
  * @param random_bits required for newgrf houses
+ * @param house_protected Whether the house is protected from the town upgrading it.
  * @pre IsTileType(t, MP_CLEAR)
  */
-inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
+inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits, bool house_protected)
 {
 	dbg_assert_tile(IsTileType(t, MP_CLEAR), t);
 
@@ -359,6 +382,7 @@ inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stag
 	SetHouseType(t, type);
 	SetHouseCompleted(t, stage == TOWN_HOUSE_COMPLETED);
 	_m[t].m5 = IsHouseCompleted(t) ? 0 : (stage << 3 | counter);
+	SetHouseProtected(t, house_protected);
 	SetAnimationFrame(t, 0);
 	SetHouseProcessingTime(t, HouseSpec::Get(type)->processing_time);
 }

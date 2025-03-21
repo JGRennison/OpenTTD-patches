@@ -1108,7 +1108,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Вибе
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Британський фунт
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Американський долар
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Євро
@@ -2113,6 +2113,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Заборон�
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Дозволено
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Дозволено (з вибором дорожньої сітки)
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Кількість вантажів та пасажирів у містах: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Скільки вантажів створюється будинками в містах відносно населення.{}Квадратична залежність: Вдвічі більше місто створює вчетверо більше вантажів.{}Лінійна:  Вдвічі більше місто створює вдвічі більше вантажів.
 ###length 2
@@ -2761,7 +2763,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :зачекай�
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :виходжу...
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} приєднався до гри
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :{G=m}*** {0:STRING} приєднався до гри (Клієнт #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} приєднався до компанії №{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} став спостерігачем
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} заснував нову компанію (№{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} покинув гру ({2:STRING})
@@ -2977,6 +2978,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Окраїна
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Передмістя
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Щільне передмістя
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Центр міста
+
 
 STR_STATION_CLASS_DFLT                                          :Звичайна
 STR_STATION_CLASS_DFLT_STATION                                  :Звичайна станція
@@ -5429,6 +5431,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Не м�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Неможливо продати авто...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Неможливо продати корабель...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Неможливо продати літак...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Дуже багато транспорту у грі
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Не можна змінити інтервал обслуговування...

@@ -860,7 +860,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}واحد
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}انتخب واحد پول
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :پوند
 STR_GAME_OPTIONS_CURRENCY_USD                                   :دلار
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو
@@ -1516,6 +1516,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :ممنوع
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :مجاز
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :آزاد و با نمایه دلخواه
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :محل قرارگرفتن درخت‌ها: {STRING}
@@ -1964,7 +1966,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :کد بازی
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :می رود
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} به بازی پیوست
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} به بازی پیوست (سرویس گیرنده #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} به شرکت پیوست #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} به تماشاچیان پیوست
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} یک شرکت جدید آغاز کرد (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} از بازی بیرون رفت ({2:STRING})
@@ -2127,6 +2128,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}طول �
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}انتخاب طول ایستگاه راه آهن
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}بکشید و بیاندازید
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}ساخت ایستگاه با استفاده از کشیدن و انداختن
+
 
 
 
@@ -3752,6 +3754,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}نمی �
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}نمیشود ماشین را فروخت...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}کشتی فروخته نمی شود...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}نمیتوان هواپیما را فروخت
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}ماشین‌های زیادی در بازی هستند
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}امکان تغییر فواصل زمانی سرویس وجود ندارد...

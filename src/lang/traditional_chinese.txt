@@ -457,6 +457,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :貨運站
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :公車站
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :碼頭
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :機場
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :廢置
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :顯示號誌站名稱
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :顯示標誌
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :顯示競手對手的標誌和車站名稱
@@ -978,7 +979,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}選擇�
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :英鎊
 STR_GAME_OPTIONS_CURRENCY_USD                                   :美元
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :歐元
@@ -1023,6 +1024,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :印尼盾
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :馬來西亞令吉
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :拉脫維亞勒斯
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :葡萄牙埃斯庫多
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :烏克蘭赫里夫尼亞
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}自動存檔
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}選擇自動存檔頻率
@@ -1985,6 +1987,13 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :禁止
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :允許
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :允許，可自訂市鎮道路配置
 
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :設置一楝市鎮的樓房：{STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :啟用此設定允許玩家手動設置市鎮的樓房
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :禁止
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :允許
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :允許，完全建成
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :城鎮貨物生成：{STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :貨物的產出速度取決於城市中的房屋，與城市的總人口數相關。{}二次方：兩倍人口的都市產出四倍量的貨物{}線性：兩倍人口的都市產出兩倍量的貨物
 ###length 2
@@ -1995,7 +2004,7 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :遊戲中產生
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :控制遊戲內是否隨意種植樹木。此選項可能會影響一些依賴樹木的工業 (例如熱帶氣候的伐木場)。
 ###length 4
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :生長但不擴散{RED}（令伐木場失效）
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :在所有地方生長但只在雨林中擴散
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :僅在雨林生長與擴散
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :在任意地點皆可生長與擴散
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :不生長，亦不擴散{RED}（令伐木場失效）
 
@@ -2197,7 +2206,7 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}積分�
 STR_INTRO_HELP                                                  :{BLACK}幫助和手冊
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}設定
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 設定
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}檢查線上內容
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}線上擴充內容
 STR_INTRO_AI_SETTINGS                                           :{BLACK}AI 設定
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}遊戲腳本設定
 STR_INTRO_QUIT                                                  :{BLACK}離開
@@ -2246,6 +2255,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Readme
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}修訂紀錄
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}已知漏洞
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}許可協議
+STR_HELP_WINDOW_FONTS                                           :{BLACK}字體
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}手冊／維基
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}回報漏洞
@@ -2634,7 +2644,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :等待連結圖
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :離開中
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} 已加入遊戲
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} 已加入此遊戲 (用戶端 #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} 已加入公司 #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} 已加入 {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} 已加入為觀眾
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} 已建立新公司 (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} 已離開遊戲 ({2:STRING})
@@ -2650,7 +2660,7 @@ STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}你的�
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}其他玩家將無法連線到你的伺服器
 
 # Content downloading window
-STR_CONTENT_TITLE                                               :{WHITE}內容下載中
+STR_CONTENT_TITLE                                               :{WHITE}線上擴充內容
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}種類
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}內容種類
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}名稱
@@ -2856,6 +2866,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :遠郊
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :近郊
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :市鎮中心
 
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :防止升級
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :選擇是否要保護這棟房子，以免隨著市鎮的發展而被替換
+STR_HOUSE_PICKER_PROTECT_OFF                                    :關閉
+STR_HOUSE_PICKER_PROTECT_ON                                     :開啟
+
 STR_STATION_CLASS_DFLT                                          :預設
 STR_STATION_CLASS_DFLT_STATION                                  :預設車站
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :預設車站
@@ -2947,7 +2962,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}選擇�
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}興建水道
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}水道
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}開鑿運河。按住 <Shift> 可顯示成本預估。
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}開鑿運河。按住 <Ctrl> 以對角線選擇區域。按住 <Shift> 可顯示成本預估。
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}興建水閘。按住 <Shift> 可顯示預估的興建費用
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}興建船塢 (用以購買及維護船舶)。按住 <Shift> 則可顯示預估成本
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}興建碼頭。按住 <Ctrl> 可興建相鄰車站，按住 <Shift> 可顯示預估的興建費用
@@ -3132,6 +3147,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}電車�
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}軌道速度限制：{LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}道路速度限制：{LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}電車速度限制：{LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}市鎮可升級：{LTBLUE}可以
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}市鎮可升級：{LTBLUE}不可
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :石頭
@@ -5315,6 +5332,18 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}無法�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}無法出售車輛...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}無法出售船舶...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}無法出售飛機...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}無法出售所有列車……
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}無法出售所有車輛……
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}無法出售所有船舶……
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}無法出售所有飛機……
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}無法自動替換列車……
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}無法自動替換車輛……
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}無法自動替換船舶……
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}無法自動替換飛機……
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}遊戲中已有太多車輛
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}不能更改檢修週期...

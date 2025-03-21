@@ -453,6 +453,12 @@ STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Opciones de san
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opciones de transparencia
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Mostrar nombres de localidades
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Mostrar nombres de estaciones
+STR_SETTINGS_MENU_STATION_NAMES_TRAIN                           :Estaciones de trenes
+STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Paradas de camiones
+STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Paradas de autobuses
+STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Muelles
+STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Aeropuertos
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Vestigios
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Mostrar puntos de ruta
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Mostrar carteles propios
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Mostrar carteles y nombres del competidor
@@ -674,8 +680,8 @@ STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}Préstam
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}Total:
 ###next-name-looks-similar
 
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_YEARS                   :{BLACK}Número de vehículos que consiguieron beneficios el último año. Se incluyen vehículos de carretera, trenes, barcos y aeronaves
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_PERIODS                 :{BLACK}Número de vehículos que consiguieron beneficios en el último periodo. Se incluyen vehículos de carretera, trenes, barcos y aeronaves
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_YEARS                   :{BLACK}Número de vehículos que consiguieron beneficios el último año. Se incluyen autotransportes, trenes, barcos y aeronaves
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_PERIODS                 :{BLACK}Número de vehículos que consiguieron beneficios en el último periodo. Se incluyen autotransportes, trenes, barcos y aeronaves
 STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Número de estaciones abastecidas recientemente. Las estaciones de tren, paradas de autobuses, aeropuertos y demás se contabilizan aparte, aun si pertenecen a la misma estación
 STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_YEARS                 :{BLACK}La ganancia del vehículo con menos ingresos (solo se consideran los vehículos con más de dos años de antigüedad)
 STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_PERIODS               :{BLACK}La ganancia del vehículo con menos ingresos (solo se consideran los vehículos con más de dos periodos de antigüedad)
@@ -974,7 +980,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Elegir d
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra británica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar estadounidense
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1019,6 +1025,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia indonesia
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malasio
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats letón
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portugués
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Grivna ucraniana
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Guardado automático
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Elegir el intervalo de guardados automáticos
@@ -1981,6 +1988,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prohibido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permitido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permitido, diseño urbano personalizado
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generación de carga en localidades: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Cantidad de carga producida por las casas con relación a la población.{}Crecimiento cuadrado: una localidad de doble tamaño genera el cuádruple de pasajeros.{}Crecimiento lineal: una localidad de doble tamaño genera el doble de pasajeros.
 ###length 2
@@ -2242,6 +2251,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Léeme
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Registro de cambios
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Errores conocidos
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licencia
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Fuentes
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Reportar un error
@@ -2270,14 +2280,14 @@ STR_LIVERY_ROAD_VEHICLE_TOOLTIP                                 :{BLACK}Mostrar 
 STR_LIVERY_SHIP_TOOLTIP                                         :{BLACK}Mostrar cromáticas para barcos
 STR_LIVERY_AIRCRAFT_TOOLTIP                                     :{BLACK}Mostrar cromáticas para aeronaves
 STR_LIVERY_TRAIN_GROUP_TOOLTIP                                  :{BLACK}Muestra los colores de los grupos de trenes
-STR_LIVERY_ROAD_VEHICLE_GROUP_TOOLTIP                           :{BLACK}Muestra los colores de los grupos de vehículos de carretera
+STR_LIVERY_ROAD_VEHICLE_GROUP_TOOLTIP                           :{BLACK}Muestra los colores de los grupos de autotransportes
 STR_LIVERY_SHIP_GROUP_TOOLTIP                                   :{BLACK}Muestra los colores de los grupos de barcos
 STR_LIVERY_AIRCRAFT_GROUP_TOOLTIP                               :{BLACK}Muestra los colores de los grupos de aeronaves
 STR_LIVERY_PRIMARY_TOOLTIP                                      :{BLACK}Elegir el color principal para la cromática elegida. Ctrl+Clic para establecerlo como cromática general
 STR_LIVERY_SECONDARY_TOOLTIP                                    :{BLACK}Elegir el color secundario para el diseño seleccionado. Ctrl+Clic para establecerlo como cromática general
 STR_LIVERY_PANEL_TOOLTIP                                        :{BLACK}Elegir un solo tipo de cromática, o Ctrl+Clic para elegir varios. Marcar las casillas para establecer diferentes combinaciones según el tipo de vehículo
 STR_LIVERY_TRAIN_GROUP_EMPTY                                    :No se han definido grupos de trenes
-STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY                             :No se han definido grupos de vehículos de carretera
+STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY                             :No se han definido grupos de autotransportes
 STR_LIVERY_SHIP_GROUP_EMPTY                                     :No se han definido grupos de barcos
 STR_LIVERY_AIRCRAFT_GROUP_EMPTY                                 :No se han definido grupos de aeronaves
 
@@ -2630,7 +2640,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :esperando actua
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :saliendo
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} se unió a la partida
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} se unió a la partida (Cliente #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} se unió a la empresa #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} se unió a {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} se unió como espectador
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} creó una nueva empresa (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} salió de la partida ({2:STRING})
@@ -2851,6 +2861,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Afueras
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbios exteriores
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbios interiores
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Zona centro
+
 
 STR_STATION_CLASS_DFLT                                          :por defecto
 STR_STATION_CLASS_DFLT_STATION                                  :Estación por defecto
@@ -3113,7 +3124,7 @@ STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY                       :{BLACK}Ayuntami
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE                  :Ninguno
 STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}Coordenadas: {LTBLUE}{NUM}×{NUM}×{NUM}
 STR_LAND_AREA_INFORMATION_LANDINFO_INDEX                        :{BLACK}Índice de casilla: {LTBLUE}{NUM} ({HEX})
-STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Construido: {LTBLUE}{DATE_LONG}
+STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Construido/renovado: {LTBLUE}{DATE_LONG}
 STR_LAND_AREA_INFORMATION_STATION_CLASS                         :{BLACK}Clase de estación: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}Tipo de estación: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Tipo de aeropuerto: {LTBLUE}{STRING}
@@ -5312,6 +5323,13 @@ STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}No se pu
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}No se puede vender barco...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}No se puede vender aeronave...
 
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}No se pueden reemplazar automáticamente los autotransportes...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}No se puede reemplazar automáticamente los barcos...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}No se puede reemplazar automáticamente la aeronave...
+
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Demasiados vehículos en el juego
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}No se puede cambiar el intervalo de mantenimiento...
 
@@ -5367,7 +5385,7 @@ STR_ERROR_NO_DOCK                                               :{WHITE}No hay p
 STR_ERROR_NO_AIRPORT                                            :{WHITE}No hay aeropuerto/helipuerto
 STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}No hay paradas con un tipo de carretera compatible
 STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}No hay paradas con un tipo de tramo compatible
-STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}No hay paradas aptas para vehículos de carretera articulados.{}Estos vehículos requieren una parada de paso y no una de entrada única
+STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}No hay paradas aptas para autotransportes articulados.{}Estos vehículos requieren una parada de paso y no una de entrada única
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}El avión no puede aterrizar en este helipuerto
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}El helicóptero no puede aterrizar en este aeropuerto
 STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}No hay punto de ruta de ferrocarril

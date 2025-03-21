@@ -979,7 +979,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Selecci�
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra esterlina
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar americano
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1986,6 +1986,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prohibido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permitido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permitido, patrón de estradas personalizado
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Xeración de mercadorías da vila: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Cantidade de mercadorías producidas nas casas da vila, segundo a poboación total da mesma.{}Crecemento cadrático: Unha vila o dobre de grande produce catro veces máis pasaxeiros.{}Linear growth: Unha vila o dobre de grande produce dúas veces máis pasaxeiros
 ###length 2
@@ -2635,7 +2637,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :agargando pola 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :saíndo
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} uniuse á partida
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} uniuse á partida (Cliente #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} uniuse á compañía #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} uniuse aos espectadores
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} comezou unha nova compañía (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} saiu da partida ({2:STRING})
@@ -2856,6 +2857,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferia
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbios da periferia
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbios interiores
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro da vila
+
 
 STR_STATION_CLASS_DFLT                                          :Por defecto
 STR_STATION_CLASS_DFLT_STATION                                  :Estación por defecto
@@ -5316,6 +5318,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Non se p
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Non se pode vender o vehículo de estrada...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}No se pode vende-lo barco...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Non se pode vende-lo avión...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Demasiados vehículos na partida
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Non se pode cambia-lo intervalo de servizo...

@@ -46,7 +46,7 @@ public:
 	typedef btree::safe_btree_set<std::pair<SQInteger, SQInteger>> ScriptListValueSet; ///< [Value, Key] set
 
 private:
-	ScriptListSorter *sorter;     ///< Sorting algorithm
+	std::unique_ptr<ScriptListSorter> sorter; ///< Sorting algorithm
 	SorterType sorter_type;       ///< Sorting type
 	bool sort_ascending;          ///< Whether to sort ascending or descending
 	bool initialized;             ///< Whether an iteration has been started

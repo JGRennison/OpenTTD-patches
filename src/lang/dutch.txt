@@ -457,6 +457,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Vrachtwagenstat
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Bushaltes
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Dokken
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Vliegvelden
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Spook
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Namen van routepunten weergeven
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Bordjes weergeven
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Bordjes en namen van tegenstanders weergeven
@@ -978,7 +979,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valuta k
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britse Pond
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1985,6 +1986,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Verboden
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Toestaan
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Toestaan, eigen wegpatroon
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Genereren van vracht in steden: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Hoeveel vracht wordt geproduceerd door huizen in steden, in relatie tot de totale bevolking van de stad.{}Kwadratische groei: een stad die twee keer zo groot is, genereert vier keer zo veel passagiers.{}Lineaire groei: een stad die twee keer zo groot is, genereert twee keer zo veel passagiers
 ###length 2
@@ -2634,7 +2637,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :wacht op bijwer
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :vertrekt
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} heeft zich bij het spel gevoegd
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} heeft zich bij het spel gevoegd (Speler #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} heeft zich gevoegd bij bedrijf nr. {2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} kijkt nu toe
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} heeft een nieuw bedrijf opgericht (nr. {2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} heeft het spel verlaten ({2:STRING})
@@ -2855,6 +2857,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Buitenwijken
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Buitenste voorsteden
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Binnenste voorsteden
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadscentrum
+
 
 STR_STATION_CLASS_DFLT                                          :Standaard
 STR_STATION_CLASS_DFLT_STATION                                  :Standaard station
@@ -5315,6 +5318,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kan spoo
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kan wegvoertuig niet verkopen...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kan schip niet verkopen...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kan vliegtuig niet verkopen...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Te veel voertuigen in het spel
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan onderhoudstermijn niet aanpassen...

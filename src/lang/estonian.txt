@@ -1021,7 +1021,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valuuta 
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Suurbritannia nael
 STR_GAME_OPTIONS_CURRENCY_USD                                   :USA dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -2023,6 +2023,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Keelatud
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Lubatud
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Lubatud, koos asulaskeemi valimisega
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Kauba tekkimine asulates: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Kui palju kaupa toodavad majad asulates, võrreldes elanike arvuga.{}Ruutfunktsioon: kaks korda suurem asula tekitab neli korda rohkem reisijaid.{}Lineaarne: kaks korda suurem asula tekitab kaks korda rohkem reisijaid.
 ###length 2
@@ -2672,7 +2674,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :transpordisõlm
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :lahkub
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} liitus mänguga
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} liitus mänguga ({2:NUM}. klient)
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} liitus {2:NUM}. ettevõttega
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} liitus vaatlejatega
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} alustas uue ettevõtte (nr {2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} lahkus mängust ({2:STRING})
@@ -2871,6 +2872,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Äärealad
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Äärelinnad
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Eeslinnad
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Kesklinn
+
 
 STR_STATION_CLASS_DFLT                                          :Vaikimisi
 STR_STATION_CLASS_DFLT_STATION                                  :Vaikimisi jaam
@@ -5306,6 +5308,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Rööbas
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ei saa veokit müüa...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ei saa laeva müüa
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ei saa õhusõidukit müüa...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Mängus on liiga palju veovahendeid
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Hooldusvahemikku ei saa muuta...

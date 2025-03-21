@@ -825,7 +825,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}کرنس
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}کرنسی کی اکائی اختیار کریں
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :برطانوی پاونڈ
 STR_GAME_OPTIONS_CURRENCY_USD                                   :امریکی ڈالر
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو
@@ -1425,6 +1425,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :ممنوع
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :اجازت ہے
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :اپنی مرضی کے شہر کے پھیلاو کی اجازت ہے
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :کھیل میں درخت لگانے کی اجازت: {STRING}
@@ -1837,7 +1839,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :کھیل کا �
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :چھوڑ رہا ہوں
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} کھیل میں شامل ہوا ہے
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} کھیل میں شامل ہوا ہے (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} کمپنی میں شامل ہوا #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ناظرین میں شامل ہوا
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} نے نئی کمپنی شروع کی ہے (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} نے کھیل چھوڑ دیا ہے ({2:STRING})
@@ -1992,6 +1993,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}پلیٹ
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}ریلوے اسٹیشن کی لمبائی منتخب کریں
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}کھینچ کر رکھ دیں
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}کھینچ کر رکھ کر اسٹیشن تعمیر کریں
+
 
 
 
@@ -2884,6 +2886,10 @@ STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}ھوائ
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}ھوائی جہاز فروخت نہیں کر سکتے
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}کھیل میں بہت زیادہ سواریاں
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}مرمت کا دورانیہ تبدیل نہین کرسکتے

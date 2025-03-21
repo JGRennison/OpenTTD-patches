@@ -110,6 +110,7 @@ namespace upstream_sl {
 	void SlFixPointerChunkByID(uint32_t id);
 	void SlSaveChunkChunkByID(uint32_t id);
 	void SlResetLoadState();
+	void FixSCCEncoded(std::string &str, bool fix_code);
 }
 
 /** What are we currently doing? */
@@ -786,7 +787,6 @@ static inline uint SlCalcConvMemLen(VarType conv)
 	static const uint8_t conv_mem_size[] = {1, 1, 1, 2, 2, 4, 4, 8, 8, 0};
 
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_STRB:
 		case SLE_VAR_STR:
 		case SLE_VAR_STRQ:
 			return SlReadArrayLength();
@@ -1165,10 +1165,6 @@ static inline size_t SlCalcStringLen(const void *ptr, size_t length, VarType con
 			str = *(const char * const *)ptr;
 			len = SIZE_MAX;
 			break;
-		case SLE_VAR_STRB:
-			str = (const char *)ptr;
-			len = length;
-			break;
 	}
 
 	len = SlCalcNetStringLen(str, len);
@@ -1188,9 +1184,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			size_t len;
 			switch (GetVarMemType(conv)) {
 				default: NOT_REACHED();
-				case SLE_VAR_STRB:
-					len = SlCalcNetStringLen((char *)ptr, length);
-					break;
 				case SLE_VAR_STR:
 				case SLE_VAR_STRQ:
 					ptr = *(char **)ptr;
@@ -1204,6 +1197,19 @@ static void SlString(void *ptr, size_t length, VarType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
+			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT) && GetVarMemType(conv) != SLE_VAR_NULL) {
+				/* Use std::string load path */
+				std::string buffer;
+				SlStdString(&buffer, conv);
+				free(*(char **)ptr);
+				if (buffer.empty()) {
+					*(char **)ptr = nullptr;
+				} else {
+					*(char **)ptr = stredup(buffer.data(), buffer.data() + buffer.size());
+				}
+				break;
+			}
+
 			size_t len = SlReadArrayLength();
 
 			switch (GetVarMemType(conv)) {
@@ -1211,16 +1217,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 				case SLE_VAR_NULL:
 					SlSkipBytes(len);
 					return;
-				case SLE_VAR_STRB:
-					if (len >= length) {
-						Debug(sl, 1, "String length in savegame is bigger than buffer, truncating");
-						SlCopyBytes(ptr, length);
-						SlSkipBytes(len - length);
-						len = length - 1;
-					} else {
-						SlCopyBytes(ptr, len);
-					}
-					break;
 				case SLE_VAR_STR:
 				case SLE_VAR_STRQ: // Malloc'd string, free previous incarnation, and allocate
 					free(*(char **)ptr);
@@ -1239,9 +1235,6 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					str_fix_scc_encoded((char *)ptr, (char *)ptr + len);
-				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
@@ -1288,10 +1281,7 @@ void SlStdString(std::string *ptr, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					char *buf = str.data();
-					str.resize(str_fix_scc_encoded(buf, buf + str.size()) - buf);
-				}
+				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT)) upstream_sl::FixSCCEncoded(str, IsSavegameVersionBefore(SLV_169));
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;

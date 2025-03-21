@@ -354,7 +354,6 @@ static inline uint SlCalcConvMemLen(VarType conv)
 		case SLE_VAR_U64: return sizeof(uint64_t);
 		case SLE_VAR_NULL: return 0;
 
-		case SLE_VAR_STRB:
 		case SLE_VAR_STR:
 		case SLE_VAR_STRQ:
 			return SlReadArrayLength();
@@ -678,10 +677,6 @@ static inline size_t SlCalcStringLen(const void *ptr, size_t length, VarType con
 			str = *(const char * const *)ptr;
 			len = SIZE_MAX;
 			break;
-		case SLE_VAR_STRB:
-			str = (const char *)ptr;
-			len = length;
-			break;
 	}
 
 	len = SlCalcNetStringLen(str, len);
@@ -703,84 +698,69 @@ static inline size_t SlCalcStdStringLen(const void *ptr)
 	return len + SlGetArrayLength(len); // also include the length of the index
 }
 
-/**
- * Save/Load a string.
- * @param ptr the string being manipulated
- * @param length of the string (full length)
- * @param conv must be SLE_FILE_STRING
- */
-static void SlString(void *ptr, size_t length, VarType conv)
+void FixSCCEncoded(std::string &str, bool fix_code)
 {
-	switch (_sl.action) {
-		case SLA_SAVE: {
-			size_t len;
-			switch (GetVarMemType(conv)) {
-				default: NOT_REACHED();
-				case SLE_VAR_STRB:
-					len = SlCalcNetStringLen((char *)ptr, length);
-					break;
-				case SLE_VAR_STR:
-				case SLE_VAR_STRQ:
-					ptr = *(char **)ptr;
-					len = SlCalcNetStringLen((char *)ptr, SIZE_MAX);
-					break;
-			}
+	if (str.empty()) return;
 
-			SlWriteArrayLength(len);
-			SlCopyBytes(ptr, len);
-			break;
+	/* We need to convert from old escape-style encoding to record separator encoding.
+	 * Initial `<SCC_ENCODED><STRINGID>` stays the same.
+	 *
+	 * `:<SCC_ENCODED><STRINGID>` becomes `<RS><SCC_ENCODED><STRINGID>`
+	 * `:<HEX>`                   becomes `<RS><SCC_ENCODED_NUMERIC><HEX>`
+	 * `:"<STRING>"`              becomes `<RS><SCC_ENCODED_STRING><STRING>`
+	 */
+	std::string result;
+	auto output = std::back_inserter(result);
+
+	bool is_encoded = false; // Set if we determine by the presence of SCC_ENCODED that the string is an encoded string.
+	bool in_string = false; // Set if we in a string, between double-quotes.
+	bool need_type = true; // Set if a parameter type needs to be emitted.
+
+	for (auto it = std::begin(str); it != std::end(str); /* nothing */) {
+		size_t len = Utf8EncodedCharLen(*it);
+		if (len == 0 || it + len > std::end(str)) break;
+
+		char32_t c;
+		Utf8Decode(&c, &*it);
+		if (c == SCC_ENCODED || (fix_code && (c == 0xE028 || c == 0xE02A))) {
+			Utf8Encode(output, SCC_ENCODED);
+			need_type = false;
+			is_encoded = true;
+			it += len;
+			continue;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
-			size_t len = SlReadArrayLength();
 
-			switch (GetVarMemType(conv)) {
-				default: NOT_REACHED();
-				case SLE_VAR_NULL:
-					SlSkipBytes(len);
-					return;
-				case SLE_VAR_STRB:
-					if (len >= length) {
-						Debug(sl, 1, "String length in savegame is bigger than buffer, truncating");
-						SlCopyBytes(ptr, length);
-						SlSkipBytes(len - length);
-						len = length - 1;
-					} else {
-						SlCopyBytes(ptr, len);
-					}
-					break;
-				case SLE_VAR_STR:
-				case SLE_VAR_STRQ: // Malloc'd string, free previous incarnation, and allocate
-					free(*(char **)ptr);
-					if (len == 0) {
-						*(char **)ptr = nullptr;
-						return;
-					} else {
-						*(char **)ptr = MallocT<char>(len + 1); // terminating '\0'
-						ptr = *(char **)ptr;
-						SlCopyBytes(ptr, len);
-					}
-					break;
-			}
+		/* If the first character is not SCC_ENCODED then we don't have to do any conversion. */
+		if (!is_encoded) return;
 
-			((char *)ptr)[len] = '\0'; // properly terminate the string
-			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
-			if ((conv & SLF_ALLOW_CONTROL) != 0) {
-				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					str_fix_scc_encoded((char *)ptr, (char *)ptr + len);
-				}
+		if (c == '"') {
+			in_string = !in_string;
+			if (in_string && need_type) {
+				/* Started a new string parameter. */
+				Utf8Encode(output, SCC_ENCODED_STRING);
+				need_type = false;
 			}
-			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
-				settings = settings | SVS_ALLOW_NEWLINE;
-			}
-			StrMakeValidInPlace((char *)ptr, (char *)ptr + len, settings);
-			break;
+			it += len;
+			continue;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL: break;
-		default: NOT_REACHED();
+
+		if (!in_string && c == ':') {
+			*output = SCC_RECORD_SEPARATOR;
+			need_type = true;
+			it += len;
+			continue;
+		}
+		if (need_type) {
+			/* Started a new numeric parameter. */
+			Utf8Encode(output, SCC_ENCODED_NUMERIC);
+			need_type = false;
+		}
+
+		Utf8Encode(output, c);
+		it += len;
 	}
+
+	str = result;
 }
 
 /**
@@ -814,10 +794,7 @@ static void SlStdString(void *ptr, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_169)) {
-					char *buf = str->data();
-					str->resize(str_fix_scc_encoded(buf, buf + str->size()) - buf);
-				}
+				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT)) FixSCCEncoded(*str, IsSavegameVersionBefore(SLV_169));
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
@@ -826,6 +803,83 @@ static void SlStdString(void *ptr, VarType conv)
 			StrMakeValidInPlace(*str, settings);
 		}
 
+		case SLA_PTRS: break;
+		case SLA_NULL: break;
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Save/Load a string.
+ * @param ptr the string being manipulated
+ * @param length of the string (full length)
+ * @param conv must be SLE_FILE_STRING
+ */
+static void SlString(void *ptr, size_t length, VarType conv)
+{
+	switch (_sl.action) {
+		case SLA_SAVE: {
+			size_t len;
+			switch (GetVarMemType(conv)) {
+				default: NOT_REACHED();
+				case SLE_VAR_STR:
+				case SLE_VAR_STRQ:
+					ptr = *(char **)ptr;
+					len = SlCalcNetStringLen((char *)ptr, SIZE_MAX);
+					break;
+			}
+
+			SlWriteArrayLength(len);
+			SlCopyBytes(ptr, len);
+			break;
+		}
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && GetVarMemType(conv) != SLE_VAR_NULL) {
+				/* Use std::string load path */
+				std::string buffer;
+				SlStdString(reinterpret_cast<void *>(&buffer), conv);
+				free(*(char **)ptr);
+				if (buffer.empty()) {
+					*(char **)ptr = nullptr;
+				} else {
+					*(char **)ptr = stredup(buffer.data(), buffer.data() + buffer.size());
+				}
+				break;
+			}
+
+			size_t len = SlReadArrayLength();
+
+			switch (GetVarMemType(conv)) {
+				default: NOT_REACHED();
+				case SLE_VAR_NULL:
+					SlSkipBytes(len);
+					return;
+				case SLE_VAR_STR:
+				case SLE_VAR_STRQ: // Malloc'd string, free previous incarnation, and allocate
+					free(*(char **)ptr);
+					if (len == 0) {
+						*(char **)ptr = nullptr;
+						return;
+					} else {
+						*(char **)ptr = MallocT<char>(len + 1); // terminating '\0'
+						ptr = *(char **)ptr;
+						SlCopyBytes(ptr, len);
+					}
+					break;
+			}
+
+			((char *)ptr)[len] = '\0'; // properly terminate the string
+			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			if ((conv & SLF_ALLOW_CONTROL) != 0) {
+				settings = settings | SVS_ALLOW_CONTROL_CODE;
+			}
+			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
+				settings = settings | SVS_ALLOW_NEWLINE;
+			}
+			StrMakeValidInPlace((char *)ptr, (char *)ptr + len, settings);
+			break;
+		}
 		case SLA_PTRS: break;
 		case SLA_NULL: break;
 		default: NOT_REACHED();

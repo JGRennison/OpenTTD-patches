@@ -1277,7 +1277,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Выба
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Брытанскі фунт
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Даляр ЗША
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Эўра
@@ -2274,6 +2274,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :забарон�
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :дазволена
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :дазволена з выбарам дарожнай сеткі
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Колькасць грузаў і пасажыраў у гарадах: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Залежнасць колькасці грузаў і пасажыраў ад памеру горада.{}Лінейная: у горадзе двухразовага памеру з'яўляецца ў 2 разу больш пасажыраў.{}Квадратычная: у горадзе двухразовага памеру з'яўляецца ў 4 разу больш пасажыраў.
 ###length 2
@@ -2919,7 +2921,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :чакае аб
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :выходзіць
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} далучыўся да гульні
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} далучыўся да гульні (кліент №{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} далучыўся да кампаніі №{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} далучыўся да гледачоў
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} распачаў новую кампанію (№{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} выйшаў з гульні ({2:STRING})
@@ -3120,6 +3121,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Даўж
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Выберыце даўжыню станцыйных каляінаў
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Участак
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Пабудаваць станцыю на выбраным участку зямлі
+
 
 
 
@@ -5576,6 +5578,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Не а�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Не атрымалася прадаць аўтамабiль...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Не атрымалася прадаць карабель...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Не атрымалася прадаць самалёт...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Занадта шмат транспарту ў гульні
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Не атрымалася зьмяніць інтэрвал абслугоўваньня...

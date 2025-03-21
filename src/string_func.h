@@ -48,7 +48,6 @@ inline void StrMakeValidInPlace(std::string &str, StringValidationSettings setti
 	str.resize(StrMakeValidInPlace(buf, buf + str.size(), settings) - buf);
 }
 
-const char *str_fix_scc_encoded(char *str, const char *last) NOACCESS(2);
 void str_strip_colours(char *str);
 const char *strip_leading_colours(const char *str);
 

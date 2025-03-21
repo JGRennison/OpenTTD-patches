@@ -38,6 +38,8 @@
 
 #include "core/format.hpp"
 
+#include <bit>
+
 #ifdef WITH_ALLEGRO
 #	include <allegro.h>
 #endif /* WITH_ALLEGRO */

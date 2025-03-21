@@ -859,7 +859,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Muntienh
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Muntienheidseleksje
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britske Pûn
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikaanske Dollars
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1683,6 +1683,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Ferbean
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Tastean
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Tastean, oanpast strittepatroan
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Bouen fan beamen yn it spul: {STRING}
@@ -2277,6 +2279,7 @@ STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}Selektea
 STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Stasjon lengte
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Selektear lengte fan treinstasjon
 STR_STATION_BUILD_DRAG_DROP                                     :Sleepe en los litte
+
 
 
 
@@ -4170,6 +4173,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kin trei
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kin wein net ferkeapje...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kin skip net ferkeapje...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kin fleantúch net ferkeapje...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Te folle fartugen yn it spul
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kin tiid tusken ûnderhâldsbeurten net feroarje...

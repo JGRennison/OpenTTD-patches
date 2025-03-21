@@ -836,6 +836,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Stacje ciężar
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Przystanki autobusowe
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Porty
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Lotniska
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Usunięte stacje
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Wyświetlanie nazw posterunków
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Wyświetlanie napisów
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Wyświetlanie napisów i nazw rywali
@@ -1302,13 +1303,13 @@ STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD                            :{WHITE}Dochód 
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE} nie może dotrzeć do kolejnego punktu docelowego, ponieważ punkt ten leży poza jego zasięgiem
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}Zaplanowane przeładowanie zatrzymane {VEHICLE}
-STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autoodnowa zawiodła przy {VEHICLE}{}{STRING}
+STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Automatyczne odnowienie nie powiodło się w {VEHICLE}{}{STRING}
 
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Dostępn{G y a e} now{G y a e} {STRING}!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Dostępn{G y a e} now{G y a e} {STRING} - {ENGINE}!
 
-STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Otwórz grupę okien skoncentrowanych na grupie pojazdów
+STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Otwórz okno grupy, do której należy ten pojazd
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} już nie akceptuje: {CARGO_LIST.d}
 STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} zaczyna akceptować: {CARGO_LIST.b}
@@ -1358,7 +1359,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Wybór w
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Funt brytyjski
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar amerykański
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1403,6 +1404,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia Indonezyj
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malezyjski
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Łat łotewski
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portugalskie
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hrywna ukraińska
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Autozapis
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Częstotliwość automatycznego zapisu stanu gry
@@ -2365,6 +2367,13 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Zabronione
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dozwolone
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dozwolone, dowolny układ miasta
 
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :Umieszczanie pojedynczych budynków: {STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :Włączenie tego ustawienia pozwala graczom na ręczne umieszczanie budynków w mieście
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :Zabronione
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :Dozwolone
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :Dozwolone, w pełni wybudowane
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generowanie ładunku przez miasta: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Ilość ładunku produkowanego przez domy w mieście względem ogólnej populacji miasta.{}Wzrost kwadratowy: miasto dwa razy większe generuje czterokrotnie więcej pasażerów.{}Wzrost liniowy: miasto dwa razy większe generuje dwukrotnie więcej pasażerów
 ###length 2
@@ -2622,10 +2631,11 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Czy na 
 STR_HELP_WINDOW_CAPTION                                         :{WHITE}Pomoc i Instrukcje
 STR_HELP_WINDOW_WEBSITES                                        :{BLACK}Strony internetowe
 STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Dokumenty
-STR_HELP_WINDOW_README                                          :{BLACK}Plik „readme”
+STR_HELP_WINDOW_README                                          :{BLACK}Plik „Readme”
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Lista Zmian
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Znane Błędy
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licencja
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Fonty
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Podręcznik / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Zgłoś Błąd
@@ -3014,7 +3024,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :oczekiwanie na 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :opuszczanie
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} dołączył do gry.
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} dołączył do gry (Klient #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} dołączył do firmy #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} dołączył do {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} dołączył do obserwatorów
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} założył nową firmę (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} opuścił grę ({2:STRING})
@@ -3094,7 +3104,7 @@ STR_CONTENT_DOWNLOAD_COMPLETE                                   :{WHITE}Pobieran
 STR_CONTENT_DOWNLOAD_PROGRESS_SIZE                              :{WHITE}Pobrano {BYTES} z {BYTES} ({NUM} %)
 
 # Content downloading error messages
-STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Nie można połączyć do serwera dodatków...
+STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Nie można połączyć się z serwerem dodatków...
 STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :{WHITE}Pobieranie nie powiodło się...
 STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :{WHITE}... plik tylko do odczytu
 STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Nie udało się dekompresować pobranego pliku
@@ -3236,6 +3246,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Przedmieścia z
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Przedmieścia wewnętrzne
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centrum miasta
 
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :Zapobieganie modernizacji
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Określ, czy ten budynek ma być chroniony przed zastąpieniem w miarę rozwoju miasta
+STR_HOUSE_PICKER_PROTECT_OFF                                    :Wył.
+STR_HOUSE_PICKER_PROTECT_ON                                     :Wł.
+
 STR_STATION_CLASS_DFLT                                          :Standardowa
 STR_STATION_CLASS_DFLT_STATION                                  :Standardowa stacja
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :Standardowy przystanek
@@ -3327,7 +3342,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Wybierz 
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Budowa dróg wodnych
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Kanał wodny
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Zbuduj kanał wodny. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Zbuduj kanał wodny. Przeciągnij z użyciem Ctrl, aby zaznaczyć obszar po przekątnej. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Zbuduj śluzę wodną. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Zbuduj stocznię (do kupowania i serwisowania statków). Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Zbuduj port. Użyj Ctrl, aby połączyć z inną stacją. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
@@ -3512,6 +3527,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Typ tor�
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limit prędkości linii kolejowej: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Drogowe ograniczenie prędkości: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Limit prędkości tramwajów: {LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Miasto może modernizować: {LTBLUE}Tak
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Miasto może modernizować: {LTBLUE}Nie
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Skały
@@ -4628,10 +4645,10 @@ STR_DEPOT_SELL_ALL_BUTTON_SHIP_TOOLTIP                          :{BLACK}Sprzedaj
 STR_DEPOT_SELL_ALL_BUTTON_AIRCRAFT_TOOLTIP                      :{BLACK}Sprzedaj wszystkie samoloty z hangaru
 
 ###length VEHICLE_TYPES
-STR_DEPOT_AUTOREPLACE_TRAIN_TOOLTIP                             :{BLACK}Autoodnowa wszystkich pociągów z hali warsztatów
-STR_DEPOT_AUTOREPLACE_ROAD_VEHICLE_TOOLTIP                      :{BLACK}Autoodnowa wszystkich pojazdów stojących w zajezdni
-STR_DEPOT_AUTOREPLACE_SHIP_TOOLTIP                              :{BLACK}Autoodnowa wszystkich statków stojących w stoczni
-STR_DEPOT_AUTOREPLACE_AIRCRAFT_TOOLTIP                          :{BLACK}Autoodnowa wszystkich samolotów stojących w hangarze
+STR_DEPOT_AUTOREPLACE_TRAIN_TOOLTIP                             :{BLACK}Automatyczne odnowienie wszystkich pociągów stojących w hali warsztatów
+STR_DEPOT_AUTOREPLACE_ROAD_VEHICLE_TOOLTIP                      :{BLACK}Automatyczne odnowienie wszystkich pojazdów stojących w zajezdni
+STR_DEPOT_AUTOREPLACE_SHIP_TOOLTIP                              :{BLACK}Automatyczne odnowienie wszystkich statków stojących w stoczni
+STR_DEPOT_AUTOREPLACE_AIRCRAFT_TOOLTIP                          :{BLACK}Automatyczne odnowienie wszystkich samolotów stojących w hangarze
 
 ###length VEHICLE_TYPES
 STR_DEPOT_TRAIN_NEW_VEHICLES_BUTTON                             :{BLACK}Nowe pojazdy
@@ -5284,7 +5301,7 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
-STR_TEXTFILE_JUMPLIST                                           :{WHITE}Spi
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Spis Treści
 STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Przeskocz do wybranej sekcji w wyświetlanym pliku za pomocą tej listy
 STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
 STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Cofnij się w historii nawigacji
@@ -5701,6 +5718,18 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Nie moż
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Nie można sprzedać pojazdu...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Nie można sprzedać statku...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Nie można sprzedać samolotu...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Nie można sprzedać wszystkich pociągów...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Nie można sprzedać wszystkich pojazdów...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Nie można sprzedać wszystkich statków...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Nie można sprzedać wszystkich samolotów...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Nie można automatycznie zastąpić pociągów...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Nie można automatycznie zastąpić pojazdów...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Nie można automatycznie zastąpić statków...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Nie można automatycznie zastąpić samolotu...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Za dużo pojazdów w grze
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nie można zmienić okresu między serwisowaniami...

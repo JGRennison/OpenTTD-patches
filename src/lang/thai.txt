@@ -865,7 +865,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}หน�
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}การเลือกสกุลเงิน
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :ปอนด์สเตอร์ลิง
 STR_GAME_OPTIONS_CURRENCY_USD                                   :ดอลลาร์สหรัฐ
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :ยูโร
@@ -1705,6 +1705,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :ห้าม
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :ยอม
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :ยอม, รูปแบบเมืองกำหนดเอง
 
+###length 3
+
 ###length 2
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :กำลังสอง (แบบดั้งเดิม)
 
@@ -2244,7 +2246,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :กำลัง
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :กำลังออก
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} ได้เข้าร่วมเกม
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} ได้เข้าร่วมเกม (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} ได้เข้าร่วมบริษัท #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ได้เข้าเป็นผู้ชม
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} ได้ทำการสร้างบริษัทใหม่ (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ได้ออกจากเกม ({2:STRING})
@@ -2414,6 +2415,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}คว�
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}เลือกความยาวของชานชาลา
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}ลากและวาง
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}สร้างสถานีโดยใช้การลากและวาง
+
 
 
 
@@ -4559,6 +4561,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}ไม�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}ไม่สามารถขายรถ...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}ไม่สามารถขายเรือ...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}ไม่สามารถขายอากาศยาน...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}ขณะนี้มียานยนต์มากเกินไปแล้วในเกม
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}ไม่สามารถเปลี่ยนระยะเวลาการซ่อมบำรุงได้...

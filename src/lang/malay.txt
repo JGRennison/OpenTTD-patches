@@ -831,7 +831,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Unit kew
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Pilihan unit kewangan
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Paun British
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerika
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1531,6 +1531,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Dilarang
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dibenarkan
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dibenarkan, susunan bandar sendiri
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Peletakan pokok-pokok dalam permainan: {STRING}
@@ -1965,7 +1967,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :Skrip permainan
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :sedang meninggalkan permainan
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} telah menyertai permainan ini
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} telah menyertai permainan ini (Klien #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} telah menyertai syarikat #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} telah menjadi penyaksi
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} telah menubuhkan syarikat baru (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} sudah meninggalkan permainan ini ({2:STRING})
@@ -2123,6 +2124,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Kepanjan
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Pilih kepanjangan stesen keretapi
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Seret & Lepas
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bina stesen menggunakan kaedah seret & lepas
+
 
 
 
@@ -4128,6 +4130,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Keretapi
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kenderaan tidak dapat dijual...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kapal tidak dapat dijual...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Pesawat tidak dapat dijual...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Terlalu banyak kenderaan dalam permainan
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak boleh tukar tempoh perkhidmatan...

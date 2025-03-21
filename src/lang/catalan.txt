@@ -458,6 +458,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Parades de cami
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Parades d'autobús
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Ports
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Aeroports
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Fantasma
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Mostra els punts de pas
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Mostra els senyals
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Mostra noms i senyals dels competidors
@@ -979,7 +980,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Selecci�
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Lliura esterlina
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dòlar americà
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1024,6 +1025,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia indonèsi
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats letó
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escut portuguès
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia ucraïnès
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Desa automàticament
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Selecciona l'interval de desada automàtica de la partida
@@ -1986,6 +1988,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prohibit
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permès
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permès, disposició dels carrers personalitzada
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generació de càrrega a les poblacions: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Estableix quanta càrrega es produirà a les cases en funció dels habitants de la població.{}Creixement quadràtic: una població el doble de gran generarà el quàdruple de passatgers.{}Creixement lineal: una població el doble de gran generarà el doble de passatgers.
 ###length 2
@@ -2247,6 +2251,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Llegeix-
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Registre de canvis
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Errors coneguts
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Llicència
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Fonts
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Informeu d'un error
@@ -2635,7 +2640,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :s'espera que s'
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :deixant
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} s'ha unit a la partida
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} s'ha unit a la partida (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} s'ha unit a la companyia #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} s'ha unit a {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} s'ha unit als espectadors
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} ha començat una nova companyia (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} ha deixat la partida ({2:STRING})
@@ -2856,6 +2861,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Afores
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbi exterior
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbi interior
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centre de la població
+
 
 STR_STATION_CLASS_DFLT                                          :Per defecte
 STR_STATION_CLASS_DFLT_STATION                                  :Estació per defecte
@@ -5316,6 +5322,18 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}No es po
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}No pots vendre l'automòbil...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}No es pot vendre el vaixell...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}No es pot vendre l'avió...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}No es poden vendre tots els vehicles ferroviaris...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}No es poden vendre tots els vehicles de carretera...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}No es poden vendre tots els vaixells...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}No es poden vendre totes les aeronaus...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Hi ha vehicles ferroviaris que no es poden autoreemplaçar...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Hi ha vehicles de carretera que no es poden autoreemplaçar...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Hi ha vaixells que no es poden autoreemplaçar...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Hi ha aeronaus que no es poden autoreemplaçar...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Massa vehicles en joc
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}No es pot canviar l'interval de les revisions...

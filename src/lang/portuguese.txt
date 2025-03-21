@@ -458,6 +458,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Paragens de cam
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Paragens de autocarro
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Docas
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Aeroportos
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Fantasma
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Mostrar nomes dos pontos de controlo
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Mostrar sinais
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Mostrar sinais e nomes dos oponentes
@@ -979,7 +980,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Selecç�
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra Britânica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar dos E.U.A.
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1024,6 +1025,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia Indonési
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit da Malásia
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats da Letónia
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo Português
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia Ucraniana
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Guardar automaticamente
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Seleccionar o intervalo para guardar automático
@@ -1986,6 +1988,13 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Proibido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permitido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permitido, estrutura personalizada da localidade
 
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :Colocar casas isoladas nas localidades: {STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :Ativar esta preferência, permite aos jogadores colocar manualmente casas nas localidades
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :Proibido
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :Permitido
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :Permitido, totalmente construído
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Geração de carga citadina: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Quantidade de carga produzida por casas em localidades, relativa à população total da mesma.{}Crescimento quadrático: Uma localidade do dobro do tamanho gera quatro vezes mais passageiros.{}Crescimento linear: Uma localidade do dobro do tamanho gera duas vezes a quantidade de passageiros
 ###length 2
@@ -1996,7 +2005,7 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Criação de á
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Controlar o aparecimento aleatório de árvores durante o jogo. Isto poderá afectar indústrias que dependem do crescimento de árvores, como as madeireiras
 ###length 4
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :Crescer mas não espalhar {RED}(inutiliza a serração)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :Crescer mas espalhar apenas em florestas tropicais
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :Crescer mas espalhar apenas nas florestas tropicais
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :Crescer e espalhar por todo o lado
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :Não cresça, não espalhe {RED} (quebra a serraria)
 
@@ -2198,7 +2207,7 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela d
 STR_INTRO_HELP                                                  :{BLACK}Ajuda & Manuais
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Definições
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Definições de NewGRF
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Verificar conteúdo online
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Conteúdo Online
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Definições de IA
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Definições de Script de Jogo
 STR_INTRO_QUIT                                                  :{BLACK}Sair
@@ -2247,6 +2256,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Leia-me
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Registo de alterações
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Erros Conhecidos
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licença
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Fontes
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Reportar um erro
@@ -2635,7 +2645,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :Em espera pela 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :a sair
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} entrou no jogo
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} entrou no jogo (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} entrou na empresa #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} juntou-se a {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} entrou como espectador
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} iniciou uma nova empresa (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} deixou o jogo ({2:STRING})
@@ -2651,7 +2661,7 @@ STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}O seu se
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Outros jogadores não conseguirão conetar ao seu servidor
 
 # Content downloading window
-STR_CONTENT_TITLE                                               :{WHITE}Descarregamento de conteúdo
+STR_CONTENT_TITLE                                               :{WHITE}Conteúdo Online
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}Tipo
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Tipo de conteúdo
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}Nome
@@ -2857,6 +2867,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Subúrbios Exte
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Subúrbios Internos
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro da localidade
 
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :Impedir atualizações
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Escolha se esta casa será protegida contra a substituição à medida que localidade cresce
+STR_HOUSE_PICKER_PROTECT_OFF                                    :Desativado
+STR_HOUSE_PICKER_PROTECT_ON                                     :Ativado
+
 STR_STATION_CLASS_DFLT                                          :Padrão
 STR_STATION_CLASS_DFLT_STATION                                  :Estação padrão
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :Paragem rodoviária padrão
@@ -2948,7 +2963,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Seleccio
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Construção de hidrovia
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Canais
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Construir canais. Pressione também Shift para apenas mostrar o custo estimado
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Construir canais. Ctrl+Clique+Arrastar para selecionar a área diagonalmente. Pressione também Shift para apenas mostrar o custo estimado
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Construir eclusas. Pressione também Shift para apenas mostrar o custo estimado
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Construir estaleiro naval (para compra e manutenção de navios). Pressione também Shift para apenas mostrar o custo estimado
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Construir doca naval. Ctrl+Clique para selecionar outra estação para se juntar. Pressione também Shift para mostrar apenas o custo estimado
@@ -3133,6 +3148,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Tipo de 
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limite de velocidade da linha: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Limite de velocidade da estrada: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Limite de velocidade para elétricos: {LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Localidade pode atualizar: {LTBLUE}Sim
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Localidade pode atualizar: {LTBLUE}Não
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Rochas
@@ -5316,6 +5333,18 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Não é 
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Não é possível vender veículo rodoviário...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Não é possível vender navio...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Não é possível vender aeronave...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Não é possível vender todos os veículos ferroviários...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Não é possível vender todos os veículos rodoviários...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Não é possível vender todos os navios...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Não é possível vender todas as aeronaves...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Não é possível auto-substituir veículos ferroviários...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Não é possível auto-substituir veículos rodoviários...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Não é possível auto-substituir navios...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Não é possível auto-substituir aeronave...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Existem demasiados veículos em jogo
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Não é possível alterar o intervalo manutenção...

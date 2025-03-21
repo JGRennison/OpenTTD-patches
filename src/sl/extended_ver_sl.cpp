@@ -219,6 +219,8 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_GROUP_NUMBERS,                    XSCF_IGNORABLE_UNKNOWN,   1,   1, "slv_group_numbers",                nullptr, nullptr, nullptr          },
 	{ XSLFI_WATER_TILE_TYPE,                  XSCF_NULL,                1,   1, "slv_water_tile_type",              nullptr, nullptr, nullptr          },
 	{ XSLFI_INDUSTRY_CARGO_REORGANISE,        XSCF_NULL,                2,   2, "slv_industry_cargo_reorganise",    nullptr, nullptr, nullptr          },
+	{ XSLFI_ENCODED_STRING_FORMAT,            XSCF_NULL,                1,   1, "slv_encoded_string_format",        nullptr, nullptr, nullptr          },
+	{ XSLFI_PROTECT_PLACED_HOUSES,            XSCF_NULL,                1,   1, "slv_protect_placed_houses",        nullptr, nullptr, nullptr          },
 
 	{ XSLFI_TABLE_PATS,                       XSCF_NULL,                1,   1, "table_pats",                       nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_PLYR,                       XSCF_NULL,                1,   1, "table_plyr",                       nullptr, nullptr, nullptr          },
@@ -636,13 +638,13 @@ static void Load_SLXI()
 	// flags are not in use yet, reserve for future expansion
 	if (chunk_flags != 0) SlErrorCorruptFmt("SLXI chunk: unknown chunk header flags: 0x{:X}", chunk_flags);
 
-	char name_buffer[256];
+	std::string name_buffer;
 	const SaveLoad xlsi_sub_chunk_name_desc[] = {
-		SLEG_STR(name_buffer, SLE_STRB),
+		SLEG_SSTR(name_buffer, SLE_STR),
 	};
 
-	auto version_error = [](StringID str, const char *feature, int64_t p1, int64_t p2) {
-		auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, feature, p1, p2);
+	auto version_error = [](StringID str, std::string_view feature, int64_t p1, int64_t p2) {
+		auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, std::string{feature}, p1, p2);
 		SlError(STR_JUST_RAW_STRING, GetStringWithArgs(str, tmp_params));
 	};
 
@@ -655,7 +657,7 @@ static void Load_SLXI()
 		// linearly scan through feature list until found name match
 		const SlxiSubChunkInfo *info = nullptr;
 		for (const SlxiSubChunkInfo &it : _sl_xv_sub_chunk_infos) {
-			if (strcmp(name_buffer, it.name) == 0) {
+			if (name_buffer == it.name) {
 				info = &it;
 				break;
 			}

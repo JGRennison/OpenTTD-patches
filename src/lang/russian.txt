@@ -583,6 +583,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Грузовы�
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Остановки автобусов
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Пристани
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Аэропорты
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Удалённые станции
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Показывать названия маршрутных точек
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Показывать метки
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Показывать названия станций конкурентов
@@ -1123,7 +1124,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Смен
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Английский фунт
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Доллар США
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Евро
@@ -1168,6 +1169,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Индонез�
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Малайзийский ринггит
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Латвийский лат
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Португальский эскудо
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Украинская гривна
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Автосохранение
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Интервал автосохранения игры
@@ -1538,7 +1540,7 @@ STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Максима�
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :Ограничение на длину строящихся туннелей
 
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Способ создания сырьевых предприятий: {STRING}
-STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_HELPTEXT    :Способ создания сырьевых предприятий.{}«Не создавать» - отключить возможность их создания транспортными компаниями.{}«Геологоразведка» - предприятие будет создано в случайном месте на карте; иногда геологи не находят месторождений, и постройка предприятия отменяется.{}«Как и остальные» - сырьевые предприятия строятся как и перерабатывающие, с выбором места постройки.
+STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_HELPTEXT    :Способ создания сырьевых предприятий.{}«Не создавать» - отключить возможность их создания транспортными компаниями.{}«Геологоразведка» - предприятие будет создано в случайном месте на карте; иногда геологи не находят месторождений, и строительство предприятия отменяется.{}«Как и остальные» - сырьевые предприятия строятся как и перерабатывающие, с выбором места размещения.
 ###length 3
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NONE        :не создавать
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NORMAL      :как и остальные
@@ -2136,18 +2138,25 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :запреще�
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :разрешено
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :разрешено с выбором сети дорог
 
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :Строительство отдельных зданий: {STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :Настройка возможности самостоятельного размещения игроками городских зданий
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :запрещено
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :разрешено
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :разрешено, здания завершённые
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Количество грузов и пассажиров в городах: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Зависимость количества грузов и пассажиров от размера города.{}Линейная: в городе двукратного размера появляется в 2 раза больше пассажиров.{}Квадратичная: в городе двукратного размера появляется в 4 раза больше пассажиров.
 ###length 2
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :квадратичная зависимость (оригинальная)
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :линейная зависимость
 
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Рост деревьев в игре: {STRING}
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Рост деревьев: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Настройка роста и произвольного появления новых деревьев со временем. Это может влиять на работоспособность некоторых предприятий, например, лесопилок.
 ###length 4
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :существующие растут, новые не появляются {RED}(ломается лесопилка)
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :существующие растут, новые - только в тропических лесах
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :растут старые и появляются новые
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :существующие растут и появляются новые
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :нет {RED}(ломается лесопилка)
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Положение главной панели инструментов: {STRING}
@@ -2348,7 +2357,7 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Табл
 STR_INTRO_HELP                                                  :{BLACK}Помощь и документация
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Расширенные настройки
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Настройки NewGRF
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Проверить онлайн-контент
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Онлайн-контент
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Настройки ИИ
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Настройки игровых скриптов
 STR_INTRO_QUIT                                                  :{BLACK}Выход
@@ -2397,6 +2406,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Readme
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}История изменений
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Известные ошибки
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Лицензия
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Шрифты
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Инструкция / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Сообщить об ошибке
@@ -2785,7 +2795,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :ожидает 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :отключение
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} подключился к игре
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} подключился к игре (клиент #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} подключился к компании #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} присоединился к компании {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} подключился в качестве зрителя
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} основал новую компанию (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} покинул игру ({2:STRING})
@@ -2801,7 +2811,7 @@ STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Клие
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Другие игроки не смогут подключиться к вашему серверу
 
 # Content downloading window
-STR_CONTENT_TITLE                                               :{WHITE}Загрузка контента
+STR_CONTENT_TITLE                                               :{WHITE}Онлайн-контент
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}Тип
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Тип контента
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}Название
@@ -2989,7 +2999,7 @@ STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}Укаж
 STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Длина платформы
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Укажите длину ж/д станции
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Произвольно
-STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Постройка станции на указанном игроком участке
+STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Строительство станции на указанном игроком участке
 
 STR_PICKER_MODE_ALL                                             :Все
 STR_PICKER_MODE_ALL_TOOLTIP                                     :Показать все элементы
@@ -3026,6 +3036,11 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Окраина
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Периферия
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Центральные районы
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Центр
+
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :Запрет улучшений
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Вы можете указать, что это здание нельзя заменять другим, несмотря на рост и расширение города.
+STR_HOUSE_PICKER_PROTECT_OFF                                    :отключён
+STR_HOUSE_PICKER_PROTECT_ON                                     :включён
 
 STR_STATION_CLASS_DFLT                                          :Стандартная станция
 STR_STATION_CLASS_DFLT_STATION                                  :Стандартная ж/д станция
@@ -3118,7 +3133,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Выбе
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Судоходные коммуникации
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Водные пути
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Строительство каналов. При нажатом Shift - оценка стоимости строительства.
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Строительство каналов. Ctrl+перетаскивание - выбор диагональной области. При нажатом Shift - оценка стоимости строительства.
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Строительство шлюзов. При нажатом Shift - оценка стоимости строительства.
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Строительство доков (для приобретения и обслуживания судов). При нажатом Shift - оценка стоимости строительства.
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Строительство пристаней. Ctrl+щелчок - объединение новой станции с существующей. При нажатом Shift - оценка стоимости строительства.
@@ -3307,6 +3322,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Тип �
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Макс. скорость ж/д: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Макс. скорость авто: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Ограничение скорости трамваев: {LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Возможность обновления: {LTBLUE}да
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Возможность обновления: {LTBLUE}нет
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Камни
@@ -5187,7 +5204,7 @@ STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... до
 STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}... достигнуто ограничение по количеству очищаемых клеток
 STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... достигнут лимит высадки деревьев
 STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Имя должно быть уникальным
-STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{1:STRING} на пути
+STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{1:STRING} мешает
 STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Запрещено во время паузы
 
 # Local authority errors
@@ -5501,24 +5518,36 @@ STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :{WHITE}Нево
 STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Невозможно продать поезд...
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Невозможно продать автомобиль...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Невозможно продать судно...
-STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Невозможно продать самолёт...
+STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Невозможно продать воздушное судно...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Невозможно продать весь железнодорожный транспорт...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Невозможно продать все автомобили...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Невозможно продать все суда...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Невозможно продать все воздушные суда...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Невозможно произвести автозамену железнодорожного транспорта...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Невозможно произвести автозамену автомобилей...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Невозможно произвести автозамену судов...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Невозможно произвести автозамену воздушных судов...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Слишком много транспорта в игре
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Невозможно изменить частоту технического обслуживания...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспортное средство уничтожено
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... не все ТС идентичны друг другу
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... не все транспортные средства идентичны друг другу
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Все транспортные средства будут недоступны
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Измените конфигурацию модуля NewGRF
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Нет доступных транспортных средств
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Начните игру не ранее {DATE_SHORT} либо подключите NewGRF, добавляющий транспортные средства, использовавшиеся в это время.
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий транспортные средства, использовавшиеся в это время.
 
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}Отсутствуют типы дорог, которые могла бы прокладывать городская администрация
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}Измените конфигурацию установленных модулей NewGRF
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}Пока что отсутствуют типы дорог, которые могла бы прокладывать городская администрация
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, которые будут доступны администрациям городов на выбранную вами дату
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, которые будут доступны администрациям городов на выбранную вами дату.
 
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Невозможно игнорировать светофор. Опасно...

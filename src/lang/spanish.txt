@@ -974,7 +974,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Seleccio
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra británica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar estadounidense
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1981,6 +1981,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prohibido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permitido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permitido, patrón de carreteras personalizado
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generación de carga en municipios: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Cantidad de carga que es producida por las casas del municipio, en relación a la población total del municipio.{}Crecimiento cuadrático: Un municipio de doble tamaño genera el cuádruple de pasajeros.{}Crecimiento lineal: Un municipio de doble tamaño genera el doble de pasajeros
 ###length 2
@@ -2630,7 +2632,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :esperando actua
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :abandonando
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} se ha unido a la partida
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} se ha unido a la partida (Cliente #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} se ha unido a la empresa #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} se ha unido como espectador
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} ha creado una empresa nueva (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} ha abandonado el juego ({2:STRING})
@@ -2851,6 +2852,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferia
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbios exteriores
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbios interiores
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro urbano
+
 
 STR_STATION_CLASS_DFLT                                          :Por defecto
 STR_STATION_CLASS_DFLT_STATION                                  :Estación por defecto
@@ -5311,6 +5313,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}No se pu
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}No se puede vender vehículo...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}No se puede vender barco...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}No se puede vender la aeronave...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Demasiados vehículos en el juego
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}No se puede cambiar intervalo de mantenimiento...

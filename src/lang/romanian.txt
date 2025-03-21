@@ -967,7 +967,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Alege un
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Liră sterlină
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar american
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1973,6 +1973,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :nepermis
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :permis
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :permis, aspect particularizat al orașului
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Modalitatea de generare a cargoului dintr-un oraș: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Câtă marfa este produsă de casele dintr-un oraș, relativ la populația totală a orașului.{}Creștere pătratică: Un oraș de 2 ori mai mare generează de 4 ori mai mulți pasageri.{}Creștere liniară: Un oraș de 2 ori mai mare generează de 4 ori mai mulți pasageri.
 ###length 2
@@ -2622,7 +2624,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :se așteaptă p
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :iese
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} a intrat în joc
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} a intrat în joc (Clientul #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} a intrat în compania #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} a intrat ca spectator
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} a început o companie nouă (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} a ieșit din joc ({2:STRING})
@@ -2835,6 +2836,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferie
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbiile periferice
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbiile urbane
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centrul orașului
+
 
 STR_STATION_CLASS_DFLT                                          :Implicită
 STR_STATION_CLASS_DFLT_STATION                                  :Stație implicită
@@ -5278,6 +5280,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Nu se po
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Nu se poate vinde autovehiculul...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Nu pot vinde nava...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Nu se poate vinde aeronava...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Prea multe vehicule în joc
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nu se poate schimba intervalul de întreținere...

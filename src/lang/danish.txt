@@ -973,7 +973,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valg af 
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britiske Pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikanske dollars
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1979,6 +1979,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Forbudt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Tilladt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Tilladt, tilpasset by-layout
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Godsgenerering i byer: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Hvor meget gods der bliver produceret af byers bygninger, i forhold til byens samlede indbyggertal.{}Kvadratisk vækst: En by med dobbelt indbyggertal genererer fire gange så mange passagerer.{}Lineær vækst: En by med dobbelt indbyggertal genererer dobbelt så mange passagerer
 ###length 2
@@ -2628,7 +2630,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :afventer forbin
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :forlader
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} har tilsluttet sig spillet
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} har tilsluttet sig spillet (Klient #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} har tilsluttet sig selskabet #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} har tilsluttet sig som tilskuer
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} har startet et nyt selskab (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} har forladt spillet ({2:STRING})
@@ -2849,6 +2850,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Udkant
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Ydre Forstæder
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Indre Forstæder
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Bymidte
+
 
 STR_STATION_CLASS_DFLT                                          :Standard station
 STR_STATION_CLASS_DFLT_STATION                                  :Standard station
@@ -5309,6 +5311,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kan ikke
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kan ikke sælge køretøj...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kan ikke sælge skibet...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kan ikke sælge flyet...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}For mange køretøjer i spillet
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan ikke ændre serviceinterval...

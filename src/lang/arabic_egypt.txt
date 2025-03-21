@@ -886,7 +886,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}اختي
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :جنية
 STR_GAME_OPTIONS_CURRENCY_USD                                   :دولار
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :يورو
@@ -1619,6 +1619,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :محذور
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :مسموح
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :مسموح - نمط مدينة قابل للتعديل
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :توليد البضائع في المدينة: {STRING}
 ###length 2
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :تربيعي (أصلي)
@@ -2095,7 +2097,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL                   :يدوي
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :يغادر
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} قد انضم للعبة
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} انضم الى اللعبة (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} انضم الى الشركة رقم : {2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} انضم الى المشاهدين
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} قد بدأ شركة جديدة: (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} قد غادر اللعبة : - {2:STRING}-
@@ -2267,6 +2268,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}طول �
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}اختر طول المحطة
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}أسحب وأفلت
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}بناء محطة بطريقة السحب والإفلات
+
 
 
 
@@ -4382,6 +4384,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}لا ي�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}لا يمكن بيع العربة...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}لا يمكن بيع السفينة ...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}لا يمكن بيع الطائرة
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}العربات كثيرة جدا في اللعبة
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}لا يمكن تغيير فترات الصيانة

@@ -380,6 +380,7 @@ int MaxTreeCount(const TileIndex tile)
 void PlaceTreesRandomly()
 {
 	int i, j, ht;
+	uint8_t max_height = _settings_game.construction.map_height_limit;
 
 	i = Map::ScaleBySize(DEFAULT_TREE_STEPS);
 	if (_game_mode == GM_EDITOR) i /= EDITOR_TREE_DIV;
@@ -402,6 +403,8 @@ void PlaceTreesRandomly()
 			j = ht * 2;
 			/* Above snowline more trees! */
 			if (_settings_game.game_creation.landscape == LT_ARCTIC && ht > GetSnowLine()) j *= 3;
+			/* Scale generation by maximum map height. */
+			if (max_height > MAP_HEIGHT_LIMIT_ORIGINAL) j = j * MAP_HEIGHT_LIMIT_ORIGINAL / max_height;
 			while (j--) {
 				PlaceTreeAtSameHeight(tile, ht);
 			}
@@ -600,9 +603,9 @@ CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 				if (_settings_game.game_creation.landscape == LT_TROPIC && treetype != TREE_INVALID && (
 						/* No cacti outside the desert */
 						(treetype == TREE_CACTUS && GetTropicZone(tile) != TROPICZONE_DESERT) ||
-						/* No rain forest trees outside the rain forest, except in the editor mode where it makes those tiles rain forest tile */
+						/* No rain forest trees outside the rainforest, except in the editor mode where it makes those tiles rainforest tile */
 						(IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS) && GetTropicZone(tile) != TROPICZONE_RAINFOREST && _game_mode != GM_EDITOR) ||
-						/* And no subtropical trees in the desert/rain forest */
+						/* And no subtropical trees in the desert/rainforest */
 						(IsInsideMM(treetype, TREE_SUB_TROPICAL, TREE_TOYLAND) && GetTropicZone(tile) != TROPICZONE_NORMAL))) {
 					msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
 					continue;

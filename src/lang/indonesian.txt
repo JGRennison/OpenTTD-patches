@@ -942,7 +942,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Pilih ma
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Poundsterling
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1918,6 +1918,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Dilarang
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Diijinkan
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Diijinkan, layout kota sendiri
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generasi Kargo Kota: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Seberapa banyak kargo dihasilkan oleh rumah di kota , relatif terhadap keseluruhan populasi kota.{}Pertumbuhan kuadrat: Kota yang membesar dua kali menghasilkan penumpang empat kali lipat.{}Pertumbuhan linier: Kota yang membesar dua kali menghasilkan penumpang dua kali lipat.
 ###length 2
@@ -2556,7 +2558,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :menunggu pembar
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :pergi
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} telah bergabung
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} sudah bergabung ke dalam permainan (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} bergabung dengan perusahaan #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} bergabung menjadi penonton
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} mulai mendirikan perusahaan (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} meninggalkan permainan ({2:STRING})
@@ -2737,6 +2738,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Panjang 
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Pilih panjang stasiun kereta
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Drag & Drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Membangun stasiun dengan Drag & Drop
+
 
 
 
@@ -5106,6 +5108,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Tidak da
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Tidak dapat menjual kendaraan...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Tidak dapat menjual kapal...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Tidak dapat menjual pesawat...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Terlalu banyak kendaraan dalam permainan
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak dapat mengubah waktu perbaikan...

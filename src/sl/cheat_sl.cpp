@@ -128,12 +128,12 @@ static void Load_CHTS()
 static void Load_CHTX()
 {
 	struct CheatsExtLoad {
-		char name[256];
+		std::string name;
 		Cheat cht;
 	};
 
 	static const SaveLoad _cheats_ext_load_desc[] = {
-		SLE_STR(CheatsExtLoad, name,           SLE_STRB, 256),
+		SLE_SSTR(CheatsExtLoad, name,          SLE_STR),
 		SLE_VAR(CheatsExtLoad, cht.been_used,  SLE_BOOL),
 		SLE_VAR(CheatsExtLoad, cht.value,      SLE_BOOL),
 	};
@@ -151,7 +151,7 @@ static void Load_CHTX()
 		bool found = false;
 		for (uint j = 0; j < lengthof(_extra_cheat_descs); j++) {
 			const ExtraCheatNameDesc &desc = _extra_cheat_descs[j];
-			if (strcmp(desc.name, current_cheat.name) == 0) {
+			if (desc.name == current_cheat.name) {
 				*(desc.cht) = current_cheat.cht;
 				found = true;
 				break;
@@ -159,8 +159,8 @@ static void Load_CHTX()
 		}
 		if (!found) {
 			Debug(sl, 1, "CHTX chunk: Could not find cheat: '{}'", current_cheat.name);
-			_unknown_cheat_fields[std::string(current_cheat.name) + ".been_used"] = current_cheat.cht.been_used;
-			_unknown_cheat_fields[std::string(current_cheat.name) + ".value"] = current_cheat.cht.value;
+			_unknown_cheat_fields[current_cheat.name + ".been_used"] = current_cheat.cht.been_used;
+			_unknown_cheat_fields[current_cheat.name + ".value"] = current_cheat.cht.value;
 		}
 	}
 }

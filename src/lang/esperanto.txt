@@ -1028,7 +1028,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Elekto d
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Brita Pundo
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Usona Dolaro
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eŭro
@@ -1966,6 +1966,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :malpermesita
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :permesate
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :permesate, kutimo urbomapo
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Urba ŝarĝogenerado: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Kiom da ŝarĝoj produktas domoj en urboj, rilate al la loĝantaro de la tuta urbo.{}Kvadrata kresko: Urbo duoble pli granda generas kvaroblan nombron da pasaĝeroj.{}Lineara kresko: Urbo duoble pli granda generas duoblan nombron da pasaĝeroj.
 ###length 2
@@ -2580,7 +2582,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :atendas ĝisdat
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :forlasanta
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} ensalutis la ludon
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} aliĝis al la ludo (Kliento #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} iĝis ano de kompanio #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} iĝis spektanto
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} fondis novan kompanion (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} foriris el la ludo ({2:STRING})
@@ -2766,6 +2767,7 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tiru por
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rando
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferioj
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Eksteraj Antaŭurboj
+
 
 STR_STATION_CLASS_DFLT                                          :Defaŭlta
 STR_STATION_CLASS_DFLT_STATION                                  :Defaŭlta stacio
@@ -5100,6 +5102,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Ne povas
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ne povas vendi stratveturilon...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ne povas vendi ŝipon...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ne povas vendi aviadilon...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tro da veturiloj en la ludo
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ne povas ŝanĝi prizorgintervalon...

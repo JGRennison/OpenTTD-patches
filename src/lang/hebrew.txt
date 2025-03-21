@@ -913,7 +913,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}מטבע
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}בחירת מטבע
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :לירה שטרלינג
 STR_GAME_OPTIONS_CURRENCY_USD                                   :דולר אמריקאי
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :יורו
@@ -1812,6 +1812,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :אסור
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :מותר
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :מותר, מתווה עיר מותאם אישית
 
+###length 3
+
 ###length 2
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :לינארי
 
@@ -2388,7 +2390,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :מחכה לעד
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :עוזב
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} הצטרף למשחק
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} הצטרף למשחק (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} הצטרף לחברה #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :***{STRING} הצטרף למשחק כצופה
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} הקים חברה חדשה (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :({2:STRING}) עזב את המשחק {NBSP}{0:STRING} ***
@@ -2570,6 +2571,7 @@ STR_PICKER_MODE_USED                                            :בשימוש
 STR_PICKER_MODE_USED_TOOLTIP                                    :החלף הצגת פריטים קיימים בלבד
 STR_PICKER_MODE_SAVED                                           :נשמר
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :החלף הצגת פריטים שמורים בלבד
+
 
 
 
@@ -4828,6 +4830,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}לא נ�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}לא ניתן למכור כלי רכב...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}לא ניתן למכור כלי שייט זה...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}לא ניתן למכור את כלי הטייס...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}יותר מידי כלי תעבורה במשחק
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}לא ניתן לשנות את מרווחי הטיפול...

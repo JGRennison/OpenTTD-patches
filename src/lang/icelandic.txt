@@ -826,7 +826,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Gjaldmi�
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Val á gjaldmiðli
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlingspund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Bandaríkjadalur
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evra
@@ -1624,6 +1624,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :bannað
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :leyft
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Leyft, sérsniðið bæjarskipulag
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Staðsetning trjáa í leik: {STRING}
@@ -2065,7 +2067,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :forskrift
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :yfirgefur
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} tengdist leiknum
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} hefur tengst leiknum (Notandi #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} hefur gengið í lið með fyrirtæki #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} horfir á
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} stofnaði nýtt fyrirtæki (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} yfirgefur leikinn ({2:STRING})
@@ -2225,6 +2226,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Lengd le
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Veldu lengd lestarstöðvar
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Draga & Sleppa
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Byggja lestarstöð með 'draga og sleppa' aðferðinni
+
 
 
 
@@ -4216,6 +4218,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Get ekki
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Get ekki selt bifreið...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Get ekki selt skip...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Get ekki selt flugvélina...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Of mörg farartæki í leiknum
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Get ekki breytt viðgerðarmillibili...

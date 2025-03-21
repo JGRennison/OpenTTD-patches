@@ -400,7 +400,7 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 
 
-###length 44
+###length 45
 
 
 # Autosave dropdown
@@ -714,6 +714,8 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Ippermetti l-uz
 
 ###length 3
 
+###length 3
+
 ###length 2
 
 ###length 4
@@ -875,6 +877,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 
@@ -1468,6 +1471,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Ma tista
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ma tistax tbigħ din il-karozza...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ma tistax tbigħ dan il-vapur...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ma tistax tbigħ dan l-ajruplan...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Hemm wisq vetturi fil-logħba
 

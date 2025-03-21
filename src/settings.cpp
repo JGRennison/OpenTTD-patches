@@ -3737,13 +3737,13 @@ static std::vector<const SettingDesc *> MakeSettingsPatxList(std::initializer_li
  */
 struct SettingsExtLoad {
 	uint32_t flags;
-	char name[256];
+	std::string name;
 	uint32_t setting_length;
 };
 
 static const SaveLoad _settings_ext_load_desc[] = {
 	SLE_VAR(SettingsExtLoad, flags,          SLE_UINT32),
-	SLE_STR(SettingsExtLoad, name,           SLE_STRB, 256),
+	SLE_SSTR(SettingsExtLoad, name,          SLE_STR),
 	SLE_VAR(SettingsExtLoad, setting_length, SLE_UINT32),
 };
 
@@ -3774,7 +3774,7 @@ static void LoadSettingsPatx(void *object)
 
 		// now try to find corresponding setting
 		bool exact_match = false;
-		auto iter = std::lower_bound(sorted_patx_settings.begin(), sorted_patx_settings.end(), current_setting.name, [&](const SettingDesc *a, const char *b) {
+		auto iter = std::lower_bound(sorted_patx_settings.begin(), sorted_patx_settings.end(), current_setting.name.c_str(), [&](const SettingDesc *a, const char *b) {
 			int result = strcmp(a->patx_name, b);
 			if (result == 0) exact_match = true;
 			return result < 0;
@@ -3866,7 +3866,7 @@ void LoadSettingsPlyx(bool skip)
 
 			// not many company settings, so perform a linear scan
 			for (auto &sd : _company_settings) {
-				if (sd->patx_name != nullptr && strcmp(sd->patx_name, current_setting.name) == 0) {
+				if (sd->patx_name != nullptr && current_setting.name == sd->patx_name) {
 					setting = sd.get();
 					break;
 				}

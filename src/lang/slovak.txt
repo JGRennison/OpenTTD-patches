@@ -1032,7 +1032,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Výber m
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra šterlingov
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Americký dolár
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -2032,6 +2032,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :zakázané
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :povolené
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :povolené, vlastné rozloženie mesta
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generovanie nákladu v mestách: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Množstvo nákladu produkovaného domami v mestách, podmienené celkovou populáciou mesta.{}Kvadratický rast: Mesto s dvojnásobnou veľkosťou produkuje štvornásobné množstvo cestujúcich.{}Lineárny rast: Mesto s dvojnásobnou veľkosťou produkuje dvojnásobné množstvo cestujúcich
 ###length 2
@@ -2679,7 +2681,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :čaká sa na ak
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :odchádza
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} vstúpil do hry
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} vstúpil do hry (klient č. {2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} sa pripojil do spoločnosti č. {2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} sa pripojil k pozorovateľom
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} založil novú spoločnosť (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} opustil hru ({2:STRING})
@@ -2873,6 +2874,7 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Zvoľ veľkosť
 
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Okraj
+
 
 STR_STATION_CLASS_DFLT                                          :Pôvodná
 STR_STATION_CLASS_DFLT_STATION                                  :Predvolená stanica
@@ -5308,6 +5310,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Nemožno
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Nemožno predať cestné vozidlo...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Nemožno predať loď...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Nie je možné predať lietadlo...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}V hre je príliš veľa dopravných prostriedkov
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nemožno zmeniť servisný interval...

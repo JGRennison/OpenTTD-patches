@@ -48,6 +48,8 @@
 #include "company_func.h"
 #include "walltime_func.h"
 
+#include <bit>
+
 #ifdef WITH_ALLEGRO
 #	include <allegro.h>
 #endif /* WITH_ALLEGRO */

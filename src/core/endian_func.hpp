@@ -11,6 +11,7 @@
 #define ENDIAN_FUNC_HPP
 
 #include "bitmath_func.hpp"
+#include <bit>
 
 static constexpr uint16_t FROM_BE16(uint16_t x)
 {

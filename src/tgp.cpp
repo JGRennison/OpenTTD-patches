@@ -889,8 +889,6 @@ static void HeightMapNormalize()
 	if (_settings_game.game_creation.variety > 0) {
 		HeightMapCurves(_settings_game.game_creation.variety);
 	}
-
-	HeightMapSmoothSlopes(I2H(1));
 }
 
 /**
@@ -1010,8 +1008,6 @@ void GenerateTerrainPerlin()
 			TgenSetTileHeight(TileXY(x, y), Clamp(H2I(_height_map.height(x, y)), 0, max_height));
 		}
 	}
-
-	IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 	FreeHeightMap();
 	GenerateWorldSetAbortCallback(nullptr);

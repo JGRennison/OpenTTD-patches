@@ -466,7 +466,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 
 
-###length 44
+###length 45
 
 
 # Autosave dropdown
@@ -782,6 +782,8 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 ###length 3
 
+###length 3
+
 ###length 2
 
 ###length 4
@@ -946,6 +948,7 @@ STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Aceptas:
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 
@@ -1581,6 +1584,10 @@ STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}Ne povas
 # Group related errors
 
 # Generic vehicle errors
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
 

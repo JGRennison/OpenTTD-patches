@@ -969,7 +969,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Novčane
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Izbor novčanih jedinica
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Funte
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Američki Dolar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1832,6 +1832,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Zabranjeno
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dopušteno
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dopušteno, proizvoljan raspored grada
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Proizvodnja tereta u gradu: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Koliko tereta proizvode kuće u gradu u odnosu na ukupno stanovništvo grada.{}Kvadratni rast: Grad dvostruke veličine proizvodi četverostruku količinu putnika.{}Linearni rast: Grad dvostruke veličine proizvodi dvostruku količinu putnika.
 ###length 2
@@ -2370,7 +2372,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :skripta igre
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :odlazim
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} se pridružio igri
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :{G=female}*** {STRING} se pridružila igri (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} se pridružio tvrtci #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} se pridružio promatračima
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} je osnovao novu tvrtku (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} je izašao iz igre ({2:STRING})
@@ -2541,6 +2542,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Dužina 
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Odaberi dužinu željezničke postaje
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Povuci i spusti
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Napravi postaju koristeći drag & drop
+
 
 
 
@@ -4770,6 +4772,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Nije mog
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Nije moguće prodati cestovno vozilo...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Nije moguće prodati brod...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Nije moguće prodati zrakoplov...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Previše vozila u igri
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Nije moguće promijeniti servisni interval...

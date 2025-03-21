@@ -127,32 +127,6 @@ char *stredup(const char *s, const char *last)
 }
 
 /**
- * Scan the string for old values of SCC_ENCODED and fix it to
- * it's new, static value.
- * @param str the string to scan
- * @param last the last valid character of str
- * @return Pointer to new null terminator.
- */
-const char *str_fix_scc_encoded(char *str, const char *last)
-{
-	while (str <= last && *str != '\0') {
-		size_t len = Utf8EncodedCharLen(*str);
-		if ((len == 0 && str + 4 > last) || str + len > last) break;
-
-		char32_t c;
-		Utf8Decode(&c, str);
-		if (c == '\0') break;
-
-		if (c == 0xE028 || c == 0xE02A) {
-			c = SCC_ENCODED;
-		}
-		str += Utf8Encode(str, c);
-	}
-	*str = '\0';
-	return str;
-}
-
-/**
  * Format a byte array into a continuous hex string.
  * @param data Array to format
  * @return Converted string.
@@ -170,6 +144,25 @@ std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case)
 	}
 
 	return buf.to_string();
+}
+
+/**
+ * Test if a character is (only) part of an encoded string.
+ * @param c Character to test.
+ * @returns True iff the character is an encoded string control code.
+ */
+static bool IsSccEncodedCode(char32_t c)
+{
+	switch (c) {
+		case SCC_RECORD_SEPARATOR:
+		case SCC_ENCODED:
+		case SCC_ENCODED_NUMERIC:
+		case SCC_ENCODED_STRING:
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 /**
@@ -221,7 +214,7 @@ static void StrMakeValid(T &dst, const char *str, const char *last, StringValida
 			continue;
 		}
 
-		if ((IsPrintable(c) && (c < SCC_SPRITE_START || c > SCC_SPRITE_END)) || ((settings & SVS_ALLOW_CONTROL_CODE) != 0 && c == SCC_ENCODED)) {
+		if ((IsPrintable(c) && (c < SCC_SPRITE_START || c > SCC_SPRITE_END)) || ((settings & SVS_ALLOW_CONTROL_CODE) != 0 && IsSccEncodedCode(c))) {
 			/* Copy the character back. Even if dst is current the same as str
 			 * (i.e. no characters have been changed) this is quicker than
 			 * moving the pointers ahead by len */

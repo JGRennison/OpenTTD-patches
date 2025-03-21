@@ -457,7 +457,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Εμφά
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Εμφάνιση εταιρικών γραφημάτων και ποσοστών πληρωμής φορτίου
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Εμφάνιση πίνακα κατάταξης των εταιριών
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Εμφάνιση λίστας βιομηχανιών ή χρηματοδότηση κατασκευής νέας βιομηχανίας
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Εμφάνιση λίστας με τα τραίνα της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Εμφάνιση λίστας με τα τρένα της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Εμφάνιση λίστας με τα οδικά οχήματα της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Εμφάνιση λίστας με τα πλοία της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Εμφάνιση λίστας με τα αεροσκάφη της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
@@ -519,6 +519,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Σταθμοί 
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Στάσεις λεωφορείων
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Λιμάνια
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Αεροδρόμια
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Φάντασμα
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Εμφάνιση ονομάτων σημείων καθοδήγησης
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Εμφάνιση πινακίδων
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Εμφανίζονται τα σήματα και τα ονόματα των ανταγωνιστών
@@ -1071,7 +1072,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Επιλ
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Στερλίνα Ηνωμένου Βασιλείου
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Δολλάριο Η.Π.Α.
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Ευρώ
@@ -1116,6 +1117,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Ινδονησ�
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ρινγκίτ Μαλαισίας
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Λετονικά Λατς
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Πορτογαλικό Εσκούδο
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ουκρανικά Γρίβνα
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Αυτόματη αποθήκευση
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Επιλογή διάκενου ανάμεσα στις αυτόματες αποθηκεύσεις
@@ -2072,11 +2074,18 @@ STR_CONFIG_SETTING_NOISE_LEVEL                                  :Περιορι�
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Επιτρέπεται στις πόλεις να μπλοκάρουν την κατασκευή αεροδρομίων με βάση το επίπεδο αποδοχής θορύβου, το οποίο βασίζεται στον πληθυσμό της πόλης και στο μέγεθος και την απόσταση του αεροδρομίου. Εάν αυτή η ρύθμιση είναι απενεργοποιημένη, οι πόλεις επιτρέπουν μόνο δύο αεροδρόμια, εκτός εάν η στάση της τοπικής αρχής έχει οριστεί σε «Ανεκτική»
 
 STR_CONFIG_SETTING_TOWN_FOUNDING                                :Ίδρυση πόλεων στο παιχνίδι: {STRING}
-STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Ενεργοποιώντας αυτήν τη ρύθμιση επιτρέπει στους παίκτες να ιδρύσουν νέες πόλεις στο παιχνίδι
+STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Ενεργοποιώντας αυτήν τη ρύθμιση επιτρέπει στους παίκτες να ιδρύουν νέες πόλεις στο παιχνίδι
 ###length 3
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Δεν επιτρέπεται
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Επιτρέπεται
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Επιτρέπεται, προσαρμοσμένο σχέδιο πόλης
+
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :Τοποθέτηση μεμονωμένων κατοικιών: {STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :Η ενεργοποίηση αυτής της ρύθμισης επιτρέπει στους παίκτες να τοποθετούν σπίτια πόλεων χειροκίνητα
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :Δεν επιτρέπεται
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :Επιτρέπεται
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :Επιτρέπεται, κατασκευασμένο πλήρως
 
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Δημιουργία εμπορευμάτων πόλης: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Η ποσότητα εμπορευμάτων που παράγεται απο σπίτια σε πόλεις, σε σχέση με τον συνολικό πληθυσμό της πόλης.{}Τετραγωνική ανάπτυξη: Μια πόλη διπλού μεγέθους παράγει τετραπλάσιο αριθμό επιβατών.{}Γραμμική ανάπτυξη: Μια πόλη διπλού μεγέθους παράγει διπλάσιο αριθμό επιβατών
@@ -2339,6 +2348,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Εμφά
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Ιστορικό αλλαγών
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Γνωστά σφάλματα/bugs
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Άδεια
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Γραμματοσειρές
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Εγχειρίδιο / Wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Αναφορά σφάλματος/bug
@@ -2366,14 +2376,14 @@ STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Εμφά
 STR_LIVERY_ROAD_VEHICLE_TOOLTIP                                 :{BLACK}Εμφάνιση χρωματικών μοτίβων οδικών οχημάτων
 STR_LIVERY_SHIP_TOOLTIP                                         :{BLACK}Εμφάνιση χρωματικών μοτίβων πλοίων
 STR_LIVERY_AIRCRAFT_TOOLTIP                                     :{BLACK}Εμφάνιση χρωματικών μοτίβων αεροσκαφών
-STR_LIVERY_TRAIN_GROUP_TOOLTIP                                  :{BLACK}Εμφάνιση χρωμάτων ομάδων τραίνων
+STR_LIVERY_TRAIN_GROUP_TOOLTIP                                  :{BLACK}Εμφάνιση χρωμάτων ομάδων τρένων
 STR_LIVERY_ROAD_VEHICLE_GROUP_TOOLTIP                           :{BLACK}Εμφάνιση χρωμάτων ομάδων οδικών οχημάτων
 STR_LIVERY_SHIP_GROUP_TOOLTIP                                   :{BLACK}Εμφάνιση χρωμάτων ομάδων πλοίων
 STR_LIVERY_AIRCRAFT_GROUP_TOOLTIP                               :{BLACK}Εμφάνιση χρωμάτων ομάδων αεροσκαφών
 STR_LIVERY_PRIMARY_TOOLTIP                                      :{BLACK}Επιλογή του βασικού χρώματος για το επιλεγμένο θέμα. Ctrl+Κλικ για ορισμό αυτού του χρώματος για κάθε θέμα
 STR_LIVERY_SECONDARY_TOOLTIP                                    :{BLACK}Επιλογή του δευτερεύοντος χρώματος για το επιλεγμένο θέμα. Ctrl+Κλικ για ορισμό αυτού του χρώματος για κάθε θέμα
 STR_LIVERY_PANEL_TOOLTIP                                        :{BLACK}Επιλέξτε το χρωματικό μοτίβο για αλλαγή ή πολλαπλά μοτίβα με Ctrl+Κλικ. Πατήστε στο κουτάκι για να επιλέξετε τη χρήση του μοτίβου
-STR_LIVERY_TRAIN_GROUP_EMPTY                                    :Δεν έχουν οριστεί ομάδες τραίνων
+STR_LIVERY_TRAIN_GROUP_EMPTY                                    :Δεν έχουν οριστεί ομάδες τρένων
 STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY                             :Δεν έχουν οριστεί ομάδες οδικών οχημάτων
 STR_LIVERY_SHIP_GROUP_EMPTY                                     :Δεν έχουν οριστεί ομάδες πλοίων
 STR_LIVERY_AIRCRAFT_GROUP_EMPTY                                 :Δεν έχουν οριστεί ομάδες αεροσκαφών
@@ -2727,7 +2737,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :αναμονή 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :αποχώρηση
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} συμμετέχει στο παιχνίδι
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} συμμετέχει στο παιχνίδι (Πελάτης #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} συμμετέχει στην εταιρία #{2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} συμμετέχει στον/στην/στο {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} συμμετέχει στους θεατές
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} ξεκίνησε μια νέα εταιρία (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} αποχώρησε από το παιχνίδι ({2:STRING})
@@ -2743,7 +2753,7 @@ STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Ο serve
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Οι άλλοι παίκτες δεν θα μπορούν να συνδεθούν στον server σας
 
 # Content downloading window
-STR_CONTENT_TITLE                                               :{WHITE}Λαμβάνεται το περιεχόμενο
+STR_CONTENT_TITLE                                               :{WHITE}Διαδικτυακό Περιεχόμενο
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}Τύπος
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Τύπος περιεχόμενου
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}Όνομα
@@ -2949,6 +2959,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Εξωτερι�
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Εσωτερικά Προάστια
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Κέντρο της πόλης
 
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :Αποτροπή αναβαθμίσεων
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Επιλέξτε αν αυτό το σπίτι θα προστατεύεται από αντικατάσταση καθώς η πόλη μεγαλώνει
+STR_HOUSE_PICKER_PROTECT_OFF                                    :Ανενεργό
+STR_HOUSE_PICKER_PROTECT_ON                                     :Ενεργό
+
 STR_STATION_CLASS_DFLT                                          :Προεπιλεγμένος
 STR_STATION_CLASS_DFLT_STATION                                  :Προεπιλεγμένος σταθμός
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :Προεπιλεγμένη οδική στάση
@@ -3040,7 +3055,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Επιλ
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Κατασκευή Καναλιού Νερού
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Κανάλια Νερού
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Κατασκευή καναλιών. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Κατασκευή καναλιών. Ctrl+Κλικ+Σύρσιμο για διαγώνια επιλογή περιοχής. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Κατασκευή υδατοφράκτη. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Κατασκευή ναυπηγείου πλοίων (για αγορά και επισκευή πλοίων). Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Κατασκευή λιμένα πλοίων. Ctrl+Κλικ για επιλογή πρόσθετου σταθμού για συνένωση. Επίσης, πατήστε το Shift για εμφάνιση εκτιμώμενου κόστους μόνο
@@ -3225,6 +3240,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Τύπο
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Όριο ταχύτητας σιδηροτροχιάς: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Όριο ταχύτητας δρόμου: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Όριο ταχύτητας τραμ: {LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Η πόλη επιτρέπεται να αναπτυχθεί: {LTBLUE}Ναι
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Η πόλη επιτρέπεται να αναπτυχθεί: {LTBLUE}Όχι
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Πέτρες
@@ -5417,6 +5434,18 @@ STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Δεν �
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Δεν μπορεί να πωληθεί το πλοίο...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Δεν μπορεί να πωληθεί το αεροσκάφος...
 
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Δεν είναι δυνατή η πώληση όλων των σιδηροδρομικών οχημάτων...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Δεν είναι δυνατή η πώληση όλων των οδικών οχημάτων...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Δεν είναι δυνατή η πώληση όλων των πλοίων...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Δεν είναι δυνατή η πώληση όλων των αεροπλάνων...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Δεν είναι δυνατή η αυτόματη αντικατάσταση σιδηροδρομικών οχημάτων...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Δεν είναι δυνατή η αυτόματη αντικατάσταση οδικών οχημάτων...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Δεν είναι δυνατή η αυτόματη αντικατάσταση πλοίων...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Δεν είναι δυνατή η αυτόματη αντικατάσταση αεροσκαφών ...
+
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Πάρα πολλά οχήματα στο παιχνίδι
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Δεν μπορεί να αλλάξει το διάστημα μεταξύ συντηρήσεων...
 
@@ -5465,7 +5494,7 @@ STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... πο
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... δεν επαρκεί η εμβέλεια του αεροσκάφους
 
 # Extra messages which go on the third line of errors, explaining why orders failed
-STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Δεν υπάρχει σταθμός τραίνου
+STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Δεν υπάρχει σταθμός τρένου
 STR_ERROR_NO_BUS_STATION                                        :{WHITE}Δεν υπάρχει σταθμός λεωφορείων
 STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Δεν υπάρχει σταθμός φορτηγών
 STR_ERROR_NO_DOCK                                               :{WHITE}Δεν υπάρχει λιμάνι

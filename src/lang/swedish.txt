@@ -977,7 +977,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Välj va
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Brittiskt pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikansk dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1984,6 +1984,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Förbjuden
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Tillåten
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Tillåten, vanlig stads-layout
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Fraktgods som genereras i staden: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Hur mycket fraktgods som produceras av hus i städer, i förhållande till den totala befolkningen i staden.{}Kvadratisk tillväxt: En dubbelt så stor stad genererar fyra gånger så många passagerare.{}Linjär tillväxt: En dubbelt så stor stad genererar dubbelt så många passagerare
 ###length 2
@@ -2633,7 +2635,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :väntar på upp
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :lämnar
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} har gått med i spelet
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} har gått med i spelet (Klient #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} har gått med i företag #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} har gått med som åskådare
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} har startat ett nytt företag (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} har lämnat spelet ({2:STRING})
@@ -2854,6 +2855,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Utkanter
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Yttrerförorter
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Innerförorter
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadskärnan
+
 
 STR_STATION_CLASS_DFLT                                          :Original
 STR_STATION_CLASS_DFLT_STATION                                  :Standardstation
@@ -5314,6 +5316,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kan inte
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kan inte sälja vägfordon...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kan inte sälja skepp...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kan inte sälja flygplan...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}För många fordon i spelet
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan inte ändra service-intervall...

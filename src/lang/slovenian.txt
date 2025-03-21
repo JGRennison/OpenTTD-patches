@@ -1011,7 +1011,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valute
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Izbira valut
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Funt
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1841,6 +1841,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prepovedano
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dovoljeno
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dovoljeno, oblika mesta po meri
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Ustvarjanje mestnega tovora: {STRING}
 ###length 2
 
@@ -2355,7 +2357,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :skripta
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :zapušča
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} pristopa k igri
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} se je pridružil igri (Gost #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} se pridružuje podjetju #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} se pridružuje opazovalcem
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} na novo ustvarja podjetje (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} odstopa od igre ({2:STRING})
@@ -2524,6 +2525,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Dolžina
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Izberi dolžino železniške postaje
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Vleci in spusti
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Zgradi postajo s povleci in spusti
+
 
 
 
@@ -4604,6 +4606,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Ni mogo�
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ni mogoče prodati cestnega vozila...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ni mogoče prodati ladje...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ni mogoče prodati letala...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Preveč vozil v igri
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ni mogoče spremeniti obdobja servisiranja...

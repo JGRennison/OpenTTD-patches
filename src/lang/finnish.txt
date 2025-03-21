@@ -457,6 +457,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Lastauslaiturit
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Linja-autopysäkit
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Satamat
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Lentokentät
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Haamuasemat
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Reittipisteitten nimet näkyvissä
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Kyltit näkyvissä
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Vastustajien kyltit ja nimet näkyvissä
@@ -978,7 +979,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Rahayksi
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Englannin punta
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Yhdysvaltain dollari
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1023,6 +1024,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesian rupi
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malesian ringgit
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Latvian lati
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugalin escudo
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainan hryvnia
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automaattitallennus
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Valitse aikaväli automaattisille pelitallennuksille
@@ -1985,6 +1987,13 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Kielletty
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Sallittu
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Sallittu, oma tiekaava
 
+STR_CONFIG_SETTING_HOUSE_PLACER                                 :Yksittäisten talojen sijoittaminen: {STRING}
+STR_CONFIG_SETTING_HOUSE_PLACER_HELPTEXT                        :Mikäli käytössä, pelaajat voivat sijoittaa taloja käsin
+###length 3
+STR_CONFIG_SETTING_HOUSE_PLACER_FORBIDDEN                       :Kielletty
+STR_CONFIG_SETTING_HOUSE_PLACER_ALLOWED                         :Sallittu
+STR_CONFIG_SETTING_HOUSE_PLACER_FULLY_CONSTRUCTED               :Sallittu, valmiiksi rakennettuina
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Taajamarahdin luonti: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Talojen tuottaman rahdin määrä suhteessa kunnan asukaslukuun.{}Neliöllinen kasvu: Kaksinkertainen asukasmäärä tuottaa matkustajia nelinkertaisesti.{}Lineaarinen kasvu: Kaksinkertainen asukasmäärä tuottaa matkustajia kaksinkertaisesti
 ###length 2
@@ -2197,7 +2206,7 @@ STR_INTRO_HIGHSCORE                                             :{BLACK}Pistetau
 STR_INTRO_HELP                                                  :{BLACK}Ohjeet ja oppaat
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Asetukset
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-asetukset
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Tarkista online-sisältö
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Online-sisältö
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Tekoälyasetukset
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Peliskriptiasetukset
 STR_INTRO_QUIT                                                  :{BLACK}Poistu
@@ -2246,6 +2255,7 @@ STR_HELP_WINDOW_README                                          :{BLACK}Lueminut
 STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Muutosloki
 STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Tiedossa olevat virheet
 STR_HELP_WINDOW_LICENSE                                         :{BLACK}Lisenssi
+STR_HELP_WINDOW_FONTS                                           :{BLACK}Fontit
 STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
 STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Käyttöopas/wiki
 STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Ilmoita virheestä
@@ -2634,7 +2644,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :odotetaan yhtey
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :poistutaan
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} on liittynyt peliin
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} liittyi peliin (asiakas nro{NBSP}{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} on liittynyt yhtiöön nro {2:NUM}
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} on liittynyt yhtiöön {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} on liittynyt katselijoihin
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} on aloittanut uuden yhtiön (nro{NBSP}{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} on poistunut pelistä ({2:STRING})
@@ -2650,7 +2660,7 @@ STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Palvelim
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Muut pelaajat eivät voi saada yhteyttä palvelimeesi
 
 # Content downloading window
-STR_CONTENT_TITLE                                               :{WHITE}Sisällön lataus
+STR_CONTENT_TITLE                                               :{WHITE}Online-sisältö
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}Tyyppi
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Sisällön tyyppi
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}Nimi
@@ -2856,6 +2866,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Ulommat lähiö
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Sisemmät lähiöt
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Keskusta
 
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :Estä uudistaminen
+STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Valitse, suojataanko tämä talo korvaamiselta kunnan kasvaessa
+STR_HOUSE_PICKER_PROTECT_OFF                                    :Ei
+STR_HOUSE_PICKER_PROTECT_ON                                     :Kyllä
+
 STR_STATION_CLASS_DFLT                                          :Oletus
 STR_STATION_CLASS_DFLT_STATION                                  :Oletusasema
 STR_STATION_CLASS_DFLT_ROADSTOP                                 :Oletuspysäkki
@@ -2947,7 +2962,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Valitse 
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Vesireittien rakentaminen
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Vesireitit
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Rakenna kanavia. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Rakenna kanavia. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Rakenna sulkuja. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Rakenna telakka (laivojen ostamista ja huoltamista varten). Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Rakenna satamalaituri. Ctrl+napsautus valitsee toisen aseman, johon haluat tämän liitettävän. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
@@ -3132,6 +3147,8 @@ STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Raitioti
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Radan nopeusrajoitus: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Tien nopeusrajoitus: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Raitiotien nopeusrajoitus: {LTBLUE}{VELOCITY}
+STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Kunta voi uudistaa: {LTBLUE}Kyllä
+STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Kunta voi uudistaa: {LTBLUE}Ei
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Kalliota
@@ -5315,6 +5332,18 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Yksikkö
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ajoneuvoa ei voi myydä...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Laivaa ei voi myydä...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ilma-alusta ei voi myydä...
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Kaikkia raideliikennevälineitä ei voida myydä…
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Kaikkia ajoneuvoja ei voida myydä…
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Kaikkia laivoja ei voida myydä…
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Kaikkia ilma-aluksia ei voida myydä…
+
+###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Raideliikennevälineitä ei voida korvata automaattisesti…
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Ajoneuvoja ei voida korvata automaattisesti…
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Aluksia ei voida korvata automaattisesti…
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Ilma-aluksia ei voida korvata automaattisesti…
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Liian monta kulkuneuvoa pelissä.
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Huoltoväliä ei voi muuttaa.

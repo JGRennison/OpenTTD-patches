@@ -1051,7 +1051,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Unitates
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Electio unitatum nummi
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra Britannica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollarium CFA
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1889,6 +1889,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Non licet
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Licet
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Licet, atque propria dispositio oppidi
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Productionis urbani modus: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Quot onera aedificia oppidorum faciunt.{}Modus quadraticus: Oppidum duplarum incolarum, quadruplex faciat vectores.{}Modus linearis: Oppidum duplarum incolarum, duplex faciat vectores.
 ###length 2
@@ -2403,7 +2405,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :a ludi scripto
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :exiens
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} ludum iungit
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} ludum iungit (Cliens #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} iungit societatem #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} spectatores iungit
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} novam societatem incipit (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ludum disiungit ({2:STRING})
@@ -2585,6 +2586,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Longitud
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Eligere longitudinem ferriviae stationis
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Trahere Ponereque
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Struere stationem trahendo ponendoque
+
 
 
 
@@ -4711,6 +4713,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Non lice
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Non licet vendere vehiculum viarium...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Non licet vendere navem...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Non licet vendere aeroplanum...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Nimis vehicula adsunt in ludo
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Non licet intervallum ministrationis mutare...

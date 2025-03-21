@@ -461,7 +461,7 @@ STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Пӗлт
 
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_RUR                                   :Вырӑсла тенкӗ
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Хӑй управ
@@ -808,6 +808,8 @@ STR_CONFIG_SETTING_TOWN_LAYOUT_3X3_GRID                         :3x3
 
 ###length 3
 
+###length 3
+
 ###length 2
 
 ###length 4
@@ -1058,6 +1060,7 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 
@@ -1692,6 +1695,10 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Ҫул �
 # Group related errors
 
 # Generic vehicle errors
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
 

@@ -221,7 +221,6 @@ enum VarTypes : uint16_t {
 	SLE_VAR_I64   =  7 << 4,
 	SLE_VAR_U64   =  8 << 4,
 	SLE_VAR_NULL  =  9 << 4, ///< useful to write zeros in savegame.
-	SLE_VAR_STRB  = 10 << 4, ///< string (with pre-allocated buffer)
 	SLE_VAR_STR   = 12 << 4, ///< string pointer
 	SLE_VAR_STRQ  = 13 << 4, ///< string pointer enclosed in quotes
 	SLE_VAR_NAME  = 14 << 4, ///< old custom name to be converted to a char pointer
@@ -244,7 +243,6 @@ enum VarTypes : uint16_t {
 	SLE_UINT64       = SLE_FILE_U64 | SLE_VAR_U64,
 	SLE_CHAR         = SLE_FILE_I8  | SLE_VAR_CHAR,
 	SLE_STRINGID     = SLE_FILE_STRINGID | SLE_VAR_U32,
-	SLE_STRINGBUF    = SLE_FILE_STRING   | SLE_VAR_STRB,
 	SLE_STRING       = SLE_FILE_STRING   | SLE_VAR_STR,
 	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
@@ -252,7 +250,6 @@ enum VarTypes : uint16_t {
 	/* Shortcut values */
 	SLE_UINT  = SLE_UINT32,
 	SLE_INT   = SLE_INT32,
-	SLE_STRB  = SLE_STRINGBUF,
 	SLE_STR   = SLE_STRING,
 	SLE_STRQ  = SLE_STRINGQUOTE,
 

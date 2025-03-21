@@ -870,7 +870,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Geldeenh
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Geld eendheid keuse
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britse Pond
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikaanse Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1715,6 +1715,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Verbode
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Toegelaat
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Toegelaat, eie dorp uitleg
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Stad-vragproduksie: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Hoeveel vrag word deur huise in dorpe geproduseer, relatief tot die algemene bevolking van die stad.{} Kwadratiese groei: 'n Dorp wat twee keer so groot is, genereer vier keer soveel passasiers.{} Lineêre groei: 'n Stad twee keer so groot, genereer twee keer soveel passasiers.
 ###length 2
@@ -2229,7 +2231,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :speletjie skrif
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :verlaat
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} het by die spel aangesluit
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} het die spel aangesluit (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} het by maatskappy #{2:NUM} aangesluit
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} het aangesluit by die spektators
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} het 'n nuwe maatskappy gestig (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} het die spel verlaat ({2:STRING})
@@ -2398,6 +2399,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Perron l
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Kies treinstasie lengte
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Sleep & Drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bou 'n stasie gebruikend sleep & drop
+
 
 
 
@@ -4582,6 +4584,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kan nie 
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kan nie pad voertuig verkoop nie
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Skip kan nie verkoop word nie...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Vliegtuig kan nie verkoop word nie...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Te veel voertuie in spel
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan nie diens interval verander nie...

@@ -438,7 +438,7 @@ namespace std {
 		if constexpr (sizeof(T) == 2) return (x >> 8) | (x << 8);
 		if constexpr (sizeof(T) == 4) return ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | ((x << 24) & 0xFF000000);
 		if constexpr (sizeof(T) == 8) return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
-				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL)
+				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL);
 #endif
 	}
 }

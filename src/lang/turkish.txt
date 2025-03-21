@@ -965,7 +965,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Para bir
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlin
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikan Doları
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Avro
@@ -1963,6 +1963,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Yasak
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :İzin verildi
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :İzin verildi, özel kasaba yerleşimi
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Şehrin kargo üretimi: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Şehrin genel nüfusuna oranla, şehirlerdeki evler tarafından ne kadar kargo üretiliyor.{}Üstel büyüme: İki katı büyüklükteki bir şehir dört katı büyüklükte yolcuya sahip olur.{}Lineer büyüme: İki katı büyüklükteki bir şehir iki katı büyüklükte yolcuya sahip olur.
 ###length 2
@@ -2610,7 +2612,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :bağlantı graf
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :ayrılıyor
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} oyuna katıldı
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} oyuna katıldı (İstemci #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} #{2:NUM} numaralı şirkete katıldı
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} izleyicilere katıldı
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} yeni bir şirket kurdu (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} oyunu terketti ({2:STRING})
@@ -2822,6 +2823,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Banliyöler
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Dış banliyöler
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :İç banliyöler
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Şehir merkezi
+
 
 STR_STATION_CLASS_DFLT                                          :Varsayılan
 STR_STATION_CLASS_DFLT_STATION                                  :Varsayılan istasyon
@@ -5262,6 +5264,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Tren sat
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Karayolu aracı satılamıyor...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Gemi satılamaz...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Uçak satılamıyor...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Oyunda çok fazla araç var
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Servis aralığı değiştirilemiyor...

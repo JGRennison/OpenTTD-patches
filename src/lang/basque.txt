@@ -847,7 +847,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Diru uni
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Diru unitatearen aukeraketa
 
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerikarrak
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euroa
@@ -1630,6 +1630,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Debekatua
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Onartua
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Gaitua herrien diseinu pertsonalizatuan
 
+###length 3
+
 ###length 2
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Zuhaitzen landaketa jokoan: {STRING}
@@ -2116,7 +2118,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :script jokoa
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :uzten
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} jokora batu da
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} jokora batu da (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} Konpainiara batu da #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ikusle bezala batu da
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} konpainia berria sortu du (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} jokoa utzi du ({2:STRING})
@@ -2278,6 +2279,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Geltokia
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Geltokiaren luzera aukeratu
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Arrastratzerakoan eraiki
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Geltokia eraiki arrastratzerakoan
+
 
 
 
@@ -4331,6 +4333,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Ezin da 
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Ezin da errepide ibilgailua saldu...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Ezin da itsasontzia saldu...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Ezin da hegazkina saldu...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Jokoan ibilgailu gehiegi
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Ezin da garraio tartea aldatu...

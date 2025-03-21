@@ -1151,7 +1151,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valiutos
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Svarai sterlingų
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikos Doleris
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eurai
@@ -2123,6 +2123,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Uždrausta
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Leista
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Leista, pasirinktinis miestų išdėstymas
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Miesto krovinių generavimo algoritmas: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Mieste generuojamų krovinių kiekis priklauso nuo miesto dydžio.{}Kvadratinis algoritmas: dvigubai paaugęs miestas generuos keturis kartus daugiau krovinių (keleivių ir pašto maišų).{}Tiesinis algoritmas: dvigubai paaugęs miestas generuos dukart daugiau krovinių (keleivių ir pašto maišų)
 ###length 2
@@ -2774,7 +2776,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :laukiama, kol a
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :išeinama
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} prisijungė prie žaidimo
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} pasijungė į žaidimą (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} prisijungė prie #{2:NUM}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} prisijungė prie stebėtojų
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} pradėjo naują kompaniją (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} paliko žaidimą ({2:STRING})
@@ -2959,6 +2960,7 @@ STR_PICKER_MODE_ALL                                             :Visi
 
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Kraštas
+
 
 STR_STATION_CLASS_DFLT                                          :Numatytoji
 STR_STATION_CLASS_DFLT_STATION                                  :Numatytoji stotelė
@@ -5407,6 +5409,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Priemone
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Automobilio parduoti negalima...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Laivo parduoti negalima...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Negalima parduoti lėktuvo...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Per daug transporto priemonių žaidime
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Aptarnavimo intervalo keisti negalima...

@@ -844,7 +844,7 @@ struct DepotWindow : Window {
 				break;
 
 			case WID_D_AUTOREPLACE:
-				Command<CMD_DEPOT_MASS_AUTOREPLACE>::Post(TileIndex(this->window_number), this->type);
+				Command<CMD_DEPOT_MASS_AUTOREPLACE>::Post(GetCmdAutoreplaceVehMsg(this->type), TileIndex(this->window_number), this->type);
 				break;
 
 			case WID_D_DEPARTURES:
@@ -1175,7 +1175,7 @@ static void DepotSellAllConfirmationCallback(Window *win, bool confirmed)
 		DepotWindow *w = (DepotWindow*)win;
 		TileIndex tile(w->window_number);
 		VehicleType vehtype = w->type;
-		Command<CMD_DEPOT_SELL_ALL_VEHICLES>::Post(tile, vehtype);
+		Command<CMD_DEPOT_SELL_ALL_VEHICLES>::Post(GetCmdSellAllVehMsg(vehtype), tile, vehtype);
 	}
 }
 

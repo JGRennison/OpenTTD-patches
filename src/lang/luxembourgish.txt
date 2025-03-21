@@ -973,7 +973,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Währung
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 44
+###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Pond
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1979,6 +1979,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Verbueden
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Erlaabt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Erlaabt, eegene Stad-Layout
 
+###length 3
+
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Duerfwuerengeneratioun: {STRING}
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Wéivill Wuere produzéiert ginn, relativ zur Bevölkerung vum Duerf.{}Quadratesche Wuesstum: En duebel sou grousst Duerf, generéiert véier mol souvill Passagéier.{}Lineare Wuesstum: En duebel sou grousst Duerf, generéiert duebel souvill Passagéier
 ###length 2
@@ -2628,7 +2630,6 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :warden op d'Akt
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :verloossen
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} ass dem Spill bäigetrueden
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} ass an d'Spill komm (Client #{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {0:STRING} ass bei d'Firma #{2:NUM} gaangen
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ass als Zuschauer do
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} huet eng nei Firma gegrënnt (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} huet d'Spill verlooss ({2:STRING})
@@ -2849,6 +2850,7 @@ STR_HOUSE_PICKER_CLASS_ZONE2                                    :Ausseberäich
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Aner Viruerter
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Bannescht Viruerter
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadzentrum
+
 
 STR_STATION_CLASS_DFLT                                          :Standard
 STR_STATION_CLASS_DFLT_STATION                                  :Standardstatioun
@@ -5309,6 +5311,10 @@ STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Kann den
 STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Kann d'Stroossegefier net verkafen...
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Kann Schëff net verkafen...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kann de Fliger net verkafen...
+
+###length VEHICLE_TYPES
+
+###length VEHICLE_TYPES
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Ze vill Gefierer am Spill
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}De Service-Intervall kann net geännert ginn...
