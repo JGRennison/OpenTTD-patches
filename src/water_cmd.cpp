@@ -484,7 +484,6 @@ CommandCost CmdBuildCanal(DoCommandFlag flags, TileIndex tile, TileIndex start_t
 
 	/* Outside of the editor you can only build canals, not oceans */
 	if (_game_mode != GM_EDITOR) {
-		if (diagonal) return CMD_ERROR;
 		if (wc == WATER_CLASS_RIVER) {
 			if (!_settings_game.construction.enable_build_river && _current_company != OWNER_DEITY) {
 				return CMD_ERROR;
