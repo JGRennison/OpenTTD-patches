@@ -21,6 +21,7 @@
 #include "vehicle_type.h"
 #include "signal_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/svector/svector.h"
 #include <map>
 #include <vector>
 
@@ -1343,7 +1344,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	uint32_t max_occupancy = 1;
 	std::string name;
 	std::vector<VehicleID> occupants;
-	std::vector<SignalReference> progsig_dependants;
+	ankerl::svector<SignalReference, 0> progsig_dependants;
 
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
@@ -1414,7 +1415,7 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	Flags flags = Flags::None;
 	int32_t value = 0;
 	std::string name;
-	std::vector<SignalReference> progsig_dependants;
+	ankerl::svector<SignalReference, 0> progsig_dependants;
 
 	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY) : owner(owner) {}
 
