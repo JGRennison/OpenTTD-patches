@@ -20,6 +20,8 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
+#include "3rdparty/svector/svector.h"
+
 #include <map>
 #include <vector>
 
@@ -99,8 +101,8 @@ struct RealSpriteGroup : SpriteGroup {
 	 * with small amount of cargo whilst loading is for stations with a lot
 	 * of da stuff. */
 
-	std::vector<const SpriteGroup *> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
-	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
+	ankerl::svector<const SpriteGroup *, 2> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
+	ankerl::svector<const SpriteGroup *, 2> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
