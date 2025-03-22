@@ -1334,7 +1334,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	TraceRestrictSlotGroupID parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	uint32_t max_occupancy = 1;
 	std::string name;
-	std::vector<VehicleID> occupants;
+	ankerl::svector<VehicleID, 3> occupants;
 	ankerl::svector<SignalReference, 0> progsig_dependants;
 
 	static void RebuildVehicleIndex();
