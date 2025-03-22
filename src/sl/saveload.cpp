@@ -1032,6 +1032,52 @@ void WriteValue(void *ptr, VarType conv, int64_t val)
 	}
 }
 
+void SlSaveValue(int64_t x, VarType conv)
+{
+	/* Write the value to the file and check if its value is in the desired range */
+	switch (GetVarFileType(conv)) {
+		case SLE_FILE_I8: assert(x >= -128 && x <= 127);     SlWriteByte(x);break;
+		case SLE_FILE_U8: assert(x >= 0 && x <= 255);        SlWriteByte(x);break;
+		case SLE_FILE_I16:assert(x >= -32768 && x <= 32767); SlWriteUint16(x);break;
+		case SLE_FILE_STRINGID:
+		case SLE_FILE_VEHORDERID:
+		case SLE_FILE_U16:assert(x >= 0 && x <= 65535);      SlWriteUint16(x);break;
+		case SLE_FILE_I32:
+		case SLE_FILE_U32:                                   SlWriteUint32((uint32_t)x);break;
+		case SLE_FILE_I64:
+		case SLE_FILE_U64:                                   SlWriteUint64(x);break;
+		default: NOT_REACHED();
+	}
+}
+
+int64_t SlLoadValue(VarType conv)
+{
+	int64_t x;
+	/* Read a value from the file */
+	switch (GetVarFileType(conv)) {
+		case SLE_FILE_I8:  x = (int8_t  )SlReadByte();   break;
+		case SLE_FILE_U8:  x = (uint8_t )SlReadByte();   break;
+		case SLE_FILE_I16: x = (int16_t )SlReadUint16(); break;
+		case SLE_FILE_U16: x = (uint16_t)SlReadUint16(); break;
+		case SLE_FILE_I32: x = (int32_t )SlReadUint32(); break;
+		case SLE_FILE_U32: x = (uint32_t)SlReadUint32(); break;
+		case SLE_FILE_I64: x = (int64_t )SlReadUint64(); break;
+		case SLE_FILE_U64: x = (uint64_t)SlReadUint64(); break;
+		case SLE_FILE_STRINGID: x = RemapOldStringID((uint16_t)SlReadUint16()); break;
+		case SLE_FILE_VEHORDERID:
+			if (SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS)) {
+				x = (uint16_t)SlReadUint16();
+			} else {
+				VehicleOrderID id = (uint8_t)SlReadByte();
+				x = (id == 0xFF) ? INVALID_VEH_ORDER_ID : id;
+			}
+			break;
+		default: NOT_REACHED();
+	}
+
+	return x;
+}
+
 /**
  * Handle all conversion and typechecking of variables here.
  * In the case of saving, read in the actual value from the struct
@@ -1045,51 +1091,13 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 {
 	switch (action) {
 		case SLA_SAVE: {
-			int64_t x = ReadValue(ptr, conv);
-
-			/* Write the value to the file and check if its value is in the desired range */
-			switch (GetVarFileType(conv)) {
-				case SLE_FILE_I8: assert(x >= -128 && x <= 127);     SlWriteByte(x);break;
-				case SLE_FILE_U8: assert(x >= 0 && x <= 255);        SlWriteByte(x);break;
-				case SLE_FILE_I16:assert(x >= -32768 && x <= 32767); SlWriteUint16(x);break;
-				case SLE_FILE_STRINGID:
-				case SLE_FILE_VEHORDERID:
-				case SLE_FILE_U16:assert(x >= 0 && x <= 65535);      SlWriteUint16(x);break;
-				case SLE_FILE_I32:
-				case SLE_FILE_U32:                                   SlWriteUint32((uint32_t)x);break;
-				case SLE_FILE_I64:
-				case SLE_FILE_U64:                                   SlWriteUint64(x);break;
-				default: NOT_REACHED();
-			}
+			SlSaveValue(ReadValue(ptr, conv), conv);
 			break;
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
-			int64_t x;
-			/* Read a value from the file */
-			switch (GetVarFileType(conv)) {
-				case SLE_FILE_I8:  x = (int8_t  )SlReadByte();   break;
-				case SLE_FILE_U8:  x = (uint8_t )SlReadByte();   break;
-				case SLE_FILE_I16: x = (int16_t )SlReadUint16(); break;
-				case SLE_FILE_U16: x = (uint16_t)SlReadUint16(); break;
-				case SLE_FILE_I32: x = (int32_t )SlReadUint32(); break;
-				case SLE_FILE_U32: x = (uint32_t)SlReadUint32(); break;
-				case SLE_FILE_I64: x = (int64_t )SlReadUint64(); break;
-				case SLE_FILE_U64: x = (uint64_t)SlReadUint64(); break;
-				case SLE_FILE_STRINGID: x = RemapOldStringID((uint16_t)SlReadUint16()); break;
-				case SLE_FILE_VEHORDERID:
-					if (SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS)) {
-						x = (uint16_t)SlReadUint16();
-					} else {
-						VehicleOrderID id = (uint8_t)SlReadByte();
-						x = (id == 0xFF) ? INVALID_VEH_ORDER_ID : id;
-					}
-					break;
-				default: NOT_REACHED();
-			}
-
 			/* Write The value to the struct. These ARE endian safe. */
-			WriteValue(ptr, conv, x);
+			WriteValue(ptr, conv, SlLoadValue(conv));
 			break;
 		}
 		case SLA_PTRS: break;
@@ -1845,6 +1853,35 @@ static void SlRing(void *ring, VarType conv)
 	}
 }
 
+template <SaveLoadAction action>
+static void SlCustomContainerVarList(void *list, const SaveLoad &sld)
+{
+	switch (action) {
+		case SLA_SAVE: {
+			const size_t item_count = static_cast<size_t>(sld.custom.container_functor(list, SaveLoadCustomContainerOp::GetLength, {}, 0));
+
+			/* Automatically calculate the length? */
+			if (_sl.need_length != NL_NONE) {
+				SlSetLength(SlCalcVarListLenFromItemCount(item_count, SlCalcConvFileLen(sld.conv)));
+			}
+
+			SlWriteListLength(item_count);
+			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Save, sld.conv, 0);
+			break;
+		}
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Load, sld.conv, SlReadListLength());
+			break;
+		}
+		case SLA_PTRS: break;
+		case SLA_NULL:
+			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Load, {}, 0);
+			break;
+		default: NOT_REACHED();
+	}
+}
+
 /** Are we going to save this object or not? */
 static inline bool SlIsObjectValidInSavegame(const SaveLoad &sld)
 {
@@ -1883,6 +1920,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
+		case SL_CUSTOMLIST:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1907,6 +1945,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 					}
 				}
 				case SL_STDSTR: return SlCalcStdStrLen(*static_cast<std::string *>(GetVariableAddress(object, sld)));
+				case SL_CUSTOMLIST: return SlCalcVarListLenFromItemCount(sld.custom.container_functor(GetVariableAddress(object, sld), SaveLoadCustomContainerOp::GetLength, {}, 0), SlCalcConvFileLen(sld.conv));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1936,6 +1975,7 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
+		case SL_CUSTOMLIST:
 		case SL_STRUCT:
 		case SL_STRUCTLIST:
 			/* CONDITIONAL saveload types depend on the savegame version */
@@ -2029,6 +2069,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
+		case SL_CUSTOMLIST:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (check_version) {
 				if (!SlIsObjectValidInSavegame(sld)) return false;
@@ -2071,6 +2112,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					}
 					break;
 				}
+				case SL_CUSTOMLIST: SlCustomContainerVarList<action>(ptr, sld); break;
 				case SL_STDSTR: SlStdStringGeneric<action>(static_cast<std::string *>(ptr), sld.conv); break;
 				default: NOT_REACHED();
 			}
@@ -2253,6 +2295,7 @@ static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
 		case SL_ARR:
 		case SL_VARVEC:
 		case SL_RING:
+		case SL_CUSTOMLIST:
 			return GetVarFileType(sld.conv) | SLE_FILE_HAS_LENGTH_FIELD; break;
 
 		case SL_REF:
@@ -2383,7 +2426,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 					}
 
 					/* We don't know this field, so read to nothing. */
-					saveloads.push_back({ true, saveload_type, ((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL, 1, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_TABLE_UNKNOWN, { nullptr }, SlXvFeatureTest(), struct_handler });
+					saveloads.push_back({ true, saveload_type, ((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL, 1, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_TABLE_UNKNOWN, { nullptr }, { struct_handler }, SlXvFeatureTest() });
 					continue;
 				}
 
