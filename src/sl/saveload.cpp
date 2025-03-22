@@ -1733,10 +1733,9 @@ static void SlRefList(void *list, SLRefType conv)
 template <typename PtrList>
 static void SlVarList(void *list, VarType conv)
 {
-	const size_t size_len = SlCalcConvMemLen(conv);
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcVarListLen<PtrList>(list, size_len));
+		SlSetLength(SlCalcVarListLen<PtrList>(list, SlCalcConvFileLen(conv)));
 	}
 
 	PtrList *l = (PtrList *)list;
@@ -1866,12 +1865,13 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 				case SL_REFVEC: return SlCalcRefListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				case SL_RING: return SlCalcRingLen(GetVariableAddress(object, sld), sld.conv);
 				case SL_VARVEC: {
-					const size_t size_len = SlCalcConvMemLen(sld.conv);
-					switch (size_len) {
-						case 1: return SlCalcVarListLen<std::vector<uint8_t>>(GetVariableAddress(object, sld), 1);
-						case 2: return SlCalcVarListLen<std::vector<uint16_t>>(GetVariableAddress(object, sld), 2);
-						case 4: return SlCalcVarListLen<std::vector<uint32_t>>(GetVariableAddress(object, sld), 4);
-						case 8: return SlCalcVarListLen<std::vector<uint64_t>>(GetVariableAddress(object, sld), 8);
+					const size_t mem_len = SlCalcConvMemLen(sld.conv);
+					const size_t file_len = SlCalcConvFileLen(sld.conv);
+					switch (mem_len) {
+						case 1: return SlCalcVarListLen<std::vector<uint8_t>>(GetVariableAddress(object, sld), file_len);
+						case 2: return SlCalcVarListLen<std::vector<uint16_t>>(GetVariableAddress(object, sld), file_len);
+						case 4: return SlCalcVarListLen<std::vector<uint32_t>>(GetVariableAddress(object, sld), file_len);
+						case 8: return SlCalcVarListLen<std::vector<uint64_t>>(GetVariableAddress(object, sld), file_len);
 						default: NOT_REACHED();
 					}
 				}
