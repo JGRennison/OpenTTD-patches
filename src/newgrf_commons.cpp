@@ -796,11 +796,15 @@ void NewGRFSpriteLayout::ProcessRegisters(uint8_t resolved_var10, uint32_t resol
  * @param index Index to get.
  * @returns SpriteGroup at index, or nullptr if not present.
  */
-const SpriteGroup *VariableGRFFileProps::GetSpriteGroup(size_t index) const
+const SpriteGroup *VariableGRFFileProps::GetSpriteGroup(VariableGRFFileProps::IndexType index) const
 {
-	auto it = std::ranges::lower_bound(this->spritegroups, index, std::less{}, &CargoSpriteGroup::first);
-	if (it == std::end(this->spritegroups) || it->first != index) return nullptr;
-	return it->second;
+	const IndexType *keys = this->get_keys();
+	for (IndexType i = 0; i < this->size; i++) {
+		if (keys[i] == index) {
+			return this->get_groups()[i];
+		}
+	}
+	return nullptr;
 }
 
 /**
@@ -808,11 +812,15 @@ const SpriteGroup *VariableGRFFileProps::GetSpriteGroup(size_t index) const
  * @param index Index to get.
  * @returns Pointer to SpriteGroup at index, or nullptr if not present.
  */
-const SpriteGroup **VariableGRFFileProps::GetSpriteGroupPtr(size_t index)
+const SpriteGroup **VariableGRFFileProps::GetSpriteGroupPtr(VariableGRFFileProps::IndexType index)
 {
-	auto it = std::ranges::lower_bound(this->spritegroups, index, std::less{}, &CargoSpriteGroup::first);
-	if (it == std::end(this->spritegroups) || it->first != index) return nullptr;
-	return &it->second;
+	const IndexType *keys = this->get_keys();
+	for (IndexType i = 0; i < this->size; i++) {
+		if (keys[i] == index) {
+			return const_cast<const SpriteGroup **>(this->get_groups() + i);
+		}
+	}
+	return nullptr;
 }
 
 /**
@@ -820,12 +828,45 @@ const SpriteGroup **VariableGRFFileProps::GetSpriteGroupPtr(size_t index)
  * @param index Index to set.
  * @param spritegroup SpriteGroup to set.
  */
-void VariableGRFFileProps::SetSpriteGroup(size_t index, const SpriteGroup *spritegroup)
+void VariableGRFFileProps::SetSpriteGroup(VariableGRFFileProps::IndexType index, const SpriteGroup *spritegroup)
 {
-	auto it = std::ranges::lower_bound(this->spritegroups, index, std::less{}, &CargoSpriteGroup::first);
-	if (it == std::end(this->spritegroups) || it->first != index) {
-		this->spritegroups.emplace(it, index, spritegroup);
-	} else {
-		it->second = spritegroup;
+	const IndexType *keys = this->get_keys();
+	const GroupType *groups = this->get_groups();
+
+	IndexType insert_pos = 0;
+	for (; insert_pos < this->size; insert_pos++) {
+		if (index == keys[insert_pos]) {
+			const_cast<GroupType *>(groups)[insert_pos] = spritegroup;
+			return;
+		}
+		if (index < keys[insert_pos]) break;
 	}
+	if (this->size == this->capacity) {
+		/* Re-allocate */
+		IndexType new_capacity = this->capacity * 2;
+		const SpriteGroup **new_groups = reinterpret_cast<const SpriteGroup **>(MallocT<char>(new_capacity * (sizeof(GroupType) + sizeof(IndexType))));
+		IndexType *new_keys = reinterpret_cast<IndexType *>(new_groups + new_capacity);
+
+		MemCpyT(new_keys, keys, this->size );
+		MemCpyT(new_groups, groups, this->size );
+		new_keys[insert_pos] = index;
+		new_groups[insert_pos] = spritegroup;
+		MemCpyT(new_keys + insert_pos + 1, keys + insert_pos, this->size - insert_pos);
+		MemCpyT(new_groups + insert_pos + 1, groups + insert_pos, this->size - insert_pos);
+
+		if (!this->inline_mode()) free(this->data.allocated_groups);
+		this->capacity = new_capacity;
+		this->data.allocated_keys = new_keys;
+		this->data.allocated_groups = new_groups;
+	} else {
+		IndexType *new_keys = const_cast<IndexType *>(keys);
+		GroupType *new_groups = const_cast<GroupType *>(groups);
+		if (insert_pos < this->size) {
+			MemMoveT(new_keys + insert_pos + 1, new_keys + insert_pos, this->size - insert_pos);
+			MemMoveT(new_groups + insert_pos + 1, new_groups + insert_pos, this->size - insert_pos);
+		}
+		new_keys[insert_pos] = index;
+		new_groups[insert_pos] = spritegroup;
+	}
+	this->size++;
 }

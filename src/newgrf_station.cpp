@@ -617,7 +617,7 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	} else if (Station::IsExpected(this->station_scope.st)) {
 		const Station *st = Station::From(this->station_scope.st);
 		/* Pick the first cargo that we have waiting */
-		for (const auto &[cargo, spritegroup] : statspec->grf_prop.spritegroups) {
+		for (const auto &[cargo, spritegroup] : statspec->grf_prop) {
 			if (cargo < NUM_CARGO && st->goods[cargo].CargoTotalCount() > 0) {
 				ctype = cargo;
 				this->root_spritegroup = spritegroup;
@@ -1076,7 +1076,7 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 
 	dumper.DumpSpriteGroup(ro.root_spritegroup, 0);
 
-	for (const auto &[cargo, spritegroup] : statspec->grf_prop.spritegroups) {
+	for (const auto &[cargo, spritegroup] : statspec->grf_prop) {
 		if (spritegroup != ro.root_spritegroup) {
 			dumper.Print("");
 			switch (cargo) {

@@ -18,7 +18,6 @@
 #include "command_type.h"
 #include "direction_type.h"
 #include "company_type.h"
-#include "3rdparty/svector/svector.h"
 #include <vector>
 
 /** Context for tile accesses */
@@ -312,6 +311,8 @@ struct GRFFilePropsBase {
 	uint32_t grfid = 0;                          ///< grfid that introduced this entity.
 	const struct GRFFile *grffile = nullptr;     ///< grf file that introduced this entity
 
+	using IndexType = uint8_t;
+
 	/**
 	 * Test if this entity was introduced by NewGRF.
 	 * @returns true iff the grfid property is set.
@@ -332,7 +333,7 @@ struct FixedGRFFileProps : GRFFilePropsBase {
 	 * @param index Index to get.
 	 * @returns SpriteGroup at index, or nullptr if not present.
 	 */
-	const struct SpriteGroup *GetSpriteGroup(size_t index = 0) const { return this->spritegroups[index]; }
+	const struct SpriteGroup *GetSpriteGroup(IndexType index = 0) const { return this->spritegroups[index]; }
 
 	/**
 	 * Set the SpriteGroup at the specified index.
@@ -346,12 +347,67 @@ struct FixedGRFFileProps : GRFFilePropsBase {
  * Variable-length list of sprite groups for an entity.
  */
 struct VariableGRFFileProps : GRFFilePropsBase {
-	using CargoSpriteGroup = std::pair<size_t, const struct SpriteGroup *>;
-	ankerl::svector<CargoSpriteGroup, 2> spritegroups; ///< pointers to the different sprite groups of the entity
+private:
+	using GroupType = const struct SpriteGroup *;
 
-	const struct SpriteGroup *GetSpriteGroup(size_t index) const;
-	const struct SpriteGroup **GetSpriteGroupPtr(size_t index);
-	void SetSpriteGroup(size_t index, const struct SpriteGroup *spritegroup);
+	IndexType capacity = 2;
+	IndexType size = 0;
+	IndexType inline_keys[2];
+
+	union {
+		GroupType inline_groups[2];
+
+		struct {
+			IndexType *allocated_keys;
+			const struct SpriteGroup **allocated_groups;
+		};
+	} data;
+
+	inline bool inline_mode() const { return this->capacity == 2; }
+	inline const IndexType *get_keys() const { return this->inline_mode() ? this->inline_keys : this->data.allocated_keys; }
+	inline const GroupType *get_groups() const { return this->inline_mode() ? this->data.inline_groups : this->data.allocated_groups; }
+
+	void move_from(VariableGRFFileProps &&other)
+	{
+		this->capacity = other.capacity;
+		this->size = other.size;
+		this->inline_keys[0] = other.inline_keys[0];
+		this->inline_keys[1] = other.inline_keys[1];
+		this->data = other.data;
+		other.capacity = 2;
+		other.size = 0;
+	}
+
+public:
+	const struct SpriteGroup *GetSpriteGroup(IndexType index) const;
+	const struct SpriteGroup **GetSpriteGroupPtr(IndexType index);
+	void SetSpriteGroup(IndexType index, const struct SpriteGroup *spritegroup);
+
+	struct VariableGRFFilePropsIterator {
+		VariableGRFFilePropsIterator(const IndexType *keys, const GroupType *groups) : keys(keys), groups(groups) {}
+
+		bool operator==(const VariableGRFFilePropsIterator &other) const { return this->keys == other.keys; }
+		std::pair<const IndexType, const GroupType> operator*() const { return { *this->keys, *this->groups }; }
+		VariableGRFFilePropsIterator &operator++() { ++this->keys; ++this->groups; return *this; }
+
+	private:
+		const IndexType *keys;
+		const GroupType *groups;
+	};
+
+	VariableGRFFilePropsIterator begin() const { return { this->get_keys(), this->get_groups() }; }
+	VariableGRFFilePropsIterator end() const { return { this->get_keys() + this->size, nullptr }; }
+
+	VariableGRFFileProps() = default;
+	VariableGRFFileProps(const VariableGRFFileProps &) = delete;
+	VariableGRFFileProps(VariableGRFFileProps &&other) { this->move_from(std::move(other)); }
+	VariableGRFFileProps& operator=(const VariableGRFFileProps &) = delete;
+	VariableGRFFileProps& operator=(VariableGRFFileProps &&other) { this->move_from(std::move(other)); return *this; }
+
+	~VariableGRFFileProps()
+	{
+		if (!this->inline_mode()) free(this->data.allocated_groups);
+	}
 };
 
 /** Data related to the handling of grf files. */

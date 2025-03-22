@@ -1653,7 +1653,7 @@ void AnalyseEngineCallbacks()
 			if (!is_purchase) non_purchase_groups++;
 		};
 
-		for (const auto &[cargo, spritegroup] : e->grf_prop.spritegroups) {
+		for (const auto &[cargo, spritegroup] : e->grf_prop) {
 			process_sg(spritegroup, cargo == SpriteGroupCargo::SG_PURCHASE);
 		}
 		for (const WagonOverride &wo : e->overrides) {
@@ -1730,7 +1730,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 
 	dumper.DumpSpriteGroup(root_spritegroup, 0);
 
-	for (const auto &[cargo, spritegroup] : e->grf_prop.spritegroups) {
+	for (const auto &[cargo, spritegroup] : e->grf_prop) {
 		if (spritegroup != root_spritegroup) {
 			dumper.Print("");
 			switch (cargo) {
