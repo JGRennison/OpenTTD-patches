@@ -1177,9 +1177,10 @@ static inline size_t SlCalcStringLen(const void *ptr, size_t length, VarType con
  * @param length of the string (full length)
  * @param conv must be SLE_FILE_STRING
  */
-static void SlString(void *ptr, size_t length, VarType conv)
+template <SaveLoadAction action>
+void SlString(void *ptr, size_t length, VarType conv)
 {
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE: {
 			size_t len;
 			switch (GetVarMemType(conv)) {
@@ -1253,9 +1254,10 @@ static void SlString(void *ptr, size_t length, VarType conv)
  * @param ptr the string being manipulated
  * @param conv must be SLE_FILE_STRING
  */
-void SlStdString(std::string *ptr, VarType conv)
+template <SaveLoadAction action>
+void SlStdStringGeneric(std::string *ptr, VarType conv)
 {
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE: {
 			dbg_assert(ptr != nullptr);
 			std::string &str = *ptr;
@@ -1291,6 +1293,28 @@ void SlStdString(std::string *ptr, VarType conv)
 		}
 		case SLA_PTRS: break;
 		case SLA_NULL: break;
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Save/Load a \c std::string.
+ * @param ptr the string being manipulated
+ * @param conv must be SLE_FILE_STRING
+ */
+void SlStdString(std::string *ptr, VarType conv)
+{
+	switch (_sl.action) {
+		case SLA_SAVE:
+			SlStdStringGeneric<SLA_SAVE>(ptr, conv);
+			return;
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD:
+			SlStdStringGeneric<SLA_LOAD>(ptr, conv);
+			return;
+		case SLA_PTRS:
+		case SLA_NULL:
+			return;
 		default: NOT_REACHED();
 	}
 }
@@ -2029,7 +2053,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					}
 					break;
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
-				case SL_STR: SlString(ptr, sld.length, sld.conv); break;
+				case SL_STR: SlString<action>(ptr, sld.length, sld.conv); break;
 				case SL_REFLIST: SlRefList<std::list<void *>>(ptr, (SLRefType)conv); break;
 				case SL_REFRING: SlRefList<ring_buffer<void *>>(ptr, (SLRefType)conv); break;
 				case SL_REFVEC: SlRefList<std::vector<void *>>(ptr, (SLRefType)conv); break;
@@ -2045,7 +2069,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					}
 					break;
 				}
-				case SL_STDSTR: SlStdString(static_cast<std::string *>(ptr), sld.conv); break;
+				case SL_STDSTR: SlStdStringGeneric<action>(static_cast<std::string *>(ptr), sld.conv); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2201,7 +2225,7 @@ void SlSkipTableHeader()
 
 		if ((type & SLE_FILE_TYPE_MASK) == SLE_FILE_STRUCT) sub_tables++;
 
-		SlString(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
+		SlString<SLA_LOAD>(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
 	}
 	for (uint i = 0; i < sub_tables; i++) {
 		SlSkipTableHeader();
@@ -2326,7 +2350,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				}
 
 				std::string key;
-				SlStdString(&key, SLE_STR);
+				SlStdStringGeneric<SLA_LOAD>(&key, SLE_STR);
 
 				auto sld_it = std::lower_bound(key_lookup.begin(), key_lookup.end(), key);
 				if (sld_it == key_lookup.end() || sld_it->name != key) {
@@ -2403,7 +2427,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				uint8_t type = GetSavegameTableFileType(nsld.save_load);
 				assert(type != SLE_FILE_END);
 				SlWriteByte(type);
-				SlString(const_cast<char **>(&nsld.name), 0, SLE_STR);
+				SlString<SLA_SAVE>(const_cast<char **>(&nsld.name), 0, SLE_STR);
 
 				saveloads.push_back(nsld.save_load);
 			}
