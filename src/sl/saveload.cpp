@@ -946,28 +946,6 @@ void SlSetLength(size_t length)
 	}
 }
 
-/**
- * Save/Load bytes. These do not need to be converted to Little/Big Endian
- * so directly write them or read them to/from file
- * @param ptr The source or destination of the object being manipulated
- * @param length number of bytes this fast CopyBytes lasts
- */
-static void SlCopyBytes(void *ptr, size_t length)
-{
-	uint8_t *p = (uint8_t *)ptr;
-
-	switch (_sl.action) {
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
-			_sl.reader->CopyBytes(p, length);
-			break;
-		case SLA_SAVE:
-			_sl.dumper->CopyBytes(p, length);
-			break;
-		default: NOT_REACHED();
-	}
-}
-
 void SlCopyBytesRead(void *p, size_t length)
 {
 	_sl.reader->CopyBytes((uint8_t *)p, length);
@@ -976,6 +954,26 @@ void SlCopyBytesRead(void *p, size_t length)
 void SlCopyBytesWrite(void *p, size_t length)
 {
 	_sl.dumper->CopyBytes((uint8_t *)p, length);
+}
+
+/**
+ * Save/Load bytes. These do not need to be converted to Little/Big Endian
+ * so directly write them or read them to/from file
+ * @param ptr The source or destination of the object being manipulated
+ * @param length number of bytes this fast CopyBytes lasts
+ */
+static void SlCopyBytes(void *ptr, size_t length)
+{
+	switch (_sl.action) {
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD:
+			SlCopyBytesRead(ptr, length);
+			break;
+		case SLA_SAVE:
+			SlCopyBytesWrite(ptr, length);
+			break;
+		default: NOT_REACHED();
+	}
 }
 
 /** Get the length of the current object */
@@ -1193,7 +1191,7 @@ void SlString(void *ptr, size_t length, VarType conv)
 			}
 
 			SlWriteArrayLength(len);
-			SlCopyBytes(ptr, len);
+			SlCopyBytesWrite(ptr, len);
 			break;
 		}
 		case SLA_LOAD_CHECK:
@@ -1227,7 +1225,7 @@ void SlString(void *ptr, size_t length, VarType conv)
 					} else {
 						*(char **)ptr = MallocT<char>(len + 1); // terminating '\0'
 						ptr = *(char **)ptr;
-						SlCopyBytes(ptr, len);
+						SlCopyBytesRead(ptr, len);
 					}
 					break;
 			}
@@ -1263,7 +1261,7 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			std::string &str = *ptr;
 
 			SlWriteArrayLength(str.size());
-			SlCopyBytes(str.data(), str.size());
+			SlCopyBytesWrite(str.data(), str.size());
 			break;
 		}
 		case SLA_LOAD_CHECK:
@@ -1278,7 +1276,7 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			std::string &str = *ptr;
 
 			str.resize(len);
-			SlCopyBytes(str.data(), len);
+			SlCopyBytesRead(str.data(), len);
 
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
@@ -1380,7 +1378,7 @@ void SlArray(void *array, size_t length, VarType conv)
 		/* all arrays except difficulty settings */
 		if (conv == SLE_INT16 || conv == SLE_UINT16 || conv == SLE_STRINGID ||
 				conv == SLE_INT32 || conv == SLE_UINT32) {
-			SlCopyBytes(array, length * SlCalcConvFileLen(conv));
+			SlCopyBytesRead(array, length * SlCalcConvFileLen(conv));
 			return;
 		}
 		/* used for conversion of Money 32bit->64bit */
