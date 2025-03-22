@@ -1659,6 +1659,14 @@ static inline size_t SlCalcRefListLen(const void *list)
 	return l->size() * item_size + type_size;
 }
 
+static size_t SlCalcVarListLenFromItemCount(size_t item_count, size_t item_size)
+{
+	uint type_size = SlGetListTypeLengthSize(item_count);
+	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
+	 * of the list */
+	return item_count * item_size + type_size;
+}
+
 /**
  * Return the size in bytes of a list
  * @param list The std::list to find the size of
@@ -1667,10 +1675,7 @@ static inline size_t SlCalcRefListLen(const void *list)
 static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
 {
 	const PtrList *l = (const PtrList *) list;
-	uint type_size = SlGetListTypeLengthSize(l->size());
-	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
-	 * of the list */
-	return l->size() * item_size + type_size;
+	return SlCalcVarListLenFromItemCount(l->size(), item_size);
 }
 
 /**
