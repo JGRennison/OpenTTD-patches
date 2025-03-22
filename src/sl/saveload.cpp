@@ -1530,9 +1530,10 @@ void *IntToReference(size_t index, SLRefType rt)
  * @param ptr The object being filled/read.
  * @param conv VarType type of the current element of the struct.
  */
+template <SaveLoadAction action>
 void SlSaveLoadRef(void *ptr, VarType conv)
 {
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE:
 			SlWriteUint32((uint32_t)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 			break;
@@ -1601,11 +1602,12 @@ public:
 		return list->size() * item_size + type_size;
 	}
 
+	template <SaveLoadAction action>
 	static void SlSaveLoadMember(SaveLoadType cmd, Tvar *item, VarType conv)
 	{
 		switch (cmd) {
-			case SL_VAR: SlSaveLoadConv(item, conv); break;
-			case SL_REF: SlSaveLoadRef(item, conv); break;
+			case SL_VAR: SlSaveLoadConvGeneric<action>(item, conv); break;
+			case SL_REF: SlSaveLoadRef<action>(item, conv); break;
 			default:
 				NOT_REACHED();
 		}
@@ -1617,18 +1619,19 @@ public:
 	 * @param conv VarType type of variable that is used for calculating the size.
 	 * @param cmd The SaveLoadType ware are saving/loading.
 	 */
+	template <SaveLoadAction action>
 	static void SlSaveLoad(void *storage, VarType conv, SaveLoadType cmd = SL_VAR)
 	{
 		assert(cmd == SL_VAR || cmd == SL_REF);
 
 		SlStorageT *list = static_cast<SlStorageT *>(storage);
 
-		switch (_sl.action) {
+		switch (action) {
 			case SLA_SAVE:
 				SlWriteListLength(list->size());
 
 				for (auto &item : *list) {
-					SlSaveLoadMember(cmd, &item, conv);
+					SlSaveLoadMember<SLA_SAVE>(cmd, &item, conv);
 				}
 				break;
 
@@ -1644,14 +1647,14 @@ public:
 				/* Load each value and push to the end of the storage. */
 				for (size_t i = 0; i < length; i++) {
 					Tvar &data = list->emplace_back();
-					SlSaveLoadMember(cmd, &data, conv);
+					SlSaveLoadMember<SLA_LOAD>(cmd, &data, conv);
 				}
 				break;
 			}
 
 			case SLA_PTRS:
 				for (auto &item : *list) {
-					SlSaveLoadMember(cmd, &item, conv);
+					SlSaveLoadMember<SLA_PTRS>(cmd, &item, conv);
 				}
 				break;
 
@@ -1705,18 +1708,18 @@ static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
  */
-template <typename PtrList>
+template <SaveLoadAction action, typename PtrList>
 static void SlRefList(void *list, SLRefType conv)
 {
-	/* Automatically calculate the length? */
-	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcRefListLen<PtrList>(list));
-	}
-
 	PtrList *l = (PtrList *)list;
 
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE: {
+			/* Automatically calculate the length? */
+			if (_sl.need_length != NL_NONE) {
+				SlSetLength(SlCalcRefListLen<PtrList>(list));
+			}
+
 			SlWriteListLength(l->size());
 
 			for (auto iter = l->begin(); iter != l->end(); ++iter) {
@@ -1757,23 +1760,23 @@ static void SlRefList(void *list, SLRefType conv)
  * @param list The list being manipulated
  * @param conv VarType type of the list
  */
-template <typename PtrList>
+template <SaveLoadAction action, typename PtrList>
 static void SlVarList(void *list, VarType conv)
 {
-	/* Automatically calculate the length? */
-	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcVarListLen<PtrList>(list, SlCalcConvFileLen(conv)));
-	}
-
 	PtrList *l = (PtrList *)list;
 
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE: {
+			/* Automatically calculate the length? */
+			if (_sl.need_length != NL_NONE) {
+				SlSetLength(SlCalcVarListLen<PtrList>(list, SlCalcConvFileLen(conv)));
+			}
+
 			SlWriteListLength(l->size());
 
 			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
-				SlSaveLoadConv(&(*iter), conv);
+				SlSaveLoadConvGeneric<SLA_SAVE>(&(*iter), conv);
 			}
 			break;
 		}
@@ -1786,7 +1789,7 @@ static void SlVarList(void *list, VarType conv)
 			iter = l->begin();
 
 			for (size_t i = 0; i < length; i++) {
-				SlSaveLoadConv(&(*iter), conv);
+				SlSaveLoadConvGeneric<SLA_LOAD>(&(*iter), conv);
 				++iter;
 			}
 			break;
@@ -1825,18 +1828,19 @@ static inline size_t SlCalcRingLen(const void *ring, VarType conv)
  * @param ring The ring buffer being manipulated
  * @param conv VarType type of variable that is used for calculating the size
  */
+template <SaveLoadAction action>
 static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64_t>::SlSaveLoad<action>(ring, conv); break;
 		default: NOT_REACHED();
 	}
 }
@@ -2052,17 +2056,17 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					break;
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
 				case SL_STR: SlString<action>(ptr, sld.length, sld.conv); break;
-				case SL_REFLIST: SlRefList<std::list<void *>>(ptr, (SLRefType)conv); break;
-				case SL_REFRING: SlRefList<ring_buffer<void *>>(ptr, (SLRefType)conv); break;
-				case SL_REFVEC: SlRefList<std::vector<void *>>(ptr, (SLRefType)conv); break;
-				case SL_RING: SlRing(ptr, conv); break;
+				case SL_REFLIST: SlRefList<action, std::list<void *>>(ptr, (SLRefType)conv); break;
+				case SL_REFRING: SlRefList<action, ring_buffer<void *>>(ptr, (SLRefType)conv); break;
+				case SL_REFVEC: SlRefList<action, std::vector<void *>>(ptr, (SLRefType)conv); break;
+				case SL_RING: SlRing<action>(ptr, conv); break;
 				case SL_VARVEC: {
 					const size_t size_len = SlCalcConvMemLen(sld.conv);
 					switch (size_len) {
-						case 1: SlVarList<std::vector<uint8_t>>(ptr, conv); break;
-						case 2: SlVarList<std::vector<uint16_t>>(ptr, conv); break;
-						case 4: SlVarList<std::vector<uint32_t>>(ptr, conv); break;
-						case 8: SlVarList<std::vector<uint64_t>>(ptr, conv); break;
+						case 1: SlVarList<action, std::vector<uint8_t>>(ptr, conv); break;
+						case 2: SlVarList<action, std::vector<uint16_t>>(ptr, conv); break;
+						case 4: SlVarList<action, std::vector<uint32_t>>(ptr, conv); break;
+						case 8: SlVarList<action, std::vector<uint64_t>>(ptr, conv); break;
 						default: NOT_REACHED();
 					}
 					break;
