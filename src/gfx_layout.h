@@ -15,6 +15,7 @@
 #include "core/math_func.hpp"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/svector/svector.h"
 
 #include <map>
 #include <string>
@@ -31,7 +32,7 @@ struct FontState {
 	FontSize fontsize;       ///< Current font size.
 	TextColour cur_colour;   ///< Current text colour.
 
-	std::stack<TextColour, std::vector<TextColour>> colour_stack; ///< Stack of colours to assist with colour switching.
+	std::stack<TextColour, ankerl::svector<TextColour, 3>> colour_stack; ///< Stack of colours to assist with colour switching.
 
 	FontState() : fontsize(FS_END), cur_colour(TC_INVALID) {}
 	FontState(TextColour colour, FontSize fontsize) : fontsize(fontsize), cur_colour(colour) {}
