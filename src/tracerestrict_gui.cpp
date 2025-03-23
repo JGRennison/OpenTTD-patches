@@ -114,7 +114,7 @@ void TraceRestrictClearRecentSlotsAndCounters()
 }
 
 /** Widget IDs */
-enum TraceRestrictWindowWidgets {
+enum TraceRestrictWindowWidgets : WidgetID {
 	TR_WIDGET_CAPTION,
 	TR_WIDGET_HIGHLIGHT,
 	TR_WIDGET_INSTRUCTION_LIST,
@@ -164,7 +164,7 @@ enum TraceRestrictWindowWidgets {
 };
 
 /** Selection mappings for NWID_SELECTION selectors */
-enum PanelWidgets {
+enum PanelWidgets : WidgetID {
 	/* Left 2 */
 	DPL2_TYPE = 0,
 	DPL2_CONDFLAGS,
@@ -1303,7 +1303,7 @@ static const StringID _program_cond_type[] = {
 };
 
 /** condition flags field drop down value types */
-enum CondFlagsDropDownType {
+enum CondFlagsDropDownType : uint8_t {
 	CFDDT_ELSE = 0,           ///< This is an else block
 	CFDDT_ELIF = TRCF_ELSE,   ///< This is an else-if block
 	CFDDT_ORIF = TRCF_OR,     ///< This is an or-if block
@@ -2029,7 +2029,7 @@ class TraceRestrictWindow: public Window {
 	int base_copy_plane;                                                        ///< base plane for TR_WIDGET_SEL_COPY widget
 	int base_share_plane;                                                       ///< base plane for TR_WIDGET_SEL_SHARE widget
 
-	enum QuerySubMode {
+	enum QuerySubMode : uint8_t {
 		QSM_DEFAULT,
 		QSM_NEW_SLOT,
 		QSM_NEW_COUNTER,
@@ -4001,7 +4001,7 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 }
 
 /** Slot GUI widget IDs */
-enum TraceRestrictSlotWindowWidgets {
+enum TraceRestrictSlotWindowWidgets : WidgetID {
 	WID_TRSL_LIST_VEHICLE, // this must be first, see: DirtyVehicleListWindowForVehicle
 	WID_TRSL_CAPTION,
 	WID_TRSL_ALL_VEHICLES,
@@ -4095,7 +4095,7 @@ class TraceRestrictSlotWindow : public BaseVehicleListWindow {
 
 private:
 	/* Columns in the group list */
-	enum ListColumns {
+	enum ListColumns : uint8_t {
 		VGC_FOLD,          ///< Fold / Unfold button.
 		VGC_NAME,          ///< Slot name.
 		VGC_PUBLIC,        ///< Slot public state.
@@ -5010,7 +5010,7 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 }
 
 /** Counter GUI widget IDs */
-enum TraceRestrictCounterWindowWidgets {
+enum TraceRestrictCounterWindowWidgets : WidgetID {
 	WID_TRCL_CAPTION,
 	WID_TRCL_LIST_COUNTERS,
 	WID_TRCL_LIST_COUNTERS_SCROLLBAR,
@@ -5054,7 +5054,7 @@ static constexpr NWidgetPart _nested_counter_widgets[] = {
 
 class TraceRestrictCounterWindow : public Window {
 private:
-	enum QueryTextOperation {
+	enum QueryTextOperation : uint8_t {
 		QTO_RENAME,
 		QTO_SET_VALUE,
 	};

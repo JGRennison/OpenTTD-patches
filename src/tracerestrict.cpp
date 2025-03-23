@@ -119,7 +119,7 @@ void ClearTraceRestrictMapping() {
  * Each 'end if' pops from the stack
  * Elif/orif/else may modify the stack top
  */
-enum TraceRestrictCondStackFlags {
+enum TraceRestrictCondStackFlags : uint8_t {
 	TRCSF_DONE_IF         = 1 << 0,       ///< The if/elif/else is "done", future elif/else branches will not be executed
 	TRCSF_SEEN_ELSE       = 1 << 1,       ///< An else branch has been seen already, error if another is seen afterwards
 	TRCSF_ACTIVE          = 1 << 2,       ///< The condition is currently active
