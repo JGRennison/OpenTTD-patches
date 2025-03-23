@@ -1023,10 +1023,8 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 	TraceRestrictCondStack condstack;
 	actions_used_flags = TRPAUF_NONE;
 
-	static std::vector<TraceRestrictSlotID> pbs_res_end_released_slots;
-	pbs_res_end_released_slots.clear();
-	static std::vector<TraceRestrictSlotID> pbs_res_end_acquired_slots;
-	pbs_res_end_acquired_slots.clear();
+	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_released_slots;
+	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_acquired_slots;
 
 	const size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -2988,7 +2986,7 @@ void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 /** Replace all instance of a vehicle ID with another, in all slot occupants */
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to)
 {
-	std::vector<TraceRestrictSlotID> slots;
+	ankerl::svector<TraceRestrictSlotID, 16> slots;
 	const auto start = _slot_vehicle_index.lower_bound(from);
 	auto it = start;
 	for (; it != _slot_vehicle_index.end() && it->first == from; ++it) {
