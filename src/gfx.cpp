@@ -189,7 +189,7 @@ typedef std::pair<Point, Point> LineSegment;
  * @param offset Offset vector subtracted from all coordinates in the shape.
  * @return Vector of undirected line segments.
  */
-static std::vector<LineSegment> MakePolygonSegments(const std::vector<Point> &shape, Point offset)
+static std::vector<LineSegment> MakePolygonSegments(std::span<const Point> shape, Point offset)
 {
 	std::vector<LineSegment> segments;
 	if (shape.size() < 3) return segments; // fewer than 3 will always result in an empty polygon
@@ -229,7 +229,7 @@ static std::vector<LineSegment> MakePolygonSegments(const std::vector<Point> &sh
  *         FILLRECT_RECOLOUR: Apply a recolour sprite to every pixel in the polygon.
  *         FILLRECT_FUNCTOR:  Apply a functor to a line of pixels.
  */
-void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mode, GfxFillRectModeFunctor *fill_functor)
+void GfxFillPolygon(std::span<const Point> shape, int colour, FillRectMode mode, GfxFillRectModeFunctor *fill_functor)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *dpi = _cur_dpi;

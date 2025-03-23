@@ -36,7 +36,7 @@
 DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
-enum ProgramWindowWidgets {
+enum ProgramWindowWidgets : WidgetID {
 	PROGRAM_WIDGET_CAPTION,
 	PROGRAM_WIDGET_INSTRUCTION_LIST,
 	PROGRAM_WIDGET_SCROLLBAR,
@@ -63,7 +63,7 @@ enum ProgramWindowWidgets {
 	PROGRAM_WIDGET_COPY_PROGRAM,
 };
 
-enum PanelWidgets {
+enum PanelWidgets : uint8_t {
 	// Left
 	DPL_COND_VARIABLE = 0,
 	DPL_SET_STATE,

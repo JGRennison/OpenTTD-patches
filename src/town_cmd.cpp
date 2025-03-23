@@ -319,7 +319,7 @@ static void DrawTile_Town(TileInfo *ti, DrawTileProcParams params)
 		/* Houses don't necessarily need new graphics. If they don't have a
 		 * spritegroup associated with them, then the sprite for the substitute
 		 * house id is drawn instead. */
-		if (HouseSpec::Get(house_id)->grf_prop.spritegroup[0] != nullptr) {
+		if (HouseSpec::Get(house_id)->grf_prop.GetSpriteGroup() != nullptr) {
 			DrawNewHouseTile(ti, house_id);
 			return;
 		} else {
@@ -380,7 +380,7 @@ static Foundation GetFoundation_Town(TileIndex tile, Slope tileh)
 	 */
 	if (hid >= NEW_HOUSE_OFFSET) {
 		const HouseSpec *hs = HouseSpec::Get(hid);
-		if (hs->grf_prop.spritegroup[0] != nullptr && HasBit(hs->callback_mask, CBM_HOUSE_DRAW_FOUNDATIONS)) {
+		if (hs->grf_prop.GetSpriteGroup() != nullptr && HasBit(hs->callback_mask, CBM_HOUSE_DRAW_FOUNDATIONS)) {
 			uint32_t callback_res = GetHouseCallback(CBID_HOUSE_DRAW_FOUNDATIONS, 0, 0, hid, Town::GetByTile(tile), tile);
 			if (callback_res != CALLBACK_FAILED && !ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_DRAW_FOUNDATIONS, callback_res)) return FOUNDATION_NONE;
 		}

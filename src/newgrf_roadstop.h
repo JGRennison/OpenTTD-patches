@@ -14,6 +14,7 @@
 
 #include "newgrf_animation_type.h"
 #include "newgrf_spritegroup.h"
+#include "newgrf_badge_type.h"
 #include "newgrf_class.h"
 #include "newgrf_commons.h"
 #include "newgrf_town.h"
@@ -154,7 +155,7 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	 * Used for obtaining the sprite offset of custom sprites, and for
 	 * evaluating callbacks.
 	 */
-	GRFFilePropsBase<NUM_CARGO + 3> grf_prop;
+	VariableGRFFileProps grf_prop;
 	StringID name;              ///< Name of this stop
 
 	RoadStopAvailabilityType stop_type = ROADSTOPTYPE_ALL;
@@ -174,6 +175,8 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	uint8_t clear_cost_multiplier = 16;  ///< Clear cost multiplier per tile.
 
 	uint8_t height;                      ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
+
+	std::vector<BadgeID> badges;
 
 	/**
 	 * Get the cost for building a road stop of this type.

@@ -229,6 +229,9 @@ DEFINE_POOL_METHOD(void)::CleanPool()
 			free(ac);
 		}
 	}
+
+	/* Ensure that item type has necessary constructors/destructors defined. */
+	static_assert(!std::is_aggregate_v<Titem>);
 }
 
 #undef DEFINE_POOL_METHOD

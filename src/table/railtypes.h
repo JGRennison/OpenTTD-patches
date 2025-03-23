@@ -121,6 +121,7 @@ static const RailTypeInfo _original_railtypes[] = {
 
 		{ nullptr },
 		{ nullptr },
+		{},
 	},
 
 	/** Electrified railway */
@@ -231,6 +232,7 @@ static const RailTypeInfo _original_railtypes[] = {
 
 		{ nullptr },
 		{ nullptr },
+		{},
 	},
 
 	/** Monorail */
@@ -337,6 +339,7 @@ static const RailTypeInfo _original_railtypes[] = {
 
 		{ nullptr },
 		{ nullptr },
+		{},
 	},
 
 	/** Maglev */
@@ -443,6 +446,7 @@ static const RailTypeInfo _original_railtypes[] = {
 
 		{ nullptr },
 		{ nullptr },
+		{},
 	},
 };
 

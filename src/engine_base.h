@@ -17,10 +17,11 @@
 #include "newgrf_commons.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/svector/svector.h"
 #include <vector>
 
 struct WagonOverride {
-	std::vector<EngineID> engines;
+	ankerl::svector<EngineID, 1> engines;
 	CargoType cargo;
 	const SpriteGroup *group;
 };
@@ -87,8 +88,9 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * Used for obtaining the sprite offset of custom sprites, and for
 	 * evaluating callbacks.
 	 */
-	GRFFilePropsBase<NUM_CARGO + 2> grf_prop;
-	std::vector<WagonOverride> overrides;
+	VariableGRFFileProps grf_prop;
+	ankerl::svector<WagonOverride, 0> overrides;
+	std::vector<BadgeID> badges;
 
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
 	uint64_t cb36_properties_used = UINT64_MAX;

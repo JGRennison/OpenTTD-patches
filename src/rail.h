@@ -21,6 +21,7 @@
 #include "signal_type.h"
 #include "rail_map.h"
 #include "settings_type.h"
+#include "newgrf_badge_type.h"
 #include "debug_dbg_assert.h"
 #include <vector>
 
@@ -304,6 +305,8 @@ public:
 	 * Sprite groups for resolving sprites
 	 */
 	const SpriteGroup *group[RTSG_END];
+
+	std::vector<BadgeID> badges;
 
 	inline bool UsesOverlay() const
 	{

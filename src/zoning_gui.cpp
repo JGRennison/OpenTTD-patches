@@ -26,7 +26,7 @@
 
 #include <initializer_list>
 
-enum ZoningToolbarWidgets {
+enum ZoningToolbarWidgets : WidgetID {
 	ZTW_OUTER_DROPDOWN,
 	ZTW_INNER_DROPDOWN,
 	ZTW_CAPTION

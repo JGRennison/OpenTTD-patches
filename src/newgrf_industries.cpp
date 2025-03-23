@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "industry.h"
+#include "newgrf_badge.h"
 #include "newgrf_industries.h"
 #include "newgrf_town.h"
 #include "newgrf_cargo.h"
@@ -78,7 +79,7 @@ uint32_t GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32_t cur_g
 		}
 	}
 	/* Not an 'old type' tile */
-	if (indtsp->grf_prop.spritegroup[0] != nullptr) { // tile has a spritegroup ?
+	if (indtsp->grf_prop.GetSpriteGroup() != nullptr) { // tile has a spritegroup ?
 		if (indtsp->grf_prop.grfid == cur_grfid) { // same industry, same grf ?
 			return indtsp->grf_prop.local_id;
 		} else {
@@ -201,6 +202,8 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		/* Variables available during construction check. */
 
 		switch (variable) {
+			case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, GetIndustrySpec(this->type)->badges, parameter);
+
 			case 0x80: return this->tile.base();
 			case 0x81: return GB(this->tile.base(), 8, 8);
 
@@ -389,6 +392,8 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			NOT_REACHED();
 		}
 
+		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, GetIndustrySpec(this->type)->badges, parameter);
+
 		/* Get a variable from the persistent storage */
 		case 0x7C: return (this->industry->psa != nullptr) ? this->industry->psa->GetValue(parameter) : 0;
 
@@ -517,7 +522,7 @@ IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *ind
 	: ResolverObject(GetGrffile(type), callback, callback_param1, callback_param2),
 	industries_scope(*this, tile, indus, type, random_bits)
 {
-	this->root_spritegroup = GetIndustrySpec(type)->grf_prop.spritegroup[0];
+	this->root_spritegroup = GetIndustrySpec(type)->grf_prop.GetSpriteGroup();
 }
 
 /**
@@ -738,10 +743,10 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoType cargo_type)
 
 void DumpIndustrySpriteGroup(const IndustrySpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
+	dumper.DumpSpriteGroup(spec->grf_prop.GetSpriteGroup(), 0);
 }
 
 void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
+	dumper.DumpSpriteGroup(spec->grf_prop.GetSpriteGroup(), 0);
 }

@@ -16,7 +16,6 @@ PlanPool _plan_pool("Plan");
 INSTANTIATE_POOL_METHODS(Plan)
 
 Plan *_current_plan = nullptr;
-Plan *_new_plan = nullptr;
 uint64_t _plan_update_counter = 0;
 uint64_t _last_plan_visibility_check = 0;
 bool _last_plan_visibility_check_result = false;

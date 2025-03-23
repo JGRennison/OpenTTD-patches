@@ -198,15 +198,16 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 	auto write_param_fallback = [&](int idx) {
 		if (std::holds_alternative<ScriptTextRef>(this->param[idx])) {
 			int count = 1; // 1 because the string id is included in consumed parameters
-			fmt::format_to(output, ":");
 			std::get<ScriptTextRef>(this->param[idx])->_GetEncodedTextTraditional(output, count, seen_ids);
 			param_count += count;
 		} else if (std::holds_alternative<SQInteger>(this->param[idx])) {
-			fmt::format_to(output, ":{:X}", std::get<SQInteger>(this->param[idx]));
+			Utf8Encode(output, SCC_ENCODED_NUMERIC);
+			fmt::format_to(output, "{:X}", std::get<SQInteger>(this->param[idx]));
 			param_count++;
 		} else {
 			/* Fallback value */
-			fmt::format_to(output, ":0");
+			Utf8Encode(output, SCC_ENCODED_NUMERIC);
+			fmt::format_to(output, "0");
 			param_count++;
 		}
 	};
@@ -220,6 +221,8 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 			break;
 		}
 
+		*output = SCC_RECORD_SEPARATOR;
+
 		switch (cur_param.type) {
 			case StringParam::RAW_STRING:
 				if (!std::holds_alternative<std::string>(this->param[cur_idx])) {
@@ -227,7 +230,8 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 					write_param_fallback(cur_idx++);
 					break;
 				}
-				fmt::format_to(output, ":\"{}\"", std::get<std::string>(this->param[cur_idx++]));
+				Utf8Encode(output, SCC_ENCODED_STRING);
+				fmt::format_to(output, "{}", std::get<std::string>(this->param[cur_idx++]));
 				param_count++;
 				break;
 
@@ -238,7 +242,6 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 					break;
 				}
 				int count = 1; // 1 because the string id is included in consumed parameters
-				fmt::format_to(output, ":");
 				std::get<ScriptTextRef>(this->param[cur_idx++])->_GetEncodedTextTraditional(output, count, seen_ids);
 				if (count != cur_param.consumes) {
 					this->_TextParamError(fmt::format("{}: Parameter {} substring consumes {}, but expected {} to be consumed", name, cur_idx, count - 1, cur_param.consumes - 1));
@@ -257,7 +260,8 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 						write_param_fallback(cur_idx++);
 						continue;
 					}
-					fmt::format_to(output, ":{:X}", std::get<SQInteger>(this->param[cur_idx++]));
+					Utf8Encode(output, SCC_ENCODED_NUMERIC);
+					fmt::format_to(output, "{:X}", std::get<SQInteger>(this->param[cur_idx++]));
 					param_count++;
 				}
 				break;
@@ -265,6 +269,7 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 	}
 
 	for (int i = cur_idx; i < this->paramc; i++) {
+		*output = SCC_RECORD_SEPARATOR;
 		write_param_fallback(i);
 	}
 

@@ -473,6 +473,12 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			}
 			return false;
 
+		case SL_CUSTOMLIST:
+			if constexpr (requires { std::declval<typename T::value_type>(); }) {
+				return SlCheckPrimitiveTypeVar<typename T::value_type>(type);
+			}
+			return false;
+
 		default:
 			return true;
 	}
@@ -483,6 +489,50 @@ inline constexpr void *SlVarWrapper(void* ptr)
 {
 	static_assert(SlCheckVar<T>(cmd, type, length));
 	return ptr;
+}
+
+template <typename T>
+size_t SaveLoadCustomContainerHandler(void *list, SaveLoadCustomContainerOp op, VarType conv, size_t count)
+{
+	extern int64_t SlLoadValue(VarType conv);
+	extern void SlSaveValue(int64_t x, VarType conv);
+
+	T *l = reinterpret_cast<T *>(list);
+
+	switch (op) {
+		case SaveLoadCustomContainerOp::GetLength:
+			return l->size();
+
+		case SaveLoadCustomContainerOp::Load:
+			if (count == 0) {
+				l->clear();
+				return 0;
+			}
+			l->resize(count);
+			for (typename T::value_type &val : *l) {
+				val = static_cast<typename T::value_type>(SlLoadValue(conv));
+			}
+			return 0;
+
+		case SaveLoadCustomContainerOp::Save:
+			for (const typename T::value_type &val : *l) {
+				SlSaveValue(val, conv);
+			}
+			return 0;
+
+		default:
+			NOT_REACHED();
+	}
+}
+
+template <typename T, SaveLoadType cmd>
+inline constexpr SaveLoadCustomHandlers SlHandlerUnionValue()
+{
+	if constexpr (cmd == SL_CUSTOMLIST) {
+		return { .container_functor = &SaveLoadCustomContainerHandler<T> };
+	}
+
+	return { nullptr };
 }
 
 /**
@@ -496,7 +546,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)) }, extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)) }, { .custom = SlHandlerUnionValue<decltype(base::variable), cmd>() }, extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -610,6 +660,18 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLE_CONDVARVEC(base, variable, type, from, to) SLE_CONDVARVEC_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a variable custom container type in some savegame versions.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDCUSTOMLIST_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_CUSTOMLIST, base, variable, type, 0, from, to, extver)
+#define SLE_CONDCUSTOMLIST(base, variable, type, from, to) SLE_CONDCUSTOMLIST_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a ring of #SL_VAR elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
@@ -696,6 +758,14 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLE_VARVEC(base, variable, type) SLE_CONDVARVEC(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
+ * Storage of a variable custom container type in every savegame version.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_CUSTOMLIST(base, variable, type) SLE_CONDCUSTOMLIST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+
+/**
  * Empty space in every savegame version.
  * @param length Length of the empty space.
  */
@@ -715,7 +785,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /** SaveLoad include, for non-table use with SlFilterObject/SlFilterNamedSaveLoadTable. */
-#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, SlXvFeatureTest()}
+#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -727,7 +797,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable) }, extver}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable) }, { .custom = SlHandlerUnionValue<decltype(variable), cmd>() }, extver}
 #define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -892,7 +962,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
  */
-#define SLEG_CONDNULL(length, from, to) SaveLoad {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
+#define SLEG_CONDNULL(length, from, to) SaveLoad {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, SLTAG_DEFAULT, { nullptr }, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.

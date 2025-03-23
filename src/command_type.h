@@ -881,7 +881,7 @@ namespace TupleCmdDataDetail {
 	 * For internal use by TupleCmdData, AutoFmtTupleCmdData.
 	 */
 	template <typename... T>
-	struct BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
+	struct EMPTY_BASES BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
 		using CommandProc = CommandCost(DoCommandFlag, TileIndex, typename CommandProcTupleAdapter::replace_string_t<T>...);
 		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
 		using Tuple = std::tuple<T...>;
@@ -938,7 +938,7 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 };
 
 template <typename Parent, typename T>
-struct TupleRefCmdData : public CommandPayloadSerialisable<Parent>, public T, public BaseTupleCmdDataTag {
+struct EMPTY_BASES TupleRefCmdData : public CommandPayloadSerialisable<Parent>, public T, public BaseTupleCmdDataTag {
 private:
 	template <typename H> struct TupleHelper;
 
@@ -984,18 +984,18 @@ public:
 
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */
 template <typename... T>
-struct CmdDataT final : public AutoFmtTupleCmdData<CmdDataT<T...>, TCDF_NONE, T...> {};
+struct EMPTY_BASES CmdDataT final : public AutoFmtTupleCmdData<CmdDataT<T...>, TCDF_NONE, T...> {};
 
 /** Specialisation for string which doesn't bother implementing FormatDebugSummary at all. */
 template <>
-struct CmdDataT<std::string> final : public TupleCmdData<CmdDataT<std::string>, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string> final : public TupleCmdData<CmdDataT<std::string>, std::string> {};
 template <>
-struct CmdDataT<std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string>, std::string, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string>, std::string, std::string> {};
 template <>
-struct CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
 
 template <>
-struct CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
+struct EMPTY_BASES CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
 	using CommandProc = CommandCost(DoCommandFlag, TileIndex);
 	using CommandProcNoTile = CommandCost(DoCommandFlag);
 	using Tuple = std::tuple<>;

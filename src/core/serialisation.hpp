@@ -127,7 +127,7 @@ struct BufferSerialisationHelper {
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Send_string(data);
-		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct EnumBitSetBase, V>) {
+		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct BaseBitSetBase, V>) {
 			this->Send_generic_integer(data.base());
 		} else if constexpr (requires { data.Serialise(*this); }) {
 			data.Serialise(*this);
@@ -437,7 +437,7 @@ public:
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Recv_string(data, settings);
-		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct EnumBitSetBase, V>) {
+		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct BaseBitSetBase, V>) {
 			this->Recv_generic_integer(data.edit_base());
 		} else if constexpr (requires { data.Deserialise(*this, settings); }) {
 			data.Deserialise(*this, settings);

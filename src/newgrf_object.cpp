@@ -12,6 +12,7 @@
 #include "company_func.h"
 #include "debug.h"
 #include "genworld.h"
+#include "newgrf_badge.h"
 #include "newgrf_class_func.h"
 #include "newgrf_object.h"
 #include "newgrf_sound.h"
@@ -291,6 +292,8 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 			/* Object view */
 			case 0x48: return this->view;
 
+			case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, this->spec->badges, parameter);
+
 			case A2VRI_OBJECT_FOUNDATION_SLOPE:
 				return GetTileSlope(this->tile);
 
@@ -366,6 +369,8 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 		/* Count of object, distance of closest instance */
 		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, this->ro.grffile->grfid, this->tile, this->obj);
 
+		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, this->spec->badges, parameter);
+
 		case A2VRI_OBJECT_FOUNDATION_SLOPE: {
 			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 			Slope slope = GetTileSlope(this->tile);
@@ -402,8 +407,8 @@ ObjectResolverObject::ObjectResolverObject(const ObjectSpec *spec, Object *obj, 
 		CallbackID callback, uint32_t param1, uint32_t param2)
 	: ResolverObject(spec->grf_prop.grffile, callback, param1, param2), object_scope(*this, obj, spec, tile, view)
 {
-	this->root_spritegroup = (obj == nullptr && spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] != nullptr) ?
-			spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] : spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT];
+	this->root_spritegroup = (obj == nullptr) ? spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_PURCHASE) : nullptr;
+	if (this->root_spritegroup == nullptr) this->root_spritegroup = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT);
 }
 
 /**
@@ -640,11 +645,13 @@ void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 
 void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT], 0);
+	const SpriteGroup *def = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT);
+	dumper.DumpSpriteGroup(def, 0);
 
-	if (spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] != nullptr && spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] != spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT]) {
+	const SpriteGroup *purchase = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_PURCHASE);
+	if (purchase != nullptr && purchase != def) {
 		dumper.Print("");
 		dumper.Print("PURCHASE:");
-		dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE], 0);
+		dumper.DumpSpriteGroup(purchase, 0);
 	}
 }

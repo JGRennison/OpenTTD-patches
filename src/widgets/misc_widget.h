@@ -62,7 +62,7 @@ enum TextfileWidgets : WidgetID {
 };
 
 /** Widgets of the #TextfileWindow class. */
-enum ModifierKeyToggleWidgets {
+enum ModifierKeyToggleWidgets : WidgetID {
 	WID_MKT_SHIFT,
 	WID_MKT_CTRL,
 };

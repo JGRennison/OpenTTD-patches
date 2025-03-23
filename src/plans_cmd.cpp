@@ -28,10 +28,12 @@
 CommandCost CmdAddPlan(DoCommandFlag flags)
 {
 	if (!Plan::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_PLANS);
+	CommandCost cost;
 	if (flags & DC_EXEC) {
-		_new_plan = new Plan(_current_company);
+		Plan *plan = new Plan(_current_company);
+		cost.SetResultData(plan->index);
 	}
-	return CommandCost();
+	return cost;
 }
 
 bool AddPlanLine(PlanID plan, std::vector<TileIndex> tiles)

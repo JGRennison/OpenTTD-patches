@@ -2859,6 +2859,7 @@ STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Years: {
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Years: {ORANGE}Until {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Size: {ORANGE}{NUM}x{NUM} tiles
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Cargo accepted: {ORANGE}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Cargo produced: {ORANGE}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Edge
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Outskirts
@@ -5926,3 +5927,5 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+
+STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{RAW_STRING}

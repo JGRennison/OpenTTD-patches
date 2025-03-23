@@ -11,7 +11,7 @@
 #define WIDGETS_DEPARTURES_WIDGET_H
 
 /** Widgets of the WC_DEPARTURES_BOARD. */
-enum DeparturesWindowWidgets {
+enum DeparturesWindowWidgets : WidgetID {
 	WID_DB_CAPTION,             ///< Window caption
 	WID_DB_LOCATION,            ///< Location button
 	WID_DB_DUPLICATE,           ///< Duplicate window

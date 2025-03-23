@@ -133,7 +133,7 @@ void ScriptInstance::RegisterAPI()
 
 bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Subdirectory dir)
 {
-	const char *api_vers[] = { "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14" };
+	const char *api_vers[] = { "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14", "15" };
 	uint api_idx = 0;
 	for (; api_idx < lengthof(api_vers) ; api_idx++) {
 		if (api_version == api_vers[api_idx]) break;

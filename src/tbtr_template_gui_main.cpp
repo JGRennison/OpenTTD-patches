@@ -49,7 +49,7 @@
 
 #include "safeguards.h"
 
-enum TemplateReplaceWindowWidgets {
+enum TemplateReplaceWindowWidgets : WidgetID {
 	TRW_CAPTION,
 
 	TRW_WIDGET_INSET_GROUPS,

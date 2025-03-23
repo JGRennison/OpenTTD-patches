@@ -54,7 +54,7 @@ class TemplateReplaceWindow;
 // some space in front of the virtual train in the matrix
 uint16_t TRAIN_FRONT_SPACE = 16;
 
-enum TemplateReplaceCreateWindowWidgets {
+enum TemplateReplaceCreateWindowWidgets : WidgetID {
 	TCW_CAPTION,
 	TCW_NEW_TMPL_PANEL,
 	TCW_INFO_PANEL,

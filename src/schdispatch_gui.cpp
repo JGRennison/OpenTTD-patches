@@ -42,7 +42,7 @@
 
 #include "safeguards.h"
 
-enum SchdispatchWidgets {
+enum SchdispatchWidgets : WidgetID {
 	WID_SCHDISPATCH_CAPTION,         ///< Caption of window.
 	WID_SCHDISPATCH_RENAME,          ///< Rename button.
 	WID_SCHDISPATCH_MOVE_LEFT,       ///< Move current schedule left (-1).
@@ -1533,7 +1533,7 @@ void ShowSchdispatchWindow(const Vehicle *v)
 	AllocateWindowDescFront<SchdispatchWindow>(_schdispatch_desc, v->index);
 }
 
-enum ScheduledDispatchAddSlotsWindowWidgets {
+enum ScheduledDispatchAddSlotsWindowWidgets : WidgetID {
 	WID_SCHDISPATCH_ADD_SLOT_START_HOUR,
 	WID_SCHDISPATCH_ADD_SLOT_START_MINUTE,
 	WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR,

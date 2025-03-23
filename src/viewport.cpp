@@ -1690,9 +1690,8 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 	}
 
 	if (_viewport_highlight_tracerestrict_program != nullptr) {
-		const TraceRestrictRefId *refs = _viewport_highlight_tracerestrict_program->GetRefIdsPtr();
-		for (uint i = 0; i < _viewport_highlight_tracerestrict_program->refcount; i++) {
-			if (GetTraceRestrictRefIdTileIndex(refs[i]) == t) return THT_LIGHT_BLUE;
+		for (TraceRestrictRefId ref : _viewport_highlight_tracerestrict_program->GetReferences()) {
+			if (GetTraceRestrictRefIdTileIndex(ref) == t) return THT_LIGHT_BLUE;
 		}
 	}
 
@@ -3699,11 +3698,7 @@ static void ViewportMapDrawSelection(const Viewport * const vp)
 	draw_line(mid2_pt, start_pt);
 
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
-		static std::vector<Point> points(4);
-		points[0] = start_pt;
-		points[1] = mid1_pt;
-		points[2] = end_pt;
-		points[3] = mid2_pt;
+		static std::array<Point, 4> points{ start_pt, mid1_pt, end_pt, mid2_pt };
 		GfxFillPolygon(points, 0, FILLRECT_FUNCTOR, [](void *dst, int count) {
 			uint32_t *buf = reinterpret_cast<uint32_t *>(dst);
 			for (int i = 0; i < count; i++) {

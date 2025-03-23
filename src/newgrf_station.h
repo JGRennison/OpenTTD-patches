@@ -12,6 +12,7 @@
 
 #include "core/enum_type.hpp"
 #include "newgrf_animation_type.h"
+#include "newgrf_badge_type.h"
 #include "newgrf_callbacks.h"
 #include "newgrf_class.h"
 #include "newgrf_commons.h"
@@ -140,7 +141,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	 * Used for obtaining the sprite offset of custom sprites, and for
 	 * evaluating callbacks.
 	 */
-	GRFFilePropsBase<NUM_CARGO + 3> grf_prop;
+	VariableGRFFileProps grf_prop;
 	StringID name;             ///< Name of this station.
 
 	/**
@@ -196,6 +197,8 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	/** Custom platform layouts, keyed by platform and length combined. */
 	std::unordered_map<uint16_t, std::vector<uint8_t>> layouts;
+
+	std::vector<BadgeID> badges;
 
 	BridgeAboveFlags GetBridgeAboveFlags(uint gfx) const
 	{

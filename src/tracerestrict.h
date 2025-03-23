@@ -21,6 +21,7 @@
 #include "vehicle_type.h"
 #include "signal_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/svector/svector.h"
 #include <map>
 #include <vector>
 
@@ -858,46 +859,37 @@ struct TraceRestrictProgramTexts {
  * This is refcounted, see info at top of tracerestrict.cpp
  */
 struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrictprogram_pool> {
-	uint32_t refcount;
-	std::vector<TraceRestrictProgramItem> items;
-	TraceRestrictProgramActionsUsedFlags actions_used_flags;
-	std::unique_ptr<TraceRestrictProgramTexts> texts;
-
 private:
-
-	struct ptr_buffer {
-		TraceRestrictRefId *buffer;
-		uint32_t elem_capacity;
-	};
-	union refid_list_union {
-		TraceRestrictRefId inline_ref_ids[4];
-		ptr_buffer ptr_ref_ids;
-
-		/* Actual construction/destruction done by struct TraceRestrictProgram */
-		refid_list_union() {}
-		~refid_list_union() {}
-	};
-	refid_list_union ref_ids;
-
-	void ClearRefIds();
-
-	inline TraceRestrictRefId *GetRefIdsPtr() { return this->refcount <= 4 ? this->ref_ids.inline_ref_ids : this->ref_ids.ptr_ref_ids.buffer; };
+	ankerl::svector<TraceRestrictRefId, 3> references;
 
 public:
-
-	TraceRestrictProgram()
-			: refcount(0), actions_used_flags(TRPAUF_NONE) { }
-
-	~TraceRestrictProgram()
-	{
-		this->ClearRefIds();
-	}
+	std::vector<TraceRestrictProgramItem> items;
+	TraceRestrictProgramActionsUsedFlags actions_used_flags = TRPAUF_NONE;
+	std::unique_ptr<TraceRestrictProgramTexts> texts;
 
 	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
-	inline const TraceRestrictRefId *GetRefIdsPtr() const { return const_cast<TraceRestrictProgram *>(this)->GetRefIdsPtr(); }
+	inline uint32_t GetReferenceCount() const { return static_cast<uint32_t>(this->references.size()); }
 
-	void IncrementRefCount(TraceRestrictRefId ref_id);
+	inline std::span<const TraceRestrictRefId> GetReferences() const { return this->references; }
+
+	/**
+	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
+	 */
+	TraceRestrictProgram() { }
+
+	/**
+	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
+	 */
+	~TraceRestrictProgram() { }
+
+	/**
+	 * Increment ref count, only use when creating a mapping
+	 */
+	void IncrementRefCount(TraceRestrictRefId ref_id)
+	{
+		this->references.push_back(ref_id);
+	}
 
 	void DecrementRefCount(TraceRestrictRefId ref_id);
 
@@ -1342,8 +1334,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	TraceRestrictSlotGroupID parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	uint32_t max_occupancy = 1;
 	std::string name;
-	std::vector<VehicleID> occupants;
-	std::vector<SignalReference> progsig_dependants;
+	ankerl::svector<VehicleID, 3> occupants;
+	ankerl::svector<SignalReference, 0> progsig_dependants;
 
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
@@ -1414,7 +1406,7 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	Flags flags = Flags::None;
 	int32_t value = 0;
 	std::string name;
-	std::vector<SignalReference> progsig_dependants;
+	ankerl::svector<SignalReference, 0> progsig_dependants;
 
 	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY) : owner(owner) {}
 

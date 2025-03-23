@@ -17,6 +17,7 @@
 #include "date_type.h"
 #include "sound_type.h"
 #include "strings_type.h"
+#include "newgrf_badge_type.h"
 #include <variant>
 
 typedef uint16_t EngineID; ///< Unique identification number of an engine.

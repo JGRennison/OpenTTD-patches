@@ -424,7 +424,7 @@ Window *ShowBuildDocksScenToolbar()
 }
 
 /** Widget numbers of the build-dock GUI. */
-enum BuildDockStationWidgets {
+enum BuildDockStationWidgets : WidgetID {
 	BDSW_BACKGROUND, ///< Background panel.
 	BDSW_LT_OFF,     ///< 'Off' button of coverage high light.
 	BDSW_LT_ON,      ///< 'On' button of coverage high light.

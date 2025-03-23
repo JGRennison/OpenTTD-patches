@@ -58,7 +58,7 @@ enum PerformanceRatingDetailsWidgets : WidgetID {
 };
 
 /** Widget of the #ExcludingCargoBaseGraphWindow class. */
-enum ExcludingCargoBaseGraphWindowWidgets {
+enum ExcludingCargoBaseGraphWindowWidgets : WidgetID {
 	WID_ECBG_FOOTER = 0x80,   ///< Footer.
 	WID_ECBG_ENABLE_CARGOES,  ///< Enable cargoes button.
 	WID_ECBG_DISABLE_CARGOES, ///< Disable cargoes button.
