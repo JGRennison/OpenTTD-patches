@@ -872,7 +872,7 @@ void CompaniesYearlyLoop()
 	for (Company *c : Company::Iterate()) {
 		/* Move expenses to previous years. */
 		std::rotate(std::rbegin(c->yearly_expenses), std::rbegin(c->yearly_expenses) + 1, std::rend(c->yearly_expenses));
-		c->yearly_expenses[0] = {};
+		c->yearly_expenses[0].fill(0);
 		c->age_years++;
 		InvalidateWindowData(WC_FINANCES, c->index);
 	}
