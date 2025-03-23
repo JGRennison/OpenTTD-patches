@@ -120,6 +120,7 @@
 
 /* static */ bool ScriptMarine::BuildRiver(TileIndex tile)
 {
+	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, ::IsValidTile(tile));
 
 	return ScriptObject::Command<CMD_BUILD_CANAL>::Do(tile, tile, WATER_CLASS_RIVER, false);
