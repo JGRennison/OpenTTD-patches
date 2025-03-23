@@ -73,7 +73,7 @@ enum OrderWidgets : WidgetID {
 };
 
 /** Widgets of the #CargoTypeOrdersWindow class. */
-enum CargoTypeOrdersWidgets {
+enum CargoTypeOrdersWidgets : WidgetID {
 	WID_CTO_CAPTION,                                                            ///< Caption of the window.
 	WID_CTO_HEADER,                                                             ///< Window header.
 	WID_CTO_CLOSEBTN,                                                           ///< Close button.
