@@ -12,7 +12,6 @@
 
 #include "plans_type.h"
 
-extern Plan *_new_plan;
 extern Plan *_current_plan;
 extern uint64_t _plan_update_counter;
 extern uint64_t _last_plan_visibility_check;

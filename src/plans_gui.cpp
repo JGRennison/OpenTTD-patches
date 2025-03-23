@@ -706,9 +706,9 @@ void ShowPlansWindow()
  */
 void CcAddPlan(const CommandCost &result)
 {
-	if (result.Failed()) return;
+	if (result.Failed() || !result.HasResultData()) return;
 
-	_current_plan = _new_plan;
+	_current_plan = Plan::Get(result.GetResultData());
 	_current_plan->SetVisibility(true);
 
 	Window *w = FindWindowById(WC_PLANS, 0);
