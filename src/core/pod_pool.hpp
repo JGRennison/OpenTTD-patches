@@ -38,12 +38,12 @@ public:
 	PodPool(const PodPool &other) = delete;
 	PodPool& operator=(const PodPool &other) = delete;
 
-	PodPool(PodPool &&other)
+	PodPool(PodPool &&other) noexcept
 	{
 		*this = std::move(other);
 	}
 
-	PodPool& operator=(PodPool &&other)
+	PodPool& operator=(PodPool &&other) noexcept
 	{
 		this->used_blocks = std::move(other.used_blocks);
 		this->current_block = other.current_block;

@@ -400,9 +400,9 @@ public:
 
 	VariableGRFFileProps() = default;
 	VariableGRFFileProps(const VariableGRFFileProps &) = delete;
-	VariableGRFFileProps(VariableGRFFileProps &&other) { this->move_from(std::move(other)); }
+	VariableGRFFileProps(VariableGRFFileProps &&other) noexcept { this->move_from(std::move(other)); }
 	VariableGRFFileProps& operator=(const VariableGRFFileProps &) = delete;
-	VariableGRFFileProps& operator=(VariableGRFFileProps &&other) { this->move_from(std::move(other)); return *this; }
+	VariableGRFFileProps& operator=(VariableGRFFileProps &&other) noexcept { this->move_from(std::move(other)); return *this; }
 
 	~VariableGRFFileProps()
 	{

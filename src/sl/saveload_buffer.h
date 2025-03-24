@@ -296,7 +296,7 @@ struct MemoryDumper {
 		~BufferInfo() { free(this->data); }
 
 		BufferInfo(const BufferInfo &) = delete;
-		BufferInfo(BufferInfo &&other) : data(other.data), size(other.size) { other.data = nullptr; };
+		BufferInfo(BufferInfo &&other) noexcept : data(other.data), size(other.size) { other.data = nullptr; };
 	};
 
 	std::vector<BufferInfo> blocks;         ///< Buffer with blocks of allocated memory.
