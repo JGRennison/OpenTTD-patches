@@ -93,6 +93,8 @@ INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
  */
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
+static btree::btree_multimap<VehicleID, TraceRestrictSlotID> _slot_vehicle_index;
+
 /**
  * List of pre-defined pathfinder penalty values
  * This is indexed by TraceRestrictPathfinderPenaltyPresetIndex
@@ -310,13 +312,63 @@ size_t TraceRestrictArrayOffsetToInstructionOffset(const std::span<const TraceRe
 	return output_offset;
 }
 
+template <typename F>
+void IterateSlotGroupSlotsWithSlotIDFilter(const TraceRestrictSlotGroup *sg, Owner owner, std::span<const TraceRestrictSlotID> slots_filter, F func)
+{
+	const bool check_ownership = sg->owner != owner;
+
+	auto sg_it = sg->contained_slots.begin();
+	const auto sg_end = sg->contained_slots.end();
+	auto f_it = slots_filter.begin();
+	const auto f_end = slots_filter.end();
+
+	/* This is broadly equivalent to std::set_intersection */
+	while (sg_it != sg_end && f_it != f_end) {
+		if (*sg_it < *f_it) {
+			++sg_it;
+		} else if (*sg_it > *f_it) {
+			++f_it;
+		} else {
+			TraceRestrictSlot *slot = TraceRestrictSlot::Get(*sg_it);
+			if (!check_ownership || HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+				bool stop = func(slot);
+				if (stop) return;
+			}
+			++sg_it;
+			++f_it;
+		}
+	}
+}
+
+template <typename F>
+void IterateSlotGroupSlotsWithFilters(const TraceRestrictSlotGroup *sg, Owner owner, const Train *v, std::span<const TraceRestrictSlotTemporaryState * const> temp_changes, F func)
+{
+	if (sg->contained_slots.empty()) return;
+	if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT) && temp_changes.empty()) return;
+
+	ankerl::svector<TraceRestrictSlotID, 8> filter_slots;
+	const VehicleID veh_id = v->index;
+	for (auto it = _slot_vehicle_index.lower_bound(veh_id); it != _slot_vehicle_index.end() && it->first == veh_id; ++it) {
+		filter_slots.push_back(it->second);
+	}
+
+	for (const TraceRestrictSlotTemporaryState *state : temp_changes) {
+		filter_slots.insert(filter_slots.end(), state->veh_temporarily_added.begin(), state->veh_temporarily_added.end());
+	}
+
+	if (filter_slots.empty()) return;
+	std::sort(filter_slots.begin(), filter_slots.end());
+
+	IterateSlotGroupSlotsWithSlotIDFilter(sg, owner, filter_slots, std::move(func));
+}
+
 /**
  * Execute program on train and store results in out
  * @p v Vehicle (may not be nullptr)
  * @p input Input state
  * @p out Output state
  */
-void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult& out) const
+void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const
 {
 	TraceRestrictCondStack condstack;
 
@@ -456,6 +508,19 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_COND_TRAIN_IN_SLOT: {
 						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
 						result = TestBinaryConditionCommon(item, slot != nullptr && slot->IsOccupant(v->index));
+						break;
+					}
+
+					case TRIT_COND_TRAIN_IN_SLOT_GROUP: {
+						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(item.GetValue());
+						bool member = false;
+						if (sg != nullptr) {
+							IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, {}, [&](TraceRestrictSlot *slot) {
+								member = true;
+								return true;
+							});
+						}
+						result = TestBinaryConditionCommon(item, member);
 						break;
 					}
 
@@ -861,6 +926,57 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_SLOT_GROUP: {
+						if (!input.permitted_slot_operations) break;
+						TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(item.GetValue());
+						if (sg == nullptr || sg->vehicle_type != v->type) break;
+
+						auto vacate_slot_group = [&]() {
+							IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, {}, [&](TraceRestrictSlot *slot) {
+								slot->Vacate(v);
+								return false;
+							});
+						};
+
+						switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
+							case TRSCOF_RELEASE_ON_RESERVE:
+								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
+									vacate_slot_group();
+								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
+									IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, TraceRestrictSlotTemporaryState::GetChangeStack(), [&](TraceRestrictSlot *slot) {
+										slot->VacateUsingTemporaryState(v->index, TraceRestrictSlotTemporaryState::GetCurrent());
+										return false;
+									});
+								}
+								break;
+
+							case TRSCOF_RELEASE_BACK:
+								if (input.permitted_slot_operations & TRPISP_RELEASE_BACK) vacate_slot_group();
+								break;
+
+							case TRSCOF_RELEASE_FRONT:
+								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) vacate_slot_group();
+								break;
+
+							case TRSCOF_PBS_RES_END_RELEASE:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
+									vacate_slot_group();
+								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
+									std::array<const TraceRestrictSlotTemporaryState * const, 1> change_stack{ &pbs_res_end_acq_dry_slot_temporary_state };
+									IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, change_stack, [&](TraceRestrictSlot *slot) {
+										slot->VacateUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state);
+										return false;
+									});
+								}
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+					}
+
 					case TRIT_GUI_LABEL:
 						/* This instruction does nothing when executed */
 						break;
@@ -1025,6 +1141,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_released_slots;
 	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_acquired_slots;
+	bool pbs_res_end_released_slot_group = false;
 
 	const size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -1131,6 +1248,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_CARGO:
 				case TRIT_COND_TRAIN_GROUP:
 				case TRIT_COND_TRAIN_IN_SLOT:
+				case TRIT_COND_TRAIN_IN_SLOT_GROUP:
 				case TRIT_COND_TRAIN_OWNER:
 				case TRIT_COND_RESERVATION_THROUGH:
 					if (invalid_binary_condition()) return unknown_instruction();
@@ -1331,7 +1449,15 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_TRAIN_IN_SLOT:
 				case TRIT_COND_SLOT_OCCUPANCY:
 					actions_used_flags |= TRPAUF_SLOT_CONDITIONALS;
-					if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0 || find_index(pbs_res_end_acquired_slots, item.GetValue()) >= 0) {
+					if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0 ||
+							find_index(pbs_res_end_acquired_slots, item.GetValue()) >= 0) {
+						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+					}
+					break;
+
+				case TRIT_COND_TRAIN_IN_SLOT_GROUP:
+					actions_used_flags |= TRPAUF_SLOT_CONDITIONALS;
+					if (pbs_res_end_released_slot_group || !pbs_res_end_released_slots.empty() || !pbs_res_end_acquired_slots.empty()) {
 						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 					}
 					break;
@@ -1427,19 +1553,43 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 						case TRSCOF_PBS_RES_END_ACQ_WAIT:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT | TRPAUF_SLOT_CONDITIONALS ;
-							if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 							include(pbs_res_end_acquired_slots, item.GetValue());
 							break;
 
 						case TRSCOF_PBS_RES_END_ACQ_TRY:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
-							if (find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 							include(pbs_res_end_acquired_slots, item.GetValue());
 							break;
 
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
 							include(pbs_res_end_released_slots, item.GetValue());
+							break;
+
+						default:
+							return unknown_instruction();
+					}
+					break;
+
+				case TRIT_SLOT_GROUP:
+					switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
+						case TRSCOF_RELEASE_ON_RESERVE:
+							actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
+							break;
+
+						case TRSCOF_RELEASE_BACK:
+							actions_used_flags |= TRPAUF_SLOT_RELEASE_BACK;
+							break;
+
+						case TRSCOF_RELEASE_FRONT:
+							actions_used_flags |= TRPAUF_SLOT_RELEASE_FRONT;
+							break;
+
+						case TRSCOF_PBS_RES_END_RELEASE:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
+							pbs_res_end_released_slot_group = true;
 							break;
 
 						default:
@@ -1689,11 +1839,25 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 
 		case TRVT_SLOT_INDEX:
 			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
-			item.SetAuxField(0);
+			if (item.GetType() == TRIT_SLOT) {
+				item.SetCombinedAuxCondOpField(TRSCOF_ACQUIRE_WAIT);
+			} else {
+				item.SetAuxField(0);
+			}
 			break;
 
 		case TRVT_SLOT_INDEX_INT:
 			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
+			item.SetAuxField(0);
+			break;
+
+		case TRVT_SLOT_GROUP_INDEX:
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_GROUP);
+			if (item.GetType() == TRIT_SLOT_GROUP) {
+				item.SetCombinedAuxCondOpField(TRSCOF_RELEASE_FRONT);
+			} else {
+				item.SetAuxField(0);
+			}
 			break;
 
 		case TRVT_COUNTER_INDEX_INT:
@@ -2248,6 +2412,14 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 				}
 				break;
 
+			case TRVT_SLOT_GROUP_INDEX:
+				if (item.GetValue() != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+					const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(item.GetValue());
+					if (sg == nullptr || sg->vehicle_type != VEH_TRAIN) return CMD_ERROR;
+					if (!sg->CompanyCanReferenceSlotGroup(_current_company)) return CMD_ERROR;
+				}
+				break;
+
 			case TRVT_COUNTER_INDEX_INT:
 				if (item.GetValue() != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(item.GetValue());
@@ -2700,6 +2872,7 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 	for (TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
 		if (sg->owner != old_company) continue;
 		if (new_company == INVALID_OWNER) {
+			TraceRestrictRemoveSlotGroupID(sg->index);
 			delete sg;
 		} else {
 			sg->owner = new_company;
@@ -2711,8 +2884,6 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 }
-
-static btree::btree_multimap<VehicleID, TraceRestrictSlotID> _slot_vehicle_index;
 
 /**
  * Add vehicle to occupants if possible and not already an occupant
@@ -3034,6 +3205,7 @@ void TraceRestrictSlotGroup::AddSlotsToParentGroups()
 		new_contained_slots.reserve(sg->contained_slots.size() + this->contained_slots.size());
 		std::set_union(sg->contained_slots.begin(), sg->contained_slots.end(), this->contained_slots.begin(), this->contained_slots.end(), std::back_inserter(new_contained_slots));
 		sg->contained_slots = std::move(new_contained_slots);
+		parent = sg->parent;
 	}
 }
 
@@ -3056,7 +3228,19 @@ void TraceRestrictSlotGroup::RemoveSlotsFromParentGroups()
 			return false;
 		});
 		sg->contained_slots.erase(erase_it, sg->contained_slots.end());
+		parent = sg->parent;
 	}
+}
+
+bool TraceRestrictSlotGroup::CompanyCanReferenceSlotGroup(Owner owner) const
+{
+	if (this->owner == owner) return true;
+	for (TraceRestrictSlotID slot_id : this->contained_slots) {
+		if (HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /** Remove vehicle ID from all slot occupants */
@@ -3140,8 +3324,8 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 
 /**
  * This is called when a slot is about to be deleted
- * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
- * Scan order list and change any references to it to the invalid group ID, to avoid dangling slot condition references
+ * Scan program pool and change any references to it to the invalid slot ID, to avoid dangling references
+ * Scan order list and change any references to it to the invalid slot ID, to avoid dangling slot condition references
  */
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 {
@@ -3367,6 +3551,54 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(DoCommandFlag flags, TraceRestrict
 	return CommandCost();
 }
 
+template <typename F>
+void ClearInstructionRangeTraceRestrictSlotGroupIf(std::span<TraceRestrictProgramItem> instructions, F cond)
+{
+	for (auto iter : TraceRestrictInstructionIterateWrapper(instructions)) {
+		TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
+		if ((item.GetType() == TRIT_SLOT_GROUP || item.GetType() == TRIT_COND_TRAIN_IN_SLOT_GROUP) && cond(static_cast<TraceRestrictSlotGroupID>(item.GetValue()))) {
+			item.SetValue(INVALID_TRACE_RESTRICT_SLOT_GROUP); // this updates the instruction in-place
+		}
+	}
+}
+
+template <typename F>
+bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
+{
+	return false;
+}
+
+/**
+ * This is called when a slot group is about to be deleted
+ * Scan program pool and change any references to it to the invalid slot group ID, to avoid dangling references
+ * Scan order list and change any references to it to the invalid slot group ID, to avoid dangling slot condition references
+ */
+void TraceRestrictRemoveSlotGroupID(TraceRestrictSlotGroupID index)
+{
+	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		ClearInstructionRangeTraceRestrictSlotGroupIf(prog->items, [&](TraceRestrictSlotGroupID idx) {
+			return idx == index;
+		});
+	}
+
+	bool changed_order = false;
+	IterateAllNonVehicleOrders([&](Order *o) {
+		changed_order |= ClearOrderTraceRestrictSlotGroupIf(o, [&](TraceRestrictSlotGroupID idx) {
+			return idx == index;
+		});
+	});
+
+	/* Update windows */
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (changed_order) {
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+	}
+
+	extern void TraceRestrictEraseRecentSlotGroup(TraceRestrictSlotGroupID index);
+	TraceRestrictEraseRecentSlotGroup(index);
+}
+
 /**
  * Create a new slot group.
  */
@@ -3477,13 +3709,15 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSl
 
 	if (flags & DC_EXEC) {
 		for (TraceRestrictSlotID slot_id : slot_group->contained_slots) {
-			TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id)[
+			TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
 			if (slot->parent_group == slot_group_id) {
 				slot->parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 			}
 		}
 
 		slot_group->RemoveSlotsFromParentGroups();
+
+		TraceRestrictRemoveSlotGroupID(slot_group_id);
 
 		delete slot_group;
 

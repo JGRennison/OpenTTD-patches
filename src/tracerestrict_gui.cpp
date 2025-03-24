@@ -57,6 +57,7 @@
 
 static constexpr uint RECENT_SLOT_HISTORY_SIZE = 8;
 static std::array<ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recent_slots;
+static std::array<ring_buffer<TraceRestrictSlotGroupID>, VEH_COMPANY_END> _recent_slot_groups;
 static ring_buffer<TraceRestrictCounterID> _recent_counters;
 
 static void EraseRecentSlotOrCounter(ring_buffer<uint16_t> &ring, uint16_t id)
@@ -84,6 +85,13 @@ void TraceRestrictEraseRecentSlot(TraceRestrictSlotID index)
 	}
 }
 
+void TraceRestrictEraseRecentSlotGroup(TraceRestrictSlotGroupID index)
+{
+	for (ring_buffer<TraceRestrictSlotGroupID> &ring : _recent_slot_groups) {
+		EraseRecentSlotOrCounter(ring, index);
+	}
+}
+
 void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
 {
 	EraseRecentSlotOrCounter(_recent_counters, index);
@@ -94,6 +102,14 @@ void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
 	const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
 	if (slot != nullptr && slot->owner == _local_company && slot->vehicle_type < _recent_slots.size()) {
 		RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], index);
+	}
+}
+
+void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index)
+{
+	const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(index);
+	if (sg != nullptr && sg->owner == _local_company && sg->vehicle_type < _recent_slot_groups.size()) {
+		RecordRecentSlotOrCounter(_recent_slot_groups[sg->vehicle_type], index);
 	}
 }
 
@@ -108,6 +124,9 @@ void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index)
 void TraceRestrictClearRecentSlotsAndCounters()
 {
 	for (auto &it : _recent_slots) {
+		it.clear();
+	}
+	for (auto &it : _recent_slot_groups) {
 		it.clear();
 	}
 	_recent_counters.clear();
@@ -574,6 +593,7 @@ static std::span<const TraceRestrictDropDownListItem> GetActionDropDownListItems
 		{ TRIT_LONG_RESERVE,             STR_TRACE_RESTRICT_LONG_RESERVE,             TRDDLIF_NONE },
 		{ TRIT_NEWS_CONTROL,             STR_TRACE_RESTRICT_NEWS_CONTROL,             TRDDLIF_NONE },
 		{ TRIT_SLOT,                     STR_TRACE_RESTRICT_SLOT_OP,                  TRDDLIF_NONE },
+		{ TRIT_SLOT_GROUP,               STR_TRACE_RESTRICT_SLOT_GROUP_OP,            TRDDLIF_NONE },
 		{ TRIT_WAIT_AT_PBS,              STR_TRACE_RESTRICT_WAIT_AT_PBS,              TRDDLIF_ADVANCED },
 		{ TRIT_REVERSE,                  STR_TRACE_RESTRICT_REVERSE,                  TRDDLIF_ADVANCED },
 		{ TRIT_SPEED_RESTRICTION,        STR_TRACE_RESTRICT_SPEED_RESTRICTION,        TRDDLIF_ADVANCED },
@@ -609,6 +629,7 @@ static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListIt
 		{ TRIT_COND_CATEGORY | (TRCCAF_ENGINE_CLASS << 16),           STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS,        TRDDLIF_NONE },
 		{ TRIT_COND_TARGET_DIRECTION,                                 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION,    TRDDLIF_NONE },
 		{ TRIT_COND_TRAIN_IN_SLOT,                                    STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT,                TRDDLIF_NONE },
+		{ TRIT_COND_TRAIN_IN_SLOT_GROUP,                              STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP,          TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,            TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,  TRDDLIF_NONE },
 		{ TRIT_COND_COUNTER_VALUE,                                    STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,             TRDDLIF_ADVANCED },
@@ -806,7 +827,7 @@ struct SlotItem {
 	auto operator<=>(const SlotItem& c) const = default;
 };
 
-static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types, bool recently_used, bool public_only)
+static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types, bool recently_used, bool public_only, bool group_only_mode)
 {
 	selected = -1;
 
@@ -823,7 +844,11 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 	};
 
 	auto add_group = [&](const TraceRestrictSlotGroup *sg, TraceRestrictSlotGroupID id, uint indent) {
-		if (indent == 0 || sg->vehicle_type == vehtype) {
+		if (group_only_mode) {
+			if (static_cast<TraceRestrictSlotGroupID>(slot_id) == id) selected = id;
+			SetDParam(0, id);
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME, id, false));
+		} else if (indent == 0 || sg->vehicle_type == vehtype) {
 			SetDParam(0, id);
 			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id, false));
 		} else {
@@ -833,7 +858,7 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 		}
 	};
 
-	if (recently_used) {
+	if (recently_used && !group_only_mode) {
 		for (TraceRestrictSlotID id : _recent_slots[vehtype]) {
 			add_slot(TraceRestrictSlot::Get(id), id, 0);
 		}
@@ -848,7 +873,9 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 		if (!show_other_types && slot->vehicle_type != vehtype) continue;
 		if (public_only && !HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) continue;
 
-		list.push_back({ SlotItemType::Slot, slot->index });
+		if (!group_only_mode) {
+			list.push_back({ SlotItemType::Slot, slot->index });
+		}
 
 		TraceRestrictSlotGroupID parent = slot->parent_group;
 		while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
@@ -862,6 +889,15 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 			list.push_back({ SlotItemType::Group, parent });
 			parent = slot_group->parent;
 		}
+	}
+
+	if (recently_used && group_only_mode) {
+		for (TraceRestrictSlotGroupID id : _recent_slot_groups[vehtype]) {
+			if (seen_parents.count(id) > 0) {
+				add_group(TraceRestrictSlotGroup::Get(id), id, 0);
+			}
+		}
+		return;
 	}
 
 	/* Sort the slots/groups by the vehicle type (if in use), then their parent group, then their name */
@@ -904,7 +940,7 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 }
 
 /**
- * Get a DropDownList of the group list
+ * Get a DropDownList of the slot list
  */
 DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types)
 {
@@ -916,7 +952,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 
 			int cselected;
 			DropDownList clist;
-			GetSlotDropDownListIntl(clist, c->index, slot_id, cselected, vehtype, show_other_types, false, true);
+			GetSlotDropDownListIntl(clist, c->index, slot_id, cselected, vehtype, show_other_types, false, true, false);
 			if (clist.empty()) continue;
 
 			if (!dlist.empty()) dlist.push_back(MakeDropDownListDividerItem());
@@ -931,7 +967,36 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());
 
-		GetSlotDropDownListIntl(dlist, owner, slot_id, selected, vehtype, show_other_types, _ctrl_pressed, false);
+		GetSlotDropDownListIntl(dlist, owner, slot_id, selected, vehtype, show_other_types, _ctrl_pressed, false, false);
+	}
+
+	return dlist;
+}
+
+/**
+ * Get a DropDownList of the slot group list
+ */
+DropDownList GetSlotGroupDropDownList(Owner owner, TraceRestrictSlotGroupID slot_group_id, int &selected, VehicleType vehtype)
+{
+	DropDownList dlist;
+
+	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[vehtype]) {
+		for (const Company *c : Company::Iterate()) {
+			if (c->index == owner) continue;
+
+			int cselected;
+			DropDownList clist;
+			GetSlotDropDownListIntl(clist, c->index, static_cast<TraceRestrictSlotID>(slot_group_id), cselected, vehtype, false, false, true, true);
+			if (clist.empty()) continue;
+
+			if (!dlist.empty()) dlist.push_back(MakeDropDownListDividerItem());
+			dlist.push_back(MakeCompanyDropDownListItem(c->index, false));
+
+			if (cselected != -1) selected = cselected;
+			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
+		}
+	} else {
+		GetSlotDropDownListIntl(dlist, owner, static_cast<TraceRestrictSlotID>(slot_group_id), selected, vehtype, false, _ctrl_pressed, false, true);
 	}
 
 	return dlist;
@@ -1072,6 +1137,23 @@ static const uint _slot_op_subtypes_val[] = {
 /** slot op subtypes dropdown list set */
 static const TraceRestrictDropDownListSet _slot_op_subtypes = {
 	_slot_op_subtypes_str, _slot_op_subtypes_val,
+};
+
+static const StringID _slot_group_op_subtypes_str[] = {
+	STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT,
+	STR_TRACE_RESTRICT_SLOT_RELEASE_BACK,
+	STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE,
+	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE,
+};
+static const uint _slot_group_op_subtypes_val[] = {
+	TRSCOF_RELEASE_FRONT,
+	TRSCOF_RELEASE_BACK,
+	TRSCOF_RELEASE_ON_RESERVE,
+	TRSCOF_PBS_RES_END_RELEASE,
+};
+/** slot group op subtypes dropdown list set */
+static const TraceRestrictDropDownListSet _slot_group_op_subtypes = {
+	_slot_group_op_subtypes_str, _slot_group_op_subtypes_val,
 };
 
 static const StringID _counter_op_cond_ops_str[] = {
@@ -1405,6 +1487,24 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictInstructio
 	DrawInstructionStringConditionalCommon(item, properties);
 }
 
+static StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
+{
+	const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(slot_group);
+	if (sg == nullptr) return STR_NULL;
+
+	if (sg->contained_slots.empty()) return STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING;
+
+	if (sg->owner != owner) {
+		for (TraceRestrictSlotID slot_id : sg->contained_slots) {
+			if (!HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+				return STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING;
+			}
+		}
+	}
+
+	return STR_NULL;
+}
+
 /**
  * Draws an instruction in the programming GUI
  * @param prog The program (may be nullptr)
@@ -1667,6 +1767,23 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 				}
 
+				case TRVT_SLOT_GROUP_INDEX:
+					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
+					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP;
+					if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+					} else {
+						StringID warning = GetSlotGroupWarning(item.GetValue(), owner);
+						if (warning != STR_NULL) {
+							SetDParam(2, warning);
+						} else {
+							SetDParam(2, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
+						}
+						SetDParam(3, item.GetValue());
+					}
+					break;
+
 				case TRVT_TRAIN_STATUS:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS;
 					assert(item.GetCondFlags() <= TRCF_OR);
@@ -1856,6 +1973,41 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 				} else {
 					SetDParam(0, STR_TRACE_RESTRICT_SLOT_NAME);
+					SetDParam(1, item.GetValue());
+				}
+				break;
+
+			case TRIT_SLOT_GROUP:
+				switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
+					case TRSCOF_RELEASE_BACK:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM;
+						break;
+
+					case TRSCOF_RELEASE_FRONT:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM;
+						break;
+
+					case TRSCOF_RELEASE_ON_RESERVE:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM;
+						break;
+
+					case TRSCOF_PBS_RES_END_RELEASE:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+				} else {
+					StringID warning = GetSlotGroupWarning(item.GetValue(), owner);
+					if (warning != STR_NULL) {
+						SetDParam(0, warning);
+					} else {
+						SetDParam(0, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
+					}
 					SetDParam(1, item.GetValue());
 				}
 				break;
@@ -2271,7 +2423,8 @@ public:
 
 			case TR_WIDGET_SLOT_OP: {
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
-				this->ShowDropDownListWithValue(&_slot_op_subtypes, item.GetCombinedAuxCondOpField(), false, TR_WIDGET_SLOT_OP, 0, 0);
+				const TraceRestrictDropDownListSet *list_set = (GetTraceRestrictTypeProperties(item).value_type == TRVT_SLOT_GROUP_INDEX) ? &_slot_group_op_subtypes : &_slot_op_subtypes;
+				this->ShowDropDownListWithValue(list_set, item.GetCombinedAuxCondOpField(), false, TR_WIDGET_SLOT_OP, 0, 0);
 				break;
 			}
 
@@ -2379,6 +2532,13 @@ public:
 					case TRVT_SLOT_INDEX: {
 						int selected;
 						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), item.GetValue(), selected, VEH_TRAIN, IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType()));
+						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
+						break;
+					}
+
+					case TRVT_SLOT_GROUP_INDEX: {
+						int selected;
+						DropDownList dlist = GetSlotGroupDropDownList(this->GetOwner(), item.GetValue(), selected, VEH_TRAIN);
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
@@ -2628,12 +2788,17 @@ public:
 				this->TraceRestrictShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS, QSM_NEW_COUNTER);
 				return;
 			}
-			if ((widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
+			if ((widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) || type.value_type == TRVT_GROUP_INDEX ||
+					type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_SLOT_GROUP_INDEX ||
+					type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				/* This is a special company drop-down or group/slot-index drop-down */
 				item.SetValue(index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				if (type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT) {
 					TraceRestrictRecordRecentSlot(index);
+				}
+				if (type.value_type == TRVT_SLOT_GROUP_INDEX) {
+					TraceRestrictRecordRecentSlotGroup(index);
 				}
 				if (type.value_type == TRVT_COUNTER_INDEX_INT) {
 					TraceRestrictRecordRecentCounter(index);
@@ -3057,7 +3222,8 @@ public:
 				if ((type.value_type == TRVT_PF_PENALTY &&
 						item.GetAuxField() == TRPPAF_VALUE)
 						|| type.value_type == TRVT_GROUP_INDEX
-						|| type.value_type == TRVT_SLOT_INDEX) {
+						|| type.value_type == TRVT_SLOT_INDEX
+						|| type.value_type == TRVT_SLOT_GROUP_INDEX) {
 					SetDParam(0, item.GetValue());
 				}
 				break;
@@ -3098,6 +3264,7 @@ public:
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX:
+					case TRVT_SLOT_GROUP_INDEX:
 						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
 						return true;
 
@@ -3654,6 +3821,27 @@ private:
 
 								default:
 									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_NAME);
+									break;
+							}
+							break;
+						}
+
+						case TRVT_SLOT_GROUP_INDEX: {
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							if (!item.IsConditional()) {
+								middle_sel->SetDisplayedPlane(DPM_SLOT_OP);
+								this->EnableWidget(TR_WIDGET_SLOT_OP);
+							}
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+
+							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->SetString(GetDropDownStringByValue(&_slot_op_subtypes, item.GetCombinedAuxCondOpField()));
+							switch (item.GetValue()) {
+								case INVALID_TRACE_RESTRICT_SLOT_GROUP:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+									break;
+
+								default:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
 									break;
 							}
 							break;

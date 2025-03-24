@@ -190,6 +190,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_COND_CATEGORY            = 30,   ///< Test train category
 	TRIT_COND_TARGET_DIRECTION    = 31,   ///< Test direction of order target tile relative to this signal tile
 	TRIT_COND_RESERVATION_THROUGH = 32,   ///< Test if train reservation passes through tile
+	TRIT_COND_TRAIN_IN_SLOT_GROUP = 33,   ///< Test train slot membership
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind/at signal
@@ -199,6 +200,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_PF_PENALTY_CONTROL       = 52,   ///< Control base signal penalties
 	TRIT_SPEED_ADAPTATION_CONTROL = 53,   ///< Control speed adaptation
 	TRIT_SIGNAL_MODE_CONTROL      = 54,   ///< Control signal modes
+	TRIT_SLOT_GROUP               = 55,   ///< Slot group operation
 
 	/* space up to 63 */
 };
@@ -780,6 +782,7 @@ private:
 
 public:
 	static TraceRestrictSlotTemporaryState *GetCurrent() { return change_stack.back(); }
+	static std::span<const TraceRestrictSlotTemporaryState * const> GetChangeStack() { return change_stack; }
 
 	static void ClearChangeStackApplyAllTemporaryChanges(const Vehicle *v)
 	{
@@ -963,6 +966,7 @@ enum TraceRestrictValueType : uint8_t {
 	TRVT_WAIT_AT_PBS,              ///< takes a TraceRestrictWaitAtPbsValueField value
 	TRVT_SLOT_INDEX,               ///< takes a TraceRestrictSlotID
 	TRVT_SLOT_INDEX_INT,           ///< takes a TraceRestrictSlotID, and an integer in the next item slot
+	TRVT_SLOT_GROUP_INDEX,         ///< takes a TraceRestrictSlotGroupID
 	TRVT_PERCENT,                  ///> takes a unsigned integer percentage value between 0 and 100
 	TRVT_OWNER,                    ///< takes a CompanyID
 	TRVT_TRAIN_STATUS,             ///< takes a TraceRestrictTrainStatusValueField
@@ -1136,6 +1140,11 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				out.cond_type = TRCOT_BINARY;
 				break;
 
+			case TRIT_COND_TRAIN_IN_SLOT_GROUP:
+				out.value_type = TRVT_SLOT_GROUP_INDEX;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1198,6 +1207,10 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 
 			case TRIT_SIGNAL_MODE_CONTROL:
 				out.value_type = TRVT_SIGNAL_MODE_CONTROL;
+				break;
+
+			case TRIT_SLOT_GROUP:
+				out.value_type = TRVT_SLOT_GROUP_INDEX;
 				break;
 
 			default:
@@ -1301,6 +1314,7 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);
+void TraceRestrictRemoveSlotGroupID(TraceRestrictSlotGroupID index);
 void TraceRestrictRemoveCounterID(TraceRestrictCounterID index);
 void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictProgramItem> instructions, Owner instructions_owner);
 void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order_owner);
@@ -1310,6 +1324,7 @@ void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to
 void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out);
 
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index);
+void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index);
 void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index);
 void TraceRestrictClearRecentSlotsAndCounters();
 
@@ -1401,6 +1416,8 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
 
 	void AddSlotsToParentGroups();
 	void RemoveSlotsFromParentGroups();
+
+	bool CompanyCanReferenceSlotGroup(Owner owner) const;
 };
 
 /**

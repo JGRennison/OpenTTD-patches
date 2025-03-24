@@ -884,6 +884,7 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :path reservatio
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :tile at end of path reservation from this signal
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :train in slot
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP                    :train in slot group
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :slot occupancy
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :slot occupancy remaining
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :occupancy
@@ -927,6 +928,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} of slot: {TRSLOT} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP                       :{STRING} train {STRING} in any slot in slot group: {STRING1} then
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} train {STRING} status: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} value of counter: {TRCOUNTER} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} value of counter: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
@@ -969,6 +971,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :exiting tunnel/
 STR_TRACE_RESTRICT_COMPANY                                      :Company
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined company
 STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
+STR_TRACE_RESTRICT_SLOT_GROUP_OP                                :Slot group operation
 STR_TRACE_RESTRICT_REVERSE                                      :Reverse
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :Speed restriction
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :News control
@@ -992,11 +995,17 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Release slot: {
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Path reservation ending here: Acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or wait at start
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Path reservation ending here: Acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or continue anyway
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Path reservation ending here: Release slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM                :Release slots in slot group: {STRING1} (front of train)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM                 :Release slots in slot group: {STRING1} (back of train)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM           :Release slots in slot group: {STRING1} (on path reserve)
+STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM          :Path reservation ending here: Release slots in slot group: {STRING1}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING                     :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(has no slots){POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING                :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(has unusable non-public slots){POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
