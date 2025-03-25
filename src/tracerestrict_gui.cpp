@@ -910,7 +910,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 {
 	DropDownList dlist;
 
-	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[vehtype]) {
 		for (const Company *c : Company::Iterate()) {
 			if (c->index == owner) continue;
 
