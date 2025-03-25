@@ -2902,7 +2902,7 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(std::string_vie
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		for (VehicleID id : slot->occupants) {
 			const Vehicle *v = Vehicle::GetIfValid(id);
-			if (v) {
+			if (v != nullptr) {
 				if (v->type != slot->vehicle_type) cclog("Slot {} ({}) has wrong vehicle type ({}, {}): {}", slot->index, slot->name, v->type, slot->vehicle_type, VehicleInfoDumper(v));
 				if (!v->IsPrimaryVehicle()) cclog("Slot {} ({}) has non-primary vehicle: {}", slot->index, slot->name, VehicleInfoDumper(v));
 				if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT)) cclog("Slot {} ({}) has vehicle without VF_HAVE_SLOT: {}", slot->index, slot->name, VehicleInfoDumper(v));

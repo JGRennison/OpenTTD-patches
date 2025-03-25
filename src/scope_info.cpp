@@ -82,7 +82,7 @@ void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target 
 			buf.format("Disaster Vehicle: subtype: {}", u->subtype);
 		}
 	};
-	if (v) {
+	if (v != nullptr) {
 		buf.format("veh: {}: (", v->index);
 		if (Vehicle::GetIfValid(v->index) != v) {
 			buf.format("INVALID PTR: {})", fmt::ptr(v));
