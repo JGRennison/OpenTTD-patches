@@ -571,6 +571,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 
 		if (!TraceRestrictSlot::ValidateVehicleIndex()) cclog("Trace restrict slot vehicle index validation failed");
 		TraceRestrictSlot::ValidateSlotOccupants(log);
+		TraceRestrictSlot::ValidateSlotGroupDescendants(log);
 
 		if (!CargoPacket::ValidateDeferredCargoPayments()) cclog("Cargo packets deferred payments validation failed");
 

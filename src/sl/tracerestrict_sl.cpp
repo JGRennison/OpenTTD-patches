@@ -269,12 +269,21 @@ static void Save_TRRC()
 }
 
 /**
- * Update program reference counts from just-loaded mapping
+ * Update program reference counts from just-loaded mapping and slot group memberships from slot parent values
  */
 void AfterLoadTraceRestrict()
 {
 	for (const auto &it : _tracerestrictprogram_mapping) {
 		_tracerestrictprogram_pool.Get(it.second.program_id)->IncrementRefCount(it.first);
+	}
+
+	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
+		TraceRestrictSlotGroupID parent = slot->parent_group;
+		while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+			TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(parent);
+			sg->contained_slots.push_back(slot->index);
+			parent = sg->parent;
+		}
 	}
 }
 

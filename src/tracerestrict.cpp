@@ -2804,6 +2804,32 @@ void TraceRestrictSlot::UpdateSignals() {
 	}
 }
 
+void TraceRestrictSlot::AddToParentGroups()
+{
+	const TraceRestrictSlotID id = this->index;
+	TraceRestrictSlotGroupID parent = this->parent_group;
+	while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+		TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(parent);
+		auto iter = std::lower_bound(sg->contained_slots.begin(), sg->contained_slots.end(), id);
+		sg->contained_slots.insert(iter, id);
+		parent = sg->parent;
+	}
+}
+
+void TraceRestrictSlot::RemoveFromParentGroups()
+{
+	const TraceRestrictSlotID id = this->index;
+	TraceRestrictSlotGroupID parent = this->parent_group;
+	while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+		TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(parent);
+		auto iter = std::lower_bound(sg->contained_slots.begin(), sg->contained_slots.end(), id);
+		if (iter != sg->contained_slots.end() && *iter == id) {
+			sg->contained_slots.erase(iter);
+		}
+		parent = sg->parent;
+	}
+}
+
 /**
  * Add vehicle to vehicle slot index
  * @param v Vehicle pointer
@@ -2887,6 +2913,38 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(std::string_vie
 	}
 }
 
+void TraceRestrictSlot::ValidateSlotGroupDescendants(std::function<void(std::string_view)> log)
+{
+	format_buffer buffer;
+	auto cclog = [&]<typename... T>(fmt::format_string<T...> fmtstr, T&&... args) {
+		buffer.format(fmtstr, std::forward<T>(args)...);
+		debug_print(DebugLevelID::desync, 0, buffer);
+		if (log) log(buffer);
+		buffer.clear();
+	};
+
+	std::map<TraceRestrictSlotGroupID, ankerl::svector<TraceRestrictSlotID, 16>> expected;
+
+	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
+		TraceRestrictSlotGroupID parent = slot->parent_group;
+		while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+			expected[parent].push_back(slot->index);
+			parent = TraceRestrictSlotGroup::Get(parent)->parent;
+		}
+	}
+
+	for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
+		auto iter = expected.find(sg->index);
+		if (iter != expected.end()) {
+			if (iter->second != sg->contained_slots) {
+				cclog("Slot group {} ({}) mismatch: sizes: {}, {}", sg->index, sg->name, sg->contained_slots.size(), iter->second.size());
+			}
+		} else {
+			if (!sg->contained_slots.empty()) cclog("Slot group {} ({}) expected to be empty, but not", sg->index, sg->name);
+		}
+	}
+}
+
 /** Slot pool is about to be cleared */
 void TraceRestrictSlot::PreCleanPool()
 {
@@ -2962,6 +3020,42 @@ void TraceRestrictSlotTemporaryState::PopFromChangeStackApplyTemporaryChanges(co
 		this->ApplyTemporaryChanges(v);
 	} else {
 		this->ApplyTemporaryChangesToParent(v->index, this->change_stack.back());
+	}
+}
+
+void TraceRestrictSlotGroup::AddSlotsToParentGroups()
+{
+	if (this->contained_slots.empty()) return;
+
+	TraceRestrictSlotGroupID parent = this->parent;
+	while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+		ankerl::svector<TraceRestrictSlotID, 8> new_contained_slots;
+		TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(parent);
+		new_contained_slots.reserve(sg->contained_slots.size() + this->contained_slots.size());
+		std::set_union(sg->contained_slots.begin(), sg->contained_slots.end(), this->contained_slots.begin(), this->contained_slots.end(), std::back_inserter(new_contained_slots));
+		sg->contained_slots = std::move(new_contained_slots);
+	}
+}
+
+void TraceRestrictSlotGroup::RemoveSlotsFromParentGroups()
+{
+	if (this->contained_slots.empty()) return;
+
+	TraceRestrictSlotGroupID parent = this->parent;
+	while (parent != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+		auto it = this->contained_slots.begin();
+		const auto end = this->contained_slots.end();
+
+		TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(parent);
+		auto erase_it = std::remove_if(sg->contained_slots.begin(), sg->contained_slots.end(), [&](TraceRestrictSlotID id) -> bool {
+			if (it == end) return false;
+			if (*it == id) {
+				++it;
+				return true;
+			}
+			return false;
+		});
+		sg->contained_slots.erase(erase_it, sg->contained_slots.end());
 	}
 }
 
@@ -3119,7 +3213,10 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 	if (flags & DC_EXEC) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
 		slot->name = data.name;
-		if (pg != nullptr) slot->parent_group = pg->index;
+		if (pg != nullptr) {
+			slot->parent_group = pg->index;
+			slot->AddToParentGroups();
+		}
 		result.SetResultData(slot->index);
 
 		if (data.follow_up_cmd.has_value()) {
@@ -3213,7 +3310,9 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 			}
 
 			if (flags & DC_EXEC) {
+				slot->RemoveFromParentGroups();
 				slot->parent_group = gid;
+				slot->AddToParentGroups();
 			}
 			break;
 		}
@@ -3345,7 +3444,9 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 			}
 
 			if (flags & DC_EXEC) {
+				slot_group->RemoveSlotsFromParentGroups();
 				slot_group->parent = (pg == nullptr) ? INVALID_TRACE_RESTRICT_SLOT_GROUP : pg->index;
+				slot_group->AddSlotsToParentGroups();
 			}
 		}
 	}
@@ -3375,11 +3476,14 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSl
 	}
 
 	if (flags & DC_EXEC) {
-		for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
-			if (slot->parent_group == slot_group->index) {
+		for (TraceRestrictSlotID slot_id : slot_group->contained_slots) {
+			TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id)[
+			if (slot->parent_group == slot_group_id) {
 				slot->parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 			}
 		}
+
+		slot_group->RemoveSlotsFromParentGroups();
 
 		delete slot_group;
 

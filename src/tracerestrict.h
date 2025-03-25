@@ -1340,13 +1340,17 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
 	static void ValidateSlotOccupants(std::function<void(std::string_view)> log);
+	static void ValidateSlotGroupDescendants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
 	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type) {}
 
 	~TraceRestrictSlot()
 	{
-		if (!CleaningPool()) this->Clear();
+		if (!CleaningPool()) {
+			this->Clear();
+			this->RemoveFromParentGroups();
+		}
 	}
 
 	/** Test whether vehicle ID is already an occupant */
@@ -1366,6 +1370,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	void VacateUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
 	void Clear();
 	void UpdateSignals();
+	void AddToParentGroups();
+	void RemoveFromParentGroups();
 
 private:
 	void AddIndex(const Vehicle *v);
@@ -1388,9 +1394,13 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
 	VehicleType vehicle_type;   ///< Vehicle type of the slot group
 	TraceRestrictSlotGroupID parent; ///< Parent slot group
 
+	ankerl::svector<TraceRestrictSlotID, 8> contained_slots; ///< NOSAVE: slots directly and indirectly contained in this slot group, sorted
 	bool folded = false;        ///< NOSAVE: Is this slot group folded in the slot view?
 
 	TraceRestrictSlotGroup(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
+
+	void AddSlotsToParentGroups();
+	void RemoveSlotsFromParentGroups();
 };
 
 /**
