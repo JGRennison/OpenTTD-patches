@@ -767,8 +767,8 @@ enum TraceRestrictProgramInputFlags : uint8_t {
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputFlags)
 
 struct TraceRestrictSlotTemporaryState {
-	std::vector<TraceRestrictSlotID> veh_temporarily_added;
-	std::vector<TraceRestrictSlotID> veh_temporarily_removed;
+	ankerl::svector<TraceRestrictSlotID, 8> veh_temporarily_added;
+	ankerl::svector<TraceRestrictSlotID, 8> veh_temporarily_removed;
 
 private:
 	bool is_active = false;

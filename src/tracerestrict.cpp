@@ -127,10 +127,45 @@ enum TraceRestrictCondStackFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictCondStackFlags)
 
+/** This has an the external interface of a continuous stack, but keeps the back() (i.e. stack top) value at a constant address, as that is used the most frequently */
+struct TraceRestrictCondStack {
+private:
+	ankerl::svector<TraceRestrictCondStackFlags, 16> stack;
+	TraceRestrictCondStackFlags top;
+	bool has_value = false;
+
+public:
+	bool empty() const { return !this->has_value; }
+
+	TraceRestrictCondStackFlags &back()
+	{
+		dbg_assert(this->has_value);
+		return this->top;
+	}
+
+	void push_back(TraceRestrictCondStackFlags value)
+	{
+		if (this->has_value) this->stack.push_back(this->top);
+		this->top = value;
+		this->has_value = true;
+	}
+
+	void pop_back()
+	{
+		dbg_assert(this->has_value);
+		if (this->stack.empty()) {
+			this->has_value = false;
+		} else {
+			this->top = this->stack.back();
+			this->stack.pop_back();
+		}
+	}
+};
+
 /**
  * Helper function to handle condition stack manipulatoin
  */
-static void HandleCondition(std::vector<TraceRestrictCondStackFlags> &condstack, TraceRestrictCondFlags condflags, bool value)
+static void HandleCondition(TraceRestrictCondStack &condstack, TraceRestrictCondFlags condflags, bool value)
 {
 	if (condflags & TRCF_OR) {
 		assert(!condstack.empty());
@@ -283,9 +318,7 @@ size_t TraceRestrictArrayOffsetToInstructionOffset(const std::span<const TraceRe
  */
 void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult& out) const
 {
-	/* Static to avoid needing to re-alloc/resize on each execution */
-	static std::vector<TraceRestrictCondStackFlags> condstack;
-	condstack.clear();
+	TraceRestrictCondStack condstack;
 
 	/* Only for use with TRPISP_PBS_RES_END_ACQ_DRY and TRPAUF_PBS_RES_END_SIMULATE */
 	static TraceRestrictSlotTemporaryState pbs_res_end_acq_dry_slot_temporary_state;
@@ -987,15 +1020,11 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
  * and that all instructions have a known type, at present
  */
 CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictProgramItem> items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
-	/* Static to avoid needing to re-alloc/resize on each execution */
-	static std::vector<TraceRestrictCondStackFlags> condstack;
-	condstack.clear();
+	TraceRestrictCondStack condstack;
 	actions_used_flags = TRPAUF_NONE;
 
-	static std::vector<TraceRestrictSlotID> pbs_res_end_released_slots;
-	pbs_res_end_released_slots.clear();
-	static std::vector<TraceRestrictSlotID> pbs_res_end_acquired_slots;
-	pbs_res_end_acquired_slots.clear();
+	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_released_slots;
+	ankerl::svector<TraceRestrictSlotID, 16> pbs_res_end_acquired_slots;
 
 	const size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -2957,7 +2986,7 @@ void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 /** Replace all instance of a vehicle ID with another, in all slot occupants */
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to)
 {
-	std::vector<TraceRestrictSlotID> slots;
+	ankerl::svector<TraceRestrictSlotID, 16> slots;
 	const auto start = _slot_vehicle_index.lower_bound(from);
 	auto it = start;
 	for (; it != _slot_vehicle_index.end() && it->first == from; ++it) {

@@ -94,12 +94,12 @@ public:
 	CommandCost(const CommandCost &other);
 	CommandCost &operator=(const CommandCost &other);
 
-	CommandCost(CommandCost &&other)
+	CommandCost(CommandCost &&other) noexcept
 	{
 		*this = std::move(other);
 	}
 
-	CommandCost &operator=(CommandCost &&other)
+	CommandCost &operator=(CommandCost &&other) noexcept
 	{
 		this->cost = other.cost;
 		this->expense_type = other.expense_type;
