@@ -2999,8 +2999,9 @@ public:
 					}
 					bool show_counters = false;
 					if (_settings_client.gui.show_adv_tracerestrict_features) {
+						bool infra_sharing = _settings_game.economy.infrastructure_sharing[VEH_TRAIN];
 						for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-							if (ctr->owner == this->vehicle->owner) {
+							if (ctr->owner == this->vehicle->owner || (infra_sharing && HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public))) {
 								show_counters = true;
 								break;
 							}
