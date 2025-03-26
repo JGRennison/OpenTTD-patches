@@ -685,7 +685,7 @@ std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 			// Do not try to separate vehicles on depot service or halt orders
 			separation_valid = false;
 		}
-		if (order->IsType(OT_SLOT) || order->IsType(OT_COUNTER) || order->IsType(OT_DUMMY) || order->IsType(OT_LABEL)) {
+		if (order->IsSlotCounterOrder() || order->IsType(OT_DUMMY) || order->IsType(OT_LABEL)) {
 			// Do not try to separate vehicles on slot, change counter, or invalid orders
 			separation_valid = false;
 		}

@@ -1487,7 +1487,7 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictInstructio
 	DrawInstructionStringConditionalCommon(item, properties);
 }
 
-static StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
+StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
 {
 	const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(slot_group);
 	if (sg == nullptr) return STR_NULL;

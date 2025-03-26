@@ -268,6 +268,13 @@ void Order::MakeTryAcquireSlot()
 	this->flags = OSST_TRY_ACQUIRE;
 }
 
+void Order::MakeReleaseSlotGroup()
+{
+	this->type = OT_SLOT_GROUP;
+	this->dest = INVALID_TRACE_RESTRICT_SLOT_ID;
+	this->flags = OSGST_RELEASE;
+}
+
 void Order::MakeChangeCounter()
 {
 	this->type = OT_COUNTER;
@@ -646,7 +653,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsSlotCounterOrder() || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
@@ -1151,6 +1158,24 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 					break;
 				}
 
+				case OCV_VEH_IN_SLOT_GROUP: {
+					TraceRestrictSlotGroupID slot_group = new_order.GetXData();
+					if (slot_group != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(slot_group);
+						if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
+						if (!sg->CompanyCanReferenceSlotGroup(v->owner)) return CMD_ERROR;
+					}
+					switch (occ) {
+						case OCC_IS_TRUE:
+						case OCC_IS_FALSE:
+							break;
+
+						default:
+							return CMD_ERROR;
+					}
+					break;
+				}
+
 				case OCV_CARGO_LOAD_PERCENTAGE:
 					if (!CargoSpec::Get(new_order.GetConditionValue())->IsValid()) return CMD_ERROR;
 					if (new_order.GetXData() > 100) return CMD_ERROR;
@@ -1214,6 +1239,23 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 			switch (new_order.GetSlotSubType()) {
 				case OSST_RELEASE:
 				case OSST_TRY_ACQUIRE:
+					break;
+
+				default:
+					return CMD_ERROR;
+			}
+			break;
+		}
+
+		case OT_SLOT_GROUP: {
+			TraceRestrictSlotGroupID data = new_order.GetDestination();
+			if (data != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+				const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(data);
+				if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
+				if (!sg->CompanyCanReferenceSlotGroup(v->owner)) return CMD_ERROR;
+			}
+			switch (new_order.GetSlotGroupSubType()) {
+				case OSGST_RELEASE:
 					break;
 
 				default:
@@ -1761,6 +1803,10 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				if (mof != MOF_SLOT) return CMD_ERROR;
 				break;
 
+			case OT_SLOT_GROUP:
+				if (mof != MOF_SLOT_GROUP) return CMD_ERROR;
+				break;
+
 			case OT_COUNTER:
 				if (mof != MOF_COUNTER_ID && mof != MOF_COUNTER_OP && mof != MOF_COUNTER_VALUE) return CMD_ERROR;
 				break;
@@ -1868,6 +1914,13 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 					break;
 				}
 
+				case OCV_VEH_IN_SLOT_GROUP: {
+					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE) return CMD_ERROR;
+					const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetXData());
+					if (sg != nullptr && sg->vehicle_type != v->type) return CMD_ERROR;
+					break;
+				}
+
 				case OCV_TIMETABLE:
 					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE || data == OCC_EQUALS || data == OCC_NOT_EQUALS) return CMD_ERROR;
 					break;
@@ -1906,6 +1959,14 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 						if (trslot == nullptr) return CMD_ERROR;
 						if (trslot->vehicle_type != v->type) return CMD_ERROR;
 						if (!trslot->IsUsableByOwner(v->owner)) return CMD_ERROR;
+					}
+					break;
+
+				case OCV_VEH_IN_SLOT_GROUP:
+					if (data != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(data);
+						if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
+						if (!sg->CompanyCanReferenceSlotGroup(v->owner)) return CMD_ERROR;
 					}
 					break;
 
@@ -2013,6 +2074,14 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
 				if (!slot->IsUsableByOwner(v->owner)) return CMD_ERROR;
+			}
+			break;
+
+		case MOF_SLOT_GROUP:
+			if (data != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+				const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(data);
+				if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
+				if (!sg->CompanyCanReferenceSlotGroup(v->owner)) return CMD_ERROR;
 			}
 			break;
 
@@ -2149,6 +2218,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 						|| order->GetConditionVariable() == OCV_CARGO_LOAD_PERCENTAGE || order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT
 						|| order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
 				bool old_var_was_slot = (order->GetConditionVariable() == OCV_SLOT_OCCUPANCY || order->GetConditionVariable() == OCV_VEH_IN_SLOT);
+				bool old_var_was_slot_group = (order->GetConditionVariable() == OCV_VEH_IN_SLOT_GROUP);
 				bool old_var_was_counter = (order->GetConditionVariable() == OCV_COUNTER_VALUE);
 				bool old_var_was_time = (order->GetConditionVariable() == OCV_TIME_DATE);
 				bool old_var_was_tt = (order->GetConditionVariable() == OCV_TIMETABLE);
@@ -2171,6 +2241,13 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 						} else if (order->GetConditionVariable() == OCV_VEH_IN_SLOT && order->GetXData() != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(order->GetXData())->vehicle_type != v->type) {
 							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+						}
+						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
+						break;
+
+					case OCV_VEH_IN_SLOT_GROUP:
+						if (!old_var_was_slot_group) {
+							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 						}
 						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
 						break;
@@ -2262,6 +2339,10 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 						}
 						break;
 
+					case OCV_VEH_IN_SLOT_GROUP:
+						order->GetXDataRef() = data;
+						break;
+
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					case OCV_COUNTER_VALUE:
@@ -2315,6 +2396,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				break;
 
 			case MOF_SLOT:
+			case MOF_SLOT_GROUP:
 			case MOF_COUNTER_ID:
 				order->SetDestination(data);
 				break;
@@ -3335,6 +3417,31 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			}
 			break;
 		}
+		case OCV_VEH_IN_SLOT_GROUP: {
+			TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetXData());
+			if (sg != nullptr) {
+				bool occupant = false;
+				if (mode == PCO_EXEC) {
+					/* Use vehicle slot membership */
+					occupant = TraceRestrictIsVehicleInSlotGroup(sg, v->owner, v);
+				} else {
+					/* Slow(er) path */
+					bool check_owner = (sg->owner != v->owner);
+					for (TraceRestrictSlotID slot_id : sg->contained_slots) {
+						TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
+						if (check_owner && !HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+							continue;
+						}
+						if (ExecuteVehicleInSlotOrderCondition(v, slot, mode, false)) {
+							occupant = true;
+							break;
+						}
+					}
+				}
+				skip_order = OrderConditionCompare(occ, occupant, value);
+			}
+			break;
+		}
 		case OCV_FREE_PLATFORMS: {
 			StationID next_station = order->GetConditionStationID();
 			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, GetFreeStationPlatforms(next_station), value);
@@ -3430,8 +3537,27 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 				}
 				break;
 
+			case OT_SLOT_GROUP:
+				switch (order->GetSlotGroupSubType()) {
+					case OSGST_RELEASE: {
+						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination());
+						if (sg != nullptr) {
+							bool check_owner = (sg->owner != v->owner);
+							for (TraceRestrictSlotID slot_id : sg->contained_slots) {
+								if (check_owner && !HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+									continue;
+								}
+								include(_pco_deferred_slot_releases, slot_id);
+								container_unordered_remove(_pco_deferred_slot_acquires, slot_id);
+							}
+						}
+						break;
+					}
+				}
+				break;
+
 			case OT_COUNTER: {
-				const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(order->GetDestination());
+				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(order->GetDestination());
 				if (ctr != nullptr) {
 					auto result = _pco_deferred_counter_values.insert(std::make_pair(ctr->index, ctr->value));
 					result.first->second = TraceRestrictCounter::ApplyValue(result.first->second, static_cast<TraceRestrictCounterCondOpField>(order->GetCounterOperation()), order->GetXData());
@@ -3609,6 +3735,22 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 							break;
 						case OSST_TRY_ACQUIRE:
 							slot->Occupy(v);
+							break;
+					}
+				}
+			}
+			UpdateVehicleTimetable(v, true);
+			v->IncrementRealOrderIndex();
+			break;
+
+		case OT_SLOT_GROUP:
+			assert(!pbs_look_ahead);
+			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+				TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination());
+				if (sg != nullptr) {
+					switch (order->GetSlotGroupSubType()) {
+						case OSGST_RELEASE:
+							TraceRestrictVacateSlotGroup(sg, v->owner, v);
 							break;
 					}
 				}
@@ -3897,6 +4039,7 @@ const char *GetOrderTypeName(OrderType order_type)
 		"OT_SLOT",
 		"OT_COUNTER",
 		"OT_LABEL",
+		"OT_SLOT_GROUP",
 	};
 	static_assert(lengthof(names) == OT_END);
 	if (order_type < OT_END) return names[order_type];

@@ -52,6 +52,7 @@ enum OrderType : uint8_t {
 	OT_SLOT          = 11,
 	OT_COUNTER       = 12,
 	OT_LABEL         = 13,
+	OT_SLOT_GROUP    = 14,
 	OT_END
 };
 
@@ -60,6 +61,10 @@ using OrderTypeMask = uint16_t;
 enum OrderSlotSubType : uint8_t {
 	OSST_RELEASE               = 0,
 	OSST_TRY_ACQUIRE           = 1,
+};
+
+enum OrderSlotGroupSubType : uint8_t {
+	OSGST_RELEASE              = 0,
 };
 
 enum OrderLabelSubType : uint8_t {
@@ -189,6 +194,7 @@ enum OrderConditionVariable : uint8_t {
 	OCV_TIMETABLE,          ///< Skip based on timetable state
 	OCV_DISPATCH_SLOT,      ///< Skip based on scheduled dispatch slot state
 	OCV_CARGO_WAITING_AMOUNT_PERCENTAGE, ///< Skip based on the amount of a specific cargo waiting at station, relative to the vehicle capacity
+	OCV_VEH_IN_SLOT_GROUP,  ///< Test if vehicle is in slot group
 	OCV_END
 };
 
@@ -239,6 +245,7 @@ enum ModifyOrderFlags : uint8_t {
 	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoType.
 	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoType.
 	MOF_SLOT,            ///< Change the slot value
+	MOF_SLOT_GROUP,      ///< Change the slot group value
 	MOF_RV_TRAVEL_DIR,   ///< Change the road vehicle travel direction.
 	MOF_COUNTER_ID,      ///< Change the counter ID
 	MOF_COUNTER_OP,      ///< Change the counter operation

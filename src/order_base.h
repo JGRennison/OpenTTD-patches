@@ -64,6 +64,7 @@ void ClearOrderDestinationRefcountMap();
  * xdata users:
  * OT_COUNTER: Counter operation value (not counter ID)
  * OCV_SLOT_OCCUPANCY, OCV_VEH_IN_SLOT: Trace restrict slot ID
+ * OCV_VEH_IN_SLOT_GROUP: Trace restrict slot group ID
  * OCV_COUNTER_VALUE: Bits 0-15: Counter comparison value, Bits 16-31: Counter ID
  * OCV_TIMETABLE: Timetable lateness/earliness
  * OCV_TIME_DATE: Time/date
@@ -272,6 +273,7 @@ public:
 	void MakeLoadingAdvance(StationID destination);
 	void MakeReleaseSlot();
 	void MakeTryAcquireSlot();
+	void MakeReleaseSlotGroup();
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
 
@@ -295,7 +297,7 @@ public:
 
 	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsSlotCounterOrder() || IsType(OT_LABEL).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -303,7 +305,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsSlotCounterOrder() || IsType(OT_LABEL).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -531,8 +533,10 @@ public:
 	 * autofilled we can be sure that any non-zero values for their wait_time and travel_time are
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
+	inline bool IsSlotCounterOrder() const { return this->IsType(OT_COUNTER) || this->IsType(OT_SLOT) || this->IsType(OT_SLOT_GROUP); }
+
 	/* Does this order not have any associated travel or wait times */
-	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_SLOT) || this->IsType(OT_LABEL); }
+	inline bool HasNoTimetableTimes() const { return this->IsSlotCounterOrder() || this->IsType(OT_LABEL); }
 
 	/** Does this order have an explicit wait time set? */
 	inline bool IsWaitTimetabled() const
@@ -705,6 +709,11 @@ public:
 	inline OrderSlotSubType GetSlotSubType() const
 	{
 		return (OrderSlotSubType)GB(this->flags, 0, 8);
+	}
+
+	inline OrderSlotGroupSubType GetSlotGroupSubType() const
+	{
+		return (OrderSlotGroupSubType)GB(this->flags, 0, 8);
 	}
 
 	inline OrderLabelSubType GetLabelSubType() const

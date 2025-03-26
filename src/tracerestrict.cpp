@@ -341,7 +341,7 @@ void IterateSlotGroupSlotsWithSlotIDFilter(const TraceRestrictSlotGroup *sg, Own
 }
 
 template <typename F>
-void IterateSlotGroupSlotsWithFilters(const TraceRestrictSlotGroup *sg, Owner owner, const Train *v, std::span<const TraceRestrictSlotTemporaryState * const> temp_changes, F func)
+void IterateSlotGroupSlotsWithFilters(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v, std::span<const TraceRestrictSlotTemporaryState * const> temp_changes, F func)
 {
 	if (sg->contained_slots.empty()) return;
 	if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT) && temp_changes.empty()) return;
@@ -360,6 +360,24 @@ void IterateSlotGroupSlotsWithFilters(const TraceRestrictSlotGroup *sg, Owner ow
 	std::sort(filter_slots.begin(), filter_slots.end());
 
 	IterateSlotGroupSlotsWithSlotIDFilter(sg, owner, filter_slots, std::move(func));
+}
+
+void TraceRestrictVacateSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v)
+{
+	IterateSlotGroupSlotsWithFilters(sg, owner, v, {}, [&](TraceRestrictSlot *slot) {
+		slot->Vacate(v);
+		return false;
+	});
+}
+
+bool TraceRestrictIsVehicleInSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v)
+{
+	bool member = false;
+	IterateSlotGroupSlotsWithFilters(sg, owner, v, {}, [&](TraceRestrictSlot *slot) {
+		member = true;
+		return true;
+	});
+	return member;
 }
 
 /**
@@ -513,13 +531,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 
 					case TRIT_COND_TRAIN_IN_SLOT_GROUP: {
 						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(item.GetValue());
-						bool member = false;
-						if (sg != nullptr) {
-							IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, {}, [&](TraceRestrictSlot *slot) {
-								member = true;
-								return true;
-							});
-						}
+						bool member = (sg != nullptr) && TraceRestrictIsVehicleInSlotGroup(sg, GetTileOwner(input.tile), v);
 						result = TestBinaryConditionCommon(item, member);
 						break;
 					}
@@ -932,10 +944,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 						if (sg == nullptr || sg->vehicle_type != v->type) break;
 
 						auto vacate_slot_group = [&]() {
-							IterateSlotGroupSlotsWithFilters(sg, GetTileOwner(input.tile), v, {}, [&](TraceRestrictSlot *slot) {
-								slot->Vacate(v);
-								return false;
-							});
+							TraceRestrictVacateSlotGroup(sg, GetTileOwner(input.tile), v);
 						};
 
 						switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
@@ -3565,7 +3574,18 @@ void ClearInstructionRangeTraceRestrictSlotGroupIf(std::span<TraceRestrictProgra
 template <typename F>
 bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 {
-	return false;
+	bool changed_order = false;
+	if (o->IsType(OT_CONDITIONAL) &&
+			o->GetConditionVariable() == OCV_VEH_IN_SLOT_GROUP &&
+			cond(static_cast<TraceRestrictSlotID>(o->GetXData()))) {
+		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+		changed_order = true;
+	}
+	if (o->IsType(OT_SLOT_GROUP) && cond(static_cast<TraceRestrictSlotGroupID>(o->GetDestination()))) {
+		o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_GROUP);
+		changed_order = true;
+	}
+	return changed_order;
 }
 
 /**

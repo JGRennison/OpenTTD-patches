@@ -1322,6 +1322,8 @@ void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order
 void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to);
 void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out);
+void TraceRestrictVacateSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v);
+bool TraceRestrictIsVehicleInSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v);
 
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index);
 void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index);

@@ -60,6 +60,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/da
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo / capacity
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Train in slot group
 
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
@@ -1702,10 +1703,12 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Change t
 STR_ORDER_DROP_SELL_DEPOT                                       :Sell vehicle
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehicle in slot
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :Vehicle in slot group
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :Next station
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}The cargo to compare the station data against
-STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The train slot to check the occupancy of
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The slot to check the occupancy of
+STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP                        :{BLACK}The slot group to check the occupancy of
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}The counter to check the value of
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}The current time/date field to check the value of
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}The timetable field to check the value of
@@ -1766,9 +1769,12 @@ STR_ORDER_CHANGE_JUMP_TARGET                                    :Change jump tar
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Try acquire slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Release slot
+STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :Release slot group
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Change counter
-STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}The train slot to release
-STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}The train slot to try to acquire
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}The slot to release
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}The slot to try to acquire
+
+STR_ORDER_RELEASE_SLOT_GROUP_TOOLTIP                            :{BLACK}The slot group to release
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}The counter to change
 
@@ -1828,6 +1834,7 @@ STR_ORDER_CONDITIONAL_SLOT                                      :Jump to order {
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Jump to order {COMMA} when {STRING} slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {COMMA} when {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
+STR_ORDER_CONDITIONAL_IN_SLOT_GROUP                             :Jump to order {COMMA} when {STRING} any slot in slot group: {STRING1}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {CARGO_SHORT}
@@ -1844,6 +1851,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} percent
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :Try to acquire slot: {STRING1}
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}
+STR_ORDER_RELEASE_SLOT_GROUP                                    :Release all slots in slot group: {STRING1}
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}minute{P "" s}
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}hour{P "" s}
