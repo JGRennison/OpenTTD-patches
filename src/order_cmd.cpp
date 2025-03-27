@@ -3259,20 +3259,17 @@ OrderConditionEvalResult EvaluateDispatchSlotConditionalOrder(const Order *order
 	return OrderConditionEvalResult(OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0), result_type);
 }
 
-static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
-static std::vector<TraceRestrictSlotID> _pco_deferred_slot_releases;
+static TraceRestrictVehicleTemporarySlotMembershipState _pco_deferred_slot_membership;
 static btree::btree_map<TraceRestrictCounterID, int32_t> _pco_deferred_counter_values;
 static btree::btree_map<Order *, int8_t> _pco_deferred_original_percent_cond;
 
 static bool ExecuteVehicleInSlotOrderCondition(const Vehicle *v, TraceRestrictSlot *slot, ProcessConditionalOrderMode mode, bool acquire)
 {
-	bool occupant = slot->IsOccupant(v->index);
-	if (mode == PCO_DEFERRED) {
-		if (occupant && find_index(_pco_deferred_slot_releases, slot->index) >= 0) {
-			occupant = false;
-		} else if (!occupant && find_index(_pco_deferred_slot_acquires, slot->index) >= 0) {
-			occupant = true;
-		}
+	bool occupant;
+	if (mode == PCO_DEFERRED && _pco_deferred_slot_membership.IsValid()) {
+		occupant = _pco_deferred_slot_membership.IsInSlot(slot->index);
+	} else {
+		occupant = slot->IsOccupant(v->index);
 	}
 	if (acquire) {
 		if (!occupant && mode == PCO_EXEC) {
@@ -3281,8 +3278,8 @@ static bool ExecuteVehicleInSlotOrderCondition(const Vehicle *v, TraceRestrictSl
 		if (!occupant && mode == PCO_DEFERRED) {
 			occupant = slot->OccupyDryRun(v->index);
 			if (occupant) {
-				include(_pco_deferred_slot_acquires, slot->index);
-				container_unordered_remove(_pco_deferred_slot_releases, slot->index);
+				_pco_deferred_slot_membership.Initialise(v);
+				_pco_deferred_slot_membership.AddSlot(slot->index);
 			}
 		}
 	}
@@ -3386,12 +3383,8 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(slot_id);
 			if (slot != nullptr) {
 				size_t count = slot->occupants.size();
-				if (mode == PCO_DEFERRED) {
-					if (find_index(_pco_deferred_slot_releases, slot_id) >= 0 && slot->IsOccupant(v->index)) {
-						count--;
-					} else if (find_index(_pco_deferred_slot_acquires, slot_id) >= 0 && !slot->IsOccupant(v->index)) {
-						count++;
-					}
+				if (mode == PCO_DEFERRED && _pco_deferred_slot_membership.IsValid()) {
+					count += _pco_deferred_slot_membership.GetSlotOccupancyDelta(slot_id);
 				}
 				bool result;
 				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
@@ -3527,8 +3520,8 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 				if (TraceRestrictSlot::IsValidID(order->GetDestination())) {
 					switch (order->GetSlotSubType()) {
 						case OSST_RELEASE:
-							include(_pco_deferred_slot_releases, order->GetDestination());
-							container_unordered_remove(_pco_deferred_slot_acquires, order->GetDestination());
+							_pco_deferred_slot_membership.Initialise(v);
+							_pco_deferred_slot_membership.RemoveSlot(order->GetDestination());
 							break;
 						case OSST_TRY_ACQUIRE:
 							ExecuteVehicleInSlotOrderCondition(v, TraceRestrictSlot::Get(order->GetDestination()), PCO_DEFERRED, true);
@@ -3542,13 +3535,13 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 					case OSGST_RELEASE: {
 						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination());
 						if (sg != nullptr) {
+							_pco_deferred_slot_membership.Initialise(v);
 							bool check_owner = (sg->owner != v->owner);
 							for (TraceRestrictSlotID slot_id : sg->contained_slots) {
 								if (check_owner && !HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
 									continue;
 								}
-								include(_pco_deferred_slot_releases, slot_id);
-								container_unordered_remove(_pco_deferred_slot_acquires, slot_id);
+								_pco_deferred_slot_membership.RemoveSlot(slot_id);
 							}
 						}
 						break;
@@ -3598,12 +3591,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 void FlushAdvanceOrderIndexDeferred(const Vehicle *v, bool apply)
 {
 	if (apply) {
-		for (TraceRestrictSlotID slot : _pco_deferred_slot_acquires) {
-			TraceRestrictSlot::Get(slot)->Occupy(v);
-		}
-		for (TraceRestrictSlotID slot : _pco_deferred_slot_releases) {
-			TraceRestrictSlot::Get(slot)->Vacate(v);
-		}
+		_pco_deferred_slot_membership.ApplyToVehicle();
 		for (auto item : _pco_deferred_counter_values) {
 			TraceRestrictCounter::Get(item.first)->UpdateValue(item.second);
 		}
@@ -3613,8 +3601,7 @@ void FlushAdvanceOrderIndexDeferred(const Vehicle *v, bool apply)
 		}
 	}
 
-	_pco_deferred_slot_acquires.clear();
-	_pco_deferred_slot_releases.clear();
+	_pco_deferred_slot_membership.Clear();
 	_pco_deferred_counter_values.clear();
 	_pco_deferred_original_percent_cond.clear();
 }

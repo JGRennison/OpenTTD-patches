@@ -3203,6 +3203,72 @@ void TraceRestrictSlotTemporaryState::PopFromChangeStackApplyTemporaryChanges(co
 	}
 }
 
+void TraceRestrictVehicleTemporarySlotMembershipState::InitialiseFromVehicle(const Vehicle *v)
+{
+	this->vehicle_slots.clear();
+	this->vehicle = v;
+	const VehicleID veh_id = v->index;
+	for (auto it = _slot_vehicle_index.lower_bound(veh_id); it != _slot_vehicle_index.end() && it->first == veh_id; ++it) {
+		this->vehicle_slots.push_back(it->second);
+	}
+	std::sort(this->vehicle_slots.begin(), this->vehicle_slots.end());
+	this->current_slots = this->vehicle_slots;
+}
+
+void TraceRestrictVehicleTemporarySlotMembershipState::AddSlot(TraceRestrictSlotID slot_id)
+{
+	include(this->current_slots, slot_id);
+}
+
+void TraceRestrictVehicleTemporarySlotMembershipState::RemoveSlot(TraceRestrictSlotID slot_id)
+{
+	container_unordered_remove(this->current_slots, slot_id);
+}
+
+int TraceRestrictVehicleTemporarySlotMembershipState::GetSlotOccupancyDelta(TraceRestrictSlotID slot_id)
+{
+	int delta = 0;
+	if (find_index(this->current_slots, slot_id) >= 0) delta++;
+	if (find_index(this->vehicle_slots, slot_id) >= 0) delta--;
+	return delta;
+}
+
+void TraceRestrictVehicleTemporarySlotMembershipState::ApplyToVehicle()
+{
+	if (!this->IsValid()) return;
+
+	std::sort(this->current_slots.begin(), this->current_slots.end());
+
+	auto veh_it = this->vehicle_slots.begin();
+	const auto veh_end = this->vehicle_slots.end();
+	auto cur_it = this->current_slots.begin();
+	const auto cur_end = this->current_slots.end();
+
+	while (veh_it != veh_end && cur_it != cur_end) {
+		if (*veh_it < *cur_it) {
+			/* In vehicle slots but not current slots */
+			TraceRestrictSlot::Get(*veh_it)->Vacate(this->vehicle);
+			++veh_it;
+		} else if (*cur_it < *veh_it) {
+			/* In current slots but not vehicle slots */
+			TraceRestrictSlot::Get(*cur_it)->Occupy(this->vehicle);
+			++cur_it;
+		} else {
+			/* In both sets, no action */
+			++veh_it;
+			++cur_it;
+		}
+	}
+	while (veh_it != veh_end) {
+		TraceRestrictSlot::Get(*veh_it)->Vacate(this->vehicle);
+		++veh_it;
+	}
+	while (cur_it != cur_end) {
+		TraceRestrictSlot::Get(*cur_it)->Occupy(this->vehicle);
+		++cur_it;
+	}
+}
+
 void TraceRestrictSlotGroup::AddSlotsToParentGroups()
 {
 	if (this->contained_slots.empty()) return;

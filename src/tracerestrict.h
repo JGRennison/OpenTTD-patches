@@ -1402,6 +1402,42 @@ bool TraceRestrictSlot::IsUsableByOwner(Owner using_owner) const
 	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
 }
 
+struct TraceRestrictVehicleTemporarySlotMembershipState {
+private:
+	ankerl::svector<TraceRestrictSlotID, 8> vehicle_slots;
+	ankerl::svector<TraceRestrictSlotID, 8> current_slots;
+	const Vehicle *vehicle = nullptr;
+
+	void InitialiseFromVehicle(const Vehicle *v);
+
+public:
+	bool IsValid() const { return this->vehicle != nullptr; }
+
+	bool IsInSlot(TraceRestrictSlotID slot_id) const
+	{
+		for (TraceRestrictSlotID s : this->current_slots) {
+			if (s == slot_id) return true;
+		}
+		return false;
+	}
+
+	void AddSlot(TraceRestrictSlotID slot_id);
+	void RemoveSlot(TraceRestrictSlotID slot_id);
+	int GetSlotOccupancyDelta(TraceRestrictSlotID slot_id);
+	void ApplyToVehicle();
+
+	void Initialise(const Vehicle *v)
+	{
+		if (!this->IsValid()) this->InitialiseFromVehicle(v);
+	}
+
+	void Clear()
+	{
+		this->current_slots.clear();
+		this->vehicle = nullptr;
+	}
+};
+
 /**
  * Slot group type
  */
