@@ -19,14 +19,14 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待货物
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受货物
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未占用站台
 STR_ORDER_CONDITIONAL_PERCENT                                   :概率
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :槽位占用
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :槽位内列车
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路签使用率
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路签
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :货物装载百分比
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待货物总量
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :调度槽位
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :发车时间
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
@@ -281,8 +281,8 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8 倍缩放及�
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16 倍缩放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32 倍缩放及以上
 
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :默认显示命令占用情况：{STRING}
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :打开载具的调度计划窗口时默认显示每条命令的占用率
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :默认显示命令负载率：{STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :打开载具的调度计划窗口时默认显示每条命令的负载率
 
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :在名称中显示分组层级：{STRING}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :启用后，组别名称将包括所有父组名
@@ -739,8 +739,8 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :支付修理费
 STR_CONFIG_SETTING_REPAIR_COST                                  :修理载具的成本为载具购置成本的 1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :将修理载具的成本设置为购买载具成本 1/x{}如果载具的使用年限超过其最高使用年限，则费用翻倍
 
-STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :测量命令占用时使用的平滑度：{STRING}
-STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :将此项设置为 0% 时，载具的载货变化将立即在命令占用中反映出来。将此项设置为 100% 时，命令占用将维持不变
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :命令负载率平滑度：{STRING}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :设置为 0% 时，命令负载率将反馈载具负载率在极短时间内的任何变动。设置为 100% 时，命令负载率将维持不变
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/复制/共享调度计划的进阶设置：{STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有载具的调度计划后：{}列车、道路载具、船舶：如果载具在一个车库中，该车库在调度计划中，则跳到该车库的调度计划之一。{}飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一
@@ -830,11 +830,11 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :预留路径结
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :预留路径终止格
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :预留路径终止格
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :列车分组
-STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :当前槽位
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :槽位占用率
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :剩余槽位占用率
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :占用率
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :剩余占用率
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :持有路签
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :路签使用率
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :路签剩余使用率
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :使用率
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :剩余使用率
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :计数器值
 STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :当前时间日期
 STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :预留路径格数
@@ -870,10 +870,10 @@ STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列车{STRING}在组：“{GROUP}”内，则
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING}列车{STRING}在组：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”内，则
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING}{STRING}{STRING}“{COMPANY}{COMPANY_NUM}”，则
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列车{STRING}在槽位：“{TRSLOT}”内，则
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列车{STRING}在槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”内，则
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}槽位：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，则
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}槽位：“{PUSH_COLOUR}{2:STRING}{POP_COLOUR}”的{1:STRING}{3:STRING} {4:COMMA}，则
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列车{STRING}持有路签：“{TRSLOT}”，则
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列车{STRING}持有路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，则
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}路签：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，则
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}路签：“{PUSH_COLOUR}{2:STRING}{POP_COLOUR}”的{1:STRING}{3:STRING} {4:COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列车{STRING}状态：“{STRING}”，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING}计数器值：{TRCOUNTER} {STRING} {COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}计数器值：{PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA}，则
@@ -915,7 +915,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE                 :正在进入桥
 STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :正在离开桥隧
 STR_TRACE_RESTRICT_COMPANY                                      :公司
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :未定义公司
-STR_TRACE_RESTRICT_SLOT_OP                                      :槽位操作
+STR_TRACE_RESTRICT_SLOT_OP                                      :路签操作
 STR_TRACE_RESTRICT_REVERSE                                      :倒转
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :限速
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :新闻控制
@@ -923,29 +923,29 @@ STR_TRACE_RESTRICT_COUNTER_OP                                   :计数器控制
 STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :延迟控制
 STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :速度调整控制
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :信号模式控制
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :占用或等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :占用或忽略
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :车头退出
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :车尾退出
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路径退出
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径终止时占用或等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径终止时占用或忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径终止时退出
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则在信号前等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :车头通过后退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :车尾通过后退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :预留的路径经过此处时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :预留的路径在此终止时占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则在信号前等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :预留的路径在此终止时占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :预留的路径在此终止时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :领取或等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :领取或忽略
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :车头返还
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :车尾返还
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路径返还
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径终止时领取或等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径终止时领取或忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径终止时返还
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则在信号前等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则忽略
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :车头通过后返还路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :车尾通过后返还路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :预留的路径经过此处时返还路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :预留的路径在此终止时领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则在信号前等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :预留的路径在此终止时领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :预留的路径在此终止时返还路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
-STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}槽位{CONSUME_ARG}：{LTBLUE}
-STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}，{LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}路签{CONSUME_ARG}：{LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}、{LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :增加
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :减少
@@ -1025,27 +1025,27 @@ STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}比较�
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}条件类型
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}到信号
-STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}槽位处理模式
-STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}槽位 - 点击一个槽位来列出所有属于这个槽位的载具列表
-STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}点击创建槽位
-STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}删除所选槽位
-STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重命名所选槽位
-STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}创建槽位组
-STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}创建一个新的槽位组
-STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}公开所选槽位。{}其他公司的调度计划与信号可以在启用基建设施共享时使用公开的槽位
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}设定所选槽位的容量
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 槽位管理（{STRING}）
-STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理槽位
+STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}路签处理模式
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}路签 - 点击路签以查看持有路签的所有载具
+STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}点击创建路签
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}删除所选路签
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重命名所选路签
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}创建路签组
+STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}创建一个新的路签组
+STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}公开所选路签。{}其他公司的调度计划与信号可以在启用基建设施共享时使用公开的路签
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}设定所选路签的数量
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 路签管理（{STRING}）
+STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理路签
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
-STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重命名槽位
-STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}重命名槽位组
-STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}创建槽位
-STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}创建槽位组
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}设置最大槽位占用
-STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}删除槽位
-STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你确定你要删除该槽位吗？
+STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重命名路签
+STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}重命名路签组
+STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}创建路签
+STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}创建路签组
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}设置路签数量
+STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}删除路签
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你确定你要删除路签吗？
 STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP                           :{BLACK}计数器运算类型
-STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}计数器 - 点击一个计数器来修改它
+STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}计数器 - 点击一个计数器以修改
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}创建
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}删除
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}重命名
@@ -1114,12 +1114,12 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}不能�
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}不能追加程序
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}不能共享程序
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}不能取消共享程序
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能创建槽位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能删除槽位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重命名槽位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能增加载具至槽位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能从槽位移除载具……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能设置槽位容量……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能创建路签……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能删除路签……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重命名路签……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能向载具发放路签……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能从载具回收路签……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能设置路签数量……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE                   :{WHITE}不能创建计数器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}不能删除计数器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}不能重命名计数器……
@@ -1150,8 +1150,8 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入�
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所选的命令
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整个程序
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}从已存在的信号处复制程序
-STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比较槽位占用
-STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比较占用值
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比较的路签
+STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比较的计数器
 
 STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}移除程序
 STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}复制程序
@@ -1172,15 +1172,15 @@ STR_PROGSIG_SET_SIGNAL                                          :使信号{STRIN
 STR_PROGSIG_COND_ALWAYS                                         :总是
 STR_PROGSIG_COND_NEVER                                          :从不
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
-STR_PROGSIG_COND_SLOT_COMPARE                                   :{TRSLOT} {STRING} {NUM} 的占用率
-STR_PROGSIG_COND_SLOT_COMPARE_INVALID                           :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的剩余占用率
-STR_PROGSIG_COND_SLOT_REMAINING_COMPARE                         :{TRSLOT} {STRING} {NUM} 的剩余占用率
-STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的剩余占用率
+STR_PROGSIG_COND_SLOT_COMPARE                                   :{TRSLOT} {STRING} {NUM} 的使用率
+STR_PROGSIG_COND_SLOT_COMPARE_INVALID                           :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的剩余使用率
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE                         :{TRSLOT} {STRING} {NUM} 的剩余使用率
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的剩余使用率
 STR_PROGSIG_COND_COUNTER_COMPARE                                :{TRCOUNTER} {STRING} {NUM} 的值
 STR_PROGSIG_COND_COUNTER_COMPARE_INVALID                        :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的值
 STR_PROGSIG_COND_SIGNAL_STATE                                   :信号状态
-STR_PROGSIG_COND_SLOT                                           :槽位占用
-STR_PROGSIG_COND_SLOT_REMAINING                                 :槽位占用剩余
+STR_PROGSIG_COND_SLOT                                           :路签使用
+STR_PROGSIG_COND_SLOT_REMAINING                                 :路签使用剩余
 STR_PROGSIG_COND_COUNTER                                        :计数器值
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :在 {NUM}×{NUM} 的信号是绿灯
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}未特别指定的信号{POP_COLOUR}是绿灯
@@ -1193,7 +1193,7 @@ STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}不能�
 STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}不能修改命令
 STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}不能移除命令
 STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能跳转到未定义的信号
-STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一个退出信号
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一个出口信号
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一个可编程入口信号
 STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能从自己复制程序
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有条件地依赖于双向信号
@@ -1584,7 +1584,7 @@ STR_CURRENT_STATUS                                              :{BLACK}状态�
 
 STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :运行费用：{CURRENCY_LONG}/原始年
 
-STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}列车长度{LTBLUE}{DECIMAL}格{STRING}
+STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}列车长度：{LTBLUE}{DECIMAL}格{STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}功率重量比：{LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}最大牵引力重量比：{LTBLUE}{FORCE_WEIGHT_RATIO}
@@ -1614,7 +1614,7 @@ STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}最高�
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}额外载具操作
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :移除限速
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :设置限速
-STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :从槽位中移除：
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :回收路签：
 
 STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :生产周期
 
@@ -1632,11 +1632,11 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改变�
 
 STR_ORDER_DROP_SELL_DEPOT                                       :卖出载具
 
-STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :槽位内载具
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路签载具
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}货物对比车站数据
-STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}检查的槽位
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}检查的路签
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}检查的计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}检查的时间信息
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}检查的时刻表项
@@ -1657,22 +1657,22 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :有{NBSP}<
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :有{NBSP}≤
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :有{NBSP}>
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :有{NBSP}≥
-STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :已被完全占用
-STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :未被完全占用
-STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :为空
-STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :不为空
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :列车在
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :列车不在
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :列车在/占用
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :列车不在/无法占用
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :载具在
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :载具不在
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :载具在/占用
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :载具不在/无法占用
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :是第一条
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :不是第一条
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :是最后一条
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :不是最后一条
+STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :已被完全领取
+STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :未被完全领取
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :尚未被领取
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :已被领取
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :列车有
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :列车没有
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :列车有/领取
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :列车没有/无法领取
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :载具有
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :载具没有
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :载具有/领取
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :载具没有/无法领取
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :是第一个
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :不是第一个
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :是最后一个
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :不是最后一个
 
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :有标签 #{NUM}
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :有标签 #{NUM}（{STRING}）
@@ -1693,11 +1693,11 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :将反转调度
 STR_ORDER_DUPLICATE_ORDER                                       :复制命令
 STR_ORDER_CHANGE_JUMP_TARGET                                    :改变跳转目标
 
-STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :尝试占用槽位
-STR_ORDER_RELEASE_SLOT_BUTTON                                   :退出槽位
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :尝试领取路签
+STR_ORDER_RELEASE_SLOT_BUTTON                                   :返还路签
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :更改计数器
-STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}退出槽位
-STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}尝试占用的槽位
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}返还路签
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}尝试领取的路签
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}要更改的计数器
 
@@ -1713,8 +1713,8 @@ STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :移除经由
 STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作为经由显示：对于起点在此站之前且终点在此站之后的车次，在出发看板内将此站点/路点作为经由显示{}双重经由将显示两重{}{}移除先前站点的经由：当显示此命令之前的调用点作为终点时，不将此站点显示为经由站点
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}显示运行平均负载率{}百分比显示的是调度占用的总平均数
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}调度占用——这展示了对于共享这些调度的载具的当离开车站时的最近的运行平均负载率等级
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}显示命令负载率{}总体平均命令负载率由百分比表示
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}命令负载率 - 共享该调度计划的载具在离开车站时的负载率之平均数
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}从单个载具创建组
@@ -1754,25 +1754,25 @@ STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 #{COMMA} [如果 {STRING} {STRING}{STRING}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING}{STRING}]
 STR_ORDER_CONDITIONAL_SLOT                                      :跳至 #{COMMA} [如果“{TRSLOT}”{STRING}]
-STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 #{COMMA} [如果{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING} ]
-STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}槽位：{TRSLOT} ]
-STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA} [如果{STRING}{PUSH_COLOUR}{RED}{STRING} {POP_COLOUR} ]
+STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 #{COMMA} [如果{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING}]
+STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}路签：{TRSLOT}]
+STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA} [如果{STRING}{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}]
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 #{COMMA} [如果{STRING}装载比例{STRING} {COMMA}%]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}数{3:STRING} {4:CARGO_SHORT}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :跳至 #{0:COMMA} [如果 {2:STRING} 经由 {3:STRING} 的{1:STRING}数{4:STRING} {5:CARGO_SHORT}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}数{3:STRING}{4:STRING}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :跳至 #{0:COMMA} [如果 {2:STRING} 经由 {3:STRING} 的{1:STRING}数{4:STRING}{5:STRING}]
 STR_ORDER_CONDITIONAL_COUNTER                                   :跳至 #{COMMA} [如果数值：{TRCOUNTER} {STRING} {COMMA} ]
-STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :跳至 #{COMMA} [如果数值：{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA} ]
-STR_ORDER_CONDITIONAL_TIME_HHMM                                 :跳至 #{COMMA} [如果 {STRING} {STRING} {TIME_HHMM} ]
+STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :跳至 #{COMMA} [如果数值：{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}]
+STR_ORDER_CONDITIONAL_TIME_HHMM                                 :跳至 #{COMMA} [如果 {STRING} {STRING} {TIME_HHMM}]
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :跳至 #{COMMA} [如果{STRING}{STRING}{TT_TICKS}]
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING} {STRING} ]
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING} {STRING}]
 
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :列车{1:STRING}容量的 {0:COMMA}%
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :列车改装为{1:STRING}类型时容量的 {0:COMMA}%
 
-STR_ORDER_TRY_ACQUIRE_SLOT                                      :尝试占用：{STRING}
-STR_ORDER_RELEASE_SLOT                                          :退出槽位：{STRING}
+STR_ORDER_TRY_ACQUIRE_SLOT                                      :尝试领取：{STRING}
+STR_ORDER_RELEASE_SLOT                                          :返还路签：{STRING}
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}分
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}时
