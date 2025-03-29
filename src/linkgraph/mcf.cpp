@@ -572,7 +572,7 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 			}
 			++i;
 		}
-		if (holes >= paths.size() / 8) {
+		if (holes > paths.size() / 4) {
 			/* remove any holes */
 			paths.erase(std::remove(paths.begin(), paths.end(), nullptr), paths.end());
 		}
