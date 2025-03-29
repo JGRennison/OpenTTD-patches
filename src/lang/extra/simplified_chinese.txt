@@ -28,6 +28,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/�
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :发车时间
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路签组路签
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
 
@@ -831,6 +832,7 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :预留路径终
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :预留路径终止格
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :列车分组
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :持有路签
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP                    :持有路签组路签
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :路签使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :路签剩余使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :使用率
@@ -874,6 +876,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列车{
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列车{STRING}持有路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，则
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}路签：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}路签：“{PUSH_COLOUR}{2:STRING}{POP_COLOUR}”的{1:STRING}{3:STRING} {4:COMMA}，则
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP                       :{STRING}列车{STRING}持有路签组：“{STRING}”内的任一路签，则
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列车{STRING}状态：“{STRING}”，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING}计数器值：{TRCOUNTER} {STRING} {COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}计数器值：{PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA}，则
@@ -916,6 +919,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :正在离开桥
 STR_TRACE_RESTRICT_COMPANY                                      :公司
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :未定义公司
 STR_TRACE_RESTRICT_SLOT_OP                                      :路签操作
+STR_TRACE_RESTRICT_SLOT_GROUP_OP                                :路签组操作
 STR_TRACE_RESTRICT_REVERSE                                      :倒转
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :限速
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :新闻控制
@@ -939,11 +943,17 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :预留的路径
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :预留的路径在此终止时领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则在信号前等待
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :预留的路径在此终止时领取路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法领取则忽略
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :预留的路径在此终止时返还路签：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM                :车头通过后返还路签组：“{STRING}”内所有路签
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM                 :车尾通过后返还路签组：“{STRING}”内所有路签
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM           :预留的路径经过此处时返还路签组：“{STRING}”内所有路签
+STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM          :预留的路径在此终止时返还路签组：“{STRING}”内所有路签
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING                     :{TRSLOTGROUP}{PUSH_COLOUR}{RED}（组内没有路签）{POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING                :{TRSLOTGROUP}{PUSH_COLOUR}{RED}（组内有不可用的私有路签）{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}路签{CONSUME_ARG}：{LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}、{LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1196,6 +1206,7 @@ STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能�
 STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一个出口信号
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一个可编程入口信号
 STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能从自己复制程序
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}不能依赖自己
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有条件地依赖于双向信号
 STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}无效信号
 
@@ -1632,11 +1643,13 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改变�
 
 STR_ORDER_DROP_SELL_DEPOT                                       :卖出载具
 
-STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路签载具
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路签
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :持有路签组路签
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}货物对比车站数据
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}检查的路签
+STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP                        :{BLACK}检查的路签组
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}检查的计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}检查的时间信息
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}检查的时刻表项
@@ -1695,9 +1708,12 @@ STR_ORDER_CHANGE_JUMP_TARGET                                    :改变跳转目
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :尝试领取路签
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :返还路签
+STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :返还路签组路签
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :更改计数器
-STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}返还路签
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}返还的路签
 STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}尝试领取的路签
+
+STR_ORDER_RELEASE_SLOT_GROUP_TOOLTIP                            :{BLACK}返还所有路签的路签组
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}要更改的计数器
 
@@ -1755,8 +1771,9 @@ STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING}{STRING}]
 STR_ORDER_CONDITIONAL_SLOT                                      :跳至 #{COMMA} [如果“{TRSLOT}”{STRING}]
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 #{COMMA} [如果{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING}]
-STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}路签：{TRSLOT}]
+STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}路签：“{TRSLOT}”]
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA} [如果{STRING}{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}]
+STR_ORDER_CONDITIONAL_IN_SLOT_GROUP                             :跳至 #{COMMA} [如果{STRING}路签组：“{STRING}”内的任一路签]
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 #{COMMA} [如果{STRING}装载比例{STRING} {COMMA}%]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}数{3:STRING} {4:CARGO_SHORT}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :跳至 #{0:COMMA} [如果 {2:STRING} 经由 {3:STRING} 的{1:STRING}数{4:STRING} {5:CARGO_SHORT}]
@@ -1773,6 +1790,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :列车改装为
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :尝试领取：{STRING}
 STR_ORDER_RELEASE_SLOT                                          :返还路签：{STRING}
+STR_ORDER_RELEASE_SLOT_GROUP                                    :返还路签组：“{STRING}”内的所有路签
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}分
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}时
