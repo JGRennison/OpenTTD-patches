@@ -551,7 +551,7 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 		uint holes = 0;
 		for (PathList::reverse_iterator i = paths.rbegin(); i != paths.rend();) {
 			Path *new_child = *i;
-			if (new_child) {
+			if (new_child != nullptr) {
 				uint new_flow = new_child->GetFlow();
 				if (new_flow == 0) break;
 				if (new_child->GetOrigin() == origin_id) {
