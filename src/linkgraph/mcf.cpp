@@ -514,7 +514,7 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 		cycle_begin->ReduceFlow(flow);
 		if (cycle_begin->GetFlow() == 0) {
 			PathList &node_paths = this->job[cycle_begin->GetParent()->GetNode()].Paths();
-			for (PathList::reverse_iterator i = node_paths.rbegin(); i != node_paths.rend(); ++i) {
+			for (PathList::iterator i = node_paths.begin(); i != node_paths.end(); ++i) {
 				if (*i == cycle_begin) {
 					*i = nullptr;
 					break;
@@ -549,16 +549,15 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 		PathList &paths = this->job[next_id].Paths();
 		PathViaMap next_hops;
 		uint holes = 0;
-		for (PathList::reverse_iterator i = paths.rbegin(); i != paths.rend();) {
+		for (PathList::iterator i = paths.begin(); i != paths.end();) {
 			Path *new_child = *i;
 			if (new_child != nullptr) {
-				uint new_flow = new_child->GetFlow();
-				if (new_flow == 0) break;
 				if (new_child->GetOrigin() == origin_id) {
 					PathViaMap::iterator via_it = next_hops.find(new_child->GetNode());
 					if (via_it == next_hops.end()) {
 						next_hops[new_child->GetNode()] = new_child;
 					} else {
+						uint new_flow = new_child->GetFlow();
 						Path *child = via_it->second;
 						child->AddFlow(new_flow);
 						new_child->ReduceFlow(new_flow);

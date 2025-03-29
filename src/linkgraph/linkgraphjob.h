@@ -205,8 +205,9 @@ public:
 		const FlowStatMap &Flows() const { return this->node_anno.flows; }
 
 		/**
-		 * Get the paths this node is part of. Paths are always expected to be
-		 * sorted so that those with flow == 0 are in the back of the list.
+		 * Get the paths this node is part of.
+		 * Paths are expected to have non-zero flow.
+		 * nullptr entries may be present in this list.
 		 * @return Paths.
 		 */
 		PathList &Paths() { return this->node_anno.paths; }
