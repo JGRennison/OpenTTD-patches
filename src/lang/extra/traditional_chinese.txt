@@ -744,7 +744,7 @@ STR_CONFIG_SETTING_REPAIR_COST                                  :維護車輛的
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :將維護車輛的成本設定為購買車輛成本 1/x{}如果車輛的使用年限超過其最高使用年限，則費用翻倍
 
 STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :指令負載率平滑度：{STRING}
-STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :設定為 0% 時，車輛負載率將反映車輛負載率在極短時間內的任何變動。設定為 100% 時，指令負載率將維持不變
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :設定為 0% 時，指令負載率將反映車輛負載率在極短時間內的任何變動。設定為 100% 時，指令負載率將維持不變
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆／複製／共享指令清單的進階設定：{STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆／複製／共享現有車輛的指令清單後：{}列車、汽車、船舶：如果車輛在一個車廠中，該車廠在指令清單中，則跳到該車廠的指令清單之一。{}飛機：如果飛機在機棚中，相關的機場在指令清單列表中，則跳到該機場的指令清單之一
