@@ -1733,7 +1733,7 @@ STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :移除經由
 STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的班次，在班次顯示板內將此車站/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前總站的經由：當顯示此指令之前的調用點作為終點時，不將此車站顯示為經由車站。
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示指令負載率{}總體平均指令負載率由百分比顯示
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示指令負載率{}整體平均指令負載率由百分比顯示
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}指令負載率 — 共享該指令清單的車輛在離開車站時的負載率之平均數
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
