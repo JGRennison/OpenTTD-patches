@@ -28,6 +28,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Data/hora actua
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Estado dos horarios
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Slot de despacho
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Agardando carga / capacidade
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Tren en grupo de slots
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[a través da carga]
 
@@ -834,6 +835,7 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :cadro de fin da
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :cadro o final da reserva de PBS dende este sinal
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :o grupo de tren
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :tren no slot
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP                    :tren no grupo de slots
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :ocupación de slots
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :ocupación de slots restante
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :ocupación
@@ -877,6 +879,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} o tren
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} o tren {STRING} no slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} do slot: {TRSLOT} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} do slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP                       :{STRING} tren {STRING} en calquera slot no grupo de slots: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} o tren {STRING} status: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} valor do contador: {TRCOUNTER} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} valor do contador: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
@@ -919,6 +922,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :saíndo dun tú
 STR_TRACE_RESTRICT_COMPANY                                      :Compañia
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Compañía non definida
 STR_TRACE_RESTRICT_SLOT_OP                                      :Operación de slot
+STR_TRACE_RESTRICT_SLOT_GROUP_OP                                :Operación de grupo de slots
 STR_TRACE_RESTRICT_REVERSE                                      :Retroceder
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :Restrición de velocidade
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :Control de novas
@@ -942,11 +946,17 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Liberar slot: {
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Reserva de ruta PBS remata aqui: Adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou agardar no sinal de ruta PBS
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Reserva de ruta PBS remata aqui: Adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou continuar de calquera xeito
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Reserva de ruta PBS remata aqui: Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM                :Liberar slots no grupo de slots: {STRING} (diante do tren)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM                 :Liberar slots no grupo de slots: {STRING} (detrás do tren)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM           :Liberar slots no grupo de slots: {STRING} (en reserva PBS)
+STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM          :Ruta de reserva remata aqui: Liberar slots no grupo de slots: {STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING                     :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(ten slots){POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING                :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(ten slots non públicos inusables){POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1638,10 +1648,12 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Cambiar 
 STR_ORDER_DROP_SELL_DEPOT                                       :Vender vehículo
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehículo en slot
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :Vehículo no grupo de slots
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :Próxima estación
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}A carga contra a que comparar os datos da estación
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}O Slot de tren no que comprobar a ocupación
+STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP                        :{BLACK}O grupo de slots no que comprobar a ocupación
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}O contador do que comprobar o valor
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}O campo de data/hora actual no que comprobar o valor
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}O Campo do horario no que comprobar o valor
@@ -1700,9 +1712,12 @@ STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxec
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Tentar adquirir slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Liberar slot
+STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :Librear grupo de slots
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Modificar contador
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}O slot de tren a liberar
 STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}O slot de tren a tentar adquirir
+
+STR_ORDER_RELEASE_SLOT_GROUP_TOOLTIP                            :{BLACK}O grupo de slots a liberar
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}O contador a modificar
 
@@ -1761,6 +1776,7 @@ STR_ORDER_CONDITIONAL_SLOT                                      :Saltar á orde 
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Saltar á orde {COMMA} cando {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Saltar á orde {COMMA} cando {STRING} no slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Saltar á orde {COMMA} cando {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
+STR_ORDER_CONDITIONAL_IN_SLOT_GROUP                             :Saltar á orde {COMMA} cando {STRING} calquera slot no grupo de slots: {STRING}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Saltar á orde {COMMA} cando o porcentaxe de carga de {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Saltar á orde {COMMA} cando {STRING} na {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Saltar á orde {COMMA} cando {STRING} na {STRING} vía {STRING} {STRING} {CARGO_SHORT}
