@@ -19,15 +19,16 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待貨物
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受貨物
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未使用月台
 STR_ORDER_CONDITIONAL_PERCENT                                   :概率
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路牌使用
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :路牌內列車
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路牌使用率
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路牌
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :貨物裝載百分比
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物數量
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :計數器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :目前時間/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :時刻表狀態
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :路牌調度
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :發車時間
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中貨物／容量
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路牌群組路牌
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :［通過式裝載］
 
@@ -284,8 +285,8 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8 倍縮放及�
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16 倍縮放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32 倍縮放及以上
 
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :預設顯示指令使用情況：{STRING}
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :開啟車輛的指令清單視窗時預設顯示每個指令的使用率
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :預設顯示指令負載率：{STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :開啟車輛的指令清單視窗時預設顯示每個指令的負載率
 
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :在名稱中顯示群組層級：{STRING}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :啟用後，群組名稱將包括所有上層群組名稱
@@ -742,8 +743,8 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :繳付維護費
 STR_CONFIG_SETTING_REPAIR_COST                                  :維護車輛的成本為車輛購置成本的 1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :將維護車輛的成本設定為購買車輛成本 1/x{}如果車輛的使用年限超過其最高使用年限，則費用翻倍
 
-STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :測量指令使用時的平滑度：{STRING}
-STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :將此項設定為 0% 時，車輛的載貨變化將立即在指令使用中反映出來。將此項設定為 100% 時，指令使用將維持不變
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :指令負載率平滑度：{STRING}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :設定為 0% 時，車輛負載率將反映車輛負載率在極短時間內的任何變動。設定為 100% 時，指令負載率將維持不變
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆／複製／共享指令清單的進階設定：{STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆／複製／共享現有車輛的指令清單後：{}列車、汽車、船舶：如果車輛在一個車廠中，該車廠在指令清單中，則跳到該車廠的指令清單之一。{}飛機：如果飛機在機棚中，相關的機場在指令清單列表中，則跳到該機場的指令清單之一
@@ -833,7 +834,8 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :預留路徑結
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :預留路徑終止格
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :預留路徑終止格
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :列車群組
-STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :目前路牌
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :持有路牌
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP                    :持有路牌群組路牌
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :路牌使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :剩餘路牌使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :使用率
@@ -862,22 +864,23 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE                    :{STRING}{STRING
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO       :{STRING}{STRING}{STRING} {POWER_WEIGHT_RATIO}，則
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO       :{STRING}{STRING}{STRING} {FORCE_WEIGHT_RATIO}，則
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM                :{STRING}{STRING}{STRING} {TIME_HHMM}，則
-STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING}{STRING}{STRING} {STATION}，則
-STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING}{STRING}{STRING} {WAYPOINT}，則
-STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING}{STRING}{STRING} {DEPOT}，則
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING}{STRING}{STRING}「{STATION}」，則
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING}{STRING}{STRING}「{WAYPOINT}」，則
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING}{STRING}{STRING}「{DEPOT}」，則
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING}列車{STRING}{STRING}，則
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING}列車{STRING}從格子{STRING}方進入格子，則
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING}列車{STRING}從號誌{STRING}方通過號誌，則
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING}列車{STRING}{STRING}，則
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING} {STRING}在 {NUM}×{NUM}，則
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列車{STRING}在群組：「{GROUP}」內，則
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING}列車{STRING}在群組：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」內，則
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列車{STRING}在群組「{GROUP}」內，則
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING}列車{STRING}在群組「{PUSH_COLOUR}{STRING}{POP_COLOUR}」內，則
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING}{STRING}{STRING}「{COMPANY}{COMPANY_NUM}」，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列車{STRING}在路牌：「{TRSLOT}」內，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列車{STRING}在路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」內，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}路牌：「{2:TRSLOT}」的{1:STRING}{3:STRING} {4:COMMA}，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}路牌：「{PUSH_COLOUR}{2:STRING}{POP_COLOUR}」的{1:STRING}{3:STRING} {4:COMMA}，則
-STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列車{STRING}狀態：「{STRING}」，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列車{STRING}持有路牌「{TRSLOT}」，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列車{STRING}持有路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}路牌「{2:TRSLOT}」的{1:STRING}{3:STRING} {4:COMMA}，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}路牌「{PUSH_COLOUR}{2:STRING}{POP_COLOUR}」的{1:STRING}{3:STRING} {4:COMMA}，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP                       :{STRING}列車{STRING}持有路牌群組「{STRING}」內的任何路牌，則
+STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列車{STRING}「{STRING}」狀態，則
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING}計數器值：{TRCOUNTER} {STRING} {COMMA}，則
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}計數器值：{PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA}，則
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING}列車編組中{STRING}{STRING}，則
@@ -919,6 +922,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :正在離開橋
 STR_TRACE_RESTRICT_COMPANY                                      :公司
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :未命名公司
 STR_TRACE_RESTRICT_SLOT_OP                                      :路牌操作
+STR_TRACE_RESTRICT_SLOT_GROUP_OP                                :路牌群組操作
 STR_TRACE_RESTRICT_REVERSE                                      :倒轉
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :限速
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :新聞控制
@@ -926,36 +930,42 @@ STR_TRACE_RESTRICT_COUNTER_OP                                   :計數器控制
 STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :延遲控制
 STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :速度調整控制
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :號誌模式控制
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :使用或等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :使用或忽略
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :車頭離開
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :車尾離開
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路徑離開
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路徑終止時使用或等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路徑終止時使用或忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路徑終止時離開
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :使用路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法使用則在號誌前等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :使用路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法使用則忽略
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :車頭通過後離開路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :車尾通過後離開路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :預留的路徑經過此處時離開路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :預留的路徑在此終止時使用路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法使用則在號誌前等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :預留的路徑在此終止時使用路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法使用則忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :預留的路徑在此終止時離開路牌：「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :領取或等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :領取或忽略
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :車頭歸還
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :車尾歸還
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路徑歸還
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路徑終止時領取或等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路徑終止時領取或忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路徑終止時歸還
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :領取路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法領取則在號誌前等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :領取路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法領取則忽略
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :車頭通過後歸還路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :車尾通過後歸還路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :預留的路徑經過此處時歸還路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :預留的路徑在此終止時領取路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法領取則在號誌前等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :預留的路徑在此終止時領取路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」，若無法領取則忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :預留的路徑在此終止時歸還路牌「{PUSH_COLOUR}{STRING}{POP_COLOUR}」
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM                :車頭通過後歸還路牌群組「{STRING}」內所有路牌
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM                 :車尾通過後歸還路牌群組「{STRING}」內所有路牌
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM           :預留的路徑經過此處時歸還路牌群組「{STRING}」內所有路牌
+STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM          :預留的路徑在此終止時歸還路牌群組「{STRING}」內所有路牌
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :［{STRING}］{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW}［{STRING}］{TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING                     :{TRSLOTGROUP}{PUSH_COLOUR}{RED}（群組內沒有路牌）{POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING                :{TRSLOTGROUP}{PUSH_COLOUR}{RED}（群組內有無效的私有路牌）{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}路牌{CONSUME_ARG}：{LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}，{LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :增加
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :減少
 STR_TRACE_RESTRICT_COUNTER_SET                                  :設定
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :將計數器：「{STRING}」增加 {COMMA}
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :將計數器：「{STRING}」減少 {COMMA}
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :將計數器：「{STRING}」設定為 {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :將計數器「{STRING}」增加 {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :將計數器「{STRING}」減少 {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :將計數器「{STRING}」設定為 {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :空載
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :滿載
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :已損壞
@@ -1030,14 +1040,14 @@ STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}條件類型
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}到號誌
 STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}路牌處理模式
-STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}路牌 — 點擊一個路牌來列出所有屬於這個路牌的車輛清單
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}路牌 — 點擊路牌以查看持有路牌的所有車輛
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}點擊建立路牌
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}刪除所選路牌
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重新命名所選路牌
 STR_TRACE_RESTRICT_NEW_SLOT_GROUP                               :{BLACK}建立路牌群組
 STR_TRACE_RESTRICT_NEW_SLOT_GROUP_TOOLTIP                       :{BLACK}建立一個新的路牌群組
 STR_TRACE_RESTRICT_SLOT_PUBLIC_TOOLTIP                          :{BLACK}公開所選路牌。{}其他公司的指令清單與號誌可以在啟用共享基建設施時使用公開的路牌
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}設定所選路牌的容量
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}設定所選路牌的數量
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}尋路限制 - 路牌管理（{STRING}）
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理路牌
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
@@ -1045,11 +1055,11 @@ STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重新�
 STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}重新命名路牌群組
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}建立路牌
 STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}建立路牌群組
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}設定最大路牌使用
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}設定路牌數量
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}刪除路牌
-STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你確定你要刪除該路牌嗎？
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你確定你要刪除路牌嗎？
 STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP                           :{BLACK}計數器運算類型
-STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}計數器 - 點擊一個計數器來修改它
+STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}計數器 - 點擊一個計數器以修改
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}設立
 STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}刪除
 STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}重新命名
@@ -1121,9 +1131,9 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}不能�
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能建立路牌……
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能刪除路牌……
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重新命名路牌……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能增載入具至路牌……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能從路牌移除車輛……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能設定路牌容量……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能向車輛發放路牌……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能從車輛收回路牌……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能設定路牌數量……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE                   :{WHITE}不能設立計數器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}不能刪除計數器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}不能重新命名計數器……
@@ -1154,8 +1164,8 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入�
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所選的指令
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整個邏輯
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}從已存在的號誌處複製邏輯
-STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比較路牌使用
-STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比較使用值
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比較的路牌
+STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比較的計數器
 
 STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}移除邏輯
 STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}複製邏輯
@@ -1197,10 +1207,10 @@ STR_PROGSIG_ERROR_CAN_T_INSERT_INSTRUCTION                      :{WHITE}不能�
 STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION                      :{WHITE}不能修改指令
 STR_PROGSIG_ERROR_CAN_T_REMOVE_INSTRUCTION                      :{WHITE}不能移除指令
 STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}不能跳轉到未命名的號誌
-STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一個離開號誌
+STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}不是一個出口號誌
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}不是一個可編程入口號誌
-STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能將邏輯複製到自身
-STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}該號誌不能有條件地依賴自身
+STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}不能從自身複製邏輯
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}不能依賴自身
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}不能有條件地依賴於雙向號誌
 STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}無效號誌
 
@@ -1589,7 +1599,7 @@ STR_CURRENT_STATUS                                              :{BLACK}狀態�
 
 STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :運行費用：{CURRENCY_LONG}/原初年
 
-STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}列車長度{LTBLUE}{DECIMAL}格{STRING}
+STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}列車長度：{LTBLUE}{DECIMAL}格{STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}功率重量比：{LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}最大牽引力重量比：{LTBLUE}{FORCE_WEIGHT_RATIO}
@@ -1619,7 +1629,7 @@ STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}最高�
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}額外車輛操作
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :移除限速
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :設定限速
-STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :從路牌中移除：
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :收回路牌：
 
 STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :生產週期
 
@@ -1637,11 +1647,13 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改變�
 
 STR_ORDER_DROP_SELL_DEPOT                                       :賣出車輛
 
-STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :路牌內車輛
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路牌
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :持有路牌群組路牌
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}貨物對比車站數據
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}檢查的路牌
+STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP                        :{BLACK}檢查的路牌群組
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}檢查的計數器值
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}檢查的時間資訊
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}檢查的時刻表項
@@ -1662,22 +1674,22 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :有{NBSP}<
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :有{NBSP}≤
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :有{NBSP}>
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :有{NBSP}≥
-STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :已被完全使用
-STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :未被完全使用
-STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :為空
-STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :不為空
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :列車在
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :列車不在
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :列車在/使用
-STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :列車不在/無法使用
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :車輛在
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :車輛不在
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :車輛在/使用
-STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :車輛不在/無法使用
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :是第一條
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :不是第一條
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :是最後一條
-STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :不是最後一條
+STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :已被完全領取
+STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :未被完全領取
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_EMPTY                :尚未被領取
+STR_ORDER_CONDITIONAL_COMPARATOR_OCCUPANCY_NOT_EMPTY            :已被領取
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :列車有
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :列車沒有
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :列車有／領取
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :列車沒有／無法領取
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :車輛有
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :車輛沒有
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :車輛有／領取
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :車輛沒有／無法領取
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :是第一個
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :不是第一個
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :是最後一個
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :不是最後一個
 
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :有標簽 #{NUM}
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :有標簽 #{NUM}（{STRING}）
@@ -1698,11 +1710,14 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :將反轉指令
 STR_ORDER_DUPLICATE_ORDER                                       :複製指令
 STR_ORDER_CHANGE_JUMP_TARGET                                    :改變跳轉目標
 
-STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :嘗試使用路牌
-STR_ORDER_RELEASE_SLOT_BUTTON                                   :離開路牌
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :嘗試領取路牌
+STR_ORDER_RELEASE_SLOT_BUTTON                                   :歸還路牌
+STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :歸還路牌群組路牌
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :更改計數器
-STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}離開路牌
-STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}嘗試使用的路牌
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}歸還的路牌
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}嘗試領取的路牌
+
+STR_ORDER_RELEASE_SLOT_GROUP_TOOLTIP                            :{BLACK}歸還所有路牌的路牌群組
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}要更改的計數器
 
@@ -1718,8 +1733,8 @@ STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :移除經由
 STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的班次，在班次顯示板內將此車站/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前總站的經由：當顯示此指令之前的調用點作為終點時，不將此車站顯示為經由車站。
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示運行平均負載率{}百分比顯示的是調度使用的總平均數
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}調度使用——這顯示了對於共享這些調度的車輛的當離開車站時的最近的運行平均負載率等級
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示指令負載率{}總體平均指令負載率由百分比顯示
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}指令負載率 — 共享該調度清單的車輛在離開車站時的負載率之平均數
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}從獨立車輛設立群組
@@ -1760,8 +1775,9 @@ STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 #{COMMA}［如果 {STRING} {STRING}{STRING}］
 STR_ORDER_CONDITIONAL_SLOT                                      :跳至 #{COMMA}［如果「{TRSLOT}」{STRING}］
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 #{COMMA}［如果{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING}］
-STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA}［如果{STRING}路牌：{TRSLOT}］
-STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA}［如果{STRING}{PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}］
+STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA}［如果{STRING}路牌「{TRSLOT}」］
+STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA}［如果{STRING}{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}］
+STR_ORDER_CONDITIONAL_IN_SLOT_GROUP                             :跳至 #{COMMA}［如果{STRING}路牌群組「{STRING}」內的任何路牌］
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 #{COMMA}［如果{STRING}裝載比例{STRING} {COMMA}%］
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 #{0:COMMA}［如果 {2:STRING} 的{1:STRING}數{3:STRING} {4:CARGO_SHORT}］
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :跳至 #{0:COMMA}［如果 {2:STRING} 經由 {3:STRING} 的{1:STRING}數{4:STRING} {5:CARGO_SHORT}］
@@ -1776,8 +1792,9 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :列車{1:STRING}容量的 {0:COMMA}%
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :列車改裝為{1:STRING}類型時容量的 {0:COMMA}%
 
-STR_ORDER_TRY_ACQUIRE_SLOT                                      :嘗試使用：{STRING}
-STR_ORDER_RELEASE_SLOT                                          :離開路牌：{STRING}
+STR_ORDER_TRY_ACQUIRE_SLOT                                      :嘗試領取：{STRING}
+STR_ORDER_RELEASE_SLOT                                          :歸還路牌：{STRING}
+STR_ORDER_RELEASE_SLOT_GROUP                                    :歸還路牌群組「{STRING}」內的所有路牌
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}分
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}時
@@ -1813,7 +1830,7 @@ STR_TIMETABLE_EXTRA_DROP_DOWN                                   :{BLACK}額外
 STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}額外選項{}{}按規定時間離開。車輛等到預定的出發時間後再離開（預設）{}提前離開：車輛在裝貨/卸貨完成後立即離開，可能在規定的出發時間前離開{}如果任何貨物已滿，提前離開：同上，如果任何貨物已滿{}如果全部裝滿就提前離開：同上，如果所有貨物都裝滿
 
 STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN                         :{BLACK}分配時刻表
-STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN_TOOLTIP                 :{BLACK}為選擇指令分配或取消一項排程調度時刻表
+STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN_TOOLTIP                 :{BLACK}為選擇的指令分配或取消一項排程調度時刻表
 STR_TIMETABLE_ASSIGN_SCHEDULE_NONE                              :無時刻表
 STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :時刻表 #{NUM}
 
