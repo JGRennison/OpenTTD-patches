@@ -82,7 +82,7 @@ jobs:
         cd build
 
         echo "::group::CMake"
-        cmake ${GITHUB_WORKSPACE} \
+        CMAKE_POLICY_VERSION_MINIMUM=3.5 cmake ${GITHUB_WORKSPACE} \
           -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_DEDICATED=ON \
