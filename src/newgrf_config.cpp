@@ -89,7 +89,7 @@ void GRFConfig::CopyParams(const GRFConfig &src)
 std::string GRFConfig::GetName() const
 {
 	auto name = GetGRFStringFromGRFText(this->name);
-	return name.has_value() ? std::string(*name) : this->filename;
+	return name.has_value() && !name->empty() ? std::string(*name) : this->filename;
 }
 
 /**
