@@ -676,14 +676,13 @@ public:
 
 	void RearrangeVirtualTrain()
 	{
-		if (!this->virtual_train) return;
+		if (this->virtual_train == nullptr) return;
 		this->virtual_train = this->virtual_train->First();
 		assert(HasBit(this->virtual_train->subtype, GVSF_VIRTUAL));
 		for (; this->virtual_train != nullptr; this->virtual_train = this->virtual_train->GetNextUnit()) {
 			if (this->pending_deletions.count(this->virtual_train->index) == 0) break;
 		}
 	}
-
 
 	void UpdateButtonState()
 	{
@@ -737,7 +736,7 @@ void CcDeleteVirtualTrain(const CommandCost &result, VehicleID veh_id, SellVehic
 	if (result.Failed()) return;
 
 	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
-	if (window!= nullptr) {
+	if (window != nullptr) {
 		((TemplateCreateWindow *)window)->VirtualVehicleDeleted(veh_id);
 		window->InvalidateData();
 	}
