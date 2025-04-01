@@ -7229,6 +7229,8 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoT
 	/* Validate the cargo type. */
 	if (cargo >= NUM_CARGO && cargo != INVALID_CARGO) return CMD_ERROR;
 
+	CommandCost cost;
+
 	if (flags & DC_EXEC) {
 		StringID err = INVALID_STRING_ID;
 		Train *train = BuildVirtualRailVehicle(eid, err, client, false);
@@ -7236,6 +7238,8 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoT
 		if (train == nullptr) {
 			return CommandCost(err);
 		}
+
+		cost.SetResultData(train->index);
 
 		if (cargo != INVALID_CARGO) {
 			CargoType default_cargo = Engine::Get(eid)->GetDefaultCargoType();
@@ -7263,7 +7267,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoT
 		}
 	}
 
-	return CommandCost();
+	return cost;
 }
 
 void ClearVehicleWindows(const Train *v)
