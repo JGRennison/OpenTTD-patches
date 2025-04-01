@@ -112,7 +112,7 @@ static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date,
  */
 static void ScheduleAddCallback(const Window *w, StateTicks date, void *callback_data)
 {
-	Command<CMD_SCH_DISPATCH_SET_START_DATE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date);
+	ScheduleAddIntl(w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date, 0, 0);
 }
 
 /**
