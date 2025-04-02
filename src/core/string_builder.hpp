@@ -159,19 +159,6 @@ public:
 	}
 
 	/**
-	 * Remove the given amount of characters from the back of the string.
-	 * @param amount The amount of characters to remove.
-	 */
-	void RemoveElementsFromBack(size_t amount)
-	{
-		if (amount >= this->string->size()) {
-			this->string->clear();
-		} else {
-			this->string->try_resize(this->string->size() - amount);
-		}
-	}
-
-	/**
 	 * Get the current index in the string.
 	 * @return The index.
 	 */
