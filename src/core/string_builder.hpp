@@ -158,22 +158,9 @@ public:
 		fmt::detail::vformat_to(*this->string, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
 	}
 
-	/**
-	 * Get the current index in the string.
-	 * @return The index.
-	 */
-	size_t CurrentIndex()
+	bool IsEmpty() const
 	{
-		return this->string->size();
-	}
-
-	/**
-	 * Get the reference to the character at the given index.
-	 * @return The reference to the character.
-	 */
-	char &operator[](size_t index)
-	{
-		return this->string->data()[index];
+		return this->string->size() == 0;
 	}
 };
 

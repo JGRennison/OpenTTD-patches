@@ -1416,7 +1416,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 			char32_t b = Utf8Consume(&str);
 			assert(b != 0);
 
-			if (_scan_for_gender_data && builder.CurrentIndex() != 0) {
+			if (_scan_for_gender_data && !builder.IsEmpty()) {
 				/* Early exit when scanning for gender data if target string is already non-empty */
 				return;
 			}
