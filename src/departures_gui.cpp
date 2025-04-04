@@ -673,6 +673,11 @@ public:
 	{
 		CallAtTargetID target = CallAtTargetID::FromTile(tile);
 		if (target.IsValid() && target.IsStationID()) {
+			if (this->source.BaseStationMatches(target.GetStationID())) {
+				/* Attempting to filter on the departures source, this is not useful so do not apply the filter */
+				ResetObjectToPlace();
+				return;
+			}
 			this->filter_target = target;
 			this->OnInvalidateData(0, false);
 			ResetObjectToPlace();

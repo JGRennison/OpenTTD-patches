@@ -169,6 +169,11 @@ struct DepartureOrderDestinationDetector {
 	{
 		return HasBit(this->order_type_mask, OT_GOTO_STATION) && station == this->destination;
 	}
+
+	bool BaseStationMatches(StationID station) const
+	{
+		return (HasBit(this->order_type_mask, OT_GOTO_STATION) || HasBit(this->order_type_mask, OT_GOTO_WAYPOINT)) && station == this->destination;
+	}
 };
 
 struct DepartureCallingSettings {
