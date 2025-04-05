@@ -1021,11 +1021,6 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 				if (!duplicate) {
 					result.push_back(std::move(departure_ptr));
-					/* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
-					/* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
-					if (d->status != D_ARRIVED && d->lateness > 0) {
-						d->lateness = std::max<Ticks>(0, d->lateness - lod.order->GetWaitTime());
-					}
 				}
 			}
 		} else {
