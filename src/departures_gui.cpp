@@ -1066,8 +1066,6 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	uint departure = 0;
 	uint arrival = 0;
 
-	StateTicks now_date = _state_ticks;
-
 	/* Draw each departure. */
 	for (uint i = 0; i < max_departures; ++i) {
 		const Departure *d;
@@ -1297,15 +1295,17 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				/* Display as scheduled. */
 				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_SCHEDULED);
 			} else {
-				if (d->lateness <= TimetableAbsoluteDisplayUnitSize() && d->scheduled_tick > now_date) {
+				Ticks arrival_lateness = d->lateness;
+				if (d->type == D_DEPARTURE) {
+					arrival_lateness -= std::max<Ticks>(d->EffectiveWaitingTime(), 0);
+				}
+				if (arrival_lateness <= TimetableAbsoluteDisplayUnitSize() && d->scheduled_tick > _state_ticks) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
 					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
-					StateTicks expected_arrival = d->scheduled_tick + d->lateness;
-					if (d->type == D_DEPARTURE) expected_arrival -= d->EffectiveWaitingTime();
-					if (expected_arrival < now_date) {
+					StateTicks expected_arrival = d->scheduled_tick + arrival_lateness;
+					if (expected_arrival < _state_ticks) {
 						/* The vehicle was expected to have arrived by now, even if we knew it was going to be late. */
-						/* We assume that the train stays at least a day at a station so it won't accidentally be marked as delayed for a fraction of a day. */
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);
 					} else {
 						/* The vehicle is expected to be late and is not yet due to arrive. */
