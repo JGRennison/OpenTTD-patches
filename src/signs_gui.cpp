@@ -405,10 +405,10 @@ Window *ShowSignList()
  * @param text  the new name.
  * @return true if the window will already be removed after returning.
  */
-static bool RenameSign(SignID index, const char *text)
+static bool RenameSign(SignID index, std::string text)
 {
-	bool remove = StrEmpty(text);
-	Command<CMD_RENAME_SIGN>::Post(StrEmpty(text) ? STR_ERROR_CAN_T_DELETE_SIGN : STR_ERROR_CAN_T_CHANGE_SIGN_NAME, index, text);
+	bool remove = text.empty();
+	Command<CMD_RENAME_SIGN>::Post(remove ? STR_ERROR_CAN_T_DELETE_SIGN : STR_ERROR_CAN_T_CHANGE_SIGN_NAME, index, std::move(text));
 	return remove;
 }
 
@@ -513,7 +513,7 @@ struct SignWindow : Window, SignList {
 
 			case WID_QES_DELETE:
 				/* Only need to set the buffer to null, the rest is handled as the OK button */
-				RenameSign(this->cur_sign, "");
+				RenameSign(this->cur_sign, {});
 				/* don't delete this, we are deleted in Sign::~Sign() -> DeleteRenameSignWindow() */
 				break;
 
@@ -564,7 +564,7 @@ void HandleClickOnSign(const Sign *si)
 	if (!CompanyCanRenameSign(si)) return;
 
 	if (_ctrl_pressed && (si->owner == _local_company || (si->owner == OWNER_DEITY && _game_mode == GM_EDITOR))) {
-		RenameSign(si->index, nullptr);
+		RenameSign(si->index, {});
 		return;
 	}
 
