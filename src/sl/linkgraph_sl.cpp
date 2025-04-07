@@ -96,7 +96,7 @@ struct LinkGraphNodeStructHandler final : public TypedSaveLoadStructHandler<Link
 
 	void Load(LinkGraph *lg) const override
 	{
-		uint num_nodes = static_cast<uint>(SlGetStructListLength(UINT16_MAX));
+		NodeID num_nodes = static_cast<NodeID>(SlGetStructListLength(UINT16_MAX));
 		lg->Init(num_nodes);
 
 		for (NodeID from = 0; from < num_nodes; ++from) {
