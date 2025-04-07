@@ -1534,7 +1534,7 @@ struct BuildVehicleWindowBase : Window {
 					te.cost          = ret.GetCost();
 					te.capacity      = _returned_refit_capacity;
 					te.mail_capacity = _returned_mail_refit_capacity;
-					te.cargo         = (cargo == INVALID_CARGO) ? e->GetDefaultCargoType() : cargo;
+					te.cargo         = cargo;
 					te.all_capacities = _returned_vehicle_capacities;
 					delete t;
 					RestoreRandomSeeds(saved_seeds);
