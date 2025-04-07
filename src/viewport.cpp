@@ -4603,18 +4603,18 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 			/* Set only high bits for first block in column */
 			vp->dirty_blocks[pos] |= (~static_cast<ViewPortBlockT>(0)) << (y % VP_BLOCK_BITS);
 
-			uint left = h_non_first;
-			while (left > 0) {
+			uint h_left = h_non_first;
+			while (h_left > 0) {
 				pos++;
-				if (left < VP_BLOCK_BITS) {
+				if (h_left < VP_BLOCK_BITS) {
 					/* Set only low bits for last block in column */
-					vp->dirty_blocks[pos] |= GetBitMaskSC<ViewPortBlockT>(0, left);
+					vp->dirty_blocks[pos] |= GetBitMaskSC<ViewPortBlockT>(0, h_left);
 					break;
 				} else {
 					/* Set all bits for middle blocks in column */
 					vp->dirty_blocks[pos] = ~static_cast<ViewPortBlockT>(0);
 				}
-				left -= VP_BLOCK_BITS;
+				h_left -= VP_BLOCK_BITS;
 			}
 		}
 	}
