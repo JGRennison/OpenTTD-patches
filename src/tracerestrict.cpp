@@ -3756,8 +3756,8 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 
 				/* Ensure request parent isn't child of group.
 				 * This is the only place that infinite loops are prevented. */
-				for (const TraceRestrictSlotGroup *parent = pg; parent != nullptr; parent = TraceRestrictSlotGroup::GetIfValid(parent->parent)) {
-					if (parent->index == slot_group->index) return CommandCost(STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION);
+				for (const TraceRestrictSlotGroup *sg = pg; sg != nullptr; sg = TraceRestrictSlotGroup::GetIfValid(sg->parent)) {
+					if (sg->index == slot_group->index) return CommandCost(STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION);
 				}
 			}
 
