@@ -21,7 +21,6 @@
 #include <sstream>
 
 #ifdef _MSC_VER
-#	include <errno.h> // required by vsnprintf implementation for MSVC
 #	define strncasecmp strnicmp
 #endif
 
@@ -44,10 +43,7 @@
 #	include "os/macosx/string_osx.h"
 #endif
 
-/* The function vsnprintf is used internally to perform the required formatting
- * tasks. As such this one must be allowed, and makes sure it's terminated. */
 #include "safeguards.h"
-#undef vsnprintf
 
 /**
  * Copies characters from one buffer to another.

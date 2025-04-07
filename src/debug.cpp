@@ -34,7 +34,6 @@
 #endif
 
 #include "safeguards.h"
-#undef vsnprintf // Required for debug implementation
 
 /** Element in the queue of debug messages that have to be passed to either NetworkAdminConsole or IConsolePrint.*/
 struct QueuedDebugItem {
