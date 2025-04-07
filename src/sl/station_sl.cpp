@@ -643,7 +643,7 @@ struct StationGoodsStructHandler final : public TypedSaveLoadStructHandler<Stati
 
 	void Load(Station *st) const override
 	{
-		uint num_cargo = static_cast<uint>(SlGetStructListLength(NUM_CARGO));
+		uint8_t num_cargo = static_cast<uint8_t>(SlGetStructListLength(NUM_CARGO));
 
 		for (CargoType i = 0; i < num_cargo; i++) {
 			GoodsEntry &ge = st->goods[i];
