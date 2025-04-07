@@ -473,7 +473,7 @@ public:
 				uint text_right = (rtl ? btn_left - 4 : ir.right);
 				const_cast<PlansWindow*>(this)->vis_btn_left = btn_left;
 
-				for (uint16_t i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
+				for (int32_t i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
 					Plan *p = Plan::Get(list[i].plan_id);
 
 					if (i == this->selected) GfxFillRect(r.left + 1, y, r.right, y + this->resize.step_height, PC_DARK_GREY);
