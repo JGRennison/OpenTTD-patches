@@ -72,7 +72,7 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 	while (order->GetType() == OT_IMPLICIT) order = v->orders->GetNextNoWrap(order);
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
-		v->orders->GetNextNoWrap(order);
+		order = v->orders->GetNextNoWrap(order);
 		while (order->GetType() == OT_IMPLICIT) order = v->orders->GetNextNoWrap(order);
 	}
 	return order;
