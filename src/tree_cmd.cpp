@@ -654,13 +654,13 @@ void GenerateTrees()
 /**
  * Plant a tree.
  * @param flags type of operation
- * @param tile end tile of area-drag
+ * @param end_tile end tile of area-drag
  * @param start_tile start tile of area-drag of tree plantation
  * @param tree_to_plant tree type, TREE_INVALID means random.
  * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, uint8_t tree_to_plant, bool diagonal)
+CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, uint8_t tree_to_plant, bool diagonal)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
@@ -672,7 +672,7 @@ CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
-	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
+	OrthogonalOrDiagonalTileIterator iter(end_tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex tile = *iter;
 		switch (GetTileType(tile)) {
