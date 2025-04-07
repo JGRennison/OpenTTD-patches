@@ -951,8 +951,6 @@ struct BuildRailToolbarWindow : Window {
 
 				case DDSP_CONVERT_RAIL_TRACK: {
 					Track track = (Track)(_thd.drawstyle & HT_DIR_MASK); // 0..5
-					TileIndex start_tile = TileVirtXY(_thd.selstart.x, _thd.selstart.y);
-					TileIndex end_tile = TileVirtXY(_thd.selend.x, _thd.selend.y);
 					Command<CMD_CONVERT_RAIL_TRACK>::Post(STR_ERROR_CAN_T_CONVERT_RAIL, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, (_thd.drawstyle & HT_RAIL) ? end_tile : start_tile, track, _cur_railtype);
 					break;
 				}
