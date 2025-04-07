@@ -463,13 +463,12 @@ void str_strip_colours(char *str)
 /** Advances the pointer over any colour codes at the start of the string */
 const char *strip_leading_colours(const char *str)
 {
-	char32_t c;
-
-	do {
+	while (true) {
+		char32_t c;
 		size_t len = Utf8Decode(&c, str);
 		if (c < SCC_BLUE || c > SCC_BLACK) break;
 		str += len;
-	} while (c != '\0');
+	}
 
 	return str;
 }
