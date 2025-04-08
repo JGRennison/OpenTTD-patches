@@ -2121,14 +2121,6 @@ BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandCo
 }
 
 /**
- * Helper function to perform parameter bit-packing and call DoCommandPOld, for instruction modification actions
- */
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, std::string text)
-{
-	Command<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Post(error_msg, tile, track, type, offset, value, std::move(text));
-}
-
-/**
  * Check whether a tile/track pair contains a usable signal
  */
 static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track, bool check_owner = true)

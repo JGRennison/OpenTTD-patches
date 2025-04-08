@@ -2196,6 +2196,16 @@ class TraceRestrictWindow: public Window {
 		ShowQueryString(str, caption, maxsize, this, afilter, flags);
 	}
 
+	void PostInstructionCommandAtOffset(uint32_t offset, TraceRestrictDoCommandType type, uint32_t value, StringID error_msg, std::string text = {})
+	{
+		Command<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Post(error_msg, this->tile, this->track, type, offset, value, std::move(text));
+	}
+
+	inline void PostInstructionCommand(TraceRestrictDoCommandType type, uint32_t value, StringID error_msg, std::string text = {})
+	{
+		this->PostInstructionCommandAtOffset(this->selected_instruction - 1, type, value, error_msg, std::move(text));
+	}
+
 public:
 	TraceRestrictWindow(WindowDesc &desc, TileIndex tile, Track track)
 			: Window(desc)
@@ -2333,8 +2343,7 @@ public:
 					return;
 				}
 
-				TraceRestrictDoCommandP(tile, track, _ctrl_pressed ? TRDCT_SHALLOW_REMOVE_ITEM : TRDCT_REMOVE_ITEM,
-						this->selected_instruction - 1, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM);
+				this->PostInstructionCommand(_ctrl_pressed ? TRDCT_SHALLOW_REMOVE_ITEM : TRDCT_REMOVE_ITEM, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM);
 				break;
 			}
 
@@ -2345,16 +2354,14 @@ public:
 					return;
 				}
 
-				uint32_t p2 = 0;
-				if (widget == TR_WIDGET_UP_BTN) p2 |= 1;
-				if (_ctrl_pressed) p2 |= 2;
+				uint32_t move_value = 0;
+				if (widget == TR_WIDGET_UP_BTN) move_value |= 1;
+				if (_ctrl_pressed) move_value |= 2;
 
 				uint32_t offset = this->selected_instruction - 1;
+				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true); // Modifies this->selected_instruction
 
-				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true);
-
-				TraceRestrictDoCommandP(tile, track, TRDCT_MOVE_ITEM,
-						offset, p2, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				this->PostInstructionCommandAtOffset(offset, TRDCT_MOVE_ITEM, move_value, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 				break;
 			}
 
@@ -2364,10 +2371,8 @@ public:
 					return;
 				}
 
-				uint32_t offset = this->selected_instruction - 1;
 				this->expecting_inserted_item = item;
-				TraceRestrictDoCommandP(tile, track, TRDCT_DUPLICATE_ITEM,
-						offset, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				this->PostInstructionCommand(TRDCT_DUPLICATE_ITEM, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 				break;
 			}
 
@@ -2727,7 +2732,7 @@ public:
 
 			case QSM_SET_TEXT:
 				if (type == TRVT_LABEL_INDEX) {
-					TraceRestrictDoCommandP(tile, track, TRDCT_SET_TEXT, this->selected_instruction - 1, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM, str->c_str());
+					this->PostInstructionCommand(TRDCT_SET_TEXT, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM, str->c_str());
 				}
 				return;
 		}
@@ -2761,14 +2766,14 @@ public:
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 			value = atoi(str->c_str());
-			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+			this->PostInstructionCommand(TRDCT_MODIFY_DUAL_ITEM, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
 		} else {
 			return;
 		}
 
 		item.SetValue(value);
-		TraceRestrictDoCommandP(tile, track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	virtual void OnDropdownSelect(WidgetID widget, int index) override
@@ -2793,7 +2798,7 @@ public:
 					type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				/* This is a special company drop-down or group/slot-index drop-down */
 				item.SetValue(index);
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				if (type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT) {
 					TraceRestrictRecordRecentSlot(index);
 				}
@@ -2807,7 +2812,7 @@ public:
 			}
 			if (type.value_type == TRVT_ORDER_TARGET_DIAGDIR && widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 				item.SetAuxField(index);
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				return;
 			}
 		}
@@ -2815,7 +2820,7 @@ public:
 		if (widget == TR_WIDGET_TYPE_COND || widget == TR_WIDGET_TYPE_NONCOND) {
 			SetTraceRestrictTypeAndNormalise(item, static_cast<TraceRestrictItemType>(index & 0xFFFF), index >> 16);
 
-			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+			this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 		}
 
 		if (widget == TR_WIDGET_INSERT) {
@@ -2828,7 +2833,7 @@ public:
 			}
 
 			this->expecting_inserted_item = insert_item;
-			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_INSERT_ITEM, this->selected_instruction - 1, insert_item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
+			this->PostInstructionCommand(TRDCT_INSERT_ITEM, insert_item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
 			return;
 		}
 
@@ -2854,20 +2859,20 @@ public:
 					item.SetCondFlags(static_cast<TraceRestrictCondFlags>(cond_type));
 				}
 
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
 
 			case TR_WIDGET_COMPARATOR:
 			case TR_WIDGET_COUNTER_OP: {
 				item.SetCondOp(static_cast<TraceRestrictCondOp>(value));
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
 
 			case TR_WIDGET_SLOT_OP: {
 				item.SetCombinedAuxCondOpField(value);
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
 
@@ -2890,7 +2895,7 @@ public:
 				} else {
 					item.SetValue(value);
 				}
-				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
 		}
@@ -3047,7 +3052,7 @@ public:
 			return;
 		}
 
-		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	/**
@@ -3080,7 +3085,7 @@ public:
 			}
 		}
 
-		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		this->PostInstructionCommand(TRDCT_MODIFY_DUAL_ITEM, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	/**
@@ -3092,7 +3097,7 @@ public:
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
-		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+		this->PostInstructionCommand(TRDCT_MODIFY_DUAL_ITEM, tile.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	virtual void OnPlaceObjectAbort() override

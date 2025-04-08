@@ -118,7 +118,6 @@ struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestric
 };
 
 BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg, std::string text = {});
 
 DEF_CMD_TUPLE    (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CMDT_OTHER_MANAGEMENT, TraceRestrictProgramSignalData)
 DEF_CMD_TUPLE    (CMD_MANAGE_TRACERESTRICT_SIGNAL,       CmdProgramSignalTraceRestrictMgmt, {}, CMDT_OTHER_MANAGEMENT, TraceRestrictManageSignalData)
