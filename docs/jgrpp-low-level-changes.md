@@ -74,7 +74,6 @@ This document does not describe the player-visible changes/additions described i
 * Various data structures have been replaced with B-tree maps/sets (cpp-btree library), or robin-hood hash maps.
 * Various lists have been replaced with vectors, or other data structures.
 * Various deques and queues have been replaced with ring buffers.
-* Remove mutexes from SmallStack, only used from the main thread.
 * Maintain free list for text effect entries.
 * Change underlying data structures for ScriptList, create reverse mapping on demand instead of unconditionally.
 * Use row-aligned bitmap for BitmapTileArea.
@@ -129,7 +128,6 @@ This document does not describe the player-visible changes/additions described i
 * Various other changes to savegame format and settings handling, see readme and code for details.
 * Replace read/write accessors and buffering.
 * Perform savegame decompression in a separate thread.
-* Pre-filter SaveLoad descriptor arrays for current version/mode, for chunks with many objects.
 * Support zstd compression for autosaves and network joins.
 
 ### AI/GS
