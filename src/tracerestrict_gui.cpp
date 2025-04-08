@@ -2637,7 +2637,7 @@ public:
 			}
 
 			case TR_WIDGET_RESET: {
-				TraceRestrictProgMgmtDoCommandP(tile, track, TRMDCT_PROG_RESET, STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL, tile, track, TRMDCT_PROG_RESET, INVALID_TILE, INVALID_TRACK);
 				break;
 			}
 
@@ -2669,7 +2669,7 @@ public:
 				break;
 
 			case TR_WIDGET_UNSHARE: {
-				TraceRestrictProgMgmtDoCommandP(tile, track, TRMDCT_PROG_UNSHARE, STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM, tile, track, TRMDCT_PROG_UNSHARE, INVALID_TILE, INVALID_TRACK);
 				break;
 			}
 
@@ -2990,23 +2990,19 @@ public:
 
 		switch (widget) {
 			case TR_WIDGET_COPY:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_COPY,
-						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM, this->tile, this->track, TRMDCT_PROG_COPY, source_tile, source_track);
 				break;
 
 			case TR_WIDGET_COPY_APPEND:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_COPY_APPEND,
-						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM, this->tile, this->track, TRMDCT_PROG_COPY_APPEND, source_tile, source_track);
 				break;
 
 			case TR_WIDGET_SHARE:
-				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRMDCT_PROG_SHARE,
-						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM, this->tile, this->track, TRMDCT_PROG_SHARE, source_tile, source_track);
 				break;
 
 			case TR_WIDGET_SHARE_ONTO:
-				TraceRestrictProgMgmtWithSourceDoCommandP(source_tile, source_track, TRMDCT_PROG_SHARE_IF_UNMAPPED,
-						this->tile, this->track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM, source_tile, source_track, TRMDCT_PROG_SHARE_IF_UNMAPPED, this->tile, this->track);
 				break;
 
 			default:

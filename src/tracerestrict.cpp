@@ -2579,15 +2579,6 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 	return CommandCost();
 }
 
-/**
- * Helper function to perform parameter bit-packing and call DoCommandPOld, for program management actions
- */
-void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type,
-		TileIndex source_tile, Track source_track, StringID error_msg)
-{
-	Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(error_msg, tile, track, type, source_tile, source_track);
-}
-
 static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestrictProgramItem> instructions, TraceRestrictProgram *prog, const TraceRestrictProgram *source)
 {
 	for (auto iter : TraceRestrictInstructionIterateWrapper(instructions)) {
