@@ -104,6 +104,14 @@ struct TraceRestrictProgramSignalData final : public TupleRefCmdData<TraceRestri
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
+/* Flag values for TraceRestrictProgramSignalData::data for TRDCT_MOVE_ITEM operations */
+enum class TraceRestrictProgramSignalMoveFlags : uint32_t {
+	None                  = 0,         ///< No flag set.
+	Up                    = (1U << 0), ///< Move up if flag set, otherwise down.
+	Shallow               = (1U << 1), ///< Shallow mode.
+};
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramSignalMoveFlags)
+
 struct TraceRestrictManageSignalInnerData {
 	Track track;
 	TraceRestrictMgmtDoCommandType type;

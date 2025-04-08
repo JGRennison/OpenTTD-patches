@@ -2354,14 +2354,14 @@ public:
 					return;
 				}
 
-				uint32_t move_value = 0;
-				if (widget == TR_WIDGET_UP_BTN) move_value |= 1;
-				if (_ctrl_pressed) move_value |= 2;
+				TraceRestrictProgramSignalMoveFlags move_value{};
+				if (widget == TR_WIDGET_UP_BTN) move_value |= TraceRestrictProgramSignalMoveFlags::Up;
+				if (_ctrl_pressed) move_value |= TraceRestrictProgramSignalMoveFlags::Shallow;
 
 				uint32_t offset = this->selected_instruction - 1;
 				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true); // Modifies this->selected_instruction
 
-				this->PostInstructionCommandAtOffset(offset, TRDCT_MOVE_ITEM, move_value, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				this->PostInstructionCommandAtOffset(offset, TRDCT_MOVE_ITEM, to_underlying(move_value), STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 				break;
 			}
 
