@@ -2306,8 +2306,8 @@ public:
 						(item.IsConditional() && item.GetCondFlags() != 0)) {
 					/* This is either: an else/or if, an else, or an end if
 					 * try to include else if, else in insertion list */
-					if (!ElseInsertionDryRun(false)) disabled |= _program_insert_else_hide_mask;
-					if (!ElseIfInsertionDryRun(false)) disabled |= _program_insert_else_if_hide_mask;
+					if (!this->ElseInsertionDryRun(false)) disabled |= _program_insert_else_hide_mask;
+					if (!this->ElseIfInsertionDryRun(false)) disabled |= _program_insert_else_if_hide_mask;
 				} else {
 					/* Can't insert else/end if here */
 					disabled |= _program_insert_else_hide_mask | _program_insert_else_if_hide_mask;
@@ -2393,8 +2393,8 @@ public:
 				}
 
 				uint32_t disabled = 0;
-				if (!ElseInsertionDryRun(true)) disabled |= _condflags_dropdown_else_hide_mask;
-				if (!ElseIfInsertionDryRun(true)) disabled |= _condflags_dropdown_else_if_hide_mask;
+				if (!this->ElseInsertionDryRun(true)) disabled |= _condflags_dropdown_else_hide_mask;
+				if (!this->ElseIfInsertionDryRun(true)) disabled |= _condflags_dropdown_else_if_hide_mask;
 
 				this->ShowDropDownListWithValue(&_condflags_dropdown, type, false, TR_WIDGET_CONDFLAGS, disabled, 0);
 				break;
@@ -2620,17 +2620,17 @@ public:
 			}
 
 			case TR_WIDGET_VALUE_DEST: {
-				SetObjectToPlaceAction(widget, ANIMCURSOR_PICKSTATION);
+				this->SetObjectToPlaceAction(widget, ANIMCURSOR_PICKSTATION);
 				break;
 			}
 
 			case TR_WIDGET_VALUE_SIGNAL: {
-				SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
+				this->SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
 				break;
 			}
 
 			case TR_WIDGET_VALUE_TILE: {
-				SetObjectToPlaceAction(widget, SPR_CURSOR_MOUSE);
+				this->SetObjectToPlaceAction(widget, SPR_CURSOR_MOUSE);
 				break;
 			}
 
@@ -2642,7 +2642,7 @@ public:
 			}
 
 			case TR_WIDGET_RESET: {
-				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL, tile, track, TRMDCT_PROG_RESET, INVALID_TILE, INVALID_TRACK);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL, this->tile, this->track, TRMDCT_PROG_RESET, INVALID_TILE, INVALID_TRACK);
 				break;
 			}
 
@@ -2650,7 +2650,7 @@ public:
 			case TR_WIDGET_COPY_APPEND:
 			case TR_WIDGET_SHARE:
 			case TR_WIDGET_SHARE_ONTO:
-				SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
+				this->SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
 				switch (this->current_placement_widget) {
 					case TR_WIDGET_COPY:
 						_thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
@@ -2674,7 +2674,7 @@ public:
 				break;
 
 			case TR_WIDGET_UNSHARE: {
-				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM, tile, track, TRMDCT_PROG_UNSHARE, INVALID_TILE, INVALID_TRACK);
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM, this->tile, this->track, TRMDCT_PROG_UNSHARE, INVALID_TILE, INVALID_TRACK);
 				break;
 			}
 
@@ -3346,7 +3346,7 @@ private:
 	 */
 	const TraceRestrictProgram *GetProgram() const
 	{
-		return GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), false);
+		return GetTraceRestrictProgram(MakeTraceRestrictRefId(this->tile, this->track), false);
 	}
 
 	/**
