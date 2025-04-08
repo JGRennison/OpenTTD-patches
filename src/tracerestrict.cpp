@@ -2394,7 +2394,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 	}
 
 	uint32_t offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
-	if (prog != nullptr) offset_limit_exclusive += static_cast<uint>(prog->items.size());
+	if (prog != nullptr) offset_limit_exclusive += static_cast<uint32_t>(prog->GetInstructionCount());
 
 	if (offset >= offset_limit_exclusive) {
 		return CommandCost(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE);
