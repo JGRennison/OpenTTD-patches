@@ -111,14 +111,14 @@ using TraceRestrictProgramItem = StrongType::Typedef<TraceRestrictProgramItemTag
  *
  * This only applies to the first item of dual-item instructions.
  *
- *  0                   1                   2                   3
- *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |    Type   |   |Cond |Aux|Cond |             Value             |
- * |           |   |Flags|   | Op  |                               |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *               |         |    |
- *              Free     Combined wider field (TRIFA_CMB_AUX_COND)
+ *   0                                       1                                       2                                       3
+ *   0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5   6   7   8   9   0   1
+ * +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+ * |          Type         | Free  | Cond  |Fr |  Aux  |    Cond   |                            Value                              |
+ * |                       |       | Flags |ee |       |     Op    |                                                               |
+ * +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+ *                                                 |         |
+ *                                               Combined wider field (TRIFA_CMB_AUX_COND)
  *
  * COUNT values describe the field bit width
  * OFFSET values describe the field bit offset
@@ -129,8 +129,10 @@ enum TraceRestrictInstructionItemFlagAllocation {
 
 	/* 2 bits reserved for future use */
 
-	TRIFA_COND_FLAGS_COUNT        = 3,
+	TRIFA_COND_FLAGS_COUNT        = 2,
 	TRIFA_COND_FLAGS_OFFSET       = 8,
+
+	/* 1 bit reserved for future use */
 
 	TRIFA_AUX_FIELD_COUNT         = 2,
 	TRIFA_AUX_FIELD_OFFSET        = 11,
@@ -212,7 +214,6 @@ enum TraceRestrictCondFlags : uint8_t {
 	TRCF_DEFAULT                  = 0,       ///< indicates end if for type: TRIT_COND_ENDIF, if otherwise
 	TRCF_ELSE                     = 1 << 0,  ///< indicates an else block for type: TRIT_COND_ENDIF, elif otherwise
 	TRCF_OR                       = 1 << 1,  ///< indicates an orif block, not valid with type: TRIT_COND_ENDIF
-	/* 1 bit spare */
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictCondFlags)
 
