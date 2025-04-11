@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.65.0 (2025-04-12)
+* Departure boards:
+  * Fix arrival estimates for late vehicles.
+  * Improve tracking of lateness across scheduled dispatch orders.
+  * Disallow setting the filter station to the source station.
+* Fix regressions in v0.65-rc1:
+  * Fix crash when deleting sign via ctrl-click.
+  * Fix adding scheduled dispatch departure slots via the single-entry drop-down window.
+  * Fix not being able to create/edit template-based train replacement templates.
+
 ### v0.65-rc1 (2025-03-31)
 * Fix incorrect path reservation behaviour when a train reversed on a tunnel/bridge head tile, where the train then exited the tunnel/bridge, which could cause train crashes.
 * Fix signal spacing arrow button pointing the wrong way in the signal window.
