@@ -519,11 +519,11 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 		}
 
 		case 0x0D: // TTD Version, 00=DOS, 01=Windows
-			*value = (_cur.grfconfig->palette & GRFP_USE_MASK) | grffile->var8D_overlay;
+			*value = (GetGRFConfig(grffile->grfid)->palette & GRFP_USE_MASK) | grffile->var8D_overlay;
 			return true;
 
 		case 0x0E: // Y-offset for train sprites
-			*value = _cur.grffile->traininfo_vehicle_pitch;
+			*value = grffile->traininfo_vehicle_pitch;
 			return true;
 
 		case 0x0F: // Rail track type cost factors
@@ -570,7 +570,7 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 
 			/* Add the local flags */
 			assert(!bits.Test(GrfMiscBit::TrainWidth32Pixels));
-			if (_cur.grffile->traininfo_vehicle_width == VEHICLEINFO_FULL_VEHICLE_WIDTH) bits.Set(GrfMiscBit::TrainWidth32Pixels);
+			if (grffile->traininfo_vehicle_width == VEHICLEINFO_FULL_VEHICLE_WIDTH) bits.Set(GrfMiscBit::TrainWidth32Pixels);
 
 			*value = bits.base();
 			return true;
