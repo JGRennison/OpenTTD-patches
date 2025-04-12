@@ -140,7 +140,7 @@ template <typename Tenum, typename Tstorage, Tenum Tend_value = Tenum{std::numer
 class EnumBitSet : public BaseBitSet<EnumBitSet<Tenum, Tstorage, Tend_value>, Tenum, Tstorage, EnumBitSetMask<Tstorage, Tenum, Tend_value>::value> {
 	using BaseClass = BaseBitSet<EnumBitSet<Tenum, Tstorage, Tend_value>, Tenum, Tstorage, EnumBitSetMask<Tstorage, Tenum, Tend_value>::value>;
 public:
-	using EnumType = BaseClass::ValueType;
+	using EnumType = typename BaseClass::ValueType;
 
 	constexpr EnumBitSet() : BaseClass() {}
 	constexpr EnumBitSet(Tenum value) : BaseClass() { this->Set(value); }
@@ -159,7 +159,7 @@ public:
 
 	constexpr auto operator <=>(const EnumBitSet &) const noexcept = default;
 
-	static constexpr size_t DecayValueType(const BaseClass::ValueType &value) { return to_underlying(value); }
+	static constexpr size_t DecayValueType(const typename BaseClass::ValueType &value) { return to_underlying(value); }
 };
 
 #endif /* ENUM_TYPE_HPP */
