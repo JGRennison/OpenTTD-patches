@@ -76,7 +76,7 @@ public:
 #endif
 		StationID second;
 	};
-#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
+#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) && !defined(__clang__))
 	static_assert(sizeof(ShareEntry) == 6, "");
 #endif
 
@@ -364,7 +364,7 @@ private:
 	uint16_t flags;
 };
 static_assert(std::is_nothrow_move_constructible<FlowStat>::value, "FlowStat must be nothrow move constructible");
-#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
+#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) && !defined(__clang__))
 static_assert(sizeof(FlowStat) == 24, "");
 #endif
 
