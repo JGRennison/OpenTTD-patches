@@ -28,6 +28,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :{G=f}시간표 상태
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :{G=m}배차일정 슬롯
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :{G=m}대기 화물 / 수송량
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :{G=m}열차 슬롯 그룹
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[차례로 나눠 싣기]
 
@@ -834,6 +835,7 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :경로 예약 �
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :이 신호기 이후 경로 신호기 예약의 끝에 있는 칸
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :열차 그룹
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :열차 슬롯
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP                    :열차 슬롯 그룹
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :슬롯 사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
@@ -877,6 +879,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} 열차
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차의 소속 슬롯 {STRING} {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {2:TRSLOT}의 {1:STRING} {3:STRING} {4:COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {PUSH_COLOUR}{2:STRING}의{POP_COLOUR} {1:STRING} {3:STRING} {4:COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP                       :{0:STRING} 열차가 {2:STRING} 슬롯 그룹의 슬롯에 {1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차가 {2:STRING}{1:STRING.case1}
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING}{3:COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {3:COMMA} (이)라면
@@ -919,6 +922,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :터널/다리�
 STR_TRACE_RESTRICT_COMPANY                                      :회사
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :정의되지 않은 회사
 STR_TRACE_RESTRICT_SLOT_OP                                      :슬롯 연산
+STR_TRACE_RESTRICT_SLOT_GROUP_OP                                :슬롯 그룹 연산
 STR_TRACE_RESTRICT_REVERSE                                      :회차
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :속력 제한
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :뉴스 제어
@@ -942,11 +946,17 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :슬롯 해제: 
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :경로 예약 종료: 슬롯 획득: {PUSH_COLOUR}{STRING}{POP_COLOUR}, 또는 입구에서 대기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :경로 예약 종료: 슬롯 획득: {PUSH_COLOUR}{STRING}{POP_COLOUR}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 종료: 슬롯 해제: {PUSH_COLOUR}{STRING}{POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM                :슬롯 그룹의 슬롯 해제: {STRING} (열차의 앞)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM                 :슬롯 그룹의 슬롯 해제: {STRING} (열차의 뒤)
+STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM           :슬롯 그룹의 슬롯 해제: {STRING} (경로가 예약될 때)
+STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM          :경로 예약 종료: 슬롯 그룹의 슬롯 해제: {STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME                              :{TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN                         :{DOWN_ARROW} {TRSLOTGROUP}
 STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED                :{DOWN_ARROW} [{STRING}] {TRSLOTGROUP}
+STR_TRACE_RESTRICT_SLOT_GROUP_EMPTY_WARNING                     :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(슬롯 없음){POP_COLOUR}
+STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING                :{TRSLOTGROUP} {PUSH_COLOUR}{RED}(사용할 수 없는 비공개 슬롯이 있음){POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}슬롯{CONSUME_ARG}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -1008,6 +1018,8 @@ STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :월
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
 STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
+STR_TRACE_RESTRICT_GUI_LABEL                                    :이름표
+STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}이름표:{POP_COLOUR} {STRING}
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :다음 출발 슬롯
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :마지막 출발 슬롯
@@ -1198,6 +1210,7 @@ STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                   :{WHITE}정의�
 STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL                            :{WHITE}출구 신호기가 아닙니다
 STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL                            :{WHITE}프로그램 신호기가 아닙니다
 STR_PROGSIG_ERROR_CANNOT_USE_SELF                               :{WHITE}자신의 프로그램을 복제해 올 수 없습니다
+STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_SELF                        :{WHITE}이 신호기 자신를 조건으로 사용할 수 없습니다
 STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS       :{WHITE}양방향 신호기를 설정할 수 없습니다
 STR_PROGSIG_ERROR_INVALID_SIGNAL                                :{WHITE}유효하지 않은 신호기
 
@@ -1635,10 +1648,12 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}선택�
 STR_ORDER_DROP_SELL_DEPOT                                       :판매
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :{G=m}슬롯에 있는 차량
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :{G=m}슬롯 그룹에 있는 차량
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :다음 역:
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}비교할 화물을 선택하세요
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯을 선택하세요
+STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP                        :{BLACK}점유되었는지 확인할 슬롯 그룹을 선택하세요
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교할 카운터를 선택하세요
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}비교할 현재 시각/날짜를 선택하세요
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}비교할 시간표 값을 선택하세요
@@ -1697,9 +1712,12 @@ STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 �
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :슬롯 획득 시도
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
+STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :슬롯 그룹 해제
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :카운터 값 변경
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제할 슬롯을 선택하세요
 STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}획득을 시도할 열차 슬롯을 선택하세요
+
+STR_ORDER_RELEASE_SLOT_GROUP_TOOLTIP                            :{BLACK}해제할 슬롯 그룹을 선택하세요
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}변경할 카운터 값을 입력하세요
 
@@ -1759,6 +1777,7 @@ STR_ORDER_CONDITIONAL_SLOT                                      :[조건 경로]
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {2:TRSLOT} 슬롯에 {1:STRING})
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {PUSH_COLOUR}{RED}{2:STRING}{POP_COLOUR}{1:STRING})
+STR_ORDER_CONDITIONAL_IN_SLOT_GROUP                             :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {2:STRING} 슬롯 그룹에 속한 슬롯에 {1:STRING})
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}의 적재율 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({2:STRING}(으)로 가는 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 ({3:STRING}(을)를 경유하여 {2:STRING}(으)로 가는 {1:STRING} {4:STRING} {5:CARGO_SHORT}일 때)
@@ -1816,8 +1835,9 @@ STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :일정 {NUM}
 STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE                      :{BLACK}시간표가 완성되지 않아 자동 배차 조절이 적용되고 있지 않습니다
 STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}자동 배차 조절이 적용되고 있습니다
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}이 시간표를 적용받는 차량이 1 대밖에 존재하지 않아 자동 배차 조절이 적용되고 있지 않습니다
-STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}자동 배차 조절 실패... 조건부 경로가 존재합니다
-STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}자동 배차 조절 실패... 시간 값이 모두 지정되어 있지 않습니다
+STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}자동 배차 조절 실패: 조건부 경로가 존재합니다
+STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}자동 배차 조절 실패: 시간 값이 모두 지정되어 있지 않습니다
+STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}자동 배차 조절을 사용하려면 모든 경로가 '직행'이어야 합니다
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}'가득 싣기'가 설정되어 있는 경로에 시간표를 지정하는 것은 권장하지 않습니다
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}자동 시간 설정은 조건부 경로 중 한 경로만 채울 것입니다
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}하나 이상의 조건부 경로 운행 시간이 채워지지 않았습니다
