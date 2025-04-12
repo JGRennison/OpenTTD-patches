@@ -119,7 +119,9 @@ TypedIndexContainer<std::vector<GRFTempEngineData>, EngineID> _gted;  ///< Tempo
 void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args)
 {
 	format_buffer buf;
-	buf.format("[{}:{}] ", _cur.grfconfig->filename, _cur.nfo_line);
+	if (_cur.grfconfig != nullptr) {
+		buf.format("[{}:{}] ", _cur.grfconfig->filename, _cur.nfo_line);
+	}
 	buf.vformat(msg, args);
 	debug_print(DebugLevelID::grf, severity, buf);
 }
@@ -578,7 +580,8 @@ static void ResetNewGRF()
 
 	_grf_files.clear();
 	_grf_file_map.clear();
-	_cur.grffile   = nullptr;
+	_cur.grfconfig = nullptr;
+	_cur.grffile = nullptr;
 	_new_signals_grfs.clear();
 	_new_signal_styles.fill({});
 	_num_new_signal_styles = 0;
@@ -2060,6 +2063,10 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 			}
 		}
 	}
+
+	/* We've finished reading files. */
+	_cur.grfconfig = nullptr;
+	_cur.grffile = nullptr;
 
 	/* Pseudo sprite processing is finished; free temporary stuff */
 	_cur.ClearDataForNextFile();
