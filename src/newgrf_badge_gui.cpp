@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 
+#include "core/flatset_type.hpp"
 #include "dropdown_type.h"
 #include "newgrf.h"
 #include "newgrf_badge.h"
@@ -122,7 +123,7 @@ int DrawBadgeNameList(Rect r, std::span<const BadgeID> badges, GrfSpecFeature)
 {
 	if (badges.empty()) return r.top;
 
-	btree::btree_set<BadgeClassID> class_indexes;
+	FlatSet<BadgeClassID> class_indexes;
 	for (const BadgeID &index : badges) class_indexes.insert(GetBadge(index)->class_index);
 
 	std::string_view list_separator = GetListSeparator();
