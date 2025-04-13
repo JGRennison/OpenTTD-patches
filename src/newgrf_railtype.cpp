@@ -11,6 +11,7 @@
 #include "core/container_func.hpp"
 #include "debug.h"
 #include "newgrf_railtype.h"
+#include "newgrf_roadtype.h"
 #include "newgrf_newsignals.h"
 #include "newgrf_extension.h"
 #include "date_func.h"
@@ -38,6 +39,12 @@
 			case 0x42: return 0;
 			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return HZB_TOWN_EDGE;
+			case 0x45: {
+				auto rt = GetRailTypeInfoIndex(this->rti);
+				uint8_t local = GetReverseRailTypeTranslation(rt, this->ro.grffile);
+				if (local == 0xFF) local = 0xFE;
+				return 0xFFFF | local << 16;
+			}
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return GetNewSignalsSignalContext(this->signal_context);
 			case A2VRI_RAILTYPE_SIGNAL_SIDE: return GetNewSignalsSideVariable();
@@ -62,6 +69,8 @@
 			}
 			return t != nullptr ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
 		}
+		case 0x45:
+			return GetTrackTypes(this->tile, ro.grffile);
 		case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, 0);
 		case A2VRI_RAILTYPE_SIGNAL_CONTEXT:
