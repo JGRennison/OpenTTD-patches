@@ -16,7 +16,9 @@
 #include "bitmath_func.hpp"
 #include <limits>
 
-struct BaseBitSetBase {};
+struct BaseBitSetBase {
+	constexpr auto operator <=>(const BaseBitSetBase &) const noexcept = default;
+};
 
 /**
  * Base for bit set wrapper.
