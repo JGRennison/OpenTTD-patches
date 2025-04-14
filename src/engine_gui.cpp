@@ -77,7 +77,7 @@ struct EnginePreviewWindow : Window {
 		this->InitNested(window_number);
 
 		/* There is no way to recover the window; so disallow closure via DEL; unless SHIFT+DEL */
-		this->flags |= WF_STICKY;
+		this->flags.Set(WindowFlag::Sticky);
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -149,7 +149,7 @@ struct EnginePreviewWindow : Window {
 static WindowDesc _engine_preview_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_ENGINE_PREVIEW, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_engine_preview_widgets
 );
 

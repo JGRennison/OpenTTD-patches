@@ -545,11 +545,11 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_RIVER_PULLDOWN:      SetDParam(0, _rivers[_settings_newgame.game_creation.amount_of_rivers]); break;
 			case WID_GL_SMOOTHNESS_PULLDOWN: SetDParam(0, _smoothness[_settings_newgame.game_creation.tgen_smoothness]); break;
 			case WID_GL_VARIETY_PULLDOWN:    SetDParam(0, _variety[_settings_newgame.game_creation.variety]); break;
-			case WID_GL_BORDERS_RANDOM:      SetDParam(0, (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? STR_MAPGEN_BORDER_RANDOMIZE : STR_MAPGEN_BORDER_MANUAL); break;
-			case WID_GL_WATER_NE: SetDParam(0, (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : HasFlag(_settings_newgame.game_creation.water_borders, Borders::NorthEast) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
-			case WID_GL_WATER_NW: SetDParam(0, (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : HasFlag(_settings_newgame.game_creation.water_borders, Borders::NorthWest) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
-			case WID_GL_WATER_SE: SetDParam(0, (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : HasFlag(_settings_newgame.game_creation.water_borders, Borders::SouthEast) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
-			case WID_GL_WATER_SW: SetDParam(0, (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : HasFlag(_settings_newgame.game_creation.water_borders, Borders::SouthWest) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
+			case WID_GL_BORDERS_RANDOM:      SetDParam(0, (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? STR_MAPGEN_BORDER_RANDOMIZE : STR_MAPGEN_BORDER_MANUAL); break;
+			case WID_GL_WATER_NE: SetDParam(0, (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : _settings_newgame.game_creation.water_borders.Test(BorderFlag::NorthEast) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
+			case WID_GL_WATER_NW: SetDParam(0, (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : _settings_newgame.game_creation.water_borders.Test(BorderFlag::NorthWest) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
+			case WID_GL_WATER_SE: SetDParam(0, (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : _settings_newgame.game_creation.water_borders.Test(BorderFlag::SouthEast) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
+			case WID_GL_WATER_SW: SetDParam(0, (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? STR_MAPGEN_BORDER_RANDOM : _settings_newgame.game_creation.water_borders.Test(BorderFlag::SouthWest) ? STR_MAPGEN_BORDER_WATER : STR_MAPGEN_BORDER_FREEFORM); break;
 			case WID_GL_HEIGHTMAP_ROTATION_PULLDOWN: SetDParam(0, _rotation[_settings_newgame.game_creation.heightmap_rotation]); break;
 
 			case WID_GL_HEIGHTMAP_SIZE_TEXT:
@@ -583,15 +583,15 @@ struct GenerateLandscapeWindow : public Window {
 			this->SetWidgetDisabledState(WID_GL_SMOOTHNESS_PULLDOWN, _settings_newgame.game_creation.land_generator == LG_ORIGINAL);
 			this->SetWidgetDisabledState(WID_GL_VARIETY_PULLDOWN, _settings_newgame.game_creation.land_generator == LG_ORIGINAL);
 			this->SetWidgetDisabledState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.land_generator == LG_ORIGINAL || !_settings_newgame.construction.freeform_edges);
-			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == LG_ORIGINAL || !_settings_newgame.construction.freeform_edges || _settings_newgame.game_creation.water_borders == Borders::RandomBorders,
+			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == LG_ORIGINAL || !_settings_newgame.construction.freeform_edges || _settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders,
 					WID_GL_WATER_NW, WID_GL_WATER_NE, WID_GL_WATER_SE, WID_GL_WATER_SW);
 
-			this->SetWidgetLoweredState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.water_borders == Borders::RandomBorders);
+			this->SetWidgetLoweredState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders);
 
-			this->SetWidgetLoweredState(WID_GL_WATER_NW, HasFlag(_settings_newgame.game_creation.water_borders, Borders::NorthWest));
-			this->SetWidgetLoweredState(WID_GL_WATER_NE, HasFlag(_settings_newgame.game_creation.water_borders, Borders::NorthEast));
-			this->SetWidgetLoweredState(WID_GL_WATER_SE, HasFlag(_settings_newgame.game_creation.water_borders, Borders::SouthEast));
-			this->SetWidgetLoweredState(WID_GL_WATER_SW, HasFlag(_settings_newgame.game_creation.water_borders, Borders::SouthWest));
+			this->SetWidgetLoweredState(WID_GL_WATER_NW, _settings_newgame.game_creation.water_borders.Test(BorderFlag::NorthWest));
+			this->SetWidgetLoweredState(WID_GL_WATER_NE, _settings_newgame.game_creation.water_borders.Test(BorderFlag::NorthEast));
+			this->SetWidgetLoweredState(WID_GL_WATER_SE, _settings_newgame.game_creation.water_borders.Test(BorderFlag::SouthEast));
+			this->SetWidgetLoweredState(WID_GL_WATER_SW, _settings_newgame.game_creation.water_borders.Test(BorderFlag::SouthWest));
 
 			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == LG_ORIGINAL && (_settings_newgame.game_creation.landscape == LT_ARCTIC || _settings_newgame.game_creation.landscape == LT_TROPIC),
 					WID_GL_TERRAIN_PULLDOWN, WID_GL_WATER_PULLDOWN);
@@ -810,7 +810,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_HEIGHTMAP_HEIGHT_DOWN:
 			case WID_GL_HEIGHTMAP_HEIGHT_UP: // Height level buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.heightmap_height = Clamp(_settings_newgame.game_creation.heightmap_height + widget - WID_GL_HEIGHTMAP_HEIGHT_TEXT, MIN_HEIGHTMAP_HEIGHT, GetMapHeightLimit());
@@ -829,7 +829,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_START_DATE_DOWN:
 			case WID_GL_START_DATE_UP: // Year buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.starting_year = Clamp(_settings_newgame.game_creation.starting_year + widget - WID_GL_START_DATE_TEXT, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
@@ -847,7 +847,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_SNOW_COVERAGE_DOWN:
 			case WID_GL_SNOW_COVERAGE_UP: // Snow coverage buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.snow_coverage = Clamp(_settings_newgame.game_creation.snow_coverage + (widget - WID_GL_SNOW_COVERAGE_TEXT) * 10, 0, 100);
@@ -865,7 +865,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_DESERT_COVERAGE_DOWN:
 			case WID_GL_DESERT_COVERAGE_UP: // Desert coverage buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.desert_coverage = Clamp(_settings_newgame.game_creation.desert_coverage + (widget - WID_GL_DESERT_COVERAGE_TEXT) * 10, 0, 100);
@@ -883,7 +883,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_SNOW_LEVEL_DOWN:
 			case WID_GL_SNOW_LEVEL_UP: // Snow line buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.snow_line_height = Clamp(_settings_newgame.game_creation.snow_line_height + widget - WID_GL_SNOW_LEVEL_TEXT, MIN_SNOWLINE_HEIGHT, MAX_SNOWLINE_HEIGHT);
@@ -901,7 +901,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_RAINFOREST_LEVEL_DOWN:
 			case WID_GL_RAINFOREST_LEVEL_UP: // Rainforest line buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
 					_settings_newgame.game_creation.rainforest_line_height = Clamp(_settings_newgame.game_creation.rainforest_line_height + widget - WID_GL_RAINFOREST_LEVEL_TEXT, MIN_RAINFOREST_HEIGHT, MAX_RAINFOREST_HEIGHT);
@@ -949,27 +949,27 @@ struct GenerateLandscapeWindow : public Window {
 
 			/* Freetype map borders */
 			case WID_GL_WATER_NW:
-				ToggleFlag(_settings_newgame.game_creation.water_borders, Borders::NorthWest);
+				_settings_newgame.game_creation.water_borders.Flip(BorderFlag::NorthWest);
 				this->InvalidateData();
 				break;
 
 			case WID_GL_WATER_NE:
-				ToggleFlag(_settings_newgame.game_creation.water_borders, Borders::NorthEast);
+				_settings_newgame.game_creation.water_borders.Flip(BorderFlag::NorthEast);
 				this->InvalidateData();
 				break;
 
 			case WID_GL_WATER_SE:
-				ToggleFlag(_settings_newgame.game_creation.water_borders, Borders::SouthEast);
+				_settings_newgame.game_creation.water_borders.Flip(BorderFlag::SouthEast);
 				this->InvalidateData();
 				break;
 
 			case WID_GL_WATER_SW:
-				ToggleFlag(_settings_newgame.game_creation.water_borders, Borders::SouthWest);
+				_settings_newgame.game_creation.water_borders.Flip(BorderFlag::SouthWest);
 				this->InvalidateData();
 				break;
 
 			case WID_GL_BORDERS_RANDOM:
-				_settings_newgame.game_creation.water_borders = (_settings_newgame.game_creation.water_borders == Borders::RandomBorders) ? Borders::None : Borders::RandomBorders;
+				_settings_newgame.game_creation.water_borders = (_settings_newgame.game_creation.water_borders == BorderFlag::RandomBorders) ? BorderFlag{} : BorderFlag::RandomBorders;
 				this->InvalidateData();
 				break;
 
@@ -1144,14 +1144,14 @@ struct GenerateLandscapeWindow : public Window {
 static WindowDesc _generate_landscape_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
-	0,
+	{},
 	_nested_generate_landscape_widgets
 );
 
 static WindowDesc _heightmap_load_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
-	0,
+	{},
 	_nested_heightmap_load_widgets
 );
 
@@ -1332,7 +1332,7 @@ struct CreateScenarioWindow : public Window
 			case WID_CS_START_DATE_DOWN:
 			case WID_CS_START_DATE_UP: // Year buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 					this->SetDirty();
 
@@ -1350,7 +1350,7 @@ struct CreateScenarioWindow : public Window
 			case WID_CS_FLAT_LAND_HEIGHT_DOWN:
 			case WID_CS_FLAT_LAND_HEIGHT_UP: // Height level buttons
 				/* Don't allow too fast scrolling */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 					this->SetDirty();
 
@@ -1467,7 +1467,7 @@ static constexpr NWidgetPart _nested_create_scenario_widgets[] = {
 static WindowDesc _create_scenario_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
-	0,
+	{},
 	_nested_create_scenario_widgets
 );
 
@@ -1493,7 +1493,7 @@ static constexpr NWidgetPart _nested_generate_progress_widgets[] = {
 static WindowDesc _generate_progress_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
-	WDF_NO_CLOSE,
+	WindowDefaultFlag::NoClose,
 	_nested_generate_progress_widgets
 );
 
@@ -1582,9 +1582,9 @@ struct GenerateProgressWindow : public Window {
 		switch (widget) {
 			case WID_GP_PROGRESS_BAR: {
 				/* Draw the % complete with a bar and a text */
-				DrawFrameRect(r, COLOUR_GREY, FR_BORDERONLY | FR_LOWERED);
+				DrawFrameRect(r, COLOUR_GREY, {FrameFlag::BorderOnly, FrameFlag::Lowered});
 				Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
-				DrawFrameRect(br.WithWidth(br.Width() * _gws.percent / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, FR_NONE);
+				DrawFrameRect(br.WithWidth(br.Width() * _gws.percent / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, {});
 				SetDParam(0, _gws.percent);
 				DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, GetCharacterHeight(FS_NORMAL)), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
 				break;

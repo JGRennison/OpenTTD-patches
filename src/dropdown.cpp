@@ -69,7 +69,7 @@ static constexpr NWidgetPart _nested_dropdown_menu_widgets[] = {
 static WindowDesc _dropdown_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_DROPDOWN_MENU, WC_NONE,
-	WDF_NO_FOCUS,
+	WindowDefaultFlag::NoFocus,
 	_nested_dropdown_menu_widgets
 );
 
@@ -123,7 +123,7 @@ struct DropdownWindow : Window {
 		this->UpdateSizeAndPosition(parent);
 
 		this->FinishInitNested(0);
-		CLRBITS(this->flags, WF_WHITE_BORDER);
+		this->flags.Reset(WindowFlag::WhiteBorder);
 
 		this->scrolling_timer  = GUITimer(MILLISECONDS_PER_TICK);
 	}

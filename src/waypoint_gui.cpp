@@ -99,7 +99,7 @@ public:
 		this->FinishInitNested(window_number);
 
 		this->owner = this->wp->owner;
-		this->flags |= WF_DISABLE_VP_SCROLL;
+		this->flags.Set(WindowFlag::DisableVpScroll);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_W_VIEWPORT);
 		nvp->InitializeViewport(this, this->GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
@@ -249,7 +249,7 @@ static constexpr NWidgetPart _nested_waypoint_view_widgets[] = {
 static WindowDesc _waypoint_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_waypoint", 260, 118,
 	WC_WAYPOINT_VIEW, WC_NONE,
-	0,
+	{},
 	_nested_waypoint_view_widgets
 );
 

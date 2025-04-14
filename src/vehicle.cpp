@@ -3995,16 +3995,17 @@ bool Vehicle::IsWaitingForUnbunching() const
  * Send this vehicle to the depot using the given command(s).
  * @param flags   the command flags (like execute and such).
  * @param command the command to execute.
+ * @param specific_depot specific depot to use, if DepotCommandFlags::Specific is set.
  * @return the cost of the depot action.
  */
-CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot)
+CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command, TileIndex specific_depot)
 {
 	CommandCost ret = CheckOwnership(this->owner);
 	if (ret.Failed()) return ret;
 
 	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
 	if (this->IsStoppedInDepot()) {
-		if (HasFlag(command, DepotCommand::Sell) && !HasFlag(command, DepotCommand::Cancel) && (!HasFlag(command, DepotCommand::Specific) || specific_depot == this->tile)) {
+		if (command.Test(DepotCommandFlag::Sell) && !command.Test(DepotCommandFlag::Cancel) && (!command.Test(DepotCommandFlag::Specific) || specific_depot == this->tile)) {
 			/* Sell vehicle immediately */
 
 			if (flags & DC_EXEC) {
@@ -4057,7 +4058,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		}
 	};
 
-	if (HasFlag(command, DepotCommand::Cancel)) {
+	if (command.Test(DepotCommandFlag::Cancel)) {
 		if (this->current_order.IsType(OT_GOTO_DEPOT)) {
 			cancel_order();
 			return CommandCost();
@@ -4066,16 +4067,16 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		}
 	}
 
-	if (this->current_order.IsType(OT_GOTO_DEPOT) && !HasFlag(command, DepotCommand::Specific)) {
+	if (this->current_order.IsType(OT_GOTO_DEPOT) && !command.Test(DepotCommandFlag::Specific)) {
 		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
 		bool sell_in_depot = (this->current_order.GetDepotActionType() & ODATFB_SELL) != 0;
-		if (HasFlag(command, DepotCommand::Service) == halt_in_depot || HasFlag(command, DepotCommand::Sell) != sell_in_depot) {
-			/* We called with a different DepotCommand::Service or DepotCommand::Sell setting.
+		if (command.Test(DepotCommandFlag::Service) == halt_in_depot || command.Test(DepotCommandFlag::Sell) != sell_in_depot) {
+			/* We called with a different DepotCommandFlag::Service or DepotCommandFlag::Sell setting.
 			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
 			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
 			if (flags & DC_EXEC) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
-				this->current_order.SetDepotActionType(HasFlag(command, DepotCommand::Sell) ? ODATFB_HALT | ODATFB_SELL : (HasFlag(command, DepotCommand::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
+				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4083,14 +4084,14 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			return CommandCost();
 		}
 
-		if (HasFlag(command, DepotCommand::DontCancel)) return CMD_ERROR; // Requested no cancellation of depot orders
+		if (command.Test(DepotCommandFlag::DontCancel)) return CMD_ERROR; // Requested no cancellation of depot orders
 		cancel_order();
 		return CommandCost();
 	}
 
-	ClosestDepot closestDepot;
+	ClosestDepot closest_depot;
 	static const StringID no_depot[] = {STR_ERROR_UNABLE_TO_FIND_ROUTE_TO, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR};
-	if (HasFlag(command, DepotCommand::Specific)) {
+	if (command.Test(DepotCommandFlag::Specific)) {
 		if (!(IsDepotTile(specific_depot) && GetDepotVehicleType(specific_depot) == this->type &&
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
 			return CommandCost(no_depot[this->type]);
@@ -4099,12 +4100,12 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
 			return CommandCost(no_depot[this->type]);
 		}
-		closestDepot.location = specific_depot;
-		closestDepot.destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
-		closestDepot.reverse = false;
+		closest_depot.location = specific_depot;
+		closest_depot.destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
+		closest_depot.reverse = false;
 	} else {
-		closestDepot = this->FindClosestDepot();
-		if (!closestDepot.found) return CommandCost(no_depot[this->type]);
+		closest_depot = this->FindClosestDepot();
+		if (!closest_depot.found) return CommandCost(no_depot[this->type]);
 	}
 
 	if (flags & DC_EXEC) {
@@ -4122,14 +4123,14 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 		}
 
-		this->SetDestTile(closestDepot.location);
-		this->current_order.MakeGoToDepot(closestDepot.destination, ODTF_MANUAL);
-		if (HasFlag(command, DepotCommand::Sell)) {
+		this->SetDestTile(closest_depot.location);
+		this->current_order.MakeGoToDepot(closest_depot.destination, ODTF_MANUAL);
+		if (command.Test(DepotCommandFlag::Sell)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
-		} else if (!HasFlag(command, DepotCommand::Service)) {
+		} else if (!command.Test(DepotCommandFlag::Service)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT);
 		}
-		if (HasFlag(command, DepotCommand::Specific)) {
+		if (command.Test(DepotCommandFlag::Specific)) {
 			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
 		}
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4138,13 +4139,13 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
-		if (this->type == VEH_TRAIN && (closestDepot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
+		if (this->type == VEH_TRAIN && (closest_depot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
 			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DC_EXEC, this->index, false);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {
 			Aircraft *a = Aircraft::From(this);
-			if (a->state == FLYING && a->targetairport != closestDepot.destination) {
+			if (a->state == FLYING && a->targetairport != closest_depot.destination) {
 				/* The aircraft is now heading for a different hangar than the next in the orders */
 				AircraftNextAirportPos_and_Order(a);
 			}

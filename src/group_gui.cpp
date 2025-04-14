@@ -669,7 +669,7 @@ public:
 
 		/* If not a default group and the group has replace protection, show an enabled replace sprite. */
 		uint16_t protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
-		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && HasFlag(Group::Get(this->vli.index)->flags, GroupFlags::ReplaceProtection)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
+		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && Group::Get(this->vli.index)->flags.Test(GroupFlag::ReplaceProtection)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->SetSprite(protect_sprite + this->vli.vtype);
 
 		/* Set text of "group by" dropdown widget. */
@@ -724,7 +724,7 @@ public:
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, HasFlag(g->flags, GroupFlags::ReplaceProtection), g->IsFolded(GroupFoldBits::GroupView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
+					DrawGroupInfo(y1, r.left, r.right, g->index, it->level_mask, it->indent, g->flags.Test(GroupFlag::ReplaceProtection), g->IsFolded(GroupFoldBits::GroupView) || (std::next(it) != std::end(this->groups) && std::next(it)->indent > it->indent));
 
 					y1 += this->tiny_step_height;
 				}
@@ -969,7 +969,7 @@ public:
 			case WID_GL_REPLACE_PROTECTION: {
 				const Group *g = Group::GetIfValid(this->vli.index);
 				if (g != nullptr) {
-					Command<CMD_SET_GROUP_FLAG>::Post(this->vli.index, GroupFlags::ReplaceProtection, !HasFlag(g->flags, GroupFlags::ReplaceProtection), _ctrl_pressed);
+					Command<CMD_SET_GROUP_FLAG>::Post(this->vli.index, GroupFlag::ReplaceProtection, !g->flags.Test(GroupFlag::ReplaceProtection), _ctrl_pressed);
 				}
 				break;
 			}
@@ -1145,16 +1145,16 @@ public:
 						ShowReplaceGroupVehicleWindow(this->vli.index, this->vli.vtype);
 						break;
 					case ADI_SERVICE: // Send for servicing
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Service, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Service, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_DEPOT: // Send to Depots
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::None, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlags{}, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_DEPOT_SELL:
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Sell, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Sell, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_CANCEL_DEPOT:
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Cancel, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Cancel, this->vli, this->GetCargoFilter());
 						break;
 
 					case ADI_ADD_SHARED: // Add shared Vehicles
@@ -1339,28 +1339,28 @@ static WindowDesc _vehicle_group_desc[] = {
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_groups_train", 525, 246,
 		WC_TRAINS_LIST, WC_NONE,
-		0,
+		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_groups_roadveh", 460, 246,
 		WC_ROADVEH_LIST, WC_NONE,
-		0,
+		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_groups_ship", 460, 246,
 		WC_SHIPS_LIST, WC_NONE,
-		0,
+		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_groups_aircraft", 460, 246,
 		WC_AIRCRAFT_LIST, WC_NONE,
-		0,
+		{},
 		_nested_group_widgets
 	},
 };

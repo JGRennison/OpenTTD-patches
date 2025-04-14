@@ -1003,7 +1003,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "signal_program", 384, 100,
 	WC_SIGNAL_PROGRAM, WC_BUILD_SIGNAL,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_program_widgets
 );
 

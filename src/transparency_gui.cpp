@@ -88,7 +88,7 @@ public:
 
 					const Rect wr = this->GetWidget<NWidgetBase>(i)->GetCurrentRect().Shrink(WidgetDimensions::scaled.fullbevel);
 					DrawFrameRect(wr.left, fr.top, wr.right, fr.bottom, COLOUR_PALE_GREEN,
-							HasBit(_invisibility_opt, i - WID_TT_BEGIN) ? FR_LOWERED : FR_NONE);
+							HasBit(_invisibility_opt, i - WID_TT_BEGIN) ? FrameFlag::Lowered : FrameFlags{});
 				}
 				break;
 			}
@@ -178,7 +178,7 @@ static constexpr NWidgetPart _nested_transparency_widgets[] = {
 static WindowDesc _transparency_desc(__FILE__, __LINE__,
 	WDP_MANUAL, "toolbar_transparency", 0, 0,
 	WC_TRANSPARENCY_TOOLBAR, WC_NONE,
-	0,
+	{},
 	_nested_transparency_widgets
 );
 

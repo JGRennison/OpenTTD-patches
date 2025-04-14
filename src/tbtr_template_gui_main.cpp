@@ -188,7 +188,7 @@ static WindowDesc _template_replace_desc(__FILE__, __LINE__,
 	456, 156,
 	WC_TEMPLATEGUI_MAIN,
 	WC_NONE,                     // parent window class
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_template_replace_widgets
 );
 

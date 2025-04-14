@@ -647,21 +647,21 @@ class NIHVehicle : public NIHelper {
 				output.register_next_line_click_flag_toggle(4 << flag_shift);
 				if (output.flags & (4 << flag_shift)) {
 					output.Print("    [-] Extra Engine Flags:\n");
-					auto print_bit = [&](ExtraEngineFlags flag, const char *name) {
-						if ((e->info.extra_flags & flag) != ExtraEngineFlags::None) {
+					auto print_bit = [&](ExtraEngineFlag flag, const char *name) {
+						if (e->info.extra_flags.Test(flag)) {
 							output.Print("      {}\n", name);
 						}
 					};
-					print_bit(ExtraEngineFlags::NoNews,          "NoNews");
-					print_bit(ExtraEngineFlags::NoPreview,       "NoPreview");
-					print_bit(ExtraEngineFlags::JoinPreview,     "JoinPreview");
-					print_bit(ExtraEngineFlags::SyncReliability, "SyncReliability");
+					print_bit(ExtraEngineFlag::NoNews,          "NoNews");
+					print_bit(ExtraEngineFlag::NoPreview,       "NoPreview");
+					print_bit(ExtraEngineFlag::JoinPreview,     "JoinPreview");
+					print_bit(ExtraEngineFlag::SyncReliability, "SyncReliability");
 				} else {
 					output.Print("    [+] Extra Engine Flags: {}{}{}{}",
-							(e->info.extra_flags & ExtraEngineFlags::NoNews)          != ExtraEngineFlags::None ? 'n' : '-',
-							(e->info.extra_flags & ExtraEngineFlags::NoPreview)       != ExtraEngineFlags::None ? 'p' : '-',
-							(e->info.extra_flags & ExtraEngineFlags::JoinPreview)     != ExtraEngineFlags::None ? 'j' : '-',
-							(e->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None ? 's' : '-');
+							e->info.extra_flags.Test(ExtraEngineFlag::NoNews)          ? 'n' : '-',
+							e->info.extra_flags.Test(ExtraEngineFlag::NoPreview)       ? 'p' : '-',
+							e->info.extra_flags.Test(ExtraEngineFlag::JoinPreview)     ? 'j' : '-',
+							e->info.extra_flags.Test(ExtraEngineFlag::SyncReliability) ? 's' : '-');
 				}
 			}
 		}

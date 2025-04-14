@@ -156,7 +156,7 @@ class ReplaceVehicleWindow : public Window {
 				if (!CheckAutoreplaceValidity(this->sel_engine[0], eid, _local_company)) continue;
 			}
 
-			list.emplace_back(eid, e->info.variant_id, (side == 0) ? EngineDisplayFlags::None : e->display_flags, 0);
+			list.emplace_back(eid, e->info.variant_id, (side == 0) ? EngineDisplayFlags{} : e->display_flags, 0);
 
 			if (side == 1) {
 				EngineID parent = e->info.variant_id;
@@ -173,7 +173,7 @@ class ReplaceVehicleWindow : public Window {
 			for (const auto &variant : variants) {
 				if (std::ranges::find(list, variant, &GUIEngineListItem::engine_id) == list.end()) {
 					const Engine *e = Engine::Get(variant);
-					list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
+					list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlag::Shaded, 0);
 				}
 			}
 		}
@@ -417,7 +417,7 @@ public:
 				bool remove_wagon;
 				const Group *g = Group::GetIfValid(this->sel_group);
 				if (g != nullptr) {
-					remove_wagon = HasFlag(g->flags, GroupFlags::ReplaceWagonRemoval);
+					remove_wagon = g->flags.Test(GroupFlag::ReplaceWagonRemoval);
 					SetDParam(0, STR_GROUP_NAME);
 					SetDParam(1, sel_group);
 				} else {
@@ -565,7 +565,7 @@ public:
 			case WID_RV_TRAIN_WAGONREMOVE_TOGGLE: {
 				const Group *g = Group::GetIfValid(this->sel_group);
 				if (g != nullptr) {
-					Command<CMD_SET_GROUP_FLAG>::Post(this->sel_group, GroupFlags::ReplaceWagonRemoval, !HasFlag(g->flags, GroupFlags::ReplaceWagonRemoval), _ctrl_pressed);
+					Command<CMD_SET_GROUP_FLAG>::Post(this->sel_group, GroupFlag::ReplaceWagonRemoval, !g->flags.Test(GroupFlag::ReplaceWagonRemoval), _ctrl_pressed);
 				} else {
 					// toggle renew_keep_length
 					Command<CMD_CHANGE_COMPANY_SETTING>::Post("company.renew_keep_length", Company::Get(_local_company)->settings.renew_keep_length ? 0 : 1);
@@ -604,18 +604,18 @@ public:
 				if (it != this->engines[click_side].end()) {
 					const auto &item = *it;
 					const Rect r = this->GetWidget<NWidgetBase>(widget)->GetCurrentRect().Shrink(WidgetDimensions::scaled.matrix).WithWidth(WidgetDimensions::scaled.hsep_indent * (item.indent + 1), _current_text_dir == TD_RTL);
-					if (HasFlag(item.flags, EngineDisplayFlags::HasVariants) && IsInsideMM(r.left, r.right, pt.x)) {
+					if (item.flags.Test(EngineDisplayFlag::HasVariants) && IsInsideMM(r.left, r.right, pt.x)) {
 						/* toggle folded flag on engine */
 						assert(item.variant_id != INVALID_ENGINE);
 						Engine *engine = Engine::Get(item.variant_id);
-						engine->display_flags ^= EngineDisplayFlags::IsFolded;
+						engine->display_flags.Flip(EngineDisplayFlag::IsFolded);
 
 						InvalidateWindowData(WC_REPLACE_VEHICLE, (VehicleType)this->window_number, 0); // Update the autoreplace window
 						InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
 						InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
 						return;
 					}
-					if (!HasFlag(item.flags, EngineDisplayFlags::Shaded)) e = item.engine_id;
+					if (!item.flags.Test(EngineDisplayFlag::Shaded)) e = item.engine_id;
 				}
 
 				/* If Ctrl is pressed on the left side and we don't have any engines of the selected type, stop autoreplacing.
@@ -776,7 +776,7 @@ static constexpr NWidgetPart _nested_replace_rail_vehicle_widgets[] = {
 static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle_train", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_replace_rail_vehicle_widgets
 );
 
@@ -834,7 +834,7 @@ static constexpr NWidgetPart _nested_replace_road_vehicle_widgets[] = {
 static WindowDesc _replace_road_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle_road", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_replace_road_vehicle_widgets
 );
 
@@ -888,7 +888,7 @@ static constexpr NWidgetPart _nested_replace_vehicle_widgets[] = {
 static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle", 456, 118,
 	WC_REPLACE_VEHICLE, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_replace_vehicle_widgets
 );
 

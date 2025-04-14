@@ -920,7 +920,7 @@ inline void UpdateViewportDirtyBlockLeftMargin(Viewport *vp)
 static void SetViewportPosition(Window *w, int x, int y, bool force_update_overlay)
 {
 	if (unlikely(HasBit(_viewport_debug_flags, VDF_DIRTY_WHOLE_VIEWPORT))) {
-		w->flags |= WF_DIRTY;
+		w->flags.Set(WindowFlag::Dirty);
 	}
 
 	Viewport *vp = w->viewport;
@@ -1975,7 +1975,7 @@ static StringSpriteToDraw *ViewportAddString(ViewportDrawerDynamic *vdd, const D
 	int right  = left + dpi->width;
 	int bottom = top + dpi->height;
 
-	bool small = HasFlag(flags, ViewportStringFlags::Small);
+	bool small = flags.Test(ViewportStringFlag::Small);
 	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, dpi->zoom);
 
@@ -2033,7 +2033,7 @@ static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const Town *> &towns, bool small)
 {
 	ViewportStringFlags flags{};
-	if (small) flags = ViewportStringFlags::Small | ViewportStringFlags::Shadow;
+	if (small) flags.Set(ViewportStringFlag::Small).Set(ViewportStringFlag::Shadow);
 
 	StringID stringid = small ? STR_VIEWPORT_TOWN_LABEL_TINY : STR_VIEWPORT_TOWN_LABEL;
 	for (const Town *t : towns) {
@@ -2054,11 +2054,11 @@ static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const Sign *> &signs, bool small)
 {
 	ViewportStringFlags flags{};
-	if (small) flags = ViewportStringFlags::Small;
+	if (small) flags.Set(ViewportStringFlag::Small);
 
 	/* Signs placed by a game script don't have a frame. */
 	ViewportStringFlags deity_flags{flags};
-	flags |= vdd->IsTransparencySet(TO_SIGNS) ? ViewportStringFlags::TransparentRect : ViewportStringFlags::ColourRect;
+	flags.Set(vdd->IsTransparencySet(TO_SIGNS) ? ViewportStringFlag::TransparentRect : ViewportStringFlag::ColourRect);
 
 	for (const Sign *si : signs) {
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &si->sign, (si->owner == OWNER_DEITY) ? deity_flags : flags);
@@ -2078,8 +2078,8 @@ static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 static void ViewportAddStationStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const BaseStation *> &stations, bool small)
 {
 	/* Transparent station signs have colour text instead of a colour panel. */
-	ViewportStringFlags flags{vdd->IsTransparencySet(TO_SIGNS) ? ViewportStringFlags::TextColour : ViewportStringFlags::ColourRect};
-	if (small) flags |= ViewportStringFlags::Small;
+	ViewportStringFlags flags{vdd->IsTransparencySet(TO_SIGNS) ? ViewportStringFlag::TextColour : ViewportStringFlag::ColourRect};
+	if (small) flags.Set(ViewportStringFlag::Small);
 
 	for (const BaseStation *st : stations) {
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &st->sign, flags);
@@ -2549,7 +2549,7 @@ void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour)
 static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, const StringSpriteToDrawVector *sstdv)
 {
 	for (const StringSpriteToDraw &ss : *sstdv) {
-		bool small = HasFlag(ss.flags, ViewportStringFlags::Small);
+		bool small = ss.flags.Test(ViewportStringFlag::Small);
 		int w = ss.width;
 		int x = UnScaleByZoom(ss.x, zoom);
 		int y = UnScaleByZoom(ss.y, zoom);
@@ -2560,14 +2560,14 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		GetStringWithArgs(StringBuilder(string), ss.string, string_params);
 
 		TextColour colour = TC_WHITE;
-		if (HasFlag(ss.flags, ViewportStringFlags::ColourRect)) {
-			if (ss.colour != INVALID_COLOUR) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FR_NONE);
+		if (ss.flags.Test(ViewportStringFlag::ColourRect)) {
+			if (ss.colour != INVALID_COLOUR) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
 			colour = TC_BLACK;
-		} else if (HasFlag(ss.flags, ViewportStringFlags::TransparentRect)) {
-			DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FR_TRANSPARENT);
+		} else if (ss.flags.Test(ViewportStringFlag::TransparentRect)) {
+			DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FrameFlag::Transparent);
 		}
 
-		if (HasFlag(ss.flags, ViewportStringFlags::TextColour)) {
+		if (ss.flags.Test(ViewportStringFlag::TextColour)) {
 			if (ss.colour != INVALID_COLOUR) colour = static_cast<TextColour>(GetColourGradient(ss.colour, SHADE_LIGHTER) | TC_IS_PALETTE_COLOUR);
 		}
 
@@ -2576,7 +2576,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int top = y + WidgetDimensions::scaled.fullbevel.top;
 
 		int shadow_offset = 0;
-		if (small && HasFlag(ss.flags, ViewportStringFlags::Shadow)) {
+		if (small && ss.flags.Test(ViewportStringFlag::Shadow)) {
 			/* Shadow needs to be shifted 1 pixel. */
 			shadow_offset = WidgetDimensions::scaled.fullbevel.top;
 			DrawString(left + shadow_offset, right + shadow_offset, top, string, TC_BLACK | TC_FORCED, SA_HOR_CENTER, false, FS_SMALL);

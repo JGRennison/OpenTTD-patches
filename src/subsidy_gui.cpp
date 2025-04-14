@@ -268,7 +268,7 @@ static constexpr NWidgetPart _nested_subsidies_list_widgets[] = {
 static WindowDesc _subsidies_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_subsidies", 500, 127,
 	WC_SUBSIDIES_LIST, WC_NONE,
-	0,
+	{},
 	_nested_subsidies_list_widgets
 );
 

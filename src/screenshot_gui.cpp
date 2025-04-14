@@ -72,7 +72,7 @@ static constexpr NWidgetPart _nested_screenshot[] = {
 static WindowDesc _screenshot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "take_a_screenshot", 200, 100,
 	WC_SCREENSHOT, WC_NONE,
-	0,
+	{},
 	_nested_screenshot
 );
 

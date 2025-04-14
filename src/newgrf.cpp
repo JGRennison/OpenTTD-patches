@@ -2157,9 +2157,9 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				if (statspec->tileflags.size() < 8) statspec->tileflags.resize(8);
 				for (int j = 0; j < 8; ++j) {
 					if (HasBit(pylons, j)) {
-						statspec->tileflags[j] |= StationSpec::TileFlags::Pylons;
+						statspec->tileflags[j].Set(StationSpec::TileFlag::Pylons);
 					} else {
-						statspec->tileflags[j] &= ~StationSpec::TileFlags::Pylons;
+						statspec->tileflags[j].Reset(StationSpec::TileFlag::Pylons);
 					}
 				}
 				break;
@@ -2182,9 +2182,9 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				if (statspec->tileflags.size() < 8) statspec->tileflags.resize(8);
 				for (int j = 0; j < 8; ++j) {
 					if (HasBit(wires, j)) {
-						statspec->tileflags[j] |= StationSpec::TileFlags::NoWires;
+						statspec->tileflags[j].Set(StationSpec::TileFlag::NoWires);
 					} else {
-						statspec->tileflags[j] &= ~StationSpec::TileFlags::NoWires;
+						statspec->tileflags[j].Reset(StationSpec::TileFlag::NoWires);
 					}
 				}
 				break;
@@ -2195,9 +2195,9 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				if (statspec->tileflags.size() < 8) statspec->tileflags.resize(8);
 				for (int j = 0; j < 8; ++j) {
 					if (HasBit(blocked, j)) {
-						statspec->tileflags[j] |= StationSpec::TileFlags::Blocked;
+						statspec->tileflags[j].Set(StationSpec::TileFlag::Blocked);
 					} else {
-						statspec->tileflags[j] &= ~StationSpec::TileFlags::Blocked;
+						statspec->tileflags[j].Reset(StationSpec::TileFlag::Blocked);
 					}
 				}
 				break;
@@ -11264,7 +11264,7 @@ static void FinaliseEngineArray()
 		}
 
 		if (e->info.variant_id != INVALID_ENGINE) {
-			Engine::Get(e->info.variant_id)->display_flags |= EngineDisplayFlags::HasVariants | EngineDisplayFlags::IsFolded;
+			Engine::Get(e->info.variant_id)->display_flags.Set(EngineDisplayFlag::HasVariants).Set(EngineDisplayFlag::IsFolded);
 		}
 	}
 }

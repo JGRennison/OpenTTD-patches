@@ -4173,7 +4173,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "trace_restrict_gui", 384, 100,
 	WC_TRACE_RESTRICT, WC_BUILD_SIGNAL,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_program_widgets
 );
 
@@ -5156,7 +5156,7 @@ void CcCreateTraceRestrictSlot(const CommandCost &result)
 static WindowDesc _slot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_slots", 525, 246,
 	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
-	0,
+	{},
 	_nested_slot_widgets
 );
 
@@ -5559,7 +5559,7 @@ void CcCreateTraceRestrictCounter(const CommandCost &result)
 static WindowDesc _counter_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_counters", 525, 246,
 	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
-	0,
+	{},
 	_nested_counter_widgets
 );
 

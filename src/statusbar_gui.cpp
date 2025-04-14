@@ -73,7 +73,7 @@ struct StatusBarWindow : Window {
 		this->reminder_timeout.SetInterval(REMINDER_STOP);
 
 		this->InitNested();
-		CLRBITS(this->flags, WF_WHITE_BORDER);
+		this->flags.Reset(WindowFlag::WhiteBorder);
 		PositionStatusbar(this);
 	}
 
@@ -281,7 +281,7 @@ static constexpr NWidgetPart _nested_main_status_widgets[] = {
 static WindowDesc _main_status_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_STATUS_BAR, WC_NONE,
-	WDF_NO_FOCUS | WDF_NO_CLOSE,
+	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_main_status_widgets
 );
 

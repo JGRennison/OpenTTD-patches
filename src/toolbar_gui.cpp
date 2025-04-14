@@ -1386,7 +1386,7 @@ static CallBackFunction ToolbarScenDatePanel(Window *w)
 static CallBackFunction ToolbarScenDateBackward(Window *w)
 {
 	/* don't allow too fast scrolling */
-	if (!(w->flags & WF_TIMEOUT) || w->timeout_timer <= 1) {
+	if (!w->flags.Test(WindowFlag::Timeout) || w->timeout_timer <= 1) {
 		w->HandleButtonClick(WID_TE_DATE_BACKWARD);
 		w->SetDirty();
 
@@ -1399,7 +1399,7 @@ static CallBackFunction ToolbarScenDateBackward(Window *w)
 static CallBackFunction ToolbarScenDateForward(Window *w)
 {
 	/* don't allow too fast scrolling */
-	if (!(w->flags & WF_TIMEOUT) || w->timeout_timer <= 1) {
+	if (!w->flags.Test(WindowFlag::Timeout) || w->timeout_timer <= 1) {
 		w->HandleButtonClick(WID_TE_DATE_FORWARD);
 		w->SetDirty();
 
@@ -2176,7 +2176,7 @@ struct MainToolbarWindow : Window {
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;
-		CLRBITS(this->flags, WF_WHITE_BORDER);
+		this->flags.Reset(WindowFlag::WhiteBorder);
 		this->SetWidgetDisabledState(WID_TN_FAST_FORWARD, _networking); // if networking, disable fast-forward button
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
@@ -2468,7 +2468,7 @@ static constexpr NWidgetPart _nested_toolbar_normal_widgets[] = {
 static WindowDesc _toolb_normal_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
-	WDF_NO_FOCUS | WDF_NO_CLOSE,
+	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_toolbar_normal_widgets,
 	&MainToolbarWindow::hotkeys
 );
@@ -2566,7 +2566,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;
-		CLRBITS(this->flags, WF_WHITE_BORDER);
+		this->flags.Reset(WindowFlag::WhiteBorder);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
 
@@ -2835,7 +2835,7 @@ static constexpr NWidgetPart _nested_toolb_scen_widgets[] = {
 static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
-	WDF_NO_FOCUS | WDF_NO_CLOSE,
+	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_toolb_scen_widgets,
 	&ScenarioEditorToolbarWindow::hotkeys
 );

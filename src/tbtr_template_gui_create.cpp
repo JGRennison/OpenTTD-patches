@@ -102,7 +102,7 @@ static WindowDesc _template_create_window_desc(__FILE__, __LINE__,
 	456, 100,                       // window size
 	WC_CREATE_TEMPLATE,             // window class
 	WC_TEMPLATEGUI_MAIN,            // parent window class
-	WDF_CONSTRUCTION,               // window flags
+	WindowDefaultFlag::Construction,// window flags
 	_template_create_window_widgets
 );
 

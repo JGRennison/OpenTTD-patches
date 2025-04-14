@@ -1109,7 +1109,7 @@ void UpdateStationTileCacheFlags(bool force_update)
 
 			checksum.Update(j);
 			for (StationSpec::TileFlags flags : statspec->tileflags) {
-				checksum.Update(static_cast<uint64_t>(flags));
+				checksum.Update(static_cast<uint64_t>(flags.base()));
 			}
 		}
 	}

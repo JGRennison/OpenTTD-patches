@@ -323,7 +323,7 @@ struct SelectGameWindow : public Window {
 			changed |= wid->UpdateMultilineWidgetSize(GetString(STR_INTRO_TRANSLATION), 3);
 		}
 
-		if (changed) this->ReInit(0, 0, this->flags & WF_CENTERED);
+		if (changed) this->ReInit(0, 0, this->flags.Test(WindowFlag::Centred));
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -460,7 +460,7 @@ static constexpr NWidgetPart _nested_select_game_widgets[] = {
 static WindowDesc _select_game_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SELECT_GAME, WC_NONE,
-	WDF_NO_CLOSE,
+	WindowDefaultFlag::NoClose,
 	_nested_select_game_widgets
 );
 

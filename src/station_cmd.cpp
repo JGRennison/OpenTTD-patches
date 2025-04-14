@@ -953,7 +953,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 		} else {
 			disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
 		}
-	} else if ((GetStationTileFlags(layout, statspec) & StationSpec::TileFlags::Blocked) == StationSpec::TileFlags::Blocked) {
+	} else if (GetStationTileFlags(layout, statspec).Test(StationSpec::TileFlag::Blocked)) {
 		/* Non-track station tiles */
 		disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
 	} else {
@@ -1471,7 +1471,7 @@ static void RestoreTrainReservation(Train *v)
 static StationSpec::TileFlags GetStationTileFlags(StationGfx gfx, const StationSpec *statspec)
 {
 	/* Default stations do not draw pylons under roofs (gfx >= 4) */
-	if (statspec == nullptr || gfx >= statspec->tileflags.size()) return gfx < 4 ? StationSpec::TileFlags::Pylons : StationSpec::TileFlags::None;
+	if (statspec == nullptr || gfx >= statspec->tileflags.size()) return gfx < 4 ? StationSpec::TileFlag::Pylons : StationSpec::TileFlags{};
 	return statspec->tileflags[gfx];
 }
 
@@ -1483,9 +1483,9 @@ static StationSpec::TileFlags GetStationTileFlags(StationGfx gfx, const StationS
 void SetRailStationTileFlags(TileIndex tile, const StationSpec *statspec)
 {
 	const auto flags = GetStationTileFlags(GetStationGfx(tile), statspec);
-	SetStationTileBlocked(tile, HasFlag(flags, StationSpec::TileFlags::Blocked));
-	SetStationTileHavePylons(tile, HasFlag(flags, StationSpec::TileFlags::Pylons));
-	SetStationTileHaveWires(tile, !HasFlag(flags, StationSpec::TileFlags::NoWires));
+	SetStationTileBlocked(tile, flags.Test(StationSpec::TileFlag::Blocked));
+	SetStationTileHavePylons(tile, flags.Test(StationSpec::TileFlag::Pylons));
+	SetStationTileHaveWires(tile, !flags.Test(StationSpec::TileFlag::NoWires));
 }
 
 /**

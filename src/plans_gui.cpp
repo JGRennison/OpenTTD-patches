@@ -84,7 +84,7 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 static WindowDesc _plans_desc(__FILE__, __LINE__,
 	WDP_AUTO, "plans", 350, 100,
 	WC_PLANS, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_plans_widgets
 );
 

@@ -658,7 +658,7 @@ struct GameOptionsWindow : Window {
 		y = GetStringHeight(STR_GAME_OPTIONS_VIDEO_DRIVER_INFO, wid->current_x);
 		changed |= wid->UpdateVerticalSize(y);
 
-		if (changed) this->ReInit(0, 0, this->flags & WF_CENTERED);
+		if (changed) this->ReInit(0, 0, this->flags.Test(WindowFlag::Centred));
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -1261,7 +1261,7 @@ static constexpr NWidgetPart _nested_game_options_widgets[] = {
 static WindowDesc _game_options_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
-	0,
+	{},
 	_nested_game_options_widgets
 );
 
@@ -3182,7 +3182,7 @@ struct GameSettingsWindow : Window {
 				if (step == 0) step = 1;
 
 				/* don't allow too fast scrolling */
-				if ((this->flags & WF_TIMEOUT) && this->timeout_timer > 1) {
+				if (this->flags.Test(WindowFlag::Timeout) && this->timeout_timer > 1) {
 					_left_button_clicked = false;
 					return;
 				}
@@ -3437,7 +3437,7 @@ static constexpr NWidgetPart _nested_settings_selection_widgets[] = {
 static WindowDesc _settings_selection_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings", 510, 450,
 	WC_GAME_OPTIONS, WC_NONE,
-	0,
+	{},
 	_nested_settings_selection_widgets
 );
 
@@ -3466,8 +3466,8 @@ void DrawArrowButtons(int x, int y, Colours button_colour, uint8_t state, bool c
 	Rect lr = {x,                  y, x + (int)dim.width     - 1, y + (int)dim.height - 1};
 	Rect rr = {x + (int)dim.width, y, x + (int)dim.width * 2 - 1, y + (int)dim.height - 1};
 
-	DrawFrameRect(lr, button_colour, (state == 1) ? FR_LOWERED : FR_NONE);
-	DrawFrameRect(rr, button_colour, (state == 2) ? FR_LOWERED : FR_NONE);
+	DrawFrameRect(lr, button_colour, (state == 1) ? FrameFlag::Lowered : FrameFlags{});
+	DrawFrameRect(rr, button_colour, (state == 2) ? FrameFlag::Lowered : FrameFlags{});
 	DrawSpriteIgnorePadding(SPR_ARROW_LEFT,  PAL_NONE, lr, SA_CENTER);
 	DrawSpriteIgnorePadding(SPR_ARROW_RIGHT, PAL_NONE, rr, SA_CENTER);
 
@@ -3495,7 +3495,7 @@ void DrawDropDownButton(int x, int y, Colours button_colour, bool state, bool cl
 
 	Rect r = {x, y, x + SETTING_BUTTON_WIDTH - 1, y + SETTING_BUTTON_HEIGHT - 1};
 
-	DrawFrameRect(r, button_colour, state ? FR_LOWERED : FR_NONE);
+	DrawFrameRect(r, button_colour, state ? FrameFlag::Lowered : FrameFlags{});
 	DrawSpriteIgnorePadding(SPR_ARROW_DOWN, PAL_NONE, r, SA_CENTER);
 
 	if (!clickable) {
@@ -3515,7 +3515,7 @@ void DrawBoolButton(int x, int y, bool state, bool clickable)
 	static const Colours _bool_ctabs[2][2] = {{COLOUR_CREAM, COLOUR_RED}, {COLOUR_DARK_GREEN, COLOUR_GREEN}};
 
 	Rect r = {x, y, x + SETTING_BUTTON_WIDTH - 1, y + SETTING_BUTTON_HEIGHT - 1};
-	DrawFrameRect(r, _bool_ctabs[state][clickable], state ? FR_LOWERED : FR_NONE);
+	DrawFrameRect(r, _bool_ctabs[state][clickable], state ? FrameFlag::Lowered : FrameFlags{});
 }
 
 struct CustomCurrencyWindow : Window {
@@ -3745,7 +3745,7 @@ static constexpr NWidgetPart _nested_cust_currency_widgets[] = {
 static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CUSTOM_CURRENCY, WC_NONE,
-	0,
+	{},
 	_nested_cust_currency_widgets
 );
 

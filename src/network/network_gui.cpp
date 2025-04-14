@@ -976,7 +976,7 @@ static constexpr NWidgetPart _nested_network_game_widgets[] = {
 static WindowDesc _network_game_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, "list_servers", 1000, 730,
 	WC_NETWORK_WINDOW, WC_NONE,
-	WDF_NETWORK,
+	WindowDefaultFlag::Network,
 	_nested_network_game_widgets
 );
 
@@ -1068,7 +1068,7 @@ struct NetworkStartServerWindow : public Window {
 			case WID_NSS_CLIENTS_BTND:    case WID_NSS_CLIENTS_BTNU:    // Click on up/down button for number of clients
 			case WID_NSS_COMPANIES_BTND:  case WID_NSS_COMPANIES_BTNU:  // Click on up/down button for number of companies
 				/* Don't allow too fast scrolling. */
-				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
+				if (!this->flags.Test(WindowFlag::Timeout) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 					this->SetDirty();
 					switch (widget) {
@@ -1243,7 +1243,7 @@ static constexpr NWidgetPart _nested_network_start_server_window_widgets[] = {
 static WindowDesc _network_start_server_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_WINDOW, WC_NONE,
-	WDF_NETWORK,
+	WindowDefaultFlag::Network,
 	_nested_network_start_server_window_widgets
 );
 
@@ -1317,7 +1317,7 @@ static constexpr NWidgetPart _nested_client_list_widgets[] = {
 static WindowDesc _client_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_clients", 220, 300,
 	WC_CLIENT_LIST, WC_NONE,
-	WDF_NETWORK,
+	WindowDefaultFlag::Network,
 	_nested_client_list_widgets
 );
 
@@ -1951,7 +1951,7 @@ public:
 			r.top = y + offset;
 			r.bottom = r.top + button->height - 1;
 
-			DrawFrameRect(r, button->colour, FR_NONE);
+			DrawFrameRect(r, button->colour, {});
 			DrawSprite(button->sprite, PAL_NONE, r.left + WidgetDimensions::scaled.framerect.left, r.top + WidgetDimensions::scaled.framerect.top);
 			if (button->disabled) {
 				GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(button->colour, SHADE_DARKER), FILLRECT_CHECKER);
@@ -2125,7 +2125,7 @@ struct NetworkJoinStatusWindow : Window {
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR: {
 				/* Draw the % complete with a bar and a text */
-				DrawFrameRect(r, COLOUR_GREY, FR_BORDERONLY | FR_LOWERED);
+				DrawFrameRect(r, COLOUR_GREY, {FrameFlag::BorderOnly, FrameFlag::Lowered});
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				uint8_t progress; // used for progress bar
 				switch (_network_join_status) {
@@ -2148,7 +2148,7 @@ struct NetworkJoinStatusWindow : Window {
 						progress = 15 + _network_join_bytes * (100 - 15) / _network_join_bytes_total;
 						break;
 				}
-				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, FR_NONE);
+				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, {});
 				DrawString(ir.left, ir.right, CenterBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_NETWORK_CONNECTING_1 + _network_join_status, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
@@ -2231,7 +2231,7 @@ static constexpr NWidgetPart _nested_network_join_status_window_widgets[] = {
 static WindowDesc _network_join_status_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
-	WDF_MODAL | WDF_NETWORK,
+	{ WindowDefaultFlag::Modal, WindowDefaultFlag::Network },
 	_nested_network_join_status_window_widgets
 );
 
@@ -2276,7 +2276,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 		auto nwid = this->GetWidget<NWidgetResizeBase>(WID_NCP_WARNING);
 		changed |= nwid->UpdateVerticalSize(GetStringHeight(STR_WARNING_PASSWORD_SECURITY, nwid->current_x));
 
-		if (changed) this->ReInit(0, 0, this->flags & WF_CENTERED);
+		if (changed) this->ReInit(0, 0, this->flags.Test(WindowFlag::Centred));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -2344,7 +2344,7 @@ static constexpr NWidgetPart _nested_network_company_password_window_widgets[] =
 static WindowDesc _network_company_password_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_PASSWORD_WINDOW, WC_NONE,
-	WDF_NETWORK,
+	WindowDefaultFlag::Network,
 	_nested_network_company_password_window_widgets
 );
 
@@ -2453,7 +2453,7 @@ static constexpr NWidgetPart _nested_network_ask_relay_widgets[] = {
 static WindowDesc _network_ask_relay_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_RELAY, WC_NONE,
-	WDF_MODAL | WDF_NETWORK,
+	{ WindowDefaultFlag::Modal, WindowDefaultFlag::Network },
 	_nested_network_ask_relay_widgets
 );
 
@@ -2551,7 +2551,7 @@ static constexpr NWidgetPart _nested_network_ask_survey_widgets[] = {
 static WindowDesc _network_ask_survey_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_SURVEY, WC_NONE,
-	WDF_MODAL,
+	WindowDefaultFlag::Modal,
 	_nested_network_ask_survey_widgets
 );
 

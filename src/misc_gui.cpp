@@ -62,7 +62,7 @@ static constexpr NWidgetPart _nested_land_info_widgets[] = {
 static WindowDesc _land_info_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_LAND_INFO, WC_NONE,
-	0,
+	{},
 	_nested_land_info_widgets
 );
 
@@ -422,7 +422,7 @@ static constexpr NWidgetPart _nested_about_widgets[] = {
 static WindowDesc _about_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
-	0,
+	{},
 	_nested_about_widgets
 );
 
@@ -687,7 +687,7 @@ static constexpr NWidgetPart _nested_tooltips_widgets[] = {
 static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0, // Coordinates and sizes are not used,
 	WC_TOOLTIPS, WC_NONE,
-	WDF_NO_FOCUS | WDF_NO_CLOSE,
+	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_tooltips_widgets
 );
 
@@ -717,7 +717,7 @@ struct TooltipsWindow : public Window
 
 		this->InitNested();
 
-		CLRBITS(this->flags, WF_WHITE_BORDER);
+		this->flags.Reset(WindowFlag::WhiteBorder);
 	}
 
 	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
@@ -873,11 +873,11 @@ void QueryString::DrawEditBox(const Window *w, WidgetID wid) const
 	Rect cr = r.WithWidth(clearbtn_width, !rtl);
 	Rect fr = r.Indent(clearbtn_width, !rtl);
 
-	DrawFrameRect(cr, wi->colour, wi->IsLowered() ? FR_LOWERED : FR_NONE);
+	DrawFrameRect(cr, wi->colour, wi->IsLowered() ? FrameFlag::Lowered : FrameFlags{});
 	DrawSpriteIgnorePadding(rtl ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT, PAL_NONE, cr, SA_CENTER);
 	if (StrEmpty(this->text.GetText())) GfxFillRect(cr.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(wi->colour, SHADE_DARKER), FILLRECT_CHECKER);
 
-	DrawFrameRect(fr, wi->colour, FR_LOWERED | FR_DARKENED);
+	DrawFrameRect(fr, wi->colour, {FrameFlag::Lowered, FrameFlag::Darkened});
 	GfxFillRect(fr.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK);
 
 	fr = fr.Shrink(WidgetDimensions::scaled.framerect);
@@ -1153,7 +1153,7 @@ static constexpr NWidgetPart _nested_query_string_widgets[] = {
 static WindowDesc _query_string_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
-	0,
+	{},
 	_nested_query_string_widgets
 );
 
@@ -1327,7 +1327,7 @@ static constexpr NWidgetPart _nested_query_widgets[] = {
 static WindowDesc _query_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
-	WDF_MODAL,
+	WindowDefaultFlag::Modal,
 	_nested_query_widgets
 );
 
@@ -1460,7 +1460,7 @@ struct ModifierKeyToggleWindow : Window {
 static WindowDesc _modifier_key_toggle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "modifier_key_toggle", 0, 0,
 	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
-	WDF_NO_FOCUS,
+	WindowDefaultFlag::NoFocus,
 	_modifier_key_toggle_widgets
 );
 

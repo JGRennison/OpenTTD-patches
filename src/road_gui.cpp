@@ -965,7 +965,7 @@ static constexpr NWidgetPart _nested_build_road_widgets[] = {
 static WindowDesc _build_road_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_road", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_build_road_widgets,
 	&BuildRoadToolbarWindow::road_hotkeys
 );
@@ -1008,7 +1008,7 @@ static constexpr NWidgetPart _nested_build_tramway_widgets[] = {
 static WindowDesc _build_tramway_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_tramway", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_build_tramway_widgets,
 	&BuildRoadToolbarWindow::tram_hotkeys
 );
@@ -1063,7 +1063,7 @@ static constexpr NWidgetPart _nested_build_road_scen_widgets[] = {
 static WindowDesc _build_road_scen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_road_scen", 0, 0,
 	WC_SCEN_BUILD_TOOLBAR, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_build_road_scen_widgets,
 	&BuildRoadToolbarWindow::road_hotkeys
 );
@@ -1098,7 +1098,7 @@ static constexpr NWidgetPart _nested_build_tramway_scen_widgets[] = {
 static WindowDesc _build_tramway_scen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_tram_scen", 0, 0,
 	WC_SCEN_BUILD_TOOLBAR, WC_NONE,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_build_tramway_scen_widgets,
 	&BuildRoadToolbarWindow::tram_hotkeys
 );
@@ -1196,7 +1196,7 @@ static constexpr NWidgetPart _nested_build_road_depot_widgets[] = {
 static WindowDesc _build_road_depot_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_DEPOT, WC_BUILD_TOOLBAR,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_build_road_depot_widgets
 );
 
@@ -1588,7 +1588,7 @@ static constexpr NWidgetPart _nested_road_station_picker_widgets[] = {
 static WindowDesc _road_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_road", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_road_station_picker_widgets,
 	&BuildRoadStationWindow::road_hotkeys
 );
@@ -1628,7 +1628,7 @@ static constexpr NWidgetPart _nested_tram_station_picker_widgets[] = {
 static WindowDesc _tram_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_tram", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_tram_station_picker_widgets,
 	&BuildRoadStationWindow::tram_hotkeys
 );
@@ -1755,8 +1755,9 @@ static constexpr NWidgetPart _nested_build_road_waypoint_widgets[] = {
 static WindowDesc _build_road_waypoint_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_road_waypoint", 0, 0,
 	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
-	WDF_CONSTRUCTION,
-	_nested_build_road_waypoint_widgets
+	WindowDefaultFlag::Construction,
+	_nested_build_road_waypoint_widgets,
+	&BuildRoadWaypointWindow::hotkeys
 );
 
 static void ShowBuildRoadWaypointPicker(Window *parent)

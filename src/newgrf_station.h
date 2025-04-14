@@ -183,12 +183,12 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	};
 	std::vector<BridgeAboveFlags> bridge_above_flags; ///< List of bridge above flags.
 
-	enum class TileFlags : uint8_t {
-		None = 0,
-		Pylons = 1U << 0, ///< Tile should contain catenary pylons.
-		NoWires = 1U << 1, ///< Tile should NOT contain catenary wires.
-		Blocked = 1U << 2, ///< Tile is blocked to vehicles.
+	enum class TileFlag : uint8_t {
+		Pylons = 0, ///< Tile should contain catenary pylons.
+		NoWires = 1, ///< Tile should NOT contain catenary wires.
+		Blocked = 2, ///< Tile is blocked to vehicles.
 	};
+	using TileFlags = EnumBitSet<TileFlag, uint8_t>;
 	std::vector<TileFlags> tileflags; ///< List of tile flags.
 
 	AnimationInfo animation;
@@ -206,7 +206,6 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 		return {};
 	}
 };
-DECLARE_ENUM_AS_BIT_SET(StationSpec::TileFlags);
 
 /** Class containing information relating to station classes. */
 using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;

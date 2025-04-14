@@ -125,7 +125,7 @@ static constexpr NWidgetPart _nested_normal_news_widgets[] = {
 static WindowDesc _normal_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
-	0,
+	{},
 	_nested_normal_news_widgets
 );
 
@@ -172,7 +172,7 @@ static constexpr NWidgetPart _nested_vehicle_news_widgets[] = {
 static WindowDesc _vehicle_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
-	0,
+	{},
 	_nested_vehicle_news_widgets
 );
 
@@ -216,7 +216,7 @@ static constexpr NWidgetPart _nested_company_news_widgets[] = {
 static WindowDesc _company_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
-	0,
+	{},
 	_nested_company_news_widgets
 );
 
@@ -250,7 +250,7 @@ static constexpr NWidgetPart _nested_thin_news_widgets[] = {
 static WindowDesc _thin_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
-	0,
+	{},
 	_nested_thin_news_widgets
 );
 
@@ -285,7 +285,7 @@ static constexpr NWidgetPart _nested_small_news_widgets[] = {
 static WindowDesc _small_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
-	0,
+	{},
 	_nested_small_news_widgets
 );
 
@@ -360,7 +360,7 @@ struct NewsWindow : Window {
 		this->chat_height = (w != nullptr) ? w->height : 0;
 		this->status_height = FindWindowById(WC_STATUS_BAR, 0)->height;
 
-		this->flags |= WF_DISABLE_VP_SCROLL;
+		this->flags.Set(WindowFlag::DisableVpScroll);
 
 		this->CreateNestedTree();
 
@@ -1273,7 +1273,7 @@ static constexpr NWidgetPart _nested_message_history[] = {
 static WindowDesc _message_history_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_news", 400, 140,
 	WC_MESSAGE_HISTORY, WC_NONE,
-	0,
+	{},
 	_nested_message_history
 );
 

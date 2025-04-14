@@ -594,9 +594,9 @@ struct NewGRFInspectWindow final : Window {
 
 				/* Highlight the articulated part (this is different to the whole-vehicle highlighting of DrawVehicleImage */
 				if (_current_text_dir == TD_RTL) {
-					DrawFrameRect(r.right - sel_end   + skip, y, r.right - sel_start + skip, y + h, COLOUR_WHITE, FR_BORDERONLY);
+					DrawFrameRect(r.right - sel_end   + skip, y, r.right - sel_start + skip, y + h, COLOUR_WHITE, FrameFlag::BorderOnly);
 				} else {
-					DrawFrameRect(r.left  + sel_start - skip, y, r.left  + sel_end   - skip, y + h, COLOUR_WHITE, FR_BORDERONLY);
+					DrawFrameRect(r.left  + sel_start - skip, y, r.left  + sel_end   - skip, y + h, COLOUR_WHITE, FrameFlag::BorderOnly);
 				}
 				break;
 			}
@@ -611,7 +611,6 @@ struct NewGRFInspectWindow final : Window {
 			std::string buf = GetString(STR_NEWGRF_INSPECT_CAPTION);
 			if (!buf.empty()) Debug(misc, 0, "*** {} ***", strip_leading_colours(buf));
 		}
-
 		uint index = this->GetFeatureIndex();
 		const NIFeature *nif  = this->GetFeature();
 		const NIHelper *nih   = nif->helper;
@@ -1299,14 +1298,14 @@ static constexpr NWidgetPart _nested_newgrf_inspect_widgets[] = {
 static WindowDesc _newgrf_inspect_chain_desc(__FILE__, __LINE__,
 	WDP_AUTO, "newgrf_inspect_chain", 400, 300,
 	WC_NEWGRF_INSPECT, WC_NONE,
-	0,
+	{},
 	_nested_newgrf_inspect_chain_widgets
 );
 
 static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
 	WDP_AUTO, "newgrf_inspect", 400, 300,
 	WC_NEWGRF_INSPECT, WC_NONE,
-	0,
+	{},
 	_nested_newgrf_inspect_widgets
 );
 
@@ -1889,7 +1888,7 @@ static constexpr NWidgetPart _nested_sprite_aligner_widgets[] = {
 static WindowDesc _sprite_aligner_desc(__FILE__, __LINE__,
 	WDP_AUTO, "sprite_aligner", 400, 300,
 	WC_SPRITE_ALIGNER, WC_NONE,
-	0,
+	{},
 	_nested_sprite_aligner_widgets
 );
 

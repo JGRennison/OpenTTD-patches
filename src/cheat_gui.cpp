@@ -635,7 +635,7 @@ struct CheatWindow : Window {
 			value ^= 1;
 		} else {
 			/* don't allow too fast scrolling */
-			if ((this->flags & WF_TIMEOUT) && this->timeout_timer > 1) {
+			if (this->flags.Test(WindowFlag::Timeout) && this->timeout_timer > 1) {
 				_left_button_clicked = false;
 				return;
 			}
@@ -760,7 +760,7 @@ struct CheatWindow : Window {
 static WindowDesc _cheats_desc(__FILE__, __LINE__,
 	WDP_AUTO, "cheats", 0, 0,
 	WC_CHEATS, WC_NONE,
-	0,
+	{},
 	_nested_cheat_widgets
 );
 

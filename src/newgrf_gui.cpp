@@ -553,7 +553,7 @@ static constexpr NWidgetPart _nested_newgrf_parameter_widgets[] = {
 static WindowDesc _newgrf_parameters_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf_config", 500, 208,
 	WC_GRF_PARAMETERS, WC_NONE,
-	0,
+	{},
 	_nested_newgrf_parameter_widgets
 );
 
@@ -1999,7 +1999,7 @@ static constexpr NWidgetPart _nested_newgrf_widgets[] = {
 static WindowDesc _newgrf_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf", 300, 263,
 	WC_GAME_OPTIONS, WC_NONE,
-	0,
+	{},
 	_nested_newgrf_widgets
 );
 
@@ -2090,7 +2090,7 @@ static constexpr NWidgetPart _nested_save_preset_widgets[] = {
 static WindowDesc _save_preset_desc(__FILE__, __LINE__,
 	WDP_CENTER, "save_preset", 140, 110,
 	WC_SAVE_PRESET, WC_GAME_OPTIONS,
-	WDF_MODAL,
+	WindowDefaultFlag::Modal,
 	_nested_save_preset_widgets
 );
 
@@ -2231,7 +2231,7 @@ static constexpr NWidgetPart _nested_scan_progress_widgets[] = {
 static WindowDesc _scan_progress_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
-	0,
+	{},
 	_nested_scan_progress_widgets
 );
 
@@ -2274,10 +2274,10 @@ struct ScanProgressWindow : public Window {
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {
 				/* Draw the % complete with a bar and a text */
-				DrawFrameRect(r, COLOUR_GREY, FR_BORDERONLY | FR_LOWERED);
+				DrawFrameRect(r, COLOUR_GREY, {FrameFlag::BorderOnly, FrameFlag::Lowered});
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				uint percent = scanned * 100 / std::max(1U, _settings_client.gui.last_newgrf_count);
-				DrawFrameRect(ir.WithWidth(ir.Width() * percent / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, FR_NONE);
+				DrawFrameRect(ir.WithWidth(ir.Width() * percent / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, {});
 				SetDParam(0, percent);
 				DrawString(ir.left, ir.right, CenterBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_GENERATION_PROGRESS, TC_FROMSTRING, SA_HOR_CENTER);
 				break;

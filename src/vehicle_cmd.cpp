@@ -1575,7 +1575,7 @@ CommandCost CmdCloneVehicleFromTemplate(DoCommandFlag flags, TileIndex tile, Tem
  * @param cid Cargo filter (or CargoFilterCriteria::CF_ANY)
  * @return 0 for success and CMD_ERROR if no vehicle is able to go to depot
  */
-static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depot_flags, const VehicleListIdentifier &vli, const CargoType cid)
+static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommandFlags depot_flags, const VehicleListIdentifier &vli, const CargoType cid)
 {
 	VehicleList list;
 
@@ -1610,7 +1610,7 @@ static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depo
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdSendVehicleToDepot(DoCommandFlag flags, VehicleID veh_id, DepotCommand depot_cmd, TileIndex specific_depot)
+CommandCost CmdSendVehicleToDepot(DoCommandFlag flags, VehicleID veh_id, DepotCommandFlags depot_cmd, TileIndex specific_depot)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 	if (v == nullptr) return CMD_ERROR;
@@ -1627,10 +1627,10 @@ CommandCost CmdSendVehicleToDepot(DoCommandFlag flags, VehicleID veh_id, DepotCo
  * @param cid Cargo filter (or CargoFilterCriteria::CF_ANY)
  * @return the cost of this operation or an error
  */
-CommandCost CmdMassSendVehicleToDepot(DoCommandFlag flags, DepotCommand depot_cmd, VehicleListIdentifier vli, CargoType cargo_filter)
+CommandCost CmdMassSendVehicleToDepot(DoCommandFlag flags, DepotCommandFlags depot_cmd, VehicleListIdentifier vli, CargoType cargo_filter)
 {
-	if ((depot_cmd & (DepotCommand::Service | DepotCommand::Cancel | DepotCommand::Sell)) != depot_cmd) return CMD_ERROR;
-	if (!HasFlag(depot_cmd, DepotCommand::Cancel)) depot_cmd |= DepotCommand::DontCancel;
+	if ((depot_cmd & DepotCommandFlags{DepotCommandFlag::Service, DepotCommandFlag::Cancel, DepotCommandFlag::Sell}) != depot_cmd) return CMD_ERROR;
+	if (!depot_cmd.Test(DepotCommandFlag::Cancel)) depot_cmd.Set(DepotCommandFlag::DontCancel);
 	return SendAllVehiclesToDepot(flags, depot_cmd, vli, cargo_filter);
 }
 

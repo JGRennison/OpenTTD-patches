@@ -1593,7 +1593,9 @@ void DrawDirtyBlocks()
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
 		for (Window *w : Window::Iterate()) {
-			w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY | WF_DRAG_DIRTIED);
+			w->flags.Reset(WindowFlag::Dirty);
+			w->flags.Reset(WindowFlag::WidgetsDirty);
+			w->flags.Reset(WindowFlag::DragDirtied);
 		}
 		_whole_screen_dirty = false;
 	} else {
@@ -1609,20 +1611,21 @@ void DrawDirtyBlocks()
 		Backup dpi_backup(_cur_dpi, &bk, FILE_LINE);
 
 		for (Window *w : Window::IterateFromBack()) {
-			w->flags &= ~WF_DRAG_DIRTIED;
+			w->flags.Reset(WindowFlag::DragDirtied);
 			if (!MayBeShown(w)) continue;
 
 			if (w->viewport != nullptr) w->viewport->is_drawn = false;
 
-			if (w->flags & WF_DIRTY) {
+			if (w->flags.Test(WindowFlag::Dirty)) {
 				clear_overlays();
 				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
 				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
 					flags |= DOWF_SHOW_DEBUG;
 				}
 				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
-				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
-			} else if (w->flags & WF_WIDGETS_DIRTY) {
+				w->flags.Reset(WindowFlag::Dirty);
+				w->flags.Reset(WindowFlag::WidgetsDirty);
+			} else if (w->flags.Test(WindowFlag::WidgetsDirty)) {
 				if (w->nested_root != nullptr) {
 					clear_overlays();
 					w->nested_root->FillDirtyWidgets(dirty_widgets);
@@ -1635,7 +1638,7 @@ void DrawDirtyBlocks()
 					}
 					dirty_widgets.clear();
 				}
-				w->flags &= ~WF_WIDGETS_DIRTY;
+				w->flags.Reset(WindowFlag::WidgetsDirty);
 			}
 
 			if (w->viewport != nullptr && !w->IsShaded()) {

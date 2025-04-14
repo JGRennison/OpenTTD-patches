@@ -1233,7 +1233,7 @@ struct RefitWindow : public Window {
 
 								if (left != right) {
 									Rect hr = {left, highlight_top, right, highlight_bottom};
-									DrawFrameRect(hr.Expand(WidgetDimensions::scaled.bevel), COLOUR_WHITE, FR_BORDERONLY);
+									DrawFrameRect(hr.Expand(WidgetDimensions::scaled.bevel), COLOUR_WHITE, FrameFlag::BorderOnly);
 								}
 
 								left = INT32_MIN;
@@ -1530,7 +1530,7 @@ static constexpr NWidgetPart _nested_vehicle_refit_widgets[] = {
 static WindowDesc _vehicle_refit_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_refit", 240, 174,
 	WC_VEHICLE_REFIT, WC_VEHICLE_VIEW,
-	WDF_CONSTRUCTION,
+	WindowDefaultFlag::Construction,
 	_nested_vehicle_refit_widgets
 );
 
@@ -2692,16 +2692,16 @@ public:
 						}
 						break;
 					case ADI_SERVICE: // Send for servicing
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Service, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Service, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_DEPOT: // Send to Depots
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::None, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlags{}, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_DEPOT_SELL:
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Sell, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Sell, this->vli, this->GetCargoFilter());
 						break;
 					case ADI_CANCEL_DEPOT:
-						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommand::Cancel, this->vli, this->GetCargoFilter());
+						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Cancel, this->vli, this->GetCargoFilter());
 						break;
 
 					case ADI_CHANGE_ORDER:
@@ -2831,28 +2831,28 @@ static WindowDesc _vehicle_list_desc[] = {
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_vehicles_train", 325, 246,
 		WC_TRAINS_LIST, WC_NONE,
-		0,
+		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_vehicles_roadveh", 260, 246,
 		WC_ROADVEH_LIST, WC_NONE,
-		0,
+		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_vehicles_ship", 260, 246,
 		WC_SHIPS_LIST, WC_NONE,
-		0,
+		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WDP_AUTO, "list_vehicles_aircraft", 260, 246,
 		WC_AIRCRAFT_LIST, WC_NONE,
-		0,
+		{},
 		_nested_vehicle_list
 	}
 };
@@ -3713,7 +3713,7 @@ struct VehicleDetailsWindow : Window {
 static WindowDesc _train_vehicle_details_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_details_train", 405, 178,
 	WC_VEHICLE_DETAILS, WC_VEHICLE_VIEW,
-	0,
+	{},
 	_nested_train_vehicle_details_widgets
 );
 
@@ -3721,7 +3721,7 @@ static WindowDesc _train_vehicle_details_desc(__FILE__, __LINE__,
 static WindowDesc _nontrain_vehicle_details_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_details", 405, 113,
 	WC_VEHICLE_DETAILS, WC_VEHICLE_VIEW,
-	0,
+	{},
 	_nested_nontrain_vehicle_details_widgets
 );
 
@@ -3950,7 +3950,7 @@ private:
 public:
 	VehicleViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
-		this->flags |= WF_DISABLE_VP_SCROLL;
+		this->flags.Set(WindowFlag::DisableVpScroll);
 		this->CreateNestedTree();
 
 		/* Sprites for the 'send to depot' button indexed by vehicle type. */
@@ -4324,14 +4324,14 @@ public:
 				} else if (_ctrl_pressed && _settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
 					OrderDepotActionFlags flags = v->current_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_SELL);
 					DropDownList list;
-					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, (int)(DepotCommand::Service | DepotCommand::DontCancel), !flags));
-					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], (int)DepotCommand::DontCancel, flags == ODATFB_HALT));
-					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], (int)(DepotCommand::Sell | DepotCommand::DontCancel), flags == (ODATFB_HALT | ODATFB_SELL)));
-					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, (int)DepotCommand::DontCancel, false));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, DepotCommandFlags{DepotCommandFlag::Service, DepotCommandFlag::DontCancel}.base(), !flags));
+					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], DepotCommandFlags{DepotCommandFlag::DontCancel}.base(), flags == ODATFB_HALT));
+					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], DepotCommandFlags{DepotCommandFlag::Sell, DepotCommandFlag::DontCancel}.base(), flags == (ODATFB_HALT | ODATFB_SELL)));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, DepotCommandFlags{DepotCommandFlag::DontCancel}.base(), false));
 					ShowDropDownList(this, std::move(list), -1, widget);
 				} else {
 					this->HandleButtonClick(WID_VV_GOTO_DEPOT);
-					Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, _ctrl_pressed ? DepotCommand::Service : DepotCommand::None, {});
+					Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, _ctrl_pressed ? DepotCommandFlag::Service : DepotCommandFlags{}, {});
 				}
 				break;
 			case WID_VV_REFIT: // refit
@@ -4403,7 +4403,7 @@ public:
 		switch (widget) {
 			case WID_VV_GOTO_DEPOT: {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, (DepotCommand)index, {});
+				Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, DepotCommandFlags{static_cast<DepotCommandFlags::BaseType>(index)}, {});
 				break;
 			}
 		}
@@ -4427,7 +4427,7 @@ public:
 		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == v->type && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
 			if (v->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(v)->compatible_roadtypes) == 0) return;
 			if (v->type == VEH_TRAIN && !HasBit(Train::From(v)->compatible_railtypes, GetRailType(tile))) return;
-			Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, DepotCommand::Specific | (this->depot_select_ctrl_pressed ? DepotCommand::Service : DepotCommand::None), tile);
+			Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, this->depot_select_ctrl_pressed ? DepotCommandFlags{DepotCommandFlag::Specific, DepotCommandFlag::Service} : DepotCommandFlags{DepotCommandFlag::Specific}, tile);
 			ResetObjectToPlace();
 			this->RaiseButtons();
 		}
@@ -4573,7 +4573,7 @@ HotkeyList VehicleViewWindow::hotkeys("vehicleview", vehicleview_hotkeys);
 static WindowDesc _vehicle_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle", 250, 116,
 	WC_VEHICLE_VIEW, WC_NONE,
-	0,
+	{},
 	_nested_vehicle_view_widgets,
 	&VehicleViewWindow::hotkeys
 );
@@ -4585,7 +4585,7 @@ static WindowDesc _vehicle_view_desc(__FILE__, __LINE__,
 static WindowDesc _train_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_train", 250, 134,
 	WC_VEHICLE_VIEW, WC_NONE,
-	0,
+	{},
 	_nested_vehicle_view_widgets,
 	&VehicleViewWindow::hotkeys
 );

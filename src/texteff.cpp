@@ -142,7 +142,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	const bool show_loading = (_settings_client.gui.loading_indicators && !load_transparent);
 
 	ViewportStringFlags flags{};
-	if (dpi->zoom >= ZOOM_LVL_TEXT_EFFECT) flags |= ViewportStringFlags::Small;
+	if (dpi->zoom >= ZOOM_LVL_TEXT_EFFECT) flags.Set(ViewportStringFlag::Small);
 
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
