@@ -905,7 +905,7 @@ NWidgetBase::NWidgetBase(WidgetType tp) : ZeroedMemoryAllocator()
  */
 void NWidgetBase::SetDirty(Window *w)
 {
-	this->base_flags |= WBF_DIRTY;
+	this->base_flags.Set(WidgetBaseFlag::Dirty);
 	w->flags.Set(WindowFlag::WidgetsDirty);
 }
 
@@ -1150,7 +1150,7 @@ NWidgetCore *NWidgetCore::GetWidgetFromPos(int x, int y)
 
 void NWidgetCore::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 {
-	if (this->base_flags & WBF_DIRTY) dirty_widgets.push_back(this);
+	if (this->base_flags.Test(WidgetBaseFlag::Dirty)) dirty_widgets.push_back(this);
 }
 
 NWidgetBase *NWidgetContainer::GetWidgetOfType(WidgetType tp)
@@ -1211,7 +1211,7 @@ NWidgetCore *NWidgetContainer::GetWidgetFromPos(int x, int y)
 
 void NWidgetContainer::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 {
-	if (this->base_flags & WBF_DIRTY) {
+	if (this->base_flags.Test(WidgetBaseFlag::Dirty)) {
 		dirty_widgets.push_back(this);
 	} else {
 		for (const auto &child_wid : this->children) {
@@ -1309,7 +1309,7 @@ void NWidgetStacked::FillWidgetLookup(WidgetLookup &widget_lookup)
 void NWidgetStacked::Draw(const Window *w)
 {
 	if (this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 	if (this->shown_plane >= SZSP_BEGIN) return;
 
 	assert(static_cast<size_t>(this->shown_plane) < this->children.size());
@@ -1329,7 +1329,7 @@ NWidgetCore *NWidgetStacked::GetWidgetFromPos(int x, int y)
 
 void NWidgetStacked::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 {
-	if (this->base_flags & WBF_DIRTY) {
+	if (this->base_flags.Test(WidgetBaseFlag::Dirty)) {
 		dirty_widgets.push_back(this);
 	} else {
 		int plane = -1;
@@ -2039,7 +2039,7 @@ NWidgetCore *NWidgetMatrix::GetWidgetFromPos(int x, int y)
 
 void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 {
-	if (this->base_flags & WBF_DIRTY) {
+	if (this->base_flags.Test(WidgetBaseFlag::Dirty)) {
 		dirty_widgets.push_back(this);
 	}
 }
@@ -2047,7 +2047,7 @@ void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 /* virtual */ void NWidgetMatrix::Draw(const Window *w)
 {
 	if (this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
 	/* Fill the background. */
 	GfxFillRect(this->GetCurrentRect(), GetColourGradient(this->colour, SHADE_LIGHT));
@@ -2287,7 +2287,7 @@ void NWidgetBackground::FillWidgetLookup(WidgetLookup &widget_lookup)
 void NWidgetBackground::Draw(const Window *w)
 {
 	if (this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
 	if (this->current_x == 0 || this->current_y == 0) return;
 
@@ -2337,7 +2337,7 @@ NWidgetCore *NWidgetBackground::GetWidgetFromPos(int x, int y)
 
 void NWidgetBackground::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 {
-	if (this->base_flags & WBF_DIRTY) {
+	if (this->base_flags.Test(WidgetBaseFlag::Dirty)) {
 		dirty_widgets.push_back(this);
 	} else {
 		if (this->child != nullptr) this->child->FillDirtyWidgets(dirty_widgets);
@@ -2366,7 +2366,7 @@ void NWidgetViewport::SetupSmallestSize(Window *)
 void NWidgetViewport::Draw(const Window *w)
 {
 	if (this->current_x == 0 || this->current_y == 0 || this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
 	if (this->disp_flags & ND_NO_TRANSPARENCY) {
 		TransparencyOptionBits to_backup = _transparency_opt;
@@ -2584,7 +2584,7 @@ void NWidgetScrollbar::SetupSmallestSize(Window *)
 void NWidgetScrollbar::Draw(const Window *w)
 {
 	if (this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
 	if (this->current_x == 0 || this->current_y == 0) return;
 
@@ -2954,7 +2954,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 void NWidgetLeaf::Draw(const Window *w)
 {
 	if (this->IsOutsideDrawArea()) return;
-	this->base_flags &= ~WBF_DIRTY;
+	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
 	if (this->current_x == 0 || this->current_y == 0) return;
 
