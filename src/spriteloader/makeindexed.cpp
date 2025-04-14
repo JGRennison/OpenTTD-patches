@@ -52,8 +52,8 @@ SpriteLoaderResult SpriteLoaderMakeIndexed::LoadSprite(SpriteLoader::SpriteColle
 {
 	SpriteLoaderResult result = this->baseloader.LoadSprite(sprite, file, file_pos, sprite_type, true, count, control_flags, zoom_levels);
 
-	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_SPR_END; zoom++) {
-		if (HasBit(result.loaded_sprites, zoom)) Convert32bppTo8bpp(sprite[zoom]);
+	for (ZoomLevel zoom : SetBitIterator<ZoomLevel, uint8_t>(result.loaded_sprites & zoom_levels & (ZoomMask(ZOOM_LVL_SPR_END) - 1))) {
+		if (sprite[zoom].data != nullptr) Convert32bppTo8bpp(sprite[zoom]);
 	}
 
 	return result;
