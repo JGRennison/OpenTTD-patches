@@ -2105,7 +2105,7 @@ struct BuildHouseWindow : public PickerWindow {
 			line.append(*cargo_string);
 		}
 
-		cargo_string = BuildCargoAcceptanceString(GetProducedCargoOfHouse(hs), STR_HOUSE_PICKER_CARGO_ACCEPTED);
+		cargo_string = BuildCargoAcceptanceString(GetProducedCargoOfHouse(hs), STR_HOUSE_PICKER_CARGO_PRODUCED);
 		if (cargo_string.has_value()) {
 			line.push_back('\n');
 			line.append(*cargo_string);
