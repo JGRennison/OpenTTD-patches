@@ -3466,7 +3466,7 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_speed_adaptation = this->ShouldShowSpeedAdaptationLine(v);
 				if (should_show_speed_adaptation) {
-					if (HasBit(this->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
+					if (HasBit(Train::From(v)->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
 						DrawString(tr, STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT);
 					} else if (Train::From(v)->signal_speed_restriction != 0) {
 						SetDParam(0, Train::From(v)->signal_speed_restriction);
