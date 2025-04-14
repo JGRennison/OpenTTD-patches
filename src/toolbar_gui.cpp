@@ -1201,6 +1201,13 @@ static void UsePickerTool(TileIndex tile)
 			break;
 		}
 
+		case MP_HOUSE: {
+			if (_game_mode == GM_EDITOR || _settings_game.economy.place_houses != PH_FORBIDDEN) {
+				ShowBuildHousePickerAndSelect(tile);
+			}
+			break;
+		}
+
 		default:
 			break;
 	}

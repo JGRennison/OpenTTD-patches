@@ -146,6 +146,7 @@ inline HouseID GetTranslatedHouseID(HouseID hid)
 }
 
 void ShowBuildHousePicker(struct Window *);
+void ShowBuildHousePickerAndSelect(TileIndex tile);
 
 StringID GetHouseName(HouseID house, TileIndex tile = INVALID_TILE);
 

@@ -2016,7 +2016,7 @@ struct BuildHouseWindow : public PickerWindow {
 	std::string house_info;
 	bool house_protected;
 
-	BuildHouseWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, 0, HousePickerCallbacks::instance)
+	BuildHouseWindow(WindowDesc &desc, WindowNumber wno, Window *parent) : PickerWindow(desc, parent, wno, HousePickerCallbacks::instance)
 	{
 		HousePickerCallbacks::instance.SetClimateMask();
 		this->ConstructWindow();
@@ -2236,5 +2236,21 @@ static WindowDesc _build_house_desc(__FILE__, __LINE__,
 void ShowBuildHousePicker(Window *parent)
 {
 	if (BringWindowToFrontById(WC_BUILD_HOUSE, 0)) return;
-	new BuildHouseWindow(_build_house_desc, parent);
+	new BuildHouseWindow(_build_house_desc, 0, parent);
+}
+
+void ShowBuildHousePickerAndSelect(TileIndex tile)
+{
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
+
+	HouseID house = GetHouseType(tile);
+	GetHouseNorthPart(house);
+
+	const HouseSpec *hs = HouseSpec::Get(house);
+	if (hs == nullptr || !hs->enabled || !HousePickerCallbacks::instance.IsActive()) return;
+
+	BuildHouseWindow *w = AllocateWindowDescFront<BuildHouseWindow, true>(_build_house_desc, 0, nullptr);
+	if (w != nullptr) {
+		w->PickItem(FindFirstBit(hs->building_availability & HZ_ZONALL), house);
+	}
 }
