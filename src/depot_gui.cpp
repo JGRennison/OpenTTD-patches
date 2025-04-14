@@ -222,6 +222,15 @@ static void InitBlocksizeForVehicles(VehicleType type, EngineImageType image_typ
  */
 void InitDepotWindowBlockSizes()
 {
+	if (IsHeadless()) {
+		for (VehicleType vt = VEH_BEGIN; vt < VEH_COMPANY_END; vt++) {
+			_base_block_sizes_depot[vt] = {};
+			_base_block_sizes_purchase[vt] = {};
+		}
+		_consistent_train_width = 0;
+		return;
+	}
+
 	for (VehicleType vt = VEH_BEGIN; vt < VEH_COMPANY_END; vt++) {
 		InitBlocksizeForVehicles(vt, EIT_IN_DEPOT);
 		InitBlocksizeForVehicles(vt, EIT_PURCHASE);
