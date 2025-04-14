@@ -215,8 +215,9 @@ public:
 		return (this->base() & Tmask) == this->base();
 	}
 
-	auto begin() const { return SetBitIterator<Tvalue_type>(this->data).begin(); }
-	auto end() const { return SetBitIterator<Tvalue_type>(this->data).end(); }
+	/* Use SetBitIterator(bit_set) instead */
+	//auto begin() const { return SetBitIterator<Tvalue_type>(this->data).begin(); }
+	//auto end() const { return SetBitIterator<Tvalue_type>(this->data).end(); }
 
 private:
 	Tstorage data; ///< Bitmask of values.
