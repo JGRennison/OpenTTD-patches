@@ -195,18 +195,6 @@ inline bool FillDrawPixelInfo(DrawPixelInfo *n, const Rect &r)
 	return FillDrawPixelInfo(n, r.left, r.top, r.Width(), r.Height());
 }
 
-/**
- * Determine where to draw a centred object inside a widget.
- * @param min The top or left coordinate.
- * @param max The bottom or right coordinate.
- * @param size The height or width of the object to draw.
- * @return Offset of where to start drawing the object.
- */
-inline int CenterBounds(int min, int max, int size)
-{
-	return (min + max - size + 1) / 2;
-}
-
 /* window.cpp */
 enum DrawOverlappedWindowFlags {
 	DOWF_NONE         =      0,
