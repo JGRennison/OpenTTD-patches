@@ -40,6 +40,7 @@
 #include "core/checksum_func.hpp"
 #include "newgrf_roadstop.h"
 #include "road_cmd.h"
+#include "newgrf_roadstop.h"
 
 #include "table/strings.h"
 
