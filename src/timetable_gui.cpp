@@ -128,6 +128,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	bool predicted = false;
 	bool no_offset = false;
 	bool skip_travel = false;
+	bool reached_depot = false;
 
 	btree::btree_map<uint, LastDispatchRecord> dispatch_records;
 
@@ -188,6 +189,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					break;
 				}
 
+				case OCV_REQUIRES_SERVICE: {
+					bool requires_service = reached_depot ? false : v->NeedsServicing();
+					jump = OrderConditionCompare(order->GetConditionComparator(), requires_service, order->GetConditionValue());
+					break;
+				}
+
 				default:
 					return;
 			}
@@ -201,6 +208,8 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 			} else {
 				skip = true;
 			}
+		} else if (order->IsType(OT_GOTO_DEPOT)) {
+			reached_depot = true;
 		}
 
 		/* Automatic orders don't influence the overall timetable;
