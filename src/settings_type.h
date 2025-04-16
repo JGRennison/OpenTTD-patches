@@ -163,6 +163,16 @@ enum PublicRoadsConstruction : uint8_t {
 	PRC_END
 };
 
+/** Deaptures conditional jump result */
+enum DeparturesConditionalJumpResult : uint8_t {
+	DCJD_BEGIN = 0,
+	DCJD_GIVE_UP = DCJD_BEGIN,    ///< Give up
+	DCJD_TAKEN,                   ///< Handle as taken
+	DCJD_NOT_TAKEN,               ///< Handle as not taken
+
+	DCJD_LAST = DCJD_NOT_TAKEN
+};
+
 /** Settings related to time display. This may be loaded from the savegame and/or overridden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
@@ -273,7 +283,7 @@ struct GUISettings : public TimeSettings {
 	bool        departure_larger_font;                           ///< whether to show the calling at list in a larger font
 	bool        departure_destination_type;                      ///< whether to show destination types for ports and airports
 	bool        departure_smart_terminus;                        ///< whether to only show passenger services
-	uint8_t     departure_conditionals;                          ///< how to handle conditional orders
+	DeparturesConditionalJumpResult departure_conditionals;      ///< how to handle conditional orders
 	bool        departure_merge_identical;                       ///< whether to merge identical departures
 	uint8_t     departure_default_mode;                          ///< default mode for non-waypoint departure board window
 	uint8_t     departure_default_source;                        ///< default source for departure board window
