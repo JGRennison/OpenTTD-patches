@@ -2589,3 +2589,6 @@ STR_PICKER_HOUSE_RANDOM_TOOLTIP                                 :Place random 1x
 
 STR_CONFIG_SETTING_LINEAR_MAINTENANCE                           :Linear maintenance growth: {STRING2}
 STR_CONFIG_SETTING_LINEAR_MAINTENANCE_HELPTEXT                  :When enabled, infrastructure maintenance costs grow linearly rather than polynomially
+
+STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION                  :Randomise vehicle introduction dates: {STRING2}
+STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION_HELPTEXT         :When enabled, randomises vehicle introduction dates by up to one and a half years

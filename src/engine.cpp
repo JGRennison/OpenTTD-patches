@@ -799,7 +799,12 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
-	e->intro_date = ei->base_intro <= CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : CalTime::DateDelta{(int)GB(r, 0, 9)} + ei->base_intro;
+	CalTime::Date begin_random_date = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1);
+	if (_settings_game.vehicle.vehicle_intro_randomisation && ei->base_intro > begin_random_date) {
+		e->intro_date = ei->base_intro + CalTime::DateDelta{GB(r, 0, 9)};
+	} else {
+		e->intro_date = ei->base_intro;
+	}
 
 	/* Get parent variant index for syncing reliability via random seed. */
 	const Engine *re = e;
