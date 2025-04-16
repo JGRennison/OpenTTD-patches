@@ -182,6 +182,7 @@ DepartureShowAs DepartureCallingSettings::GetShowAsType(const Order *order, Depa
 static DeparturesConditionalJumpResult GetNonScheduleDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick)
 {
 	if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return DCJD_TAKEN;
+	if (order->GetConditionVariable() == OCV_REQUIRES_SERVICE) return OrderConditionCompare(order->GetConditionComparator(), 0, order->GetConditionValue()) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
 	if (order->GetConditionVariable() == OCV_TIME_DATE) {
 		int value = GetTraceRestrictTimeDateValueFromStateTicks(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), eval_tick);
 		return OrderConditionCompare(order->GetConditionComparator(), value, order->GetXData()) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
