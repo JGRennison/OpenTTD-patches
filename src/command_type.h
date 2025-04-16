@@ -387,6 +387,7 @@ enum Commands : uint8_t {
 	CMD_REMOVE_FROM_ROAD_WAYPOINT,    ///< remove a (rectangle of) tiles from a road waypoint
 
 	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
+	CMD_EXCHANGE_WAYPOINT_NAMES,      ///< exchange waypoint names
 
 	CMD_BUILD_ROAD_STOP,              ///< build a road stop
 	CMD_REMOVE_ROAD_STOP,             ///< remove a road stop

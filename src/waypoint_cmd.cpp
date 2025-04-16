@@ -653,3 +653,43 @@ CommandCost CmdSetWaypointLabelHidden(DoCommandFlag flags, StationID waypoint_id
 	}
 	return CommandCost();
 }
+
+/**
+ * Exchange waypoint names
+ * @param flags operation to perform
+ * @param waypoint_id1 station ID to exchange name with
+ * @param waypoint_id2 station ID to exchange name with
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdExchangeWaypointNames(DoCommandFlag flags, StationID waypoint_id1, StationID waypoint_id2)
+{
+	Waypoint *wp = Waypoint::GetIfValid(waypoint_id1);
+	if (wp == nullptr) return CMD_ERROR;
+
+	if (wp->owner != OWNER_NONE) {
+		CommandCost ret = CheckOwnership(wp->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	Waypoint *wp2 = Waypoint::GetIfValid(waypoint_id2);
+	if (wp2 == nullptr) return CMD_ERROR;
+
+	if (wp2->owner != OWNER_NONE) {
+		CommandCost ret = CheckOwnership(wp2->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	if (wp->town != wp2->town) return CommandCost(STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN);
+	if (!wp->IsOfType(wp2)) return CommandCost(STR_ERROR_WAYPOINTS_NOT_COMPATIBLE);
+
+	if (flags & DC_EXEC) {
+		wp->cached_name.clear();
+		wp2->cached_name.clear();
+		std::swap(wp->name, wp2->name);
+		std::swap(wp->town_cn, wp2->town_cn);
+		wp->UpdateVirtCoord();
+		wp2->UpdateVirtCoord();
+	}
+
+	return CommandCost();
+}

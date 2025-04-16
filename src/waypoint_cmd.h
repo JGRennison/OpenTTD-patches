@@ -23,5 +23,6 @@ DEF_CMD_TUPLE   (CMD_REMOVE_FROM_ROAD_WAYPOINT,        CmdRemoveFromRoadWaypoint
 DEF_CMD_TUPLE   (CMD_BUILD_BUOY,                       CmdBuildBuoy,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<>)
 DEF_CMD_TUPLE_NT(CMD_RENAME_WAYPOINT,                  CmdRenameWaypoint,                        {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, std::string>)
 DEF_CMD_TUPLE_NT(CMD_SET_WAYPOINT_LABEL_HIDDEN,        CmdSetWaypointLabelHidden,                {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, bool>)
+DEF_CMD_TUPLE_NT(CMD_EXCHANGE_WAYPOINT_NAMES,          CmdExchangeWaypointNames,                 {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, StationID>)
 
 #endif /* WAYPOINT_CMD_H */

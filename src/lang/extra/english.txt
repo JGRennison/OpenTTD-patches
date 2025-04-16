@@ -2336,6 +2336,11 @@ STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Can't ex
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... stations are not in the same town
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... station is attached to an industry
 
+STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA                          :{BLACK}{STRING}{}{}Ctrl+Click to exchange names with another waypoint.
+STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN                            :{WHITE}... waypoints are not in the same town
+STR_ERROR_WAYPOINTS_NOT_COMPATIBLE                              :{WHITE}... waypoints are not compatible
+STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES                         :{WHITE}Can't exchange waypoint names...
+
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click to convert track pieces instead of whole tiles.
 
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Allow buying shares from other companies: {STRING2}
