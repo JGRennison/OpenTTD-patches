@@ -2274,6 +2274,11 @@ STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}역 이�
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... 역이 같은 도시 안에 있지 않습니다
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... 역이 산업시설과 연관되어 있습니다
 
+STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA                          :{BLACK}{STRING}{}{}CTRL + 클릭하면 다른 경유지와 이름을 교체할 수 있습니다.
+STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN                            :{WHITE}... 경유지가 같은 도시 안에 있지 않습니다
+STR_ERROR_WAYPOINTS_NOT_COMPATIBLE                              :{WHITE}... 적합하지 않은 경유지입니다
+STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES                         :{WHITE}경유지 이름을 교체할 수 없습니다...
+
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}CTRL + 클릭하면 전체 칸 대신 선로 일부분만 변환할 수 있습니다
 
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :다른 회사의 지분을 사는 것을 허용: {STRING}
