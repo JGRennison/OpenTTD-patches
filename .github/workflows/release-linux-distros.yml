@@ -16,10 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - container_image: "ubuntu:20.04"
-          bundle_name: "focal"
-          compiler: "g++-10"
-          c_compiler: "gcc-10"
         - container_image: "ubuntu:22.04"
           bundle_name: "jammy"
           compiler: "g++"
@@ -33,7 +29,7 @@ jobs:
           compiler: "g++"
           c_compiler: "gcc"
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ${{ matrix.container_image }}
 
