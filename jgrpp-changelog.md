@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.65.1 (2025-04-18)
+* Fix crash when loading certain 32bpp-only GRFs in dedicated server mode.
+* Fix displaying whether a train is exempt from speed adaptation in the train details window.
+* Fix cargo produced string in house placer window.
+* Add picker tool support for house placing.
+* Allow exchanging a waypoint's name with another waypoint in the same town.
+* Handle requires service conditional orders when predicting arrival/departure times in the timetable window.
+* Departure boards: Resolve all requires service conditional jumps as not required.
+* Bump trunk base from commit 6d1f56ce6b782ee8b4cbf41239f7ce2c08e7bece to commit 56b1e9df1f5c7909c4ff956a62b9d60932761c4a.
+
 ### v0.65.0 (2025-04-12)
 * Departure boards:
   * Fix arrival estimates for late vehicles.
