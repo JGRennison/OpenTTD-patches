@@ -716,26 +716,27 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 {
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
 
-	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_CATENARY);
+	return GetRoadTypeInfo((::RoadType)roadtype)->flags.Test(RoadTypeFlag::Catenary);
 }
 
 /* static */ bool ScriptRoad::IsNonLevelCrossingRoadType(RoadType roadtype)
 {
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
 
-	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_NO_LEVEL_CROSSING);
+	return GetRoadTypeInfo((::RoadType)roadtype)->flags.Test(RoadTypeFlag::NoLevelCrossing);
 }
 
 /* static */ bool ScriptRoad::IsNoTownHousesRoadType(RoadType roadtype)
 {
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
 
-	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_NO_HOUSES);
+	return GetRoadTypeInfo((::RoadType)roadtype)->flags.Test(RoadTypeFlag::NoHouses);
 }
 
 /* static */ bool ScriptRoad::IsTownBuildableRoadType(RoadType roadtype)
 {
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
 
-	return HasBit(GetRoadTypeInfo((::RoadType)roadtype)->flags, ROTF_TOWN_BUILD) && !HasBit(GetRoadTypeInfo((::RoadType)roadtype)->extra_flags, RXTF_NO_TOWN_MODIFICATION);
+	const RoadTypeInfo *rti = GetRoadTypeInfo((::RoadType)roadtype);
+	return rti->flags.Test(RoadTypeFlag::TownBuild) && !HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION);
 }

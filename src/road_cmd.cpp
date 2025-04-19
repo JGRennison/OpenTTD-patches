@@ -120,7 +120,7 @@ void InitRoadTypes()
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		RoadTypeInfo *rti = &_roadtypes[rt];
 		ResolveRoadTypeGUISprites(rti);
-		if (HasBit(rti->flags, ROTF_HIDDEN)) SetBit(_roadtypes_hidden_mask, rt);
+		if (rti->flags.Test(RoadTypeFlag::Hidden)) SetBit(_roadtypes_hidden_mask, rt);
 	}
 
 	_sorted_roadtypes.clear();
@@ -160,7 +160,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 			*rti = _original_roadtypes[(rtt == RTT_TRAM) ? ROADTYPE_TRAM : ROADTYPE_ROAD];
 			rti->label = label;
 			rti->alternate_labels.clear();
-			rti->flags = ROTFB_NONE;
+			rti->flags = {};
 			rti->extra_flags = RXTFB_NONE;
 			rti->collision_mode = RTCM_NORMAL;
 			rti->introduction_date = CalTime::INVALID_DATE;
@@ -2451,7 +2451,7 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 			int relocation = GetCustomRoadSprite(rti, ti->tile, ROTSG_DEPOT);
 			bool default_gfx = relocation == 0;
 			if (default_gfx) {
-				if (HasBit(rti->flags, ROTF_CATENARY)) {
+				if (rti->flags.Test(RoadTypeFlag::Catenary)) {
 					if (_loaded_newgrf_features.tram == TRAMWAY_REPLACE_DEPOT_WITH_TRACK && road_rt == INVALID_ROADTYPE && !rti->UsesOverlay()) {
 						/* Sprites with track only work for default tram */
 						relocation = SPR_TRAMWAY_DEPOT_WITH_TRACK - SPR_ROAD_DEPOT;
@@ -2501,7 +2501,7 @@ void DrawRoadDepotSprite(int x, int y, DiagDirection dir, RoadType rt)
 	int relocation = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_DEPOT);
 	bool default_gfx = relocation == 0;
 	if (default_gfx) {
-		if (HasBit(rti->flags, ROTF_CATENARY)) {
+		if (rti->flags.Test(RoadTypeFlag::Catenary)) {
 			if (_loaded_newgrf_features.tram == TRAMWAY_REPLACE_DEPOT_WITH_TRACK && RoadTypeIsTram(rt) && !rti->UsesOverlay()) {
 				/* Sprites with track only work for default tram */
 				relocation = SPR_TRAMWAY_DEPOT_WITH_TRACK - SPR_ROAD_DEPOT;
@@ -3164,7 +3164,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 		}
 
 		/* Disallow converting town roads to types which do not allow houses, unless this is allowed */
-		if (rtt == RTT_ROAD && owner == OWNER_TOWN && HasBit(GetRoadTypeInfo(to_type)->flags, ROTF_NO_HOUSES)
+		if (rtt == RTT_ROAD && owner == OWNER_TOWN && GetRoadTypeInfo(to_type)->flags.Test(RoadTypeFlag::NoHouses)
 				&& !_settings_game.construction.convert_town_road_no_houses) {
 			SetDParamsForOwnedBy(OWNER_TOWN, tile);
 			error.MakeError(STR_ERROR_OWNED_BY);

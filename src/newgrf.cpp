@@ -4768,7 +4768,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint first, uint last, int prop, cons
 			}
 
 			case 0x10: // Rail Type flags
-				rti->flags = (RailTypeFlags)buf.ReadByte();
+				rti->flags = static_cast<RailTypeFlags>(buf.ReadByte());
 				break;
 
 			case 0x11: // Curve speed advantage
@@ -5034,7 +5034,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, cons
 			}
 
 			case 0x10: // Road Type flags
-				rti->flags = (RoadTypeFlags)buf.ReadByte();
+				rti->flags = static_cast<RoadTypeFlags>(buf.ReadByte());
 				break;
 
 			case 0x13: // Construction cost factor
@@ -10819,7 +10819,7 @@ void ResetNewGRFData()
 	ResetCustomRoadStops();
 
 	/* Reset canal sprite groups and flags */
-	memset(_water_feature, 0, sizeof(_water_feature));
+	_water_feature.fill({});
 
 	/* Reset the snowline table. */
 	ClearSnowLine();

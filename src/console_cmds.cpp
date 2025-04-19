@@ -3130,11 +3130,11 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
 				NewGRFLabelDumper().Label(rti->label),
-				HasBit(rti->flags, ROTF_CATENARY)                   ? 'c' : '-',
-				HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING)          ? 'l' : '-',
-				HasBit(rti->flags, ROTF_NO_HOUSES)                  ? 'X' : '-',
-				HasBit(rti->flags, ROTF_HIDDEN)                     ? 'h' : '-',
-				HasBit(rti->flags, ROTF_TOWN_BUILD)                 ? 'T' : '-',
+				rti->flags.Test(RoadTypeFlag::Catenary)        ? 'c' : '-',
+				rti->flags.Test(RoadTypeFlag::NoLevelCrossing) ? 'l' : '-',
+				rti->flags.Test(RoadTypeFlag::NoHouses)        ? 'X' : '-',
+				rti->flags.Test(RoadTypeFlag::Hidden)          ? 'h' : '-',
+				rti->flags.Test(RoadTypeFlag::TownBuild)       ? 'T' : '-',
 				HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)  ? 's' : '-',
 				HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
 				HasBit(rti->extra_flags, RXTF_NO_TUNNELS)           ? 'T' : '-',
@@ -3187,12 +3187,12 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}, GRF: {:08X}, {}",
 				(uint) rt,
 				NewGRFLabelDumper().Label(rti->label),
-				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
-				HasBit(rti->flags, RTF_NO_LEVEL_CROSSING)   ? 'l' : '-',
-				HasBit(rti->flags, RTF_HIDDEN)              ? 'h' : '-',
-				HasBit(rti->flags, RTF_NO_SPRITE_COMBINE)   ? 's' : '-',
-				HasBit(rti->flags, RTF_ALLOW_90DEG)         ? 'a' : '-',
-				HasBit(rti->flags, RTF_DISALLOW_90DEG)      ? 'd' : '-',
+				rti->flags.Test(RailTypeFlag::Catenary)        ? 'c' : '-',
+				rti->flags.Test(RailTypeFlag::NoLevelCrossing) ? 'l' : '-',
+				rti->flags.Test(RailTypeFlag::Hidden)          ? 'h' : '-',
+				rti->flags.Test(RailTypeFlag::NoSpriteCombine) ? 's' : '-',
+				rti->flags.Test(RailTypeFlag::Allow90Deg)      ? 'a' : '-',
+				rti->flags.Test(RailTypeFlag::Disallow90Deg)   ? 'd' : '-',
 				HasBit(rti->ctrl_flags, RTCF_PROGSIG)       ? 'p' : '-',
 				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
 				HasBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
@@ -3978,7 +3978,7 @@ DEF_CONSOLE_CMD(ConRoadTypeFlagCtl)
 	if (flag >= 100) {
 		ToggleBit(_roadtypes[rt].extra_flags, flag - 100);
 	} else {
-		ToggleBit(_roadtypes[rt].flags, flag);
+		ToggleBit(_roadtypes[rt].flags.edit_base(), flag);
 	}
 
 	return true;

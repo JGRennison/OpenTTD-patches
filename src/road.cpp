@@ -147,7 +147,7 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 		 * The GS under deity mode, as well as anybody in the editor builds roads that are
 		 * owned by towns. So if a town may build it, it should be buildable by them too.
 		 */
-		bool available = (rti->flags & ROTFB_HIDDEN) == 0 || (rti->flags & ROTFB_TOWN_BUILD) != 0;
+		bool available = !rti->flags.Test(RoadTypeFlag::Hidden) || rti->flags.Test(RoadTypeFlag::TownBuild);
 		if (!available && (company == OWNER_TOWN || _game_mode == GM_EDITOR || _generating_world)) {
 			if (roadtype == GetTownRoadType()) return true;
 		}

@@ -332,10 +332,10 @@ protected:
 
 /** Container for all information for a given feature. */
 struct NIFeature {
-	const NIProperty *properties; ///< The properties associated with this feature.
-	const NICallback *callbacks;  ///< The callbacks associated with this feature.
-	const NIVariable *variables;  ///< The variables associated with this feature.
-	const NIHelper   *helper;     ///< The class container all helper functions.
+	std::span<const NIProperty> properties; ///< The properties associated with this feature.
+	std::span<const NICallback> callbacks; ///< The callbacks associated with this feature.
+	std::span<const NIVariable> variables; ///< The variables associated with this feature.
+	std::unique_ptr<const NIHelper> helper; ///< The class container all helper functions.
 };
 
 /* Load all the NewGRF debug data; externalised as it is just a huge bunch of tables. */
@@ -405,9 +405,9 @@ struct NewGRFInspectWindow final : Window {
 	 * @param variable the variable to check.
 	 * @return true iff the variable has a parameter.
 	 */
-	static bool HasVariableParameter(const NIVariable *niv)
+	static bool HasVariableParameter(const NIVariable &niv)
 	{
-		return IsInsideBS(niv->var, 0x60, 0x20) || (niv->flags & NIVF_SHOW_PARAMS);
+		return IsInsideBS(niv.var, 0x60, 0x20) || (niv.flags & NIVF_SHOW_PARAMS);
 	}
 
 	/**
@@ -436,7 +436,7 @@ struct NewGRFInspectWindow final : Window {
 
 	const NIHelper *GetFeatureHelper() const
 	{
-		return this->GetFeature()->helper;
+		return this->GetFeature()->helper.get();
 	}
 
 	/**
@@ -613,7 +613,7 @@ struct NewGRFInspectWindow final : Window {
 		}
 		uint index = this->GetFeatureIndex();
 		const NIFeature *nif  = this->GetFeature();
-		const NIHelper *nih   = nif->helper;
+		const NIHelper *nih   = nif->helper.get();
 		const void *base      = nih->GetInstance(index);
 		const void *base_spec = nih->GetSpec(index);
 
@@ -757,13 +757,13 @@ struct NewGRFInspectWindow final : Window {
 
 		const_cast<NewGRFInspectWindow*>(this)->first_variable_line_index = i;
 
-		if (nif->variables != nullptr) {
+		if (!nif->variables.empty()) {
 			this->DrawString(r, i++, "Variables:");
 			int prefix_width = 0;
 			uint widest_num = 0;
-			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
-				if (niv->var >= 0x100) {
-					const char *name = GetExtendedVariableNameById(niv->var);
+			for (const NIVariable &niv : nif->variables) {
+				if (niv.var >= 0x100) {
+					const char *name = GetExtendedVariableNameById(niv.var);
 					if (name != nullptr) {
 						format_buffer buffer;
 						if (HasVariableParameter(niv)) {
@@ -776,20 +776,20 @@ struct NewGRFInspectWindow final : Window {
 					}
 				}
 			}
-			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
+			for (const NIVariable &niv : nif->variables) {
 				GetVariableExtra extra;
 				const bool has_param = HasVariableParameter(niv);
 				uint param = 0;
 				if (has_param) {
-					auto iter = this->var60params.find(niv->var);
+					auto iter = this->var60params.find(niv.var);
 					if (iter != this->var60params.end()) param = iter->second;
 				}
-				uint value = nih->Resolve(index, niv->var, param, extra);
+				uint value = nih->Resolve(index, niv.var, param, extra);
 
 				if (!extra.available) continue;
 
-				if (niv->var >= 0x100) {
-					const char *name = GetExtendedVariableNameById(niv->var);
+				if (niv.var >= 0x100) {
+					const char *name = GetExtendedVariableNameById(niv.var);
 					if (name != nullptr) {
 						format_buffer buffer;
 						if (has_param) {
@@ -798,9 +798,9 @@ struct NewGRFInspectWindow final : Window {
 							buffer.format("  {}: ", name);
 						}
 						if (_current_text_dir == TD_RTL) {
-							this->DrawString(r, i++, "{}{:08x} ({})", buffer, value, niv->name);
+							this->DrawString(r, i++, "{}{:08x} ({})", buffer, value, niv.name);
 						} else {
-							if (this->log_console) Debug(misc, 0, "  {}{:08x} ({})", buffer, value, niv->name);
+							if (this->log_console) Debug(misc, 0, "  {}{:08x} ({})", buffer, value, niv.name);
 
 							int offset = i - this->vscroll->GetPosition();
 							i++;
@@ -808,7 +808,7 @@ struct NewGRFInspectWindow final : Window {
 								Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
 								int edge = ::DrawString(sr.left, sr.right, sr.top, buffer, TC_BLACK);
 								buffer.clear();
-								buffer.format("{:08x} ({})", value, niv->name);
+								buffer.format("{:08x} ({})", value, niv.name);
 								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buffer, TC_BLACK);
 							}
 						}
@@ -817,9 +817,9 @@ struct NewGRFInspectWindow final : Window {
 				}
 
 				if (has_param) {
-					this->DrawString(r, i++, "  {:02x}[{:02x}]: {:08x} ({})", niv->var, param, value, niv->name);
+					this->DrawString(r, i++, "  {:02x}[{:02x}]: {:08x} ({})", niv.var, param, value, niv.name);
 				} else {
-					this->DrawString(r, i++, "  {:02x}: {:08x} ({})", niv->var, value, niv->name);
+					this->DrawString(r, i++, "  {:02x}: {:08x} ({})", niv.var, value, niv.name);
 				}
 			}
 		}
@@ -857,14 +857,14 @@ struct NewGRFInspectWindow final : Window {
 			}
 		}
 
-		if (nif->properties != nullptr) {
+		if (!nif->properties.empty()) {
 			this->DrawString(r, i++, "Properties:");
-			for (const NIProperty *nip = nif->properties; nip->name != nullptr; nip++) {
-				uint value = nip->reader.ReadValue(base);
+			for (const NIProperty &nip : nif->properties) {
+				uint value = nip.reader.ReadValue(base);
 
 				StringID string;
 				SetDParam(0, value);
-				switch (nip->type) {
+				switch (nip.type) {
 					case NIT_INT:
 						string = STR_JUST_INT;
 						break;
@@ -877,20 +877,20 @@ struct NewGRFInspectWindow final : Window {
 						NOT_REACHED();
 				}
 
-				this->DrawString(r, i++, "  {:02x}: {} ({})", nip->prop, GetString(string), nip->name);
+				this->DrawString(r, i++, "  {:02x}: {} ({})", nip.prop, GetString(string), nip.name);
 			}
 		}
 
-		if (nif->callbacks != nullptr) {
+		if (!nif->callbacks.empty()) {
 			this->DrawString(r, i++, "Callbacks:");
-			for (const NICallback *nic = nif->callbacks; nic->name != nullptr; nic++) {
-				if (nic->cb_bit != CBM_NO_BIT) {
-					uint value = nic->reader.ReadValue(base_spec);
+			for (const NICallback &nic : nif->callbacks) {
+				if (nic.cb_bit != CBM_NO_BIT) {
+					uint value = nic.reader.ReadValue(base_spec);
 
-					if (!HasBit(value, nic->cb_bit)) continue;
-					this->DrawString(r, i++, "  {:03x}: {}", nic->cb_id, nic->name);
+					if (!HasBit(value, nic.cb_bit)) continue;
+					this->DrawString(r, i++, "  {:03x}: {}", nic.cb_id, nic.name);
 				} else {
-					this->DrawString(r, i++, "  {:03x}: {} (unmasked)", nic->cb_id, nic->name);
+					this->DrawString(r, i++, "  {:03x}: {} (unmasked)", nic.cb_id, nic.name);
 				}
 			}
 		}
@@ -1023,7 +1023,7 @@ struct NewGRFInspectWindow final : Window {
 
 				/* Does this feature have variables? */
 				const NIFeature *nif = this->GetFeature();
-				if (nif->variables == nullptr) return;
+				if (nif->variables.empty()) return;
 
 				if (nif->helper->ShowExtraInfoOnly(this->GetFeatureIndex()) || nif->helper->ShowExtraInfoIncludingGRFIDOnly(this->GetFeatureIndex())) return;
 
@@ -1031,12 +1031,12 @@ struct NewGRFInspectWindow final : Window {
 				line -= this->first_variable_line_index;
 
 				/* Find the variable related to the line */
-				for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++, line--) {
-					if (line != 1) continue; // 1 because of the "Variables:" line
+				for (const NIVariable &niv : nif->variables) {
+					if (--line != 0) continue; // 0 because of the "Variables:" line
 
 					if (!HasVariableParameter(niv)) break;
 
-					this->current_edit_param = niv->var;
+					this->current_edit_param = niv.var;
 					ShowQueryString(STR_EMPTY, STR_NEWGRF_INSPECT_QUERY_CAPTION, 9, this, CS_HEXADECIMAL, QSF_NONE);
 				}
 				break;

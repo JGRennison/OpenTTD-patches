@@ -229,7 +229,7 @@ void InitRailTypes()
 
 	_sorted_railtypes.clear();
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		bool hidden = HasBit(_railtypes[rt].flags, RTF_HIDDEN);
+		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
 		if (hidden) SetBit(_railtypes_hidden_mask, rt);
 		if (_railtypes[rt].label != 0 && !hidden) {
 			_sorted_railtypes.push_back(rt);
@@ -3673,7 +3673,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 		}
 	}
 
-	bool no_combine = ti->tileh == SLOPE_FLAT && HasBit(rti->flags, RTF_NO_SPRITE_COMBINE);
+	bool no_combine = ti->tileh == SLOPE_FLAT && rti->flags.Test(RailTypeFlag::NoSpriteCombine);
 	SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
 	SpriteID ground = GetCustomRailSprite(rti, ti->tile, no_combine ? RTSG_GROUND_COMPLETE : RTSG_GROUND);
 	TrackBits pbs = TRACK_BIT_NONE;

@@ -61,7 +61,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		ROADTYPES_ROAD,
 
 		/* flags */
-		ROTFB_TOWN_BUILD,
+		{RoadTypeFlag::TownBuild},
 
 		/* extra flags */
 		RXTFB_NONE,
@@ -148,7 +148,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		ROADTYPES_TRAM,
 
 		/* flags */
-		ROTFB_CATENARY | ROTFB_NO_HOUSES,
+		{RoadTypeFlag::Catenary, RoadTypeFlag::NoHouses},
 
 		/* extra flags */
 		RXTFB_NONE,
