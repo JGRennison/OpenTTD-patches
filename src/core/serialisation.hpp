@@ -118,7 +118,15 @@ struct BufferSerialisationHelper {
 		} else if constexpr (sizeof(V) == 2) {
 			this->Send_uint16(static_cast<uint16_t>(data));
 		} else {
-			this->Send_varuint(static_cast<uint64_t>(data));
+			if constexpr (std::is_signed<V>::value) {
+				/* Zig-zag encode */
+				using U = typename std::make_unsigned<V>::type;
+				U zigzag = (static_cast<U>(data) << 1);
+				if (data < 0) zigzag = ~zigzag;
+				this->Send_varuint(zigzag);
+			} else {
+				this->Send_varuint(static_cast<uint64_t>(data));
+			}
 		}
 	}
 
@@ -428,7 +436,13 @@ public:
 		} else {
 			uint64_t val = this->Recv_varuint();
 			if ((val & GetBitMaskSC<uint64_t>(0, sizeof(V) * 8)) != val) this->RaiseRecvError();
-			data = static_cast<V>(val);
+			if constexpr (std::is_signed<V>::value) {
+				/* Zig-zag decode */
+				using U = typename std::make_unsigned<V>::type;
+				data = static_cast<V>((static_cast<U>(val) >> 1) ^ (-(static_cast<U>(val) & 1)));
+			} else {
+				data = static_cast<V>(val);
+			}
 		}
 	}
 
