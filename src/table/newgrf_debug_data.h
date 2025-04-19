@@ -1659,11 +1659,12 @@ class NIHRailType : public NIHelper {
 					info->flags.Test(RailTypeFlag::NoSpriteCombine) ? 's' : '-',
 					info->flags.Test(RailTypeFlag::Allow90Deg)      ? 'a' : '-',
 					info->flags.Test(RailTypeFlag::Disallow90Deg)   ? 'd' : '-');
-			output.Print("  Ctrl flags: {}{}{}{}",
-					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
-					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
-					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
-					HasBit(info->ctrl_flags, RTCF_NOENTRYSIG) ? 'n' : '-');
+			output.Print("  Ctrl flags: {}{}{}{}{}",
+					info->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteProgSig)         ? 'p' : '-',
+					info->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRestrictedSig)   ? 'r' : '-',
+					info->ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking)       ? 'b' : '-',
+					info->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRecolourEnabled) ? 'c' : '-',
+					info->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteNoEntry)         ? 'n' : '-');
 
 			uint bit = 1;
 			auto dump_railtypes = [&](const char *name, RailTypes types, RailTypes mark) {

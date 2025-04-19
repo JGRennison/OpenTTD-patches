@@ -3184,7 +3184,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}, GRF: {:08X}, {}",
+		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}{}, GRF: {:08X}, {}",
 				(uint) rt,
 				NewGRFLabelDumper().Label(rti->label),
 				rti->flags.Test(RailTypeFlag::Catenary)        ? 'c' : '-',
@@ -3193,10 +3193,11 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 				rti->flags.Test(RailTypeFlag::NoSpriteCombine) ? 's' : '-',
 				rti->flags.Test(RailTypeFlag::Allow90Deg)      ? 'a' : '-',
 				rti->flags.Test(RailTypeFlag::Disallow90Deg)   ? 'd' : '-',
-				HasBit(rti->ctrl_flags, RTCF_PROGSIG)       ? 'p' : '-',
-				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
-				HasBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
-				HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)    ? 'n' : '-',
+				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteProgSig)         ? 'p' : '-',
+				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRestrictedSig)   ? 'r' : '-',
+				rti->ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking)       ? 'b' : '-',
+				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRecolourEnabled) ? 'c' : '-',
+				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteNoEntry)         ? 'n' : '-',
 				std::byteswap(grfid),
 				GetStringPtr(rti->strings.name)
 		);

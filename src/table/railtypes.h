@@ -81,7 +81,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		{},
 
 		/* control flags */
-		0,
+		{},
 
 		/* signal extra aspects */
 		0,
@@ -192,7 +192,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		{RailTypeFlag::Catenary},
 
 		/* control flags */
-		0,
+		{},
 
 		/* signal extra aspects */
 		0,
@@ -299,7 +299,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		{},
 
 		/* control flags */
-		0,
+		{},
 
 		/* signal extra aspects */
 		0,
@@ -406,7 +406,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		{},
 
 		/* control flags */
-		0,
+		{},
 
 		/* signal extra aspects */
 		0,

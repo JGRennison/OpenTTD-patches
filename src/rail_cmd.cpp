@@ -288,7 +288,7 @@ RailType AllocateRailType(RailTypeLabel label)
 			 * before the first (default) rail type. */
 			rti->sorting_order = rt << 4 | 7;
 
-			if (label == 'TELE' || label == 'PIPE' || label == 'WIRE') SetBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING);
+			if (label == 'TELE' || label == 'PIPE' || label == 'WIRE') rti->ctrl_flags.Set(RailTypeCtrlFlag::NoRealisticBraking);
 			return rt;
 		}
 	}

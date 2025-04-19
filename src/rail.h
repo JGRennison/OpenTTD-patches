@@ -38,13 +38,14 @@ enum class RailTypeFlag : uint8_t {
 using RailTypeFlags = EnumBitSet<RailTypeFlag, uint8_t>;
 
 /** Railtype control flags. */
-enum RailTypeCtrlFlags {
-	RTCF_PROGSIG                = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
-	RTCF_RESTRICTEDSIG          = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
-	RTCF_NOREALISTICBRAKING     = 2,                          ///< Realistic braking disabled for this track type
-	RTCF_RECOLOUR_ENABLED       = 3,                          ///< Recolour sprites enabled
-	RTCF_NOENTRYSIG             = 4,                          ///< Custom signal sprites enabled for no-entry signals.
+enum class RailTypeCtrlFlag : uint8_t {
+	SigSpriteProgSig         = 0, ///< Custom signal sprites enabled for programmable pre-signals.
+	SigSpriteRestrictedSig   = 1, ///< Custom signal sprite flag enabled for restricted signals.
+	NoRealisticBraking       = 2, ///< Realistic braking disabled for this track type
+	SigSpriteRecolourEnabled = 3, ///< Recolour sprites enabled
+	SigSpriteNoEntry         = 4, ///< Custom signal sprites enabled for no-entry signals.
 };
+using RailTypeCtrlFlags = EnumBitSet<RailTypeCtrlFlag, uint8_t>;
 
 struct SpriteGroup;
 
@@ -219,7 +220,7 @@ public:
 	/**
 	 * Bit mask of rail type control flags
 	 */
-	uint8_t ctrl_flags;
+	RailTypeCtrlFlags ctrl_flags;
 
 	/**
 	 * Signal extra aspects

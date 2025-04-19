@@ -4822,27 +4822,27 @@ static ChangeInfoResult RailTypeChangeInfo(uint first, uint last, int prop, cons
 
 			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(rti->ctrl_flags, RTCF_PROGSIG, buf.ReadByte() != 0);
+				rti->ctrl_flags.Set(RailTypeCtrlFlag::SigSpriteProgSig, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_NO_ENTRY_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(rti->ctrl_flags, RTCF_NOENTRYSIG, buf.ReadByte() != 0);
+				rti->ctrl_flags.Set(RailTypeCtrlFlag::SigSpriteNoEntry, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG, buf.ReadByte() != 0);
+				rti->ctrl_flags.Set(RailTypeCtrlFlag::SigSpriteRestrictedSig, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, buf.ReadByte() != 0);
+				rti->ctrl_flags.Set(RailTypeCtrlFlag::NoRealisticBraking, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED, buf.ReadByte() != 0);
+				rti->ctrl_flags.Set(RailTypeCtrlFlag::SigSpriteRecolourEnabled, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
