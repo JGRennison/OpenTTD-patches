@@ -2276,6 +2276,11 @@ STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}無法�
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}……車站不在同一市鎮
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}……車站已附屬某個工業
 
+STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA                          :{BLACK}{STRING}{}{}按住 <Ctrl> 鍵點擊以交換另一個號誌站名稱。
+STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN                            :{WHITE}……號誌站不在同一個市鎮
+STR_ERROR_WAYPOINTS_NOT_COMPATIBLE                              :{WHITE}……不適合的號誌站
+STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES                         :{WHITE}無法交換號誌站名稱……
+
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以轉換單節軌道而不是整格軌道
 
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :允許購買其他公司的股票：{STRING}
