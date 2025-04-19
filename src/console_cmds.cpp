@@ -3135,10 +3135,10 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 				rti->flags.Test(RoadTypeFlag::NoHouses)        ? 'X' : '-',
 				rti->flags.Test(RoadTypeFlag::Hidden)          ? 'h' : '-',
 				rti->flags.Test(RoadTypeFlag::TownBuild)       ? 'T' : '-',
-				HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)  ? 's' : '-',
-				HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
-				HasBit(rti->extra_flags, RXTF_NO_TUNNELS)           ? 'T' : '-',
-				HasBit(rti->extra_flags, RXTF_NO_TRAIN_COLLISION)   ? 'c' : '-',
+				rti->extra_flags.Test(RoadTypeExtraFlag::NotAvailableAiGs)   ? 's' : '-',
+				rti->extra_flags.Test(RoadTypeExtraFlag::NoTownModification) ? 't' : '-',
+				rti->extra_flags.Test(RoadTypeExtraFlag::NoTunnels)          ? 'T' : '-',
+				rti->extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)   ? 'c' : '-',
 				std::byteswap(grfid),
 				GetStringPtr(rti->strings.name)
 		);
@@ -3977,7 +3977,7 @@ DEF_CONSOLE_CMD(ConRoadTypeFlagCtl)
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 
 	if (flag >= 100) {
-		ToggleBit(_roadtypes[rt].extra_flags, flag - 100);
+		ToggleBit(_roadtypes[rt].extra_flags.edit_base(), flag - 100);
 	} else {
 		ToggleBit(_roadtypes[rt].flags.edit_base(), flag);
 	}

@@ -20,7 +20,7 @@ ScriptRoadTypeList::ScriptRoadTypeList(ScriptRoad::RoadTramTypes rtts)
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		if (!HasBit(rtts, GetRoadTramType(rt))) continue;
 		if (::HasRoadTypeAvail(owner, rt) &&
-				!HasBit(GetRoadTypeInfo(rt)->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)) {
+				!GetRoadTypeInfo(rt)->extra_flags.Test(RoadTypeExtraFlag::NotAvailableAiGs)) {
 			this->AddItem(rt);
 		}
 	}

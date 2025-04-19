@@ -64,7 +64,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		{RoadTypeFlag::TownBuild},
 
 		/* extra flags */
-		RXTFB_NONE,
+		{},
 
 		/* collision mode */
 		RTCM_NORMAL,
@@ -151,7 +151,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		{RoadTypeFlag::Catenary, RoadTypeFlag::NoHouses},
 
 		/* extra flags */
-		RXTFB_NONE,
+		{},
 
 		/* collision mode */
 		RTCM_NORMAL,

@@ -47,22 +47,13 @@ enum class RoadTypeFlag : uint8_t {
 using RoadTypeFlags = EnumBitSet<RoadTypeFlag, uint8_t>;
 
 /** Roadtype extra flags. */
-enum RoadTypeExtraFlag {
-	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
-	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
-	RXTF_NO_TUNNELS,                                             ///< Bit number for no tunnels
-	RXTF_NO_TRAIN_COLLISION,                                     ///< Bit number for no train collision
+enum class RoadTypeExtraFlag : uint8_t {
+	NotAvailableAiGs   = 0, ///< Bit number for unavailable for AI/GS
+	NoTownModification = 1, ///< Bit number for no town modification
+	NoTunnels          = 2, ///< Bit number for no tunnels
+	NoTrainCollision   = 3, ///< Bit number for no train collision
 };
-
-/** Roadtype extra flags. */
-enum RoadTypeExtraFlags : uint8_t {
-	RXTFB_NONE = 0,                                              ///< All flags cleared.
-	RXTFB_NOT_AVAILABLE_AI_GS   = 1 << RXTF_NOT_AVAILABLE_AI_GS,
-	RXTFB_NO_TOWN_MODIFICATION  = 1 << RXTF_NO_TOWN_MODIFICATION,
-	RXTFB_NO_TUNNELS            = 1 << RXTF_NO_TUNNELS,
-	RXTFB_NO_TRAIN_COLLISION    = 1 << RXTF_NO_TRAIN_COLLISION,
-};
-DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
+using RoadTypeExtraFlags = EnumBitSet<RoadTypeExtraFlag, uint8_t>;
 
 enum RoadTypeCollisionMode : uint8_t {
 	RTCM_NORMAL = 0,
@@ -337,7 +328,7 @@ inline bool RoadNoLevelCrossing(RoadType roadtype)
 inline bool RoadNoTunnels(RoadType roadtype)
 {
 	assert(roadtype < ROADTYPE_END);
-	return HasBit(GetRoadTypeInfo(roadtype)->extra_flags, RXTF_NO_TUNNELS);
+	return GetRoadTypeInfo(roadtype)->extra_flags.Test(RoadTypeExtraFlag::NoTunnels);
 }
 
 RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels = true);

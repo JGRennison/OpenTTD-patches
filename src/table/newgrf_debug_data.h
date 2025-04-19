@@ -2259,10 +2259,10 @@ private:
 					rti->flags.Test(RoadTypeFlag::Hidden)          ? 'h' : '-',
 					rti->flags.Test(RoadTypeFlag::TownBuild)       ? 'T' : '-');
 			output.Print("    Extra Flags:{}{}{}{}",
-					HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
-					HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
-					HasBit(rti->extra_flags, RXTF_NO_TUNNELS) ? 'T' : '-',
-					HasBit(rti->extra_flags, RXTF_NO_TRAIN_COLLISION) ? 'c' : '-');
+					rti->extra_flags.Test(RoadTypeExtraFlag::NotAvailableAiGs)   ? 's' : '-',
+					rti->extra_flags.Test(RoadTypeExtraFlag::NoTownModification) ? 't' : '-',
+					rti->extra_flags.Test(RoadTypeExtraFlag::NoTunnels)          ? 'T' : '-',
+					rti->extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)   ? 'c' : '-');
 			output.Print("    Collision mode: {}", rti->collision_mode);
 
 			output.register_next_line_click_flag_toggle((1 << rtt));

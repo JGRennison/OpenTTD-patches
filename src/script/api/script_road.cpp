@@ -68,7 +68,7 @@
 /* static */ bool ScriptRoad::IsRoadTypeAvailable(RoadType road_type)
 {
 	EnforceDeityOrCompanyModeValid(false);
-	return (::RoadType)road_type < ROADTYPE_END && ::HasRoadTypeAvail(ScriptObject::GetCompany(), (::RoadType)road_type) && !HasBit(GetRoadTypeInfo((::RoadType)road_type)->extra_flags, RXTF_NOT_AVAILABLE_AI_GS);
+	return (::RoadType)road_type < ROADTYPE_END && ::HasRoadTypeAvail(ScriptObject::GetCompany(), (::RoadType)road_type) && !GetRoadTypeInfo((::RoadType)road_type)->extra_flags.Test(RoadTypeExtraFlag::NotAvailableAiGs);
 }
 
 /* static */ ScriptRoad::RoadType ScriptRoad::GetCurrentRoadType()
@@ -738,5 +738,5 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 	if (!ScriptRoad::IsRoadTypeAvailable(roadtype)) return false;
 
 	const RoadTypeInfo *rti = GetRoadTypeInfo((::RoadType)roadtype);
-	return rti->flags.Test(RoadTypeFlag::TownBuild) && !HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION);
+	return rti->flags.Test(RoadTypeFlag::TownBuild) && !rti->extra_flags.Test(RoadTypeExtraFlag::NoTownModification);
 }

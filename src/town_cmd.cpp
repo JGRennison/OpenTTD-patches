@@ -1029,7 +1029,7 @@ RoadType GetTownRoadType()
 
 		/* Can town build this road. */
 		if (!rti->flags.Test(RoadTypeFlag::TownBuild)) continue;
-		if (HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION)) continue;
+		if (rti->extra_flags.Test(RoadTypeExtraFlag::NoTownModification)) continue;
 
 		/* Not yet introduced at this date. */
 		if (IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base()) && rti->introduction_date > CalTime::CurDate()) continue;
@@ -1049,9 +1049,9 @@ bool MayTownModifyRoad(TileIndex tile)
 {
 	if (MayHaveRoad(tile)) {
 		RoadType present_road = GetRoadTypeRoad(tile);
-		if (present_road != INVALID_ROADTYPE && HasBit(GetRoadTypeInfo(present_road)->extra_flags, RXTF_NO_TOWN_MODIFICATION)) return false;
+		if (present_road != INVALID_ROADTYPE && GetRoadTypeInfo(present_road)->extra_flags.Test(RoadTypeExtraFlag::NoTownModification)) return false;
 		RoadType present_tram = GetRoadTypeTram(tile);
-		if (present_tram != INVALID_ROADTYPE && HasBit(GetRoadTypeInfo(present_tram)->extra_flags, RXTF_NO_TOWN_MODIFICATION)) return false;
+		if (present_tram != INVALID_ROADTYPE && GetRoadTypeInfo(present_tram)->extra_flags.Test(RoadTypeExtraFlag::NoTownModification)) return false;
 	}
 	return true;
 }

@@ -143,7 +143,7 @@ void InitRoadTypesCaches()
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		const RoadTypeInfo &rti = _roadtypes[rt];
 		SetBit(_collision_mode_roadtypes[rti.collision_mode], rt);
-		if (HasBit(rti.extra_flags, RXTF_NO_TRAIN_COLLISION)) SetBit(_roadtypes_non_train_colliding, rt);
+		if (rti.extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)) SetBit(_roadtypes_non_train_colliding, rt);
 	}
 }
 
@@ -161,7 +161,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 			rti->label = label;
 			rti->alternate_labels.clear();
 			rti->flags = {};
-			rti->extra_flags = RXTFB_NONE;
+			rti->extra_flags = {};
 			rti->collision_mode = RTCM_NORMAL;
 			rti->introduction_date = CalTime::INVALID_DATE;
 

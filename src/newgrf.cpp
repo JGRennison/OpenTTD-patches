@@ -5076,7 +5076,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, cons
 
 			case A0RPI_ROADTYPE_EXTRA_FLAGS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				rti->extra_flags = (RoadTypeExtraFlags)buf.ReadByte();
+				rti->extra_flags = static_cast<RoadTypeExtraFlags>(buf.ReadByte());
 				break;
 
 			case A0RPI_ROADTYPE_COLLISION_MODE: {
