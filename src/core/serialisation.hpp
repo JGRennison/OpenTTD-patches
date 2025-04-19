@@ -435,7 +435,7 @@ public:
 			data = static_cast<V>(this->Recv_uint16());
 		} else {
 			uint64_t val = this->Recv_varuint();
-			if ((val & GetBitMaskSC<uint64_t>(0, sizeof(V) * 8)) != val) this->RaiseRecvError();
+			if (unlikely((val & GetBitMaskSC<uint64_t>(0, sizeof(V) * 8)) != val)) this->RaiseRecvError();
 			if constexpr (std::is_signed<V>::value) {
 				/* Zig-zag decode */
 				using U = typename std::make_unsigned<V>::type;
