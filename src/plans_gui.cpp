@@ -479,7 +479,7 @@ public:
 
 					if (list[i].is_plan) {
 						if (Company::IsValidID(p->owner)) DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
-						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
+						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, COLOUR_YELLOW, COLOUR_GREY, p->visible, true);
 
 						format_buffer buf;
 						if (!p->visible_by_all) AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN_PRIVATE);
@@ -491,7 +491,7 @@ public:
 						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, buf, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
 					} else {
 						PlanLine &pl = p->lines[list[i].line_id];
-						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl.visible, true);
+						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, COLOUR_YELLOW, COLOUR_GREY, pl.visible, true);
 						std::string str = GetString(STR_PLANS_LIST_ITEM_LINE, list[i].line_id + 1, pl.tiles.size() - 1);
 						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_WHITE);
 					}
