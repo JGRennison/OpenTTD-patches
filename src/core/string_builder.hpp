@@ -10,8 +10,8 @@
 #ifndef STRING_BUILDER_HPP
 #define STRING_BUILDER_HPP
 
-#include "../string_func.h"
 #include "format.hpp"
+#include <charconv>
 
 /**
  * Equivalent to the std::back_insert_iterator in function, with some
@@ -27,6 +27,8 @@ public:
 	using iterator_category = std::output_iterator_tag;
 	using pointer = void;
 	using reference = void;
+
+	using size_type = std::string_view::size_type;
 
 	/**
 	 * Create the builder of an external fmt::basic_memory_buffer/fmt::memory_buffer.
@@ -80,20 +82,68 @@ public:
 		return *this;
 	}
 
+	void PutBuffer(std::span<const char> str) { this->string->append(str.data(), str.data() + str.size()); }
+
+	/**
+	 * Append string.
+	 */
+	void Put(std::string_view str) { this->string->append(str.data(), str.data() + str.size()); }
+
+	/**
+	 * Append binary uint8.
+	 */
+	void PutUint8(uint8_t value) { this->string->push_back((char)value); }
+
+	/**
+	 * Append binary int8.
+	 */
+	void PutSint8(int8_t value) { this->string->push_back((char)value); }
+
+	void PutUint16LE(uint16_t value);
+	void PutSint16LE(int16_t value);
+	void PutUint32LE(uint32_t value);
+	void PutSint32LE(int32_t value);
+	void PutUint64LE(uint64_t value);
+	void PutSint64LE(int64_t value);
+
+	inline void PutChar(char c) { this->string->push_back((char)c); }
+
+private:
+	void PutUtf8Impl(char32_t c);
+
+public:
+	/**
+	 * Append UTF.8 char.
+	 */
+	inline void PutUtf8(char32_t c)
+	{
+		if (c < 0x80) {
+			this->PutChar((char)c);
+		} else {
+			this->PutUtf8Impl(c);
+		}
+	}
+
+	/**
+	 * Append integer 'value' in given number 'base'.
+	 */
+	template <class T>
+	void PutIntegerBase(T value, int base)
+	{
+		std::array<char, 32> buf;
+		auto result = std::to_chars(buf.data(), buf.data() + buf.size(), value, base);
+		if (result.ec != std::errc{}) return;
+		size_type len = result.ptr - buf.data();
+		this->PutBuffer({buf.data(), len});
+	}
+
 	/**
 	 * Encode the given Utf8 character into the output buffer.
 	 * @param c The character to encode.
 	 */
-	void Utf8Encode(char32_t c)
+	inline void Utf8Encode(char32_t c)
 	{
-		if (c < 0x80) {
-			this->string->push_back((char)c);
-		} else {
-			const size_t pos = this->string->size();
-			const int8_t count = Utf8CharLen(c);
-			this->string->try_resize(pos + count);
-			::Utf8Encode(this->string->data() + pos, c);
-		}
+		this->PutUtf8(c);
 	}
 
 	template <typename... T>

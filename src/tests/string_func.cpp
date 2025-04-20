@@ -463,6 +463,9 @@ TEST_CASE("FixSCCEncoded")
 	/* Test conversion with one numeric parameter. */
 	CHECK(FixSCCEncodedWrapper("\uE00022:1", false) == Compose(SCC_ENCODED, "22", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "1"));
 
+	/* Test conversion with signed numeric parameter. */
+	CHECK(FixSCCEncodedWrapper("\uE00022:-1", false) == Compose(SCC_ENCODED, "22", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "-1"));
+
 	/* Test conversion with two numeric parameters. */
 	CHECK(FixSCCEncodedWrapper("\uE0003:12:2", false) == Compose(SCC_ENCODED, "3", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "12", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "2"));
 
@@ -477,4 +480,26 @@ TEST_CASE("FixSCCEncoded")
 
 	/* Test conversion with one sub-string and two string parameters. */
 	CHECK(FixSCCEncodedWrapper("\uE000777:\uE0008888:\"Foo\":\"BarBaz\"", false) == Compose(SCC_ENCODED, "777", SCC_RECORD_SEPARATOR, SCC_ENCODED, "8888", SCC_RECORD_SEPARATOR, SCC_ENCODED_STRING, "Foo", SCC_RECORD_SEPARATOR, SCC_ENCODED_STRING, "BarBaz"));
+}
+
+namespace upstream_sl {
+	extern void FixSCCEncodedNegative(std::string &str);
+}
+
+/* Helper to call FixSCCEncodedNegative and return the result in a new string. */
+static std::string FixSCCEncodedNegativeWrapper(const std::string &str)
+{
+	std::string result = str;
+	upstream_sl::FixSCCEncodedNegative(result);
+	return result;
+}
+
+TEST_CASE("FixSCCEncodedNegative")
+{
+	auto positive = Compose(SCC_ENCODED, "777", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "ffffffffffffffff");
+	auto negative = Compose(SCC_ENCODED, "777", SCC_RECORD_SEPARATOR, SCC_ENCODED_NUMERIC, "-1");
+
+	CHECK(FixSCCEncodedNegativeWrapper("") == "");
+	CHECK(FixSCCEncodedNegativeWrapper(positive) == positive);
+	CHECK(FixSCCEncodedNegativeWrapper(negative) == positive);
 }

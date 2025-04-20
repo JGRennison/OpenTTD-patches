@@ -316,7 +316,8 @@ void ScriptText::ParamCheck::Encode(std::back_insert_iterator<std::string> &outp
 		void operator()(const SQInteger &value)
 		{
 			Utf8Encode(this->output, SCC_ENCODED_NUMERIC);
-			fmt::format_to(this->output, "{:X}", value);
+			/* Sign-extend the value, then store as unsigned */
+			fmt::format_to(this->output, "{:X}", static_cast<uint64_t>(static_cast<int64_t>(value)));
 		}
 
 		void operator()(const ScriptTextRef &value)

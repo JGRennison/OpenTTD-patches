@@ -35,8 +35,13 @@ add_files(
     serialisation.cpp
     serialisation.hpp
     smallstack_type.hpp
+    string_builder.cpp
     string_builder.hpp
+    string_consumer.cpp
+    string_consumer.hpp
     strong_typedef_type.hpp
     tinystring_type.hpp
+    utf8.cpp
+    utf8.hpp
     y_combinator.hpp
 )

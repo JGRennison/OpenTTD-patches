@@ -28,6 +28,7 @@
 #include <iterator>
 
 #include "core/bitmath_func.hpp"
+#include "core/utf8.hpp"
 #include "string_type.h"
 
 char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode = false) NOACCESS(3);
@@ -172,13 +173,6 @@ inline int8_t Utf8EncodedCharLen(char c)
 
 	/* Invalid UTF8 start encoding */
 	return 0;
-}
-
-
-/* Check if the given character is part of a UTF8 sequence */
-inline bool IsUtf8Part(char c)
-{
-	return GB(c, 6, 2) == 2;
 }
 
 /**

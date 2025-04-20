@@ -111,6 +111,7 @@ namespace upstream_sl {
 	void SlSaveChunkChunkByID(uint32_t id);
 	void SlResetLoadState();
 	void FixSCCEncoded(std::string &str, bool fix_code);
+	void FixSCCEncodedNegative(std::string &str);
 }
 
 /** What are we currently doing? */
@@ -1289,7 +1290,12 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT)) upstream_sl::FixSCCEncoded(str, IsSavegameVersionBefore(SLV_169));
+				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT)) {
+					upstream_sl::FixSCCEncoded(str, IsSavegameVersionBefore(SLV_169));
+				}
+				if (IsSavegameVersionBefore(SLV_FIX_SCC_ENCODED_NEGATIVE) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT, 2)) {
+					upstream_sl::FixSCCEncodedNegative(str);
+				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;

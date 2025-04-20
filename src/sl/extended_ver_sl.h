@@ -168,7 +168,7 @@ enum SlXvFeatureIndex {
 	XSLFI_GROUP_NUMBERS,                          ///< See: SLV_GROUP_NUMBERS (PR #12297)
 	XSLFI_WATER_TILE_TYPE,                        ///< See: SLV_WATER_TILE_TYPE (PR #13030)
 	XSLFI_INDUSTRY_CARGO_REORGANISE,              ///< See: SLV_INDUSTRY_CARGO_REORGANISE (PR #10853)
-	XSLFI_ENCODED_STRING_FORMAT,                  ///< See: SLV_ENCODED_STRING_FORMAT (PR #13499)
+	XSLFI_ENCODED_STRING_FORMAT,                  ///< See: SLV_ENCODED_STRING_FORMAT (PR #13499) (v1), SLV_FIX_SCC_ENCODED_NEGATIVE (PR #14049) (v2)
 	XSLFI_PROTECT_PLACED_HOUSES,                  ///< See: SLV_PROTECT_PLACED_HOUSES (PR #13270)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
