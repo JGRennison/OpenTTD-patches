@@ -715,16 +715,27 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32_t offset)
 }
 
 /**
+ * Adjust a scheduled dispatch slot by a time adjustment.
+ * @param offset The time slot to adjust.
+ * @param adjust The time adjustment to add to the time slot.
+ * @return the adjusted time slot.
+ */
+uint32_t DispatchSchedule::AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust)
+{
+	int32_t t = (int32_t)offset + adjust;
+	if (t < 0) t += this->GetScheduledDispatchDuration();
+	if (t >= (int32_t)this->GetScheduledDispatchDuration()) t -= (int32_t)this->GetScheduledDispatchDuration();
+	return (uint32_t)t;
+}
+
+/**
  * Adjust all scheduled dispatch slots by time adjustment.
  * @param adjust The time adjustment to add to each time slot.
  */
 void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 {
 	for (DispatchSlot &slot : this->scheduled_dispatch) {
-		int32_t t = (int32_t)slot.offset + adjust;
-		if (t < 0) t += GetScheduledDispatchDuration();
-		if (t >= (int32_t)GetScheduledDispatchDuration()) t -= (int32_t)GetScheduledDispatchDuration();
-		slot.offset = (uint32_t)t;
+		slot.offset = this->AdjustScheduledDispatchOffset(slot.offset, adjust);
 	}
 	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
 }
