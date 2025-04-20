@@ -12,6 +12,7 @@
 #include "../3rdparty/catch2/catch.hpp"
 
 #include "../core/ring_buffer.hpp"
+#include "../core/format.hpp"
 
 struct NonTrivialTestType {
 	uint32_t value;
@@ -49,17 +50,20 @@ std::ostream &operator<<(std::ostream &os, const typename ring_buffer<T>::iterat
 template <typename T>
 void DumpRing(const ring_buffer<T> &ring)
 {
-	char buffer[1024];
-	char *b = buffer;
-	const char *end = buffer + 1024;
-	b += snprintf(b, end - b, "Ring: Size: %u, Cap: %u, {", (uint)ring.size(), (uint)ring.capacity());
+	format_buffer buffer;
+	buffer.format("Ring: Size: {}, Cap: {}, {{", ring.size(), ring.capacity());
+	bool done_first = false;
 	for (const auto &it : ring) {
-		b += snprintf(b, end - b, " %u,", TestValueOf(it));
+		if (done_first) {
+			buffer.push_back(',');
+		} else {
+			done_first = true;
+		}
+		buffer.format(" {}", TestValueOf(it));
 	}
-	b--;
-	b += snprintf(b, end - b, " }");
+	buffer.append(" }");
 
-	WARN(buffer);
+	WARN((std::string_view)buffer);
 }
 
 template <typename T>
