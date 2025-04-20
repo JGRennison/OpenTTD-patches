@@ -1362,6 +1362,8 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :Unimplemented r
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}Not enough string IDs available for all NewGRFs.
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}Some names and text fields may be displayed incorrectly. Try using fewer NewGRFs.
 
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}.{}Ctrl+Click to only upgrade the selected NewGRF.
+
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}Noise limit in town: {ORANGE}{COMMA}
 
 STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}{CARGO_LIST} last interval: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}

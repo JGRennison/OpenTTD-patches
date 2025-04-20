@@ -632,10 +632,10 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	StringList grf_presets;     ///< List of known NewGRF presets.
 
-	GRFConfigList actives;         ///< Temporary active grf list to which changes are made.
+	GRFConfigList actives;      ///< Temporary active grf list to which changes are made.
 	GRFConfig *active_sel;      ///< Selected active grf item.
 
-	GRFConfigList *orig_list;      ///< List active grfs in the game. Used as initial value, may be updated by the window.
+	GRFConfigList *orig_list;   ///< List active grfs in the game. Used as initial value, may be updated by the window.
 	bool editable;              ///< Is the window editable?
 	bool show_params;           ///< Are the grf-parameters shown in the info-panel?
 	bool execute;               ///< On pressing 'apply changes' are grf changes applied immediately, or only list is updated.
@@ -709,14 +709,27 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		ClearGRFConfigList(this->actives);
 	}
 
+	GrfIdMap MakeGrfidMap(bool selected_only) const
+	{
+		GrfIdMap grfid_map;
+		if (selected_only) {
+			if (this->active_sel != nullptr) {
+				grfid_map.emplace(this->active_sel->ident.grfid, this->active_sel);
+			}
+		} else {
+			FillGrfidMap(this->actives, &grfid_map);
+		}
+		return grfid_map;
+	}
+
 	/**
 	 * Test whether the currently active set of NewGRFs can be upgraded with the available NewGRFs.
 	 * @return Whether an upgrade is possible.
 	 */
-	bool CanUpgradeCurrent()
+	bool CanUpgradeCurrent(bool selected_only)
 	{
-		GrfIdMap grfid_map;
-		FillGrfidMap(this->actives, &grfid_map);
+		GrfIdMap grfid_map = this->MakeGrfidMap(selected_only);
+		if (grfid_map.empty()) return false;
 
 		for (const GRFConfig *a = _all_grfs; a != nullptr; a = a->next) {
 			GrfIdMap::const_iterator iter = grfid_map.find(a->ident.grfid);
@@ -726,10 +739,10 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 	}
 
 	/** Upgrade the currently active set of NewGRFs. */
-	void UpgradeCurrent()
+	void UpgradeCurrent(bool selected_only)
 	{
-		GrfIdMap grfid_map;
-		FillGrfidMap(this->actives, &grfid_map);
+		GrfIdMap grfid_map = this->MakeGrfidMap(selected_only);
+		if (grfid_map.empty()) return;
 
 		for (const GRFConfig *a = _all_grfs; a != nullptr; a = a->next) {
 			GrfIdMap::iterator iter = grfid_map.find(a->ident.grfid);
@@ -1101,7 +1114,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WID_NS_UPGRADE: { // Upgrade GRF.
 				if (!this->editable || this->actives == nullptr) break;
-				UpgradeCurrent();
+				this->UpgradeCurrent(_ctrl_pressed);
 				this->InvalidateData(GOID_NEWGRF_LIST_EDITED);
 				break;
 			}
@@ -1247,6 +1260,16 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		if (this->avail_pos >= 0) this->vscroll2->ScrollTowards(this->avail_pos);
 	}
 
+	void SetUpgradeButtonDisableState()
+	{
+		NWidgetCore *upgrade = this->GetWidget<NWidgetCore>(WID_NS_UPGRADE);
+		bool disable = !this->editable || this->actives == nullptr || !this->CanUpgradeCurrent(_ctrl_pressed);
+		if (upgrade->IsDisabled() != disable) {
+			upgrade->SetDisabled(disable);
+			upgrade->SetDirty(this);
+		}
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data. @see GameOptionsInvalidationData
@@ -1312,7 +1335,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			WID_NS_TOGGLE_PALETTE
 		);
 		this->SetWidgetDisabledState(WID_NS_ADD, !this->editable || this->avail_sel == nullptr || HasBit(this->avail_sel->flags, GCF_INVALID));
-		this->SetWidgetDisabledState(WID_NS_UPGRADE, !this->editable || this->actives == nullptr || !this->CanUpgradeCurrent());
+		this->SetUpgradeButtonDisableState();
 
 		bool disable_all = this->active_sel == nullptr || !this->editable;
 		this->SetWidgetsDisabledState(disable_all,
@@ -1359,6 +1382,25 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->GetWidget<NWidgetCore>(WID_NS_CONTENT_DOWNLOAD2)->SetStringTip(text, tool_tip);
 
 		this->SetWidgetDisabledState(WID_NS_PRESET_SAVE, has_missing);
+	}
+
+	void OnCTRLStateChangeAlways() override
+	{
+		this->SetUpgradeButtonDisableState();
+	}
+
+	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case WID_NS_UPGRADE: {
+				SetDParam(0, STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP);
+				GuiShowTooltips(this, STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA, close_cond, 1);
+				return true;
+			}
+
+			default:
+				return false;
+		}
 	}
 
 	EventState OnKeyPress(char32_t key, uint16_t keycode) override
