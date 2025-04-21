@@ -1028,11 +1028,12 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 struct QueryStringWindow : public Window
 {
 	QueryString editbox;    ///< Editbox.
+	std::string capture_str;///< Pre-composed caption string.
 	QueryStringFlags flags; ///< Flags controlling behaviour of the window.
 	Dimension warning_size; ///< How much space to use for the warning text
 
-	QueryStringWindow(StringID str, StringID caption, uint max_bytes, uint max_chars, WindowDesc &desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
-			Window(desc), editbox(max_bytes, max_chars)
+	QueryStringWindow(StringID str, StringID caption, std::string capture_str, uint max_bytes, uint max_chars, WindowDesc &desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
+			Window(desc), editbox(max_bytes, max_chars), capture_str(std::move(capture_str))
 	{
 		this->editbox.text.Assign(str);
 
@@ -1045,7 +1046,11 @@ struct QueryStringWindow : public Window
 		this->editbox.text.afilter = afilter;
 		this->flags = flags;
 
-		this->InitNested(WN_QUERY_STRING);
+		this->CreateNestedTree();
+		if (!this->capture_str.empty()) {
+			this->GetWidget<NWidgetCore>(WID_QS_CAPTION)->SetString(STR_JUST_RAW_STRING);
+		}
+		this->FinishInitNested(WN_QUERY_STRING);
 		this->UpdateWarningStringSize();
 
 		this->parent = parent;
@@ -1093,7 +1098,13 @@ struct QueryStringWindow : public Window
 
 	void SetStringParameters(WidgetID widget) const override
 	{
-		if (widget == WID_QS_CAPTION) SetDParam(0, this->editbox.caption);
+		if (widget == WID_QS_CAPTION) {
+			if (!this->capture_str.empty()) {
+				SetDParamStr(0, this->capture_str);
+			} else {
+				SetDParam(0, this->editbox.caption);
+			}
+		}
 	}
 
 	void OnOk()
@@ -1170,7 +1181,13 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(str, caption, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
+	new QueryStringWindow(str, caption, {}, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
+}
+
+void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
+{
+	CloseWindowByClass(WC_QUERY_STRING);
+	new QueryStringWindow(str, STR_EMPTY, std::move(caption), ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
 }
 
 /**

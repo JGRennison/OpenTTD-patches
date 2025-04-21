@@ -29,6 +29,7 @@ DECLARE_ENUM_AS_BIT_SET(QueryStringFlags)
 typedef void QueryCallbackProc(Window*, bool);
 
 void ShowQueryString(StringID str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
+void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc *callback, bool focus = false);
 void ShowQuery(std::string caption, std::string message, Window *parent, QueryCallbackProc *callback, bool focus = false);
 
