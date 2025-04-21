@@ -2209,12 +2209,14 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (d
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Delay (ticks)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}Adjust Slots
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Adjust all departure slots in this schedule.
+STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}Ctrl+Click to only adjust the selected slot.
 STR_SCHDISPATCH_REMOVE                                          :{BLACK}Remove Slots
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}Enable removing departure slots from this schedule.
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}Remove departure slot
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Adjustment to add (minutes)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Adjustment to add (days)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Adjustment to add (ticks)
+STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}: {STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset when a vehicle was last dispatched from the schedule.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Clear Departure Slots
@@ -2308,6 +2310,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Are you 
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Tried to add too many departure slots at once
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}Departure slot adjustment is too large
+STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME      :{WHITE}Departure slot already exists at adjusted time
 
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}Only one of scheduled dispatch, automatic separation and depot unbunching can be enabled at a time

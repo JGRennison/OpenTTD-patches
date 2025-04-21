@@ -198,6 +198,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	bool remove_slot_mode = false;
 	uint32_t selected_slot = UINT32_MAX;
+	uint32_t adjust_slot_offset = UINT32_MAX;
 
 	enum ManagementDropdown {
 		SCH_MD_RESET_LAST_DISPATCHED,
@@ -475,6 +476,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					return true;
 				}
 				break;
+			}
+
+			case WID_SCHDISPATCH_ADJUST: {
+				SetDParam(0, STR_SCHDISPATCH_ADJUST_TOOLTIP);
+				GuiShowTooltips(this, STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED, close_cond, 1);
+				return true;
 			}
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
@@ -1183,8 +1190,25 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ADJUST: {
 				if (!this->IsScheduleSelected()) break;
 				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL_SIGNED : CS_NUMERAL_DECIMAL_SIGNED;
-				SetDParam(0, 0);
-				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
+				StringID caption = STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset();
+
+				if (_ctrl_pressed) {
+					const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
+					if (selected_slot != nullptr) {
+						const DispatchSchedule &ds = this->GetSelectedSchedule();
+						SetDParam(0, ds.GetScheduledDispatchStartTick() + selected_slot->offset);
+						SetDParam(1, caption);
+						std::string caption_str = GetString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED);
+
+						this->adjust_slot_offset = selected_slot->offset;
+						SetDParam(0, 0);
+						ShowQueryString(STR_JUST_INT, std::move(caption_str), 31, this, charset_filter, QSF_NONE);
+					}
+				} else {
+					this->adjust_slot_offset = UINT32_MAX;
+					SetDParam(0, 0);
+					ShowQueryString(STR_JUST_INT, caption, 31, this, charset_filter, QSF_NONE);
+				}
 				break;
 			}
 
@@ -1396,7 +1420,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				Ticks val = ParseTimetableDuration(str->c_str());
 
 				if (val != 0) {
-					Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
+					if (this->adjust_slot_offset != UINT32_MAX) {
+						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, this->adjust_slot_offset, val);
+					} else {
+						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
+					}
 				}
 				break;
 			}

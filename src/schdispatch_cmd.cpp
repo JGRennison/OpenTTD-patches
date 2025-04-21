@@ -567,6 +567,52 @@ CommandCost CmdSchDispatchAdjust(DoCommandFlag flags, VehicleID veh, uint32_t sc
 }
 
 /**
+ * Adjust scheduled dispatch time offset of a single departure slot
+ *
+ * @param flags Operation to perform.
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param offset Slot offset.
+ * @param adjustment Signed adjustment.
+ * @param text name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSchDispatchAdjustSlot(DoCommandFlag flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, int32_t adjustment)
+{
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	if (abs(adjustment) >= (int)ds.GetScheduledDispatchDuration()) return CommandCost(STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE);
+
+	uint32_t new_offset = ds.AdjustScheduledDispatchOffset(offset, adjustment);
+	for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
+		if (slot.offset == new_offset) return CommandCost(STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME);
+	}
+
+	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+		if (slot.offset == offset) {
+			if (flags & DC_EXEC) {
+				slot.offset = new_offset;
+				ds.ResortDispatchOffsets();
+				ds.UpdateScheduledDispatch(nullptr);
+				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+			}
+			return CommandCost();
+		}
+	}
+
+	return CMD_ERROR;
+}
+
+/**
  * Swap two schedules in dispatch schedule list
  *
  * @param flags Operation to perform.
@@ -728,6 +774,11 @@ uint32_t DispatchSchedule::AdjustScheduledDispatchOffset(uint32_t offset, int32_
 	return (uint32_t)t;
 }
 
+void DispatchSchedule::ResortDispatchOffsets()
+{
+	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
+}
+
 /**
  * Adjust all scheduled dispatch slots by time adjustment.
  * @param adjust The time adjustment to add to each time slot.
@@ -737,7 +788,7 @@ void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 	for (DispatchSlot &slot : this->scheduled_dispatch) {
 		slot.offset = this->AdjustScheduledDispatchOffset(slot.offset, adjust);
 	}
-	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
+	this->ResortDispatchOffsets();
 }
 
 bool DispatchSchedule::UpdateScheduledDispatchToDate(StateTicks now)

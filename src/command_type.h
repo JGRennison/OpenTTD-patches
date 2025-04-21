@@ -613,6 +613,7 @@ enum Commands : uint8_t {
 	CMD_SCH_DISPATCH_DUPLICATE_SCHEDULE,        ///< scheduled dispatch duplicate schedule
 	CMD_SCH_DISPATCH_APPEND_VEH_SCHEDULE,       ///< scheduled dispatch append schedules from another vehicle
 	CMD_SCH_DISPATCH_ADJUST,                    ///< scheduled dispatch adjust time offsets in schedule
+	CMD_SCH_DISPATCH_ADJUST_SLOT,               ///< scheduled dispatch adjust time offset of single slot in schedule
 	CMD_SCH_DISPATCH_SWAP_SCHEDULES,            ///< scheduled dispatch swap schedules in order
 	CMD_SCH_DISPATCH_SET_SLOT_FLAGS,            ///< scheduled dispatch set flags of dispatch slot
 	CMD_SCH_DISPATCH_RENAME_TAG,                ///< scheduled dispatch rename departure tag

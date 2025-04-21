@@ -60,6 +60,7 @@ DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_RENAME_SCHEDULE,     CmdSchDispatchRenameSched
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_DUPLICATE_SCHEDULE,  CmdSchDispatchDuplicateSchedule,  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_APPEND_VEH_SCHEDULE, CmdSchDispatchAppendVehSchedules, {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleID>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_ADJUST,              CmdSchDispatchAdjust,             {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, int32_t>)
+DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_ADJUST_SLOT,         CmdSchDispatchAdjustSlot,         {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, int32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SWAP_SCHEDULES,      CmdSchDispatchSwapSchedules,      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SET_SLOT_FLAGS,      CmdSchDispatchSetSlotFlags,       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, uint16_t, uint16_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_RENAME_TAG,          CmdSchDispatchRenameTag,          {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint16_t, std::string>)
