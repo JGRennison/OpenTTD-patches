@@ -305,6 +305,7 @@ DEF_CB_RES(AddVirtualEngine)
 DEF_CB_RES(MoveNewVirtualEngine)
 DEF_CB_RES_TUPLE(AddNewSchDispatchSchedule, CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE)
 DEF_CB_RES_TUPLE(SwapSchDispatchSchedules, CMD_SCH_DISPATCH_SWAP_SCHEDULES)
+DEF_CB_RES_TUPLE(AdjustSchDispatchSlot, CMD_SCH_DISPATCH_ADJUST_SLOT)
 DEF_CB_RES(CreateTraceRestrictSlot)
 DEF_CB_RES(CreateTraceRestrictCounter)
 

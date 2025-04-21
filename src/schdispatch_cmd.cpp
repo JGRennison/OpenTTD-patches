@@ -605,7 +605,9 @@ CommandCost CmdSchDispatchAdjustSlot(DoCommandFlag flags, VehicleID veh, uint32_
 				ds.UpdateScheduledDispatch(nullptr);
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 			}
-			return CommandCost();
+			CommandCost cost;
+			cost.SetResultData(new_offset);
+			return cost;
 		}
 	}
 

@@ -1421,7 +1421,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (val != 0) {
 					if (this->adjust_slot_offset != UINT32_MAX) {
-						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, this->adjust_slot_offset, val);
+						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_offset, val);
 					} else {
 						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
 					}
@@ -1498,6 +1498,16 @@ void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32
 		w->schedule_index = schedule_index_1;
 		w->AutoSelectSchedule();
 		w->ReInit();
+	}
+}
+
+void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t schedule_index, uint32_t offset, int32_t adjustment)
+{
+	if (!result.Succeeded() || !result.HasResultData()) return;
+
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	if (w != nullptr && w->schedule_index == schedule_index && w->selected_slot == offset) {
+		w->selected_slot = result.GetResultData();
 	}
 }
 

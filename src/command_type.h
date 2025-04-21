@@ -707,6 +707,7 @@ enum class CommandCallback : uint8_t {
 	/* schdispatch_gui.cpp */
 	AddNewSchDispatchSchedule,
 	SwapSchDispatchSchedules,
+	AdjustSchDispatchSlot,
 
 	/* tracerestrict_gui.cpp */
 	CreateTraceRestrictSlot,
