@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.65.2 (2025-04-23)
+* Scheduled dispatch:
+  * Fix network disconnection when adjusting departure slots by negative offsets in multiplayer.
+  * Allow adjusting individual departure slots.
+* NewGRF window:
+  * Ctrl-click upgrade button to only upgrade selected.
+  * Add tooltip text for ctrl-click of up/down buttons.
+* Bump trunk base from commit 56b1e9df1f5c7909c4ff956a62b9d60932761c4a to commit 1dd4adc50c6aaaef8ff07481b1daa9b06c729c6c.
+
 ### v0.65.1 (2025-04-18)
 * Fix crash when loading certain 32bpp-only GRFs in dedicated server mode.
 * Fix displaying whether a train is exempt from speed adaptation in the train details window.
