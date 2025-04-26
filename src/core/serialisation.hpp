@@ -439,7 +439,7 @@ public:
 			if constexpr (std::is_signed<V>::value) {
 				/* Zig-zag decode */
 				using U = typename std::make_unsigned<V>::type;
-				data = static_cast<V>((static_cast<U>(val) >> 1) ^ (-(static_cast<U>(val) & 1)));
+				data = static_cast<V>((static_cast<U>(val) >> 1) ^ static_cast<U>(-(static_cast<V>(val) & 1)));
 			} else {
 				data = static_cast<V>(val);
 			}
