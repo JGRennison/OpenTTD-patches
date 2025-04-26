@@ -1310,6 +1310,10 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :Remapeado non i
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}Non hai suficientes cadeas de IDs para todos os NewGRFs.
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}Algúns nomes e campos de texto pódense amosar incorrectamente. Intenta usar menos NewGRFs
 
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}.{}Ctrl+Click para actualizar o NewGRF seleccionado.
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}.{}Ctrl+Click para movelo arriba de todo.
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}.{}Ctrl+Click para movelo abaixo de todo.
+
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}Límite de ruído na localidade: {ORANGE}{COMMA}
 
 STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}{CARGO_LIST} último intervalo: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
@@ -2144,11 +2148,13 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Atraso (
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Atraso (ticks)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}Axustar slots de saída
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Axustar todos os slots de saída deste programa
+STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}Ctrl+Click para axustar só o slot seleccionado.
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}Habilitar a eliminación de franxas de saída deste horario.
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}Eliminar slot de saída
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Axuste a engadir (minutos)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Axuste a engadir (días)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Axuste a engadir (ticks)
+STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}: {STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Restablecer última saída
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Restablecer cando un vehículo fora despachado por última vez dende o programa.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Limpar slots de saídas
@@ -2240,6 +2246,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Seguro q
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Intentouse engadir demasiados slots de saída ó mesmo tempo
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}O axuste do slot de saída é demasiado grande
+STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME      :{WHITE}O slot de saída xa existe na hora axustada
 
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}Só se pode activar unha das seguintes opcións: despacho programado, separación automática e desagrupación de depósitos ao mesmo tempo.
@@ -2270,6 +2277,11 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}Non se poden intercambiar os nomes das estacións...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... as estacións non están na mesma vila
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... a estación está conectada a unha industria
+
+STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA                          :{BLACK}{STRING}{}{}Ctrl+Click para intercambiar nomes con outro punto de ruta.
+STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN                            :{WHITE}... os puntos de ruta non estan na mesma vila
+STR_ERROR_WAYPOINTS_NOT_COMPATIBLE                              :{WHITE}... os puntos de ruta non son compatibles
+STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES                         :{WHITE}Non se poden intercambiar os nomes dos puntos de ruta...
 
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+Click para convertir pezas de raís en lugar do cadro enteiro.
 
