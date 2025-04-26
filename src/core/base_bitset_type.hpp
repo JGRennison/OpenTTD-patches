@@ -215,7 +215,9 @@ public:
 		return (this->base() & Tmask) == this->base();
 	}
 
-	/* Use SetBitIterator(bit_set) instead */
+	inline constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
+
+	/* Use IterateSetBits instead */
 	//auto begin() const { return SetBitIterator<Tvalue_type>(this->data).begin(); }
 	//auto end() const { return SetBitIterator<Tvalue_type>(this->data).end(); }
 

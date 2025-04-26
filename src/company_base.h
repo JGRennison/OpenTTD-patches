@@ -143,7 +143,7 @@ struct CompanyProperties {
 		: name_2(0), name_1(0), president_name_1(0), president_name_2(0),
 		  face(0), money(0), money_fraction(0), current_loan(0), max_loan(COMPANY_MAX_LOAN_DEFAULT), colour(COLOUR_BEGIN),
 		  block_preview(0), location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0), display_inaugurated_period(0), age_years(0),
-		  months_of_bankruptcy(0), bankrupt_last_asked(INVALID_COMPANY), bankrupt_flags(CBRF_NONE), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
+		  months_of_bankruptcy(0), bankrupt_last_asked(INVALID_COMPANY), bankrupt_flags(CBRF_NONE), bankrupt_asked(), bankrupt_timeout(0), bankrupt_value(0),
 		  terraform_limit(0), clear_limit(0), tree_limit(0), purchase_land_limit(0), build_object_limit(0), is_ai(false), engine_renew_list(nullptr) {}
 
 	int32_t InauguratedDisplayYear() const

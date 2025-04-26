@@ -116,7 +116,7 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 	suffix.text.clear();
 	suffix.display = CSD_CARGO_AMOUNT;
 
-	if (HasBit(indspec->callback_mask, CBM_IND_CARGO_SUFFIX)) {
+	if (indspec->callback_mask.Test(IndustryCallbackMask::CargoSuffix)) {
 		TileIndex t = (cst != CST_FUND) ? ind->location.tile : INVALID_TILE;
 		uint16_t callback = GetIndustryCallback(CBID_INDUSTRY_CARGO_SUFFIX, 0, (cst << 8) | cargo, const_cast<Industry *>(ind), ind_type, t);
 		if (callback == CALLBACK_FAILED) return;
@@ -621,7 +621,7 @@ public:
 				ir.top = DrawBadgeNameList(ir, indsp->badges, GSF_INDUSTRIES);
 
 				/* Get the additional purchase info text, if it has not already been queried. */
-				if (HasBit(indsp->callback_mask, CBM_IND_FUND_MORE_TEXT)) {
+				if (indsp->callback_mask.Test(IndustryCallbackMask::FundMoreText)) {
 					uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_FUND_MORE_TEXT, 0, 0, nullptr, this->selected_type, INVALID_TILE);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 						if (callback_res > 0x400) {
@@ -959,7 +959,7 @@ public:
 		}
 
 		const int label_indent = WidgetDimensions::scaled.hsep_normal + this->cargo_icon_size.width;
-		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+		bool stockpiling = ind->callback_mask.Any({IndustryCallbackMask::ProductionCargoArrival, IndustryCallbackMask::Production256Ticks});
 
 		for (const auto &a : i->Accepted()) {
 			if (a.cargo == INVALID_CARGO) continue;
@@ -1053,7 +1053,7 @@ public:
 		}
 
 		/* Get the extra message for the GUI */
-		if (HasBit(ind->callback_mask, CBM_IND_WINDOW_MORE_TEXT)) {
+		if (ind->callback_mask.Test(IndustryCallbackMask::WindowMoreText)) {
 			uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_WINDOW_MORE_TEXT, 0, 0, i, i->type, i->location.tile);
 			if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 				if (callback_res > 0x400) {
@@ -3388,8 +3388,8 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 	if (_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled) {
 		// Have to query the stockpiling right now, in case callback 37 returns fail.
-		bool stockpiling = HasBit(industry_spec->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ||
-				HasBit(industry_spec->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+		bool stockpiling = industry_spec->callback_mask.Test(IndustryCallbackMask::ProductionCargoArrival) ||
+				industry_spec->callback_mask.Test(IndustryCallbackMask::Production256Ticks);
 
 		if (_settings_client.gui.industry_tooltip_show_required) {
 			// Print out required cargo.

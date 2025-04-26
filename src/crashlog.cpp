@@ -304,9 +304,9 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
-	if (_grfconfig_static != nullptr) {
+	if (!_grfconfig_static.empty()) {
 		buffer.append("Static NewGRFs present:\n");
-		for (GRFConfig *c = _grfconfig_static; c != nullptr; c = c->next) {
+		for (const auto &c : _grfconfig_static) {
 			buffer.format(" GRF ID: {:08X}, checksum {}, {}", std::byteswap(c->ident.grfid), c->ident.md5sum, c->GetDisplayPath());
 			const char *name = GetDefaultLangGRFStringFromGRFText(c->name);
 			if (name != nullptr) buffer.format(", '{}'", name);

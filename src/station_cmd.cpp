@@ -803,10 +803,10 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 			(*st)->string_id = GenerateStationName(*st, area.tile, name_class);
 
 			if (Company::IsValidID(_current_company)) {
-				if (_local_company == _current_company && !HasBit((*st)->town->have_ratings, _current_company)) {
+				if (_local_company == _current_company && !(*st)->town->have_ratings.Test(_current_company)) {
 					ZoningTownAuthorityRatingChange();
 				}
-				SetBit((*st)->town->have_ratings, _current_company);
+				(*st)->town->have_ratings.Set(_current_company);
 				if (_cheats.town_rating.value) {
 					(*st)->town->ratings[_current_company] = RATING_MAXIMUM;
 				}
@@ -1033,7 +1033,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 	uint invalid_dirs = 5 << axis;
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
-	bool slope_cb = statspec != nullptr && HasBit(statspec->callback_mask, CBM_STATION_SLOPE_CHECK);
+	bool slope_cb = statspec != nullptr && statspec->callback_mask.Test(StationCallbackMask::SlopeCheck);
 
 	for (TileIndex tile_cur : tile_area) {
 		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, false);
@@ -1598,7 +1598,7 @@ CommandCost CmdBuildRailStation(DoCommandFlag flags, TileIndex tile_org, RailTyp
 		if (HasBit(statspec->disallowed_lengths, std::min(plat_len - 1, 7))) return CommandCost(STR_ERROR_STATION_DISALLOWED_LENGTH);
 
 		/* Check if the station is buildable */
-		if (HasBit(statspec->callback_mask, CBM_STATION_AVAIL)) {
+		if (statspec->callback_mask.Test(StationCallbackMask::Avail)) {
 			uint16_t cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, nullptr, INVALID_TILE, rt);
 			if (cb_res != CALLBACK_FAILED && !Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res)) return CMD_ERROR;
 		}
@@ -2186,7 +2186,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlag flags, TileIndex tile, uint8_t width,
 		/* Perform NewGRF checks */
 
 		/* Check if the road stop is buildable */
-		if (HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) {
+		if (roadstopspec->callback_mask.Test(RoadStopCallbackMask::Avail)) {
 			uint16_t cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, rt, station_type, 0);
 			if (cb_res != CALLBACK_FAILED && !Convert8bitBooleanCallback(roadstopspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res)) return CMD_ERROR;
 		}
@@ -3356,7 +3356,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 			if (statspec != nullptr) {
 				tile_layout = GetStationGfx(ti->tile);
 
-				if (HasBit(statspec->callback_mask, CBM_STATION_DRAW_TILE_LAYOUT)) {
+				if (statspec->callback_mask.Test(StationCallbackMask::DrawTileLayout)) {
 					uint16_t callback = GetStationCallback(CBID_STATION_DRAW_TILE_LAYOUT, 0, 0, statspec, st, ti->tile, INVALID_RAILTYPE);
 					if (callback != CALLBACK_FAILED) tile_layout = (callback & ~1) + GetRailStationAxis(ti->tile);
 				}
@@ -4224,7 +4224,7 @@ int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge)
 
 int GetStatueRating(const Station *st)
 {
-	return Company::IsValidID(st->owner) && HasBit(st->town->statues, st->owner) ? 26 : 0;
+	return Company::IsValidID(st->owner) && st->town->statues.Test(st->owner) ? 26 : 0;
 }
 
 int GetVehicleAgeRating(const GoodsEntry *ge)
@@ -4248,13 +4248,12 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	if (_cheats.station_rating.value) {
 		rating = 255;
 		skip = true;
-	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
-
+	} else if (cs->callback_mask.Test(CargoCallbackMask::StationRatingCalc)) {
 		int new_grf_rating;
 
 		if (GetNewGrfRating(st, cs, ge, &new_grf_rating)) {
 			skip = true;
-			rating += new_grf_rating;
+			rating = new_grf_rating;
 		}
 	}
 

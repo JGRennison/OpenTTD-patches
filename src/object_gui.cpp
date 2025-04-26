@@ -238,7 +238,7 @@ public:
 				tr.top = DrawBadgeNameList(tr, spec->badges, GSF_OBJECTS);
 
 				/* Get the extra message for the GUI */
-				if (HasBit(spec->callback_mask, CBM_OBJ_FUND_MORE_TEXT)) {
+				if (spec->callback_mask.Test(ObjectCallbackMask::FundMoreText)) {
 					uint16_t callback_res = GetObjectCallback(CBID_OBJECT_FUND_MORE_TEXT, 0, 0, spec, nullptr, INVALID_TILE, _object_gui.sel_view);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 						if (callback_res > 0x400) {
@@ -316,7 +316,7 @@ public:
 	{
 		switch (widget) {
 			case WID_BO_OBJECT_SPRITE:
-				if (_object_gui.sel_type != MAX_UVALUE(uint16_t)) {
+				if (_object_gui.sel_type != std::numeric_limits<uint16_t>::max()) {
 					_object_gui.sel_view = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 					this->InvalidateData(PickerWindow::PFI_POSITION);
 					if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);

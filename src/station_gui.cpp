@@ -2847,8 +2847,7 @@ public:
 			skip = true;
 			this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_USING_CHEAT);
 			line_nr++;
-		} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
-
+		} else if (cs->callback_mask.Test(CargoCallbackMask::StationRatingCalc)) {
 			int new_grf_rating;
 			this->newgrf_rating_used = GetNewGrfRating(st, cs, ge, &new_grf_rating);
 

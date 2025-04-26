@@ -215,7 +215,7 @@ CommandCost CmdCreateStoryPage(DoCommandFlag flags, CompanyID company, const std
 	if (company != INVALID_COMPANY && !Company::IsValidID(company)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		if (_story_page_pool.items == 0) {
+		if (StoryPage::GetNumItems() == 0) {
 			/* Initialize the next sort value variable. */
 			_story_page_next_sort_value = 0;
 		}
@@ -266,7 +266,7 @@ CommandCost CmdCreateStoryPageElement(DoCommandFlag flags, TileIndex tile, Story
 
 
 	if (flags & DC_EXEC) {
-		if (_story_page_element_pool.items == 0) {
+		if (StoryPageElement::GetNumItems() == 0) {
 			/* Initialize the next sort value variable. */
 			_story_page_element_next_sort_value = 0;
 		}

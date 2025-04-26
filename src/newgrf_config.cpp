@@ -224,9 +224,9 @@ void GRFParameterInfo::Finalize()
  */
 void UpdateNewGRFConfigPalette(int32_t new_value)
 {
-	for (GRFConfig *c = _grfconfig_newgame; c != nullptr; c = c->next) c->SetSuitablePalette();
-	for (GRFConfig *c = _grfconfig_static;  c != nullptr; c = c->next) c->SetSuitablePalette();
-	for (GRFConfig *c = _all_grfs;          c != nullptr; c = c->next) c->SetSuitablePalette();
+	for (const auto &c : _grfconfig_newgame) c->SetSuitablePalette();
+	for (const auto &c : _grfconfig_static ) c->SetSuitablePalette();
+	for (const auto &c : _all_grfs         ) c->SetSuitablePalette();
 }
 
 /**
@@ -414,12 +414,7 @@ bool FillGRFDetails(GRFConfig &config, bool is_static, Subdirectory subdir)
  */
 void ClearGRFConfigList(GRFConfigList &config)
 {
-	GRFConfig *c, *next;
-	for (c = config; c != nullptr; c = next) {
-		next = c->next;
-		delete c;
-	}
-	config = nullptr;
+	config.clear();
 }
 
 /**
@@ -430,16 +425,9 @@ void ClearGRFConfigList(GRFConfigList &config)
  */
 static void AppendGRFConfigList(GRFConfigList &dst, const GRFConfigList &src, bool init_only)
 {
-	GRFConfig **tail = &dst;
-	while (*tail != nullptr) tail = &(*tail)->next;
-
-	for (GRFConfig *s = src; s != nullptr; s = s->next) {
-		GRFConfig *c = new GRFConfig(*s);
-
+	for (const auto &s : src) {
+		auto &c = dst.emplace_back(std::make_unique<GRFConfig>(*s));
 		AssignBit(c->flags, GCF_INIT_ONLY, init_only);
-
-		*tail = c;
-		tail = &c->next;
 	}
 }
 
@@ -471,20 +459,13 @@ void CopyGRFConfigList(GRFConfigList &dst, const GRFConfigList &src, bool init_o
  */
 static void RemoveDuplicatesFromGRFConfigList(GRFConfigList &list)
 {
-	GRFConfig *prev;
-	GRFConfig *cur;
+	if (list.empty()) return;
 
-	if (list == nullptr) return;
-
-	for (prev = list, cur = list->next; cur != nullptr; prev = cur, cur = cur->next) {
-		if (cur->ident.grfid != list->ident.grfid) continue;
-
-		prev->next = cur->next;
-		delete cur;
-		cur = prev; // Just go back one so it continues as normal later on
+	auto last = std::end(list);
+	for (auto it = std::begin(list); it != last; ++it) {
+		auto remove = std::remove_if(std::next(it), last, [&grfid = (*it)->ident.grfid](const auto &c) { return grfid == c->ident.grfid; });
+		last = list.erase(remove, last);
 	}
-
-	RemoveDuplicatesFromGRFConfigList(list->next);
 }
 
 /**
@@ -502,12 +483,9 @@ void AppendStaticGRFConfigs(GRFConfigList &dst)
  * @param dst the head of the list to add to
  * @param el the new tail to be
  */
-void AppendToGRFConfigList(GRFConfigList &dst, GRFConfig *el)
+void AppendToGRFConfigList(GRFConfigList &dst, std::unique_ptr<GRFConfig> &&el)
 {
-	GRFConfig **tail = &dst;
-	while (*tail != nullptr) tail = &(*tail)->next;
-	*tail = el;
-
+	dst.push_back(std::move(el));
 	RemoveDuplicatesFromGRFConfigList(dst);
 }
 
@@ -520,10 +498,10 @@ void ResetGRFConfig(bool defaults)
 }
 
 /** Get the count of non-static GRFs in a GRF config list */
-uint GetGRFConfigListNonStaticCount(const GRFConfigList config)
+uint GetGRFConfigListNonStaticCount(const GRFConfigList &config)
 {
 	uint grf_count = 0;
-	for (const GRFConfig *c = config; c != nullptr; c = c->next) {
+	for (const auto &c : config) {
 		if (!HasBit(c->flags, GCF_STATIC)) grf_count++;
 	}
 	return grf_count;
@@ -540,22 +518,22 @@ uint GetGRFConfigListNonStaticCount(const GRFConfigList config)
  * <li> GLC_NOT_FOUND: For one or more GRF's no match was found at all
  * </ul>
  */
-GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
+GRFListCompatibility IsGoodGRFConfigList(GRFConfigList &grfconfig)
 {
 	GRFListCompatibility res = GLC_ALL_GOOD;
 
-	for (GRFConfig *c = grfconfig; c != nullptr; c = c->next) {
+	for (auto &c : grfconfig) {
 		const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, &c->ident.md5sum);
 		if (f == nullptr || HasBit(f->flags, GCF_INVALID)) {
 			/* If we have not found the exactly matching GRF try to find one with the
 			 * same grfid, as it most likely is compatible */
 			f = FindGRFConfig(c->ident.grfid, FGCM_COMPATIBLE, nullptr, c->version);
-			auto grf_info = format_lambda([](format_target &buf, GRFConfig *c) {
-				const char *name = GetDefaultLangGRFStringFromGRFText(c->name);
+			auto grf_info = format_lambda([](format_target &buf, const GRFConfig &c) {
+				const char *name = GetDefaultLangGRFStringFromGRFText(c.name);
 				if (name != nullptr) buf.format(", name: '{}'", name);
 			});
 			if (f != nullptr) {
-				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(*c));
 				if (!HasBit(c->flags, GCF_COMPATIBLE)) {
 					/* Preserve original_md5sum after it has been assigned */
 					SetBit(c->flags, GCF_COMPATIBLE);
@@ -568,7 +546,7 @@ GRFListCompatibility IsGoodGRFConfigList(const GRFConfigList grfconfig)
 			}
 
 			/* No compatible grf was found, mark it as disabled */
-			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
+			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", std::byteswap(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(*c));
 
 			c->status = GCS_NOT_FOUND;
 			res = GLC_NOT_FOUND;
@@ -606,7 +584,7 @@ int _skip_all_newgrf_scanning = 0;
 class GRFFileScanner : FileScanner {
 	std::chrono::steady_clock::time_point next_update; ///< The next moment we do update the screen.
 	uint num_scanned; ///< The number of GRFs we have scanned.
-	std::vector<GRFConfig *> grfs;
+	std::vector<std::unique_ptr<GRFConfig>> grfs;
 
 public:
 	GRFFileScanner() : num_scanned(0)
@@ -630,33 +608,9 @@ public:
 		int ret = fs.Scan(".grf", NEWGRF_DIR);
 		CalcGRFMD5ThreadingEnd();
 
-		for (GRFConfig *c : fs.grfs) {
-			bool added = true;
-			if (_all_grfs == nullptr) {
-				_all_grfs = c;
-			} else {
-				/* Insert file into list at a position determined by its
-				 * name, so the list is sorted as we go along */
-				GRFConfig **pd, *d;
-				bool stop = false;
-				for (pd = &_all_grfs; (d = *pd) != nullptr; pd = &d->next) {
-					if (c->ident.grfid == d->ident.grfid && c->ident.md5sum == d->ident.md5sum) added = false;
-					/* Because there can be multiple grfs with the same name, make sure we checked all grfs with the same name,
-					 *  before inserting the entry. So insert a new grf at the end of all grfs with the same name, instead of
-					 *  just after the first with the same name. Avoids doubles in the list. */
-					if (StrCompareIgnoreCase(c->GetName(), d->GetName()) <= 0) {
-						stop = true;
-					} else if (stop) {
-						break;
-					}
-				}
-				if (added) {
-					c->next = d;
-					*pd = c;
-				} else {
-					delete c;
-					ret--;
-				}
+		for (std::unique_ptr<GRFConfig> &c : fs.grfs) {
+			if (std::ranges::none_of(_all_grfs, [&c](const auto &gc) { return c->ident.grfid == gc->ident.grfid && c->ident.md5sum == gc->ident.md5sum; })) {
+				_all_grfs.push_back(std::move(c));
 			}
 		}
 
@@ -672,26 +626,20 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
 	/* Abort if the user stopped the game during a scan. */
 	if (_exit_game) return false;
 
-	GRFConfig *c = new GRFConfig(filename.c_str() + basepath_length);
-
+	auto c = std::make_unique<GRFConfig>(filename.substr(basepath_length));
+	GRFConfig *grfconfig = c.get();
 	bool added = FillGRFDetails(*c, false);
 	if (added) {
-		this->grfs.push_back(c);
+		this->grfs.push_back(std::move(c));
 	}
 
 	this->num_scanned++;
 
 	const char *name = nullptr;
-	if (c->name != nullptr) name = GetGRFStringFromGRFText(c->name);
-	if (name == nullptr) name = c->filename.c_str();
+	if (grfconfig->name != nullptr) name = GetGRFStringFromGRFText(grfconfig->name);
+	if (name == nullptr) name = grfconfig->filename.c_str();
 	UpdateNewGRFScanStatus(this->num_scanned, name);
 	VideoDriver::GetInstance()->GameLoopPause();
-
-	if (!added) {
-		/* File couldn't be opened, or is either not a NewGRF or is a
-		 * 'system' NewGRF or it's already known, so forget about it. */
-		delete c;
-	}
 
 	return added;
 }
@@ -702,7 +650,7 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
  * @param c2 the second GRFConfig *
  * @return true if the name of first NewGRF is before the name of the second.
  */
-static bool GRFSorter(GRFConfig * const &c1, GRFConfig * const &c2)
+static bool GRFSorter(std::unique_ptr<GRFConfig> const &c1, std::unique_ptr<GRFConfig> const &c2)
 {
 	return StrNaturalCompare(c1->GetName(), c2->GetName()) < 0;
 }
@@ -720,29 +668,8 @@ void DoScanNewGRFFiles(NewGRFScanCallback *callback)
 	uint num = GRFFileScanner::DoScan();
 
 	Debug(grf, 1, "Scan complete, found {} files", num);
-	if (num != 0 && _all_grfs != nullptr) {
-		/* Sort the linked list using quicksort.
-		 * For that we first have to make an array, then sort and
-		 * then remake the linked list. */
-		std::vector<GRFConfig *> to_sort;
-
-		uint i = 0;
-		for (GRFConfig *p = _all_grfs; p != nullptr; p = p->next, i++) {
-			to_sort.push_back(p);
-		}
-		/* Number of files is not necessarily right */
-		num = i;
-
-		std::sort(to_sort.begin(), to_sort.end(), GRFSorter);
-
-		for (i = 1; i < num; i++) {
-			to_sort[i - 1]->next = to_sort[i];
-		}
-		to_sort[num - 1]->next = nullptr;
-		_all_grfs = to_sort[0];
-
-		NetworkAfterNewGRFScan();
-	}
+	std::ranges::sort(_all_grfs, GRFSorter);
+	NetworkAfterNewGRFScan();
 
 	/* Yes... these are the NewGRF windows */
 	InvalidateWindowClassesData(WC_SAVELOAD, 0, true);
@@ -780,17 +707,17 @@ const GRFConfig *FindGRFConfig(uint32_t grfid, FindGRFConfigMode mode, const MD5
 {
 	assert((mode == FGCM_EXACT) != (md5sum == nullptr));
 	const GRFConfig *best = nullptr;
-	for (const GRFConfig *c = _all_grfs; c != nullptr; c = c->next) {
+	for (const auto &c : _all_grfs) {
 		/* if md5sum is set, we look for an exact match and continue if not found */
 		if (!c->ident.HasGrfIdentifier(grfid, md5sum)) continue;
 		/* return it, if the exact same newgrf is found, or if we do not care about finding "the best" */
-		if (md5sum != nullptr || mode == FGCM_ANY) return c;
+		if (md5sum != nullptr || mode == FGCM_ANY) return c.get();
 		/* Skip incompatible stuff, unless explicitly allowed */
 		if (mode != FGCM_NEWEST && HasBit(c->flags, GCF_INVALID)) continue;
 		/* check version compatibility */
 		if (mode == FGCM_COMPATIBLE && !c->IsCompatible(desired_version)) continue;
 		/* remember the newest one as "the best" */
-		if (best == nullptr || c->version > best->version) best = c;
+		if (best == nullptr || c->version > best->version) best = c.get();
 	}
 
 	return best;
@@ -804,11 +731,8 @@ const GRFConfig *FindGRFConfig(uint32_t grfid, FindGRFConfigMode mode, const MD5
  */
 GRFConfig *GetGRFConfig(uint32_t grfid, uint32_t mask)
 {
-	GRFConfig *c;
-
-	for (c = _grfconfig; c != nullptr; c = c->next) {
-		if ((c->ident.grfid & mask) == (grfid & mask)) return c;
-	}
+	auto it = std::ranges::find_if(_grfconfig, [grfid, mask](const auto &c) { return (c->ident.grfid & mask) == (grfid & mask); });
+	if (it != std::end(_grfconfig)) return it->get();
 
 	return nullptr;
 }

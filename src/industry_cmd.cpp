@@ -224,7 +224,7 @@ void Industry::PostDestructor(size_t)
 {
 	if (Industry::GetNumItems() == 0) return nullptr;
 	int num = RandomRange((uint16_t)Industry::GetNumItems());
-	size_t index = MAX_UVALUE(size_t);
+	size_t index = std::numeric_limits<size_t>::max();
 
 	while (num >= 0) {
 		num--;
@@ -403,7 +403,7 @@ static Foundation GetFoundation_Industry(TileIndex tile, Slope tileh)
 	 */
 	if (gfx >= NEW_INDUSTRYTILEOFFSET) {
 		const IndustryTileSpec *indts = GetIndustryTileSpec(gfx);
-		if (indts->grf_prop.GetSpriteGroup() != nullptr && HasBit(indts->callback_mask, CBM_INDT_DRAW_FOUNDATIONS)) {
+		if (indts->grf_prop.GetSpriteGroup() != nullptr && indts->callback_mask.Test(IndustryTileCallbackMask::DrawFoundations)) {
 			uint32_t callback_res = GetIndustryTileCallback(CBID_INDTILE_DRAW_FOUNDATIONS, 0, 0, gfx, Industry::GetByTile(tile), tile);
 			if (callback_res != CALLBACK_FAILED && !ConvertBooleanCallback(indts->grf_prop.grffile, CBID_INDTILE_DRAW_FOUNDATIONS, callback_res)) return FOUNDATION_NONE;
 		}
@@ -435,7 +435,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 		}
 	}
 
-	if (HasBit(itspec->callback_mask, CBM_INDT_ACCEPT_CARGO)) {
+	if (itspec->callback_mask.Test(IndustryTileCallbackMask::AcceptCargo)) {
 		/* Try callback for accepts list, if success override all existing accepts */
 		uint16_t res = GetIndustryTileCallback(CBID_INDTILE_ACCEPT_CARGO, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
@@ -444,7 +444,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 		}
 	}
 
-	if (HasBit(itspec->callback_mask, CBM_INDT_CARGO_ACCEPTANCE)) {
+	if (itspec->callback_mask.Test(IndustryTileCallbackMask::CargoAcceptance)) {
 		/* Try callback for acceptance list, if success override all existing acceptance */
 		uint16_t res = GetIndustryTileCallback(CBID_INDTILE_CARGO_ACCEPTANCE, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
@@ -1226,10 +1226,10 @@ static void ProduceIndustryGoods(Industry *i)
 
 	i->counter--;
 
-	const bool scale_ticks = _industry_cargo_scaler.HasScaling() && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+	const bool scale_ticks = _industry_cargo_scaler.HasScaling() && indsp->callback_mask.Test(IndustryCallbackMask::Production256Ticks);
 	if (scale_ticks) {
 		if ((i->counter % _scaled_production_ticks) == 0) {
-			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			if (indsp->callback_mask.Test(IndustryCallbackMask::Production256Ticks)) IndustryProductionCallback(i, 1);
 			ProduceIndustryGoodsFromRate(i, false);
 		}
 	}
@@ -1237,14 +1237,14 @@ static void ProduceIndustryGoods(Industry *i)
 	/* produce some cargo */
 	if ((i->counter % INDUSTRY_PRODUCE_TICKS) == 0) {
 		if (!scale_ticks) {
-			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			if (indsp->callback_mask.Test(IndustryCallbackMask::Production256Ticks)) IndustryProductionCallback(i, 1);
 			ProduceIndustryGoodsFromRate(i, true);
 		}
 
 		IndustryBehaviour indbehav = indsp->behaviour;
 		if ((indbehav & INDUSTRYBEH_PLANT_FIELDS) != 0) {
 			uint16_t cb_res = CALLBACK_FAILED;
-			if (HasBit(indsp->callback_mask, CBM_IND_SPECIAL_EFFECT)) {
+			if (indsp->callback_mask.Test(IndustryCallbackMask::SpecialEffect)) {
 				cb_res = GetIndustryCallback(CBID_INDUSTRY_SPECIAL_EFFECT, Random(), 0, i, i->type, i->location.tile);
 			}
 
@@ -1259,7 +1259,7 @@ static void ProduceIndustryGoods(Industry *i)
 		}
 		if ((indbehav & INDUSTRYBEH_CUT_TREES) != 0) {
 			uint16_t cb_res = CALLBACK_FAILED;
-			if (HasBit(indsp->callback_mask, CBM_IND_SPECIAL_EFFECT)) {
+			if (indsp->callback_mask.Test(IndustryCallbackMask::SpecialEffect)) {
 				cb_res = GetIndustryCallback(CBID_INDUSTRY_SPECIAL_EFFECT, Random(), 1, i, i->type, i->location.tile);
 			}
 
@@ -1591,7 +1591,7 @@ static CommandCost CheckIfIndustryTileSlopes(TileIndex tile, const IndustryTileL
 		if (gfx != GFX_WATERTILE_SPECIALCHECK) {
 			const IndustryTileSpec *its = GetIndustryTileSpec(gfx);
 
-			if (HasBit(its->callback_mask, CBM_INDT_SHAPE_CHECK)) {
+			if (its->callback_mask.Test(IndustryTileCallbackMask::ShapeCheck)) {
 				custom_shape = true;
 				CommandCost ret = PerformIndustryTileSlopeCheck(tile, cur_tile, its, type, gfx, layout_index, initial_random_bits, founder, creation_type);
 				if (ret.Failed()) return ret;
@@ -1877,7 +1877,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	/* Call callbacks after the regular fields got initialised. */
 
-	if (HasBit(indspec->callback_mask, CBM_IND_PROD_CHANGE_BUILD)) {
+	if (indspec->callback_mask.Test(IndustryCallbackMask::ProdChangeBuild)) {
 		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROD_CHANGE_BUILD, 0, Random(), i, type, INVALID_TILE);
 		if (res != CALLBACK_FAILED) {
 			if (res < PRODLEVEL_MINIMUM || res > PRODLEVEL_MAXIMUM) {
@@ -1890,7 +1890,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	}
 
 	if (_generating_world) {
-		if (HasBit(indspec->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
+		if (indspec->callback_mask.Test(IndustryCallbackMask::Production256Ticks)) {
 			IndustryProductionCallback(i, 1);
 			for (auto &p : i->Produced()) {
 				p.history[LAST_MONTH].production = p.waiting * 8;
@@ -1903,7 +1903,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		}
 	}
 
-	if (HasBit(indspec->callback_mask, CBM_IND_DECIDE_COLOUR)) {
+	if (indspec->callback_mask.Test(IndustryCallbackMask::DecideColour)) {
 		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_DECIDE_COLOUR, 0, 0, i, type, INVALID_TILE);
 		if (res != CALLBACK_FAILED) {
 			if (GB(res, 4, 11) != 0) ErrorUnknownCallbackResult(indspec->grf_prop.grfid, CBID_INDUSTRY_DECIDE_COLOUR, res);
@@ -1911,7 +1911,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		}
 	}
 
-	if (HasBit(indspec->callback_mask, CBM_IND_INPUT_CARGO_TYPES)) {
+	if (indspec->callback_mask.Test(IndustryCallbackMask::InputCargoTypes)) {
 		/* Clear all input cargo types */
 		i->accepted_cargo_count = 0;
 		i->accepted.reset();
@@ -1961,7 +1961,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		}
 	}
 
-	if (HasBit(indspec->callback_mask, CBM_IND_OUTPUT_CARGO_TYPES)) {
+	if (indspec->callback_mask.Test(IndustryCallbackMask::OutputCargoTypes)) {
 		/* Clear all output cargo types */
 		i->produced_cargo_count = 0;
 		i->produced.reset();
@@ -2097,7 +2097,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 	if (ret.Failed()) return ret;
 
 	/* 3. NewGRF-defined checks on industry level. */
-	if (HasBit(GetIndustrySpec(type)->callback_mask, CBM_IND_LOCATION)) {
+	if (GetIndustrySpec(type)->callback_mask.Test(IndustryCallbackMask::Location)) {
 		ret = CheckIfCallBackAllowsCreation(tile, type, layout_index, random_var8f, random_initial_bits, founder, creation_type);
 	} else {
 		ret = _check_new_industry_procs[indspec->check_proc](tile);
@@ -2926,7 +2926,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	uint8_t mul = 0;
 	int8_t increment = 0;
 
-	bool callback_enabled = HasBit(indspec->callback_mask, monthly ? CBM_IND_MONTHLYPROD_CHANGE : CBM_IND_PRODUCTION_CHANGE);
+	bool callback_enabled = indspec->callback_mask.Test(monthly ? IndustryCallbackMask::MonthlyProdChange : IndustryCallbackMask::ProductionChange);
 	if (callback_enabled) {
 		uint16_t res = GetIndustryCallback(monthly ? CBID_INDUSTRY_MONTHLYPROD_CHANGE : CBID_INDUSTRY_PRODUCTION_CHANGE, 0, Random(), i, i->type, i->location.tile);
 		if (res != CALLBACK_FAILED) { // failed callback means "do nothing"
@@ -3270,8 +3270,12 @@ Money IndustrySpec::GetRemovalCost() const
 bool IndustrySpec::UsesOriginalEconomy() const
 {
 	return _settings_game.economy.type == ET_ORIGINAL ||
-		HasBit(this->callback_mask, CBM_IND_PRODUCTION_256_TICKS) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || // production callbacks
-		HasBit(this->callback_mask, CBM_IND_MONTHLYPROD_CHANGE) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CHANGE) || HasBit(this->callback_mask, CBM_IND_PROD_CHANGE_BUILD); // production change callbacks
+		this->callback_mask.Any({
+			IndustryCallbackMask::Production256Ticks,
+			IndustryCallbackMask::ProductionCargoArrival, // production callbacks
+			IndustryCallbackMask::MonthlyProdChange,
+			IndustryCallbackMask::ProductionChange,
+			IndustryCallbackMask::ProdChangeBuild}); // production change callbacks
 }
 
 static CommandCost TerraformTile_Industry(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
@@ -3290,7 +3294,7 @@ static CommandCost TerraformTile_Industry(TileIndex tile, DoCommandFlag flags, i
 			const IndustryTileSpec *itspec = GetIndustryTileSpec(gfx);
 
 			/* Call callback 3C 'disable autosloping for industry tiles'. */
-			if (HasBit(itspec->callback_mask, CBM_INDT_AUTOSLOPE)) {
+			if (itspec->callback_mask.Test(IndustryTileCallbackMask::Autoslope)) {
 				/* If the callback fails, allow autoslope. */
 				uint16_t res = GetIndustryTileCallback(CBID_INDTILE_AUTOSLOPE, 0, 0, gfx, Industry::GetByTile(tile), tile);
 				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(itspec->grf_prop.grffile, CBID_INDTILE_AUTOSLOPE, res)) return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);

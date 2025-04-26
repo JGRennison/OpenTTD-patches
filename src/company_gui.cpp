@@ -2836,7 +2836,7 @@ struct BuyCompanyWindow : Window {
 	void Close(int data = 0) override
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
-		if (!this->hostile_takeover && c != nullptr && HasBit(c->bankrupt_asked, this->owner) && _current_company == this->owner) {
+		if (!this->hostile_takeover && c != nullptr && c->bankrupt_asked.Test(this->owner) && _current_company == this->owner) {
 			EnqueueDoCommandP<CMD_DECLINE_BUY_COMPANY>({}, CmdPayload<CMD_DECLINE_BUY_COMPANY>::Make((CompanyID)this->window_number), (StringID)0);
 		}
 		this->Window::Close();

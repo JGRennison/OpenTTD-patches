@@ -737,10 +737,10 @@ static void Check_PLYX()
 static void Load_PLYP()
 {
 	size_t size = SlGetFieldLength();
-	CompanyMask invalid_mask = 0;
+	CompanyMask invalid_mask = {};
 	if (SlXvIsFeaturePresent(XSLFI_COMPANY_PW, 2)) {
 		if (size <= 2) return;
-		invalid_mask = SlReadUint16();
+		invalid_mask.edit_base() = SlReadUint16();
 		size -= 2;
 	}
 	if (size <= 16 + 24 + 16 || (_networking && !_network_server)) {
@@ -784,7 +784,7 @@ static void Load_PLYP()
 				std::string password;
 				password.resize(SlReadUint32());
 				ReadBuffer::GetCurrent()->CopyBytes((uint8_t *)password.data(), password.size());
-				if (!HasBit(invalid_mask, cid)) {
+				if (!HasBit(invalid_mask.base(), cid)) {
 					NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
 				}
 			}
@@ -811,7 +811,7 @@ static void Save_PLYP()
 			SlSetLength(0);
 		} else {
 			SlSetLength(2 + _saved_PLYP_data.size());
-			SlWriteUint16(_saved_PLYP_invalid_mask);
+			SlWriteUint16(_saved_PLYP_invalid_mask.base());
 			MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_saved_PLYP_data.data(), _saved_PLYP_data.size());
 		}
 		return;

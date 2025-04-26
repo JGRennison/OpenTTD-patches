@@ -147,11 +147,20 @@ struct NIProperty {
 struct NICallback {
 	const char *name;    ///< The human readable name of the callback
 	NIValueReader reader;///< Class value reader
-	uint8_t cb_bit;      ///< The bit that needs to be set for this callback to be enabled
-	uint16_t cb_id;      ///< The number of the callback
+	std::variant<
+		std::monostate,
+		VehicleCallbackMask,
+		StationCallbackMask,
+		RoadStopCallbackMask,
+		HouseCallbackMask,
+		CanalCallbackMask,
+		CargoCallbackMask,
+		IndustryCallbackMask,
+		IndustryTileCallbackMask,
+		ObjectCallbackMask,
+		AirportTileCallbackMask> cb_bit; ///< The bit that needs to be set for this callback to be enabled
+	uint16_t cb_id;                      ///< The number of the callback
 };
-/** Mask to show no bit needs to be enabled for the callback. */
-static const int CBM_NO_BIT = UINT8_MAX;
 
 enum NIVariableFlags : uint16_t {
 	NIVF_NONE                  = 0,
@@ -884,10 +893,26 @@ struct NewGRFInspectWindow final : Window {
 		if (!nif->callbacks.empty()) {
 			this->DrawString(r, i++, "Callbacks:");
 			for (const NICallback &nic : nif->callbacks) {
-				if (nic.cb_bit != CBM_NO_BIT) {
+				if (!std::holds_alternative<std::monostate>(nic.cb_bit)) {
 					uint value = nic.reader.ReadValue(base_spec);
 
-					if (!HasBit(value, nic.cb_bit)) continue;
+					struct visitor {
+						uint value;
+
+						bool operator()(const std::monostate &) { return false; }
+						bool operator()(const VehicleCallbackMask &bit) { return static_cast<VehicleCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const StationCallbackMask &bit) { return static_cast<StationCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const RoadStopCallbackMask &bit) { return static_cast<RoadStopCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const HouseCallbackMask &bit) { return static_cast<HouseCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const CanalCallbackMask &bit) { return static_cast<CanalCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const CargoCallbackMask &bit) { return static_cast<CargoCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const IndustryCallbackMask &bit) { return static_cast<IndustryCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const IndustryTileCallbackMask &bit) { return static_cast<IndustryTileCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const ObjectCallbackMask &bit) { return static_cast<ObjectCallbackMasks>(this->value).Test(bit); }
+						bool operator()(const AirportTileCallbackMask &bit) { return static_cast<AirportTileCallbackMasks>(this->value).Test(bit); }
+					};
+
+					if (!std::visit(visitor{value}, nic.cb_bit)) continue;
 					this->DrawString(r, i++, "  {:03x}: {}", nic.cb_id, nic.name);
 				} else {
 					this->DrawString(r, i++, "  {:03x}: {} (unmasked)", nic.cb_id, nic.name);

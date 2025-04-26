@@ -161,7 +161,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 	/* If the object wants only one colour, then give it that colour. */
 	if ((spec->flags & OBJECT_FLAG_2CC_COLOUR) == 0) o->colour &= 0xF;
 
-	if (HasBit(spec->callback_mask, CBM_OBJ_COLOUR)) {
+	if (spec->callback_mask.Test(ObjectCallbackMask::Colour)) {
 		uint16_t res = GetObjectCallback(CBID_OBJECT_COLOUR, o->colour, 0, spec, o, tile);
 		if (res != CALLBACK_FAILED) {
 			if (res >= 0x100) ErrorUnknownCallbackResult(spec->grf_prop.grfid, CBID_OBJECT_COLOUR, res);
@@ -250,7 +250,7 @@ void UpdateObjectColours(const Company *c)
 
 		const ObjectSpec *spec = ObjectSpec::GetByTile(obj->location.tile);
 		/* Using the object colour callback, so not using company colour. */
-		if (HasBit(spec->callback_mask, CBM_OBJ_COLOUR)) continue;
+		if (spec->callback_mask.Test(ObjectCallbackMask::Colour)) continue;
 
 		const Livery *l = c->livery;
 		obj->colour = ((spec->flags & OBJECT_FLAG_2CC_COLOUR) ? (l->colour2 * 16) : 0) + l->colour1;
@@ -336,7 +336,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 
 		for (TileIndex t : ta) {
 			uint16_t callback = CALLBACK_FAILED;
-			if (HasBit(spec->callback_mask, CBM_OBJ_SLOPE_CHECK)) {
+			if (spec->callback_mask.Test(ObjectCallbackMask::SlopeCheck)) {
 				TileIndexDiffCUnsigned diff = TileIndexToTileIndexDiffCUnsigned(t, tile);
 				callback = GetObjectCallback(CBID_OBJECT_LAND_SLOPE_CHECK, GetTileSlope(t), diff.y << 4 | diff.x, spec, nullptr, t, view);
 			}
@@ -785,7 +785,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 		case OBJECT_STATUE:
 			if (flags & DC_EXEC) {
 				Town *town = o->town;
-				ClrBit(town->statues, GetTileOwner(tile));
+				town->statues.Reset(GetTileOwner(tile));
 				SetWindowDirty(WC_TOWN_AUTHORITY, town->index);
 			}
 			break;
@@ -1172,10 +1172,10 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 		}
 	} else if (type == OBJECT_STATUE) {
 		Town *t = Object::GetByTile(tile)->town;
-		ClrBit(t->statues, old_owner);
-		if (new_owner != INVALID_OWNER && !HasBit(t->statues, new_owner)) {
+		t->statues.Reset(old_owner);
+		if (new_owner != INVALID_OWNER && !t->statues.Test(new_owner)) {
 			/* Transfer ownership to the new company */
-			SetBit(t->statues, new_owner);
+			t->statues.Set(new_owner);
 			SetTileOwner(tile, new_owner);
 		} else {
 			do_clear = true;
@@ -1253,7 +1253,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		if (!IsSteepSlope(tileh_old) && !IsSteepSlope(tileh_new) && (GetObjectEffectiveZ(tile, spec, z_old, tileh_old) == GetObjectEffectiveZ(tile, spec, z_new, tileh_new))) {
 
 			/* Call callback 'disable autosloping for objects'. */
-			if (HasBit(spec->callback_mask, CBM_OBJ_AUTOSLOPE)) {
+			if (spec->callback_mask.Test(ObjectCallbackMask::Autoslope)) {
 				/* If the callback fails, allow autoslope. */
 				uint16_t res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
 				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) {
