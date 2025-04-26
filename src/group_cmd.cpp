@@ -641,6 +641,9 @@ static void AddVehicleToGroup(Vehicle *v, GroupID new_g)
 			break;
 	}
 
+	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
+	InvalidateWindowData(WC_VEHICLE_DETAILS, v->index);
+
 	GroupStatistics::CountVehicle(v, 1);
 }
 
@@ -693,11 +696,7 @@ CommandCost CmdAddVehicleGroup(DoCommandFlags flags, GroupID group_id, VehicleID
 		/* Update the Replace Vehicle Windows */
 		SetWindowDirty(WC_REPLACE_VEHICLE, v->type);
 		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
-		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
-		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 		InvalidateWindowData(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_GROUP_LIST, v->type, _current_company).ToWindowNumber());
-		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
-		InvalidateWindowData(WC_VEHICLE_DETAILS, v->index);
 	}
 
 	return ret;
