@@ -703,7 +703,7 @@ void GamelogGRFUpdate(const GRFConfigList &oldc, const GRFConfigList &newc)
 
 			if (ni >= oi) { // prefer the one that is moved further
 				/* GRF was moved down */
-				GamelogGRFMove(ol[o++]->ident.grfid, ni);
+				GamelogGRFMove(ol[o++]->ident.grfid, (int)ni);
 			} else {
 				GamelogGRFMove(nl[n++]->ident.grfid, -(int)oi);
 			}
