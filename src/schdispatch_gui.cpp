@@ -1506,7 +1506,7 @@ void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t 
 	if (!result.Succeeded() || !result.HasResultData()) return;
 
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
-	if (w != nullptr && w->schedule_index == schedule_index && w->selected_slot == offset) {
+	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index) && w->selected_slot == offset) {
 		w->selected_slot = result.GetResultData();
 	}
 }
