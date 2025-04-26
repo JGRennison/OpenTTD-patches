@@ -199,7 +199,7 @@ bool DrawNewIndustryTile(TileInfo *ti, Industry *i, IndustryGfx gfx, const Indus
 {
 	if (ti->tileh != SLOPE_FLAT) {
 		bool draw_old_one = true;
-		if (HasBit(inds->callback_mask, CBM_INDT_DRAW_FOUNDATIONS)) {
+		if (inds->callback_mask.Test(IndustryTileCallbackMask::DrawFoundations)) {
 			/* Called to determine the type (if any) of foundation to draw for industry tile */
 			uint32_t callback_res = GetIndustryTileCallback(CBID_INDTILE_DRAW_FOUNDATIONS, 0, 0, gfx, i, ti->tile);
 			if (callback_res != CALLBACK_FAILED) draw_old_one = ConvertBooleanCallback(inds->grf_prop.grffile, CBID_INDTILE_DRAW_FOUNDATIONS, callback_res);
@@ -266,11 +266,11 @@ uint16_t GetSimpleIndustryCallback(CallbackID callback, uint32_t param1, uint32_
 
 /** Helper class for animation control. */
 struct IndustryAnimationBase : public AnimationBase<IndustryAnimationBase, IndustryTileSpec, Industry, int, GetSimpleIndustryCallback, TileAnimationFrameAnimationHelper<Industry> > {
-	static const CallbackID cb_animation_speed      = CBID_INDTILE_ANIMATION_SPEED;
-	static const CallbackID cb_animation_next_frame = CBID_INDTILE_ANIM_NEXT_FRAME;
+	static constexpr CallbackID cb_animation_speed      = CBID_INDTILE_ANIMATION_SPEED;
+	static constexpr CallbackID cb_animation_next_frame = CBID_INDTILE_ANIM_NEXT_FRAME;
 
-	static const IndustryTileCallbackMask cbm_animation_speed      = CBM_INDT_ANIM_SPEED;
-	static const IndustryTileCallbackMask cbm_animation_next_frame = CBM_INDT_ANIM_NEXT_FRAME;
+	static constexpr IndustryTileCallbackMask cbm_animation_speed      = IndustryTileCallbackMask::AnimationSpeed;
+	static constexpr IndustryTileCallbackMask cbm_animation_next_frame = IndustryTileCallbackMask::AnimationNextFrame;
 };
 
 void AnimateNewIndustryTile(TileIndex tile)
@@ -470,7 +470,7 @@ void AnalyseIndustryTileSpriteGroups()
 				cfg.layout = &layout;
 				cfg.result_mask = &anim_mask;
 				cfg.layout_index = idx + 1;
-				cfg.check_anim_next_frame_cb = HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME);
+				cfg.check_anim_next_frame_cb = tilespec.callback_mask.Test(IndustryTileCallbackMask::AnimationNextFrame);
 
 				IndustryTileDataAnalyser analyser(cfg, current);
 				analyser.AnalyseGroup(tilespec.grf_prop.GetSpriteGroup());

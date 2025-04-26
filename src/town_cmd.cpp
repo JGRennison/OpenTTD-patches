@@ -205,7 +205,7 @@ void Town::InitializeLayout(TownLayout layout)
 {
 	if (Town::GetNumItems() == 0) return nullptr;
 	int num = RandomRange((uint16_t)Town::GetNumItems());
-	size_t index = MAX_UVALUE(size_t);
+	size_t index = std::numeric_limits<size_t>::max();
 
 	while (num >= 0) {
 		num--;
@@ -380,7 +380,7 @@ static Foundation GetFoundation_Town(TileIndex tile, Slope tileh)
 	 */
 	if (hid >= NEW_HOUSE_OFFSET) {
 		const HouseSpec *hs = HouseSpec::Get(hid);
-		if (hs->grf_prop.GetSpriteGroup() != nullptr && HasBit(hs->callback_mask, CBM_HOUSE_DRAW_FOUNDATIONS)) {
+		if (hs->grf_prop.GetSpriteGroup() != nullptr && hs->callback_mask.Test(HouseCallbackMask::DrawFoundations)) {
 			uint32_t callback_res = GetHouseCallback(CBID_HOUSE_DRAW_FOUNDATIONS, 0, 0, hid, Town::GetByTile(tile), tile);
 			if (callback_res != CALLBACK_FAILED && !ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_DRAW_FOUNDATIONS, callback_res)) return FOUNDATION_NONE;
 		}
@@ -694,7 +694,7 @@ static void TileLoop_Town(TileIndex tile)
 
 	StationFinder stations(TileArea(tile, 1, 1));
 
-	if (HasBit(hs->callback_mask, CBM_HOUSE_PRODUCE_CARGO)) {
+	if (hs->callback_mask.Test(HouseCallbackMask::ProduceCargo)) {
 		for (uint i = 0; i < 256; i++) {
 			uint16_t callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, r, house_id, t, tile);
 
@@ -817,7 +817,7 @@ static void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 {
 	const HouseSpec *hs = HouseSpec::Get(house_id);
 
-	if (HasBit(hs->callback_mask, CBM_HOUSE_PRODUCE_CARGO)) {
+	if (hs->callback_mask.Test(HouseCallbackMask::ProduceCargo)) {
 		Town *t = (tile == INVALID_TILE) ? nullptr : Town::GetByTile(tile);
 		for (uint i = 0; i < 256; i++) {
 			uint16_t callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, 0, house_id, t, tile);
@@ -881,7 +881,7 @@ void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs,
 	}
 
 	/* Check for custom accepted cargo types */
-	if (HasBit(hs->callback_mask, CBM_HOUSE_ACCEPT_CARGO)) {
+	if (hs->callback_mask.Test(HouseCallbackMask::AcceptCargo)) {
 		uint16_t callback = GetHouseCallback(CBID_HOUSE_ACCEPT_CARGO, 0, 0, house, t, tile, tile == INVALID_TILE);
 		if (callback != CALLBACK_FAILED) {
 			/* Replace accepted cargo types with translated values from callback */
@@ -892,7 +892,7 @@ void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs,
 	}
 
 	/* Check for custom cargo acceptance */
-	if (HasBit(hs->callback_mask, CBM_HOUSE_CARGO_ACCEPTANCE)) {
+	if (hs->callback_mask.Test(HouseCallbackMask::CargoAcceptance)) {
 		uint16_t callback = GetHouseCallback(CBID_HOUSE_CARGO_ACCEPTANCE, 0, 0, house, t, tile, tile == INVALID_TILE);
 		if (callback != CALLBACK_FAILED) {
 			AddAcceptedCargoSetMask(accepts[0], GB(callback, 0, 4), acceptance, always_accepted);
@@ -2255,10 +2255,10 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 
 	for (uint i = 0; i != MAX_COMPANIES; i++) t->ratings[i] = RATING_INITIAL;
 
-	t->have_ratings = 0;
+	t->have_ratings = {};
 	t->exclusivity = INVALID_COMPANY;
 	t->exclusive_counter = 0;
-	t->statues = 0;
+	t->statues = {};
 
 	{
 		TownNameParams tnp(_settings_game.game_creation.town_name);
@@ -3746,7 +3746,7 @@ static CommandCost TownActionBuildStatue(Town *t, DoCommandFlag flags)
 		Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_TOWN, statue_data.best_position);
 		cur_company.Restore();
 		BuildObject(OBJECT_STATUE, statue_data.best_position, _current_company, t);
-		SetBit(t->statues, _current_company); // Once found and built, "inform" the Town.
+		t->statues.Set(_current_company); // Once found and built, "inform" the Town.
 		MarkTileDirtyByTile(statue_data.best_position);
 	}
 	return CommandCost();
@@ -3923,7 +3923,7 @@ uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t)
 			if (cur == TACT_ROAD_REBUILD && !_settings_game.economy.fund_roads) continue;
 
 			/* Is the company not able to build a statue ? */
-			if (cur == TACT_BUILD_STATUE && HasBit(t->statues, cid)) continue;
+			if (cur == TACT_BUILD_STATUE && t->statues.Test(cid)) continue;
 
 			if (avail >= _town_action_costs[i] * _price[PR_TOWN_ACTION] >> 8) {
 				buttons |= cur;
@@ -4408,10 +4408,10 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	if (_town_rating_test) {
 		_town_test_ratings[t] = rating;
 	} else {
-		if (_local_company == _current_company && (!HasBit(t->have_ratings, _current_company) || ((prev_rating > 0) != (rating > 0)))) {
+		if (_local_company == _current_company && (!t->have_ratings.Test(_current_company) || ((prev_rating > 0) != (rating > 0)))) {
 			ZoningTownAuthorityRatingChange();
 		}
-		SetBit(t->have_ratings, _current_company);
+		t->have_ratings.Set(_current_company);
 		t->ratings[_current_company] = rating;
 		t->UpdateVirtCoord();
 		SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
@@ -4423,13 +4423,13 @@ void UpdateAllTownRatings()
 {
 	if (_cheats.town_rating.value) {
 		for (Town *t : Town::Iterate()) {
-			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
+			if (Company::IsValidID(_local_company) && t->have_ratings.Test(_local_company) && t->ratings[_local_company] <= 0) {
 				ZoningTownAuthorityRatingChange();
 			}
-			for (uint8_t c : SetBitIterator(t->have_ratings)) {
+			for (CompanyID c : t->have_ratings.IterateSetBits()) {
 				t->ratings[c] = RATING_MAXIMUM;
 			}
-			if (t->have_ratings != 0) {
+			if (t->have_ratings.Any()) {
 				t->UpdateVirtCoord();
 				SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 			}
@@ -4530,7 +4530,7 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlag flags, int z
 			/* Call the autosloping callback per tile, not for the whole building at once. */
 			house = GetHouseType(tile);
 			hs = HouseSpec::Get(house);
-			if (HasBit(hs->callback_mask, CBM_HOUSE_AUTOSLOPE)) {
+			if (hs->callback_mask.Test(HouseCallbackMask::Autoslope)) {
 				/* If the callback fails, allow autoslope. */
 				uint16_t res = GetHouseCallback(CBID_HOUSE_AUTOSLOPE, 0, 0, house, Town::GetByTile(tile), tile);
 				if (res != CALLBACK_FAILED && ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_AUTOSLOPE, res)) allow_terraform = false;

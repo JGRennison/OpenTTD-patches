@@ -412,9 +412,6 @@ struct SetBitIterator {
 
 	SetBitIterator(Tbitset bitset) : bitset(bitset) {}
 
-	template <typename T, typename = std::enable_if_t<std::is_base_of<struct BaseBitSetBase, T>::value>>
-	SetBitIterator(const T &bitset) : bitset(bitset.base()) {}
-
 	Iterator begin() { return Iterator(this->bitset); }
 	Iterator end() { return Iterator(static_cast<Tbitset>(0)); }
 	bool empty() { return this->begin() == this->end(); }

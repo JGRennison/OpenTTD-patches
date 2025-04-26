@@ -390,16 +390,16 @@ static void ResetSignalHandlers()
  * @param c the GRF to get the 'previous' version of.
  * @return the GRF identifier or \a c if none could be found.
  */
-static const GRFIdentifier &GetOverriddenIdentifier(const GRFConfig *c)
+static const GRFIdentifier &GetOverriddenIdentifier(const GRFConfig &c)
 {
 	const LoggedAction &la = _gamelog_actions.back();
-	if (la.at != GLAT_LOAD) return c->ident;
+	if (la.at != GLAT_LOAD) return c.ident;
 
 	for (const LoggedChange &lc : la.changes) {
-		if (lc.ct == GLCT_GRFCOMPAT && lc.grfcompat.grfid == c->ident.grfid) return lc.grfcompat;
+		if (lc.ct == GLCT_GRFCOMPAT && lc.grfcompat.grfid == c.ident.grfid) return lc.grfcompat;
 	}
 
-	return c->ident;
+	return c.ident;
 }
 
 /** Was the saveload crash because of missing NewGRFs? */
@@ -432,9 +432,7 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 	format_buffer buffer;
 	buffer.append("Loading your savegame caused OpenTTD to crash.\n");
 
-	for (const GRFConfig *c = _grfconfig; !_saveload_crash_with_missing_newgrfs && c != nullptr; c = c->next) {
-		_saveload_crash_with_missing_newgrfs = HasBit(c->flags, GCF_COMPATIBLE) || c->status == GCS_NOT_FOUND;
-	}
+	_saveload_crash_with_missing_newgrfs = std::ranges::any_of(_grfconfig, [](const auto &c) { return HasBit(c->flags, GCF_COMPATIBLE) || c->status == GCS_NOT_FOUND; });
 
 	if (_saveload_crash_with_missing_newgrfs) {
 		buffer.append(
@@ -450,9 +448,9 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 			"Please load the savegame with the appropriate NewGRFs installed.\n"
 			"The missing/compatible NewGRFs are:\n");
 
-		for (const GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
+		for (const auto &c : _grfconfig) {
 			if (HasBit(c->flags, GCF_COMPATIBLE)) {
-				const GRFIdentifier &replaced = GetOverriddenIdentifier(c);
+				const GRFIdentifier &replaced = GetOverriddenIdentifier(*c);
 				buffer.format("NewGRF {:08X} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
 						std::byteswap(c->ident.grfid), c->original_md5sum, c->filename, replaced.md5sum);
 			}
@@ -841,7 +839,7 @@ bool AfterLoadGame()
 
 	/* Check if all NewGRFs are present, we are very strict in MP mode */
 	GRFListCompatibility gcf_res = IsGoodGRFConfigList(_grfconfig);
-	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
+	for (const auto &c : _grfconfig) {
 		if (c->status == GCS_NOT_FOUND) {
 			GamelogGRFRemove(c->ident.grfid);
 		} else if (HasBit(c->flags, GCF_COMPATIBLE)) {
@@ -2405,7 +2403,7 @@ bool AfterLoadGame()
 		/* Remove all trams from savegames without tram support.
 		 * There would be trams without tram track under causing crashes sooner or later. */
 		for (RoadVehicle *v : RoadVehicle::IterateFrontOnly()) {
-			if (HasBit(EngInfo(v->engine_type)->misc_flags, EF_ROAD_TRAM)) {
+			if (EngInfo(v->engine_type)->misc_flags.Test(EngineMiscFlag::RoadIsTram)) {
 				ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_TRAMS, INVALID_STRING_ID, WL_CRITICAL);
 				delete v;
 			}
@@ -2538,15 +2536,15 @@ bool AfterLoadGame()
 
 		/* More companies ... */
 		for (Company *c : Company::Iterate()) {
-			if (c->bankrupt_asked == 0xFF) c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+			if (c->bankrupt_asked.base() == 0xFF) c->bankrupt_asked.Set();
 		}
 
 		for (Engine *e : Engine::Iterate()) {
-			if (e->company_avail == 0xFF) e->company_avail = MAX_UVALUE(CompanyMask);
+			if (e->company_avail.base() == 0xFF) e->company_avail.Set();
 		}
 
 		for (Town *t : Town::Iterate()) {
-			if (t->have_ratings == 0xFF) t->have_ratings = MAX_UVALUE(CompanyMask);
+			if (t->have_ratings.base() == 0xFF) t->have_ratings.Set();
 			for (uint i = 8; i != MAX_COMPANIES; i++) t->ratings[i] = RATING_INITIAL;
 		}
 	}

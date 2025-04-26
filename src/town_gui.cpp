@@ -180,7 +180,7 @@ public:
 
 		/* Draw list of companies */
 		for (const Company *c : Company::Iterate()) {
-			if ((HasBit(this->town->have_ratings, c->index) || this->town->exclusivity == c->index)) {
+			if ((this->town->have_ratings.Test(c->index) || this->town->exclusivity == c->index)) {
 				DrawCompanyIcon(c->index, icon.left, text.top + icon_y_offset);
 
 				SetDParam(0, c->index);
@@ -1006,8 +1006,8 @@ private:
 		bool before = !order; // Value to get 'a' before 'b'.
 
 		/* Towns without rating are always after towns with rating. */
-		if (HasBit(a->have_ratings, _local_company)) {
-			if (HasBit(b->have_ratings, _local_company)) {
+		if (a->have_ratings.Test(_local_company)) {
+			if (b->have_ratings.Test(_local_company)) {
 				int16_t a_rating = a->ratings[_local_company];
 				int16_t b_rating = b->ratings[_local_company];
 				if (a_rating == b_rating) return TownDirectoryWindow::TownNameSorter(a, b, order);
@@ -1015,7 +1015,7 @@ private:
 			}
 			return before;
 		}
-		if (HasBit(b->have_ratings, _local_company)) return !before;
+		if (b->have_ratings.Test(_local_company)) return !before;
 
 		/* Sort unrated towns always on ascending town name. */
 		if (before) return TownDirectoryWindow::TownNameSorter(a, b, order);
@@ -1094,7 +1094,7 @@ public:
 					assert(t->xy != INVALID_TILE);
 
 					/* Draw rating icon. */
-					if (_game_mode == GM_EDITOR || !HasBit(t->have_ratings, _local_company)) {
+					if (_game_mode == GM_EDITOR || !t->have_ratings.Test(_local_company)) {
 						DrawSprite(SPR_TOWN_RATING_NA, PAL_NONE, icon_x, tr.top + (this->resize.step_height - icon_size.height) / 2);
 					} else {
 						SpriteID icon = SPR_TOWN_RATING_APALLING;
@@ -1710,7 +1710,7 @@ void DrawNewHouseTileInGUI(int x, int y, const HouseSpec *spec, HouseID house_id
 	const DrawTileSprites *dts = reinterpret_cast<const TileLayoutSpriteGroup *>(group)->ProcessRegisters(&stage);
 
 	PaletteID palette = GENERAL_SPRITE_COLOUR(spec->random_colour[0]);
-	if (HasBit(spec->callback_mask, CBM_HOUSE_COLOUR)) {
+	if (spec->callback_mask.Test(HouseCallbackMask::Colour)) {
 		uint16_t callback = GetHouseCallback(CBID_HOUSE_COLOUR, 0, 0, house_id, nullptr, INVALID_TILE, true, view);
 		if (callback != CALLBACK_FAILED) {
 			/* If bit 14 is set, we should use a 2cc colour map, else use the callback value. */
@@ -1990,7 +1990,7 @@ static CargoArray GetProducedCargoOfHouse(const HouseSpec *hs)
 	static const uint MIN_CARGO = 8;
 
 	CargoArray production{};
-	if (HasBit(hs->callback_mask, CBM_HOUSE_PRODUCE_CARGO)) {
+	if (hs->callback_mask.Test(HouseCallbackMask::ProduceCargo)) {
 		for (uint i = 0; i < 256; i++) {
 			uint16_t callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, 0, hs->Index(), nullptr, INVALID_TILE, true);
 

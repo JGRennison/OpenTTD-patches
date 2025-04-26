@@ -31,10 +31,7 @@
 /* This file handles all the admin network commands. */
 
 /** Redirection of the (remote) console to the admin. */
-AdminIndex _redirect_console_to_admin = INVALID_ADMIN_ID;
-
-/** The amount of admins connected. */
-uint8_t _network_admins_connected = 0;
+AdminID _redirect_console_to_admin = INVALID_ADMIN_ID;
 
 /** The pool with sockets/clients. */
 NetworkAdminSocketPool _networkadminsocket_pool("NetworkAdminSocket");
@@ -69,7 +66,6 @@ static_assert(lengthof(_admin_update_type_frequencies) == ADMIN_UPDATE_END);
  */
 ServerNetworkAdminSocketHandler::ServerNetworkAdminSocketHandler(SOCKET s) : NetworkAdminSocketHandler(s)
 {
-	_network_admins_connected++;
 	this->status = ADMIN_STATUS_INACTIVE;
 	this->connect_time = std::chrono::steady_clock::now();
 }
@@ -79,7 +75,6 @@ ServerNetworkAdminSocketHandler::ServerNetworkAdminSocketHandler(SOCKET s) : Net
  */
 ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 {
-	_network_admins_connected--;
 	Debug(net, 3, "[admin] '{}' ({}) has disconnected", this->admin_name, this->admin_version);
 	if (_redirect_console_to_admin == this->index) _redirect_console_to_admin = INVALID_ADMIN_ID;
 
@@ -95,12 +90,7 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
  */
 /* static */ bool ServerNetworkAdminSocketHandler::AllowConnection()
 {
-	bool accept = _settings_client.network.AdminAuthenticationConfigured() && _network_admins_connected < MAX_ADMINS;
-	/* We can't go over the MAX_ADMINS limit here. However, if we accept
-	 * the connection, there has to be space in the pool. */
-	static_assert(NetworkAdminSocketPool::MAX_SIZE == MAX_ADMINS);
-	assert(!accept || ServerNetworkAdminSocketHandler::CanAllocateItem());
-	return accept;
+	return _settings_client.network.AdminAuthenticationConfigured() && ServerNetworkAdminSocketHandler::CanAllocateItem();
 }
 
 /** Send the packets for the server sockets. */
@@ -1018,7 +1008,7 @@ void NetworkAdminChat(NetworkAction action, DestType desttype, ClientID client_i
  * @param colour_code The colour of the string.
  * @param string      The string to show.
  */
-void NetworkServerSendAdminRcon(AdminIndex admin_index, TextColour colour_code, const std::string_view string)
+void NetworkServerSendAdminRcon(AdminID admin_index, TextColour colour_code, const std::string_view string)
 {
 	ServerNetworkAdminSocketHandler::Get(admin_index)->SendRcon(colour_code, string);
 }

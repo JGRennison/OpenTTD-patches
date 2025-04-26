@@ -15,6 +15,7 @@
 #include "newgrf_animation_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_badge_type.h"
+#include "newgrf_callbacks.h"
 #include "newgrf_class.h"
 #include "newgrf_commons.h"
 #include "newgrf_town.h"
@@ -160,7 +161,7 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 
 	RoadStopAvailabilityType stop_type = ROADSTOPTYPE_ALL;
 	RoadStopDrawMode draw_mode = ROADSTOP_DRAW_MODE_ROAD | ROADSTOP_DRAW_MODE_OVERLAY;
-	uint8_t callback_mask = 0;
+	RoadStopCallbackMasks callback_mask{};
 	uint16_t flags = 0;
 	uint8_t internal_flags = 0;          ///< Bitmask of internal spec flags (RoadStopSpecIntlFlags)
 

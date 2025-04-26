@@ -25,7 +25,7 @@
 	return ::LeagueTable::IsValidID(table_id);
 }
 
-/* static */ ScriptLeagueTable::LeagueTableID ScriptLeagueTable::New(Text *title, Text *header, Text *footer)
+/* static */ LeagueTableID ScriptLeagueTable::New(Text *title, Text *header, Text *footer)
 {
 	ScriptObjectRef title_counter(title);
 	ScriptObjectRef header_counter(header);
@@ -42,7 +42,7 @@
 	if (!ScriptObject::Command<CMD_CREATE_LEAGUE_TABLE>::Do(&ScriptInstance::DoCommandReturnLeagueTableID, std::move(encoded_title), std::move(encoded_header), std::move(encoded_footer))) return LEAGUE_TABLE_INVALID;
 
 	/* In case of test-mode, we return LeagueTableID 0 */
-	return (ScriptLeagueTable::LeagueTableID)0;
+	return static_cast<LeagueTableID>(0);
 }
 
 /* static */ bool ScriptLeagueTable::IsValidLeagueTableElement(LeagueTableElementID element_id)
@@ -50,7 +50,7 @@
 	return ::LeagueTableElement::IsValidID(element_id);
 }
 
-/* static */ ScriptLeagueTable::LeagueTableElementID ScriptLeagueTable::NewElement(ScriptLeagueTable::LeagueTableID table, SQInteger rating, ScriptCompany::CompanyID company, Text *text, Text *score, LinkType link_type, SQInteger link_target)
+/* static */ LeagueTableElementID ScriptLeagueTable::NewElement(LeagueTableID table, SQInteger rating, ScriptCompany::CompanyID company, Text *text, Text *score, LinkType link_type, SQInteger link_target)
 {
 	ScriptObjectRef text_counter(text);
 	ScriptObjectRef score_counter(score);
@@ -75,7 +75,7 @@
 	if (!ScriptObject::Command<CMD_CREATE_LEAGUE_TABLE_ELEMENT>::Do(&ScriptInstance::DoCommandReturnLeagueTableElementID, table, rating, c, std::move(encoded_text), std::move(encoded_score), (::LinkType)link_type, (::LinkTargetID)link_target)) return LEAGUE_TABLE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return LeagueTableElementID 0 */
-	return (ScriptLeagueTable::LeagueTableElementID)0;
+	return static_cast<LeagueTableElementID>(0);
 }
 
 /* static */ bool ScriptLeagueTable::UpdateElementData(LeagueTableElementID element, ScriptCompany::CompanyID company, Text *text, LinkType link_type, SQInteger link_target)

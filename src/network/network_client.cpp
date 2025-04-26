@@ -1432,7 +1432,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(
 	if (this->status < STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16_t));
-	_network_company_passworded = p.Recv_uint16();
+	_network_company_passworded.edit_base() = p.Recv_uint16();
 	SetWindowClassesDirty(WC_COMPANY);
 
 	return NETWORK_RECV_STATUS_OKAY;

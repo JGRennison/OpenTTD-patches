@@ -318,7 +318,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		const Engine *e_u = u->GetEngine();
 		const RailVehicleInfo *rvi_u = &e_u->u.rail;
 
-		if (!HasBit(e_u->info.misc_flags, EF_RAIL_TILTS)) train_can_tilt = false;
+		if (!e_u->info.misc_flags.Test(EngineMiscFlag::RailTilts)) train_can_tilt = false;
 		if (e_u->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) speed_varies_by_railtype = true;
 		min_curve_speed_mod = std::min(min_curve_speed_mod, u->GetCurveSpeedModifier());
 
@@ -383,7 +383,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			if (veh_len != CALLBACK_FAILED && veh_len >= VEHICLE_LENGTH) {
 				ErrorUnknownCallbackResult(e_u->GetGRFID(), CBID_VEHICLE_LENGTH, veh_len);
 			}
-		} else if (HasBit(e_u->info.callback_mask, CBM_VEHICLE_LENGTH)) {
+		} else if (e_u->info.callback_mask.Test(VehicleCallbackMask::Length)) {
 			/* Use callback 11 */
 			veh_len = GetVehicleCallback(CBID_VEHICLE_LENGTH, 0, 0, u->engine_type, u);
 		}
@@ -1286,7 +1286,7 @@ bool Train::ConsistNeedsRepair() const
 
 int Train::GetCursorImageOffset() const
 {
-	if (this->gcache.cached_veh_length != 8 && HasBit(this->flags, VRF_REVERSE_DIRECTION) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_RAIL_FLIPS)) {
+	if (this->gcache.cached_veh_length != 8 && HasBit(this->flags, VRF_REVERSE_DIRECTION) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::RailFlips)) {
 		int reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
 
 		const Engine *e = this->GetEngine();
@@ -1316,7 +1316,7 @@ int Train::GetDisplayImageWidth(Point *offset) const
 	}
 
 	if (offset != nullptr) {
-		if (HasBit(this->flags, VRF_REVERSE_DIRECTION) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_RAIL_FLIPS)) {
+		if (HasBit(this->flags, VRF_REVERSE_DIRECTION) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::RailFlips)) {
 			offset->x = ScaleSpriteTrad(((int)this->gcache.cached_veh_length - (int)VEHICLE_LENGTH / 2) * reference_width / (int)VEHICLE_LENGTH);
 		} else {
 			offset->x = ScaleSpriteTrad(reference_width) / 2;
@@ -1667,7 +1667,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 
-		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
+		if (e->flags.Test(EngineFlag::ExclusivePreview)) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
 		v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
 		AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
 		AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
@@ -2423,7 +2423,7 @@ void Train::UpdateDeltaXY()
 	this->y_bb_offs =  0;
 
 	/* Set if flipped and engine is NOT flagged with custom flip handling. */
-	int flipped = HasBit(this->flags, VRF_REVERSE_DIRECTION) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_RAIL_FLIPS);
+	int flipped = HasBit(this->flags, VRF_REVERSE_DIRECTION) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::RailFlips);
 	/* If flipped and vehicle length is odd, we need to adjust the bounding box offset slightly. */
 	int flip_offs = flipped && (this->gcache.cached_veh_length & 1);
 
@@ -3186,7 +3186,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool
 	if (reverse_single_veh) {
 		/* turn a single unit around */
 
-		if (v->IsMultiheaded() || HasBit(EngInfo(v->engine_type)->callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) {
+		if (v->IsMultiheaded() || EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::ArticEngine)) {
 			return CommandCost(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS);
 		}
 

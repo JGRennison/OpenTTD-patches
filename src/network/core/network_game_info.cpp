@@ -127,7 +127,7 @@ void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 	ngi.compatible = ngi.version_compatible;
 
 	/* Check if we have all the GRFs on the client-system too. */
-	for (const GRFConfig *c = ngi.grfconfig; c != nullptr; c = c->next) {
+	for (const auto &c : ngi.grfconfig) {
 		if (c->status == GCS_NOT_FOUND) ngi.compatible = false;
 	}
 }
@@ -146,7 +146,7 @@ void FillStaticNetworkServerGameInfo()
 	_network_game_info.map_height     = Map::SizeY();
 	_network_game_info.landscape      = _settings_game.game_creation.landscape;
 	_network_game_info.dedicated      = _network_dedicated;
-	_network_game_info.grfconfig      = _grfconfig;
+	CopyGRFConfigList(_network_game_info.grfconfig, _grfconfig, false);
 
 	_network_game_info.server_name = _settings_client.network.server_name;
 	_network_game_info.server_revision = GetNetworkRevisionString();
@@ -228,17 +228,11 @@ void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool
 		 * the GRFs that are needed, i.e. the ones that the server has
 		 * selected in the NewGRF GUI and not the ones that are used due
 		 * to the fact that they are in [newgrf-static] in openttd.cfg */
-		const GRFConfig *c;
-		uint count = 0;
-
-		/* Count number of GRFs to send information about */
-		for (c = info.grfconfig; c != nullptr; c = c->next) {
-			if (!HasBit(c->flags, GCF_STATIC)) count++;
-		}
+		uint count = std::ranges::count_if(info.grfconfig, [](const auto &c) { return !HasBit(c->flags, GCF_STATIC); });
 		p.Send_uint8(ClampTo<uint8_t>(std::min<uint>(count, NETWORK_MAX_GRF_COUNT))); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
-		for (c = info.grfconfig; c != nullptr; c = c->next) {
+		for (const auto &c : info.grfconfig) {
 			if (HasBit(c->flags, GCF_STATIC)) continue;
 
 			SerializeGRFIdentifier(p, c->ident);
@@ -318,17 +312,16 @@ void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &in
 		 * the GRFs that are needed, i.e. the ones that the server has
 		 * selected in the NewGRF GUI and not the ones that are used due
 		 * to the fact that they are in [newgrf-static] in openttd.cfg */
-		const GRFConfig *c;
 		uint count = 0;
 
 		/* Count number of GRFs to send information about */
-		for (c = info.grfconfig; c != nullptr; c = c->next) {
+		for (const auto &c : info.grfconfig) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
 		p.Send_uint32(count); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
-		for (c = info.grfconfig; c != nullptr; c = c->next) {
+		for (const auto &c : info.grfconfig) {
 			if (HasBit(c->flags, GCF_STATIC)) continue;
 
 			SerializeGRFIdentifier(p, c->ident);
@@ -378,7 +371,7 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
 			static_assert(std::numeric_limits<uint8_t>::max() == NETWORK_MAX_GRF_COUNT);
 			uint num_grfs = p.Recv_uint8();
 
-			GRFConfig **dst = &info.grfconfig;
+			GRFConfigList &dst = info.grfconfig;
 			for (uint i = 0; i < num_grfs; i++) {
 				NamedGRFIdentifier grf;
 				switch (newgrf_serialisation) {
@@ -402,13 +395,12 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
 						NOT_REACHED();
 				}
 
-				GRFConfig *c = new GRFConfig();
+				auto c = std::make_unique<GRFConfig>();
 				c->ident = grf.ident;
 				HandleIncomingNetworkGameInfoGRFConfig(*c, grf.name);
 
 				/* Append GRFConfig to the list */
-				*dst = c;
-				dst = &c->next;
+				dst.push_back(std::move(c));
 			}
 			[[fallthrough]];
 		}
@@ -495,14 +487,13 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 	}
 
 	{
-		GRFConfig **dst = &info.grfconfig;
-		uint i;
+		GRFConfigList &dst = info.grfconfig;
 		uint num_grfs = p.Recv_uint32();
 
 		/* Broken/bad data. It cannot have that many NewGRFs. */
 		if (num_grfs > MAX_NON_STATIC_GRF_COUNT) return;
 
-		for (i = 0; i < num_grfs; i++) {
+		for (uint i = 0; i < num_grfs; i++) {
 			NamedGRFIdentifier grf;
 			switch (newgrf_serialisation) {
 				case NST_GRFID_MD5:
@@ -522,13 +513,12 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 					NOT_REACHED();
 			}
 
-			GRFConfig *c = new GRFConfig();
+			auto c = std::make_unique<GRFConfig>();
 			c->ident = grf.ident;
 			HandleIncomingNetworkGameInfoGRFConfig(*c, grf.name);
 
 			/* Append GRFConfig to the list */
-			*dst = c;
-			dst = &c->next;
+			dst.push_back(std::move(c));
 		}
 	}
 }

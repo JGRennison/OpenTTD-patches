@@ -96,7 +96,7 @@ Company::~Company()
 	if (CleaningPool()) return;
 
 	DeleteCompanyWindows(this->index);
-	SetBit(_saved_PLYP_invalid_mask, this->index);
+	_saved_PLYP_invalid_mask.Set(this->index);
 }
 
 /**
@@ -702,7 +702,7 @@ void StartupCompanies()
 
 static void ClearSavedPLYP()
 {
-	_saved_PLYP_invalid_mask = 0;
+	_saved_PLYP_invalid_mask = {};
 	_saved_PLYP_data.clear();
 }
 
@@ -754,7 +754,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	 * Note that the company going bankrupt can't buy itself. */
 	static const int TAKE_OVER_TIMEOUT = 3 * 30 * DAY_TICKS / (MAX_COMPANIES - 1);
 
-	assert(c->bankrupt_asked != 0);
+	assert(c->bankrupt_asked.Any());
 
 
 	/* We're currently asking some company to buy 'us' */
@@ -777,15 +777,15 @@ static void HandleBankruptcyTakeover(Company *c)
 	}
 
 	/* Did we ask everyone for bankruptcy? If so, bail out. */
-	if (c->bankrupt_asked == MAX_UVALUE(CompanyMask)) return;
+	if (c->bankrupt_asked.All()) return;
 
 	Company *best = nullptr;
 	int32_t best_performance = -1;
 
 	/* Ask the company with the highest performance history first */
 	for (Company *c2 : Company::Iterate()) {
-		if ((c2->bankrupt_asked == 0 || (c2->bankrupt_flags & CBRF_SALE_ONLY)) && // Don't ask companies going bankrupt themselves
-				!HasBit(c->bankrupt_asked, c2->index) &&
+		if ((c2->bankrupt_asked.None() || (c2->bankrupt_flags & CBRF_SALE_ONLY)) && // Don't ask companies going bankrupt themselves
+				!c->bankrupt_asked.Test(c2->index) &&
 				best_performance < c2->old_economy[1].performance_history &&
 				CheckTakeoverVehicleLimit(c2->index, c->index)) {
 			best_performance = c2->old_economy[1].performance_history;
@@ -796,16 +796,16 @@ static void HandleBankruptcyTakeover(Company *c)
 	/* Asked all companies? */
 	if (best_performance == -1) {
 		if (c->bankrupt_flags & CBRF_SALE_ONLY) {
-			c->bankrupt_asked = 0;
+			c->bankrupt_asked = {};
 			CloseWindowById(WC_BUY_COMPANY, c->index);
 		} else {
-			c->bankrupt_asked = MAX_UVALUE(CompanyMask);
+			c->bankrupt_asked.Set();
 		}
 		c->bankrupt_flags = CBRF_NONE;
 		return;
 	}
 
-	SetBit(c->bankrupt_asked, best->index);
+	c->bankrupt_asked.Set(best->index);
 	c->bankrupt_last_asked = best->index;
 
 	c->bankrupt_timeout = TAKE_OVER_TIMEOUT;
@@ -829,13 +829,13 @@ void OnTick_Companies(bool main_tick)
 	if (main_tick) {
 		Company *c = Company::GetIfValid(_cur_company_tick_index);
 		if (c != nullptr) {
-			if (c->bankrupt_asked != 0) HandleBankruptcyTakeover(c);
+			if (c->bankrupt_asked.Any()) HandleBankruptcyTakeover(c);
 		}
 		_cur_company_tick_index = (_cur_company_tick_index + 1) % MAX_COMPANIES;
 	}
 	for (Company *c : Company::Iterate()) {
 		if (c->name_1 != 0) GenerateCompanyName(c);
-		if (c->bankrupt_asked != 0 && c->bankrupt_timeout == 0) HandleBankruptcyTakeover(c);
+		if (c->bankrupt_asked.Any() && c->bankrupt_timeout == 0) HandleBankruptcyTakeover(c);
 	}
 
 	if (_new_competitor_timeout.HasFired() && _game_mode != GM_MENU && AI::CanStartNew()) {
@@ -950,7 +950,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			/* This command is only executed in a multiplayer game */
 			if (!_networking) return CMD_ERROR;
 
-			/* Has the network client a correct ClientIndex? */
+			/* Has the network client a correct ClientID? */
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
@@ -1068,9 +1068,9 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			c->bankrupt_flags |= CBRF_SALE;
-			if (c->bankrupt_asked == 0) c->bankrupt_flags |= CBRF_SALE_ONLY;
+			if (c->bankrupt_asked.None()) c->bankrupt_flags |= CBRF_SALE_ONLY;
 			c->bankrupt_value = CalculateCompanyValue(c, false);
-			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
+			c->bankrupt_asked = CompanyMask{}.Set(c->index); // Don't ask the owner
 			c->bankrupt_timeout = 0;
 			CloseWindowById(WC_BUY_COMPANY, c->index);
 			break;

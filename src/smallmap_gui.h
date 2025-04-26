@@ -173,7 +173,13 @@ protected:
 	 */
 	inline CompanyMask GetOverlayCompanyMask() const
 	{
-		return Company::IsValidID(_local_company) ? 1U << _local_company : MAX_UVALUE(CompanyMask);
+		CompanyMask mask{};
+		if (Company::IsValidID(_local_company)) {
+			mask.Set(_local_company);
+		} else {
+			mask.Set();
+		}
+		return mask;
 	}
 
 	uint GetNumberRowsLegend(uint columns) const;

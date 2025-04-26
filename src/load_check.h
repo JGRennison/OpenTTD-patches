@@ -50,8 +50,7 @@ struct LoadCheckData {
 	bool sl_is_ext_version = false;
 	std::string version_name;
 
-	LoadCheckData() : grfconfig(nullptr),
-			grf_compatibility(GLC_NOT_FOUND)
+	LoadCheckData() : grf_compatibility(GLC_NOT_FOUND)
 	{
 		this->Clear();
 	}
@@ -79,7 +78,7 @@ struct LoadCheckData {
 	 */
 	bool HasNewGrfs()
 	{
-		return this->checkable && this->error == INVALID_STRING_ID && this->grfconfig != nullptr;
+		return this->checkable && this->error == INVALID_STRING_ID && !this->grfconfig.empty();
 	}
 
 	void Clear();

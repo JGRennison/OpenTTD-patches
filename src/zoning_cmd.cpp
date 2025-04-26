@@ -134,7 +134,7 @@ SpriteID TileZoneCheckOpinionEvaluation(TileIndex tile, Owner owner)
 	Town *town = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
 
 	if (town != nullptr) {
-		if (HasBit(town->have_ratings, owner)) {
+		if (town->have_ratings.Test(owner)) {
 			opinion = (town->ratings[owner] > 0) ? 3 : 2;
 		} else {
 			opinion = 1;

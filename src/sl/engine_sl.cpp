@@ -130,7 +130,7 @@ void Save_ERNC()
 	uint32_t count = 0;
 	std::span<uint8_t> result = SlSaveToTempBuffer([&]() {
 		for (const Engine *e : Engine::Iterate()) {
-			if (HasBit(e->info.callback_mask, CBM_VEHICLE_CUSTOM_REFIT)) {
+			if (e->info.callback_mask.Test(VehicleCallbackMask::CustomRefit)) {
 				count++;
 				SlWriteUint16(e->index);
 				SlWriteUint64(e->info.refit_mask);

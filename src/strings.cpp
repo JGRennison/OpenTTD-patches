@@ -1882,7 +1882,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						break;
 					}
 
-					if (HasBit(e->info.callback_mask, CBM_VEHICLE_NAME)) {
+					if (e->info.callback_mask.Test(VehicleCallbackMask::Name)) {
 						uint16_t callback = GetVehicleCallback(CBID_VEHICLE_NAME, static_cast<uint32_t>(arg >> 32), 0, e->index, nullptr);
 						/* Not calling ErrorUnknownCallbackResult due to being inside string processing. */
 						if (callback != CALLBACK_FAILED && callback < 0x400) {

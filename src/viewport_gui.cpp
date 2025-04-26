@@ -256,7 +256,7 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	}
 
 	StringID tooltip_string;
-	if (_game_mode == GM_NORMAL && _local_company < MAX_COMPANIES && HasBit(town->have_ratings, _local_company)) {
+	if (_game_mode == GM_NORMAL && _local_company < MAX_COMPANIES && town->have_ratings.Test(_local_company)) {
 		const int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
 													RATING_EXCELLENT, RATING_OUTSTANDING };
 		constexpr size_t threshold_count = lengthof(local_authority_rating_thresholds);

@@ -705,7 +705,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			return (cs->classes << 16) | (cs->weight << 8) | object->ro.grffile->cargo_map[v->cargo_type];
 		}
 
-		case 0x48: return v->GetEngine()->flags; // Vehicle Type Info
+		case 0x48: return v->GetEngine()->flags.base(); // Vehicle Type Info
 		case 0x49: return v->build_year.base();
 
 		case 0x4A:
@@ -1146,7 +1146,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 					return 0x000000FF;
 				}
 			}
-			case 0x48: return Engine::Get(this->self_type)->flags; // Vehicle Type Info
+			case 0x48: return Engine::Get(this->self_type)->flags.base(); // Vehicle Type Info
 			case 0x49: return CalTime::CurYear().base(); // 'Long' format build year
 			case 0x4B: return CalTime::CurDate().base(); // Long date of last service
 
@@ -1278,7 +1278,7 @@ void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction directio
 	VehicleResolverObject object(engine, v, VehicleResolverObject::WO_CACHED, false, CBID_NO_CALLBACK);
 	result->Clear();
 
-	bool sprite_stack = HasBit(EngInfo(engine)->misc_flags, EF_SPRITE_STACK);
+	bool sprite_stack = EngInfo(engine)->misc_flags.Test(EngineMiscFlag::SpriteStack);
 	uint max_stack = sprite_stack ? lengthof(result->seq) : 1;
 	for (uint stack = 0; stack < max_stack; ++stack) {
 		object.ResetState();
@@ -1312,7 +1312,7 @@ void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineIma
 	result->Clear();
 	uint rotor_pos = v == nullptr || rotor_in_gui ? 0 : v->Next()->Next()->state;
 
-	bool sprite_stack = HasBit(e->info.misc_flags, EF_SPRITE_STACK);
+	bool sprite_stack = e->info.misc_flags.Test(EngineMiscFlag::SpriteStack);
 	uint max_stack = sprite_stack ? lengthof(result->seq) : 1;
 	for (uint stack = 0; stack < max_stack; ++stack) {
 		object.ResetState();
@@ -1667,7 +1667,7 @@ void AnalyseEngineCallbacks()
 			}
 		}
 
-		if (refit_cap_whitelist_ok && non_purchase_groups <= 1 && HasBit(e->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) && e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT) != nullptr) {
+		if (refit_cap_whitelist_ok && non_purchase_groups <= 1 && e->info.callback_mask.Test(VehicleCallbackMask::RefitCapacity) && e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT) != nullptr) {
 			const SpriteGroup **purchase_sg_ptr = e->grf_prop.GetSpriteGroupPtr(SpriteGroupCargo::SG_PURCHASE);
 			const SpriteGroup *purchase_sg = nullptr;
 			if (purchase_sg_ptr != nullptr) {

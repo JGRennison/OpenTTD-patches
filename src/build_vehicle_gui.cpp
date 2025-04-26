@@ -1357,7 +1357,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 			tr = tr.Indent(badge_column_widths[2], !rtl);
 		}
 
-		bool hidden = HasBit(e->company_hidden, _local_company);
+		bool hidden = e->company_hidden.Test(_local_company);
 		StringID str = hidden ? STR_HIDDEN_ENGINE_NAME : STR_ENGINE_NAME;
 		TextColour tc = (item.engine_id == selected_id) ? TC_WHITE : ((hidden | shaded) ? (TC_GREY | TC_FORCED | TC_NO_SHADE) : TC_BLACK);
 
@@ -1597,7 +1597,7 @@ uint GUIEngineListSortCache::GetArticulatedCapacity(EngineID eng, bool dual_head
 	if (iter.second) {
 		/* New cache entry */
 		const Engine *e = Engine::Get(eng);
-		if (this->current_cargo != INVALID_CARGO && this->current_cargo != e->GetDefaultCargoType() && HasBit(e->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) && e->refit_capacity_values == nullptr && this->parent != nullptr) {
+		if (this->current_cargo != INVALID_CARGO && this->current_cargo != e->GetDefaultCargoType() && e->info.callback_mask.Test(VehicleCallbackMask::RefitCapacity) && e->refit_capacity_values == nullptr && this->parent != nullptr) {
 			/* Expensive path simulating vehicle construction is required to determine capacity */
 			TestedEngineDetails te{};
 			this->parent->FillTestedEngineCapacity(eng, this->current_cargo, te);

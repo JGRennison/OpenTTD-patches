@@ -63,7 +63,7 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 		this->reference_width = e->GetGRF()->traininfo_vehicle_width;
 		this->vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}
-	if (t->gcache.cached_veh_length != 8 && HasBit(t->flags, VRF_REVERSE_DIRECTION) && !HasBit(EngInfo(t->engine_type)->misc_flags, EF_RAIL_FLIPS)) {
+	if (t->gcache.cached_veh_length != 8 && HasBit(t->flags, VRF_REVERSE_DIRECTION) && !EngInfo(t->engine_type)->misc_flags.Test(EngineMiscFlag::RailFlips)) {
 		this->vehicle_flip_length = t->gcache.cached_veh_length;
 	} else {
 		this->vehicle_flip_length = -1;
@@ -152,7 +152,7 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 		/* Check money.
 		 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
 		for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
-			if (!HasBit(Engine::Get(tv->engine_type)->company_avail, t->owner)) return false;
+			if (!Engine::Get(tv->engine_type)->company_avail.Test(t->owner)) return false;
 			needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
 		}
 		return needed_money <= c->money;

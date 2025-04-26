@@ -658,7 +658,7 @@ uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoType d
 	subtypes.clear();
 	for (; v_from != nullptr; v_from = v_from->HasArticulatedPart() ? v_from->GetNextArticulatedPart() : nullptr) {
 		const Engine *e_from = v_from->GetEngine();
-		if (!e_from->CanCarryCargo() || !HasBit(e_from->info.callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) continue;
+		if (!e_from->CanCarryCargo() || !e_from->info.callback_mask.Test(VehicleCallbackMask::CargoSuffix)) continue;
 		include(subtypes, GetCargoSubtypeText(v_from));
 	}
 
@@ -668,7 +668,7 @@ uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoType d
 		/* Check whether any articulated part is refittable to 'dest_cargo_type' with a subtype listed in 'subtypes' */
 		for (Vehicle *v = v_for; v != nullptr; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr) {
 			const Engine *e = v->GetEngine();
-			if (!e->CanCarryCargo() || !HasBit(e->info.callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) continue;
+			if (!e->CanCarryCargo() || !e->info.callback_mask.Test(VehicleCallbackMask::CargoSuffix)) continue;
 			if (!HasBit(e->info.refit_mask, dest_cargo_type) && v->cargo_type != dest_cargo_type) continue;
 
 			CargoType old_cargo_type = v->cargo_type;
@@ -870,12 +870,12 @@ struct RefitWindow : public Window {
 			if (v->type == VEH_SHIP && this->num_vehicles == 1 && v->index != this->selected_vehicle) continue;
 			const Engine *e = v->GetEngine();
 			CargoTypes cmask = e->info.refit_mask;
-			uint8_t callback_mask = e->info.callback_mask;
+			VehicleCallbackMasks callback_mask = e->info.callback_mask;
 
 			/* Skip this engine if it does not carry anything */
 			if (!e->CanCarryCargo()) continue;
 			/* Skip this engine if we build the list for auto-refitting and engine doesn't allow it. */
-			if (this->auto_refit && !HasBit(e->info.misc_flags, EF_AUTO_REFIT)) continue;
+			if (this->auto_refit && !e->info.misc_flags.Test(EngineMiscFlag::AutoRefit)) continue;
 
 			/* Loop through all cargoes in the refit mask */
 			for (const auto &cs : _sorted_cargo_specs) {
@@ -894,7 +894,7 @@ struct RefitWindow : public Window {
 				 * This is not supported for ordered refits, since subtypes only have a meaning
 				 * for a specific vehicle at a specific point in time, which conflicts with shared orders,
 				 * autoreplace, autorenew, clone, order restoration, ... */
-				if (this->order == INVALID_VEH_ORDER_ID && HasBit(callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) {
+				if (this->order == INVALID_VEH_ORDER_ID && callback_mask.Test(VehicleCallbackMask::CargoSuffix)) {
 					/* Make a note of the original cargo type. It has to be
 					 * changed to test the cargo & subtype... */
 					CargoType temp_cargo = v->cargo_type;
@@ -1580,7 +1580,7 @@ uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 /** Get the cargo subtype text from NewGRF for the vehicle details window. */
 StringID GetCargoSubtypeText(const Vehicle *v)
 {
-	if (HasBit(EngInfo(v->engine_type)->callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) {
+	if (EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::CargoSuffix)) {
 		uint16_t cb = GetVehicleCallback(CBID_VEHICLE_CARGO_SUFFIX, 0, 0, v->engine_type, v);
 		if (cb != CALLBACK_FAILED) {
 			if (cb > 0x400) ErrorUnknownCallbackResult(v->GetGRFID(), CBID_VEHICLE_CARGO_SUFFIX, cb);

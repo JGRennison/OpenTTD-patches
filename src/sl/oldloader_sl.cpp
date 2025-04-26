@@ -407,8 +407,8 @@ static bool FixTTOEngines()
 
 			/* Make sure for example monorail and maglev are available when they should be */
 			if (CalTime::CurDate() >= e->intro_date && HasBit(e->info.climates, 0)) {
-				e->flags |= ENGINE_AVAILABLE;
-				e->company_avail = MAX_UVALUE(CompanyMask);
+				e->flags.Set(EngineFlag::Available);
+				e->company_avail.Set();
 				e->age = CalTime::CurDate() > e->intro_date ? (CalTime::CurDate() - e->intro_date).base() / 30 : 0;
 			}
 		} else {
@@ -427,14 +427,14 @@ static bool FixTTOEngines()
 			e->duration_phase_3    = oe->duration_phase_3;
 			e->flags               = oe->flags;
 
-			e->company_avail = 0;
+			e->company_avail = CompanyMask{};
 
 			/* One or more engines were remapped to this one. Make this engine available
 			 * if at least one of them was available. */
 			for (uint j = 0; j < lengthof(tto_to_ttd); j++) {
-				if (tto_to_ttd[j] == i && _old_engines[j].company_avail != 0) {
-					e->company_avail = MAX_UVALUE(CompanyMask);
-					e->flags |= ENGINE_AVAILABLE;
+				if (tto_to_ttd[j] == i && _old_engines[j].company_avail.Any()) {
+					e->company_avail.Set();
+					e->flags.Set(EngineFlag::Available);
 					break;
 				}
 			}
@@ -443,7 +443,7 @@ static bool FixTTOEngines()
 		}
 
 		e->preview_company = INVALID_COMPANY;
-		e->preview_asked = MAX_UVALUE(CompanyMask);
+		e->preview_asked.Set();
 		e->preview_wait = 0;
 		e->name = nullptr;
 	}
@@ -1571,11 +1571,11 @@ static bool LoadTTDPatchExtraChunks(LoadgameState *ls, int)
 					uint32_t grfid = ReadUint32(ls);
 
 					if (ReadByte(ls) == 1) {
-						GRFConfig *c = new GRFConfig("TTDP game, no information");
+						auto c = std::make_unique<GRFConfig>("TTDP game, no information");
 						c->ident.grfid = grfid;
 
-						AppendToGRFConfigList(_grfconfig, c);
 						Debug(oldloader, 3, "TTDPatch game using GRF file with GRFID {:08X}", std::byteswap(c->ident.grfid));
+						AppendToGRFConfigList(_grfconfig, std::move(c));
 					}
 					len -= 5;
 				}
