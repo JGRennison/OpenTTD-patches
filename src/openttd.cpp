@@ -24,6 +24,7 @@
 #include "sl/saveload.h"
 #include "company_cmd.h"
 #include "company_func.h"
+#include "company_gui.h"
 #include "command_func.h"
 #include "command_log.h"
 #include "news_func.h"
@@ -1531,6 +1532,7 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
+		InvalidateCompanyWindows();
 	} else {
 		if (GetDebugLevel(DebugLevelID::desync) > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
@@ -1591,6 +1593,7 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
+		InvalidateCompanyWindows();
 
 		if (_networking) {
 			RecordSyncEvent(NSRE_PRE_DATES);
