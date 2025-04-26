@@ -55,7 +55,7 @@ STR_BUTTON_RENAME                                               :{BLACK}重命�
 
 STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}曼哈顿距离：{NUM}{}直线距离：{NUM}{}最近边距离：{NUM}{}海平面高度：{HEIGHT}{}高度差：{HEIGHT}
 
-STR_SORT_BY_PROFIT_LIFETIME                                     :总利润
+STR_SORT_BY_PROFIT_LIFETIME                                     :总损益
 STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :平均运载率
 STR_SORT_BY_MAX_SPEED_LOADED                                    :满载最高速度
 STR_SORT_BY_VEHICLES_CALLING                                    :车次调度总数
@@ -109,7 +109,7 @@ STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}以现�
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :建议将此设置保留为默认值
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :真实{PUSH_COLOUR}{RED}（专家）{POP_COLOUR}
-STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :开{PUSH_COLOUR}{RED}（专家、困难）{POP_COLOUR}
+STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :打开{PUSH_COLOUR}{RED}（专家、困难）{POP_COLOUR}
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}无法启用真实制动，尚存有至少一个逻辑信号或双向信号
 
@@ -136,16 +136,16 @@ STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :增加车站覆
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :增加此格数的车站覆盖半径
 
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :货物类别影响车站评价及时间宽容度：{STRING}
-STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:启用时货物的类别将影响车站评价{}乘客、邮件、贵重品、食物和货物将要求更短的等待时间，散装和液体货物更为宽容
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:启用时货物的类别将影响车站评价。乘客、邮件、贵重品、食物和货物将要求更短的等待时间，散装和液体货物更为宽容
 
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :车站大小影响车站容量及时间宽容度：{STRING}
-STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :启用时则车站大小将影响车站评价{}更大的车站可以储存更多的货物并有更大的时间宽容度
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :启用时则车站大小将影响车站评价。更大的车站可以储存更多的货物并有更大的时间宽容度
 
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :货物分配模式：{STRING}
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :向周边工业分配货物的方法
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :列车制动模型：{STRING}
-STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :选择列车制动的物理模型。“原版”模型允许列车立即停止。在“真实”模型中，列车拥有停止距离并需要供停止用的预留量，且无法立即停车{}{}“真实”模型对于信号和轨道的布局设计有显著的影响{}{PUSH_COLOUR}{GOLD}在此模式下只能使用路径信号{POP_COLOUR} #TODO
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :选择列车制动的物理模型。使用“原版”模型时，列车可以立即停止；使用“真实”模型时，列车需要预留一定的距离刹车，无法立即停止{}{}“真实”模型对于信号和轨道的布局设计有显著的影响，是一项进阶特性，因此可能不适合新手玩家。使用“真实”模型时无法使用出口、入口、复合信号灯与双向通过信号灯，可以使用的所有信号灯也会改用路径信号灯逻辑
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :制动方向限制：{STRING}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真实列车制动模型中，在信号方向限制列车的前方观察能力（即，不允许观察和预测前方的无限数量的信号）{}这需要 NewGRF 提供多相信号{}{}这是一个高阶设置并将增加游戏难度，需要考虑信号类型及其放置位置
@@ -196,7 +196,7 @@ STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :直通车辆段
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :启用直通车辆段{}列车可以在背对背的两个车库之间穿越，并且可以穿越两个车库之间的所有车库{}这需要启用 YAPF 寻路器
 
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :在列车因为寻路限制长时间等待时提示：{STRING}
-STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :当被启用时，如果列车长时间在路径信号处等待，给出提示
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :启用时，如果列车长时间在路径信号处等待，给出提示
 
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在载具没有回库计划时提示：{STRING}
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :启用时，若车损已开启，则在列车、道路载具、船舶的时刻表中没有入库计划时提示
@@ -355,7 +355,7 @@ STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
 STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :无湖泊
 
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :在沙漠中生成湖泊与河流：{STRING}
-STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :选择河流和湖泊是否能在亚热带气候的沙漠里被生成
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :选择是否在热带气候的沙漠中生成河流和湖泊
 
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :石滩大小：{STRING}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :决定石滩的大小{}较大的值可以占用地图的很大一部分
@@ -363,17 +363,17 @@ STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :决定石滩的
 STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :石滩的大小随着高度增加而增加：{STRING}
 STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :决定石滩的尺寸随高度的增加而增加的系数{}这项系数与之前设置的石滩大小值相互累积，而本项将在石滩大小值设定较小时展现出最佳的效果
 
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许“不停止”命令：{STRING}
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用“不停止”的命令
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许直达命令：{STRING}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用直达命令
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地图上显示选中载具的虚拟路径：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :当开启并有载具窗口被聚焦的时候，在载具命令站点和/或命令位置之间显示标记{}选择“仅车站”只显示载具在车站停车的命令（即不包括通过命令、路点和车库）
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :显示载具虚拟路径：{STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :启用时，在聚焦载具窗口时，在载具各命令之上显示标志、在各命令之间连线。{}选择“停靠站点”忽略通过的站点与车库，不忽略停靠的站点
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :关闭
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有命令
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :仅车站
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :停靠站点
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :显示载具路径覆盖标志：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有载具窗口被聚焦的时候，在每条命令的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :标记载具命令方位：{STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :启用时，在聚焦载具窗口时，在载具的每一条命令方位上显示标志，提示命令的次序与命令类型
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在载具列表中使用公司颜色标记其他公司的载具：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在打开车站/车库时，在显示的载具列表上用公司颜色标注该公司的载具{}车站/车库的拥有者除外
@@ -393,7 +393,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES_HELPTEXT           :缩小至较大
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :显示隧道：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS_HELPTEXT           :缩小至较大倍数时渲染隧道
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :显示滚动视口：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :显示滚动视点：{STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_HELPTEXT      :滚动视点时，显示当前视点在其他视点上的位置
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :否
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :轮廓
@@ -412,11 +412,11 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :无效
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :直接缩放到一倍
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :打开额外视点窗口
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :显示载具路径覆盖线段：{STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :当被启用且载具窗口被聚焦时，在载具调度计划中的地点之间连线（当前所选择路径将以黄色线段表示）
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :载具命令方位间连线：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :启用时，在聚焦载具窗口时，在载具命令方位之间连线。条件性命令中的各个分支将以黄色标记
 
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :载具路径样式：{STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :控制每条命令所对应的位置之间的连线的样式
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :载具命令连线样式：{STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :命令方位间连线线段的样式
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 像素虚线
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :实心直线
 
@@ -562,10 +562,10 @@ STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :城镇最高海
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :城镇只能建在这个高度或低于这个高度的地方
 
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :城镇最小距离格数：{STRING}
-STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :城镇最小距离被设置为该值设定的格数
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :设置城镇间最小距离
 
 STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :都市最小距离格数：{STRING}
-STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :都市最小距离被设置为该值设定的格数
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :设置都市间最小距离
 
 STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
 STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :关闭
@@ -1303,8 +1303,12 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未实现且已
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未实现且已重映射的 Action 0 属性特性：{4:HEX}，名称：{2:STRING}，已映射至：{5:HEX}（Sprite {3:NUM}）
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未实现且已重映射的 Action 5 类型：名称：{2:STRING}，已映射至：{4:HEX}（Sprite {3:NUM}）
 
-STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}对于所有的 NewGRF 没有足够的字符串 ID
-STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}一些名称和文本域可能显示不正常，请尝试使用更少的 NewGRF
+STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF 没有足够的字符串 ID
+STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}一些名称和文本可能不会正常显示，请减少 NewGRF 数量
+
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}。{}按住 <Ctrl> 键点击以仅升级选择的 NewGRF
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}。{}按住 <Ctrl> 键点击以移至顶部
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}。{}按住 <Ctrl> 键点击以移至底部
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}城镇噪音限制：{ORANGE}{COMMA}
 
@@ -2057,7 +2061,7 @@ STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}购买�
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}购买成本：{LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}预计运营成本：{LTBLUE}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
-STR_TMPL_WARNING_FREE_WAGON                                     :{RED}没有接触网：无法运行
+STR_TMPL_WARNING_FREE_WAGON                                     :{RED}自由编组：无法运行！
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}列车建造失败：载具不可用
 STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE                    :{RED}列车建造失败：与当前轨道类型不兼容
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}正在使用的模板：{STRING}
@@ -2143,12 +2147,14 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}延误�
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}延误时间（游戏刻）
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}调整发车时间
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}调整此调度计划中的所有发车时间
+STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}按住 <Ctrl> 键点击以仅调整选择的发车时间
 STR_SCHDISPATCH_REMOVE                                          :{BLACK}移除发车时间
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}启用从时刻表中移除发车时间
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}移除发车时间
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}增加时间（分钟）
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}增加时间（日）
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}增加时间（游戏刻）
+STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}：{STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}重设调度
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}当载具使用了最后一个发车时间后，重设调度
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}清除发车时间
@@ -2240,6 +2246,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}你确�
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}一次性添加的发车时间过多
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}发车时间调整幅度过大
+STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME      :{WHITE}调整后的发车时间重合
 
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}计时调度、自动分离与班次均匀之间互不兼容，一次只能启用一项
@@ -2271,6 +2278,11 @@ STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}无法交换站点名称……
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}……站点不在同一城镇
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}……站点已连接到工业
+
+STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA                          :{BLACK}{STRING}{}{}按住 <Ctrl> 键点击以与另一个路点交换名称
+STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN                            :{WHITE}……路点不在同一城镇
+STR_ERROR_WAYPOINTS_NOT_COMPATIBLE                              :{WHITE}……路点互不兼容
+STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES                         :{WHITE}无法交换路点名称……
 
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}按住 <Ctrl> 键操作以转换单节轨道而不是整格轨道
 
