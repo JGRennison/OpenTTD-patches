@@ -389,8 +389,8 @@ void RoadStop::DebugReEnter(const RoadVehicle *rv)
  */
 void RoadStop::Entry::Leave(const RoadVehicle *rv)
 {
+	assert(this->occupied >= rv->gcache.cached_total_length);
 	this->occupied -= rv->gcache.cached_total_length;
-	assert(this->occupied >= 0);
 }
 
 /**
