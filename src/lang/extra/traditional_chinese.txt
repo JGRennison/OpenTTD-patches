@@ -1310,6 +1310,10 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未呈現且已
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}對於所有的 NewGRF 沒有足夠的字符串 ID
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}一些名稱和文本域可能顯示不正常，請嘗試使用更少的 NewGRF
 
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點選僅升級選取的 NewGRF。
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至頂端。
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至下端。
+
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}市鎮噪音限制：{ORANGE}{COMMA}
 
 STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}上個生產週期的{CARGO_LIST}數量：{ORANGE}{COMMA}{BLACK}  最大：{ORANGE}{COMMA}
@@ -2147,12 +2151,14 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}延誤�
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}延誤時間（遊戲刻）
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}調整發車時間
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}調整此指令清單中的所有發車時間
+STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}按住 <Ctrl> 鍵點選僅調整選取的路牌。
 STR_SCHDISPATCH_REMOVE                                          :{BLACK}移除發車時間
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}啟用從時刻表中移除發車時間
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}移除發車時間
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}增加時間（分鐘）
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}增加時間（日）
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}增加時間（遊戲刻）
+STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}：{STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}重設調度
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}當車輛使用了最後一個發車時間後，重設調度
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}清除發車時間
@@ -2244,6 +2250,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}你確�
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}單次增加的發車時間過多
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}發車時間調整幅度過大
+STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME      :{WHITE}調整後的發車時間發生重疊
 
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}排程調度、自動分離與調節班次之間互不兼容，一次只能啟用一項
