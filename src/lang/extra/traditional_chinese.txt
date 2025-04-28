@@ -147,7 +147,7 @@ STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :貨物分配模
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :向周邊工業分配貨物的方法
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :列車制動模型：{STRING}
-STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :選擇列車制動的物理模型。使用「原版」模型時，列車可以立即停止；使用「真實」模型時，列車需要預留一定的距離剎車，無法立即停止{}{}「真實」模型對於號誌和軌道的布局設計有顯著的影響，是一項進階特質，因此可能不適合新手玩家。使用「真實」模型時無法使用出口、入口、複合號誌與雙向通過號誌，可以使用的所有號誌也會改用路徑號誌邏輯
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :選擇列車制動的物理模型。使用「原版」模型時，列車可以立即停止；使用「真實」模型時，列車需要預留一定的距離剎車，無法立即停止{}{}「真實」模型對於號誌和軌道的布局設計有顯著的影響，是一項進階功能，因此可能不適合新手玩家。使用「真實」模型時無法使用出口、入口、複合號誌與雙向通過號誌，可以使用的所有號誌也會改用路徑號誌邏輯
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :制動方向限制：{STRING}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真實列車制動模型中，在號誌方向限制列車的前方觀察能力（即，不允許觀察和預測前方的無限數量的號誌）{}這需要 NewGRF 提供多相號誌{}{}這是一個進階設定並將增加遊戲難度，需要考慮號誌類型及其放置位置
@@ -1310,9 +1310,9 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未呈現且已
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF 沒有足夠的字符串 ID
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}一些名稱和文本可能不會正常顯示，請減少 NewGRF 數量
 
-STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點選僅升級選取的 NewGRF。
-STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至頂端。
-STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至下端。
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點選僅升級選取的 NewGRF
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至頂端
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}。{}按住 <Ctrl> 鍵點將其移至下端
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}市鎮噪音限制：{ORANGE}{COMMA}
 
