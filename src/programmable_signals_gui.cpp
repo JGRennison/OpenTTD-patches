@@ -537,10 +537,10 @@ public:
 				case QSM_NEW_SLOT:
 				case QSM_NEW_COUNTER: {
 					using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
-					ProgPresigModifyCommandType mode = (this->query_submode == QSM_NEW_SLOT) ? PPMCT_SLOT : PPMCT_COUNTER;
+					ProgPresigModifyCommandType mode = (qsm == QSM_NEW_SLOT) ? PPMCT_SLOT : PPMCT_COUNTER;
 					Payload follow_up_payload = Payload::Make(this->track, si->Id(), mode, {}, {});
 					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<CMD_PROGPRESIG_MODIFY_INSTRUCTION>((StringID)0, this->tile, std::move(follow_up_payload)) };
-					if (this->query_submode == QSM_NEW_SLOT) {
+					if (qsm == QSM_NEW_SLOT) {
 						TraceRestrictCreateSlotCmdData data;
 						data.vehtype = VEH_TRAIN;
 						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
@@ -553,6 +553,7 @@ public:
 						data.follow_up_cmd = std::move(follow_up);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 					}
+					break;
 				}
 			}
 		}
