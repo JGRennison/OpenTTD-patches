@@ -1640,7 +1640,7 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
 
 	if (mode == RM_BASIC) return (this->setting->cat & SC_BASIC_LIST) != 0;
 	if (mode == RM_ADVANCED) return (this->setting->cat & SC_ADVANCED_LIST) != 0;
-	if (mode == RM_PATCH) return (this->setting->flags & SF_PATCH) != 0;
+	if (mode == RM_PATCH) return this->setting->flags.Test(SettingFlag::Patch);
 
 	/* Read the current value. */
 	const void *object = ResolveObject(&GetGameSettings(), sd);
@@ -1675,7 +1675,7 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
  */
 bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 {
-	if (this->setting->flags & SF_NO_NEWGAME && _game_mode == GM_MENU) {
+	if (this->setting->flags.Test(SettingFlag::NoNewgame) && _game_mode == GM_MENU) {
 		SETBITS(this->flags, SEF_FILTERED);
 		return false;
 	}
@@ -1713,7 +1713,7 @@ bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 
 static const void *ResolveObject(const GameSettings *settings_ptr, const IntSettingDesc *sd)
 {
-	if ((sd->flags & SF_PER_COMPANY) != 0) {
+	if (sd->flags.Test(SettingFlag::PerCompany)) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
 			return &Company::Get(_local_company)->settings;
 		}
@@ -1750,13 +1750,13 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	if (sd->IsBoolSetting()) {
 		/* Draw checkbox for boolean-value either on/off */
 		DrawBoolButton(buttons_left, button_y, value != 0, editable);
-	} else if ((sd->flags & (SF_GUI_DROPDOWN | SF_ENUM)) != 0) {
+	} else if (sd->flags.Any({SettingFlag::GuiDropdown, SettingFlag::Enum})) {
 		/* Draw [v] button for settings of an enum-type */
 		DrawDropDownButton(buttons_left, button_y, COLOUR_YELLOW, state != 0, editable);
 	} else {
 		/* Draw [<][>] boxes for settings of an integer-type */
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
-				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : min_val), editable && static_cast<uint32_t>(value) != max_val);
+				editable && value != (sd->flags.Test(SettingFlag::GuiZeroIsSpecial) ? 0 : min_val), editable && static_cast<uint32_t>(value) != max_val);
 	}
 	this->DrawSettingString(text_left, text_right, y + (SETTING_HEIGHT - GetCharacterHeight(FS_NORMAL)) / 2, highlight, value);
 }
@@ -3114,7 +3114,7 @@ struct GameSettingsWindow : Window {
 		int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 
 		/* clicked on the icon on the left side. Either scroller, bool on/off or dropdown */
-		if (x < SETTING_BUTTON_WIDTH && (sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
+		if (x < SETTING_BUTTON_WIDTH && sd->flags.Any({SettingFlag::GuiDropdown, SettingFlag::Enum})) {
 			this->SetDisplayedHelpText(pe);
 
 			if (this->valuedropdown_entry == pe) {
@@ -3142,7 +3142,7 @@ struct GameSettingsWindow : Window {
 					this->valuedropdown_entry->SetButtons(SEF_LEFT_DEPRESSED);
 
 					DropDownList list;
-					if (sd->flags & SF_GUI_DROPDOWN) {
+					if (sd->flags.Test(SettingFlag::GuiDropdown)) {
 						for (int32_t i = min_val; i <= static_cast<int32_t>(max_val); i++) {
 							int32_t val = i;
 							if (sd->guiproc != nullptr) {
@@ -3157,7 +3157,7 @@ struct GameSettingsWindow : Window {
 							sd->SetValueDParams(0, val);
 							list.push_back(MakeDropDownListStringItem(STR_JUST_STRING2, val, false));
 						}
-					} else if ((sd->flags & SF_ENUM)) {
+					} else if (sd->flags.Test(SettingFlag::Enum)) {
 						for (const SettingDescEnumEntry *enumlist = sd->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 							list.push_back(MakeDropDownListStringItem(enumlist->str, enumlist->val, false));
 						}
@@ -3199,7 +3199,7 @@ struct GameSettingsWindow : Window {
 					if (value < min_val) value = min_val; // skip between "disabled" and minimum
 				} else {
 					value -= step;
-					if (value < min_val) value = (sd->flags & SF_GUI_0_IS_SPECIAL) ? 0 : min_val;
+					if (value < min_val) value = sd->flags.Test(SettingFlag::GuiZeroIsSpecial) ? 0 : min_val;
 				}
 
 				/* Set up scroller timeout for numeric values */
@@ -3220,14 +3220,14 @@ struct GameSettingsWindow : Window {
 			}
 		} else {
 			/* Only open editbox if clicked for the second time, and only for types where it is sensible for. */
-			if (this->last_clicked == pe && !sd->IsBoolSetting() && !(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
+			if (this->last_clicked == pe && !sd->IsBoolSetting() && !sd->flags.Any({SettingFlag::GuiDropdown, SettingFlag::Enum})) {
 				int64_t value64 = value;
 				/* Show the correct currency or velocity translated value */
-				if (sd->flags & SF_GUI_CURRENCY) value64 *= GetCurrency().rate;
-				if (sd->flags & SF_GUI_VELOCITY) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
+				if (sd->flags.Test(SettingFlag::GuiCurrency)) value64 *= GetCurrency().rate;
+				if (sd->flags.Test(SettingFlag::GuiVelocity)) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
 
 				this->valuewindow_entry = pe;
-				if (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3) {
+				if (sd->flags.Test(SettingFlag::GuiVelocity) && _settings_game.locale.units_velocity == 3) {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
@@ -3266,19 +3266,19 @@ struct GameSettingsWindow : Window {
 		int32_t value;
 		if (!str->empty()) {
 			long long llvalue;
-			if (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3) {
+			if (sd->flags.Test(SettingFlag::GuiVelocity) && _settings_game.locale.units_velocity == 3) {
 				llvalue = atof(str->c_str()) * 10;
 			} else {
 				llvalue = atoll(str->c_str());
 			}
 
 			/* Save the correct currency-translated value */
-			if (sd->flags & SF_GUI_CURRENCY) llvalue /= GetCurrency().rate;
+			if (sd->flags.Test(SettingFlag::GuiCurrency)) llvalue /= GetCurrency().rate;
 
 			value = ClampTo<int32_t>(llvalue);
 
 			/* Save the correct velocity-translated value */
-			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);
+			if (sd->flags.Test(SettingFlag::GuiVelocity)) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);
 		} else {
 			value = sd->GetDefaultValue();
 		}
@@ -3316,7 +3316,7 @@ struct GameSettingsWindow : Window {
 				/* Deal with drop down boxes on the panel. */
 				assert(this->valuedropdown_entry != nullptr);
 				const IntSettingDesc *sd = this->valuedropdown_entry->setting;
-				assert(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM));
+				assert(sd->flags.Any({SettingFlag::GuiDropdown, SettingFlag::Enum}));
 
 				SetSettingValue(sd, index);
 				this->SetDirty();

@@ -16,6 +16,7 @@
 #include "core.h"
 #include "../../newgrf_config.h"
 #include "../../date_type.h"
+#include "../../landscape_type.h"
 
 #include <unordered_map>
 
@@ -108,7 +109,7 @@ struct NetworkServerGameInfo {
 	uint8_t companies_on;        ///< How many started companies do we have
 	uint8_t companies_max;       ///< Max companies allowed on server
 	uint8_t spectators_on;       ///< How many spectators do we have?
-	uint8_t landscape;           ///< The used landscape
+	LandscapeType landscape;     ///< The used landscape
 	int gamescript_version;      ///< Version of the gamescript.
 	std::string gamescript_name; ///< Name of the gamescript.
 };

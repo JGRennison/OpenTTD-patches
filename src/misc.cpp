@@ -179,7 +179,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ClearBridgeSimulatedSignalMapping();
 	ClearBridgeSignalStyleMapping();
 	ClearCargoPacketDeferredPayments();
-	PoolBase::Clean(PT_NORMAL);
+	PoolBase::Clean(PoolType::Normal);
 
 	extern void ClearNewSignalStyleMapping();
 	ClearNewSignalStyleMapping();

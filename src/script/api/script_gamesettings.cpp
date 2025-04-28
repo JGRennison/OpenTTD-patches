@@ -92,7 +92,7 @@ struct CargoScalingProxy {
 	const SettingDesc *sd = GetSettingFromName(setting);
 	if (sd == nullptr || !sd->IsIntSetting()) return false;
 
-	if ((sd->flags & SF_NO_NETWORK_SYNC) != 0) return false;
+	if ((sd->flags.Test(SettingFlag::NoNetworkSync))) return false;
 
 	value = Clamp<SQInteger>(value, INT32_MIN, INT32_MAX);
 

@@ -11,6 +11,7 @@
 #define GAMELOG_INTERNAL_H
 
 #include "gamelog.h"
+#include "landscape_type.h"
 
 #include <vector>
 
@@ -40,7 +41,7 @@ struct LoggedChange {
 	union {
 		struct {
 			uint8_t mode;        ///< new game mode - Editor x Game
-			uint8_t landscape;   ///< landscape (temperate, arctic, ...)
+			LandscapeType landscape; ///< landscape (temperate, arctic, ...)
 		} mode;
 		struct {
 			char *text;          ///< revision string, _openttd_revision
@@ -72,7 +73,7 @@ struct LoggedChange {
 		struct {
 			uint64_t data;       ///< additional data
 			uint32_t grfid;      ///< ID of problematic GRF
-			uint8_t bug;         ///< type of bug, @see enum GRFBugs
+			GRFBug bug;          ///< type of bug, @see enum GRFBugs
 		} grfbug;
 	};
 };

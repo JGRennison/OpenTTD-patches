@@ -214,7 +214,7 @@ struct CargoSpec {
 private:
 	static CargoSpec array[NUM_CARGO]; ///< Array holding all CargoSpecs
 
-	friend void SetupCargoForClimate(LandscapeID l);
+	friend void SetupCargoForClimate(LandscapeType l);
 	friend void BuildCargoLabelMap();
 	friend void FinaliseCargoArray();
 };
@@ -222,7 +222,7 @@ private:
 extern CargoTypes _cargo_mask;
 extern CargoTypes _standard_cargo_mask;
 
-void SetupCargoForClimate(LandscapeID l);
+void SetupCargoForClimate(LandscapeType l);
 bool IsDefaultCargo(CargoType cargo_type);
 void BuildCargoLabelMap();
 

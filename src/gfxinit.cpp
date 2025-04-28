@@ -167,7 +167,7 @@ static std::unique_ptr<GRFConfig> GetDefaultExtraGRFConfig()
 	auto gc = std::make_unique<GRFConfig>("OPENTTD.GRF");
 	gc->palette |= GRFP_GRF_DOS;
 	FillGRFDetails(*gc, false, BASESET_DIR);
-	ClrBit(gc->flags, GCF_INIT_ONLY);
+	gc->flags.Reset(GRFConfigFlag::InitOnly);
 	return gc;
 }
 
@@ -179,7 +179,7 @@ static std::unique_ptr<GRFConfig> GetBasesetExtraGRFConfig()
 {
 	auto gc = std::make_unique<GRFConfig>(BaseGraphics::GetUsedSet()->GetOrCreateExtraConfig());
 	if (gc->param.empty()) gc->SetParameterDefaults();
-	ClrBit(gc->flags, GCF_INIT_ONLY);
+	gc->flags.Reset(GRFConfigFlag::InitOnly);
 	return gc;
 }
 
@@ -235,10 +235,10 @@ static void LoadSpriteTables()
 	 * This overwrites some of the temperate sprites, such as foundations
 	 * and the ground sprites.
 	 */
-	if (_settings_game.game_creation.landscape != LT_TEMPERATE) {
+	if (_settings_game.game_creation.landscape != LandscapeType::Temperate) {
 		LoadGrfFileIndexed(
-			used_set->files[GFT_ARCTIC + _settings_game.game_creation.landscape - 1].filename,
-			_landscape_spriteindexes[_settings_game.game_creation.landscape - 1],
+			used_set->files[GFT_ARCTIC + to_underlying(_settings_game.game_creation.landscape) - 1].filename,
+			_landscape_spriteindexes[to_underlying(_settings_game.game_creation.landscape) - 1],
 			PAL_DOS != used_set->palette
 		);
 	}
@@ -325,7 +325,7 @@ static bool SwitchNewGRFBlitter()
 	uint depth_wanted_by_base = BaseGraphics::GetUsedSet()->blitter == BLT_32BPP ? 32 : 8;
 	uint depth_wanted_by_grf = _support8bpp != S8BPP_NONE ? 8 : 32;
 	for (const auto &c : _grfconfig) {
-		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || HasBit(c->flags, GCF_INIT_ONLY)) continue;
+		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || c->flags.Test(GRFConfigFlag::InitOnly)) continue;
 		if (c->palette & GRFP_BLT_32BPP) depth_wanted_by_grf = 32;
 	}
 	/* We need a 32bpp blitter for font anti-alias. */
@@ -482,8 +482,8 @@ void GfxDetermineMainColours()
 
 	/* Trees. */
 	extern uint32_t _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
-	const uint base  = _tree_base_by_landscape[_settings_game.game_creation.landscape];
-	const uint count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
+	const uint base  = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const uint count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 	for (uint tg = 0; tg < 5; tg++) {
 		for (uint i = base; i < base + count; i++) {
 			_vp_map_vegetation_tree_colours[0][tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);

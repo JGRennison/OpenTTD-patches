@@ -98,7 +98,7 @@ static void Save_NGRF()
 	int index = 0;
 
 	for (const auto &c : _grfconfig) {
-		if (HasBit(c->flags, GCF_STATIC) || HasBit(c->flags, GCF_INIT_ONLY)) continue;
+		if (c->flags.Any({GRFConfigFlag::Static, GRFConfigFlag::InitOnly})) continue;
 		SlSetArrayIndex(index++);
 		_grf_name = str_strip_all_scc(GetDefaultLangGRFStringFromGRFText(c->name));
 		SlObjectSaveFiltered(c.get(), sld);

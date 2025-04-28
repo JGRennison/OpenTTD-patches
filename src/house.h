@@ -34,23 +34,23 @@ static const HouseID NUM_HOUSES_PER_GRF = NUM_HOUSES; ///< Number of supported h
 static const uint HOUSE_NUM_ACCEPTS = 16; ///< Max number of cargoes accepted by a tile
 static const uint HOUSE_ORIGINAL_NUM_ACCEPTS = 3; ///< Original number of accepted cargo types.
 
-enum BuildingFlags : uint8_t {
-	TILE_NO_FLAG         =       0,
-	TILE_SIZE_1x1        = 1U << 0,
-	TILE_NOT_SLOPED      = 1U << 1,
-	TILE_SIZE_2x1        = 1U << 2,
-	TILE_SIZE_1x2        = 1U << 3,
-	TILE_SIZE_2x2        = 1U << 4,
-	BUILDING_IS_ANIMATED = 1U << 5,
-	BUILDING_IS_CHURCH   = 1U << 6,
-	BUILDING_IS_STADIUM  = 1U << 7,
-	BUILDING_HAS_1_TILE  = TILE_SIZE_1x1 | TILE_SIZE_2x1 | TILE_SIZE_1x2 | TILE_SIZE_2x2,
-	BUILDING_HAS_2_TILES = TILE_SIZE_2x1 | TILE_SIZE_1x2 | TILE_SIZE_2x2,
-	BUILDING_2_TILES_X   = TILE_SIZE_2x1 | TILE_SIZE_2x2,
-	BUILDING_2_TILES_Y   = TILE_SIZE_1x2 | TILE_SIZE_2x2,
-	BUILDING_HAS_4_TILES = TILE_SIZE_2x2,
+enum class BuildingFlag : uint8_t {
+	Size1x1    = 0,
+	NotSloped  = 1,
+	Size2x1    = 2,
+	Size1x2    = 3,
+	Size2x2    = 4,
+	IsAnimated = 5,
+	IsChurch   = 6,
+	IsStadium  = 7,
 };
-DECLARE_ENUM_AS_BIT_SET(BuildingFlags)
+using BuildingFlags = EnumBitSet<BuildingFlag, uint8_t>;
+
+static constexpr BuildingFlags BUILDING_HAS_1_TILE  = {BuildingFlag::Size1x1, BuildingFlag::Size2x1, BuildingFlag::Size1x2, BuildingFlag::Size2x2};
+static constexpr BuildingFlags BUILDING_HAS_2_TILES = {BuildingFlag::Size2x1, BuildingFlag::Size1x2, BuildingFlag::Size2x2};
+static constexpr BuildingFlags BUILDING_2_TILES_X   = {BuildingFlag::Size2x1, BuildingFlag::Size2x2};
+static constexpr BuildingFlags BUILDING_2_TILES_Y   = {BuildingFlag::Size1x2, BuildingFlag::Size2x2};
+static constexpr BuildingFlags BUILDING_HAS_4_TILES = {BuildingFlag::Size2x2};
 
 enum HouseZonesBits : uint8_t {
 	HZB_BEGIN     = 0,
@@ -82,14 +82,13 @@ enum HouseZones : uint16_t {        ///< Bit  Value       Meaning
 };
 DECLARE_ENUM_AS_BIT_SET(HouseZones)
 
-enum HouseExtraFlags : uint8_t {
-	NO_EXTRA_FLAG            =       0,
-	BUILDING_IS_HISTORICAL   = 1U << 0,  ///< this house will only appear during town generation in random games, thus the historical
-	BUILDING_IS_PROTECTED    = 1U << 1,  ///< towns and AI will not remove this house, while human players will be able to
-	SYNCHRONISED_CALLBACK_1B = 1U << 2,  ///< synchronized callback 1B will be performed, on multi tile houses
-	CALLBACK_1A_RANDOM_BITS  = 1U << 3,  ///< callback 1A needs random bits
+enum class HouseExtraFlag : uint8_t {
+	BuildingIsHistorical   = 0, ///< this house will only appear during town generation in random games, thus the historical
+	BuildingIsProtected    = 1, ///< towns and AI will not remove this house, while human players will be able to
+	SynchronisedCallback1B = 2, ///< synchronized callback 1B will be performed, on multi tile houses
+	Callback1ARandomBits   = 3, ///< callback 1A needs random bits
 };
-DECLARE_ENUM_AS_BIT_SET(HouseExtraFlags)
+using HouseExtraFlags = EnumBitSet<HouseExtraFlag, uint8_t>;
 
 enum HouseCtrlFlags : uint8_t {
 	HCF_NONE                 =       0,

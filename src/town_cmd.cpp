@@ -415,7 +415,7 @@ void AnimateTile_Town(TileIndex tile)
 	 * Not exactly sure when this happens, but probably when a house changes.
 	 * Before this was just a return...so it'd leak animated tiles..
 	 * That bug seems to have been here since day 1?? */
-	if (!(HouseSpec::Get(GetHouseType(tile))->building_flags & BUILDING_IS_ANIMATED)) {
+	if (!HouseSpec::Get(GetHouseType(tile))->building_flags.Test(BuildingFlag::IsAnimated)) {
 		DeleteAnimatedTile(tile);
 		return;
 	}
@@ -540,9 +540,9 @@ static void RemoveNearbyStations(Town *t, TileIndex tile, BuildingFlags flags)
 		const Station *st = *it;
 
 		bool covers_area = st->TileIsInCatchment(tile);
-		if (flags & BUILDING_2_TILES_Y)   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(0, 1));
-		if (flags & BUILDING_2_TILES_X)   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 0));
-		if (flags & BUILDING_HAS_4_TILES) covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 1));
+		if (flags.Any(BUILDING_2_TILES_Y))   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(0, 1));
+		if (flags.Any(BUILDING_2_TILES_X))   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 0));
+		if (flags.Any(BUILDING_HAS_4_TILES)) covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 1));
 
 		if (covers_area && !st->CatchmentCoversTown(t->index)) {
 			it = t->stations_near.erase(it);
@@ -581,11 +581,11 @@ static void AdvanceSingleHouseConstruction(TileIndex tile)
  */
 static void AdvanceHouseConstruction(TileIndex tile)
 {
-	uint flags = HouseSpec::Get(GetHouseType(tile))->building_flags;
-	if (flags & BUILDING_HAS_1_TILE)  AdvanceSingleHouseConstruction(TileAddXY(tile, 0, 0));
-	if (flags & BUILDING_2_TILES_Y)   AdvanceSingleHouseConstruction(TileAddXY(tile, 0, 1));
-	if (flags & BUILDING_2_TILES_X)   AdvanceSingleHouseConstruction(TileAddXY(tile, 1, 0));
-	if (flags & BUILDING_HAS_4_TILES) AdvanceSingleHouseConstruction(TileAddXY(tile, 1, 1));
+	BuildingFlags flags = HouseSpec::Get(GetHouseType(tile))->building_flags;
+	if (flags.Any(BUILDING_HAS_1_TILE))  AdvanceSingleHouseConstruction(TileAddXY(tile, 0, 0));
+	if (flags.Any(BUILDING_2_TILES_Y))   AdvanceSingleHouseConstruction(TileAddXY(tile, 0, 1));
+	if (flags.Any(BUILDING_2_TILES_X))   AdvanceSingleHouseConstruction(TileAddXY(tile, 1, 0));
+	if (flags.Any(BUILDING_HAS_4_TILES)) AdvanceSingleHouseConstruction(TileAddXY(tile, 1, 1));
 }
 
 /**
@@ -682,7 +682,7 @@ static void TileLoop_Town(TileIndex tile)
 	const HouseSpec *hs = HouseSpec::Get(house_id);
 
 	/* If the lift has a destination, it is already an animated tile. */
-	if ((hs->building_flags & BUILDING_IS_ANIMATED) &&
+	if (hs->building_flags.Test(BuildingFlag::IsAnimated) &&
 			house_id < NEW_HOUSE_OFFSET &&
 			!LiftHasDestination(tile) &&
 			Chance16(1, 2)) {
@@ -734,7 +734,7 @@ static void TileLoop_Town(TileIndex tile)
 
 	Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 
-	if ((hs->building_flags & BUILDING_HAS_1_TILE) &&
+	if (hs->building_flags.Any(BUILDING_HAS_1_TILE) &&
 			HasBit(t->flags, TOWN_IS_GROWING) &&
 			CanDeleteHouse(tile) &&
 			GetHouseAge(tile) >= hs->minimum_life &&
@@ -748,18 +748,18 @@ static void TileLoop_Town(TileIndex tile)
 			/* If we are multi-tile houses, make sure to replace the house
 			 * closest to city center. If we do not do this, houses tend to
 			 * wander away from roads and other houses. */
-			if (hs->building_flags & BUILDING_HAS_2_TILES) {
+			if (hs->building_flags.Any(BUILDING_HAS_2_TILES)) {
 				/* House tiles are always the most north tile. Move the new
 				 * house to the south if we are north of the city center. */
 				TileIndexDiffC grid_pos = TileIndexToTileIndexDiffC(t->xy, tile);
 				int x = Clamp(grid_pos.x, 0, 1);
 				int y = Clamp(grid_pos.y, 0, 1);
 
-				if (hs->building_flags & TILE_SIZE_2x2) {
+				if (hs->building_flags.Test(BuildingFlag::Size2x2)) {
 					tile = TileAddXY(tile, x, y);
-				} else if (hs->building_flags & TILE_SIZE_1x2) {
+				} else if (hs->building_flags.Test(BuildingFlag::Size1x2)) {
 					tile = TileAddXY(tile, 0, y);
-				} else if (hs->building_flags & TILE_SIZE_2x1) {
+				} else if (hs->building_flags.Test(BuildingFlag::Size2x1)) {
 					tile = TileAddXY(tile, x, 0);
 				}
 			}
@@ -897,7 +897,7 @@ void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs,
 		if (callback != CALLBACK_FAILED) {
 			AddAcceptedCargoSetMask(accepts[0], GB(callback, 0, 4), acceptance, always_accepted);
 			AddAcceptedCargoSetMask(accepts[1], GB(callback, 4, 4), acceptance, always_accepted);
-			if (_settings_game.game_creation.landscape != LT_TEMPERATE && HasBit(callback, 12)) {
+			if (_settings_game.game_creation.landscape != LandscapeType::Temperate && HasBit(callback, 12)) {
 				/* The 'S' bit indicates food instead of goods */
 				AddAcceptedCargoSetMask(GetCargoTypeByLabel(CT_FOOD), GB(callback, 8, 4), acceptance, always_accepted);
 			} else {
@@ -2241,13 +2241,16 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 
 	/* Set the default cargo requirement for town growth */
 	switch (_settings_game.game_creation.landscape) {
-		case LT_ARCTIC:
+		case LandscapeType::Arctic:
 			if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_WINTER;
 			break;
 
-		case LT_TROPIC:
+		case LandscapeType::Tropic:
 			if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_DESERT;
 			if (FindFirstCargoWithTownAcceptanceEffect(TAE_WATER) != nullptr) t->goal[TAE_WATER] = TOWN_GROWTH_DESERT;
+			break;
+
+		default:
 			break;
 	}
 
@@ -2748,7 +2751,7 @@ static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, 
 
 	IncreaseBuildingCount(t, type);
 	MakeHouseTile(tile, t->index, counter, stage, type, random_bits, is_protected);
-	if (HouseSpec::Get(type)->building_flags & BUILDING_IS_ANIMATED) AddAnimatedTile(tile, false);
+	if (HouseSpec::Get(type)->building_flags.Test(BuildingFlag::IsAnimated)) AddAnimatedTile(tile, false);
 
 	MarkTileDirtyByTile(tile);
 }
@@ -2770,12 +2773,12 @@ static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stag
 	BuildingFlags size = HouseSpec::Get(type)->building_flags;
 
 	ClearMakeHouseTile(tile, t, counter, stage, type, random_bits, is_protected);
-	if (size & BUILDING_2_TILES_Y)   ClearMakeHouseTile(tile + TileDiffXY(0, 1), t, counter, stage, ++type, random_bits, is_protected);
-	if (size & BUILDING_2_TILES_X)   ClearMakeHouseTile(tile + TileDiffXY(1, 0), t, counter, stage, ++type, random_bits, is_protected);
-	if (size & BUILDING_HAS_4_TILES) ClearMakeHouseTile(tile + TileDiffXY(1, 1), t, counter, stage, ++type, random_bits, is_protected);
+	if (size.Any(BUILDING_2_TILES_Y))   ClearMakeHouseTile(tile + TileDiffXY(0, 1), t, counter, stage, ++type, random_bits, is_protected);
+	if (size.Any(BUILDING_2_TILES_X))   ClearMakeHouseTile(tile + TileDiffXY(1, 0), t, counter, stage, ++type, random_bits, is_protected);
+	if (size.Any(BUILDING_HAS_4_TILES)) ClearMakeHouseTile(tile + TileDiffXY(1, 1), t, counter, stage, ++type, random_bits, is_protected);
 
 	if (!_generating_world) {
-		ForAllStationsAroundTiles(TileArea(tile, (size & BUILDING_2_TILES_X) ? 2 : 1, (size & BUILDING_2_TILES_Y) ? 2 : 1), [t](Station *st, TileIndex tile) {
+		ForAllStationsAroundTiles(TileArea(tile, size.Any(BUILDING_2_TILES_X) ? 2 : 1, size.Any(BUILDING_2_TILES_Y) ? 2 : 1), [t](Station *st, TileIndex tile) {
 			t->stations_near.insert(st);
 			return true;
 		});
@@ -2783,8 +2786,8 @@ static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stag
 	if (_record_house_coords) {
 		_record_house_rect.left = std::min(_record_house_rect.left, (int)TileX(tile));
 		_record_house_rect.top = std::min(_record_house_rect.top, (int)TileY(tile));
-		_record_house_rect.right = std::max(_record_house_rect.right, (int)TileX(tile) + ((size & BUILDING_2_TILES_X) ? 2 : 1));
-		_record_house_rect.bottom = std::max(_record_house_rect.bottom, (int)TileY(tile) + ((size & BUILDING_2_TILES_Y) ? 2 : 1));
+		_record_house_rect.right = std::max(_record_house_rect.right, (int)TileX(tile) + (size.Any(BUILDING_2_TILES_X) ? 2 : 1));
+		_record_house_rect.bottom = std::max(_record_house_rect.bottom, (int)TileY(tile) + (size.Any(BUILDING_2_TILES_Y) ? 2 : 1));
 	}
 }
 
@@ -2866,8 +2869,8 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
 	if (!hs->enabled || hs->grf_prop.override != INVALID_HOUSE_ID) return CMD_ERROR;
 
 	/* Check if we can build this house in current climate. */
-	if (_settings_game.game_creation.landscape != LT_ARCTIC) {
-		if (!(hs->building_availability & (HZ_TEMP << _settings_game.game_creation.landscape))) return CMD_ERROR;
+	if (_settings_game.game_creation.landscape != LandscapeType::Arctic) {
+		if (!(hs->building_availability & (HZ_TEMP << to_underlying(_settings_game.game_creation.landscape)))) return CMD_ERROR;
 	} else if (above_snowline) {
 		if (!(hs->building_availability & HZ_SUBARTC_ABOVE)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE);
 	} else {
@@ -2944,20 +2947,20 @@ static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta)
 static TileIndex FindPlaceForTownHouseAroundTile(TileIndex tile, Town *t, HouseID house)
 {
 	const HouseSpec *hs = HouseSpec::Get(house);
-	bool noslope = (hs->building_flags & TILE_NOT_SLOPED) != 0;
+	bool noslope = hs->building_flags.Test(BuildingFlag::NotSloped);
 
 	TileArea ta(tile, 1, 1);
 	DiagDirection dir;
 	uint count;
-	if (hs->building_flags & TILE_SIZE_2x2) {
+	if (hs->building_flags.Test(BuildingFlag::Size2x2)) {
 		ta.w = ta.h = 2;
 		dir = DIAGDIR_NW; // 'd' goes through DIAGDIR_NW, DIAGDIR_NE, DIAGDIR_SE
 		count = 4;
-	} else if (hs->building_flags & TILE_SIZE_2x1) {
+	} else if (hs->building_flags.Test(BuildingFlag::Size2x1)) {
 		ta.w = 2;
 		dir = DIAGDIR_NE;
 		count = 2;
-	} else if (hs->building_flags & TILE_SIZE_1x2) {
+	} else if (hs->building_flags.Test(BuildingFlag::Size1x2)) {
 		ta.h = 2;
 		dir = DIAGDIR_NW;
 		count = 2;
@@ -2992,7 +2995,7 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 {
 	const HouseSpec *hs = HouseSpec::Get(house);
 
-	if (!_generating_world && _game_mode != GM_EDITOR && (hs->extra_flags & BUILDING_IS_HISTORICAL) != 0) {
+	if (!_generating_world && _game_mode != GM_EDITOR && hs->extra_flags.Test(HouseExtraFlag::BuildingIsHistorical)) {
 		return CMD_ERROR;
 	}
 
@@ -3000,9 +3003,9 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 	if (CalTime::CurYear() < hs->min_year) return CommandCost(STR_ERROR_BUILDING_IS_TOO_MODERN);
 
 	/* Special houses that there can be only one of. */
-	if (hs->building_flags & BUILDING_IS_CHURCH) {
+	if (hs->building_flags.Test(BuildingFlag::IsChurch)) {
 		if (t->church_count >= 1) return CommandCost(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
-	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
+	} else if (hs->building_flags.Test(BuildingFlag::IsStadium)) {
 		if (t->stadium_count >= 1) return CommandCost(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	}
 
@@ -3025,9 +3028,9 @@ static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID
 	t->cache.num_houses++;
 
 	/* Special houses that there can be only one of. */
-	if (hs->building_flags & BUILDING_IS_CHURCH) {
+	if (hs->building_flags.Test(BuildingFlag::IsChurch)) {
 		t->church_count++;
-	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
+	} else if (hs->building_flags.Test(BuildingFlag::IsStadium)) {
 		t->stadium_count++;
 	}
 
@@ -3038,7 +3041,7 @@ static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID
 		uint32_t construction_random = Random();
 
 		construction_stage = TOWN_HOUSE_COMPLETED;
-		if (_generating_world && !HasFlag(hs->extra_flags, HouseExtraFlags::BUILDING_IS_HISTORICAL) && Chance16(1, 7)) construction_stage = GB(construction_random, 0, 2);
+		if (_generating_world && !hs->extra_flags.Test(HouseExtraFlag::BuildingIsHistorical) && Chance16(1, 7)) construction_stage = GB(construction_random, 0, 2);
 
 		if (construction_stage == TOWN_HOUSE_COMPLETED) {
 			ChangePopulation(t, hs->population);
@@ -3066,7 +3069,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 	/* no house allowed at all, bail out */
 	if (CanBuildHouseHere(tile, t->index, false).Failed()) return false;
 
-	bool above_snowline = _settings_game.game_creation.landscape == LT_ARCTIC && GetTileMaxZ(tile) > HighestSnowLine();
+	bool above_snowline = _settings_game.game_creation.landscape == LandscapeType::Arctic && GetTileMaxZ(tile) > HighestSnowLine();
 	HouseZonesBits zone = GetTownRadiusGroup(t, tile);
 
 	/* bits 0-4 are used
@@ -3123,7 +3126,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 		if (!HouseAllowsConstruction(house, tile, t, random_bits)) continue;
 
 		const HouseSpec *hs = HouseSpec::Get(house);
-		BuildTownHouse(t, tile, hs, house, random_bits, false, HasFlag(hs->extra_flags, BUILDING_IS_PROTECTED));
+		BuildTownHouse(t, tile, hs, house, random_bits, false, hs->extra_flags.Test(HouseExtraFlag::BuildingIsProtected));
 		return true;
 	}
 
@@ -3160,10 +3163,10 @@ CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, bo
 	int max_z = GetTileMaxZ(tile);
 
 	/* Make sure there is no slope? */
-	bool noslope = (hs->building_flags & TILE_NOT_SLOPED) != 0;
+	bool noslope = hs->building_flags.Test(BuildingFlag::NotSloped);
 
-	uint w = (hs->building_flags & BUILDING_2_TILES_X) ? 2 : 1;
-	uint h = (hs->building_flags & BUILDING_2_TILES_Y) ? 2 : 1;
+	uint w = hs->building_flags.Any(BUILDING_2_TILES_X) ? 2 : 1;
+	uint h = hs->building_flags.Any(BUILDING_2_TILES_Y) ? 2 : 1;
 
 	CommandCost cost = IsAnotherHouseTypeAllowedInTown(t, house);
 	if (!cost.Succeeded()) return cost;
@@ -3205,16 +3208,16 @@ static void DoClearTownHouseHelper(TileIndex tile, Town *t, HouseID house)
 TileIndexDiff GetHouseNorthPart(HouseID &house)
 {
 	if (house >= 3) { // house id 0,1,2 MUST be single tile houses, or this code breaks.
-		if (HouseSpec::Get(house - 1)->building_flags & TILE_SIZE_2x1) {
+		if (HouseSpec::Get(house - 1)->building_flags.Test(BuildingFlag::Size2x1)) {
 			house--;
 			return TileDiffXY(-1, 0);
-		} else if (HouseSpec::Get(house - 1)->building_flags & BUILDING_2_TILES_Y) {
+		} else if (HouseSpec::Get(house - 1)->building_flags.Any(BUILDING_2_TILES_Y)) {
 			house--;
 			return TileDiffXY(0, -1);
-		} else if (HouseSpec::Get(house - 2)->building_flags & BUILDING_HAS_4_TILES) {
+		} else if (HouseSpec::Get(house - 2)->building_flags.Any(BUILDING_HAS_4_TILES)) {
 			house -= 2;
 			return TileDiffXY(-1, 0);
-		} else if (HouseSpec::Get(house - 3)->building_flags & BUILDING_HAS_4_TILES) {
+		} else if (HouseSpec::Get(house - 3)->building_flags.Any(BUILDING_HAS_4_TILES)) {
 			house -= 3;
 			return TileDiffXY(-1, -1);
 		}
@@ -3246,17 +3249,17 @@ void ClearTownHouse(Town *t, TileIndex tile)
 	t->cache.num_houses--;
 
 	/* Clear flags for houses that only may exist once/town. */
-	if (hs->building_flags & BUILDING_IS_CHURCH) {
+	if (hs->building_flags.Test(BuildingFlag::IsChurch)) {
 		t->church_count--;
-	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
+	} else if (hs->building_flags.Test(BuildingFlag::IsStadium)) {
 		t->stadium_count--;
 	}
 
 	/* Do the actual clearing of tiles */
 	DoClearTownHouseHelper(tile, t, house);
-	if (hs->building_flags & BUILDING_2_TILES_Y)   DoClearTownHouseHelper(tile + TileDiffXY(0, 1), t, ++house);
-	if (hs->building_flags & BUILDING_2_TILES_X)   DoClearTownHouseHelper(tile + TileDiffXY(1, 0), t, ++house);
-	if (hs->building_flags & BUILDING_HAS_4_TILES) DoClearTownHouseHelper(tile + TileDiffXY(1, 1), t, ++house);
+	if (hs->building_flags.Any(BUILDING_2_TILES_Y))   DoClearTownHouseHelper(tile + TileDiffXY(0, 1), t, ++house);
+	if (hs->building_flags.Any(BUILDING_2_TILES_X))   DoClearTownHouseHelper(tile + TileDiffXY(1, 0), t, ++house);
+	if (hs->building_flags.Any(BUILDING_HAS_4_TILES)) DoClearTownHouseHelper(tile + TileDiffXY(1, 1), t, ++house);
 
 	RemoveNearbyStations(t, tile, hs->building_flags);
 
@@ -4522,8 +4525,8 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlag flags, int z
 		GetHouseNorthPart(house); // modifies house to the ID of the north tile
 		const HouseSpec *hs = HouseSpec::Get(house);
 
-		/* Here we differ from TTDP by checking TILE_NOT_SLOPED */
-		if (((hs->building_flags & TILE_NOT_SLOPED) == 0) && !IsSteepSlope(tileh_new) &&
+		/* Here we differ from TTDP by checking BuildingFlag::NotSloped */
+		if (!hs->building_flags.Test(BuildingFlag::NotSloped) && !IsSteepSlope(tileh_new) &&
 				(GetTileMaxZ(tile) == z_new + GetSlopeMaxZ(tileh_new))) {
 			bool allow_terraform = true;
 

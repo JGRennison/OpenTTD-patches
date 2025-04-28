@@ -287,7 +287,7 @@ void GamelogPrint(format_target &buffer)
 				case GLCT_GRFBUG: {
 					/* A specific bug in a NewGRF, that could cause wide spread problems, has been noted during the execution of the game. */
 					auto gm = grf_names.find(lc->grfrem.grfid);
-					assert (lc->grfbug.bug == GBUG_VEH_LENGTH);
+					assert (lc->grfbug.bug == GRFBug::VehLength);
 
 					buffer.format("Rail vehicle changes length outside a depot: GRF ID {:08X}, internal ID 0x{:X}", std::byteswap(lc->grfbug.grfid), lc->grfbug.data);
 					PrintGrfInfo(buffer, lc->grfbug.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
@@ -493,7 +493,7 @@ void GamelogTestMode()
  * @param bug type of bug, @see enum GRFBugs
  * @param data additional data
  */
-static void GamelogGRFBug(uint32_t grfid, uint8_t bug, uint64_t data)
+static void GamelogGRFBug(uint32_t grfid, GRFBug bug, uint64_t data)
 {
 	assert(_gamelog_action_type == GLAT_GRFBUG);
 
@@ -519,14 +519,14 @@ bool GamelogGRFBugReverse(uint32_t grfid, uint16_t internal_id)
 	for (LoggedAction &la : _gamelog_actions) {
 		for (LoggedChange &lc : la.changes) {
 			if (lc.ct == GLCT_GRFBUG && lc.grfbug.grfid == grfid &&
-					lc.grfbug.bug == GBUG_VEH_LENGTH && lc.grfbug.data == internal_id) {
+					lc.grfbug.bug == GRFBug::VehLength && lc.grfbug.data == internal_id) {
 				return false;
 			}
 		}
 	}
 
 	GamelogStartAction(GLAT_GRFBUG);
-	GamelogGRFBug(grfid, GBUG_VEH_LENGTH, internal_id);
+	GamelogGRFBug(grfid, GRFBug::VehLength, internal_id);
 	GamelogStopAction();
 
 	return true;
@@ -540,7 +540,7 @@ bool GamelogGRFBugReverse(uint32_t grfid, uint16_t internal_id)
  */
 static inline bool IsLoggableGrfConfig(const GRFConfig &g)
 {
-	return !HasBit(g.flags, GCF_STATIC) && g.status != GCS_NOT_FOUND;
+	return !g.flags.Test(GRFConfigFlag::Static) && g.status != GCS_NOT_FOUND;
 }
 
 /**

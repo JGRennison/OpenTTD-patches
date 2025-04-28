@@ -191,7 +191,7 @@ static void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig &config, std::strin
 		config.info = f->info;
 		config.url = f->url;
 	}
-	SetBit(config.flags, GCF_COPY);
+	config.flags.Set(GRFConfigFlag::Copy);
 }
 
 /**
@@ -228,12 +228,12 @@ void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool
 		 * the GRFs that are needed, i.e. the ones that the server has
 		 * selected in the NewGRF GUI and not the ones that are used due
 		 * to the fact that they are in [newgrf-static] in openttd.cfg */
-		uint count = std::ranges::count_if(info.grfconfig, [](const auto &c) { return !HasBit(c->flags, GCF_STATIC); });
+		uint count = std::ranges::count_if(info.grfconfig, [](const auto &c) { return !c->flags.Test(GRFConfigFlag::Static); });
 		p.Send_uint8(ClampTo<uint8_t>(std::min<uint>(count, NETWORK_MAX_GRF_COUNT))); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		for (const auto &c : info.grfconfig) {
-			if (HasBit(c->flags, GCF_STATIC)) continue;
+			if (c->flags.Test(GRFConfigFlag::Static)) continue;
 
 			SerializeGRFIdentifier(p, c->ident);
 			if (send_newgrf_names) p.Send_string(c->GetName());
@@ -266,7 +266,7 @@ void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool
 	};
 	p.Send_uint16(encode_map_size(info.map_width));
 	p.Send_uint16(encode_map_size(info.map_height));
-	p.Send_uint8 (info.landscape);
+	p.Send_uint8 (to_underlying(info.landscape));
 	p.Send_bool  (info.dedicated);
 }
 
@@ -296,7 +296,7 @@ void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &in
 	p.Send_string(""); // Used to be map-name.
 	p.Send_uint32(info.map_width);
 	p.Send_uint32(info.map_height);
-	p.Send_uint8 (info.landscape);
+	p.Send_uint8 (to_underlying(info.landscape));
 	p.Send_bool  (info.dedicated);
 
 	if (version >= 1) {
@@ -316,13 +316,13 @@ void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &in
 
 		/* Count number of GRFs to send information about */
 		for (const auto &c : info.grfconfig) {
-			if (!HasBit(c->flags, GCF_STATIC)) count++;
+			if (!c->flags.Test(GRFConfigFlag::Static)) count++;
 		}
 		p.Send_uint32(count); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		for (const auto &c : info.grfconfig) {
-			if (HasBit(c->flags, GCF_STATIC)) continue;
+			if (c->flags.Test(GRFConfigFlag::Static)) continue;
 
 			SerializeGRFIdentifier(p, c->ident);
 			if (send_newgrf_names && version >= 1) p.Send_string(c->GetName());
@@ -440,10 +440,10 @@ void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfo
 			info.map_width      = decode_map_size(p.Recv_uint16());
 			info.map_height     = decode_map_size(p.Recv_uint16());
 
-			info.landscape      = p.Recv_uint8 ();
+			info.landscape      = LandscapeType{p.Recv_uint8()};
 			info.dedicated      = p.Recv_bool  ();
 
-			if (info.landscape >= NUM_LANDSCAPE) info.landscape = 0;
+			if (to_underlying(info.landscape) >= NUM_LANDSCAPE) info.landscape = LandscapeType::Temperate;
 	}
 }
 
@@ -474,8 +474,8 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 	while (p.Recv_uint8() != 0) {} // Used to contain the map-name.
 	info.map_width      = p.Recv_uint32();
 	info.map_height     = p.Recv_uint32();
-	info.landscape      = p.Recv_uint8 ();
-	if (info.landscape >= NUM_LANDSCAPE) info.landscape = 0;
+	info.landscape      = LandscapeType{p.Recv_uint8()};
+	if (to_underlying(info.landscape) >= NUM_LANDSCAPE) info.landscape = LandscapeType::Temperate;
 	info.dedicated      = p.Recv_bool  ();
 
 	if (version >= 1) {

@@ -19,8 +19,8 @@
 #include "safeguards.h"
 
 /**
- * Pack a VehicleListIdentifier in a single uint32.
- * @return The packed identifier.
+ * Pack a VehicleListIdentifier in 32 bits so it can be used as unique WindowNumber.
+ * @return The window number.
  */
 uint32_t VehicleListIdentifier::Pack() const
 {

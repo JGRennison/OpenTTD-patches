@@ -1379,7 +1379,7 @@ static void ShowCompanyGroupInternal(CompanyID company, VehicleType vehicle_type
 
 	assert(vehicle_type < std::size(_vehicle_group_desc));
 	VehicleListIdentifier vli(VL_GROUP_LIST, vehicle_type, company);
-	VehicleGroupWindow *w = AllocateWindowDescFront<VehicleGroupWindow, Tneed_existing_window>(_vehicle_group_desc[vehicle_type], vli.Pack(), vli);
+	VehicleGroupWindow *w = AllocateWindowDescFront<VehicleGroupWindow, Tneed_existing_window>(_vehicle_group_desc[vehicle_type], vli.ToWindowNumber(), vli);
 	if (w != nullptr) w->SelectGroup(group);
 }
 
@@ -1411,7 +1411,7 @@ void ShowCompanyGroupForVehicle(const Vehicle *v)
  */
 static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner owner)
 {
-	return dynamic_cast<VehicleGroupWindow *>(FindWindowById(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_GROUP_LIST, vt, owner).Pack()));
+	return dynamic_cast<VehicleGroupWindow *>(FindWindowById(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_GROUP_LIST, vt, owner).ToWindowNumber()));
 }
 
 /**

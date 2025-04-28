@@ -432,7 +432,7 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 	format_buffer buffer;
 	buffer.append("Loading your savegame caused OpenTTD to crash.\n");
 
-	_saveload_crash_with_missing_newgrfs = std::ranges::any_of(_grfconfig, [](const auto &c) { return HasBit(c->flags, GCF_COMPATIBLE) || c->status == GCS_NOT_FOUND; });
+	_saveload_crash_with_missing_newgrfs = std::ranges::any_of(_grfconfig, [](const auto &c) { return c->flags.Test(GRFConfigFlag::Compatible) || c->status == GCS_NOT_FOUND; });
 
 	if (_saveload_crash_with_missing_newgrfs) {
 		buffer.append(
@@ -449,7 +449,7 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 			"The missing/compatible NewGRFs are:\n");
 
 		for (const auto &c : _grfconfig) {
-			if (HasBit(c->flags, GCF_COMPATIBLE)) {
+			if (c->flags.Test(GRFConfigFlag::Compatible)) {
 				const GRFIdentifier &replaced = GetOverriddenIdentifier(*c);
 				buffer.format("NewGRF {:08X} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
 						std::byteswap(c->ident.grfid), c->original_md5sum, c->filename, replaced.md5sum);
@@ -842,7 +842,7 @@ bool AfterLoadGame()
 	for (const auto &c : _grfconfig) {
 		if (c->status == GCS_NOT_FOUND) {
 			GamelogGRFRemove(c->ident.grfid);
-		} else if (HasBit(c->flags, GCF_COMPATIBLE)) {
+		} else if (c->flags.Test(GRFConfigFlag::Compatible)) {
 			GamelogGRFCompatible(c->ident);
 		}
 	}
@@ -1972,7 +1972,7 @@ bool AfterLoadGame()
 			if (IsTileType(t, MP_HOUSE)) {
 				/* We now store house protection status in the map. Set this based on the house spec flags. */
 				const HouseSpec *hs = HouseSpec::Get(GetHouseType(t));
-				SetHouseProtected(t, HasFlag(hs->extra_flags, BUILDING_IS_PROTECTED));
+				SetHouseProtected(t, hs->extra_flags.Test(HouseExtraFlag::BuildingIsProtected));
 			}
 		}
 	}
@@ -3349,13 +3349,16 @@ bool AfterLoadGame()
 		for (Town *t : Town::Iterate()) {
 			/* Set the default cargo requirement for town growth */
 			switch (_settings_game.game_creation.landscape) {
-				case LT_ARCTIC:
+				case LandscapeType::Arctic:
 					if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_WINTER;
 					break;
 
-				case LT_TROPIC:
+				case LandscapeType::Tropic:
 					if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_DESERT;
 					if (FindFirstCargoWithTownAcceptanceEffect(TAE_WATER) != nullptr) t->goal[TAE_WATER] = TOWN_GROWTH_DESERT;
+					break;
+
+				default:
 					break;
 			}
 		}

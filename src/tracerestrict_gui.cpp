@@ -5180,7 +5180,7 @@ void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype)
  */
 static inline TraceRestrictSlotWindow *FindTraceRestrictSlotWindow(Owner owner)
 {
-	return (TraceRestrictSlotWindow *)FindWindowById(GetWindowClassForVehicleType(VEH_TRAIN), VehicleListIdentifier(VL_SLOT_LIST, VEH_TRAIN, owner).Pack());
+	return (TraceRestrictSlotWindow *)FindWindowById(GetWindowClassForVehicleType(VEH_TRAIN), VehicleListIdentifier(VL_SLOT_LIST, VEH_TRAIN, owner).ToWindowNumber());
 }
 
 /**

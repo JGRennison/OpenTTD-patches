@@ -39,6 +39,9 @@ struct VehicleListIdentifier : public fmt_formattable {
 	bool UnpackIfValid(uint32_t data);
 	static VehicleListIdentifier UnPack(uint32_t data);
 
+	using WindowNumber = int32_t;
+	WindowNumber ToWindowNumber() const { return (WindowNumber)this->Pack(); }
+
 	template <typename T>
 	void Serialise(T &&buffer) const { buffer.Send_uint32(this->Pack()); }
 

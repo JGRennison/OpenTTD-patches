@@ -1771,15 +1771,15 @@ void DrawHouseInGUI(int x, int y, HouseID house_id, int view)
 	int y_delta = ScaleSpriteTrad(TILE_PIXELS / 2);
 
 	const HouseSpec *hs = HouseSpec::Get(house_id);
-	if (hs->building_flags & TILE_SIZE_2x2) {
+	if (hs->building_flags.Test(BuildingFlag::Size2x2)) {
 		draw(x, y - y_delta - y_delta, house_id, view); // North corner.
 		draw(x + x_delta, y - y_delta, house_id + 1, view); // West corner.
 		draw(x - x_delta, y - y_delta, house_id + 2, view); // East corner.
 		draw(x, y, house_id + 3, view); // South corner.
-	} else if (hs->building_flags & TILE_SIZE_2x1) {
+	} else if (hs->building_flags.Test(BuildingFlag::Size2x1)) {
 		draw(x + x_delta / 2, y - y_delta, house_id, view); // North east tile.
 		draw(x - x_delta / 2, y, house_id + 1, view); // South west tile.
-	} else if (hs->building_flags & TILE_SIZE_1x2) {
+	} else if (hs->building_flags.Test(BuildingFlag::Size1x2)) {
 		draw(x - x_delta / 2, y - y_delta, house_id, view); // North west tile.
 		draw(x + x_delta / 2, y, house_id + 1, view); // South east tile.
 	} else {
@@ -1819,10 +1819,10 @@ public:
 	void SetClimateMask()
 	{
 		switch (_settings_game.game_creation.landscape) {
-			case LT_TEMPERATE: this->climate_mask = HZ_TEMP; break;
-			case LT_ARCTIC:    this->climate_mask = HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW; break;
-			case LT_TROPIC:    this->climate_mask = HZ_SUBTROPIC; break;
-			case LT_TOYLAND:   this->climate_mask = HZ_TOYLND; break;
+			case LandscapeType::Temperate: this->climate_mask = HZ_TEMP; break;
+			case LandscapeType::Arctic:    this->climate_mask = HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW; break;
+			case LandscapeType::Tropic:    this->climate_mask = HZ_SUBTROPIC; break;
+			case LandscapeType::Toyland:   this->climate_mask = HZ_TOYLND; break;
 			default: NOT_REACHED();
 		}
 
@@ -2030,13 +2030,13 @@ struct BuildHouseWindow : public PickerWindow {
 			ResetObjectToPlace();
 		} else {
 			SetObjectToPlaceWnd(SPR_CURSOR_TOWN, PAL_NONE, HT_RECT | HT_DIAGONAL, this);
-			if (spec->building_flags & TILE_SIZE_2x2) {
+			if (spec->building_flags.Test(BuildingFlag::Size2x2)) {
 				SetTileSelectSize(2, 2);
-			} else if (spec->building_flags & TILE_SIZE_2x1) {
+			} else if (spec->building_flags.Test(BuildingFlag::Size2x1)) {
 				SetTileSelectSize(2, 1);
-			} else if (spec->building_flags & TILE_SIZE_1x2) {
+			} else if (spec->building_flags.Test(BuildingFlag::Size1x2)) {
 				SetTileSelectSize(1, 2);
-			} else if (spec->building_flags & TILE_SIZE_1x1) {
+			} else if (spec->building_flags.Test(BuildingFlag::Size1x1)) {
 				SetTileSelectSize(1, 1);
 			}
 		}
@@ -2091,10 +2091,10 @@ struct BuildHouseWindow : public PickerWindow {
 		line.push_back('\n');
 
 		uint8_t size = 0;
-		if ((hs->building_flags & TILE_SIZE_1x1) != 0) size = 0x11;
-		if ((hs->building_flags & TILE_SIZE_2x1) != 0) size = 0x21;
-		if ((hs->building_flags & TILE_SIZE_1x2) != 0) size = 0x12;
-		if ((hs->building_flags & TILE_SIZE_2x2) != 0) size = 0x22;
+		if (hs->building_flags.Test(BuildingFlag::Size1x1)) size = 0x11;
+		if (hs->building_flags.Test(BuildingFlag::Size2x1)) size = 0x21;
+		if (hs->building_flags.Test(BuildingFlag::Size1x2)) size = 0x12;
+		if (hs->building_flags.Test(BuildingFlag::Size2x2)) size = 0x22;
 		SetDParam(0, GB(size, 0, 4));
 		SetDParam(1, GB(size, 4, 4));
 		AppendStringInPlace(line, STR_HOUSE_PICKER_SIZE);
@@ -2161,7 +2161,7 @@ struct BuildHouseWindow : public PickerWindow {
 		}
 
 		/* If house spec already has the protected flag, handle it automatically and disable the buttons. */
-		bool hasflag = HasFlag(spec->extra_flags, BUILDING_IS_PROTECTED);
+		bool hasflag = spec->extra_flags.Test(HouseExtraFlag::BuildingIsProtected);
 		if (hasflag) this->house_protected = true;
 
 		this->SetWidgetLoweredState(WID_BH_PROTECT_OFF, !this->house_protected);

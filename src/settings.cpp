@@ -444,7 +444,7 @@ size_t IntSettingDesc::ParseValue(const char *str) const
 	char *end;
 	size_t val = std::strtoul(str, &end, 0);
 	if (end == str) {
-		if (this->flags & SF_CONVERT_BOOL_TO_INT) {
+		if (this->flags.Test(SettingFlag::ConvertBoolToInt)) {
 			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;
 			if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0) return 0;
 		}
@@ -502,7 +502,7 @@ size_t BoolSettingDesc::ParseValue(const char *str) const
 
 static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32_t &val)
 {
-	if (sdb->flags & SF_ENUM_PRE_CB_VALIDATE && sdb->pre_check != nullptr && !sdb->pre_check(val)) return false;
+	if (sdb->flags.Test(SettingFlag::EnumPreCallbackValidate) && sdb->pre_check != nullptr && !sdb->pre_check(val)) return false;
 	for (const SettingDescEnumEntry *enumlist = sdb->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 		if (enumlist->val == val) {
 			return true;
@@ -552,7 +552,7 @@ void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
 	} else if (this->IsBoolSetting()) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 	} else {
-		if ((this->flags & SF_ENUM) != 0) {
+		if (this->flags.Test(SettingFlag::Enum)) {
 			StringID str = STR_UNDEFINED;
 			for (const SettingDescEnumEntry *enumlist = this->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 				if (enumlist->val == value) {
@@ -561,11 +561,11 @@ void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
 				}
 			}
 			SetDParam(first_param++, str);
-		} else if ((this->flags & SF_GUI_DROPDOWN) != 0) {
+		} else if (this->flags.Test(SettingFlag::GuiDropdown)) {
 			auto [min_val, _] = this->GetRange();
 			SetDParam(first_param++, this->str_val - min_val + value);
 		} else {
-			SetDParam(first_param++, this->str_val + ((value == 0 && (this->flags & SF_GUI_0_IS_SPECIAL) != 0) ? 1 : 0));
+			SetDParam(first_param++, this->str_val + ((value == 0 && this->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? 1 : 0));
 		}
 		SetDParam(first_param++, value);
 	}
@@ -612,9 +612,9 @@ void IntSettingDesc::MakeValueValidAndWrite(const void *object, int32_t val) con
  * Make the value valid given the limitations of this setting.
  *
  * In the case of int settings this is ensuring the value is between the minimum and
- * maximum value, with a special case for 0 if SF_GUI_0_IS_SPECIAL is set.
+ * maximum value, with a special case for 0 if SettingFlag::GuiZeroIsSpecial is set.
  * This is generally done by clamping the value so it is within the allowed value range.
- * However, for SF_GUI_DROPDOWN the default is used when the value is not valid.
+ * However, for SettingFlag::GuiDropdown the default is used when the value is not valid.
  * @param val The value to make valid.
  */
 void IntSettingDesc::MakeValueValid(int32_t &val) const
@@ -634,10 +634,10 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 		case SLE_VAR_U16:
 		case SLE_VAR_I32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
-			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || val != 0) {
-				if (this->flags & SF_ENUM) {
+			if (!this->flags.Test(SettingFlag::GuiZeroIsSpecial) || val != 0) {
+				if (this->flags.Test(SettingFlag::Enum)) {
 					if (!ValidateEnumSetting(this, val)) val = GetDefaultValue();
-				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
+				} else if (!this->flags.Test(SettingFlag::GuiDropdown)) {
 					/* Clamp value-type setting to its valid range */
 					val = Clamp(val, min_val, max_val);
 				} else if (val < min_val || val > static_cast<int32_t>(max_val)) {
@@ -650,14 +650,14 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 		case SLE_VAR_U32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
 			uint32_t uval = static_cast<uint32_t>(val);
-			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || uval != 0) {
-				if (this->flags & SF_ENUM) {
+			if (!this->flags.Test(SettingFlag::GuiZeroIsSpecial) || uval != 0) {
+				if (this->flags.Test(SettingFlag::Enum)) {
 					if (!ValidateEnumSetting(this, val)) {
 						uval = (uint32_t)this->GetDefaultValue();
 					} else {
 						uval = (uint32_t)val;
 					}
-				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
+				} else if (!this->flags.Test(SettingFlag::GuiDropdown)) {
 					/* Clamp value-type setting to its valid range */
 					uval = ClampU(uval, min_val, max_val);
 				} else if (uval < static_cast<uint32_t>(min_val) || uval > max_val) {
@@ -766,7 +766,7 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (sd->startup != only_startup) continue;
 		const IniItem *item = nullptr;
-		if (!(sd->flags & SF_NO_NEWGAME)) {
+		if (!sd->flags.Test(SettingFlag::NoNewgame)) {
 			/* For settings.xx.yy load the settings from [xx] yy = ? */
 			std::string s{ GetSettingConfigName(*sd) };
 			auto sc = s.find('.');
@@ -814,7 +814,7 @@ void StringSettingDesc::ParseValue(const IniItem *item, void *object) const
 {
 	std::string str = (item == nullptr) ? this->def : item->value.value_or("");
 	this->MakeValueValid(str);
-	if (this->flags & SF_RUN_CALLBACKS_ON_PARSE) {
+	if (this->flags.Test(SettingFlag::RunCallbacksOnParse)) {
 		if (this->pre_check != nullptr && !this->pre_check(str)) str = this->def;
 		if (this->post_callback != nullptr) this->post_callback(str);
 	}
@@ -855,8 +855,8 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 		/* If the setting is not saved to the configuration
 		 * file, just continue with the next setting */
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (sd->flags & SF_NOT_IN_CONFIG) continue;
-		if (sd->flags & SF_NO_NEWGAME) continue;
+		if (sd->flags.Test(SettingFlag::NotInConfig)) continue;
+		if (sd->flags.Test(SettingFlag::NoNewgame)) continue;
 
 		/* XXX - wtf is this?? (group override?) */
 		std::string s{ GetSettingConfigName(*sd) };
@@ -1047,14 +1047,14 @@ void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->flags & SF_NO_NETWORK_SYNC) && IsNonAdminNetworkClient() && !(this->flags & SF_PER_COMPANY)) return false;
-	if (do_command && (this->flags & SF_NO_NETWORK_SYNC)) return false;
-	if ((this->flags & SF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
-	if ((this->flags & SF_NO_NETWORK) && _networking) return false;
-	if ((this->flags & SF_NEWGAME_ONLY) &&
+	if (!do_command && !this->flags.Test(SettingFlag::NoNetworkSync) && IsNonAdminNetworkClient() && !this->flags.Test(SettingFlag::PerCompany)) return false;
+	if (do_command && this->flags.Test(SettingFlag::NoNetworkSync)) return false;
+	if (this->flags.Test(SettingFlag::NetworkOnly) && !_networking && _game_mode != GM_MENU) return false;
+	if (this->flags.Test(SettingFlag::NoNetwork) && _networking) return false;
+	if (this->flags.Test(SettingFlag::NewgameOnly) &&
 			(_game_mode == GM_NORMAL ||
-			(_game_mode == GM_EDITOR && !(this->flags & SF_SCENEDIT_TOO)))) return false;
-	if ((this->flags & SF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
+			(_game_mode == GM_EDITOR && !this->flags.Test(SettingFlag::SceneditToo)))) return false;
+	if (this->flags.Test(SettingFlag::SceneditOnly) && _game_mode != GM_EDITOR) return false;
 	return true;
 }
 
@@ -1064,8 +1064,8 @@ bool SettingDesc::IsEditable(bool do_command) const
  */
 SettingType SettingDesc::GetType() const
 {
-	if (this->flags & SF_PER_COMPANY) return ST_COMPANY;
-	return (this->flags & SF_NOT_IN_SAVE) ? ST_CLIENT : ST_GAME;
+	if (this->flags.Test(SettingFlag::PerCompany)) return ST_COMPANY;
+	return this->flags.Test(SettingFlag::NotInSave) ? ST_CLIENT : ST_GAME;
 }
 
 /**
@@ -2612,14 +2612,14 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, const char *grpname, bool
 		}
 
 		/* Check if item is valid */
-		if (!FillGRFDetails(*c, is_static) || HasBit(c->flags, GCF_INVALID)) {
+		if (!FillGRFDetails(*c, is_static) || c->flags.Test(GRFConfigFlag::Invalid)) {
 			if (c->status == GCS_NOT_FOUND) {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND);
-			} else if (HasBit(c->flags, GCF_UNSAFE)) {
+			} else if (c->flags.Test(GRFConfigFlag::Unsafe)) {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNSAFE);
-			} else if (HasBit(c->flags, GCF_SYSTEM)) {
+			} else if (c->flags.Test(GRFConfigFlag::System)) {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_SYSTEM);
-			} else if (HasBit(c->flags, GCF_INVALID)) {
+			} else if (c->flags.Test(GRFConfigFlag::Invalid)) {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE);
 			} else {
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
@@ -2641,7 +2641,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, const char *grpname, bool
 
 		if (is_static) {
 			/* Mark file as static to avoid saving in savegame. */
-			SetBit(c->flags, GCF_STATIC);
+			c->flags.Set(GRFConfigFlag::Static);
 		} else if (++num_grfs > NETWORK_MAX_GRF_COUNT) {
 			/* Check we will not load more non-static NewGRFs than allowed. This could trigger issues for game servers. */
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED, WL_CRITICAL);
@@ -3166,14 +3166,14 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
 	this->Write(object, newval);
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
-	if (HasFlag(this->flags, SF_NO_NETWORK) || HasFlag(this->flags, SF_SANDBOX)) {
+	if (this->flags.Test(SettingFlag::NoNetwork) || this->flags.Test(SettingFlag::Sandbox)) {
 		GamelogStartAction(GLAT_SETTING);
 		GamelogSetting(this->name, oldval, newval);
 		GamelogStopAction();
 	}
 
 	SetWindowClassesDirty(WC_GAME_OPTIONS);
-	if (HasFlag(this->flags, SF_SANDBOX)) SetWindowClassesDirty(WC_CHEATS);
+	if (this->flags.Test(SettingFlag::Sandbox)) SetWindowClassesDirty(WC_CHEATS);
 
 	if (_save_config) SaveToConfig(ini_save_flags);
 }
@@ -3244,8 +3244,8 @@ const SettingDesc *GetSettingFromName(std::string_view name)
 
 SaveToConfigFlags ConfigSaveFlagsFor(const SettingDesc *sd)
 {
-	if (sd->flags & SF_PRIVATE) return STCF_PRIVATE;
-	if (sd->flags & SF_SECRET) return STCF_SECRETS;
+	if (sd->flags.Test(SettingFlag::Private)) return STCF_PRIVATE;
+	if (sd->flags.Test(SettingFlag::Secret)) return STCF_SECRETS;
 	return STCF_GENERIC;
 }
 
@@ -3347,10 +3347,10 @@ const char *GetCompanySettingNameByIndex(uint32_t idx)
 bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame)
 {
 	const IntSettingDesc *setting = sd->AsIntSetting();
-	if ((setting->flags & SF_PER_COMPANY) != 0) {
+	if (setting->flags.Test(SettingFlag::PerCompany)) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
 			return Command<CMD_CHANGE_COMPANY_SETTING>::Post(setting->name, value);
-		} else if (setting->flags & SF_NO_NEWGAME) {
+		} else if (setting->flags.Test(SettingFlag::NoNewgame)) {
 			return false;
 		}
 
@@ -3362,9 +3362,9 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	 * (if any) to change. Also *hack*hack* we update the _newgame version
 	 * of settings because changing a company-based setting in a game also
 	 * changes its defaults. At least that is the convention we have chosen */
-	bool no_newgame = setting->flags & SF_NO_NEWGAME;
+	bool no_newgame = setting->flags.Test(SettingFlag::NoNewgame);
 	if (no_newgame && _game_mode == GM_MENU) return false;
-	if (setting->flags & SF_NO_NETWORK_SYNC) {
+	if (setting->flags.Test(SettingFlag::NoNetworkSync)) {
 		if (_game_mode != GM_MENU && !no_newgame) {
 			setting->ChangeValue(&_settings_newgame, value, ConfigSaveFlagsFor(setting));
 		}
@@ -3426,7 +3426,7 @@ void SyncCompanySettings()
  */
 bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_newgame)
 {
-	assert(sd->flags & SF_NO_NETWORK_SYNC);
+	assert(sd->flags.Test(SettingFlag::NoNetworkSync));
 
 	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value.compare("(null)") == 0) {
 		value.clear();
@@ -3470,7 +3470,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 	/* Company settings are not in "list_settings", so don't try to modify them. */
-	if (sd == nullptr || (sd->flags & SF_PER_COMPANY) || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || sd->flags.Test(SettingFlag::PerCompany) || (sd->flags.Test(SettingFlag::NoNewgame) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrint(CC_ERROR, "'{}' is an unknown setting.", name);
 		return;
 	}
@@ -3520,7 +3520,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 	/* Company settings are not in "list_settings", so don't try to read them. */
-	if (sd == nullptr || (sd->flags & SF_PER_COMPANY) || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || sd->flags.Test(SettingFlag::PerCompany) || (sd->flags.Test(SettingFlag::NoNewgame) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrint(CC_ERROR, "'{}' is an unknown setting.", name);
 		return;
 	}
@@ -3534,7 +3534,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 
 		bool show_min_max = true;
 		auto [min_val, max_val] = int_setting->GetRange();
-		if (sd->flags & SF_ENUM) {
+		if (sd->flags.Test(SettingFlag::Enum)) {
 			int64_t min_value = INT64_MAX;
 			int64_t max_value = INT64_MIN;
 			int count = 0;
@@ -3557,7 +3557,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 
 		if (show_min_max) {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {})",
-				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_val, max_val);
+				name, value, (sd->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? "(0) " : "", min_val, max_val);
 		} else {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'",
 				name, value);
@@ -3570,7 +3570,7 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
 	for (auto &sd : table) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
-		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
+		if (sd->flags.Test(SettingFlag::NoNewgame) && _game_mode == GM_MENU) continue;
 		format_buffer value;
 		sd->FormatValue(value, &GetGameSettings());
 		if (show_defaults && sd->IsIntSetting()) {
@@ -3630,7 +3630,7 @@ static void LoadSettings(std::initializer_list<SettingTable> settings, std::init
 
 		btree::btree_multimap<std::string_view, const SettingDesc *> names;
 		for (auto &osd : IterateSettingTables(settings)) {
-			if (osd->flags & SF_NOT_IN_SAVE) continue;
+			if (osd->flags.Test(SettingFlag::NotInSave)) continue;
 			if (osd->name == nullptr) continue;
 			names.insert({osd->name, osd.get()});
 		}
@@ -3966,8 +3966,8 @@ const SettingTable &GetLinkGraphSettingTable()
 void ResetSettingsToDefaultForLoad()
 {
 	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
-		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if ((sd->flags & SF_NO_NETWORK_SYNC) && _networking && !_network_server) continue;
+		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
+		if (sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) continue;
 
 		sd->ResetToDefault(&_settings_game);
 	}

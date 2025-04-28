@@ -1038,7 +1038,7 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 			break;
 
 		case 0x06: // Climates available
-			ei->climates = buf.ReadByte();
+			ei->climates = LandscapeTypes{buf.ReadByte()};
 			break;
 
 		case PROP_VEHICLE_LOAD_AMOUNT: // 0x07 Loading speed
@@ -2622,7 +2622,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 					housespec->random_colour[3] = COLOUR_GREEN;
 
 					/* House flags 40 and 80 are exceptions; these flags are never set automatically. */
-					housespec->building_flags &= ~(BUILDING_IS_CHURCH | BUILDING_IS_STADIUM);
+					housespec->building_flags.Reset(BuildingFlag::IsChurch).Reset(BuildingFlag::IsStadium);
 
 					/* Make sure that the third cargo type is valid in this
 					 * climate. This can cause problems when copying the properties
@@ -2666,8 +2666,8 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 
 				/* If value of goods is negative, it means in fact food or, if in toyland, fizzy_drink acceptance.
 				 * Else, we have "standard" 3rd cargo type, goods or candy, for toyland once more */
-				CargoType cargo_type = (goods >= 0) ? ((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoTypeByLabel(CT_CANDY) : GetCargoTypeByLabel(CT_GOODS)) :
-						((_settings_game.game_creation.landscape == LT_TOYLAND) ? GetCargoTypeByLabel(CT_FIZZY_DRINKS) : GetCargoTypeByLabel(CT_FOOD));
+				CargoType cargo_type = (goods >= 0) ? ((_settings_game.game_creation.landscape == LandscapeType::Toyland) ? GetCargoTypeByLabel(CT_CANDY) : GetCargoTypeByLabel(CT_GOODS)) :
+						((_settings_game.game_creation.landscape == LandscapeType::Toyland) ? GetCargoTypeByLabel(CT_FIZZY_DRINKS) : GetCargoTypeByLabel(CT_FOOD));
 
 				/* Make sure the cargo type is valid in this climate. */
 				if (!IsValidCargoType(cargo_type)) goods = 0;
@@ -2727,7 +2727,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				break;
 
 			case 0x19: // Extra flags
-				housespec->extra_flags = (HouseExtraFlags)buf.ReadByte();
+				housespec->extra_flags = static_cast<HouseExtraFlags>(buf.ReadByte());
 				break;
 
 			case 0x1A: // Animation frames
@@ -4024,11 +4024,11 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				break;
 
 			case 0x17: // Probability in random game
-				indsp->appear_creation[_settings_game.game_creation.landscape] = buf.ReadByte();
+				indsp->appear_creation[to_underlying(_settings_game.game_creation.landscape)] = buf.ReadByte();
 				break;
 
 			case 0x18: // Probability during gameplay
-				indsp->appear_ingame[_settings_game.game_creation.landscape] = buf.ReadByte();
+				indsp->appear_ingame[to_underlying(_settings_game.game_creation.landscape)] = buf.ReadByte();
 				break;
 
 			case 0x19: // Map colour
@@ -4607,7 +4607,7 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 				break;
 
 			case 0x0B: // Climate mask
-				spec->climate = buf.ReadByte();
+				spec->climate = LandscapeTypes{buf.ReadByte()};
 				break;
 
 			case 0x0C: // Size
@@ -5889,7 +5889,7 @@ static void SafeChangeInfo(ByteReader &buf)
 				uint32_t s = buf.ReadDWord();
 				buf.ReadDWord(); // dest
 				const GRFConfig *grfconfig = GetGRFConfig(s);
-				if (grfconfig != nullptr && !HasBit(grfconfig->flags, GCF_STATIC)) {
+				if (grfconfig != nullptr && !grfconfig->flags.Test(GRFConfigFlag::Static)) {
 					is_safe = false;
 					break;
 				}
@@ -5898,7 +5898,7 @@ static void SafeChangeInfo(ByteReader &buf)
 		}
 	}
 
-	SetBit(_cur.grfconfig->flags, GCF_UNSAFE);
+	_cur.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
 
 	/* Skip remainder of GRF */
 	_cur.skip_sprites = -1;
@@ -7550,7 +7550,7 @@ static void FeatureNewName(ByteReader &buf)
 			case GSF_SHIPS:
 			case GSF_AIRCRAFT:
 				if (!generic) {
-					Engine *e = GetNewEngine(_cur.grffile, (VehicleType)feature, id, HasBit(_cur.grfconfig->flags, GCF_STATIC));
+					Engine *e = GetNewEngine(_cur.grffile, (VehicleType)feature, id, _cur.grfconfig->flags.Test(GRFConfigFlag::Static));
 					if (e == nullptr) break;
 					StringID string = AddGRFString(_cur.grffile->grfid, GRFStringID{feature_overlay | e->index}, lang, new_scheme, false, name, e->info.string_id);
 					e->info.string_id = string;
@@ -7727,7 +7727,7 @@ static void GraphicsNew(ByteReader &buf)
 			action5_type = def.info;
 		}
 	} else {
-		if ((type == 0x0D) && (num == 10) && HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
+		if ((type == 0x0D) && (num == 10) && _cur.grfconfig->flags.Test(GRFConfigFlag::System)) {
 			/* Special not-TTDP-compatible case used in openttd.grf
 			 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
 			GrfMsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
@@ -7866,7 +7866,7 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 		}
 
 		case 0x03: // current climate, 0=temp, 1=arctic, 2=trop, 3=toyland
-			*value = _settings_game.game_creation.landscape;
+			*value = to_underlying(_settings_game.game_creation.landscape);
 			return true;
 
 		case 0x06: // road traffic side, bit 4 clear=left, set=right
@@ -7949,7 +7949,7 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile)
 
 		case 0x20: { // snow line height
 			uint8_t snowline = GetSnowLine();
-			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.map_height_limit) {
+			if (_settings_game.game_creation.landscape == LandscapeType::Arctic && snowline <= _settings_game.construction.map_height_limit) {
 				*value = Clamp(snowline * (grffile->grf_version >= 8 ? 1 : TILE_HEIGHT), 0, 0xFE);
 			} else {
 				/* No snow */
@@ -8005,7 +8005,7 @@ static uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 				uint32_t param_val = 0;
 				if (index < lengthof(_ttdpatch_flags)) {
 					param_val = _ttdpatch_flags[index];
-					if (!HasBit(_cur.grfconfig->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
+					if (!_cur.grfconfig->flags.Any({GRFConfigFlag::Static, GRFConfigFlag::System})) {
 						SetBit(_observed_ttdpatch_flags[index], *cond_val);
 					}
 				}
@@ -8216,7 +8216,7 @@ static void SkipIf(ByteReader &buf)
 
 		GRFConfig *c = GetGRFConfig(cond_val, mask);
 
-		if (c != nullptr && HasBit(c->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_STATIC) && _networking) {
+		if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 			DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
 			c = nullptr;
 		}
@@ -8335,12 +8335,12 @@ static void ScanInfo(ByteReader &buf)
 	_cur.grfconfig->ident.grfid = grfid;
 
 	if (grf_version < 2 || grf_version > 8) {
-		SetBit(_cur.grfconfig->flags, GCF_INVALID);
+		_cur.grfconfig->flags.Set(GRFConfigFlag::Invalid);
 		Debug(grf, 0, "{}: NewGRF \"{}\" (GRFID {:08X}) uses GRF version {}, which is incompatible with this version of OpenTTD.", _cur.grfconfig->GetDisplayPath(), StrMakeValid(name), std::byteswap(grfid), grf_version);
 	}
 
 	/* GRF IDs starting with 0xFF are reserved for internal TTDPatch use */
-	if (GB(grfid, 0, 8) == 0xFF) SetBit(_cur.grfconfig->flags, GCF_SYSTEM);
+	if (GB(grfid, 0, 8) == 0xFF) _cur.grfconfig->flags.Set(GRFConfigFlag::System);
 
 	AddGRFTextToList(_cur.grfconfig->name, 0x7F, grfid, false, name);
 
@@ -8603,7 +8603,7 @@ static void SafeParamSet(ByteReader &buf)
 	 * reserved, it would be marked unsafe anyway. GRM for (e.g. bridge)
 	 * sprites  is considered safe. */
 
-	SetBit(_cur.grfconfig->flags, GCF_UNSAFE);
+	_cur.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
 
 	/* Skip remainder of GRF */
 	_cur.skip_sprites = -1;
@@ -8875,7 +8875,7 @@ static void ParamSet(ByteReader &buf)
 			/* Read another GRF File's parameter */
 			const GRFFile *file = GetFileByGRFID(data);
 			GRFConfig *c = GetGRFConfig(data);
-			if (c != nullptr && HasBit(c->flags, GCF_STATIC) && !HasBit(_cur.grfconfig->flags, GCF_STATIC) && _networking) {
+			if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 				/* Disable the read GRF if it is a static NewGRF. */
 				DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
 				src1 = 0;
@@ -9014,7 +9014,7 @@ static void ParamSet(ByteReader &buf)
 			ClrBit(res, GMB_TRAIN_WIDTH_32_PIXELS);
 
 			/* Only copy safe bits for static grfs */
-			if (HasBit(_cur.grfconfig->flags, GCF_STATIC)) {
+			if (_cur.grfconfig->flags.Test(GRFConfigFlag::Static)) {
 				uint32_t safe_bits = 0;
 				SetBit(safe_bits, GMB_SECOND_ROCKY_TILE_SET);
 
@@ -9055,7 +9055,7 @@ static void SafeGRFInhibit(ByteReader &buf)
 
 		/* GRF is unsafe it if tries to deactivate other GRFs */
 		if (grfid != _cur.grfconfig->ident.grfid) {
-			SetBit(_cur.grfconfig->flags, GCF_UNSAFE);
+			_cur.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
 
 			/* Skip remainder of GRF */
 			_cur.skip_sprites = -1;
@@ -10601,7 +10601,7 @@ static void Act14FeatureTest(ByteReader &buf)
  */
 static void GRFUnsafe(ByteReader &)
 {
-	SetBit(_cur.grfconfig->flags, GCF_UNSAFE);
+	_cur.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
 
 	/* Skip remainder of GRF */
 	_cur.skip_sprites = -1;
@@ -11042,29 +11042,29 @@ static void CalculateRefitMasks()
 		if (_gted[engine].defaultcargo_grf == nullptr) {
 			/* If the vehicle has any capacity, apply the default refit masks */
 			if (e->type != VEH_TRAIN || e->u.rail.capacity != 0) {
-				static constexpr uint8_t T = 1 << LT_TEMPERATE;
-				static constexpr uint8_t A = 1 << LT_ARCTIC;
-				static constexpr uint8_t S = 1 << LT_TROPIC;
-				static constexpr uint8_t Y = 1 << LT_TOYLAND;
+				static constexpr LandscapeType T = LandscapeType::Temperate;
+				static constexpr LandscapeType A = LandscapeType::Arctic;
+				static constexpr LandscapeType S = LandscapeType::Tropic;
+				static constexpr LandscapeType Y = LandscapeType::Toyland;
 				static const struct DefaultRefitMasks {
-					uint8_t climate;
+					LandscapeTypes climate;
 					CargoLabel cargo_label;
 					CargoClasses cargo_allowed;
 					CargoClasses cargo_disallowed;
 				} _default_refit_masks[] = {
-					{T | A | S | Y, CT_PASSENGERS, CC_PASSENGERS,               0},
-					{T | A | S    , CT_MAIL,       CC_MAIL,                     0},
-					{T | A | S    , CT_VALUABLES,  CC_ARMOURED,                 CC_LIQUID},
-					{            Y, CT_MAIL,       CC_MAIL | CC_ARMOURED,       CC_LIQUID},
-					{T | A        , CT_COAL,       CC_BULK,                     0},
-					{        S    , CT_COPPER_ORE, CC_BULK,                     0},
-					{            Y, CT_SUGAR,      CC_BULK,                     0},
-					{T | A | S    , CT_OIL,        CC_LIQUID,                   0},
-					{            Y, CT_COLA,       CC_LIQUID,                   0},
-					{T            , CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
-					{    A | S    , CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS | CC_REFRIGERATED},
-					{    A | S    , CT_FOOD,       CC_REFRIGERATED,             0},
-					{            Y, CT_CANDY,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
+					{{T, A, S, Y}, CT_PASSENGERS, CC_PASSENGERS,               0},
+					{{T, A, S   }, CT_MAIL,       CC_MAIL,                     0},
+					{{T, A, S   }, CT_VALUABLES,  CC_ARMOURED,                 CC_LIQUID},
+					{{         Y}, CT_MAIL,       CC_MAIL | CC_ARMOURED,       CC_LIQUID},
+					{{T, A      }, CT_COAL,       CC_BULK,                     0},
+					{{      S   }, CT_COPPER_ORE, CC_BULK,                     0},
+					{{         Y}, CT_SUGAR,      CC_BULK,                     0},
+					{{T, A, S   }, CT_OIL,        CC_LIQUID,                   0},
+					{{         Y}, CT_COLA,       CC_LIQUID,                   0},
+					{{T         }, CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
+					{{   A, S   }, CT_GOODS,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS | CC_REFRIGERATED},
+					{{   A, S   }, CT_FOOD,       CC_REFRIGERATED,             0},
+					{{         Y}, CT_CANDY,      CC_PIECE_GOODS | CC_EXPRESS, CC_LIQUID | CC_PASSENGERS},
 				};
 
 				if (e->type == VEH_AIRCRAFT) {
@@ -11086,7 +11086,7 @@ static void CalculateRefitMasks()
 							break;
 						default:
 							/* Cargo ships */
-							if (_settings_game.game_creation.landscape == LT_TOYLAND) {
+							if (_settings_game.game_creation.landscape == LandscapeType::Toyland) {
 								/* No tanker in toyland :( */
 								_gted[engine].cargo_allowed = CC_MAIL | CC_ARMOURED | CC_EXPRESS | CC_BULK | CC_PIECE_GOODS | CC_LIQUID;
 								_gted[engine].cargo_disallowed = CC_PASSENGERS;
@@ -11106,7 +11106,7 @@ static void CalculateRefitMasks()
 					/* Train wagons and road vehicles are classified by their default cargo type */
 					CargoLabel label = GetActiveCargoLabel(ei->cargo_label);
 					for (const auto &drm : _default_refit_masks) {
-						if (!HasBit(drm.climate, _settings_game.game_creation.landscape)) continue;
+						if (!drm.climate.Test(_settings_game.game_creation.landscape)) continue;
 						if (drm.cargo_label != label) continue;
 
 						_gted[engine].cargo_allowed = drm.cargo_allowed;
@@ -11207,7 +11207,7 @@ static void CalculateRefitMasks()
 				ei->cargo_type = static_cast<CargoType>(FindFirstBit(_standard_cargo_mask));
 			}
 		}
-		if (!IsValidCargoType(ei->cargo_type)) ei->climates = 0;
+		if (!IsValidCargoType(ei->cargo_type)) ei->climates = {};
 
 		/* Clear refit_mask for not refittable ships */
 		if (e->type == VEH_SHIP && !e->u.ship.old_refittable) {
@@ -11243,7 +11243,7 @@ static void FinaliseEngineArray()
 			e->info.variant_id = GetNewEngineID(e->grf_prop.grffile, e->type, e->info.variant_id);
 		}
 
-		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
+		if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
 		switch (e->type) {
 			case VEH_TRAIN: AppendCopyableBadgeList(e->badges, GetRailTypeInfo(e->u.rail.railtype)->badges, GSF_TRAINS); break;
@@ -11333,11 +11333,11 @@ void FinaliseCargoArray()
  */
 static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseSpec *next2, const HouseSpec *next3, const std::string &filename)
 {
-	if (((hs->building_flags & BUILDING_HAS_2_TILES) != 0 &&
-				(next1 == nullptr || !next1->enabled || (next1->building_flags & BUILDING_HAS_1_TILE) != 0)) ||
-			((hs->building_flags & BUILDING_HAS_4_TILES) != 0 &&
-				(next2 == nullptr || !next2->enabled || (next2->building_flags & BUILDING_HAS_1_TILE) != 0 ||
-				next3 == nullptr || !next3->enabled || (next3->building_flags & BUILDING_HAS_1_TILE) != 0))) {
+	if ((hs->building_flags.Any(BUILDING_HAS_2_TILES) &&
+				(next1 == nullptr || !next1->enabled || next1->building_flags.Any(BUILDING_HAS_1_TILE))) ||
+			(hs->building_flags.Any(BUILDING_HAS_4_TILES) &&
+				(next2 == nullptr || !next2->enabled || next2->building_flags.Any(BUILDING_HAS_1_TILE) ||
+				next3 == nullptr || !next3->enabled || next3->building_flags.Any(BUILDING_HAS_1_TILE)))) {
 		hs->enabled = false;
 		if (!filename.empty()) Debug(grf, 1, "FinaliseHouseArray: {} defines house {} as multitile, but no suitable tiles follow. Disabling house.", filename, hs->grf_prop.local_id);
 		return false;
@@ -11346,8 +11346,8 @@ static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseS
 	/* Some places sum population by only counting north tiles. Other places use all tiles causing desyncs.
 	 * As the newgrf specs define population to be zero for non-north tiles, we just disable the offending house.
 	 * If you want to allow non-zero populations somewhen, make sure to sum the population of all tiles in all places. */
-	if (((hs->building_flags & BUILDING_HAS_2_TILES) != 0 && next1->population != 0) ||
-			((hs->building_flags & BUILDING_HAS_4_TILES) != 0 && (next2->population != 0 || next3->population != 0))) {
+	if ((hs->building_flags.Any(BUILDING_HAS_2_TILES) && next1->population != 0) ||
+			(hs->building_flags.Any(BUILDING_HAS_4_TILES) && (next2->population != 0 || next3->population != 0))) {
 		hs->enabled = false;
 		if (!filename.empty()) Debug(grf, 1, "FinaliseHouseArray: {} defines multitile house {} with non-zero population on additional tiles. Disabling house.", filename, hs->grf_prop.local_id);
 		return false;
@@ -11362,7 +11362,7 @@ static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseS
 	}
 
 	/* Make sure that additional parts of multitile houses are not available. */
-	if ((hs->building_flags & BUILDING_HAS_1_TILE) == 0 && (hs->building_availability & HZ_ZONALL) != 0 && (hs->building_availability & HZ_CLIMALL) != 0) {
+	if (!hs->building_flags.Any(BUILDING_HAS_1_TILE) && (hs->building_availability & HZ_ZONALL) != 0 && (hs->building_availability & HZ_CLIMALL) != 0) {
 		hs->enabled = false;
 		if (!filename.empty()) Debug(grf, 1, "FinaliseHouseArray: {} defines house {} without a size but marked it as available. Disabling house.", filename, hs->grf_prop.local_id);
 		return false;
@@ -11448,7 +11448,7 @@ static void FinaliseHouseArray()
 			 * don't want to have them influencing valid tiles. As such set
 			 * building_flags to zero here to make sure any house following
 			 * this one in the pool is properly handled as 1x1 house. */
-			hs->building_flags = TILE_NO_FLAG;
+			hs->building_flags = {};
 		}
 
 		/* Apply default cargo translation map for unset cargo slots */
@@ -11459,14 +11459,14 @@ static void FinaliseHouseArray()
 		}
 	}
 
-	HouseZones climate_mask = (HouseZones)(1 << (_settings_game.game_creation.landscape + 12));
+	HouseZones climate_mask = (HouseZones)(1 << (to_underlying(_settings_game.game_creation.landscape) + 12));
 	EnsureEarlyHouse(HZ_ZON1 | climate_mask);
 	EnsureEarlyHouse(HZ_ZON2 | climate_mask);
 	EnsureEarlyHouse(HZ_ZON3 | climate_mask);
 	EnsureEarlyHouse(HZ_ZON4 | climate_mask);
 	EnsureEarlyHouse(HZ_ZON5 | climate_mask);
 
-	if (_settings_game.game_creation.landscape == LT_ARCTIC) {
+	if (_settings_game.game_creation.landscape == LandscapeType::Arctic) {
 		EnsureEarlyHouse(HZ_ZON1 | HZ_SUBARTC_ABOVE);
 		EnsureEarlyHouse(HZ_ZON2 | HZ_SUBARTC_ABOVE);
 		EnsureEarlyHouse(HZ_ZON3 | HZ_SUBARTC_ABOVE);
@@ -11759,7 +11759,7 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 		_cur.grffile = GetFileByFilename(filename);
 		if (_cur.grffile == nullptr) UserError("File '{}' lost in cache.\n", filename);
 		if (stage == GLS_RESERVE && config.status != GCS_INITIALISED) return;
-		if (stage == GLS_ACTIVATION && !HasBit(config.flags, GCF_RESERVED)) return;
+		if (stage == GLS_ACTIVATION && !config.flags.Test(GRFConfigFlag::Reserved)) return;
 	}
 
 	bool needs_palette_remap = config.palette & GRFP_USE_MASK;
@@ -11769,7 +11769,7 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 	} else {
 		SpriteFile &file = OpenCachedSpriteFile(filename, subdir, needs_palette_remap);
 		LoadNewGRFFileFromFile(config, stage, file);
-		if (!HasBit(config.flags, GCF_SYSTEM)) file.flags |= SFF_USERGRF;
+		if (!config.flags.Test(GRFConfigFlag::System)) file.flags |= SFF_USERGRF;
 		if (config.ident.grfid == std::byteswap<uint32_t>(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
 	}
 }
@@ -12088,14 +12088,14 @@ static void AfterLoadGRFs()
 		}
 
 		/* Road type is not available, so disable this engine */
-		e->info.climates = 0;
+		e->info.climates = {};
 	}
 
 	for (Engine *e : Engine::IterateType(VEH_TRAIN)) {
 		RailType railtype = GetRailTypeByLabel(_gted[e->index].railtypelabel);
 		if (railtype == INVALID_RAILTYPE) {
 			/* Rail type is not available, so disable this engine */
-			e->info.climates = 0;
+			e->info.climates = {};
 		} else {
 			e->u.rail.railtype = railtype;
 			e->u.rail.intended_railtype = railtype;
@@ -12194,7 +12194,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		_cur.stage = stage;
 		for (const auto &c : _grfconfig) {
 			if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND) continue;
-			if (stage > GLS_INIT && HasBit(c->flags, GCF_INIT_ONLY)) continue;
+			if (stage > GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) continue;
 
 			Subdirectory subdir = num_grfs < num_baseset ? BASESET_DIR : NEWGRF_DIR;
 			if (!FioCheckFileExists(c->filename, subdir)) {
@@ -12205,7 +12205,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 
 			if (stage == GLS_LABELSCAN) InitNewGRFFile(*c);
 
-			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
+			if (!c->flags.Test(GRFConfigFlag::Static) && !c->flags.Test(GRFConfigFlag::System)) {
 				if (num_non_static == MAX_NON_STATIC_GRF_COUNT) {
 					Debug(grf, 0, "'{}' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
 					c->status = GCS_DISABLED;
@@ -12219,15 +12219,15 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 
 			LoadNewGRFFile(*c, stage, subdir, false);
 			if (stage == GLS_RESERVE) {
-				SetBit(c->flags, GCF_RESERVED);
+				c->flags.Set(GRFConfigFlag::Reserved);
 			} else if (stage == GLS_ACTIVATION) {
-				ClrBit(c->flags, GCF_RESERVED);
+				c->flags.Reset(GRFConfigFlag::Reserved);
 				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur.grffile, "{:08X}", std::byteswap(c->ident.grfid));
 				ClearTemporaryNewGRFData(_cur.grffile);
 				BuildCargoTranslationMap();
 				HandleVarAction2OptimisationPasses();
 				Debug(sprite, 2, "LoadNewGRF: Currently {} sprites are loaded", _cur.spriteid);
-			} else if (stage == GLS_INIT && HasBit(c->flags, GCF_INIT_ONLY)) {
+			} else if (stage == GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) {
 				/* We're not going to activate this, so free whatever data we allocated */
 				ClearTemporaryNewGRFData(_cur.grffile);
 			}

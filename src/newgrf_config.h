@@ -21,16 +21,17 @@
 static const uint MAX_NON_STATIC_GRF_COUNT = 256;
 
 /** GRF config bit flags */
-enum GCF_Flags : uint8_t {
-	GCF_SYSTEM,     ///< GRF file is an openttd-internal system grf
-	GCF_UNSAFE,     ///< GRF file is unsafe for static usage
-	GCF_STATIC,     ///< GRF file is used statically (can be used in any MP game)
-	GCF_COMPATIBLE, ///< GRF file does not exactly match the requested GRF (different MD5SUM), but grfid matches)
-	GCF_COPY,       ///< The data is copied from a grf in _all_grfs
-	GCF_INIT_ONLY,  ///< GRF file is processed up to GLS_INIT
-	GCF_RESERVED,   ///< GRF file passed GLS_RESERVE stage
-	GCF_INVALID,    ///< GRF is unusable with this version of OpenTTD
+enum GRFConfigFlag : uint8_t {
+	System,     ///< GRF file is an openttd-internal system grf
+	Unsafe,     ///< GRF file is unsafe for static usage
+	Static,     ///< GRF file is used statically (can be used in any MP game)
+	Compatible, ///< GRF file does not exactly match the requested GRF (different MD5SUM), but grfid matches)
+	Copy,       ///< The data is copied from a grf in _all_grfs
+	InitOnly,   ///< GRF file is processed up to GLS_INIT
+	Reserved,   ///< GRF file passed GLS_RESERVE stage
+	Invalid,    ///< GRF is unusable with this version of OpenTTD
 };
+using GRFConfigFlags = EnumBitSet<GRFConfigFlag, uint8_t>;
 
 /** Status of GRF */
 enum GRFStatus : uint8_t {
@@ -42,13 +43,14 @@ enum GRFStatus : uint8_t {
 };
 
 /** Encountered GRF bugs */
-enum GRFBugs : uint8_t {
-	GBUG_VEH_LENGTH,        ///< Length of rail vehicle changes when not inside a depot
-	GBUG_VEH_REFIT,         ///< Articulated vehicles carry different cargoes resp. are differently refittable than specified in purchase list
-	GBUG_VEH_POWERED_WAGON, ///< Powered wagon changed poweredness state when not inside a depot
-	GBUG_UNKNOWN_CB_RESULT, ///< A callback returned an unknown/invalid result
-	GBUG_VEH_CAPACITY,      ///< Capacity of vehicle changes when not refitting or arranging
+enum class GRFBug : uint8_t {
+	VehLength       = 0, ///< Length of rail vehicle changes when not inside a depot
+	VehRefit        = 1, ///< Articulated vehicles carry different cargoes resp. are differently refittable than specified in purchase list
+	VehPoweredWagon = 2, ///< Powered wagon changed poweredness state when not inside a depot
+	UnknownCbResult = 3, ///< A callback returned an unknown/invalid result
+	VehCapacity     = 4, ///< Capacity of vehicle changes when not refitting or arranging
 };
+using GRFBugs = EnumBitSet<GRFBug, uint8_t>;
 
 /** Status of post-gameload GRF compatibility check */
 enum GRFListCompatibility : uint8_t {
@@ -176,9 +178,9 @@ struct GRFConfig {
 
 	uint32_t version = 0;                          ///< NOSAVE: Version a NewGRF can set so only the newest NewGRF is shown
 	uint32_t min_loadable_version = 0;             ///< NOSAVE: Minimum compatible version a NewGRF can define
-	uint8_t flags = 0;                             ///< NOSAVE: GCF_Flags, bitset
+	GRFConfigFlags flags = {};                     ///< NOSAVE: GRF config flags
 	GRFStatus status = GCS_UNKNOWN;                ///< NOSAVE: GRFStatus, enum
-	uint32_t grf_bugs = 0;                         ///< NOSAVE: bugs in this GRF in this run, @see enum GRFBugs
+	GRFBugs grf_bugs = {};                         ///< NOSAVE: bugs in this GRF in this run, @see enum GRFBugs
 	uint8_t num_valid_params = MAX_NUM_PARAMS;     ///< NOSAVE: Number of valid parameters (action 0x14)
 	uint8_t palette = 0;                           ///< GRFPalette, bitset
 	bool has_param_defaults = false;               ///< NOSAVE: did this newgrf specify any defaults for it's parameters
@@ -214,7 +216,7 @@ enum FindGRFConfigMode : uint8_t {
 	FGCM_EXACT,       ///< Only find Grfs matching md5sum
 	FGCM_COMPATIBLE,  ///< Find best compatible Grf wrt. desired_version
 	FGCM_NEWEST,      ///< Find newest Grf
-	FGCM_NEWEST_VALID,///< Find newest Grf, ignoring Grfs with GCF_INVALID set
+	FGCM_NEWEST_VALID,///< Find newest Grf, ignoring Grfs with GRFConfigFlag::Invalid set
 	FGCM_ANY,         ///< Use first found
 };
 

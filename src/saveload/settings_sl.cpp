@@ -34,8 +34,8 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 {
 	std::vector<SaveLoad> saveloads;
 	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
-		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && (sd->flags & SF_PATCH)) continue;
+		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
+		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && sd->flags.Test(SettingFlag::Patch)) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
 
 		VarType new_type = 0;
@@ -134,7 +134,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				FatalError("Unexpected save cmd for {}: {}", sd->name, sd->save.cmd);
 		}
 
-		if (is_loading && (sd->flags & SF_NO_NETWORK_SYNC) && _networking && !_network_server) {
+		if (is_loading && sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) {
 			if (IsSavegameVersionBefore(SLV_TABLE_CHUNKS)) {
 				/* We don't want to read this setting, so we do need to skip over it. */
 				saveloads.push_back({sd->name, new_cmd, GetVarFileType(new_type) | SLE_VAR_NULL, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, nullptr});
@@ -167,8 +167,8 @@ static void LoadSettings(void *object, const SaveLoadCompatTable &slct)
 
 	/* Ensure all IntSettings are valid (min/max could have changed between versions etc). */
 	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
-		if (sd->flags & SF_NOT_IN_SAVE) continue;
-		if ((sd->flags & SF_NO_NETWORK_SYNC) && _networking && !_network_server) continue;
+		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
+		if (sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, MAX_LOAD_SAVEGAME_VERSION, sd->save.version_from, sd->save.version_to)) continue;
 
 		if (sd->IsIntSetting()) {

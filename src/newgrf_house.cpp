@@ -564,7 +564,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x42: return FindFirstBit<HouseZones>(HouseSpec::Get(this->house_id)->building_availability & HZ_ZONALL); // first available
 
 		/* Terrain type */
-		case 0x43: return _settings_game.game_creation.landscape == LT_ARCTIC && (HouseSpec::Get(house_id)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) == HZ_SUBARTC_ABOVE ? 4 : 0;
+		case 0x43: return _settings_game.game_creation.landscape == LandscapeType::Arctic && (HouseSpec::Get(house_id)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) == HZ_SUBARTC_ABOVE ? 4 : 0;
 
 		/* Number of this type of building on the map. */
 		case 0x44: return 0;
@@ -721,7 +721,7 @@ void AnimateNewHouseTile(TileIndex tile)
 	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
 	if (hs == nullptr) return;
 
-	HouseAnimationBase::AnimateTile(hs, Town::GetByTile(tile), tile, HasFlag(hs->extra_flags, CALLBACK_1A_RANDOM_BITS));
+	HouseAnimationBase::AnimateTile(hs, Town::GetByTile(tile), tile, hs->extra_flags.Test(HouseExtraFlag::Callback1ARandomBits));
 }
 
 void AnimateNewHouseConstruction(TileIndex tile)
@@ -784,7 +784,7 @@ static void AnimationControl(TileIndex tile, uint16_t random_bits)
 	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
 
 	if (hs->callback_mask.Test(HouseCallbackMask::AnimationStartStop)) {
-		uint32_t param = (hs->extra_flags & SYNCHRONISED_CALLBACK_1B) ? (GB(Random(), 0, 16) | random_bits << 16) : Random();
+		uint32_t param = hs->extra_flags.Test(HouseExtraFlag::SynchronisedCallback1B) ? (GB(Random(), 0, 16) | random_bits << 16) : Random();
 		HouseAnimationBase::ChangeAnimationFrame(CBID_HOUSE_ANIMATION_START_STOP, hs, Town::GetByTile(tile), tile, param, 0);
 	}
 }
@@ -802,7 +802,7 @@ bool NewHouseTileLoop(TileIndex tile)
 
 	if (do_triggers) {
 		TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP);
-		if (hs->building_flags & BUILDING_HAS_1_TILE) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
+		if (hs->building_flags.Any(BUILDING_HAS_1_TILE)) TriggerHouse(tile, HOUSE_TRIGGER_TILE_LOOP_TOP);
 	}
 
 	if (hs->callback_mask.Test(HouseCallbackMask::AnimationStartStop)) {
@@ -810,13 +810,13 @@ bool NewHouseTileLoop(TileIndex tile)
 		 * tiles will have the callback called at once, rather than when the
 		 * tile loop reaches them. This should only be enabled for the northern
 		 * tile, or strange things will happen (here, and in TTDPatch). */
-		if (hs->extra_flags & SYNCHRONISED_CALLBACK_1B) {
+		if (hs->extra_flags.Test(HouseExtraFlag::SynchronisedCallback1B)) {
 			uint16_t random = GB(Random(), 0, 16);
 
-			if (hs->building_flags & BUILDING_HAS_1_TILE)  AnimationControl(tile, random);
-			if (hs->building_flags & BUILDING_2_TILES_Y)   AnimationControl(TileAddXY(tile, 0, 1), random);
-			if (hs->building_flags & BUILDING_2_TILES_X)   AnimationControl(TileAddXY(tile, 1, 0), random);
-			if (hs->building_flags & BUILDING_HAS_4_TILES) AnimationControl(TileAddXY(tile, 1, 1), random);
+			if (hs->building_flags.Any(BUILDING_HAS_1_TILE))  AnimationControl(tile, random);
+			if (hs->building_flags.Any(BUILDING_2_TILES_Y))   AnimationControl(TileAddXY(tile, 0, 1), random);
+			if (hs->building_flags.Any(BUILDING_2_TILES_X))   AnimationControl(TileAddXY(tile, 1, 0), random);
+			if (hs->building_flags.Any(BUILDING_HAS_4_TILES)) AnimationControl(TileAddXY(tile, 1, 1), random);
 		} else {
 			AnimationControl(tile, 0);
 		}
@@ -877,9 +877,9 @@ static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, uint8_t base_ra
 				break;
 			}
 			/* Random value of first tile already set. */
-			if (hs->building_flags & BUILDING_2_TILES_Y)   DoTriggerHouse(TileAddXY(tile, 0, 1), trigger, random_bits, false);
-			if (hs->building_flags & BUILDING_2_TILES_X)   DoTriggerHouse(TileAddXY(tile, 1, 0), trigger, random_bits, false);
-			if (hs->building_flags & BUILDING_HAS_4_TILES) DoTriggerHouse(TileAddXY(tile, 1, 1), trigger, random_bits, false);
+			if (hs->building_flags.Any(BUILDING_2_TILES_Y))   DoTriggerHouse(TileAddXY(tile, 0, 1), trigger, random_bits, false);
+			if (hs->building_flags.Any(BUILDING_2_TILES_X))   DoTriggerHouse(TileAddXY(tile, 1, 0), trigger, random_bits, false);
+			if (hs->building_flags.Any(BUILDING_HAS_4_TILES)) DoTriggerHouse(TileAddXY(tile, 1, 1), trigger, random_bits, false);
 			break;
 	}
 }
@@ -927,9 +927,9 @@ void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes)
 	hs = HouseSpec::Get(id);
 
 	DoWatchedCargoCallback(north, tile, trigger_cargoes, r);
-	if (hs->building_flags & BUILDING_2_TILES_Y)   DoWatchedCargoCallback(TileAddXY(north, 0, 1), tile, trigger_cargoes, r);
-	if (hs->building_flags & BUILDING_2_TILES_X)   DoWatchedCargoCallback(TileAddXY(north, 1, 0), tile, trigger_cargoes, r);
-	if (hs->building_flags & BUILDING_HAS_4_TILES) DoWatchedCargoCallback(TileAddXY(north, 1, 1), tile, trigger_cargoes, r);
+	if (hs->building_flags.Any(BUILDING_2_TILES_Y))   DoWatchedCargoCallback(TileAddXY(north, 0, 1), tile, trigger_cargoes, r);
+	if (hs->building_flags.Any(BUILDING_2_TILES_X))   DoWatchedCargoCallback(TileAddXY(north, 1, 0), tile, trigger_cargoes, r);
+	if (hs->building_flags.Any(BUILDING_HAS_4_TILES)) DoWatchedCargoCallback(TileAddXY(north, 1, 1), tile, trigger_cargoes, r);
 }
 
 void AnalyseHouseSpriteGroups()

@@ -406,7 +406,7 @@ static bool FixTTOEngines()
 			CalTime::Detail::now = backup;
 
 			/* Make sure for example monorail and maglev are available when they should be */
-			if (CalTime::CurDate() >= e->intro_date && HasBit(e->info.climates, 0)) {
+			if (CalTime::CurDate() >= e->intro_date && e->info.climates.Test(LandscapeType::Temperate)) {
 				e->flags.Set(EngineFlag::Available);
 				e->company_avail.Set();
 				e->age = CalTime::CurDate() > e->intro_date ? (CalTime::CurDate() - e->intro_date).base() / 30 : 0;
@@ -439,7 +439,7 @@ static bool FixTTOEngines()
 				}
 			}
 
-			e->info.climates = 1;
+			e->info.climates = LandscapeType::Temperate;
 		}
 
 		e->preview_company = INVALID_COMPANY;
@@ -1805,7 +1805,7 @@ bool LoadTTDMain(LoadgameState *ls)
 	FixTTDDepots();
 
 	/* Fix some general stuff */
-	_settings_game.game_creation.landscape = _settings_game.game_creation.landscape & 0xF;
+	if (to_underlying(_settings_game.game_creation.landscape) >= NUM_LANDSCAPE) _settings_game.game_creation.landscape = LandscapeType::Temperate;
 
 	/* Fix the game to be compatible with OpenTTD */
 	FixOldTowns();
@@ -1842,7 +1842,7 @@ bool LoadTTOMain(LoadgameState *ls)
 
 	if (_settings_game.game_creation.town_name != 0) _settings_game.game_creation.town_name++;
 
-	_settings_game.game_creation.landscape = 0;
+	_settings_game.game_creation.landscape = LandscapeType::Temperate;
 	_trees_tick_ctr = 0xFF;
 
 	if (!FixTTOMapArray() || !FixTTOEngines()) {

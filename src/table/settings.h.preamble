@@ -83,7 +83,7 @@ constexpr typename T::BaseType STUnwrap(T value)
 	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, get_range_hook, nullptr)
 
 #define SDTG_ENUM(name, type, flags, var, def, str, strhelp, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
-	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, nullptr, enumlist)
+	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags.Set(SettingFlag::Enum), guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, nullptr, enumlist)
 
 #define SDTG_BOOL(name, flags, var, def, str, strhelp, strval, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Bool, SLEG_GENERAL_X(SL_VAR, var, SLE_BOOL, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook)
@@ -112,7 +112,7 @@ constexpr typename T::BaseType STUnwrap(T value)
 	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, get_range_hook, nullptr)
 
 #define SDT_ENUM(base, var, type, flags, def, str, strhelp, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
-	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, nullptr, enumlist)
+	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags.Set(SettingFlag::Enum), guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, nullptr, enumlist)
 
 #define SDT_BOOL(base, var, flags, def, str, strhelp, strval, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Bool, SLE_GENERAL_X(SL_VAR, base, var, SLE_BOOL, 1, from, to, extver), #var, flags, guiproc, startup, patxname, def, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook)

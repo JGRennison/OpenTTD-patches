@@ -18,32 +18,31 @@
 
 enum SaveToConfigFlags : uint32_t;
 
-enum SettingFlag : uint32_t {
-	SF_NONE = 0,
-	SF_GUI_0_IS_SPECIAL        = 1 <<  0, ///< A value of zero is possible and has a custom string (the one after "strval").
-	SF_GUI_DROPDOWN            = 1 <<  2, ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
-	SF_GUI_CURRENCY            = 1 <<  3, ///< The number represents money, so when reading value multiply by exchange rate.
-	SF_NETWORK_ONLY            = 1 <<  4, ///< This setting only applies to network games.
-	SF_NO_NETWORK              = 1 <<  5, ///< This setting does not apply to network games; it may not be changed during the game.
-	SF_NEWGAME_ONLY            = 1 <<  6, ///< This setting cannot be changed in a game.
-	SF_SCENEDIT_TOO            = 1 <<  7, ///< This setting can be changed in the scenario editor (only makes sense when SF_NEWGAME_ONLY is set).
-	SF_SCENEDIT_ONLY           = 1 <<  8, ///< This setting can only be changed in the scenario editor.
-	SF_PER_COMPANY             = 1 <<  9, ///< This setting can be different for each company (saved in company struct).
-	SF_NOT_IN_SAVE             = 1 << 10, ///< Do not save with savegame, basically client-based.
-	SF_NOT_IN_CONFIG           = 1 << 11, ///< Do not save to config file.
-	SF_NO_NETWORK_SYNC         = 1 << 12, ///< Do not synchronize over network (but it is saved if SF_NOT_IN_SAVE is not set).
-	SF_SANDBOX                 = 1 << 13, ///< This setting is a sandbox setting.
-	SF_ENUM                    = 1 << 14, ///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
-	SF_NO_NEWGAME              = 1 << 15, ///< the setting does not apply and is not shown in a new game context
-	SF_RUN_CALLBACKS_ON_PARSE  = 1 << 17, ///< run callbacks when parsing from config file
-	SF_GUI_VELOCITY            = 1 << 18, ///< setting value is a velocity
-	SF_ENUM_PRE_CB_VALIDATE    = 1 << 20, ///< Call the pre_check callback for enum incoming value validation
-	SF_CONVERT_BOOL_TO_INT     = 1 << 21, ///< Accept a boolean value when loading an int-type setting from the config file
-	SF_PATCH                   = 1 << 22, ///< Do not load from upstream table-mode PATS, also for GUI filtering of "patch" settings
-	SF_PRIVATE                 = 1 << 23, ///< Setting is in private ini
-	SF_SECRET                  = 1 << 24, ///< Setting is in secrets ini
+enum class SettingFlag : uint8_t {
+	GuiZeroIsSpecial,        ///< A value of zero is possible and has a custom string (the one after "strval").
+	GuiDropdown,             ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
+	GuiCurrency,             ///< The number represents money, so when reading value multiply by exchange rate.
+	NetworkOnly,             ///< This setting only applies to network games.
+	NoNetwork,               ///< This setting does not apply to network games; it may not be changed during the game.
+	NewgameOnly,             ///< This setting cannot be changed in a game.
+	SceneditToo,             ///< This setting can be changed in the scenario editor (only makes sense when SettingFlag::NewgameOnly is set).
+	SceneditOnly,            ///< This setting can only be changed in the scenario editor.
+	PerCompany,              ///< This setting can be different for each company (saved in company struct).
+	NotInSave,               ///< Do not save with savegame, basically client-based.
+	NotInConfig,             ///< Do not save to config file.
+	NoNetworkSync,           ///< Do not synchronize over network (but it is saved if SettingFlag::NotInSave is not set).
+	Sandbox,                 ///< This setting is a sandbox setting.
+	Enum,                    ///< The setting can take one of the values given by an array of struct SettingDescEnumEntry.
+	NoNewgame,               ///< The setting does not apply and is not shown in a new game context.
+	RunCallbacksOnParse,     ///< Run callbacks when parsing from config file.
+	GuiVelocity,             ///< Setting value is a velocity.
+	EnumPreCallbackValidate, ///< Call the pre_check callback for enum incoming value validation.
+	ConvertBoolToInt,        ///< Accept a boolean value when loading an int-type setting from the config file.
+	Patch,                   ///< Do not load from upstream table-mode PATS, also for GUI filtering of "patch" settings.
+	Private,                 ///< Setting is in private ini.
+	Secret,                  ///< Setting is in secrets ini.
 };
-DECLARE_ENUM_AS_BIT_SET(SettingFlag)
+using SettingFlags = EnumBitSet<SettingFlag, uint32_t>;
 
 /**
  * A SettingCategory defines a grouping of the settings.
@@ -84,7 +83,7 @@ enum SettingType : uint8_t {
 enum SettingOnGuiCtrlType {
 	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
 	SOGCT_VALUE_DPARAMS,      ///< Value dparam override callback
-	SOGCT_GUI_DROPDOWN_ORDER, ///< SF_GUI_DROPDOWN reordering callback
+	SOGCT_GUI_DROPDOWN_ORDER, ///< SettingFlag::GuiDropdown reordering callback
 	SOGCT_CFG_NAME,           ///< Config file name override
 	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
 	SOGCT_GUI_SPRITE,         ///< Show sprite after setting value (i.e. warning)
@@ -113,12 +112,12 @@ struct SettingDescEnumEntry {
 
 /** Properties of config file settings. */
 struct SettingDesc {
-	SettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
+	SettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
 		name(name), flags(flags), startup(startup), save(save), guiproc(guiproc), patx_name(patx_name) {}
 	virtual ~SettingDesc() = default;
 
 	const char *name;       ///< Name of the setting. Used in configuration file and for console
-	SettingFlag flags;      ///< Handles how a setting would show up in the GUI (text/currency, etc.)
+	SettingFlags flags;     ///< Handles how a setting would show up in the GUI (text/currency, etc.)
 	bool startup;           ///< Setting has to be loaded directly at startup?
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 	OnGuiCtrl *guiproc;     ///< Callback procedure for GUI operations
@@ -205,7 +204,7 @@ struct IntSettingDesc : SettingDesc {
 	 */
 	typedef void PostChangeCallback(int32_t value);
 
-	IntSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
+	IntSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,
 			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
@@ -267,7 +266,7 @@ private:
 
 /** Boolean setting. */
 struct BoolSettingDesc : IntSettingDesc {
-	BoolSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
+	BoolSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
 			StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
@@ -286,7 +285,7 @@ struct BoolSettingDesc : IntSettingDesc {
 struct OneOfManySettingDesc : IntSettingDesc {
 	typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 
-	OneOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	OneOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, int32_t max, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
@@ -309,7 +308,7 @@ struct OneOfManySettingDesc : IntSettingDesc {
 
 /** Many of many setting. */
 struct ManyOfManySettingDesc : OneOfManySettingDesc {
-	ManyOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	ManyOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
@@ -338,7 +337,7 @@ struct StringSettingDesc : SettingDesc {
 	 */
 	typedef void PostChangeCallback(const std::string &value);
 
-	StringSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
+	StringSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
 			uint32_t max_length, PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def == nullptr ? "" : def), max_length(max_length),
 			pre_check(pre_check), post_callback(post_callback) {}
@@ -365,7 +364,7 @@ private:
 
 /** List/array settings. */
 struct ListSettingDesc : SettingDesc {
-	ListSettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
+	ListSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def) {}
 
 	const char *def;        ///< default value given when none is present
@@ -380,9 +379,9 @@ struct ListSettingDesc : SettingDesc {
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
 struct NullSettingDesc : SettingDesc {
 	NullSettingDesc(const SaveLoad &save) :
-		SettingDesc(save, "", SF_NOT_IN_CONFIG, nullptr, false, nullptr) {}
+		SettingDesc(save, "", SettingFlag::NotInConfig, nullptr, false, nullptr) {}
 	NullSettingDesc(const SaveLoad &save, const char *name, const char *patx_name) :
-		SettingDesc(save, name, SF_NOT_IN_CONFIG, nullptr, false, patx_name) {}
+		SettingDesc(save, name, SettingFlag::NotInConfig, nullptr, false, patx_name) {}
 
 	void FormatValue(struct format_target &buf, const void *object) const override { NOT_REACHED(); }
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }

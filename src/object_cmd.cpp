@@ -947,8 +947,9 @@ static void TileLoop_Object(TileIndex tile)
 			TileLoop_Water(tile);
 		} else {
 			switch (_settings_game.game_creation.landscape) {
-				case LT_TROPIC: TileLoopObjectGroundDesert(tile); break;
-				case LT_ARCTIC: TileLoopObjectGroundAlps(tile);   break;
+				case LandscapeType::Tropic: TileLoopObjectGroundDesert(tile); break;
+				case LandscapeType::Arctic: TileLoopObjectGroundAlps(tile);   break;
+				default: break;
 			}
 		}
 

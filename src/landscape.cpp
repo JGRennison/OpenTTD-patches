@@ -1025,7 +1025,7 @@ static bool FindSpring(TileIndex tile, void *)
 	if (!IsTileFlat(tile, &reference_height) || IsWaterTile(tile)) return false;
 
 	/* In the tropics rivers start in the rainforest. */
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Are there enough higher tiles to warrant a 'spring'? */
 	uint num = 0;
@@ -1070,7 +1070,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
 {
 	const MakeLakeData *data = (const MakeLakeData *)user_data;
 	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return false;
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Offset from centre tile */
 	const int64_t x_delta = (int)TileX(tile) - (int)TileX(data->centre);
@@ -1300,7 +1300,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 				/* We don't want the lake at the entry of the valley. */
 				lake_centre != begin &&
 				/* We don't want lakes in the desert. */
-				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lake_centre) != TROPICZONE_DESERT) &&
+				(_settings_game.game_creation.landscape != LandscapeType::Tropic || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lake_centre) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
 				DistanceManhattan(spring, lake_centre) > min_river_length) {
 			end = lake_centre;
@@ -1500,7 +1500,7 @@ bool GenerateLandscape(uint8_t mode)
 	static constexpr uint GLS_ORIGINAL = 2; ///< Original generator
 	static constexpr uint GLS_TROPIC = 12; ///< Extra steps needed for tropic landscape
 	static constexpr uint GLS_OTHER = 0; ///< Extra steps for other landscapes
-	uint steps = (_settings_game.game_creation.landscape == LT_TROPIC) ? GLS_TROPIC : GLS_OTHER;
+	uint steps = (_settings_game.game_creation.landscape == LandscapeType::Tropic) ? GLS_TROPIC : GLS_OTHER;
 
 	if (mode == GWM_HEIGHTMAP) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_HEIGHTMAP);
@@ -1518,7 +1518,7 @@ bool GenerateLandscape(uint8_t mode)
 			for (uint y = 0; y < Map::SizeY(); y++) MakeVoid(TileXY(0, y));
 		}
 		switch (_settings_game.game_creation.landscape) {
-			case LT_ARCTIC: {
+			case LandscapeType::Arctic: {
 				uint32_t r = Random();
 
 				for (uint i = Map::ScaleBySize(GB(r, 0, 7) + 950); i != 0; --i) {
@@ -1532,7 +1532,7 @@ bool GenerateLandscape(uint8_t mode)
 				break;
 			}
 
-			case LT_TROPIC: {
+			case LandscapeType::Tropic: {
 				uint32_t r = Random();
 
 				for (uint i = Map::ScaleBySize(GB(r, 0, 7) + 170); i != 0; --i) {
@@ -1577,11 +1577,11 @@ bool GenerateLandscape(uint8_t mode)
 	IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 	switch (_settings_game.game_creation.landscape) {
-		case LT_ARCTIC:
+		case LandscapeType::Arctic:
 			CalculateSnowLine();
 			break;
 
-		case LT_TROPIC: {
+		case LandscapeType::Tropic: {
 			uint desert_tropic_line = CalculateDesertLine();
 			CreateDesertOrRainForest(desert_tropic_line);
 			break;
