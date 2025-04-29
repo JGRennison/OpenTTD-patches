@@ -93,7 +93,7 @@ static inline void IConsoleResetHistoryPos()
 }
 
 
-static const char *IConsoleHistoryAdd(std::string_view cmd);
+static std::optional<std::string_view> IConsoleHistoryAdd(std::string_view cmd);
 static void IConsoleHistoryNavigate(int direction);
 static void IConsoleTabCompletion();
 
@@ -248,10 +248,10 @@ struct IConsoleWindow : Window
 				 * aligned anyway. So enforce this in all cases by adding a left-to-right marker,
 				 * otherwise it will be drawn at the wrong side with right-to-left texts. */
 				IConsolePrint(CC_COMMAND, LRM "] {}", _iconsole_cmdline.GetText());
-				const char *cmd = IConsoleHistoryAdd(_iconsole_cmdline.GetText());
+				auto cmd = IConsoleHistoryAdd(_iconsole_cmdline.GetText());
 				IConsoleClearCommand();
 
-				if (cmd != nullptr) IConsoleCmdExec(cmd);
+				if (cmd.has_value()) IConsoleCmdExec(*cmd);
 				break;
 			}
 
@@ -412,13 +412,13 @@ void IConsoleClose()
  * @param cmd Text to be entered into the 'history'
  * @return the command to execute
  */
-static const char *IConsoleHistoryAdd(std::string_view cmd)
+static std::optional<std::string_view> IConsoleHistoryAdd(std::string_view cmd)
 {
 	/* Strip all spaces at the begin */
 	while (!cmd.empty() && IsWhitespace(cmd[0])) cmd.remove_prefix(1);
 
 	/* Do not put empty command in history */
-	if (cmd.empty()) return nullptr;
+	if (cmd.empty()) return std::nullopt;
 
 	/* Do not put in history if command is same as previous */
 	if (_iconsole_history.empty() || _iconsole_history.front() != cmd) {
@@ -428,7 +428,7 @@ static const char *IConsoleHistoryAdd(std::string_view cmd)
 
 	/* Reset the history position */
 	IConsoleResetHistoryPos();
-	return _iconsole_history.front().c_str();
+	return _iconsole_history.front();
 }
 
 /**
