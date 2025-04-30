@@ -243,15 +243,15 @@ void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 			" Video driver: {}\n",
 			BlitterFactory::GetCurrentBlitter() == nullptr ? (std::string_view)"none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseGraphics::GetUsedSet()->name,
-			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
+			BaseGraphics::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseGraphics::GetUsedSet()->FormatVersion(),
 			_current_language == nullptr ? (std::string_view)"none" : StrLastPathSegment(_current_language->file.c_str()),
 			MusicDriver::GetInstance() == nullptr ? "none" : MusicDriver::GetInstance()->GetName(),
 			BaseMusic::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseMusic::GetUsedSet()->name,
-			BaseMusic::GetUsedSet() == nullptr ? UINT32_MAX : BaseMusic::GetUsedSet()->version,
+			BaseMusic::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseMusic::GetUsedSet()->FormatVersion(),
 			_networking ? (_network_server ? "server" : "client") : "no",
 			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseSounds::GetUsedSet()->name,
-			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
+			BaseSounds::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseSounds::GetUsedSet()->FormatVersion(),
 			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString()
 	);
 	buffer.format(" Game mode:    {}", mode_name());

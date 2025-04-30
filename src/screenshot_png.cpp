@@ -82,7 +82,7 @@ public:
 
 		format_buffer text_buf;
 
-		text_buf.format("Graphics set: {} ({})\n", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->version);
+		text_buf.format("Graphics set: {} ({})\n", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->FormatVersion());
 		text_buf.append("NewGRFs:\n");
 		if (_game_mode != GM_MENU) {
 			for (const auto &c : _grfconfig) {

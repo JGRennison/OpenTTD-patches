@@ -254,7 +254,7 @@ void SurveyConfiguration(nlohmann::json &survey)
 		survey["video_info"] = VideoDriver::GetInstance()->GetInfoString();
 	}
 	if (BaseGraphics::GetUsedSet() != nullptr) {
-		survey["graphics_set"] = fmt::format("{}.{}", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->version);
+		survey["graphics_set"] = fmt::format("{}.{}", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->FormatVersion());
 		const GRFConfig *extra_cfg = BaseGraphics::GetUsedSet()->GetExtraConfig();
 		if (extra_cfg != nullptr && !extra_cfg->param.empty()) {
 			survey["graphics_set_parameters"] = std::span<const uint32_t>(extra_cfg->param);
@@ -263,10 +263,10 @@ void SurveyConfiguration(nlohmann::json &survey)
 		}
 	}
 	if (BaseMusic::GetUsedSet() != nullptr) {
-		survey["music_set"] = fmt::format("{}.{}", BaseMusic::GetUsedSet()->name, BaseMusic::GetUsedSet()->version);
+		survey["music_set"] = fmt::format("{}.{}", BaseMusic::GetUsedSet()->name, BaseMusic::GetUsedSet()->FormatVersion());
 	}
 	if (BaseSounds::GetUsedSet() != nullptr) {
-		survey["sound_set"] = fmt::format("{}.{}", BaseSounds::GetUsedSet()->name, BaseSounds::GetUsedSet()->version);
+		survey["sound_set"] = fmt::format("{}.{}", BaseSounds::GetUsedSet()->name, BaseSounds::GetUsedSet()->FormatVersion());
 	}
 }
 

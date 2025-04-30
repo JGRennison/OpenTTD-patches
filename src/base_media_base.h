@@ -42,6 +42,12 @@ struct MD5File {
 /** Defines the traits of a BaseSet type. */
 template <class T> struct BaseSetTraits;
 
+struct BaseSetVersionPrinter {
+	std::span<const uint32_t> version{};
+
+	void fmt_format_value(struct format_target &output) const;
+};
+
 struct BaseSetBase {
 	typedef std::vector<std::pair<std::string, std::string>> TranslatedStrings;
 
@@ -49,13 +55,21 @@ struct BaseSetBase {
 	std::string url;               ///< URL for information about the base set
 	TranslatedStrings description; ///< Description of the base set
 	uint32_t shortname = 0;        ///< Four letter short variant of the name
-	uint32_t version = 0;          ///< The version of this base set
+	std::vector<uint32_t> version; ///< The version of this base set
 	bool fallback = false;         ///< This set is a fallback set, i.e. it should be used only as last resort
 
 	uint found_files = 0; ///< Number of the files that could be found
 	uint valid_files = 0; ///< Number of the files that could be found and are valid
 
 	const std::string &GetDescription(std::string_view isocode) const;
+
+	BaseSetVersionPrinter FormatVersion() const
+	{
+		return BaseSetVersionPrinter{this->version};
+	}
+
+protected:
+	bool ReadVersionString(std::string_view version_str);
 };
 
 /**

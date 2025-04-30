@@ -28,6 +28,7 @@
 #include "base_media_func.h"
 #include "base_media_graphics.h"
 #include "base_media_sounds.h"
+#include "core/string_consumer.hpp"
 
 #include "table/sprites.h"
 
@@ -640,6 +641,28 @@ const std::string &BaseSetBase::GetDescription(std::string_view isocode) const
 	}
 	/* Then fall back */
 	return *find({});
+}
+
+void BaseSetVersionPrinter::fmt_format_value(format_target &output) const
+{
+	for (size_t i = 0; i < this->version.size(); i++) {
+		if (i != 0) output.push_back('.');
+		output.format("{}", this->version[i]);
+	}
+}
+
+bool BaseSetBase::ReadVersionString(std::string_view version_str)
+{
+	for (StringConsumer consumer{version_str};;) {
+		auto value = consumer.TryReadIntegerBase<uint32_t>(10);
+		bool valid = value.has_value();
+		if (valid) this->version.push_back(*value);
+		if (valid && !consumer.AnyBytesLeft()) break;
+		if (!valid || !consumer.ReadIf(".")) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /** Names corresponding to the GraphicsFileType */

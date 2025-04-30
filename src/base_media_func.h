@@ -99,12 +99,10 @@ bool BaseSet<T>::FillSetDetails(const IniFile &ini, const std::string &path, con
 
 	item = this->GetMandatoryItem(full_filename, *metadata, "version");
 	if (item == nullptr) return false;
-	auto value = ParseInteger(*item->value);
-	if (!value.has_value()) {
+	if (!this->ReadVersionString(*item->value)) {
 		this->LogError(full_filename, fmt::format("metadata.version field is invalid: {}", *item->value));
 		return false;
 	}
-	this->version = *value;
 
 	item = metadata->GetItem("fallback");
 	this->fallback = (item != nullptr && item->value && *item->value != "0" && *item->value != "false");
@@ -232,7 +230,7 @@ bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_
 			/* The more complete set takes precedence over the version number. */
 			if ((duplicate->valid_files == set->valid_files && duplicate->version >= set->version) ||
 					duplicate->valid_files > set->valid_files) {
-				Debug(misc, 1, "Not adding {} ({}) as base {} set (duplicate, {})", set->name, set->version,
+				Debug(misc, 1, "Not adding {} ({}) as base {} set (duplicate, {})", set->name, set->FormatVersion(),
 						BaseSet<Tbase_set>::SET_TYPE,
 						duplicate->valid_files > set->valid_files ? "less valid files" : "lower version");
 				set->next = BaseMedia<Tbase_set>::duplicate_sets;
@@ -252,7 +250,7 @@ bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_
 				 * version number until a new game is started which isn't a big problem */
 				if (BaseMedia<Tbase_set>::used_set == duplicate) BaseMedia<Tbase_set>::used_set = set;
 
-				Debug(misc, 1, "Removing {} ({}) as base {} set (duplicate, {})", duplicate->name, duplicate->version,
+				Debug(misc, 1, "Removing {} ({}) as base {} set (duplicate, {})", duplicate->name, duplicate->FormatVersion(),
 						BaseSet<Tbase_set>::SET_TYPE,
 						duplicate->valid_files < set->valid_files ? "less valid files" : "lower version");
 				duplicate->next = BaseMedia<Tbase_set>::duplicate_sets;
@@ -267,7 +265,7 @@ bool BaseMedia<Tbase_set>::AddFile(const std::string &filename, size_t basepath_
 			ret = true;
 		}
 		if (ret) {
-			Debug(misc, 1, "Adding {} ({}) as base {} set", set->name, set->version, BaseSet<Tbase_set>::SET_TYPE);
+			Debug(misc, 1, "Adding {} ({}) as base {} set", set->name, set->FormatVersion(), BaseSet<Tbase_set>::SET_TYPE);
 		}
 	} else {
 		delete set;
