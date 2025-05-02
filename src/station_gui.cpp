@@ -1908,6 +1908,7 @@ struct StationViewWindow : public Window {
 	 */
 	StringID SearchNonStop(CargoDataEntry &cd, StationID station, int column)
 	{
+		assert(column < NUM_COLUMNS);
 		CargoDataEntry *parent = cd.GetParent();
 		for (int i = column - 1; i > 0; --i) {
 			if (this->groupings[i] == GR_DESTINATION) {
@@ -1920,7 +1921,7 @@ struct StationViewWindow : public Window {
 			parent = parent->GetParent();
 		}
 
-		if (this->groupings[column + 1] == GR_DESTINATION) {
+		if (column < NUM_COLUMNS - 1 && this->groupings[column + 1] == GR_DESTINATION) {
 			CargoDataSet::iterator begin = cd.Begin();
 			CargoDataSet::iterator end = cd.End();
 			if (begin != end && ++(cd.Begin()) == end && (*(begin))->GetStation() == station) {
@@ -1945,6 +1946,7 @@ struct StationViewWindow : public Window {
 	 */
 	int DrawEntries(CargoDataEntry &entry, const Rect &r, int pos, int maxrows, int column, CargoType cargo = INVALID_CARGO)
 	{
+		assert(column < NUM_COLUMNS);
 		if (this->sortings[column] == CargoSortType::AsGrouping) {
 			if (this->groupings[column] != GR_CARGO) {
 				entry.Resort(CargoSortType::StationString, this->sort_orders[column]);
@@ -2001,7 +2003,7 @@ struct StationViewWindow : public Window {
 				this->SetDisplayedRow(cd);
 			}
 			--pos;
-			if (auto_distributed || column == 0) {
+			if ((auto_distributed || column == 0) && column < NUM_COLUMNS - 1) {
 				pos = this->DrawEntries(cd, r, pos, maxrows, column + 1, cargo);
 			}
 		}
