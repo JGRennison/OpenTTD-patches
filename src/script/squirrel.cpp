@@ -202,7 +202,7 @@ void Squirrel::CompileError(HSQUIRRELVM vm, const SQChar *desc, const SQChar *so
 	}
 }
 
-void Squirrel::ErrorPrintFunc(HSQUIRRELVM vm, const std::string &s)
+void Squirrel::ErrorPrintFunc(HSQUIRRELVM vm, std::string_view s)
 {
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
@@ -213,7 +213,7 @@ void Squirrel::ErrorPrintFunc(HSQUIRRELVM vm, const std::string &s)
 	}
 }
 
-void Squirrel::RunError(HSQUIRRELVM vm, const SQChar *error)
+void Squirrel::RunError(HSQUIRRELVM vm, std::string_view error)
 {
 	/* Set the print function to something that prints to stderr */
 	SQPRINTFUNCTION pf = sq_getprintfunc(vm);
@@ -237,11 +237,11 @@ void Squirrel::RunError(HSQUIRRELVM vm, const SQChar *error)
 
 SQInteger Squirrel::_RunError(HSQUIRRELVM vm)
 {
-	const SQChar *sErr = nullptr;
+	std::string_view view;
 
 	if (sq_gettop(vm) >= 1) {
-		if (SQ_SUCCEEDED(sq_getstring(vm, -1, &sErr))) {
-			Squirrel::RunError(vm, sErr);
+		if (SQ_SUCCEEDED(sq_getstring(vm, -1, view))) {
+			Squirrel::RunError(vm, view);
 			return 0;
 		}
 	}
@@ -250,7 +250,7 @@ SQInteger Squirrel::_RunError(HSQUIRRELVM vm)
 	return 0;
 }
 
-void Squirrel::PrintFunc(HSQUIRRELVM vm, const std::string &s)
+void Squirrel::PrintFunc(HSQUIRRELVM vm, std::string_view s)
 {
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
