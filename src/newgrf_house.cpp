@@ -119,7 +119,7 @@ HouseResolverObject::HouseResolverObject(HouseID house_id, TileIndex tile, Town 
 	/* Tile must be valid and a house tile, unless not yet constructed in which case it may also be INVALID_TILE. */
 	assert((IsValidTile(tile) && (not_yet_constructed || IsTileType(tile, MP_HOUSE))) || (not_yet_constructed && tile == INVALID_TILE));
 
-	this->root_spritegroup = HouseSpec::Get(house_id)->grf_prop.GetSpriteGroup();
+	this->root_spritegroup = HouseSpec::Get(house_id)->grf_prop.GetSpriteGroup(!not_yet_constructed);
 }
 
 GrfSpecFeature HouseResolverObject::GetFeature() const
@@ -915,13 +915,13 @@ void AnalyseHouseSpriteGroups()
 		HouseSpec *spec = HouseSpec::Get(i);
 		spec->ctrl_flags = HCF_NONE;
 
-		if (spec->grf_prop.GetSpriteGroup() == nullptr) {
+		if (spec->grf_prop.GetSpriteGroup(true) == nullptr) {
 			spec->ctrl_flags |= HCF_NO_TRIGGERS;
 			continue;
 		}
 
 		FindRandomTriggerAnalyser analyser;
-		analyser.AnalyseGroup(spec->grf_prop.GetSpriteGroup());
+		analyser.AnalyseGroup(spec->grf_prop.GetSpriteGroup(true));
 		if (!analyser.found_trigger) {
 			spec->ctrl_flags |= HCF_NO_TRIGGERS;
 		}

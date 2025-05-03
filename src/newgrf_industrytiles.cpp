@@ -150,7 +150,7 @@ IndustryTileResolverObject::IndustryTileResolverObject(IndustryGfx gfx, TileInde
 	ind_scope(*this, tile, indus, indus->type),
 	gfx(gfx)
 {
-	this->root_spritegroup = GetIndustryTileSpec(gfx)->grf_prop.GetSpriteGroup();
+	this->root_spritegroup = GetIndustryTileSpec(gfx)->grf_prop.GetSpriteGroup(indus->index != IndustryID::Invalid());
 }
 
 GrfSpecFeature IndustryTileResolverObject::GetFeature() const
@@ -475,7 +475,7 @@ void AnalyseIndustryTileSpriteGroups()
 				to_check &= ~current;
 
 				const IndustryTileSpec &tilespec = _industry_tile_specs[gfx];
-				if (tilespec.grf_prop.GetSpriteGroup() == nullptr) continue;
+				if (tilespec.grf_prop.GetSpriteGroup(true) == nullptr) continue;
 
 				anim_mask |= current;
 
@@ -486,7 +486,7 @@ void AnalyseIndustryTileSpriteGroups()
 				cfg.check_anim_next_frame_cb = tilespec.callback_mask.Test(IndustryTileCallbackMask::AnimationNextFrame);
 
 				IndustryTileDataAnalyser analyser(cfg, current);
-				analyser.AnalyseGroup(tilespec.grf_prop.GetSpriteGroup());
+				analyser.AnalyseGroup(tilespec.grf_prop.GetSpriteGroup(true));
 
 				if (analyser.anim_state_at_offset) {
 					/* Give up: use of get anim state of offset tiles */

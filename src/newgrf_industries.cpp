@@ -522,7 +522,7 @@ IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *ind
 	: ResolverObject(GetGrffile(type), callback, callback_param1, callback_param2),
 	industries_scope(*this, tile, indus, type, random_bits)
 {
-	this->root_spritegroup = GetIndustrySpec(type)->grf_prop.GetSpriteGroup();
+	this->root_spritegroup = GetIndustrySpec(type)->grf_prop.GetSpriteGroup(indus != nullptr && indus->index != IndustryID::Invalid());
 }
 
 /**
@@ -742,10 +742,10 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoType cargo_type)
 
 void DumpIndustrySpriteGroup(const IndustrySpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.GetSpriteGroup(), 0);
+	dumper.DumpStandardGRFFileProps(spec->grf_prop);
 }
 
 void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.GetSpriteGroup(), 0);
+	dumper.DumpStandardGRFFileProps(spec->grf_prop);
 }

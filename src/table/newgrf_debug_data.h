@@ -955,7 +955,7 @@ class NIHHouse : public NIHelper {
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.GetSpriteGroup(), 0);
+		dumper.DumpStandardGRFFileProps(HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop);
 	}
 };
 
