@@ -16,8 +16,9 @@
 #include "../script_fatalerror.hpp"
 #include "../script_instance.hpp"
 #include "script_log.hpp"
-#include "../../table/control_codes.h"
 #include "../../core/format.hpp"
+#include "../../core/string_consumer.hpp"
+#include "../../table/control_codes.h"
 
 #include "table/strings.h"
 
@@ -144,7 +145,9 @@ SQInteger ScriptText::_set(HSQUIRRELVM vm)
 		std::string str = StrMakeValid(view);
 		if (!str.starts_with("param_") || str.size() > 8) return SQ_ERROR;
 
-		k = stoi(str.substr(6));
+		auto key = ParseInteger<int32_t>(str.substr(6));
+		if (!key.has_value()) return SQ_ERROR;
+		k = *key;
 	} else if (sq_gettype(vm, 2) == OT_INTEGER) {
 		SQInteger key;
 		sq_getinteger(vm, 2, &key);
