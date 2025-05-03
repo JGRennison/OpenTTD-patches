@@ -547,12 +547,23 @@ public:
 						data.name = std::move(*str);
 						data.follow_up_cmd = std::move(follow_up);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
+
+						CloseWindowByClass(WC_QUERY_STRING); // sets this->query_submode to QSM_NONE
+						this->query_submode = QSM_SET_SLOT_CAPACITY;
+						SetDParam(0, 1 /* default maximum occupancy */);
+						ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
 					} else {
 						TraceRestrictCreateCounterCmdData data;
 						data.name = std::move(*str);
 						data.follow_up_cmd = std::move(follow_up);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_COUNTER>(data, STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE, CommandCallback::CreateTraceRestrictCounter);
 					}
+					break;
+				}
+
+				case QSM_SET_SLOT_CAPACITY: {
+					TraceRestrictSlotID newSlotsID = *TraceRestrictGetRecentSlot(VEH_TRAIN);
+					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, newSlotsID, TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
 					break;
 				}
 			}
@@ -932,6 +943,7 @@ private:
 		QSM_SET_VALUE,
 		QSM_NEW_SLOT,
 		QSM_NEW_COUNTER,
+		QSM_SET_SLOT_CAPACITY,
 	};
 	QuerySubMode query_submode = QSM_NONE;
 };
