@@ -4078,7 +4078,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (_file_to_saveload.abstract_ftype == FT_SCENARIO) {
+	if (_file_to_saveload.abstract_ftype == FT_SCENARIO && _game_mode == GM_NORMAL) {
 		/* Apply the new-game cargo scale values for scenarios */
 		_settings_game.economy.town_cargo_scale = _settings_newgame.economy.town_cargo_scale;
 		_settings_game.economy.industry_cargo_scale = _settings_newgame.economy.industry_cargo_scale;
