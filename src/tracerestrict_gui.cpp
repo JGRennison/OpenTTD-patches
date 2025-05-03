@@ -97,6 +97,15 @@ void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
 	EraseRecentSlotOrCounter(_recent_counters, index);
 }
 
+std::optional<TraceRestrictSlotID> TraceRestrictGetRecentSlot(VehicleType vehicle_type)
+{
+	if (_recent_slots[vehicle_type].empty())
+		return std::nullopt;
+	else
+		// _recent_slots isn't used by any other threads, so this is safe.
+		return _recent_slots[vehicle_type].front();
+}
+
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
 {
 	const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
@@ -2727,7 +2736,7 @@ public:
 
 			case QSM_SET_SLOT_CAPACITY:
 				{
-					const TraceRestrictSlotID newSlotsID = _recent_slots[VEH_TRAIN].front();
+					const TraceRestrictSlotID newSlotsID = *TraceRestrictGetRecentSlot(VEH_TRAIN);
 					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, newSlotsID, TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
 				}
 				break;
