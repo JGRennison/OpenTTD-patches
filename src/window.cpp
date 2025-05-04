@@ -1064,9 +1064,8 @@ void Window::SetShaded(bool make_shaded)
 
 /**
  * Find the Window whose parent pointer points to this window
- * @param w parent Window to find child of
- * @param wc Window class of the window to remove; #WC_INVALID if class does not matter
- * @return a Window pointer that is the child of \a w, or \c nullptr otherwise
+ * @param wc Window class of the window to find; #WC_INVALID if class does not matter
+ * @return a Window pointer that is the child of this window, or \c nullptr otherwise
  */
 Window *Window::FindChildWindow(WindowClass wc) const
 {
@@ -1080,7 +1079,24 @@ Window *Window::FindChildWindow(WindowClass wc) const
 }
 
 /**
- * Delete all children a window might have in a head-recursive manner
+ * Find the Window whose parent pointer points to this window
+ * @param wc Window class of the window to find.
+ * @param number Window number of the window to find.
+ * @return a Window pointer that is the child of this window, or \c nullptr otherwise
+ */
+Window *Window::FindChildWindowById(WindowClass wc, WindowNumber number) const
+{
+	if (wc < WC_END && !_present_window_types[wc]) return nullptr;
+
+	for (Window *v : Window::IterateFromBack()) {
+		if (wc == v->window_class && number == v->window_number && v->parent == this) return v;
+	}
+
+	return nullptr;
+}
+
+/**
+ * Close all children a window might have in a head-recursive manner
  * @param wc Window class of the window to remove; #WC_INVALID if class does not matter
  */
 void Window::CloseChildWindows(WindowClass wc) const
@@ -1089,6 +1105,21 @@ void Window::CloseChildWindows(WindowClass wc) const
 	while (child != nullptr) {
 		child->Close();
 		child = this->FindChildWindow(wc);
+	}
+}
+
+
+/**
+ * Close all children a window might have in a head-recursive manner
+ * @param wc Window class of the window to remove.
+ * @param number Window number of the window to remove.
+ */
+void Window::CloseChildWindowById(WindowClass wc, WindowNumber number) const
+{
+	Window *child = this->FindChildWindowById(wc, number);
+	while (child != nullptr) {
+		child->Close();
+		child = this->FindChildWindowById(wc, number);
 	}
 }
 
