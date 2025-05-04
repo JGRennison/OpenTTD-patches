@@ -1,6 +1,7 @@
 add_test_files(
     bitmath_func.cpp
     enum_over_optimisation.cpp
+    flatset_type.cpp
     format_target.cpp
     landscape_partial_pixel_z.cpp
     math_func.cpp

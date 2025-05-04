@@ -13,6 +13,7 @@ add_files(
     endian_func.hpp
     enum_type.hpp
     hash_func.hpp
+    flatset_type.hpp
     format.cpp
     format.hpp
     geometry_func.cpp
