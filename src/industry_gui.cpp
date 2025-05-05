@@ -126,7 +126,7 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 		if (indspec->grf_prop.grffile->grf_version < 8) {
 			if (GB(callback, 0, 8) == 0xFF) return;
 			if (callback < 0x400) {
-				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
 				suffix.display = CSD_CARGO_AMOUNT_TEXT;
 				return;
 			}
@@ -140,12 +140,12 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 				return;
 			}
 			if (callback < 0x400) {
-				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
 				suffix.display = CSD_CARGO_AMOUNT_TEXT;
 				return;
 			}
 			if (callback >= 0x800 && callback < 0xC00) {
-				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback - 0x800, 6);
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback - 0x800, GetRegisterRange(0x100));
 				suffix.display = CSD_CARGO_TEXT;
 				return;
 			}
@@ -593,7 +593,7 @@ public:
 						if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(indsp->grf_prop.grfid, CBID_INDUSTRY_FUND_MORE_TEXT, callback_res);
 						} else {
-							std::string str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, 6);
+							std::string str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
 							if (!str.empty()) {
 								DrawStringMultiLine(ir, str, TC_YELLOW);
 							}
@@ -1014,7 +1014,7 @@ public:
 				if (callback_res > 0x400) {
 					ErrorUnknownCallbackResult(ind->grf_prop.grfid, CBID_INDUSTRY_WINDOW_MORE_TEXT, callback_res);
 				} else {
-					std::string str = GetGRFStringWithTextStack(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, 6);
+					std::string str = GetGRFStringWithTextStack(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
 					if (!str.empty()) {
 						ir.top += WidgetDimensions::scaled.vsep_wide;
 						ir.top = DrawStringMultiLine(ir, str, TC_YELLOW);

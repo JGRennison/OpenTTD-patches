@@ -605,7 +605,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	 * the building of the industry, as that's how it's done in TTDP. */
 	if (result == CALLBACK_FAILED) return CommandCost();
 
-	return GetErrorMessageFromLocationCallbackResult(result, indspec->grf_prop.grffile, STR_ERROR_SITE_UNSUITABLE);
+	return GetErrorMessageFromLocationCallbackResult(result, GetRegisterRange(0x100), indspec->grf_prop.grffile, STR_ERROR_SITE_UNSUITABLE);
 }
 
 /**

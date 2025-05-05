@@ -245,7 +245,7 @@ CommandCost PerformIndustryTileSlopeCheck(TileIndex ind_base_tile, TileIndex ind
 	ind.random = initial_random_bits;
 	ind.founder = founder;
 
-	uint16_t callback_res = GetIndustryTileCallback(CBID_INDTILE_SHAPE_CHECK, 0, creation_type << 8 | (uint32_t)layout_index, gfx, &ind, ind_tile);
+	uint16_t callback_res = GetIndustryTileCallback(CBID_INDTILE_SHAPE_CHECK, 0, creation_type << 8 | static_cast<uint32_t>(layout_index), gfx, &ind, ind_tile);
 	if (callback_res == CALLBACK_FAILED) {
 		if (!IsSlopeRefused(GetTileSlope(ind_tile), its->slopes_refused)) return CommandCost();
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
@@ -255,7 +255,7 @@ CommandCost PerformIndustryTileSlopeCheck(TileIndex ind_base_tile, TileIndex ind
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
-	return GetErrorMessageFromLocationCallbackResult(callback_res, its->grf_prop.grffile, STR_ERROR_SITE_UNSUITABLE);
+	return GetErrorMessageFromLocationCallbackResult(callback_res, GetRegisterRange(0x100), its->grf_prop.grffile, STR_ERROR_SITE_UNSUITABLE);
 }
 
 /* Simple wrapper for GetHouseCallback to keep the animation unified. */

@@ -32,8 +32,8 @@ void AddGRFTextToList(GRFTextWrapper &list, std::string_view text_to_add);
 
 bool CheckGrfLangID(uint8_t lang_id, uint8_t grf_version);
 
-std::vector<StringParameter> GetGRFStringTextStackParameters(const struct GRFFile *grffile, StringID stringid, uint8_t num_entries);
-std::string GetGRFStringWithTextStack(const struct GRFFile *grffile, GRFStringID grfstringid, uint8_t num_entries);
+std::vector<StringParameter> GetGRFStringTextStackParameters(const struct GRFFile *grffile, StringID stringid, std::span<const int32_t> textstack);
+std::string GetGRFStringWithTextStack(const struct GRFFile *grffile, GRFStringID grfstringid, std::span<const int32_t> textstack);
 
 char32_t RemapNewGRFStringControlCode(char32_t scc, class StringConsumer &consumer);
 

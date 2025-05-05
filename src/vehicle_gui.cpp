@@ -1112,7 +1112,7 @@ struct RefitWindow : public Window {
 				const GRFFile *grffile = v->GetGRF();
 				assert(grffile != nullptr);
 
-				name = GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
+				name = GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
 			} else {
 				name = GetString(STR_REFIT_SHIP_PART, offset + 1);
 			}

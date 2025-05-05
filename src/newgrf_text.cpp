@@ -751,15 +751,10 @@ struct TextRefStack {
 	bool error = false;
 	const GRFFile *grffile = nullptr;
 
-	TextRefStack(const GRFFile *grffile, uint8_t num_entries) : grffile(grffile)
+	TextRefStack(const GRFFile *grffile, std::span<const int32_t> textstack) : grffile(grffile)
 	{
-		extern TemporaryStorageArray<int32_t, 0x110> _temp_store;
-
-		assert(num_entries < sizeof(uint32_t) * std::size(stack));
-
 		auto stack_it = this->stack.begin();
-		for (uint i = 0; i < num_entries; i++) {
-			uint32_t value = _temp_store.GetValue(0x100 + i);
+		for (int32_t value : textstack) {
 			for (uint j = 0; j < 32; j += 8) {
 				*stack_it++ = GB(value, j, 8);
 			}
@@ -1053,10 +1048,10 @@ static void HandleNewGRFStringControlCodes(std::string_view str, TextRefStack &s
  * Process the text ref stack for a GRF String and return its parameters.
  * @param grffile GRFFile of string.
  * @param stringid StringID of string.
- * @param num_entries Number of temporary storage registers to import.
+ * @param textstack Text parameter stack.
  * @returns Parameters for GRF string.
  */
-std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grffile, StringID stringid, uint8_t num_entries)
+std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grffile, StringID stringid, std::span<const int32_t> textstack)
 {
 	if (stringid == INVALID_STRING_ID) return {};
 
@@ -1065,7 +1060,7 @@ std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grff
 	std::vector<StringParameter> params;
 	params.reserve(20);
 
-	TextRefStack stack{grffile, num_entries};
+	TextRefStack stack{grffile, textstack};
 	HandleNewGRFStringControlCodes(str, stack, params);
 
 	if (stack.error) {
@@ -1083,12 +1078,12 @@ std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grff
  * Format a GRF string using the text ref stack for parameters.
  * @param grffile GRFFile of string.
  * @param grfstringid GRFStringID of string.
- * @param num_entries Number of temporary storage registers to import.
+ * @param textstack Text parameter stack.
  * @returns Formatted string.
  */
-std::string GetGRFStringWithTextStack(const struct GRFFile *grffile, GRFStringID grfstringid, uint8_t num_entries)
+std::string GetGRFStringWithTextStack(const struct GRFFile *grffile, GRFStringID grfstringid, std::span<const int32_t> textstack)
 {
 	StringID stringid = GetGRFStringID(grffile->grfid, grfstringid);
-	auto params = GetGRFStringTextStackParameters(grffile, stringid, num_entries);
+	auto params = GetGRFStringTextStackParameters(grffile, stringid, textstack);
 	return GetStringWithArgs(stringid, params);
 }

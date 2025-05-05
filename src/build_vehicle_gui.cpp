@@ -1062,7 +1062,7 @@ static std::optional<std::string> GetNewGRFAdditionalText(EngineID engine)
 		return std::nullopt;
 	}
 
-	return GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
+	return GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
 }
 
 /**

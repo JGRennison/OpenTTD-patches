@@ -2001,7 +2001,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 							const GRFFile *grffile = e->GetGRF();
 							assert(grffile != nullptr);
 
-							builder += GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
+							builder += GetGRFStringWithTextStack(grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
 							break;
 						}
 					}
