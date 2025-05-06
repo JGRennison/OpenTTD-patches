@@ -2130,7 +2130,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlag flags, TileIndex tile, uint8_t width,
 	if (roadstopspec != nullptr) {
 		if (stop_type == RoadStopType::Truck && roadstopspec->stop_type != ROADSTOPTYPE_FREIGHT && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
 		if (stop_type == RoadStopType::Bus && roadstopspec->stop_type != ROADSTOPTYPE_PASSENGER && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
-		if (!is_drive_through && HasBit(roadstopspec->flags, RSF_DRIVE_THROUGH_ONLY)) return CMD_ERROR;
+		if (!is_drive_through && roadstopspec->flags.Test(RoadStopSpecFlag::DriveThroughOnly)) return CMD_ERROR;
 	}
 
 	/* Check if the requested road stop is too big */
@@ -3421,7 +3421,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 
 	/* don't show foundation for docks */
 	if (ti->tileh != SLOPE_FLAT && !IsDock(ti->tile)) {
-		if (statspec != nullptr && HasBit(statspec->flags, SSF_CUSTOM_FOUNDATIONS)) {
+		if (statspec != nullptr && statspec->flags.Test(StationSpecFlag::CustomFoundations)) {
 			/* Station has custom foundations.
 			 * Check whether the foundation continues beyond the tile's upper sides. */
 			uint edge_info = 0;
@@ -3431,7 +3431,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 			SpriteID image = GetCustomStationFoundationRelocation(statspec, st, ti->tile, tile_layout, edge_info);
 			if (image == 0) goto draw_default_foundation;
 
-			if (HasBit(statspec->flags, SSF_EXTENDED_FOUNDATIONS)) {
+			if (statspec->flags.Test(StationSpecFlag::ExtendedFoundations)) {
 				/* Station provides extended foundations. */
 
 				static const uint8_t foundation_parts[] = {
@@ -3517,7 +3517,7 @@ draw_default_foundation:
 	} else {
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
-			bool separate_ground = HasBit(statspec->flags, SSF_SEPARATE_GROUND);
+			bool separate_ground = statspec->flags.Test(StationSpecFlag::SeparateGround);
 			uint32_t var10_values = layout->PrepareLayout(total_offset, rti->fallback_railtype, 0, 0, separate_ground);
 			for (uint8_t var10 : SetBitIterator(var10_values)) {
 				uint32_t var10_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, var10);
@@ -3529,7 +3529,7 @@ draw_default_foundation:
 		} else if (statspec != nullptr) {
 			/* Simple sprite layout */
 			ground_relocation = relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, 0);
-			if (HasBit(statspec->flags, SSF_SEPARATE_GROUND)) {
+			if (statspec->flags.Test(StationSpecFlag::SeparateGround)) {
 				ground_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, 1);
 			}
 			ground_relocation += rti->fallback_railtype;
@@ -3575,7 +3575,7 @@ draw_default_foundation:
 		StationType type = GetStationType(ti->tile);
 
 		const RoadStopSpec *stopspec = GetRoadStopSpec(ti->tile);
-		RoadStopDrawMode stop_draw_mode = (RoadStopDrawMode)0;
+		RoadStopDrawModes stop_draw_mode{};
 		if (stopspec != nullptr) {
 			stop_draw_mode = stopspec->draw_mode;
 			st = BaseStation::GetByTile(ti->tile);
@@ -3583,11 +3583,11 @@ draw_default_foundation:
 			const SpriteGroup *group = object.Resolve();
 			if (group != nullptr && group->type == SGT_TILELAYOUT) {
 				const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
-				if (HasBit(stopspec->flags, RSF_DRAW_MODE_REGISTER)) {
+				if (stopspec->flags.Test(RoadStopSpecFlag::DrawModeRegister)) {
 					stop_draw_mode = (RoadStopDrawMode)GetRegister(0x100);
 				}
 				t = dts;
-				if (type == StationType::RoadWaypoint && (stop_draw_mode & ROADSTOP_DRAW_MODE_WAYP_GROUND)) {
+				if (type == StationType::RoadWaypoint && stop_draw_mode.Test(RoadStopDrawMode::WaypGround)) {
 					draw_ground = true;
 				}
 			}
@@ -3605,13 +3605,13 @@ draw_default_foundation:
 		}
 
 		if (IsDriveThroughStopTile(ti->tile)) {
-			if (type != StationType::RoadWaypoint && (stopspec == nullptr || (stop_draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) != 0)) {
+			if (type != StationType::RoadWaypoint && (stopspec == nullptr || stop_draw_mode.Test(RoadStopDrawMode::Overlay))) {
 				uint sprite_offset = GetDriveThroughStopAxis(ti->tile) == AXIS_X ? 1 : 0;
 				DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
 			}
 
 			DisallowedRoadDirections drd = GetDriveThroughStopDisallowedRoadDirections(ti->tile);
-			if (drd != DRD_NONE && (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_ONE_WAY_OVERLAY)) && road_rt != INVALID_ROADTYPE) {
+			if (drd != DRD_NONE && (stopspec == nullptr || !stopspec->flags.Test(RoadStopSpecFlag::NoOneWayOverlay)) && road_rt != INVALID_ROADTYPE) {
 				SpriteID oneway = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ONEWAY);
 				if (oneway == 0) oneway = SPR_ONEWAY_BASE;
 				DrawGroundSpriteAt(oneway + drd - 1 + ((GetDriveThroughStopAxis(ti->tile) == AXIS_X) ? 0 : 3), PAL_NONE, 8, 8, 0);
@@ -3620,13 +3620,13 @@ draw_default_foundation:
 			/* Non-drivethrough road stops are only valid for roads. */
 			assert_tile(road_rt != INVALID_ROADTYPE && tram_rt == INVALID_ROADTYPE, ti->tile);
 
-			if ((stopspec == nullptr || (stop_draw_mode & ROADSTOP_DRAW_MODE_ROAD) != 0) && road_rti->UsesOverlay()) {
+			if ((stopspec == nullptr || stop_draw_mode.Test(RoadStopDrawMode::Road)) && road_rti->UsesOverlay()) {
 				SpriteID ground = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ROADSTOP);
 				DrawGroundSprite(ground + view, PAL_NONE);
 			}
 		}
 
-		if (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_CATENARY)) {
+		if (stopspec == nullptr || !stopspec->flags.Test(RoadStopSpecFlag::NoCatenary)) {
 			/* Draw road, tram catenary */
 			DrawRoadCatenary(ti);
 		}

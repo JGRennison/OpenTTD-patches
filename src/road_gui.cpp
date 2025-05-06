@@ -88,8 +88,8 @@ static bool IsRoadStopEverAvailable(const RoadStopSpec *spec, StationType type)
 {
 	if (spec == nullptr) return true;
 
-	if (HasBit(spec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) return false;
-	if (HasBit(spec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)) return false;
+	if (spec->flags.Test(RoadStopSpecFlag::RoadOnly) && !RoadTypeIsRoad(_cur_roadtype)) return false;
+	if (spec->flags.Test(RoadStopSpecFlag::TramOnly) && !RoadTypeIsTram(_cur_roadtype)) return false;
 
 	if (type == StationType::RoadWaypoint && spec->stop_type != ROADSTOPTYPE_ALL) {
 		if (spec->grf_prop.grffile != nullptr && HasBit(spec->grf_prop.grffile->observed_feature_tests, GFTOF_ROAD_STOPS)) return true;
@@ -211,7 +211,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint8_t width, uint8_
 	bool connect_to_road = true;
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
-		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
+		if (roadstopspec != nullptr && roadstopspec->flags.Test(RoadStopSpecFlag::NoAutoRoadConnection)) connect_to_road = false;
 	}
 
 	if (connect_to_road) {
@@ -1280,7 +1280,7 @@ public:
 			StationPickerDrawSprite(x, y, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui.orientation);
 		} else {
 			DiagDirection orientation = _roadstop_gui.orientation;
-			if (orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) orientation = DIAGDIR_END;
+			if (orientation < DIAGDIR_END && spec->flags.Test(RoadStopSpecFlag::DriveThroughOnly)) orientation = DIAGDIR_END;
 			DrawRoadStopTile(x, y, _cur_roadtype, spec, roadstoptype == RoadStopType::Bus ? StationType::Bus : StationType::Truck, (uint8_t)orientation);
 		}
 	}
@@ -1327,13 +1327,13 @@ private:
 		/* Raise and lower to ensure the correct widget is lowered after changing displayed orientation plane. */
 		if (RoadTypeIsRoad(_cur_roadtype)) {
 			this->RaiseWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
-			this->GetWidget<NWidgetStacked>(WID_BROS_AVAILABLE_ORIENTATIONS)->SetDisplayedPlane((spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) ? 1 : 0);
+			this->GetWidget<NWidgetStacked>(WID_BROS_AVAILABLE_ORIENTATIONS)->SetDisplayedPlane((spec != nullptr && spec->flags.Test(RoadStopSpecFlag::DriveThroughOnly)) ? 1 : 0);
 			this->LowerWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
 		}
 
 		if (_roadstop_gui.orientation >= DIAGDIR_END) return;
 
-		if (spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) {
+		if (spec != nullptr && spec->flags.Test(RoadStopSpecFlag::DriveThroughOnly)) {
 			this->RaiseWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
 			_roadstop_gui.orientation = DIAGDIR_END;
 			this->LowerWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
@@ -1400,15 +1400,16 @@ public:
 		/* 'Accepts' and 'Supplies' texts. */
 		StationCoverageType sct = (this->window_class == WC_BUS_STATION) ? SCT_PASSENGERS_ONLY : SCT_NON_PASSENGERS_ONLY;
 		Rect r = this->GetWidget<NWidgetBase>(WID_BROS_ACCEPTANCE)->GetCurrentRect();
-		int top = r.top;
-		if (spec != nullptr) top = DrawBadgeNameList(Rect{r.left, top, r.right, INT_MAX}, spec->badges, GSF_ROADSTOPS);
-		top = DrawStationCoverageAreaText(r.left, r.right, top, sct, rad, false) + WidgetDimensions::scaled.vsep_normal;
-		top = DrawStationCoverageAreaText(r.left, r.right, top, sct, rad, true);
+		const int bottom = r.bottom;
+		r.bottom = INT_MAX; // Allow overflow as we want to know the required height.
+		if (spec != nullptr) r.top = DrawBadgeNameList(r, spec->badges, GSF_ROADSTOPS);
+		r.top = DrawStationCoverageAreaText(r, sct, rad, false) + WidgetDimensions::scaled.vsep_normal;
+		r.top = DrawStationCoverageAreaText(r, sct, rad, true);
 		/* Resize background if the window is too small.
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
-		if (top > r.bottom) {
-			this->coverage_height += top - r.bottom;
+		if (r.top > bottom) {
+			this->coverage_height += r.top - bottom;
 			this->ReInit();
 		}
 	}
@@ -1491,7 +1492,7 @@ public:
 			case WID_BROS_STATION_Y:
 				if (widget < WID_BROS_STATION_X) {
 					const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui.sel_class)->GetSpec(_roadstop_gui.sel_type);
-					if (spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) return;
+					if (spec != nullptr && spec->flags.Test(RoadStopSpecFlag::DriveThroughOnly)) return;
 				}
 				this->RaiseWidget(WID_BROS_STATION_NE + _roadstop_gui.orientation);
 				_roadstop_gui.orientation = (DiagDirection)(widget - WID_BROS_STATION_NE);
@@ -1971,8 +1972,8 @@ static BuildRoadToolbarWindow *GetRoadToolbarWindowForRoadStop(const RoadStopSpe
 
 	BuildRoadToolbarWindow *w = dynamic_cast<BuildRoadToolbarWindow *>(FindWindowById(_game_mode == GM_EDITOR ? WC_SCEN_BUILD_TOOLBAR : WC_BUILD_TOOLBAR, TRANSPORT_ROAD));
 	if (w != nullptr) {
-		if (spec != nullptr && ((HasBit(spec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) ||
-				(HasBit(spec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)))) {
+		if (spec != nullptr && ((spec->flags.Test(RoadStopSpecFlag::RoadOnly) && !RoadTypeIsRoad(_cur_roadtype)) ||
+				(spec->flags.Test(RoadStopSpecFlag::TramOnly) && !RoadTypeIsTram(_cur_roadtype)))) {
 			w->Close();
 		} else {
 			return w;

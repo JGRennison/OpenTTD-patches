@@ -1558,26 +1558,26 @@ class NIHObject : public NIHelper {
 				auto print = [&](const char *name) {
 					output.Print("    {}", name);
 				};
-				auto check_flag = [&](ObjectFlags flag, const char *name) {
-					if (spec->flags & flag) print(name);
+				auto check_flag = [&](ObjectFlag flag, const char *name) {
+					if (spec->flags.Test(flag)) print(name);
 				};
 				auto check_ctrl_flag = [&](ObjectCtrlFlags flag, const char *name) {
 					if (spec->ctrl_flags & flag) print(name);
 				};
-				check_flag(OBJECT_FLAG_ONLY_IN_SCENEDIT,   "OBJECT_FLAG_ONLY_IN_SCENEDIT");
-				check_flag(OBJECT_FLAG_CANNOT_REMOVE,      "OBJECT_FLAG_CANNOT_REMOVE");
-				check_flag(OBJECT_FLAG_AUTOREMOVE,         "OBJECT_FLAG_AUTOREMOVE");
-				check_flag(OBJECT_FLAG_BUILT_ON_WATER,     "OBJECT_FLAG_BUILT_ON_WATER");
-				check_flag(OBJECT_FLAG_CLEAR_INCOME,       "OBJECT_FLAG_CLEAR_INCOME");
-				check_flag(OBJECT_FLAG_HAS_NO_FOUNDATION,  "OBJECT_FLAG_HAS_NO_FOUNDATION");
-				check_flag(OBJECT_FLAG_ANIMATION,          "OBJECT_FLAG_ANIMATION");
-				check_flag(OBJECT_FLAG_ONLY_IN_GAME,       "OBJECT_FLAG_ONLY_IN_GAME");
-				check_flag(OBJECT_FLAG_2CC_COLOUR,         "OBJECT_FLAG_2CC_COLOUR");
-				check_flag(OBJECT_FLAG_NOT_ON_LAND,        "OBJECT_FLAG_NOT_ON_LAND");
-				check_flag(OBJECT_FLAG_DRAW_WATER,         "OBJECT_FLAG_DRAW_WATER");
-				check_flag(OBJECT_FLAG_ALLOW_UNDER_BRIDGE, "OBJECT_FLAG_ALLOW_UNDER_BRIDGE");
-				check_flag(OBJECT_FLAG_ANIM_RANDOM_BITS,   "OBJECT_FLAG_ANIM_RANDOM_BITS");
-				check_flag(OBJECT_FLAG_SCALE_BY_WATER,     "OBJECT_FLAG_SCALE_BY_WATER");
+				check_flag(ObjectFlag::OnlyInScenedit,   "OnlyInScenedit");
+				check_flag(ObjectFlag::CannotRemove,     "CannotRemove");
+				check_flag(ObjectFlag::Autoremove,       "Autoremove");
+				check_flag(ObjectFlag::BuiltOnWater,     "BuiltOnWater");
+				check_flag(ObjectFlag::ClearIncome,      "ClearIncome");
+				check_flag(ObjectFlag::HasNoFoundation,  "HasNoFoundation");
+				check_flag(ObjectFlag::Animation,        "Animation");
+				check_flag(ObjectFlag::OnlyInGame,       "OnlyInGame");
+				check_flag(ObjectFlag::Uses2CC,          "Uses2CC");
+				check_flag(ObjectFlag::NotOnLand,        "NotOnLand");
+				check_flag(ObjectFlag::DrawWater,        "DrawWater");
+				check_flag(ObjectFlag::AllowUnderBridge, "AllowUnderBridge");
+				check_flag(ObjectFlag::AnimRandomBits,   "AnimRandomBits");
+				check_flag(ObjectFlag::ScaleByWater,     "ScaleByWater");
 				check_ctrl_flag(OBJECT_CTRL_FLAG_USE_LAND_GROUND, "OBJECT_CTRL_FLAG_USE_LAND_GROUND");
 				check_ctrl_flag(OBJECT_CTRL_FLAG_EDGE_FOUNDATION, "OBJECT_CTRL_FLAG_EDGE_FOUNDATION");
 				check_ctrl_flag(OBJECT_CTRL_FLAG_FLOOD_RESISTANT, "OBJECT_CTRL_FLAG_FLOOD_RESISTANT");

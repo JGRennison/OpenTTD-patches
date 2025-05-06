@@ -60,25 +60,25 @@ enum RoadStopAvailabilityType : uint8_t {
  * Different draw modes to disallow rendering of some parts of the stop
  * or road.
  */
-enum RoadStopDrawMode : uint8_t {
-	ROADSTOP_DRAW_MODE_NONE        = 0,
-	ROADSTOP_DRAW_MODE_ROAD        = 1 << 0, ///< Bay stops: Draw the road itself
-	ROADSTOP_DRAW_MODE_OVERLAY     = 1 << 1, ///< Drive-through stops: Draw the road overlay, e.g. pavement
-	ROADSTOP_DRAW_MODE_WAYP_GROUND = 1 << 2, ///< Waypoints: Draw the sprite layout ground tile (on top of the road)
+enum class RoadStopDrawMode : uint8_t {
+	Road       = 0, ///< Bay stops: Draw the road itself
+	Overlay    = 1, ///< Drive-through stops: Draw the road overlay, e.g. pavement
+	WaypGround = 2, ///< Waypoints: Draw the sprite layout ground tile (on top of the road)
 };
-DECLARE_ENUM_AS_BIT_SET(RoadStopDrawMode)
+using RoadStopDrawModes = EnumBitSet<RoadStopDrawMode, uint8_t>;
 
-enum RoadStopSpecFlags : uint8_t {
-	RSF_CB141_RANDOM_BITS              = 0, ///< Callback 141 needs random bits.
-	RSF_NO_ONE_WAY_OVERLAY             = 1, ///< Do not show one-way road overlays.
-	RSF_NO_CATENARY                    = 2, ///< Do not show catenary.
-	RSF_DRIVE_THROUGH_ONLY             = 3, ///< Stop is drive-through only.
-	RSF_NO_AUTO_ROAD_CONNECTION        = 4, ///< No auto road connection.
-	RSF_BUILD_MENU_ROAD_ONLY           = 5, ///< Only show in the road build menu (not tram).
-	RSF_BUILD_MENU_TRAM_ONLY           = 6, ///< Only show in the tram build menu (not road).
-	RSF_BUILD_MENU_DRAW_DISABLED_VIEWS = 7, ///< Use custom road stop graphics for disabled views.
-	RSF_DRAW_MODE_REGISTER             = 8, ///< Read draw mode from register 0x100.
+enum class RoadStopSpecFlag : uint8_t {
+	Cb141RandomBits      = 0, ///< Callback 141 needs random bits.
+	NoOneWayOverlay      = 1, ///< Do not show one-way road overlays.
+	NoCatenary           = 2, ///< Do not show catenary.
+	DriveThroughOnly     = 3, ///< Stop is drive-through only.
+	NoAutoRoadConnection = 4, ///< No auto road connection.
+	RoadOnly             = 5, ///< Only show in the road build menu (not tram).
+	TramOnly             = 6, ///< Only show in the tram build menu (not road).
+	DrawDisabledViews    = 7, ///< Use custom road stop graphics for disabled views.
+	DrawModeRegister     = 8, ///< Read draw mode from register 0x100.
 };
+using RoadStopSpecFlags = EnumBitSet<RoadStopSpecFlag, uint8_t>;
 
 enum RoadStopSpecIntlFlags : uint8_t {
 	RSIF_BRIDGE_HEIGHTS_SET,            ///< bridge_height[6] is set.
@@ -160,9 +160,9 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	StringID name;              ///< Name of this stop
 
 	RoadStopAvailabilityType stop_type = ROADSTOPTYPE_ALL;
-	RoadStopDrawMode draw_mode = ROADSTOP_DRAW_MODE_ROAD | ROADSTOP_DRAW_MODE_OVERLAY;
+	RoadStopDrawModes draw_mode = {RoadStopDrawMode::Road, RoadStopDrawMode::Overlay};
 	RoadStopCallbackMasks callback_mask{};
-	uint16_t flags = 0;
+	RoadStopSpecFlags flags{};
 	uint8_t internal_flags = 0;          ///< Bitmask of internal spec flags (RoadStopSpecIntlFlags)
 
 	CargoTypes cargo_triggers = 0;       ///< Bitmask of cargo types which cause trigger re-randomizing

@@ -77,7 +77,7 @@ size_t ObjectSpec::Count()
 bool ObjectSpec::IsEverAvailable() const
 {
 	return this->IsEnabled() && this->climate.Test(_settings_game.game_creation.landscape) &&
-			(this->flags & ((_game_mode != GM_EDITOR && !_generating_world) ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
+			!this->flags.Test((_game_mode != GM_EDITOR && !_generating_world) ? ObjectFlag::OnlyInScenedit : ObjectFlag::OnlyInGame);
 }
 
 /**
@@ -493,7 +493,7 @@ void DrawObjectLandscapeGround(TileInfo *ti)
 static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, const ObjectSpec *spec, int building_z_offset)
 {
 	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
-	PaletteID palette = ((spec->flags & OBJECT_FLAG_2CC_COLOUR) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START) + Object::GetByTile(ti->tile)->colour;
+	PaletteID palette = (spec->flags.Test(ObjectFlag::Uses2CC) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START) + Object::GetByTile(ti->tile)->colour;
 
 	SpriteID image = dts->ground.sprite;
 	PaletteID pal  = dts->ground.pal;
@@ -503,7 +503,7 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 	} else if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		/* If the ground sprite is the default flat water sprite, draw also canal/river borders
 		 * Do not do this if the tile's WaterClass is 'land'. */
-		if ((image == SPR_FLAT_WATER_TILE || spec->flags & OBJECT_FLAG_DRAW_WATER) && IsTileOnWater(ti->tile)) {
+		if ((image == SPR_FLAT_WATER_TILE || spec->flags.Test(ObjectFlag::DrawWater)) && IsTileOnWater(ti->tile)) {
 			DrawWaterClassGround(ti);
 		} else {
 			DrawGroundSprite(image, GroundSpritePaletteTransform(image, pal, palette));
@@ -549,7 +549,7 @@ void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view)
 	PaletteID palette;
 	if (Company::IsValidID(_local_company)) {
 		/* Get the colours of our company! */
-		if (spec->flags & OBJECT_FLAG_2CC_COLOUR) {
+		if (spec->flags.Test(ObjectFlag::Uses2CC)) {
 			const Livery *l = Company::Get(_local_company)->livery;
 			palette = SPR_2CCMAP_BASE + l->colour1 + l->colour2 * 16;
 		} else {
@@ -557,7 +557,7 @@ void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view)
 		}
 	} else {
 		/* There's no company, so just take the base palette. */
-		palette = (spec->flags & OBJECT_FLAG_2CC_COLOUR) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START;
+		palette = spec->flags.Test(ObjectFlag::Uses2CC) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START;
 	}
 
 	SpriteID image = dts->ground.sprite;
@@ -601,15 +601,15 @@ struct ObjectAnimationBase : public AnimationBase<ObjectAnimationBase, ObjectSpe
 void AnimateNewObjectTile(TileIndex tile)
 {
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
-	if (spec == nullptr || !(spec->flags & OBJECT_FLAG_ANIMATION)) return;
+	if (spec == nullptr || !spec->flags.Test(ObjectFlag::Animation)) return;
 
-	ObjectAnimationBase::AnimateTile(spec, Object::GetByTile(tile), tile, (spec->flags & OBJECT_FLAG_ANIM_RANDOM_BITS) != 0);
+	ObjectAnimationBase::AnimateTile(spec, Object::GetByTile(tile), tile, spec->flags.Test(ObjectFlag::AnimRandomBits));
 }
 
 uint8_t GetNewObjectTileAnimationSpeed(TileIndex tile)
 {
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
-	if (spec == nullptr || !(spec->flags & OBJECT_FLAG_ANIMATION)) return 0;
+	if (spec == nullptr || !spec->flags.Test(ObjectFlag::Animation)) return 0;
 
 	return ObjectAnimationBase::GetAnimationSpeed(spec);
 }

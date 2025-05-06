@@ -2198,7 +2198,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				break;
 
 			case 0x13: // General flags
-				statspec->flags = buf.ReadByte();
+				statspec->flags = StationSpecFlags{buf.ReadByte()};
 				break;
 
 			case 0x14: { // Overhead wire placement
@@ -4633,7 +4633,7 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 
 			case 0x10: // Flags
 				spec->flags = (ObjectFlags)buf.ReadWord();
-				_loaded_newgrf_features.has_2CC |= (spec->flags & OBJECT_FLAG_2CC_COLOUR) != 0;
+				_loaded_newgrf_features.has_2CC |= spec->flags.Test(ObjectFlag::Uses2CC);
 				break;
 
 			case 0x11: // Animation info
@@ -5475,7 +5475,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x12: // General flags
-				rs->flags = (uint16_t)buf.ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need two byte's worth of flags at present
+				rs->flags = static_cast<RoadStopSpecFlags>(buf.ReadDWord()); // Future-proofing, size this as 4 bytes, but we only need two byte's worth of flags at present
 				break;
 
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
