@@ -72,6 +72,7 @@ struct TraceRestrictCreateSlotCmdData final : public CommandPayloadSerialisable<
 	VehicleType vehtype = VEH_INVALID;
 	TraceRestrictSlotGroupID parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	std::string name;
+	uint32_t max_occupancy;
 	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
 
 	void Serialise(BufferSerialisationRef buffer) const override;

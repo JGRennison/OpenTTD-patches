@@ -3536,6 +3536,7 @@ public:
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
+				data.max_occupancy = 1;
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}

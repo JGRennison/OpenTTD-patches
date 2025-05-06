@@ -3456,6 +3456,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 	if (flags & DC_EXEC) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
 		slot->name = data.name;
+		slot->max_occupancy = data.max_occupancy;
 		if (pg != nullptr) {
 			slot->parent_group = pg->index;
 			slot->AddToParentGroups();
@@ -4087,6 +4088,7 @@ void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) co
 	buffer.Send_uint8(this->vehtype);
 	buffer.Send_uint16(this->parent);
 	buffer.Send_string(this->name);
+	buffer.Send_uint32(this->max_occupancy);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
 	if (this->follow_up_cmd.has_value()) {
 		this->follow_up_cmd->Serialise(buffer);
@@ -4098,6 +4100,7 @@ bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, 
 	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
 	this->parent = buffer.Recv_uint16();
 	buffer.Recv_string(this->name, default_string_validation);
+	this->max_occupancy = buffer.Recv_uint32();
 	if (buffer.Recv_bool()) {
 		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}
@@ -4112,7 +4115,7 @@ void TraceRestrictCreateSlotCmdData::SanitiseStrings(StringValidationSettings se
 
 void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("vt: {}, parent: {:X}", this->vehtype, this->parent);
+	output.format("vt: {}, parent: {:X}, max occupancy: {}", this->vehtype, this->parent, this->max_occupancy);
 	if (this->follow_up_cmd.has_value()) {
 		output.append(", ");
 		this->follow_up_cmd->FormatDebugSummary(output);
