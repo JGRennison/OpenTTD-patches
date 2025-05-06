@@ -13,7 +13,7 @@
 #include "window_gui.h"
 #include "window_func.h"
 #include "textbuf_gui.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "strings_func.h"
 #include "vehicle_base.h"
 #include "string_func.h"

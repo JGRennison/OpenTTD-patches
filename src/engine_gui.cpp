@@ -12,7 +12,7 @@
 #include "engine_base.h"
 #include "engine_cmd.h"
 #include "command_func.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "strings_func.h"
 #include "engine_gui.h"
 #include "articulated_vehicles.h"

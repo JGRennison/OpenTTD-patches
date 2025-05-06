@@ -85,7 +85,7 @@
 #include "blitter/factory.hpp"
 #include "strings_func.h"
 #include "strings_internal.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "zoom_func.h"
 #include "vehicle_func.h"
 #include "company_func.h"

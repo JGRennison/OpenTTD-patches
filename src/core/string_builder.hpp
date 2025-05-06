@@ -5,13 +5,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file strings_builder.h Types and functions related to struct StringBuilder. */
+/** @file string_builder.hpp Types and functions related to struct StringBuilder. */
 
-#ifndef STRINGS_BUILDER_H
-#define STRINGS_BUILDER_H
+#ifndef STRING_BUILDER_HPP
+#define STRING_BUILDER_HPP
 
-#include "string_func.h"
-#include "core/format.hpp"
+#include "../string_func.h"
+#include "format.hpp"
 
 /**
  * Equivalent to the std::back_insert_iterator in function, with some
@@ -134,4 +134,4 @@ public:
 	}
 };
 
-#endif /* STRINGS_BUILDER_H */
+#endif /* STRING_BUILDER_HPP */

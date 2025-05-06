@@ -9,7 +9,7 @@
 
 #include "../stdafx.h"
 
-#include "../strings_builder.h"
+#include "../core/string_builder.hpp"
 #include "../strings_func.h"
 #include "../command_func.h"
 #include "../date_func.h"

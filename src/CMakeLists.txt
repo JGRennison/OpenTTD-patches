@@ -508,7 +508,6 @@ add_files(
     stringfilter.cpp
     stringfilter_type.h
     strings.cpp
-    strings_builder.h
     strings_func.h
     strings_internal.h
     strings_type.h

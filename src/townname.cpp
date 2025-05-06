@@ -15,7 +15,7 @@
 #include "core/random_func.hpp"
 #include "genworld.h"
 #include "gfx_layout.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "strings_internal.h"
 
 #include "table/townname.h"

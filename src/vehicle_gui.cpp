@@ -26,7 +26,7 @@
 #include "group_gui.h"
 #include "strings_func.h"
 #include "strings_internal.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"
 #include "string_func.h"

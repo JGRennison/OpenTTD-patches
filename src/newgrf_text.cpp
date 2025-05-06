@@ -20,7 +20,7 @@
 #include <array>
 
 #include "newgrf.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "strings_func.h"
 #include "newgrf_storage.h"
 #include "newgrf_text.h"

@@ -21,7 +21,7 @@
 #include "error.h"
 #include "error_func.h"
 #include "strings_func.h"
-#include "strings_builder.h"
+#include "core/string_builder.hpp"
 #include "rev.h"
 #include "core/endian_func.hpp"
 #include "date_func.h"
