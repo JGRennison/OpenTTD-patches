@@ -2046,7 +2046,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 		if (this->grouping == GB_NONE) {
 			const Vehicle *v = vehgroup.GetSingleVehicle();
 
-			SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+			SetDParam(0, EconTime::UsingWallclockUnits() ? STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD : STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
 			SetDParam(1, v->GetDisplayProfitThisYear());
 			SetDParam(2, v->GetDisplayProfitLastYear());
 
@@ -2167,7 +2167,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			}
 		} else {
 			StringID str = STR_JUST_STRING2;
-			SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+			SetDParam(0, EconTime::UsingWallclockUnits() ? STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD : STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
 			SetDParam(1, vehgroup.GetDisplayProfitThisYear());
 			SetDParam(2, vehgroup.GetDisplayProfitLastYear());
 
