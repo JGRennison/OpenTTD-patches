@@ -106,3 +106,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Proteger
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Establecer contraseña de la empresa
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Configuración de NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Configuración de IA
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Configuración de script de juego
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Abrir configuración de NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Abrir configuración de IA
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Abrir configuración de script de juego

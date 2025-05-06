@@ -103,3 +103,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Zaštiti
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Postavi lozinku za preduzeće
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Podešavanja NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Podešavanja VI
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Podešavanja skripte
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Prikaži podešavanja NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Otvori podešavanja VI
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Otvori podešavanja skripte

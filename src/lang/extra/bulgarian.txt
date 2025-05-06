@@ -93,3 +93,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Пост
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Поставяне парола на компанията
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF настройки
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Настройки на ИИ
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Игрови скрипт
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Отваряне на NewGRF настройки
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Отворете ИИ настройки
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Отворете настройките на игровия скрипт

@@ -2368,3 +2368,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}以密�
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}設定公司密碼
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 設定
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI 設定
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}遊戲腳本設定
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}開啟 NewGRF 設定
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}開啟 AI 設定
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}開啟遊戲腳本設定

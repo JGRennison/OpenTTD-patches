@@ -96,3 +96,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}הגן �
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}קבע סיסמה לחברה
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}(NewGRF)הגדרות שדרוג גראפי
+STR_INTRO_AI_SETTINGS                                           :{BLACK}הגדרות בינה מלאכותית
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}הגדרות סקריפטי משחק
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}פתח הגדרות NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}פתח הגדרות בינה מלאכותית
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}פתח הגדרות סקריפטי משחק

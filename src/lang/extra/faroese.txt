@@ -88,3 +88,6 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Verj tí
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Áset fyritøku loyniorð
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF innstillingar
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Vís NewGRF innstillingar

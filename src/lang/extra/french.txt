@@ -113,3 +113,10 @@ STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Choisir 
 STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT                        :Meilleur emplacement pour les villes
 STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_HELPTEXT               :Lors de la construction d'une ville, recherche dans le voisinage un endroit plus propice. Privilégie les vallées et endroits proche de l'eau.
 STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_RADIUS                 :Rayon dans lequel rechercher un meilleur emplacement : {STRING}
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Paramètres NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Configuration des IAs
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Configuration du script de jeu
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ouvrir la configuration des NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Ouvrir la configuration des IAs
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Ouvrir la configuration du script de jeu

@@ -96,3 +96,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Pasvorte
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Agordu kompanian pasvorton
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Agordoj de NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI-agordoj
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Ludoskriptaj agordoj
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Montri NewGRF-agordojn
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Montru AI-agordojn
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Montru ludoskriptajn agordojn

@@ -103,3 +103,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Προσ
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Θέση του κωδικού της εταιρείας
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Ρυθμίσεις NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Ρυθμίσεις AI
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Ρυθμίσεις σενάριου παιχνιδιού
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Εμφάνιση ρυθμίσεων NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Εμφάνιση ρυθμίσεων ΤΝ
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Εμφάνιση ρυθμίσεων σενάριου παιχνιδιού

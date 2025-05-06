@@ -2459,3 +2459,10 @@ STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}确认�
 
 STR_ORDER_UNKNOWN_ERROR                                         :[错误] 未知错误
 STR_ORDER_PARSE_ERROR                                           :[错误] 无法解析这条命令
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 设置
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI 设置
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}游戏脚本设置
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}显示 NewGRF 设定
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}显示 AI 设置
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}显示游戏脚本设置

@@ -93,3 +93,8 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}احمي
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}ادخل كلمة المرور
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK} اعدادات NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}اعدادات االذكاء الاصطناعي
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}عرض إعدادات اﻹضافات
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK} اعدادات الOpen AI

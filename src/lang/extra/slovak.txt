@@ -108,3 +108,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ochráni
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastavte heslo spoločnosti
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Nastavenia NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Nastavenia AI
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Nastavenia skriptu
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Otvoriť nastavenia NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Otvoriť nastavenia AI
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Otvoriť nastavenia skriptu

@@ -109,3 +109,10 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Use pala
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Definir palavra-chave da empresa
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Definições de NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Definições de IA
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Definições de Script de Jogo
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Abrir definições de NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Abrir definições de IA
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Abrir definições de Script de Jogo
