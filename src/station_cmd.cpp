@@ -927,7 +927,7 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
-	if (statspec != nullptr && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
+	if (statspec != nullptr && statspec->internal_flags.Test(StationSpecIntlFlag::BridgeHeightsSet)) {
 		int height_above = statspec->GetBridgeAboveFlags(layout).height;
 		if (height_above == 0) return CommandCost(INVALID_STRING_ID);
 		if (GetTileMaxZ(tile) + height_above > bridge_height) {
@@ -942,7 +942,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags;
-	if (statspec != nullptr && HasBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+	if (statspec != nullptr && statspec->internal_flags.Test(StationSpecIntlFlag::BridgeDisallowedPillarsSet)) {
 		/* Pillar flags set by NewGRF */
 		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->GetBridgeAboveFlags(layout).disallowed_pillars;
 	} else if (!statspec) {
@@ -983,7 +983,7 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bo
 		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
-	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET)) {
+	if (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet)) {
 		int height = spec->bridge_height[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
 		if (height == 0) return CommandCost(INVALID_STRING_ID);
 		if (GetTileMaxZ(tile) + height > bridge_height) {
@@ -998,7 +998,7 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bo
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
-	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+	if (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeDisallowedPillarsSet)) {
 		disallowed_pillar_flags = (BridgePiecePillarFlags) spec->bridge_disallowed_pillars[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
 	} else if (drive_through) {
 		disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(entrance) == AXIS_X ? 0x50 : 0xA0);
@@ -1124,7 +1124,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 	int allowed_z = -1;
 
 	for (TileIndex cur_tile : tile_area) {
-		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET));
+		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet));
 		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !allow_under_bridge);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);

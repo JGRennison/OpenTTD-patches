@@ -2263,7 +2263,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT: {
-				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
+				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeHeightsSet);
 				size_t length = buf.ReadExtendedByte();
 				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
 				for (size_t i = 0; i < length; i++) {
@@ -2273,7 +2273,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case 0x1B: // Minimum height for a bridge above
-				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
+				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeHeightsSet);
 				if (statspec->bridge_above_flags.size() < 8) statspec->bridge_above_flags.resize(8);
 				for (uint i = 0; i < 8; i++) {
 					statspec->bridge_above_flags[i].height = buf.ReadByte();
@@ -2281,7 +2281,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				break;
 
 			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS: {
-				SetBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET);
+				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeDisallowedPillarsSet);
 				size_t length = buf.ReadExtendedByte();
 				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
 				for (size_t i = 0; i < length; i++) {
@@ -5480,7 +5480,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x13: // Minimum height for a bridge above
-				SetBit(rs->internal_flags, RSIF_BRIDGE_HEIGHTS_SET);
+				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeHeightsSet);
 				for (uint i = 0; i < 6; i++) {
 					rs->bridge_height[i] = buf.ReadByte();
 				}
@@ -5490,7 +5490,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x14: // Disallowed bridge pillars
-				SetBit(rs->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET);
+				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeDisallowedPillarsSet);
 				for (uint i = 0; i < 6; i++) {
 					rs->bridge_disallowed_pillars[i] = buf.ReadByte();
 				}

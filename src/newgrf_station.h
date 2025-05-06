@@ -124,18 +124,19 @@ enum StationRandomTrigger : uint8_t {
 	SRT_PATH_RESERVATION, ///< Trigger platform when train reserves path.
 };
 
-enum StationSpecIntlFlags {
-	SSIF_BRIDGE_HEIGHTS_SET,            ///< bridge_height[8] is set.
-	SSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< bridge_disallowed_pillars[8] is set.
+enum class StationSpecIntlFlag : uint8_t {
+	BridgeHeightsSet,           ///< bridge_height[8] is set.
+	BridgeDisallowedPillarsSet, ///< bridge_disallowed_pillars[8] is set.
 };
+using StationSpecIntlFlags = EnumBitSet<StationSpecIntlFlag, uint8_t>;
 
 /** Station specification. */
 struct StationSpec : NewGRFSpecBase<StationClassID> {
 	StationSpec() : name(0),
 		disallowed_platforms(0), disallowed_lengths(0),
 		cargo_threshold(0), cargo_triggers(0),
-		callback_mask(0), flags(0),
-		animation({0, 0, 0, 0}), internal_flags(0) {}
+		callback_mask(0),
+		animation({0, 0, 0, 0}) {}
 	/**
 	 * Properties related the the grf file.
 	 * NUM_CARGO real cargo plus three pseudo cargo sprite groups.
@@ -176,7 +177,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	StationCallbackMasks callback_mask; ///< Bitmask of station callbacks that have to be called
 
-	StationSpecFlags flags; ///< Bitmask of flags, bit 0: use different sprite set; bit 1: divide cargo about by station size
+	StationSpecFlags flags{}; ///< Bitmask of flags
 
 	struct BridgeAboveFlags {
 		uint8_t height = UINT8_MAX;     ///< Minimum height for a bridge above, 0 for none
@@ -194,7 +195,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	AnimationInfo animation;
 
-	uint8_t internal_flags; ///< Bitmask of internal spec flags (StationSpecIntlFlags)
+	StationSpecIntlFlags internal_flags{}; ///< Bitmask of internal spec flags
 
 	/** Custom platform layouts, keyed by platform and length combined. */
 	std::unordered_map<uint16_t, std::vector<uint8_t>> layouts;

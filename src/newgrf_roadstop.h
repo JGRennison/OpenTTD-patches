@@ -80,10 +80,11 @@ enum class RoadStopSpecFlag : uint8_t {
 };
 using RoadStopSpecFlags = EnumBitSet<RoadStopSpecFlag, uint8_t>;
 
-enum RoadStopSpecIntlFlags : uint8_t {
-	RSIF_BRIDGE_HEIGHTS_SET,            ///< bridge_height[6] is set.
-	RSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< bridge_disallowed_pillars[6] is set.
+enum class RoadStopSpecIntlFlag : uint8_t {
+	BridgeHeightsSet,           ///< bridge_height[6] is set.
+	BridgeDisallowedPillarsSet, ///< bridge_disallowed_pillars[6] is set.
 };
+using RoadStopSpecIntlFlags = EnumBitSet<RoadStopSpecIntlFlag, uint8_t>;
 
 enum RoadStopView : uint8_t {
 	RSV_BAY_NE                  = 0, ///< Bay road stop, facing Northeast
@@ -163,7 +164,7 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	RoadStopDrawModes draw_mode = {RoadStopDrawMode::Road, RoadStopDrawMode::Overlay};
 	RoadStopCallbackMasks callback_mask{};
 	RoadStopSpecFlags flags{};
-	uint8_t internal_flags = 0;          ///< Bitmask of internal spec flags (RoadStopSpecIntlFlags)
+	RoadStopSpecIntlFlags internal_flags{};
 
 	CargoTypes cargo_triggers = 0;       ///< Bitmask of cargo types which cause trigger re-randomizing
 
