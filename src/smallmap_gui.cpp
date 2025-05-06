@@ -360,8 +360,8 @@ static TileType GetSmallMapTileType(TileIndex tile, TileType t)
 	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
 		ObjectViewportMapType vmtype = OVMT_DEFAULT;
 		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
-		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
-		if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+		if (spec->ctrl_flags.Test(ObjectCtrlFlag::ViewportMapTypeSet)) vmtype = spec->vport_map_type;
+		if (vmtype == OVMT_CLEAR && spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 			if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
 				vmtype = OVMT_WATER;
 			}
@@ -526,11 +526,11 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 			if (!GetObjectHasViewportMapViewOverride(tile)) return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
 			ObjectViewportMapType vmtype = OVMT_DEFAULT;
 			const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
-			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+			if (spec->ctrl_flags.Test(ObjectCtrlFlag::ViewportMapTypeSet)) vmtype = spec->vport_map_type;
 
 			switch (vmtype) {
 				case OVMT_CLEAR:
-					if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+					if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 						if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
 							t = MP_WATER;
 						} else {

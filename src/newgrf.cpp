@@ -4679,13 +4679,12 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 
 			case A0RPI_OBJECT_USE_LAND_GROUND:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_USE_LAND_GROUND;
-				if (buf.ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_USE_LAND_GROUND;
+				spec->ctrl_flags.Set(ObjectCtrlFlag::UseLandGround, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_OBJECT_EDGE_FOUNDATION_MODE:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				spec->ctrl_flags |= OBJECT_CTRL_FLAG_EDGE_FOUNDATION;
+				spec->ctrl_flags.Set(ObjectCtrlFlag::EdgeFoundation);
 				for (int i = 0; i < 4; i++) {
 					spec->edge_foundation[i] = buf.ReadByte();
 				}
@@ -4693,14 +4692,13 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 
 			case A0RPI_OBJECT_FLOOD_RESISTANT:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
-				if (buf.ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
+				spec->ctrl_flags.Set(ObjectCtrlFlag::FloodResistant, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_OBJECT_VIEWPORT_MAP_TYPE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				spec->vport_map_type = (ObjectViewportMapType)buf.ReadByte();
-				spec->ctrl_flags |= OBJECT_CTRL_FLAG_VPORT_MAP_TYPE;
+				spec->ctrl_flags.Set(ObjectCtrlFlag::ViewportMapTypeSet);
 				break;
 
 			case A0RPI_OBJECT_VIEWPORT_MAP_SUBTYPE:

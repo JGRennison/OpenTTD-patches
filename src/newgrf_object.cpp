@@ -498,7 +498,7 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 	SpriteID image = dts->ground.sprite;
 	PaletteID pal  = dts->ground.pal;
 
-	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+	if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 		DrawObjectLandscapeGround(ti);
 	} else if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		/* If the ground sprite is the default flat water sprite, draw also canal/river borders

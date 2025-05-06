@@ -1534,7 +1534,7 @@ class NIHObject : public NIHelper {
 			output.FinishPrint();
 
 			output.Print("  view: {}, colour: {}, effective foundation: {}", obj->view, obj->colour, GetObjectEffectiveFoundationType(tile));
-			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+			if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 				output.Print("  ground type: {}, density: {}, counter: {}, water class: {}", GetObjectGroundType(tile), GetObjectGroundDensity(tile), GetObjectGroundCounter(tile), GetWaterClass(tile));
 			}
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
@@ -1561,8 +1561,8 @@ class NIHObject : public NIHelper {
 				auto check_flag = [&](ObjectFlag flag, const char *name) {
 					if (spec->flags.Test(flag)) print(name);
 				};
-				auto check_ctrl_flag = [&](ObjectCtrlFlags flag, const char *name) {
-					if (spec->ctrl_flags & flag) print(name);
+				auto check_ctrl_flag = [&](ObjectCtrlFlag flag, const char *name) {
+					if (spec->ctrl_flags.Test(flag)) print(name);
 				};
 				check_flag(ObjectFlag::OnlyInScenedit,   "OnlyInScenedit");
 				check_flag(ObjectFlag::CannotRemove,     "CannotRemove");
@@ -1578,10 +1578,10 @@ class NIHObject : public NIHelper {
 				check_flag(ObjectFlag::AllowUnderBridge, "AllowUnderBridge");
 				check_flag(ObjectFlag::AnimRandomBits,   "AnimRandomBits");
 				check_flag(ObjectFlag::ScaleByWater,     "ScaleByWater");
-				check_ctrl_flag(OBJECT_CTRL_FLAG_USE_LAND_GROUND, "OBJECT_CTRL_FLAG_USE_LAND_GROUND");
-				check_ctrl_flag(OBJECT_CTRL_FLAG_EDGE_FOUNDATION, "OBJECT_CTRL_FLAG_EDGE_FOUNDATION");
-				check_ctrl_flag(OBJECT_CTRL_FLAG_FLOOD_RESISTANT, "OBJECT_CTRL_FLAG_FLOOD_RESISTANT");
-				check_ctrl_flag(OBJECT_CTRL_FLAG_VPORT_MAP_TYPE,  "OBJECT_CTRL_FLAG_VPORT_MAP_TYPE");
+				check_ctrl_flag(ObjectCtrlFlag::UseLandGround,      "UseLandGround");
+				check_ctrl_flag(ObjectCtrlFlag::EdgeFoundation,     "EdgeFoundation");
+				check_ctrl_flag(ObjectCtrlFlag::FloodResistant,     "FloodResistant");
+				check_ctrl_flag(ObjectCtrlFlag::ViewportMapTypeSet, "ViewportMapTypeSet");
 			}
 		}
 	}

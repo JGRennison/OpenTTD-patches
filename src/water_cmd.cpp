@@ -1227,7 +1227,7 @@ static void DoFloodTile(TileIndex target)
 
 			case MP_OBJECT: {
 				const ObjectSpec *spec = ObjectSpec::GetByTile(target);
-				if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION)) {
+				if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround) && spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation)) {
 					Object *obj = Object::GetByTile(target);
 					uint8_t flags = spec->edge_foundation[obj->view];
 					DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
@@ -1245,7 +1245,7 @@ static void DoFloodTile(TileIndex target)
 					SetObjectGroundTypeDensity(target, OBJECT_GROUND_SHORE, 3);
 					MarkTileDirtyByTile(target, VMDF_NOT_MAP_MODE);
 					flooded = true;
-				} else if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && spec->flags.Test(ObjectFlag::HasNoFoundation)) {
+				} else if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround) && spec->flags.Test(ObjectFlag::HasNoFoundation)) {
 					SetWaterClass(target, WATER_CLASS_SEA);
 					SetObjectGroundTypeDensity(target, OBJECT_GROUND_SHORE, 3);
 					MarkTileDirtyByTile(target, VMDF_NOT_MAP_MODE);

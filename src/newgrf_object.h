@@ -41,14 +41,13 @@ enum class ObjectFlag : uint8_t {
 };
 using ObjectFlags = EnumBitSet<ObjectFlag, uint16_t>;
 
-enum ObjectCtrlFlags {
-	OBJECT_CTRL_FLAG_NONE               =       0, ///< Just nothing.
-	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
-	OBJECT_CTRL_FLAG_EDGE_FOUNDATION    = 1 <<  1, ///< Use edge foundation mode.
-	OBJECT_CTRL_FLAG_FLOOD_RESISTANT    = 1 <<  2, ///< Object is flood-resistant.
-	OBJECT_CTRL_FLAG_VPORT_MAP_TYPE     = 1 <<  3, ///< Viewport map type is set.
+enum class ObjectCtrlFlag : uint8_t {
+	UseLandGround      = 0, ///< Use land for ground sprite.
+	EdgeFoundation     = 1, ///< Use edge foundation mode.
+	FloodResistant     = 2, ///< Object is flood-resistant.
+	ViewportMapTypeSet = 3, ///< Viewport map type is set.
 };
-DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
+using ObjectCtrlFlags = EnumBitSet<ObjectCtrlFlag, uint8_t>;
 
 enum ObjectEdgeFoundationFlags {
 	/* Bits 0 and 1 use for edge DiagDirection */

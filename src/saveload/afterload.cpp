@@ -4304,7 +4304,7 @@ bool AfterLoadGame()
 					SetObjectFoundationType(t, SLOPE_ELEVATED, type, ObjectSpec::Get(type));
 				}
 				if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 3)) {
-					if (ObjectSpec::GetByTile(t)->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) {
+					if (ObjectSpec::GetByTile(t)->ctrl_flags.Test(ObjectCtrlFlag::ViewportMapTypeSet)) {
 						SetObjectHasViewportMapViewOverride(t, true);
 					}
 				}

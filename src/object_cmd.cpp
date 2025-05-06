@@ -86,7 +86,7 @@ void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const
 		return;
 	}
 
-	if (!spec->flags.Test(ObjectFlag::HasNoFoundation) && (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION)) {
+	if (!spec->flags.Test(ObjectFlag::HasNoFoundation) && spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation)) {
 		if (tileh == SLOPE_ELEVATED) tileh = GetTileSlope(tile);
 
 		if (tileh == SLOPE_FLAT) {
@@ -183,11 +183,11 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 		bool remove = IsDockingTile(t);
 		MakeObject(t, owner, o->index, wc, Random());
 		if (remove) RemoveDockingTile(t);
-		if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && wc == WATER_CLASS_INVALID) {
+		if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround) && wc == WATER_CLASS_INVALID) {
 			SetObjectGroundTypeDensity(t, OBJECT_GROUND_GRASS, 0);
 		}
 		SetObjectFoundationType(t, SLOPE_ELEVATED, type, spec);
-		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) {
+		if (spec->ctrl_flags.Test(ObjectCtrlFlag::ViewportMapTypeSet)) {
 			SetObjectHasViewportMapViewOverride(t, true);
 		}
 		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
@@ -577,7 +577,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 	if (!spec->IsEnabled()) {
 		type = OBJECT_TRANSMITTER;
 	} else if (!spec->flags.Test(ObjectFlag::HasNoFoundation)) {
-		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) {
+		if (spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation)) {
 			uint8_t flags = spec->edge_foundation[obj->view];
 			DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 			Slope incline = InclinedSlope(edge);
@@ -622,7 +622,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 			dts = &_objects[type];
 		}
 
-		if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && _settings_game.construction.purchased_land_clear_ground) {
+		if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround) && _settings_game.construction.purchased_land_clear_ground) {
 			DrawObjectLandscapeGround(ti);
 		} else if (spec->flags.Test(ObjectFlag::HasNoFoundation)) {
 			/* If an object has no foundation, but tries to draw a (flat) ground
@@ -763,7 +763,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 			/* Removing with the cheat costs more in TTDPatch / the specs. */
 			cost.MultiplyCost(25);
 		}
-	} else if (spec->flags.Any({ObjectFlag::BuiltOnWater, ObjectFlag::NotOnLand}) || (spec->ctrl_flags & OBJECT_CTRL_FLAG_FLOOD_RESISTANT) != 0) {
+	} else if (spec->flags.Any({ObjectFlag::BuiltOnWater, ObjectFlag::NotOnLand}) || spec->ctrl_flags.Test(ObjectCtrlFlag::FloodResistant)) {
 		/* Water can't remove objects that are buildable on water. */
 		return CMD_ERROR;
 	}
@@ -942,7 +942,7 @@ static void TileLoop_Object(TileIndex tile)
 
 	if (IsTileOnWater(tile)) {
 		TileLoop_Water(tile);
-	} else if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+	} else if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 		if (GetObjectGroundType(tile) == OBJECT_GROUND_SHORE) {
 			TileLoop_Water(tile);
 		} else {
@@ -1196,7 +1196,7 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 
 static int GetObjectEffectiveZ(TileIndex tile, const ObjectSpec *spec, int z, Slope tileh)
 {
-	if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) && !spec->flags.Test(ObjectFlag::HasNoFoundation)) {
+	if (spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation) && !spec->flags.Test(ObjectFlag::HasNoFoundation)) {
 		uint8_t flags = spec->edge_foundation[Object::GetByTile(tile)->view];
 		DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 		if (!(flags & OBJECT_EF_FLAG_FOUNDATION_LOWER) && !(tileh & InclinedSlope(edge))) return z;
@@ -1235,7 +1235,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		auto pre_success_checks = [&]() {
 			if (flags & DC_EXEC) {
 				SetObjectFoundationType(tile, tileh_new, type, spec);
-				if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+				if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
 				update_water_class();
 			}
 		};
