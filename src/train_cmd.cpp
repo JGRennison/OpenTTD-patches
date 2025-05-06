@@ -1970,6 +1970,10 @@ static CommandCost CheckTrainAttachment(Train *t)
 							case 0x401: // allow
 								break;
 
+							case 0x40F:
+								error = GetGRFStringID(head->GetGRFID(), static_cast<GRFStringID>(GetRegister(0x100)));
+								break;
+
 							default:    // unknown reason -> disallow
 							case 0x402: // disallow attaching
 								error = STR_ERROR_INCOMPATIBLE_RAIL_TYPES;

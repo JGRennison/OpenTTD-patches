@@ -1057,6 +1057,9 @@ static std::optional<std::string> GetNewGRFAdditionalText(EngineID engine)
 	if (callback == CALLBACK_FAILED || callback == 0x400) return std::nullopt;
 	const GRFFile *grffile = Engine::Get(engine)->GetGRF();
 	assert(grffile != nullptr);
+	if (callback == 0x40F) {
+		return GetGRFStringWithTextStack(grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+	}
 	if (callback > 0x400) {
 		ErrorUnknownCallbackResult(grffile->grfid, CBID_VEHICLE_ADDITIONAL_TEXT, callback);
 		return std::nullopt;

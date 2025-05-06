@@ -564,12 +564,15 @@ StringID GetHouseName(HouseID house_id, TileIndex tile)
 
 	uint16_t callback_res = GetHouseCallback(CBID_HOUSE_CUSTOM_NAME, house_completed ? 1 : 0, 0, house_id, t, tile);
 	if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
-		if (callback_res > 0x400) {
+		StringID new_name = STR_NULL;
+		if (callback_res == 0x40F) {
+			new_name = GetGRFStringID(hs->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)));
+		} else if (callback_res > 0x400) {
 			ErrorUnknownCallbackResult(hs->grf_prop.grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
 		} else {
-			StringID ret = GetGRFStringID(hs->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res);
-			if (ret != STR_NULL && ret != STR_UNDEFINED) return ret;
+			new_name = GetGRFStringID(hs->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res);
 		}
+		if (new_name != STR_NULL && new_name != STR_UNDEFINED) return new_name;
 	}
 
 	return hs->building_name;

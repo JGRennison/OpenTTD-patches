@@ -1574,17 +1574,18 @@ uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 /** Get the cargo subtype text from NewGRF for the vehicle details window. */
 StringID GetCargoSubtypeText(const Vehicle *v)
 {
-	if (EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::CargoSuffix)) {
-		uint16_t cb = GetVehicleCallback(CBID_VEHICLE_CARGO_SUFFIX, 0, 0, v->engine_type, v);
-		if (cb != CALLBACK_FAILED) {
-			if (cb > 0x400) ErrorUnknownCallbackResult(v->GetGRFID(), CBID_VEHICLE_CARGO_SUFFIX, cb);
-			if (cb >= 0x400 || (v->GetGRF()->grf_version < 8 && cb == 0xFF)) cb = CALLBACK_FAILED;
-		}
-		if (cb != CALLBACK_FAILED) {
-			return GetGRFStringID(v->GetGRF(), GRFSTR_MISC_GRF_TEXT + cb);
-		}
+	if (!EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::CargoSuffix)) return STR_EMPTY;
+	uint16_t cb = GetVehicleCallback(CBID_VEHICLE_CARGO_SUFFIX, 0, 0, v->engine_type, v);
+	if (v->GetGRF()->grf_version < 8 && cb == 0xFF) return STR_EMPTY;
+	if (cb == CALLBACK_FAILED || cb == 0x400) return STR_EMPTY;
+	if (cb == 0x40F) {
+		return GetGRFStringID(v->GetGRF(), static_cast<GRFStringID>(GetRegister(0x100)));
 	}
-	return STR_EMPTY;
+	if (cb > 0x400) {
+		ErrorUnknownCallbackResult(v->GetGRFID(), CBID_VEHICLE_CARGO_SUFFIX, cb);
+		return STR_EMPTY;
+	}
+	return GetGRFStringID(v->GetGRFID(), GRFSTR_MISC_GRF_TEXT + cb);
 }
 
 /** Sort vehicle groups by the number of vehicles in the group */

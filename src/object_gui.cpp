@@ -238,13 +238,16 @@ public:
 				if (spec->callback_mask.Test(ObjectCallbackMask::FundMoreText)) {
 					uint16_t callback_res = GetObjectCallback(CBID_OBJECT_FUND_MORE_TEXT, 0, 0, spec, nullptr, INVALID_TILE, _object_gui.sel_view);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
-						if (callback_res > 0x400) {
+						std::string str;
+						if (callback_res == 0x40F) {
+							str = GetGRFStringWithTextStack(spec->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+						} else if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(spec->grf_prop.grfid, CBID_OBJECT_FUND_MORE_TEXT, callback_res);
 						} else {
-							std::string str = GetGRFStringWithTextStack(spec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
-							if (!str.empty()) {
-								tr.top = DrawStringMultiLine(tr, str, TC_ORANGE);
-							}
+							str = GetGRFStringWithTextStack(spec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
+						}
+						if (!str.empty()) {
+							tr.top = DrawStringMultiLine(tr, str, TC_ORANGE);
 						}
 					}
 				}

@@ -661,6 +661,10 @@ CommandCost CmdStartStopVehicle(DoCommandFlags flags, VehicleID veh_id, bool eva
 						case 0x400: // allow
 							break;
 
+						case 0x40F:
+							error = GetGRFStringID(v->GetGRFID(), static_cast<GRFStringID>(GetRegister(0x100)));
+							break;
+
 						default: // unknown reason -> disallow
 							error = STR_ERROR_INCOMPATIBLE_RAIL_TYPES;
 							break;

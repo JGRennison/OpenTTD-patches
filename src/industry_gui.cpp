@@ -134,10 +134,22 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 			return;
 
 		} else { // GRF version 8 or higher.
-			if (callback == 0x400) return;
-			if (callback == 0x401) {
-				suffix.display = CSD_CARGO;
-				return;
+			switch (callback) {
+				case 0x400:
+					return;
+				case 0x401:
+					suffix.display = CSD_CARGO;
+					return;
+				case 0x40E:
+					suffix.display = CSD_CARGO_TEXT;
+					suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+					return;
+				case 0x40F:
+					suffix.display = CSD_CARGO_AMOUNT_TEXT;
+					suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+					return;
+				default:
+					break;
 			}
 			if (callback < 0x400) {
 				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, GetRegisterRange(0x100));
@@ -590,13 +602,16 @@ public:
 				if (indsp->callback_mask.Test(IndustryCallbackMask::FundMoreText)) {
 					uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_FUND_MORE_TEXT, 0, 0, nullptr, this->selected_type, INVALID_TILE);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
-						if (callback_res > 0x400) {
+						std::string str;
+						if (callback_res == 0x40F) {
+							str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+						} else if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(indsp->grf_prop.grfid, CBID_INDUSTRY_FUND_MORE_TEXT, callback_res);
 						} else {
-							std::string str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
-							if (!str.empty()) {
-								DrawStringMultiLine(ir, str, TC_YELLOW);
-							}
+							str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
+						}
+						if (!str.empty()) {
+							DrawStringMultiLine(ir, str, TC_YELLOW);
 						}
 					}
 				}
@@ -1011,14 +1026,17 @@ public:
 		if (ind->callback_mask.Test(IndustryCallbackMask::WindowMoreText)) {
 			uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_WINDOW_MORE_TEXT, 0, 0, i, i->type, i->location.tile);
 			if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
-				if (callback_res > 0x400) {
+				std::string str;
+				if (callback_res == 0x40F) {
+					str = GetGRFStringWithTextStack(ind->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)), GetRegisterRange(0x101));
+				} else if (callback_res > 0x400) {
 					ErrorUnknownCallbackResult(ind->grf_prop.grfid, CBID_INDUSTRY_WINDOW_MORE_TEXT, callback_res);
 				} else {
-					std::string str = GetGRFStringWithTextStack(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
-					if (!str.empty()) {
-						ir.top += WidgetDimensions::scaled.vsep_wide;
-						ir.top = DrawStringMultiLine(ir, str, TC_YELLOW);
-					}
+					str = GetGRFStringWithTextStack(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
+				}
+				if (!str.empty()) {
+					ir.top += WidgetDimensions::scaled.vsep_wide;
+					ir.top = DrawStringMultiLine(ir, str, TC_YELLOW);
 				}
 			}
 		}

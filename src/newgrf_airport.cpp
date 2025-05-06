@@ -282,6 +282,9 @@ StringID GetAirportTextCallback(const AirportSpec *as, uint8_t layout, uint16_t 
 	AirportResolverObject object(INVALID_TILE, nullptr, as, layout, (CallbackID)callback);
 	uint16_t cb_res = object.ResolveCallback();
 	if (cb_res == CALLBACK_FAILED || cb_res == 0x400) return STR_UNDEFINED;
+	if (cb_res == 0x40F) {
+		return GetGRFStringID(as->grf_prop.grffile, static_cast<GRFStringID>(GetRegister(0x100)));
+	}
 	if (cb_res > 0x400) {
 		ErrorUnknownCallbackResult(as->grf_prop.grfid, callback, cb_res);
 		return STR_UNDEFINED;
