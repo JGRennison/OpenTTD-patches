@@ -466,8 +466,11 @@ void Blitter_40bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour);
 		do {
 			for (int i = 0; i != width; i++) {
-				if (*anim == 0) *udst = MakeGrey(*udst);
-				*anim = remap[*anim];
+				if (*anim == 0) {
+					*udst = MakeGrey(*udst);
+				} else {
+					*anim = remap[*anim];
+				}
 				udst++;
 				anim++;
 			}
@@ -478,7 +481,7 @@ void Blitter_40bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour);
 		do {
 			for (int i = 0; i != width; i++) {
-				*anim = remap[*anim];
+				if (*anim != 0) *anim = remap[*anim];
 				anim++;
 			}
 			anim = anim - width + _screen.pitch;
