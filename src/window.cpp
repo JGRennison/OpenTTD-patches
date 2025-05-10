@@ -3298,15 +3298,6 @@ void InputLoop()
 
 	Window::DeleteClosedWindows();
 
-	/* Handle sprite picker before any GUI interaction */
-	if (_newgrf_debug_sprite_picker.mode == SPM_REDRAW) {
-		/* We are done with the last draw-frame, so we know what sprites we
-		 * clicked on. Reset the picker mode and invalidate the window. */
-		_newgrf_debug_sprite_picker.mode = SPM_NONE;
-		_newgrf_debug_sprite_picker.DrawingComplete();
-		InvalidateWindowData(WC_SPRITE_ALIGNER, 0, 1);
-	}
-
 	/* HandleMouseEvents was already called for this tick */
 	HandleMouseEvents();
 }
@@ -3408,6 +3399,14 @@ void UpdateWindows()
 	NetworkDrawChatMessage();
 	/* Redraw mouse cursor in case it was hidden */
 	DrawMouseCursor();
+
+	if (_newgrf_debug_sprite_picker.mode == SPM_REDRAW) {
+		/* We are done with the last draw-frame, so we know what sprites we
+		 * clicked on. Reset the picker mode and invalidate the window. */
+		_newgrf_debug_sprite_picker.mode = SPM_NONE;
+		_newgrf_debug_sprite_picker.DrawingComplete();
+		InvalidateWindowData(WC_SPRITE_ALIGNER, 0, 1);
+	}
 
 	_window_update_number++;
 }
