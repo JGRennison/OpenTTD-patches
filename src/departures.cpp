@@ -542,11 +542,11 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 		/* If the order is a conditional branch, handle it. */
 		if (order->IsType(OT_CONDITIONAL)) {
 			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, dispatch_records)) {
-					case 0: {
+					case DCJD_GIVE_UP: {
 						/* Give up */
 						break;
 					}
-					case 1: {
+					case DCJD_TAKEN: {
 						/* Take the branch */
 						if (status != D_CANCELLED) {
 							status = D_TRAVELLING;
@@ -560,7 +560,7 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 						require_travel_time = false;
 						continue;
 					}
-					case 2: {
+					case DCJD_NOT_TAKEN: {
 						/* Do not take the branch */
 						if (status != D_CANCELLED) {
 							status = D_TRAVELLING;
@@ -960,11 +960,11 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
 					switch (GetDepartureConditionalOrderMode(order, lod.v, departure_tick, dispatch_records)) {
-							case 0: {
+							case DCJD_GIVE_UP: {
 								/* Give up */
 								break;
 							}
-							case 1: {
+							case DCJD_TAKEN: {
 								/* Take the branch */
 								const Order *target = lod.v->GetOrder(order->GetConditionSkipToOrder());
 								if (target == nullptr) {
@@ -978,7 +978,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 								travel_time_required = false;
 								continue;
 							}
-							case 2: {
+							case DCJD_NOT_TAKEN: {
 								/* Do not take the branch */
 								order = lod.v->orders->GetNext(order);
 								continue;
@@ -1147,11 +1147,11 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
 				switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, dispatch_records)) {
-						case 0: {
+						case DCJD_GIVE_UP: {
 							/* Give up */
 							break;
 						}
-						case 1: {
+						case DCJD_TAKEN: {
 							/* Take the branch */
 							const Order *target = lod.v->GetOrder(order->GetConditionSkipToOrder());
 							if (target == nullptr) {
@@ -1169,7 +1169,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 							require_travel_time = false;
 							continue;
 						}
-						case 2: {
+						case DCJD_NOT_TAKEN: {
 							/* Do not take the branch */
 							lod.expected_tick -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
 							order = lod.v->orders->GetNext(order);
