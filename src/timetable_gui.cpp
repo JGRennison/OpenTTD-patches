@@ -428,7 +428,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 			const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
 			const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
 			assert(real_timetable_order->IsType(OT_CONDITIONAL));
-			start_time += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+			start_time += real_timetable_order->GetWaitTime(); // NB: wait and travel times are unsigned
+			start_time -= real_current_order->GetTravelTime();
 		}
 
 		FillTimetableArrivalDepartureTable(v, v->cur_real_order_index % v->GetNumOrders(), travelling, table, start_time);
