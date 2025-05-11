@@ -110,3 +110,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Нала
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Відкрити налаштування NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Показати налаштування ШІ
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Відкрити налаштування ігрового скрипту
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

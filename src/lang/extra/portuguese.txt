@@ -116,3 +116,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Definiç
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Abrir definições de NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Abrir definições de IA
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Abrir definições de Script de Jogo
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

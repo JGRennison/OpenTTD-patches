@@ -111,3 +111,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Spillscr
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF Astellungen opman
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}KI-Astellungen opman
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Spillscriptastellungen opman
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

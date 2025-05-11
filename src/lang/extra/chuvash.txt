@@ -35,3 +35,4 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Сывлӑш ҫ
 
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF майлаштару
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF майлаштару кӑтар
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

@@ -569,7 +569,7 @@ struct TraditionalSelectGameWindow : public Window {
 };
 
 static constexpr NWidgetPart _nested_traditional_select_game_widgets[] = {
-	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION),
+	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION_TRADITIONAL),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.sparse),
 

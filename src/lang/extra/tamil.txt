@@ -99,3 +99,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}வி�
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF அமைப்புகளைத் திற
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}AI அமைப்புகளைத் திற
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}விளையாட்டு ஸ்கிரிப்ட் அமைப்புகளைத் திற
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

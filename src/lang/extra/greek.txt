@@ -110,3 +110,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Ρυθμ
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Εμφάνιση ρυθμίσεων NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Εμφάνιση ρυθμίσεων ΤΝ
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Εμφάνιση ρυθμίσεων σενάριου παιχνιδιού
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

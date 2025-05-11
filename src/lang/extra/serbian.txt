@@ -110,3 +110,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Podešav
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Prikaži podešavanja NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Otvori podešavanja VI
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Otvori podešavanja skripte
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

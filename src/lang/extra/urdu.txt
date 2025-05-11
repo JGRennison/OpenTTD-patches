@@ -60,3 +60,4 @@ STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}کمپن
 
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF چنئے
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF سیٹنگز دیکھیئے
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

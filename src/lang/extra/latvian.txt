@@ -111,3 +111,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Spēles 
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Atvērt NewGRF iestatījumus
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Atvērt MI iestatījumus
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Atvērt spēles skripta iestatījumi
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

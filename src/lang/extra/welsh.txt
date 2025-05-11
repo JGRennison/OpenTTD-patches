@@ -107,3 +107,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Gosodiad
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Agor gosodiadau NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Agor gosodiadau AI
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Agor gosodiadau sgript gêm
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

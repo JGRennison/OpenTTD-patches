@@ -91,3 +91,4 @@ STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Áset fy
 
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF innstillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Vís NewGRF innstillingar
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

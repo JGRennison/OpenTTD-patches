@@ -94,3 +94,4 @@ STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-i
 STR_INTRO_AI_SETTINGS                                           :{BLACK}AI-innstillingar
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Spelscript-innstillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Syne NewGRF-instillingar
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

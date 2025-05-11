@@ -103,3 +103,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}הגדר
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}פתח הגדרות NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}פתח הגדרות בינה מלאכותית
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}פתח הגדרות סקריפטי משחק
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

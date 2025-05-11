@@ -115,3 +115,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Indstill
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Åben NewGRF-indstillinger
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Åben AI indstillinger
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Åben indstillinger for spilscript
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

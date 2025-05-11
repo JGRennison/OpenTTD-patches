@@ -2480,3 +2480,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Axustes 
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Abrir a configuración de NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Abrir axustes da IA
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Abrir os axustes dos scripts do xogo
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

@@ -116,3 +116,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Thiết 
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Hiển thị tùy chỉnh NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Hiển thị tùy chỉnh AI
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Mở thiết lập kịch bản màn chơi
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

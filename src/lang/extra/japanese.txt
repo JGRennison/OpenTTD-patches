@@ -194,3 +194,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}ゲー�
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRFの有効/無効化、各パラメータの設定ができます
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}AI設定を表示
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}ゲームスクリプト設定を表示
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

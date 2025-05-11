@@ -94,3 +94,4 @@ STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Suidhich
 
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Roghainnean NewGRF
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Seall na roghainnean NewGRF
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

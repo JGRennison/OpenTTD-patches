@@ -98,3 +98,4 @@ STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK} اعد�
 STR_INTRO_AI_SETTINGS                                           :{BLACK}اعدادات االذكاء الاصطناعي
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}عرض إعدادات اﻹضافات
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK} اعدادات الOpen AI
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

@@ -2466,3 +2466,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}游戏�
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}显示 NewGRF 设定
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}显示 AI 设置
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}显示游戏脚本设置
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

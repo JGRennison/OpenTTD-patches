@@ -109,3 +109,4 @@ STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Pengatur
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Tampilkan pengaturan NewGRF
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Tampilkan pengaturan AI
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Tampilan pengaturan game script
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}
