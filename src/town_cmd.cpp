@@ -232,6 +232,11 @@ void Town::InitializeLayout(TownLayout layout)
 void Town::UpdateLabel()
 {
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+		if (!this->have_ratings.Test(_local_company)) {
+			this->town_label_rating = TC_WHITE;
+			return;
+		}
+
 		int r = this->ratings[_local_company];
 		int town_rating = 0;                     // Appalling and Very Poor
 		if (r > RATING_VERYPOOR)  town_rating++; // Poor and Mediocre
