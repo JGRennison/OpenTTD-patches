@@ -489,7 +489,8 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 		const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
 		const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
 		if (real_timetable_order->IsType(OT_CONDITIONAL)) {
-			start_ticks += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+			start_ticks += real_timetable_order->GetWaitTime(); // NB: wait and travel times are unsigned
+			start_ticks -= real_current_order->GetTravelTime();
 		} else {
 			/* This can also occur with implicit orders, when there are no real orders, do nothing */
 		}
@@ -970,7 +971,8 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 								if (target == nullptr) {
 									break;
 								}
-								departure_tick += order->GetWaitTime() - target->GetTravelTime();
+								departure_tick += order->GetWaitTime(); // NB: wait and travel times are unsigned
+								departure_tick -= target->GetTravelTime();
 								if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes()) {
 									c.scheduled_tick = StateTicks{0};
 								}
@@ -1356,7 +1358,8 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 						if (target == nullptr) {
 							break;
 						}
-						departure_tick += order->GetWaitTime() - target->GetTravelTime();
+						departure_tick += order->GetWaitTime(); // NB: wait and travel times are unsigned
+						departure_tick -= target->GetTravelTime();
 						if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes() && !target->IsType(OT_CONDITIONAL)) {
 							c.scheduled_tick = StateTicks{0};
 						}
