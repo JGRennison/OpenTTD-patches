@@ -3213,7 +3213,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 		case MP_CLEAR: {
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & 15) : SLOPE_FLAT;
 			uint multi;
-			ClearGround cg = GetClearGround(tile);
+			ClearGround cg = IsSnowTile(tile) ? CLEAR_SNOW : GetClearGround(tile);
 			if (cg == CLEAR_FIELDS && colour_index & 1) {
 				cg = CLEAR_GRASS;
 				multi = 1;
