@@ -3211,25 +3211,31 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 
 	switch (t) {
 		case MP_CLEAR: {
-			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & 15) : SLOPE_FLAT;
+			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & SLOPE_ELEVATED) : SLOPE_FLAT;
 			uint multi;
 			ClearGround cg = IsSnowTile(tile) ? CLEAR_SNOW : GetClearGround(tile);
-			if (cg == CLEAR_FIELDS && colour_index & 1) {
+			if (cg == CLEAR_FIELDS && (colour_index & 1) != 0) {
 				cg = CLEAR_GRASS;
 				multi = 1;
-			} else multi = ViewportMapGetColourIndexMulti(tile, cg);
+			} else {
+				multi = ViewportMapGetColourIndexMulti(tile, cg);
+			}
 			return _vp_map_vegetation_clear_colours[slope][cg][multi];
 		}
 
 		case MP_INDUSTRY:
-			colour = IsTileForestIndustry(tile) ? (colour_index & 1 ? PC_GREEN : 0x7B) : GREY_SCALE(3);
+			if (IsTileForestIndustry(tile)) {
+				colour = ((colour_index & 1) != 0) ? PC_GREEN : 0x7B;
+			} else {
+				colour = GREY_SCALE(3);
+			}
 			break;
 
 		case MP_TREES: {
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
 			const uint tc = GetTreeCount(tile);
-			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & 15) : SLOPE_FLAT;
+			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & SLOPE_ELEVATED) : SLOPE_FLAT;
 			return ViewportMapGetColourVegetationTree<is_32bpp>(tile, tg, td, tc, colour_index, slope);
 		}
 
