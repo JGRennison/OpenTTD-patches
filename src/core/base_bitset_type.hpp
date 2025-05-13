@@ -15,6 +15,7 @@
 
 #include "bitmath_func.hpp"
 #include <limits>
+#include <optional>
 
 /**
  * Base for bit set wrapper.
@@ -229,6 +230,21 @@ public:
 	inline constexpr bool IsValid() const
 	{
 		return (this->base() & Tmask) == this->base();
+	}
+
+	/**
+	 * Get the value of the Nth set bit.
+	 * @param n The Nth set bit from which we want to know the value.
+	 * @return The value of the Nth set bit, or std::nullopt if no Nth bit set.
+	 */
+	std::optional<Tvalue_type> GetNthSetBit(uint n) const
+	{
+		for (auto i : *this) {
+			if (n == 0) return i;
+			--n;
+		}
+
+		return std::nullopt;
 	}
 
 	inline constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
