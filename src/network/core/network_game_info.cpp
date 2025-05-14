@@ -277,7 +277,7 @@ void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool
  */
 void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &info, uint16_t flags, uint16_t version, bool send_newgrf_names)
 {
-	version = std::max<uint16_t>(version, 1); // Version 1 is the max supported
+	version = std::max<uint16_t>(version, 2); // Version 2 is the max supported
 
 	p.Send_uint8(version); // version num
 
@@ -305,6 +305,10 @@ void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &in
 		p.Send_string(game_info == nullptr ? "" : game_info->GetName());
 
 		p.Send_uint8(send_newgrf_names ? NST_GRFID_MD5_NAME : NST_GRFID_MD5);
+	}
+
+	if (version >= 2) {
+		p.Send_uint64(info.ticks_playing);
 	}
 
 	{
@@ -484,6 +488,10 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 
 		newgrf_serialisation = (NewGRFSerializationType)p.Recv_uint8();
 		if (newgrf_serialisation >= NST_END) return;
+	}
+
+	if (version >= 2) {
+		info.ticks_playing = p.Recv_uint64();
 	}
 
 	{

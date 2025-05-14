@@ -106,6 +106,6 @@ static const uint NETWORK_PUBLIC_KEY_LENGTH = 32 * 2 + 1;
 /**
  * Maximum version supported in PACKET_SERVER_GAME_INFO_EXTENDED
  */
-static const uint8_t SERVER_GAME_INFO_EXTENDED_MAX_VERSION = 1;
+static const uint8_t SERVER_GAME_INFO_EXTENDED_MAX_VERSION = 2;
 
 #endif /* NETWORK_CORE_CONFIG_H */
