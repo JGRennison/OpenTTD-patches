@@ -1326,6 +1326,11 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 void TraceRestrictVacateSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v);
 bool TraceRestrictIsVehicleInSlotGroup(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v);
 
+/**
+ * @return The most recent slot of the given type, or std::nullopt if there is
+ * no recent slot of that type.
+ */
+std::optional<TraceRestrictSlotID> TraceRestrictGetRecentSlot(VehicleType vehicle_type);
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index);
 void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index);
 void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index);

@@ -97,6 +97,15 @@ void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
 	EraseRecentSlotOrCounter(_recent_counters, index);
 }
 
+std::optional<TraceRestrictSlotID> TraceRestrictGetRecentSlot(VehicleType vehicle_type)
+{
+	if (_recent_slots[vehicle_type].empty())
+		return std::nullopt;
+	else
+		// _recent_slots isn't used by any other threads, so this is safe.
+		return _recent_slots[vehicle_type].front();
+}
+
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
 {
 	const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
@@ -2186,6 +2195,7 @@ class TraceRestrictWindow: public Window {
 		QSM_NEW_SLOT,
 		QSM_NEW_COUNTER,
 		QSM_SET_TEXT,
+		QSM_SET_SLOT_CAPACITY,
 	};
 	QuerySubMode query_submode = QSM_DEFAULT;                                   ///< sub-mode for query strings
 
@@ -2719,8 +2729,18 @@ public:
 					data.max_occupancy = 1;
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
+
+					SetDParam(0, 1 /* default maximum occupancy */);
+					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, CS_NUMERAL, QSF_ENABLE_DEFAULT, QSM_SET_SLOT_CAPACITY);
 				}
 				return;
+
+			case QSM_SET_SLOT_CAPACITY:
+				{
+					const TraceRestrictSlotID newSlotsID = *TraceRestrictGetRecentSlot(VEH_TRAIN);
+					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, newSlotsID, TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
+				}
+				break;
 
 			case QSM_NEW_COUNTER:
 				if (type == TRVT_COUNTER_INDEX_INT) {

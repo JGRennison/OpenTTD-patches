@@ -1590,6 +1590,7 @@ private:
 	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
 	int query_text_widget; ///< widget which most recently called ShowQueryString
+	bool query_text_widget_slot_capacity{false}; ///< If true, overrides query_text_widget.
 	std::array<int, 4> current_aux_planes;
 	int current_value_plane;
 	int current_mgmt_plane;
@@ -3523,6 +3524,13 @@ public:
 		if (!str.has_value() || str->empty()) return;
 
 		auto create_slot_counter = [&](ModifyOrderFlags mof, bool counter) {
+			if (!counter && query_text_widget_slot_capacity) {
+				query_text_widget_slot_capacity = false;
+
+				TraceRestrictSlotID newSlotsID = *TraceRestrictGetRecentSlot(VEH_TRAIN);
+				Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, newSlotsID, TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
+				return;
+			}
 			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
 			Payload follow_up_payload = Payload::Make(this->vehicle->index, this->OrderGetSel(), mof, {}, {}, {});
 			TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<CMD_MODIFY_ORDER>((StringID)0, this->vehicle->tile, std::move(follow_up_payload)) };
@@ -3539,6 +3547,10 @@ public:
 				data.max_occupancy = 1;
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
+
+				query_text_widget_slot_capacity = true;
+				SetDParam(0, 1 /* default maximum occupancy */);
+				ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
 			}
 		};
 		switch (this->query_text_widget) {
