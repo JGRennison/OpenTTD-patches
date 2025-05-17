@@ -513,6 +513,11 @@ public:
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		OnQueryTextFinished(str, {});
+	}
+
+	virtual void OnQueryTextFinished(std::optional<std::string> str, std::optional<std::string> str2) override
+	{
 		const auto qsm = this->query_submode;
 		this->query_submode = QSM_NONE;
 		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_VALUE);
@@ -545,7 +550,7 @@ public:
 						data.vehtype = VEH_TRAIN;
 						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 						data.name = std::move(*str);
-						data.max_occupancy = 1;
+						data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
 						data.follow_up_cmd = std::move(follow_up);
 						DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 					} else {
@@ -590,7 +595,11 @@ public:
 			case PROGRAM_WIDGET_COND_COUNTER: {
 				if (widget == PROGRAM_WIDGET_COND_SLOT && index == NEW_TRACE_RESTRICT_SLOT_ID) {
 					this->query_submode = QSM_NEW_SLOT;
-					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					std::array<QueryEditboxDescription, 2> ed{{
+						{STR_EMPTY, {}, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
+						{STR_JUST_INT, MakeParameters(slot_default_max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
+					}};
+					ShowQueryString(std::span(ed), this, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 					return;
 				}
 				if (widget == PROGRAM_WIDGET_COND_COUNTER && index == NEW_TRACE_RESTRICT_COUNTER_ID) {

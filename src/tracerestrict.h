@@ -1495,4 +1495,5 @@ bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
 	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
 }
 
+static const int slot_default_max_occupancy = 1;
 #endif /* TRACERESTRICT_H */
