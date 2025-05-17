@@ -323,48 +323,13 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 	return false;
 }
 
-static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
+static void SortDepartures(DepartureList &departure_list)
 {
-	/* Separate departure by each shared order group */
-	btree::btree_map<uint32_t, std::vector<Departure *>> separated_departure;
-	for (auto &departure : departure_list) {
-		separated_departure[departure->vehicle->orders->index].push_back(departure.get());
-	}
-
-	for (auto& pair : separated_departure) {
-		std::vector<Departure *> &d_list = pair.second;
-
-		/* If the group is scheduled dispatch, then */
-		if (HasBit(d_list[0]->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-			/* Separate departure time and sort them ascendently */
-			std::vector<StateTicks> departure_time_list;
-			for (const auto& d : d_list) {
-				departure_time_list.push_back(d->scheduled_tick);
-			}
-			std::sort(departure_time_list.begin(), departure_time_list.end());
-
-			/* Sort the departure list by arrival time */
-			std::sort(d_list.begin(), d_list.end(), [](const Departure * const &a, const Departure * const &b) -> bool {
-				StateTicks arr_a = a->scheduled_tick - a->EffectiveWaitingTime();
-				StateTicks arr_b = b->scheduled_tick - b->EffectiveWaitingTime();
-				return arr_a < arr_b;
-			});
-
-			/* Re-assign them sequentially */
-			for (size_t i = 0; i < d_list.size(); i++) {
-				const StateTicks arrival = d_list[i]->scheduled_tick - d_list[i]->EffectiveWaitingTime();
-				d_list[i]->scheduled_waiting_time = (departure_time_list[i] - arrival).AsTicks();
-				d_list[i]->scheduled_tick = departure_time_list[i];
-
-				if (d_list[i]->scheduled_waiting_time == (Ticks)d_list[i]->order->GetWaitTime()) {
-					d_list[i]->scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
-				}
-			}
-		}
-	}
-
-	/* Re-sort the departure list */
 	std::sort(departure_list.begin(), departure_list.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
+		if (a->scheduled_tick == b->scheduled_tick) {
+			return std::tie(a->terminus.target, a->terminus.scheduled_tick, a->vehicle->index)
+					< std::tie(b->terminus.target, b->terminus.scheduled_tick, b->vehicle->index);
+		}
 		return a->scheduled_tick < b->scheduled_tick;
 	});
 }
@@ -1232,7 +1197,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 	}
 
 	if (type == D_DEPARTURE) {
-		ScheduledDispatchDepartureLocalFix(result);
+		SortDepartures(result);
 		if (calling_settings.SmartTerminusEnabled()) {
 			ScheduledDispatchSmartTerminusDetection(result);
 		}
@@ -1776,13 +1741,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 		}
 	}
 
-	std::sort(result.begin(), result.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
-		if (a->scheduled_tick == b->scheduled_tick) {
-			return std::tie(a->terminus.target, a->terminus.scheduled_tick, a->vehicle->index)
-					< std::tie(b->terminus.target, b->terminus.scheduled_tick, b->vehicle->index);
-		}
-		return a->scheduled_tick < b->scheduled_tick;
-	});
+	SortDepartures(result);
 
 	if (type == D_DEPARTURE && calling_settings.SmartTerminusEnabled()) {
 		ScheduledDispatchSmartTerminusDetection(result, tick_duration);
