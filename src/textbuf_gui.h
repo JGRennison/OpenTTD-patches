@@ -38,7 +38,7 @@ struct QueryEditboxDescription
 	StringID str;
 	/** String parameters for \a str */
 	std::optional<StringParameters> strparams;
-	/** Text shown in the window's title bar */
+	/** Text shown in the on-screen keyboard's title bar */
 	StringID caption;
 	/**
 	 * Text of the label in the query window before this string.
@@ -56,10 +56,10 @@ struct QueryEditboxDescription
 	uint max_size;
 };
 
-void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, Window *parent, QueryStringFlags flags);
-void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, Window *parent, QueryStringFlags flags);
-void ShowQueryString(StringID str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
-void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
+void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, StringID windowCaption, Window *parent, QueryStringFlags flags);
+void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID windowCaption, Window *parent, QueryStringFlags flags);
+void ShowQueryString(StringID str, StringID capture_str, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
+void ShowQueryString(StringID str, std::string capture_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc *callback, bool focus = false);
 void ShowQuery(std::string caption, std::string message, Window *parent, QueryCallbackProc *callback, bool focus = false);
 
