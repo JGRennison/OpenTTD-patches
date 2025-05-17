@@ -33,6 +33,7 @@
 #include "rev.h"
 #include "core/backup_type.hpp"
 #include "pathfinder/water_regions.h"
+#include "strings_internal.h"
 
 #include "widgets/misc_widget.h"
 
@@ -1078,8 +1079,12 @@ private:
 	{
 		static_assert(sizeof...(j) == N);
 
-		for (int i = 0; i < N; ++i)
-			this->editboxes[i].text.Assign(ed[i].str);
+		for (int i = 0; i < N; ++i) {
+			if (ed[i].strparams)
+				this->editboxes[i].text.Assign(GetStringWithArgs(ed[i].str, *ed[i].strparams));
+			else
+				this->editboxes[i].text.Assign(GetString(ed[i].str));
+		}
 
 		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) {
 			for (QueryString &editbox : this->editboxes) {
@@ -1308,7 +1313,7 @@ void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, Window *pa
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	QueryEditboxDescription ed[1]{
-		{str, caption, INVALID_STRING_ID, afilter, maxsize }
+		{str, {}, caption, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
 	new QueryStringWindow<1>(ed, {}, _query_string_desc, parent, flags);
@@ -1321,7 +1326,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *paren
 void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	QueryEditboxDescription ed[1]{
-		{str, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
+		{str, {}, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
 	new QueryStringWindow<1>(ed, std::move(caption), _query_string_desc, parent, flags);

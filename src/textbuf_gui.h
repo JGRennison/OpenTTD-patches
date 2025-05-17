@@ -12,6 +12,7 @@
 
 #include "window_type.h"
 #include "string_type.h"
+#include "strings_internal.h"
 #include "strings_type.h"
 
 /** Flags used in ShowQueryString() call */
@@ -35,6 +36,8 @@ struct QueryEditboxDescription
 {
 	/** Text to populate the editbox with initially */
 	StringID str;
+	/** String parameters for \a str */
+	std::optional<StringParameters> strparams;
 	/** Text shown in the window's title bar */
 	StringID caption;
 	/**
