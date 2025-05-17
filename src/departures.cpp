@@ -523,6 +523,7 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 	/* We only need to consider each order at most once. */
 	for (int i = v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1); i > 0; --i) {
+		Ticks lateness_post_adjust = 0; // Lateness change to apply after this order
 		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, dispatch_records)) {
 			if (waiting_time != Departure::INVALID_WAIT_TICKS) {
 				Ticks arrival_tick = start_ticks - waiting_time;
@@ -533,8 +534,8 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 				/* Changing effective lateness, so adjust waiting time to get correct arrival time */
 				waiting_time = start_ticks - timetable_arrival_tick;
 
-				start_ticks += new_lateness;
-				current_lateness = new_lateness;
+				start_ticks += current_lateness;
+				lateness_post_adjust = new_lateness - current_lateness;
 			} else {
 				current_lateness = 0;
 			}
@@ -628,6 +629,9 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 			order = v->orders->GetNext(order);
 			require_travel_time = true;
 		}
+
+		start_ticks += lateness_post_adjust;
+		current_lateness += lateness_post_adjust;
 	}
 }
 
