@@ -2701,6 +2701,11 @@ public:
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		OnQueryTextFinished(str, {});
+	}
+
+	virtual void OnQueryTextFinished(std::optional<std::string> str, std::optional<std::string> str2) override
+	{
 		if (!str.has_value() || (str->empty() && this->query_submode != QSM_SET_TEXT)) return;
 
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
@@ -2716,7 +2721,7 @@ public:
 					data.vehtype = VEH_TRAIN;
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
-					data.max_occupancy = 1;
+					data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 				}
@@ -2787,7 +2792,8 @@ public:
 		if (widget == TR_WIDGET_VALUE_DROPDOWN || widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 			TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 			if (((widget == TR_WIDGET_VALUE_DROPDOWN && type.value_type == TRVT_SLOT_INDEX) || (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_SLOT_INDEX_INT)) && index == NEW_TRACE_RESTRICT_SLOT_ID) {
-				this->TraceRestrictShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS, QSM_NEW_SLOT);
+				this->query_submode = QSM_NEW_SLOT;
+				ShowSlotCreationQueryString(*this);
 				return;
 			}
 			if (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_COUNTER_INDEX_INT && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
