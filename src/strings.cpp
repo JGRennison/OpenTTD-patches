@@ -1282,7 +1282,7 @@ static void DecodeEncodedString(StringConsumer &consumer, bool game_script, Stri
 	ankerl::svector<StringParameter, 10> sub_args;
 
 	StringIndexInTab id(consumer.ReadIntegerBase<uint32_t>(16));
-	if (consumer.AnyBytesLeft() && !consumer.ReadUtf8If(SCC_RECORD_SEPARATOR)) {
+	if (consumer.AnyBytesLeft() && !consumer.PeekUtf8If(SCC_RECORD_SEPARATOR)) {
 		consumer.SkipAll();
 		builder += "(invalid SCC_ENCODED)";
 		return;
