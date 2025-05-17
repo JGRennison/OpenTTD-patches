@@ -3468,6 +3468,11 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		OnQueryTextFinished(str, {});
+	}
+
+	void OnQueryTextFinished(std::optional<std::string> str, std::optional<std::string> str2) override
+	{
 		if (this->query_text_widget == WID_O_COND_VALUE && str.has_value() && !str->empty()) {
 			VehicleOrderID sel = this->OrderGetSel();
 			uint value = atoi(str->c_str());
@@ -3536,7 +3541,7 @@ public:
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
-				data.max_occupancy = 1;
+				data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}
@@ -3629,7 +3634,7 @@ public:
 			case WID_O_COND_SLOT:
 				if (index == NEW_TRACE_RESTRICT_SLOT_ID) {
 					this->query_text_widget = widget;
-					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					ShowSlotCreationQueryString(*this);
 					break;
 				}
 				TraceRestrictRecordRecentSlot(index);
@@ -3684,7 +3689,7 @@ public:
 
 				if (index == NEW_TRACE_RESTRICT_SLOT_ID) {
 					this->query_text_widget = widget;
-					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					ShowSlotCreationQueryString(*this);
 					break;
 				}
 				TraceRestrictRecordRecentSlot(index);
