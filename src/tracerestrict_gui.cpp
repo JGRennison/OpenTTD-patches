@@ -5575,3 +5575,17 @@ void ShowTraceRestrictCounterWindow(CompanyID company)
 
 	AllocateWindowDescFront<TraceRestrictCounterWindow>(_counter_window_desc, (WindowNumber)company);
 }
+
+
+/**
+ * Show the slot creation query window.
+ * @param parent Window to call OnQueryTextFinished on
+ */
+void ShowSlotCreationQueryString(Window &parent)
+{
+	std::array<QueryEditboxDescription, 2> ed{{
+		{STR_EMPTY, {}, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
+		{STR_JUST_INT, MakeParameters(slot_default_max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
+	}};
+	ShowQueryString(std::span(ed), STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, &parent, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+}

@@ -26,6 +26,7 @@
 #include <vector>
 
 struct Train;
+struct Window;
 
 /** Program pool ID type. */
 typedef uint32_t TraceRestrictProgramID;
@@ -1496,4 +1497,5 @@ bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
 }
 
 static const int slot_default_max_occupancy = 1;
+void ShowSlotCreationQueryString(Window &parent);
 #endif /* TRACERESTRICT_H */
