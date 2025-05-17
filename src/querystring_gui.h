@@ -25,7 +25,7 @@ struct QueryString {
 	static const int ACTION_DESELECT = -2; ///< Deselect editbox.
 	static const int ACTION_CLEAR    = -3; ///< Clear editbox.
 
-	StringID caption;
+	StringID caption;   ///< Description of this string. Shown in OskWindow's title bar
 	int ok_button;      ///< Widget button of parent window to simulate when pressing OK in OSK.
 	int cancel_button;  ///< Widget button of parent window to simulate when pressing CANCEL in OSK.
 	Textbuf text;
