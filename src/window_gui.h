@@ -843,6 +843,9 @@ public:
 	 */
 	virtual void OnQueryTextFinished([[maybe_unused]] std::optional<std::string> str) {}
 
+	/** Same, for two-string query windows. */
+	virtual void OnQueryTextFinished([[maybe_unused]] std::optional<std::string> str1, [[maybe_unused]] std::optional<std::string> str2) {}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data information about the changed data.

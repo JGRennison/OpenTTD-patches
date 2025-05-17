@@ -28,6 +28,33 @@ DECLARE_ENUM_AS_BIT_SET(QueryStringFlags)
 /** Callback procedure for the ShowQuery method. */
 typedef void QueryCallbackProc(Window*, bool);
 
+/**
+ * Information needed by QueryStringWindow for each editbox.
+ */
+struct QueryEditboxDescription
+{
+	/** Text to populate the editbox with initially */
+	StringID str;
+	/** Text shown in the window's title bar */
+	StringID caption;
+	/**
+	 * Text of the label in the query window before this string.
+	 *
+	 * Set to #INVALID_STRING_ID when not required
+	 */
+	StringID label;
+	/** Filters out unwanted character input */
+	CharSetFilter afilter;
+	/**
+	 * Maximum length of the text, including the terminating '\0'.
+	 *
+	 * Whether this is in bytes or in characters depends on QueryStringFlags.
+	 */
+	uint max_size;
+};
+
+void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, Window *parent, QueryStringFlags flags);
+void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, Window *parent, QueryStringFlags flags);
 void ShowQueryString(StringID str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc *callback, bool focus = false);

@@ -1025,24 +1025,16 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 }
 
 /**
- * Information needed by QueryStringWindow for each editbox.
+ * Class for the string query window.
+ *
+ * @tparam N The number of editboxes to show.
+ * @pre N == 1 || N == 2
  */
-struct EditboxDescription
-{
-	/// text to populate the editbox with initially
-	StringID str;
-	/// text shown in the window's title bar
-	StringID caption;
-	/// filters out unwanted character input
-	CharSetFilter afilter;
-	/// maximum size in bytes or characters (including terminating '\0') depending on QueryStringFlags
-	uint max_size;
-};
-
-/** Class for the string query window. */
+template <int N = 1>
 struct QueryStringWindow : public Window
 {
-	QueryString editbox;    ///< Editbox.
+	static_assert(N == 1 || N == 2);
+	QueryString editboxes[N]; ///< Editboxes.
 	std::string capture_str;///< Pre-composed caption string.
 	QueryStringFlags flags; ///< Flags controlling behaviour of the window.
 	Dimension warning_size; ///< How much space to use for the warning text
@@ -1052,23 +1044,66 @@ struct QueryStringWindow : public Window
 	 *
 	 * @see QueryString::QueryString
 	 */
-	static uint max_bytes(const EditboxDescription &ed, QueryStringFlags flags)
+	static uint max_bytes(const QueryEditboxDescription &ed, QueryStringFlags flags)
 	{
 		return ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * ed.max_size;
 	}
 
-	QueryStringWindow(EditboxDescription ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags) :
-			Window(desc), editbox(max_bytes(ed, flags), ed.max_size), capture_str(std::move(capture_str))
+	/**
+	 * Constructor for the N == 1 case.
+	 */
+	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+			requires (N == 1)
+			: Window(desc),
+			editboxes{QueryString(max_bytes(ed[0], flags), ed[0].max_size)},
+			capture_str(std::move(capture_str))
 	{
-		this->editbox.text.Assign(ed.str);
+		Constructor(ed, parent, flags);
+	}
 
-		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) this->editbox.orig = this->editbox.text.GetText();
+	/**
+	 * Constructor for the N == 2 case.
+	 */
+	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+			requires (N == 2)
+			: Window(desc),
+			editboxes{QueryString(max_bytes(ed[0], flags), ed[0].max_size), QueryString(max_bytes(ed[1], flags), ed[1].max_size)},
+			capture_str(std::move(capture_str))
+	{
+		Constructor(ed, parent, flags);
+	}
 
-		this->querystrings[WID_QS_TEXT] = &this->editbox;
-		this->editbox.caption = ed.caption;
-		this->editbox.cancel_button = WID_QS_CANCEL;
-		this->editbox.ok_button = WID_QS_OK;
-		this->editbox.text.afilter = ed.afilter;
+private:
+	/**
+	 * Common part for the two constructors.
+	 *
+	 * This exists because this->editboxes has to be initialized in the
+	 * (actual) constructor's member initializer list with a different
+	 * number of elements depending on the value of N. The usual
+	 * workarounds for such a situation don't seem to work for QueryString
+	 * because it's not default constructible and not copy constructible.
+	 */
+	void Constructor(std::span<QueryEditboxDescription, N> ed, Window *parent, QueryStringFlags flags)
+	{
+		for (int i = 0; i < N; ++i)
+			this->editboxes[i].text.Assign(ed[i].str);
+
+		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) {
+			for (QueryString &editbox : this->editboxes) {
+				editbox.orig = editbox.text.GetText();
+			}
+		}
+
+		this->querystrings[WID_QS_TEXT] = &this->editboxes[0];
+		if constexpr (N > 1) {
+			this->querystrings[WID_QS_TEXT2] = &this->editboxes[1];
+		}
+		for (int i = 0; i < N; ++i) {
+			this->editboxes[i].caption = ed[i].caption;
+			this->editboxes[i].cancel_button = WID_QS_CANCEL;
+			this->editboxes[i].ok_button = WID_QS_OK;
+			this->editboxes[i].text.afilter = ed[i].afilter;
+		}
 		this->flags = flags;
 
 		this->CreateNestedTree();
@@ -1076,6 +1111,10 @@ struct QueryStringWindow : public Window
 			this->GetWidget<NWidgetCore>(WID_QS_CAPTION)->SetString(STR_JUST_RAW_STRING);
 		}
 		this->FinishInitNested(WN_QUERY_STRING);
+		if constexpr (N > 1) {
+			this->GetWidget<NWidgetCore>(WID_QS_LABEL1)->SetString(ed[0].label);
+			this->GetWidget<NWidgetCore>(WID_QS_LABEL2)->SetString(ed[1].label);
+		}
 		this->UpdateWarningStringSize();
 
 		this->parent = parent;
@@ -1083,6 +1122,7 @@ struct QueryStringWindow : public Window
 		this->SetFocusedWidget(WID_QS_TEXT);
 	}
 
+public:
 	void UpdateWarningStringSize()
 	{
 		if (this->flags & QSF_PASSWORD) {
@@ -1106,10 +1146,45 @@ struct QueryStringWindow : public Window
 			size.width = 0;
 		}
 
+		if constexpr (N == 1) {
+			if (widget == WID_QS_LABEL1 || widget == WID_QS_LABEL2 || widget == WID_QS_TEXT2) {
+				fill.height = 0;
+				resize.height = 0;
+				size.height = 0;
+				fill.width = 0;
+				resize.width = 0;
+				size.width = 0;
+			}
+			if (widget == WID_QS_TEXT2)
+				this->GetWidget<NWidgetCore>(widget)->SetPadding(0, 0, 0, 0);
+		}
+
 		if (widget == WID_QS_WARNING) {
 			size = this->warning_size;
 		}
 	}
+
+#if 0
+	// Pressing TAB toggles fast-forward even while this window is open. We can't
+	// change that easily, because it's done outside the widgets infrastructure,
+	// in the video drivers (see fast_forward_key_pressed in src/video/*.cpp).
+	//
+	// Once we've made TAB not toggle fast-forward (at least while this window is
+	// open), uncomment this function.
+	EventState OnKeyPress(char32_t key, uint16_t keycode) override
+	{
+		if (N > 1 && keycode == WKC_TAB) {
+			if (this->GetFocusedTextbuf() == &this->editboxes[1].text) {
+				this->SetFocusedWidget(WID_QS_TEXT);
+			} else {
+				this->SetFocusedWidget(WID_QS_TEXT2);
+			}
+			return ES_HANDLED;
+		} else {
+			return ES_NOT_HANDLED;
+		}
+	}
+#endif
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
@@ -1127,18 +1202,29 @@ struct QueryStringWindow : public Window
 			if (!this->capture_str.empty()) {
 				SetDParamStr(0, this->capture_str);
 			} else {
-				SetDParam(0, this->editbox.caption);
+				SetDParam(0, this->editboxes[0].caption);
 			}
 		}
 	}
 
 	void OnOk()
 	{
-		if (!this->editbox.orig.has_value() || this->editbox.text.GetText() != this->editbox.orig) {
+		auto has_new_value = [](const QueryString &editbox) -> bool {
+			return !editbox.orig.has_value() || editbox.text.GetText() != editbox.orig;
+		};
+		if (std::ranges::any_of(this->editboxes, has_new_value)) {
 			assert(this->parent != nullptr);
 
-			this->parent->OnQueryTextFinished(this->editbox.text.GetText());
-			this->editbox.handled = true;
+			if constexpr (N == 1) {
+				this->parent->OnQueryTextFinished(this->editboxes[0].text.GetText());
+			} else {
+				static_assert(N == 2);
+				this->parent->OnQueryTextFinished(this->editboxes[0].text.GetText(), this->editboxes[1].text.GetText());
+			}
+
+			for (QueryString &editbox : this->editboxes) {
+				editbox.handled = true;
+			}
 		}
 	}
 
@@ -1146,7 +1232,9 @@ struct QueryStringWindow : public Window
 	{
 		switch (widget) {
 			case WID_QS_DEFAULT:
-				this->editbox.text.DeleteAll();
+				for (QueryString &editbox : this->editboxes) {
+					editbox.text.DeleteAll();
+				}
 				[[fallthrough]];
 
 			case WID_QS_OK:
@@ -1161,7 +1249,8 @@ struct QueryStringWindow : public Window
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		if (!this->editbox.handled && this->parent != nullptr) {
+		auto has_been_handled = [](const QueryString &editbox) { return editbox.handled; };
+		if (!std::ranges::any_of(editboxes, has_been_handled) && this->parent != nullptr) {
 			Window *parent = this->parent;
 			this->parent = nullptr; // so parent doesn't try to close us again
 			parent->OnQueryTextFinished(std::nullopt);
@@ -1176,7 +1265,14 @@ static constexpr NWidgetPart _nested_query_string_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_QS_CAPTION), SetStringTip(STR_JUST_STRING), SetTextStyle(TC_WHITE),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
+		NWidget(NWID_HORIZONTAL, NC_BIGFIRST),
+			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL1), SetToolTip(STR_NULL),
+			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL, NC_BIGFIRST), // TODO: WID_QS_ROW2
+			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL2), SetToolTip(STR_NULL),
+			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT2), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
+		EndContainer(),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_QS_WARNING), EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
@@ -1195,26 +1291,47 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
 
 /**
  * Show a query popup window with a textbox in it.
- * @param str StringID for the text shown in the textbox
- * @param caption StringID of text shown in caption of querywindow
- * @param maxsize maximum size in bytes or characters (including terminating '\0') depending on flags
+ * @param ed Textbox properties.
  * @param parent pointer to a Window that will handle the events (ok/cancel) of this
  *        window. If nullptr, results are handled by global function HandleOnEditText
- * @param afilter filters out unwanted character input
  * @param flags various flags, @see QueryStringFlags
+ */
+void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, Window *parent, QueryStringFlags flags)
+{
+	CloseWindowByClass(WC_QUERY_STRING);
+	new QueryStringWindow<1>(ed, {}, _query_string_desc, parent, flags);
+}
+
+/** Ditto, but with two textboxes. */
+void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, Window *parent, QueryStringFlags flags)
+{
+	CloseWindowByClass(WC_QUERY_STRING);
+	new QueryStringWindow<2>(ed, {}, _query_string_desc, parent, flags);
+}
+
+/**
+ * Like the above, but with \a ed broken out to separate parameters.
  */
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
-	EditboxDescription ed{str, caption, afilter, maxsize };
+	QueryEditboxDescription ed[1]{
+		{str, caption, INVALID_STRING_ID, afilter, maxsize }
+	};
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(ed, {}, _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, {}, _query_string_desc, parent, flags);
 }
 
+/**
+ * Like the above, but with \a caption being a string, and is only used for the query window's title bar
+ * (the editbox's caption is left empty).
+ */
 void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
-	EditboxDescription ed{str, STR_EMPTY, afilter, maxsize };
+	QueryEditboxDescription ed[1]{
+		{str, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
+	};
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(ed, std::move(caption), _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, std::move(caption), _query_string_desc, parent, flags);
 }
 
 /**
