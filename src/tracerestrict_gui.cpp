@@ -4987,6 +4987,11 @@ public:
 
 	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		OnQueryTextFinished(str, {});
+	}
+
+	virtual void OnQueryTextFinished(std::optional<std::string> str, std::optional<std::string> str2) override
+	{
 		if (str.has_value()) {
 			switch (this->qsm_mode) {
 				case QuerySelectorMode::None:
@@ -4999,7 +5004,7 @@ public:
 							data.vehtype = this->vli.vtype;
 							data.parent = this->slot_sel.GetClosestGroupID();
 							data.name = std::move(*str);
-							data.max_occupancy = 1;
+							data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
 							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 						} else {
 							Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.id, TRASO_RENAME, {}, std::move(*str));
@@ -5133,7 +5138,7 @@ public:
 	{
 		this->qsm_mode = QuerySelectorMode::Rename;
 		this->slot_query = { SlotItemType::Slot, NEW_TRACE_RESTRICT_SLOT_ID };
-		ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+		ShowSlotCreationQueryString(*this);
 	}
 
 	void ShowCreateSlotGroupWindow()
