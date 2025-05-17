@@ -1024,6 +1024,21 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 	}
 }
 
+/**
+ * Information needed by QueryStringWindow for each editbox.
+ */
+struct EditboxDescription
+{
+	/// text to populate the editbox with initially
+	StringID str;
+	/// text shown in the window's title bar
+	StringID caption;
+	/// filters out unwanted character input
+	CharSetFilter afilter;
+	/// maximum size in bytes or characters (including terminating '\0') depending on QueryStringFlags
+	uint max_size;
+};
+
 /** Class for the string query window. */
 struct QueryStringWindow : public Window
 {
@@ -1032,18 +1047,28 @@ struct QueryStringWindow : public Window
 	QueryStringFlags flags; ///< Flags controlling behaviour of the window.
 	Dimension warning_size; ///< How much space to use for the warning text
 
-	QueryStringWindow(StringID str, StringID caption, std::string capture_str, uint max_bytes, uint max_chars, WindowDesc &desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
-			Window(desc), editbox(max_bytes, max_chars), capture_str(std::move(capture_str))
+	/**
+	 * Compute the maximum size in bytes of the described editbox.
+	 *
+	 * @see QueryString::QueryString
+	 */
+	static uint max_bytes(const EditboxDescription &ed, QueryStringFlags flags)
 	{
-		this->editbox.text.Assign(str);
+		return ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * ed.max_size;
+	}
+
+	QueryStringWindow(EditboxDescription ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags) :
+			Window(desc), editbox(max_bytes(ed, flags), ed.max_size), capture_str(std::move(capture_str))
+	{
+		this->editbox.text.Assign(ed.str);
 
 		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) this->editbox.orig = this->editbox.text.GetText();
 
 		this->querystrings[WID_QS_TEXT] = &this->editbox;
-		this->editbox.caption = caption;
+		this->editbox.caption = ed.caption;
 		this->editbox.cancel_button = WID_QS_CANCEL;
 		this->editbox.ok_button = WID_QS_OK;
-		this->editbox.text.afilter = afilter;
+		this->editbox.text.afilter = ed.afilter;
 		this->flags = flags;
 
 		this->CreateNestedTree();
@@ -1180,14 +1205,16 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
  */
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
+	EditboxDescription ed{str, caption, afilter, maxsize };
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(str, caption, {}, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
+	new QueryStringWindow(ed, {}, _query_string_desc, parent, flags);
 }
 
 void ShowQueryString(StringID str, std::string caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
+	EditboxDescription ed{str, STR_EMPTY, afilter, maxsize };
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(str, STR_EMPTY, std::move(caption), ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
+	new QueryStringWindow(ed, std::move(caption), _query_string_desc, parent, flags);
 }
 
 /**
