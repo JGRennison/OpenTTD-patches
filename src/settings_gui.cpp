@@ -1446,10 +1446,6 @@ struct GameOptionsWindow : Window {
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		auto guard = scope_guard([this]() {
-			this->current_query_text_item = QueryTextItem::None;
-		});
-
 		/* The user pressed cancel */
 		if (!str.has_value()) return;
 
