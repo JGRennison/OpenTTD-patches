@@ -72,6 +72,8 @@
 #include "3rdparty/fmt/chrono.h"
 #include "company_cmd.h"
 #include "misc_cmd.h"
+#include "order_backup.h"
+#include "cheat_func.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -204,11 +206,13 @@ DEF_CONSOLE_HOOK(ConHookNeedNetwork)
 }
 
 /**
- * Check whether we are in a multiplayer game and are playing, i.e. we are not the dedicated server.
- * @return Are we a client or non-dedicated server in a network game? True when yes, false otherwise.
+ * Check whether we are in a multiplayer game and are playing, i.e. we are not the dedicated server, or not in a network game.
+ * @return Are we a client or non-dedicated server in a network game, or not in a network game? True when yes, false otherwise.
  */
-DEF_CONSOLE_HOOK(ConHookNeedNonDedicatedNetwork)
+DEF_CONSOLE_HOOK(ConHookNeedNonDedicatedOrNoNetwork)
 {
+	if (!_networking) return CHR_ALLOW;
+
 	if (!NetworkAvailable(echo)) return CHR_DISALLOW;
 
 	if (_network_dedicated) {
@@ -1055,6 +1059,19 @@ DEF_CONSOLE_CMD(ConJoinCompany)
 	}
 
 	CompanyID company_id = (CompanyID)(atoi(argv[1]) <= MAX_COMPANIES ? atoi(argv[1]) - 1 : atoi(argv[1]));
+
+	if (!_networking) {
+		/* Check we have a valid company id! */
+		if (!Company::IsValidID(company_id)) {
+			IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
+			return true;
+		}
+
+		OrderBackup::Reset();
+		SetLocalCompany(company_id);
+		_cheats.switch_company.been_used = true;
+		return true;
+	}
 
 	const NetworkClientInfo *info = NetworkClientInfo::GetByClientID(_network_own_client_id);
 	if (info == nullptr) {
@@ -4290,7 +4307,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("rcon",                    ConRcon,             ConHookNeedNetwork);
 	IConsole::CmdRegister("settings_access",         ConSettingsAccess,   ConHookNeedNetwork);
 
-	IConsole::CmdRegister("join",                    ConJoinCompany,      ConHookNeedNonDedicatedNetwork);
+	IConsole::CmdRegister("join",                    ConJoinCompany,      ConHookNeedNonDedicatedOrNoNetwork);
 	IConsole::AliasRegister("spectate",              "join 255");
 	IConsole::CmdRegister("move",                    ConMoveClient,       ConHookServerOnly);
 	IConsole::CmdRegister("reset_company",           ConResetCompany,     ConHookServerOnly);
