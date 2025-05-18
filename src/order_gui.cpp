@@ -3541,7 +3541,7 @@ public:
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
-				data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
+				data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}
