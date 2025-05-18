@@ -9425,13 +9425,22 @@ ERROR: IsEnd() is invalid as Begin() is never called
     23 => 652
     25 => 563
   HasStatue():                     false
-  GetRoadReworkDuration():         0
-  GetExclusiveRightsCompany():     -1
-  GetExclusiveRightsDuration():    0
   IsActionAvailable(BUILD_STATUE): true
   PerformTownAction(BUILD_STATUE): true
   IsActionAvailable(BUILD_STATUE): false
   HasStatue():                     true
+  GetRoadReworkDuration():         0
+  IsActionAvailable(ROAD_REBUILD): true
+  PerformTownAction(ROAD_REBUILD): true
+  IsActionAvailable(ROAD_REBUILD): true
+  GetRoadReworkDuration():         6
+  GetExclusiveRightsCompany():     -1
+  GetExclusiveRightsDuration():    0
+  IsActionAvailable(BUY_RIGHTS):   true
+  PerformTownAction(BUY_RIGHTS):   true
+  IsActionAvailable(BUY_RIGHTS):   false
+  GetExclusiveRightsCompany():     1
+  GetExclusiveRightsDuration():    12
 
 --Tunnel--
   IsTunnelTile():       false
@@ -9473,7 +9482,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsStoppedInDepot():   false
   --Accounting--
     GetCosts():         -5947
-    Should be:          -5947
+    Should be:          -5946
   GetName():            Road Vehicle #1
   SetName():            true
   GetName():            MyVehicleName
@@ -9572,11 +9581,11 @@ ERROR: IsEnd() is invalid as Begin() is never called
     14 => 1
     12 => 1
   Age ListDump:
-    14 => 1
-    13 => 1
     12 => 1
     17 => 0
     16 => 0
+    14 => 0
+    13 => 0
   MaxAge ListDump:
     16 => 10980
     14 => 10980
@@ -9585,9 +9594,9 @@ ERROR: IsEnd() is invalid as Begin() is never called
     12 => 5490
   AgeLeft ListDump:
     16 => 10980
-    14 => 10979
+    14 => 10980
     17 => 7320
-    13 => 5489
+    13 => 5490
     12 => 5489
   CurrentSpeed ListDump:
     12 => 27
@@ -9687,7 +9696,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   UnshareOrders():       true
   AppendOrder():         true
   GetStopLocation():     -1
-  BuildVehicle():        20
+  BuildVehicle():        21
   BuildRailStation():    true
   AppendOrder():         true
   GetOrderCount():       1
@@ -9698,17 +9707,17 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --VehicleList_Station--
   Count():             1
   Location ListDump:
-    20 => 23596
+    21 => 23596
   foreach():
-    20 => 23596
+    21 => 23596
   Count():             0
   Location ListDump:
   foreach():
   Count():             1
   Location ListDump:
-    20 => 23596
+    21 => 23596
   foreach():
-    20 => 23596
+    21 => 23596
 
   First Subsidy Test
       --Subsidy (0) --
@@ -9736,6 +9745,16 @@ ERROR: IsEnd() is invalid as Begin() is never called
       EventName:         CompanyRenamed
       CompanyID:         1
       CompanyName:       Beningville Transport
+  GetNextEvent:          instance
+    GetEventType:        28
+      EventName:         RoadReconstruction
+      CompanyID:         1
+      TownID:            12
+  GetNextEvent:          instance
+    GetEventType:        27
+      EventName:         ExclusiveTransportRights
+      CompanyID:         1
+      TownID:            12
   IsEventWaiting:        false
 
 --Math--
@@ -9773,9 +9792,9 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --Valuate() with excessive CPU usage--
 Your script made an error: excessive CPU usage in valuator function
 
-*FUNCTION [unknown()] regression/main.nut line [2091]
+*FUNCTION [unknown()] regression/main.nut line [2114]
 *FUNCTION [Valuate()] NATIVE line [-1]
-*FUNCTION [Start()] regression/main.nut line [2092]
+*FUNCTION [Start()] regression/main.nut line [2115]
 
 [id] 0
 [this] TABLE
@@ -9784,7 +9803,7 @@ Your script made an error: excessive CPU usage in valuator function
 [this] INSTANCE
 Your script made an error: excessive CPU usage in valuator function
 
-*FUNCTION [Start()] regression/main.nut line [2092]
+*FUNCTION [Start()] regression/main.nut line [2115]
 
 [Infinite] CLOSURE
 [list] INSTANCE
