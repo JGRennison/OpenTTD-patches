@@ -11,6 +11,7 @@
 #define STRING_BUILDER_HPP
 
 #include "format.hpp"
+#include <array>
 #include <charconv>
 
 /**
