@@ -482,7 +482,7 @@ bool EditBoxInGlobalFocus()
  */
 bool FocusedWindowIsConsole()
 {
-	return _focused_window && _focused_window->window_class == WC_CONSOLE;
+	return _focused_window != nullptr && _focused_window->window_class == WC_CONSOLE;
 }
 
 /**
