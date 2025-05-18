@@ -53,6 +53,8 @@ static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // 
 static const TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID = 0xFFFE; // for GUI use only
 static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
+static const uint32_t TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY = 1;
+
 /** Slot group pool ID type. */
 typedef uint16_t TraceRestrictSlotGroupID;
 struct TraceRestrictSlotGroup;
@@ -1496,6 +1498,5 @@ bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
 	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
 }
 
-static const int slot_default_max_occupancy = 1;
 void ShowSlotCreationQueryString(Window &parent);
 #endif /* TRACERESTRICT_H */

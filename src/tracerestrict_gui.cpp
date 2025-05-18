@@ -2721,7 +2721,7 @@ public:
 					data.vehtype = VEH_TRAIN;
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
-					data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
+					data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 				}
@@ -5004,7 +5004,7 @@ public:
 							data.vehtype = this->vli.vtype;
 							data.parent = this->slot_sel.GetClosestGroupID();
 							data.name = std::move(*str);
-							data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : slot_default_max_occupancy;
+							data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
 							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 						} else {
 							Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.id, TRASO_RENAME, {}, std::move(*str));
@@ -5596,7 +5596,7 @@ void ShowSlotCreationQueryString(Window &parent)
 {
 	std::array<QueryEditboxDescription, 2> ed{{
 		{STR_EMPTY, {}, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
-		{STR_JUST_INT, MakeParameters(slot_default_max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
+		{STR_JUST_INT, MakeParameters(TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
 	}};
 	ShowQueryString(std::span(ed), STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, &parent, QSF_LEN_IN_CHARS);
 }
