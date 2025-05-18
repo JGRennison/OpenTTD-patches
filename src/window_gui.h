@@ -264,6 +264,8 @@ enum class WindowFlag : uint8_t {
 	Dirty,            ///< Whole window is dirty, and requires repainting.
 	WidgetsDirty,     ///< One or more widgets are dirty, and require repainting.
 	DragDirtied,      ///< The window has already been marked dirty as blocks as part of the current drag operation
+
+	NoTabFastForward, ///< Suppress tab to fast-forward if this window is focused
 };
 using WindowFlags = EnumBitSet<WindowFlag, uint16_t>;
 

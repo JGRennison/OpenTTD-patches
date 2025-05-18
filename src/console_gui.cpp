@@ -120,6 +120,8 @@ struct IConsoleWindow : Window
 	{
 		_iconsole_mode = ICONSOLE_OPENED;
 
+		this->flags.Set(WindowFlag::NoTabFastForward);
+
 		this->InitNested(0);
 		this->truncate_timer.SetInterval(3000);
 		ResizeWindow(this, _screen.width, _screen.height / 3);

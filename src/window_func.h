@@ -72,6 +72,7 @@ inline bool HaveWindowByClass(WindowClass wc)
 
 bool EditBoxInGlobalFocus();
 bool FocusedWindowIsConsole();
+bool FocusedWindowSuppressesTabToFastForward();
 Point GetCaretPosition();
 
 void DumpWindowInfo(struct format_target &buffer, const Window *w);

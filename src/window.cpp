@@ -486,6 +486,15 @@ bool FocusedWindowIsConsole()
 }
 
 /**
+ * Check if the focused window suppresses tab to fast forward.
+ * @return returns true if the focused window suppresses tab to fast forward, else false
+ */
+bool FocusedWindowSuppressesTabToFastForward()
+{
+	return _focused_window != nullptr && _focused_window->flags.Test(WindowFlag::NoTabFastForward);
+}
+
+/**
  * Makes no widget on this window have focus. The function however doesn't change which window has focus.
  */
 void Window::UnfocusFocusedWidget()
