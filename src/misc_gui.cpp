@@ -1050,41 +1050,34 @@ struct QueryStringWindow : public Window
 	}
 
 	/**
-	 * Constructor for the N == 1 case.
+	 * Public constructor.
+	 *
+	 * This just forwards to the private constructor, because the latter needs to have
+	 * a template parameter pack in order to initialize \a editboxes correctly regardless
+	 * of the value of \a N.
+	 *
+	 * For the parameters, see #ShowQueryString.
 	 */
 	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
-			requires (N == 1)
-			: Window(desc),
-			editboxes{QueryString(max_bytes(ed[0], flags), ed[0].max_size)},
-			capture_str(std::move(capture_str))
-	{
-		Constructor(ed, parent, flags);
-	}
-
-	/**
-	 * Constructor for the N == 2 case.
-	 */
-	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
-			requires (N == 2)
-			: Window(desc),
-			editboxes{QueryString(max_bytes(ed[0], flags), ed[0].max_size), QueryString(max_bytes(ed[1], flags), ed[1].max_size)},
-			capture_str(std::move(capture_str))
-	{
-		Constructor(ed, parent, flags);
-	}
+			: QueryStringWindow(std::make_index_sequence<N>{}, ed, capture_str, desc, parent, flags)
+	{}
 
 private:
 	/**
-	 * Common part for the two constructors.
+	 * Private constructor.
 	 *
-	 * This exists because this->editboxes has to be initialized in the
-	 * (actual) constructor's member initializer list with a different
-	 * number of elements depending on the value of N. The usual
-	 * workarounds for such a situation don't seem to work for QueryString
-	 * because it's not default constructible and not copy constructible.
+	 * @tparam j (parameter pack) A compile-time sequence of 0 through \a N-1, used to
+	 * initialize \a editboxes with the correct number of QueryString objects, even
+	 * though #QueryString is neither default- nor copy-constructible.
 	 */
-	void Constructor(std::span<QueryEditboxDescription, N> ed, Window *parent, QueryStringFlags flags)
+	template <std::size_t... j>
+	QueryStringWindow(std::index_sequence<j...>, std::span<QueryEditboxDescription, N> ed, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+			: Window(desc),
+			editboxes{QueryString(max_bytes(ed[j], flags), ed[j].max_size)...},
+			capture_str(std::move(capture_str))
 	{
+		static_assert(sizeof...(j) == N);
+
 		for (int i = 0; i < N; ++i)
 			this->editboxes[i].text.Assign(ed[i].str);
 
