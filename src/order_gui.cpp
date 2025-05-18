@@ -3466,7 +3466,7 @@ public:
 		}
 	}
 
-	void OnQueryTextFinished(std::optional<std::string> str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override final
 	{
 		OnQueryTextFinished(str, {});
 	}

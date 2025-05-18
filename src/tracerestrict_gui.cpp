@@ -2699,7 +2699,7 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(std::optional<std::string> str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override final
 	{
 		OnQueryTextFinished(str, {});
 	}
@@ -4985,7 +4985,7 @@ public:
 		_cursor.vehchain = false;
 	}
 
-	virtual void OnQueryTextFinished(std::optional<std::string> str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override final
 	{
 		OnQueryTextFinished(str, {});
 	}

@@ -511,7 +511,7 @@ public:
 		this->RaiseWidgetWhenLowered(PROGRAM_WIDGET_COND_SET_SIGNAL);
 	}
 
-	virtual void OnQueryTextFinished(std::optional<std::string> str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override final
 	{
 		OnQueryTextFinished(str, {});
 	}
