@@ -3151,13 +3151,15 @@ STR_LAND_AREA_INFORMATION_TOWN_CAN_UPGRADE                      :{BLACK}Kunta vo
 STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Kunta voi uudistaa: {LTBLUE}Ei
 
 # Description of land area of different tiles
-STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Kalliota
+STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Kivikkoa
 STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Epätasaista maata
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Paljasta maata
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Ruohikkoa
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Peltoja
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Lumen peittämää maata
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Aavikkoa
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Lumista kivikkoa
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Lumista epätasaista maata
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Lumista ruohikkoa
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Rautatie
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Rautatie suojastusopastimilla

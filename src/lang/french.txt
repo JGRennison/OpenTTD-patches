@@ -3157,8 +3157,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Terre en friche
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Terre nue
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Herbe
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Champs
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terre enneigée
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Désert
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Roches couvertes de neige
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Terre en friche couverte de neige
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Herbe couverte de neige
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Voie ferrée
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Voie ferrée avec signaux de bloc

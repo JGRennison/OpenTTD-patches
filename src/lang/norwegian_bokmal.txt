@@ -3158,8 +3158,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Ulendt terreng
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Bart land
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Gress
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Jorder
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snødekt land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Ørken
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Snødekte steiner
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Snødekt ulendt terreng
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Snødekt gress
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Jernbanespor
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Jernbanespor med blokksignaler

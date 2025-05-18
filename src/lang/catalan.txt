@@ -3157,8 +3157,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Terreny irregul
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Terreny erm
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Gespa
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Camps de conreu
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terreny nevat
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Desert
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Roques cobertes de neu
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Terreny irregular cobert de neu
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Herba coberta de neu
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Via ferroviària
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Via ferroviària amb senyals de secció

@@ -3263,8 +3263,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Нерівна 
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Пустир
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Трава
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Поле
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Засніжена земля
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Пустеля
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Засніжені скелі
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Засніжена нерівна земля
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Засніжена трава
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Залізнична колія
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Залізнична колія з блок-сигналами

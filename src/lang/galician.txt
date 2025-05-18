@@ -3142,8 +3142,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Terra árida
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Terra deserta
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Herba
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Leiras
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terra cuberta de neve
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :rochas cubertas de neve
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :terra árida cuberta de neve
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :herba cuberta de neve
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Vía de ferrocarril
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Vía de ferrocarril con sinais de bloqueo

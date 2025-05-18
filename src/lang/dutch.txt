@@ -3152,12 +3152,14 @@ STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}Stad kan
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Rotsen
-STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Ruw land
+STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Ruw terrein
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Braakliggend land
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Gras
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Akkers
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Sneeuw
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Woestijn
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Rotsen met sneeuw
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Ruw terrein met sneeuw
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Gras met sneeuw
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Spoor
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Spoor met blokseinen

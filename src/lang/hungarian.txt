@@ -3180,8 +3180,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Durva föld
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Csupasz föld
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Fű
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Szántóföld
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Havas föld
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Sivatag
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Hóval borított sziklák
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Hóval borított göröngyös talaj
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Hóval borított fű
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Vasúti pálya
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Vasúti pálya normál jelzőkkel

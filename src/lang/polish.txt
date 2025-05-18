@@ -3536,8 +3536,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Wyboisty teren
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Odkryty teren
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Trawa
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Pola
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Zaśnieżony teren
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Pustynia
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Skały pokryte śniegiem
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Wyboisty teren pokryty śniegiem
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Trawa pokryta śniegiem
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{G=m}Tor kolejowy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Tor kolejowy z semaforam blokowymi

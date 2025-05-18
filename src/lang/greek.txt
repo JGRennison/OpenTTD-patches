@@ -3249,8 +3249,10 @@ STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :Ανώμαλο 
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :Γυμνό έδαφος
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :Γρασίδι
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Χωράφια
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Χιονισμένο έδαφος
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Έρημος
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :Χιονισμένες πέτρες
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :Χιονισμένο ανώμαλο έδαφος
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :Χιονισμένο γρασίδι
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Σιδηροδρομική τροχιά
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Σιδηροδρομική τροχιά με σήματα τμήματος

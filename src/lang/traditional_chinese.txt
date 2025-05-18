@@ -3152,12 +3152,14 @@ STR_LAND_AREA_INFORMATION_TOWN_CANNOT_UPGRADE                   :{BLACK}市鎮�
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :石頭
-STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :粗地
+STR_LAI_CLEAR_DESCRIPTION_ROUGH_LAND                            :荒地
 STR_LAI_CLEAR_DESCRIPTION_BARE_LAND                             :裸地
 STR_LAI_CLEAR_DESCRIPTION_GRASS                                 :草地
 STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :田地
-STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :覆雪地
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :沙漠
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROCKS                           :積雪岩石
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_ROUGH_LAND                      :積雪荒地
+STR_LAI_CLEAR_DESCRIPTION_SNOWY_GRASS                           :積雪草地
 
 STR_LAI_RAIL_DESCRIPTION_TRACK                                  :鐵道軌道
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :設有閉塞號誌的鐵道軌道
