@@ -115,17 +115,6 @@ struct OrderDate {
 	}
 };
 
-struct OrderDateQueueItem {
-	uint order_data_index;
-	Ticks tick;
-
-	bool operator<(const OrderDateQueueItem &other) const
-	{
-		/* Sort in opposite order */
-		return std::tie(this->tick, this->order_data_index) > std::tie(other.tick, other.order_data_index);
-	}
-};
-
 inline bool IsStationOrderWithWait(const Order *order)
 {
 	return ((order->GetWaitTime() != 0 || order->IsWaitTimetabled()) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
@@ -444,15 +433,53 @@ static bool IsVehicleUsableForDepartures(const Vehicle *v, DepartureCallingSetti
 	return true;
 }
 
-static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &next_orders, const Vehicle *v, const DepartureOrderDestinationDetector &source, const DepartureType type,
-		DepartureCallingSettings calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch)
-{
-	if (!IsVehicleUsableForDepartures(v, calling_settings)) return;
-
+struct LiveCandidateVehicle {
 	ScheduledDispatchVehicleRecords dispatch_records;
 	std::vector<ArrivalHistoryEntry> arrival_history;
 
-	const StateTicks state_ticks_base = _state_ticks;
+	const Vehicle *v;
+	const Order *order;
+	bool have_veh_dispatch_conditionals;
+	bool require_travel_time;
+	DepartureStatus status;
+	Ticks tick;
+	Ticks current_lateness;
+	int orders_remaining;
+
+	LiveCandidateVehicle(const Vehicle *v, const Order *order, bool have_veh_dispatch_conditionals, bool require_travel_time, DepartureStatus status, Ticks tick)
+			: v(v), order(order), have_veh_dispatch_conditionals(have_veh_dispatch_conditionals), require_travel_time(require_travel_time), status(status),
+			tick(tick), current_lateness(v->lateness_counter), orders_remaining(v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1)) {}
+};
+
+struct LiveQueueItem {
+	enum class DataType : uint8_t {
+		CandidateVehicle,
+		CandidateOrder,
+	};
+
+private:
+	Ticks tick;
+	uint32_t data;
+
+public:
+	LiveQueueItem(Ticks tick, DataType type, uint32_t idx) : tick(tick), data(idx | (to_underlying(type) << 24)) {}
+
+	/** Only for use when the item is not currently in the queue/heap */
+	void SetTick(Ticks tick) { this->tick = tick; }
+
+	bool operator<(const LiveQueueItem &other) const
+	{
+		/* Sort in opposite order */
+		return std::tie(this->tick, this->data) > std::tie(other.tick, other.data);
+	}
+
+	DataType Type() const { return static_cast<DataType>(GB(this->data, 24, 8)); }
+	uint32_t Index() const { return GB(this->data, 0, 24); }
+};
+
+static void PrepareLiveDepartureCandidateVehicle(std::vector<LiveCandidateVehicle> &candidates, const Vehicle *v, DepartureCallingSettings calling_settings)
+{
+	if (!IsVehicleUsableForDepartures(v, calling_settings)) return;
 
 	const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
 	if (order == nullptr) return;
@@ -469,7 +496,6 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 		}
 	}
 	DepartureStatus status = D_TRAVELLING;
-	Ticks waiting_time = 0;
 
 	/* If the vehicle is heading for a depot to stop there, then its departures are cancelled. */
 	if (v->current_order.IsType(OT_GOTO_DEPOT) && v->current_order.GetDepotActionType() & ODATFB_HALT) {
@@ -491,13 +517,47 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 		}
 	}
 
-	Ticks current_lateness = v->lateness_counter;
+	candidates.emplace_back(v, order, have_veh_dispatch_conditionals, require_travel_time, status, start_ticks);
+}
+
+enum class ProcessLiveDepartureCandidateVehicleResult : uint8_t {
+	None,
+	EnqueueCandidateVehicle,
+	AppendedOrderDate,
+};
+
+static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateVehicle(std::vector<OrderDate> &next_orders, LiveCandidateVehicle &candidate, const DepartureOrderDestinationDetector &source, const DepartureType type,
+		DepartureCallingSettings calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch, bool check_first_order)
+{
+	const Vehicle *v = candidate.v;
+	const Order *order = candidate.order;
+	bool require_travel_time = candidate.require_travel_time;
+	DepartureStatus status = candidate.status;
+	Ticks start_ticks = candidate.tick;
+	Ticks current_lateness = candidate.current_lateness;
+
+	const StateTicks state_ticks_base = _state_ticks;
 
 	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 	/* We only need to consider each order at most once. */
-	for (int i = v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1); i > 0; --i) {
+	for (int i = candidate.orders_remaining; i > 0; --i) {
+		if (check_first_order) {
+			if (VehicleOrderRequiresScheduledDispatch(v, order, status == D_ARRIVED)) {
+				candidate.order = order;
+				candidate.require_travel_time = require_travel_time;
+				candidate.status = status;
+				candidate.tick = start_ticks;
+				candidate.current_lateness = current_lateness;
+				candidate.orders_remaining = i;
+				return ProcessLiveDepartureCandidateVehicleResult::EnqueueCandidateVehicle;
+			}
+		}
+
+		check_first_order = true;
+
 		Ticks lateness_post_adjust = 0; // Lateness change to apply after this order
-		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, dispatch_records)) {
+		Ticks waiting_time = 0;
+		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, candidate.dispatch_records)) {
 			if (waiting_time != Departure::INVALID_WAIT_TICKS) {
 				Ticks arrival_tick = start_ticks - waiting_time;
 				Ticks timetable_arrival_tick = arrival_tick - current_lateness;
@@ -516,7 +576,7 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 
 		/* If the order is a conditional branch, handle it. */
 		if (order->IsType(OT_CONDITIONAL)) {
-			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, dispatch_records)) {
+			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, candidate.dispatch_records)) {
 					case DCJD_GIVE_UP: {
 						/* Give up */
 						break;
@@ -575,11 +635,11 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 			od.expected_tick = start_ticks;
 			od.lateness = current_lateness > 0 ? current_lateness : 0;
 			od.status = status;
-			od.have_veh_dispatch_conditionals = have_veh_dispatch_conditionals;
+			od.have_veh_dispatch_conditionals = candidate.have_veh_dispatch_conditionals;
 			od.scheduled_waiting_time = waiting_time;
-			od.dispatch_records = std::move(dispatch_records);
+			od.dispatch_records = std::move(candidate.dispatch_records);
 			od.arrivals_complete = false;
-			od.arrival_history = std::move(arrival_history);
+			od.arrival_history = std::move(candidate.arrival_history);
 
 			/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
 			if (current_lateness < 0 && !(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING))) {
@@ -589,10 +649,10 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 			next_orders.push_back(std::move(od));
 
 			/* We're done with this vehicle. */
-			break;
+			return ProcessLiveDepartureCandidateVehicleResult::AppendedOrderDate;
 		} else {
 			if (type == D_ARRIVAL) {
-				arrival_history.push_back({ order, start_ticks });
+				candidate.arrival_history.push_back({ order, start_ticks });
 			}
 
 			/* Go to the next order in the list. */
@@ -606,6 +666,8 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 		start_ticks += lateness_post_adjust;
 		current_lateness += lateness_post_adjust;
 	}
+
+	return ProcessLiveDepartureCandidateVehicleResult::None;
 }
 
 static bool IsCallingPointTargetOrder(const Order *order)
@@ -836,6 +898,9 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 	/* The list of departures which will be returned as a result. */
 	std::vector<std::unique_ptr<Departure>> result;
 
+	/* A list of the candidate vehicle states */
+	std::vector<LiveCandidateVehicle> candidate_vehicles;
+
 	/* A list of the next scheduled orders to be considered for inclusion in the departure list. */
 	std::vector<OrderDate> next_orders;
 
@@ -847,24 +912,33 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 	/* Cache for scheduled departure time */
 	ScheduledDispatchCache schdispatch_last_planned_dispatch;
 
+	/* Candidates, later converted into a queue/heap */
+	std::vector<LiveQueueItem> candidate_queue;
+
 	/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 	/* We find the least order while we're at it. */
 	for (const Vehicle *v : vehicles) {
-		GetDepartureCandidateOrderDatesFromVehicle(next_orders, v, source, type, calling_settings, max_ticks, schdispatch_last_planned_dispatch);
+		PrepareLiveDepartureCandidateVehicle(candidate_vehicles, v, calling_settings);
+	}
+	for (uint i = 0; i < (uint)candidate_vehicles.size(); i++) {
+		auto result = ProcessLiveDepartureCandidateVehicle(next_orders, candidate_vehicles[i], source, type, calling_settings, max_ticks, schdispatch_last_planned_dispatch, true);
+		if (result == ProcessLiveDepartureCandidateVehicleResult::EnqueueCandidateVehicle) {
+			candidate_queue.emplace_back(candidate_vehicles[i].tick, LiveQueueItem::DataType::CandidateVehicle, i);
+		}
 	}
 
-	/* No suitable orders found? Then stop. */
-	if (next_orders.size() == 0) {
+	/* No suitable candidates found? Then stop. */
+	if (candidate_queue.empty() && next_orders.empty()) {
 		return result;
 	}
 
-	/* Priority queue/heap */
-	std::vector<OrderDateQueueItem> order_queue;
-	order_queue.reserve(next_orders.size());
+	candidate_queue.reserve(candidate_queue.size() + next_orders.size());
 	for (uint i = 0; i < (uint)next_orders.size(); i++) {
-		order_queue.push_back({ i, next_orders[i].GetQueueTick(type) });
+		candidate_queue.emplace_back(next_orders[i].GetQueueTick(type), LiveQueueItem::DataType::CandidateOrder, i);
 	}
-	std::make_heap(order_queue.begin(), order_queue.end());
+	std::make_heap(candidate_queue.begin(), candidate_queue.end());
+
+	/* candidate_queue is now a queue/heap */
 
 	/* We now find as many departures as we can. It's a little involved so I'll try to explain each major step. */
 	/* The countdown from 10000 is a safeguard just in case something nasty happens. 10000 seemed large enough. */
@@ -877,14 +951,28 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		/* 4. Therefore the loop must eventually terminate. */
 
 		/* First, we check if we can stop looking for departures yet. */
-		if (result.size() >= _settings_client.gui.max_departures || order_queue.empty()) break;
+		if (result.size() >= _settings_client.gui.max_departures || candidate_queue.empty()) break;
 
 		/* The best candidate for the next departure is at the top of the next_orders queue, store it in least_item, lod. */
-		OrderDateQueueItem least_item = order_queue.front();
-		std::pop_heap(order_queue.begin(), order_queue.end());
-		order_queue.pop_back();
+		LiveQueueItem least_item = candidate_queue.front();
+		std::pop_heap(candidate_queue.begin(), candidate_queue.end());
+		candidate_queue.pop_back();
 
-		OrderDate &lod = next_orders[least_item.order_data_index];
+		if (least_item.Type() == LiveQueueItem::DataType::CandidateVehicle) {
+			LiveCandidateVehicle &lcv = candidate_vehicles[least_item.Index()];
+			auto result = ProcessLiveDepartureCandidateVehicle(next_orders, lcv, source, type, calling_settings, max_ticks, schdispatch_last_planned_dispatch, false);
+			if (result == ProcessLiveDepartureCandidateVehicleResult::EnqueueCandidateVehicle) {
+				candidate_queue.emplace_back(lcv.tick, LiveQueueItem::DataType::CandidateVehicle, least_item.Index());
+				std::push_heap(candidate_queue.begin(), candidate_queue.end());
+			} else if (result == ProcessLiveDepartureCandidateVehicleResult::AppendedOrderDate) {
+				uint32_t idx = (uint32_t)(next_orders.size() - 1);
+				candidate_queue.emplace_back(next_orders[idx].GetQueueTick(type), LiveQueueItem::DataType::CandidateOrder, idx);
+				std::push_heap(candidate_queue.begin(), candidate_queue.end());
+			}
+			continue;
+		}
+
+		OrderDate &lod = next_orders[least_item.Index()];
 
 		if (lod.expected_tick - lod.lateness > max_ticks) break;
 
@@ -1198,9 +1286,9 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 		/* If we found a suitable order for being a departure, add it back to the queue, otherwise then we can ignore this vehicle from now on. */
 		if (found_next_order) {
-			least_item.tick = lod.GetQueueTick(type);
-			order_queue.push_back(least_item);
-			std::push_heap(order_queue.begin(), order_queue.end());
+			least_item.SetTick(lod.GetQueueTick(type));
+			candidate_queue.push_back(least_item);
+			std::push_heap(candidate_queue.begin(), candidate_queue.end());
 		}
 	}
 
