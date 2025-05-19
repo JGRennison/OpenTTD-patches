@@ -219,6 +219,7 @@ static void HandleScheduledWaitLateness(OrderDate &od)
 	Ticks new_lateness = od.lateness - od.scheduled_waiting_time;
 	if (new_lateness > 0) {
 		od.lateness = new_lateness;
+		od.expected_tick += new_lateness;
 	} else {
 		od.lateness = 0;
 	}
