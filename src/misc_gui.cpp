@@ -1088,6 +1088,9 @@ private:
 			}
 		}
 
+		if constexpr (N > 1)
+			this->Window::flags.Set(WindowFlag::NoTabFastForward);
+
 		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) {
 			for (QueryString &editbox : this->editboxes) {
 				editbox.orig = editbox.text.GetText();
@@ -1172,16 +1175,12 @@ public:
 		}
 	}
 
-#if 0
-	// Pressing TAB toggles fast-forward even while this window is open. We can't
-	// change that easily, because it's done outside the widgets infrastructure,
-	// in the video drivers (see fast_forward_key_pressed in src/video/*.cpp).
-	//
-	// Once we've made TAB not toggle fast-forward (at least while this window is
-	// open), uncomment this function.
 	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
-		if (N > 1 && keycode == WKC_TAB) {
+		if constexpr (N == 1) {
+			return ES_NOT_HANDLED;
+		} else if (keycode == WKC_TAB) {
+			static_assert(N == 2);
 			if (this->GetFocusedTextbuf() == &this->editboxes[1].text) {
 				this->SetFocusedWidget(WID_QS_TEXT);
 			} else {
@@ -1192,7 +1191,6 @@ public:
 			return ES_NOT_HANDLED;
 		}
 	}
-#endif
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
