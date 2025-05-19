@@ -926,7 +926,7 @@ public:
 		SetDParam(2, tmp->max_speed);
 		SetDParam(1, tmp->power);
 		SetDParam(0, tmp->empty_weight);
-		SetDParam(3, tmp->max_te / 1000);
+		SetDParam(3, tmp->max_te);
 		DrawString(left, right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 
 		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
