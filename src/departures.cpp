@@ -225,18 +225,25 @@ static void HandleScheduledWaitLateness(OrderDate &od)
 	}
 }
 
+static bool VehicleOrderRequiresScheduledDispatch(const Vehicle *v, const Order *order, bool arrived_at_timing_point)
+{
+	if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !order->IsScheduledDispatchOrder(true)) return false;
+
+	auto is_current_implicit_order = [&v](const Order *o) -> bool {
+		if (v->cur_implicit_order_index >= v->orders->GetNumOrders()) return false;
+		return v->orders->GetOrderAt(v->cur_implicit_order_index) == o;
+	};
+
+	return !(arrived_at_timing_point && is_current_implicit_order(order));
+}
+
 static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waiting_time, const StateTicks state_ticks_base,
 		const Vehicle *v, const Order *order, bool arrived_at_timing_point, ScheduledDispatchCache &dept_schedule_last, ScheduledDispatchVehicleRecords &records)
 {
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-		auto is_current_implicit_order = [&v](const Order *o) -> bool {
-			if (v->cur_implicit_order_index >= v->orders->GetNumOrders()) return false;
-			return v->orders->GetOrderAt(v->cur_implicit_order_index) == o;
-		};
-
 		/* This condition means that we want departure time for the dispatch order */
 		/* but not if the vehicle has arrived at the dispatch order because the timetable is already shifted */
-		if (order->IsScheduledDispatchOrder(true) && !(arrived_at_timing_point && is_current_implicit_order(order))) {
+		if (VehicleOrderRequiresScheduledDispatch(v, order, arrived_at_timing_point)) {
 			const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 
 			StateTicks actual_departure         = STATE_TICKS_INT_MAX;
