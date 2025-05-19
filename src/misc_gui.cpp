@@ -1158,6 +1158,13 @@ public:
 			if (widget == WID_QS_TEXT2) {
 				this->GetWidget<NWidgetCore>(widget)->SetPadding(0, 0, 0, 0);
 			}
+		} else if (widget == WID_QS_LABEL1 || widget == WID_QS_LABEL2) {
+			static_assert(N == 2);
+			const StringID label1 = this->GetWidget<NWidgetCore>(WID_QS_LABEL1)->GetString();
+			const StringID label2 = this->GetWidget<NWidgetCore>(WID_QS_LABEL2)->GetString();
+			const auto width1 = GetStringBoundingBox(label1).width;
+			const auto width2 = GetStringBoundingBox(label2).width;
+			size.width = std::max(width1, width2);
 		}
 
 		if (widget == WID_QS_WARNING) {
