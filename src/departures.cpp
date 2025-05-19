@@ -893,7 +893,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		d->order = lod.order;
 		d->scheduled_waiting_time = lod.scheduled_waiting_time;
 
-		ScheduledDispatchVehicleRecords dispatch_records = lod.dispatch_records;
+		ScheduledDispatchVehicleRecords &dispatch_records = lod.dispatch_records;
 
 		/* We'll be going through the order list later, so we need a separate variable for it. */
 		const Order *order = lod.order;
