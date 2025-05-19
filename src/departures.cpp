@@ -47,7 +47,7 @@ static constexpr Ticks INVALID_DEPARTURE_TICKS = INT32_MIN;
 
 /* A cache of used departure time for scheduled dispatch in departure time calculation */
 using ScheduledDispatchCache = btree::btree_map<const DispatchSchedule *, btree::btree_set<StateTicks>>;
-using ScheduledDispatchVehicleRecords = btree::btree_map<std::pair<uint, VehicleID>, LastDispatchRecord>;
+using ScheduledDispatchVehicleRecords = btree::btree_map<uint, LastDispatchRecord>;
 
 CallAtTargetID CallAtTargetID::FromOrder(const Order *order)
 {
@@ -195,7 +195,7 @@ static DeparturesConditionalJumpResult GetDepartureConditionalOrderMode(const Or
 {
 	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 		auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {
-			auto record = records.find(std::make_pair(schedule_index, v->index));
+			auto record = records.find(schedule_index);
 			if (record != records.end()) {
 				/* ScheduledDispatchVehicleRecords contains a last dispatch entry, use that instead of the one stored in the vehicle */
 				return &(record->second);
@@ -304,7 +304,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 			}
 
 			extern LastDispatchRecord MakeLastDispatchRecord(const DispatchSchedule &ds, StateTicks slot, int slot_index);
-			records[std::make_pair((uint)order->GetDispatchScheduleIndex(), v->index)] = MakeLastDispatchRecord(ds, actual_departure, actual_slot_index);
+			records[(uint)order->GetDispatchScheduleIndex()] = MakeLastDispatchRecord(ds, actual_departure, actual_slot_index);
 
 			/* Return true means that vehicle lateness should be clear from this point onward */
 			return true;
