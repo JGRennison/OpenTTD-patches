@@ -1088,8 +1088,9 @@ private:
 			}
 		}
 
-		if constexpr (N > 1)
+		if constexpr (N > 1) {
 			this->Window::flags.Set(WindowFlag::NoTabFastForward);
+		}
 
 		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) {
 			for (QueryString &editbox : this->editboxes) {
@@ -1270,11 +1271,11 @@ static constexpr NWidgetPart _nested_query_string_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NC_BIGFIRST),
-			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL1), SetToolTip(STR_NULL), SetPadding(2,2,2,2),
+			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL1), SetToolTip(STR_NULL), SetPadding(2, 2, 2, 2),
 			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL, NC_BIGFIRST), // TODO: WID_QS_ROW2
-			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL2), SetToolTip(STR_NULL), SetPadding(2,2,2,2),
+		NWidget(NWID_HORIZONTAL, NC_BIGFIRST),
+			NWidget(WWT_LABEL, INVALID_COLOUR, WID_QS_LABEL2), SetToolTip(STR_NULL), SetPadding(2, 2, 2, 2),
 			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT2), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
 		EndContainer(),
 	EndContainer(),

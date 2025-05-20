@@ -33,7 +33,6 @@ enum AboutWidgets : WidgetID {
 /** Widgets of the #QueryStringWindow class. */
 enum QueryStringWidgets : WidgetID {
 	WID_QS_CAPTION, ///< Caption of the window.
-	WID_QS_ROW2,    ///< Container for second row
 	WID_QS_LABEL1,  ///< Label of text1.
 	WID_QS_LABEL2,  ///< Label of text2.
 	WID_QS_TEXT,    ///< Text of the query.

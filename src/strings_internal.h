@@ -11,7 +11,7 @@
 #define STRINGS_INTERNAL_H
 
 #include "string_func.h"
-#include "strings_type.h" // for StringID
+#include "strings_type.h"
 #include "core/strong_typedef_type.hpp"
 
 #include <array>
