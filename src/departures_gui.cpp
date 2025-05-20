@@ -1297,7 +1297,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			} else {
 				Ticks arrival_lateness = d->lateness;
 				if (d->type == D_DEPARTURE) {
-					arrival_lateness -= std::max<Ticks>(d->EffectiveWaitingTime(), 0);
+					arrival_lateness -= d->EffectiveWaitingTime();
 				}
 				if (arrival_lateness <= TimetableAbsoluteDisplayUnitSize() && d->scheduled_tick > _state_ticks) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
