@@ -1157,8 +1157,6 @@ public:
 				fill.width = 0;
 				resize.width = 0;
 				size.width = 0;
-			}
-			if (widget == WID_QS_TEXT2) {
 				this->GetWidget<NWidgetCore>(widget)->SetPadding(0, 0, 0, 0);
 			}
 		} else if (widget == WID_QS_LABEL1 || widget == WID_QS_LABEL2) {
