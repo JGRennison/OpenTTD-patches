@@ -997,9 +997,6 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 		ScheduledDispatchVehicleRecords &dispatch_records = lod.dispatch_records;
 
-		/* We'll be going through the order list later, so we need a separate variable for it. */
-		const Order *order = lod.order;
-
 		const uint order_iteration_limit = lod.v->GetNumOrders() * (lod.have_veh_dispatch_conditionals ? 8 : 1);
 
 		if (type == D_DEPARTURE) {
@@ -1018,7 +1015,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 			/* Go through the order list, looping if necessary, to find a terminus. */
 			/* Get the next order, which may be the vehicle's first order. */
-			order = lod.v->orders->GetNext(order);
+			const Order *order = lod.v->orders->GetNext(lod.order);
 			StateTicks departure_tick = d->scheduled_tick;
 			bool travel_time_required = true;
 			CallAt c = CallAt(order, departure_tick);
@@ -1202,7 +1199,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		}
 
 		/* Save on pointer dereferences in the coming loop. */
-		order = lod.order;
+		const Order *order = lod.order;
 
 		/* Now we find the next suitable order for being a departure for this vehicle. */
 		/* We do this in a similar way to finding the first suitable order for the vehicle. */
