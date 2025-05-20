@@ -88,6 +88,7 @@ struct OrderDate {
 	bool have_veh_dispatch_conditionals; ///< Whether vehicle dispatch conditionals are present
 	bool arrivals_complete;       ///< arrival history is complete
 	Ticks scheduled_waiting_time = Departure::INVALID_WAIT_TICKS; ///< Scheduled waiting time if scheduled dispatch is used
+	Ticks lateness_post_adjust = 0;                   ///< Lateness adjustment to apply after this order
 	ScheduledDispatchVehicleRecords dispatch_records; ///< Dispatch records for this vehicle
 	std::vector<ArrivalHistoryEntry> arrival_history;
 
@@ -202,16 +203,21 @@ static void HandleScheduledWaitLateness(OrderDate &od)
 {
 	if (!od.HasScheduledWaitingTime()) {
 		od.lateness = 0;
+		od.lateness_post_adjust = 0;
 		return;
 	}
 
-	Ticks new_lateness = od.lateness - od.scheduled_waiting_time;
-	if (new_lateness > 0) {
-		od.lateness = new_lateness;
-		od.expected_tick += new_lateness;
-	} else {
-		od.lateness = 0;
-	}
+	Ticks new_lateness = std::max<Ticks>(-od.scheduled_waiting_time, 0);
+	od.expected_tick += od.lateness;
+	od.scheduled_waiting_time += od.lateness;
+	od.lateness_post_adjust = new_lateness - od.lateness;
+}
+
+static void HandleLatenessPostAdjustment(OrderDate &od)
+{
+	od.lateness += od.lateness_post_adjust;
+	od.expected_tick += od.lateness_post_adjust;
+	od.lateness_post_adjust = 0;
 }
 
 static bool VehicleOrderRequiresScheduledDispatch(const Vehicle *v, const Order *order, bool arrived_at_timing_point)
@@ -637,6 +643,7 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 			od.status = status;
 			od.have_veh_dispatch_conditionals = candidate.have_veh_dispatch_conditionals;
 			od.scheduled_waiting_time = waiting_time;
+			od.lateness_post_adjust = lateness_post_adjust;
 			od.dispatch_records = std::move(candidate.dispatch_records);
 			od.arrivals_complete = false;
 			od.arrival_history = std::move(candidate.arrival_history);
@@ -1200,6 +1207,8 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		/* Now we find the next suitable order for being a departure for this vehicle. */
 		/* We do this in a similar way to finding the first suitable order for the vehicle. */
 
+		HandleLatenessPostAdjustment(lod);
+
 		/* Go to the next order so we don't add the current order again. */
 		order = lod.v->orders->GetNext(order);
 		if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
@@ -1213,6 +1222,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		for (uint i = order_iteration_limit; i > 0; --i) {
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
+				HandleLatenessPostAdjustment(lod);
 				switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, dispatch_records)) {
 						case DCJD_GIVE_UP: {
 							/* Give up */
@@ -1272,6 +1282,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				}
 			}
 
+			HandleLatenessPostAdjustment(lod);
 			order = lod.v->orders->GetNext(order);
 			if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
 				HandleScheduledWaitLateness(lod);
