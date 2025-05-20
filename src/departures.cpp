@@ -1136,7 +1136,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 							}
 						};
 						stop_prediction_at(i);
-						stop_prediction_at(order->GetConditionSkipToOrder());
+						stop_prediction_at(o->GetConditionSkipToOrder());
 					}
 				}
 
