@@ -1530,7 +1530,8 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 
 		v->group_id = DEFAULT_GROUP;
 
-		if (TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed)) SetBit(v->flags, VRF_REVERSE_DIRECTION);
+		auto prob = TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed);
+		if (prob.has_value()) AssignBit(v->flags, VRF_REVERSE_DIRECTION, prob.value());
 		AddArticulatedParts(v);
 
 		v->UpdatePosition();
@@ -1619,7 +1620,8 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->SetMultiheaded();
 	if (v->IsVirtual()) u->SetVirtual();
 	v->SetNext(u);
-	if (TestVehicleBuildProbability(u, u->engine_type, BuildProbabilityType::Reversed)) SetBit(u->flags, VRF_REVERSE_DIRECTION);
+	auto prob = TestVehicleBuildProbability(u, u->engine_type, BuildProbabilityType::Reversed);
+	if (prob.has_value()) AssignBit(v->flags, VRF_REVERSE_DIRECTION, prob.value());
 	u->UpdatePosition();
 
 	/* Now we need to link the front and rear engines together */
@@ -1698,7 +1700,8 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->SetFrontEngine();
 		v->SetEngine();
 
-		if (TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed)) SetBit(v->flags, VRF_REVERSE_DIRECTION);
+		auto prob = TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed);
+		if (prob.has_value()) AssignBit(v->flags, VRF_REVERSE_DIRECTION, prob.value());
 		v->UpdatePosition();
 
 		if (rvi->railveh_type == RAILVEH_MULTIHEAD) {

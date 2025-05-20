@@ -1417,7 +1417,11 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 			w = Vehicle::Get(*veh_id);
 
 			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
-				SetBit(Train::From(w)->flags, VRF_REVERSE_DIRECTION);
+				/* Only copy the reverse state if neither old or new vehicle implements reverse-on-build probability callback. */
+				if (!TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed).has_value() &&
+					!TestVehicleBuildProbability(w, w->engine_type, BuildProbabilityType::Reversed).has_value()) {
+					SetBit(Train::From(w)->flags, VRF_REVERSE_DIRECTION);
+				}
 			}
 
 			if (v->type == VEH_TRAIN && !v->IsFrontEngine()) {

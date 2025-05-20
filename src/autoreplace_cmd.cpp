@@ -539,7 +539,11 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 
 	/* Try to reverse the vehicle, but do not care if it fails as the new type might not be reversible */
 	if (new_veh->type == VEH_TRAIN && HasBit(Train::From(old_veh)->flags, VRF_REVERSE_DIRECTION)) {
-		Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, new_veh->index, true);
+		/* Only copy the reverse state if neither old or new vehicle implements reverse-on-build probability callback. */
+		if (!TestVehicleBuildProbability(old_veh, old_veh->engine_type, BuildProbabilityType::Reversed).has_value() &&
+			!TestVehicleBuildProbability(new_veh, new_veh->engine_type, BuildProbabilityType::Reversed).has_value()) {
+			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, new_veh->index, true);
+		}
 	}
 
 	return cost;
