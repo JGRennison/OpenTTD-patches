@@ -654,7 +654,7 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 			od.arrival_history = std::move(candidate.arrival_history);
 
 			/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-			if (current_lateness < 0 && !(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING))) {
+			if (current_lateness < 0 && status != D_ARRIVED) {
 				od.expected_tick -= current_lateness;
 			}
 
