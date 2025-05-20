@@ -92,6 +92,9 @@ struct OrderDate {
 	ScheduledDispatchVehicleRecords dispatch_records; ///< Dispatch records for this vehicle
 	std::vector<ArrivalHistoryEntry> arrival_history;
 
+	uint order_iterations_remaining = 0; ///< For use in AdvanceLiveDepartureOrderToNextCandidate
+	bool require_travel_time = false;    ///< For use in AdvanceLiveDepartureOrderToNextCandidate
+
 	inline Ticks EffectiveWaitingTime() const
 	{
 		if (this->scheduled_waiting_time != Departure::INVALID_WAIT_TICKS) {
@@ -461,6 +464,7 @@ struct LiveQueueItem {
 	enum class DataType : uint8_t {
 		CandidateVehicle,
 		CandidateOrder,
+		AdvanceOrder,
 	};
 
 private:
@@ -472,6 +476,7 @@ public:
 
 	/** Only for use when the item is not currently in the queue/heap */
 	void SetTick(Ticks tick) { this->tick = tick; }
+	void SetType(DataType type) { SB(this->data, 24, 8, to_underlying(type)); }
 
 	bool operator<(const LiveQueueItem &other) const
 	{
@@ -883,6 +888,108 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 	return false;
 }
 
+static void AdvanceLiveDepartureOrderToNextCandidate(LiveQueueItem queue_item, OrderDate &lod, std::vector<LiveQueueItem> &candidate_queue, const DepartureType type,
+		DepartureOrderDestinationDetector source, DepartureCallingSettings calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch, bool check_first_order)
+{
+	const Order *order = lod.order;
+	const StateTicks state_ticks_base = _state_ticks;
+
+	/* Go through the order list to find the next candidate departure. */
+	/* We only need to consider each order at most once. */
+	bool found_next_order = false;
+	for (uint i = lod.order_iterations_remaining; i > 0; --i) {
+		if (check_first_order) {
+			if (VehicleOrderRequiresScheduledDispatch(lod.v, order, false)) {
+				/* Enqueue for later */
+				lod.order = order;
+				lod.order_iterations_remaining = i;
+				queue_item.SetTick(lod.GetQueueTick(type));
+				queue_item.SetType(LiveQueueItem::DataType::AdvanceOrder);
+				candidate_queue.push_back(queue_item);
+				std::push_heap(candidate_queue.begin(), candidate_queue.end());
+				return;
+			}
+		}
+
+		check_first_order = true;
+
+		if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, lod.dispatch_records)) {
+			HandleScheduledWaitLateness(lod);
+		}
+
+		/* If the order is a conditional branch, handle it. */
+		if (order->IsType(OT_CONDITIONAL)) {
+			HandleLatenessPostAdjustment(lod);
+			switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, lod.dispatch_records)) {
+					case DCJD_GIVE_UP: {
+						/* Give up */
+						break;
+					}
+					case DCJD_TAKEN: {
+						/* Take the branch */
+						const Order *target = lod.v->GetOrder(order->GetConditionSkipToOrder());
+						if (target == nullptr) {
+							break;
+						}
+						if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes() && !target->IsType(OT_CONDITIONAL)) {
+							break;
+						}
+						order = target;
+
+						lod.expected_tick -= order->GetTravelTime(); /* Added in next VehicleSetNextDepartureTime */
+						lod.require_travel_time = false;
+						continue;
+					}
+					case DCJD_NOT_TAKEN: {
+						/* Do not take the branch */
+						lod.expected_tick -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
+						order = lod.v->orders->GetNext(order);
+						lod.require_travel_time = true;
+						continue;
+					}
+			}
+			break;
+		}
+
+		/* If an order has a 0 travel time, and it's not explicitly set, then stop. */
+		if (lod.require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
+			break;
+		}
+
+		/* If the departure is scheduled to be too late, then stop. */
+		if (lod.expected_tick - lod.lateness > max_ticks) {
+			break;
+		}
+
+		/* If the order loads from this station (or unloads if we're computing arrivals) and has a wait time set, then it is suitable for being a departure. */
+		if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
+				(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
+			lod.order = order;
+			found_next_order = true;
+			break;
+		} else if (type == D_ARRIVAL) {
+			lod.arrival_history.push_back({ order, lod.expected_tick });
+		}
+
+		HandleLatenessPostAdjustment(lod);
+		order = lod.v->orders->GetNext(order);
+		lod.require_travel_time = true;
+	}
+
+	/* The vehicle can't possibly have arrived at its next candidate departure yet. */
+	if (lod.status == D_ARRIVED) {
+		lod.status = D_TRAVELLING;
+	}
+
+	/* If we found a suitable order for being a departure, add it back to the queue, otherwise then we can ignore this vehicle from now on. */
+	if (found_next_order) {
+		queue_item.SetTick(lod.GetQueueTick(type));
+		queue_item.SetType(LiveQueueItem::DataType::CandidateOrder);
+		candidate_queue.push_back(queue_item);
+		std::push_heap(candidate_queue.begin(), candidate_queue.end());
+	}
+}
+
 /**
  * Compute an up-to-date list of departures for a station.
  * @param source the station/etc to compute the departures of
@@ -976,6 +1083,10 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				candidate_queue.emplace_back(next_orders[idx].GetQueueTick(type), LiveQueueItem::DataType::CandidateOrder, idx);
 				std::push_heap(candidate_queue.begin(), candidate_queue.end());
 			}
+			continue;
+		} else if (least_item.Type() == LiveQueueItem::DataType::AdvanceOrder) {
+			AdvanceLiveDepartureOrderToNextCandidate(least_item, next_orders[least_item.Index()], candidate_queue,
+					type, source, calling_settings, max_ticks, schdispatch_last_planned_dispatch, false);
 			continue;
 		}
 
@@ -1198,106 +1309,15 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 			lod.arrivals_complete = true;
 		}
 
-		/* Save on pointer dereferences in the coming loop. */
-		const Order *order = lod.order;
-
 		/* Now we find the next suitable order for being a departure for this vehicle. */
 		/* We do this in a similar way to finding the first suitable order for the vehicle. */
-
 		HandleLatenessPostAdjustment(lod);
-
 		/* Go to the next order so we don't add the current order again. */
-		order = lod.v->orders->GetNext(order);
-		if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
-			HandleScheduledWaitLateness(lod);
-		}
-
-		/* Go through the order list to find the next candidate departure. */
-		/* We only need to consider each order at most once. */
-		bool found_next_order = false;
-		bool require_travel_time = true;
-		for (uint i = order_iteration_limit; i > 0; --i) {
-			/* If the order is a conditional branch, handle it. */
-			if (order->IsType(OT_CONDITIONAL)) {
-				HandleLatenessPostAdjustment(lod);
-				switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, dispatch_records)) {
-						case DCJD_GIVE_UP: {
-							/* Give up */
-							break;
-						}
-						case DCJD_TAKEN: {
-							/* Take the branch */
-							const Order *target = lod.v->GetOrder(order->GetConditionSkipToOrder());
-							if (target == nullptr) {
-								break;
-							}
-							if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && !target->HasNoTimetableTimes() && !target->IsType(OT_CONDITIONAL)) {
-								break;
-							}
-							order = target;
-
-							lod.expected_tick -= order->GetTravelTime(); /* Added in next VehicleSetNextDepartureTime */
-							if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
-								HandleScheduledWaitLateness(lod);
-							}
-							require_travel_time = false;
-							continue;
-						}
-						case DCJD_NOT_TAKEN: {
-							/* Do not take the branch */
-							lod.expected_tick -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
-							order = lod.v->orders->GetNext(order);
-							if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
-								HandleScheduledWaitLateness(lod);
-							}
-							require_travel_time = true;
-							continue;
-						}
-				}
-				break;
-			}
-
-			/* If an order has a 0 travel time, and it's not explicitly set, then stop. */
-			if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
-				break;
-			}
-
-			/* If the departure is scheduled to be too late, then stop. */
-			if (lod.expected_tick - lod.lateness > max_ticks) {
-				break;
-			}
-
-			/* If the order loads from this station (or unloads if we're computing arrivals) and has a wait time set, then it is suitable for being a departure. */
-			if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
-					(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
-				lod.order = order;
-				found_next_order = true;
-				break;
-			} else {
-				if (type == D_ARRIVAL) {
-					lod.arrival_history.push_back({ order, lod.expected_tick });
-				}
-			}
-
-			HandleLatenessPostAdjustment(lod);
-			order = lod.v->orders->GetNext(order);
-			if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
-				HandleScheduledWaitLateness(lod);
-			}
-			require_travel_time = true;
-		}
-
-		/* The vehicle can't possibly have arrived at its next candidate departure yet. */
-		if (lod.status == D_ARRIVED) {
-			lod.status = D_TRAVELLING;
-		}
-
-		/* If we found a suitable order for being a departure, add it back to the queue, otherwise then we can ignore this vehicle from now on. */
-		if (found_next_order) {
-			least_item.SetTick(lod.GetQueueTick(type));
-			candidate_queue.push_back(least_item);
-			std::push_heap(candidate_queue.begin(), candidate_queue.end());
-		}
+		lod.order = lod.v->orders->GetNext(lod.order);
+		lod.order_iterations_remaining = (int)order_iteration_limit;
+		lod.require_travel_time = true;
+		AdvanceLiveDepartureOrderToNextCandidate(least_item, lod, candidate_queue,
+				type, source, calling_settings, max_ticks, schdispatch_last_planned_dispatch, true);
 	}
 
 	if (type == D_DEPARTURE) {
