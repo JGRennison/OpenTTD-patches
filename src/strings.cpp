@@ -1404,7 +1404,11 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 			const size_t ref_param_offset = str_stack.top().first_param_offset;
 			const uint case_index = str_stack.top().case_index;
 			char32_t b = Utf8Consume(&str);
-			assert(b != 0);
+			if (b == 0) {
+				/* A NUL character should never be encountered, but for non-debug builds handle it gracefully. */
+				builder += "(unexpected NUL)";
+				continue;
+			}
 
 			if (_scan_for_gender_data && !builder.IsEmpty()) {
 				/* Early exit when scanning for gender data if target string is already non-empty */
