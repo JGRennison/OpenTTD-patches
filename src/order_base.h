@@ -98,6 +98,16 @@ namespace upstream_sl {
 	class SlVehicleDisaster;
 }
 
+/* Used for defining colors for labels used when annotating import errors
+*  Added to bottom of orderlist if error is related to whole list
+*/
+enum JsonOrderImportErrorType : uint8_t {
+	JOIET_OK,			///< [Not to be used for error logging] : Used to confirm there were no errors
+	JOIET_MINOR,		///< Is added before related order : A cosmetic attribute of the order was malformed
+	JOIET_MAJOR,		///< Is added before related order : An important, non-critical part of the order was malformed 
+	JOIET_CRITICAL,		///< Completely repalces order	   : Makes building an order impossible 
+};
+
 /* If you change this, keep in mind that it is saved in 3 places:
  * - Load_ORDR, all the global orders
  * - Vehicle -> current_order
@@ -272,7 +282,7 @@ public:
 	void MakeLabel(OrderLabelSubType subtype);
 
 	std::string ToJSONString() const;
-	static Order FromJSONString(std::string jsonSTR);
+	static JsonOrderImportErrorType FromJSONString(std::string jsonSTR,const Vehicle * veh);
 
 	/**
 	 * Is this a 'goto' order with a real destination?

@@ -444,58 +444,170 @@ std::string Order::ToJSONString() const
 	return out;
 }
 
-static Order makeJsonErrorOrder(std::string error)
+//ripped from order_gui.cpp
+/**
+ * Modify an order in the orderlist of a vehicle.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 various bitstuffed elements
+ * - p1 = (bit  0  - 19) - ID of the vehicle
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0  -  7) - what data to modify (@see ModifyOrderFlags)
+ *  - p2 = (bit 8  - 23) - the data to modify
+ *  - p2 = (bit 24 - 31) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0  - 15) - the selected order (if any). If the last order is given,
+ *                         the order will be inserted before that one
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, ModifyOrderFlags mof, uint16_t val, CargoID cargo = 0, const char *text = nullptr)
 {
-	Order error_order;
-	error_order.MakeLabel(OLST_TEXT);
-	error_order.SetLabelText(error.c_str());
-	error_order.SetColour(COLOUR_RED);
-	return error_order;
+	uint32_t p2 = mof | val << 8 | cargo << 24;
+	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER, nullptr, text, nullptr);
 }
 
-Order Order::FromJSONString(std::string jsonSTR)
+Colours errorTypeToColour(JsonOrderImportErrorType errType)
 {
-	try {
+	assert(errType != JOIET_OK);
+	switch (errType) {
+		case JOIET_CRITICAL: return COLOUR_RED;
+		case JOIET_MAJOR: return COLOUR_ORANGE;
+		case JOIET_MINOR: return COLOUR_CREAM;
+	}
+}
 
-		nlohmann::json json = nlohmann::json::parse(jsonSTR);
+//Ripped from timetable_gui.
+static inline bool ExecuteTimetableCommand(const Vehicle *veh, ModifyTimetableFlags mtf, uint p2, bool clear)
+{
+	assert(veh->GetNumOrders() > 0);
 
-		OrderType type = OT_NOTHING;
+	VehicleOrderID oid = veh->GetNumOrders()-1;
+	uint p1 = veh->index | (mtf << 28) | (clear ? 1 << 31 : 0);
+	return DoCommandPEx(0, p1, p2, oid, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	
+}
 
-		if (json.contains("type")) {
+class OrderJSONImporter{
 
+	const Vehicle *veh;
+	nlohmann::json json;
+	JsonOrderImportErrorType currentWorst = JOIET_OK;
+
+public:
+
+	OrderJSONImporter(const Vehicle *veh, nlohmann::json &json)
+	{
+		this->veh = veh;
+		this->json = json;
+	}
+
+	void makeErrorLabel(std::string error, JsonOrderImportErrorType errType)
+	{
+		this->currentWorst = this->currentWorst < errType ? errType : this->currentWorst;
+
+		Order error_order;
+		error_order.MakeLabel(OLST_TEXT);
+
+		VehicleOrderID oid = errType == JOIET_CRITICAL ? veh->GetNumOrders() : veh->GetNumOrders() - 1;
+		DoCommandPEx(veh->tile, veh->index, oid, error_order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+		ModifyOrder(veh, oid, MOF_LABEL_TEXT, 0, 0, error.c_str());
+		ModifyOrder(veh, oid, MOF_COLOUR, errorTypeToColour(errType));
+	}
+
+	template<typename T>
+	bool tryGetField(std::string key, JsonOrderImportErrorType failType)
+	{
+		T tmp;
+		return this->tryGetField(key, tmp,failType);
+	}
+	template<typename T>
+	bool tryGetField(std::string key, T &value, JsonOrderImportErrorType failType)
+	{
+		if (json.contains(key)) {
 			try {
 
-				type = (OrderType)json["type"];
-			
-				if (type == OT_NOTHING) {
-					return makeJsonErrorOrder("Value for 'type' is invalid");
+				T temp = (T)json[key];
+
+				//special case for enums, here we can also check if the value is valid.
+				if (std::is_enum<T>::value) {
+					T invalid_result = json.template get<T>();
+
+					if (temp == invalid_result) {
+						makeErrorLabel("Value of '" + key + "' is invalid", failType);
+						return false;
+					}
 				}
 
+				value = temp;
 			} catch (...) {
-				return makeJsonErrorOrder("Data type for 'type' is invalid");
+				makeErrorLabel("Data type of '" + key + "' is invalid", failType);
+				return false;
 			}
-
 		} else {
-			return makeJsonErrorOrder("Required 'type' is missing");
+			if (failType == JOIET_CRITICAL) {
+				makeErrorLabel("Required '" + key + "' is missing", failType);
+				return false;
+			}
 		}
+		return true;
+	}
+
+	template <typename T = uint>
+	bool tryApplyTimetableCommand(std::string field,ModifyTimetableFlags mtf,JsonOrderImportErrorType errType){
+		T data;
+		if (this->tryGetField(field, data, errType)) {
+			bool success = ExecuteTimetableCommand(this->veh, mtf, data, false);
+			if (!success) {
+				this->makeErrorLabel("Value for '"+ field + "' is invalid", errType);
+			}
+			return success;
+		}
+		return false;
+	}
+
+	template <typename T>
+	bool tryDirectModifyOrder(std::string field,ModifyOrderFlags mof, JsonOrderImportErrorType errType,CargoID cargo = 0,const char *text = nullptr){
+		T data;
+		if (this->tryGetField(field, data, errType)) {
+			bool success = ModifyOrder(veh, veh->GetNumOrders() - 1, mof, data, cargo, text);
+			if (!success) {
+				this->makeErrorLabel("Value for '" + field + "' is invalid", errType);
+			}
+			return success;
+		}
+		return false;
+	}
+
+	OrderJSONImporter operator[](auto val)
+	{
+		return OrderJSONImporter(veh, json[val]);
+	}
+
+};
+
+JsonOrderImportErrorType Order::FromJSONString(std::string jsonSTR,const Vehicle * veh)
+{
+	try {
+		nlohmann::json json = nlohmann::json::parse(jsonSTR);
+		OrderJSONImporter jsonImporter(veh,json);
+
+		OrderType type;
+
+		if (jsonImporter.tryGetField("type",type, JOIET_CRITICAL) == JOIET_CRITICAL) return JOIET_CRITICAL;
 
 		DestinationID destination = INVALID_STATION;
 		OrderLabelSubType labelSubtype = OLST_TEXT;
 
 		//Get basic order data required to build order
 		switch (type) {
-			case OT_LABEL:		
-				if (json.contains("label-subtype")) {
-					try {
-						labelSubtype = (OrderLabelSubType)json["label-subtype"];
-						if (labelSubtype == OLST_END) {
-							return makeJsonErrorOrder("Value of 'label-subtype' is invalid");
-						}
-					} catch (...) {
-						return makeJsonErrorOrder("Data type of 'label-subtype' is invalid");
-					}
+			case OT_LABEL:
+
+				jsonImporter.tryGetField("label-subtype", labelSubtype, JOIET_MAJOR);
+				if (labelSubtype == OLST_END) {
+					labelSubtype = OLST_TEXT;
 				}
-				
+
 				if(labelSubtype != OLST_DEPARTURES_REMOVE_VIA && labelSubtype != OLST_DEPARTURES_VIA) break;
 
 				//fall through if label has destination
@@ -504,37 +616,16 @@ Order Order::FromJSONString(std::string jsonSTR)
 			case OT_GOTO_STATION:
 			case OT_GOTO_WAYPOINT:
 			case OT_IMPLICIT:
-				if (json.contains("destination-id")) {
-					if (json["destination-id"].is_number_integer()) {
-						 destination = json["destination-id"];
-					} else {
-						return makeJsonErrorOrder("Data type of 'destination-id' is invalid");
-					}
-				} else if (type == OT_LABEL) {
-					return makeJsonErrorOrder("Go-via labels require 'destination-id'");
-				} else {
-					return makeJsonErrorOrder("Order type '" + (std::string)json["order-type"] + "' requires 'destination-id' to be set");
-				}
-				break;
+
+				destination = INVALID_STATION;
+				jsonImporter.tryGetField("destination-id", destination, JOIET_MAJOR);
 
 			case OT_GOTO_DEPOT:
-				if (json.contains("depot-id")) {
-					if (json["depot-id"].is_string()) {
-						if (json["depot-id"] == "nearest") {
-							destination = INVALID_DEPOT;
-						} else {
-							return makeJsonErrorOrder("Value for 'depot-id' is invalid");
-						}
-					} else if(json["depot-id"].is_number_integer()){
-						destination = json["depot-id"];
-					} else {
-						return makeJsonErrorOrder("Data type of 'depot-id' is invalid");
-					}
-				} else {
-					destination = INVALID_DEPOT;
-				}
-				break;
 
+				destination = INVALID_DEPOT;
+				jsonImporter.tryGetField("depot-id", destination, JOIET_MAJOR);
+
+				break;
 		}
 
 		//Now let's build the order
@@ -552,111 +643,83 @@ Order Order::FromJSONString(std::string jsonSTR)
 				break;
 		}
 
+		//create the order
+		bool success = DoCommandPEx(veh->tile, veh->index, veh->GetNumOrders(), new_order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+
+		if (!success) {
+			jsonImporter.makeErrorLabel("The order could not be imported for an unknown reason", JOIET_CRITICAL);
+			return;
+		}
+
 		//And now set up the flags
 		if (new_order.IsGotoOrder()) {
-			if (json.contains("stopping-pattern")) {
 
-				try {
+			OrderNonStopFlags stoppingPattern = new_order.IsType(OT_GOTO_WAYPOINT) ? ONSF_NO_STOP_AT_ANY_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS; // defaults
 
-					OrderNonStopFlags stoppingPattern = (OrderNonStopFlags)json["stopping-pattern"];
-					if (stoppingPattern == ONSF_END) {
-						return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid");
-					} else {
-						switch (new_order.GetType()) {
-							case OT_GOTO_DEPOT:
-								if (stoppingPattern == ONSF_NO_STOP_AT_ANY_STATION || stoppingPattern == ONSF_NO_STOP_AT_DESTINATION_STATION) {
-									return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid for 'type'='go-to-depot'");
-								}
-								break;
+			jsonImporter.tryGetField("stopping-pattern",stoppingPattern, JOIET_MAJOR);
 
-							case OT_GOTO_WAYPOINT:
-								if (stoppingPattern == ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS || stoppingPattern == ONSF_STOP_EVERYWHERE) {
-									return makeJsonErrorOrder("Value of 'stopping-pattern' is invalid for 'type'='go-to-waypoint'");
-								}
-								break;
-						}
+			switch (new_order.GetType()) {
+				case OT_GOTO_DEPOT:
+					if (stoppingPattern == ONSF_NO_STOP_AT_ANY_STATION || stoppingPattern == ONSF_NO_STOP_AT_DESTINATION_STATION) {
+						jsonImporter.makeErrorLabel("Altered 'stopping-pattern': invalid for 'type'='go-to-depot'",JOIET_MAJOR);
+						stoppingPattern = stoppingPattern == ONSF_NO_STOP_AT_ANY_STATION ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_ANY_STATION;
 					}
-					
-				} catch (...) {
+					break;
 
-					return makeJsonErrorOrder("Data type of 'stopping-pattern' is invalid");
-
-				}
-
-			} else if(new_order.IsType(OT_GOTO_WAYPOINT)) {
-				new_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION); //default for timetablers
-			} else {
-				new_order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS); //default for timetablers
+				case OT_GOTO_WAYPOINT:
+					if (stoppingPattern == ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS || stoppingPattern == ONSF_STOP_EVERYWHERE) {
+						jsonImporter.makeErrorLabel("Altered 'stopping-pattern': invalid for 'type'='go-to-waypoint'",JOIET_MAJOR);
+					}
+					break;
 			}
 
-		}
-
-		if (json.contains("max-speed")) {
-			if (json["max-speed"].is_number_integer()) {
-				if (json["max-speed"] > 0) {
-					new_order.SetMaxSpeed(json["max-speed"]);
-				} else {
-					return makeJsonErrorOrder("Value of 'max-speed' is invalid");
-				}
-			} else {
-				return makeJsonErrorOrder("Data type of 'max-speed' is invalid");
+			bool success = ModifyOrder(veh, veh->GetNumOrders(), MOF_STOP_LOCATION, stoppingPattern);
+			if (!success) {
+				jsonImporter.makeErrorLabel("Undefiend error when trying to set stopping-pattern", JOIET_MAJOR);
 			}
 		}
 
-		if (json.contains("wait-time")) {
-			if (json["wait-time"].is_number_integer()) {
-				if (json["wait-time"] >= 0) {
-					new_order.SetWaitTimetabled(true);
-					new_order.SetWaitTime(json["wait-time"]);
-				} else {
-					return makeJsonErrorOrder("Value of 'wait-time' is invalid");
-				}
-			} else {
-				return makeJsonErrorOrder("Data type of 'wait-time' is invalid");
-			}
-		}
-
-		if (json.contains("travel-time")) {
-			if (json["travel-time"].is_number_integer()) {
-				if (json["travel-time"] >= 0) {
-					new_order.SetTravelTimetabled(true);
-					new_order.SetTravelTime(json["travel-time"]);
-				} else {
-					return makeJsonErrorOrder("Value of 'travel-time' is invalid");
-				}
-			} else {
-				return makeJsonErrorOrder("Data type of 'travel-time' is invalid");
-			}
-		}
+		jsonImporter.tryApplyTimetableCommand("max-speed", MTF_TRAVEL_SPEED, JOIET_MINOR);
+		jsonImporter.tryApplyTimetableCommand("wait-time", MTF_WAIT_TIME, JOIET_MINOR);
+		jsonImporter.tryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
 
 		if (new_order.IsType(OT_GOTO_STATION)) {
 
-			bool isGeneralLoad;
-			if (isGeneralLoad = json.contains("load")) {
-				try {
-					new_order.SetLoadType((OrderLoadFlags)json["load"]);
-				} catch (...) {
-					return makeJsonErrorOrder("Value of 'load' is invalid");
-				}
-			}
+			if (json.contains("load-by-cargo-type")) {
 
-			bool isGeneralUnLoad;
-			if (isGeneralUnLoad = json.contains("unload")) {
-				try {
-					new_order.SetUnloadType((OrderUnloadFlags)json["unload"]);
-				} catch (...) {
-					return makeJsonErrorOrder("Value of 'unload' is invalid");
-				}
-			}
+				if(json["load-by-cargo-type"].is_object()){
+					
+					for (auto& [key,val] : json["load-by-cargo-type"].items()) {
 
-			if (json.contains("load-by-cargo-type") && json["load-by-cargo-type"].is_object()) {
+						CargoID cargo_id;
 
-				for (int i = 0; i < NUM_CARGO; i++) {
+						try{
 
-					if (json["load-by-cargo-type"].contains(std::to_string(i))) {
+							cargo_id = std::stoi(key);
 
-						auto &specificLULjson = json["load-by-cargo-type"][std::to_string(i)];
+							if (cargo_id < 0 || cargo_id > NUM_CARGO) {
+								throw;
+							}
 
+						} catch (...) {
+							jsonImporter.makeErrorLabel("in 'load-by-cargo-type','"+key+"' is not a valid cargo_id",JOIET_MAJOR);
+							continue;
+						}
+
+						if (!val.is_object()) {
+							jsonImporter.makeErrorLabel("loading options in 'load-by-cargo-type'[" + key + "] are not valid", JOIET_MAJOR);
+							continue;
+						};
+
+						if (val.contains("load")) {
+
+						}
+
+						if (val.contains("unload")) {
+
+						}
+
+						/*
 						if (specificLULjson.is_object()) {
 
 							if (!isGeneralLoad && specificLULjson.contains("load")) {
@@ -675,10 +738,22 @@ Order Order::FromJSONString(std::string jsonSTR)
 								}
 							}
 						}
+						*/
 					}
+
+				} else { // 'load-by-cargo-type' is not an object
+					jsonImporter.makeErrorLabel("'load-by-cargo-type' must be an object",JOIET_MAJOR);
 				}
+
+			} else { // does not contain 'load-by-cargo-type'
+
+				jsonImporter.tryDirectModifyOrder<OrderLoadFlags>("load", MOF_CARGO_TYPE_LOAD,JOIET_MAJOR);
+				jsonImporter.tryDirectModifyOrder<OrderUnloadFlags>("unload", MOF_CARGO_TYPE_UNLOAD,JOIET_MAJOR);
+
 			}
-			
+
+			jsonImporter.tryDirectModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR);
+
 			if (json.contains("stop-location")) {
 				try {
 					OrderStopLocation sl = (OrderStopLocation)json["stop-location"];
@@ -1348,9 +1423,7 @@ void OrderList::FromJSONString(std::string json_str)
 
 			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
 
-				auto &orderJson = it.value();
-				OrderID new_orderID = v->GetNumOrders();
-				DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
+				Order::FromJSONString(it.value().dump(), v);
 
 			}
 		}

@@ -34,6 +34,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderStopLocation, {
 
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderWaypointFlags, {
+	{OWF_INVALID,nullptr}
 	{OWF_DEFAULT,"default"},
 	{OWF_REVERSE,"reverse"}
 })
@@ -72,6 +73,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderDepotActionFlags, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadFlags, {
+	{OLF_INVALID,nullptr},
 	{OLF_LOAD_IF_POSSIBLE,"load"},
 	{OLFB_FULL_LOAD,"full-load"},
 	{OLF_FULL_LOAD_ANY,"full-load-any"},

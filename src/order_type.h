@@ -89,6 +89,7 @@ enum OrderUnloadFlags {
 	OUFB_NO_UNLOAD         = 1 << 2, ///< Totally no unloading will be done.
 	OUFB_CARGO_TYPE_UNLOAD = 1 << 3, ///< Unload actions are defined per cargo type.
 	OUFB_CARGO_TYPE_UNLOAD_ENCODING = (1 << 0) | (1 << 2), ///< Raw encoding of OUFB_CARGO_TYPE_UNLOAD
+	OUF_INVALID = -1				 ///< Used for JSON serializaion
 };
 
 /**
@@ -101,6 +102,7 @@ enum OrderLoadFlags {
 	OLFB_NO_LOAD         = 4,      ///< Do not load anything.
 	OLFB_CARGO_TYPE_LOAD = 1 << 3, ///< Load actions are defined per cargo type.
 	OLFB_CARGO_TYPE_LOAD_ENCODING = (1 << 1) | 4, ///< Raw encoding of OLFB_CARGO_TYPE_LOAD
+	OLF_INVALID			 = -1      ///< Used in JSON serializion
 };
 
 /**
@@ -163,6 +165,7 @@ DECLARE_ENUM_AS_BIT_SET(OrderDepotExtraFlags)
 enum OrderWaypointFlags {
 	OWF_DEFAULT          = 0,      ///< Default waypoint behaviour
 	OWF_REVERSE          = 1 << 0, ///< Reverse train at the waypoint
+	OWF_INVALID			 = -1,	   ///< Used in ENUM serializaion
 };
 DECLARE_ENUM_AS_BIT_SET(OrderWaypointFlags)
 

@@ -16,6 +16,8 @@
 
 void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner owner, int delta);
 
+Colours errorTypeToColour(JsonOrderImportErrorType errType);
+
 inline void RegisterOrderDestination(const Order *order, VehicleType type, Owner owner)
 {
 	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, 1);
