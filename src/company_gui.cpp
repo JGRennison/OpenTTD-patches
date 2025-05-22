@@ -798,13 +798,6 @@ public:
 					d = maxdim(d, GetStringBoundingBox(STR_LIVERY_DEFAULT + scheme));
 				}
 
-				/* And group names */
-				for (const Group *g : Group::Iterate()) {
-					if (g->owner == (CompanyID)this->window_number) {
-						d = maxdim(d, GetStringBoundingBox(GetString(STR_GROUP_NAME, g->index)));
-					}
-				}
-
 				size.width = std::max(size.width, 5 + d.width + padding.width);
 				break;
 			}
