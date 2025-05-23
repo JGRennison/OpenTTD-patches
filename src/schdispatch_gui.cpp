@@ -1456,7 +1456,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		if (!this->TimeUnitsUsable()) return;
 
@@ -2101,7 +2101,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:

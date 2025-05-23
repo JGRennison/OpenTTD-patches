@@ -1995,7 +1995,7 @@ public:
 		this->InvalidateData();
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_BS_STYLE:
@@ -2582,7 +2582,7 @@ static void OpenBuildSignalWindow(BuildRailToolbarWindow *w, SignalVariant varia
 	BuildSignalWindow *signal_window = dynamic_cast<BuildSignalWindow *>(FindWindowById(WC_BUILD_SIGNAL, TRANSPORT_RAIL));
 	if (signal_window == nullptr) return;
 
-	signal_window->OnDropdownSelect(WID_BS_STYLE, style);
+	signal_window->OnDropdownSelect(WID_BS_STYLE, style, -1);
 
 	if (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_PATH && _settings_game.vehicle.train_braking_model != TBM_REALISTIC && !IsPbsSignalNonExtended(type) && !IsNoEntrySignal(type)) {
 		signal_window->OnClick(Point(), WID_BS_TOGGLE_SIZE, 1);

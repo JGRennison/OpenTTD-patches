@@ -111,7 +111,7 @@ struct ZoningWindow : public Window {
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch(widget) {
 			case ZTW_OUTER_DROPDOWN:

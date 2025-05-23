@@ -98,6 +98,7 @@ struct DropdownWindow : Window {
 	Rect wi_rect{};                 ///< Rect of the button that opened the dropdown.
 	DropDownList list{};            ///< List with dropdown menu items.
 	int selected_result{};          ///< Result value of the selected item in the list.
+	int selected_click_result = -1; ///< Click result value, from the OnClick handler of the selected item.
 	uint8_t click_delay = 0;        ///< Timer to delay selection.
 	bool drag_mode = true;
 	DropDownModeFlags mode_flags{}; ///< Mode flags.
@@ -155,7 +156,7 @@ struct DropdownWindow : Window {
 			Point pt = _cursor.pos;
 			pt.x -= w2->left;
 			pt.y -= w2->top;
-			w2->OnDropdownClose(pt, this->parent_button, this->selected_result, (this->mode_flags & DDMF_INSTANT_CLOSE) != 0);
+			w2->OnDropdownClose(pt, this->parent_button, this->selected_result, this->selected_click_result, (this->mode_flags & DDMF_INSTANT_CLOSE) != 0);
 		}
 	}
 
@@ -238,14 +239,15 @@ struct DropdownWindow : Window {
 
 	/**
 	 * Find the dropdown item under the cursor.
-	 * @param[out] value Selected item, if function returns \c true.
+	 * @param[out] result Selected item, if function returns \c true.
+	 * @param[out] click_result Click result from OnClick of Selected item, if function returns \c true.
 	 * @return Cursor points to a dropdown item.
 	 */
-	bool GetDropDownItem(int &value)
+	bool GetDropDownItem(int &result, int &click_result)
 	{
 		if (GetWidgetFromPos(this, _cursor.pos.x - this->left, _cursor.pos.y - this->top) < 0) return false;
 
-		const Rect &r = this->GetWidget<NWidgetBase>(WID_DM_ITEMS)->GetCurrentRect().Shrink(WidgetDimensions::scaled.dropdownlist);
+		const Rect &r = this->GetWidget<NWidgetBase>(WID_DM_ITEMS)->GetCurrentRect().Shrink(WidgetDimensions::scaled.dropdownlist).Shrink(WidgetDimensions::scaled.dropdowntext, RectPadding::zero);
 		int y     = _cursor.pos.y - this->top - r.top;
 		int pos   = this->vscroll->GetPosition();
 
@@ -257,7 +259,8 @@ struct DropdownWindow : Window {
 
 			if (y < item_height) {
 				if (item->masked || !item->Selectable()) return false;
-				value = item->result;
+				result = item->result;
+				click_result = item->OnClick({r.left, 0, r.right, item_height - 1}, {_cursor.pos.x - this->left, y});
 				return true;
 			}
 
@@ -297,10 +300,11 @@ struct DropdownWindow : Window {
 	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (widget != WID_DM_ITEMS) return;
-		int item;
-		if (this->GetDropDownItem(item)) {
+		int result, click_result;
+		if (this->GetDropDownItem(result, click_result)) {
 			this->click_delay = 4;
-			this->selected_result = item;
+			this->selected_result = result;
+			this->selected_click_result = click_result;
 			this->SetDirty();
 		}
 	}
@@ -335,16 +339,16 @@ struct DropdownWindow : Window {
 				this->Close();
 			}
 
-			w2->OnDropdownSelect(this->parent_button, this->selected_result);
+			w2->OnDropdownSelect(this->parent_button, this->selected_result, this->selected_click_result);
 			return;
 		}
 
 		if (this->drag_mode) {
-			int item;
+			int result, click_result;
 
 			if (!_left_button_clicked) {
 				this->drag_mode = false;
-				if (!this->GetDropDownItem(item)) {
+				if (!this->GetDropDownItem(result, click_result)) {
 					if ((this->mode_flags & DDMF_INSTANT_CLOSE) != 0) this->Close();
 					return;
 				}
@@ -360,11 +364,12 @@ struct DropdownWindow : Window {
 					return;
 				}
 
-				if (!this->GetDropDownItem(item)) return;
+				if (!this->GetDropDownItem(result, click_result)) return;
 			}
 
-			if (this->selected_result != item) {
-				this->selected_result = item;
+			if (this->selected_result != result || this->selected_click_result != click_result) {
+				this->selected_result = result;
+				this->selected_click_result = click_result;
 				this->SetDirty();
 			}
 		}

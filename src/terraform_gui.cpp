@@ -581,7 +581,7 @@ struct PublicRoadsWindow : Window {
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		if (widget == WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN) {
 			_selected_public_road_type = (RoadType)index;

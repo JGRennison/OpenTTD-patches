@@ -1042,7 +1042,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_SCL_MATRIX);
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		bool local = (CompanyID)this->window_number == _local_company;
 		if (!local) return;

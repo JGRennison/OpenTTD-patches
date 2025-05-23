@@ -595,7 +595,7 @@ public:
 		this->RaiseButtons();
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		RailType temp = (RailType) index;
 		if (temp == this->sel_railtype) return; // we didn't select a new one. No need to change anything

@@ -510,7 +510,7 @@ public:
 	}
 
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_TA_SETTING: {
@@ -1246,7 +1246,7 @@ public:
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		if (widget != WID_TD_SORT_CRITERIA) return;
 

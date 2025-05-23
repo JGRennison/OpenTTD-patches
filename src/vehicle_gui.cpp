@@ -1373,7 +1373,7 @@ struct RefitWindow : public Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		if (widget != WID_VR_VEHICLE_DROPDOWN) return;
 
@@ -2662,7 +2662,7 @@ public:
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_VL_GROUP_BY_PULLDOWN:
@@ -3641,7 +3641,7 @@ struct VehicleDetailsWindow : Window {
 		return false;
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_VD_SERVICE_INTERVAL_DROPDOWN: {
@@ -4431,7 +4431,7 @@ public:
 		Command<CMD_RENAME_VEHICLE>::Post(STR_ERROR_CAN_T_RENAME_TRAIN + Vehicle::Get(this->window_number)->type, static_cast<VehicleID>(this->window_number), *str);
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_VV_GOTO_DEPOT: {

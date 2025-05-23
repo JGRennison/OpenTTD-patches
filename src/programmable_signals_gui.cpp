@@ -559,7 +559,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		SignalInstruction *ins = this->GetSelected();
 		if (ins == nullptr) return;

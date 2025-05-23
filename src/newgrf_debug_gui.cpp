@@ -1120,7 +1120,7 @@ struct NewGRFInspectWindow final : Window {
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		if (widget == WID_NGRFI_MAIN_OPTIONS) {
 			this->GetFeatureHelper()->OnOptionsDropdownSelect(this->GetFeatureIndex(), index);

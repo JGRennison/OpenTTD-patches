@@ -2802,7 +2802,7 @@ public:
 		this->PostInstructionCommand(TRDCT_MODIFY_ITEM, item.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
 		if (item == 0 || index < 0 || this->selected_instruction < 1) {
@@ -5034,7 +5034,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_TRSL_LIST_VEHICLE);
 	}
 
-	virtual void OnDropdownSelect(WidgetID widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
