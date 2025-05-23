@@ -25,6 +25,8 @@ enum BuildVehicleWidgets : WidgetID {
 	WID_BV_SHOW_HIDE,                 ///< Button to hide or show the selected engine.
 	WID_BV_BUILD_SEL,                 ///< Build button.
 	WID_BV_RENAME,                    ///< Rename button.
+	WID_BV_CONFIGURE_BADGES,          ///< Button to configure badges.
+
 	WID_BV_TOGGLE_DUAL_PANE,          ///< Toggle dual pane windows.
 	WID_BV_TOGGLE_DUAL_PANE_SEL,      ///< Selection for WID_BV_TOGGLE_DUAL_PANE.
 
