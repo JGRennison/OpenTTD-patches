@@ -25,6 +25,7 @@
 #include "currency.h"
 #include "landscape.h"
 #include "newgrf_badge.h"
+#include "newgrf_badge_config.h"
 #include "newgrf_cargo.h"
 #include "newgrf_sound.h"
 #include "newgrf_station.h"
@@ -1797,6 +1798,7 @@ static void FinaliseBadges()
 	}
 
 	ApplyBadgeFeaturesToClassBadges();
+	AddBadgeClassesToConfiguration();
 }
 
 extern void InitGRFTownGeneratorNames();

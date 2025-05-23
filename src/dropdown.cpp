@@ -391,12 +391,13 @@ struct DropdownWindow : Window {
 		}
 	}
 
-	void ReplaceList(DropDownList &&list)
+	void ReplaceList(DropDownList &&list, std::optional<int> selected_result)
 	{
 		Window *parent = FindWindowByToken(this->parent_wnd_token);
 		if (parent == nullptr) return;
 
 		this->list = std::move(list);
+		if (selected_result.has_value()) this->selected_result = *selected_result;
 		this->UpdateSizeAndPosition(parent);
 		this->ReInit(0, 0);
 		this->InitializePositionSize(this->position.x, this->position.y, this->nested_root->smallest_x, this->nested_root->smallest_y);
@@ -410,7 +411,7 @@ static DropdownWindow *GetDropDownWindowForParent(Window *parent)
 	for (Window *w : Window::IterateFromFront()) {
 		if (w->window_class != WC_DROPDOWN_MENU) continue;
 
-		DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);
+		DropdownWindow *dw = dynamic_cast<DropdownWindow *>(w);
 		assert(dw != nullptr);
 		if (parent->GetWindowToken() == dw->parent_wnd_token) {
 			return dw;
@@ -420,10 +421,10 @@ static DropdownWindow *GetDropDownWindowForParent(Window *parent)
 	return nullptr;
 }
 
-void ReplaceDropDownList(Window *parent, DropDownList &&list)
+void ReplaceDropDownList(Window *parent, DropDownList &&list, std::optional<int> selected_result)
 {
 	DropdownWindow *ddw = GetDropDownWindowForParent(parent);
-	if (ddw != nullptr) ddw->ReplaceList(std::move(list));
+	if (ddw != nullptr) ddw->ReplaceList(std::move(list), selected_result);
 }
 
 /**

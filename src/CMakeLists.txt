@@ -299,6 +299,8 @@ add_files(
     newgrf_analysis.h
     newgrf_badge.cpp
     newgrf_badge.h
+    newgrf_badge_config.cpp
+    newgrf_badge_config.h
     newgrf_badge_gui.cpp
     newgrf_badge_gui.h
     newgrf_badge_type.h
