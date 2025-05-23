@@ -511,8 +511,9 @@ public:
 	 */
 	inline void ToggleWidgetLoweredState(WidgetID widget_index)
 	{
-		bool lowered_state = this->GetWidget<NWidgetCore>(widget_index)->IsLowered();
-		this->GetWidget<NWidgetCore>(widget_index)->SetLowered(!lowered_state);
+		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(widget_index);
+		bool lowered_state = nwid->IsLowered();
+		nwid->SetLowered(!lowered_state);
 	}
 
 	/**
@@ -521,7 +522,7 @@ public:
 	 */
 	inline void LowerWidget(WidgetID widget_index)
 	{
-		SetWidgetLoweredState(widget_index, true);
+		this->SetWidgetLoweredState(widget_index, true);
 	}
 
 	/**
@@ -530,7 +531,7 @@ public:
 	 */
 	inline void RaiseWidget(WidgetID widget_index)
 	{
-		SetWidgetLoweredState(widget_index, false);
+		this->SetWidgetLoweredState(widget_index, false);
 	}
 
 	/**
@@ -539,9 +540,10 @@ public:
 	 */
 	inline void RaiseWidgetWhenLowered(WidgetID widget_index)
 	{
-		if (this->IsWidgetLowered(widget_index)) {
-			this->RaiseWidget(widget_index);
-			this->SetWidgetDirty(widget_index);
+		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(widget_index);
+		if (nwid->IsLowered()) {
+			nwid->SetLowered(false);
+			nwid->SetDirty(this);
 		}
 	}
 
