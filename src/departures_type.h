@@ -61,6 +61,10 @@ public:
 	inline DestinationID GetDepotDestinationID() const { return this->id & ~DEPOT_TAG; }
 	inline bool MatchesStationID(StationID st) const { return this->IsStationID() && st == this->GetStationID(); }
 
+	inline bool MatchesOrder(const Order *order) const {
+		return (order->IsGotoOrder() || order->IsType(OT_IMPLICIT)) && CallAtTargetID::FromOrder(order) == *this;
+	}
+
 	bool operator==(const CallAtTargetID& c) const = default;
 	auto operator<=>(const CallAtTargetID& c) const = default;
 };

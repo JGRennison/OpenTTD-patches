@@ -167,6 +167,17 @@ protected:
 	static void RecomputeDateWidth();
 	void DrawDeparturesListItems(const Rect &r) const;
 
+	bool VehicleTargetCoarseFilter(const Vehicle *v) const
+	{
+		if (!this->filter_target.IsValid()) return true; // No filter set
+
+		for (const Order *order : v->Orders()) {
+			if (this->filter_target.MatchesOrder(order)) return true;
+		}
+
+		return false;
+	}
+
 	void FillVehicleList()
 	{
 		this->vehicles.clear();
@@ -187,6 +198,11 @@ protected:
 				if (this->source_mode != DSM_LIVE && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) continue;
 				for (const Order *order : veh->Orders()) {
 					if (this->source.OrderMatches(order)) {
+						/* Found a vehicle with an order for this source. */
+
+						/* Coarse filter against filter_target. */
+						if (!this->VehicleTargetCoarseFilter(veh)) break;
+
 						if (this->source_mode != DSM_LIVE) this->vehicles.push_back(veh);
 						for (const Vehicle *v = veh; v != nullptr; v = v->NextShared()) {
 							if (this->source_mode == DSM_LIVE) this->vehicles.push_back(v);
