@@ -161,6 +161,7 @@ protected:
 	int toc_width;                         ///< current width of company field
 	std::array<uint32_t, 3> title_params{};///< title string parameters
 	CallAtTargetID filter_target;          ///< Filter target
+	const OrderList *order_list_filter{};  ///< Shared order list filter
 
 	uint GetScrollbarCapacity() const;
 	uint GetMinWidth() const;
@@ -169,6 +170,8 @@ protected:
 
 	bool VehicleTargetCoarseFilter(const Vehicle *v) const
 	{
+		if (this->order_list_filter != nullptr && this->order_list_filter != v->orders) return false;
+
 		if (!this->filter_target.IsValid()) return true; // No filter set
 
 		for (const Order *order : v->Orders()) {
@@ -300,6 +303,22 @@ protected:
 		}
 	}
 
+	void UpdateVehicleTypeFilterDisableState()
+	{
+		bool disable = this->source_type == DST_WAYPOINT || this->source_type == DST_DEPOT || this->order_list_filter != nullptr;
+		for (uint i = 0; i < 4; ++i) {
+			this->SetWidgetDisabledState(WID_DB_SHOW_TRAINS + i, disable);
+			this->SetWidgetDirty(WID_DB_SHOW_TRAINS + i);
+		}
+		if (this->order_list_filter != nullptr) {
+			VehicleType vt = this->order_list_filter->GetFirstSharedVehicle()->type;
+			for (uint i = 0; i < 4; ++i) {
+				this->show_types[i] = (i == vt);
+				this->SetWidgetLoweredState(WID_DB_SHOW_TRAINS + i, i == vt);
+			}
+		}
+	}
+
 public:
 	DeparturesWindow(WindowDesc &desc, StationID station) : Window(desc)
 	{
@@ -322,13 +341,9 @@ public:
 				vt = VEH_SHIP;
 				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_BUOY_VIEW_CENTER_TOOLTIP);
 			}
-			for (uint i = 0; i < 4; ++i) {
-				if (i == vt) {
-					this->show_types[i] = true;
-					this->LowerWidget(WID_DB_SHOW_TRAINS + i);
-				}
-				this->DisableWidget(WID_DB_SHOW_TRAINS + i);
-			}
+			this->UpdateVehicleTypeFilterDisableState();
+			this->show_types[vt] = true;
+			this->LowerWidget(WID_DB_SHOW_TRAINS + vt);
 
 			this->show_via = true;
 		} else {
@@ -372,13 +387,9 @@ public:
 
 		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt);
 
-		for (uint i = 0; i < 4; ++i) {
-			if (i == vt) {
-				this->show_types[i] = true;
-				this->LowerWidget(WID_DB_SHOW_TRAINS + i);
-			}
-			this->DisableWidget(WID_DB_SHOW_TRAINS + i);
-		}
+		this->UpdateVehicleTypeFilterDisableState();
+		this->show_types[vt] = true;
+		this->LowerWidget(WID_DB_SHOW_TRAINS + vt);
 
 		this->show_via = true;
 		this->source_mode = static_cast<DeparturesSourceMode>(_settings_client.gui.departure_default_source);
@@ -426,10 +437,12 @@ public:
 		switch (widget) {
 			case WID_DB_CAPTION: {
 				uint title_offset;
-				if (!this->filter_target.IsValid()) {
-					SetDParam(0, STR_DEPARTURES_CAPTION);
-					title_offset = 1;
-				} else {
+				if (this->order_list_filter != nullptr) {
+					SetDParam(0, STR_DEPARTURES_CAPTION_VEHICLE_FILTER);
+					SetDParam(1, STR_DEPARTURES_CAPTION);
+					title_offset = 2;
+					SetDParam(5, this->order_list_filter->GetFirstSharedVehicle()->index);
+				} else if (this->filter_target.IsValid()) {
 					SetDParam(0, STR_DEPARTURES_CAPTION_FILTER);
 					SetDParam(1, STR_DEPARTURES_CAPTION);
 					title_offset = 2;
@@ -439,6 +452,9 @@ public:
 						SetDParam(5, STR_STATION_NAME);
 					}
 					SetDParam(6, this->filter_target.GetStationID());
+				} else {
+					SetDParam(0, STR_DEPARTURES_CAPTION);
+					title_offset = 1;
 				}
 
 				SetDParam(title_offset + 0, this->title_params[0]);
@@ -615,10 +631,14 @@ public:
 				if (this->IsWidgetLowered(WID_DB_FILTER)) {
 					this->RaiseWidget(WID_DB_FILTER);
 					this->filter_target = CallAtTargetID();
+					if (this->order_list_filter != nullptr) {
+						this->order_list_filter = nullptr;
+						this->UpdateVehicleTypeFilterDisableState();
+					}
 					this->OnInvalidateData(0, false);
 				} else {
 					this->LowerWidget(WID_DB_FILTER);
-					SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
+					SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT | HT_VEHICLE, this);
 				}
 				this->SetWidgetDirty(WID_DB_FILTER);
 				this->SetWidgetDirty(WID_DB_CAPTION);
@@ -703,10 +723,51 @@ public:
 		}
 	}
 
+	bool OnVehicleSelect(const Vehicle *v) override
+	{
+		if (v->type >= VEH_COMPANY_END) return false;
+
+		if (this->source_type == DST_WAYPOINT || this->source_type == DST_DEPOT) {
+			if (!this->show_types[v->type]) return false; // wrong vehicle type
+		}
+
+		this->filter_target = CallAtTargetID();
+		this->order_list_filter = v->orders;
+		this->UpdateVehicleTypeFilterDisableState();
+		this->OnInvalidateData(0, false);
+		ResetObjectToPlace();
+		this->LowerWidget(WID_DB_FILTER);
+		this->SetWidgetDirty(WID_DB_FILTER);
+		this->SetWidgetDirty(WID_DB_CAPTION);
+		return true;
+	}
+
+	bool OnVehicleSelect(VehicleList::const_iterator begin, VehicleList::const_iterator end) override
+	{
+		/* If the range is empty or not all of the same order list, take no action. */
+		if (begin == end) return false;
+		if (!AllEqual(begin, end, [](const Vehicle *v1, const Vehicle *v2) { return v1->FirstShared() == v2->FirstShared(); })) {
+			return false;
+		}
+
+		return this->OnVehicleSelect(*begin);
+	}
+
 	void OnPlaceObjectAbort() override
 	{
 		this->RaiseWidget(WID_DB_FILTER);
 		this->SetWidgetDirty(WID_DB_FILTER);
+	}
+
+	void UpdateVehicleFilter(const OrderList *order_list, bool remove)
+	{
+		if (this->order_list_filter == order_list) {
+			if (remove) {
+				this->OnClick({}, WID_DB_FILTER, 1);
+			} else {
+				this->SetWidgetDirty(WID_DB_CAPTION);
+			}
+		}
 	}
 
 	virtual void OnGameTick() override
@@ -908,6 +969,17 @@ void CloseStationDeparturesWindow(StationID station)
 void CloseDepotDeparturesWindow(TileIndex tile)
 {
 	CloseAllWindowsById(WC_DEPARTURES_BOARD, DeparturesWindow::GetDepotWindowNumber(tile));
+}
+
+void UpdateDeparturesWindowVehicleFilter(const OrderList *order_list, bool remove)
+{
+	if (HaveWindowByClass(WC_DEPARTURES_BOARD)) {
+		for (Window *w : Window::Iterate()) {
+			if (w->window_class == WC_DEPARTURES_BOARD) {
+				static_cast<DeparturesWindow *>(w)->UpdateVehicleFilter(order_list, remove);
+			}
+		}
+	}
 }
 
 void DeparturesWindow::RecomputeDateWidth()

@@ -1393,6 +1393,7 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show wai
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING2} Live Travel Information
 STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING3} - Calling at {STRING1}
+STR_DEPARTURES_CAPTION_VEHICLE_FILTER                           :{WHITE}{STRING3} - Shared Orders: {VEHICLE}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
 STR_DEPARTURES_DEPARTURES                                       :Departures
 STR_DEPARTURES_ARRIVALS                                         :Arrivals
@@ -1406,7 +1407,7 @@ STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Include 
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
 STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}Filter
-STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}Only show departures/arrivals calling at a particular destination.
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}Only show departures/arrivals calling at a particular destination, or only show a single shared order group.
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show timetabled road vehicles
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show timetabled ships

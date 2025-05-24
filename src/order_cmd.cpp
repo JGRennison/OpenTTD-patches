@@ -3035,14 +3035,18 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 	DeleteOrderWarnings(v);
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
+	extern void UpdateDeparturesWindowVehicleFilter(const OrderList *order_list, bool remove);
+
 	if (v->IsOrderListShared()) {
 		/* Remove ourself from the shared order list. */
+		UpdateDeparturesWindowVehicleFilter(v->orders, false);
 		v->RemoveFromShared();
 		v->orders = nullptr;
 	} else {
 		CloseWindowById(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_SHARED_ORDERS, v->type, v->owner, v->index).ToWindowNumber());
 		if (v->orders != nullptr) {
 			/* Remove the orders */
+			if (!keep_orderlist) UpdateDeparturesWindowVehicleFilter(v->orders, true);
 			v->orders->FreeChain(keep_orderlist);
 			if (!keep_orderlist) v->orders = nullptr;
 		}
