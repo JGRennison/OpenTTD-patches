@@ -170,8 +170,6 @@ protected:
 
 	bool VehicleTargetCoarseFilter(const Vehicle *v) const
 	{
-		if (this->order_list_filter != nullptr && this->order_list_filter != v->orders) return false;
-
 		if (!this->filter_target.IsValid()) return true; // No filter set
 
 		for (const Order *order : v->Orders()) {
@@ -192,45 +190,52 @@ protected:
 		CompanyMask companies = {};
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
-		VehicleTypeMask vt_mask = 0;
-		for (VehicleType vt = VEH_BEGIN; vt != VEH_COMPANY_END; vt++) {
-			if (this->show_types[vt]) SetBit(vt_mask, vt);
-		}
-		for (const Vehicle *veh : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
-			if (veh->IsPrimaryVehicle() && veh == veh->FirstShared()) {
-				if (this->source_mode != DSM_LIVE && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) continue;
-				for (const Order *order : veh->Orders()) {
-					if (this->source.OrderMatches(order)) {
-						/* Found a vehicle with an order for this source. */
+		auto process_vehicle = [&](const Vehicle *veh) {
+			if (this->source_mode != DSM_LIVE && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) return;
+			for (const Order *order : veh->Orders()) {
+				if (this->source.OrderMatches(order)) {
+					/* Found a vehicle with an order for this source. */
 
-						/* Coarse filter against filter_target. */
-						if (!this->VehicleTargetCoarseFilter(veh)) break;
+					/* Coarse filter against filter_target. */
+					if (!this->VehicleTargetCoarseFilter(veh)) return;
 
-						if (this->source_mode != DSM_LIVE) this->vehicles.push_back(veh);
-						for (const Vehicle *v = veh; v != nullptr; v = v->NextShared()) {
-							if (this->source_mode == DSM_LIVE) this->vehicles.push_back(v);
+					if (this->source_mode != DSM_LIVE) this->vehicles.push_back(veh);
+					for (const Vehicle *v = veh; v != nullptr; v = v->NextShared()) {
+						if (this->source_mode == DSM_LIVE) this->vehicles.push_back(v);
 
-							if (_settings_client.gui.departure_show_vehicle) {
-								if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
-									if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
-								} else {
-									SetDParam(0, v->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
-									int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
-									if (width > this->veh_width) this->veh_width = width;
-								}
-							}
-
-							if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
-								groups.insert(v->group_id);
-							}
-
-							if (_settings_client.gui.departure_show_company) {
-								companies.Set(v->owner);
+						if (_settings_client.gui.departure_show_vehicle) {
+							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
+								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
+							} else {
+								SetDParam(0, v->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
+								int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
+								if (width > this->veh_width) this->veh_width = width;
 							}
 						}
-						break;
+
+						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
+							groups.insert(v->group_id);
+						}
+
+						if (_settings_client.gui.departure_show_company) {
+							companies.Set(v->owner);
+						}
 					}
+					return;
 				}
+			}
+		};
+
+		if (this->order_list_filter != nullptr) {
+			process_vehicle(this->order_list_filter->GetFirstSharedVehicle());
+		} else {
+			VehicleTypeMask vt_mask = 0;
+			for (VehicleType vt = VEH_BEGIN; vt != VEH_COMPANY_END; vt++) {
+				if (this->show_types[vt]) SetBit(vt_mask, vt);
+			}
+
+			for (const Vehicle *veh : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
+				if (veh->IsPrimaryVehicle() && veh == veh->FirstShared()) process_vehicle(veh);
 			}
 		}
 
