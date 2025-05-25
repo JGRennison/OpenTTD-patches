@@ -25,34 +25,6 @@ namespace upstream_sl {
 
 static uint32_t _order_item_ref;
 
-/**
- * Unpacks a order from savegames with version 4 and lower
- * @param packed packed order
- * @return unpacked order
- */
-static Order UnpackVersion4Order(uint16_t packed)
-{
-	return Order(GB(packed, 0, 4), GB(packed, 4, 4), GB(packed, 8, 8));
-}
-
-/**
- * Unpacks a order from savegames made with TTD(Patch)
- * @param packed packed order
- * @return unpacked order
- */
-Order UnpackOldOrder(uint16_t packed)
-{
-	Order order = UnpackVersion4Order(packed);
-
-	/*
-	 * Sanity check
-	 * TTD stores invalid orders as OT_NOTHING with non-zero flags/station
-	 */
-	if (order.IsType(OT_NOTHING) && packed != 0) order.MakeDummy();
-
-	return order;
-}
-
 SaveLoadTable GetOrderDescription()
 {
 	static const SaveLoad _order_desc[] = {
@@ -95,10 +67,34 @@ struct ORDRChunkHandler : ChunkHandler {
 	}
 };
 
+template <typename T>
+class SlOrders : public VectorSaveLoadHandler<SlOrders<T>, T, Order> {
+public:
+	static inline const SaveLoad description[] = {
+		SLE_VAR(Order, type,        SLE_UINT8),
+		SLE_VAR(Order, flags,       SLE_FILE_U8 | SLE_VAR_U16),
+		SLE_VAR(Order, dest,        SLE_UINT16),
+		SLE_VAR(Order, refit_cargo, SLE_UINT8),
+		SLE_VAR(Order, wait_time,   SLE_FILE_U16 | SLE_VAR_U32),
+		SLE_VAR(Order, travel_time, SLE_FILE_U16 | SLE_VAR_U32),
+		SLE_VAR(Order, max_speed,   SLE_UINT16),
+	};
+	static inline const SaveLoadCompatTable compat_description = {};
+
+	std::vector<Order> &GetVector(T *container) const override { return container->orders; }
+
+	void LoadCheck(T *container) const override { this->Load(container); }
+};
+
+/* Instantiate SlOrders classes. */
+template class SlOrders<OrderList>;
+template class SlOrders<OrderBackup>;
+
 SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
-		SLEG_VAR("first",  _order_item_ref,    SLE_UINT32),
+		SLEG_CONDVAR("first",  _order_item_ref,    SLE_UINT32, SL_MIN_VERSION, SLV_ORDERS_OWNED_BY_ORDERLIST),
+		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderList>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
 	};
 
 	return _orderlist_desc;
@@ -109,28 +105,24 @@ struct ORDLChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		const SaveLoadTable slt = GetOrderListDescription();
-		SlTableHeader(slt);
-
-		for (OrderList *list : OrderList::Iterate()) {
-			SlSetArrayIndex(list->index);
-			SlObject(list, slt);
-		}
+		NOT_REACHED();
 	}
 
 	void Load() const override
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderListDescription(), _orderlist_sl_compat);
+		const bool old_mode = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
 
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
 			/* set num_orders to 0 so it's a valid OrderList */
-			OrderList *list = new (index) OrderList();
+			OrderList *list = new (OrderListID(index)) OrderList();
 			SlObject(list, slt);
-			RegisterOrderPoolItemReference(&list->GetOrderVector(), _order_item_ref);
+			if (old_mode) {
+				RegisterOrderPoolItemReference(&list->GetOrderVector(), _order_item_ref);
+			}
 		}
-
 	}
 };
 
@@ -152,7 +144,8 @@ SaveLoadTable GetOrderBackupDescription()
 		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_FILE_U64 | SLE_VAR_I64, SLV_TIMETABLE_START_TICKS_FIX, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8  | SLE_VAR_U32, SLV_176, SLV_180),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U16 | SLE_VAR_U32, SLV_180, SL_MAX_VERSION),
-		    SLEG_VAR("orders",    _order_item_ref,          SLE_UINT32),
+		SLEG_CONDVAR("orders",    _order_item_ref,          SLE_UINT32,                 SL_MIN_VERSION, SLV_ORDERS_OWNED_BY_ORDERLIST),
+		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderBackup>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
 	};
 
 	return _order_backup_desc;
@@ -163,23 +156,13 @@ struct BKORChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		const SaveLoadTable slt = GetOrderBackupDescription();
-		SlTableHeader(slt);
-
-		/* We only save this when we're a network server
-		 * as we want this information on our clients. For
-		 * normal games this information isn't needed. */
-		if (!_networking || !_network_server) return;
-
-		for (OrderBackup *ob : OrderBackup::Iterate()) {
-			SlSetArrayIndex(ob->index);
-			SlObject(ob, slt);
-		}
+		NOT_REACHED();
 	}
 
 	void Load() const override
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderBackupDescription(), _order_backup_sl_compat);
+		const bool old_mode = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
 
 		int index;
 
@@ -189,7 +172,9 @@ struct BKORChunkHandler : ChunkHandler {
 			SlObject(ob, slt);
 			if (ob->cur_real_order_index == 0xFF) ob->cur_real_order_index = INVALID_VEH_ORDER_ID;
 			if (ob->cur_implicit_order_index == 0xFF) ob->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
-			RegisterOrderPoolItemReference(&ob->orders, _order_item_ref);
+			if (old_mode) {
+				RegisterOrderPoolItemReference(&ob->orders, _order_item_ref);
+			}
 		}
 	}
 

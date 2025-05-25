@@ -43,6 +43,8 @@ private:
 	friend struct OrderBackupDispatchScheduleStructHandler; ///< Saving and loading of order backups.
 	friend struct OrderBackupOrderVectorStructHandler; ///< Saving and loading of order backups.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderBackupDescription(); ///< Saving and loading of order backups.
+	template <typename T>
+	friend class upstream_sl::SlOrders;
 	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
 	friend void Save_BKOR();   ///< Saving orders upon savegame saving.
 	friend upstream_sl::BKORChunkHandler;

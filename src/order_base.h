@@ -95,6 +95,8 @@ struct OrderExtraInfo {
 namespace upstream_sl {
 	SaveLoadTable GetOrderDescription();
 	SaveLoadTable GetOrderListDescription();
+	template <typename T>
+	class SlOrders;
 	class SlVehicleCommon;
 	class SlVehicleDisaster;
 }
@@ -112,6 +114,8 @@ private:
 	friend struct OrderExtraDataStructHandler;                            ///< Saving and loading of orders.
 	friend struct VehicleOrderExtraDataStructHandler;                     ///< Saving and loading of orders.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderDescription(); ///< Saving and loading of orders.
+	template <typename T>
+	friend class upstream_sl::SlOrders;
 	friend upstream_sl::SlVehicleCommon;
 	friend upstream_sl::SlVehicleDisaster;
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
@@ -1012,6 +1016,8 @@ private:
 	friend void AfterLoadVehiclesPhase1(bool part_of_load); ///< For instantiating the shared vehicle chain
 	friend NamedSaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
+	template <typename T>
+	friend class upstream_sl::SlOrders;
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
 	std::vector<Order> orders;        ///< Order list.
