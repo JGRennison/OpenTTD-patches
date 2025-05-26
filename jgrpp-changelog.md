@@ -3,7 +3,6 @@
 * * *
 
 ### v0.65.3 (2025-05-26)
-*
 * Fix town labels showing a rating even when the current company did not have a set rating for that town.
 * Fix town/industry cargo scaling settings being reset in the scenario editor.
 * Fix multiplayer game play times being incorrectly advertised as 0 in some circumstances.
