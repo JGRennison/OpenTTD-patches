@@ -2,6 +2,27 @@
 
 * * *
 
+### v0.65.3 (2025-05-26)
+*
+* Fix town labels showing a rating even when the current company did not have a set rating for that town.
+* Fix town/industry cargo scaling settings being reset in the scenario editor.
+* Fix multiplayer game play times being incorrectly advertised as 0 in some circumstances.
+* Routing restrictions:
+  * Fix creating slots from the programmable pre-signals window.
+  * The slot maximum occupancy can now be set when creating a slot.
+* Departure boards:
+  * Fix arrival/departure times when using conditional jumps, in some cases.
+  * Fix arrival/departure times for vehicles currently loading at an earlier station.
+  * Fix late arrival estimates for scheduled dispatch departures.
+  * Fix matching of arrivals to departures and dispatch conditional order handling for non-trivial scheduled dispatch setups.
+  * Allow filtering by shared order group.
+* Template-based train replacement:
+  * Fix incorrect displayed value for maximum TE in the main window.
+* Fix incorrect arrival/departure times in timetable windows when using conditional jumps, in some cases.
+* Suppress tab to fast-forward when using the in-game console and other windows which use the tab key for other functions.
+* Allow use of the join console command in single player.
+* Bump trunk base from commit 1dd4adc50c6aaaef8ff07481b1daa9b06c729c6c to commit adc79aca09a63e76e7bc3cc5838fadc057732edf.
+
 ### v0.65.2 (2025-04-23)
 * Scheduled dispatch:
   * Fix network disconnection when adjusting departure slots by negative offsets in multiplayer.
