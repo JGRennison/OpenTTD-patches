@@ -1106,8 +1106,8 @@ STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COM
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Rename a slot
 STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}Rename a slot group
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Create a slot
-STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME                        :{BLACK}Slot name:
-STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY               :{BLACK}Slot maximum occupancy:
+STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME                        :{BLACK}Name:
+STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY               :{BLACK}Maximum occupancy:
 STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}Create a slot group
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Set maximum occupancy of a slot
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Delete Slot
