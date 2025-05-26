@@ -25,6 +25,7 @@
 #include "script_controller.hpp"
 #include "script_error.hpp"
 #include "../../debug.h"
+#include "../squirrel_helper.hpp"
 
 #include "../../safeguards.h"
 
@@ -377,12 +378,12 @@ ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
 
 /* static */ ScriptObject::RandomizerArray ScriptObject::random_states;
 
-Randomizer &ScriptObject::GetRandomizer(Owner owner)
+/* static */ Randomizer &ScriptObject::GetRandomizer(Owner owner)
 {
 	return ScriptObject::random_states[owner];
 }
 
-void ScriptObject::InitializeRandomizers()
+/* static */ void ScriptObject::InitializeRandomizers()
 {
 	Randomizer random = _random;
 	for (Owner owner = OWNER_BEGIN; owner < OWNER_END; ++owner) {
@@ -398,4 +399,22 @@ void ScriptObject::InitializeRandomizers()
 /* static */ void ScriptObject::RegisterUniqueLogMessage(std::string &&msg)
 {
 	GetStorage()->seen_unique_log_messages.emplace(std::move(msg));
+}
+
+/* static */ SQInteger ScriptObject::Constructor(HSQUIRRELVM)
+{
+	throw Script_FatalError("This class is not instantiable");
+}
+
+/* static */ SQInteger ScriptObject::_cloned(HSQUIRRELVM vm)
+{
+	ScriptObject *original = static_cast<ScriptObject *>(Squirrel::GetRealInstance(vm, 2, "Object"));
+	if (ScriptObject *clone = original->CloneObject(); clone != nullptr) {
+		clone->AddRef();
+		sq_setinstanceup(vm, 1, clone);
+		sq_setreleasehook(vm, 1, SQConvert::DefSQDestructorCallback<ScriptObject>);
+		return 0;
+	}
+
+	throw Script_FatalError("This instance is not cloneable");
 }
