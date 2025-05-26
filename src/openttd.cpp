@@ -270,7 +270,6 @@ static void WriteSavegameInfo(const char *name)
 {
 	extern SaveLoadVersion _sl_version;
 	extern std::string _sl_xv_version_label;
-	extern SaveLoadVersion _sl_xv_upstream_version;
 	uint32_t last_ottd_rev = 0;
 	uint8_t ever_modified = 0;
 	bool removed_newgrfs = false;
@@ -291,8 +290,8 @@ static void WriteSavegameInfo(const char *name)
 	if (!_sl_xv_version_label.empty()) {
 		buffer.format("    Version label: {}\n", _sl_xv_version_label);
 	}
-	if (_sl_xv_upstream_version != SL_MIN_VERSION) {
-		buffer.format("    Upstream version: {}\n", _sl_xv_upstream_version);
+	if (SlXvGetUpstreamVersion() != SL_MIN_VERSION) {
+		buffer.format("    Upstream version: {}\n", SlXvGetUpstreamVersion());
 	}
 	for (size_t i = 0; i < XSLFI_SIZE; i++) {
 		if (_sl_xv_feature_versions[i] > 0) {

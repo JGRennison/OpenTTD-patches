@@ -268,6 +268,12 @@ inline bool SlXvIsFeatureMissing(const std::array<uint16_t, XSLFI_SIZE> &feature
 
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
 
+inline SaveLoadVersion SlXvGetUpstreamVersion()
+{
+	extern SaveLoadVersion _sl_xv_upstream_version;
+	return _sl_xv_upstream_version;
+}
+
 /**
  * sub chunk flags, this is saved as-is
  * (XSCF_EXTRA_DATA_PRESENT and XSCF_CHUNK_ID_LIST_PRESENT must only be set by the save code, and read by the load code)

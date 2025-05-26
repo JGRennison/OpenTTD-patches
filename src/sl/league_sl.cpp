@@ -10,13 +10,12 @@
 
 #include "saveload.h"
 
-extern SaveLoadVersion _sl_xv_upstream_version;
-
 struct GetLeagueChunkLoadInfo
 {
 	static SaveLoadVersion GetLoadVersion()
 	{
-		return _sl_xv_upstream_version != SL_MIN_VERSION ? _sl_xv_upstream_version : SLV_MULTITRACK_LEVEL_CROSSINGS;
+		auto upstream_version = SlXvGetUpstreamVersion();
+		return upstream_version != SL_MIN_VERSION ? upstream_version : SLV_MULTITRACK_LEVEL_CROSSINGS;
 	}
 };
 
