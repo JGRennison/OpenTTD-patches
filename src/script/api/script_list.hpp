@@ -203,6 +203,13 @@ protected:
 
 	virtual bool SaveObject(HSQUIRRELVM vm) override;
 	virtual bool LoadObject(HSQUIRRELVM vm) override;
+	virtual ScriptObject *CloneObject() override;
+
+	/**
+	 * Copy the content of a list.
+	 * @param list The list that will be copied.
+	 */
+	void CopyList(const ScriptList *list);
 
 public:
 	ScriptListMap items;       ///< The items in the list

@@ -525,6 +525,23 @@ bool ScriptList::LoadObject(HSQUIRRELVM vm)
 	return true;
 }
 
+ScriptObject *ScriptList::CloneObject()
+{
+	ScriptList *clone = new ScriptList();
+	clone->CopyList(this);
+	return clone;
+}
+
+void ScriptList::CopyList(const ScriptList *list)
+{
+	Squirrel::DecreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
+	this->Sort(list->sorter_type, list->sort_ascending);
+	this->items = list->items;
+	this->values_inited = list->values_inited;
+	this->values = list->values;
+	Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
+}
+
 ScriptList::ScriptList()
 {
 	/* Default sorter */
