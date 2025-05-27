@@ -314,13 +314,6 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 			/* Return true means that vehicle lateness should be clear from this point onward */
 			return true;
 		}
-
-		/* This is special case for proper calculation of arrival time. */
-		if (arrived_at_timing_point && v->cur_implicit_order_index < v->orders->GetNumOrders() && v->orders->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
-			*previous_departure += order->GetTravelTime() + order->GetWaitTime();
-			*waiting_time = -v->lateness_counter + order->GetWaitTime();
-			return false;
-		}
 	} /* if vehicle is on scheduled dispatch */
 
 	/* Not using schedule for this departure time */
@@ -568,7 +561,12 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 
 		Ticks lateness_post_adjust = 0; // Lateness change to apply after this order
 		Ticks waiting_time = 0;
-		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, candidate.dispatch_records)) {
+		if (status == D_ARRIVED && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->cur_implicit_order_index < v->orders->GetNumOrders() && v->orders->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
+			/* This is a special case for proper calculation of dispatch order arrival time. */
+			start_ticks += order->GetTravelTime() + order->GetWaitTime();
+			waiting_time = -current_lateness + order->GetWaitTime();
+			current_lateness = std::max<Ticks>(0, -waiting_time);
+		} else if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, candidate.dispatch_records)) {
 			if (waiting_time != Departure::INVALID_WAIT_TICKS) {
 				Ticks arrival_tick = start_ticks - waiting_time;
 				Ticks timetable_arrival_tick = arrival_tick - current_lateness;
