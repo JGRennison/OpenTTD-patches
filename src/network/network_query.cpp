@@ -85,8 +85,9 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::SendGameInfo()
 	auto p = std::make_unique<Packet>(this, PACKET_CLIENT_GAME_INFO);
 	p->Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
 	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED);       // reply type
-	p->Send_uint16(0);                                     // flags
-	p->Send_uint16(SERVER_GAME_INFO_EXTENDED_MAX_VERSION); // version
+	p->Send_uint16(1);                                     // flags
+	p->Send_uint16(1);                                     // version (original field, bug workaround)
+	p->Send_uint16(SERVER_GAME_INFO_EXTENDED_MAX_VERSION); // version (enabled by flag bit 0)
 	this->SendPacket(std::move(p));
 
 	return NETWORK_RECV_STATUS_OKAY;

@@ -949,6 +949,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packe
 		PacketGameType reply_type = (PacketGameType)p.Recv_uint8();
 		uint16_t flags = p.Recv_uint16();
 		uint16_t version = p.Recv_uint16();
+		if (HasBit(flags, 0) && p.CanReadFromPacket(2)) {
+			version = p.Recv_uint16();
+		}
 		return this->SendGameInfoExtended(reply_type, flags, version);
 	} else {
 		return this->SendGameInfo();
