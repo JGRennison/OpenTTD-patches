@@ -277,7 +277,7 @@ void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool
  */
 void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &info, uint16_t flags, uint16_t version, bool send_newgrf_names)
 {
-	version = std::max<uint16_t>(version, 2); // Version 2 is the max supported
+	version = std::min<uint16_t>(version, 2); // Version 2 is the max supported
 
 	p.Send_uint8(version); // version num
 
