@@ -618,6 +618,11 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 			break;
 		}
 
+		/* If the order to halt at a depot, then give up. */
+		if (order->IsType(OT_GOTO_DEPOT) && order->GetDepotActionType() & ODATFB_HALT) {
+			break;
+		}
+
 		/* If the scheduled departure date is too far in the future, stop. */
 		if (start_ticks - current_lateness > max_ticks) {
 			break;
@@ -946,6 +951,11 @@ static void AdvanceLiveDepartureOrderToNextCandidate(LiveQueueItem queue_item, O
 						continue;
 					}
 			}
+			break;
+		}
+
+		/* If the order to halt at a depot, then give up. */
+		if (order->IsType(OT_GOTO_DEPOT) && order->GetDepotActionType() & ODATFB_HALT) {
 			break;
 		}
 
