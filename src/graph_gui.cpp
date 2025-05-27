@@ -583,23 +583,6 @@ protected:
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 	}
 
-	void InitializeWindow(WindowNumber number)
-	{
-		/* Initialise the dataset */
-		this->UpdateStatistics(true);
-
-		this->CreateNestedTree();
-
-		if (EconTime::UsingWallclockUnits()) {
-			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-			if (wid != nullptr) {
-				wid->SetString(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL);
-			}
-		}
-
-		this->FinishInitNested(number);
-	}
-
 	void UpdateCargoExcludingGraphs() {
 		this->SetDirty();
 		InvalidateWindowData(WC_DELIVERED_CARGO, 0);
@@ -689,11 +672,6 @@ public:
 		}
 	}
 
-	virtual OverflowSafeInt64 GetGraphData(const Company *, int)
-	{
-		return INVALID_DATAPOINT;
-	}
-
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		/* Clicked on legend? */
@@ -730,11 +708,35 @@ public:
 		this->UpdateStatistics(true);
 	}
 
+	virtual void UpdateStatistics(bool initialize) = 0;
+};
+
+class CompanyGraphWindow : public BaseGraphWindow {
+public:
+	CompanyGraphWindow(WindowDesc &desc, StringID format_str_y_axis) : BaseGraphWindow(desc, format_str_y_axis) {}
+
+	void InitializeWindow(WindowNumber number)
+	{
+		/* Initialise the dataset */
+		this->UpdateStatistics(true);
+
+		this->CreateNestedTree();
+
+		if (EconTime::UsingWallclockUnits()) {
+			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
+			if (wid != nullptr) {
+				wid->SetString(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL);
+			}
+		}
+
+		this->FinishInitNested(number);
+	}
+
 	/**
 	 * Update the statistics.
 	 * @param initialize Initialize the data structure.
 	 */
-	virtual void UpdateStatistics(bool initialize)
+	void UpdateStatistics(bool initialize) override
 	{
 		CompanyMask excluded_companies = _legend_excluded_companies;
 
@@ -787,6 +789,8 @@ public:
 			}
 		}
 	}
+
+	virtual OverflowSafeInt64 GetGraphData(const Company *, int) = 0;
 };
 
 
@@ -794,9 +798,9 @@ public:
 /* OPERATING PROFIT */
 /********************/
 
-struct OperatingProfitGraphWindow : BaseGraphWindow {
+struct OperatingProfitGraphWindow : CompanyGraphWindow {
 	OperatingProfitGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -851,9 +855,9 @@ void ShowOperatingProfitGraph()
 /* INCOME GRAPH */
 /****************/
 
-struct IncomeGraphWindow : BaseGraphWindow {
+struct IncomeGraphWindow : CompanyGraphWindow {
 	IncomeGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -906,14 +910,14 @@ void ShowIncomeGraph()
 /* DELIVERED CARGO */
 /*******************/
 
-struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
+struct ExcludingCargoBaseGraphWindow : CompanyGraphWindow {
 	uint line_height;   ///< Pixel height of each cargo type row.
 	uint icon_size;     ///< Size of the cargo color icon.
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
 	ExcludingCargoBaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis):
-			BaseGraphWindow(desc, format_str_y_axis)
+			CompanyGraphWindow(desc, format_str_y_axis)
 	{}
 
 	void OnInit() override
@@ -1038,13 +1042,6 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 		this->vscroll->SetCount(_sorted_standard_cargo_specs.size());
 		this->LowerWidget(WID_DCG_BY_COMPANY);
 		this->UpdateStatistics(true);
-
-		if (EconTime::UsingWallclockUnits()) {
-			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-			if (wid != nullptr) {
-				wid->SetStringTip(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, STR_NULL);
-			}
-		}
 
 		this->FinishInitNested(window_number);
 	}
@@ -1230,9 +1227,9 @@ void ShowDeliveredCargoGraph()
 /* PERFORMANCE HISTORY */
 /***********************/
 
-struct PerformanceHistoryGraphWindow : BaseGraphWindow {
+struct PerformanceHistoryGraphWindow : CompanyGraphWindow {
 	PerformanceHistoryGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_COMMA)
+			CompanyGraphWindow(desc, STR_JUST_COMMA)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -1292,9 +1289,9 @@ void ShowPerformanceHistoryGraph()
 /* COMPANY VALUE */
 /*****************/
 
-struct CompanyValueGraphWindow : BaseGraphWindow {
+struct CompanyValueGraphWindow : CompanyGraphWindow {
 	CompanyValueGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -1577,6 +1574,8 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->SetXAxis();
 		this->OnHundredthTick();
 	}
+
+	void UpdateStatistics(bool) override {}
 
 	void OnHundredthTick() override
 	{
@@ -2416,6 +2415,8 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	{
 		/* Override default OnGameTick */
 	}
+
+	void UpdateStatistics(bool) override {}
 
 	/**
 	* Some data on this window has become invalid.
