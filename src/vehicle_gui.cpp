@@ -2261,7 +2261,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				break;
 			}
 
-			case GB_SHARED_ORDERS:
+			case GB_SHARED_ORDERS: {
 				assert(vehgroup.NumVehicles() > 0);
 
 				for (int i = 0; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
@@ -2269,20 +2269,43 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					DrawVehicleImage(vehgroup.vehicles_begin[i], {image_left + WidgetDimensions::scaled.hsep_wide * i, ir.top, image_right, ir.bottom}, selected_vehicle, EIT_IN_LIST, 0);
 				}
 
-				if (vehgroup.vehicles_begin[0]->group_id != DEFAULT_GROUP) {
-					/* If all vehicles are in the same group, print group name */
-					GroupID gid = vehgroup.vehicles_begin[0]->group_id;
-					bool show_group = true;
-					for (int i = 1; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
-						if (vehgroup.vehicles_begin[i]->group_id != gid) {
-							show_group = false;
-							break;
+				/* If all vehicles are in the same group, print group name */
+				GroupID gid = vehgroup.vehicles_begin[0]->group_id;
+				bool show_group = true;
+				for (int i = 1; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
+					if (vehgroup.vehicles_begin[i]->group_id != gid || vehgroup.vehicles_begin[i]->group_id == DEFAULT_GROUP) {
+						show_group = false;
+						break;
+					}
+				}
+
+				if (_settings_client.gui.show_cargo_in_vehicle_lists) {
+					CargoTypes vehicle_cargoes = 0;
+
+					for (int i = 0; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
+						const Vehicle *v = vehgroup.vehicles_begin[i];
+						for (auto u = v; u != nullptr; u = u->Next()) {
+							if (u->cargo_cap == 0) continue;
+							SetBit(vehicle_cargoes, u->cargo_type);
 						}
 					}
+
 					if (show_group) {
-						SetDParam(0, gid | GROUP_NAME_HIERARCHY);
-						DrawString(tr.left, tr.right, ir.top, STR_GROUP_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
+						/* The vehicle is member of a group, so print group name and the cargoes */
+						SetDParam(0, STR_GROUP_NAME);
+						SetDParam(1, gid);
+						SetDParam(2, STR_VEHICLE_LIST_CARGO);
+						SetDParam(3, vehicle_cargoes);
+						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_NAME_AND_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
+					} else {
+						/* The vehicle is not a member of a group, so just print the cargoes */
+						SetDParam(0, vehicle_cargoes);
+						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
 					}
+				} else if (show_group) {
+					/* The vehicle is member of a group, so print group name */
+					SetDParam(0, gid | GROUP_NAME_HIERARCHY);
+					DrawString(tr.left, tr.right, ir.top, STR_GROUP_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 				}
 
 				if (show_orderlist) DrawSmallOrderList((vehgroup.vehicles_begin[0])->Orders(), olr.left, olr.right, ir.top + GetCharacterHeight(FS_SMALL), this->order_arrow_width);
@@ -2290,6 +2313,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				SetDParam(0, vehgroup.NumVehicles());
 				DrawString(ir.left, ir.right, ir.top + WidgetDimensions::scaled.framerect.top, STR_JUST_COMMA, TC_BLACK);
 				break;
+			}
 
 			default:
 				NOT_REACHED();
