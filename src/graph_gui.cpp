@@ -711,9 +711,9 @@ public:
 	virtual void UpdateStatistics(bool initialize) = 0;
 };
 
-class CompanyGraphWindow : public BaseGraphWindow {
+class BaseCompanyGraphWindow : public BaseGraphWindow {
 public:
-	CompanyGraphWindow(WindowDesc &desc, StringID format_str_y_axis) : BaseGraphWindow(desc, format_str_y_axis) {}
+	BaseCompanyGraphWindow(WindowDesc &desc, StringID format_str_y_axis) : BaseGraphWindow(desc, format_str_y_axis) {}
 
 	void InitializeWindow(WindowNumber number)
 	{
@@ -798,9 +798,9 @@ public:
 /* OPERATING PROFIT */
 /********************/
 
-struct OperatingProfitGraphWindow : CompanyGraphWindow {
+struct OperatingProfitGraphWindow : BaseCompanyGraphWindow {
 	OperatingProfitGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			BaseCompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -851,9 +851,9 @@ void ShowOperatingProfitGraph()
 /* INCOME GRAPH */
 /****************/
 
-struct IncomeGraphWindow : CompanyGraphWindow {
+struct IncomeGraphWindow : BaseCompanyGraphWindow {
 	IncomeGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			BaseCompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -902,14 +902,14 @@ void ShowIncomeGraph()
 /* DELIVERED CARGO */
 /*******************/
 
-struct ExcludingCargoBaseGraphWindow : CompanyGraphWindow {
+struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 	uint line_height;   ///< Pixel height of each cargo type row.
 	uint icon_size;     ///< Size of the cargo color icon.
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
 	ExcludingCargoBaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis):
-			CompanyGraphWindow(desc, format_str_y_axis)
+			BaseCompanyGraphWindow(desc, format_str_y_axis)
 	{}
 
 	void OnInit() override
@@ -1219,9 +1219,9 @@ void ShowDeliveredCargoGraph()
 /* PERFORMANCE HISTORY */
 /***********************/
 
-struct PerformanceHistoryGraphWindow : CompanyGraphWindow {
+struct PerformanceHistoryGraphWindow : BaseCompanyGraphWindow {
 	PerformanceHistoryGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			CompanyGraphWindow(desc, STR_JUST_COMMA)
+			BaseCompanyGraphWindow(desc, STR_JUST_COMMA)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -1277,9 +1277,9 @@ void ShowPerformanceHistoryGraph()
 /* COMPANY VALUE */
 /*****************/
 
-struct CompanyValueGraphWindow : CompanyGraphWindow {
+struct CompanyValueGraphWindow : BaseCompanyGraphWindow {
 	CompanyValueGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			CompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+			BaseCompanyGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
