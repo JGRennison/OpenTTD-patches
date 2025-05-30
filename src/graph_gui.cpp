@@ -38,8 +38,6 @@
 
 /* Bitmasks of company and cargo indices that shouldn't be drawn. */
 static CompanyMask _legend_excluded_companies;
-static CargoTypes _legend_excluded_cargo_payment_rates;
-static CargoTypes _legend_excluded_cargo_production_history;
 
 uint8_t _cargo_payment_x_mode;
 
@@ -626,12 +624,6 @@ protected:
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 	}
 
-	void UpdateCargoExcludingGraphs() {
-		this->SetDirty();
-		InvalidateWindowData(WC_DELIVERED_CARGO, 0);
-		InvalidateWindowData(WC_PAYMENT_RATES, 0);
-	}
-
 	void UpdateMatrixSize(WidgetID widget, Dimension &size, Dimension &resize, auto labels)
 	{
 		size = {};
@@ -993,9 +985,15 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
+	CargoTypes excluded_cargo_types{};
+
+	static inline CargoTypes static_excluded_cargo_types{};
+
 	ExcludingCargoBaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis):
 			BaseCompanyGraphWindow(desc, format_str_y_axis)
-	{}
+	{
+		this->excluded_cargo_types = ExcludingCargoBaseGraphWindow::static_excluded_cargo_types;
+	}
 
 	void OnInit() override
 	{
@@ -1041,7 +1039,7 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
-			bool lowered = !HasBit(_legend_excluded_cargo_production_history, cs->Index());
+			bool lowered = !HasBit(this->excluded_cargo_types, cs->Index());
 
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
@@ -1069,16 +1067,20 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 
 			case WID_ECBG_ENABLE_CARGOES:
 				/* Remove all cargoes from the excluded lists. */
-				_legend_excluded_cargo_production_history = 0;
-				this->UpdateCargoExcludingGraphs();
+				this->excluded_cargo_types = {};
+				ExcludingCargoBaseGraphWindow::static_excluded_cargo_types = {};
+				this->OnInvalidateData();
+				this->SetDirty();
 				break;
 
 			case WID_ECBG_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					SetBit(_legend_excluded_cargo_production_history, cs->Index());
+					SetBit(this->excluded_cargo_types, cs->Index());
 				}
-				this->UpdateCargoExcludingGraphs();
+				ExcludingCargoBaseGraphWindow::static_excluded_cargo_types = this->excluded_cargo_types;
+				this->OnInvalidateData();
+				this->SetDirty();
 				break;
 			}
 
@@ -1089,10 +1091,12 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					if (row-- > 0) continue;
 
-					ToggleBit(_legend_excluded_cargo_production_history, cs->Index());
-					this->UpdateCargoExcludingGraphs();
+					ToggleBit(this->excluded_cargo_types, cs->Index());
 					break;
 				}
+				ExcludingCargoBaseGraphWindow::static_excluded_cargo_types = this->excluded_cargo_types;
+				this->OnInvalidateData();
+				this->SetDirty();
 				break;
 			}
 		}
@@ -1125,12 +1129,12 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 
 	OverflowSafeInt64 GetGraphData(const Company *c, int j) override
 	{
-		if (_legend_excluded_cargo_production_history == 0) {
+		if (this->excluded_cargo_types == 0) {
 			return c->old_economy[j].delivered_cargo.GetSum<OverflowSafeInt64>();
 		}
 		OverflowSafeInt64 total_delivered = 0;
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(_legend_excluded_cargo_production_history, cs->Index())){
+			if (!HasBit(this->excluded_cargo_types, cs->Index())){
 				total_delivered += c->old_economy[j].delivered_cargo[cs->Index()];
 			}
 		}
@@ -1209,7 +1213,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			mo += 12;
 		}
 
-		if (!initialize && this->excluded_data == excluded_companies.base() && this->num_on_x_axis == nums &&
+		if (!initialize && this->excluded_data == this->excluded_cargo_types && this->num_on_x_axis == nums &&
 				this->year == yr && this->month == mo) {
 			/* There's no reason to get new stats */
 			return;
@@ -1225,7 +1229,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			DataSet &dataset = this->data.emplace_back();
 			dataset.colour = cs->legend_colour;
 			dataset.exclude_bit = cs->Index();
-			if (HasBit(_legend_excluded_cargo_production_history, cs->Index())) {
+			if (HasBit(this->excluded_cargo_types, cs->Index())) {
 				SetBit(this->excluded_data, cs->Index());
 				continue;
 			}
@@ -1409,34 +1413,173 @@ void ShowCompanyValueGraph()
 	AllocateWindowDescFront<CompanyValueGraphWindow>(_company_value_graph_desc, 0);
 }
 
+struct BaseCargoGraphWindow : BaseGraphWindow {
+	Scrollbar *vscroll = nullptr; ///< Cargo list scrollbar.
+	uint line_height = 0; ///< Pixel height of each cargo type row.
+	uint legend_width = 0; ///< Width of legend 'blob'.
+
+	CargoTypes cargo_types{}; ///< Cargo types that can be selected.
+
+	BaseCargoGraphWindow(WindowDesc &desc, StringID format_str_y_axis) : BaseGraphWindow(desc, format_str_y_axis) {}
+
+	void InitializeWindow(WindowNumber number, StringID footer)
+	{
+		this->CreateNestedTree();
+
+		this->excluded_range = this->masked_range;
+		this->cargo_types = this->GetCargoTypes(number);
+
+		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
+		this->vscroll->SetCount(CountBits(this->cargo_types));
+
+		if (footer != STR_NULL) {
+			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
+			wid->SetString(footer);
+		}
+
+		this->FinishInitNested(number);
+
+		/* Initialise the dataset */
+		this->InvalidateData();
+	}
+
+	virtual CargoTypes GetCargoTypes(WindowNumber number) const = 0;
+	virtual CargoTypes &GetExcludedCargoTypes() const = 0;
+
+	void OnInit() override
+	{
+		/* Width of the legend blob. */
+		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
+	}
+
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
+	{
+		if (widget != WID_GRAPH_MATRIX) {
+			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
+			return;
+		}
+
+		size.height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
+
+		for (CargoType cargo_type : SetCargoBitIterator(this->cargo_types)) {
+			const CargoSpec *cs = CargoSpec::Get(cargo_type);
+
+			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
+			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
+			d.width += WidgetDimensions::scaled.framerect.Horizontal();
+			d.height += WidgetDimensions::scaled.framerect.Vertical();
+			size = maxdim(d, size);
+		}
+
+		this->line_height = size.height;
+		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
+		resize.width = 0;
+		fill.height = resize.height = this->line_height;
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		if (widget != WID_GRAPH_MATRIX) {
+			BaseGraphWindow::DrawWidget(r, widget);
+			return;
+		}
+
+		bool rtl = _current_text_dir == TD_RTL;
+
+		int pos = this->vscroll->GetPosition();
+		int max = pos + this->vscroll->GetCapacity();
+
+		Rect line = r.WithHeight(this->line_height);
+
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			if (!HasBit(this->cargo_types, cs->Index())) continue;
+
+			if (pos-- > 0) continue;
+			if (--max < 0) break;
+
+			bool lowered = !HasBit(this->excluded_data, cs->Index());
+
+			/* Redraw frame if lowered */
+			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
+
+			const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
+
+			/* Cargo-colour box with outline */
+			const Rect cargo = text.WithWidth(this->legend_width, rtl);
+			GfxFillRect(cargo, PC_BLACK);
+			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
+
+			/* Cargo name */
+			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
+
+			line = line.Translate(0, this->line_height);
+		}
+	}
+
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	{
+		switch (widget) {
+			case WID_GRAPH_ENABLE_CARGOES:
+				/* Remove all cargoes from the excluded lists. */
+				this->GetExcludedCargoTypes() = {};
+				this->excluded_data = this->GetExcludedCargoTypes();
+				this->SetDirty();
+				break;
+
+			case WID_GRAPH_DISABLE_CARGOES: {
+				/* Add all cargoes to the excluded lists. */
+				this->GetExcludedCargoTypes() = this->cargo_types;
+				this->excluded_data = this->GetExcludedCargoTypes();
+				this->SetDirty();
+				break;
+			}
+
+			case WID_GRAPH_MATRIX: {
+				int row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_GRAPH_MATRIX);
+				if (row >= this->vscroll->GetCount()) return;
+
+				for (const CargoSpec *cs : _sorted_cargo_specs) {
+					if (!HasBit(this->cargo_types, cs->Index())) continue;
+					if (row-- > 0) continue;
+
+					ToggleBit(this->GetExcludedCargoTypes(), cs->Index());
+					this->excluded_data = this->GetExcludedCargoTypes();
+					this->SetDirty();
+					break;
+				}
+				break;
+			}
+
+			default:
+				this->BaseGraphWindow::OnClick(pt, widget, click_count);
+				break;
+		}
+	}
+
+	void OnResize() override
+	{
+		this->vscroll->SetCapacityFromWidget(this, WID_GRAPH_MATRIX);
+	}
+};
+
 /*****************/
 /* PAYMENT RATES */
 /*****************/
 
-struct PaymentRatesGraphWindow : BaseGraphWindow {
-	uint line_height = 0; ///< Pixel height of each cargo type row.
-	Scrollbar *vscroll = nullptr; ///< Cargo list scrollbar.
-	uint legend_width = 0; ///< Width of legend 'blob'.
+struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
+	static inline CargoTypes excluded_cargo_types{};
 
-	PaymentRatesGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
+	PaymentRatesGraphWindow(WindowDesc &desc, WindowNumber window_number) : BaseCargoGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_PAYMENT_RATE_STEPS;
 		this->num_vert_lines = GRAPH_PAYMENT_RATE_STEPS;
 		this->draw_dates = false;
 		this->SetXAxis();
 
-		this->CreateNestedTree();
-		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
-		this->vscroll->SetCount(_sorted_standard_cargo_specs.size());
+		this->InitializeWindow(window_number, STR_NULL);
 
 		this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
 		this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
-
-		/* Initialise the dataset */
-		this->OnHundredthTick();
-
-		this->FinishInitNested(window_number);
 	}
 
 	void SetXAxis()
@@ -1508,128 +1651,14 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		return GetString(STR_JUST_DECIMAL, GetParamMaxValue(val.first, 0, FS_SMALL), val.second);
 	}
 
-	void OnInit() override
+	CargoTypes GetCargoTypes(WindowNumber) const override
 	{
-		/* Width of the legend blob. */
-		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
+		return _standard_cargo_mask;
 	}
 
-	void UpdateExcludedData()
+	CargoTypes &GetExcludedCargoTypes() const override
 	{
-		this->excluded_data = _legend_excluded_cargo_payment_rates;
-	}
-
-	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
-	{
-		if (widget != WID_GRAPH_MATRIX) {
-			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
-			return;
-		}
-
-		size.height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
-
-		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
-			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
-			d.width += WidgetDimensions::scaled.framerect.Horizontal();
-			d.height += WidgetDimensions::scaled.framerect.Vertical();
-			size = maxdim(d, size);
-		}
-
-		this->line_height = size.height;
-		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
-		resize.width = 0;
-		resize.height = this->line_height;
-	}
-
-	void DrawWidget(const Rect &r, WidgetID widget) const override
-	{
-		if (widget != WID_GRAPH_MATRIX) {
-			BaseGraphWindow::DrawWidget(r, widget);
-			return;
-		}
-
-		bool rtl = _current_text_dir == TD_RTL;
-
-		auto [first, last] = this->vscroll->GetVisibleRangeIterators(_sorted_standard_cargo_specs);
-
-		Rect line = r.WithHeight(this->line_height);
-		for (auto it = first; it != last; ++it) {
-			const CargoSpec *cs = *it;
-
-			bool lowered = !HasBit(_legend_excluded_cargo_payment_rates, cs->Index());
-
-			/* Redraw frame if lowered */
-			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
-
-			const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
-
-			/* Cargo-colour box with outline */
-			const Rect cargo = text.WithWidth(this->legend_width, rtl);
-			GfxFillRect(cargo, PC_BLACK);
-			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
-
-			/* Cargo name */
-			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
-
-			line = line.Translate(0, this->line_height);
-		}
-	}
-
-	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
-	{
-		switch (widget) {
-			case WID_GRAPH_ENABLE_CARGOES:
-				/* Remove all cargoes from the excluded lists. */
-				_legend_excluded_cargo_payment_rates = 0;
-				this->excluded_data = 0;
-				this->UpdateCargoExcludingGraphs();
-				break;
-
-			case WID_GRAPH_DISABLE_CARGOES: {
-				/* Add all cargoes to the excluded lists. */
-				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					SetBit(_legend_excluded_cargo_payment_rates, cs->Index());
-					SetBit(this->excluded_data, cs->Index());
-				}
-				this->UpdateCargoExcludingGraphs();
-				break;
-			}
-
-			case WID_GRAPH_MATRIX: {
-				auto it = this->vscroll->GetScrolledItemFromWidget(_sorted_standard_cargo_specs, pt.y, this, WID_GRAPH_MATRIX);
-				if (it != _sorted_standard_cargo_specs.end()) {
-					ToggleBit(_legend_excluded_cargo_payment_rates, (*it)->Index());
-					this->UpdateExcludedData();
-					this->UpdateCargoExcludingGraphs();
-				}
-				break;
-			}
-
-			case WID_CPR_DAYS:
-			case WID_CPR_SPEED:
-				_cargo_payment_x_mode = widget - WID_CPR_DAYS;
-				this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
-				this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
-				this->SetXAxis();
-				this->OnHundredthTick();
-				this->SetDirty();
-				break;
-
-			default:
-				this->BaseGraphWindow::OnClick(pt, widget, click_count);
-				break;
-		}
-	}
-
-	void OnResize() override
-	{
-		this->vscroll->SetCapacityFromWidget(this, WID_GRAPH_MATRIX);
-	}
-
-	void OnGameTick() override
-	{
-		/* Override default OnGameTick */
+		return PaymentRatesGraphWindow::excluded_cargo_types;
 	}
 
 	/**
@@ -1648,7 +1677,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 	void OnHundredthTick() override
 	{
-		this->UpdateExcludedData();
+		this->excluded_data = this->GetExcludedCargoTypes();
 
 		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16, VEH_TRAIN) / (1.6f * static_cast<float>(1 << 16));
 
@@ -1693,6 +1722,25 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 			default:
 				return this->Window::GetWidgetString(widget, stringid);
+		}
+	}
+
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	{
+		switch (widget) {
+			case WID_CPR_DAYS:
+			case WID_CPR_SPEED:
+				_cargo_payment_x_mode = widget - WID_CPR_DAYS;
+				this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
+				this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
+				this->SetXAxis();
+				this->OnHundredthTick();
+				this->SetDirty();
+				break;
+
+			default:
+				this->BaseCargoGraphWindow::OnClick(pt, widget, click_count);
+				break;
 		}
 	}
 };
@@ -1975,12 +2023,7 @@ CompanyID PerformanceRatingDetailWindow::company = CompanyID::Invalid();
 /* INDUSTRY PRODUCTION HISTORY */
 /*******************************/
 
-struct IndustryProductionGraphWindow : BaseGraphWindow {
-	uint line_height = 0; ///< Pixel height of each cargo type row.
-	Scrollbar *vscroll = nullptr; ///< Cargo list scrollbar.
-	uint legend_width = 0;  ///< Width of legend 'blob'.
-	CargoTypes cargo_types{};
-
+struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 	static inline constexpr StringID RANGE_LABELS[] = {
 		STR_GRAPH_INDUSTRY_RANGE_PRODUCED,
 		STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED,
@@ -1988,8 +2031,10 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		STR_GRAPH_INDUSTRY_RANGE_WAITING,
 	};
 
+	static inline CargoTypes excluded_cargo_types{};
+
 	IndustryProductionGraphWindow(WindowDesc &desc, WindowNumber window_number) :
-			BaseGraphWindow(desc, STR_JUST_COMMA)
+			BaseCargoGraphWindow(desc, STR_JUST_COMMA)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
@@ -1998,142 +2043,36 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		this->draw_dates = !EconTime::UsingWallclockUnits();
 		this->ranges = RANGE_LABELS;
 
-		this->CreateNestedTree();
-		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
-
 		const Industry *i = Industry::Get(window_number);
 		if (!i->IsCargoProduced()) this->masked_range = (1U << 0) | (1U << 1);
 		if (!i->IsCargoAccepted()) this->masked_range = (1U << 2) | (1U << 3);
 
-		for (const auto &a : i->Accepted()) {
-			if (IsValidCargoType(a.cargo)) SetBit(this->cargo_types, a.cargo);
-		}
-		for (const auto &p : i->Produced()) {
-			if (IsValidCargoType(p.cargo)) SetBit(this->cargo_types, p.cargo);
-		}
-		this->vscroll->SetCount(CountBits(this->cargo_types));
-
-		auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-		wid->SetString(EconTime::UsingWallclockUnits() ? (ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_24_MINUTES_TIME_LABEL) : STR_EMPTY);
-
-		this->FinishInitNested(window_number);
-
-		/* Initialise the dataset */
-		this->UpdateStatistics(true);
+		this->InitializeWindow(window_number, EconTime::UsingWallclockUnits() ? (ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_24_MINUTES_TIME_LABEL) : STR_EMPTY);
 	}
 
 	void OnInit() override
 	{
-		/* Width of the legend blob. */
-		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
+		this->BaseCargoGraphWindow::OnInit();
+
 		this->scales = EconTime::UsingWallclockUnits() ? MONTHLY_SCALE_WALLCLOCK : MONTHLY_SCALE_CALENDAR;
 	}
 
-	void UpdateExcludedData()
+	CargoTypes GetCargoTypes(WindowNumber window_number) const override
 	{
-		this->excluded_data = _legend_excluded_cargo_production_history;
+		CargoTypes cargo_types{};
+		const Industry *i = Industry::Get(window_number);
+		for (const auto &a : i->Accepted()) {
+			if (IsValidCargoType(a.cargo)) SetBit(cargo_types, a.cargo);
+		}
+		for (const auto &p : i->Produced()) {
+			if (IsValidCargoType(p.cargo)) SetBit(cargo_types, p.cargo);
+		}
+		return cargo_types;
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
+	CargoTypes &GetExcludedCargoTypes() const override
 	{
-		if (widget != WID_GRAPH_MATRIX) {
-			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
-			return;
-		}
-
-		for (CargoType cargo : SetCargoBitIterator(this->cargo_types)) {
-			const CargoSpec *cs = CargoSpec::Get(cargo);
-			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
-			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
-			d.width += WidgetDimensions::scaled.framerect.Horizontal();
-			d.height += WidgetDimensions::scaled.framerect.Vertical();
-			size = maxdim(d, size);
-		}
-
-		this->line_height = size.height;
-		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
-		resize.width = 0;
-		resize.height = this->line_height;
-	}
-
-	void DrawWidget(const Rect &r, WidgetID widget) const override
-	{
-		if (widget != WID_GRAPH_MATRIX) {
-			BaseGraphWindow::DrawWidget(r, widget);
-			return;
-		}
-
-		bool rtl = _current_text_dir == TD_RTL;
-
-		int pos = this->vscroll->GetPosition();
-		int max = pos + this->vscroll->GetCapacity();
-
-		Rect line = r.WithHeight(this->line_height);
-
-		for (CargoType cargo_type : SetCargoBitIterator(this->cargo_types)) {
-			if (pos-- > 0) continue;
-			if (--max < 0) break;
-
-			const CargoSpec *cs = CargoSpec::Get(cargo_type);
-
-			bool lowered = !HasBit(_legend_excluded_cargo_production_history, cargo_type);
-
-			/* Redraw frame if lowered */
-			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
-
-			const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
-
-			/* Cargo-colour box with outline */
-			const Rect cargo = text.WithWidth(this->legend_width, rtl);
-			GfxFillRect(cargo, PC_BLACK);
-			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
-
-			/* Cargo name */
-			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
-
-			line = line.Translate(0, this->line_height);
-		}
-	}
-
-	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
-	{
-		switch (widget) {
-			case WID_GRAPH_ENABLE_CARGOES:
-				/* Remove all cargoes from the excluded lists. */
-				_legend_excluded_cargo_production_history = 0;
-				this->excluded_data = 0;
-				this->SetDirty();
-				break;
-
-			case WID_GRAPH_DISABLE_CARGOES: {
-				/* Add all cargoes to the excluded lists. */
-				for (CargoType cargo : SetCargoBitIterator(this->cargo_types)) {
-					SetBit(_legend_excluded_cargo_production_history, cargo);
-					SetBit(this->excluded_data, cargo);
-				}
-				this->SetDirty();
-				break;
-			}
-
-			case WID_GRAPH_MATRIX: {
-				int row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_GRAPH_MATRIX);
-				if (row >= this->vscroll->GetCount()) return;
-
-				for (CargoType cargo : SetCargoBitIterator(this->cargo_types)) {
-					if (row-- > 0) continue;
-
-					ToggleBit(_legend_excluded_cargo_production_history, cargo);
-					this->UpdateExcludedData();
-					this->SetDirty();
-					break;
-				}
-				break;
-			}
-
-			default:
-				this->BaseGraphWindow::OnClick(pt, widget, click_count);
-				break;
-		}
+		return IndustryProductionGraphWindow::excluded_cargo_types;
 	}
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
@@ -2143,16 +2082,8 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		return this->Window::GetWidgetString(widget, stringid);
 	}
 
-	void OnResize() override
-	{
-		this->vscroll->SetCapacityFromWidget(this, WID_GRAPH_MATRIX);
-	}
-
 	void UpdateStatistics(bool initialize) override
 	{
-		CargoTypes excluded_cargo = this->excluded_data;
-		this->UpdateExcludedData();
-
 		int mo = (EconTime::CurMonth() / this->month_increment - this->num_vert_lines) * this->month_increment;
 		auto yr = EconTime::CurYear();
 		while (mo < 0) {
@@ -2160,11 +2091,12 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 			mo += 12;
 		}
 
-		if (!initialize && this->excluded_data == excluded_cargo && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
+		if (!initialize && this->excluded_data == this->GetExcludedCargoTypes() && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
 			/* There's no reason to get new stats */
 			return;
 		}
 
+		this->excluded_data = this->GetExcludedCargoTypes();
 		this->year = yr;
 		this->month = mo;
 
@@ -2219,8 +2151,6 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 				FillFromHistory<GRAPH_NUM_MONTHS>(*a.history, i->valid_history, *this->scales[this->selected_scale].history_range, accepted_filler, waiting_filler);
 			}
 		}
-
-		this->vscroll->SetCount(std::size(this->data));
 
 		this->SetDirty();
 	}
@@ -2338,8 +2268,8 @@ void ShowPerformanceRatingDetail()
 void InitializeGraphGui()
 {
 	_legend_excluded_companies = CompanyMask{};
-	_legend_excluded_cargo_payment_rates = 0;
-	_legend_excluded_cargo_production_history = 0;
+	PaymentRatesGraphWindow::excluded_cargo_types = {};
+	IndustryProductionGraphWindow::excluded_cargo_types = {};
 }
 
 /*************************/
