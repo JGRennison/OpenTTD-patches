@@ -1017,7 +1017,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				if (pos <= 0) break;
 
 				int target = _ctrl_pressed ? 0 : pos - 1;
-				std::swap(this->actives[target], this->actives[pos]);
+				if (_ctrl_pressed) {
+					std::rotate(this->actives.begin(), this->actives.begin() + pos, this->actives.begin() + pos + 1);
+				} else {
+					std::swap(this->actives[target], this->actives[pos]);
+				}
 
 				this->vscroll->ScrollTowards(target);
 				this->preset = -1;
@@ -1032,7 +1036,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				if (pos == -1 || static_cast<size_t>(pos) >= this->actives.size() - 1) break;
 
 				int target = _ctrl_pressed ? static_cast<int>(this->actives.size() - 1) : pos + 1;
-				std::swap(this->actives[pos], this->actives[target]);
+				if (_ctrl_pressed) {
+					std::rotate(this->actives.begin() + pos, this->actives.begin() + pos + 1, this->actives.end());
+				} else {
+					std::swap(this->actives[pos], this->actives[target]);
+				}
 
 				this->vscroll->ScrollTowards(target);
 				this->preset = -1;
