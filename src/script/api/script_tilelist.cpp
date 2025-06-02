@@ -20,8 +20,12 @@ void ScriptTileList::AddRectangle(TileIndex t1, TileIndex t2)
 	if (!::IsValidTile(t1)) return;
 	if (!::IsValidTile(t2)) return;
 
+	const size_t old_size = this->GetSize();
+
 	TileArea ta(t1, t2);
 	for (TileIndex t : ta) this->AddItem(t.base());
+
+	ScriptController::DecreaseOps(3 * static_cast<int>(this->GetSize() - old_size));
 }
 
 void ScriptTileList::AddTile(TileIndex tile)
@@ -36,8 +40,12 @@ void ScriptTileList::RemoveRectangle(TileIndex t1, TileIndex t2)
 	if (!::IsValidTile(t1)) return;
 	if (!::IsValidTile(t2)) return;
 
+	const size_t old_size = this->GetSize();
+
 	TileArea ta(t1, t2);
 	for (TileIndex t : ta) this->RemoveItem(t.base());
+
+	ScriptController::DecreaseOps(3 * static_cast<int>(old_size - this->GetSize()));
 }
 
 void ScriptTileList::RemoveTile(TileIndex tile)

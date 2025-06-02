@@ -196,6 +196,11 @@ protected:
 		ScriptList::FillListT<Thelper>(helper, vm, list, [](const IterType *) { return true; });
 	}
 
+	inline size_t GetSize() const
+	{
+		return this->items.size();
+	}
+
 public:
 	ScriptListMap items;       ///< The items in the list
 	ScriptListValueSet values; ///< The items in the list, sorted by value
