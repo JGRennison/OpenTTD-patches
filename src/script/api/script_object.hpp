@@ -14,6 +14,7 @@
 #include "../../company_type.h"
 #include "../../road_type.h"
 #include "../../rail_type.h"
+#include "../../core/backup_type.hpp"
 #include "../../core/random_func.hpp"
 #include "../../core/typed_container.hpp"
 
@@ -83,6 +84,11 @@ protected:
 		ScriptAllocatorScope alc_scope; ///< Keep the correct allocator for the script instance activated
 
 		static ScriptInstance *active;  ///< The global current active instance.
+	};
+
+	class DisableDoCommandScope : private AutoRestoreBackup<bool> {
+	public:
+		DisableDoCommandScope();
 	};
 
 	/**
@@ -277,21 +283,6 @@ protected:
 	 * Get the latest result of a DoCommand.
 	 */
 	static bool GetLastCommandRes();
-
-	/**
-	 * Store a allow_do_command per company.
-	 * @param allow The new allow.
-	 */
-	static void SetAllowDoCommand(bool allow);
-
-	/**
-	 * Get the internal value of allow_do_command. This can differ
-	 * from CanSuspend() if the reason we are not allowed
-	 * to execute a DoCommand is in squirrel and not the API.
-	 * In that case use this function to restore the previous value.
-	 * @return True iff DoCommands are allowed in the current scope.
-	 */
-	static bool GetAllowDoCommand();
 
 	/**
 	 * Set the current company to execute commands for or request

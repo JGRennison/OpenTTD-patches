@@ -139,11 +139,9 @@ protected:
 			sq_push(vm, 2);
 		}
 
-		/* Don't allow docommand from a Valuator, as we can't resume in
+		/* Don't allow docommand from a filter, as we can't resume in
 		 * mid C++-code. */
-		bool backup_allow = ScriptObject::GetAllowDoCommand();
-		ScriptObject::SetAllowDoCommand(false);
-
+		ScriptObject::DisableDoCommandScope disabler{};
 
 		if (nparam < 1) {
 			ScriptList::FillListT<Thelper>(helper, list, item_valid);
@@ -152,7 +150,7 @@ protected:
 			SQOpsLimiter limiter(vm, MAX_VALUATE_OPS, "list filter function");
 
 			ScriptList::FillListT<Thelper>(helper, list, item_valid,
-				[vm, nparam, backup_allow](const IterType *item) {
+				[vm, nparam](const IterType *item) {
 					/* Push the root table as instance object, this is what squirrel does for meta-functions. */
 					sq_pushroottable(vm);
 					/* Push all arguments for the valuator function. */
@@ -163,7 +161,6 @@ protected:
 
 					/* Call the function. Squirrel pops all parameters and pushes the return value. */
 					if (SQ_FAILED(sq_call(vm, nparam + 1, SQTrue, SQFalse))) {
-						ScriptObject::SetAllowDoCommand(backup_allow);
 						throw static_cast<SQInteger>(SQ_ERROR);
 					}
 
@@ -176,7 +173,6 @@ protected:
 							break;
 
 						default:
-							ScriptObject::SetAllowDoCommand(backup_allow);
 							throw sq_throwerror(vm, "return value of filter is not valid (not bool)");
 					}
 
@@ -190,8 +186,6 @@ protected:
 			/* Pop the filter function */
 			sq_poptop(vm);
 		}
-
-		ScriptObject::SetAllowDoCommand(backup_allow);
 	}
 
 	template <typename Thelper>

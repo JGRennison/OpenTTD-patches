@@ -66,6 +66,10 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	ScriptObject::ActiveInstance::active = this->last_active;
 }
 
+ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
+	: AutoRestoreBackup(GetStorage()->allow_do_command, false)
+{}
+
 /* static */ ScriptInstance &ScriptObject::GetActiveInstance()
 {
 	assert(ScriptObject::ActiveInstance::active != nullptr);
@@ -216,16 +220,6 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ bool ScriptObject::GetLastCommandRes()
 {
 	return GetStorage()->last_command_res;
-}
-
-/* static */ void ScriptObject::SetAllowDoCommand(bool allow)
-{
-	GetStorage()->allow_do_command = allow;
-}
-
-/* static */ bool ScriptObject::GetAllowDoCommand()
-{
-	return GetStorage()->allow_do_command;
 }
 
 /* static */ void ScriptObject::SetCompany(::CompanyID company)
