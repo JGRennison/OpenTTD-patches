@@ -726,8 +726,7 @@ void ScriptList::AddList(ScriptList *list)
 	} else {
 		ScriptListMap *list_items = &list->items;
 		for (auto &it : *list_items) {
-			this->AddItem(it.first);
-			this->SetValue(it.first, it.second);
+			this->AddOrSetItem(it.first, it.second);
 		}
 	}
 }
