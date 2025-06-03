@@ -503,6 +503,8 @@ void ScriptList::Clear()
 
 void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
 {
+	this->modifications++;
+
 	auto res = this->items.insert(std::make_pair(item, value));
 	if (!res.second) {
 		/* Key was already present, insertion did not take place */
@@ -510,7 +512,6 @@ void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
 		return;
 	}
 
-	this->modifications++;
 	if (this->values_inited) {
 		this->values.insert(std::make_pair(value, item));
 	}
@@ -518,6 +519,8 @@ void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
 
 void ScriptList::AddToItemValue(SQInteger item, SQInteger value)
 {
+	this->modifications++;
+
 	auto res = this->items.insert(std::make_pair(item, value));
 	if (!res.second) {
 		/* Key was already present, insertion did not take place */
@@ -525,7 +528,6 @@ void ScriptList::AddToItemValue(SQInteger item, SQInteger value)
 		return;
 	}
 
-	this->modifications++;
 	if (this->values_inited) {
 		this->values.insert(std::make_pair(value, item));
 	}
