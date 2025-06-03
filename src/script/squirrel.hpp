@@ -331,6 +331,9 @@ public:
 	size_t GetAllocatedMemory() const noexcept;
 
 	void SetMemoryAllocationLimit(size_t limit) noexcept;
+
+	static inline void IncreaseAllocatedSize(size_t bytes);
+	static inline void DecreaseAllocatedSize(size_t bytes);
 };
 
 
@@ -352,5 +355,15 @@ public:
 		_squirrel_allocator = this->old_allocator;
 	}
 };
+
+void Squirrel::IncreaseAllocatedSize(size_t bytes)
+{
+	_squirrel_allocator->allocated_size += bytes;
+}
+
+void Squirrel::DecreaseAllocatedSize(size_t bytes)
+{
+	_squirrel_allocator->allocated_size -= bytes;
+}
 
 #endif /* SQUIRREL_HPP */

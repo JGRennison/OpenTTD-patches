@@ -14,6 +14,9 @@
 
 #include "../../safeguards.h"
 
+/** Number of bytes per item to charge to script allocation limit. */
+static const size_t SCRIPT_LIST_BYTES_PER_ITEM = 64;
+
 /**
  * Base class for any ScriptList sorter.
  */
@@ -484,6 +487,9 @@ ScriptList::ScriptList()
 
 ScriptList::~ScriptList()
 {
+	if (_squirrel_allocator != nullptr) {
+		Squirrel::DecreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
+	}
 }
 
 bool ScriptList::HasItem(SQInteger item)
@@ -494,6 +500,7 @@ bool ScriptList::HasItem(SQInteger item)
 void ScriptList::Clear()
 {
 	this->modifications++;
+	Squirrel::DecreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
 
 	this->items.clear();
 	this->values.clear();
@@ -512,6 +519,7 @@ void ScriptList::AddOrSetItem(SQInteger item, SQInteger value)
 		return;
 	}
 
+	Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM);
 	if (this->values_inited) {
 		this->values.insert(std::make_pair(value, item));
 	}
@@ -528,6 +536,7 @@ void ScriptList::AddToItemValue(SQInteger item, SQInteger value)
 		return;
 	}
 
+	Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM);
 	if (this->values_inited) {
 		this->values.insert(std::make_pair(value, item));
 	}
@@ -543,6 +552,7 @@ void ScriptList::AddItem(SQInteger item, SQInteger value)
 		return;
 	}
 
+	Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM);
 	if (this->values_inited) {
 		this->values.insert(std::make_pair(value, item));
 	}
@@ -556,6 +566,7 @@ ScriptList::ScriptListMap::iterator ScriptList::RemoveIter(ScriptList::ScriptLis
 	if (this->initialized) this->sorter->Remove(item);
 
 	ScriptListMap::iterator new_item_iter = this->items.erase(item_iter);
+	Squirrel::DecreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM);
 	if (this->values_inited) {
 		ScriptListValueSet::iterator new_reverse_iter = this->values.erase(this->values.find(std::make_pair(value, item)));
 
@@ -575,6 +586,7 @@ ScriptList::ScriptListValueSet::iterator ScriptList::RemoveValueIter(ScriptList:
 
 	ScriptListMap::iterator new_item_iter = this->items.erase(this->items.find(item));
 	ScriptListValueSet::iterator new_value_iter = this->values.erase(value_iter);
+	Squirrel::DecreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM);
 
 	if (this->initialized) this->sorter->PostErase(item, new_item_iter, new_value_iter);
 
@@ -723,6 +735,7 @@ void ScriptList::AddList(ScriptList *list)
 			this->InitValues();
 		}
 		this->modifications++;
+		Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
 	} else {
 		ScriptListMap *list_items = &list->items;
 		for (auto &it : *list_items) {
