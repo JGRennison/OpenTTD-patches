@@ -75,6 +75,12 @@ public:
 	Squirrel(const char *APIName);
 	~Squirrel();
 
+	/* Make unmovable and uncopyable */
+	Squirrel(const Squirrel &) = delete;
+	Squirrel(Squirrel &&) = delete;
+	Squirrel &operator=(const Squirrel &) = delete;
+	Squirrel &operator=(Squirrel &&) = delete;
+
 	/**
 	 * Get the squirrel VM. Try to avoid using this.
 	 */
