@@ -32,6 +32,7 @@
 #include "core/geometry_func.hpp"
 #include "tilehighlight_func.h"
 #include "timetable_cmd.h"
+#include "schdispatch.h"
 
 #include <vector>
 #include <algorithm>
@@ -150,7 +151,7 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedu
 	return vehicle_count;
 }
 
-static void AddNewScheduledDispatchSchedule(VehicleID vindex)
+void AddNewScheduledDispatchSchedule(VehicleID vindex)
 {
 	StateTicks start_tick;
 	uint32_t duration;

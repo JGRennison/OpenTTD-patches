@@ -13,11 +13,14 @@
 #include "command_type.h"
 #include "order_base.h"
 #include "order_type.h"
+#include "order_dest_func.h"
 
 enum class ReverseOrderOperation : uint8_t {
 	Reverse,
 	AppendReversed,
 };
+
+Colours errorTypeToColour(JsonOrderImportErrorType errType);
 
 struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderCmdData> {
 	VehicleID veh;

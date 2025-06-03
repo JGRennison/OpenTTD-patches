@@ -20,6 +20,7 @@
 #include "schdispatch.h"
 #include "vehicle_gui.h"
 #include "timetable_cmd.h"
+#include "3rdparty/nlohmann/json.hpp"
 
 #include <algorithm>
 
@@ -839,6 +840,58 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	if (this->UpdateScheduledDispatchToDate(_state_ticks) && v != nullptr) {
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
+}
+
+std::string DispatchSchedule::ToJSONString()
+{
+
+	nlohmann::ordered_json json;
+
+	for (int i = 0; i < DispatchSchedule::DEPARTURE_TAG_COUNT; i++) {
+
+		std::string_view rename = this->GetSupplementaryName(SDSNT_DEPARTURE_TAG, i);
+
+		if (!rename.empty()) {
+
+			json["renamed-tags"][std::to_string(i + 1)] = rename;
+
+		}
+	}
+
+	for (auto & SD_slot : this->GetScheduledDispatch()) {
+
+		std::string stringOffset = std::to_string(SD_slot.offset);
+
+		auto &slotJson = json["slots"][stringOffset];
+
+		if (HasBit(SD_slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+			slotJson["re-use-slot"] = true;
+		}
+		int ctr = 0;
+		for (int i = 0; i <= (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); i++) {
+			if (HasBit(SD_slot.flags, DispatchSlot::SDSF_FIRST_TAG + i)) {
+				slotJson["tags"][ctr++] = std::to_string(i + 1);
+			}
+		}
+	}
+
+	if (!this->ScheduleName().empty()) {
+		json["name"] = this->ScheduleName();
+	}
+
+	if (this->GetScheduledDispatchDuration() != _settings_client.company.default_sched_dispatch_duration ) {
+		json["duration"] = this->GetScheduledDispatchDuration();
+	}
+
+	if (this->GetScheduledDispatchDelay() != 0) {
+		json["delay"] = this->GetScheduledDispatchDelay();
+	}
+
+	if (this->GetScheduledDispatchReuseSlots()) {
+		json["re-use-all-slots"] = true;
+	}
+
+	return json.dump();
 }
 
 static inline uint32_t SupplementaryNameKey(ScheduledDispatchSupplementaryNameType name_type, uint16_t id)

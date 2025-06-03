@@ -15,6 +15,7 @@
 #include "vehicle_type.h"
 #include "settings_type.h"
 
+void AddNewScheduledDispatchSchedule(VehicleID vindex);
 void ShowSchdispatchWindow(const Vehicle *v);
 void SchdispatchInvalidateWindows(const Vehicle *v);
 
@@ -41,5 +42,4 @@ public:
 
 using GetVehicleLastDispatchRecordFunctor = std::function<const LastDispatchRecord *(uint16_t)>;
 OrderConditionEvalResult EvaluateDispatchSlotConditionalOrder(const Order *order, std::span<const DispatchSchedule> schedules, StateTicks state_ticks, GetVehicleLastDispatchRecordFunctor get_vehicle_record);
-
 #endif /* SCHDISPATCH_H */
