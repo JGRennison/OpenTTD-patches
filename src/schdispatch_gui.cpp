@@ -41,6 +41,7 @@
 #include "table/sprites.h"
 
 #include "safeguards.h"
+#include "schdispatch.h"
 
 enum SchdispatchWidgets : WidgetID {
 	WID_SCHDISPATCH_CAPTION,         ///< Caption of window.
@@ -150,7 +151,7 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedu
 	return vehicle_count;
 }
 
-static void AddNewScheduledDispatchSchedule(VehicleID vindex)
+void AddNewScheduledDispatchSchedule(VehicleID vindex, const char * text)
 {
 	StateTicks start_tick;
 	uint32_t duration;
@@ -1358,8 +1359,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			default: NOT_REACHED();
 
 			case WID_SCHDISPATCH_ADD: {
-				if (!this->IsScheduleSelected()) break;
 
+				if (!this->IsScheduleSelected()) break;
 				if (str->empty()) break;
 
 				char *end;

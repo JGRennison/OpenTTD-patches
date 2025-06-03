@@ -71,6 +71,7 @@ enum OrderLabelSubType : uint8_t {
 	OLST_TEXT                  = 0,
 	OLST_DEPARTURES_VIA        = 1,
 	OLST_DEPARTURES_REMOVE_VIA = 2,
+	OLST_END
 };
 
 inline bool IsDestinationOrderLabelSubType(OrderLabelSubType subtype)
@@ -93,6 +94,7 @@ enum OrderUnloadFlags : uint8_t {
 	OUFB_NO_UNLOAD         = 1 << 2, ///< Totally no unloading will be done.
 	OUFB_CARGO_TYPE_UNLOAD = 1 << 3, ///< Unload actions are defined per cargo type.
 	OUFB_CARGO_TYPE_UNLOAD_ENCODING = (1 << 0) | (1 << 2), ///< Raw encoding of OUFB_CARGO_TYPE_UNLOAD
+	OUF_INVALID = -1				 ///< Used for JSON serializaion
 };
 
 /**
@@ -105,6 +107,7 @@ enum OrderLoadFlags : uint8_t {
 	OLFB_NO_LOAD         = 4,      ///< Do not load anything.
 	OLFB_CARGO_TYPE_LOAD = 1 << 3, ///< Load actions are defined per cargo type.
 	OLFB_CARGO_TYPE_LOAD_ENCODING = (1 << 1) | 4, ///< Raw encoding of OLFB_CARGO_TYPE_LOAD
+	OLF_INVALID			 = -1      ///< Used in JSON serializion
 };
 
 /**
@@ -148,6 +151,7 @@ enum OrderDepotActionFlags : uint8_t {
 	ODATFB_NEAREST_DEPOT = 1 << 1, ///< Send the vehicle to the nearest depot.
 	ODATFB_SELL          = 1 << 2, ///< Sell the vehicle on arrival at the depot.
 	ODATFB_UNBUNCH       = 1 << 3, ///< Service the vehicle and then unbunch it.
+	ODAFTB_END
 };
 DECLARE_ENUM_AS_BIT_SET(OrderDepotActionFlags)
 
@@ -166,6 +170,7 @@ DECLARE_ENUM_AS_BIT_SET(OrderDepotExtraFlags)
 enum OrderWaypointFlags {
 	OWF_DEFAULT          = 0,      ///< Default waypoint behaviour
 	OWF_REVERSE          = 1 << 0, ///< Reverse train at the waypoint
+	OWF_INVALID			 = -1,	   ///< Used in ENUM serializaion
 };
 DECLARE_ENUM_AS_BIT_SET(OrderWaypointFlags)
 
@@ -350,6 +355,8 @@ enum CloneOptions : uint8_t {
 	CO_COPY    = 1,
 	CO_UNSHARE = 2
 };
+
+const uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
 struct Order;
 struct OrderPoolItem;
