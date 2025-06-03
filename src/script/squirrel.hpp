@@ -10,7 +10,16 @@
 #ifndef SQUIRREL_HPP
 #define SQUIRREL_HPP
 
+/*
+ * If changing the call paths into the scripting engine, define this symbol to enable full debugging of allocations.
+ * This lets you track whether the allocator context is being switched correctly in all call paths.
+#define SCRIPT_DEBUG_ALLOCATIONS
+ */
+
 #include <squirrel.h>
+#ifdef SCRIPT_DEBUG_ALLOCATIONS
+#	include <map>
+#endif
 
 /** The type of script we're working with, i.e. for who is it? */
 enum class ScriptType : uint8_t {
@@ -18,7 +27,40 @@ enum class ScriptType : uint8_t {
 	GS, ///< The script is for Game scripts.
 };
 
-struct ScriptAllocator;
+class ScriptAllocator {
+	friend class Squirrel;
+
+private:
+	size_t allocated_size;   ///< Sum of allocated data size
+	size_t allocation_limit; ///< Maximum this allocator may use before allocations fail
+	/**
+	 * Whether the error has already been thrown, so to not throw secondary errors in
+	 * the handling of the allocation error. This as the handling of the error will
+	 * throw a Squirrel error so the Squirrel stack can be dumped, however that gets
+	 * allocated by this allocator and then you might end up in an infinite loop.
+	 */
+	bool error_thrown;
+
+#ifdef SCRIPT_DEBUG_ALLOCATIONS
+	std::map<void *, size_t> allocations;
+#endif
+
+	void CheckLimitFailed() const;
+
+public:
+	inline void CheckLimit() const
+	{
+		if (this->allocated_size > this->allocation_limit) this->CheckLimitFailed();
+	}
+
+	void CheckAllocation(size_t requested_size, void *p);
+	void *Malloc(SQUnsignedInteger size);
+	void *Realloc(void *p, SQUnsignedInteger oldsize, SQUnsignedInteger size);
+	void Free(void *p, SQUnsignedInteger size);
+
+	ScriptAllocator();
+	~ScriptAllocator();
+};
 
 class Squirrel {
 	friend class ScriptAllocatorScope;
@@ -33,7 +75,7 @@ private:
 	bool crashed;            ///< True if the squirrel script made an error.
 	int overdrawn_ops;       ///< The amount of operations we have overdrawn.
 	const char *APIName;     ///< Name of the API used for this squirrel.
-	std::unique_ptr<ScriptAllocator> allocator; ///< Allocator object used by this script.
+	ScriptAllocator allocator; ///< Allocator object used by this script.
 
 	/**
 	 * The internal RunError handler. It looks up the real error and calls RunError with it.
@@ -298,11 +340,11 @@ class ScriptAllocatorScope {
 	ScriptAllocator *old_allocator;
 
 public:
-	ScriptAllocatorScope(const Squirrel *engine)
+	ScriptAllocatorScope(Squirrel *engine)
 	{
 		this->old_allocator = _squirrel_allocator;
 		/* This may get called with a nullptr engine, in case of a crashed script */
-		_squirrel_allocator = engine != nullptr ? engine->allocator.get() : nullptr;
+		_squirrel_allocator = engine != nullptr ? &engine->allocator : nullptr;
 	}
 
 	~ScriptAllocatorScope()

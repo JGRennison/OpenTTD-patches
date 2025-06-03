@@ -29,32 +29,13 @@
  * So no #include "../safeguards.h" here as is required, but after the allocator's implementation.
  */
 
-/*
- * If changing the call paths into the scripting engine, define this symbol to enable full debugging of allocations.
- * This lets you track whether the allocator context is being switched correctly in all call paths.
-#define SCRIPT_DEBUG_ALLOCATIONS
- */
+static const size_t SAFE_LIMIT = 0x8000000; ///< 128 MiB, a safe choice for almost any situation
 
-struct ScriptAllocator {
-	size_t allocated_size;   ///< Sum of allocated data size
-	size_t allocation_limit; ///< Maximum this allocator may use before allocations fail
-	/**
-	 * Whether the error has already been thrown, so to not throw secondary errors in
-	 * the handling of the allocation error. This as the handling of the error will
-	 * throw a Squirrel error so the Squirrel stack can be dumped, however that gets
-	 * allocated by this allocator and then you might end up in an infinite loop.
-	 */
-	bool error_thrown;
+/* NB: Indented to reduce upstream diff */
 
-	static const size_t SAFE_LIMIT = 0x8000000; ///< 128 MiB, a safe choice for almost any situation
-
-#ifdef SCRIPT_DEBUG_ALLOCATIONS
-	std::map<void *, size_t> allocations;
-#endif
-
-	void CheckLimit() const
+	void ScriptAllocator::CheckLimitFailed() const
 	{
-		if (this->allocated_size > this->allocation_limit) throw Script_FatalError("Maximum memory allocation exceeded");
+		throw Script_FatalError("Maximum memory allocation exceeded");
 	}
 
 	/**
@@ -66,7 +47,7 @@ struct ScriptAllocator {
 	 * @param requested_size The requested size that was requested to be allocated.
 	 * @param p              The pointer to the allocated object, or null if allocation failed.
 	 */
-	void CheckAllocation(size_t requested_size, void *p)
+	void ScriptAllocator::CheckAllocation(size_t requested_size, void *p)
 	{
 		if (this->allocated_size + requested_size > this->allocation_limit && !this->error_thrown) {
 			/* Do not allow allocating more than the allocation limit, except when an error is
@@ -94,7 +75,7 @@ struct ScriptAllocator {
 		}
 	}
 
-	void *Malloc(SQUnsignedInteger size)
+	void *ScriptAllocator::Malloc(SQUnsignedInteger size)
 	{
 		void *p = malloc(size);
 
@@ -111,7 +92,7 @@ struct ScriptAllocator {
 		return p;
 	}
 
-	void *Realloc(void *p, SQUnsignedInteger oldsize, SQUnsignedInteger size)
+	void *ScriptAllocator::Realloc(void *p, SQUnsignedInteger oldsize, SQUnsignedInteger size)
 	{
 		if (p == nullptr) {
 			return this->Malloc(size);
@@ -149,7 +130,7 @@ struct ScriptAllocator {
 		return new_p;
 	}
 
-	void Free(void *p, SQUnsignedInteger size)
+	void ScriptAllocator::Free(void *p, SQUnsignedInteger size)
 	{
 		if (p == nullptr) return;
 		free(p);
@@ -161,7 +142,7 @@ struct ScriptAllocator {
 #endif
 	}
 
-	ScriptAllocator()
+	ScriptAllocator::ScriptAllocator()
 	{
 		this->allocated_size = 0;
 		this->allocation_limit = static_cast<size_t>(_settings_game.script.script_max_memory_megabytes) << 20;
@@ -169,13 +150,12 @@ struct ScriptAllocator {
 		this->error_thrown = false;
 	}
 
-	~ScriptAllocator()
+	ScriptAllocator::~ScriptAllocator()
 	{
 #ifdef SCRIPT_DEBUG_ALLOCATIONS
 		assert(this->allocations.empty());
 #endif
 	}
-};
 
 /**
  * In the memory allocator for Squirrel we want to directly use malloc/realloc, so when the OS
@@ -196,15 +176,12 @@ void sq_vm_free(void *p, SQUnsignedInteger size) { _squirrel_allocator->Free(p, 
 
 size_t Squirrel::GetAllocatedMemory() const noexcept
 {
-	assert(this->allocator != nullptr);
-	return this->allocator->allocated_size;
+	return this->allocator.allocated_size;
 }
 
 void Squirrel::SetMemoryAllocationLimit(size_t limit) noexcept
 {
-	if (this->allocator != nullptr) {
-		this->allocator->allocation_limit = limit;
-	}
+	this->allocator.allocation_limit = limit;
 }
 
 
@@ -385,7 +362,7 @@ bool Squirrel::Resume(int suspend)
 
 	this->crashed = !sq_resumecatch(this->vm, suspend);
 	this->overdrawn_ops = -this->vm->_ops_till_suspend;
-	this->allocator->CheckLimit();
+	this->allocator.CheckLimit();
 	return this->vm->_suspended != 0;
 }
 
@@ -406,7 +383,7 @@ bool Squirrel::CallMethod(HSQOBJECT instance, const char *method_name, HSQOBJECT
 {
 	assert(!this->crashed);
 	ScriptAllocatorScope alloc_scope(this);
-	this->allocator->CheckLimit();
+	this->allocator.CheckLimit();
 
 	/* Store the stack-location for the return value. We need to
 	 * restore this after saving or the stack will be corrupted
@@ -535,7 +512,7 @@ bool Squirrel::CreateClassInstance(const std::string &class_name, void *real_ins
 }
 
 Squirrel::Squirrel(const char *APIName) :
-	APIName(APIName), allocator(new ScriptAllocator())
+	APIName(APIName)
 {
 	this->Initialize();
 }
@@ -768,10 +745,10 @@ void Squirrel::Uninitialize()
 	sq_pop(this->vm, 1);
 	sq_close(this->vm);
 
-	assert(this->allocator->allocated_size == 0);
+	assert(this->allocator.allocated_size == 0);
 
 	/* Reset memory allocation errors. */
-	this->allocator->error_thrown = false;
+	this->allocator.error_thrown = false;
 }
 
 void Squirrel::Reset()
