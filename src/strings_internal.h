@@ -169,7 +169,14 @@ public:
 		this->parameters[n].string = std::make_unique<std::string>(str);
 	}
 
-	void SetParam(size_t n, std::string str)
+	void SetParam(size_t n, std::string_view str)
+	{
+		assert(n < this->parameters.size());
+		this->parameters[n].data = 0;
+		this->parameters[n].string = std::make_unique<std::string>(str);
+	}
+
+	void SetParam(size_t n, std::string &&str)
 	{
 		assert(n < this->parameters.size());
 		this->parameters[n].data = 0;
