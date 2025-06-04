@@ -900,7 +900,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 	TileIndex tile;
 	Trackdir  trackdir;
 
-	if (!(flags & FTRF_IGNORE_LOOKAHEAD) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->lookahead != nullptr) {
+	if (!flags.Test(FollowTrainReservationFlag::IgnoreLookahead) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->lookahead != nullptr) {
 		tile = v->lookahead->reservation_end_tile;
 		trackdir = v->lookahead->reservation_end_trackdir;
 		if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::DepotEnd)) return PBSTileInfo(tile, trackdir, false);
@@ -920,7 +920,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 
 	FindTrainOnTrackInfo ftoti;
 	ftoti.res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir, FRF_NONE, v, nullptr);
-	ftoti.res.okay = (flags & FTRF_OKAY_UNUSED) ? false : IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
+	ftoti.res.okay = flags.Test(FollowTrainReservationFlag::OkayUnused) ? false : IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
 	if (train_on_res != nullptr) {
 		FindVehicleOnPos(ftoti.res.tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
 		if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();

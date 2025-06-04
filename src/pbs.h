@@ -160,15 +160,14 @@ struct TrainReservationLookAhead {
 };
 
 /** Flags for FollowTrainReservation */
-enum FollowTrainReservationFlags {
-	FTRF_NONE                 = 0,        ///< No flags
-	FTRF_IGNORE_LOOKAHEAD     = 0x01,     ///< No use of cached lookahead
-	FTRF_OKAY_UNUSED          = 0x02,     ///< 'okay' return value is not used
+enum class FollowTrainReservationFlag : uint8_t {
+	IgnoreLookahead, ///< No use of cached lookahead
+	OkayUnused,      ///< 'okay' return value is not used
 };
-DECLARE_ENUM_AS_BIT_SET(FollowTrainReservationFlags)
+using FollowTrainReservationFlags = EnumBitSet<FollowTrainReservationFlag, uint8_t>;
 
 bool ValidateLookAhead(const Train *v);
-PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = nullptr, FollowTrainReservationFlags flags = FTRF_NONE);
+PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = nullptr, FollowTrainReservationFlags flags = {});
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end);
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t);
 int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_position);

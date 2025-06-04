@@ -617,7 +617,7 @@ public:
 		if (dest != nullptr) *dest = INVALID_TILE;
 
 		/* set origin and destination nodes */
-		PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
+		PBSTileInfo origin = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
 		Yapf().SetOrigin(origin.tile, origin.trackdir, INVALID_TILE, INVALID_TRACKDIR, 1);
 		Yapf().SetTreatFirstRedTwoWaySignalAsEOL(true);
 		Yapf().SetDestination(v);
@@ -816,7 +816,7 @@ FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 {
 	const Train *last_veh = v->Last();
 
-	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
+	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
 	TileIndex last_tile = last_veh->tile;
 	Trackdir td_rev = ReverseTrackdir(last_veh->GetVehicleTrackdir());
 

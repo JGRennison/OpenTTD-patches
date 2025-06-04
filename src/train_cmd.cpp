@@ -4378,7 +4378,7 @@ static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_r
 {
 	ClearLookAheadIfInvalid(v);
 
-	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
+	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
 	if (IsRailDepotTile(origin.tile)) return;
 
 	ChooseTrainTrackLookAheadState lookahead_state;
@@ -4480,7 +4480,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 		if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(v->index);
 	});
 
-	PBSTileInfo   origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
+	PBSTileInfo   origin = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
 	PBSTileInfo   res_dest(tile, INVALID_TRACKDIR, false);
 	DiagDirection dest_enterdir = enterdir;
 	if (do_track_reservation) {
@@ -4555,7 +4555,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 	/* No possible reservation target found, we are probably lost. */
 	if (res_dest.tile == INVALID_TILE) {
 		/* Try to find any safe destination. */
-		PBSTileInfo path_end = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
+		PBSTileInfo path_end = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
 		if (TryReserveSafeTrack(v, path_end.tile, path_end.trackdir, false)) {
 			if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackApplyTemporaryChanges(v);
 			TrackBits res = GetReservedTrackbits(tile) & DiagdirReachesTracks(enterdir);
