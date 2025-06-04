@@ -79,6 +79,8 @@
  * of help at #tycoon. Also thanks to Michael Blunck for his GRF files which
  * served as subject to the initial testing of this codec. */
 
+constexpr uint16_t GROUPID_CALLBACK_FAILED = 0x7FFF; ///< Explicit "failure" result.
+
 /** List of all loaded GRF files */
 static std::vector<GRFFile *> _grf_files;
 static robin_hood::unordered_map<uint32_t, GRFFile *> _grf_file_map;
@@ -6030,6 +6032,8 @@ static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16_t gr
 
 static const SpriteGroup *GetGroupFromGroupIDNoCBResult(uint16_t setid, uint8_t type, uint16_t groupid)
 {
+	if (groupid == GROUPID_CALLBACK_FAILED) return nullptr;
+
 	if ((size_t)groupid >= _cur.spritegroups.size() || _cur.spritegroups[groupid] == nullptr) {
 		GrfMsg(1, "GetGroupFromGroupID(0x{:02X}:0x{:02X}): Groupid 0x{:04X} does not exist, leaving empty", setid, type, groupid);
 		return nullptr;
