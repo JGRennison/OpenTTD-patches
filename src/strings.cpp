@@ -1862,7 +1862,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 					const Depot *d = Depot::Get(args.GetNextParameter<DepotID>());
 					if (!d->name.empty()) {
-						auto tmp_params = MakeParameters(d->name.c_str());
+						auto tmp_params = MakeParameters(d->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else {
 						auto tmp_params = MakeParameters(d->town->index, d->town_cn + 1);
@@ -1877,7 +1877,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (e == nullptr) break;
 
 					if (!e->name.empty() && e->IsEnabled()) {
-						auto tmp_params = MakeParameters(e->name.c_str());
+						auto tmp_params = MakeParameters(e->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 						break;
 					}
@@ -1982,7 +1982,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						AutoRestoreBackup cache_backup(use_cache, false);
 						builder += st->GetCachedName();
 					} else if (!st->name.empty()) {
-						auto tmp_params = MakeParameters(st->name.c_str());
+						auto tmp_params = MakeParameters(st->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else {
 						StringID string_id = st->string_id;
@@ -2016,7 +2016,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						AutoRestoreBackup cache_backup(use_cache, false);
 						builder += t->GetCachedName();
 					} else if (!t->name.empty()) {
-						auto tmp_params = MakeParameters(t->name.c_str());
+						auto tmp_params = MakeParameters(t->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else {
 						GetTownName(builder, t);
@@ -2042,7 +2042,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (wp == nullptr) break;
 
 					if (!wp->name.empty()) {
-						auto tmp_params = MakeParameters(wp->name.c_str());
+						auto tmp_params = MakeParameters(wp->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else {
 						auto tmp_params = MakeParameters(wp->town->index, wp->town_cn + 1);
@@ -2066,7 +2066,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (v == nullptr) break;
 
 					if (!v->name.empty()) {
-						auto tmp_params = MakeParameters(v->name.c_str());
+						auto tmp_params = MakeParameters(v->name);
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else if (v->group_id != DEFAULT_GROUP && vehicle_names != 0 && v->type < VEH_COMPANY_END) {
 						/* The vehicle has no name, but is member of a group, so print group name */
@@ -2111,7 +2111,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_TR_SLOT_NAME: { // {TRSLOT}
 					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (slot == nullptr) break;
-					auto tmp_params = MakeParameters(slot->name.c_str());
+					auto tmp_params = MakeParameters(slot->name);
 					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					break;
 				}
@@ -2119,7 +2119,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_TR_SLOT_GROUP_NAME: { // {TRSLOTGROUP}
 					const TraceRestrictSlotGroup *slot = TraceRestrictSlotGroup::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (slot == nullptr) break;
-					auto tmp_params = MakeParameters(slot->name.c_str());
+					auto tmp_params = MakeParameters(slot->name);
 					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					break;
 				}
@@ -2127,7 +2127,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_TR_COUNTER_NAME: { // {TRCOUNTER}
 					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (ctr == nullptr) break;
-					auto tmp_params = MakeParameters(ctr->name.c_str());
+					auto tmp_params = MakeParameters(ctr->name);
 					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					break;
 				}
