@@ -292,7 +292,7 @@ class NIHVehicle : public NIHelper {
 
 				output.buffer.format("    Reservation ends at {}, trackdir: {:02X}, z: {}",
 						l.reservation_end_tile, l.reservation_end_trackdir, l.reservation_end_z);
-				if (HasBit(l.flags, TRLF_DEPOT_END)) {
+				if (l.flags.Test(TrainReservationLookAheadFlag::DepotEnd)) {
 					print_braking_speed(l.reservation_end_position - TILE_SIZE, _settings_game.vehicle.rail_depot_speed_limit, l.reservation_end_z);
 				} else {
 					print_braking_speed(l.reservation_end_position, 0, l.reservation_end_z);
@@ -300,11 +300,11 @@ class NIHVehicle : public NIHelper {
 				output.FinishPrint();
 
 				output.buffer.format("    TB reserved tiles: {}, flags: ", l.tunnel_bridge_reserved_tiles);
-				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) output.buffer.push_back('x');
-				if (HasBit(l.flags, TRLF_DEPOT_END)) output.buffer.push_back('d');
-				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) output.buffer.push_back('a');
-				if (HasBit(l.flags, TRLF_CHUNNEL)) output.buffer.push_back('c');
-				if (HasBit(l.flags, TRLF_TB_CMB_DEFER)) output.buffer.push_back('d');
+				if (l.flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) output.buffer.push_back('x');
+				if (l.flags.Test(TrainReservationLookAheadFlag::DepotEnd)) output.buffer.push_back('d');
+				if (l.flags.Test(TrainReservationLookAheadFlag::ApplyAdvisory)) output.buffer.push_back('a');
+				if (l.flags.Test(TrainReservationLookAheadFlag::Chunnel)) output.buffer.push_back('c');
+				if (l.flags.Test(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer)) output.buffer.push_back('d');
 				output.FinishPrint();
 
 				output.Print("    Items: {}", l.items.size());

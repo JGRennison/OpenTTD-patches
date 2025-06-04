@@ -78,13 +78,14 @@ struct TrainReservationLookAheadCurve {
 	DirDiff dir_diff;
 };
 
-enum TrainReservationLookAheadFlags {
-	TRLF_TB_EXIT_FREE      = 0,           ///< Reservation ends at signalled tunnel/bridge entrance and the corresponding exit is free, but may not be reserved
-	TRLF_DEPOT_END         = 1,           ///< Reservation ends at a depot
-	TRLF_APPLY_ADVISORY    = 2,           ///< Apply advisory speed limit on next iteration
-	TRLF_CHUNNEL           = 3,           ///< Reservation ends at a signalled chunnel entrance
-	TRLF_TB_CMB_DEFER      = 4,           ///< Deferred combined normal/shunt tunnel/bridge exit
+enum class TrainReservationLookAheadFlag : uint8_t {
+	TunnelBridgeExitFree            = 0,  ///< Reservation ends at signalled tunnel/bridge entrance and the corresponding exit is free, but may not be reserved
+	DepotEnd                        = 1,  ///< Reservation ends at a depot
+	ApplyAdvisory                   = 2,  ///< Apply advisory speed limit on next iteration
+	Chunnel                         = 3,  ///< Reservation ends at a signalled chunnel entrance
+	TunnelBridgeCombinedDefer       = 4,  ///< Deferred combined normal/shunt tunnel/bridge exit
 };
+using TrainReservationLookAheadFlags = EnumBitSet<TrainReservationLookAheadFlag, uint16_t>;
 
 struct TrainReservationLookAhead {
 	TileIndex reservation_end_tile;       ///< Tile the reservation ends.
@@ -96,7 +97,7 @@ struct TrainReservationLookAhead {
 	int32_t next_extend_position;         ///< Next position to try extending the reservation at the sighting distance of the next mid-reservation signal
 	int16_t reservation_end_z;            ///< The z coordinate of the reservation end
 	int16_t tunnel_bridge_reserved_tiles; ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
-	uint16_t flags;                       ///< Flags (TrainReservationLookAheadFlags)
+	TrainReservationLookAheadFlags flags; ///< Flags
 	uint16_t speed_restriction;
 	ring_buffer<TrainReservationLookAheadItem> items;
 	ring_buffer<TrainReservationLookAheadCurve> curves;

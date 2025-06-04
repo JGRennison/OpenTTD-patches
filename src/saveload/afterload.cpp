@@ -4241,7 +4241,7 @@ bool AfterLoadGame()
 			if (!(t->vehstatus & VS_CRASHED)) {
 				t->crash_anim_pos = 0;
 			}
-			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+			if (t->lookahead != nullptr) t->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
 	}
 

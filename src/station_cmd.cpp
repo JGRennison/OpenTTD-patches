@@ -4020,7 +4020,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			stop &= TILE_SIZE - 1;
 
 			if (x == stop) {
-				if (front->UsingRealisticBraking() && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
+				if (front->UsingRealisticBraking() && front->cur_speed > 15 && !(front->lookahead != nullptr && front->lookahead->flags.Test(TrainReservationLookAheadFlag::ApplyAdvisory))) {
 					/* Travelling too fast, do not stop and report overshoot to player */
 					if (front->owner == _local_company) {
 						SetDParam(0, front->index);

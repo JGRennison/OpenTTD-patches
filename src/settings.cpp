@@ -1196,7 +1196,7 @@ static void UpdateConsists(int32_t new_value)
 		/* Update the consist of all trains so the maximum speed is set correctly. */
 		if (t->IsFrontEngine() || t->IsFreeWagon()) {
 			t->ConsistChanged(CCF_TRACK);
-			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+			if (t->lookahead != nullptr) t->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
 	}
 
@@ -1433,7 +1433,7 @@ static void TrainAccelerationModelChanged(int32_t new_value)
 		if (t->IsFrontEngine()) {
 			t->tcache.cached_max_curve_speed = t->GetCurveSpeedLimit();
 			t->UpdateAcceleration();
-			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+			if (t->lookahead != nullptr) t->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
 	}
 
@@ -1515,7 +1515,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
 			TryPathReserve(v, true, HasStationTileRail(v->tile));
-			if (v->lookahead != nullptr) SetBit(v->lookahead->flags, TRLF_APPLY_ADVISORY);
+			if (v->lookahead != nullptr) v->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
 	} else if (new_value == TBM_ORIGINAL && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		Train *v_cur = nullptr;
@@ -1554,7 +1554,7 @@ static void TrainSlopeSteepnessChanged(int32_t new_value)
 	for (Train *t : Train::IterateFrontOnly()) {
 		if (t->IsFrontEngine()) {
 			t->CargoChanged();
-			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+			if (t->lookahead != nullptr) t->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
 	}
 }

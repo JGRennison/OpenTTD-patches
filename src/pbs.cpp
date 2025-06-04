@@ -624,7 +624,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 
 					if (HasBit(_signal_style_masks.combined_normal_shunt, exit_signal_style)) {
 						SetBit(exit_signal_flags, TRSLAI_COMBINED);
-						SetBit(lookahead->flags, TRLF_TB_CMB_DEFER);
+						lookahead->flags.Set(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer);
 					}
 					AddSignalToLookAhead(v, lookahead, signal_speed, exit_signal_flags, end, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), end_offset, z);
 
@@ -704,7 +704,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 		}
 		/* Depot tile? Can't continue. */
 		if (IsRailDepotTile(tile)) {
-			if (lookahead != nullptr) SetBit(lookahead->flags, TRLF_DEPOT_END);
+			if (lookahead != nullptr) lookahead->flags.Set(TrainReservationLookAheadFlag::DepotEnd);
 			break;
 		}
 		/* Non-pbs signal? Reservation can't continue. */
@@ -873,12 +873,12 @@ bool ValidateLookAhead(const Train *v)
 	TileIndex tile = v->lookahead->reservation_end_tile;
 	Trackdir trackdir = v->lookahead->reservation_end_trackdir;
 
-	if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
+	if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) {
 		if (!likely(IsRailTunnelBridgeTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir))) {
 			return false;
 		}
 	}
-	if (HasBit(v->lookahead->flags, TRLF_DEPOT_END) && !IsRailDepotTile(tile)) return false;
+	if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::DepotEnd) && !IsRailDepotTile(tile)) return false;
 
 	TrackdirBits trackdirbits = GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0);
 	if (!HasTrackdir(trackdirbits, trackdir)) return false;
@@ -903,8 +903,8 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 	if (!(flags & FTRF_IGNORE_LOOKAHEAD) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->lookahead != nullptr) {
 		tile = v->lookahead->reservation_end_tile;
 		trackdir = v->lookahead->reservation_end_trackdir;
-		if (HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return PBSTileInfo(tile, trackdir, false);
-		if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
+		if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::DepotEnd)) return PBSTileInfo(tile, trackdir, false);
+		if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) {
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
 			if (IsTunnelBridgeSignalSimulationExit(exit_tile) && GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
 				tile = exit_tile;
@@ -946,7 +946,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end)
 {
-	AssignBit(lookahead->flags, TRLF_TB_EXIT_FREE, free_tiles == INT_MAX);
+	lookahead->flags.Set(TrainReservationLookAheadFlag::TunnelBridgeExitFree, free_tiles == INT_MAX);
 	if (free_tiles == INT_MAX) {
 		/* whole tunnel/bridge is empty */
 		if (unlikely(end == INVALID_TILE)) end = GetOtherTunnelBridgeEnd(tile);
@@ -961,7 +961,7 @@ void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, i
 	}
 	lookahead->reservation_end_position += ((free_tiles - lookahead->tunnel_bridge_reserved_tiles) * TILE_SIZE);
 	lookahead->tunnel_bridge_reserved_tiles = free_tiles;
-	if (HasBit(lookahead->flags, TRLF_CHUNNEL)) {
+	if (lookahead->flags.Test(TrainReservationLookAheadFlag::Chunnel)) {
 		if (unlikely(end == INVALID_TILE)) end = GetOtherTunnelBridgeEnd(tile);
 		lookahead->reservation_end_z = LookaheadTileHeightForChunnel(GetTunnelBridgeLength(tile, end), free_tiles + 1);
 	}
@@ -1056,11 +1056,11 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 		t->lookahead->next_extend_position = 0;
 		t->lookahead->tunnel_bridge_reserved_tiles = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
 		t->lookahead->reservation_end_position = GetTileMarginInFrontOfTrain(t);
-		t->lookahead->flags = 0;
+		t->lookahead->flags = {};
 		t->lookahead->speed_restriction = t->speed_restriction;
 		t->lookahead->cached_zpos = t->CalculateOverallZPos();
 		t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
-		if (IsTunnel(t->tile) && Tunnel::GetByTile(t->tile)->is_chunnel) SetBit(t->lookahead->flags, TRLF_CHUNNEL);
+		if (IsTunnel(t->tile) && Tunnel::GetByTile(t->tile)->is_chunnel) t->lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel);
 
 		if (IsTunnelBridgeSignalSimulationEntrance(t->tile)) {
 			const uint16_t bridge_speed = IsBridge(t->tile) ? GetBridgeSpec(GetBridgeType(t->tile))->speed : 0;
@@ -1082,7 +1082,7 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 			int offset = -(int)TILE_SIZE;
 			for (int i = 0; i < signals; i++) {
 				offset += TILE_SIZE * spacing;
-				const int signal_z = HasBit(t->lookahead->flags, TRLF_CHUNNEL) ? LookaheadTileHeightForChunnel(length, i * spacing) : z;
+				const int signal_z = t->lookahead->flags.Test(TrainReservationLookAheadFlag::Chunnel) ? LookaheadTileHeightForChunnel(length, i * spacing) : z;
 				AddSignalToLookAhead(t, t->lookahead.get(), signal_speed, signal_flags, t->tile, 0x100 + i, offset, signal_z);
 			}
 
@@ -1203,7 +1203,7 @@ void FillTrainReservationLookAhead(Train *v)
 		v->lookahead->reservation_end_position = std::max(GetTileMarginInFrontOfTrain(v), -4);
 
 		v->lookahead->tunnel_bridge_reserved_tiles = 0;
-		v->lookahead->flags = 0;
+		v->lookahead->flags = {};
 		v->lookahead->speed_restriction = v->speed_restriction;
 		v->lookahead->cached_zpos = v->CalculateOverallZPos();
 		v->lookahead->zpos_refresh_remaining = v->GetZPosCacheUpdateInterval();
@@ -1227,7 +1227,7 @@ void FillTrainReservationLookAhead(Train *v)
 		if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 			int raw_free_tiles;
-			if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
+			if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) {
 				raw_free_tiles = INT_MAX;
 			} else {
 				raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, v->lookahead->tunnel_bridge_reserved_tiles + 1);
@@ -1239,7 +1239,7 @@ void FillTrainReservationLookAhead(Train *v)
 				SetTrainReservationLookaheadEnd(v);
 				return;
 			}
-			if (HasBit(v->lookahead->flags, TRLF_TB_CMB_DEFER) && IsTunnelBridgeSignalSimulationExitTile(end)) {
+			if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer) && IsTunnelBridgeSignalSimulationExitTile(end)) {
 				for (auto iter = v->lookahead->items.rbegin(); iter != v->lookahead->items.rend(); ++iter) {
 					const TrainReservationLookAheadItem &item = *iter;
 					if (item.type == TRLIT_SIGNAL && HasBit(item.data_aux, TRSLAI_COMBINED)) {
@@ -1247,7 +1247,7 @@ void FillTrainReservationLookAhead(Train *v)
 						break;
 					}
 				}
-				ClrBit(v->lookahead->flags, TRLF_TB_CMB_DEFER);
+				v->lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer);
 			}
 		}
 	}
@@ -1259,11 +1259,11 @@ void FillTrainReservationLookAhead(Train *v)
 	}
 
 	FollowReservationFlags flags = FRF_NONE;
-	if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) flags |= FRF_TB_EXIT_FREE;
+	if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) flags |= FRF_TB_EXIT_FREE;
 	PBSTileInfo res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir, flags, v, v->lookahead.get());
 
 	if (IsTunnelBridgeWithSignalSimulation(res.tile) && TrackdirEntersTunnelBridge(res.tile, res.trackdir)) {
-		AssignBit(v->lookahead->flags, TRLF_CHUNNEL, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
+		v->lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
 		if (v->lookahead->current_position < v->lookahead->reservation_end_position - ((int)TILE_SIZE * (1 + v->lookahead->tunnel_bridge_reserved_tiles))) {
 			/* Vehicle is not itself in this tunnel/bridge, scan how much is available */
 			TileIndex end = INVALID_TILE;
@@ -1277,8 +1277,8 @@ void FillTrainReservationLookAhead(Train *v)
 			ApplyAvailableFreeTunnelBridgeTiles(v->lookahead.get(), free_tiles, res.tile, end);
 		}
 	} else {
-		ClrBit(v->lookahead->flags, TRLF_TB_EXIT_FREE);
-		ClrBit(v->lookahead->flags, TRLF_CHUNNEL);
+		v->lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeExitFree);
+		v->lookahead->flags.Reset(TrainReservationLookAheadFlag::Chunnel);
 		if (v->lookahead->tunnel_bridge_reserved_tiles != 0) {
 			v->lookahead->reservation_end_position -= (v->lookahead->tunnel_bridge_reserved_tiles * (int)TILE_SIZE);
 			v->lookahead->tunnel_bridge_reserved_tiles = 0;
