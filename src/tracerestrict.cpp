@@ -4228,7 +4228,8 @@ void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order
 void DumpTraceRestrictSlotsStats(format_target &buffer)
 {
 	struct cstats {
-		uint slotstats[VEH_END] = {};
+		std::array<uint, VEH_END> slotstats{};
+		std::array<uint, VEH_END> slotgroupstats{};
 		uint counters = 0;
 	};
 	std::map<Owner, cstats> cstatmap;
@@ -4237,20 +4238,24 @@ void DumpTraceRestrictSlotsStats(format_target &buffer)
 		cstatmap[slot->owner].slotstats[slot->vehicle_type]++;
 	}
 
+	for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
+		cstatmap[sg->owner].slotgroupstats[sg->vehicle_type]++;
+	}
+
 	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
 		cstatmap[ctr->owner].counters++;
 	}
 
 	auto print_stats = [&](const cstats &cs) {
-		auto line = [&](uint count, const char *type) {
-			if (count > 0) {
-				buffer.format("  {:10} slots: {:5}\n", type, count);
+		auto line = [&](VehicleType vt, const char *type_name) {
+			if (cs.slotstats[vt] > 0 || cs.slotgroupstats[vt] > 0) {
+				buffer.format("  {:10} slots: {:5}, groups: {:5}\n", type_name, cs.slotstats[vt], cs.slotgroupstats[vt]);
 			}
 		};
-		line(cs.slotstats[VEH_TRAIN], "train");
-		line(cs.slotstats[VEH_ROAD], "road");
-		line(cs.slotstats[VEH_SHIP], "ship");
-		line(cs.slotstats[VEH_AIRCRAFT], "aircraft");
+		line(VEH_TRAIN, "train");
+		line(VEH_ROAD, "road");
+		line(VEH_SHIP, "ship");
+		line(VEH_AIRCRAFT, "aircraft");
 		if (cs.counters > 0) {
 			buffer.format("          counters: {:5}\n", cs.counters);
 		}
