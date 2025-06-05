@@ -17,6 +17,9 @@
 #include <limits>
 
 struct BaseBitSetBase {
+	static inline constexpr bool serialisation_as_base = true;
+	static inline constexpr bool saveload_primitive_type = true;
+
 	constexpr auto operator <=>(const BaseBitSetBase &) const noexcept = default;
 };
 

@@ -19,6 +19,9 @@
 #include <tuple>
 #include <limits>
 
+template<typename T>
+concept SerialisationAsBase = T::serialisation_as_base || false;
+
 void   BufferSend_bool  (std::vector<uint8_t> &buffer, size_t limit, bool     data);
 void   BufferSend_uint8 (std::vector<uint8_t> &buffer, size_t limit, uint8_t  data);
 void   BufferSend_uint16(std::vector<uint8_t> &buffer, size_t limit, uint16_t data);
@@ -135,7 +138,7 @@ struct BufferSerialisationHelper {
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Send_string(data);
-		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct BaseBitSetBase, V>) {
+		} else if constexpr (SerialisationAsBase<V>) {
 			this->Send_generic_integer(data.base());
 		} else if constexpr (requires { data.Serialise(*this); }) {
 			data.Serialise(*this);
@@ -451,7 +454,7 @@ public:
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Recv_string(data, settings);
-		} else if constexpr (std::is_base_of_v<struct StrongTypedefBase, V> || std::is_base_of_v<struct BaseBitSetBase, V>) {
+		} else if constexpr (SerialisationAsBase<V>) {
 			this->Recv_generic_integer(data.edit_base());
 		} else if constexpr (requires { data.Deserialise(*this, settings); }) {
 			data.Deserialise(*this, settings);

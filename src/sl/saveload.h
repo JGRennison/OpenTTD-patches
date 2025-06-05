@@ -372,6 +372,9 @@ inline constexpr size_t SlVarSize(VarType type)
 	}
 }
 
+template<typename T>
+concept SlIsPrimitiveType = T::saveload_primitive_type || false;
+
 /**
  * Check whether the variable size/type of the variable in the saveload configuration
  * matches with the actual variable size, for primitive types.
@@ -387,7 +390,7 @@ inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
 	if (GetVarMemType(type) == SLE_VAR_CNAME) {
 		return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
 	}
-	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !sl_is_instance<T, OverflowSafeInt>{} && !std::is_base_of_v<StrongTypedefBase, T> && !std::is_base_of_v<BaseBitSetBase, T>) return false;
+	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !SlIsPrimitiveType<T>) return false;
 	return sizeof(T) == SlVarSize(type);
 }
 

@@ -23,6 +23,9 @@
 template <class T>
 class OverflowSafeInt : public fmt_format_as_base
 {
+public:
+	static inline constexpr bool saveload_primitive_type = true;
+
 private:
 	static constexpr T T_MAX = std::numeric_limits<T>::max();
 	static constexpr T T_MIN = std::numeric_limits<T>::min();

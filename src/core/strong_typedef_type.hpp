@@ -11,7 +11,10 @@
 #define STRONG_TYPEDEF_TYPE_HPP
 
 /** Non-templated base for #StrongType::Typedef for use with type trait queries. */
-struct StrongTypedefBase {};
+struct StrongTypedefBase {
+	static inline constexpr bool serialisation_as_base = true;
+	static inline constexpr bool saveload_primitive_type = true;
+};
 
 namespace StrongType {
 	/**
