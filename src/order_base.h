@@ -38,7 +38,7 @@ inline uint32_t OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid
 {
 	static_assert(sizeof(dest) == 2);
 	static_assert(OT_END <= 16);
-	return (((uint32_t) dest) << 16) | (((uint32_t) cid) << 8) | (((uint32_t) order_type) << 4) | ((uint32_t) veh_type);
+	return (((uint32_t) dest.base()) << 16) | (((uint32_t) cid) << 8) | (((uint32_t) order_type) << 4) | ((uint32_t) veh_type);
 }
 
 template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID dest, F handler)
@@ -439,13 +439,13 @@ public:
 	/** What waypoint flags? */
 	inline OrderWaypointFlags GetWaypointFlags() const { return (OrderWaypointFlags)GB(this->flags, 0, 3); }
 	/** What variable do we have to compare? */
-	inline OrderConditionVariable GetConditionVariable() const { return (OrderConditionVariable)GB(this->dest, 11, 5); }
+	inline OrderConditionVariable GetConditionVariable() const { return static_cast<OrderConditionVariable>(GB(this->dest.value, 11, 5)); }
 	/** What is the comparator to use? */
 	inline OrderConditionComparator GetConditionComparator() const { return (OrderConditionComparator)GB(this->type, 5, 3); }
 	/** Get the order to skip to. */
 	inline VehicleOrderID GetConditionSkipToOrder() const { return this->flags; }
 	/** Get the value to base the skip on. */
-	inline uint16_t GetConditionValue() const { return GB(this->dest, 0, 11); }
+	inline uint16_t GetConditionValue() const { return GB(this->dest.value, 0, 11); }
 	/** Get counter for the 'jump xx% of times' option */
 	inline int8_t GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
 	/** Get counter operation */
@@ -512,13 +512,13 @@ public:
 	/** Set waypoint flags. */
 	inline void SetWaypointFlags(OrderWaypointFlags waypoint_flags) { SB(this->flags, 0, 3, waypoint_flags); }
 	/** Set variable we have to compare. */
-	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest, 11, 5, condition_variable); }
+	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest.value, 11, 5, condition_variable); }
 	/** Set the comparator to use. */
 	inline void SetConditionComparator(OrderConditionComparator condition_comparator) { SB(this->type, 5, 3, condition_comparator); }
 	/** Get the order to skip to. */
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
-	inline void SetConditionValue(uint16_t value) { SB(this->dest, 0, 11, value); }
+	inline void SetConditionValue(uint16_t value) { SB(this->dest.value, 0, 11, value); }
 	/** Set counter for the 'jump xx% of times' option */
 	inline void SetJumpCounter(int8_t jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
 	/** Set counter operation */

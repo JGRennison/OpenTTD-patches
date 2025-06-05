@@ -137,7 +137,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 		if (v->current_order.IsType(OT_GOTO_STATION) ||
 				(v->current_order.IsType(OT_GOTO_DEPOT) && (v->current_order.GetDepotActionType() & ODATFB_NEAREST_DEPOT) == 0)) {
 			last_dest = Station::GetIfValid(v->last_station_visited);
-			next_dest = Station::GetIfValid(v->current_order.GetDestination());
+			next_dest = Station::GetIfValid(v->current_order.GetDestination().ToStationID());
 		} else {
 			last_dest = GetTargetAirportIfValid(v);
 			next_dest = Station::GetIfValid(v->GetNextStoppingStationCargoIndependent().value);
@@ -447,7 +447,7 @@ static void CheckIfAircraftNeedsService(Aircraft *v)
 	 * we don't want to consider going to a depot too. */
 	if (!v->current_order.IsType(OT_GOTO_DEPOT) && !v->current_order.IsType(OT_GOTO_STATION)) return;
 
-	const Station *st = Station::Get(v->current_order.GetDestination());
+	const Station *st = Station::Get(v->current_order.GetDestination().ToStationID());
 
 	assert(st != nullptr);
 
@@ -1218,8 +1218,8 @@ void FindBreakdownDestination(Aircraft *v)
 	DestinationID destination = INVALID_STATION;
 	if (v->breakdown_type == BREAKDOWN_AIRCRAFT_DEPOT) {
 		/* Go to a hangar, if possible at our current destination */
-		ClosestDepot closestDepot = v->FindClosestDepot();
-		if (closestDepot.found) destination = closestDepot.destination;
+		ClosestDepot closest_depot = v->FindClosestDepot();
+		if (closest_depot.found) destination = closest_depot.destination;
 	} else if (v->breakdown_type == BREAKDOWN_AIRCRAFT_EM_LANDING) {
 		/* Go to the nearest airport with a hangar */
 		destination = FindNearestHangar(v);
@@ -1228,15 +1228,15 @@ void FindBreakdownDestination(Aircraft *v)
 	}
 
 	if (destination != INVALID_STATION) {
-		if(destination != v->current_order.GetDestination()) {
-			v->current_order.MakeGoToDepot(destination, ODTFB_BREAKDOWN);
+		if (destination != v->current_order.GetDestination()) {
+			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
 			if (v->state == FLYING) {
 				/* Do not change airport if in the middle of another airport's state machine,
 				 * as this can result in the airport being left in a blocked state */
 				AircraftNextAirportPos_and_Order(v);
 			}
 		} else {
-			v->current_order.MakeGoToDepot(destination, ODTFB_BREAKDOWN);
+			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
 		}
 	} else {
 		if (v->state != FLYING && v->targetairport != INVALID_STATION) {
@@ -1543,7 +1543,7 @@ static void AircraftLandAirplane(Aircraft *v)
 void AircraftNextAirportPos_and_Order(Aircraft *v)
 {
 	if (v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_GOTO_DEPOT)) {
-		v->targetairport = v->current_order.GetDestination();
+		v->targetairport = v->current_order.GetDestination().ToStationID();
 	}
 
 	const Station *st = GetTargetAirportIfValid(v);
@@ -2201,7 +2201,7 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 	if (v->current_order.IsType(OT_LOADING)) return true;
 
 	if (v->current_order.IsType(OT_LEAVESTATION)) {
-		StationID station_id = v->current_order.GetDestination();
+		StationID station_id = v->current_order.GetDestination().ToStationID();
 		v->current_order.Free();
 
 		ProcessOrders(v);
@@ -2224,7 +2224,7 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 		/* Check the distance to the next destination. This code works because the target
 		 * airport is only updated after take off and not on the ground. */
 		Station *cur_st = Station::GetIfValid(v->targetairport);
-		Station *next_st = v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_GOTO_DEPOT) ? Station::GetIfValid(v->current_order.GetDestination()) : nullptr;
+		Station *next_st = v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_GOTO_DEPOT) ? Station::GetIfValid(v->current_order.GetDestination().ToStationID()) : nullptr;
 
 		if (cur_st != nullptr && cur_st->airport.tile != INVALID_TILE && next_st != nullptr && next_st->airport.tile != INVALID_TILE) {
 			uint dist = DistanceSquare(cur_st->airport.tile, next_st->airport.tile);

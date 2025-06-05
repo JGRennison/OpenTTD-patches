@@ -2005,10 +2005,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 					pull_through_mode = false;
 					if (_local_company == v->owner) {
 						SetDParam(0, front->index);
-						SetDParam(1, order->GetDestination());
+						SetDParam(1, order->GetDestination().base());
 						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
 								NR_VEHICLE, front->index,
-								NR_STATION, order->GetDestination());
+								NR_STATION, order->GetDestination().ToStationID());
 					}
 					break;
 				}

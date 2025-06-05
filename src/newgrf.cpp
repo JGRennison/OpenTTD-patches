@@ -3627,7 +3627,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 				break;
 
 			case 0x12: // Special flags
-				tsp->special_flags = (IndustryTileSpecialFlags)buf.ReadByte();
+				tsp->special_flags = IndustryTileSpecialFlags{buf.ReadByte()};
 				break;
 
 			case 0x13: { // variable length cargo acceptance
@@ -3640,7 +3640,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 				for (uint i = 0; i < std::size(tsp->acceptance); i++) {
 					if (i < num_cargoes) {
 						tsp->accepts_cargo[i] = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
-						/* Tile acceptance can be negative to counteract the INDTILE_SPECIAL_ACCEPTS_ALL_CARGO flag */
+						/* Tile acceptance can be negative to counteract the IndustryTileSpecialFlag::AcceptsAllCargo flag */
 						tsp->acceptance[i] = (int8_t)buf.ReadByte();
 					} else {
 						tsp->accepts_cargo[i] = INVALID_CARGO;
@@ -3965,7 +3965,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 			}
 
 			case 0x0B: // Industry production flags
-				indsp->life_type = (IndustryLifeType)buf.ReadByte();
+				indsp->life_type = IndustryLifeTypes{buf.ReadByte()};
 				break;
 
 			case 0x0C: // Industry closure message
@@ -4038,7 +4038,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				break;
 
 			case 0x1A: // Special industry flags to define special behavior
-				indsp->behaviour = (IndustryBehaviour)buf.ReadDWord();
+				indsp->behaviour = IndustryBehaviours{buf.ReadDWord()};
 				break;
 
 			case 0x1B: // New industry text ID

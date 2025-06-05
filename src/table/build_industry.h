@@ -1151,8 +1151,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_POWER_STATION,  IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_COAL,       15, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
-	   INDUSTRYBEH_CAN_SUBSIDENCE,
+	   IndustryLifeType::Extractive,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
+	   IndustryBehaviour::CanSubsidence,
 	   STR_INDUSTRY_NAME_COAL_MINE,                     STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_COAL,   STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1162,7 +1162,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   CT_INVALID,     0, CT_INVALID,       0, 5,
 	   CT_COAL,      256, CT_INVALID,     256, CT_INVALID,   256,
 	   INDUSTRYLIFE_BLACK_HOLE,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
-	   INDUSTRYBEH_NONE,
+	   {},
 	   STR_INDUSTRY_NAME_POWER_STATION,                 STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1171,8 +1171,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FOREST,         IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_GOODS,       0, CT_INVALID,       0, 5,
 	   CT_WOOD,      256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Temperate,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Temperate,
+	   {},
 	   STR_INDUSTRY_NAME_SAWMILL,                       STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1181,8 +1181,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_SAWMILL,        IT_PAPER_MILL,       IT_INVALID,       CHECK_FOREST,
 	   CT_WOOD,       13, CT_INVALID,       0, 30,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Organic,                   LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
+	   {},
 	   STR_INDUSTRY_NAME_FOREST,                        STR_NEWS_INDUSTRY_PLANTED,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1191,8 +1191,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_OIL_RIG,        IT_INVALID,          IT_INVALID,       CHECK_REFINERY,
 	   CT_GOODS,       0, CT_INVALID,       0, 5,
 	   CT_OIL,       256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic, LandscapeType::Tropic}),
-	   INDUSTRYBEH_AIRPLANE_ATTACKS,
+	   IndustryLifeType::Processing,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic, LandscapeType::Tropic}),
+	   IndustryBehaviour::AirplaneAttacks,
 	   STR_INDUSTRY_NAME_OIL_REFINERY,                  STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1201,8 +1201,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_OIL_REFINERY,   IT_INVALID,          IT_INVALID,       CHECK_OIL_RIG,
 	   CT_OIL,        15, CT_PASSENGERS,    2, 5,
 	   CT_INVALID,     0, CT_INVALID,       0, CT_INVALID,     0,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Temperate,
-	   INDUSTRYBEH_BUILT_ONWATER | INDUSTRYBEH_AFTER_1960 | INDUSTRYBEH_AI_AIRSHIP_ROUTES,
+	   IndustryLifeType::Extractive,                LandscapeType::Temperate,
+	   IndustryBehaviours({IndustryBehaviour::BuiltOnWater, IndustryBehaviour::After1960, IndustryBehaviour::AIAirShipRoutes}),
 	   STR_INDUSTRY_NAME_OIL_RIG,                       STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_OIL,   STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1211,8 +1211,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FARM,           IT_STEEL_MILL,       IT_INVALID,       CHECK_NOTHING,
 	   CT_GOODS,       0, CT_INVALID,       0, 5,
 	   MCT_LIVESTOCK_FRUIT, 256, MCT_GRAIN_WHEAT_MAIZE,       256, CT_STEEL,    256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Temperate,
-	   INDUSTRYBEH_CHOPPER_ATTACKS,
+	   IndustryLifeType::Processing,                LandscapeType::Temperate,
+	   IndustryBehaviour::ChopperAttacks,
 	   STR_INDUSTRY_NAME_FACTORY,                       STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1221,8 +1221,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_PAPER_MILL,     IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_GOODS,       0, CT_INVALID,       0, 5,
 	   CT_PAPER,     256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Arctic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Arctic,
+	   {},
 	   STR_INDUSTRY_NAME_PRINTING_WORKS,                STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1231,8 +1231,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_IRON_MINE,      IT_FACTORY,          IT_INVALID,       CHECK_NOTHING,
 	   CT_STEEL,       0, CT_INVALID,       0, 5,
 	   CT_IRON_ORE,  256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Temperate,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Temperate,
+	   {},
 	   STR_INDUSTRY_NAME_STEEL_MILL,                    STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1241,8 +1241,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FACTORY,        IT_FOOD_PROCESS,     IT_INVALID,       CHECK_FARM,
 	   MCT_GRAIN_WHEAT_MAIZE,      10, MCT_LIVESTOCK_FRUIT,    10, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
-	   INDUSTRYBEH_PLANT_FIELDS | INDUSTRYBEH_PLANT_ON_BUILT,
+	   IndustryLifeType::Organic,                   LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic}),
+	   IndustryBehaviours({IndustryBehaviour::PlantFields, IndustryBehaviour::PlantOnBuild}),
 	   STR_INDUSTRY_NAME_FARM,                          STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1251,8 +1251,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FACTORY_2,      IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_COPPER_ORE, 10, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_COPPER_ORE_MINE,               STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1261,8 +1261,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_OIL_REFINERY,   IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_OIL,        12, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic, LandscapeType::Tropic}),
-	   INDUSTRYBEH_DONT_INCR_PROD | INDUSTRYBEH_BEFORE_1950,
+	   IndustryLifeType::Extractive,                LandscapeTypes({LandscapeType::Temperate, LandscapeType::Arctic, LandscapeType::Tropic}),
+	   IndustryBehaviours({IndustryBehaviour::DontIncrProd, IndustryBehaviour::Before1950}),
 	   STR_INDUSTRY_NAME_OIL_WELLS,                     STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_OIL,   STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1272,7 +1272,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   MCT_VALUABLES_GOLD_DIAMONDS,   6, CT_INVALID,       0, 5,
 	   MCT_VALUABLES_GOLD_DIAMONDS,   0, CT_INVALID,       0, CT_INVALID,     0,
 	   INDUSTRYLIFE_BLACK_HOLE,                LandscapeType::Temperate,
-	   INDUSTRYBEH_TOWN1200_MORE,
+	   IndustryBehaviour::Town1200More,
 	   STR_INDUSTRY_NAME_BANK,                          STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1281,8 +1281,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FRUIT_PLANTATION, IT_FARM,           IT_FARM_2,        CHECK_NOTHING,
 	   CT_FOOD,        0, CT_INVALID,       0, 5,
 	   MCT_LIVESTOCK_FRUIT,     256, MCT_GRAIN_WHEAT_MAIZE,       256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeTypes({LandscapeType::Arctic, LandscapeType::Tropic}),
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeTypes({LandscapeType::Arctic, LandscapeType::Tropic}),
+	   {},
 	   STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT,         STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1291,8 +1291,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FOREST,         IT_PRINTING_WORKS,   IT_INVALID,       CHECK_NOTHING,
 	   CT_PAPER,       0, CT_INVALID,       0, 5,
 	   CT_WOOD,      256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Arctic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Arctic,
+	   {},
 	   STR_INDUSTRY_NAME_PAPER_MILL,                    STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1301,8 +1301,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_BANK_TROPIC_ARCTIC, IT_INVALID,      IT_INVALID,       CHECK_NOTHING,
 	   MCT_VALUABLES_GOLD_DIAMONDS,        7, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Arctic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Arctic,
+	   {},
 	   STR_INDUSTRY_NAME_GOLD_MINE,                     STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1312,7 +1312,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   CT_INVALID,     0, CT_INVALID,       0, 5,
 	   MCT_VALUABLES_GOLD_DIAMONDS,      256, CT_INVALID,     256, CT_INVALID,   256,
 	   INDUSTRYLIFE_BLACK_HOLE,                LandscapeTypes({LandscapeType::Arctic, LandscapeType::Tropic}),
-	   INDUSTRYBEH_ONLY_INTOWN,
+	   IndustryBehaviour::OnlyInTown,
 	   STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC,                          STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1321,8 +1321,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_BANK_TROPIC_ARCTIC, IT_INVALID,      IT_INVALID,       CHECK_NOTHING,
 	   MCT_VALUABLES_GOLD_DIAMONDS,    7, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_DIAMOND_MINE,                  STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1331,8 +1331,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_STEEL_MILL,     IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_IRON_ORE,   10, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Temperate,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Temperate,
+	   {},
 	   STR_INDUSTRY_NAME_IRON_ORE_MINE,                 STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1341,8 +1341,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FOOD_PROCESS,   IT_INVALID,          IT_INVALID,       CHECK_PLANTATION,
 	   MCT_LIVESTOCK_FRUIT,      10, CT_INVALID,       0, 15,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Organic,                   LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_FRUIT_PLANTATION,              STR_NEWS_INDUSTRY_PLANTED,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1351,8 +1351,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FACTORY_2,      IT_INVALID,          IT_INVALID,       CHECK_PLANTATION,
 	   CT_RUBBER,     10, CT_INVALID,       0, 15,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Organic,                   LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_RUBBER_PLANTATION,             STR_NEWS_INDUSTRY_PLANTED,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1361,8 +1361,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_WATER_TOWER,    IT_INVALID,          IT_INVALID,       CHECK_WATER,
 	   CT_WATER,      12, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_WATER_SUPPLY,                  STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1372,7 +1372,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   CT_INVALID,     0, CT_INVALID,       0, 5,
 	   CT_WATER,     256, CT_INVALID,     256, CT_INVALID,   256,
 	   INDUSTRYLIFE_BLACK_HOLE,                LandscapeType::Tropic,
-	   INDUSTRYBEH_ONLY_INTOWN,
+	   IndustryBehaviour::OnlyInTown,
 	   STR_INDUSTRY_NAME_WATER_TOWER,                   STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1381,8 +1381,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_RUBBER_PLANTATION, IT_COPPER_MINE,   IT_LUMBER_MILL,   CHECK_PLANTATION,
 	   CT_GOODS,       0, CT_INVALID,       0, 5,
 	   CT_RUBBER,    256, CT_COPPER_ORE,  256, CT_WOOD,      256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Tropic,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Tropic,
+	   {},
 	   STR_INDUSTRY_NAME_FACTORY_2,                       STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1391,8 +1391,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FOOD_PROCESS,   IT_INVALID,          IT_INVALID,       CHECK_PLANTATION,
 	   MCT_GRAIN_WHEAT_MAIZE,      11, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeType::Tropic,
-	   INDUSTRYBEH_PLANT_FIELDS | INDUSTRYBEH_PLANT_ON_BUILT,
+	   IndustryLifeType::Organic,                   LandscapeType::Tropic,
+	   IndustryBehaviours({IndustryBehaviour::PlantFields, IndustryBehaviour::PlantOnBuild}),
 	   STR_INDUSTRY_NAME_FARM_2,                          STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1401,8 +1401,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FACTORY_2,      IT_INVALID,          IT_INVALID,       CHECK_LUMBERMILL,
 	   CT_WOOD,        0, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Tropic,
-	   INDUSTRYBEH_CUT_TREES,
+	   IndustryLifeType::Processing,                LandscapeType::Tropic,
+	   IndustryBehaviour::CutTrees,
 	   STR_INDUSTRY_NAME_LUMBER_MILL,                   STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_LACK_OF_TREES,   STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1411,8 +1411,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_CANDY_FACTORY,  IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_COTTON_CANDY, 13, CT_INVALID,    0, 30,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Organic,                   LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_COTTON_CANDY_FOREST,           STR_NEWS_INDUSTRY_PLANTED,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1421,8 +1421,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_COTTON_CANDY,   IT_TOFFEE_QUARRY,    IT_SUGAR_MINE,    CHECK_NOTHING,
 	   CT_CANDY,       0, CT_INVALID,       0, 5,
 	   CT_SUGAR,     256, CT_TOFFEE,      256, CT_COTTON_CANDY, 256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_CANDY_FACTORY,                 STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1431,8 +1431,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_TOY_FACTORY,    IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_BATTERIES,  11, CT_INVALID,       0, 30,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_ORGANIC,                   LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Organic,                   LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_BATTERY_FARM,                  STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM),
 
@@ -1441,8 +1441,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FIZZY_DRINK_FACTORY, IT_INVALID,     IT_INVALID,       CHECK_NOTHING,
 	   CT_COLA,       12, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_COLA_WELLS,                    STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1452,7 +1452,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   CT_INVALID,     0, CT_INVALID,       0, 5,
 	   CT_TOYS,      256, CT_INVALID,     256, CT_INVALID,   256,
 	   INDUSTRYLIFE_BLACK_HOLE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_ONLY_NEARTOWN,
+	   IndustryBehaviour::OnlyNearTown,
 	   STR_INDUSTRY_NAME_TOY_SHOP,                      STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1461,8 +1461,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_PLASTIC_FOUNTAINS, IT_BATTERY_FARM,  IT_TOY_SHOP,     CHECK_NOTHING,
 	   CT_TOYS,        0, CT_INVALID,       0, 5,
 	   CT_PLASTIC,   256, CT_BATTERIES,   256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_TOY_FACTORY,                   STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1471,8 +1471,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_TOY_FACTORY,    IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_PLASTIC,    14, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS,             STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1481,8 +1481,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_COLA_WELLS,     IT_BUBBLE_GENERATOR, IT_INVALID,       CHECK_NOTHING,
 	   CT_FIZZY_DRINKS, 0, CT_INVALID,      0, 5,
 	   CT_COLA,       256, CT_BUBBLES,    256, CT_INVALID,   256,
-	   INDUSTRYLIFE_PROCESSING,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Processing,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY,           STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS,      STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1491,8 +1491,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_FIZZY_DRINK_FACTORY, IT_INVALID,     IT_INVALID,       CHECK_BUBBLEGEN,
 	   CT_BUBBLES,    13, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_BUBBLE_GENERATOR,              STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1501,8 +1501,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_CANDY_FACTORY,  IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_TOFFEE,     10, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_TOFFEE_QUARRY,                 STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 
@@ -1511,8 +1511,8 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 	   IT_CANDY_FACTORY,  IT_INVALID,          IT_INVALID,       CHECK_NOTHING,
 	   CT_SUGAR,      11, CT_INVALID,       0, 5,
 	   CT_INVALID,   256, CT_INVALID,     256, CT_INVALID,   256,
-	   INDUSTRYLIFE_EXTRACTIVE,                LandscapeType::Toyland,
-	   INDUSTRYBEH_NONE,
+	   IndustryLifeType::Extractive,                LandscapeType::Toyland,
+	   {},
 	   STR_INDUSTRY_NAME_SUGAR_MINE,                    STR_NEWS_INDUSTRY_CONSTRUCTION,
 	   STR_NEWS_INDUSTRY_CLOSURE_GENERAL,    STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL,     STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL),
 };
@@ -1533,7 +1533,7 @@ static const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
  */
 #define MT(ca1, c1, ca2, c2, ca3, c3, sl, a1, a2, a3) { \
 	{INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO, INVALID_CARGO}, \
-	{ca1, ca2, ca3}, sl, a1, a2, a3, IndustryTileCallbackMasks{}, {0, ANIM_STATUS_NO_ANIMATION, 2, 0}, INDTILE_SPECIAL_NONE, true, GRFFileProps(INVALID_INDUSTRYTILE), {}, {c1, c2, c3} \
+	{ca1, ca2, ca3}, sl, a1, a2, a3, IndustryTileCallbackMasks{}, {0, ANIM_STATUS_NO_ANIMATION, 2, 0}, IndustryTileSpecialFlags{}, true, GRFFileProps(INVALID_INDUSTRYTILE), {}, {c1, c2, c3} \
 }
 static const IndustryTileSpec _origin_industry_tile_specs[NEW_INDUSTRYTILEOFFSET] = {
 	/* Coal Mine */

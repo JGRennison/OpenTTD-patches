@@ -259,11 +259,11 @@ static bool TestOrderCondition(const Order *order, TraceRestrictInstructionItem 
 				break;
 
 			case TROCAF_WAYPOINT:
-				result = order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == condvalue;
+				result = order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination().base() == condvalue;
 				break;
 
 			case TROCAF_DEPOT:
-				result = order->IsType(OT_GOTO_DEPOT) && order->GetDestination() == condvalue;
+				result = order->IsType(OT_GOTO_DEPOT) && order->GetDestination().base() == condvalue;
 				break;
 
 			default:
@@ -666,7 +666,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 									case OT_GOTO_STATION:
 									case OT_GOTO_WAYPOINT:
 									case OT_LOADING_ADVANCE:
-										has_status = v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT));
+										has_status = v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination().ToStationID(), v->current_order.IsType(OT_GOTO_WAYPOINT));
 										break;
 
 									default:
@@ -3374,7 +3374,7 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 		changed_order = true;
 	}
-	if (o->IsType(OT_SLOT) && cond(static_cast<TraceRestrictSlotID>(o->GetDestination()))) {
+	if (o->IsType(OT_SLOT) && cond(static_cast<TraceRestrictSlotID>(o->GetDestination().base()))) {
 		o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
 		changed_order = true;
 	}
@@ -3632,7 +3632,7 @@ bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 		changed_order = true;
 	}
-	if (o->IsType(OT_SLOT_GROUP) && cond(static_cast<TraceRestrictSlotGroupID>(o->GetDestination()))) {
+	if (o->IsType(OT_SLOT_GROUP) && cond(static_cast<TraceRestrictSlotGroupID>(o->GetDestination().base()))) {
 		o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_GROUP);
 		changed_order = true;
 	}
@@ -3860,7 +3860,7 @@ bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 		o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID);
 		changed_order = true;
 	}
-	if (o->IsType(OT_COUNTER) && cond(static_cast<TraceRestrictCounterID>(o->GetDestination()))) {
+	if (o->IsType(OT_COUNTER) && cond(static_cast<TraceRestrictCounterID>(o->GetDestination().base()))) {
 		o->SetDestination(INVALID_TRACE_RESTRICT_COUNTER_ID);
 		changed_order = true;
 	}

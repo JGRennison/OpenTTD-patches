@@ -179,7 +179,7 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 {
 	static_assert(std::tuple_size_v<std::remove_reference_t<decltype(cargoes)>> <= std::tuple_size_v<std::remove_reference_t<decltype(suffixes)>>);
 
-	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
+	if (indspec->behaviour.Test(IndustryBehaviour::CargoTypesUnlimited)) {
 		/* Reworked behaviour with new many-in-many-out scheme */
 		for (size_t j = 0; j < std::size(suffixes); j++) {
 			if (cargoes[j] != INVALID_CARGO) {
@@ -231,7 +231,7 @@ void GetCargoSuffix(CargoSuffixInOut use_input, CargoSuffixType cst, const Indus
 	suffix.text.clear();
 	suffix.display = CSD_CARGO;
 	if (!IsValidCargoType(cargo)) return;
-	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
+	if (indspec->behaviour.Test(IndustryBehaviour::CargoTypesUnlimited)) {
 		uint8_t local_id = indspec->grf_prop.grffile->cargo_map[cargo]; // should we check the value for valid?
 		uint cargotype = local_id << 16 | use_input;
 		GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffix);

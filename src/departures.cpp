@@ -51,7 +51,7 @@ using ScheduledDispatchVehicleRecords = btree::btree_map<uint, LastDispatchRecor
 
 CallAtTargetID CallAtTargetID::FromOrder(const Order *order)
 {
-	uint32_t id = order->GetDestination();
+	uint32_t id = order->GetDestination().base();
 	if (order->IsType(OT_GOTO_DEPOT)) id |= DEPOT_TAG;
 	return CallAtTargetID(id);
 }
@@ -732,19 +732,19 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 			order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) &&
 			order->GetType() == OT_GOTO_STATION &&
 			d->via == INVALID_STATION) {
-		this->candidate_via = (StationID)order->GetDestination();
+		this->candidate_via = order->GetDestination().ToStationID();
 	}
 
 	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && this->pending_via == INVALID_STATION) {
-		this->pending_via = (StationID)order->GetDestination();
+		this->pending_via = order->GetDestination().ToStationID();
 		const Order *next = v->orders->GetNext(order);
-		if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && (StationID)next->GetDestination() != this->pending_via) {
-			this->pending_via2 = (StationID)next->GetDestination();
+		if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && next->GetDestination().ToStationID() != this->pending_via) {
+			this->pending_via2 = next->GetDestination().ToStationID();
 		}
 	}
 
 	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_REMOVE_VIA && !d->calling_at.empty()) {
-		d->remove_vias.push_back({ (StationID)order->GetDestination(), (uint)(d->calling_at.size() - 1) });
+		d->remove_vias.push_back({ order->GetDestination().ToStationID(), (uint)(d->calling_at.size() - 1) });
 	}
 
 	return false;
@@ -780,8 +780,8 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 		d->via = this->pending_via;
 		d->via2 = this->pending_via2;
 	}
-	if (d->via == INVALID_STATION && this->candidate_via == (StationID)order->GetDestination()) {
-		d->via = (StationID)order->GetDestination();
+	if (d->via == INVALID_STATION && this->candidate_via == order->GetDestination().ToStationID()) {
+		d->via = order->GetDestination().ToStationID();
 	}
 
 	/* If we unload all at this station and departure load tests are not disabled, then it is the terminus. */
@@ -816,7 +816,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 		const Order *o = arrival_history[i].order;
 
 		if (IsCallingPointTargetOrder(o)) {
-			if (source.StationMatches(o->GetDestination())) {
+			if (source.StationMatches(o->GetDestination().ToStationID())) {
 				/* Same as source order, remove all possible origins */
 				possible_origins.clear();
 			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_NO_LOAD && (o->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0) {
@@ -825,15 +825,15 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 			} else {
 				/* Remove all possible origins of this station */
 				for (auto &item : possible_origins) {
-					if (item.first == o->GetDestination()) {
+					if (item.first == o->GetDestination().ToStationID()) {
 						item.first = INVALID_STATION;
 					}
 				}
 
 				if (o->IsType(OT_GOTO_WAYPOINT) || o->IsType(OT_GOTO_DEPOT)) {
-					if (calling_settings.ShowAllStops()) possible_origins.push_back({ o->GetDestination(), i });
+					if (calling_settings.ShowAllStops()) possible_origins.push_back({ o->GetDestination().ToStationID(), i });
 				} else {
-					if (calling_settings.ShowAllStops() || o->GetLoadType() != OLFB_NO_LOAD) possible_origins.push_back({ o->GetDestination(), i });
+					if (calling_settings.ShowAllStops() || o->GetLoadType() != OLFB_NO_LOAD) possible_origins.push_back({ o->GetDestination().ToStationID(), i });
 				}
 			}
 		}

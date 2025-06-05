@@ -388,7 +388,7 @@ public:
 		this->source.destination = (vt == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
 		this->title_params[0] = STR_DEPOT_NAME;
 		this->title_params[1] = vt;
-		this->title_params[2] = this->source.destination;
+		this->title_params[2] = this->source.destination.base();
 
 		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt);
 
@@ -1075,7 +1075,7 @@ static void FillCallingAtTargetDParam(size_t n, const Departure *d, CallAtTarget
 	} else {
 		SetDParam(n, STR_DEPOT_NAME);
 		SetDParam(n + 1, d->vehicle->type);
-		SetDParam(n + 2, target.GetDepotDestinationID());
+		SetDParam(n + 2, target.GetDepotDestinationID().base());
 	}
 }
 

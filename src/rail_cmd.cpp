@@ -4692,10 +4692,10 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 	auto abort_load_through = [&](bool leave_station) {
 		if (_local_company == v->owner) {
 			SetDParam(0, v->index);
-			SetDParam(1, v->current_order.GetDestination());
+			SetDParam(1, v->current_order.GetDestination().ToStationID());
 			AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
 					NR_VEHICLE, v->index,
-					NR_STATION, v->current_order.GetDestination());
+					NR_STATION, v->current_order.GetDestination().ToStationID());
 		}
 		if (leave_station) {
 			v->LeaveStation();

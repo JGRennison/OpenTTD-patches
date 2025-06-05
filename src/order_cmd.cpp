@@ -86,7 +86,7 @@ void IntialiseOrderDestinationRefcountMap()
 		if (v != v->FirstShared()) continue;
 		for (const Order *order : v->Orders()) {
 			if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
-				_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), v->owner, order->GetType(), v->type)]++;
+				_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination().ToStationID(), v->owner, order->GetType(), v->type)]++;
 			}
 		}
 	}
@@ -102,7 +102,7 @@ void ClearOrderDestinationRefcountMap()
 void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner owner, int delta)
 {
 	if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
-		_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), owner, order->GetType(), type)] += delta;
+		_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination().ToStationID(), owner, order->GetType(), type)] += delta;
 	}
 }
 
@@ -111,7 +111,7 @@ void Order::InvalidateGuiOnRemove()
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (this->IsType(OT_GOTO_STATION) || this->IsType(OT_GOTO_WAYPOINT)) {
-		BaseStation *bs = BaseStation::GetIfValid(this->GetDestination());
+		BaseStation *bs = BaseStation::GetIfValid(this->GetDestination().ToStationID());
 		if (bs != nullptr && bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST, 0);
 	}
 }
@@ -333,12 +333,12 @@ uint16_t Order::MapOldOrder() const
 			if (this->GetUnloadType() & OUFB_UNLOAD) SetBit(order, 5);
 			if (this->GetLoadType() & OLFB_FULL_LOAD) SetBit(order, 6);
 			if (this->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) SetBit(order, 7);
-			order |= GB(this->GetDestination(), 0, 8) << 8;
+			order |= GB(this->GetDestination().value, 0, 8) << 8;
 			break;
 		case OT_GOTO_DEPOT:
 			if (!(this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) SetBit(order, 6);
 			SetBit(order, 7);
-			order |= GB(this->GetDestination(), 0, 8) << 8;
+			order |= GB(this->GetDestination().value, 0, 8) << 8;
 			break;
 		case OT_LOADING:
 			if (this->GetLoadType() & OLFB_FULL_LOAD) SetBit(order, 6);
@@ -656,7 +656,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 	} while (next->IsType(OT_GOTO_DEPOT) || next->IsSlotCounterOrder() || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
-	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
+	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination().ToStationID());
 }
 
 /**
@@ -682,7 +682,7 @@ void OrderList::InsertOrderAt(Order &&ins_order, VehicleOrderID index)
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (new_order->IsType(OT_GOTO_STATION) || new_order->IsType(OT_GOTO_WAYPOINT)) {
-		BaseStation *bs = BaseStation::Get(new_order->GetDestination());
+		BaseStation *bs = BaseStation::Get(new_order->GetDestination().ToStationID());
 		if (bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST, 0);
 	}
 
@@ -841,13 +841,13 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 		case OT_GOTO_WAYPOINT:
 		case OT_GOTO_STATION:
 		case OT_IMPLICIT:
-			if (airport && v->type == VEH_AIRCRAFT) return Station::Get(this->GetDestination())->airport.tile;
-			return BaseStation::Get(this->GetDestination())->xy;
+			if (airport && v->type == VEH_AIRCRAFT) return Station::Get(this->GetDestination().ToStationID())->airport.tile;
+			return BaseStation::Get(this->GetDestination().ToStationID())->xy;
 
 		case OT_GOTO_DEPOT:
 			if (this->GetDepotActionType() & ODATFB_NEAREST_DEPOT) return INVALID_TILE;
 			if (this->GetDestination() == INVALID_DEPOT) return INVALID_TILE;
-			return (v->type == VEH_AIRCRAFT) ? Station::Get(this->GetDestination())->xy : Depot::Get(this->GetDestination())->xy;
+			return (v->type == VEH_AIRCRAFT) ? Station::Get(this->GetDestination().ToStationID())->xy : Depot::Get(this->GetDestination().ToDepotID())->xy;
 
 		default:
 			return INVALID_TILE;
@@ -872,7 +872,7 @@ TileIndex Order::GetAuxiliaryLocation(bool secondary) const
 		}
 	}
 	if (this->IsType(OT_LABEL) && IsDestinationOrderLabelSubType(this->GetLabelSubType())) {
-		const BaseStation *st = BaseStation::GetIfValid(this->GetDestination());
+		const BaseStation *st = BaseStation::GetIfValid(this->GetDestination().ToStationID());
 		if (st != nullptr) return st->xy;
 	}
 	return INVALID_TILE;
@@ -969,7 +969,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 	 * and has the correct flags if any */
 	switch (new_order.GetType()) {
 		case OT_GOTO_STATION: {
-			const Station *st = Station::GetIfValid(new_order.GetDestination());
+			const Station *st = Station::GetIfValid(new_order.GetDestination().ToStationID());
 			if (st == nullptr) return CMD_ERROR;
 
 			if (st->owner != OWNER_NONE) {
@@ -1033,7 +1033,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		case OT_GOTO_DEPOT: {
 			if ((new_order.GetDepotActionType() & ODATFB_NEAREST_DEPOT) == 0) {
 				if (v->type == VEH_AIRCRAFT) {
-					const Station *st = Station::GetIfValid(new_order.GetDestination());
+					const Station *st = Station::GetIfValid(new_order.GetDestination().ToStationID());
 
 					if (st == nullptr) return CMD_ERROR;
 
@@ -1044,7 +1044,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 						return CMD_ERROR;
 					}
 				} else {
-					const Depot *dp = Depot::GetIfValid(new_order.GetDestination());
+					const Depot *dp = Depot::GetIfValid(new_order.GetDestination().ToDepotID());
 
 					if (dp == nullptr) return CMD_ERROR;
 
@@ -1088,7 +1088,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_GOTO_WAYPOINT: {
-			const Waypoint *wp = Waypoint::GetIfValid(new_order.GetDestination());
+			const Waypoint *wp = Waypoint::GetIfValid(new_order.GetDestination().ToStationID());
 			if (wp == nullptr) return CMD_ERROR;
 
 			switch (v->type) {
@@ -1230,7 +1230,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_SLOT: {
-			TraceRestrictSlotID data = new_order.GetDestination();
+			TraceRestrictSlotID data = new_order.GetDestination().base();
 			if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
@@ -1248,7 +1248,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_SLOT_GROUP: {
-			TraceRestrictSlotGroupID data = new_order.GetDestination();
+			TraceRestrictSlotGroupID data = new_order.GetDestination().base();
 			if (data != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 				const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(data);
 				if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
@@ -1265,7 +1265,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_COUNTER: {
-			TraceRestrictCounterID data = new_order.GetDestination();
+			TraceRestrictCounterID data = new_order.GetDestination().base();
 			if (data != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(data);
 				if (ctr == nullptr) return CMD_ERROR;
@@ -1281,7 +1281,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 
 				case OLST_DEPARTURES_VIA:
 				case OLST_DEPARTURES_REMOVE_VIA: {
-					const BaseStation *st = BaseStation::GetIfValid(new_order.GetDestination());
+					const BaseStation *st = BaseStation::GetIfValid(new_order.GetDestination().ToStationID());
 					if (st == nullptr) return CMD_ERROR;
 
 					if (st->owner != OWNER_NONE) {
@@ -2596,13 +2596,13 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 					/* Allow copying unreachable destinations if they were already unreachable for the source.
 					 * This is basically to allow cloning / autorenewing / autoreplacing vehicles, while the stations
 					 * are temporarily invalid due to reconstruction. */
-					const Station *st = Station::Get(order->GetDestination());
+					const Station *st = Station::Get(order->GetDestination().ToStationID());
 					if (CanVehicleUseStation(src, st) && !CanVehicleUseStation(dst, st)) {
 						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
 					}
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
-					const Depot *dp = Depot::GetIfValid(order->GetDestination());
+					const Depot *dp = Depot::GetIfValid(order->GetDestination().ToDepotID());
 					if (dp != nullptr && (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
 						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, RoadTypeIsTram(RoadVehicle::From(dst)->roadtype) ? STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE : STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE);
 					}
@@ -2682,13 +2682,13 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 			 * and neither can helicopters and aircraft. */
 			for (const Order *order : src->Orders()) {
 				if (OrderGoesToStation(dst, order)) {
-					const Station *st = Station::Get(order->GetDestination());
+					const Station *st = Station::Get(order->GetDestination().ToStationID());
 					if (!CanVehicleUseStation(dst, st)) {
 						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, GetVehicleCannotUseStationReason(dst, st));
 					}
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
-					const Depot *dp = Depot::GetIfValid(order->GetDestination());
+					const Depot *dp = Depot::GetIfValid(order->GetDestination().ToDepotID());
 					if (dp != nullptr && (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
 						return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, RoadTypeIsTram(RoadVehicle::From(dst)->roadtype) ? STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE : STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE);
 					}
@@ -2856,7 +2856,7 @@ void CheckOrders(const Vehicle *v)
 			}
 			/* Does station have a load-bay for this vehicle? */
 			if (order->IsType(OT_GOTO_STATION)) {
-				const Station *st = Station::Get(order->GetDestination());
+				const Station *st = Station::Get(order->GetDestination().ToStationID());
 
 				n_st++;
 				if (!CanVehicleUseStation(v, st)) {
@@ -2910,9 +2910,9 @@ std::vector<uint32_t> _remove_order_from_all_vehicles_depots;
 
 static bool IsBatchRemoveOrderDepotRemoved(DestinationID destination)
 {
-	if (static_cast<size_t>(destination / 32) >= _remove_order_from_all_vehicles_depots.size()) return false;
+	if (static_cast<size_t>(destination.base() / 32) >= _remove_order_from_all_vehicles_depots.size()) return false;
 
-	return HasBit(_remove_order_from_all_vehicles_depots[destination / 32], destination % 32);
+	return HasBit(_remove_order_from_all_vehicles_depots[destination.base() / 32], destination.base() % 32);
 }
 
 void StartRemoveOrderFromAllVehiclesBatch()
@@ -2966,9 +2966,9 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 
 	if (_remove_order_from_all_vehicles_batch && type == OT_GOTO_DEPOT && !hangar) {
 		std::vector<uint32_t> &ids = _remove_order_from_all_vehicles_depots;
-		uint32_t word_idx = destination / 32;
+		uint32_t word_idx = destination.base() / 32;
 		if (word_idx >= ids.size()) ids.resize(word_idx + 1);
-		SetBit(ids[word_idx], destination % 32);
+		SetBit(ids[word_idx], destination.base() % 32);
 		return;
 	}
 
@@ -3521,14 +3521,14 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 				}
 
 			case OT_SLOT:
-				if (TraceRestrictSlot::IsValidID(order->GetDestination())) {
+				if (TraceRestrictSlot::IsValidID(order->GetDestination().base())) {
 					switch (order->GetSlotSubType()) {
 						case OSST_RELEASE:
 							_pco_deferred_slot_membership.Initialise(v);
-							_pco_deferred_slot_membership.RemoveSlot(order->GetDestination());
+							_pco_deferred_slot_membership.RemoveSlot(order->GetDestination().base());
 							break;
 						case OSST_TRY_ACQUIRE:
-							ExecuteVehicleInSlotOrderCondition(v, TraceRestrictSlot::Get(order->GetDestination()), PCO_DEFERRED, true);
+							ExecuteVehicleInSlotOrderCondition(v, TraceRestrictSlot::Get(order->GetDestination().base()), PCO_DEFERRED, true);
 							break;
 					}
 				}
@@ -3537,7 +3537,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 			case OT_SLOT_GROUP:
 				switch (order->GetSlotGroupSubType()) {
 					case OSGST_RELEASE: {
-						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination());
+						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination().base());
 						if (sg != nullptr) {
 							_pco_deferred_slot_membership.Initialise(v);
 							bool check_owner = (sg->owner != v->owner);
@@ -3554,7 +3554,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 				break;
 
 			case OT_COUNTER: {
-				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(order->GetDestination());
+				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(order->GetDestination().base());
 				if (ctr != nullptr) {
 					auto result = _pco_deferred_counter_values.insert(std::make_pair(ctr->index, ctr->value));
 					result.first->second = TraceRestrictCounter::ApplyValue(result.first->second, static_cast<TraceRestrictCounterCondOpField>(order->GetCounterOperation()), order->GetXData());
@@ -3627,7 +3627,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 	switch (order->GetType()) {
 		case OT_GOTO_STATION:
-			v->SetDestTile(v->GetOrderStationLocation(order->GetDestination()));
+			v->SetDestTile(v->GetOrderStationLocation(order->GetDestination().ToStationID()));
 			return true;
 
 		case OT_GOTO_DEPOT:
@@ -3673,13 +3673,13 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 				v->IncrementRealOrderIndex();
 			} else {
 				if (v->type != VEH_AIRCRAFT) {
-					v->SetDestTile(Depot::Get(order->GetDestination())->xy);
+					v->SetDestTile(Depot::Get(order->GetDestination().ToStationID())->xy);
 				} else {
 					Aircraft *a = Aircraft::From(v);
 					DestinationID destination = a->current_order.GetDestination();
 					if (a->targetairport != destination) {
 						/* The aircraft is now heading for a different hangar than the next in the orders */
-						a->SetDestTile(a->GetOrderStationLocation(destination));
+						a->SetDestTile(a->GetOrderStationLocation(destination.ToStationID()));
 					}
 				}
 				return true;
@@ -3687,7 +3687,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			break;
 
 		case OT_GOTO_WAYPOINT:
-			v->SetDestTile(Waypoint::Get(order->GetDestination())->xy);
+			v->SetDestTile(Waypoint::Get(order->GetDestination().ToStationID())->xy);
 			return true;
 
 		case OT_CONDITIONAL: {
@@ -3717,8 +3717,8 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 		case OT_SLOT:
 			assert(!pbs_look_ahead);
-			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_ID) {
-				TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetDestination());
+			if (order->GetDestination().base() != INVALID_TRACE_RESTRICT_SLOT_ID) {
+				TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetDestination().base());
 				if (slot != nullptr) {
 					switch (order->GetSlotSubType()) {
 						case OSST_RELEASE:
@@ -3736,8 +3736,8 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 		case OT_SLOT_GROUP:
 			assert(!pbs_look_ahead);
-			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
-				TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination());
+			if (order->GetDestination().base() != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+				TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetDestination().base());
 				if (sg != nullptr) {
 					switch (order->GetSlotGroupSubType()) {
 						case OSGST_RELEASE:
@@ -3752,8 +3752,8 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 		case OT_COUNTER:
 			assert(!pbs_look_ahead);
-			if (order->GetDestination() != INVALID_TRACE_RESTRICT_COUNTER_ID) {
-				TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(order->GetDestination());
+			if (order->GetDestination().base() != INVALID_TRACE_RESTRICT_COUNTER_ID) {
+				TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(order->GetDestination().base());
 				if (ctr != nullptr) {
 					ctr->ApplyUpdate(static_cast<TraceRestrictCounterCondOpField>(order->GetCounterOperation()), order->GetXData());
 				}
@@ -3846,7 +3846,7 @@ bool ProcessOrders(Vehicle *v)
 		 * the train to stop at this 'via' station if the next order
 		 * is a no-non-stop order; in that case not setting the last
 		 * visited station will cause the vehicle to still stop. */
-		v->last_station_visited = v->current_order.GetDestination();
+		v->last_station_visited = v->current_order.GetDestination().ToStationID();
 		UpdateVehicleTimetable(v, true);
 		v->IncrementImplicitOrderIndex();
 	}
@@ -3876,7 +3876,7 @@ bool ProcessOrders(Vehicle *v)
 
 	/* If it is unchanged, keep it. */
 	if (order->Equals(v->current_order) && (v->type == VEH_AIRCRAFT || v->dest_tile != 0) &&
-			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination())->HasFacilities(FACIL_DOCK))) {
+			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination().ToStationID())->HasFacilities(FACIL_DOCK))) {
 		return false;
 	}
 

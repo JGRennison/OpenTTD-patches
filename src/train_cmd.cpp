@@ -2949,10 +2949,10 @@ void ReverseTrainDirection(Train *v)
 
 	if (_local_company == v->owner && (v->current_order.IsType(OT_LOADING_ADVANCE) || HasBit(v->flags, VRF_BEYOND_PLATFORM_END))) {
 		SetDParam(0, v->index);
-		SetDParam(1, v->current_order.GetDestination());
+		SetDParam(1, v->current_order.GetDestination().ToStationID());
 		AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
 				NR_VEHICLE, v->index,
-				NR_STATION, v->current_order.GetDestination());
+				NR_STATION, v->current_order.GetDestination().ToStationID());
 	}
 	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
 		v->LeaveStation();
@@ -4115,9 +4115,9 @@ public:
 				HasStationTileRail(v->tile) && v->current_order.GetDestination() == GetStationIndex(v->tile) :
 				v->tile == v->dest_tile))) {
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->current_order.IsBaseStationOrder()) {
-				if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination().ToStationID(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
 					SetBit(state.flags, CTTLASF_STOP_FOUND);
-					v->last_station_visited = v->current_order.GetDestination();
+					v->last_station_visited = v->current_order.GetDestination().ToStationID();
 				}
 			}
 			if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) SetBit(state.flags, CTTLASF_STOP_FOUND);
@@ -4633,8 +4633,8 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 	if (result_flags & CTTRF_RESERVATION_MADE) {
 		if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackApplyTemporaryChanges(v);
 		if (v->current_order.IsBaseStationOrder() && HasStationTileRail(res_dest.tile) && v->current_order.GetDestination() == GetStationIndex(res_dest.tile)) {
-			if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
-				v->last_station_visited = v->current_order.GetDestination();
+			if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination().ToStationID(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				v->last_station_visited = v->current_order.GetDestination().ToStationID();
 			}
 			orders.SwitchToNextOrder(true);
 		}
@@ -6746,7 +6746,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	}
 
 	if (v->current_order.IsType(OT_LEAVESTATION)) {
-		StationID station_id = v->current_order.GetDestination();
+		StationID station_id = v->current_order.GetDestination().ToStationID();
 		v->current_order.Free();
 
 		bool may_reverse = ProcessOrders(v);
@@ -6955,7 +6955,7 @@ void Train::OnPeriodic()
 
 		/* update destination */
 		if (this->current_order.IsType(OT_GOTO_STATION)) {
-			TileIndex tile = Station::Get(this->current_order.GetDestination())->train_station.tile;
+			TileIndex tile = Station::Get(this->current_order.GetDestination().ToStationID())->train_station.tile;
 			if (tile != INVALID_TILE) this->dest_tile = tile;
 		}
 

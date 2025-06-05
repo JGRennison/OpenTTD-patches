@@ -295,7 +295,7 @@ public:
 		if (widget == WID_CTO_CAPTION) {
 			SetDParam(0, this->vehicle->index);
 			SetDParam(1, this->order_id + 1);
-			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination());
+			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination().base());
 		}
 	}
 
@@ -856,24 +856,24 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	switch (order->GetType()) {
 		case OT_DUMMY:
 			SetDParam(0, STR_INVALID_ORDER);
-			SetDParam(1, order->GetDestination());
+			SetDParam(1, order->GetDestination().base());
 			break;
 
 		case OT_IMPLICIT:
 			SetDParam(0, STR_ORDER_GO_TO_STATION);
 			SetDParam(1, STR_ORDER_GO_TO);
-			SetDParam(2, order->GetDestination());
+			SetDParam(2, order->GetDestination().ToStationID());
 			SetDParam(3, timetable ? STR_EMPTY : STR_ORDER_IMPLICIT);
 			break;
 
 		case OT_GOTO_STATION: {
 			OrderLoadFlags load = order->GetLoadType();
 			OrderUnloadFlags unload = order->GetUnloadType();
-			bool valid_station = CanVehicleUseStation(v, Station::Get(order->GetDestination()));
+			bool valid_station = CanVehicleUseStation(v, Station::Get(order->GetDestination().ToStationID()));
 
 			SetDParam(0, valid_station ? STR_ORDER_GO_TO_STATION : STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION);
 			SetDParam(1, STR_ORDER_GO_TO + (v->IsGroundVehicle() ? order->GetNonStopType() : 0));
-			SetDParam(2, order->GetDestination());
+			SetDParam(2, order->GetDestination().ToStationID());
 
 			if (timetable) {
 				/* Show only wait time in the timetable window. */
@@ -920,7 +920,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				/* Going to a specific depot. */
 				SetDParam(0, STR_ORDER_GO_TO_DEPOT_FORMAT);
 				SetDParam(2, v->type);
-				SetDParam(3, order->GetDestination());
+				SetDParam(3, order->GetDestination().ToDepotID());
 			}
 
 			if (order->GetDepotOrderType() & ODTFB_SERVICE) {
@@ -963,7 +963,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			StringID str = (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) ? STR_ORDER_GO_NON_STOP_TO_WAYPOINT : STR_ORDER_GO_TO_WAYPOINT;
 			if (order->GetWaypointFlags() & OWF_REVERSE) str += STR_ORDER_GO_TO_WAYPOINT_REVERSE - STR_ORDER_GO_TO_WAYPOINT;
 			SetDParam(0, str);
-			SetDParam(1, order->GetDestination());
+			SetDParam(1, order->GetDestination().ToStationID());
 			if (timetable && order->IsWaitTimetabled()) {
 				SetDParam(7, STR_TIMETABLE_STAY_FOR);
 				SetTimetableParams(8, order->GetWaitTime());
@@ -1231,7 +1231,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 			} else {
 				SetDParam(1, STR_TRACE_RESTRICT_SLOT_NAME);
-				SetDParam(2, order->GetDestination());
+				SetDParam(2, order->GetDestination().base());
 			}
 			break;
 
@@ -1248,13 +1248,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 			} else {
-				StringID warning = GetSlotGroupWarning(order->GetDestination(), v->owner);
+				StringID warning = GetSlotGroupWarning(order->GetDestination().base(), v->owner);
 				if (warning != STR_NULL) {
 					SetDParam(1, warning);
 				} else {
 					SetDParam(1, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
 				}
-				SetDParam(2, order->GetDestination());
+				SetDParam(2, order->GetDestination().base());
 			}
 			break;
 
@@ -1280,19 +1280,19 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 			} else {
 				SetDParam(1, STR_TRACE_RESTRICT_COUNTER_NAME);
-				SetDParam(2, order->GetDestination());
+				SetDParam(2, order->GetDestination().base());
 			}
 			SetDParam(3, order->GetXData());
 			break;
 
 		case OT_LABEL: {
 			auto show_destination_subtype = [&](uint offset) {
-				if (Waypoint::IsValidID(order->GetDestination())) {
+				if (Waypoint::IsValidID(order->GetDestination().ToStationID())) {
 					SetDParam(offset, STR_WAYPOINT_NAME);
 				} else {
 					SetDParam(offset, STR_STATION_NAME);
 				}
-				SetDParam(offset + 1, order->GetDestination());
+				SetDParam(offset + 1, order->GetDestination().ToStationID());
 			};
 			switch (order->GetLabelSubType()) {
 				case OLST_TEXT: {
@@ -2471,7 +2471,7 @@ public:
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_COUNTER);
 					}
 
-					TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetDestination()) ? order->GetDestination() : INVALID_TRACE_RESTRICT_COUNTER_ID);
+					TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetDestination().base()) ? order->GetDestination().base() : INVALID_TRACE_RESTRICT_COUNTER_ID);
 
 					this->GetWidget<NWidgetCore>(WID_O_CHANGE_COUNTER)->SetString((ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					break;
@@ -2798,14 +2798,14 @@ public:
 						SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					} else {
 						SetDParam(0, STR_TRACE_RESTRICT_SLOT_NAME);
-						SetDParam(1, order->GetDestination());
+						SetDParam(1, order->GetDestination().base());
 					}
 				} else if (order != nullptr && order->IsType(OT_SLOT_GROUP)) {
 					if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 						SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					} else {
 						SetDParam(0, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
-						SetDParam(1, order->GetDestination());
+						SetDParam(1, order->GetDestination().base());
 					}
 				} else {
 					SetDParam(0, STR_EMPTY);
@@ -2830,7 +2830,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
-					TraceRestrictCounterID value = order->GetDestination();
+					TraceRestrictCounterID value = order->GetDestination().base();
 					SetDParam(0, value);
 				}
 				break;
@@ -3408,14 +3408,14 @@ public:
 				if (o == nullptr) return;
 				if (o->IsType(OT_SLOT_GROUP)) {
 					int selected;
-					TraceRestrictSlotGroupID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
+					TraceRestrictSlotGroupID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
 					DropDownList list = GetSlotGroupDropDownList(this->vehicle->owner, value, selected, this->vehicle->type);
 					if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 					break;
 				}
 
 				int selected;
-				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
+				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
 				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, false);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3433,7 +3433,7 @@ public:
 
 			case WID_O_CHANGE_COUNTER: {
 				int selected;
-				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
+				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_CHANGE_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;

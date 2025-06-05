@@ -463,7 +463,7 @@ protected:
 			seen_stations.clear();
 			for (const Order *order : l->Orders()) {
 				if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_IMPLICIT)) {
-					seen_stations.insert(order->GetDestination());
+					seen_stations.insert(order->GetDestination().ToStationID());
 				}
 			}
 			if (!seen_stations.empty()) {

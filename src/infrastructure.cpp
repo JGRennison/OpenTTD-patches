@@ -133,11 +133,11 @@ static bool OrderDestinationIsAllowed(const Order *order, const Vehicle *v, Owne
 		case OT_IMPLICIT:
 		case OT_GOTO_STATION:
 		case OT_GOTO_WAYPOINT:
-			dest_owner = BaseStation::Get(order->GetDestination())->owner;
+			dest_owner = BaseStation::Get(order->GetDestination().ToStationID())->owner;
 			break;
 		case OT_GOTO_DEPOT:
 			if ((order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return true;
-			dest_owner = (v->type == VEH_AIRCRAFT) ? Station::Get(order->GetDestination())->owner : GetTileOwner(Depot::Get(order->GetDestination())->xy);
+			dest_owner = (v->type == VEH_AIRCRAFT) ? Station::Get(order->GetDestination().ToStationID())->owner : GetTileOwner(Depot::Get(order->GetDestination().ToDepotID())->xy);
 			break;
 		case OT_LOADING_ADVANCE:
 		case OT_LOADING:

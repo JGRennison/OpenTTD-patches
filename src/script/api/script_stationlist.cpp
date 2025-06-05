@@ -35,7 +35,7 @@ ScriptStationList_Vehicle::ScriptStationList_Vehicle(VehicleID vehicle_id)
 	const Vehicle *v = ::Vehicle::Get(vehicle_id);
 
 	for (const Order *o : v->Orders()) {
-		if (o->IsType(OT_GOTO_STATION)) this->AddItem(o->GetDestination());
+		if (o->IsType(OT_GOTO_STATION)) this->AddItem(o->GetDestination().ToStationID());
 	}
 }
 

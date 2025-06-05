@@ -11,12 +11,38 @@
 #define ORDER_TYPE_H
 
 #include "core/enum_type.hpp"
+#include "depot_type.h"
+#include "station_type.h"
 
 typedef uint16_t VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
 typedef uint32_t OrderID;
 typedef uint16_t OrderListID;
-typedef uint16_t DestinationID;
 typedef uint32_t TimetableTicks;
+
+struct DestinationID {
+	static inline constexpr bool fmt_as_base = true;
+	static inline constexpr bool serialisation_as_base = true;
+	static inline constexpr bool saveload_primitive_type = true;
+
+	using BaseType = uint16_t;
+	BaseType value = 0;
+
+	explicit DestinationID() = default;
+	constexpr DestinationID(size_t index) : value(static_cast<BaseType>(index)) {}
+
+	constexpr DepotID ToDepotID() const noexcept { return static_cast<DepotID>(this->value); }
+	constexpr StationID ToStationID() const noexcept { return static_cast<StationID>(this->value); }
+	constexpr BaseType base() const noexcept { return this->value; }
+	constexpr BaseType &edit_base() { return this->value; }
+
+	constexpr bool operator ==(const DestinationID &destination) const { return this->value == destination.value; }
+	constexpr bool operator !=(const DestinationID &destination) const { return this->value != destination.value; }
+	constexpr bool operator ==(const StationID &station) const { return this->value == station; }
+	constexpr bool operator !=(const StationID &station) const { return this->value != station; }
+};
+
+constexpr bool operator ==(const StationID &station, const DestinationID &destination) { return destination == station; }
+constexpr bool operator !=(const StationID &station, const DestinationID &destination) { return destination != station; }
 
 /** Invalid vehicle order index (sentinel) */
 static const VehicleOrderID INVALID_VEH_ORDER_ID = 0xFFFF;

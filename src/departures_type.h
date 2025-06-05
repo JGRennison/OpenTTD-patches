@@ -158,7 +158,7 @@ struct Departure {
 
 struct DepartureOrderDestinationDetector {
 	OrderTypeMask order_type_mask = 0;
-	DestinationID destination;
+	DestinationID destination{};
 
 	bool OrderMatches(const Order *order) const
 	{

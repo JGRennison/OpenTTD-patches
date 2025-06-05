@@ -1593,7 +1593,7 @@ static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 
 	if (v->cur_implicit_order_index < v->GetNumOrders() && v->GetOrder(v->cur_implicit_order_index)->IsType(OT_IMPLICIT)) return false;
 
-	StationID station_id = v->current_order.GetDestination();
+	StationID station_id = v->current_order.GetDestination().ToStationID();
 	VehicleOrderID next_order_idx = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index);
 	const Order *next_order = v->GetOrder(next_order_idx);
 	FlushAdvanceOrderIndexDeferred(v, false);

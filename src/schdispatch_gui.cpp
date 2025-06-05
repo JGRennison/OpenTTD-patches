@@ -815,12 +815,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						switch (order->GetType()) {
 							case OT_GOTO_STATION:
 								SetDParam(1, STR_STATION_NAME);
-								SetDParam(2, order->GetDestination());
+								SetDParam(2, order->GetDestination().ToStationID());
 								break;
 
 							case OT_GOTO_WAYPOINT:
 								SetDParam(1, STR_WAYPOINT_NAME);
-								SetDParam(2, order->GetDestination());
+								SetDParam(2, order->GetDestination().ToStationID());
 								break;
 
 							case OT_GOTO_DEPOT:
@@ -833,7 +833,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								} else {
 									SetDParam(1, STR_DEPOT_NAME);
 									SetDParam(2, v->type);
-									SetDParam(3, order->GetDestination());
+									SetDParam(3, order->GetDestination().ToDepotID());
 								}
 								break;
 

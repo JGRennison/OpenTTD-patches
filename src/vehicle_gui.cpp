@@ -1923,7 +1923,7 @@ static void DrawSmallOrderList(const Vehicle *v, int left, int right, int y, uin
 		if (oid == v->cur_real_order_index) DrawString(left, right, y, STR_JUST_RIGHT_ARROW, TC_BLACK, SA_LEFT, false, FS_SMALL);
 
 		if (order->IsType(OT_GOTO_STATION)) {
-			SetDParam(0, order->GetDestination());
+			SetDParam(0, order->GetDestination().ToStationID());
 			DrawString(left + l_offset, right - r_offset, y, STR_STATION_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 
 			y += GetCharacterHeight(FS_SMALL);
@@ -1943,7 +1943,7 @@ static void DrawSmallOrderList(OrderIterateWrapper<const Order> orders, int left
 	int i = 0;
 	for (const Order *order : orders) {
 		if (order->IsType(OT_GOTO_STATION)) {
-			SetDParam(0, order->GetDestination());
+			SetDParam(0, order->GetDestination().ToStationID());
 			DrawString(left + l_offset, right - r_offset, y, STR_STATION_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 
 			y += GetCharacterHeight(FS_SMALL);
@@ -4095,7 +4095,7 @@ public:
 				if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
 					SetDParam(1, v->breakdown_severity << 3);
 				} else {
-					SetDParam(1, v->current_order.GetDestination());
+					SetDParam(1, v->current_order.GetDestination().base());
 				}
 			} else {
 				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
@@ -4154,7 +4154,7 @@ public:
 				case OT_GOTO_STATION: {
 					show_order_number = true;
 					text_colour = TC_LIGHT_BLUE;
-					SetDParam(0, v->current_order.GetDestination());
+					SetDParam(0, v->current_order.GetDestination().ToStationID());
 					SetDParam(1, PackVelocity(v->GetDisplaySpeed(), v->type));
 					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL;
 					break;
@@ -4164,7 +4164,7 @@ public:
 					show_order_number = true;
 					text_colour = TC_ORANGE;
 					SetDParam(0, v->type);
-					SetDParam(1, v->current_order.GetDestination());
+					SetDParam(1, v->current_order.GetDestination().ToDepotID());
 					SetDParam(2, PackVelocity(v->GetDisplaySpeed(), v->type));
 					if (v->current_order.GetDestination() == INVALID_DEPOT) {
 						/* This case *only* happens when multiple nearest depot orders
@@ -4200,7 +4200,7 @@ public:
 					show_order_number = true;
 					text_colour = TC_LIGHT_BLUE;
 					assert(v->type == VEH_TRAIN || v->type == VEH_ROAD || v->type == VEH_SHIP);
-					SetDParam(0, v->current_order.GetDestination());
+					SetDParam(0, v->current_order.GetDestination().ToStationID());
 					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL;
 					SetDParam(1, PackVelocity(v->GetDisplaySpeed(), v->type));
 					break;

@@ -741,7 +741,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 {
 	// No checking close to docks and depots.
 	if (v->current_order.IsType(OT_GOTO_STATION)) {
-		Station *st = Station::Get(v->current_order.GetDestination());
+		Station *st = Station::Get(v->current_order.GetDestination().ToStationID());
 		if (st->IsWithinRangeOfDockingTile(tile, 3)) return;
 	} else if (!v->current_order.IsType(OT_GOTO_WAYPOINT)) {
 		if (DistanceManhattan(v->dest_tile, tile) <= 3) return;
@@ -975,7 +975,7 @@ static void ShipController(Ship *v)
 					/* A leave station order only needs one tick to get processed, so we can
 					 * always skip ahead. */
 					if (v->current_order.IsType(OT_LEAVESTATION)) {
-						StationID station_id = v->current_order.GetDestination();
+						StationID station_id = v->current_order.GetDestination().ToStationID();
 						v->current_order.Free();
 
 						bool may_reverse = ProcessOrders(v);
@@ -1017,7 +1017,7 @@ static void ShipController(Ship *v)
 							}
 						} else if (v->current_order.IsType(OT_GOTO_STATION) && IsDockingTile(gp.new_tile)) {
 							/* Process station in the orderlist. */
-							Station *st = Station::Get(v->current_order.GetDestination());
+							Station *st = Station::Get(v->current_order.GetDestination().ToStationID());
 							if (st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, st->index)) {
 								v->last_station_visited = st->index;
 								if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations

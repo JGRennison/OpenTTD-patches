@@ -713,7 +713,7 @@ CommandCost CmdAddVehicleGroup(DoCommandFlag flags, GroupID group_id, VehicleID 
 
 static TownID GetTownFromDestination(const DestinationID destination)
 {
-	const BaseStation *st = BaseStation::GetIfValid(destination);
+	const BaseStation *st = BaseStation::GetIfValid(destination.ToStationID());
 	if (st != nullptr) {
 		return st->town->index;
 	}
