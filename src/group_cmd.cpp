@@ -711,46 +711,36 @@ CommandCost CmdAddVehicleGroup(DoCommandFlag flags, GroupID group_id, VehicleID 
 	return ret;
 }
 
-static Town* GetTownFromDestination(const DestinationID destination)
+static TownID GetTownFromDestination(const DestinationID destination)
 {
-	Town* town = nullptr;
-
-	BaseStation *st = BaseStation::GetIfValid(destination);
+	const BaseStation *st = BaseStation::GetIfValid(destination);
 	if (st != nullptr) {
-		town = st->town;
+		return st->town->index;
 	}
 
-	return town;
+	return INVALID_TOWN;
 }
 
-static void GetAutoGroupMostRelevantTowns(const Vehicle *vehicle, Town* &from, Town* &to)
+static std::pair<TownID, TownID> GetAutoGroupMostRelevantTowns(const Vehicle *vehicle)
 {
-	std::vector<Town*> unique_destinations;
+	TownID first = INVALID_TOWN;
+	TownID last = INVALID_TOWN;
+	robin_hood::unordered_flat_set<TownID> seen_towns;
 
-	const int num = vehicle->GetNumOrders();
-
-	for (int x = 0; x < num; x++)
-	{
-		const Order *order = vehicle->GetOrder(x);
-
+	for (const Order *order : vehicle->Orders()) {
 		if (order->GetType() != OT_GOTO_STATION) continue;
 
 		const DestinationID dest = order->GetDestination();
-		Town *town = GetTownFromDestination(dest);
+		TownID town = GetTownFromDestination(dest);
 
-		if (town != nullptr && unique_destinations.end() == std::find(unique_destinations.begin(), unique_destinations.end(), town))
-		{
-			unique_destinations.push_back(town);
+		if (town != INVALID_TOWN && seen_towns.insert(town).second) {
+			/* Town not seen before and now inserted into seen_towns. */
+			if (first == INVALID_TOWN) first = town;
+			last = town;
 		}
 	}
 
-	if (unique_destinations.empty()) return;
-
-	from = unique_destinations[0];
-
-	if (unique_destinations.size() > 1) {
-		to = unique_destinations[unique_destinations.size() - 1];
-	}
+	return std::make_pair(first, last);
 }
 
 static CargoTypes GetVehicleCargoList(const Vehicle *vehicle)
@@ -767,23 +757,20 @@ static CargoTypes GetVehicleCargoList(const Vehicle *vehicle)
 
 std::string GenerateAutoNameForVehicleGroup(const Vehicle *v)
 {
-	Town *town_from = nullptr;
-	Town *town_to = nullptr;
-
-	GetAutoGroupMostRelevantTowns(v, town_from, town_to);
-	if (town_from == nullptr) return "";
+	auto [town_from, town_to] = GetAutoGroupMostRelevantTowns(v);
+	if (town_from == INVALID_TOWN) return "";
 
 	CargoTypes cargoes = GetVehicleCargoList(v);
 
 	StringID str;
-	if (town_from == town_to || town_to == nullptr) {
-		SetDParam(0, town_from->index);
+	if (town_from == town_to) {
+		SetDParam(0, town_from);
 		SetDParam(1, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
 		SetDParam(2, cargoes);
 		str = STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE;
 	} else {
-		SetDParam(0, town_from->index);
-		SetDParam(1, town_to->index);
+		SetDParam(0, town_from);
+		SetDParam(1, town_to);
 		SetDParam(2, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
 		SetDParam(3, cargoes);
 		str = STR_VEHICLE_AUTO_GROUP_ROUTE;
