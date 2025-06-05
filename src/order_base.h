@@ -52,6 +52,9 @@ template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID
 void IntialiseOrderDestinationRefcountMap();
 void ClearOrderDestinationRefcountMap();
 
+
+void importJsonOrderList(const Vehicle * veh, std::string str);
+
 /*
  * xflags bits:
  * Bit 0:    OT_CONDITIONAL and OT_GOTO_DEPOT: IsWaitTimetabled(): Depot: wait is timetabled, conditional: branch travel time
@@ -100,6 +103,16 @@ namespace upstream_sl {
 	class SlVehicleCommon;
 	class SlVehicleDisaster;
 }
+
+/* Used for defining colors for labels used when annotating import errors
+*  Added to bottom of orderlist if error is related to whole list
+*/
+enum JsonOrderImportErrorType : uint8_t {
+	JOIET_OK,			///< [Not to be used for error logging] : Used to confirm there were no errors
+	JOIET_MINOR,		///< Is added before related order : A cosmetic attribute of the order was malformed
+	JOIET_MAJOR,		///< Is added before related order : An important, non-critical part of the order was malformed 
+	JOIET_CRITICAL,		///< Completely repalces order	   : Makes building an order impossible 
+};
 
 /* If you change this, keep in mind that it is saved in 3 places:
  * - Load_ORDR, all the global orders
@@ -280,6 +293,8 @@ public:
 	void MakeReleaseSlotGroup();
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
+
+	std::string ToJSONString() const;
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -805,8 +820,8 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 }
 
 struct DispatchSlot {
-	uint32_t offset;
-	uint16_t flags;
+	uint32_t offset = 0;
+	uint16_t flags = 0;
 
 	bool operator<(const DispatchSlot &other) const
 	{
@@ -864,7 +879,9 @@ public:
 	inline std::vector<DispatchSlot> &GetScheduledDispatchMutable() { return this->scheduled_dispatch; }
 
 	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
+
 	void AddScheduledDispatch(uint32_t offset);
+	void AddScheduledDispatch(DispatchSlot slot);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void ResortDispatchOffsets();
 	uint32_t AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust);
@@ -872,6 +889,8 @@ public:
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(StateTicks now);
 	void UpdateScheduledDispatch(const Vehicle *v);
+
+	std::string ToJSONString();
 
 	/**
 	 * Set the scheduled dispatch duration, in scaled tick
@@ -942,6 +961,18 @@ public:
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
 
+	/**
+	 * Get the scheduled dispatch flags
+	 * @return flags
+	 */
+	inline int8_t GetScheduledDispatchFlags() const {return this->scheduled_dispatch_flags; }
+
+	/**
+	 * Set the scheduled disaptch flags
+	 * @param flags
+	 */
+	inline void SetScheduledDispatchFlags(int8_t flags) { this->scheduled_dispatch_flags = flags; }
+
 	inline PositionBackup BackupPosition() const
 	{
 		return PositionBackup{ this->scheduled_dispatch_start_tick, this->scheduled_dispatch_last_dispatch };
@@ -1005,12 +1036,15 @@ public:
 	OrderIterator<T> begin() { return OrderIterator<T>(this->begin_ptr); }
 	OrderIterator<T> end() { return OrderIterator<T>(this->end_ptr); }
 	bool empty() { return this->begin_ptr == this->end_ptr; }
+
+	std::string ToJSONString();
 };
 
 /**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
  */
+
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehiclesPhase1(bool part_of_load); ///< For instantiating the shared vehicle chain
@@ -1176,6 +1210,8 @@ public:
 	void DeleteOrderAt(VehicleOrderID index);
 	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
 
+	std::string ToJSONString();
+
 	/**
 	 * Is this a shared order list?
 	 * @return whether this order list is shared among multiple vehicles
@@ -1242,6 +1278,8 @@ public:
 	void DebugCheckSanity() const;
 #endif
 
+	bool CheckOrderListIndexing() const;
+	
 	inline std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() { return this->dispatch_schedules; }
 	inline const std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() const { return this->dispatch_schedules; }
 

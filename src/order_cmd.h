@@ -13,6 +13,7 @@
 #include "command_type.h"
 #include "order_base.h"
 #include "order_type.h"
+#include "order_dest_func.h"
 
 enum class ReverseOrderOperation : uint8_t {
 	Reverse,
@@ -23,6 +24,12 @@ struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderC
 	VehicleID veh;
 	VehicleOrderID sel_ord;
 	typename TupleTypeAdapter<decltype(std::declval<Order>().GetCmdRefTuple())>::Value new_order;
+Colours errorTypeToColour(JsonOrderImportErrorType errType);
+
+inline void RegisterOrderDestination(const Order *order, VehicleType type, Owner owner)
+{
+	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, 1);
+}
 
 	InsertOrderCmdData() = default;
 	InsertOrderCmdData(VehicleID veh, VehicleOrderID sel_ord, const Order &order) :

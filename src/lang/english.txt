@@ -3313,8 +3313,10 @@ STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Save Gam
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Load Game
 STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Save Scenario
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Load Scenario
-STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Load Heightmap
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Save Heightmap
+STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Load Heightmap
+STR_SAVELOAD_SAVE_ORDERLIST										:{WHITE}Save Orderlist
+STR_SAVELOAD_LOAD_ORDERLIST										:{WHITE}Load Orderlist
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Load Town Data
 STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Click here to jump to the current default save/load directory
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} free
@@ -5931,3 +5933,9 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{RAW_STRING}
+
+#json messages
+
+STR_ERROR_ORDERLIST_MALFORMED_JSON								:{WHITE}Input JSON was malformed
+STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS							:{WHITE}No orders found, can't instantiate orderlist
+STR_ERROR_JON													:{WHITE}JSON error
