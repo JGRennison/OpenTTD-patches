@@ -820,7 +820,7 @@ enum CommandPauseLevel : uint8_t {
  * - Have a FormatDebugSummary implementation where even remotely useful.
  * - Have a `ClientID &GetClientIDField()` function if used by commands with CMD_CLIENT_ID.
  */
-struct CommandPayloadBase : public fmt_formattable {
+struct CommandPayloadBase {
 	virtual ~CommandPayloadBase() {}
 
 	virtual std::unique_ptr<CommandPayloadBase> Clone() const = 0;
@@ -832,7 +832,6 @@ struct CommandPayloadBase : public fmt_formattable {
 	/* FormatDebugSummary may be called when populating the crash log so should not allocate */
 	virtual void FormatDebugSummary(struct format_target &) const {}
 
-	/* To enable use as a format argument, see fmt_formattable */
 	inline void fmt_format_value(struct format_target &output) const
 	{
 		this->FormatDebugSummary(output);

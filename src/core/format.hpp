@@ -237,8 +237,15 @@ struct format_to_buffer : public format_target {
 	fmt::detail::buffer<char> &GetTargetBuffer() const { return this->GetTargetFmtBuffer(); }
 };
 
+namespace format_detail {
+	template<typename T>
+	concept FmtUsingFormatValueMethod = requires(const T &a) {
+		{ a.fmt_format_value(std::declval<format_target &>()) };
+	};
+};
+
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_formattable, T>::value>> {
+struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtUsingFormatValueMethod<T>>> {
 	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
 		return ctx.begin();
 	}
@@ -438,7 +445,7 @@ size_t format_target::size() const noexcept
 }
 
 template <typename F>
-struct format_lambda_wrapper : public fmt_formattable {
+struct format_lambda_wrapper {
 	F lm;
 
 	format_lambda_wrapper(F lm) : lm(std::move(lm)) {}

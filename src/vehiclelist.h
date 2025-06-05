@@ -29,7 +29,7 @@ enum VehicleListType : uint8_t {
 };
 
 /** The information about a vehicle list. */
-struct VehicleListIdentifier : public fmt_formattable {
+struct VehicleListIdentifier {
 	VehicleListType type; ///< The type of vehicle list.
 	VehicleType vtype;    ///< The vehicle type associated with this list.
 	CompanyID company;    ///< The company associated with this list.

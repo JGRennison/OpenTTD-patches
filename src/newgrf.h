@@ -461,7 +461,7 @@ struct GrfSpecFeatureRef {
 	uint8_t raw_byte;
 };
 
-struct GetFeatureStringFormatter : public fmt_formattable {
+struct GetFeatureStringFormatter {
 	GrfSpecFeatureRef feature;
 
 	GetFeatureStringFormatter(GrfSpecFeatureRef feature) : feature(feature) {}

@@ -66,7 +66,7 @@ void WriteScopeLog(struct format_target &buffer);
 #endif /* DISABLE_SCOPE_INFO */
 
 template <typename TAG, typename T>
-struct GeneralFmtDumper : public fmt_formattable {
+struct GeneralFmtDumper {
 	T value;
 	GeneralFmtDumper(T value) : value(value) {}
 

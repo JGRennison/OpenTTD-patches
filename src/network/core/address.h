@@ -182,7 +182,7 @@ public:
 	static const std::string GetPeerName(SOCKET sock);
 };
 
-struct FormatNetworkAddress : public fmt_formattable {
+struct FormatNetworkAddress {
 	NetworkAddress *addr;
 	bool with_family;
 
