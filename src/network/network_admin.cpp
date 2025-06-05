@@ -810,10 +810,10 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN_SECURE(Pac
 
 	this->admin_name = p.Recv_string(NETWORK_CLIENT_NAME_LENGTH);
 	this->admin_version = p.Recv_string(NETWORK_REVISION_LENGTH);
-	NetworkAuthenticationMethodMask method_mask = p.Recv_uint16();
+	NetworkAuthenticationMethodMask method_mask{p.Recv_uint16()};
 
 	/* Always exclude key exchange only, as that provides no credential checking. */
-	ClrBit(method_mask, NETWORK_AUTH_METHOD_X25519_KEY_EXCHANGE_ONLY);
+	method_mask.Reset(NetworkAuthenticationMethod::X25519_KeyExchangeOnly);
 
 	if (this->admin_name.empty() || this->admin_version.empty()) {
 		/* No name or version supplied. */
@@ -859,7 +859,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_AUTH_RESPONSE(P
 	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 
 	switch (this->authentication_handler->ReceiveResponse(p)) {
-		case NetworkAuthenticationServerHandler::AUTHENTICATED:
+		case NetworkAuthenticationServerHandler::ResponseResult::Authenticated:
 			Debug(net, 3, "[admin] '{}' ({}) authenticated", this->admin_name, this->admin_version);
 
 			this->SendEnableEncryption();
@@ -869,11 +869,11 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_AUTH_RESPONSE(P
 			this->authentication_handler = nullptr;
 			return this->SendProtocol();
 
-		case NetworkAuthenticationServerHandler::RETRY_NEXT_METHOD:
+		case NetworkAuthenticationServerHandler::ResponseResult::RetryNextMethod:
 			Debug(net, 6, "[admin] '{}' ({}) authentication failed, trying next method", this->admin_name, this->admin_version);
 			return this->SendAuthRequest();
 
-		case NetworkAuthenticationServerHandler::NOT_AUTHENTICATED:
+		case NetworkAuthenticationServerHandler::ResponseResult::NotAuthenticated:
 		default:
 			Debug(net, 3, "[admin] '{}' ({}) authentication failed", this->admin_name, this->admin_version);
 			return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);

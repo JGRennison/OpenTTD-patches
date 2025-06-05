@@ -286,7 +286,7 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 {
 	if (p.RemainingBytesToTransfer() != X25519_KEY_SIZE + X25519_MAC_SIZE + X25519_KEY_EXCHANGE_MESSAGE_SIZE) {
 		Debug(net, 1, "[crypto] Received auth response of illegal size; authentication aborted.");
-		return NetworkAuthenticationServerHandler::NOT_AUTHENTICATED;
+		return NetworkAuthenticationServerHandler::ResponseResult::NotAuthenticated;
 	}
 
 	X25519KeyExchangeMessage message{};
@@ -299,7 +299,7 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 	if (!this->derived_keys.Exchange(this->peer_public_key, X25519KeyExchangeSide::SERVER,
 			this->our_secret_key, this->our_public_key, derived_key_extra_payload)) {
 		Debug(net, 0, "[crypto] Peer sent an illegal public key; authentication aborted.");
-		return NetworkAuthenticationServerHandler::NOT_AUTHENTICATED;
+		return NetworkAuthenticationServerHandler::ResponseResult::NotAuthenticated;
 	}
 
 	if (crypto_aead_unlock(message.data(), mac.data(), this->derived_keys.ClientToServer().data(), this->key_exchange_nonce.data(),
@@ -308,20 +308,20 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 		 * The ciphertext and the message authentication code do not match with the encryption key.
 		 * This is most likely an invalid password, or possibly a bug in the client.
 		 */
-		return NetworkAuthenticationServerHandler::NOT_AUTHENTICATED;
+		return NetworkAuthenticationServerHandler::ResponseResult::NotAuthenticated;
 	}
 
-	return NetworkAuthenticationServerHandler::AUTHENTICATED;
+	return NetworkAuthenticationServerHandler::ResponseResult::Authenticated;
 }
 
 
 /* virtual */ NetworkAuthenticationClientHandler::RequestResult X25519PAKEClientHandler::ReceiveRequest(struct Packet &p)
 {
 	bool success = this->X25519AuthenticationHandler::ReceiveRequest(p);
-	if (!success) return NetworkAuthenticationClientHandler::INVALID;
+	if (!success) return NetworkAuthenticationClientHandler::RequestResult::Invalid;
 
 	this->handler->AskUserForPassword(this->handler);
-	return NetworkAuthenticationClientHandler::AWAIT_USER_INPUT;
+	return NetworkAuthenticationClientHandler::RequestResult::AwaitUserInput;
 }
 
 /**
@@ -351,10 +351,10 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 /* virtual */ NetworkAuthenticationServerHandler::ResponseResult X25519AuthorizedKeyServerHandler::ReceiveResponse(Packet &p)
 {
 	ResponseResult result = this->X25519AuthenticationHandler::ReceiveResponse(p, {});
-	if (result != AUTHENTICATED) return result;
+	if (result != ResponseResult::Authenticated) return result;
 
 	std::string peer_public_key = this->GetPeerPublicKey();
-	return this->authorized_key_handler->IsAllowed(peer_public_key) ? AUTHENTICATED : NOT_AUTHENTICATED;
+	return this->authorized_key_handler->IsAllowed(peer_public_key) ? ResponseResult::Authenticated : ResponseResult::NotAuthenticated;
 }
 
 
@@ -364,7 +364,7 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 
 	auto is_of_method = [method](Handler &handler) { return handler->GetAuthenticationMethod() == method; };
 	auto it = std::ranges::find_if(handlers, is_of_method);
-	if (it == handlers.end()) return INVALID;
+	if (it == handlers.end()) return RequestResult::Invalid;
 
 	this->current_handler = it->get();
 
@@ -386,7 +386,7 @@ NetworkAuthenticationServerHandler::ResponseResult X25519AuthenticationHandler::
 
 /* virtual */ NetworkAuthenticationMethod CombinedAuthenticationClientHandler::GetAuthenticationMethod() const
 {
-	return this->current_handler != nullptr ? this->current_handler->GetAuthenticationMethod() : NETWORK_AUTH_METHOD_END;
+	return this->current_handler != nullptr ? this->current_handler->GetAuthenticationMethod() : NetworkAuthenticationMethod::End;
 }
 
 
@@ -406,7 +406,7 @@ void CombinedAuthenticationServerHandler::Add(CombinedAuthenticationServerHandle
 {
 	Debug(net, 9, "Sending {} authentication request", this->GetName());
 
-	p.Send_uint8(this->handlers.back()->GetAuthenticationMethod());
+	p.Send_uint8(to_underlying(this->handlers.back()->GetAuthenticationMethod()));
 	this->handlers.back()->SendRequest(p);
 }
 
@@ -415,10 +415,10 @@ void CombinedAuthenticationServerHandler::Add(CombinedAuthenticationServerHandle
 	Debug(net, 9, "Receiving {} authentication response", this->GetName());
 
 	ResponseResult result = this->handlers.back()->ReceiveResponse(p);
-	if (result != NOT_AUTHENTICATED) return result;
+	if (result != ResponseResult::NotAuthenticated) return result;
 
 	this->handlers.pop_back();
-	return this->CanBeUsed() ? RETRY_NEXT_METHOD : NOT_AUTHENTICATED;
+	return this->CanBeUsed() ? ResponseResult::RetryNextMethod : ResponseResult::NotAuthenticated;
 }
 
 /* virtual */ std::string_view CombinedAuthenticationServerHandler::GetName() const
@@ -428,7 +428,7 @@ void CombinedAuthenticationServerHandler::Add(CombinedAuthenticationServerHandle
 
 /* virtual */ NetworkAuthenticationMethod CombinedAuthenticationServerHandler::GetAuthenticationMethod() const
 {
-	return this->CanBeUsed() ? this->handlers.back()->GetAuthenticationMethod() : NETWORK_AUTH_METHOD_END;
+	return this->CanBeUsed() ? this->handlers.back()->GetAuthenticationMethod() : NetworkAuthenticationMethod::End;
 }
 
 /* virtual */ bool CombinedAuthenticationServerHandler::CanBeUsed() const
@@ -470,15 +470,15 @@ std::unique_ptr<NetworkAuthenticationServerHandler> NetworkAuthenticationServerH
 {
 	auto secret = X25519SecretKey::CreateRandom();
 	auto handler = std::make_unique<CombinedAuthenticationServerHandler>();
-	if (password_provider != nullptr && HasBit(client_supported_method_mask, NETWORK_AUTH_METHOD_X25519_PAKE)) {
+	if (password_provider != nullptr && client_supported_method_mask.Test(NetworkAuthenticationMethod::X25519_PAKE)) {
 		handler->Add(std::make_unique<X25519PAKEServerHandler>(secret, password_provider));
 	}
 
-	if (authorized_key_handler != nullptr && HasBit(client_supported_method_mask, NETWORK_AUTH_METHOD_X25519_AUTHORIZED_KEY)) {
+	if (authorized_key_handler != nullptr && client_supported_method_mask.Test(NetworkAuthenticationMethod::X25519_AuthorizedKey)) {
 		handler->Add(std::make_unique<X25519AuthorizedKeyServerHandler>(secret, authorized_key_handler));
 	}
 
-	if (!handler->CanBeUsed() && HasBit(client_supported_method_mask, NETWORK_AUTH_METHOD_X25519_KEY_EXCHANGE_ONLY)) {
+	if (!handler->CanBeUsed() && client_supported_method_mask.Test(NetworkAuthenticationMethod::X25519_KeyExchangeOnly)) {
 		/* Fall back to the plain handler when neither password, nor authorized keys are configured. */
 		handler->Add(std::make_unique<X25519KeyExchangeOnlyServerHandler>(secret));
 	}

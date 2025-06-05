@@ -344,34 +344,27 @@ public:
 };
 
 /** Nested widget flags that affect display and interaction with 'real' widgets. */
-enum NWidgetDisplay : uint16_t {
+enum NWidgetDisplayFlag : uint8_t {
 	/* Generic. */
-	NDB_LOWERED         = 0, ///< Widget is lowered (pressed down) bit.
-	NDB_DISABLED        = 1, ///< Widget is disabled (greyed out) bit.
-	/* Viewport widget. */
-	NDB_NO_TRANSPARENCY = 2, ///< Viewport is never transparent.
-	NDB_SHADE_GREY      = 3, ///< Shade viewport to grey-scale.
-	NDB_SHADE_DIMMED    = 4, ///< Display dimmed colours in the viewport.
-	/* Button dropdown widget. */
-	NDB_DROPDOWN_ACTIVE = 5, ///< Dropdown menu of the button dropdown widget is active. @see #NWID_BUTTON_DROPDOWN
-	/* Scrollbar widget. */
-	NDB_SCROLLBAR_UP    = 6, ///< Up-button is lowered bit.
-	NDB_SCROLLBAR_DOWN  = 7, ///< Down-button is lowered bit.
-	/* Generic. */
-	NDB_HIGHLIGHT       = 8, ///< Highlight of widget is on.
+	Lowered, ///< Widget is lowered (pressed down) bit.
+	Disabled, ///< Widget is disabled (greyed out) bit.
 
-	ND_LOWERED  = 1 << NDB_LOWERED,                ///< Bit value of the lowered flag.
-	ND_DISABLED = 1 << NDB_DISABLED,               ///< Bit value of the disabled flag.
-	ND_HIGHLIGHT = 1 << NDB_HIGHLIGHT,             ///< Bit value of the highlight flag.
-	ND_NO_TRANSPARENCY = 1 << NDB_NO_TRANSPARENCY, ///< Bit value of the 'no transparency' flag.
-	ND_SHADE_GREY      = 1 << NDB_SHADE_GREY,      ///< Bit value of the 'shade to grey' flag.
-	ND_SHADE_DIMMED    = 1 << NDB_SHADE_DIMMED,    ///< Bit value of the 'dimmed colours' flag.
-	ND_DROPDOWN_ACTIVE = 1 << NDB_DROPDOWN_ACTIVE, ///< Bit value of the 'dropdown active' flag.
-	ND_SCROLLBAR_UP    = 1 << NDB_SCROLLBAR_UP,    ///< Bit value of the 'scrollbar up' flag.
-	ND_SCROLLBAR_DOWN  = 1 << NDB_SCROLLBAR_DOWN,  ///< Bit value of the 'scrollbar down' flag.
-	ND_SCROLLBAR_BTN   = ND_SCROLLBAR_UP | ND_SCROLLBAR_DOWN, ///< Bit value of the 'scrollbar up' or 'scrollbar down' flag.
+	/* Viewport widget. */
+	NoTransparency, ///< Viewport is never transparent.
+	ShadeGrey, ///< Shade viewport to grey-scale.
+	ShadeDimmed, ///< Display dimmed colours in the viewport.
+
+	/* Button dropdown widget. */
+	DropdownActive, ///< Dropdown menu of the button dropdown widget is active. @see #NWID_BUTTON_DROPDOWN
+
+	/* Scrollbar widget. */
+	ScrollbarUp, ///< Up-button is lowered bit.
+	ScrollbarDown, ///< Down-button is lowered bit.
+
+	/* Generic. */
+	Highlight, ///< Highlight of widget is on.
 };
-DECLARE_ENUM_AS_BIT_SET(NWidgetDisplay)
+using NWidgetDisplayFlags = EnumBitSet<NWidgetDisplayFlag, uint16_t>;
 
 /** Container with the data associated to a single widget. */
 struct WidgetData {
@@ -420,7 +413,7 @@ public:
 	void SetHighlighted(TextColour highlight_colour) override;
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
-	NWidgetDisplay disp_flags; ///< Flags that affect display and interaction with the widget.
+	NWidgetDisplayFlags disp_flags; ///< Flags that affect display and interaction with the widget.
 	Colours colour;            ///< Colour of this widget.
 protected:
 	const WidgetID index;      ///< Index of the nested widget (\c -1 means 'not used').
@@ -575,14 +568,14 @@ inline WidgetID NWidgetCore::GetScrollbarIndex() const
  */
 inline void NWidgetCore::SetHighlighted(TextColour highlight_colour)
 {
-	this->disp_flags = highlight_colour != TC_INVALID ? SETBITS(this->disp_flags, ND_HIGHLIGHT) : CLRBITS(this->disp_flags, ND_HIGHLIGHT);
+	highlight_colour != TC_INVALID ? this->disp_flags.Set(NWidgetDisplayFlag::Highlight) : this->disp_flags.Reset(NWidgetDisplayFlag::Highlight);
 	this->highlight_colour = highlight_colour;
 }
 
 /** Return whether the widget is highlighted. */
 inline bool NWidgetCore::IsHighlighted() const
 {
-	return HasBit(this->disp_flags, NDB_HIGHLIGHT);
+	return this->disp_flags.Test(NWidgetDisplayFlag::Highlight);
 }
 
 /** Return the colour of the highlight. */
@@ -597,13 +590,13 @@ inline TextColour NWidgetCore::GetHighlightColour() const
  */
 inline void NWidgetCore::SetLowered(bool lowered)
 {
-	this->disp_flags = lowered ? SETBITS(this->disp_flags, ND_LOWERED) : CLRBITS(this->disp_flags, ND_LOWERED);
+	lowered ? this->disp_flags.Set(NWidgetDisplayFlag::Lowered) : this->disp_flags.Reset(NWidgetDisplayFlag::Lowered);
 }
 
 /** Return whether the widget is lowered. */
 inline bool NWidgetCore::IsLowered() const
 {
-	return HasBit(this->disp_flags, NDB_LOWERED);
+	return this->disp_flags.Test(NWidgetDisplayFlag::Lowered);
 }
 
 /**
@@ -612,13 +605,13 @@ inline bool NWidgetCore::IsLowered() const
  */
 inline void NWidgetCore::SetDisabled(bool disabled)
 {
-	this->disp_flags = disabled ? SETBITS(this->disp_flags, ND_DISABLED) : CLRBITS(this->disp_flags, ND_DISABLED);
+	this->disp_flags = disabled ? this->disp_flags.Set(NWidgetDisplayFlag::Disabled) : this->disp_flags.Reset(NWidgetDisplayFlag::Disabled);
 }
 
 /** Return whether the widget is disabled. */
 inline bool NWidgetCore::IsDisabled() const
 {
-	return HasBit(this->disp_flags, NDB_DISABLED);
+	return this->disp_flags.Test(NWidgetDisplayFlag::Disabled);
 }
 
 
@@ -691,20 +684,16 @@ private:
 };
 
 /** Nested widget container flags, */
-enum NWidContainerFlags : uint8_t {
-	NCB_EQUALSIZE = 0, ///< Containers should keep all their (resizing) children equally large.
-	NCB_BIGFIRST  = 1, ///< Allocate space to biggest resize first.
-
-	NC_NONE = 0,                       ///< All flags cleared.
-	NC_EQUALSIZE = 1 << NCB_EQUALSIZE, ///< Value of the #NCB_EQUALSIZE flag.
-	NC_BIGFIRST  = 1 << NCB_BIGFIRST,  ///< Value of the #NCB_BIGFIRST flag.
+enum NWidContainerFlag : uint8_t {
+	EqualSize, ///< Containers should keep all their (resizing) children equally large.
+	BigFirst, ///< Allocate space to biggest resize first.
 };
-DECLARE_ENUM_AS_BIT_SET(NWidContainerFlags)
+using NWidContainerFlags = EnumBitSet<NWidContainerFlag, uint8_t>;
 
 /** Container with pre/inter/post child space. */
 class NWidgetPIPContainer : public NWidgetContainer {
 public:
-	NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags = NC_NONE);
+	NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags = {});
 
 	void AdjustPaddingForZoom() override;
 	void SetPIP(uint8_t pip_pre, uint8_t pip_inter, uint8_t pip_post);
@@ -732,7 +721,7 @@ protected:
  */
 class NWidgetHorizontal : public NWidgetPIPContainer {
 public:
-	NWidgetHorizontal(NWidContainerFlags flags = NC_NONE);
+	NWidgetHorizontal(NWidContainerFlags flags = {});
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
@@ -744,7 +733,7 @@ public:
  */
 class NWidgetHorizontalLTR : public NWidgetHorizontal {
 public:
-	NWidgetHorizontalLTR(NWidContainerFlags flags = NC_NONE);
+	NWidgetHorizontalLTR(NWidContainerFlags flags = {});
 
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
 };
@@ -755,7 +744,7 @@ public:
  */
 class NWidgetVertical : public NWidgetPIPContainer {
 public:
-	NWidgetVertical(NWidContainerFlags flags = NC_NONE);
+	NWidgetVertical(NWidContainerFlags flags = {});
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
@@ -1573,7 +1562,7 @@ constexpr NWidgetPart NWidget(WidgetType tp, Colours col, WidgetID idx = -1)
  * @param cont_flags Flags for the containers (#NWID_HORIZONTAL and #NWID_VERTICAL).
  * @ingroup NestedWidgetParts
  */
-constexpr NWidgetPart NWidget(WidgetType tp, NWidContainerFlags cont_flags = NC_NONE)
+constexpr NWidgetPart NWidget(WidgetType tp, NWidContainerFlags cont_flags = {})
 {
 	return NWidgetPart{tp, NWidContainerFlags{cont_flags}};
 }

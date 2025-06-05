@@ -1515,7 +1515,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
 
 static std::vector<Rect> _dirty_viewport_occlusions;
 static Viewport *_dirty_viewport;
-static NWidgetDisplay _dirty_viewport_disp_flags;
+static NWidgetDisplayFlags _dirty_viewport_disp_flags{};
 
 static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int bottom)
 {
@@ -1559,7 +1559,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	if (_game_mode == GM_MENU) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
-		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags);
+		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom, _dirty_viewport_disp_flags);
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
@@ -1658,8 +1658,8 @@ void DrawDirtyBlocks()
 
 					_dirty_viewport = vp;
 					_dirty_viewport_disp_flags = w->viewport_widget->disp_flags;
-					TransparencyOptionBits to_backup = _transparency_opt;
-					if (_dirty_viewport_disp_flags & ND_NO_TRANSPARENCY) {
+					AutoRestoreBackup to_backup(_transparency_opt, AutoRestoreBackupNoNewValueTag{});
+					if (_dirty_viewport_disp_flags.Test(NWidgetDisplayFlag::NoTransparency)) {
 						_transparency_opt &= (1 << TO_SIGNS) | (1 << TO_LOADING); // Disable all transparency, except textual stuff
 					}
 
@@ -1789,7 +1789,6 @@ void DrawDirtyBlocks()
 						}
 					}
 
-					_transparency_opt = to_backup;
 					w->viewport->ClearDirty();
 				}
 			}

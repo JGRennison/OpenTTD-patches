@@ -101,7 +101,6 @@ void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);
 
-void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags);
 void ViewportDoDrawProcessAllPending();
 
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);

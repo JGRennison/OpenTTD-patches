@@ -321,7 +321,7 @@ struct ViewportDrawerDynamic {
 	btree::btree_map<TileIndex, TileIndex, BridgeSetXComparator> bridge_to_map_x;
 	btree::btree_map<TileIndex, TileIndex, BridgeSetYComparator> bridge_to_map_y;
 
-	uint8_t display_flags;
+	NWidgetDisplayFlags display_flags;
 
 	std::atomic<uint> draw_jobs_active;
 
@@ -3993,7 +3993,7 @@ static void ViewportDoDrawPhase3(Viewport *vp);
 static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd);
 
 /* This is run in the main thread */
-void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags)
+void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags)
 {
 	if (_spare_viewport_drawers.empty()) {
 		_vdd.reset(new ViewportDrawerDynamic());
@@ -4265,10 +4265,10 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 				dp.height, dp.width, vp->width);
 	}
 
-	if (_vdd->display_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
+	if (_vdd->display_flags.Any({ NWidgetDisplayFlag::ShadeGrey, NWidgetDisplayFlag::ShadeDimmed })) {
 		DrawPixelInfo dp = _vdd->MakeDPIForText();
 		GfxFillRect(BlitterFactory::GetCurrentBlitter(), &dp, dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
-				(_vdd->display_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+				_vdd->display_flags.Test(NWidgetDisplayFlag::ShadeDimmed) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 	}
 
 	_vdd->bridge_to_map_x.clear();
@@ -4288,7 +4288,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
  * Make sure we don't draw a too big area at a time.
  * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
-void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags)
+void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags)
 {
 	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && ((int64_t)ScaleByZoom(bottom - top, vp->zoom) * (int64_t)ScaleByZoom(right - left, vp->zoom) > (int64_t)(1000000 * ZOOM_BASE * ZOOM_BASE))) {
 		if ((bottom - top) > (right - left)) {
@@ -4311,7 +4311,7 @@ void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uin
 	}
 }
 
-static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags)
+static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags)
 {
 	if (right <= vp->left || bottom <= vp->top) return;
 
@@ -4333,7 +4333,7 @@ static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int 
 /**
  * Draw the viewport of this window.
  */
-void Window::DrawViewport(uint8_t display_flags) const
+void Window::DrawViewport(NWidgetDisplayFlags display_flags) const
 {
 	PerformanceAccumulator framerate(PFE_DRAWWORLD);
 

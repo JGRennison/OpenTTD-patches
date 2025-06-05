@@ -960,7 +960,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 	// Button Bar
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_LEFT),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_VARIABLE), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetToolTip(STR_PROGSIG_COND_VARIABLE_TOOLTIP), SetResize(1, 0),
@@ -991,7 +991,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_PROGSIG_INSERT, STR_PROGSIG_INSERT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, PROGRAM_WIDGET_REMOVE), SetMinimalSize(186, 12), SetFill(1, 0),

@@ -4096,7 +4096,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_UP_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetSpriteTip(SPR_ARROW_UP, STR_TRACE_RESTRICT_UP_BTN_TOOLTIP),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_DOWN_BTN), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetSpriteTip(SPR_ARROW_DOWN, STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT_2),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_NONCOND), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetToolTip(STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
@@ -4149,7 +4149,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_TRACE_RESTRICT_INSERT, STR_TRACE_RESTRICT_INSERT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_REMOVE), SetMinimalSize(124, 12), SetFill(1, 0),

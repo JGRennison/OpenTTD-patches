@@ -641,12 +641,13 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 		wx = std::min(vp->width - left, 1600);
 		left += wx;
 
+		extern void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags);
 		ViewportDoDraw(vp,
 			ScaleByZoom(left - wx - vp->left, vp->zoom) + vp->virtual_left,
 			ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top,
 			ScaleByZoom(left - vp->left, vp->zoom) + vp->virtual_left,
 			ScaleByZoom((y + n) - vp->top, vp->zoom) + vp->virtual_top,
-			0
+			{}
 		);
 	}
 

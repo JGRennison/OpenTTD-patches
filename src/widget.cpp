@@ -197,7 +197,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 	}
 	if (pos < mi + button_size) {
 		/* Pressing the upper button? */
-		SetBit(sb->disp_flags, NDB_SCROLLBAR_UP);
+		sb->disp_flags.Set(NWidgetDisplayFlag::ScrollbarUp);
 		if (_scroller_click_timeout <= 1) {
 			_scroller_click_timeout = 3;
 			changed = sb->UpdatePosition(rtl ? 1 : -1);
@@ -205,7 +205,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 		w->mouse_capture_widget = sb->GetIndex();
 	} else if (pos >= ma - button_size) {
 		/* Pressing the lower button? */
-		SetBit(sb->disp_flags, NDB_SCROLLBAR_DOWN);
+		sb->disp_flags.Set(NWidgetDisplayFlag::ScrollbarDown);
 
 		if (_scroller_click_timeout <= 1) {
 			_scroller_click_timeout = 3;
@@ -1527,7 +1527,7 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 		child_wid->ApplyAspectRatio();
 		longest = std::max(longest, child_wid->smallest_x);
 	}
-	if (this->flags & NC_EQUALSIZE) {
+	if (this->flags.Test(NWidContainerFlag::EqualSize)) {
 		for (const auto &child_wid : this->children) {
 			if (child_wid->fill_x == 1) child_wid->smallest_x = longest;
 		}
@@ -1581,7 +1581,7 @@ void NWidgetHorizontal::AssignSizePosition(SizingType sizing, int x, int y, uint
 	for (const auto &child_wid : this->children) {
 		uint hor_step = child_wid->GetHorizontalStepSize(sizing);
 		if (hor_step > 0) {
-			if (!(flags & NC_BIGFIRST)) num_changing_childs++;
+			if (!flags.Test(NWidContainerFlag::BigFirst)) num_changing_childs++;
 			biggest_stepsize = std::max(biggest_stepsize, hor_step);
 		} else {
 			child_wid->current_x = child_wid->smallest_x;
@@ -1592,7 +1592,7 @@ void NWidgetHorizontal::AssignSizePosition(SizingType sizing, int x, int y, uint
 	}
 
 	/* First.5 loop: count how many children are of the biggest step size. */
-	if ((flags & NC_BIGFIRST) && biggest_stepsize > 0) {
+	if (flags.Test(NWidContainerFlag::BigFirst) && biggest_stepsize > 0) {
 		for (const auto &child_wid : this->children) {
 			uint hor_step = child_wid->GetHorizontalStepSize(sizing);
 			if (hor_step == biggest_stepsize) {
@@ -1619,7 +1619,7 @@ void NWidgetHorizontal::AssignSizePosition(SizingType sizing, int x, int y, uint
 		}
 		biggest_stepsize = next_biggest_stepsize;
 
-		if (num_changing_childs == 0 && (flags & NC_BIGFIRST) && biggest_stepsize > 0) {
+		if (num_changing_childs == 0 && flags.Test(NWidContainerFlag::BigFirst) && biggest_stepsize > 0) {
 			/* Second.5 loop: count how many children are of the updated biggest step size. */
 			for (const auto &child_wid : this->children) {
 				uint hor_step = child_wid->GetHorizontalStepSize(sizing);
@@ -1721,7 +1721,7 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 		child_wid->ApplyAspectRatio();
 		highest = std::max(highest, child_wid->smallest_y);
 	}
-	if (this->flags & NC_EQUALSIZE) {
+	if (this->flags.Test(NWidContainerFlag::EqualSize)) {
 		for (const auto &child_wid : this->children) {
 			if (child_wid->fill_y == 1) child_wid->smallest_y = highest;
 		}
@@ -1766,7 +1766,7 @@ void NWidgetVertical::AssignSizePosition(SizingType sizing, int x, int y, uint g
 	for (const auto &child_wid : this->children) {
 		uint vert_step = child_wid->GetVerticalStepSize(sizing);
 		if (vert_step > 0) {
-			if (!(flags & NC_BIGFIRST)) num_changing_childs++;
+			if (!flags.Test(NWidContainerFlag::BigFirst)) num_changing_childs++;
 			biggest_stepsize = std::max(biggest_stepsize, vert_step);
 		} else {
 			child_wid->current_y = child_wid->smallest_y;
@@ -1777,7 +1777,7 @@ void NWidgetVertical::AssignSizePosition(SizingType sizing, int x, int y, uint g
 	}
 
 	/* First.5 loop: count how many children are of the biggest step size. */
-	if ((this->flags & NC_BIGFIRST) && biggest_stepsize > 0) {
+	if (this->flags.Test(NWidContainerFlag::BigFirst) && biggest_stepsize > 0) {
 		for (const auto &child_wid : this->children) {
 			uint vert_step = child_wid->GetVerticalStepSize(sizing);
 			if (vert_step == biggest_stepsize) {
@@ -1804,7 +1804,7 @@ void NWidgetVertical::AssignSizePosition(SizingType sizing, int x, int y, uint g
 		}
 		biggest_stepsize = next_biggest_stepsize;
 
-		if (num_changing_childs == 0 && (flags & NC_BIGFIRST) && biggest_stepsize > 0) {
+		if (num_changing_childs == 0 && flags.Test(NWidContainerFlag::BigFirst) && biggest_stepsize > 0) {
 			/* Second.5 loop: count how many children are of the updated biggest step size. */
 			for (const auto &child_wid : this->children) {
 				uint vert_step = child_wid->GetVerticalStepSize(sizing);
@@ -1891,7 +1891,7 @@ void NWidgetSpacer::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 	/* Spacer widget never need repainting. */
 }
 
-NWidgetMatrix::NWidgetMatrix(Colours colour, WidgetID index) : NWidgetPIPContainer(NWID_MATRIX, NC_EQUALSIZE), index(index), clicked(-1), count(-1)
+NWidgetMatrix::NWidgetMatrix(Colours colour, WidgetID index) : NWidgetPIPContainer(NWID_MATRIX, NWidContainerFlag::EqualSize), index(index), clicked(-1), count(-1)
 {
 	this->colour = colour;
 }
@@ -2368,7 +2368,7 @@ void NWidgetViewport::Draw(const Window *w)
 	if (this->current_x == 0 || this->current_y == 0 || this->IsOutsideDrawArea()) return;
 	this->base_flags.Reset(WidgetBaseFlag::Dirty);
 
-	if (this->disp_flags & ND_NO_TRANSPARENCY) {
+	if (this->disp_flags.Test(NWidgetDisplayFlag::NoTransparency)) {
 		TransparencyOptionBits to_backup = _transparency_opt;
 		_transparency_opt &= (1 << TO_SIGNS) | (1 << TO_LOADING); // Disable all transparency, except textual stuff
 		w->DrawViewport(this->disp_flags);
@@ -2593,9 +2593,9 @@ void NWidgetScrollbar::Draw(const Window *w)
 	const DrawPixelInfo *dpi = _cur_dpi;
 	if (dpi->left > r.right || dpi->left + dpi->width <= r.left || dpi->top > r.bottom || dpi->top + dpi->height <= r.top) return;
 
-	bool up_lowered = HasBit(this->disp_flags, NDB_SCROLLBAR_UP);
-	bool down_lowered = HasBit(this->disp_flags, NDB_SCROLLBAR_DOWN);
-	bool middle_lowered = !(this->disp_flags & ND_SCROLLBAR_BTN) && w->mouse_capture_widget == this->index;
+	bool up_lowered = this->disp_flags.Test(NWidgetDisplayFlag::ScrollbarUp);
+	bool down_lowered = this->disp_flags.Test(NWidgetDisplayFlag::ScrollbarDown);
+	bool middle_lowered = !this->disp_flags.Any({NWidgetDisplayFlag::ScrollbarUp, NWidgetDisplayFlag::ScrollbarDown}) && w->mouse_capture_widget == this->index;
 
 	if (this->type == NWID_HSCROLLBAR) {
 		DrawHorizontalScrollbar(r, this->colour, up_lowered, middle_lowered, down_lowered, this);
@@ -3068,7 +3068,7 @@ void NWidgetLeaf::Draw(const Window *w)
 		case NWID_BUTTON_DROPDOWN:
 		case NWID_PUSHBUTTON_DROPDOWN:
 			if (this->index >= 0) w->SetStringParameters(this->index);
-			DrawButtonDropdown(r, this->colour, clicked, (this->disp_flags & ND_DROPDOWN_ACTIVE) != 0, this->GetString(), this->align);
+			DrawButtonDropdown(r, this->colour, clicked, this->disp_flags.Test(NWidgetDisplayFlag::DropdownActive), this->GetString(), this->align);
 			break;
 
 		default:

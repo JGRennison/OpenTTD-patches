@@ -608,7 +608,7 @@ public:
 	void SetWidgetDirty(WidgetID widget_index);
 
 	void DrawWidgets() const;
-	void DrawViewport(uint8_t display_flags) const;
+	void DrawViewport(NWidgetDisplayFlags display_flags) const;
 	void DrawSortButtonState(WidgetID widget, SortButtonState state) const;
 	static int SortButtonWidth();
 

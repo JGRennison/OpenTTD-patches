@@ -394,11 +394,11 @@ struct NewsWindow : Window {
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
 		if (nvp != nullptr) {
 			nvp->InitializeViewport(this, ni->reftype1 == NR_VEHICLE ? 0x80000000 | ni->ref1 : GetReferenceTile(ni->reftype1, ni->ref1).base(), ScaleZoomGUI(ZOOM_LVL_NEWS));
-			if (this->ni->flags & NF_NO_TRANSPARENT) nvp->disp_flags |= ND_NO_TRANSPARENCY;
+			if (this->ni->flags & NF_NO_TRANSPARENT) nvp->disp_flags.Set(NWidgetDisplayFlag::NoTransparency);
 			if ((this->ni->flags & NF_INCOLOUR) == 0) {
-				nvp->disp_flags |= ND_SHADE_GREY;
+				nvp->disp_flags.Set(NWidgetDisplayFlag::ShadeGrey);
 			} else if (this->ni->flags & NF_SHADE) {
-				nvp->disp_flags |= ND_SHADE_DIMMED;
+				nvp->disp_flags.Set(NWidgetDisplayFlag::ShadeDimmed);
 			}
 		}
 
