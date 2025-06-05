@@ -144,7 +144,7 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
  * @param attempt_refit cargo ID to attempt to use
  * @return cargo and capacity
  */
-static inline std::pair<CargoType, uint16_t> GetVehicleDefaultCapacity(EngineID engine, CargoType attempt_refit = INVALID_CARGO)
+static inline std::pair<CargoType, uint> GetVehicleDefaultCapacity(EngineID engine, CargoType attempt_refit = INVALID_CARGO)
 {
 	const Engine *e = Engine::Get(engine);
 	CargoType cargo = INVALID_CARGO;
