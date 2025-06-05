@@ -26,6 +26,17 @@
 
 #include <type_traits>
 
+namespace format_detail {
+	template<typename T>
+	concept FmtAsBase = T::fmt_as_base || false;
+
+	template<typename T>
+	concept FmtAsBaseHex = T::fmt_as_base_hex || false;
+
+	template<typename T>
+	concept FmtAsTileIndex = T::fmt_as_tile_index || false;
+};
+
 template <typename E, typename Char>
 struct fmt::formatter<E, Char, std::enable_if_t<std::is_enum<E>::value>> : fmt::formatter<typename std::underlying_type<E>::type> {
 	using underlying_type = typename std::underlying_type<E>::type;
@@ -43,7 +54,7 @@ struct fmt::formatter<E, Char, std::enable_if_t<std::is_enum<E>::value>> : fmt::
 };
 
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_format_as_base, T>::value>> : fmt::formatter<typename T::BaseType> {
+struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtAsBase<T>>> : fmt::formatter<typename T::BaseType> {
 	using underlying_type = typename T::BaseType;
 	using parent = typename fmt::formatter<underlying_type>;
 
@@ -61,7 +72,7 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_format_as_ba
 extern fmt::format_context::iterator FmtTileIndexValueIntl(fmt::format_context &ctx, uint32_t value);
 
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<struct fmt_tile_index_tag, T>::value>> : fmt::formatter<uint32_t> {
+struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtAsTileIndex<T>>> : fmt::formatter<uint32_t> {
 	bool use_base_fmt{};
 
 	using underlying_type = uint32_t;
@@ -87,7 +98,7 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<struct fmt_tile_
 };
 
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<struct BaseBitSetBase, T>::value>> : fmt::formatter<typename T::BaseType> {
+struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtAsBaseHex<T>>> : fmt::formatter<typename T::BaseType> {
 	bool use_base_fmt{};
 
 	using underlying_type = typename T::BaseType;

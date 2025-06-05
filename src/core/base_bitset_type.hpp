@@ -16,13 +16,6 @@
 #include "bitmath_func.hpp"
 #include <limits>
 
-struct BaseBitSetBase {
-	static inline constexpr bool serialisation_as_base = true;
-	static inline constexpr bool saveload_primitive_type = true;
-
-	constexpr auto operator <=>(const BaseBitSetBase &) const noexcept = default;
-};
-
 /**
  * Base for bit set wrapper.
  * Allows wrapping strong type values as a bit set. Methods are loosely modelled on std::bitset.
@@ -30,8 +23,12 @@ struct BaseBitSetBase {
  * @tparam Tstorage Storage type required to hold values.
  */
 template <typename Timpl, typename Tvalue_type, typename Tstorage, Tstorage Tmask = std::numeric_limits<Tstorage>::max()>
-class BaseBitSet : public BaseBitSetBase {
+class BaseBitSet {
 public:
+	static inline constexpr bool fmt_as_base_hex = true;
+	static inline constexpr bool serialisation_as_base = true;
+	static inline constexpr bool saveload_primitive_type = true;
+
 	using ValueType = Tvalue_type; ///< Value type of this BaseBitSet.
 	using BaseType = Tstorage; ///< Storage type of this BaseBitSet, be ConvertibleThroughBase
 	static constexpr Tstorage MASK = Tmask; ///< Mask of valid values.

@@ -21,9 +21,10 @@
  * @param T     the type these integers are stored with.
  */
 template <class T>
-class OverflowSafeInt : public fmt_format_as_base
+class OverflowSafeInt
 {
 public:
+	static inline constexpr bool fmt_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 
 private:

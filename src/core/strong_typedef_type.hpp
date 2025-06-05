@@ -309,6 +309,9 @@ namespace StrongType {
 		using Properties = detail::Properties<TProperties...>;
 
 		struct dummy{};
+		struct fmt_format_as_base {
+			static inline constexpr bool fmt_as_base = true;
+		};
 		using FmtTag = std::conditional_t<(std::is_same_v<TProperties, NoDefaultFormat> || ...), dummy, fmt_format_as_base>;
 	};
 

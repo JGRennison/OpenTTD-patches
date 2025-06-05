@@ -95,9 +95,6 @@ enum TropicZone : uint8_t {
  */
 typedef int32_t TileIndexDiff;
 
-/** Tag type to enable custom format behaviour */
-struct fmt_tile_index_tag {};
-
 /**
  * Instead of using StrongType::Integer, implement delta behaviour with TileIndexDiff.
  * As TileIndexDiff is not a strong type, StrongType::IntegerDelta can't be used.
@@ -105,7 +102,10 @@ struct fmt_tile_index_tag {};
  */
 struct TileIndexIntegerMixin {
 	template <typename TType, typename TBaseType>
-	struct mixin : public fmt_tile_index_tag {
+	struct mixin {
+		/** Tag to enable custom format behaviour */
+		static inline constexpr bool fmt_as_tile_index = true;
+
 		friend constexpr TType &operator ++(TType &lhs) { lhs.edit_base()++; return lhs; }
 		friend constexpr TType &operator --(TType &lhs) { lhs.edit_base()--; return lhs; }
 		friend constexpr TType operator ++(TType &lhs, int) { TType res = lhs; lhs.edit_base()++; return res; }
