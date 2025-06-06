@@ -363,6 +363,7 @@ struct GUISettings : public TimeSettings {
 	bool        hide_default_stop_location;                      ///< Hide default stop location for orders
 	bool        show_rail_polyline_tool;                         ///< Show rail polyline tool
 	bool        show_running_costs_calendar_year;                ///< Show vehicle running costs in calendar years
+	bool        show_town_growth_status;                         ///< Show town growth status in town directory
 
 	uint16_t    console_backlog_timeout;                         ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16_t    console_backlog_length;                          ///< the minimum amount of items in the console backlog before items will be removed.
