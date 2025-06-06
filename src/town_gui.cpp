@@ -950,6 +950,7 @@ private:
 		STR_SORT_BY_NAME,
 		STR_SORT_BY_POPULATION,
 		STR_SORT_BY_RATING,
+		STR_SORT_BY_GROWTH_SPEED,
 	};
 	static const std::initializer_list<GUITownList::SortFunction * const> sorter_funcs;
 
@@ -1019,6 +1020,32 @@ private:
 		/* Sort unrated towns always on ascending town name. */
 		if (before) return TownDirectoryWindow::TownNameSorter(a, b, order);
 		return TownDirectoryWindow::TownNameSorter(b, a, order);
+	}
+
+	/**Sort by town growth speed/status */
+	static bool TownGrowthSpeedSorter(const Town * const &a, const Town * const &b, const bool &order)
+	{
+		/* Group: 0 = Growth Disabled, 1 = Not Growing, 2 = Growing */
+		auto GetGrowthGroup = [](const Town *t) -> int {
+			if (t->IsTownGrowthDisabledByOverride()) return 0;
+			return HasBit(t->flags, TOWN_IS_GROWING) ? 2 : 1;
+		};
+
+		int group_a = GetGrowthGroup(a);
+		int group_b = GetGrowthGroup(b);
+
+		if (group_a != group_b) return group_a < group_b;
+
+		/* If growth group is equal, sort by town name. */
+		return TownDirectoryWindow::TownNameSorter(a, b, order);
+	}
+
+	/**Get the string to display the town growth status. */
+	static StringID GetTownGrowthStatusString(const Town *t)
+	{
+		if (!_settings_client.gui.show_town_growth_status) return STR_EMPTY;
+		if (t->IsTownGrowthDisabledByOverride()) return STR_TOWN_GROWTH_STATUS_GROWTH_DISABLED;
+		return HasBit(t->flags, TOWN_IS_GROWING) ? STR_TOWN_GROWTH_STATUS_GROWING : STR_TOWN_GROWTH_STATUS_NOT_GROWING;
 	}
 
 public:
@@ -1104,6 +1131,8 @@ public:
 
 					SetDParam(0, t->index);
 					SetDParam(1, t->cache.population);
+					SetDParam(2, GetTownGrowthStatusString(t));
+
 					DrawString(tr.left, tr.right, tr.top + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetTownString(t));
 
 					tr.top += this->resize.step_height;
@@ -1138,7 +1167,10 @@ public:
 					assert(t != nullptr);
 
 					SetDParam(0, t->index);
+					SetDParam(1, t->cache.population);
+					SetDParam(2, GetTownGrowthStatusString(t));
 					SetDParamMaxDigits(1, 8);
+
 					d = maxdim(d, GetStringBoundingBox(GetTownString(t)));
 				}
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
@@ -1285,6 +1317,7 @@ const std::initializer_list<GUITownList::SortFunction * const> TownDirectoryWind
 	&TownNameSorter,
 	&TownPopulationSorter,
 	&TownRatingSorter,
+	&TownGrowthSpeedSorter,
 };
 
 static WindowDesc _town_directory_desc(__FILE__, __LINE__,
