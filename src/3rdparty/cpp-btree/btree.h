@@ -119,6 +119,9 @@
 
 namespace btree {
 
+template<typename T>
+concept btree_integer_type_hint = T::integer_type_hint || false;
+
 // Inside a btree method, if we just call swap(), it will choose the
 // btree::swap method, which we don't want. And we can't say ::swap
 // because then MSVC won't pickup any std::swap() implementations. We
@@ -484,7 +487,8 @@ class btree_node {
   // configure linear search based on node-size.
   typedef typename if_<
     std::is_integral<key_type>::value ||
-    std::is_floating_point<key_type>::value,
+    std::is_floating_point<key_type>::value ||
+    btree_integer_type_hint<key_type>,
     linear_search_type, binary_search_type>::type search_type;
 
   struct base_fields {

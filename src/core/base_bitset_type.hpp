@@ -28,6 +28,7 @@ public:
 	static inline constexpr bool fmt_as_base_hex = true;
 	static inline constexpr bool serialisation_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
+	static inline constexpr bool integer_type_hint = true;
 
 	using ValueType = Tvalue_type; ///< Value type of this BaseBitSet.
 	using BaseType = Tstorage; ///< Storage type of this BaseBitSet, be ConvertibleThroughBase

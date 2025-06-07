@@ -27,6 +27,7 @@ public:
 	static inline constexpr bool fmt_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 	static inline constexpr bool string_parameter_as_base = true;
+	static inline constexpr bool integer_type_hint = true;
 
 private:
 	static constexpr T T_MAX = std::numeric_limits<T>::max();

@@ -23,6 +23,7 @@ struct DestinationID {
 	static inline constexpr bool fmt_as_base = true;
 	static inline constexpr bool serialisation_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
+	static inline constexpr bool integer_type_hint = true;
 
 	using BaseType = uint16_t;
 	BaseType value = 0;
