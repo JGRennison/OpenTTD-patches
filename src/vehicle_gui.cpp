@@ -2269,13 +2269,17 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					DrawVehicleImage(vehgroup.vehicles_begin[i], {image_left + WidgetDimensions::scaled.hsep_wide * i, ir.top, image_right, ir.bottom}, selected_vehicle, EIT_IN_LIST, 0);
 				}
 
-				/* If all vehicles are in the same group, print group name */
 				GroupID gid = vehgroup.vehicles_begin[0]->group_id;
-				bool show_group = true;
-				for (int i = 1; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
-					if (vehgroup.vehicles_begin[i]->group_id != gid || vehgroup.vehicles_begin[i]->group_id == DEFAULT_GROUP) {
-						show_group = false;
-						break;
+				bool show_group = false;
+
+				/* If all vehicles are in the same group, print group name */
+				if (vehgroup.vehicles_begin[0]->group_id != DEFAULT_GROUP) {
+					show_group = true;
+					for (int i = 1; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
+						if (vehgroup.vehicles_begin[i]->group_id != gid) {
+							show_group = false;
+							break;
+						}
 					}
 				}
 
@@ -2293,7 +2297,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					if (show_group) {
 						/* The vehicle is member of a group, so print group name and the cargoes */
 						SetDParam(0, STR_GROUP_NAME);
-						SetDParam(1, gid);
+						SetDParam(1, gid | GROUP_NAME_HIERARCHY);
 						SetDParam(2, STR_VEHICLE_LIST_CARGO);
 						SetDParam(3, vehicle_cargoes);
 						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_NAME_AND_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
