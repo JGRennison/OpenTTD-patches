@@ -6086,6 +6086,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
 					}
 				}
+				if (v->IsFrontEngine() && !IsTunnelBridgeWithSignalSimulation(v->tile) && (v->lookahead != nullptr &&
+						v->cur_speed > 0 && v->lookahead->reservation_end_position <= v->lookahead->current_position + 24)) {
+					TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
+				}
 				continue;
 			}
 		}
