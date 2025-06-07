@@ -1792,7 +1792,12 @@ CommandCost CmdBuildSingleSignal(DoCommandFlag flags, TileIndex tile, Track trac
 			update_signal_side(tile_exit);
 			YapfNotifyTrackLayoutChange(tile, track);
 			YapfNotifyTrackLayoutChange(tile_exit, track);
-			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+			if (IsTunnelBridgeWithSignalSimulation(tile)) {
+				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+				if (IsTunnelBridgeRestrictedSignal(tile) || IsTunnelBridgeRestrictedSignal(tile_exit)) {
+					InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+				}
+			}
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 			for (Train *re_reserve_train : re_reserve_trains) {
 				ReReserveTrainPath(re_reserve_train);
