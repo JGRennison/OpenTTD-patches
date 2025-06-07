@@ -1505,6 +1505,12 @@ StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
 	return STR_NULL;
 }
 
+enum class DrawInstructionStringFlag : uint8_t {
+	TunnelBridgeEntrance, ///< Tunnel/bridge entrance present
+	TunnelBridgeExit,     ///< Tunnel/bridge exit present
+};
+using DrawInstructionStringFlags = EnumBitSet<DrawInstructionStringFlag, uint8_t>;
+
 /**
  * Draws an instruction in the programming GUI
  * @param prog The program (may be nullptr)
@@ -1516,8 +1522,10 @@ StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
  * @param left Left border for text drawing
  * @param right Right border for text drawing
  * @param owner Owning company ID
+ * @param flags Flags
  */
-static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictInstructionRecord instruction_record, int index, int y, bool selected, int indent, int left, int right, Owner owner)
+static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictInstructionRecord instruction_record,
+		int index, int y, bool selected, int indent, int left, int right, Owner owner, DrawInstructionStringFlags flags)
 {
 	StringID instruction_string = INVALID_STRING_ID;
 
@@ -1885,6 +1893,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 			case TRIT_RESERVE_THROUGH:
 				instruction_string = (item.GetValue() != 0) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+
+				if (flags.Any({ DrawInstructionStringFlag::TunnelBridgeEntrance, DrawInstructionStringFlag::TunnelBridgeExit })) {
+					SetDParam(0, instruction_string);
+					instruction_string = STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE;
+				}
 				break;
 
 			case TRIT_LONG_RESERVE:
@@ -1904,6 +1917,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					default:
 						NOT_REACHED();
 						break;
+				}
+				if (flags.Test(DrawInstructionStringFlag::TunnelBridgeEntrance)) {
+					SetDParam(0, instruction_string);
+					instruction_string = STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE_ENTRANCES;
 				}
 				break;
 
@@ -3149,6 +3166,12 @@ public:
 		/* prog may be nullptr */
 		const TraceRestrictProgram *prog = this->GetProgram();
 
+		DrawInstructionStringFlags flags{};
+		if (IsTunnelBridgeWithSignalSimulation(this->tile)) {
+			if (IsTunnelBridgeSignalSimulationEntrance(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeEntrance);
+			if (IsTunnelBridgeSignalSimulationExit(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeExit);
+		}
+
 		int count = this->GetItemCount(prog);
 		uint indent = 1;
 		for (int i = 0; i < count; i++) {
@@ -3168,7 +3191,8 @@ public:
 			}
 
 			if (i >= scroll_position && this->vscroll->IsVisible(i)) {
-				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right, this->GetOwner());
+				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent,
+						r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right, this->GetOwner(), flags);
 				y += line_height;
 			}
 		}
