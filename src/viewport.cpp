@@ -84,7 +84,6 @@
 #include "vehicle_gui.h"
 #include "blitter/factory.hpp"
 #include "strings_func.h"
-#include "strings_internal.h"
 #include "core/string_builder.hpp"
 #include "zoom_func.h"
 #include "vehicle_func.h"
@@ -2558,8 +2557,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int h = WidgetDimensions::scaled.fullbevel.Vertical() + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL);
 
 		format_buffer string;
-		auto string_params = MakeParameters(ss.params[0], ss.params[1]);
-		GetStringWithArgs(StringBuilder(string), ss.string, string_params);
+		AppendStringInPlace(string, ss.string, ss.params[0], ss.params[1]);
 
 		TextColour colour = TC_WHITE;
 		if (ss.flags.Test(ViewportStringFlag::ColourRect)) {

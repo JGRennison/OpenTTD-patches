@@ -33,7 +33,6 @@
 #include "rev.h"
 #include "core/backup_type.hpp"
 #include "pathfinder/water_regions.h"
-#include "strings_internal.h"
 
 #include "widgets/misc_widget.h"
 

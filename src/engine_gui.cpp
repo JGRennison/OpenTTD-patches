@@ -187,8 +187,7 @@ static StringID GetEngineInfoCapacityStringParameter(EngineID engine)
 				buffer.append(GetListSeparator());
 			}
 
-			auto tmp_params = MakeParameters(i, cap[i]);
-			GetStringWithArgs(StringBuilder(buffer), STR_JUST_CARGO, tmp_params);
+			AppendStringInPlace(buffer, STR_JUST_CARGO, i, cap[i]);
 		}
 		_temp_special_strings[1] = buffer.to_string();
 	}

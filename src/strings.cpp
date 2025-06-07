@@ -51,6 +51,8 @@
 #include "table/strings.h"
 #include "table/control_codes.h"
 
+#include "strings_internal.h"
+
 #include "safeguards.h"
 
 std::string _config_language_file;                ///< The file (name) stored in the configuration.
@@ -346,6 +348,19 @@ void AppendStringInPlace(format_buffer &result, StringID string)
 {
 	_global_string_params.PrepareForNextRun();
 	GetStringWithArgs(StringBuilder(result), string, _global_string_params);
+}
+
+/**
+ * Resolve the given StringID and append in place with most special stringcodes replaced by the string parameters.
+ * DParam lookups and formatting.
+ * @param result The format_buffer to place the translated string.
+ * @param string The unique identifier of the translatable string.
+ * @param args Span of arguments for the string.
+ */
+void AppendStringInPlaceWithArgs(format_buffer &result, StringID string, std::span<StringParameter> args)
+{
+	StringParameters params{args};
+	GetStringWithArgs(StringBuilder(result), string, params);
 }
 
 /**

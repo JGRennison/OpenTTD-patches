@@ -318,7 +318,8 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
  * If 'self_send' is true, this is the client who is sending the message */
 void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str, NetworkTextMessageData data, const char *data_str)
 {
-	SetDParamStr(0, name);
+	std::string_view name_view = name;
+	std::string replacement_name;
 
 	StringID strid;
 	switch (action) {
@@ -347,8 +348,8 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
 
 		case NETWORK_ACTION_GIVE_MONEY: {
-			SetDParam(1, data.auxdata >> 16);
-			SetDParamStr(0, GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION));
+			replacement_name = GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, name, data.auxdata >> 16);
+			name_view = replacement_name;
 
 			extern uint8_t GetCurrentGrfLangID();
 			uint8_t lang_id = GetCurrentGrfLangID();
@@ -371,17 +372,13 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	}
 
 	format_buffer message;
-	StringBuilder builder(message);
-	SetDParamStr(1, str);
-	SetDParam(2, data.data);
-	SetDParamStr(3, data_str);
 
 	/* All of these strings start with "***". These characters are interpreted as both left-to-right and
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the
 	 * user name's characters will influence the direction of the "***" instead of the language setting
 	 * of the game. Manually set the direction of the "***" by inserting a text-direction marker. */
-	builder.Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
-	GetString(builder, strid);
+	StringBuilder(message).Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
+	AppendStringInPlace(message, strid, name_view, str, data.data, data_str);
 
 	Debug(desync, 1, "msg: {}; {}", debug_date_dumper().HexDate(), message);
 	IConsolePrint(colour, message.to_string());

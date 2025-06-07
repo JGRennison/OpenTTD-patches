@@ -894,8 +894,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						const LastDispatchRecord &record = record_iter->second;
 						format_buffer details;
 						auto add_detail = [&](StringID str) {
-							auto tmp_params = MakeParameters(str);
-							GetStringWithArgs(StringBuilder(details), details.empty() ? STR_JUST_STRING : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR, tmp_params);
+							AppendStringInPlace(details, details.empty() ? STR_JUST_STRING : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR, str);
 						};
 						if (HasBit(record.record_flags, LastDispatchRecord::RF_FIRST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST);
 						if (HasBit(record.record_flags, LastDispatchRecord::RF_LAST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST);
