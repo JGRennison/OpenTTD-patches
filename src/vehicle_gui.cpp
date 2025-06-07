@@ -2228,7 +2228,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					} else if (v->group_id != DEFAULT_GROUP) {
 						/* The vehicle has no name, but is member of a group, so print group name and the cargoes */
 						SetDParam(0, STR_GROUP_NAME);
-						SetDParam(1, v->group_id);
+						SetDParam(1, v->group_id | GROUP_NAME_HIERARCHY);
 						SetDParam(2, STR_VEHICLE_LIST_CARGO);
 						SetDParam(3, vehicle_cargoes);
 						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_NAME_AND_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
