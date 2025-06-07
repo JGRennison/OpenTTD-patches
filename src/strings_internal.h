@@ -77,17 +77,28 @@ public:
 		assert(this->offset <= this->parameters.size());
 	}
 
+	uint64_t GetNextParameter()
+	{
+		struct visitor {
+			uint64_t operator()(const uint64_t &arg) { return arg; }
+			uint64_t operator()(const std::string &) { throw std::out_of_range("Attempt to read string parameter as integer"); }
+		};
+
+		const auto &param = this->GetNextParameterReference();
+		return std::visit(visitor{}, param.data);
+	}
+
 	/**
 	 * Get the next parameter from our parameters.
 	 * This updates the offset, so the next time this is called the next parameter
 	 * will be read.
+	 * @tparam T The return type of the parameter.
 	 * @return The next parameter's value.
 	 */
 	template <typename T>
 	T GetNextParameter()
 	{
-		const auto &param = GetNextParameterReference();
-		return static_cast<T>(param.data);
+		return static_cast<T>(this->GetNextParameter());
 	}
 
 	/**
@@ -98,8 +109,13 @@ public:
 	 */
 	const char *GetNextParameterString()
 	{
+		struct visitor {
+			const char *operator()(const uint64_t &) { throw std::out_of_range("Attempt to read integer parameter as string"); }
+			const char *operator()(const std::string &arg) { return arg.c_str(); }
+		};
+
 		const auto &param = GetNextParameterReference();
-		return param.string != nullptr ? param.string->c_str() : nullptr;
+		return std::visit(visitor{}, param.data);
 	}
 
 	/**
@@ -146,23 +162,10 @@ public:
 		this->parameters[n] = StringParameter(std::forward<T>(v));
 	}
 
-	uint64_t GetParam(size_t n) const
+	const StringParameterData &GetParam(size_t n) const
 	{
 		assert(n < this->parameters.size());
-		assert(this->parameters[n].string == nullptr);
 		return this->parameters[n].data;
-	}
-
-	/**
-	 * Get the stored string of the parameter, or \c nullptr when there is none.
-	 * @param n The index into the parameters.
-	 * @return The stored string.
-	 */
-	const char *GetParamStr(size_t n) const
-	{
-		assert(n < this->parameters.size());
-		auto &param = this->parameters[n];
-		return param.string != nullptr ? param.string->c_str() : nullptr;
 	}
 };
 

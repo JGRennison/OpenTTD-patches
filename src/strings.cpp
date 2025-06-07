@@ -130,15 +130,10 @@ void SetDParamMaxDigits(size_t n, uint count, FontSize size)
  * Copy the parameters from the backup into the global string parameter array.
  * @param backup The backup to copy from.
  */
-void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset)
+void CopyInDParam(const std::span<const StringParameterData> backup, uint offset)
 {
 	for (size_t i = 0; i < backup.size(); i++) {
-		auto &value = backup[i];
-		if (value.string.has_value()) {
-			_global_string_params.SetParam(i + offset, value.string.value());
-		} else {
-			_global_string_params.SetParam(i + offset, value.data);
-		}
+		_global_string_params.SetParam(i, backup[i]);
 	}
 }
 
@@ -147,16 +142,11 @@ void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offs
  * @param backup The backup to write to.
  * @param num Number of string parameters to copy.
  */
-void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num)
+void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num)
 {
 	backup.resize(num);
 	for (size_t i = 0; i < backup.size(); i++) {
-		const char *str = _global_string_params.GetParamStr(i);
-		if (str != nullptr) {
-			backup[i] = str;
-		} else {
-			backup[i] = _global_string_params.GetParam(i);
-		}
+		backup[i] = _global_string_params.GetParam(i);
 	}
 }
 
@@ -1403,8 +1393,12 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_PLURAL_LIST: { // {P}
 					int plural_form = *str++;          // contains the plural form for this string
 					size_t offset = orig_offset + (uint8_t)*str++;
-					int64_t v = args.GetParam(offset); // contains the number that determines plural
-					str = ParseStringChoice(str, DeterminePluralForm(v, plural_form), builder);
+					const uint64_t *v = std::get_if<uint64_t>(&args.GetParam(offset)); // contains the number that determines plural
+					if (v != nullptr) {
+						str = ParseStringChoice(str, DeterminePluralForm(static_cast<int64_t>(*v), plural_form), builder);
+					} else {
+						builder += "(invalid PLURAL parameter)";
+					}
 					break;
 				}
 

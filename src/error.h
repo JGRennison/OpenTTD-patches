@@ -31,7 +31,7 @@ enum WarningLevel : uint8_t {
 class ErrorMessageData {
 protected:
 	GUITimer display_timer;         ///< Timer before closing the message.
-	std::vector<StringParameterBackup> params; ///< Backup of parameters of the message strings.
+	std::vector<StringParameterData> params; ///< Backup of parameters of the message strings.
 	const GRFFile *textref_stack_grffile; ///< NewGRF that filled the #TextRefStack for the error message.
 	uint textref_stack_size;        ///< Number of uint32_t values to put on the #TextRefStack for the error message.
 	uint32_t textref_stack[16];     ///< Values to put on the #TextRefStack for the error message.

@@ -156,7 +156,7 @@ struct NewsItem {
 
 	std::unique_ptr<NewsAllocatedData> data; ///< Custom data for the news item that will be deallocated (deleted) when the news item has reached its end.
 
-	std::vector<StringParameterBackup> params; ///< Parameters for string resolving.
+	std::vector<StringParameterData> params; ///< Parameters for string resolving.
 
 	NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type);
 };

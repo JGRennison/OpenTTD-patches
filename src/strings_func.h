@@ -118,8 +118,8 @@ inline void SetDParamStr(size_t n, std::string_view str)
 	SetDParamStr(n, std::string{str});
 }
 
-void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset = 0);
-void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
+void CopyInDParam(const std::span<const StringParameterData> backup, uint offset = 0);
+void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num);
 
 /**
  * Get the current string parameter at index \a n from the global string parameter array.
@@ -128,7 +128,7 @@ void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
  */
 inline uint64_t GetDParam(size_t n)
 {
-	return _global_string_params.GetParam(n);
+	return std::get<uint64_t>(_global_string_params.GetParam(n));
 }
 
 extern TextDirection _current_text_dir; ///< Text direction of the currently selected language

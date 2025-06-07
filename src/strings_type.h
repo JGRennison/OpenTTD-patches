@@ -12,6 +12,7 @@
 
 #include "core/strong_typedef_type.hpp"
 #include <optional>
+#include <variant>
 
 /**
  * Numeric value that represents a string, independent of the selected language.
@@ -77,43 +78,14 @@ static constexpr StringID SPECSTR_PRESIDENT_NAME = 0x70E7; ///< Special string f
 
 static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for _temp_special_strings
 
-/** Data that is to be stored when backing up StringParameters. */
-struct StringParameterBackup {
-	uint64_t data; ///< The data field; valid *when* string has no value.
-	std::optional<std::string> string; ///< The string value.
-
-	/**
-	 * Assign the numeric data with the given value, while clearing the stored string.
-	 * @param data The new value of the data field.
-	 * @return This object.
-	 */
-	StringParameterBackup &operator=(uint64_t data)
-	{
-		this->string.reset();
-		this->data = data;
-		return *this;
-	}
-
-	/**
-	 * Assign a copy of the given string to the string field, while clearing the data field.
-	 * @param string The new value of the string.
-	 * @return This object.
-	 */
-	StringParameterBackup &operator=(const std::string_view string)
-	{
-		this->data = 0;
-		this->string.emplace(string);
-		return *this;
-	}
-};
-
 template<typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;
 
+using StringParameterData = std::variant<uint64_t, std::string>;
+
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
-	uint64_t data = 0; ///< The data of the parameter.
-	std::unique_ptr<std::string> string; ///< Copied string value, if it has any.
+	StringParameterData data; ///< The data of the parameter.
 	char32_t type = 0; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
 
 private:
@@ -124,17 +96,17 @@ private:
 
 	inline void Init(const char *str)
 	{
-		this->string = std::make_unique<std::string>(str);
+		this->data = std::string{str};
 	}
 
 	inline void Init(std::string_view str)
 	{
-		this->string = std::make_unique<std::string>(str);
+		this->data = std::string{str};
 	}
 
 	inline void Init(std::string &&str)
 	{
-		this->string = std::make_unique<std::string>(std::move(str));
+		this->data = std::move(str);
 	}
 
 	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
@@ -145,6 +117,8 @@ private:
 
 public:
 	StringParameter() = default;
+	inline StringParameter(StringParameterData &&data) : data(std::move(data)), type(0) {}
+	inline StringParameter(const StringParameterData &data) : data(data), type(0) {}
 
 	template <typename T>
 	inline StringParameter(T &&v)

@@ -696,7 +696,7 @@ static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 struct TooltipsWindow : public Window
 {
 	StringID string_id;               ///< String to display as tooltip.
-	std::vector<StringParameterBackup> params; ///< The string parameters.
+	std::vector<StringParameterData> params; ///< The string parameters.
 	TooltipCloseCondition close_cond; ///< Condition for closing the window.
 	std::string buffer;               ///< Text to draw
 	int viewport_virtual_left;        ///< Owner viewport state: left
@@ -1346,7 +1346,7 @@ void ShowQueryString(StringID str, std::string capture_str, uint maxsize, Window
  */
 struct QueryWindow : public Window {
 	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	std::vector<StringParameterBackup> params; ///< local copy of #_global_string_params
+	std::vector<StringParameterData> params; ///< local copy of #_global_string_params
 	StringID message;        ///< message shown for query window
 	StringID caption;        ///< title of window
 	bool precomposed;
