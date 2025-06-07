@@ -16,6 +16,9 @@
 
 #include <array>
 
+template<typename T>
+concept StringParameterAsBase = T::string_parameter_as_base || false;
+
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
 	uint64_t data; ///< The data of the parameter.
@@ -156,7 +159,7 @@ public:
 		this->parameters[n].string.reset();
 	}
 
-	template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
+	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
 	void SetParam(size_t n, T v)
 	{
 		SetParam(n, v.base());
