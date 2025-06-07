@@ -1591,29 +1591,35 @@ void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
   dbg_assert(to_move >= 1);
   dbg_assert(to_move <= src->count());
 
+  // optimization: cache these locally to reduce pointer chasing
+  const int position = this->position();
+  const int count = this->count();
+  btree_node* const parent = this->parent();
+  const int src_count = src->count();
+
   // Move the delimiting value to the left node and the new delimiting value
   // from the right node.
-  value_move_construct(count(), parent(), position());
-  parent()->value_move(position(), src, to_move - 1);
+  value_move_construct(count, parent, position);
+  parent->value_move(position, src, to_move - 1);
 
   // Move the values from the right to the left node.
   for (int i = 1; i < to_move; ++i) {
-    value_move_construct(count() + i, src, i - 1);
+    value_move_construct(count + i, src, i - 1);
   }
   // Shift the values in the right node to their correct position.
-  for (int i = to_move; i < src->count(); ++i) {
+  for (int i = to_move; i < src_count; ++i) {
     src->value_move(i - to_move, src, i);
   }
   for (int i = 1; i <= to_move; ++i) {
-    src->value_destroy(src->count() - i);
+    src->value_destroy(src_count - i);
   }
 
   if (!leaf()) {
     // Move the child pointers from the right to the left node.
     for (int i = 0; i < to_move; ++i) {
-      set_child(1 + count() + i, src->child(i));
+      set_child(1 + count + i, src->child(i));
     }
-    for (int i = 0; i <= src->count() - to_move; ++i) {
+    for (int i = 0; i <= src_count - to_move; ++i) {
       dbg_assert(i + to_move <= src->max_count());
       src->set_child(i, src->child(i + to_move));
       *src->mutable_child(i + to_move) = NULL;
@@ -1621,8 +1627,8 @@ void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
   }
 
   // Fixup the counts on the src and dest nodes.
-  set_count(count() + to_move);
-  src->set_count(src->count() - to_move);
+  set_count(count + to_move);
+  src->set_count(src_count - to_move);
 }
 
 template <typename P>
@@ -1633,39 +1639,45 @@ void btree_node<P>::rebalance_left_to_right(btree_node *dest, int to_move) {
   dbg_assert(to_move >= 1);
   dbg_assert(to_move <= count());
 
+  // optimization: cache these locally to reduce pointer chasing
+  const int position = this->position();
+  const int count = this->count();
+  btree_node* const parent = this->parent();
+  const int dest_count = dest->count();
+
   // Make room in the right node for the new values.
-  for (int i = dest->count() - 1; i >= 0; --i) {
+  for (int i = dest_count - 1; i >= 0; --i) {
     dest->value_move_construct(i + to_move, dest, i);
     dest->value_destroy(i);
   }
 
   // Move the delimiting value to the right node and the new delimiting value
   // from the left node.
-  dest->value_move_construct(to_move - 1, parent(), position());
-  parent()->value_move(position(), this, count() - to_move);
-  value_destroy(count() - to_move);
+  dest->value_move_construct(to_move - 1, parent, position);
+  parent->value_move(position, this, count - to_move);
+  value_destroy(count - to_move);
 
   // Move the values from the left to the right node.
   for (int i = 1; i < to_move; ++i) {
-    dest->value_move_construct(i - 1, this, count() - to_move + i);
-    value_destroy(count() - to_move + i);
+    dest->value_move_construct(i - 1, this, count - to_move + i);
+    value_destroy(count - to_move + i);
   }
 
   if (!leaf()) {
     // Move the child pointers from the left to the right node.
-    for (int i = dest->count(); i >= 0; --i) {
+    for (int i = dest_count; i >= 0; --i) {
       dest->set_child(i + to_move, dest->child(i));
       *dest->mutable_child(i) = NULL;
     }
     for (int i = 1; i <= to_move; ++i) {
-      dest->set_child(i - 1, child(count() - to_move + i));
-      *mutable_child(count() - to_move + i) = NULL;
+      dest->set_child(i - 1, child(count - to_move + i));
+      *mutable_child(count - to_move + i) = NULL;
     }
   }
 
   // Fixup the counts on the src and dest nodes.
-  set_count(count() - to_move);
-  dest->set_count(dest->count() + to_move);
+  set_count(count - to_move);
+  dest->set_count(dest_count + to_move);
 }
 
 template <typename P>
