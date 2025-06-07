@@ -1039,14 +1039,17 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		if (new_time < 1) new_time = 1;
 		if (new_time != (int32_t)timetabled) {
 			ChangeTimetable(v, v->cur_timetable_order_index, new_time, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+			timetabled = travel_field ? real_timetable_order->GetTimetabledTravel() : real_timetable_order->GetTimetabledWait();
 		}
 	} else if (timetabled == 0 && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 		/* Add times for orders that are not yet timetabled, even while not autofilling */
 		const int32_t new_time = travelling ? time_taken : time_loading;
 		if (travel_field) {
 			ChangeTimetable(v, v->cur_timetable_order_index, new_time, MTF_TRAVEL_TIME, true);
+			timetabled = real_timetable_order->GetTimetabledTravel();
 		} else {
 			ChangeTimetable(v, v->cur_timetable_order_index, new_time, MTF_WAIT_TIME, true);
+			timetabled = real_timetable_order->GetTimetabledWait();
 		}
 	}
 
