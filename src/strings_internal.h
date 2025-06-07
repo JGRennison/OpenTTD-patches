@@ -16,16 +16,6 @@
 
 #include <array>
 
-template<typename T>
-concept StringParameterAsBase = T::string_parameter_as_base || false;
-
-/** The data required to format and validate a single parameter of a string. */
-struct StringParameter {
-	uint64_t data; ///< The data of the parameter.
-	std::unique_ptr<std::string> string; ///< Copied string value, if it has any.
-	char32_t type; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
-};
-
 class StringParameters {
 protected:
 	StringParameters *parent = nullptr; ///< If not nullptr, this instance references data from this parent instance.
@@ -33,10 +23,6 @@ protected:
 
 	size_t offset = 0; ///< Current offset in the parameters span.
 	char32_t next_type = 0; ///< The type of the next data that is retrieved.
-
-	StringParameters(std::span<StringParameter> parameters = {}) :
-		parameters(parameters)
-	{}
 
 	const StringParameter &GetNextParameterReference();
 
@@ -49,6 +35,8 @@ public:
 		parent(&parent),
 		parameters(parent.parameters.subspan(parent.offset, size))
 	{}
+
+	StringParameters(std::span<StringParameter> parameters = {}) : parameters(parameters) {}
 
 	void PrepareForNextRun();
 	void SetTypeOfNextParameter(char32_t type) { this->next_type = type; }
@@ -152,38 +140,10 @@ public:
 		return this->parameters[offset].type;
 	}
 
-	void SetParam(size_t n, uint64_t v)
-	{
+	template <typename T>
+	inline void SetParam(size_t n, T &&v) {
 		assert(n < this->parameters.size());
-		this->parameters[n].data = v;
-		this->parameters[n].string.reset();
-	}
-
-	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
-	void SetParam(size_t n, T v)
-	{
-		SetParam(n, v.base());
-	}
-
-	void SetParam(size_t n, const char *str)
-	{
-		assert(n < this->parameters.size());
-		this->parameters[n].data = 0;
-		this->parameters[n].string = std::make_unique<std::string>(str);
-	}
-
-	void SetParam(size_t n, std::string_view str)
-	{
-		assert(n < this->parameters.size());
-		this->parameters[n].data = 0;
-		this->parameters[n].string = std::make_unique<std::string>(str);
-	}
-
-	void SetParam(size_t n, std::string &&str)
-	{
-		assert(n < this->parameters.size());
-		this->parameters[n].data = 0;
-		this->parameters[n].string = std::make_unique<std::string>(std::move(str));
+		this->parameters[n] = StringParameter(std::forward<T>(v));
 	}
 
 	uint64_t GetParam(size_t n) const
@@ -238,25 +198,10 @@ public:
 	ArrayStringParameters& operator=(const ArrayStringParameters &other) = delete;
 };
 
-/**
- * Helper to create the StringParameters with its own buffer with the given
- * parameter values.
- * @param args The parameters to set for the to be created StringParameters.
- * @return The constructed StringParameters.
- */
-template <typename... Args>
-static auto MakeParameters(const Args&... args)
-{
-	ArrayStringParameters<sizeof...(args)> parameters;
-	size_t index = 0;
-	(parameters.SetParam(index++, std::forward<const Args&>(args)), ...);
-	return parameters;
-}
-
 class StringBuilder;
 
 void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters &args, uint case_index = 0, bool game_script = false);
-std::string GetStringWithArgs(StringID string, StringParameters &args);
+void GetStringWithArgs(StringBuilder builder, StringID string, std::span<StringParameter> params, uint case_index = 0, bool game_script = false);
 
 void GetString(StringBuilder builder, StringID string);
 

@@ -976,14 +976,19 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		}
 
 		case OT_CONDITIONAL: {
-			auto set_station_id = [&order](uint index, StringParameters &sp = _global_string_params) {
+			auto set_station_id_generic = [&order]<typename F>(uint index, F set_param) {
 				const Station *st = Station::GetIfValid(order->GetConditionStationID());
 				if (st == nullptr) {
-					sp.SetParam(index, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
+					set_param(index, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 				} else {
-					sp.SetParam(index, STR_STATION_NAME);
-					sp.SetParam(index + 1, st->index);
+					set_param(index, STR_STATION_NAME);
+					set_param(index + 1, st->index);
 				}
+			};
+			auto set_station_id = [&](uint index) {
+				set_station_id_generic(index, [&]<typename T>(uint index, T &&val) {
+					SetDParam(index, std::forward<T>(val));
+				});
 			};
 
 			SetDParam(1, order->GetConditionSkipToOrder() + 1);
@@ -1063,12 +1068,16 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(4, order->GetXData());
 			} else if (ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
 				const bool percent_mode = (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
-				ArrayStringParameters<10> tmp_params;
+				std::array<StringParameter, 10> tmp_params{};
 				StringID substr;
 
-				tmp_params.SetParam(0, order->GetConditionSkipToOrder() + 1);
-				tmp_params.SetParam(1, CargoSpec::Get(order->GetConditionValue())->name);
-				set_station_id(2, tmp_params);
+				auto set_tmp_param = [&]<typename T>(uint index, T &&val) {
+					tmp_params[index] = StringParameter(std::forward<T>(val));
+				};
+
+				set_tmp_param(0, order->GetConditionSkipToOrder() + 1);
+				set_tmp_param(1, CargoSpec::Get(order->GetConditionValue())->name);
+				set_station_id_generic(2, set_tmp_param);
 
 				auto output_condition_value = [&](int param_offset) {
 					if (percent_mode) {
@@ -1076,27 +1085,27 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						bool refit = HasBit(order->GetXData2(), 16);
 						StringID capacity_str = refit ? STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT : STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY;
 						_temp_special_strings[0] = GetStringWithArgs(capacity_str, capacity_params);
-						tmp_params.SetParam(param_offset, SPECSTR_TEMP_START);
+						set_tmp_param(param_offset, SPECSTR_TEMP_START);
 					} else {
-						tmp_params.SetParam(param_offset, order->GetConditionValue());
-						tmp_params.SetParam(param_offset + 1, order->GetXDataLow());
+						set_tmp_param(param_offset, order->GetConditionValue());
+						set_tmp_param(param_offset + 1, order->GetXDataLow());
 					}
 				};
 
 				if (!order->HasConditionViaStation()) {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY;
-					tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+					set_tmp_param(4, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 					output_condition_value(5);
 				} else {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY;
 					const Station *via_st = Station::GetIfValid(order->GetConditionViaStationID());
 					if (via_st == nullptr) {
-						tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
+						set_tmp_param(4, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 					} else {
-						tmp_params.SetParam(4, STR_STATION_NAME);
-						tmp_params.SetParam(5, via_st->index);
+						set_tmp_param(4, STR_STATION_NAME);
+						set_tmp_param(5, via_st->index);
 					}
-					tmp_params.SetParam(6, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+					set_tmp_param(6, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 					output_condition_value(7);
 				}
 				_temp_special_strings[0] = GetStringWithArgs(substr, tmp_params);

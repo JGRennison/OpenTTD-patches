@@ -107,4 +107,50 @@ struct StringParameterBackup {
 	}
 };
 
+template<typename T>
+concept StringParameterAsBase = T::string_parameter_as_base || false;
+
+/** The data required to format and validate a single parameter of a string. */
+struct StringParameter {
+	uint64_t data = 0; ///< The data of the parameter.
+	std::unique_ptr<std::string> string; ///< Copied string value, if it has any.
+	char32_t type = 0; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
+
+private:
+	inline void Init(uint64_t v)
+	{
+		this->data = v;
+	}
+
+	inline void Init(const char *str)
+	{
+		this->string = std::make_unique<std::string>(str);
+	}
+
+	inline void Init(std::string_view str)
+	{
+		this->string = std::make_unique<std::string>(str);
+	}
+
+	inline void Init(std::string &&str)
+	{
+		this->string = std::make_unique<std::string>(std::move(str));
+	}
+
+	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
+	inline void Init(const T &v)
+	{
+		this->Init(v.base());
+	}
+
+public:
+	StringParameter() = default;
+
+	template <typename T>
+	inline StringParameter(T &&v)
+	{
+		this->Init(v);
+	}
+};
+
 #endif /* STRINGS_TYPE_H */
