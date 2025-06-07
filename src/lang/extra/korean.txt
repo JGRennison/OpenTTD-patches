@@ -1054,6 +1054,8 @@ STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COM
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}슬롯 이름 바꾸기
 STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION                    :{BLACK}슬롯 그룹 이름 바꾸기
 STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}슬롯 생성하기
+STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME                        :{BLACK}이름:
+STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY               :{BLACK}최대 수용량:
 STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION                    :{BLACK}슬롯 그룹 생성하기
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}슬롯의 최대 수용량을 설정하세요
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}슬롯 삭제
@@ -1308,7 +1310,11 @@ STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :구현되지 �
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :구현되지 않은 재배치된 액션 5 종류: 이름: {2:STRING}, 재배치: {4:HEX} (스프라이트 {3:NUM})
 
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF에서 할당 가능한 문자열 ID 개수보다 많은 문자열을 사용하고 있습니다
-STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 이름이나 텍스트가 잘못된 문자열을 표시할 수 있습니다. NewGRF의 개수를 줄이십시오.
+STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 이름이나 텍스트가 잘못된 문자열을 표시할 수 있습니다. NewGRF의 개수를 줄이세요.
+
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA                       :{BLACK}{STRING}.{}CTRL+클릭하면 선택한 NewGRF만 업그레이드합니다.
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA                        :{BLACK}{STRING}.{}CTRL+클릭하면 제일 위로 이동합니다.
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA                      :{BLACK}{STRING}.{}CTRL+클릭하면 제일 아래로 이동합니다.
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}현재 소음 수준: {ORANGE}{COMMA}
 
@@ -1334,6 +1340,7 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 �
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
 STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - {STRING}에 정차
+STR_DEPARTURES_CAPTION_VEHICLE_FILTER                           :{WHITE}{STRING} - 공유된 경로: {VEHICLE}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}발착 전광판에 화물 필터 모드 설정
 STR_DEPARTURES_DEPARTURES                                       :출발
 STR_DEPARTURES_ARRIVALS                                         :도착
@@ -2145,12 +2152,14 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}지연 (틱)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}출발 슬롯 조정
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}이 일정에 있는 모든 출발 슬롯을 조정합니다
+STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}CTRL+ 클릭하면 선택한 슬롯만 조정합니다
 STR_SCHDISPATCH_REMOVE                                          :{BLACK}슬롯 제거
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}이 일정에서 출발 슬롯을 제거하는 것을 허용합니다
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}출발 슬롯 제거
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}일괄 추가 (분)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}일괄 추가 (일)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}일괄 추가 (틱)
+STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}: {STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하세요.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}출발 슬롯 초기화
@@ -2242,6 +2251,7 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}정말�
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}너무 많은 출발 슬롯을 한 번에 추가하려고 했습니다
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}출발 슬롯 조정값이 너무 큽니다
+STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME      :{WHITE}조정된 시각에 출발 슬롯이 이미 존재합니다
 
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}배차 일정, 자동 배차, 차량 기지 배차 간격 유지 중에서 하나만 사용할 수 있습니다
