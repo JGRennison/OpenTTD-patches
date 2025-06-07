@@ -11,7 +11,6 @@
 #define STRINGS_FUNC_H
 
 #include "strings_type.h"
-#include "strings_internal.h"
 #include "string_type.h"
 #include "gfx_type.h"
 #include "core/bitmath_func.hpp"
@@ -19,8 +18,6 @@
 #include <array>
 #include <optional>
 #include <vector>
-
-extern ArrayStringParameters<20> _global_string_params;
 
 /**
  * Extract the StringTab from a StringID.
@@ -99,7 +96,9 @@ char32_t GetDecimalSeparatorChar();
  */
 template <typename T>
 inline void SetDParam(size_t n, T &&v) {
-	_global_string_params.SetParam(n, std::forward<T>(v));
+	extern std::array<StringParameter, 20> _global_string_params_data;
+	assert(n < _global_string_params_data.size());
+	_global_string_params_data[n] = StringParameter{std::forward<T>(v)};
 }
 
 void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
@@ -129,7 +128,9 @@ void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num);
  */
 inline uint64_t GetDParam(size_t n)
 {
-	return std::get<uint64_t>(_global_string_params.GetParam(n));
+	extern std::array<StringParameter, 20> _global_string_params_data;
+	assert(n < _global_string_params_data.size());
+	return std::get<uint64_t>(_global_string_params_data[n].data);
 }
 
 extern TextDirection _current_text_dir; ///< Text direction of the currently selected language

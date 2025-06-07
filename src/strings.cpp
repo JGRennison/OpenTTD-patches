@@ -65,7 +65,9 @@ TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently s
 std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
 #endif /* WITH_ICU_I18N */
 
-ArrayStringParameters<20> _global_string_params;
+std::array<StringParameter, 20> _global_string_params_data;
+
+static StringParameters _global_string_params(std::span<StringParameter>{ _global_string_params_data.data(), _global_string_params_data.size() });
 
 std::string _temp_special_strings[16];
 
