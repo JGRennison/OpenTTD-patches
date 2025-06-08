@@ -506,28 +506,24 @@ struct CheatWindow : Window {
 		if (cheat == CHT_CHANGE_DATE && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
 			/* Click at the date text directly. */
 			clicked_cheat = CHT_CHANGE_DATE;
-			SetDParam(0, value);
-			ShowQueryString(STR_JUST_INT, STR_CHEAT_CHANGE_DATE_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+			ShowQueryString(GetString(STR_JUST_INT, value), STR_CHEAT_CHANGE_DATE_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
 		} else if (cheat == CHT_EDIT_MAX_HL && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_cheat = CHT_EDIT_MAX_HL;
-			SetDParam(0, value);
-			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+			ShowQueryString(GetString(STR_JUST_INT, value), STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
 		} else if (cheat == CHT_MONEY && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_cheat = CHT_MONEY;
-			SetDParam(0, value);
-			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
+			ShowQueryString(GetString(STR_JUST_INT, value), STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
 			return;
 		} else if (ce->type == SLF_ALLOW_CONTROL && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_cheat = cheat;
 			uint64_t val = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
-			SetDParam(0, val * 1000 >> 16);
-			SetDParam(1, 3);
-			StringID str = (cheat == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
+			std::string str = GetString(STR_JUST_DECIMAL, val * 1000 >> 16, 3);
+			StringID caption = (cheat == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
 			std::string saved = std::move(_settings_game.locale.digit_group_separator);
 			_settings_game.locale.digit_group_separator = "";
-			ShowQueryString(STR_JUST_DECIMAL, str, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
+			ShowQueryString(str, caption, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
 			_settings_game.locale.digit_group_separator = std::move(saved);
 			return;
 		}
@@ -617,10 +613,9 @@ struct CheatWindow : Window {
 				if (sd->min < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
 
 				this->valuewindow_entry = sd;
-				SetDParam(0, value64);
 
 				/* Limit string length to 14 so that MAX_INT32 * max currency rate doesn't exceed MAX_INT64. */
-				ShowQueryString(STR_JUST_INT, STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QSF_ENABLE_DEFAULT);
+				ShowQueryString(GetString(STR_JUST_INT, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QSF_ENABLE_DEFAULT);
 			}
 
 			this->clicked_setting = sd;

@@ -77,6 +77,12 @@ public:
 		assert(this->offset <= this->parameters.size());
 	}
 
+	/**
+	 * Get the next parameter from our parameters.
+	 * This updates the offset, so the next time this is called the next parameter
+	 * will be read.
+	 * @return The next parameter's value.
+	 */
 	uint64_t GetNextParameter()
 	{
 		struct visitor {

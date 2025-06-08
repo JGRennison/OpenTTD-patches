@@ -120,7 +120,7 @@ struct ViewportSign {
 	uint16_t width_normal; ///< The width when not zoomed out (normal font)
 	uint16_t width_small;  ///< The width when zoomed out (small font)
 
-	void UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small = STR_NULL);
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small = STR_NULL);
 	void MarkDirty(ZoomLevel maxzoom) const;
 };
 
@@ -132,10 +132,10 @@ struct TrackedViewportSign : ViewportSign {
 	 * Update the position of the viewport sign.
 	 * Note that this function hides the base class function.
 	 */
-	void UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small = STR_NULL)
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small = STR_NULL)
 	{
 		this->kdtree_valid = true;
-		this->ViewportSign::UpdatePosition(maxzoom, center, top, str, str_small);
+		this->ViewportSign::UpdatePosition(maxzoom, center, top, params, str, str_small);
 	}
 
 

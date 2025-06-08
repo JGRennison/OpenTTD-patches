@@ -1035,7 +1035,7 @@ struct QueryStringWindow : public Window {
 	static_assert(N == 1 || N == 2);
 	QueryString editboxes[N]; ///< Editboxes.
 	StringID window_caption;  ///< Title for the whole query window
-	std::string capture_str;  ///< Pre-composed caption string.
+	std::string caption_str;  ///< Pre-composed caption string.
 	QueryStringFlags flags;   ///< Flags controlling behaviour of the window.
 	Dimension warning_size;   ///< How much space to use for the warning text
 
@@ -1058,8 +1058,8 @@ struct QueryStringWindow : public Window {
 	 *
 	 * For the parameters, see #ShowQueryString.
 	 */
-	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
-			: QueryStringWindow(std::make_index_sequence<N>{}, ed, window_caption, capture_str, desc, parent, flags)
+	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string caption_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+			: QueryStringWindow(std::make_index_sequence<N>{}, ed, window_caption, caption_str, desc, parent, flags)
 	{}
 
 private:
@@ -1071,20 +1071,16 @@ private:
 	 * though #QueryString is neither default- nor copy-constructible.
 	 */
 	template <std::size_t... j>
-	QueryStringWindow(std::index_sequence<j...>, std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string capture_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+	QueryStringWindow(std::index_sequence<j...>, std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string caption_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
 			: Window(desc),
 			editboxes{QueryString(max_bytes(ed[j], flags), ed[j].max_size)...},
 			window_caption(window_caption),
-			capture_str(std::move(capture_str))
+			caption_str(std::move(caption_str))
 	{
 		static_assert(sizeof...(j) == N);
 
 		for (int i = 0; i < N; ++i) {
-			if (ed[i].strparams) {
-				this->editboxes[i].text.Assign(GetStringWithArgs(ed[i].str, *ed[i].strparams));
-			} else {
-				this->editboxes[i].text.Assign(GetString(ed[i].str));
-			}
+			this->editboxes[i].text.Assign(ed[i].str);
 		}
 
 		if constexpr (N > 1) {
@@ -1110,7 +1106,7 @@ private:
 		this->flags = flags;
 
 		this->CreateNestedTree();
-		if (!this->capture_str.empty()) {
+		if (!this->caption_str.empty()) {
 			this->GetWidget<NWidgetCore>(WID_QS_CAPTION)->SetString(STR_JUST_RAW_STRING);
 		}
 		this->FinishInitNested(WN_QUERY_STRING);
@@ -1203,8 +1199,8 @@ public:
 	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_QS_CAPTION) {
-			if (!this->capture_str.empty()) {
-				SetDParamStr(0, this->capture_str);
+			if (!this->caption_str.empty()) {
+				SetDParamStr(0, this->caption_str);
 			} else {
 				SetDParam(0, this->window_caption);
 			}
@@ -1317,27 +1313,27 @@ void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID w
  * Like the above, but with \a ed broken out to separate parameters, and \a caption
  * is used not only as \a window_caption but also for the edited string's caption.
  */
-void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
+void ShowQueryString(std::string_view str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	QueryEditboxDescription ed[1]{
-		{str, {}, caption, INVALID_STRING_ID, afilter, maxsize }
+		{str, caption, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
 	new QueryStringWindow<1>(ed, caption, {}, _query_string_desc, parent, flags);
 }
 
 /**
- * Like the above, but with \a capture_str instead of a \a caption or a \a window_caption.
+ * Like the above, but with \a caption_str instead of a \a caption or a \a window_caption.
  *
- * @param capture_str Precomposed string for the query window's title bar. Not used for the editbox's caption.
+ * @param caption_str Precomposed string for the query window's title bar. Not used for the editbox's caption.
  */
-void ShowQueryString(StringID str, std::string capture_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
+void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	QueryEditboxDescription ed[1]{
-		{str, {}, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
+		{str, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow<1>(ed, {}, std::move(capture_str), _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, {}, std::move(caption_str), _query_string_desc, parent, flags);
 }
 
 /**

@@ -24,13 +24,13 @@ public:
 	 */
 	enum NewsType {
 		/* Arbitrary selection of NewsTypes which might make sense for scripts */
-		NT_ACCIDENT          = ::NT_ACCIDENT,         ///< Category accidents.
-		NT_COMPANY_INFO      = ::NT_COMPANY_INFO,     ///< Category company info.
-		NT_ECONOMY           = ::NT_ECONOMY,          ///< Category economy.
-		NT_ADVICE            = ::NT_ADVICE,           ///< Category vehicle advice.
-		NT_ACCEPTANCE        = ::NT_ACCEPTANCE,       ///< Category acceptance changes.
-		NT_SUBSIDIES         = ::NT_SUBSIDIES,        ///< Category subsidies.
-		NT_GENERAL           = ::NT_GENERAL,          ///< Category general.
+		NT_ACCIDENT          = to_underlying(::NewsType::Accident),         ///< Category accidents.
+		NT_COMPANY_INFO      = to_underlying(::NewsType::CompanyInfo),      ///< Category company info.
+		NT_ECONOMY           = to_underlying(::NewsType::Economy),          ///< Category economy.
+		NT_ADVICE            = to_underlying(::NewsType::Advice),           ///< Category vehicle advice.
+		NT_ACCEPTANCE        = to_underlying(::NewsType::Acceptance),       ///< Category acceptance changes.
+		NT_SUBSIDIES         = to_underlying(::NewsType::Subsidies),        ///< Category subsidies.
+		NT_GENERAL           = to_underlying(::NewsType::General),          ///< Category general.
 	};
 
 	/**
@@ -38,11 +38,11 @@ public:
 	 */
 	enum NewsReferenceType {
 		/* Selection of useful game elements to refer to. */
-		NR_NONE     = ::NR_NONE,     ///< No reference supplied.
-		NR_TILE     = ::NR_TILE,     ///< Reference location, scroll to the location when clicking on the news.
-		NR_STATION  = ::NR_STATION,  ///< Reference station, scroll to the station when clicking on the news. Delete news when the station is deleted.
-		NR_INDUSTRY = ::NR_INDUSTRY, ///< Reference industry, scrolls to the industry when clicking on the news. Delete news when the industry is deleted.
-		NR_TOWN     = ::NR_TOWN,     ///< Reference town, scroll to the town when clicking on the news.
+		NR_NONE     = to_underlying(::NewsReferenceType::None),     ///< No reference supplied.
+		NR_TILE     = to_underlying(::NewsReferenceType::Tile),     ///< Reference location, scroll to the location when clicking on the news.
+		NR_STATION  = to_underlying(::NewsReferenceType::Station),  ///< Reference station, scroll to the station when clicking on the news. Delete news when the station is deleted.
+		NR_INDUSTRY = to_underlying(::NewsReferenceType::Industry), ///< Reference industry, scrolls to the industry when clicking on the news. Delete news when the industry is deleted.
+		NR_TOWN     = to_underlying(::NewsReferenceType::Town),     ///< Reference town, scroll to the town when clicking on the news.
 	};
 
 	/**
@@ -58,7 +58,7 @@ public:
 	 *  - For #NR_INDUSTRY this parameter should be a valid industryID (ScriptIndustry::IsValidIndustry).
 	 *  - For #NR_TOWN this parameter should be a valid townID (ScriptTown::IsValidTown).
 	 * @return True if the action succeeded.
-	 * @pre type must be #NT_ECONOMY, #NT_SUBSIDIES, or #NT_GENERAL.
+	 * @pre type must be #NewsType::Economy, #NewsType::Subsidies, or #NewsType::General.
 	 * @pre text != null.
 	 * @pre company == COMPANY_INVALID || ResolveCompanyID(company) != COMPANY_INVALID.
 	 * @pre The \a reference condition must be fulfilled.

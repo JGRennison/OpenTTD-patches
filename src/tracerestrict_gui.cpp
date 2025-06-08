@@ -2206,7 +2206,7 @@ class TraceRestrictWindow: public Window {
 	};
 	QuerySubMode query_submode = QSM_DEFAULT;                                   ///< sub-mode for query strings
 
-	void TraceRestrictShowQueryString(StringID str, StringID caption, uint maxsize, CharSetFilter afilter, QueryStringFlags flags, QuerySubMode query_submode = QSM_DEFAULT)
+	void TraceRestrictShowQueryString(std::string_view str, StringID caption, uint maxsize, CharSetFilter afilter, QueryStringFlags flags, QuerySubMode query_submode = QSM_DEFAULT)
 	{
 		CloseWindowByClass(WC_QUERY_STRING);
 		this->query_submode = query_submode;
@@ -2460,11 +2460,10 @@ public:
 				TraceRestrictInstructionRecord record = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(record.instruction).value_type;
 				if (IsIntegerValueType(type)) {
-					SetDParam(0, ConvertIntegerValue(type, record.instruction.GetValue(), true));
-					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+					std::string str = GetString(STR_JUST_INT, ConvertIntegerValue(type, record.instruction.GetValue(), true));
+					this->TraceRestrictShowQueryString(str, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-					SetDParam(0, record.secondary);
-					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, record.secondary), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				}
 				break;
 			}
@@ -2475,11 +2474,9 @@ public:
 				if (IsDecimalValueType(type)) {
 					int64_t value, decimal;
 					ConvertValueToDecimal(type, item.GetValue(), value, decimal);
-					SetDParam(0, value);
-					SetDParam(1, decimal);
 					std::string saved = std::move(_settings_game.locale.digit_group_separator);
 					_settings_game.locale.digit_group_separator.clear();
-					this->TraceRestrictShowQueryString(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(GetString(STR_JUST_DECIMAL, value, decimal), STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
 					_settings_game.locale.digit_group_separator = std::move(saved);
 				}
 				break;
@@ -2708,8 +2705,7 @@ public:
 				const TraceRestrictProgram *prog = this->GetProgram();
 				if (prog != nullptr) {
 					TraceRestrictInstructionItem item = this->GetSelected().instruction;
-					SetDParamStr(0, prog->GetLabel(item.GetValue()));
-					this->TraceRestrictShowQueryString(STR_JUST_RAW_STRING, STR_ORDER_LABEL_TEXT_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_SET_TEXT);
+					this->TraceRestrictShowQueryString(prog->GetLabel(item.GetValue()), STR_ORDER_LABEL_TEXT_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_SET_TEXT);
 				}
 				break;
 			}
@@ -2814,7 +2810,7 @@ public:
 				return;
 			}
 			if (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_COUNTER_INDEX_INT && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
-				this->TraceRestrictShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_NEW_COUNTER);
+				this->TraceRestrictShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_NEW_COUNTER);
 				return;
 			}
 			if ((widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) || type.value_type == TRVT_GROUP_INDEX ||
@@ -2909,8 +2905,7 @@ public:
 						} else {
 							penalty_value = item.GetValue();
 						}
-						SetDParam(0, penalty_value);
-						this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+						this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, penalty_value), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 						return;
 					} else {
 						item.SetValue(value);
@@ -5141,11 +5136,10 @@ public:
 		if (this->slot_sel.type != SlotItemType::Slot && this->slot_sel.type != SlotItemType::Group) return;
 		this->qsm_mode = QuerySelectorMode::Rename;
 		this->slot_query = this->slot_sel;
-		SetDParam(0, this->slot_sel.id);
 		if (this->slot_sel.type == SlotItemType::Slot) {
-			ShowQueryString(STR_TRACE_RESTRICT_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 		} else if (this->slot_sel.type == SlotItemType::Group) {
-			ShowQueryString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 		}
 	}
 
@@ -5154,8 +5148,7 @@ public:
 		if (this->slot_sel.type != SlotItemType::Slot) return;
 		this->qsm_mode = QuerySelectorMode::SetMaxOccupancy;
 		this->slot_query = this->slot_sel;
-		SetDParam(0, TraceRestrictSlot::Get(this->slot_sel.id)->max_occupancy);
-		ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictSlot::Get(this->slot_sel.id)->max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
 	}
 
 	void ShowCreateSlotWindow()
@@ -5169,7 +5162,7 @@ public:
 	{
 		this->qsm_mode = QuerySelectorMode::Rename;
 		this->slot_query = { SlotItemType::Group, NEW_TRACE_RESTRICT_SLOT_GROUP };
-		ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString({}, STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 	}
 
 	/**
@@ -5565,8 +5558,7 @@ public:
 		assert(TraceRestrictCounter::IsValidID(ctr_id));
 		this->qto = QTO_RENAME;
 		this->ctr_qt_op = ctr_id;
-		SetDParam(0, ctr_id);
-		ShowQueryString(STR_TRACE_RESTRICT_COUNTER_NAME, STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString(GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 	}
 
 	void ShowSetCounterValueWindow(TraceRestrictCounterID ctr_id)
@@ -5574,15 +5566,14 @@ public:
 		assert(TraceRestrictCounter::IsValidID(ctr_id));
 		this->qto = QTO_SET_VALUE;
 		this->ctr_qt_op = ctr_id;
-		SetDParam(0, TraceRestrictCounter::Get(ctr_id)->value);
-		ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictCounter::Get(ctr_id)->value), STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
 	}
 
 	void ShowCreateCounterWindow()
 	{
 		this->qto = QTO_RENAME;
 		this->ctr_qt_op = NEW_TRACE_RESTRICT_COUNTER_ID;
-		ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 	}
 };
 
@@ -5618,10 +5609,10 @@ void ShowTraceRestrictCounterWindow(CompanyID company)
  */
 void ShowSlotCreationQueryString(Window &parent)
 {
-	auto occupancy_parameters = MakeParameters(TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY);
+	std::string occupancy = GetString(STR_JUST_INT, TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY);
 	std::array<QueryEditboxDescription, 2> ed{{
-		{STR_EMPTY, {}, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
-		{STR_JUST_INT, occupancy_parameters, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
+		{{}, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
+		{occupancy, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
 	}};
 	ShowQueryString(std::span(ed), STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, &parent, QSF_LEN_IN_CHARS);
 }

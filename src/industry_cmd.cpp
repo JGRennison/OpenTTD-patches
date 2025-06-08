@@ -56,7 +56,7 @@
 IndustryPool _industry_pool("Industry");
 INSTANTIATE_POOL_METHODS(Industry)
 
-void ShowIndustryViewWindow(int industry);
+void ShowIndustryViewWindow(IndustryID industry);
 void BuildOilRig(TileIndex tile);
 
 static uint8_t _industry_sound_ctr;
@@ -1774,7 +1774,7 @@ static void AdvertiseIndustryOpening(const Industry *ind)
 	} else {
 		SetDParam(1, ind->town->index);
 	}
-	AddIndustryNewsItem(ind_spc->new_industry_text, NT_INDUSTRY_OPEN, ind->index);
+	AddIndustryNewsItem(ind_spc->new_industry_text, NewsType::IndustryOpen, ind->index);
 	AI::BroadcastNewEvent(new ScriptEventIndustryOpen(ind->index));
 	Game::NewEvent(new ScriptEventIndustryOpen(ind->index));
 }
@@ -2275,9 +2275,9 @@ CommandCost CmdIndustrySetProduction(DoCommandFlag flags, IndustryID ind_id, uin
 		if (show_news && str != STR_NULL) {
 			NewsType nt;
 			switch (WhoCanServiceIndustry(ind)) {
-				case 0: nt = NT_INDUSTRY_NOBODY;  break;
-				case 1: nt = NT_INDUSTRY_OTHER;   break;
-				case 2: nt = NT_INDUSTRY_COMPANY; break;
+				case 0: nt = NewsType::IndustryNobody;  break;
+				case 1: nt = NewsType::IndustryOther;   break;
+				case 2: nt = NewsType::IndustryCompany; break;
 				default: NOT_REACHED();
 			}
 
@@ -2890,9 +2890,9 @@ static void ReportNewsProductionChangeIndustry(Industry *ind, CargoType type, in
 	NewsType nt;
 
 	switch (WhoCanServiceIndustry(ind)) {
-		case 0: nt = NT_INDUSTRY_NOBODY;  break;
-		case 1: nt = NT_INDUSTRY_OTHER;   break;
-		case 2: nt = NT_INDUSTRY_COMPANY; break;
+		case 0: nt = NewsType::IndustryNobody;  break;
+		case 1: nt = NewsType::IndustryOther;   break;
+		case 2: nt = NewsType::IndustryCompany; break;
 		default: NOT_REACHED();
 	}
 	SetDParam(2, abs(percent));
@@ -3090,14 +3090,14 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 		NewsType nt;
 		/* Compute news category */
 		if (closeit) {
-			nt = NT_INDUSTRY_CLOSE;
+			nt = NewsType::IndustryClose;
 			AI::BroadcastNewEvent(new ScriptEventIndustryClose(i->index));
 			Game::NewEvent(new ScriptEventIndustryClose(i->index));
 		} else {
 			switch (WhoCanServiceIndustry(i)) {
-				case 0: nt = NT_INDUSTRY_NOBODY;  break;
-				case 1: nt = NT_INDUSTRY_OTHER;   break;
-				case 2: nt = NT_INDUSTRY_COMPANY; break;
+				case 0: nt = NewsType::IndustryNobody;  break;
+				case 1: nt = NewsType::IndustryOther;   break;
+				case 2: nt = NewsType::IndustryCompany; break;
 				default: NOT_REACHED();
 			}
 		}

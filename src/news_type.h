@@ -21,27 +21,28 @@
 /**
  * Type of news.
  */
-enum NewsType : uint8_t {
-	NT_ARRIVAL_COMPANY, ///< First vehicle arrived for company
-	NT_ARRIVAL_OTHER,   ///< First vehicle arrived for competitor
-	NT_ACCIDENT,        ///< An accident or disaster has occurred
-	NT_ACCIDENT_OTHER,  ///< An accident or disaster has occurred
-	NT_COMPANY_INFO,    ///< Company info (new companies, bankruptcy messages)
-	NT_INDUSTRY_OPEN,   ///< Opening of industries
-	NT_INDUSTRY_CLOSE,  ///< Closing of industries
-	NT_ECONOMY,         ///< Economic changes (recession, industry up/dowm)
-	NT_INDUSTRY_COMPANY,///< Production changes of industry serviced by local company
-	NT_INDUSTRY_OTHER,  ///< Production changes of industry serviced by competitor(s)
-	NT_INDUSTRY_NOBODY, ///< Other industry production changes
-	NT_ADVICE,          ///< Bits of news about vehicles of the company
-	NT_NEW_VEHICLES,    ///< New vehicle has become available
-	NT_ACCEPTANCE,      ///< A type of cargo is (no longer) accepted
-	NT_SUBSIDIES,       ///< News about subsidies (announcements, expirations, acceptance)
-	NT_GENERAL,         ///< General news (from towns)
-	NT_END,             ///< end-of-array marker
+enum class NewsType : uint8_t {
+	ArrivalCompany, ///< First vehicle arrived for company
+	ArrivalOther, ///< First vehicle arrived for competitor
+	Accident, ///< An accident or disaster has occurred
+	AccidentOther, ///< An accident or disaster has occurred
+	CompanyInfo, ///< Company info (new companies, bankruptcy messages)
+	IndustryOpen, ///< Opening of industries
+	IndustryClose, ///< Closing of industries
+	Economy, ///< Economic changes (recession, industry up/dowm)
+	IndustryCompany, ///< Production changes of industry serviced by local company
+	IndustryOther, ///< Production changes of industry serviced by competitor(s)
+	IndustryNobody, ///< Other industry production changes
+	Advice, ///< Bits of news about vehicles of the company
+	NewVehicles, ///< New vehicle has become available
+	Acceptance, ///< A type of cargo is (no longer) accepted
+	Subsidies, ///< News about subsidies (announcements, expirations, acceptance)
+	General, ///< General news (from towns)
+
+	End, ///< end-of-array marker
 };
 
-/** Sub type of the #NT_ADVICE to be able to remove specific news items. */
+/** Sub type of the #NewsType::Advice to be able to remove specific news items. */
 enum class AdviceType : uint8_t {
 	AircraftDestinationTooFar, ///< Next (order) destination is too far for the aircraft type.
 	AutorenewFailed, ///< Autorenew or autoreplace failed.
@@ -65,49 +66,44 @@ enum class AdviceType : uint8_t {
  * You have to make sure, #ChangeVehicleNews catches the DParams of your message.
  * This is NOT ensured by the references.
  */
-enum NewsReferenceType : uint8_t {
-	NR_NONE,      ///< Empty reference
-	NR_TILE,      ///< Reference tile.     Scroll to tile when clicking on the news.
-	NR_VEHICLE,   ///< Reference vehicle.  Scroll to vehicle when clicking on the news. Delete news when vehicle is deleted.
-	NR_STATION,   ///< Reference station.  Scroll to station when clicking on the news. Delete news when station is deleted.
-	NR_INDUSTRY,  ///< Reference industry. Scroll to industry when clicking on the news. Delete news when industry is deleted.
-	NR_TOWN,      ///< Reference town.     Scroll to town when clicking on the news.
-	NR_ENGINE,    ///< Reference engine.
+enum class NewsReferenceType : uint8_t {
+	None, ///< Empty reference
+	Tile, ///< Reference tile. Scroll to tile when clicking on the news.
+	Vehicle, ///< Reference vehicle. Scroll to vehicle when clicking on the news. Delete news when vehicle is deleted.
+	Station, ///< Reference station. Scroll to station when clicking on the news. Delete news when station is deleted.
+	Industry, ///< Reference industry. Scroll to industry when clicking on the news. Delete news when industry is deleted.
+	Town, ///< Reference town. Scroll to town when clicking on the news.
+	Engine, ///< Reference engine.
+};
+
+/** News Window Styles. */
+enum class NewsStyle : uint8_t {
+	Thin, ///< Thin news item. (Newspaper with headline and viewport)
+	Small, ///< Small news item. (Information window with text and viewport)
+	Normal, ///< Normal news item. (Newspaper with text only)
+	Vehicle, ///< Vehicle news item. (new engine available)
+	Company, ///< Company news item. (Newspaper with face)
 };
 
 /**
  * Various OR-able news-item flags.
- * @note #NF_INCOLOUR is set automatically if needed.
+ * @note #NewsFlag::InColour is set automatically if needed.
  */
-enum NewsFlag : uint8_t {
-	NFB_INCOLOUR       = 0,                      ///< News item is shown in colour (otherwise it is shown in black & white).
-	NFB_NO_TRANSPARENT = 1,                      ///< News item disables transparency in the viewport.
-	NFB_SHADE          = 2,                      ///< News item uses shaded colours.
-	NFB_WINDOW_LAYOUT  = 3,                      ///< First bit for window layout.
-	NFB_WINDOW_LAYOUT_COUNT = 3,                 ///< Number of bits for window layout.
-	NFB_VEHICLE_PARAM0 = 6,                      ///< String param 0 contains a vehicle ID. (special autoreplace behaviour)
-
-	NF_INCOLOUR       = 1 << NFB_INCOLOUR,       ///< Bit value for coloured news.
-	NF_NO_TRANSPARENT = 1 << NFB_NO_TRANSPARENT, ///< Bit value for disabling transparency.
-	NF_SHADE          = 1 << NFB_SHADE,          ///< Bit value for enabling shading.
-	NF_VEHICLE_PARAM0 = 1 << NFB_VEHICLE_PARAM0, ///< Bit value for specifying that string param 0 contains a vehicle ID. (special autoreplace behaviour)
-
-	NF_THIN           = 0 << NFB_WINDOW_LAYOUT,  ///< Thin news item. (Newspaper with headline and viewport)
-	NF_SMALL          = 1 << NFB_WINDOW_LAYOUT,  ///< Small news item. (Information window with text and viewport)
-	NF_NORMAL         = 2 << NFB_WINDOW_LAYOUT,  ///< Normal news item. (Newspaper with text only)
-	NF_VEHICLE        = 3 << NFB_WINDOW_LAYOUT,  ///< Vehicle news item. (new engine available)
-	NF_COMPANY        = 4 << NFB_WINDOW_LAYOUT,  ///< Company news item. (Newspaper with face)
+enum class NewsFlag : uint8_t {
+	InColour, ///< News item is shown in colour (otherwise it is shown in black & white).
+	NoTransparency, ///< News item disables transparency in the viewport.
+	Shaded, ///< News item uses shaded colours.
+	VehicleParam0, ///< String param 0 contains a vehicle ID. (special autoreplace behaviour)
 };
-DECLARE_ENUM_AS_BIT_SET(NewsFlag)
-
+using NewsFlags = EnumBitSet<NewsFlag, uint8_t>;
 
 /**
  * News display options
  */
-enum NewsDisplay : uint8_t {
-	ND_OFF,        ///< Only show a reminder in the status bar
-	ND_SUMMARY,    ///< Show ticker
-	ND_FULL,       ///< Show newspaper
+enum class NewsDisplay : uint8_t {
+	Off, ///< Only show a reminder in the status bar
+	Summary, ///< Show ticker
+	Full, ///< Show newspaper
 };
 
 /**
@@ -146,8 +142,9 @@ struct NewsItem {
 	CalTime::Date date;          ///< Date of the news
 	uint64_t creation_tick;      ///< Tick when news was created
 	NewsType type;               ///< Type of the news
-	AdviceType advice_type;       ///< The type of advice, to be able to remove specific advices later on.
-	NewsFlag flags;              ///< NewsFlags bits @see NewsFlag
+	AdviceType advice_type;      ///< The type of advice, to be able to remove specific advices later on.
+	NewsStyle style;             ///< Window style for the news.
+	NewsFlags flags;             ///< NewsFlags bits @see NewsFlag
 
 	NewsReferenceType reftype1;  ///< Type of ref1
 	NewsReferenceType reftype2;  ///< Type of ref2
@@ -158,7 +155,7 @@ struct NewsItem {
 
 	std::vector<StringParameterData> params; ///< Parameters for string resolving.
 
-	NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type);
+	NewsItem(StringID string_id, NewsType type, NewsStyle style, NewsFlags flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type);
 };
 
 /**

@@ -2184,10 +2184,11 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
  * Update the position of the viewport sign.
  * @param center the (preferred) center of the viewport sign
  * @param top    the new top of the sign
+ * @param params string parameters
  * @param str    the string to show in the sign
  * @param str_small the string to show when zoomed out. STR_NULL means same as \a str
  */
-void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small)
+void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small)
 {
 	if (this->width_normal != 0) this->MarkDirty(maxzoom);
 
@@ -2195,14 +2196,17 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 
 	format_buffer buffer;
 
-	AppendStringInPlace(buffer, str);
+	AppendStringInPlaceWithArgs(buffer, str, params);
 	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 	this->center = center;
 
 	/* zoomed out version */
 	if (str_small != STR_NULL) {
 		buffer.clear();
-		AppendStringInPlace(buffer, str_small);
+		for (StringParameter &param : params) {
+			param.type = 0;
+		}
+		AppendStringInPlaceWithArgs(buffer, str_small, params);
 	}
 	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 

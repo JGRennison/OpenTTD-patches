@@ -335,8 +335,7 @@ public:
 				if (!IsConditionComparator(sif->condition)) return;
 				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(sif->condition);
 
-				SetDParam(0, vc->value);
-				ShowQueryString(STR_JUST_INT, STR_PROGSIG_CONDITION_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(GetString(STR_JUST_INT, vc->value), STR_PROGSIG_CONDITION_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
 				this->query_submode = QSM_SET_VALUE;
 				this->LowerWidget(PROGRAM_WIDGET_COND_VALUE);
 				break;
@@ -600,7 +599,7 @@ public:
 				}
 				if (widget == PROGRAM_WIDGET_COND_COUNTER && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
 					this->query_submode = QSM_NEW_COUNTER;
-					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 					return;
 				}
 

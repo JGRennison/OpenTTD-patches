@@ -167,23 +167,21 @@ static void AddCustomRefreshRates()
 static const int SCALE_NMARKS = (MAX_INTERFACE_SCALE - MIN_INTERFACE_SCALE) / 25 + 1; // Show marks at 25% increments
 static const int VOLUME_NMARKS = 9; // Show 5 values and 4 empty marks.
 
-static StringID ScaleMarkFunc(int, int, int value)
+static std::optional<std::string> ScaleMarkFunc(int, int, int value)
 {
 	/* Label only every 100% mark. */
-	if (value % 100 != 0) return STR_NULL;
+	if (value % 100 != 0) return std::string{};
 
-	SetDParam(0, value / 100);
-	SetDParam(1, 0);
-	return STR_GAME_OPTIONS_GUI_SCALE_MARK;
+	return GetString(STR_GAME_OPTIONS_GUI_SCALE_MARK, value / 100, 0);
 }
 
-static StringID VolumeMarkFunc(int, int mark, int value)
+static std::optional<std::string> VolumeMarkFunc(int, int mark, int value)
 {
 	/* Label only every other mark. */
-	if (mark % 2 != 0) return STR_NULL;
+	if (mark % 2 != 0) return std::string{};
 
-	SetDParam(0, value / 31 * 25); // 0-127 does not map nicely to 0-100. Dividing first gives us nice round numbers.
-	return STR_GAME_OPTIONS_VOLUME_MARK;
+	// 0-127 does not map nicely to 0-100. Dividing first gives us nice round numbers.
+	return GetString(STR_GAME_OPTIONS_VOLUME_MARK, value / 31 * 25);
 }
 
 static constexpr NWidgetPart _nested_social_plugins_widgets[] = {
@@ -946,8 +944,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_AUTOSAVE_DROPDOWN: // Autosave options
 				if (index == 5) {
 					this->current_query_text_item = QueryTextItem::AutosaveCustomRealTimeMinutes;
-					SetDParam(0, _settings_client.gui.autosave_interval);
-					ShowQueryString(STR_JUST_INT, STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+					ShowQueryString(GetString(STR_JUST_INT, _settings_client.gui.autosave_interval), STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					_settings_client.gui.autosave_interval = _autosave_dropdown_to_minutes[index];
 					ChangeAutosaveFrequency(false);
@@ -3231,15 +3228,13 @@ struct GameSettingsWindow : Window {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
-					SetDParam(0, value64);
-					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
+					ShowQueryString(GetString(STR_JUST_DECIMAL1, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
 				} else {
 					CharSetFilter charset_filter = CS_NUMERAL; //default, only numeric input allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
 
-					SetDParam(0, value64);
 					/* Limit string length to 14 so that MAX_INT32 * max currency rate doesn't exceed MAX_INT64. */
-					ShowQueryString(STR_JUST_INT, STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QSF_ENABLE_DEFAULT);
+					ShowQueryString(GetString(STR_JUST_INT, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QSF_ENABLE_DEFAULT);
 				}
 			}
 			this->SetDisplayedHelpText(pe);
@@ -3585,7 +3580,7 @@ struct CustomCurrencyWindow : Window {
 	{
 		int line = 0;
 		int len = 0;
-		StringID str = STR_NULL;
+		std::string str;
 		CharSetFilter afilter = CS_ALPHANUMERAL;
 
 		switch (widget) {
@@ -3602,8 +3597,7 @@ struct CustomCurrencyWindow : Window {
 				break;
 
 			case WID_CC_RATE:
-				SetDParam(0, GetCustomCurrency().rate);
-				str = STR_JUST_INT;
+				str = GetString(STR_JUST_INT, GetCustomCurrency().rate);
 				len = 5;
 				line = WID_CC_RATE;
 				afilter = CS_NUMERAL;
@@ -3611,24 +3605,21 @@ struct CustomCurrencyWindow : Window {
 
 			case WID_CC_SEPARATOR_EDIT:
 			case WID_CC_SEPARATOR:
-				SetDParamStr(0, GetCustomCurrency().separator);
-				str = STR_JUST_RAW_STRING;
+				str = GetCustomCurrency().separator;
 				len = 7;
 				line = WID_CC_SEPARATOR;
 				break;
 
 			case WID_CC_PREFIX_EDIT:
 			case WID_CC_PREFIX:
-				SetDParamStr(0, GetCustomCurrency().prefix);
-				str = STR_JUST_RAW_STRING;
+				str = GetCustomCurrency().prefix;
 				len = 15;
 				line = WID_CC_PREFIX;
 				break;
 
 			case WID_CC_SUFFIX_EDIT:
 			case WID_CC_SUFFIX:
-				SetDParamStr(0, GetCustomCurrency().suffix);
-				str = STR_JUST_RAW_STRING;
+				str = GetCustomCurrency().suffix;
 				len = 15;
 				line = WID_CC_SUFFIX;
 				break;
@@ -3646,8 +3637,7 @@ struct CustomCurrencyWindow : Window {
 				break;
 
 			case WID_CC_YEAR:
-				SetDParam(0, GetCustomCurrency().to_euro);
-				str = STR_JUST_INT;
+				str = GetString(STR_JUST_INT, GetCustomCurrency().to_euro);
 				len = 7;
 				line = WID_CC_YEAR;
 				afilter = CS_NUMERAL;

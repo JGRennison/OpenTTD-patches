@@ -89,11 +89,11 @@ const NewsContainer &GetNews()
 static TileIndex GetReferenceTile(NewsReferenceType reftype, uint32_t ref)
 {
 	switch (reftype) {
-		case NR_TILE:     return (TileIndex)ref;
-		case NR_STATION:  return BaseStation::Get((StationID)ref)->xy;
-		case NR_INDUSTRY: return Industry::Get((IndustryID)ref)->location.tile + TileDiffXY(1, 1);
-		case NR_TOWN:     return Town::Get((TownID)ref)->xy;
-		default:          return INVALID_TILE;
+		case NewsReferenceType::Tile:     return (TileIndex)ref;
+		case NewsReferenceType::Station:  return BaseStation::Get((StationID)ref)->xy;
+		case NewsReferenceType::Industry: return Industry::Get((IndustryID)ref)->location.tile + TileDiffXY(1, 1);
+		case NewsReferenceType::Town:     return Town::Get((TownID)ref)->xy;
+		default:                          return INVALID_TILE;
 	}
 }
 
@@ -293,16 +293,16 @@ static WindowDesc _small_news_desc(__FILE__, __LINE__,
  * Window layouts for news items.
  */
 static WindowDesc *_news_window_layout[] = {
-	&_thin_news_desc,    ///< NF_THIN
-	&_small_news_desc,   ///< NF_SMALL
-	&_normal_news_desc,  ///< NF_NORMAL
-	&_vehicle_news_desc, ///< NF_VEHICLE
-	&_company_news_desc, ///< NF_COMPANY
+	&_thin_news_desc,    // NewsStyle::Thin
+	&_small_news_desc,   // NewsStyle::Small
+	&_normal_news_desc,  // NewsStyle::Normal
+	&_vehicle_news_desc, // NewsStyle::Vehicle
+	&_company_news_desc, // NewsStyle::Company
 };
 
-WindowDesc &GetNewsWindowLayout(NewsFlag flags)
+static WindowDesc &GetNewsWindowLayout(NewsStyle style)
 {
-	uint layout = GB(flags, NFB_WINDOW_LAYOUT, NFB_WINDOW_LAYOUT_COUNT);
+	uint layout = to_underlying(style);
 	assert(layout < lengthof(_news_window_layout));
 	return *_news_window_layout[layout];
 }
@@ -312,25 +312,25 @@ WindowDesc &GetNewsWindowLayout(NewsFlag flags)
  */
 static NewsTypeData _news_type_data[] = {
 	/*            name,                           age, sound,          */
-	NewsTypeData("news_display.arrival_player",    60, SND_1D_APPLAUSE ),  ///< NT_ARRIVAL_COMPANY
-	NewsTypeData("news_display.arrival_other",     60, SND_1D_APPLAUSE ),  ///< NT_ARRIVAL_OTHER
-	NewsTypeData("news_display.accident",          90, SND_BEGIN       ),  ///< NT_ACCIDENT
-	NewsTypeData("news_display.accident_other",    90, SND_BEGIN       ),  ///< NT_ACCIDENT_OTHER
-	NewsTypeData("news_display.company_info",      60, SND_BEGIN       ),  ///< NT_COMPANY_INFO
-	NewsTypeData("news_display.open",              90, SND_BEGIN       ),  ///< NT_INDUSTRY_OPEN
-	NewsTypeData("news_display.close",             90, SND_BEGIN       ),  ///< NT_INDUSTRY_CLOSE
-	NewsTypeData("news_display.economy",           30, SND_BEGIN       ),  ///< NT_ECONOMY
-	NewsTypeData("news_display.production_player", 30, SND_BEGIN       ),  ///< NT_INDUSTRY_COMPANY
-	NewsTypeData("news_display.production_other",  30, SND_BEGIN       ),  ///< NT_INDUSTRY_OTHER
-	NewsTypeData("news_display.production_nobody", 30, SND_BEGIN       ),  ///< NT_INDUSTRY_NOBODY
-	NewsTypeData("news_display.advice",           150, SND_BEGIN       ),  ///< NT_ADVICE
-	NewsTypeData("news_display.new_vehicles",      30, SND_1E_NEW_ENGINE), ///< NT_NEW_VEHICLES
-	NewsTypeData("news_display.acceptance",        90, SND_BEGIN       ),  ///< NT_ACCEPTANCE
-	NewsTypeData("news_display.subsidies",        180, SND_BEGIN       ),  ///< NT_SUBSIDIES
-	NewsTypeData("news_display.general",           60, SND_BEGIN       ),  ///< NT_GENERAL
+	NewsTypeData("news_display.arrival_player",    60, SND_1D_APPLAUSE ),  ///< NewsType::ArrivalCompany
+	NewsTypeData("news_display.arrival_other",     60, SND_1D_APPLAUSE ),  ///< NewsType::ArrivalOther
+	NewsTypeData("news_display.accident",          90, SND_BEGIN       ),  ///< NewsType::Accident
+	NewsTypeData("news_display.accident_other",    90, SND_BEGIN       ),  ///< NewsType::AccidentOther
+	NewsTypeData("news_display.company_info",      60, SND_BEGIN       ),  ///< NewsType::CompanyInfo
+	NewsTypeData("news_display.open",              90, SND_BEGIN       ),  ///< NewsType::IndustryOpen
+	NewsTypeData("news_display.close",             90, SND_BEGIN       ),  ///< NewsType::IndustryClose
+	NewsTypeData("news_display.economy",           30, SND_BEGIN       ),  ///< NewsType::Economy
+	NewsTypeData("news_display.production_player", 30, SND_BEGIN       ),  ///< NewsType::IndustryCompany
+	NewsTypeData("news_display.production_other",  30, SND_BEGIN       ),  ///< NewsType::IndustryOther
+	NewsTypeData("news_display.production_nobody", 30, SND_BEGIN       ),  ///< NewsType::IndustryNobody
+	NewsTypeData("news_display.advice",           150, SND_BEGIN       ),  ///< NewsType::Advice
+	NewsTypeData("news_display.new_vehicles",      30, SND_1E_NEW_ENGINE), ///< NewsType::NewVehicles
+	NewsTypeData("news_display.acceptance",        90, SND_BEGIN       ),  ///< NewsType::Acceptance
+	NewsTypeData("news_display.subsidies",        180, SND_BEGIN       ),  ///< NewsType::Subsidies
+	NewsTypeData("news_display.general",           60, SND_BEGIN       ),  ///< NewsType::General
 };
 
-static_assert(lengthof(_news_type_data) == NT_END);
+static_assert(std::size(_news_type_data) == to_underlying(NewsType::End));
 
 /**
  * Return the news display option.
@@ -340,7 +340,7 @@ NewsDisplay NewsTypeData::GetDisplay() const
 {
 	const SettingDesc *sd = GetSettingFromName(this->name);
 	assert(sd != nullptr && sd->IsIntSetting());
-	return (NewsDisplay)sd->AsIntSetting()->Read(nullptr);
+	return static_cast<NewsDisplay>(sd->AsIntSetting()->Read(nullptr));
 }
 
 /** Window class displaying a news item. */
@@ -368,7 +368,7 @@ struct NewsWindow : Window {
 		if (&desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->SetString(static_cast<StringID>(std::get<uint64_t>(this->ni->params[0])));
 
 		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP);
-		if (ni->reftype1 == NR_VEHICLE && nwid != nullptr) {
+		if (ni->reftype1 == NewsReferenceType::Vehicle && nwid != nullptr) {
 			const Vehicle *v = Vehicle::Get(ni->ref1);
 			switch (v->type) {
 				case VEH_TRAIN:
@@ -393,11 +393,11 @@ struct NewsWindow : Window {
 		/* Initialize viewport if it exists. */
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
 		if (nvp != nullptr) {
-			nvp->InitializeViewport(this, ni->reftype1 == NR_VEHICLE ? 0x80000000 | ni->ref1 : GetReferenceTile(ni->reftype1, ni->ref1).base(), ScaleZoomGUI(ZOOM_LVL_NEWS));
-			if (this->ni->flags & NF_NO_TRANSPARENT) nvp->disp_flags.Set(NWidgetDisplayFlag::NoTransparency);
-			if ((this->ni->flags & NF_INCOLOUR) == 0) {
+			nvp->InitializeViewport(this, ni->reftype1 == NewsReferenceType::Vehicle ? 0x80000000 | ni->ref1 : GetReferenceTile(ni->reftype1, ni->ref1).base(), ScaleZoomGUI(ZOOM_LVL_NEWS));
+			if (this->ni->flags.Test(NewsFlag::NoTransparency)) nvp->disp_flags.Set(NWidgetDisplayFlag::NoTransparency);
+			if (!this->ni->flags.Test(NewsFlag::InColour)) {
 				nvp->disp_flags.Set(NWidgetDisplayFlag::ShadeGrey);
-			} else if (this->ni->flags & NF_SHADE) {
+			} else if (this->ni->flags.Test(NewsFlag::Shaded)) {
 				nvp->disp_flags.Set(NWidgetDisplayFlag::ShadeDimmed);
 			}
 		}
@@ -460,14 +460,14 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_VEH_INFO: {
-				assert(this->ni->reftype1 == NR_ENGINE);
+				assert(this->ni->reftype1 == NewsReferenceType::Engine);
 				EngineID engine = this->ni->ref1;
 				str = GetEngineInfoString(engine);
 				break;
 			}
 
 			case WID_N_SHOW_GROUP:
-				if (this->ni->reftype1 == NR_VEHICLE) {
+				if (this->ni->reftype1 == NewsReferenceType::Vehicle) {
 					Dimension d2 = GetStringBoundingBox(this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP)->GetString());
 					d2.height += WidgetDimensions::scaled.captiontext.Vertical();
 					d2.width += WidgetDimensions::scaled.captiontext.Horizontal();
@@ -544,14 +544,14 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_VEH_SPR: {
-				assert(this->ni->reftype1 == NR_ENGINE);
+				assert(this->ni->reftype1 == NewsReferenceType::Engine);
 				EngineID engine = this->ni->ref1;
 				DrawVehicleEngine(r.left, r.right, CenterBounds(r.left, r.right, 0), CenterBounds(r.top, r.bottom, 0), engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
 				GfxFillRect(r.left, r.top, r.right, r.bottom, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 				break;
 			}
 			case WID_N_VEH_INFO: {
-				assert(this->ni->reftype1 == NR_ENGINE);
+				assert(this->ni->reftype1 == NewsReferenceType::Engine);
 				EngineID engine = this->ni->ref1;
 				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, GetEngineInfoString(engine), TC_FROMSTRING, SA_CENTER);
 				break;
@@ -569,7 +569,7 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_CAPTION:
-				if (this->ni->reftype1 == NR_VEHICLE) {
+				if (this->ni->reftype1 == NewsReferenceType::Vehicle) {
 					const Vehicle *v = Vehicle::Get(this->ni->ref1);
 					ShowVehicleViewWindow(v);
 				}
@@ -579,13 +579,13 @@ struct NewsWindow : Window {
 				break; // Ignore clicks
 
 			case WID_N_SHOW_GROUP:
-				if (this->ni->reftype1 == NR_VEHICLE) {
+				if (this->ni->reftype1 == NewsReferenceType::Vehicle) {
 					const Vehicle *v = Vehicle::Get(this->ni->ref1);
 					ShowCompanyGroupForVehicle(v);
 				}
 				break;
 			default:
-				if (this->ni->reftype1 == NR_VEHICLE) {
+				if (this->ni->reftype1 == NewsReferenceType::Vehicle) {
 					const Vehicle *v = Vehicle::Get(this->ni->ref1);
 					ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos);
 				} else {
@@ -610,7 +610,7 @@ struct NewsWindow : Window {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
 			nvp->UpdateViewportCoordinates(this);
 
-			if (ni->reftype1 != NR_VEHICLE) {
+			if (ni->reftype1 != NewsReferenceType::Vehicle) {
 				ScrollWindowToTile(GetReferenceTile(ni->reftype1, ni->ref1), this, true); // Re-center viewport.
 			}
 		}
@@ -680,7 +680,7 @@ private:
 
 	StringID GetNewVehicleMessageString(WidgetID widget) const
 	{
-		assert(this->ni->reftype1 == NR_ENGINE);
+		assert(this->ni->reftype1 == NewsReferenceType::Engine);
 		EngineID engine = this->ni->ref1;
 
 		switch (widget) {
@@ -703,10 +703,10 @@ private:
 /** Open up an own newspaper window for the news item */
 static void ShowNewspaper(const NewsItem *ni)
 {
-	SoundFx sound = _news_type_data[ni->type].sound;
+	SoundFx sound = _news_type_data[to_underlying(ni->type)].sound;
 	if (sound != 0 && _settings_client.sound.news_full) SndPlayFx(sound);
 
-	new NewsWindow(GetNewsWindowLayout(ni->flags), ni);
+	new NewsWindow(GetNewsWindowLayout(ni->style), ni);
 }
 
 /** Show news item in the ticker */
@@ -771,19 +771,19 @@ static void MoveToNextTickerItem()
 		const NewsType type = _statusbar_news->type;
 
 		/* check the date, don't show too old items */
-		if (_scaled_tick_counter - _statusbar_news->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
+		if (_scaled_tick_counter - _statusbar_news->creation_tick > _news_type_data[to_underlying(type)].age * DAY_TICKS) continue;
 
-		switch (_news_type_data[type].GetDisplay()) {
+		switch (_news_type_data[to_underlying(type)].GetDisplay()) {
 			default: NOT_REACHED();
-			case ND_OFF: // Off - show nothing only a small reminder in the status bar
+			case NewsDisplay::Off: // Show nothing only a small reminder in the status bar.
 				InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SHOW_REMINDER);
 				return;
 
-			case ND_SUMMARY: // Summary - show ticker
+			case NewsDisplay::Summary: // Show ticker.
 				ShowTicker(_statusbar_news);
 				return;
 
-			case ND_FULL: // Full - show newspaper, skipped here
+			case NewsDisplay::Full: // Show newspaper, skipped here.
 				break;;
 		}
 	}
@@ -809,17 +809,17 @@ static void MoveToNextNewsItem()
 		const NewsType type = _current_news->type;
 
 		/* check the date, don't show too old items */
-		if (_scaled_tick_counter - _current_news->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
+		if (_scaled_tick_counter - _current_news->creation_tick > _news_type_data[to_underlying(type)].age * DAY_TICKS) continue;
 
-		switch (_news_type_data[type].GetDisplay()) {
+		switch (_news_type_data[to_underlying(type)].GetDisplay()) {
 			default: NOT_REACHED();
-			case ND_OFF: // Off - show nothing only a small reminder in the status bar, skipped here
+			case NewsDisplay::Off: // Show nothing only a small reminder in the status bar, skipped here.
 				break;
 
-			case ND_SUMMARY: // Summary - show ticker, skipped here
-				break;;
+			case NewsDisplay::Summary: // Show ticker, skipped here.
+				break;
 
-			case ND_FULL: // Full - show newspaper
+			case NewsDisplay::Full: // Sshow newspaper.
 				ShowNewspaper(&*_current_news);
 				return;
 		}
@@ -873,15 +873,15 @@ static std::list<NewsItem>::iterator DeleteNewsItem(std::list<NewsItem>::iterato
  * @param reftype2  Type of ref2.
  * @param ref2      Reference 2 to some object: Used for scrolling after clicking on the news, and for deleting the news when the object is deleted.
  * @param data      Pointer to data that must be released once the news message is cleared.
- * @param advice_type Sub-type in case the news type is #NT_ADVICE.
+ * @param advice_type Sub-type in case the news type is #NewsType::Advice.
  *
  * @see NewsSubtype
  */
-NewsItem::NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type) :
-	string_id(string_id), date(CalTime::CurDate()), creation_tick(_scaled_tick_counter), type(type), advice_type(advice_type), flags(flags), reftype1(reftype1), reftype2(reftype2), ref1(ref1), ref2(ref2), data(std::move(data))
+NewsItem::NewsItem(StringID string_id, NewsType type, NewsStyle style, NewsFlags flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type) :
+	string_id(string_id), date(CalTime::CurDate()), creation_tick(_scaled_tick_counter), type(type), advice_type(advice_type), style(style), flags(flags), reftype1(reftype1), reftype2(reftype2), ref1(ref1), ref2(ref2), data(std::move(data))
 {
 	/* show this news message in colour? */
-	if (CalTime::CurYear() >= _settings_client.gui.coloured_news_year) this->flags |= NF_INCOLOUR;
+	if (CalTime::CurYear() >= _settings_client.gui.coloured_news_year) this->flags.Set(NewsFlag::InColour);
 	CopyOutDParam(this->params, 10);
 }
 
@@ -895,16 +895,16 @@ NewsItem::NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsRefere
  * @param reftype2 Type of ref2
  * @param ref2     Reference 2 to some object: Used for scrolling after clicking on the news, and for deleting the news when the object is deleted.
  * @param data     Pointer to data that must be released once the news message is cleared.
- * @param advice_type Sub-type in case the news type is #NT_ADVICE.
+ * @param advice_type Sub-type in case the news type is #NewsType::Advice.
  *
  * @see NewsSubtype
  */
-void AddNewsItem(StringID string, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type)
+void AddNewsItem(StringID string, NewsType type, NewsStyle style, NewsFlags flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, std::unique_ptr<NewsAllocatedData> data, AdviceType advice_type)
 {
 	if (_game_mode == GM_MENU) return;
 
 	/* Create new news item node */
-	_news.emplace_front(string, type, flags, reftype1, ref1, reftype2, ref2, std::move(data), advice_type);
+	_news.emplace_front(string, type, style, flags, reftype1, ref1, reftype2, ref2, std::move(data), advice_type);
 
 	/* Keep the number of stored news items to a manageable number */
 	if (std::size(_news) > MAX_NEWS_AMOUNT) {
@@ -929,32 +929,32 @@ CommandCost CmdCustomNewsItem(DoCommandFlag flags, NewsType type, NewsReferenceT
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
 	if (company != INVALID_OWNER && !Company::IsValidID(company)) return CMD_ERROR;
-	if (type >= NT_END) return CMD_ERROR;
+	if (type >= NewsType::End) return CMD_ERROR;
 	if (text.empty()) return CMD_ERROR;
 
 	switch (reftype1) {
-		case NR_NONE: break;
-		case NR_TILE:
+		case NewsReferenceType::None: break;
+		case NewsReferenceType::Tile:
 			if (!IsValidTile(TileIndex{reference})) return CMD_ERROR;
 			break;
 
-		case NR_VEHICLE:
+		case NewsReferenceType::Vehicle:
 			if (!Vehicle::IsValidID(reference)) return CMD_ERROR;
 			break;
 
-		case NR_STATION:
+		case NewsReferenceType::Station:
 			if (!Station::IsValidID(reference)) return CMD_ERROR;
 			break;
 
-		case NR_INDUSTRY:
+		case NewsReferenceType::Industry:
 			if (!Industry::IsValidID(reference)) return CMD_ERROR;
 			break;
 
-		case NR_TOWN:
+		case NewsReferenceType::Town:
 			if (!Town::IsValidID(reference)) return CMD_ERROR;
 			break;
 
-		case NR_ENGINE:
+		case NewsReferenceType::Engine:
 			if (!Engine::IsValidID(reference)) return CMD_ERROR;
 			break;
 
@@ -965,7 +965,7 @@ CommandCost CmdCustomNewsItem(DoCommandFlag flags, NewsType type, NewsReferenceT
 
 	if (flags & DC_EXEC) {
 		SetDParamStr(0, text);
-		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, reference, NR_NONE, UINT32_MAX);
+		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NewsStyle::Normal, {}, reftype1, reference, NewsReferenceType::None, UINT32_MAX);
 	}
 
 	return CommandCost();
@@ -1003,7 +1003,7 @@ void DeleteNews(Tpredicate predicate)
 void DeleteVehicleNews(VehicleID vid, AdviceType advice_type)
 {
 	DeleteNews([&](const auto &ni) {
-		return ((ni.reftype1 == NR_VEHICLE && ni.ref1 == vid) || (ni.reftype2 == NR_VEHICLE && ni.ref2 == vid)) && (advice_type == AdviceType::Invalid || ni.advice_type == advice_type);
+		return ((ni.reftype1 == NewsReferenceType::Vehicle && ni.ref1 == vid) || (ni.reftype2 == NewsReferenceType::Vehicle && ni.ref2 == vid)) && (advice_type == AdviceType::Invalid || ni.advice_type == advice_type);
 	});
 }
 
@@ -1015,7 +1015,7 @@ void DeleteVehicleNews(VehicleID vid, AdviceType advice_type)
 void DeleteStationNews(StationID sid)
 {
 	DeleteNews([&](const auto &ni) {
-		return (ni.reftype1 == NR_STATION && ni.ref1 == sid) || (ni.reftype2 == NR_STATION && ni.ref2 == sid);
+		return (ni.reftype1 == NewsReferenceType::Station && ni.ref1 == sid) || (ni.reftype2 == NewsReferenceType::Station && ni.ref2 == sid);
 	});
 }
 
@@ -1026,7 +1026,7 @@ void DeleteStationNews(StationID sid)
 void DeleteIndustryNews(IndustryID iid)
 {
 	DeleteNews([&](const auto &ni) {
-		return (ni.reftype1 == NR_INDUSTRY && ni.ref1 == iid) || (ni.reftype2 == NR_INDUSTRY && ni.ref2 == iid);
+		return (ni.reftype1 == NewsReferenceType::Industry && ni.ref1 == iid) || (ni.reftype2 == NewsReferenceType::Industry && ni.ref2 == iid);
 	});
 }
 
@@ -1036,15 +1036,15 @@ void DeleteIndustryNews(IndustryID iid)
 void DeleteInvalidEngineNews()
 {
 	DeleteNews([](const auto &ni) {
-		return (ni.reftype1 == NR_ENGINE && (!Engine::IsValidID(ni.ref1) || !Engine::Get(ni.ref1)->IsEnabled())) ||
-				(ni.reftype2 == NR_ENGINE && (!Engine::IsValidID(ni.ref2) || !Engine::Get(ni.ref2)->IsEnabled()));
+		return (ni.reftype1 == NewsReferenceType::Engine && (!Engine::IsValidID(ni.ref1) || !Engine::Get(ni.ref1)->IsEnabled())) ||
+				(ni.reftype2 == NewsReferenceType::Engine && (!Engine::IsValidID(ni.ref2) || !Engine::Get(ni.ref2)->IsEnabled()));
 	});
 }
 
 static void RemoveOldNewsItems()
 {
 	DeleteNews<MIN_NEWS_AMOUNT>([](const auto &ni) {
-		return _scaled_tick_counter - ni.creation_tick > (uint)(_news_type_data[ni.type].age * _settings_client.gui.news_message_timeout * DAY_TICKS);
+		return _scaled_tick_counter - ni.creation_tick > (uint)(_news_type_data[to_underlying(ni.type)].age * _settings_client.gui.news_message_timeout * DAY_TICKS);
 	});
 }
 
@@ -1057,9 +1057,9 @@ static void RemoveOldNewsItems()
 void ChangeVehicleNews(VehicleID from_index, VehicleID to_index)
 {
 	for (auto &ni : _news) {
-		if (ni.reftype1 == NR_VEHICLE && ni.ref1 == from_index) ni.ref1 = to_index;
-		if (ni.reftype2 == NR_VEHICLE && ni.ref2 == from_index) ni.ref2 = to_index;
-		if (ni.flags & NF_VEHICLE_PARAM0 && std::get<uint64_t>(ni.params[0]) == from_index) ni.params[0] = to_index;
+		if (ni.reftype1 == NewsReferenceType::Vehicle && ni.ref1 == from_index) ni.ref1 = to_index;
+		if (ni.reftype2 == NewsReferenceType::Vehicle && ni.ref2 == from_index) ni.ref2 = to_index;
+		if (ni.flags.Test(NewsFlag::VehicleParam0) && std::get<uint64_t>(ni.params[0]) == from_index) ni.params[0] = to_index;
 	}
 }
 
@@ -1134,7 +1134,7 @@ void ShowLastNewsMessage()
 	}
 	bool wrap = false;
 	for (;;) {
-		if (_news_type_data[ni->type].GetDisplay() != ND_OFF) {
+		if (_news_type_data[to_underlying(ni->type)].GetDisplay() != NewsDisplay::Off) {
 			ShowNewsMessage(ni);
 			break;
 		}

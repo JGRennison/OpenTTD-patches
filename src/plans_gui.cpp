@@ -285,8 +285,7 @@ public:
 
 			case WID_PLN_RENAME: {
 				if (_current_plan != nullptr) {
-					SetDParamStr(0, _current_plan->GetName().c_str());
-					ShowQueryString(STR_JUST_RAW_STRING, STR_PLANS_QUERY_RENAME_PLAN,
+					ShowQueryString(_current_plan->GetName(), STR_PLANS_QUERY_RENAME_PLAN,
 						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 				}
 				break;

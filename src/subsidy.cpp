@@ -54,7 +54,7 @@ void Subsidy::AwardTo(CompanyID company)
 	SetDParamStr(0, company_name);
 	AddNewsItem(
 		STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF + _settings_game.difficulty.subsidy_multiplier,
-		NT_SUBSIDIES, NF_NORMAL,
+		NewsType::Subsidies, NewsStyle::Normal, {},
 		reftype.first, this->src, reftype.second, this->dst
 	);
 	AI::BroadcastNewEvent(new ScriptEventSubsidyAwarded(this->index));
@@ -72,8 +72,8 @@ void Subsidy::AwardTo(CompanyID company)
  */
 std::pair<NewsReferenceType, NewsReferenceType> SetupSubsidyDecodeParam(const Subsidy *s, SubsidyDecodeParamType mode, uint parameter_offset)
 {
-	NewsReferenceType reftype1 = NR_NONE;
-	NewsReferenceType reftype2 = NR_NONE;
+	NewsReferenceType reftype1 = NewsReferenceType::None;
+	NewsReferenceType reftype2 = NewsReferenceType::None;
 
 	/* Always use the plural form of the cargo name - trying to decide between plural or singular causes issues for translations */
 	const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
@@ -81,11 +81,11 @@ std::pair<NewsReferenceType, NewsReferenceType> SetupSubsidyDecodeParam(const Su
 
 	switch (s->src_type) {
 		case SourceType::Industry:
-			reftype1 = NR_INDUSTRY;
+			reftype1 = NewsReferenceType::Industry;
 			SetDParam(parameter_offset + 1, STR_INDUSTRY_NAME);
 			break;
 		case SourceType::Town:
-			reftype1 = NR_TOWN;
+			reftype1 = NewsReferenceType::Town;
 			SetDParam(parameter_offset + 1, STR_TOWN_NAME);
 			break;
 		default: NOT_REACHED();
@@ -94,11 +94,11 @@ std::pair<NewsReferenceType, NewsReferenceType> SetupSubsidyDecodeParam(const Su
 
 	switch (s->dst_type) {
 		case SourceType::Industry:
-			reftype2 = NR_INDUSTRY;
+			reftype2 = NewsReferenceType::Industry;
 			SetDParam(parameter_offset + 4, STR_INDUSTRY_NAME);
 			break;
 		case SourceType::Town:
-			reftype2 = NR_TOWN;
+			reftype2 = NewsReferenceType::Town;
 			SetDParam(parameter_offset + 4, STR_TOWN_NAME);
 			break;
 		default: NOT_REACHED();
@@ -220,7 +220,7 @@ void CreateSubsidy(CargoType cargo_type, SourceType src_type, SourceID src, Sour
 	s->awarded = INVALID_COMPANY;
 
 	std::pair<NewsReferenceType, NewsReferenceType> reftype = SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::NewsOffered);
-	AddNewsItem(STR_NEWS_SERVICE_SUBSIDY_OFFERED, NT_SUBSIDIES, NF_NORMAL, reftype.first, s->src, reftype.second, s->dst);
+	AddNewsItem(STR_NEWS_SERVICE_SUBSIDY_OFFERED, NewsType::Subsidies, NewsStyle::Normal, {}, reftype.first, s->src, reftype.second, s->dst);
 	SetPartOfSubsidyFlag(s->src_type, s->src, POS_SRC);
 	SetPartOfSubsidyFlag(s->dst_type, s->dst, POS_DST);
 	AI::BroadcastNewEvent(new ScriptEventSubsidyOffer(s->index));
@@ -498,13 +498,13 @@ void SubsidyMonthlyLoop()
 		if (--s->remaining == 0) {
 			if (!s->IsAwarded()) {
 				std::pair<NewsReferenceType, NewsReferenceType> reftype = SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::NewsWithdrawn);
-				AddNewsItem(STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED, NT_SUBSIDIES, NF_NORMAL, reftype.first, s->src, reftype.second, s->dst);
+				AddNewsItem(STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED, NewsType::Subsidies, NewsStyle::Normal, {}, reftype.first, s->src, reftype.second, s->dst);
 				AI::BroadcastNewEvent(new ScriptEventSubsidyOfferExpired(s->index));
 				Game::NewEvent(new ScriptEventSubsidyOfferExpired(s->index));
 			} else {
 				if (s->awarded == _local_company) {
 					std::pair<NewsReferenceType, NewsReferenceType> reftype = SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::NewsWithdrawn);
-					AddNewsItem(STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE, NT_SUBSIDIES, NF_NORMAL, reftype.first, s->src, reftype.second, s->dst);
+					AddNewsItem(STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE, NewsType::Subsidies, NewsStyle::Normal, {}, reftype.first, s->src, reftype.second, s->dst);
 				}
 				AI::BroadcastNewEvent(new ScriptEventSubsidyExpired(s->index));
 				Game::NewEvent(new ScriptEventSubsidyExpired(s->index));

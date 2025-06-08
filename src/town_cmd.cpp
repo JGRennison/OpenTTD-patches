@@ -478,9 +478,8 @@ void Town::UpdateVirtCoord(bool only_if_label_changed)
 
 	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
 
-	SetDParam(0, this->index);
-	SetDParam(1, this->LabelParam2());
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_32X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_BASE, STR_VIEWPORT_TOWN_LABEL, STR_TOWN_NAME);
+	auto params = MakeParameters(this->index, this->LabelParam2());
+	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_32X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_BASE, params, STR_VIEWPORT_TOWN_LABEL, STR_TOWN_NAME);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
@@ -2462,7 +2461,7 @@ CommandCost CmdFoundTown(DoCommandFlag flags, TileIndex tile, TownSize size, boo
 
 			if (_current_company == OWNER_DEITY) {
 				SetDParam(0, t->index);
-				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NT_INDUSTRY_OPEN, tile);
+				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NewsType::IndustryOpen, tile);
 			} else {
 				SetDParam(0, _current_company);
 				std::string company_name = GetString(STR_COMPANY_NAME);
@@ -2470,7 +2469,7 @@ CommandCost CmdFoundTown(DoCommandFlag flags, TileIndex tile, TownSize size, boo
 				SetDParamStr(0, company_name);
 				SetDParam(1, t->index);
 
-				AddTileNewsItem(STR_NEWS_NEW_TOWN, NT_INDUSTRY_OPEN, tile);
+				AddTileNewsItem(STR_NEWS_NEW_TOWN, NewsType::IndustryOpen, tile);
 			}
 			AI::BroadcastNewEvent(new ScriptEventTownFounded(t->index));
 			Game::NewEvent(new ScriptEventTownFounded(t->index));
@@ -3664,7 +3663,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 		} else {
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
-		AddNewsItem(msg, NT_GENERAL, NF_NORMAL, NR_TOWN, t->index, NR_NONE, UINT32_MAX);
+		AddNewsItem(msg, NewsType::General, NewsStyle::Normal, {}, NewsReferenceType::Town, t->index, NewsReferenceType::None, UINT32_MAX);
 		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 		Game::NewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 	}
@@ -3823,7 +3822,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlag flags)
 		}
 		SetDParam(2, t->index);
 		SetDParamStr(3, cni->company_name);
-		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_GENERAL, NF_COMPANY, NR_TOWN, t->index, NR_NONE, UINT32_MAX, std::move(cni));
+		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NewsType::General, NewsStyle::Company, {}, NewsReferenceType::Town, t->index, NewsReferenceType::None, UINT32_MAX, std::move(cni));
 		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 		Game::NewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 	}

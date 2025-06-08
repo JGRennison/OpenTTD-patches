@@ -3621,7 +3621,7 @@ DEF_CONSOLE_CMD(ConShowIndustryWindow)
 		return true;
 	}
 
-	extern void ShowIndustryViewWindow(int industry);
+	extern void ShowIndustryViewWindow(IndustryID industry);
 	ShowIndustryViewWindow(ind_id);
 
 	return true;

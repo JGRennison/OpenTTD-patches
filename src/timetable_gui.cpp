@@ -977,12 +977,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 				bool set_all = _ctrl_pressed && v->orders->IsCompleteTimetable();
 				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
 					this->set_start_date_all = set_all;
-					ShowQueryString(STR_EMPTY, STR_TIMETABLE_START_SECONDS_QUERY, 6, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+					ShowQueryString({}, STR_TIMETABLE_START_SECONDS_QUERY, 6, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					this->set_start_date_all = set_all;
-					StringID str = STR_JUST_INT;
-					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
-					ShowQueryString(str, STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+					ShowQueryString(GetString(STR_JUST_INT, _settings_time.NowInTickMinutes().ClockHHMM()), STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index,
 							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(set_all ? 1 : 0)));
@@ -997,15 +995,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (real >= v->GetNumOrders()) real = 0;
 
 				const Order *order = v->GetOrder(real);
-				StringID current = STR_EMPTY;
+				std::string current;
 
 				if (order != nullptr) {
 					uint time = (selected % 2 != 0) ? order->GetTravelTime() : order->GetWaitTime();
 					if (!_settings_client.gui.timetable_in_ticks) time /= TimetableDisplayUnitSize();
 
 					if (time != 0) {
-						SetDParam(0, time);
-						current = STR_JUST_INT;
+						current = GetString(STR_JUST_INT, time);
 					}
 				}
 
@@ -1022,12 +1019,11 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				if (real >= v->GetNumOrders()) real = 0;
 
-				StringID current = STR_EMPTY;
+				std::string current;
 				const Order *order = v->GetOrder(real);
 				if (order != nullptr) {
 					if (order->GetMaxSpeed() != UINT16_MAX) {
-						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(order->GetMaxSpeed(), v->type));
-						current = STR_JUST_INT;
+						current = GetString(STR_JUST_INT, ConvertKmhishSpeedToDisplaySpeed(order->GetMaxSpeed(), v->type));
 					}
 				}
 
@@ -1096,7 +1092,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				break;
 
 			case WID_VT_ADD_VEH_GROUP: {
-				ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				ShowQueryString({}, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				break;
 			}
 

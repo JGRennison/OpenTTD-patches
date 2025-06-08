@@ -999,10 +999,10 @@ static void HandleEconomyFluctuations()
 
 	if (_economy.fluct == 0) {
 		_economy.fluct = -(int)GB(Random(), 0, 2);
-		AddNewsItem(STR_NEWS_BEGIN_OF_RECESSION, NT_ECONOMY, NF_NORMAL);
+		AddNewsItem(STR_NEWS_BEGIN_OF_RECESSION, NewsType::Economy, NewsStyle::Normal, {});
 	} else if (_economy.fluct == -12) {
 		_economy.fluct = GB(Random(), 0, 8) + 312;
-		AddNewsItem(STR_NEWS_END_OF_RECESSION, NT_ECONOMY, NF_NORMAL);
+		AddNewsItem(STR_NEWS_END_OF_RECESSION, NewsType::Economy, NewsStyle::Normal, {});
 	}
 }
 
@@ -1995,8 +1995,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 					pull_through_mode = false;
 					if (_local_company == v->owner) {
 						SetDParam(0, front->index);
-						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-								NR_VEHICLE, front->index);
+						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+								NewsReferenceType::Vehicle, front->index);
 					}
 					break;
 				}
@@ -2006,9 +2006,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 					if (_local_company == v->owner) {
 						SetDParam(0, front->index);
 						SetDParam(1, order->GetDestination().base());
-						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-								NR_VEHICLE, front->index,
-								NR_STATION, order->GetDestination().ToStationID());
+						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+								NewsReferenceType::Vehicle, front->index,
+								NewsReferenceType::Station, order->GetDestination().ToStationID());
 					}
 					break;
 				}

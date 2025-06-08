@@ -523,9 +523,8 @@ void Station::UpdateVirtCoord()
 
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
-	SetDParam(0, this->index);
-	SetDParam(1, this->facilities);
-	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y, STR_VIEWPORT_STATION, STR_STATION_NAME);
+	auto params = MakeParameters(this->index, this->facilities);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y, params, STR_VIEWPORT_STATION, STR_STATION_NAME);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 
@@ -614,7 +613,7 @@ static void ShowRejectOrAcceptNews(const Station *st, CargoTypes cargoes, bool r
 	SetDParam(0, st->index);
 	SetDParam(1, cargoes);
 	StringID msg = reject ? STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST : STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST;
-	AddNewsItem(msg, NT_ACCEPTANCE, NF_INCOLOUR | NF_SMALL, NR_STATION, st->index);
+	AddNewsItem(msg, NewsType::Acceptance, NewsStyle::Small, NewsFlag::InColour, NewsReferenceType::Station, st->index);
 }
 
 /**
@@ -4026,9 +4025,9 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 						SetDParam(0, front->index);
 						SetDParam(1, IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME);
 						SetDParam(2, station_id);
-						AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-								NR_VEHICLE, v->index,
-								NR_STATION, station_id);
+						AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+								NewsReferenceType::Vehicle, v->index,
+								NewsReferenceType::Station, station_id);
 					}
 					for (Train *u = front; u != nullptr; u = u->Next()) {
 						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);

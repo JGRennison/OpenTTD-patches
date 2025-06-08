@@ -1472,8 +1472,8 @@ void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
 	if (find_index(_train_news_too_heavy_this_tick, v->index) < 0) {
 		_train_news_too_heavy_this_tick.push_back(v->index);
 		SetDParam(0, v->index);
-		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-				NR_VEHICLE, v->index);
+		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+				NewsReferenceType::Vehicle, v->index);
 	}
 }
 

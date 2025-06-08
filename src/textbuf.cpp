@@ -427,15 +427,6 @@ Textbuf::~Textbuf()
 }
 
 /**
- * Render a string into the textbuffer.
- * @param string String
- */
-void Textbuf::Assign(StringID string)
-{
-	this->Assign(GetString(string));
-}
-
-/**
  * Copy a string into the textbuffer.
  * @param text Source.
  */
