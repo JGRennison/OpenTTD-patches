@@ -40,7 +40,7 @@ template <> const char *GetClassName<AIInfo, ScriptType::AI>() { return "AIInfo"
 	/* Create the AIInfo class, and add the RegisterAI function */
 	DefSQClass<AIInfo, ScriptType::AI> SQAIInfo("AIInfo");
 	SQAIInfo.PreRegister(engine);
-	SQAIInfo.AddConstructor<void (AIInfo::*)(), 1>(engine, "x");
+	SQAIInfo.AddConstructor<void (AIInfo::*)()>(engine, "x");
 	SQAIInfo.DefSQAdvancedMethod(engine, &AIInfo::AddSetting, "AddSetting");
 	SQAIInfo.DefSQAdvancedMethod(engine, &AIInfo::AddLabels, "AddLabels");
 	SQAIInfo.DefSQConst(engine, ScriptConfigFlags{}.base(), "CONFIG_NONE");
