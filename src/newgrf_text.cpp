@@ -31,6 +31,7 @@
 #include "date_type.h"
 #include "debug.h"
 #include "core/alloc_type.hpp"
+#include "core/typed_container.hpp"
 #include "language.h"
 #include <sstream>
 #include <map>
@@ -80,7 +81,7 @@ struct GRFTextEntry {
 };
 
 
-static std::vector<GRFTextEntry> _grf_text;
+static TypedIndexContainer<std::vector<GRFTextEntry>, StringIndexInTab> _grf_text;
 static uint8_t _currentLangID = GRFLX_ENGLISH;  ///< by default, english is used.
 
 /**
@@ -601,7 +602,7 @@ StringID AddGRFString(uint32_t grfid, GRFStringID stringid, uint8_t langid_to_ad
 	}
 
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
-	AddGRFTextToList(_grf_text[id.base()].textholder, langid_to_add, newtext);
+	AddGRFTextToList(_grf_text[id].textholder, langid_to_add, newtext);
 
 	GrfMsg(3, "Added 0x{:X}: grfid {:08X} string 0x{:X} lang 0x{:X} string '{}' ({:X})", id, grfid, stringid, langid_to_add, newtext.c_str(), MakeStringID(TEXT_TAB_NEWGRF_START, id));
 
@@ -709,15 +710,15 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
  */
 const char *GetGRFStringPtr(StringIndexInTab stringid)
 {
-	if (stringid.base() >= _grf_text.size() || _grf_text[stringid.base()].grfid == 0) {
+	if (stringid.base() >= _grf_text.size() || _grf_text[stringid].grfid == 0) {
 		Debug(misc, 0, "Invalid NewGRF string ID: {}", stringid);
 		return "(invalid StringID)";
 	}
 
-	const char *str = GetGRFStringFromGRFText(_grf_text[stringid.base()].textholder);
+	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
 	if (str == nullptr) {
 		/* Use the default string ID if the fallback string isn't available */
-		str = GetStringPtr(_grf_text[stringid.base()].def_string);
+		str = GetStringPtr(_grf_text[stringid].def_string);
 	}
 
 	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<StringIndexInTab, const char *>(stringid, str);
@@ -922,8 +923,8 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, StringBuilder builder, const
 			if (txt != nullptr &&
 					buffer >= txt && buffer < txt + 8192 &&
 					buffer < txt + strlen(txt) &&
-					_grf_text[stringid.base()].grfid != 0) {
-				grfid = _grf_text[stringid.base()].grfid;
+					_grf_text[stringid].grfid != 0) {
+				grfid = _grf_text[stringid].grfid;
 				break;
 			}
 		}
@@ -1130,7 +1131,7 @@ uint32_t GetStringGRFID(StringID string)
 {
 	switch (GetStringTab(string)) {
 		case TEXT_TAB_NEWGRF_START:
-			return _grf_text[GetStringIndex(string).base()].grfid;
+			return _grf_text[GetStringIndex(string)].grfid;
 		default:
 			return 0;
 	}
