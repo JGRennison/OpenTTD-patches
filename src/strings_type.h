@@ -120,7 +120,7 @@ public:
 	inline StringParameter(StringParameterData &&data) : data(std::move(data)), type(0) {}
 	inline StringParameter(const StringParameterData &data) : data(data), type(0) {}
 
-	template <typename T>
+	template <typename T, std::enable_if_t<!std::is_same_v<std::remove_cvref_t<T>, StringParameter>, int> = 0>
 	inline StringParameter(T &&v)
 	{
 		this->Init(v);
