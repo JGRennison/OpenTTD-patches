@@ -357,10 +357,10 @@ public:
 	{
 		const Train *v = Yapf().GetVehicle();
 		TrackFollower F(v);
-		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
+		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason.Any({EndSegmentReason::SafeTile, EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 			Node *rev_node = &old_node;
 			uint length = 0;
-			while (rev_node && !(rev_node->segment->end_segment_reason & ESRB_REVERSE)) {
+			while (rev_node && !rev_node->segment->end_segment_reason.Test(EndSegmentReason::Reverse)) {
 				length += rev_node->GetNodeLength(v, Yapf(), *this);
 				rev_node = rev_node->parent;
 			}
@@ -372,7 +372,7 @@ public:
 					});
 				}
 				return;
-			} else if (old_node.segment->end_segment_reason & (ESRB_DEPOT | ESRB_DEAD_END)) {
+			} else if (old_node.segment->end_segment_reason.Any({EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 				return;
 			}
 		}
@@ -557,10 +557,10 @@ public:
 	{
 		const Train *v = Yapf().GetVehicle();
 		TrackFollower F(v);
-		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
+		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason.Any({EndSegmentReason::SafeTile, EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 			Node *rev_node = &old_node;
 			uint length = 0;
-			while (rev_node != nullptr && !(rev_node->segment->end_segment_reason & ESRB_REVERSE)) {
+			while (rev_node != nullptr && !rev_node->segment->end_segment_reason.Test(EndSegmentReason::Reverse)) {
 				length += rev_node->GetNodeLength(v, Yapf(), *this);
 				rev_node = rev_node->parent;
 			}
@@ -572,7 +572,7 @@ public:
 					});
 				}
 				return;
-			} else if (old_node.segment->end_segment_reason & (ESRB_DEPOT | ESRB_DEAD_END)) {
+			} else if (old_node.segment->end_segment_reason.Any({EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 				return;
 			}
 		}

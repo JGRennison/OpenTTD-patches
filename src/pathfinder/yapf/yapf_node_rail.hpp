@@ -75,7 +75,7 @@ struct CYapfRailSegment
 	int cost = -1;
 	TileIndex last_signal_tile = INVALID_TILE;
 	Trackdir last_signal_td = INVALID_TRACKDIR;
-	EndSegmentReasonBits end_segment_reason = ESRB_NONE;
+	EndSegmentReasons end_segment_reason{};
 
 	inline CYapfRailSegment(const CYapfRailSegmentKey &key) : key(key) {}
 
@@ -226,8 +226,8 @@ struct CYapfRailNodeT
 			cur_td = FindFirstTrackdir(ft.new_td_bits);
 		}
 
-		EndSegmentReasonBits esrb = this->segment->end_segment_reason;
-		if (!(esrb & ESRB_DEAD_END) || (esrb & ESRB_DEAD_END_EOL)) {
+		EndSegmentReasons esr = this->segment->end_segment_reason;
+		if (!esr.Test(EndSegmentReason::DeadEnd) || esr.Test(EndSegmentReason::DeadEndEol)) {
 			length += IsDiagonalTrackdir(cur_td) ? TILE_SIZE : (TILE_SIZE / 2);
 			if (IsTileType(cur, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(cur) && TrackdirEntersTunnelBridge(cur, cur_td)) {
 				length += TILE_SIZE * GetTunnelBridgeLength(cur, GetOtherTunnelBridgeEnd(cur));

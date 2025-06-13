@@ -82,7 +82,6 @@ enum SettingType : uint8_t {
 
 enum SettingOnGuiCtrlType {
 	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
-	SOGCT_VALUE_DPARAMS,      ///< Value dparam override callback
 	SOGCT_GUI_DROPDOWN_ORDER, ///< SettingFlag::GuiDropdown reordering callback
 	SOGCT_CFG_NAME,           ///< Config file name override
 	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
@@ -94,7 +93,6 @@ enum SettingOnGuiCtrlType {
 struct SettingOnGuiCtrlData {
 	SettingOnGuiCtrlType type;
 	StringID text;
-	uint offset;
 	int val;
 	const char *str = nullptr;
 	int output = 0;
@@ -183,11 +181,11 @@ struct SettingDesc {
 
 /** Base integer type, including boolean, settings. Only these are shown in the settings UI. */
 struct IntSettingDesc : SettingDesc {
-	typedef StringID GetTitleCallback(const IntSettingDesc &sd);
-	typedef StringID GetHelpCallback(const IntSettingDesc &sd);
-	typedef void SetValueDParamsCallback(const IntSettingDesc &sd, uint first_param, int32_t value);
-	typedef int32_t GetDefaultValueCallback(const IntSettingDesc &sd);
-	typedef std::tuple<int32_t, uint32_t> GetRangeCallback(const IntSettingDesc &sd);
+	using GetTitleCallback = StringID(const IntSettingDesc &sd);
+	using GetHelpCallback = StringID(const IntSettingDesc &sd);
+	using GetValueParamsCallback = std::pair<StringParameter, StringParameter>(const IntSettingDesc &sd, int32_t value);
+	using GetDefaultValueCallback = int32_t(const IntSettingDesc &sd);
+	using GetRangeCallback = std::tuple<int32_t, uint32_t>(const IntSettingDesc &sd);
 
 	/**
 	 * A check to be performed before the setting gets changed. The passed integer may be
@@ -197,22 +195,22 @@ struct IntSettingDesc : SettingDesc {
 	 * @param value The prospective new value for the setting.
 	 * @return True when the setting is accepted.
 	 */
-	typedef bool PreChangeCheck(int32_t &value);
+	using PreChangeCheck = bool(int32_t &value);
 	/**
 	 * A callback to denote that a setting has been changed.
 	 * @param The new value for the setting.
 	 */
-	typedef void PostChangeCallback(int32_t value);
+	using PostChangeCallback = void(int32_t value);
 
 	IntSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,
 			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback,
-			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
+			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
 			GetDefaultValueCallback get_def_cb, GetRangeCallback get_range_cb,
 			const SettingDescEnumEntry *enumlist) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), min(min), max(max), interval(interval),
 			str(str), str_help(str_help), str_val(str_val), cat(cat), pre_check(pre_check), post_callback(post_callback),
-			get_title_cb(get_title_cb), get_help_cb(get_help_cb), set_value_dparams_cb(set_value_dparams_cb),
+			get_title_cb(get_title_cb), get_help_cb(get_help_cb), get_value_params_cb(get_value_params_cb),
 			get_def_cb(get_def_cb), get_range_cb(get_range_cb),
 			enumlist(enumlist) {}
 
@@ -228,7 +226,7 @@ struct IntSettingDesc : SettingDesc {
 	PostChangeCallback *post_callback; ///< Callback when the setting has been changed.
 	GetTitleCallback *get_title_cb;
 	GetHelpCallback *get_help_cb;
-	SetValueDParamsCallback *set_value_dparams_cb;
+	GetValueParamsCallback *get_value_params_cb;
 	GetDefaultValueCallback *get_def_cb; ///< Callback to set the correct default value
 	GetRangeCallback *get_range_cb;
 
@@ -236,7 +234,7 @@ struct IntSettingDesc : SettingDesc {
 
 	StringID GetTitle() const;
 	StringID GetHelp() const;
-	void SetValueDParams(uint first_param, int32_t value) const;
+	std::pair<StringParameter, StringParameter> GetValueParams(int32_t value) const;
 	int32_t GetDefaultValue() const;
 	std::tuple<int32_t, uint32_t> GetRange() const;
 
@@ -269,10 +267,10 @@ struct BoolSettingDesc : IntSettingDesc {
 	BoolSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
 			StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
-			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
+			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
 			GetDefaultValueCallback get_def_cb) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat,
-			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr, nullptr) {}
+			pre_check, post_callback, get_title_cb, get_help_cb, get_value_params_cb, get_def_cb, nullptr, nullptr) {}
 
 	static std::optional<bool> ParseSingleValue(const char *str);
 
@@ -288,10 +286,10 @@ struct OneOfManySettingDesc : IntSettingDesc {
 	OneOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, int32_t max, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
-			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
+			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
 			GetDefaultValueCallback get_def_cb, std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, max, 0, str, str_help, str_val, cat,
-			pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, nullptr, nullptr), many_cnvt(many_cnvt)
+			pre_check, post_callback, get_title_cb, get_help_cb, get_value_params_cb, get_def_cb, nullptr, nullptr), many_cnvt(many_cnvt)
 	{
 		for (auto one : many) this->many.push_back(one);
 	}
@@ -311,10 +309,10 @@ struct ManyOfManySettingDesc : OneOfManySettingDesc {
 	ManyOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
-			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, SetValueDParamsCallback set_value_dparams_cb,
+			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
 			GetDefaultValueCallback get_def_cb, std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		OneOfManySettingDesc(save, name, flags, guiproc, startup, patx_name, def, (1 << many.size()) - 1, str, str_help,
-			str_val, cat, pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, many, many_cnvt) {}
+			str_val, cat, pre_check, post_callback, get_title_cb, get_help_cb, get_value_params_cb, get_def_cb, many, many_cnvt) {}
 
 	size_t ParseValue(const char *str) const override;
 	void FormatIntValue(struct format_target &buf, uint32_t value) const override;

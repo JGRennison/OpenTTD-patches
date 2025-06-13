@@ -1741,7 +1741,6 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	/* We do not allow changes of some items when we are a client in a networkgame */
 	bool editable = this->IsGUIEditable();
 
-	SetDParam(0, STR_CONFIG_SETTING_VALUE);
 	auto [min_val, max_val] = sd->GetRange();
 	int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 	if (sd->IsBoolSetting()) {
@@ -1761,8 +1760,8 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const
 {
 	const IntSettingDesc *sd = this->setting;
-	sd->SetValueDParams(1, value);
-	int edge = DrawString(left, right, y, sd->GetTitle(), highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	auto [param1, param2] = sd->GetValueParams(value);
+	int edge = DrawString(left, right, y, GetString(sd->GetTitle(), STR_CONFIG_SETTING_VALUE, param1, param2), highlight ? TC_WHITE : TC_LIGHT_BLUE);
 
 	if (this->setting->guiproc != nullptr && edge != 0) {
 		SettingOnGuiCtrlData data;
@@ -1792,10 +1791,9 @@ void CargoDestPerCargoSettingEntry::Init(uint8_t level)
 void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const
 {
 	assert(this->setting->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
-	SetDParam(0, CargoSpec::Get(this->cargo)->name);
-	SetDParam(1, STR_CONFIG_SETTING_VALUE);
-	this->setting->SetValueDParams(2, value);
-	DrawString(left, right, y, STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	auto [param1, param2] = this->setting->GetValueParams(value);
+	std::string str = GetString(STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, CargoSpec::Get(this->cargo)->name, STR_CONFIG_SETTING_VALUE, param1, param2);
+	DrawString(left, right, y, str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
 }
 
 bool CargoDestPerCargoSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
@@ -2982,8 +2980,8 @@ struct GameSettingsWindow : Window {
 					DrawString(tr, STR_CONFIG_SETTING_TYPE);
 					tr.top += GetCharacterHeight(FS_NORMAL);
 
-					sd->SetValueDParams(0, sd->GetDefaultValue());
-					DrawString(tr, STR_CONFIG_SETTING_DEFAULT_VALUE);
+					auto [param1, param2] = sd->GetValueParams(sd->GetDefaultValue());
+					DrawString(tr, GetString(STR_CONFIG_SETTING_DEFAULT_VALUE, param1, param2));
 					tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 					if (sd->guiproc != nullptr) {
@@ -3151,8 +3149,8 @@ struct GameSettingsWindow : Window {
 								}
 								assert_msg(val >= min_val && val <= static_cast<int32_t>(max_val), "min: {}, max: {}, val: {}", sd->min, sd->max, val);
 							}
-							sd->SetValueDParams(0, val);
-							list.push_back(MakeDropDownListStringItem(STR_JUST_STRING2, val, false));
+							auto [param1, param2] = sd->GetValueParams(val);
+							list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_STRING1, param1, param2), val, false));
 						}
 					} else if (sd->flags.Test(SettingFlag::Enum)) {
 						for (const SettingDescEnumEntry *enumlist = sd->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {

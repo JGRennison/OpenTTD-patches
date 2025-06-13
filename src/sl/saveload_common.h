@@ -445,6 +445,7 @@ enum SaveLoadVersion : uint16_t {
 };
 
 uint8_t SlReadByte();
+void SlReadString(std::string &str, size_t length);
 void SlWriteByte(uint8_t b);
 
 uint16_t SlReadUint16();

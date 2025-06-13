@@ -248,7 +248,7 @@
 {
 	const Industry *i = Industry::GetIfValid(industry_id);
 	if (i == nullptr) return 0;
-	return i->ctlflags;
+	return i->ctlflags.base();
 }
 
 /* static */ bool ScriptIndustry::SetControlFlags(IndustryID industry_id, SQInteger control_flags)
@@ -256,7 +256,7 @@
 	EnforceDeityMode(false);
 	if (!IsValidIndustry(industry_id)) return false;
 
-	return ScriptObject::Command<CMD_INDUSTRY_SET_FLAGS>::Do(industry_id, (::IndustryControlFlags)control_flags & ::INDCTL_MASK);
+	return ScriptObject::Command<CMD_INDUSTRY_SET_FLAGS>::Do(industry_id, ::IndustryControlFlags(control_flags));
 }
 
 /* static */ ScriptCompany::CompanyID ScriptIndustry::GetExclusiveSupplier(IndustryID industry_id)

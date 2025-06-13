@@ -977,6 +977,18 @@ static void SlCopyBytes(void *ptr, size_t length)
 	}
 }
 
+/**
+ * Read the given amount of bytes from the buffer into the string.
+ * @param str The string to write to.
+ * @param length The amount of bytes to read into the string.
+ * @note Does not perform any validation on validity of the string.
+ */
+void SlReadString(std::string &str, size_t length)
+{
+	str.resize(length);
+	SlCopyBytesRead((uint8_t *)str.data(), length);
+}
+
 /** Get the length of the current object */
 size_t SlGetFieldLength()
 {

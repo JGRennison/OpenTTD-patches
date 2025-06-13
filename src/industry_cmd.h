@@ -13,8 +13,7 @@
 #include "command_type.h"
 #include "company_type.h"
 #include "industry_type.h"
-
-enum IndustryControlFlags : uint8_t;
+#include "industry.h"
 
 DEF_CMD_TUPLE   (CMD_BUILD_INDUSTRY,           CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<IndustryType, uint32_t, bool, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_FLAGS,       CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, IndustryControlFlags>)

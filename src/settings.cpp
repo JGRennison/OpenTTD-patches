@@ -540,42 +540,36 @@ StringID IntSettingDesc::GetHelp() const
 }
 
 /**
- * Set the DParams for drawing the value of the setting.
- * @param first_param First DParam to use
+ * Get parameters for drawing the value of the setting.
  * @param value Setting value to set params for.
  */
-void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
+std::pair<StringParameter, StringParameter> IntSettingDesc::GetValueParams(int32_t value) const
 {
-	const uint initial_first_param = first_param;
-	if (this->set_value_dparams_cb != nullptr) {
-		this->set_value_dparams_cb(*this, first_param, value);
-	} else if (this->IsBoolSetting()) {
-		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
-	} else {
-		if (this->flags.Test(SettingFlag::Enum)) {
-			StringID str = STR_UNDEFINED;
-			for (const SettingDescEnumEntry *enumlist = this->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
-				if (enumlist->val == value) {
-					str = enumlist->str;
-					break;
-				}
+	if (this->get_value_params_cb != nullptr) {
+		return this->get_value_params_cb(*this, value);
+	}
+
+	if (this->IsBoolSetting()) {
+		return {value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF, {}};
+	}
+
+	if (this->flags.Test(SettingFlag::Enum)) {
+		StringID str = STR_UNDEFINED;
+		for (const SettingDescEnumEntry *enumlist = this->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+			if (enumlist->val == value) {
+				str = enumlist->str;
+				break;
 			}
-			SetDParam(first_param++, str);
-		} else if (this->flags.Test(SettingFlag::GuiDropdown)) {
-			auto [min_val, _] = this->GetRange();
-			SetDParam(first_param++, this->str_val - min_val + value);
-		} else {
-			SetDParam(first_param++, this->str_val + ((value == 0 && this->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? 1 : 0));
 		}
-		SetDParam(first_param++, value);
+		return {str, value};
 	}
-	if (this->guiproc != nullptr) {
-		SettingOnGuiCtrlData data;
-		data.type = SOGCT_VALUE_DPARAMS;
-		data.offset = initial_first_param;
-		data.val = value;
-		this->guiproc(data);
+
+	if (this->flags.Test(SettingFlag::GuiDropdown)) {
+		auto [min_val, _] = this->GetRange();
+		return {this->str_val - min_val + value, value};
 	}
+
+	return {this->str_val + ((value == 0 && this->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? 1 : 0), value};
 }
 
 /**
@@ -1109,7 +1103,7 @@ static StringID SettingHelpWallclockTriple(const IntSettingDesc &sd)
 }
 
 /** Setting values for velocity unit localisation */
-static void SettingsValueVelocityUnit(const IntSettingDesc &, uint first_param, int32_t value)
+static std::pair<StringParameter, StringParameter> SettingsValueVelocityUnit(const IntSettingDesc &, int32_t value)
 {
 	StringID val;
 	switch (value) {
@@ -1120,18 +1114,17 @@ static void SettingsValueVelocityUnit(const IntSettingDesc &, uint first_param, 
 		case 4: val = STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS; break;
 		default: NOT_REACHED();
 	}
-	SetDParam(first_param, val);
+	return {val, {}};
 }
 
 /** A negative value has another string (the one after "strval"). */
-static void SettingsValueAbsolute(const IntSettingDesc &sd, uint first_param, int32_t value)
+static std::pair<StringParameter, StringParameter> SettingsValueAbsolute(const IntSettingDesc &sd, int32_t value)
 {
-	SetDParam(first_param, sd.str_val + ((value >= 0) ? 1 : 0));
-	SetDParam(first_param + 1, abs(value));
+	return {sd.str_val + ((value >= 0) ? 1 : 0), abs(value)};
 }
 
 /** Service Interval Settings Default Value displays the correct units or as a percentage */
-static void ServiceIntervalSettingsValueText(const IntSettingDesc &sd, uint first_param, int32_t value)
+static std::pair<StringParameter, StringParameter> ServiceIntervalSettingsValueText(const IntSettingDesc &sd, int32_t value)
 {
 	VehicleDefaultSettings *vds;
 	if (_game_mode == GM_MENU || !Company::IsValidID(_current_company)) {
@@ -1140,16 +1133,17 @@ static void ServiceIntervalSettingsValueText(const IntSettingDesc &sd, uint firs
 		vds = &Company::Get(_current_company)->settings.vehicle;
 	}
 
+	StringID str;
 	if (value == 0) {
-		SetDParam(first_param, sd.str_val + 3);
+		str = sd.str_val + 3;
 	} else if (vds->servint_ispercent) {
-		SetDParam(first_param, sd.str_val + 2);
+		str = sd.str_val + 2;
 	} else if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
-		SetDParam(first_param, sd.str_val + 1);
+		str = sd.str_val + 1;
 	} else {
-		SetDParam(first_param, sd.str_val);
+		str = sd.str_val;
 	}
-	SetDParam(first_param + 1, value);
+	return {str, value};
 }
 
 /** Reposition the main toolbar as the setting changed. */
@@ -2346,18 +2340,22 @@ static bool ChunnelSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
-static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
+static std::pair<StringParameter, StringParameter> TownCargoScaleValueText(const IntSettingDesc &sd, int32_t value)
 {
-	switch (data.type) {
-		case SOGCT_VALUE_DPARAMS:
-			if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
-				SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT);
-			}
-			return true;
-
-		default:
-			return false;
+	StringID str = STR_CONFIG_SETTING_CARGO_SCALE_VALUE;
+	if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
+		str = STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT;
 	}
+	return {str, value};
+}
+
+static std::pair<StringParameter, StringParameter> IndustryCargoScaleValueText(const IntSettingDesc &sd, int32_t value)
+{
+	StringID str = STR_CONFIG_SETTING_CARGO_SCALE_VALUE;
+	if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
+		str = STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT;
+	}
+	return {str, value};
 }
 
 static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
@@ -2368,24 +2366,19 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA;
 			return true;
 
-		case SOGCT_VALUE_DPARAMS:
-			if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
-				SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT);
-			}
-			return true;
-
 		default:
 			return false;
 	}
 }
 
+static std::pair<StringParameter, StringParameter> CalendarModeDisabledValueText(const IntSettingDesc &sd, int32_t value)
+{
+	return {EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? sd.str_val : STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR, value};
+}
+
 static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
-		case SOGCT_VALUE_DPARAMS:
-			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR);
-			return true;
-
 		case SOGCT_GUI_DISABLE:
 			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) data.val = 1;
 			return true;
@@ -2395,13 +2388,14 @@ static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static std::pair<StringParameter, StringParameter> WallclockModeDisabledValueText(const IntSettingDesc &sd, int32_t value)
+{
+	return {EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK : sd.str_val, value};
+}
+
 static bool WallclockModeDisabledGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
-		case SOGCT_VALUE_DPARAMS:
-			if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK);
-			return true;
-
 		case SOGCT_GUI_DISABLE:
 			if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) data.val = 1;
 			return true;

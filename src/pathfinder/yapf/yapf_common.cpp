@@ -15,14 +15,14 @@
 
 #include "../../safeguards.h"
 
-std::string ValueStr(EndSegmentReasonBits bits)
+std::string ValueStr(EndSegmentReasons flags)
 {
-	static const char * const end_segment_reason_names[] = {
+	static const std::initializer_list<std::string_view> end_segment_reason_names = {
 		"DEAD_END", "DEAD_END_EOL", "RAIL_TYPE", "INFINITE_LOOP", "SEGMENT_TOO_LONG", "CHOICE_FOLLOWS",
 		"DEPOT", "WAYPOINT", "STATION", "SAFE_TILE",
 		"PATH_TOO_LONG", "FIRST_TWO_WAY_RED", "LOOK_AHEAD_END", "TARGET_REACHED",
 		"REVERSE"
 	};
 
-	return fmt::format("0x{:04X} ({})", bits, ComposeNameT(bits, end_segment_reason_names, "UNK", ESRB_NONE, "NONE"));
+	return fmt::format("0x{:04X} ({})", flags.base(), ComposeNameT(flags, end_segment_reason_names, "UNK"));
 }
