@@ -710,12 +710,19 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			switch (v->type) {
 				case VEH_TRAIN: {
 					if (Train::From(v)->IsVirtual()) {
-						return 0x1FF | (GetRailTypeInfo(Train::From(v)->railtype)->flags.Test(RailTypeFlag::Catenary) ? 0x200 : 0);
+						uint32_t result = 0x1FF;
+						for (RailType rt : Train::From(v)->railtypes) {
+							if (GetRailTypeInfo(rt)->flags.Test(RailTypeFlag::Catenary)) {
+								result |= 0x200;
+								break;
+							}
+						}
+						return result;
 					}
 					RailType rt = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
 					const RailTypeInfo *rti = GetRailTypeInfo(rt);
 					return (rti->flags.Test(RailTypeFlag::Catenary) ? 0x200 : 0) |
-						(HasPowerOnRail(Train::From(v)->railtype, rt) ? 0x100 : 0) |
+						(HasPowerOnRail(Train::From(v)->railtypes, rt) ? 0x100 : 0) |
 						GetReverseRailTypeTranslation(rt, object->ro.grffile);
 				}
 
@@ -830,12 +837,13 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				case VEH_TRAIN: {
 					RailType param_type = GetRailTypeTranslation(parameter, object->ro.grffile);
 					if (param_type == INVALID_RAILTYPE) return 0x00;
-					RailType tile_type;
 					if (Train::From(v)->IsVirtual()) {
-						tile_type = Train::From(v)->railtype;
-					} else {
-						tile_type = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
+						RailTypes rts = Train::From(v)->railtypes;
+						return (GetRailTypeInfo(param_type)->powered_railtypes.Any(rts) ? 0x04 : 0x00) |
+								(GetRailTypeInfo(param_type)->compatible_railtypes.Any(rts) ? 0x02 : 0x00) |
+								0x01;
 					}
+					RailType tile_type = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
 					if (tile_type == param_type) return 0x0F;
 					return (HasPowerOnRail(param_type, tile_type) ? 0x04 : 0x00) |
 							(IsCompatibleRail(param_type, tile_type) ? 0x02 : 0x00) |
@@ -897,7 +905,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 					has_power = true;
 				} else {
 					RailType railtype = GetRailTypeByTrackBit(v->tile, t->track);
-					has_power = HasPowerOnRail(u->railtype, railtype);
+					has_power = HasPowerOnRail(u->railtypes, railtype);
 				}
 
 				if (powered && has_power) SetBit(modflags, 5);
@@ -1084,7 +1092,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			Train *t = Train::From(v);
 			switch (variable - 0x80) {
 				case 0x62: return t->track;
-				case 0x66: return t->railtype;
+				case 0x66: return t->railtypes.GetNthSetBit(0).value_or(RailType::INVALID_RAILTYPE);
 				case 0x73: return 0x80 + VEHICLE_LENGTH - t->gcache.cached_veh_length;
 				case 0x74: return t->gcache.cached_power;
 				case 0x75: return GB(t->gcache.cached_power,  8, 24);

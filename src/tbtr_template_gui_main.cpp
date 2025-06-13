@@ -838,7 +838,7 @@ public:
 					buildable = false;
 					break;
 				} else {
-					types &= (GetRailTypeInfo(Engine::Get(u->engine_type)->u.rail.railtype))->compatible_railtypes;
+					types &= GetAllCompatibleRailTypes(Engine::Get(u->engine_type)->u.rail.railtypes);
 				}
 			}
 			/* Draw a notification string for chains that are not buildable */
@@ -919,7 +919,7 @@ public:
 
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
-				GetRailTypeInfo(tmp->railtype)->acceleration_type == VehicleAccelerationModel::Maglev);
+				GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(tmp->railtypes));
 		DrawString(left, right, top, GetString(original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
 				tmp->empty_weight, tmp->power, tmp->max_speed, tmp->max_te));
 
@@ -932,7 +932,7 @@ public:
 						STR_VEHICLE_INFO_WEIGHT_RATIOS,
 						STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
 						(100 * tmp->power) / std::max<uint>(1, tmp->full_weight),
-						GetRailTypeInfo(tmp->railtype)->acceleration_type == VehicleAccelerationModel::Maglev ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+						GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(tmp->railtypes) ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
 						(100 * tmp->max_te) / std::max<uint>(1, tmp->full_weight));
 			} else {
 				str = GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,

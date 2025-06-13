@@ -225,6 +225,7 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_ENCODED_STRING_FORMAT,            XSCF_NULL,                2,   2, "slv_encoded_string_format",        nullptr, nullptr, nullptr          },
 	{ XSLFI_PROTECT_PLACED_HOUSES,            XSCF_NULL,                1,   1, "slv_protect_placed_houses",        nullptr, nullptr, nullptr          },
 	{ XSLFI_FACE_STYLES,                      XSCF_NULL,                1,   1, "slv_face_styles",                  nullptr, nullptr, nullptr          },
+	{ XSLFI_ENGINE_MULTI_RAILTYPE,            XSCF_NULL,                1,   1, "slv_engine_multi_railtype",        nullptr, nullptr, nullptr          },
 
 	{ XSLFI_PR_13745_APPLIED,                 XSCF_IGNORABLE_ALL,       1,   1, "pr_13745",                         nullptr, nullptr, nullptr          },
 

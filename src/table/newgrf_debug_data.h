@@ -250,10 +250,18 @@ class NIHVehicle : public NIHelper {
 					t->speed_restriction, t->signal_speed_restriction);
 
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
-			output.Print("  [{}] Railtype: {} ({}), compatible_railtypes: 0x{}, acceleration type: {}",
-					(output.flags & (8 << flag_shift)) ? '-' : '+', t->railtype, label_dumper().RailTypeLabel(t->railtype), t->compatible_railtypes, t->GetAccelerationType());
-
+			output.buffer.format("  [{}] Railtypes: {} (", (output.flags & (8 << flag_shift)) ? '-' : '+', t->railtypes);
+			const uint rt_count = CountBits(t->railtypes);
+			if (rt_count == 1) {
+				const RailType rt = *t->railtypes.begin();
+				output.buffer.format("{:02}, {}", rt, label_dumper().RailTypeLabel(rt));
+			} else {
+				output.buffer.format("count: {}", rt_count);
+			}
+			output.buffer.format("), compatible_railtypes: {}, acceleration type: {}", t->compatible_railtypes, t->GetAccelerationType());
+			output.FinishPrint();
 			if (output.flags & (8 << flag_shift)) {
+				if (rt_count > 1) DumpRailTypeList(output, "    ", t->railtypes);
 				DumpRailTypeList(output, "    ", t->compatible_railtypes);
 			}
 
@@ -614,9 +622,17 @@ class NIHVehicle : public NIHelper {
 				}
 
 				if (e->type == VEH_TRAIN) {
-					const RailTypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
-					output.Print("    Railtype: {} ({}), Compatible: 0x{:X}, Powered: 0x{:X}, All compatible: 0x{:X}",
-							e->u.rail.railtype, label_dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->indirect_compatible_railtypes);
+					const RailTypes rts = e->u.rail.railtypes;
+					output.buffer.format("  Railtypes: {} (", rts);
+					const uint rt_count = CountBits(rts);
+					if (rt_count == 1) {
+						const RailType rt = *rts.begin();
+						output.buffer.format("{}, {}", rt, label_dumper().RailTypeLabel(rt));
+					} else {
+						output.buffer.format("count: {}", rt_count);
+					}
+					output.buffer.format("), Compatible: {}, Powered: {}, Indirect compatible: {}", GetAllCompatibleRailTypes(rts), GetAllPoweredRailTypes(rts), GetAllIndirectCompatibleRailTypes(rts));
+					output.FinishPrint();
 					static const char *engine_types[] = {
 						"SINGLEHEAD",
 						"MULTIHEAD",

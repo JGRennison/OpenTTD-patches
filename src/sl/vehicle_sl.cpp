@@ -747,6 +747,7 @@ static uint32_t _path_layout_ctr;
 static uint32_t _old_ahead_separation;
 static uint16_t _old_timetable_start_subticks;
 static uint32_t _old_order_item_ref;
+static RailType _old_railtype;
 
 btree::btree_map<VehicleID, uint16_t> _old_timetable_start_subticks_map;
 
@@ -1198,7 +1199,8 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 
 		NSL("crash_anim_pos",                 SLE_VAR(Train, crash_anim_pos,            SLE_UINT16)),
 		NSL("force_proceed",                  SLE_VAR(Train, force_proceed,             SLE_UINT8)),
-		NSL("railtype",                       SLE_VAR(Train, railtype,                  SLE_UINT8)),
+		NSL("railtype",                SLEG_CONDVAR_X(_old_railtype,                    SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENGINE_MULTI_RAILTYPE, 0, 0))),
+		NSL("railtypes",                SLE_CONDVAR_X(Train, railtypes,                 SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENGINE_MULTI_RAILTYPE, 1))),
 		NSL("track",                          SLE_VAR(Train, track,                     SLE_UINT8)),
 
 		NSL("flags",                      SLE_CONDVAR(Train, flags,                     SLE_FILE_U8  | SLE_VAR_U32,  SLV_2, SLV_100)),
@@ -1505,6 +1507,10 @@ void Load_VEHS()
 				rv->cached_path->tile[i] = _path_tile[i];
 			}
 			rv->cached_path->layout_ctr = _path_layout_ctr;
+		}
+
+		if (vtype == VEH_TRAIN && SlXvIsFeatureMissing(XSLFI_ENGINE_MULTI_RAILTYPE)) {
+			Train::From(v)->railtypes = _old_railtype;
 		}
 	}
 }

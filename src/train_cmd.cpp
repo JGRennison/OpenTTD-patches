@@ -288,7 +288,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 		/* update the 'first engine' */
 		u->gcache.first_engine = this == u ? EngineID::Invalid() : first_engine;
-		u->railtype = rvi_u->railtype;
+		u->railtypes = rvi_u->railtypes;
 
 		if (u->IsEngine()) first_engine = u->engine_type;
 
@@ -343,13 +343,13 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* Do not count powered wagons for the compatible railtypes, as wagons always
 			   have railtype normal */
 			if (rvi_u->power > 0) {
-				this->compatible_railtypes.Set(GetRailTypeInfo(u->railtype)->powered_railtypes);
+				this->compatible_railtypes.Set(GetAllPoweredRailTypes(u->railtypes));
 			}
 
 			/* Some electric engines can be allowed to run on normal rail. It happens to all
 			 * existing electric engines when elrails are disabled and then re-enabled */
 			if (HasBit(u->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL)) {
-				u->railtype = RAILTYPE_RAIL;
+				u->railtypes.Set(RAILTYPE_RAIL);
 				u->compatible_railtypes.Set(RAILTYPE_RAIL);
 			}
 
@@ -864,7 +864,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 		int64_t sloped_ke = target_ke + (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness);
 		int64_t slope_speed_sqr = sloped_ke + ((int64_t)stats.uncapped_deceleration_x2 * (int64_t)distance);
 		if (slope_speed_sqr < speed_sqr &&
-				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && GetRailTypeInfo(stats.t->railtype)->acceleration_type != VehicleAccelerationModel::Maglev) {
+				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && stats.t->GetAccelerationType() != VehicleAccelerationModel::Maglev) {
 			/* calculate speed at which braking would be sufficient */
 
 			uint weight = stats.t->gcache.cached_weight;
@@ -1177,6 +1177,14 @@ uint32_t Train::CalculateOverallZPos() const
 	}
 }
 
+static bool IsTrainOnNonRealisticBrakingTrack(const Train *t)
+{
+	extern RailTypes _railtypes_non_realistic_braking;
+	if (likely(!t->compatible_railtypes.Any(_railtypes_non_realistic_braking))) return false;
+	if (_railtypes_non_realistic_braking.All(t->railtypes)) return true;
+	return GetRailTypeInfo(GetRailTypeByTrackBit(t->tile, t->track))->ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking);
+}
+
 /** Update acceleration of the train from the cached power and weight. */
 void Train::UpdateAcceleration()
 {
@@ -1187,7 +1195,7 @@ void Train::UpdateAcceleration()
 	assert(weight != 0);
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
 
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !GetRailTypeInfo(this->railtype)->ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking) && this->IsFrontEngine()) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !IsTrainOnNonRealisticBrakingTrack(this) && this->IsFrontEngine()) {
 		this->tcache.cached_tflags |= TCF_RL_BRAKING;
 		switch (_settings_game.vehicle.train_acceleration_model) {
 			default: NOT_REACHED();
@@ -1462,7 +1470,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 	const RailVehicleInfo *rvi = &e->u.rail;
 
 	/* Check that the wagon can drive on the track in question */
-	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
+	if (!IsCompatibleRail(rvi->railtypes, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		Train *v = new Train();
@@ -1500,7 +1508,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 		v->cargo_cap = rvi->capacity;
 		v->refit_cap = 0;
 
-		v->railtype = rvi->railtype;
+		v->railtypes = rvi->railtypes;
 
 		v->date_of_last_service = EconTime::CurDate();
 		v->date_of_last_service_newgrf = CalTime::CurDate();
@@ -1586,7 +1594,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->cargo_subtype = v->cargo_subtype;
 	u->cargo_cap = v->cargo_cap;
 	u->refit_cap = v->refit_cap;
-	u->railtype = v->railtype;
+	u->railtypes = v->railtypes;
 	u->engine_type = v->engine_type;
 	u->reliability = v->reliability;
 	u->reliability_spd_dec = v->reliability_spd_dec;
@@ -1623,7 +1631,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 
 	/* Check if depot and new engine uses the same kind of tracks *
 	 * We need to see if the engine got power on the tile to avoid electric engines in non-electric depots */
-	if (!HasPowerOnRail(rvi->railtype, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
+	if (!HasPowerOnRail(rvi->railtypes, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		DiagDirection dir = GetRailDepotDirection(tile);
@@ -1659,7 +1667,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->reliability_spd_dec = e->reliability_spd_dec;
 		v->max_age = e->GetLifeLengthInDays();
 
-		v->railtype = rvi->railtype;
+		v->railtypes = rvi->railtypes;
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 		v->date_of_last_service = EconTime::CurDate();
@@ -3004,7 +3012,7 @@ void ReverseTrainDirection(Train *v)
 		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
 		if ((!no_near_end_unreserve && next_tile == v->tile) || (!no_far_end_unreserve && next_tile == GetOtherTunnelBridgeEnd(v->tile))) {
 			Trackdir exit_td = GetTunnelBridgeExitTrackdir(next_tile);
-			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->indirect_compatible_railtypes);
+			CFollowTrackRail ft(GetTileOwner(next_tile), GetAllIndirectCompatibleRailTypes(v->railtypes));
 			if (ft.Follow(next_tile, exit_td)) {
 				TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
 				if (reserved == TRACKDIR_BIT_NONE) {
@@ -3749,7 +3757,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 		}
 	}
 
-	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->indirect_compatible_railtypes);
+	CFollowTrackRail ft(v, GetAllIndirectCompatibleRailTypes(v->railtypes));
 	while (ft.Follow(tile, td)) {
 		tile = ft.new_tile;
 		TrackdirBits bits = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(tile));
@@ -4951,7 +4959,7 @@ static inline void AffectSpeedByZChange(Train *v, int old_z)
 {
 	if (old_z == v->z_pos || _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) return;
 
-	const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(GetRailTypeInfo(v->railtype)->acceleration_type)];
+	const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(v->GetAccelerationType())];
 
 	if (old_z < v->z_pos) {
 		v->cur_speed -= (v->cur_speed * asp->z_up >> 8);
@@ -5268,7 +5276,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	});
 
 	Trackdir td = GetTunnelBridgeExitTrackdir(tile);
-	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->indirect_compatible_railtypes);
+	CFollowTrackRail ft(GetTileOwner(tile), GetAllIndirectCompatibleRailTypes(t->railtypes));
 
 	if (ft.Follow(tile, td)) {
 		TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
@@ -5407,7 +5415,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgeEffectivelyPBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state != SIGSEG_PBS) {
-		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->indirect_compatible_railtypes);
+		CFollowTrackRail ft(GetTileOwner(tile), GetAllIndirectCompatibleRailTypes(t->railtypes));
 		if (ft.Follow(tile, GetTunnelBridgeExitTrackdir(tile))) {
 			if (ft.new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.new_td_bits) == TRACKDIR_BIT_NONE) {
 				Trackdir td = FindFirstTrackdir(ft.new_td_bits);
@@ -5563,7 +5571,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 	auto notify_direction_changed = [&](Direction old_direction, Direction new_direction) {
 		if (prev == nullptr && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-			const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(GetRailTypeInfo(v->railtype)->acceleration_type)];
+			const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(v->GetAccelerationType())];
 			DirDiff diff = DirDifference(old_direction, new_direction);
 			v->cur_speed -= (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT ? asp->small_turn : asp->large_turn) * v->cur_speed >> 8;
 		}
@@ -7074,7 +7082,7 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 	v->cargo_type = e->GetDefaultCargoType();
 	v->cargo_cap = rvi->capacity;
 
-	v->railtype = rvi->railtype;
+	v->railtypes = rvi->railtypes;
 
 	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
@@ -7151,7 +7159,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
 	v->vehicle_flags.Set(VehicleFlag::TimetableSeparation, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
-	v->railtype = rvi->railtype;
+	v->railtypes = rvi->railtypes;
 
 	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
@@ -7632,12 +7640,12 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed)
 	t->breakdown_severity = 0;
 }
 
-int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32_t cached_power, const uint32_t max_te, const uint32_t air_drag, const RailType railtype)
+int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32_t cached_power, const uint32_t max_te, const uint32_t air_drag, const RailTypes railtypes)
 {
 	const int64_t power = cached_power * 746ll;
 	int64_t resistance = 0;
 
-	const bool maglev = (GetRailTypeInfo(railtype)->acceleration_type == VehicleAccelerationModel::Maglev);
+	const bool maglev = GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(railtypes);
 
 	if (!maglev) {
 		/* Static resistance plus rolling friction. */
@@ -7686,7 +7694,7 @@ int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int 
 	do
 	{
 		max_speed++;
-		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, train->gcache.cached_power, train->gcache.cached_max_te, train->gcache.cached_air_drag, train->railtype);
+		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, train->gcache.cached_power, train->gcache.cached_max_te, train->gcache.cached_air_drag, train->railtypes);
 	} while (acceleration > 0 && max_speed < speed_cap);
 
 	return max_speed;

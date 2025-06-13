@@ -869,9 +869,15 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Max tractive effort - not applicable if old acceleration or maglev */
-	if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && GetRailTypeInfo(rvi->railtype)->acceleration_type != VehicleAccelerationModel::Maglev) {
-		DrawString(left, right, y, GetString(STR_PURCHASE_INFO_MAX_TE, e->GetDisplayMaxTractiveEffort()));
-		y += GetCharacterHeight(FS_NORMAL);
+	if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+		bool is_maglev = true;
+		for (RailType rt : rvi->railtypes) {
+			is_maglev &= GetRailTypeInfo(rt)->acceleration_type == VehicleAccelerationModel::Maglev;
+		}
+		if (!is_maglev) {
+			DrawString(left, right, y, GetString(STR_PURCHASE_INFO_MAX_TE, e->GetDisplayMaxTractiveEffort()));
+			y += GetCharacterHeight(FS_NORMAL);
+		}
 	}
 
 	/* Running cost */
@@ -1764,7 +1770,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			EngineID eid = e->index;
 			const RailVehicleInfo *rvi = &e->u.rail;
 
-			if (this->filter.railtype != INVALID_RAILTYPE && !HasPowerOnRail(rvi->railtype, this->filter.railtype)) continue;
+			if (this->filter.railtype != INVALID_RAILTYPE && !HasPowerOnRail(rvi->railtypes, this->filter.railtype)) continue;
 			if (!IsEngineBuildable(eid, VEH_TRAIN, _local_company)) continue;
 
 			/* Filter now! So num_engines and num_wagons is valid */
@@ -2727,7 +2733,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			EngineID eid = engine->index;
 			const RailVehicleInfo *rvi = &engine->u.rail;
 
-			if (this->railtype != RAILTYPE_END && !HasPowerOnRail(rvi->railtype, this->railtype)) continue;
+			if (this->railtype != RAILTYPE_END && !HasPowerOnRail(rvi->railtypes, this->railtype)) continue;
 			if (!IsEngineBuildable(eid, VEH_TRAIN, _local_company)) continue;
 
 			if (!FilterSingleEngine(state, eid)) continue;

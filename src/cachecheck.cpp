@@ -363,10 +363,10 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 
 		struct SavedTrainInfo {
 			TrainCache tcache;
-			RailType railtype;
+			RailTypes railtypes;
 			RailTypes compatible_railtypes;
 			uint32_t flags;
-			SavedTrainInfo(const Train *t) : tcache(t->tcache), railtype(t->railtype), compatible_railtypes(t->compatible_railtypes), flags(t->flags) {}
+			SavedTrainInfo(const Train *t) : tcache(t->tcache), railtypes(t->railtypes), compatible_railtypes(t->compatible_railtypes), flags(t->flags) {}
 		};
 		std::vector<SavedTrainInfo> train_old;
 
@@ -498,7 +498,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 									oldt.tcache.user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
 									oldt.tcache.cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
 						}
-						if (oldt.railtype != Train::From(u)->railtype) {
+						if (oldt.railtypes != Train::From(u)->railtypes) {
 							CCLOGV("railtype mismatch");
 						}
 						if (oldt.compatible_railtypes != Train::From(u)->compatible_railtypes) {

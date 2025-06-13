@@ -1642,7 +1642,7 @@ struct CompanyInfrastructureWindow : Window
 		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
 			if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
-			this->railtypes.Set(GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes);
+			this->railtypes.Set(GetAllIntroducesRailTypes(e->u.rail.railtypes));
 		}
 
 		/* Get the date introduced railtypes as well. */

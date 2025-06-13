@@ -88,13 +88,14 @@ public:
 	friend NamedSaveLoadTable GetTemplateVehicleDesc();
 	friend void AfterLoadTemplateVehicles();
 
-	// Template usage configuration
+	/* Template usage configuration. */
 	bool reuse_depot_vehicles = false;
 	bool keep_remaining_vehicles = false;
 	bool refit_as_template = true;
 	bool replace_old_only = false;
 
-	// Things derived from a virtual train
+	/* Things derived from a virtual train. */
+	RailTypes railtypes{};
 	Owner owner = INVALID_OWNER;
 
 	EngineID engine_type;                 ///< The type of engine used for this vehicle.
@@ -103,7 +104,6 @@ public:
 	uint8_t cargo_subtype = 0;
 
 	uint8_t subtype = 0;
-	RailType railtype{};
 
 	uint16_t real_consist_length = 0;
 
@@ -178,7 +178,6 @@ public:
 	SpriteID GetSpriteID() const;
 
 	uint NumGroupsUsingTemplate() const;
-
 };
 
 TemplateID GetTemplateIDByGroupID(GroupID gid);

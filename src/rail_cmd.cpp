@@ -2545,7 +2545,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
 				Train *v = GetTrainForReservation(tile, track);
 				bool check_train = false;
-				if (v != nullptr && !HasPowerOnRail(v->railtype, totype)) {
+				if (v != nullptr && !HasPowerOnRail(v->railtypes, totype)) {
 					check_train = true;
 				} else if (v != nullptr && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 					RailType original = GetRailTypeByTrack(tile, track);
@@ -2846,7 +2846,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
 				Train *v = GetTrainForReservation(tile, track);
 				bool check_train = false;
-				if (v != nullptr && !HasPowerOnRail(v->railtype, totype)) {
+				if (v != nullptr && !HasPowerOnRail(v->railtypes, totype)) {
 					check_train = true;
 				} else if (v != nullptr && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 					RailType original = GetRailTypeByTrack(tile, track);

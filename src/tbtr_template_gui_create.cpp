@@ -315,7 +315,7 @@ public:
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) {
 							buildable = false;
 						} else {
-							types &= (GetRailTypeInfo(e->u.rail.railtype))->compatible_railtypes;
+							types &= GetAllCompatibleRailTypes(e->u.rail.railtypes);
 						}
 						buy_cost += e->GetCost();
 					}
@@ -336,7 +336,7 @@ public:
 
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
-							GetRailTypeInfo(this->virtual_train->railtype)->acceleration_type == VehicleAccelerationModel::Maglev);
+							GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(this->virtual_train->railtypes));
 					const GroundVehicleCache *gcache = this->virtual_train->GetGroundVehicleCache();
 					DrawString(left, right, y, GetString(original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
 							gcache->cached_weight,
@@ -357,7 +357,7 @@ public:
 									STR_VEHICLE_INFO_WEIGHT_RATIOS,
 									STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
 									(100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight),
-									this->virtual_train->GetAccelerationType() == VehicleAccelerationModel::Maglev ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+									GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(this->virtual_train->railtypes) ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
 									(100 * this->virtual_train->gcache.cached_max_te) / std::max<uint>(1, full_weight)));
 						} else {
 							DrawString(left, right, y, GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,

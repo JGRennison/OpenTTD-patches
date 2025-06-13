@@ -106,7 +106,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 		tmp->SetPrev(prev);
 		tmp->SetFirst(prev->First());
 	}
-	tmp->railtype = virt->railtype;
+	tmp->railtypes = virt->railtypes;
 	tmp->owner = virt->owner;
 
 	/* Set the subtype but also clear the virtual flag while doing it */
@@ -197,7 +197,7 @@ bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType
 	/* For standard rail engines, allow only those */
 	if (type == RAILTYPE_BEGIN || type == RAILTYPE_RAIL) {
 		while (tv != nullptr) {
-			if (tv->railtype != type) {
+			if (!tv->railtypes.Test(type)) {
 				return false;
 			}
 			tv = tv->GetNextUnit();
@@ -206,7 +206,7 @@ bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType
 	}
 	/* For electrified rail engines, standard wagons or engines are allowed to be included */
 	while (tv != nullptr) {
-		if (tv->railtype == type) {
+		if (tv->railtypes.Test(type)) {
 			return true;
 		}
 		tv = tv->GetNextUnit();
@@ -452,7 +452,7 @@ int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, int
 
 	do {
 		max_speed++;
-		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, tv->power, tv->max_te, tv->air_drag, tv->railtype);
+		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, tv->power, tv->max_te, tv->air_drag, tv->railtypes);
 	} while (acceleration > 0 && max_speed < speed_cap);
 
 	return max_speed;

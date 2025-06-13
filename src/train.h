@@ -147,7 +147,6 @@ struct TrainCache {
  */
 struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	TrackBits track{};
-	RailType railtype{};
 	uint32_t flags = 0;
 	TrainCache tcache{};
 
@@ -156,6 +155,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 
 	std::unique_ptr<TrainReservationLookAhead> lookahead{};
 
+	RailTypes railtypes{};
 	RailTypes compatible_railtypes{};
 
 	TrainForceProceeding force_proceed{};
@@ -346,7 +346,7 @@ public:
 	 */
 	inline VehicleAccelerationModel GetAccelerationType() const
 	{
-		return GetRailTypeInfo(this->railtype)->acceleration_type;
+		return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->acceleration_type;
 	}
 
 protected: // These functions should not be called outside acceleration code.
@@ -376,7 +376,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16_t GetPower() const
 	{
 		/* Power is not added for articulated parts */
-		if (!this->IsArticulatedPart() && (this->IsVirtual() || HasPowerOnRail(this->railtype, GetRailTypeByTrackBit(this->tile, this->track)))) {
+		if (!this->IsArticulatedPart() && (this->IsVirtual() || HasPowerOnRail(this->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			uint16_t power = GetVehicleProperty(this, PROP_TRAIN_POWER, RailVehInfo(this->engine_type)->power);
 			/* Halve power for multiheaded parts */
 			if (this->IsMultiheaded()) power /= 2;
@@ -393,7 +393,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16_t GetPoweredPartPower(const Train *head) const
 	{
 		/* For powered wagons the engine defines the type of engine (i.e. railtype) */
-		if (HasBit(this->flags, VRF_POWEREDWAGON) && (head->IsVirtual() || HasPowerOnRail(head->railtype, GetRailTypeByTrackBit(this->tile, this->track)))) {
+		if (HasBit(this->flags, VRF_POWEREDWAGON) && (head->IsVirtual() || HasPowerOnRail(head->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			return RailVehInfo(this->gcache.first_engine)->pow_wag_power;
 		}
 
@@ -552,7 +552,7 @@ inline int GetTileMarginInFrontOfTrain(const Train *v)
 
 int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length);
 
-int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32_t cached_power, const uint32_t max_te, const uint32_t air_drag, const RailType railtype);
+int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32_t cached_power, const uint32_t max_te, const uint32_t air_drag, const RailTypes railtypes);
 int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int speed_cap);
 
 #endif /* TRAIN_H */
