@@ -13,6 +13,8 @@
 #include "direction_type.h"
 #include "tile_type.h"
 
+#include <vector>
+
 /** Some airport-related constants */
 static const uint MAX_TERMINALS =   8;                       ///< maximum number of terminals per airport
 static const uint MAX_HELIPADS  =   3;                       ///< maximum number of helipads per airport
