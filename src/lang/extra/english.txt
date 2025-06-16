@@ -350,7 +350,7 @@ STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Show rail polyl
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :When enabled, the rail construction toolbar includes a button to build using the polyline mode.
 
 STR_CONFIG_SETTING_SHOW_TOWN_GROWTH_STATUS                      :Show town growth status in town directory: {STRING2}
-STR_CONFIG_SETTING_SHOW_TOWN_GROWTH_STATUS_HELPTEXT             :If enabled, the town directory will display the growth status (growing, not growing or growth disabled) for each town.
+STR_CONFIG_SETTING_SHOW_TOWN_GROWTH_STATUS_HELPTEXT             :Show each town's growth status (growing, not growing or growth disabled) and allow sorting by growth in the town directory.
 
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :Show vehicle running costs per calendar year/period: {STRING2}
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :When using a economy speed reduction factor greater than one, show vehicle running costs per calendar year (in calendar mode) or per period (in wallclock mode) instead of per original year.

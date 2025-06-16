@@ -966,6 +966,13 @@ private:
 	};
 	static const std::initializer_list<GUITownList::SortFunction * const> sorter_funcs;
 
+	enum class SorterTypes {
+		Name,
+		Population,
+		Rating,
+		GrowthSpeed,
+	};
+
 	StringFilter string_filter;             ///< Filter for towns
 	QueryString townname_editbox;           ///< Filter editbox
 
@@ -1059,6 +1066,11 @@ private:
 		return HasBit(t->flags, TOWN_IS_GROWING) ? STR_TOWN_GROWTH_STATUS_GROWING : STR_TOWN_GROWTH_STATUS_NOT_GROWING;
 	}
 
+	bool IsInvalidSortCritera() const
+	{
+		return !_settings_client.gui.show_town_growth_status && this->towns.SortType() == to_underlying(SorterTypes::GrowthSpeed);
+	}
+
 public:
 	TownDirectoryWindow(WindowDesc &desc) : Window(desc), townname_editbox(MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_TOWN_NAME_CHARS)
 	{
@@ -1068,6 +1080,10 @@ public:
 
 		this->towns.SetListing(this->last_sorting);
 		this->towns.SetSortFuncs(TownDirectoryWindow::sorter_funcs);
+		if (this->IsInvalidSortCritera()) {
+			this->towns.SetSortType(0);
+			this->last_sorting = this->towns.GetListing();
+		}
 		this->towns.ForceRebuild();
 		this->BuildSortTownList();
 
@@ -1231,9 +1247,12 @@ public:
 				this->SetDirty();
 				break;
 
-			case WID_TD_SORT_CRITERIA: // Click on sort criteria dropdown
-				ShowDropDownMenu(this, TownDirectoryWindow::sorter_names, this->towns.SortType(), WID_TD_SORT_CRITERIA, 0, 0);
+			case WID_TD_SORT_CRITERIA: { // Click on sort criteria dropdown
+				uint32_t hidden_mask = 0;
+				if (!_settings_client.gui.show_town_growth_status) SetBit(hidden_mask, to_underlying(SorterTypes::GrowthSpeed));
+				ShowDropDownMenu(this, TownDirectoryWindow::sorter_names, this->towns.SortType(), WID_TD_SORT_CRITERIA, 0, hidden_mask);
 				break;
+			}
 
 			case WID_TD_LIST: { // Click on Town Matrix
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->towns, pt.y, this, WID_TD_LIST, WidgetDimensions::scaled.framerect.top);
@@ -1305,6 +1324,11 @@ public:
 				break;
 
 			case TDIWD_SHOW_GROWTH_CHANGE:
+				if (this->IsInvalidSortCritera()) {
+					this->towns.SetSortType(0);
+					this->last_sorting = this->towns.GetListing();
+					this->BuildSortTownList();
+				}
 				this->ReInit();
 				break;
 
