@@ -256,6 +256,10 @@ struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtUsingFormatVal
 	}
 };
 
+namespace format_detail {
+	void FmtResizeForCStr(fmt::detail::buffer<char> &buffer);
+};
+
 /**
  * Common functionality for format_buffer and format_buffer_size.
  */
@@ -286,7 +290,7 @@ public:
 	/* Return a null terminated c string, this may cause the buffer to re-allocated to make room for the null terminator */
 	const char *c_str()
 	{
-		if (this->size() == this->capacity()) this->buffer.try_reserve(this->capacity() + 1);
+		if (this->size() == this->capacity()) format_detail::FmtResizeForCStr(this->buffer);
 		*(this->end()) = '\0';
 		return this->data();
 	}

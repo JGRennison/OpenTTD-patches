@@ -41,3 +41,9 @@ void format_to_fixed_base::inner_wrapper::restore_size_impl(size_t size)
 	this->set(this->buffer_ptr, this->buffer_size);
 	this->try_resize(size);
 }
+
+void format_detail::FmtResizeForCStr(fmt::detail::buffer<char> &buffer)
+{
+	buffer.try_reserve(buffer.capacity() + 1);
+	assert(buffer.size() < buffer.capacity());
+}
