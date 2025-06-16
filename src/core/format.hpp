@@ -141,7 +141,6 @@ protected:
 	format_target(fmt::detail::buffer<char> &buffer, uint8_t flags) : target(buffer), flags(flags) {}
 	~format_target() = default;
 
-protected:
 	fmt::detail::buffer<char> &GetTargetFmtBuffer() const { return this->target; }
 
 public:
@@ -162,25 +161,25 @@ public:
 	template <typename... T>
 	void format(fmt::format_string<T...> fmtstr, T&&... args)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		fmt::detail::vformat_to(this->target, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
 	}
 
 	void vformat(fmt::string_view fmtstr, fmt::format_args args)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		fmt::detail::vformat_to(this->target, fmtstr, args, {});
 	}
 
 	void push_back(char c)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		this->target.push_back(c);
 	}
 
 	void append(const char* begin, const char* end)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		this->target.append<char>(begin, end);
 	}
 
@@ -189,7 +188,7 @@ public:
 	template <typename F>
 	void append_ptr_last_func(size_t to_reserve, F func)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		this->target.try_reserve(this->target.size() + to_reserve);
 		char *buf = this->target.data() + this->target.size();
 		const char *last = this->target.data() + this->target.capacity() - 1;
@@ -202,7 +201,7 @@ public:
 	template <typename F>
 	void append_span_func(size_t to_reserve, F func)
 	{
-		if (has_overflowed()) return;
+		if (this->has_overflowed()) return;
 		this->target.try_reserve(this->target.size() + to_reserve);
 		const auto size = this->target.size();
 		const auto capacity = this->target.capacity();
@@ -213,7 +212,7 @@ public:
 
 	std::span<char> append_as_span(size_t to_append)
 	{
-		if (has_overflowed()) return {};
+		if (this->has_overflowed()) return {};
 		const auto orig_size = this->target.size();
 		this->target.try_resize(orig_size + to_append);
 		return std::span<char>(this->target.data() + orig_size, this->target.size() - orig_size);
