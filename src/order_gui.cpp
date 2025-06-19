@@ -3240,7 +3240,7 @@ public:
 				if (this->goto_type != OPOS_NONE) {
 					ResetObjectToPlace();
 				} else if (this->vehicle->GetOrder(this->OrderGetSel())->HasConditionViaStation()) {
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3, NEW_STATION);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3, ORDER_NO_VIA_STATION);
 				} else {
 					this->OrderClick_Goto(OPOS_COND_VIA);
 				}

@@ -2033,7 +2033,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 			switch (order->GetConditionVariable()) {
 				case OCV_CARGO_WAITING_AMOUNT:
 				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
-					if (!(data == NEW_STATION || Station::GetIfValid(data) != nullptr)) return CMD_ERROR;
+					if (!(data == ORDER_NO_VIA_STATION || Station::GetIfValid(data) != nullptr)) return CMD_ERROR;
 					if (order->GetConditionStationID() == data) return CMD_ERROR;
 					break;
 
