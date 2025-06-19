@@ -106,9 +106,9 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 bool TrainOnCrossing(TileIndex tile);
 void NormalizeTrainVehInDepot(const Train *u);
 
-inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
+inline int GetTrainRealisticBrakingTargetDecelerationLimit(VehicleAccelerationModel acceleration_type)
 {
-	return _settings_game.vehicle.train_acc_braking_percent * (120 + (acceleration_type * 48)) / 100;
+	return _settings_game.vehicle.train_acc_braking_percent * (120 + (static_cast<int>(acceleration_type) * 48)) / 100;
 }
 
 /** Flags for TrainCache::cached_tflags */
@@ -344,7 +344,7 @@ public:
 	 * Allows to know the acceleration type of a vehicle.
 	 * @return Acceleration type of the vehicle.
 	 */
-	inline int GetAccelerationType() const
+	inline VehicleAccelerationModel GetAccelerationType() const
 	{
 		return GetRailTypeInfo(this->railtype)->acceleration_type;
 	}

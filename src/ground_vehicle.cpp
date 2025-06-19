@@ -176,8 +176,8 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	 */
 	int64_t resistance = 0;
 
-	int acceleration_type = v->GetAccelerationType();
-	bool maglev = (acceleration_type == 2);
+	VehicleAccelerationModel acceleration_type = v->GetAccelerationType();
+	bool maglev = (acceleration_type == VehicleAccelerationModel::Maglev);
 
 	const int area = v->GetAirDragArea();
 	if (!maglev) {

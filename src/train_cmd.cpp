@@ -864,7 +864,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 		int64_t sloped_ke = target_ke + (z_delta * ((400 * 5) / 18) * _settings_game.vehicle.train_slope_steepness);
 		int64_t slope_speed_sqr = sloped_ke + ((int64_t)stats.uncapped_deceleration_x2 * (int64_t)distance);
 		if (slope_speed_sqr < speed_sqr &&
-				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && GetRailTypeInfo(stats.t->railtype)->acceleration_type != 2) {
+				_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && GetRailTypeInfo(stats.t->railtype)->acceleration_type != VehicleAccelerationModel::Maglev) {
 			/* calculate speed at which braking would be sufficient */
 
 			uint weight = stats.t->gcache.cached_weight;
@@ -1197,8 +1197,8 @@ void Train::UpdateAcceleration()
 				break;
 
 			case AM_REALISTIC: {
-				int acceleration_type = this->GetAccelerationType();
-				bool maglev = (acceleration_type == 2);
+				VehicleAccelerationModel acceleration_type = this->GetAccelerationType();
+				bool maglev = (acceleration_type == VehicleAccelerationModel::Maglev);
 				int64_t power_w = power * 746ll;
 
 				/* Increase the effective length used for brake force/power value when using the freight weight multiplier */
@@ -4951,7 +4951,7 @@ static inline void AffectSpeedByZChange(Train *v, int old_z)
 {
 	if (old_z == v->z_pos || _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) return;
 
-	const AccelerationSlowdownParams *asp = &_accel_slowdown[GetRailTypeInfo(v->railtype)->acceleration_type];
+	const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(GetRailTypeInfo(v->railtype)->acceleration_type)];
 
 	if (old_z < v->z_pos) {
 		v->cur_speed -= (v->cur_speed * asp->z_up >> 8);
@@ -5563,7 +5563,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 	auto notify_direction_changed = [&](Direction old_direction, Direction new_direction) {
 		if (prev == nullptr && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-			const AccelerationSlowdownParams *asp = &_accel_slowdown[GetRailTypeInfo(v->railtype)->acceleration_type];
+			const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(GetRailTypeInfo(v->railtype)->acceleration_type)];
 			DirDiff diff = DirDifference(old_direction, new_direction);
 			v->cur_speed -= (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT ? asp->small_turn : asp->large_turn) * v->cur_speed >> 8;
 		}
@@ -7635,7 +7635,7 @@ int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const 
 	const int64_t power = cached_power * 746ll;
 	int64_t resistance = 0;
 
-	const bool maglev = (GetRailTypeInfo(railtype)->acceleration_type == 2);
+	const bool maglev = (GetRailTypeInfo(railtype)->acceleration_type == VehicleAccelerationModel::Maglev);
 
 	if (!maglev) {
 		/* Static resistance plus rolling friction. */

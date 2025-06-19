@@ -215,7 +215,7 @@ static std::string GetTrainEngineInfoString(const Engine &e)
 	AppendStringInPlace(res, STR_ENGINE_PREVIEW_COST_WEIGHT, e.GetCost(), e.GetDisplayWeight());
 	res.push_back('\n');
 
-	if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && GetRailTypeInfo(e.u.rail.railtype)->acceleration_type != 2) {
+	if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && GetRailTypeInfo(e.u.rail.railtype)->acceleration_type != VehicleAccelerationModel::Maglev) {
 		AppendStringInPlace(res, STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE, PackVelocity(e.GetDisplayMaxSpeed(), e.type), e.GetPower(), e.GetDisplayMaxTractiveEffort());
 		res.push_back('\n');
 	} else {

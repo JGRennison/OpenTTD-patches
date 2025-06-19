@@ -3214,7 +3214,7 @@ struct VehicleDetailsWindow : Window {
 					process(STR_VEHICLE_INFO_WEIGHT_RATIOS,
 							STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
 							max_value_16,
-							(v->type != VEH_TRAIN || Train::From(v)->GetAccelerationType() == 2) ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+							(v->type != VEH_TRAIN || Train::From(v)->GetAccelerationType() == VehicleAccelerationModel::Maglev) ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
 							max_value_16);
 				}
 				size.width = dim.width + padding.width;
@@ -3352,7 +3352,7 @@ struct VehicleDetailsWindow : Window {
 						(v->type == VEH_ROAD && _settings_game.vehicle.roadveh_acceleration_model != AM_ORIGINAL)) {
 					const GroundVehicleCache *gcache = v->GetGroundVehicleCache();
 					if (v->type == VEH_TRAIN && (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
-							GetRailTypeInfo(Train::From(v)->railtype)->acceleration_type == 2)) {
+							GetRailTypeInfo(Train::From(v)->railtype)->acceleration_type == VehicleAccelerationModel::Maglev)) {
 						DrawString(tr, GetString(STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED, gcache->cached_weight, gcache->cached_power, max_speed));
 					} else {
 						DrawString(tr, GetString(STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE, gcache->cached_weight, gcache->cached_power, max_speed, gcache->cached_max_te));
@@ -3375,7 +3375,7 @@ struct VehicleDetailsWindow : Window {
 						GetString(STR_VEHICLE_INFO_WEIGHT_RATIOS,
 							STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
 							(100 * Train::From(v)->gcache.cached_power) / std::max<uint>(1, Train::From(v)->gcache.cached_weight),
-							Train::From(v)->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+							Train::From(v)->GetAccelerationType() == VehicleAccelerationModel::Maglev ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
 							(100 * Train::From(v)->gcache.cached_max_te) / std::max<uint>(1, Train::From(v)->gcache.cached_weight)));
 					tr.top += GetCharacterHeight(FS_NORMAL);
 				}
