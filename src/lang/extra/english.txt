@@ -219,6 +219,9 @@ STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :If enabled, inf
 
 STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Enable improved breakdowns: {STRING2}
 
+STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :Maximum reliability floor: {STRING2}
+STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :At vehicle introduction, random maximum reliability is chosen between this value and 100.{}(The value is only reached after introductory period, as was always the case.){}{}Old behavior: the value was chosen between 75 and 100.
+
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. The best results are obtained when 90° turns are forbidden.
 
