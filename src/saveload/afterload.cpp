@@ -4320,6 +4320,10 @@ bool AfterLoadGame()
 		_settings_game.vehicle.through_load_speed_limit = 15;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_MAX_RELIABILITY_FLOOR)) {
+		_settings_game.difficulty.max_reliability_floor = 75;
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_RAIL_DEPOT_SPEED_LIMIT)) {
 		_settings_game.vehicle.rail_depot_speed_limit = 61;
 	}
