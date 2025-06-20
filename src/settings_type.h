@@ -116,6 +116,7 @@ struct DifficultySettings {
 	uint8_t  vehicle_costs_when_stopped;            ///< amount of money spent on vehicle running cost when vehicle is stopped
 	uint8_t  competitor_speed;                      ///< the speed at which the AI builds
 	uint8_t  vehicle_breakdowns;                    ///< likelihood of vehicles breaking down
+	uint8_t  max_reliability_floor;                 ///< The minimum value (%) for maximum reliability randomizer
 	uint8_t  subsidy_multiplier;                    ///< payment multiplier for subsidized deliveries
 	uint16_t subsidy_duration;                      ///< duration of subsidies
 	uint8_t  construction_cost;                     ///< how expensive is building

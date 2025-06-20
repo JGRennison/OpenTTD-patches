@@ -123,6 +123,7 @@ enum SlXvFeatureIndex {
 	XSLFI_COMPANY_PW,                             ///< Company passwords
 	XSLFI_ST_INDUSTRY_CARGO_MODE,                 ///< Station industry cargo mode setting
 	XSLFI_TL_SPEED_LIMIT,                         ///< Through load maximum speed setting
+	XSLFI_MAX_RELIABILITY_FLOOR,                  ///< The minimum value (%) for maximum reliability randomizer
 	XSLFI_RAIL_DEPOT_SPEED_LIMIT,                 ///< Rail depot maximum speed setting
 	XSLFI_WAYPOINT_FLAGS,                         ///< Waypoint flags
 	XSLFI_ROAD_WAYPOINTS,                         ///< Road waypoints

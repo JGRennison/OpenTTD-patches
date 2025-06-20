@@ -2552,6 +2552,7 @@ static SettingsContainer &GetSettingsTree()
 			disasters->Add(new SettingEntry("vehicle.plane_crashes"));
 			disasters->Add(new SettingEntry("vehicle.no_train_crash_other_company"));
 			disasters->Add(new SettingEntry("difficulty.vehicle_breakdowns"));
+			disasters->Add(new SettingEntry("difficulty.max_reliability_floor"));
 			disasters->Add(new SettingEntry("vehicle.improved_breakdowns"));
 			disasters->Add(new SettingEntry("vehicle.pay_for_repair"));
 			disasters->Add(new SettingEntry("vehicle.repair_cost"));
