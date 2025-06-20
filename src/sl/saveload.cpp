@@ -952,9 +952,9 @@ void SlCopyBytesRead(void *p, size_t length)
 	_sl.reader->CopyBytes((uint8_t *)p, length);
 }
 
-void SlCopyBytesWrite(void *p, size_t length)
+void SlCopyBytesWrite(const void *p, size_t length)
 {
-	_sl.dumper->CopyBytes((uint8_t *)p, length);
+	_sl.dumper->CopyBytes((const uint8_t *)p, length);
 }
 
 /**

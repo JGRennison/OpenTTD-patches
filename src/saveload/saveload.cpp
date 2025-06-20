@@ -51,8 +51,6 @@ std::string CopyFromOldName(StringID id);
 
 extern uint8_t SlSaveToTempBufferSetup();
 extern std::span<uint8_t> SlSaveToTempBufferRestore(uint8_t state);
-extern void SlCopyBytesRead(void *ptr, size_t length);
-extern void SlCopyBytesWrite(void *ptr, size_t length);
 
 namespace upstream_sl {
 

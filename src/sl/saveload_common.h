@@ -458,6 +458,9 @@ void SlWriteUint64(uint64_t v);
 
 void SlSkipBytes(size_t length);
 
+void SlCopyBytesRead(void *ptr, size_t length);
+void SlCopyBytesWrite(const void *ptr, size_t length);
+
 size_t SlGetBytesRead();
 size_t SlGetBytesWritten();
 
