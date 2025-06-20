@@ -396,8 +396,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 			SlWriteByte(SQSL_INT);
 			SQInteger res;
 			sq_getinteger(vm, index, &res);
-			int64_t value = (int64_t)res;
-			SlArray(&value, 1, SLE_INT64);
+			SlWriteUint64((int64_t)res);
 			return true;
 		}
 
@@ -411,7 +410,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 				return false;
 			}
 			SlWriteByte((uint8_t)len);
-			SlArray(const_cast<char *>(buf), len, SLE_CHAR);
+			SlCopyBytesWrite(buf, len);
 			return true;
 		}
 
@@ -584,15 +583,19 @@ bool ScriptInstance::IsPaused()
 	switch (type) {
 		case SQSL_INT: {
 			int64_t value;
-			SlArray(&value, 1, (IsSavegameVersionBefore(SLV_SCRIPT_INT64) && SlXvIsFeatureMissing(XSLFI_SCRIPT_INT64)) ? SLE_FILE_I32 | SLE_VAR_I64 : SLE_INT64);
+			if (IsSavegameVersionBefore(SLV_SCRIPT_INT64) && SlXvIsFeatureMissing(XSLFI_SCRIPT_INT64)) {
+				value = (int32_t)SlReadUint32();
+			} else {
+				value = (int64_t)SlReadUint64();
+			}
 			if (data != nullptr) data->push_back(static_cast<SQInteger>(value));
 			return true;
 		}
 
 		case SQSL_STRING: {
 			uint8_t len = SlReadByte();
-			static char buf[std::numeric_limits<decltype(len)>::max()];
-			SlArray(buf, len, SLE_CHAR);
+			char buf[std::numeric_limits<decltype(len)>::max()];
+			SlCopyBytesRead(buf, len);
 			if (data != nullptr) data->push_back(StrMakeValid(std::string_view(buf, len)));
 			return true;
 		}
