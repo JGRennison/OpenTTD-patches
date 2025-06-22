@@ -838,6 +838,11 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 
 	Train *t = Train::From(v);
 	if (t->track & TRACK_BIT_WORMHOLE) {
+		/* Do not find trains inside bridges, when the search track is a bridge-bypassing custom bridge head track. */
+		if (IsCustomBridgeHeadTile(info->res.tile) && !IsTrackAcrossTunnelBridge(info->res.tile, TrackdirToTrack(info->res.trackdir))) {
+			return nullptr;
+		}
+
 		/* Do not find trains inside signalled bridge/tunnels.
 		 * Trains on the ramp/entrance itself are found though.
 		 */
