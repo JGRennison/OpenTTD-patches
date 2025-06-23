@@ -745,11 +745,11 @@ struct TooltipsWindow : public Window
 		if (widget != WID_TT_BACKGROUND) return;
 		if (this->params.size() == 0) {
 			size.width  = std::min<uint>(GetStringBoundingBox(this->buffer).width, ScaleGUITrad(194));
-			size.height = GetStringHeight(this->buffer, size.width);
+			size.height = size.width > 0 ? GetStringHeight(this->buffer, size.width) : 0;
 		} else {
 			CopyInDParam(this->params);
 			size.width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
-			size.height = GetStringHeight(this->string_id, size.width);
+			size.height = size.width > 0 ? GetStringHeight(this->string_id, size.width) : 0;
 		}
 
 		/* Increase slightly to have some space around the box. */
