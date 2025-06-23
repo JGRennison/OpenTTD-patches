@@ -15,6 +15,7 @@
 #include "newgrf.h"
 #include "newgrf_badge.h"
 #include "newgrf_badge_type.h"
+#include <array>
 
 class GUIBadgeClasses : public UsedBadgeClasses {
 public:
@@ -54,7 +55,13 @@ std::unique_ptr<DropDownListItem> MakeDropDownListBadgeItem(const std::shared_pt
 std::unique_ptr<DropDownListItem> MakeDropDownListBadgeIconItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, const Dimension &dim, SpriteID sprite, PaletteID palette, std::string &&str, int value, bool masked = false, bool shaded = false);
 
 DropDownList BuildBadgeClassConfigurationList(const class GUIBadgeClasses &badge_class, uint columns, std::span<const StringID> column_separators);
-bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result);
+bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result, std::span<BadgeFilterChoices *> choices);
+
+inline bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result, BadgeFilterChoices &choices)
+{
+	std::array<BadgeFilterChoices *, 1> filter_choices{ &choices };
+	return HandleBadgeConfigurationDropDownClick(feature, columns, result, click_result, filter_choices);
+}
 
 std::pair<WidgetID, WidgetID> AddBadgeDropdownFilters(NWidgetContainer &container, WidgetID widget, Colours colour, GrfSpecFeature feature);
 

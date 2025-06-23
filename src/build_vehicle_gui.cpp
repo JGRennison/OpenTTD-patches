@@ -2277,7 +2277,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_CONFIGURE_BADGES: {
-				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result);
+				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result, this->badge_filter_choices);
 
 				this->ReInit();
 
@@ -2286,6 +2286,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				} else {
 					this->CloseChildWindows(WC_DROPDOWN_MENU);
 				}
+
+				/* We need to refresh if a filter is removed. */
+				this->eng_list.ForceRebuild();
+				this->SetDirty();
 				break;
 			}
 
@@ -3345,7 +3349,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_CONFIGURE_BADGES: {
-				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result);
+				std::array<BadgeFilterChoices *, 2> filter_choices{ &this->loco.badge_filter_choices, &this->wagon.badge_filter_choices };
+				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result, filter_choices);
 
 				this->ReInit();
 
@@ -3354,6 +3359,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				} else {
 					this->CloseChildWindows(WC_DROPDOWN_MENU);
 				}
+
+				/* We need to refresh if a filter is removed. */
+				this->loco.eng_list.ForceRebuild();
+				this->wagon.eng_list.ForceRebuild();
+				this->SetDirty();
 				break;
 			}
 

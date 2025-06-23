@@ -368,14 +368,21 @@ DropDownList BuildBadgeClassConfigurationList(const GUIBadgeClasses &gui_classes
  * @param class_badge Class badge.
  * @param click Dropdown click reuslt.
  */
-static void BadgeClassToggleVisibility(GrfSpecFeature feature, Badge &class_badge, int click_result)
+static void BadgeClassToggleVisibility(GrfSpecFeature feature, Badge &class_badge, int click_result, std::span<BadgeFilterChoices *> choices)
 {
 	auto config = GetBadgeClassConfiguration(feature);
 	auto it = std::ranges::find(config, class_badge.label, &BadgeClassConfigItem::label);
 	if (it == std::end(config)) return;
 
 	if (click_result == BADGE_CLICK_TOGGLE_ICON) it->show_icon = !it->show_icon;
-	if (click_result == BADGE_CLICK_TOGGLE_FILTER) it->show_filter = !it->show_filter;
+	if (click_result == BADGE_CLICK_TOGGLE_FILTER) {
+		it->show_filter = !it->show_filter;
+		if (!it->show_filter) {
+			for (BadgeFilterChoices *fc : choices) {
+				ResetBadgeFilter(*fc, class_badge.class_index);
+			}
+		}
+	}
 }
 
 /**
@@ -445,7 +452,7 @@ static void BadgeClassMoveNext(GrfSpecFeature feature, Badge &class_badge, uint 
  * @param click_result Dropdown click result.
  * @return true iff the caller should reinitialise their widgets.
  */
-bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result)
+bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result, std::span<BadgeFilterChoices *> choices)
 {
 	if (result == INT_MAX) {
 		ResetBadgeClassConfiguration(feature);
@@ -464,7 +471,7 @@ bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns,
 			break;
 		case BADGE_CLICK_TOGGLE_ICON:
 		case BADGE_CLICK_TOGGLE_FILTER:
-			BadgeClassToggleVisibility(feature, *class_badge, click_result);
+			BadgeClassToggleVisibility(feature, *class_badge, click_result, choices);
 			break;
 		default:
 			break;
