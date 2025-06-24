@@ -96,7 +96,7 @@ public:
 			this->GetWidget<NWidgetCore>(WID_W_CENTER_VIEW)->SetToolTip(STR_WAYPOINT_VIEW_CENTER_TOOLTIP);
 			this->GetWidget<NWidgetCore>(WID_W_RENAME)->SetToolTip(STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME);
 		}
-		this->show_hide_label = (this->vt != VEH_SHIP && _settings_client.gui.allow_hiding_waypoint_labels);
+		this->show_hide_label = _settings_client.gui.allow_hiding_waypoint_labels;
 		this->GetWidget<NWidgetStacked>(WID_W_TOGGLE_HIDDEN_SEL)->SetDisplayedPlane(this->show_hide_label ? 0 : SZSP_NONE);
 		this->FinishInitNested(window_number);
 
@@ -217,14 +217,15 @@ public:
 	{
 		if (!gui_scope) return;
 		/* You can only change your own waypoints */
-		this->SetWidgetDisabledState(WID_W_RENAME, !this->wp->IsInUse() || (this->wp->owner != _local_company && this->wp->owner != OWNER_NONE));
-		this->SetWidgetDisabledState(WID_W_TOGGLE_HIDDEN, !this->wp->IsInUse() || this->wp->owner != _local_company);
+		bool disable_rename = !this->wp->IsInUse() || (this->wp->owner != _local_company && this->wp->owner != OWNER_NONE);
+		this->SetWidgetDisabledState(WID_W_RENAME, disable_rename);
+		this->SetWidgetDisabledState(WID_W_TOGGLE_HIDDEN, disable_rename);
 		/* Disable the widget for waypoints with no use */
 		this->SetWidgetDisabledState(WID_W_SHOW_VEHICLES, !this->wp->IsInUse());
 
 		this->SetWidgetLoweredState(WID_W_TOGGLE_HIDDEN, HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL));
 
-		bool show_hide_label = (this->vt != VEH_SHIP && _settings_client.gui.allow_hiding_waypoint_labels);
+		bool show_hide_label = _settings_client.gui.allow_hiding_waypoint_labels;
 		if (show_hide_label != this->show_hide_label) {
 			this->show_hide_label = show_hide_label;
 			this->GetWidget<NWidgetStacked>(WID_W_TOGGLE_HIDDEN_SEL)->SetDisplayedPlane(this->show_hide_label ? 0 : SZSP_NONE);
