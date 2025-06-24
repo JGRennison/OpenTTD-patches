@@ -27,6 +27,7 @@
 
 #include "widgets/error_widget.h"
 
+#include "table/sprites.h"
 #include "table/strings.h"
 #include <list>
 

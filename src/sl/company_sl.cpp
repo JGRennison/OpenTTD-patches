@@ -29,74 +29,6 @@
 
 #include "../safeguards.h"
 
-/**
- * Converts an old company manager's face format to the new company manager's face format
- *
- * Meaning of the bits in the old face (some bits are used in several times):
- * - 4 and 5: chin
- * - 6 to 9: eyebrows
- * - 10 to 13: nose
- * - 13 to 15: lips (also moustache for males)
- * - 16 to 19: hair
- * - 20 to 22: eye colour
- * - 20 to 27: tie, ear rings etc.
- * - 28 to 30: glasses
- * - 19, 26 and 27: race (bit 27 set and bit 19 equal to bit 26 = black, otherwise white)
- * - 31: gender (0 = male, 1 = female)
- *
- * @param face the face in the old format
- * @return the face in the new format
- */
-CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32_t face)
-{
-	CompanyManagerFace cmf = 0;
-	GenderEthnicity ge = GE_WM;
-
-	if (HasBit(face, 31)) SetBit(ge, GENDER_FEMALE);
-	if (HasBit(face, 27) && (HasBit(face, 26) == HasBit(face, 19))) SetBit(ge, ETHNICITY_BLACK);
-
-	SetCompanyManagerFaceBits(cmf, CMFV_GEN_ETHN,    ge, ge);
-	SetCompanyManagerFaceBits(cmf, CMFV_HAS_GLASSES, ge, GB(face, 28, 3) <= 1);
-	SetCompanyManagerFaceBits(cmf, CMFV_EYE_COLOUR,  ge, HasBit(ge, ETHNICITY_BLACK) ? 0 : ClampU(GB(face, 20, 3), 5, 7) - 5);
-	SetCompanyManagerFaceBits(cmf, CMFV_CHIN,        ge, ScaleCompanyManagerFaceValue(CMFV_CHIN,     ge, GB(face,  4, 2)));
-	SetCompanyManagerFaceBits(cmf, CMFV_EYEBROWS,    ge, ScaleCompanyManagerFaceValue(CMFV_EYEBROWS, ge, GB(face,  6, 4)));
-	SetCompanyManagerFaceBits(cmf, CMFV_HAIR,        ge, ScaleCompanyManagerFaceValue(CMFV_HAIR,     ge, GB(face, 16, 4)));
-	SetCompanyManagerFaceBits(cmf, CMFV_JACKET,      ge, ScaleCompanyManagerFaceValue(CMFV_JACKET,   ge, GB(face, 20, 2)));
-	SetCompanyManagerFaceBits(cmf, CMFV_COLLAR,      ge, ScaleCompanyManagerFaceValue(CMFV_COLLAR,   ge, GB(face, 22, 2)));
-	SetCompanyManagerFaceBits(cmf, CMFV_GLASSES,     ge, GB(face, 28, 1));
-
-	uint lips = GB(face, 10, 4);
-	if (!HasBit(ge, GENDER_FEMALE) && lips < 4) {
-		SetCompanyManagerFaceBits(cmf, CMFV_HAS_MOUSTACHE, ge, true);
-		SetCompanyManagerFaceBits(cmf, CMFV_MOUSTACHE,     ge, std::max(lips, 1U) - 1);
-	} else {
-		if (!HasBit(ge, GENDER_FEMALE)) {
-			lips = lips * 15 / 16;
-			lips -= 3;
-			if (HasBit(ge, ETHNICITY_BLACK) && lips > 8) lips = 0;
-		} else {
-			lips = ScaleCompanyManagerFaceValue(CMFV_LIPS, ge, lips);
-		}
-		SetCompanyManagerFaceBits(cmf, CMFV_LIPS, ge, lips);
-
-		uint nose = GB(face, 13, 3);
-		if (ge == GE_WF) {
-			nose = (nose * 3 >> 3) * 3 >> 2; // There is 'hole' in the nose sprites for females
-		} else {
-			nose = ScaleCompanyManagerFaceValue(CMFV_NOSE, ge, nose);
-		}
-		SetCompanyManagerFaceBits(cmf, CMFV_NOSE, ge, nose);
-	}
-
-	uint tie_earring = GB(face, 24, 4);
-	if (!HasBit(ge, GENDER_FEMALE) || tie_earring < 3) { // Not all females have an earring
-		if (HasBit(ge, GENDER_FEMALE)) SetCompanyManagerFaceBits(cmf, CMFV_HAS_TIE_EARRING, ge, true);
-		SetCompanyManagerFaceBits(cmf, CMFV_TIE_EARRING, ge, HasBit(ge, GENDER_FEMALE) ? tie_earring : ScaleCompanyManagerFaceValue(CMFV_TIE_EARRING, ge, tie_earring / 2));
-	}
-
-	return cmf;
-}
-
 /** Rebuilding of company statistics after loading a savegame. */
 void AfterLoadCompanyStats()
 {
@@ -520,7 +452,8 @@ static const NamedSaveLoad _company_desc[] = {
 	NSL("president_name_2",                 SLE_VAR(CompanyProperties, president_name_2,      SLE_UINT32)),
 	NSL("president_name",              SLE_CONDSSTR(CompanyProperties, president_name,        SLE_STR | SLF_ALLOW_CONTROL, SLV_84, SL_MAX_VERSION)),
 
-	NSL("face",                             SLE_VAR(CompanyProperties, face,                  SLE_UINT32)),
+	NSL("face",                             SLE_VAR(CompanyProperties, face.bits,             SLE_UINT32)),
+	NSLT("face_style",                     SLE_SSTR(CompanyProperties, face.style_label,      SLE_STR)),
 
 	/* money was changed to a 64 bit field in savegame version 1. */
 	NSL("money",                        SLE_CONDVAR(CompanyProperties, money,                 SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_1)),

@@ -496,6 +496,17 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 #define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SL_STDSTR, base, variable, type, 0, from, to, 0)
 
 /**
+ * Storage of a \c std::string in some savegame versions.
+ * @param base     Name of the class or struct containing the string.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param name     Field name for table chunks.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the string.
+ * @param to       Last savegame version that has the string.
+ */
+#define SLE_CONDSSTRNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SL_STDSTR, name, base, variable, type, 0, from, to, 0)
+
+/**
  * Storage of a list of #SL_REF elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
@@ -596,6 +607,15 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param type     Storage of the data in memory and in the savegame.
  */
 #define SLE_SSTR(base, variable, type) SLE_CONDSSTR(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+
+/**
+ * Storage of a \c std::string in every savegame version.
+ * @param base     Name of the class or struct containing the string.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param name     Field name for table chunks.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_SSTRNAME(base, variable, name, type) SLE_CONDSSTRNAME(base, variable, name, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a list of #SL_REF elements in every savegame version.

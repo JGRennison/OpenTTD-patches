@@ -9,8 +9,9 @@
 
 #include "stdafx.h"
 #include "core/backup_type.hpp"
-#include "core/container_func.hpp"
 #include "core/bit_cast.hpp"
+#include "core/container_func.hpp"
+#include "company_manager_face.h"
 #include "debug.h"
 #include "fileio_func.h"
 #include "engine_func.h"
@@ -670,6 +671,8 @@ void ResetNewGRFData()
 
 	/* Reset canal sprite groups and flags */
 	_water_feature.fill({});
+
+	ResetFaces();
 
 	/* Reset the snowline table. */
 	ClearSnowLine();

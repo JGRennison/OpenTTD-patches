@@ -171,6 +171,7 @@ enum SlXvFeatureIndex {
 	XSLFI_INDUSTRY_CARGO_REORGANISE,              ///< See: SLV_INDUSTRY_CARGO_REORGANISE (PR #10853)
 	XSLFI_ENCODED_STRING_FORMAT,                  ///< See: SLV_ENCODED_STRING_FORMAT (PR #13499) (v1), SLV_FIX_SCC_ENCODED_NEGATIVE (PR #14049) (v2)
 	XSLFI_PROTECT_PLACED_HOUSES,                  ///< See: SLV_PROTECT_PLACED_HOUSES (PR #13270)
+	XSLFI_FACE_STYLES,                            ///< See: SLV_FACE_STYLES (PR #14319)
 
 	XSLFI_PR_13745_APPLIED,                       ///< Tag to indicate that the fix in PR #13745 has been already applied
 

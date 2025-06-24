@@ -27,6 +27,104 @@
 
 void SetDefaultCompanySettings(CompanyID cid);
 
+/**
+ * Search for a face variable by type and name.
+ * @param style Face style to find variable in.
+ * @param type Type of variable to look up.
+ * @param name Name (string) of variable to look up.
+ * @return Face variable if present, otherwise nullptr.
+ */
+static const FaceVar *FindFaceVar(FaceVars style, FaceVarType type, StringID name)
+{
+	auto it = std::ranges::find_if(style, [type, name](const FaceVar &facevar) { return facevar.type == type && facevar.name == name; });
+	if (it != std::end(style)) return &*it;
+	return nullptr;
+}
+
+/**
+ * Converts an old company manager's face format to the new company manager's face format
+ *
+ * Meaning of the bits in the old face (some bits are used in several times):
+ * - 4 and 5: chin
+ * - 6 to 9: eyebrows
+ * - 10 to 13: nose
+ * - 13 to 15: lips (also moustache for males)
+ * - 16 to 19: hair
+ * - 20 to 22: eye colour
+ * - 20 to 27: tie, ear rings etc.
+ * - 28 to 30: glasses
+ * - 19, 26 and 27: race (bit 27 set and bit 19 equal to bit 26 = black, otherwise white)
+ * - 31: gender (0 = male, 1 = female)
+ *
+ * @param face the face in the old format
+ * @return the face in the new format
+ */
+CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32_t face)
+{
+	CompanyManagerFace cmf{};
+
+	if (HasBit(face, 31)) cmf.style += 1;
+	if (HasBit(face, 27) && (HasBit(face, 26) == HasBit(face, 19))) cmf.style += 2;
+
+	const FaceSpec *spec = GetCompanyManagerFaceSpec(cmf.style);
+	FaceVars vars = spec->GetFaceVars();
+
+	cmf.style_label = spec->label;
+
+	if (auto var = FindFaceVar(vars, FaceVarType::Toggle, STR_FACE_GLASSES); var != nullptr) var->SetBits(cmf, GB(face, 28, 3) <= 1);
+	if (auto var = FindFaceVar(vars, FaceVarType::Palette, STR_FACE_EYECOLOUR); var != nullptr) var->SetBits(cmf, ClampU(GB(face, 20, 3), 5, 7) - 5);
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_CHIN); var != nullptr) var->SetBits(cmf, var->ScaleBits(GB(face, 4, 2)));
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_EYEBROWS); var != nullptr) var->SetBits(cmf, var->ScaleBits(GB(face, 6, 4)));
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_HAIR); var != nullptr) var->SetBits(cmf, var->ScaleBits(GB(face, 16, 4)));
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_JACKET); var != nullptr) var->SetBits(cmf, var->ScaleBits(GB(face, 20, 2)));
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_COLLAR); var != nullptr) var->SetBits(cmf, var->ScaleBits(GB(face, 22, 2)));
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_GLASSES); var != nullptr) var->SetBits(cmf, GB(face, 28, 1));
+
+	uint lips = GB(face, 10, 4);
+	if (cmf.style != 1 && cmf.style != 3 && lips < 4) {
+		if (auto var = FindFaceVar(vars, FaceVarType::Toggle, STR_FACE_MOUSTACHE); var != nullptr) var->SetBits(cmf, true);
+		if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_MOUSTACHE); var != nullptr) var->SetBits(cmf, std::max(lips, 1U) - 1);
+	} else {
+		if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_LIPS); var != nullptr) {
+			if (cmf.style == 0 || cmf.style == 2) {
+				lips = lips * 15 / 16;
+				lips -= 3;
+				if (cmf.style == 2 && lips > 8) lips = 0;
+			} else {
+				lips = var->ScaleBits(lips);
+			}
+			var->SetBits(cmf, lips);
+		}
+
+		if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_NOSE); var != nullptr) {
+			uint nose = GB(face, 13, 3);
+			if (cmf.style == 1) {
+				nose = (nose * 3 >> 3) * 3 >> 2; // There is 'hole' in the nose sprites for women
+			} else {
+				nose = var->ScaleBits(nose);
+			}
+			var->SetBits(cmf, nose);
+		}
+	}
+
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_TIE); var != nullptr) {
+		uint tie = GB(face, 24, 4);
+		var->SetBits(cmf, var->ScaleBits(tie / 2));
+	}
+
+	if (auto var = FindFaceVar(vars, FaceVarType::Sprite, STR_FACE_EARRING); var != nullptr) {
+		uint earring = GB(face, 24, 4);
+		if (earring < 3) { // Not all women have an earring
+			if (auto has_earring = FindFaceVar(vars, FaceVarType::Toggle, STR_FACE_EARRING)) {
+				has_earring->SetBits(cmf, true);
+				var->SetBits(cmf, earring);
+			}
+		}
+	}
+
+	return cmf;
+}
+
 namespace upstream_sl {
 
 /* We do need to read this single value, as the bigger it gets, the more data is stored */
@@ -260,7 +358,8 @@ static const SaveLoad _company_desc[] = {
 	SLE_CONDVECTOR(CompanyProperties, allow_list, SLE_STR, SLV_COMPANY_ALLOW_LIST, SLV_COMPANY_ALLOW_LIST_V2),
 	SLEG_CONDSTRUCTLIST("allow_list", SlAllowListData, SLV_COMPANY_ALLOW_LIST_V2, SL_MAX_VERSION),
 
-	    SLE_VAR(CompanyProperties, face,            SLE_UINT32),
+	SLE_VARNAME(CompanyProperties, face.bits, "face", SLE_UINT32),
+	SLE_CONDSSTRNAME(CompanyProperties, face.style_label, "face_style", SLE_STR, SLV_FACE_STYLES, SL_MAX_VERSION),
 
 	/* money was changed to a 64 bit field in savegame version 1. */
 	SLE_CONDVAR(CompanyProperties, money,                 SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_1),

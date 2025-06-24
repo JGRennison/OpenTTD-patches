@@ -35,7 +35,7 @@ DEF_CMD_TUPLE_NT (CMD_COMPANY_ALLOW_LIST_CTRL,  CmdCompanyAllowListCtrl,  CMD_NO
 DEF_CMD_TUPLE_NT (CMD_GIVE_MONEY,               CmdGiveMoney,             {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<Money, CompanyID>)
 DEF_CMD_TUPLE_NT (CMD_RENAME_COMPANY,           CmdRenameCompany,         {},                                         CMDT_COMPANY_SETTING,  CmdDataT<std::string>)
 DEF_CMD_TUPLE_NT (CMD_RENAME_PRESIDENT,         CmdRenamePresident,       {},                                         CMDT_COMPANY_SETTING,  CmdDataT<std::string>)
-DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MANAGER_FACE, CmdSetCompanyManagerFace, {},                                         CMDT_COMPANY_SETTING,  CmdDataT<CompanyManagerFace>)
+DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MANAGER_FACE, CmdSetCompanyManagerFace, {},                                         CMDT_COMPANY_SETTING,  CmdDataT<uint, uint32_t>)
 DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_COLOUR,       CmdSetCompanyColour,      {},                                         CMDT_COMPANY_SETTING,  CmdDataT<LiveryScheme, bool, Colours>)
 DEF_CMD_TUPLE_NT (CMD_BUY_SHARE_IN_COMPANY,     CmdBuyShareInCompany,     {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID>)
 DEF_CMD_TUPLE_NT (CMD_SELL_SHARE_IN_COMPANY,    CmdSellShareInCompany,    {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID>)
