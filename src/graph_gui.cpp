@@ -8,6 +8,7 @@
 /** @file graph_gui.cpp GUI that shows performance graphs. */
 
 #include "stdafx.h"
+#include "misc/history_func.hpp"
 #include "graph_gui.h"
 #include "window_gui.h"
 #include "company_base.h"
@@ -215,6 +216,14 @@ protected:
 	std::vector<DataSet> data{};
 
 	std::span<const StringID> ranges = {};
+
+	template <typename Tprojection>
+	struct Filler {
+		DataSet &dataset; ///< Dataset to fill.
+		Tprojection proj; ///< Projection to apply.
+
+		inline void Fill(uint i, const auto &data) const { this->dataset.values[i] = std::invoke(this->proj, data); }
+	};
 
 	/**
 	 * Get appropriate part of dataset values for the current number of horizontal points.
@@ -2095,24 +2104,22 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 			if (!IsValidCargoType(p.cargo)) continue;
 			const CargoSpec *cs = CargoSpec::Get(p.cargo);
 
+			this->data.reserve(this->data.size() + 2);
+
 			DataSet &produced = this->data.emplace_back();
 			produced.colour = cs->legend_colour;
 			produced.exclude_bit = cs->Index();
 			produced.range_bit = 0;
-
-			for (uint j = 0; j < GRAPH_NUM_MONTHS; j++) {
-				produced.values[j] = p.history[GRAPH_NUM_MONTHS - j].production;
-			}
+			auto produced_filler = Filler{produced, &Industry::ProducedHistory::production};
 
 			DataSet &transported = this->data.emplace_back();
 			transported.colour = cs->legend_colour;
 			transported.exclude_bit = cs->Index();
 			transported.range_bit = 1;
 			transported.dash = 2;
+			auto transported_filler = Filler{transported, &Industry::ProducedHistory::transported};
 
-			for (uint j = 0; j < GRAPH_NUM_MONTHS; j++) {
-				transported.values[j] = p.history[GRAPH_NUM_MONTHS - j].transported;
-			}
+			FillFromHistory<GRAPH_NUM_MONTHS>(p.history, produced_filler, transported_filler);
 		}
 
 		this->vscroll->SetCount(std::size(this->data));

@@ -8,6 +8,8 @@
 /** @file industry_cmd.cpp Handling of industry tiles. */
 
 #include "stdafx.h"
+#include "misc/history_type.hpp"
+#include "misc/history_func.hpp"
 #include "clear_map.h"
 #include "industry.h"
 #include "station_base.h"
@@ -2596,10 +2598,7 @@ static void UpdateIndustryStatistics(Industry *i)
 		if (p.cargo != INVALID_CARGO) {
 			if (p.history[THIS_MONTH].production != 0) i->last_prod_year = EconTime::CurYear();
 
-			/* Move history from this month to last month. */
-			std::copy_backward(p.history.begin(), p.history.end() - 1, p.history.end());
-			p.history[THIS_MONTH].production = 0;
-			p.history[THIS_MONTH].transported = 0;
+			RotateHistory(p.history);
 		}
 	}
 }
