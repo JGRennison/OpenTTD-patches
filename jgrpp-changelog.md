@@ -18,7 +18,7 @@
 * Enabling hiding buoy viewport labels.
 * Allow showing cargoes when grouping by shared orders in vehicle list windows.
 * Add setting to show town growth status in town list window.
-* Rouring restrictions:
+* Routing restrictions:
   * Show warning for unsupported reserve through/long reserve actions on tunnel/bridge tiles.
 * Departure boards:
   * Fix handling of early arrival at prior dispatch order.
