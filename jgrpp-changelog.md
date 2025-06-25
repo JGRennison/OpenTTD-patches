@@ -2,6 +2,31 @@
 
 * * *
 
+### v0.65.4 (2025-06-25)
+* Fix crash when waypoint tooltips are enabled and the waypoint has been renamed to text with zero size.
+* Fix upgrade button in NewGRF window.
+* Fix ctrl-clicking up/down button in NewGRF window.
+* Fix cancel depot service item in vehicle window depot button dropdown.
+* Fix incorrect reporting of server uptime with some JGRPP client and server version combinations.
+* Fix spurious engine preview behaviour which could occur after loading savegames from earlier versions.
+* Fix reservation extension when inside unsignalled tunnels/bridges when using realistic braking and the reservation end is within the signal sighting distance.
+* Fix via button for station cargo conditional orders in the order window.
+* Fix savegame save/load issues for AIs which save certain types of state.
+* From vanilla: Fix incorrect sprites for rail stations and road stops for some NewGRFs.
+* From vanilla: Allow separate expansion of town buildings and roads in scenario editor.
+* Improve vehicle lateness adjustments when applying timetable automation changes.
+* Enabling hiding buoy viewport labels.
+* Allow showing cargoes when grouping by shared orders in vehicle list windows.
+* Add setting to show town growth status in town list window.
+* Rouring restrictions:
+  * Show warning for unsupported reserve through/long reserve actions on tunnel/bridge tiles.
+* Departure boards:
+  * Fix handling of early arrival at prior dispatch order.
+  * Fix depot halt orders being ignored in some cases.
+  * Fix arrival/departure matching in schedule mode, for order lists with no intermediary stops, at dispatch point.
+* Fix not being able to open town debug windows.
+* Bump trunk base from commit adc79aca09a63e76e7bc3cc5838fadc057732edf to commit 95bfd68341e8f05dcba7827e89a7804f2714a2e6.
+
 ### v0.65.3 (2025-05-26)
 * Fix town labels showing a rating even when the current company did not have a set rating for that town.
 * Fix town/industry cargo scaling settings being reset in the scenario editor.
