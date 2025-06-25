@@ -12,6 +12,7 @@
 * Fix reservation extension when inside unsignalled tunnels/bridges when using realistic braking and the reservation end is within the signal sighting distance.
 * Fix via button for station cargo conditional orders in the order window.
 * Fix savegame save/load issues for AIs which save certain types of state.
+* Fix incorrect handling of reservations on the bridge-bypassing track of custom bridge heads with parallel tracks.
 * From vanilla: Fix incorrect sprites for rail stations and road stops for some NewGRFs.
 * From vanilla: Allow separate expansion of town buildings and roads in scenario editor.
 * Improve vehicle lateness adjustments when applying timetable automation changes.
