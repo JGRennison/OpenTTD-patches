@@ -24,6 +24,7 @@ struct DestinationID {
 	static inline constexpr bool serialisation_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 	static inline constexpr bool integer_type_hint = true;
+	static inline constexpr bool string_parameter_as_base = true;
 
 	using BaseType = uint16_t;
 	BaseType value = 0;
@@ -37,13 +38,8 @@ struct DestinationID {
 	constexpr BaseType &edit_base() { return this->value; }
 
 	constexpr bool operator ==(const DestinationID &destination) const { return this->value == destination.value; }
-	constexpr bool operator !=(const DestinationID &destination) const { return this->value != destination.value; }
 	constexpr bool operator ==(const StationID &station) const { return this->value == station; }
-	constexpr bool operator !=(const StationID &station) const { return this->value != station; }
 };
-
-constexpr bool operator ==(const StationID &station, const DestinationID &destination) { return destination == station; }
-constexpr bool operator !=(const StationID &station, const DestinationID &destination) { return destination != station; }
 
 /** Invalid vehicle order index (sentinel) */
 static const VehicleOrderID INVALID_VEH_ORDER_ID = 0xFFFF;

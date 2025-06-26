@@ -109,7 +109,7 @@ bool LinkRefresher::HandleRefit(CargoType refit_cargo)
 		CargoType temp_cargo_type = v->cargo_type;
 		uint8_t temp_subtype = v->cargo_subtype;
 		v->cargo_type = this->cargo;
-		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(this->cargo, CC_PASSENGERS))) {
+		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(this->cargo, CargoClass::Passengers))) {
 			/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
 			v->cargo_subtype = GetBestFittingSubType(v, v, this->cargo);
 		}

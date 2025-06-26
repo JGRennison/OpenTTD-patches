@@ -774,7 +774,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 			if (flags & DC_EXEC) {
 				c->location_of_HQ = INVALID_TILE; // reset HQ position
 				SetWindowDirty(WC_COMPANY, c->index);
-				CargoPacket::InvalidateAllFrom(SourceType::Headquarters, c->index);
+				CargoPacket::InvalidateAllFrom({c->index, SourceType::Headquarters});
 			}
 
 			/* cost of relocating company is 1% of company value */
@@ -990,7 +990,7 @@ static void TileLoop_Object(TileIndex tile)
 		/* Scale by cargo scale setting. */
 		amt = _town_cargo_scaler.ScaleAllowTrunc(amt);
 		if (amt != 0) {
-			MoveGoodsToStation(pass, amt, SourceType::Headquarters, GetTileOwner(tile), stations.GetStations());
+			MoveGoodsToStation(pass, amt, {GetTileOwner(tile), SourceType::Headquarters}, stations.GetStations());
 		}
 	}
 
@@ -1005,7 +1005,7 @@ static void TileLoop_Object(TileIndex tile)
 		/* Scale by cargo scale setting. */
 		amt = _town_cargo_scaler.ScaleAllowTrunc(amt);
 		if (amt != 0) {
-			MoveGoodsToStation(mail, amt, SourceType::Headquarters, GetTileOwner(tile), stations.GetStations());
+			MoveGoodsToStation(mail, amt, {GetTileOwner(tile), SourceType::Headquarters}, stations.GetStations());
 		}
 	}
 }

@@ -1211,7 +1211,7 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoType cargo_type,
 		accepted += amount;
 
 		/* Update the cargo monitor. */
-		AddCargoDelivery(cargo_type, company, amount, SourceType::Industry, source, st, ind->index);
+		AddCargoDelivery(cargo_type, company, amount, {source, SourceType::Industry}, st, ind->index);
 
 		return num_pieces != 0;
 	});
@@ -1252,7 +1252,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoType cargo_type, uint
 		include(_cargo_delivery_destinations, e.ind);
 		e.acc->waiting += e.delivered;
 		e.acc->last_accepted = EconTime::CurDate();
-		AddCargoDelivery(cargo_type, company, e.delivered, SourceType::Industry, source, st, e.ind->index);
+		AddCargoDelivery(cargo_type, company, e.delivered, {source, SourceType::Industry}, st, e.ind->index);
 	};
 
 	if (acceptingIndustries.size() == 1) {
@@ -1341,19 +1341,18 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoType cargo_type, uint
  * @param distance The distance the cargo has traveled.
  * @param periods_in_transit Travel time in cargo aging periods
  * @param company The company delivering the cargo
- * @param src_type Type of source of cargo (industry, town, headquarters)
- * @param src Index of source of cargo
+ * @param src Source of cargo
  * @return Revenue for delivering cargo
  * @note The cargo is just added to the stockpile of the industry. It is due to the caller to trigger the industry's production machinery
  */
-static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, uint distance, uint16_t periods_in_transit, Company *company, SourceType src_type, SourceID src)
+static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, uint distance, uint16_t periods_in_transit, Company *company, Source src)
 {
 	assert(num_pieces > 0);
 
 	Station *st = Station::Get(dest);
 
 	/* Give the goods to the industry. */
-	uint accepted_ind = DeliverGoodsToIndustry(st, cargo_type, num_pieces, src_type == SourceType::Industry ? src : INVALID_INDUSTRY, company->index);
+	uint accepted_ind = DeliverGoodsToIndustry(st, cargo_type, num_pieces, src.type == SourceType::Industry ? src.id : INVALID_INDUSTRY, company->index);
 
 	/* If this cargo type is always accepted, accept all */
 	uint accepted_total = HasBit(st->always_accepted, cargo_type) ? num_pieces : accepted_ind;
@@ -1376,10 +1375,10 @@ static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, 
 	Money profit = GetTransportedGoodsIncome(accepted_total, distance, periods_in_transit, cargo_type);
 
 	/* Update the cargo monitor. */
-	AddCargoDelivery(cargo_type, company->index, accepted_total - accepted_ind, src_type, src, st);
+	AddCargoDelivery(cargo_type, company->index, accepted_total - accepted_ind, src, st);
 
 	/* Modify profit if a subsidy is in effect */
-	if (CheckSubsidised(cargo_type, company->index, src_type, src, st))  {
+	if (CheckSubsidised(cargo_type, company->index, src, st))  {
 		switch (_settings_game.difficulty.subsidy_multiplier) {
 			case 0:  profit += profit >> 1; break;
 			case 1:  profit *= 2; break;
@@ -1480,7 +1479,7 @@ void CargoPayment::PayFinalDelivery(CargoType cargo, CargoPacket *cp, uint count
 	}
 
 	/* Handle end of route payment */
-	Money profit = DeliverGoods(count, cargo, this->current_station, cp->GetDistance(current_tile), cp->GetPeriodsInTransit(), this->owner, cp->GetSourceType(), cp->GetSourceID());
+	Money profit = DeliverGoods(count, cargo, this->current_station, cp->GetDistance(current_tile), cp->GetPeriodsInTransit(), this->owner, cp->GetSource());
 
 	profit -= cp->GetFeederShare(count);
 
@@ -1991,7 +1990,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			pull_through_mode = true;
 			for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 				/* Passengers may not be through-loaded */
-				if (v->cargo_cap > 0 && IsCargoInClass(v->cargo_type, CC_PASSENGERS)) {
+				if (v->cargo_cap > 0 && IsCargoInClass(v->cargo_type, CargoClass::Passengers)) {
 					pull_through_mode = false;
 					if (_local_company == v->owner) {
 						SetDParam(0, front->index);
@@ -2342,7 +2341,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				return true;
 
 			case OLT_LEAVE_EARLY_FULL_ANY:
-				return !((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
+				return !((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CargoClass::Passengers) && front->cargo_cap > front->cargo.StoredCount()) ||
 					((cargo_not_full | not_yet_in_station_cargo_not_full) != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)) == 0));
 
 			case OLT_LEAVE_EARLY_FULL_ALL:
@@ -2380,7 +2379,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			if (full_load_any_order) {
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
-				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
+				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CargoClass::Passengers) && front->cargo_cap > front->cargo.StoredCount()) ||
 						(cargo_not_full != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~cargo_not_full) == 0)) { // There are still non-full cargoes
 					finished_loading = false;
 				}

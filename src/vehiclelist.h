@@ -10,19 +10,23 @@
 #ifndef VEHICLELIST_H
 #define VEHICLELIST_H
 
-#include "vehicle_type.h"
-#include "company_type.h"
-#include "tile_type.h"
 #include "cargo_type.h"
+#include "company_type.h"
+#include "group_type.h"
+#include "order_type.h"
+#include "station_type.h"
+#include "tile_type.h"
+#include "vehicle_type.h"
+#include "window_type.h"
 #include <vector>
 
 /** Vehicle List type flags */
 enum VehicleListType : uint8_t {
-	VL_STANDARD,
-	VL_SHARED_ORDERS,
-	VL_STATION_LIST,
-	VL_DEPOT_LIST,
-	VL_GROUP_LIST,
+	VL_STANDARD, ///< Index is the company.
+	VL_SHARED_ORDERS, ///< Index is the first vehicle of the shared orders.
+	VL_STATION_LIST, ///< Index is the station.
+	VL_DEPOT_LIST, ///< Index is the destination (station for hangar of aircraft, depot for others)
+	VL_GROUP_LIST, ///< Index is the group.
 	VL_SLOT_LIST,
 	VL_SINGLE_VEH,
 	VLT_END
@@ -50,6 +54,14 @@ struct VehicleListIdentifier {
 
 	void fmt_format_value(struct format_target &output) const;
 
+	constexpr CompanyID ToCompanyID() const { assert(this->type == VL_STANDARD); return CompanyID(this->index); }
+	constexpr DestinationID ToDestinationID() const { assert(this->type == VL_DEPOT_LIST); return DestinationID(this->index); }
+	constexpr GroupID ToGroupID() const { assert(this->type == VL_GROUP_LIST); return GroupID(this->index); }
+	constexpr StationID ToStationID() const { assert(this->type == VL_STATION_LIST); return StationID(this->index); }
+	constexpr VehicleID ToVehicleID() const { assert(this->type == VL_SHARED_ORDERS); return VehicleID(this->index); }
+
+	constexpr void SetIndex(uint32_t index) { this->index = index; }
+
 	/**
 	 * Create a simple vehicle list.
 	 * @param type    List type.
@@ -60,7 +72,7 @@ struct VehicleListIdentifier {
 	VehicleListIdentifier(VehicleListType type, VehicleType vtype, CompanyID company, uint index = 0) :
 		type(type), vtype(vtype), company(company), index(index) {}
 
-	VehicleListIdentifier() : type(), vtype(), company(), index() {}
+	VehicleListIdentifier() = default;
 };
 
 /** A list of vehicles. */

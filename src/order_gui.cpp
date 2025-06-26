@@ -1379,7 +1379,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			order.Free();
 			return order;
 		}
-		order.MakeGoToDepot(v->type == VEH_AIRCRAFT ? GetStationIndex(tile) : GetDepotIndex(tile),
+		order.MakeGoToDepot(GetDepotDestinationIndex(tile),
 				ODTFB_PART_OF_ORDERS,
 				((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 
@@ -2941,7 +2941,7 @@ public:
 						if (osl == OSL_PLATFORM_THROUGH) {
 							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
 								/* Passengers may not be through-loaded */
-								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
 									osl = OSL_PLATFORM_NEAR_END;
 									break;
 								}
@@ -3008,7 +3008,7 @@ public:
 						if (allowed) {
 							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
 								/* Passengers may not be through-loaded */
-								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
 									allowed = false;
 									break;
 								}

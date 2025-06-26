@@ -106,8 +106,6 @@ std::string DumpCargoPacketDeferredPaymentStats()
  */
 CargoPacket::CargoPacket()
 {
-	this->source_type = SourceType::Industry;
-	this->source_id   = INVALID_SOURCE;
 }
 
 /**
@@ -115,14 +113,12 @@ CargoPacket::CargoPacket()
  *
  * @param first_station Source station of the packet.
  * @param count         Number of cargo entities to put in this packet.
- * @param source_type   'Type' of source the packet comes from (for subsidies).
- * @param source_id     Actual source of the packet (for subsidies).
+ * @param source        Source of the packet (for subsidies).
  * @pre count != 0
  */
-CargoPacket::CargoPacket(StationID first_station,uint16_t count, SourceType source_type, SourceID source_id) :
+CargoPacket::CargoPacket(StationID first_station,uint16_t count, Source source) :
 		count(count),
-		source_id(source_id),
-		source_type(source_type),
+		source(source),
 		first_station(first_station)
 {
 	dbg_assert(count != 0);
@@ -160,8 +156,7 @@ CargoPacket::CargoPacket(uint16_t count, Money feeder_share, const CargoPacket &
 		feeder_share(feeder_share),
 		source_xy(original.source_xy),
 		travelled(original.travelled),
-		source_id(original.source_id),
-		source_type(original.source_type),
+		source(original.source),
 		first_station(original.first_station),
 		next_hop(original.next_hop)
 {
@@ -285,10 +280,10 @@ void CargoPacket::PayDeferredPayments()
  * @param src_type Type of source.
  * @param src Index of source.
  */
-/* static */ void CargoPacket::InvalidateAllFrom(SourceType src_type, SourceID src)
+/* static */ void CargoPacket::InvalidateAllFrom(Source src)
 {
 	for (CargoPacket *cp : CargoPacket::Iterate()) {
-		if (cp->source_type == src_type && cp->source_id == src) cp->source_id = INVALID_SOURCE;
+		if (cp->source == src) cp->source.id = INVALID_SOURCE;
 	}
 }
 

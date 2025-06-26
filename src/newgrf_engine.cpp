@@ -591,7 +591,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 					/* Skip empty engines */
 					if (!u->GetEngine()->CanCarryCargo()) continue;
 
-					cargo_classes |= CargoSpec::Get(u->cargo_type)->classes;
+					cargo_classes |= CargoSpec::Get(u->cargo_type)->classes.base();
 					common_cargoes[u->cargo_type]++;
 				}
 
@@ -702,7 +702,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			 * is object->ro.grffile.
 			 * In case of CBID_TRAIN_ALLOW_WAGON_ATTACH this is not the same as v->GetGRF().
 			 */
-			return (cs->classes << 16) | (cs->weight << 8) | object->ro.grffile->cargo_map[v->cargo_type];
+			return (cs->classes.base() << 16) | (cs->weight << 8) | object->ro.grffile->cargo_map[v->cargo_type];
 		}
 
 		case 0x48: return v->GetEngine()->flags.base(); // Vehicle Type Info
@@ -1141,7 +1141,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				CargoType cargo_type = e->GetDefaultCargoType();
 				if (cargo_type != INVALID_CARGO) {
 					const CargoSpec *cs = CargoSpec::Get(cargo_type);
-					return (cs->classes << 16) | (cs->weight << 8) | this->ro.grffile->cargo_map[cargo_type];
+					return (cs->classes.base() << 16) | (cs->weight << 8) | this->ro.grffile->cargo_map[cargo_type];
 				} else {
 					return 0x000000FF;
 				}

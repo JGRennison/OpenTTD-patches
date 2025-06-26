@@ -967,7 +967,6 @@ public:
 		}
 
 		bool operator==(const WindowIterator &other) const { return this->w == other.w; }
-		bool operator!=(const WindowIterator &other) const { return !(*this == other); }
 		T * operator*() const { return static_cast<T *>(this->w); }
 		WindowIterator & operator++() { this->Next(); this->Validate(); return *this; }
 

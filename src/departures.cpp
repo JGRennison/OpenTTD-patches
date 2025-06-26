@@ -415,7 +415,7 @@ static bool IsVehicleUsableForDepartures(const Vehicle *v, DepartureCallingSetti
 
 		const Vehicle *u = v;
 		while (u != nullptr) {
-			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
 				carries_passengers = true;
 				break;
 			}

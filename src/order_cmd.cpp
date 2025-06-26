@@ -147,7 +147,7 @@ void Order::MakeGoToStation(StationID destination)
  * @param action        what to do in the depot?
  * @param cargo         the cargo type to change to.
  */
-void Order::MakeGoToDepot(DepotID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type, OrderDepotActionFlags action, CargoType cargo)
+void Order::MakeGoToDepot(DestinationID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type, OrderDepotActionFlags action, CargoType cargo)
 {
 	this->type = OT_GOTO_DEPOT;
 	this->SetDepotOrderType(order);
@@ -3358,7 +3358,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 						const uint8_t temp_subtype = u->cargo_subtype;
 
 						const_cast<Vehicle *>(u)->cargo_type = value;
-						if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(cargo, CC_PASSENGERS))) {
+						if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(cargo, CargoClass::Passengers))) {
 							/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
 							const_cast<Vehicle *>(u)->cargo_subtype = GetBestFittingSubType(u, const_cast<Vehicle *>(u), cargo);
 						}

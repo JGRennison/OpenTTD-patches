@@ -166,8 +166,8 @@ NamedSaveLoadTable GetCargoPacketDesc()
 		NSL("periods_in_transit", SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE, 0, 0))),
 		NSL("periods_in_transit", SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE))),
 		NSL("feeder_share",       SLE_VAR(CargoPacket, feeder_share,             SLE_INT64)),
-		NSL("source_type",        SLE_CONDVAR(CargoPacket, source_type,          SLE_UINT8,  SLV_125, SL_MAX_VERSION)),
-		NSL("source_id",          SLE_CONDVAR(CargoPacket, source_id,            SLE_UINT16, SLV_125, SL_MAX_VERSION)),
+		NSL("source_type",        SLE_CONDVAR(CargoPacket, source.type,          SLE_UINT8,  SLV_125, SL_MAX_VERSION)),
+		NSL("source_id",          SLE_CONDVAR(CargoPacket, source.id,            SLE_UINT16, SLV_125, SL_MAX_VERSION)),
 		NSL("travelled.x",        SLE_CONDVAR_X(CargoPacket, travelled.x,        SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED))),
 		NSL("travelled.y",        SLE_CONDVAR_X(CargoPacket, travelled.y,        SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED))),
 

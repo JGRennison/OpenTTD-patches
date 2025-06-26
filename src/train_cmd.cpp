@@ -517,7 +517,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		for (Train *u = front; u != nullptr; u = u->Next()) {
 			/* Passengers may not be through-loaded */
-			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
 				osl = OSL_PLATFORM_FAR_END;
 				break;
 			}
@@ -755,7 +755,7 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		for (const Train *u = v; u != nullptr; u = u->Next()) {
 			/* Passengers may not be through-loaded */
-			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
 				osl = OSL_PLATFORM_FAR_END;
 				break;
 			}

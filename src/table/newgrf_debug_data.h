@@ -1275,21 +1275,37 @@ class NIHCargo : public NIHelper {
 				spec->bitnum,
 				label_dumper().Label(spec->label.base()),
 				spec->callback_mask);
-		output.buffer.format("  Cargo class: {}{}{}{}{}{}{}{}{}{}{}",
-				(spec->classes & CC_PASSENGERS)   != 0 ? "passenger, " : "",
-				(spec->classes & CC_MAIL)         != 0 ? "mail, " : "",
-				(spec->classes & CC_EXPRESS)      != 0 ? "express, " : "",
-				(spec->classes & CC_ARMOURED)     != 0 ? "armoured, " : "",
-				(spec->classes & CC_BULK)         != 0 ? "bulk, " : "",
-				(spec->classes & CC_PIECE_GOODS)  != 0 ? "piece goods, " : "",
-				(spec->classes & CC_LIQUID)       != 0 ? "liquid, " : "",
-				(spec->classes & CC_REFRIGERATED) != 0 ? "refrigerated, " : "",
-				(spec->classes & CC_HAZARDOUS)    != 0 ? "hazardous, " : "",
-				(spec->classes & CC_COVERED)      != 0 ? "covered/sheltered, " : "",
-				(spec->classes & CC_SPECIAL)      != 0 ? "special, " : "");
-		std::string_view view = output.buffer;
-		if (view.ends_with(", ")) output.buffer.restore_size(output.buffer.size() - 2);
-		output.FinishPrint();
+
+		{
+			output.buffer.format("  Cargo class: ");
+			bool add_sep = false;
+			auto output_class = [&](CargoClass cc, std::string_view name) {
+				if (spec->classes.Test(cc)) {
+					if (add_sep) {
+						output.buffer.append(", ");
+					} else {
+						add_sep = true;
+					}
+					output.buffer.append(name);
+				}
+			};
+			output_class(CargoClass::Passengers,    "passenger");
+			output_class(CargoClass::Mail,          "mail");
+			output_class(CargoClass::Express,       "express");
+			output_class(CargoClass::Armoured,      "armoured");
+			output_class(CargoClass::Bulk,          "bulk");
+			output_class(CargoClass::PieceGoods,    "piece goods");
+			output_class(CargoClass::Liquid,        "liquid");
+			output_class(CargoClass::Refrigerated,  "refrigerated");
+			output_class(CargoClass::Hazardous,     "hazardous");
+			output_class(CargoClass::Covered,       "covered/sheltered");
+			output_class(CargoClass::Oversized,     "oversized");
+			output_class(CargoClass::Powderized,    "powderized");
+			output_class(CargoClass::NotPourable,   "not pourable");
+			output_class(CargoClass::Potable,       "potable");
+			output_class(CargoClass::NonPotable,    "non potable");
+			output.FinishPrint();
+		}
 
 		output.Print("  Weight: {}, Capacity multiplier: {}", spec->weight, spec->multiplier);
 		output.Print("  Initial payment: {}, Current payment: {}, Transit periods: ({}, {})",

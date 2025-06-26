@@ -331,7 +331,7 @@ private:
 		if (g_id == NEW_GROUP) return;
 
 		/* draw the selected group in white, else we draw it in black */
-		TextColour colour = g_id == this->vli.index ? TC_WHITE : TC_BLACK;
+		TextColour colour = g_id == this->vli.ToGroupID() ? TC_WHITE : TC_BLACK;
 		const GroupStatistics &stats = GroupStatistics::Get(this->vli.company, g_id, this->vli.vtype);
 		bool rtl = _current_text_dir == TD_RTL;
 
@@ -479,7 +479,7 @@ public:
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
 
-		this->vli.index = ALL_GROUP;
+		this->vli.SetIndex(ALL_GROUP);
 		this->group_sel = INVALID_GROUP;
 		this->group_rename = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
@@ -587,7 +587,8 @@ public:
 			this->group_rename = INVALID_GROUP;
 		}
 
-		if (!(IsAllGroupID(this->vli.index) || IsDefaultGroupID(this->vli.index) || Group::IsValidID(this->vli.index))) {
+		GroupID group = this->vli.ToGroupID();
+		if (!(IsAllGroupID(group) || IsDefaultGroupID(group) || Group::IsValidID(group))) {
 			this->vli.index = ALL_GROUP;
 			HideDropDownMenu(this);
 		}
@@ -610,16 +611,16 @@ public:
 			case WID_GL_CAPTION:
 				/* If selected_group == DEFAULT_GROUP || ALL_GROUP, draw the standard caption
 				 * We list all vehicles or ungrouped vehicles */
-				if (IsDefaultGroupID(this->vli.index) || IsAllGroupID(this->vli.index)) {
+				if (IsDefaultGroupID(this->vli.ToGroupID()) || IsAllGroupID(this->vli.ToGroupID())) {
 					SetDParam(0, STR_COMPANY_NAME);
 					SetDParam(1, this->vli.company);
 					SetDParam(2, this->vehicles.size());
 					SetDParam(3, this->vehicles.size());
 				} else {
-					uint num_vehicle = GetGroupNumVehicle(this->vli.company, this->vli.index, this->vli.vtype);
+					uint num_vehicle = GetGroupNumVehicle(this->vli.company, this->vli.ToGroupID(), this->vli.vtype);
 
 					SetDParam(0, STR_GROUP_NAME);
-					SetDParam(1, this->vli.index);
+					SetDParam(1, this->vli.ToGroupID());
 					SetDParam(2, num_vehicle);
 					SetDParam(3, num_vehicle);
 				}
@@ -651,7 +652,8 @@ public:
 				WID_GL_START_ALL);
 
 		/* Disable the group specific function when we select the default group or all vehicles */
-		this->SetWidgetsDisabledState(IsDefaultGroupID(this->vli.index) || IsAllGroupID(this->vli.index) || _local_company != this->vli.company,
+		GroupID group = this->vli.ToGroupID();
+		this->SetWidgetsDisabledState(IsDefaultGroupID(group) || IsAllGroupID(group) || _local_company != this->vli.company,
 				WID_GL_DELETE_GROUP,
 				WID_GL_RENAME_GROUP,
 				WID_GL_LIVERY_GROUP,
@@ -669,7 +671,7 @@ public:
 
 		/* If not a default group and the group has replace protection, show an enabled replace sprite. */
 		uint16_t protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
-		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && Group::Get(this->vli.index)->flags.Test(GroupFlag::ReplaceProtection)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
+		if (!IsDefaultGroupID(group) && !IsAllGroupID(group) && Group::Get(group)->flags.Test(GroupFlag::ReplaceProtection)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->SetSprite(protect_sprite + this->vli.vtype);
 
 		/* Set text of "group by" dropdown widget. */
@@ -739,13 +741,13 @@ public:
 				break;
 
 			case WID_GL_LIST_VEHICLE:
-				if (this->vli.index != ALL_GROUP && this->grouping == GB_NONE) {
+				if (this->vli.ToGroupID() != ALL_GROUP && this->grouping == GB_NONE) {
 					/* Mark vehicles which are in sub-groups (only if we are not using shared order coalescing) */
 					Rect mr = r.WithHeight(this->resize.step_height);
 					auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->vehgroups);
 					for (auto it = first; it != last; ++it) {
 						const Vehicle *v = it->GetSingleVehicle();
-						if (v->group_id != this->vli.index) {
+						if (v->group_id != this->vli.ToGroupID()) {
 							GfxFillRect(mr.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(COLOUR_GREY, SHADE_DARK), FILLRECT_CHECKER);
 						}
 						mr = mr.Translate(0, this->resize.step_height);
@@ -761,7 +763,7 @@ public:
 	{
 		if (confirmed) {
 			VehicleGroupWindow *w = (VehicleGroupWindow*)win;
-			w->vli.index = ALL_GROUP;
+			w->vli.SetIndex(ALL_GROUP);
 			Command<CMD_DELETE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_DELETE, w->group_confirm);
 		}
 	}
@@ -797,16 +799,16 @@ public:
 				break;
 
 			case WID_GL_ALL_VEHICLES: // All vehicles button
-				if (!IsAllGroupID(this->vli.index)) {
-					this->vli.index = ALL_GROUP;
+				if (!IsAllGroupID(this->vli.ToGroupID())) {
+					this->vli.SetIndex(ALL_GROUP);
 					this->vehgroups.ForceRebuild();
 					this->SetDirty();
 				}
 				break;
 
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles button
-				if (!IsDefaultGroupID(this->vli.index)) {
-					this->vli.index = DEFAULT_GROUP;
+				if (!IsDefaultGroupID(this->vli.ToGroupID())) {
+					this->vli.SetIndex(DEFAULT_GROUP);
 					this->vehgroups.ForceRebuild();
 					this->SetDirty();
 				}
@@ -824,12 +826,12 @@ public:
 							group_display->pos_x + WidgetDimensions::scaled.framerect.left + it->indent * WidgetDimensions::scaled.hsep_indent;
 					if (click_count > 1 || (pt.x >= x && pt.x < (int)(x + this->column_size[VGC_FOLD].width))) {
 
-						GroupID g = this->vli.index;
+						GroupID g = this->vli.ToGroupID();
 						if (!IsAllGroupID(g) && !IsDefaultGroupID(g)) {
 							do {
 								g = Group::Get(g)->parent;
 								if (g == it->group->index) {
-									this->vli.index = g;
+									this->vli.SetIndex(g);
 									break;
 								}
 							} while (g != INVALID_GROUP);
@@ -843,7 +845,8 @@ public:
 					}
 				}
 
-				this->group_sel = this->vli.index = it->group->index;
+				this->vli.SetIndex(it->group->index);
+				this->group_sel = it->group->index;
 
 				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 
@@ -909,12 +912,12 @@ public:
 			}
 
 			case WID_GL_CREATE_GROUP: { // Create a new group
-				Command<CMD_CREATE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_CREATE, CommandCallback::CreateGroup, this->vli.vtype, this->vli.index);
+				Command<CMD_CREATE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_CREATE, CommandCallback::CreateGroup, this->vli.vtype, this->vli.ToGroupID());
 				break;
 			}
 
 			case WID_GL_DELETE_GROUP: { // Delete the selected group
-				this->group_confirm = this->vli.index;
+				this->group_confirm = this->vli.ToGroupID();
 				ShowQuery(STR_QUERY_GROUP_DELETE_CAPTION, STR_GROUP_DELETE_QUERY_TEXT, this, DeleteGroupCallback);
 				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0, 0);
 				break;
@@ -931,7 +934,7 @@ public:
 						}
 					}
 				}
-				this->ShowRenameGroupWindow(this->vli.index, false);
+				this->ShowRenameGroupWindow(this->vli.ToGroupID(), false);
 				break;
 
 			case WID_GL_COLLAPSE_ALL_GROUPS: {
@@ -946,7 +949,7 @@ public:
 
 
 			case WID_GL_LIVERY_GROUP: // Set group livery
-				ShowCompanyLiveryWindow(this->owner, this->vli.index);
+				ShowCompanyLiveryWindow(this->owner, this->vli.ToGroupID());
 				break;
 
 			case WID_GL_AVAILABLE_VEHICLES:
@@ -954,7 +957,7 @@ public:
 				break;
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.index), this->vli.vtype == VEH_TRAIN,
+				DropDownList list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.ToGroupID()), this->vli.vtype == VEH_TRAIN,
 						0, false, IsTopLevelGroupID(this->vli.index));
 				ShowDropDownList(this, std::move(list), -1, WID_GL_MANAGE_VEHICLES_DROPDOWN);
 				break;
@@ -967,9 +970,9 @@ public:
 			}
 
 			case WID_GL_REPLACE_PROTECTION: {
-				const Group *g = Group::GetIfValid(this->vli.index);
+				const Group *g = Group::GetIfValid(this->vli.ToGroupID());
 				if (g != nullptr) {
-					Command<CMD_SET_GROUP_FLAG>::Post(this->vli.index, GroupFlag::ReplaceProtection, !g->flags.Test(GroupFlag::ReplaceProtection), _ctrl_pressed);
+					Command<CMD_SET_GROUP_FLAG>::Post(this->vli.ToGroupID(), GroupFlag::ReplaceProtection, !g->flags.Test(GroupFlag::ReplaceProtection), _ctrl_pressed);
 				}
 				break;
 			}
@@ -1142,7 +1145,7 @@ public:
 						}
 						break;
 					case ADI_REPLACE: // Replace window
-						ShowReplaceGroupVehicleWindow(this->vli.index, this->vli.vtype);
+						ShowReplaceGroupVehicleWindow(this->vli.ToGroupID(), this->vli.vtype);
 						break;
 					case ADI_SERVICE: // Send for servicing
 						Command<CMD_MASS_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(this->vli.vtype), DepotCommandFlag::Service, this->vli, this->GetCargoFilter());
@@ -1158,14 +1161,14 @@ public:
 						break;
 
 					case ADI_ADD_SHARED: // Add shared Vehicles
-						assert(Group::IsValidID(this->vli.index));
+						assert(Group::IsValidID(this->vli.ToGroupID()));
 
-						Command<CMD_ADD_SHARED_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE, this->vli.index, this->vli.vtype);
+						Command<CMD_ADD_SHARED_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE, this->vli.ToGroupID(), this->vli.vtype);
 						break;
 					case ADI_REMOVE_ALL: // Remove all Vehicles from the selected group
-						assert(Group::IsValidID(this->vli.index));
+						assert(Group::IsValidID(this->vli.ToGroupID()));
 
-						Command<CMD_REMOVE_ALL_VEHICLES_GROUP>::Post(STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES, this->vli.index);
+						Command<CMD_REMOVE_ALL_VEHICLES_GROUP>::Post(STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES, this->vli.ToGroupID());
 						break;
 
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
@@ -1296,9 +1299,9 @@ public:
 	 */
 	void SelectGroup(const GroupID g_id)
 	{
-		if (g_id == INVALID_GROUP || g_id == this->vli.index) return;
+		if (g_id == INVALID_GROUP || g_id == this->vli.ToGroupID()) return;
 
-		this->vli.index = g_id;
+		this->vli.SetIndex(g_id);
 		if (g_id != ALL_GROUP && g_id != DEFAULT_GROUP) {
 			const Group *g = Group::Get(g_id);
 

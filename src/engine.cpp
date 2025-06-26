@@ -249,7 +249,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 		}
 	}
 
-	if (mail_capacity != nullptr && this->type == VEH_AIRCRAFT && IsCargoInClass(cargo_type, CC_PASSENGERS)) {
+	if (mail_capacity != nullptr && this->type == VEH_AIRCRAFT && IsCargoInClass(cargo_type, CargoClass::Passengers)) {
 		*mail_capacity = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->u.air.mail_capacity, v);
 	}
 
@@ -293,7 +293,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 
 		case VEH_AIRCRAFT:
 			capacity = GetEngineProperty(this->index, PROP_AIRCRAFT_PASSENGER_CAPACITY, this->u.air.passenger_capacity, v);
-			if (!IsCargoInClass(cargo_type, CC_PASSENGERS)) {
+			if (!IsCargoInClass(cargo_type, CargoClass::Passengers)) {
 				extra_mail_cap = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->u.air.mail_capacity, v);
 			}
 			if (IsValidCargoType(GetCargoTypeByLabel(CT_MAIL))) {

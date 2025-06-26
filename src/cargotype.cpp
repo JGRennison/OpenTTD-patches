@@ -226,11 +226,11 @@ static bool CargoSpecNameSorter(const CargoSpec * const &a, const CargoSpec * co
 /** Sort cargo specifications by their cargo class. */
 static bool CargoSpecClassSorter(const CargoSpec * const &a, const CargoSpec * const &b)
 {
-	int res = (b->classes & CC_PASSENGERS) - (a->classes & CC_PASSENGERS);
+	int res = b->classes.Test(CargoClass::Passengers) - a->classes.Test(CargoClass::Passengers);
 	if (res == 0) {
-		res = (b->classes & CC_MAIL) - (a->classes & CC_MAIL);
+		res = b->classes.Test(CargoClass::Mail) - a->classes.Test(CargoClass::Mail);
 		if (res == 0) {
-			res = (a->classes & CC_SPECIAL) - (b->classes & CC_SPECIAL);
+			res = a->classes.Test(CargoClass::Special) - b->classes.Test(CargoClass::Special);
 			if (res == 0) {
 				return CargoSpecNameSorter(a, b);
 			}
@@ -266,7 +266,7 @@ void InitializeSortedCargoSpecs()
 		assert(cargo->town_production_effect != INVALID_TPE);
 		CargoSpec::town_production_cargoes[cargo->town_production_effect].push_back(cargo->Index());
 		SetBit(CargoSpec::town_production_cargo_mask[cargo->town_production_effect], cargo->Index());
-		if (cargo->classes & CC_SPECIAL) break;
+		if (cargo->classes.Test(CargoClass::Special)) break;
 		nb_standard_cargo++;
 		SetBit(_standard_cargo_mask, cargo->Index());
 	}
@@ -317,4 +317,9 @@ std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptan
 	if (found) return line.to_string();
 
 	return std::nullopt;
+}
+
+void Source::fmt_format_value(format_target &output) const
+{
+	output.format("source({}, {})", this->id, this->type);
 }

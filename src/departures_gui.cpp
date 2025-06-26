@@ -1239,7 +1239,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					type = STR_DEPARTURES_TYPE_TRAIN;
 					break;
 				case VEH_ROAD:
-					type = IsCargoInClass(d->vehicle->cargo_type, CC_PASSENGERS) ? STR_DEPARTURES_TYPE_BUS : STR_DEPARTURES_TYPE_LORRY;
+					type = IsCargoInClass(d->vehicle->cargo_type, CargoClass::Passengers) ? STR_DEPARTURES_TYPE_BUS : STR_DEPARTURES_TYPE_LORRY;
 					break;
 				case VEH_SHIP:
 					type = STR_DEPARTURES_TYPE_SHIP;

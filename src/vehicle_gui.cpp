@@ -743,16 +743,6 @@ struct RefitOption {
 	StringID string;    ///< GRF-local String to display for the cargo
 
 	/**
-	 * Inequality operator for #RefitOption.
-	 * @param other Compare to this #RefitOption.
-	 * @return True if both #RefitOption are different.
-	 */
-	inline bool operator != (const RefitOption &other) const
-	{
-		return other.cargo != this->cargo || other.string != this->string;
-	}
-
-	/**
 	 * Equality operator for #RefitOption.
 	 * @param other Compare to this #RefitOption.
 	 * @return True if both #RefitOption are equal.
@@ -2515,20 +2505,20 @@ public:
 
 					case VL_STANDARD: // Company Name
 						SetDParam(0, STR_COMPANY_NAME);
-						SetDParam(1, this->vli.index);
+						SetDParam(1, this->vli.ToCompanyID());
 						SetDParam(3, this->vehicles.size());
 						break;
 
 					case VL_STATION_LIST: // Station/Waypoint Name
-						SetDParam(0, Station::IsExpected(BaseStation::Get(this->vli.index)) ? STR_STATION_NAME : STR_WAYPOINT_NAME);
-						SetDParam(1, this->vli.index);
+						SetDParam(0, Station::IsExpected(BaseStation::Get(this->vli.ToStationID())) ? STR_STATION_NAME : STR_WAYPOINT_NAME);
+						SetDParam(1, this->vli.ToStationID());
 						SetDParam(3, this->vehicles.size());
 						break;
 
 					case VL_DEPOT_LIST:
 						SetDParam(0, STR_DEPOT_CAPTION);
 						SetDParam(1, this->vli.vtype);
-						SetDParam(2, this->vli.index);
+						SetDParam(2, this->vli.ToDestinationID());
 						SetDParam(3, this->vehicles.size());
 						break;
 					default: NOT_REACHED();
@@ -2809,7 +2799,7 @@ public:
 	void OnGameTick() override
 	{
 		if (this->vehgroups.NeedResort()) {
-			StationID station = (this->vli.type == VL_STATION_LIST) ? this->vli.index : INVALID_STATION;
+			StationID station = (this->vli.type == VL_STATION_LIST) ? this->vli.ToStationID() : INVALID_STATION;
 
 			Debug(misc, 3, "Periodic resort {} list company {} at station {}", this->vli.vtype, this->owner, station);
 			this->SetDirty();
@@ -2830,7 +2820,7 @@ public:
 	{
 		if (!gui_scope && HasBit(data, 31) && this->vli.type == VL_SHARED_ORDERS) {
 			/* Needs to be done in command-scope, so everything stays valid */
-			this->vli.index = GB(data, 0, 20);
+			this->vli.SetIndex(GB(data, 0, 20));
 			this->window_number = this->vli.ToWindowNumber();
 			this->vehgroups.ForceRebuild();
 			return;
@@ -2915,14 +2905,7 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, StationI
 
 void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileIndex depot_tile)
 {
-	uint16_t depot_airport_index;
-
-	if (vehicle_type == VEH_AIRCRAFT) {
-		depot_airport_index = GetStationIndex(depot_tile);
-	} else {
-		depot_airport_index = GetDepotIndex(depot_tile);
-	}
-	ShowVehicleListWindowLocal(company, VL_DEPOT_LIST, vehicle_type, depot_airport_index);
+	ShowVehicleListWindowLocal(company, VL_DEPOT_LIST, vehicle_type, GetDepotDestinationIndex(depot_tile).base());
 }
 
 void DirtyVehicleListWindowForVehicle(const Vehicle *v)

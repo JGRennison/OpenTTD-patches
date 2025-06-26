@@ -476,9 +476,7 @@ static_assert(std::is_trivially_destructible_v<Path>);
 
 inline bool IsLinkGraphCargoExpress(CargoType cargo)
 {
-	return IsCargoInClass(cargo, CC_PASSENGERS) ||
-			IsCargoInClass(cargo, CC_MAIL) ||
-			IsCargoInClass(cargo, CC_EXPRESS);
+	return IsCargoInClass(cargo, {CargoClass::Passengers, CargoClass::Mail, CargoClass::Express});
 }
 
 #endif /* LINKGRAPHJOB_H */
