@@ -156,6 +156,12 @@ struct BufferSerialisationHelper {
 		handler(std::index_sequence_for<V...>{});
 	}
 
+	template <typename... V>
+	void Send_generic_seq(const V&... data)
+	{
+		(this->Send_generic(data), ...);
+	}
+
 	size_t GetSendOffset() const
 	{
 		T *self = const_cast<T *>(static_cast<const T *>(this));
@@ -470,6 +476,12 @@ public:
 			((this->Recv_generic(std::get<Tindices>(data), settings)), ...);
 		};
 		handler(std::index_sequence_for<V...>{});
+	}
+
+	template <typename... V>
+	void Recv_generic_seq(StringValidationSettings settings, V&... data)
+	{
+		(this->Recv_generic(data, settings), ...);
 	}
 
 	struct DeserialisationBuffer BorrowAsDeserialisationBuffer();
