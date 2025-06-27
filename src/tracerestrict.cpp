@@ -2496,7 +2496,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 
 		case TRDCT_MOVE_ITEM: {
 			TraceRestrictProgramSignalMoveFlags move_flags{data};
-			CommandCost res = TraceRestrictProgramMoveItemAt(items, offset, HasFlag(move_flags, TraceRestrictProgramSignalMoveFlags::Up), HasFlag(move_flags, TraceRestrictProgramSignalMoveFlags::Shallow));
+			CommandCost res = TraceRestrictProgramMoveItemAt(items, offset, move_flags.Test(TraceRestrictProgramSignalMoveFlag::Up), move_flags.Test(TraceRestrictProgramSignalMoveFlag::Shallow));
 			if (res.Failed()) return res;
 			break;
 		}

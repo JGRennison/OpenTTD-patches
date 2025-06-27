@@ -2372,13 +2372,13 @@ public:
 				}
 
 				TraceRestrictProgramSignalMoveFlags move_value{};
-				if (widget == TR_WIDGET_UP_BTN) move_value |= TraceRestrictProgramSignalMoveFlags::Up;
-				if (_ctrl_pressed) move_value |= TraceRestrictProgramSignalMoveFlags::Shallow;
+				if (widget == TR_WIDGET_UP_BTN) move_value.Set(TraceRestrictProgramSignalMoveFlag::Up);
+				if (_ctrl_pressed) move_value.Set(TraceRestrictProgramSignalMoveFlag::Shallow);
 
 				uint32_t offset = this->selected_instruction - 1;
 				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true); // Modifies this->selected_instruction
 
-				this->PostInstructionCommandAtOffset(offset, TRDCT_MOVE_ITEM, to_underlying(move_value), STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				this->PostInstructionCommandAtOffset(offset, TRDCT_MOVE_ITEM, move_value.base(), STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 				break;
 			}
 

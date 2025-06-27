@@ -106,12 +106,11 @@ struct TraceRestrictProgramSignalData final : public TupleRefCmdData<TraceRestri
 };
 
 /* Flag values for TraceRestrictProgramSignalData::data for TRDCT_MOVE_ITEM operations */
-enum class TraceRestrictProgramSignalMoveFlags : uint32_t {
-	None                  = 0,         ///< No flag set.
-	Up                    = (1U << 0), ///< Move up if flag set, otherwise down.
-	Shallow               = (1U << 1), ///< Shallow mode.
+enum class TraceRestrictProgramSignalMoveFlag : uint8_t {
+	Up      = 0, ///< Move up if flag set, otherwise down.
+	Shallow = 1, ///< Shallow mode.
 };
-DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramSignalMoveFlags)
+using TraceRestrictProgramSignalMoveFlags = EnumBitSet<TraceRestrictProgramSignalMoveFlag, uint32_t>;
 
 struct TraceRestrictManageSignalInnerData {
 	Track track;
