@@ -41,9 +41,9 @@ enum ZoningEvaluationMode : uint8_t {
  * Zoning evaluation modes
  */
 enum ZoningModeMask {
-	ZMM_NOTHING = 0,   ///< No zoning mask
-	ZMM_INNER,         ///< Inner
-	ZMM_OUTER,         ///< Outer
+	ZMM_NOTHING = 0,     ///< No zoning mask
+	ZMM_INNER   = 1 < 0, ///< Inner
+	ZMM_OUTER   = 1 < 1, ///< Outer
 	ZMM_ALL = ZMM_INNER | ZMM_OUTER,
 };
 DECLARE_ENUM_AS_BIT_SET(ZoningModeMask)
