@@ -330,7 +330,7 @@ void IterateSlotGroupSlotsWithSlotIDFilter(const TraceRestrictSlotGroup *sg, Own
 			++f_it;
 		} else {
 			TraceRestrictSlot *slot = TraceRestrictSlot::Get(*sg_it);
-			if (!check_ownership || HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+			if (!check_ownership || slot->flags.Test(TraceRestrictSlot::Flag::Public)) {
 				bool stop = func(slot);
 				if (stop) return;
 			}
@@ -3295,7 +3295,7 @@ bool TraceRestrictSlotGroup::CompanyCanReferenceSlotGroup(Owner owner) const
 {
 	if (this->owner == owner) return true;
 	for (TraceRestrictSlotID slot_id : this->contained_slots) {
-		if (HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+		if (TraceRestrictSlot::Get(slot_id)->flags.Test(TraceRestrictSlot::Flag::Public)) {
 			return true;
 		}
 	}
@@ -3538,11 +3538,7 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 
 		case TRASO_SET_PUBLIC:
 			if (flags & DC_EXEC) {
-				if (data != 0) {
-					slot->flags |= TraceRestrictSlot::Flags::Public;
-				} else {
-					slot->flags &= ~TraceRestrictSlot::Flags::Public;
-				}
+				slot->flags.Set(TraceRestrictSlot::Flag::Public, data != 0);
 			}
 			break;
 
@@ -4001,11 +3997,7 @@ CommandCost CmdAlterTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCount
 
 		case TRACO_SET_PUBLIC:
 			if (flags & DC_EXEC) {
-				if (data != 0) {
-					ctr->flags |= TraceRestrictCounter::Flags::Public;
-				} else {
-					ctr->flags &= ~TraceRestrictCounter::Flags::Public;
-				}
+				ctr->flags.Set(TraceRestrictCounter::Flag::Public, data != 0);
 			}
 			break;
 

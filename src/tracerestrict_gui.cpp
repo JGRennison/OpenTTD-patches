@@ -871,7 +871,7 @@ static void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		if (slot->owner != owner) continue;
 		if (!show_other_types && slot->vehicle_type != vehtype) continue;
-		if (public_only && !HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) continue;
+		if (public_only && !slot->flags.Test(TraceRestrictSlot::Flag::Public)) continue;
 
 		if (!group_only_mode) {
 			list.push_back({ SlotItemType::Slot, slot->index });
@@ -1020,7 +1020,7 @@ static void GetCounterDropDownListIntl(DropDownList &dlist, Owner owner, TraceRe
 		}
 	} else {
 		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-			if (public_only && !HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public)) continue;
+			if (public_only && !ctr->flags.Test(TraceRestrictCounter::Flag::Public)) continue;
 			if (ctr->owner == owner) {
 				list.push_back(ctr);
 			}
@@ -1496,7 +1496,7 @@ StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner)
 
 	if (sg->owner != owner) {
 		for (TraceRestrictSlotID slot_id : sg->contained_slots) {
-			if (!HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+			if (!TraceRestrictSlot::Get(slot_id)->flags.Test(TraceRestrictSlot::Flag::Public)) {
 				return STR_TRACE_RESTRICT_SLOT_GROUP_NON_PUBLIC_WARNING;
 			}
 		}
@@ -4494,7 +4494,7 @@ private:
 				SetDParam(1, slot->max_occupancy);
 				DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, colour, SA_RIGHT | SA_FORCE);
 
-				if (HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+				if (slot->flags.Test(TraceRestrictSlot::Flag::Public)) {
 					DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r.WithWidth(this->column_size[VGC_PUBLIC].width, !rtl), SA_CENTER);
 				}
 				break;
@@ -4710,7 +4710,7 @@ public:
 				WID_TRSL_DELETE_SLOT,
 				WID_TRSL_RENAME_SLOT);
 
-		this->SetWidgetLoweredState(WID_TRSL_SLOT_PUBLIC, this->slot_sel.type == SlotItemType::Slot && TraceRestrictSlot::IsValidID(this->slot_sel.id) && HasFlag(TraceRestrictSlot::Get(this->slot_sel.id)->flags, TraceRestrictSlot::Flags::Public));
+		this->SetWidgetLoweredState(WID_TRSL_SLOT_PUBLIC, this->slot_sel.type == SlotItemType::Slot && TraceRestrictSlot::IsValidID(this->slot_sel.id) && TraceRestrictSlot::Get(this->slot_sel.id)->flags.Test(TraceRestrictSlot::Flag::Public));
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -4873,7 +4873,7 @@ public:
 			case WID_TRSL_SLOT_PUBLIC: { // Toggle public state of the selected slot
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(this->vli.index);
 				if (slot != nullptr) {
-					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_CAN_T_DO_THIS, this->vli.index, TRASO_SET_PUBLIC, HasFlag(slot->flags, TraceRestrictSlot::Flags::Public) ? 0 : 1, {});
+					Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_CAN_T_DO_THIS, this->vli.index, TRASO_SET_PUBLIC, slot->flags.Test(TraceRestrictSlot::Flag::Public) ? 0 : 1, {});
 				}
 				break;
 			}
@@ -5349,7 +5349,7 @@ private:
 		SetDParam(0, ctr_id);
 		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
 
-		if (HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public)) {
+		if (ctr->flags.Test(TraceRestrictCounter::Flag::Public)) {
 			r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide, !rtl).WithWidth(this->public_col_width, !rtl);
 			DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r, SA_CENTER);
 		}
@@ -5431,7 +5431,7 @@ public:
 				WID_TRCL_COUNTER_PUBLIC,
 				WID_TRCL_SET_COUNTER_VALUE);
 
-		this->SetWidgetLoweredState(WID_TRCL_COUNTER_PUBLIC, this->selected != INVALID_TRACE_RESTRICT_COUNTER_ID && HasFlag(TraceRestrictCounter::Get(this->selected)->flags, TraceRestrictCounter::Flags::Public));
+		this->SetWidgetLoweredState(WID_TRCL_COUNTER_PUBLIC, this->selected != INVALID_TRACE_RESTRICT_COUNTER_ID && TraceRestrictCounter::Get(this->selected)->flags.Test(TraceRestrictCounter::Flag::Public));
 
 		/* Disable remaining buttons for non-local companies
 		 * Needed while changing _local_company, eg. by cheats
@@ -5506,7 +5506,7 @@ public:
 			case WID_TRCL_COUNTER_PUBLIC: { // Toggle public state of the selected counter
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(this->selected);
 				if (ctr != nullptr) {
-					Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->selected, TRACO_SET_PUBLIC, HasFlag(ctr->flags, TraceRestrictCounter::Flags::Public) ? 0 : 1, {});
+					Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->selected, TRACO_SET_PUBLIC, ctr->flags.Test(TraceRestrictCounter::Flag::Public) ? 0 : 1, {});
 				}
 				break;
 			}

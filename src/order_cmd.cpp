@@ -3426,7 +3426,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 					bool check_owner = (sg->owner != v->owner);
 					for (TraceRestrictSlotID slot_id : sg->contained_slots) {
 						TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
-						if (check_owner && !HasFlag(slot->flags, TraceRestrictSlot::Flags::Public)) {
+						if (check_owner && !slot->flags.Test(TraceRestrictSlot::Flag::Public)) {
 							continue;
 						}
 						if (ExecuteVehicleInSlotOrderCondition(v, slot, mode, false)) {
@@ -3542,7 +3542,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 							_pco_deferred_slot_membership.Initialise(v);
 							bool check_owner = (sg->owner != v->owner);
 							for (TraceRestrictSlotID slot_id : sg->contained_slots) {
-								if (check_owner && !HasFlag(TraceRestrictSlot::Get(slot_id)->flags, TraceRestrictSlot::Flags::Public)) {
+								if (check_owner && !TraceRestrictSlot::Get(slot_id)->flags.Test(TraceRestrictSlot::Flag::Public)) {
 									continue;
 								}
 								_pco_deferred_slot_membership.RemoveSlot(slot_id);

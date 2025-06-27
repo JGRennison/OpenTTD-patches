@@ -1344,13 +1344,13 @@ static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maxi
 struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_pool> {
 	friend TraceRestrictSlotTemporaryState;
 
-	enum class Flags : uint8_t {
-		None        = 0,         ///< No flag set.
-		Public      = (1U << 0), ///< Public slot.
+	enum class Flag : uint8_t {
+		Public, ///< Public slot.
 	};
+	using Flags = EnumBitSet<Flag, uint8_t>;
 
 	Owner owner;
-	Flags flags = Flags::None;
+	Flags flags{};
 	VehicleType vehicle_type;
 	TraceRestrictSlotGroupID parent_group = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	uint32_t max_occupancy = 1;
@@ -1383,7 +1383,11 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 		return false;
 	}
 
-	inline bool IsUsableByOwner(Owner using_owner) const;
+	inline bool IsUsableByOwner(Owner using_owner) const
+	{
+		return this->owner == using_owner || this->flags.Test(Flag::Public);
+	}
+
 	bool Occupy(const Vehicle *v, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
 	bool OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
@@ -1399,12 +1403,6 @@ private:
 	void DeIndex(VehicleID id, const Vehicle *v);
 };
 
-DECLARE_ENUM_AS_BIT_SET(TraceRestrictSlot::Flags)
-
-bool TraceRestrictSlot::IsUsableByOwner(Owner using_owner) const
-{
-	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
-}
 
 struct TraceRestrictVehicleTemporarySlotMembershipState {
 private:
@@ -1466,13 +1464,13 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
  * Counter type
  */
 struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrictcounter_pool> {
-	enum class Flags : uint8_t {
-		None        = 0,         ///< No flag set.
-		Public      = (1U << 0), ///< Public counter.
+	enum class Flag : uint8_t {
+		Public, ///< Public counter.
 	};
+	using Flags = EnumBitSet<Flag, uint8_t>;
 
 	Owner owner;
-	Flags flags = Flags::None;
+	Flags flags{};
 	int32_t value = 0;
 	std::string name;
 	ankerl::svector<SignalReference, 0> progsig_dependants;
@@ -1488,15 +1486,12 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
 	}
 
-	inline bool IsUsableByOwner(Owner using_owner) const;
+	inline bool IsUsableByOwner(Owner using_owner) const
+	{
+		return this->owner == using_owner || this->flags.Test(Flag::Public);
+	}
 };
 
-DECLARE_ENUM_AS_BIT_SET(TraceRestrictCounter::Flags)
-
-bool TraceRestrictCounter::IsUsableByOwner(Owner using_owner) const
-{
-	return this->owner == using_owner || HasFlag(this->flags, Flags::Public);
-}
 
 void ShowSlotCreationQueryString(Window &parent);
 #endif /* TRACERESTRICT_H */
