@@ -130,21 +130,20 @@ static void Load_TRRP()
 		}
 		CommandCost validation_result = prog->Validate();
 		if (validation_result.Failed()) {
-			auto buffer = fmt::memory_buffer();
-			fmt::format_to(std::back_inserter(buffer), "Trace restrict program {}: {}\nProgram dump:",
-					index, GetStringPtr(validation_result.GetErrorMessage()));
+			format_buffer buffer;
+			buffer.format("Trace restrict program {}: {}\nProgram dump:", index, GetStringPtr(validation_result.GetErrorMessage()));
 			uint fail_offset = validation_result.HasResultData() ? validation_result.GetResultData() : UINT32_MAX;
 			for (uint i = 0; i < (uint)prog->items.size(); i++) {
 				if ((i % 3) == 0) {
-					fmt::format_to(std::back_inserter(buffer), "\n{:4}:", i);
+					buffer.format("\n{:4}:", i);
 				}
 				if (i == fail_offset) {
-					fmt::format_to(std::back_inserter(buffer), " [{:08X}]", prog->items[i]);
+					buffer.format(" [{:08X}]", prog->items[i]);
 				} else {
-					fmt::format_to(std::back_inserter(buffer), " {:08X}", prog->items[i]);
+					buffer.format(" {:08X}", prog->items[i]);
 				}
 			}
-			SlErrorCorrupt(fmt::to_string(buffer));
+			SlErrorCorrupt(buffer.to_string());
 		}
 	}
 }
