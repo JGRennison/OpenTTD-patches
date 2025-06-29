@@ -1588,10 +1588,10 @@ struct StationViewWindow : public Window {
 		const Station *st = Station::Get(this->window_number);
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			const GoodsEntry *ge = &st->goods[cs->Index()];
-			if (!ge->HasRating()) continue;
+			if (!ge->HasRating() && ge->IsSupplyAllowed()) continue;
 			ofs_y -= GetCharacterHeight(FS_NORMAL);
 			if (ofs_y < 0) {
-				GuiShowStationRatingTooltip(this, st, cs);
+				if (ge->HasRating()) GuiShowStationRatingTooltip(this, st, cs);
 				break;
 			}
 		}
@@ -2073,7 +2073,19 @@ struct StationViewWindow : public Window {
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			const GoodsEntry *ge = &st->goods[cs->Index()];
-			if (!ge->HasRating()) continue;
+			if (!ge->HasRating()) {
+				if (!ge->IsSupplyAllowed()) {
+					Rect rating_rect = tr.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
+					SetDParam(0, cs->name);
+					int x = DrawString(rating_rect, cs->name, TC_WHITE);
+					if (x != 0) {
+						int line_y = rating_rect.top + (GetCharacterHeight(FS_NORMAL) / 2) - 1;
+						GfxDrawLine(rating_rect.left, line_y, x, line_y, PC_WHITE, 1);
+					}
+					tr.top += GetCharacterHeight(FS_NORMAL);
+				}
+				continue;
+			}
 
 			const LinkGraph *lg = LinkGraph::GetIfValid(ge->link_graph);
 			SetDParam(0, cs->name);
@@ -2232,7 +2244,7 @@ struct StationViewWindow : public Window {
 				const Station *st = Station::Get(this->window_number);
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					const GoodsEntry *ge = &st->goods[cs->Index()];
-					if (!ge->HasRating()) continue;
+					if (!ge->HasRating() && ge->IsSupplyAllowed()) continue;
 					if (row == 1) {
 						Command<CMD_SET_STATION_CARGO_ALLOWED_SUPPLY>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, cs->Index(), !ge->IsSupplyAllowed());
 					}
