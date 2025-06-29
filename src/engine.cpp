@@ -816,18 +816,16 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	              e->GetGRFID());
 
 	/* Base reliability defined as a percentage of UINT16_MAX. */
-	const uint16_t RELIABILITY_START = UINT16_MAX * 48 / 100;
-	const uint16_t RELIABILITY_MAX   = UINT16_MAX * 75 / 100;
-	const uint16_t RELIABILITY_FINAL = UINT16_MAX * 25 / 100;
-
-	static_assert(RELIABILITY_START == 0x7AE0);
-	static_assert(RELIABILITY_MAX   == 0xBFFF);
-	static_assert(RELIABILITY_FINAL == 0x3FFF);
+	const uint16_t RELIABILITY_MAX   = UINT16_MAX * _settings_game.difficulty.max_reliability_floor / 100;
+	const uint16_t RELIABILITY_START = RELIABILITY_MAX - UINT16_MAX * 27 / 100;
+	const uint16_t RELIABILITY_FINAL = RELIABILITY_MAX - UINT16_MAX * 50 / 100;
 
 	r = Random();
-	/* 14 bits gives a value between 0 and 16383, which is up to an additional 25%p reliability on top of the base reliability. */
+	/* 14 bits gives a value between 0 and 16383, which is up to an additional 25%p reliability on top of the base reliability.
+	 * reliability_max needs adjusted random component to fill space between max_reliability_floor and 100 - with the default
+	 * floor of 75, this is (100 - 75) / 25 = 1 */
 	e->reliability_start = GB(r, 16, 14) + RELIABILITY_START;
-	e->reliability_max   = GB(r,  0, 14) + RELIABILITY_MAX;
+	e->reliability_max   = GB(r,  0, 14) * (100 - _settings_game.difficulty.max_reliability_floor) / 25 + RELIABILITY_MAX;
 
 	r = Random();
 	e->reliability_final = GB(r, 16, 14) + RELIABILITY_FINAL;
