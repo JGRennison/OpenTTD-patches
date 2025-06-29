@@ -89,7 +89,6 @@ INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
 /**
  * TraceRestrictRefId --> TraceRestrictProgramID (Pool ID) mapping
  * The indirection is mainly to enable shared programs
- * TODO: use a more efficient container/indirection mechanism
  */
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
