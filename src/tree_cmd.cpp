@@ -60,6 +60,13 @@ static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number
 static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
 static const uint16_t EDITOR_TREE_DIV = 5;                   ///< Game editor tree generation divisor factor.
 
+static bool IsTreeDisallowedByArcticPerfectMode(TileIndex tile)
+{
+	return (_settings_game.game_creation.tree_placer == TP_PERFECT) &&
+			(_settings_game.game_creation.landscape == LandscapeType::Arctic) &&
+			(GetTileZ(tile) > (HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range));
+}
+
 /**
  * Tests if a tile can be converted to MP_TREES
  * This is true for clear ground without farms or rocks.
@@ -70,11 +77,7 @@ static const uint16_t EDITOR_TREE_DIV = 5;                   ///< Game editor tr
  */
 static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
 {
-	if ((_settings_game.game_creation.tree_placer == TP_PERFECT) &&
-		(_settings_game.game_creation.landscape == LandscapeType::Arctic) &&
-		(GetTileZ(tile) > (HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range))) {
-		return false;
-	}
+	if (IsTreeDisallowedByArcticPerfectMode(tile)) return false;
 
 	switch (GetTileType(tile)) {
 		case MP_WATER:
@@ -705,14 +708,14 @@ CommandCost CmdPlantTree(DoCommandFlag flags, TileIndex end_tile, TileIndex star
 			}
 
 			case MP_WATER:
-				if (!CanPlantTreesOnTile(tile, false) || !IsCoast(tile) || IsSlopeWithOneCornerRaised(GetTileSlope(tile))) {
+				if (!IsCoast(tile) || IsSlopeWithOneCornerRaised(GetTileSlope(tile))) {
 					msg = STR_ERROR_CAN_T_BUILD_ON_WATER;
 					continue;
 				}
 				[[fallthrough]];
 
 			case MP_CLEAR: {
-				if (!CanPlantTreesOnTile(tile, false) || IsBridgeAbove(tile)) {
+				if (IsTreeDisallowedByArcticPerfectMode(tile) || IsBridgeAbove(tile)) {
 					msg = STR_ERROR_SITE_UNSUITABLE;
 					continue;
 				}
