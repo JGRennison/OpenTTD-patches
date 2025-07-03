@@ -2116,7 +2116,7 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 		switch (item.type) {
 			case ViewportSignKdtreeItem::VKI_STATION: {
 				if (!show_stations) break;
-				const BaseStation *st = BaseStation::Get(item.id.station);
+				const BaseStation *st = BaseStation::Get(item.GetIdAs<StationID>());
 
 				/* If no facilities are present the station is a ghost station. */
 				StationFacility facilities = st->facilities;
@@ -2133,7 +2133,7 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 
 			case ViewportSignKdtreeItem::VKI_WAYPOINT: {
 				if (!show_waypoints) break;
-				const BaseStation *st = BaseStation::Get(item.id.station);
+				const BaseStation *st = BaseStation::Get(item.GetIdAs<StationID>());
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
@@ -2145,12 +2145,12 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 
 			case ViewportSignKdtreeItem::VKI_TOWN:
 				if (!show_towns) break;
-				towns.push_back(Town::Get(item.id.town));
+				towns.push_back(Town::Get(item.GetIdAs<TownID>()));
 				break;
 
 			case ViewportSignKdtreeItem::VKI_SIGN: {
 				if (!show_signs) break;
-				const Sign *si = Sign::Get(item.id.sign);
+				const Sign *si = Sign::Get(item.GetIdAs<SignID>());
 
 				/* Don't draw if sign is owned by another company and competitor signs should be hidden.
 				 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
@@ -5120,14 +5120,14 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 		switch (item.type) {
 			case ViewportSignKdtreeItem::VKI_STATION:
 				if (!show_stations) break;
-				st = BaseStation::Get(item.id.station);
+				st = BaseStation::Get(item.GetIdAs<StationID>());
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
 				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
 				break;
 
 			case ViewportSignKdtreeItem::VKI_WAYPOINT:
 				if (!show_waypoints) break;
-				st = BaseStation::Get(item.id.station);
+				st = BaseStation::Get(item.GetIdAs<StationID>());
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
 				if (hide_hidden_waypoints && HasBit(Waypoint::From(st)->waypoint_flags, WPF_HIDE_LABEL)) break;
 				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
@@ -5135,13 +5135,13 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 
 			case ViewportSignKdtreeItem::VKI_TOWN:
 				if (!show_towns) break;
-				t = Town::Get(item.id.town);
+				t = Town::Get(item.GetIdAs<TownID>());
 				if (CheckClickOnViewportSign(vp, x, y, &t->cache.sign)) last_t = t;
 				break;
 
 			case ViewportSignKdtreeItem::VKI_SIGN:
 				if (!show_signs) break;
-				si = Sign::Get(item.id.sign);
+				si = Sign::Get(item.GetIdAs<SignID>());
 				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
 				if (CheckClickOnViewportSign(vp, x, y, &si->sign)) last_si = si;
 				break;
@@ -5175,7 +5175,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 {
 	ViewportSignKdtreeItem item;
 	item.type = VKI_STATION;
-	item.id.station = id;
+	item.SetID(id);
 
 	const Station *st = Station::Get(id);
 	assert(st->sign.kdtree_valid);
@@ -5192,7 +5192,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 {
 	ViewportSignKdtreeItem item;
 	item.type = VKI_WAYPOINT;
-	item.id.station = id;
+	item.SetID(id);
 
 	const Waypoint *st = Waypoint::Get(id);
 	assert(st->sign.kdtree_valid);
@@ -5209,7 +5209,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
 {
 	ViewportSignKdtreeItem item;
 	item.type = VKI_TOWN;
-	item.id.town = id;
+	item.SetID(id);
 
 	const Town *town = Town::Get(id);
 	assert(town->cache.sign.kdtree_valid);
@@ -5226,7 +5226,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
 {
 	ViewportSignKdtreeItem item;
 	item.type = VKI_SIGN;
-	item.id.sign = id;
+	item.SetID(id);
 
 	const Sign *sign = Sign::Get(id);
 	assert(sign->sign.kdtree_valid);

@@ -17,6 +17,15 @@
 #include "signs_base.h"
 
 struct ViewportSignKdtreeItem {
+	using IDType = uint16_t;
+
+	template <typename T>
+	static constexpr void IDTypeCheck()
+	{
+		static_assert(std::is_same_v<T, StationID> || std::is_same_v<T, TownID> || std::is_same_v<T, SignID>);
+		static_assert(sizeof(IDType) >= sizeof(T));
+	}
+
 	enum ItemType : uint16_t {
 		VKI_STATION,
 		VKI_WAYPOINT,
@@ -24,44 +33,34 @@ struct ViewportSignKdtreeItem {
 		VKI_SIGN,
 	};
 	ItemType type;
-	union {
-		StationID station;
-		TownID town;
-		SignID sign;
-	} id;
+	IDType id;
 	int32_t center;
 	int32_t top;
+
+	template <typename T>
+	T GetIdAs() const
+	{
+		IDTypeCheck<T>();
+		return T(this->id);
+	}
+
+	template <typename T>
+	void SetID(T id)
+	{
+		IDTypeCheck<T>();
+		this->id = id;
+	}
 
 	bool operator== (const ViewportSignKdtreeItem &other) const
 	{
 		if (this->type != other.type) return false;
-		switch (this->type) {
-			case VKI_STATION:
-			case VKI_WAYPOINT:
-				return this->id.station == other.id.station;
-			case VKI_TOWN:
-				return this->id.town == other.id.town;
-			case VKI_SIGN:
-				return this->id.sign == other.id.sign;
-			default:
-				NOT_REACHED();
-		}
+		return this->id == other.id;
 	}
 
 	bool operator< (const ViewportSignKdtreeItem &other) const
 	{
 		if (this->type != other.type) return this->type < other.type;
-		switch (this->type) {
-			case VKI_STATION:
-			case VKI_WAYPOINT:
-				return this->id.station < other.id.station;
-			case VKI_TOWN:
-				return this->id.town < other.id.town;
-			case VKI_SIGN:
-				return this->id.sign < other.id.sign;
-			default:
-				NOT_REACHED();
-		}
+		return this->id < other.id;
 	}
 
 	static ViewportSignKdtreeItem MakeStation(StationID id);
