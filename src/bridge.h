@@ -37,7 +37,7 @@ constexpr uint SPRITES_PER_BRIDGE_PIECE = 32; ///< Number of sprites there are p
 typedef uint BridgeType; ///< Bridge spec number.
 
 /**
- * Actions that can be performed when the vehicle enters the depot.
+ * Bridge piece present pillar flags.
  */
 enum BridgePiecePillarFlags {
 	BPPF_CORNER_W        = 1 << 0,
