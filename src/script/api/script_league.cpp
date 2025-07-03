@@ -42,7 +42,7 @@
 	if (!ScriptObject::Command<CMD_CREATE_LEAGUE_TABLE>::Do(&ScriptInstance::DoCommandReturnLeagueTableID, std::move(encoded_title), std::move(encoded_header), std::move(encoded_footer))) return LEAGUE_TABLE_INVALID;
 
 	/* In case of test-mode, we return LeagueTableID 0 */
-	return static_cast<LeagueTableID>(0);
+	return LeagueTableID::Begin();
 }
 
 /* static */ bool ScriptLeagueTable::IsValidLeagueTableElement(LeagueTableElementID element_id)
@@ -75,7 +75,7 @@
 	if (!ScriptObject::Command<CMD_CREATE_LEAGUE_TABLE_ELEMENT>::Do(&ScriptInstance::DoCommandReturnLeagueTableElementID, table, rating, c, std::move(encoded_text), std::move(encoded_score), (::LinkType)link_type, (::LinkTargetID)link_target)) return LEAGUE_TABLE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return LeagueTableElementID 0 */
-	return static_cast<LeagueTableElementID>(0);
+	return LeagueTableElementID::Begin();
 }
 
 /* static */ bool ScriptLeagueTable::UpdateElementData(LeagueTableElementID element, ScriptCompany::CompanyID company, Text *text, LinkType link_type, SQInteger link_target)

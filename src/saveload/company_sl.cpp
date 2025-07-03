@@ -329,7 +329,7 @@ struct PLYRChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Company *c = new (index) Company();
+			Company *c = new (CompanyID(index)) Company();
 			SetDefaultCompanySettings(c->index);
 			SlObject((CompanyProperties *)c, slt);
 			_company_colours[index] = c->colour;

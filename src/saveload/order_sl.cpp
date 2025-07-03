@@ -59,7 +59,7 @@ struct ORDRChunkHandler : ChunkHandler {
 			int index;
 
 			while ((index = SlIterateArray()) != -1) {
-				OrderPoolItem *item = new (index) OrderPoolItem();
+				OrderPoolItem *item = new (OrderID(index)) OrderPoolItem();
 				SlObject(&item->order, slt);
 				item->next_ref = _order_item_ref;
 			}
@@ -168,7 +168,7 @@ struct BKORChunkHandler : ChunkHandler {
 
 		while ((index = SlIterateArray()) != -1) {
 			/* set num_orders to 0 so it's a valid OrderList */
-			OrderBackup *ob = new (index) OrderBackup();
+			OrderBackup *ob = new (OrderBackupID(index)) OrderBackup();
 			SlObject(ob, slt);
 			if (ob->cur_real_order_index == 0xFF) ob->cur_real_order_index = INVALID_VEH_ORDER_ID;
 			if (ob->cur_implicit_order_index == 0xFF) ob->cur_implicit_order_index = INVALID_VEH_ORDER_ID;

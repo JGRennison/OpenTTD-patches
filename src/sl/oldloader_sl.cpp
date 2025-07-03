@@ -642,7 +642,7 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 {
 	if (!LoadChunk(ls, nullptr, order_chunk)) return false;
 
-	OrderPoolItem *o = new (num) OrderPoolItem();
+	OrderPoolItem *o = new (OrderID(num)) OrderPoolItem();
 	o->order.AssignOrder(UnpackOldOrder(_old_order));
 
 	if (o->order.IsType(OT_NOTHING)) {
@@ -650,7 +650,7 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 	} else {
 		/* Relink the orders to each other (in the orders for one vehicle are behind each other,
 		 * with an invalid order (OT_NOTHING) as indication that it is the last order */
-		OrderPoolItem *prev = OrderPoolItem::GetIfValid(num - 1);
+		OrderPoolItem *prev = OrderPoolItem::GetIfValid(OrderID(num - 1));
 		if (prev != nullptr) prev->next = o;
 	}
 
@@ -983,7 +983,7 @@ static const OldChunks _company_chunk[] = {
 
 static bool LoadOldCompany(LoadgameState *ls, int num)
 {
-	Company *c = new (num) Company();
+	Company *c = new (CompanyID(num)) Company();
 
 	_current_company_id = (CompanyID)num;
 
@@ -1372,7 +1372,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 			if (old_id < max) {
 				/* Don't accept orders > max number of orders */
 				extern void RegisterVehicleOldOrderRef(VehicleID id, OrderID order_id);
-				RegisterVehicleOldOrderRef(v->index, old_id);
+				RegisterVehicleOldOrderRef(v->index, OrderID(old_id));
 			}
 		}
 		v->current_order.AssignOrder(UnpackOldOrder(_old_order));
@@ -1489,7 +1489,7 @@ static const OldChunks subsidy_chunk[] = {
 
 static bool LoadOldSubsidy(LoadgameState *ls, int num)
 {
-	Subsidy *s = new (num) Subsidy();
+	Subsidy *s = new (SubsidyID(num)) Subsidy();
 	bool ret = LoadChunk(ls, s, subsidy_chunk);
 	if (s->cargo_type == INVALID_CARGO) delete s;
 	return ret;

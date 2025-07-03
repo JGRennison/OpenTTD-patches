@@ -131,7 +131,12 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 	}
 	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);
-	item->index = (Tindex)(uint)index;
+	if constexpr (std::is_base_of_v<PoolIDBase, Tindex>) {
+		/* MSVC complains about casting to narrower type, so first cast to the base type... then to the strong type. */
+		item->index = static_cast<Tindex>(static_cast<Tindex::BaseType>(index));
+	} else {
+		item->index = static_cast<Tindex>(index);
+	}
 	return item;
 }
 

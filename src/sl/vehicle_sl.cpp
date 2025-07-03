@@ -1478,7 +1478,7 @@ void Load_VEHS()
 		if (IsSavegameVersionBefore(SLV_60)) v->group_id = DEFAULT_GROUP;
 
 		/* Handle pre-OrderList orders */
-		if (IsSavegameVersionBefore(SLV_105) && _old_order_item_ref != 0) RegisterVehicleOldOrderRef(index, _old_order_item_ref - 1); // -1 to go from saveload ref to index
+		if (IsSavegameVersionBefore(SLV_105) && _old_order_item_ref != 0) RegisterVehicleOldOrderRef(index, OrderID(_old_order_item_ref - 1)); // -1 to go from saveload ref to index
 
 		if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 			_veh_cpp_packets[index] = std::move(_cpp_packets);

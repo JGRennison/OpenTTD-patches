@@ -10,13 +10,13 @@
 #ifndef STATION_TYPE_H
 #define STATION_TYPE_H
 
+#include "core/pool_type.hpp"
 #include "core/smallstack_type.hpp"
 #include "tilearea_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 typedef uint16_t StationID;
-typedef uint16_t RoadStopID;
-typedef uint16_t DockID;
+using RoadStopID = PoolID<uint16_t, struct RoadStopIDTag, 64000, 0xFFFF>;
 
 struct BaseStation;
 struct Station;

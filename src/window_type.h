@@ -831,8 +831,47 @@ enum GameOptionsInvalidationData : uint8_t {
 struct Window;
 struct WindowBase;
 
-/** Number to differentiate different windows of the same class */
-typedef int32_t WindowNumber;
+/**
+ * Number to differentiate different windows of the same class. This number generally
+ * implicitly passes some information, e.g. the TileIndex or Company associated with
+ * the window. To ease this use, the window number is lenient with what it accepts and
+ * broad with what it returns.
+ *
+ * Anything that converts into a number and ConvertibleThroughBase types will be accepted.
+ * When it's being used it returns int32_t or any other type when that's specifically
+ * requested, e.g. `VehicleType type = window_number` or `GetEngineListHeight(window_number)`
+ * in which the returned value will be a `VehicleType`.
+ */
+struct WindowNumber {
+	static inline constexpr bool fmt_as_base = true;
+	static inline constexpr bool string_parameter_as_base = true;
+	static inline constexpr bool integer_type_hint = true;
+
+	using BaseType = int32_t;
+
+private:
+	int32_t value = 0;
+public:
+	WindowNumber() = default;
+	WindowNumber(int32_t value) : value(value) {}
+
+	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
+	WindowNumber(T value) : value(value.base()) {}
+
+	/* Automatically convert to int32_t. */
+	operator int32_t() const { return value; }
+
+	constexpr int32_t base() const noexcept { return this->value; }
+
+	/* Automatically convert to any other type that might be requested. */
+	template <typename T> requires (std::is_enum_v<T> || std::is_class_v<T>)
+	operator T() const { return static_cast<T>(value); };
+
+	constexpr bool operator==(const std::integral auto &rhs) const { return this->value == static_cast<int32_t>(rhs); }
+
+	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
+	constexpr bool operator==(const T &rhs) const { return this->value == static_cast<int32_t>(rhs.base()); }
+};
 
 /** State of handling an event. */
 enum EventState : uint8_t {

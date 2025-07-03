@@ -11,6 +11,7 @@
 #define SUBSIDY_TYPE_H
 
 #include "core/enum_type.hpp"
+#include "core/pool_type.hpp"
 
 /** What part of a subsidy is something? */
 enum PartOfSubsidy : uint8_t {
@@ -20,7 +21,7 @@ enum PartOfSubsidy : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(PartOfSubsidy)
 
-typedef uint16_t SubsidyID; ///< ID of a subsidy
+using SubsidyID = PoolID<uint16_t, struct SubsidyIDTag, 256, 0xFFFF>; ///< ID of a subsidy
 struct Subsidy;
 
 #endif /* SUBSIDY_TYPE_H */

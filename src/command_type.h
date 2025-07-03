@@ -337,6 +337,9 @@ public:
 	}
 
 	void SetResultData(uint32_t result);
+
+	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
+	inline void SetResultData(T result) { this->SetResultData(static_cast<uint32_t>(result.base())); }
 };
 
 /**

@@ -1046,6 +1046,10 @@ int64_t ReadValue(const void *ptr, VarType conv);
 void WriteValue(void *ptr, VarType conv, int64_t val);
 
 void SlSetArrayIndex(uint index);
+
+template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
+static void SlSetArrayIndex(const T &index) { SlSetArrayIndex(index.base()); }
+
 int SlIterateArray();
 
 size_t SlGetFieldLength();

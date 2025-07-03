@@ -374,7 +374,7 @@ public:
 
 	static WindowNumber GetDepotWindowNumber(TileIndex tile)
 	{
-		static constexpr WindowNumber DEPARTURE_WINDOW_NUMBER_DEPOT_TAG = 1 << 31;
+		static constexpr int32_t DEPARTURE_WINDOW_NUMBER_DEPOT_TAG = 1 << 31;
 		return tile.base() | DEPARTURE_WINDOW_NUMBER_DEPOT_TAG;
 	}
 

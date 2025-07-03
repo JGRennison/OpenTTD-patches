@@ -12,6 +12,7 @@
 
 #include "core/overflowsafe_type.hpp"
 #include "core/enum_type.hpp"
+#include "core/pool_type.hpp"
 #include <array>
 
 typedef OverflowSafeInt64 Money;
@@ -242,7 +243,7 @@ static const uint ROAD_STOP_TRACKBIT_FACTOR = 2;
 static const uint LOCK_DEPOT_TILE_FACTOR = 2;
 
 struct CargoPayment;
-typedef uint32_t CargoPaymentID;
+using CargoPaymentID = PoolID<uint32_t, struct CargoPaymentIDTag, 0xFF000, 0xFFFFF>;
 
 enum CargoPaymentAlgorithm : uint8_t {
 	CPA_BEGIN = 0,       ///< Used for iterations and limit testing

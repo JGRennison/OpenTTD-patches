@@ -654,7 +654,7 @@ static void Load_PLYR()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Company *c = new (index) Company();
+		Company *c = new (CompanyID(index)) Company();
 		CompanyProperties *cprops = c;
 		SetDefaultCompanySettings(c->index);
 		SlObjectLoadFiltered(cprops, slt);

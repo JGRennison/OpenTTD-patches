@@ -20,11 +20,11 @@
 #include <vector>
 
 /** Unique identifier for an order backup. */
-typedef uint8_t OrderBackupID;
+using OrderBackupID = PoolID<uint8_t, struct OrderBackupIDTag, 255, 0xFF>;
 struct OrderBackup;
 
 /** The pool type for order backups. */
-typedef Pool<OrderBackup, OrderBackupID, 1, 256> OrderBackupPool;
+using OrderBackupPool = Pool<OrderBackup, OrderBackupID, 1, OrderBackupID::End().base()>;
 /** The pool with order backups. */
 extern OrderBackupPool _order_backup_pool;
 

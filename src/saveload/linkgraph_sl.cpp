@@ -223,7 +223,7 @@ struct LGRPChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			LinkGraph *lg = new (index) LinkGraph();
+			LinkGraph *lg = new (LinkGraphID(index)) LinkGraph();
 			SlObject(lg, slt);
 		}
 	}
@@ -251,7 +251,7 @@ struct LGRJChunkHandler : ChunkHandler {
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			LinkGraphJob *lgj = new (index) LinkGraphJob();
+			LinkGraphJob *lgj = new (LinkGraphJobID(index)) LinkGraphJob();
 			SlObject(lgj, slt);
 
 			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);

@@ -511,7 +511,7 @@ struct ROADChunkHandler : ChunkHandler {
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
-			RoadStop *rs = new (index) RoadStop(INVALID_TILE);
+			RoadStop *rs = new (RoadStopID(index)) RoadStop(INVALID_TILE);
 
 			SlObject(rs, slt);
 		}

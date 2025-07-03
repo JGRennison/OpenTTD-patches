@@ -27,8 +27,8 @@
 #include <vector>
 #include "3rdparty/cpp-btree/btree_map.h"
 
-typedef Pool<OrderPoolItem, OrderID, 256, 0xFF0000> OrderPool;
-typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
+using OrderPool = Pool<OrderPoolItem, OrderID, 256, OrderID::End().base()>;
+using OrderListPool = Pool<OrderList, OrderListID, 128, OrderListID::End().base()>;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
 extern btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;

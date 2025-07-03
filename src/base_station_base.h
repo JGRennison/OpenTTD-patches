@@ -257,7 +257,7 @@ struct SpecializedStation : public BaseStation {
 	 * @param index tested index
 	 * @return is this index valid index of T?
 	 */
-	static inline bool IsValidID(size_t index)
+	static inline bool IsValidID(auto index)
 	{
 		return BaseStation::IsValidID(index) && IsExpected(BaseStation::Get(index));
 	}
@@ -266,7 +266,7 @@ struct SpecializedStation : public BaseStation {
 	 * Gets station with given index
 	 * @return pointer to station with given index casted to T *
 	 */
-	static inline T *Get(size_t index)
+	static inline T *Get(auto index)
 	{
 		return (T *)BaseStation::Get(index);
 	}
@@ -275,7 +275,7 @@ struct SpecializedStation : public BaseStation {
 	 * Returns station if the index is a valid index for this station type
 	 * @return pointer to station with given index if it's a station of this type
 	 */
-	static inline T *GetIfValid(size_t index)
+	static inline T *GetIfValid(auto index)
 	{
 		return IsValidID(index) ? Get(index) : nullptr;
 	}

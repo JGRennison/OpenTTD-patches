@@ -327,7 +327,7 @@ static void Load_LGRP()
 			/* Impossible as they have been present in previous game. */
 			NOT_REACHED();
 		}
-		LinkGraph *lg = new (index) LinkGraph();
+		LinkGraph *lg = new (LinkGraphID(index)) LinkGraph();
 		SlObjectLoadFiltered(lg, slt);
 		if (!is_table) {
 			lg->Init(_num_nodes);
@@ -353,7 +353,7 @@ static void Load_LGRJ()
 			/* Impossible as they have been present in previous game. */
 			NOT_REACHED();
 		}
-		LinkGraphJob *lgj = new (index) LinkGraphJob();
+		LinkGraphJob *lgj = new (LinkGraphJobID(index)) LinkGraphJob();
 		SlObjectLoadFiltered(lgj, slt);
 		if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE)) {
 			extern void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);

@@ -17,7 +17,7 @@
 #include "date_type.h"
 #include <vector>
 
-typedef Pool<Object, ObjectID, 64, 0xFF0000> ObjectPool;
+using ObjectPool = Pool<Object, ObjectID, 64, ObjectID::End().base()>;
 extern ObjectPool _object_pool;
 
 /** An object, such as transmitter, on the map. */

@@ -47,7 +47,7 @@ struct ERNWChunkHandler : ChunkHandler {
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
-			EngineRenew *er = new (index) EngineRenew();
+			EngineRenew *er = new (EngineRenewID(index)) EngineRenew();
 			SlObject(er, slt);
 
 			/* Advanced vehicle lists, ungrouped vehicles got added */

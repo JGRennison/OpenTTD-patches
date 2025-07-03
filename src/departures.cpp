@@ -1226,21 +1226,21 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 			/* Project back the arrival history if the vehicle is already part way along the route, this stops at conditional jumps or jump targets */
 			if (!lod.arrivals_complete) {
 				ArrivalHistoryEntry existing_history_start = lod.arrival_history.empty() ? ArrivalHistoryEntry{ lod.order, lod.expected_tick } : lod.arrival_history.front();
-				OrderID existing_history_start_idx = 0;
-				OrderID arrival_idx = 0;
-				for (OrderID i = 0; i < lod.v->GetNumOrders(); i++) {
+				VehicleOrderID existing_history_start_idx = 0;
+				VehicleOrderID arrival_idx = 0;
+				for (VehicleOrderID i = 0; i < lod.v->GetNumOrders(); i++) {
 					const Order *o = lod.v->GetOrder(i);
 					if (o == existing_history_start.order) existing_history_start_idx = i;
 					if (o == lod.order) arrival_idx = i;
 				}
 
-				OrderID predict_history_starting_from = arrival_idx + 1;
+				VehicleOrderID predict_history_starting_from = arrival_idx + 1;
 				if (predict_history_starting_from >= lod.v->GetNumOrders()) predict_history_starting_from = 0;
 
-				for (OrderID i = 0; i < lod.v->GetNumOrders(); i++) {
+				for (VehicleOrderID i = 0; i < lod.v->GetNumOrders(); i++) {
 					const Order *o = lod.v->GetOrder(i);
 					if (o->IsType(OT_CONDITIONAL)) {
-						auto stop_prediction_at = [&](OrderID target) {
+						auto stop_prediction_at = [&](VehicleOrderID target) {
 							if (target < lod.v->GetNumOrders()) {
 								if (predict_history_starting_from > existing_history_start_idx) {
 									/* Prediction range is cut into two sections by the end of the order list */

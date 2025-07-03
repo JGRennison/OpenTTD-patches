@@ -27,6 +27,9 @@ enum class ScriptType : uint8_t {
 	GS, ///< The script is for Game scripts.
 };
 
+template<typename T>
+concept SquirrelStackValueAsBase = T::script_stack_value_as_base || false;
+
 class ScriptAllocator {
 	friend class Squirrel;
 
@@ -159,6 +162,8 @@ public:
 	 */
 	void AddConst(const char *var_name, uint value) { this->AddConst(var_name, (int)value); }
 
+	void AddConst(const char *var_name, const SquirrelStackValueAsBase auto &value) { this->AddConst(var_name, static_cast<int>(value.base())); }
+
 	/**
 	 * Adds a const to the stack. Depending on the current state this means
 	 *  either a const to a class or to the global space.
@@ -201,6 +206,7 @@ public:
 	void InsertResult(bool result);
 	void InsertResult(int result);
 	void InsertResult(uint result) { this->InsertResult((int)result); }
+	void InsertResult(SquirrelStackValueAsBase auto result) { this->InsertResult(static_cast<int>(result.base())); }
 
 	/**
 	 * Call a method of an instance, in various flavors.

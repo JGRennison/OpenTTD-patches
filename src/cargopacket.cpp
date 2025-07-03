@@ -58,7 +58,7 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
 
 inline uint64_t CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
 {
-	return (((uint64_t) id) << 32) | (cid << 24) | (type << 22);
+	return (((uint64_t) id.base()) << 32) | (cid << 24) | (type << 22);
 }
 
 template <typename F>
