@@ -325,7 +325,8 @@ public:
 		return (this->flags & CCIF_VALID_RESULT);
 	}
 
-	uint32_t GetResultData() const
+private:
+	uint32_t GetResultDataIntl() const
 	{
 		if (this->GetInlineType() == CommandCostInlineType::Result) {
 			return this->inl.result;
@@ -333,6 +334,17 @@ public:
 			return this->inl.aux_data->result;
 		} else {
 			return 0;
+		}
+	}
+
+public:
+	template <typename T = uint32_t>
+	T GetResultData() const
+	{
+		if constexpr (std::is_base_of_v<struct PoolIDBase, T>) {
+			return T(static_cast<typename T::BaseType>(this->GetResultDataIntl()));
+		} else {
+			return static_cast<T>(this->GetResultDataIntl());
 		}
 	}
 
