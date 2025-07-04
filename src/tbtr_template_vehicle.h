@@ -201,7 +201,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	~TemplateReplacement();
 
 	inline GroupID Group() { return this->group; }
-	inline GroupID Template() { return this->sel_template; }
+	inline TemplateID Template() { return this->sel_template; }
 
 	inline void SetGroup(GroupID gid) { this->group = gid; }
 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }

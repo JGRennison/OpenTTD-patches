@@ -605,7 +605,7 @@ CommandCost CmdCreateGroupFromList(DoCommandFlag flags, VehicleListIdentifier vl
 		if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
 		if (!name.empty()) {
-			Command<CMD_ALTER_GROUP>::Do(flags, AlterGroupMode::Rename, g->index, 0, name);
+			Command<CMD_ALTER_GROUP>::Do(flags, AlterGroupMode::Rename, g->index, INVALID_GROUP, name);
 		}
 
 		for (const Vehicle *v : list) {
@@ -680,7 +680,7 @@ CommandCost CmdAddVehicleGroup(DoCommandFlag flags, GroupID group_id, VehicleID 
 		ret = CmdCreateGroup(flags, v->type, INVALID_GROUP);
 		if (ret.Failed()) return ret;
 		if (ret.HasResultData()) {
-			new_g = ret.GetResultData();
+			new_g = ret.GetResultData<GroupID>();
 		} else if (flags & DC_EXEC) {
 			return CMD_ERROR;
 		}

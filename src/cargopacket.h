@@ -15,6 +15,7 @@
 #include "station_type.h"
 #include "order_type.h"
 #include "cargo_type.h"
+#include "source_type.h"
 #include "vehicle_type.h"
 #include "company_type.h"
 #include "core/multimap.hpp"
@@ -65,7 +66,7 @@ private:
 	TileIndex source_xy = INVALID_TILE; ///< The origin of the cargo.
 	Vector travelled{0, 0}; ///< If cargo is in station: the vector from the unload tile to the source tile. If in vehicle: an intermediate value.
 
-	Source source{INVALID_SOURCE, SourceType::Industry}; ///< Source of the cargo
+	Source source{Source::Invalid, SourceType::Industry}; ///< Source of the cargo
 
 	uint8_t flags = 0;                             ///< NOSAVE: temporary flags
 	StationID first_station = INVALID_STATION;     ///< The station where the cargo came from first.

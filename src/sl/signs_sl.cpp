@@ -33,7 +33,7 @@ static void Load_SIGN()
 {
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Sign *si = new (index) Sign();
+		Sign *si = new (SignID(index)) Sign();
 		SlObject(si, _sign_desc);
 		/* Before version 6.1, signs didn't have owner.
 		 * Before version 83, invalid signs were determined by si->str == 0.

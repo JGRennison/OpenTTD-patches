@@ -19,7 +19,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <string>
 
-typedef Pool<Group, GroupID, 16, 64000> GroupPool;
+using GroupPool = Pool<Group, GroupID, 16, GroupID::End().base()>;
 extern GroupPool _group_pool; ///< Pool of groups.
 
 /** Statistics and caches on the vehicles in a group. */

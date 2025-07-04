@@ -731,8 +731,8 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	selected = -1;
 
 	if (include_default) {
-		if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+		if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP.base();
+		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP.base(), false));
 	}
 
 	auto output_groups = y_combinator([&](auto output_groups, uint indent, GroupID parent_filter) -> void {
@@ -741,9 +741,9 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 		});
 		for (auto it = start; it != list.end() && (*it)->parent == parent_filter; ++it) {
 			const Group *g = *it;
-			if (group_id == g->index) selected = group_id;
+			if (group_id == g->index) selected = group_id.base();
 			SetDParam(0, g->index);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_GROUP_NAME, g->index, false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_GROUP_NAME, g->index.base(), false));
 			if (seen_parents.count(g->index)) {
 				/* Output child groups */
 				output_groups(indent + 1, g->index);
@@ -2521,14 +2521,14 @@ public:
 						DropDownList dlist;
 						if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
 							selected = -1;
-							if (item.GetValue() == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-							dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+							if (item.GetValue() == DEFAULT_GROUP) selected = DEFAULT_GROUP.base();
+							dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP.base(), false));
 
 							for (const Company *c : Company::Iterate()) {
 								if (c->index == this->GetOwner()) continue;
 
 								int cselected;
-								DropDownList clist = GetGroupDropDownList(c->index, item.GetValue(), cselected, false);
+								DropDownList clist = GetGroupDropDownList(c->index, GroupID(item.GetValue()), cselected, false);
 								if (clist.empty()) continue;
 
 								dlist.push_back(MakeDropDownListDividerItem());
@@ -2538,7 +2538,7 @@ public:
 								dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
 							}
 						} else {
-							dlist = GetGroupDropDownList(this->GetOwner(), item.GetValue(), selected);
+							dlist = GetGroupDropDownList(this->GetOwner(), GroupID(item.GetValue()), selected);
 						}
 						ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN, 0);
 						break;
@@ -3047,7 +3047,7 @@ public:
 
 		if (IsDepotTypeTile(tile, TRANSPORT_RAIL)) {
 			if (stations_only) return;
-			item.SetValue(GetDepotIndex(tile));
+			item.SetValue(GetDepotIndex(tile).base());
 			item.SetAuxField(TROCAF_DEPOT);
 		} else if (IsRailWaypointTile(tile)) {
 			if (stations_only) return;
@@ -3794,11 +3794,11 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							switch (item.GetValue()) {
-								case INVALID_GROUP:
+								case INVALID_GROUP.base():
 									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
-								case DEFAULT_GROUP:
+								case DEFAULT_GROUP.base():
 									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_GROUP_DEFAULT_TRAINS);
 									break;
 

@@ -15,6 +15,7 @@
 #include "cargo_type.h"
 #include "vehicle_type.h"
 #include "company_type.h"
+#include "source_type.h"
 
 void ResetPriceBaseMultipliers();
 void SetPriceBaseMultiplier(Price price, int factor);

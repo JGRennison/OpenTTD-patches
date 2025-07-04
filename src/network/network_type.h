@@ -11,18 +11,12 @@
 #define NETWORK_TYPE_H
 
 #include "../core/enum_type.hpp"
+#include "../core/pool_type.hpp"
 #include <vector>
 #include <string>
 
 /** How many clients can we have */
 static const uint MAX_CLIENTS = 255;
-
-/**
- * The number of slots; must be at least 1 more than MAX_CLIENTS. It must
- * furthermore be less than or equal to 256 as client indices (sent over
- * the network) are 8 bits. It needs 1 more for the dedicated server.
- */
-static const uint MAX_CLIENT_SLOTS = 256;
 
 /**
  * Vehicletypes in the order they are send in info packets.
@@ -55,13 +49,13 @@ enum ClientID : uint32_t {
 };
 
 /** Indices into the client related pools */
-typedef uint8_t ClientPoolID;
+using ClientPoolID = PoolID<uint16_t, struct ClientPoolIDTag, MAX_CLIENTS + 1 /* dedicated server. */, 0xFFFF>;
 
 /** Indices into the admin tables. */
-typedef uint8_t AdminID;
+using AdminID = PoolID<uint8_t, struct AdminIDTag, 16, 0xFF>;
 
 /** An invalid admin marker. */
-static const AdminID INVALID_ADMIN_ID = UINT8_MAX;
+static constexpr AdminID INVALID_ADMIN_ID = AdminID::Invalid();
 
 /** Simple calculated statistics of a company */
 struct NetworkCompanyStats {

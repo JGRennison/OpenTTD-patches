@@ -692,7 +692,7 @@ inline void MakeRailDepot(TileIndex t, Owner o, DepotID did, DiagDirection d, Ra
 	SetTileType(t, MP_RAILWAY);
 	SetTileOwner(t, o);
 	SetDockingTile(t, false);
-	_m[t].m2 = did;
+	_m[t].m2 = did.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = RAIL_TILE_DEPOT << 6 | d;

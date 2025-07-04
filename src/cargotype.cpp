@@ -318,8 +318,3 @@ std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptan
 
 	return std::nullopt;
 }
-
-void Source::fmt_format_value(format_target &output) const
-{
-	output.format("source({}, {})", this->id, this->type);
-}

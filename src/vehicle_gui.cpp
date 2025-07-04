@@ -2218,7 +2218,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					} else if (v->group_id != DEFAULT_GROUP) {
 						/* The vehicle has no name, but is member of a group, so print group name and the cargoes */
 						SetDParam(0, STR_GROUP_NAME);
-						SetDParam(1, v->group_id | GROUP_NAME_HIERARCHY);
+						SetDParam(1, v->group_id.base() | GROUP_NAME_HIERARCHY);
 						SetDParam(2, STR_VEHICLE_LIST_CARGO);
 						SetDParam(3, vehicle_cargoes);
 						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_NAME_AND_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
@@ -2233,7 +2233,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 				} else if (v->group_id != DEFAULT_GROUP) {
 					/* The vehicle has no name, but is member of a group, so print group name */
-					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
+					SetDParam(0, v->group_id.base() | GROUP_NAME_HIERARCHY);
 					DrawString(tr.left, tr.right, ir.top, STR_GROUP_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 				}
 
@@ -2287,7 +2287,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					if (show_group) {
 						/* The vehicle is member of a group, so print group name and the cargoes */
 						SetDParam(0, STR_GROUP_NAME);
-						SetDParam(1, gid | GROUP_NAME_HIERARCHY);
+						SetDParam(1, gid.base() | GROUP_NAME_HIERARCHY);
 						SetDParam(2, STR_VEHICLE_LIST_CARGO);
 						SetDParam(3, vehicle_cargoes);
 						DrawString(tr.left, tr.right, ir.top, STR_VEHICLE_LIST_NAME_AND_CARGO, TC_BLACK, SA_LEFT, false, FS_SMALL);
@@ -2298,7 +2298,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					}
 				} else if (show_group) {
 					/* The vehicle is member of a group, so print group name */
-					SetDParam(0, gid | GROUP_NAME_HIERARCHY);
+					SetDParam(0, gid.base() | GROUP_NAME_HIERARCHY);
 					DrawString(tr.left, tr.right, ir.top, STR_GROUP_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
 				}
 
@@ -2759,7 +2759,7 @@ public:
 			if (!IsInfraTileUsageAllowed(this->vli.vtype, this->vli.company, tile)) return;
 			if (this->vli.vtype == VEH_ROAD && GetPresentRoadTramTypes(Depot::Get(this->vli.index)->xy) != GetPresentRoadTramTypes(tile)) return;
 
-			DestinationID dest = (this->vli.vtype == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
+			DestinationID dest = (this->vli.vtype == VEH_AIRCRAFT) ? DestinationID(GetStationIndex(tile)) : DestinationID(GetDepotIndex(tile));
 			Command<CMD_MASS_CHANGE_ORDER>::Post(this->vli.index, this->vli.vtype, OT_GOTO_DEPOT, this->GetCargoFilter(), dest);
 			ResetObjectToPlace();
 			return;
@@ -3218,7 +3218,7 @@ struct VehicleDetailsWindow : Window {
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME));
 				}
 				if (this->vehicle_group_line_shown) {
-					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
+					SetDParam(0, v->group_id.base() | GROUP_NAME_HIERARCHY);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_GROUP));
 				}
 				if (this->vehicle_weight_ratio_line_shown) {
@@ -3442,7 +3442,7 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_group = this->ShouldShowGroupLine(v);
 				if (should_show_group) {
-					SetDParam(0, v->group_id | GROUP_NAME_HIERARCHY);
+					SetDParam(0, v->group_id.base() | GROUP_NAME_HIERARCHY);
 					DrawString(tr, STR_VEHICLE_INFO_GROUP);
 					tr.top += GetCharacterHeight(FS_NORMAL);
 				}

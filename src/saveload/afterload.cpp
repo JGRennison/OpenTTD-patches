@@ -1245,7 +1245,7 @@ bool AfterLoadGame()
 					if ((GB(_m[t].m5, 4, 2) == ROAD_TILE_CROSSING ? (Owner)_m[t].m3 : GetTileOwner(t)) == OWNER_TOWN) {
 						SetTownIndex(t, CalcClosestTownFromTile(t)->index);
 					} else {
-						SetTownIndex(t, 0);
+						SetTownIndex(t, TOWN_BEGIN);
 					}
 					break;
 
@@ -1478,7 +1478,7 @@ bool AfterLoadGame()
 								GetRailType(t)
 							);
 						} else {
-							TownID town = IsTileOwner(t, OWNER_TOWN) ? ClosestTownFromTile(t, UINT_MAX)->index : 0;
+							TownID town = IsTileOwner(t, OWNER_TOWN) ? ClosestTownFromTile(t, UINT_MAX)->index : TOWN_BEGIN;
 
 							/* MakeRoadNormal */
 							SetTileType(t, MP_ROAD);
@@ -2744,19 +2744,19 @@ bool AfterLoadGame()
 					case TAE_MAIL:
 						/* Town -> Town */
 						s->src.type = s->dst.type = SourceType::Town;
-						if (Town::IsValidID(s->src.id) && Town::IsValidID(s->dst.id)) continue;
+						if (Town::IsValidID(s->src.ToTownID()) && Town::IsValidID(s->dst.ToTownID())) continue;
 						break;
 					case TAE_GOODS:
 					case TAE_FOOD:
 						/* Industry -> Town */
 						s->src.type = SourceType::Industry;
 						s->dst.type = SourceType::Town;
-						if (Industry::IsValidID(s->src.id) && Town::IsValidID(s->dst.id)) continue;
+						if (Industry::IsValidID(s->src.ToIndustryID()) && Town::IsValidID(s->dst.ToTownID())) continue;
 						break;
 					default:
 						/* Industry -> Industry */
 						s->src.type = s->dst.type = SourceType::Industry;
-						if (Industry::IsValidID(s->src.id) && Industry::IsValidID(s->dst.id)) continue;
+						if (Industry::IsValidID(s->src.ToIndustryID()) && Industry::IsValidID(s->dst.ToIndustryID())) continue;
 						break;
 				}
 			} else {
@@ -2774,8 +2774,8 @@ bool AfterLoadGame()
 						if (ss != nullptr && sd != nullptr && ss->owner == sd->owner &&
 								Company::IsValidID(ss->owner)) {
 							s->src.type = s->dst.type = SourceType::Town;
-							s->src.id = ss->town->index;
-							s->dst.id = sd->town->index;
+							s->src.SetIndex(ss->town->index);
+							s->dst.SetIndex(sd->town->index);
 							s->awarded = ss->owner;
 							continue;
 						}
@@ -2818,8 +2818,8 @@ bool AfterLoadGame()
 				d = nullptr;
 				continue;
 			}
-			_m[d->xy].m2 = d->index;
-			if (IsTileType(d->xy, MP_WATER)) _m[GetOtherShipDepotTile(d->xy)].m2 = d->index;
+			_m[d->xy].m2 = d->index.base();
+			if (IsTileType(d->xy, MP_WATER)) _m[GetOtherShipDepotTile(d->xy)].m2 = d->index.base();
 		}
 	}
 
@@ -4510,7 +4510,7 @@ bool AfterLoadGame()
 		Company *c = Company::Get(g->owner);
 		if (IsSavegameVersionBefore(SLV_GROUP_NUMBERS) && SlXvIsFeatureMissing(XSLFI_GROUP_NUMBERS)) {
 			/* Use the index as group number when converting old savegames. */
-			g->number = c->freegroups.UseID(g->index);
+			g->number = c->freegroups.UseID(g->index.base());
 		} else {
 			c->freegroups.UseID(g->number);
 		}

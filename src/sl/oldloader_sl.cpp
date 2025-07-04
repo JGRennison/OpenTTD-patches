@@ -617,7 +617,7 @@ static const OldChunks town_chunk[] = {
 
 static bool LoadOldTown(LoadgameState *ls, int num)
 {
-	Town *t = new (num) Town();
+	Town *t = new (TownID(num)) Town();
 	if (!LoadChunk(ls, t, town_chunk)) return false;
 
 	if (t->xy != 0) {
@@ -684,7 +684,7 @@ static const OldChunks depot_chunk[] = {
 
 static bool LoadOldDepot(LoadgameState *ls, int num)
 {
-	Depot *d = new (num) Depot();
+	Depot *d = new (DepotID(num)) Depot();
 	if (!LoadChunk(ls, d, depot_chunk)) return false;
 
 	if (d->xy != 0) {
@@ -1425,7 +1425,7 @@ static const OldChunks sign_chunk[] = {
 
 static bool LoadOldSign(LoadgameState *ls, int num)
 {
-	Sign *si = new (num) Sign();
+	Sign *si = new (SignID(num)) Sign();
 	if (!LoadChunk(ls, si, sign_chunk)) return false;
 
 	if (_old_string_id != 0) {

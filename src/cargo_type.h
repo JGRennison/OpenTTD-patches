@@ -146,31 +146,4 @@ struct CargoArray : std::array<uint, NUM_CARGO> {
 	}
 };
 
-
-/** Types of cargo source and destination */
-enum class SourceType : uint8_t {
-	Industry,     ///< Source/destination is an industry
-	Town,         ///< Source/destination is a town
-	Headquarters, ///< Source/destination are company headquarters
-};
-
-typedef uint16_t SourceID; ///< Contains either industry ID, town ID or company ID (or INVALID_SOURCE)
-static const SourceID INVALID_SOURCE = 0xFFFF; ///< Invalid/unknown index of source
-
-/** A location from where cargo can come from (or go to). Specifically industries, towns and headquarters. */
-struct Source {
-	SourceID id; ///< Index of industry/town/HQ, INVALID_SOURCE if unknown/invalid.
-	SourceType type; ///< Type of \c source_id.
-
-	auto operator<=>(const Source &source) const = default;
-
-	template <typename T>
-	void Serialise(T &&buffer) const { buffer.Send_generic_seq(this->id, this->type); }
-
-	template <typename T, typename V>
-	bool Deserialise(T &buffer, V &&default_string_validation) { buffer.Recv_generic_seq(default_string_validation, this->id, this->type); return true; }
-
-	void fmt_format_value(struct format_target &output) const;
-};
-
 #endif /* CARGO_TYPE_H */

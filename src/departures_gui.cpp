@@ -256,7 +256,7 @@ protected:
 		}
 
 		for (GroupID gid : groups) {
-			SetDParam(0, (uint64_t)(gid | GROUP_NAME_HIERARCHY));
+			SetDParam(0, (uint64_t)(gid.base() | GROUP_NAME_HIERARCHY));
 			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width + 4;
 			if (width > this->group_width) this->group_width = width;
 		}
@@ -385,7 +385,7 @@ public:
 
 		this->source_type = DST_DEPOT;
 		SetBit(this->source.order_type_mask, OT_GOTO_DEPOT);
-		this->source.destination = (vt == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
+		this->source.destination = (vt == VEH_AIRCRAFT) ? DestinationID(GetStationIndex(tile)) : DestinationID(GetDepotIndex(tile));
 		this->title_params[0] = STR_DEPOT_NAME;
 		this->title_params[1] = vt;
 		this->title_params[2] = this->source.destination.base();
@@ -1424,7 +1424,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
 			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
 
-			SetDParam(0, (uint64_t)(d->vehicle->group_id | GROUP_NAME_HIERARCHY));
+			SetDParam(0, (uint64_t)(d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
 			DrawString(group_left, group_right, y + 1, STR_DEPARTURES_GROUP);
 		}
 

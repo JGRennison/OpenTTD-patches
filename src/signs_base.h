@@ -17,7 +17,7 @@
 #include "company_func.h"
 #include <string>
 
-typedef Pool<Sign, SignID, 16, 64000> SignPool;
+typedef Pool<Sign, SignID, 16, SignID::End().base()> SignPool;
 extern SignPool _sign_pool;
 
 struct Sign : SignPool::PoolItem<&_sign_pool> {

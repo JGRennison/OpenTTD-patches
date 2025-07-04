@@ -259,7 +259,7 @@ private:
 		while (g != nullptr) {
 			g = Group::GetIfValid(g->parent);
 			if (g != nullptr && g->IsFolded(GroupFoldBits::GroupView)) {
-				this->vli.index = g->index;
+				this->vli.SetIndex(g->index);
 				this->vehgroups.ForceRebuild();
 			}
 		}
@@ -589,7 +589,7 @@ public:
 
 		GroupID group = this->vli.ToGroupID();
 		if (!(IsAllGroupID(group) || IsDefaultGroupID(group) || Group::IsValidID(group))) {
-			this->vli.index = ALL_GROUP;
+			this->vli.SetIndex(ALL_GROUP);
 			HideDropDownMenu(this);
 		}
 
@@ -647,7 +647,7 @@ public:
 
 		/* Disable all lists management button when the list is empty */
 		this->SetWidgetDisabledState(WID_GL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList());
-		this->SetWidgetsDisabledState(this->vehicles.empty() || _local_company != this->vli.company || (IsTopLevelGroupID(this->vli.index) && _settings_client.gui.disable_top_veh_list_mass_actions),
+		this->SetWidgetsDisabledState(this->vehicles.empty() || _local_company != this->vli.company || (IsTopLevelGroupID(this->vli.ToGroupID()) && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_GL_STOP_ALL,
 				WID_GL_START_ALL);
 
@@ -929,7 +929,7 @@ public:
 					if (!this->vehgroups.empty()) {
 						std::string name = GenerateAutoNameForVehicleGroup(this->vehgroups[0].vehicles_begin[0]);
 						if (!name.empty()) {
-							Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->vli.index, 0, name);
+							Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->vli.ToGroupID(), INVALID_GROUP, name);
 							return;
 						}
 					}
@@ -958,7 +958,7 @@ public:
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
 				DropDownList list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.ToGroupID()), this->vli.vtype == VEH_TRAIN,
-						0, false, IsTopLevelGroupID(this->vli.index));
+						0, false, IsTopLevelGroupID(this->vli.ToGroupID()));
 				ShowDropDownList(this, std::move(list), -1, WID_GL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -1111,7 +1111,7 @@ public:
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str.has_value()) Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->group_rename, 0, *str);
+		if (str.has_value()) Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->group_rename, INVALID_GROUP, *str);
 		this->group_rename = INVALID_GROUP;
 	}
 
@@ -1428,7 +1428,7 @@ void CcCreateGroup(const CommandCost &result, VehicleType vt, GroupID parent_gro
 	if (result.Failed() || !result.HasResultData() || vt >= VEH_COMPANY_END) return;
 
 	VehicleGroupWindow *w = FindVehicleGroupWindow(vt, _current_company);
-	if (w != nullptr) w->ShowRenameGroupWindow(result.GetResultData(), true);
+	if (w != nullptr) w->ShowRenameGroupWindow(result.GetResultData<GroupID>(), true);
 }
 
 /**

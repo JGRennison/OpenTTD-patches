@@ -450,7 +450,7 @@ inline void MakeShipDepot(TileIndex t, Owner o, DepotID did, DepotPart part, Axi
 	SetTileOwner(t, o);
 	SetWaterClass(t, original_water_class);
 	SetDockingTile(t, false);
-	_m[t].m2 = did;
+	_m[t].m2 = did.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = part << WBL_DEPOT_PART | a << WBL_DEPOT_AXIS;

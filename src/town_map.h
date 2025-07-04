@@ -22,7 +22,7 @@
 inline TownID GetTownIndex(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE) || (IsTileType(t, MP_ROAD) && !IsRoadDepot(t)), t);
-	return _m[t].m2;
+	return static_cast<TownID>(_m[t].m2);
 }
 
 /**

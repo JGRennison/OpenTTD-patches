@@ -121,8 +121,8 @@ std::pair<NewsReferenceType, NewsReferenceType> SetupSubsidyDecodeParam(const Su
 static inline void SetPartOfSubsidyFlag(Source source, PartOfSubsidy flag)
 {
 	switch (source.type) {
-		case SourceType::Industry: Industry::Get(source.id)->part_of_subsidy |= flag; return;
-		case SourceType::Town: Town::Get(source.id)->cache.part_of_subsidy |= flag; return;
+		case SourceType::Industry: Industry::Get(source.ToIndustryID())->part_of_subsidy |= flag; return;
+		case SourceType::Town: Town::Get(source.ToTownID())->cache.part_of_subsidy |= flag; return;
 		default: NOT_REACHED();
 	}
 }
@@ -186,8 +186,8 @@ static bool CheckSubsidyDuplicate(CargoType cargo, Source src, Source dst)
  */
 static bool CheckSubsidyDistance(Source src, Source dst)
 {
-	TileIndex tile_src = (src.type == SourceType::Town) ? Town::Get(src.id)->xy : Industry::Get(src.id)->location.tile;
-	TileIndex tile_dst = (dst.type == SourceType::Town) ? Town::Get(dst.id)->xy : Industry::Get(dst.id)->location.tile;
+	TileIndex tile_src = (src.type == SourceType::Town) ? Town::Get(src.ToTownID())->xy : Industry::Get(src.ToIndustryID())->location.tile;
+	TileIndex tile_dst = (dst.type == SourceType::Town) ? Town::Get(dst.ToTownID())->xy : Industry::Get(dst.ToIndustryID())->location.tile;
 
 	return (DistanceManhattan(tile_src, tile_dst) <= SUBSIDY_MAX_DISTANCE);
 }
@@ -235,20 +235,20 @@ CommandCost CmdCreateSubsidy(DoCommandFlag flags, CargoType cargo_type, Source s
 
 	switch (src.type) {
 		case SourceType::Town:
-			if (!Town::IsValidID(src.id)) return CMD_ERROR;
+			if (!Town::IsValidID(src.ToTownID())) return CMD_ERROR;
 			break;
 		case SourceType::Industry:
-			if (!Industry::IsValidID(src.id)) return CMD_ERROR;
+			if (!Industry::IsValidID(src.ToIndustryID())) return CMD_ERROR;
 			break;
 		default:
 			return CMD_ERROR;
 	}
 	switch (dst.type) {
 		case SourceType::Town:
-			if (!Town::IsValidID(dst.id)) return CMD_ERROR;
+			if (!Town::IsValidID(dst.ToTownID())) return CMD_ERROR;
 			break;
 		case SourceType::Industry:
-			if (!Industry::IsValidID(dst.id)) return CMD_ERROR;
+			if (!Industry::IsValidID(dst.ToIndustryID())) return CMD_ERROR;
 			break;
 		default:
 			return CMD_ERROR;
@@ -413,7 +413,7 @@ bool FindSubsidyIndustryCargoRoute()
 bool FindSubsidyCargoDestination(CargoType cargo_type, Source src)
 {
 	/* Choose a random destination. */
-	Source dst{INVALID_SOURCE, Chance16(1, 2) ? SourceType::Town : SourceType::Industry};
+	Source dst{Source::Invalid, Chance16(1, 2) ? SourceType::Town : SourceType::Industry};
 
 	switch (dst.type) {
 		case SourceType::Town: {
@@ -432,7 +432,7 @@ bool FindSubsidyCargoDestination(CargoType cargo_type, Source src)
 			/* Check if the town can accept this cargo. */
 			if (town_cargo_accepted[cargo_type] < 8) return false;
 
-			dst.id = dst_town->index;
+			dst.SetIndex(dst_town->index);
 			break;
 		}
 
@@ -444,7 +444,7 @@ bool FindSubsidyCargoDestination(CargoType cargo_type, Source src)
 			/* The industry must accept the cargo */
 			if (!dst_ind->IsCargoAccepted(cargo_type)) return false;
 
-			dst.id = dst_ind->index;
+			dst.SetIndex(dst_ind->index);
 			break;
 		}
 
@@ -549,13 +549,13 @@ void SubsidyMonthlyLoop()
 bool CheckSubsidised(CargoType cargo_type, CompanyID company, Source src, const Station *st)
 {
 	/* If the source isn't subsidised, don't continue */
-	if (src.id == INVALID_SOURCE) return false;
+	if (!src.IsValid()) return false;
 	switch (src.type) {
 		case SourceType::Industry:
-			if (!(Industry::Get(src.id)->part_of_subsidy & POS_SRC)) return false;
+			if (!(Industry::Get(src.ToIndustryID())->part_of_subsidy & POS_SRC)) return false;
 			break;
 		case SourceType::Town:
-			if (!(Town::Get(src.id)->cache.part_of_subsidy & POS_SRC)) return false;
+			if (!(Town::Get(src.ToTownID())->cache.part_of_subsidy & POS_SRC)) return false;
 			break;
 		default: return false;
 	}
@@ -589,7 +589,7 @@ bool CheckSubsidised(CargoType cargo_type, CompanyID company, Source src, const 
 			switch (s->dst.type) {
 				case SourceType::Industry:
 					for (const auto &i : st->industries_near) {
-						if (s->dst.id == i.industry->index) {
+						if (s->dst.ToIndustryID() == i.industry->index) {
 							assert(i.industry->part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
@@ -598,7 +598,7 @@ bool CheckSubsidised(CargoType cargo_type, CompanyID company, Source src, const 
 					break;
 				case SourceType::Town:
 					for (const Town *tp : towns_near) {
-						if (s->dst.id == tp->index) {
+						if (s->dst.ToTownID() == tp->index) {
 							assert(tp->cache.part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
@@ -612,4 +612,9 @@ bool CheckSubsidised(CargoType cargo_type, CompanyID company, Source src, const 
 	}
 
 	return subsidised;
+}
+
+void Source::fmt_format_value(format_target &output) const
+{
+	output.format("source({}, {})", this->id, this->type);
 }

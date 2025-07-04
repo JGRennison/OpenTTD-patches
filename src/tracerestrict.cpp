@@ -518,7 +518,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_TRAIN_GROUP: {
-						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, item.GetValue()));
+						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, GroupID(item.GetValue())));
 						break;
 					}
 
@@ -1836,7 +1836,7 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 			break;
 
 		case TRVT_GROUP_INDEX:
-			item.SetValue(INVALID_GROUP);
+			item.SetValue(INVALID_GROUP.base());
 			item.SetAuxField(0);
 			break;
 
@@ -2785,7 +2785,7 @@ int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField 
  * This is called when a station, waypoint or depot is about to be deleted
  * Scan program pool and change any references to it to the invalid station ID, to avoid dangling references
  */
-void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16_t index)
+void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, DestinationID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		for (auto iter : prog->IterateInstructionsMutable()) {
@@ -2793,7 +2793,7 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 			if (item.GetType() == TRIT_COND_CURRENT_ORDER ||
 					item.GetType() == TRIT_COND_NEXT_ORDER ||
 					item.GetType() == TRIT_COND_LAST_STATION) {
-				if (item.GetAuxField() == type && item.GetValue() == index) {
+				if (item.GetAuxField() == type && item.GetValue() == index.base()) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
 			}

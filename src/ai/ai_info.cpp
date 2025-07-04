@@ -27,8 +27,7 @@
  */
 static bool CheckAPIVersion(const std::string &api_version)
 {
-	static constexpr std::initializer_list<const char*> versions{ "0.7", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14", "15" };
-	return std::find_if(versions.begin(), versions.end(), [&](const char *v) { return api_version == v; }) != versions.end();
+	return std::ranges::find(AIInfo::ApiVersions, api_version) != std::end(AIInfo::ApiVersions);
 }
 
 #if defined(_WIN32)

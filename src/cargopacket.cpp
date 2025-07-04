@@ -283,7 +283,7 @@ void CargoPacket::PayDeferredPayments()
 /* static */ void CargoPacket::InvalidateAllFrom(Source src)
 {
 	for (CargoPacket *cp : CargoPacket::Iterate()) {
-		if (cp->source == src) cp->source.id = INVALID_SOURCE;
+		if (cp->source == src) cp->source.MakeInvalid();
 	}
 }
 

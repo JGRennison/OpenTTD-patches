@@ -4102,7 +4102,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 			return CommandCost(no_depot[this->type]);
 		}
 		closest_depot.location = specific_depot;
-		closest_depot.destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
+		closest_depot.destination = (this->type == VEH_AIRCRAFT) ? DestinationID(GetStationIndex(specific_depot)) : DestinationID(GetDepotIndex(specific_depot));
 		closest_depot.reverse = false;
 	} else {
 		closest_depot = this->FindClosestDepot();

@@ -59,7 +59,7 @@ CallAtTargetID CallAtTargetID::FromOrder(const Order *order)
 CallAtTargetID CallAtTargetID::FromTile(TileIndex tile)
 {
 	if (IsDepotTile(tile)) {
-		return CallAtTargetID(DEPOT_TAG | (IsHangarTile(tile) ? GetStationIndex(tile) : GetDepotIndex(tile)));
+		return CallAtTargetID(DEPOT_TAG | GetDepotDestinationIndex(tile).base());
 	}
 	if (IsTileType(tile, MP_STATION)) {
 		return CallAtTargetID::FromStation(GetStationIndex(tile));

@@ -326,11 +326,13 @@ struct NetworkChatWindow : public Window {
 	 */
 	std::optional<std::string> ChatTabCompletionNextItem(uint *item)
 	{
+		uint MAX_CLIENT_SLOTS = ClientPoolID::End().base();
+
 		/* First, try clients */
 		if (*item < MAX_CLIENT_SLOTS) {
 			/* Skip inactive clients */
 			for (NetworkClientInfo *ci : NetworkClientInfo::Iterate(*item)) {
-				*item = ci->index;
+				*item = ci->index.base();
 				return ci->client_name;
 			}
 			*item = MAX_CLIENT_SLOTS;
@@ -339,7 +341,7 @@ struct NetworkChatWindow : public Window {
 		/* Then, try townnames
 		 * Not that the following assumes all town indices are adjacent, ie no
 		 * towns have been deleted. */
-		if (*item < (uint)MAX_CLIENT_SLOTS + Town::GetPoolSize()) {
+		if (*item < MAX_CLIENT_SLOTS + Town::GetPoolSize()) {
 			for (const Town *t : Town::Iterate(*item - MAX_CLIENT_SLOTS)) {
 				/* Get the town-name via the string-system */
 				SetDParam(0, t->index);

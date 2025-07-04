@@ -1926,7 +1926,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					uint32_t id = args.GetNextParameter<uint32_t>();
 					bool recurse = _settings_client.gui.show_group_hierarchy_name && (id & GROUP_NAME_HIERARCHY);
 					id &= ~GROUP_NAME_HIERARCHY;
-					const Group *group = Group::GetIfValid(id);
+					const Group *group = Group::GetIfValid(GroupID(id));
 					if (group == nullptr) break;
 
 					auto handle_group = y_combinator([&](auto handle_group, const Group *g) -> void {
@@ -2087,7 +2087,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
 					} else if (v->group_id != DEFAULT_GROUP && vehicle_names != 0 && v->type < VEH_COMPANY_END) {
 						/* The vehicle has no name, but is member of a group, so print group name */
-						uint32_t group_name = v->group_id;
+						uint32_t group_name = v->group_id.base();
 						if (_settings_client.gui.show_vehicle_group_hierarchy_name) group_name |= GROUP_NAME_HIERARCHY;
 						if (vehicle_names == 1) {
 							auto tmp_params = MakeParameters(group_name, v->unitnumber);

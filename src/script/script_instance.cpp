@@ -103,7 +103,7 @@ void ScriptInstance::Initialize(const std::string &main_script, const std::strin
 
 		if (this->script_type == ScriptType::GS) {
 			if (instance_name == "BeeRewardClass") {
-				this->LoadCompatibilityScripts("brgs", GAME_DIR);
+				this->LoadCompatibilityScript("brgs", GAME_DIR);
 			}
 		}
 
@@ -131,19 +131,10 @@ void ScriptInstance::RegisterAPI()
 	squirrel_register_std(this->engine);
 }
 
-bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Subdirectory dir)
+bool ScriptInstance::LoadCompatibilityScript(std::string_view api_version, Subdirectory dir)
 {
-	const char *api_vers[] = { "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "12", "13", "14", "15" };
-	uint api_idx = 0;
-	for (; api_idx < lengthof(api_vers) ; api_idx++) {
-		if (api_version == api_vers[api_idx]) break;
-	}
-	if (api_idx < 12) {
-		/* 13 and below */
-		this->allow_text_param_mismatch = true;
-	}
-
 	std::string script_name = fmt::format("compat_{}.nut", api_version);
+
 	for (Searchpath sp : _valid_searchpaths) {
 		std::string buf = FioGetDirectory(sp, dir);
 		buf += script_name;
@@ -151,27 +142,34 @@ bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Su
 
 		if (this->engine->LoadScript(buf)) return true;
 
-		ScriptLog::Error("Failed to load API compatibility script");
+		ScriptLog::Error(fmt::format("Failed to load API compatibility script for {}", api_version));
 		Debug(script, 0, "Error compiling / running API compatibility script: {}", buf);
 		return false;
 	}
 
-	const char *message_suffix;
-	switch (dir) {
-		case AI_DIR:
-			message_suffix = ", please check that the 'ai/' directory is properly installed";
-			break;
+	ScriptLog::Warning(fmt::format("API compatibility script for {} not found", api_version));
+	return true;
+}
 
-		case GAME_DIR:
-			message_suffix = ", please check that the 'game/' directory is properly installed";
-			break;
+bool ScriptInstance::LoadCompatibilityScripts(Subdirectory dir, std::span<const std::string_view> api_versions)
+{
+	/* Don't try to load compatibility scripts for the current version. */
+	if (this->versionAPI == std::rbegin(api_versions)->data()) return true;
 
-		default:
-			message_suffix = "";
-			break;
+	ScriptLog::Info(fmt::format("Downgrading API to be compatible with version {}", this->versionAPI));
+
+	/* Downgrade the API till we are the same version as the script. The last
+	 * entry in the list is always the current version, so skip that one. */
+	for (auto it = std::rbegin(api_versions) + 1; it != std::rend(api_versions); ++it) {
+		if (*it == "13") {
+			/* 13 and below */
+			this->allow_text_param_mismatch = true;
+		}
+		if (!this->LoadCompatibilityScript(*it, dir)) return false;
+
+		if (*it == this->versionAPI) break;
 	}
 
-	ScriptLog::Warning(fmt::format("API compatibility script not found: {}{}", script_name, message_suffix));
 	return true;
 }
 

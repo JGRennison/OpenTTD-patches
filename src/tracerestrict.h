@@ -64,8 +64,8 @@ typedef Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 16, 0xFFF0> Trace
 /** The actual pool for trace restrict slot groups. */
 extern TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool;
 
-static const GroupID NEW_TRACE_RESTRICT_SLOT_GROUP     = 0xFFFE; ///< Sentinel for a to-be-created group.
-static const GroupID INVALID_TRACE_RESTRICT_SLOT_GROUP = 0xFFFF; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
+static const TraceRestrictSlotGroupID NEW_TRACE_RESTRICT_SLOT_GROUP     = 0xFFFE; ///< Sentinel for a to-be-created group.
+static const TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP = 0xFFFF; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
 
 /** Counter pool ID type. */
 typedef uint16_t TraceRestrictCounterID;
@@ -1314,7 +1314,7 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type);
 int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField type, StateTicks state_ticks);
 
-void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16_t index);
+void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, struct DestinationID index);
 void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);

@@ -12,6 +12,7 @@
 
 #include "cargo_type.h"
 #include "company_type.h"
+#include "depot_type.h"
 #include "group_type.h"
 #include "order_type.h"
 #include "station_type.h"
@@ -31,6 +32,10 @@ enum VehicleListType : uint8_t {
 	VL_SINGLE_VEH,
 	VLT_END
 };
+
+template<typename T>
+concept VehicleListIdentifierValidType = (std::is_same_v<T, CompanyID> || std::is_same_v<T, DestinationID> || std::is_same_v<T, GroupID> ||
+		std::is_same_v<T, StationID> || std::is_same_v<T, VehicleID>|| std::is_same_v<T, DepotID>) && !std::is_integral_v<T>;
 
 /** The information about a vehicle list. */
 struct VehicleListIdentifier {
@@ -61,6 +66,7 @@ struct VehicleListIdentifier {
 	constexpr VehicleID ToVehicleID() const { assert(this->type == VL_SHARED_ORDERS); return VehicleID(this->index); }
 
 	constexpr void SetIndex(uint32_t index) { this->index = index; }
+	constexpr void SetIndex(VehicleListIdentifierValidType auto index) { this->index = index.base(); }
 
 	/**
 	 * Create a simple vehicle list.
@@ -71,6 +77,9 @@ struct VehicleListIdentifier {
 	 */
 	VehicleListIdentifier(VehicleListType type, VehicleType vtype, CompanyID company, uint index = 0) :
 		type(type), vtype(vtype), company(company), index(index) {}
+
+	VehicleListIdentifier(VehicleListType type, VehicleType vtype, CompanyID company, VehicleListIdentifierValidType auto index) :
+		type(type), vtype(vtype), company(company), index(index.base()) {}
 
 	VehicleListIdentifier() = default;
 };

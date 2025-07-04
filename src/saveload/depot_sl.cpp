@@ -51,7 +51,7 @@ struct DEPTChunkHandler : ChunkHandler {
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
-			Depot *depot = new (index) Depot();
+			Depot *depot = new (DepotID(index)) Depot();
 			SlObject(depot, slt);
 
 			/* Set the town 'pointer' so we can restore it later. */

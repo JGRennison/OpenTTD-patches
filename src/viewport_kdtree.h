@@ -41,14 +41,25 @@ struct ViewportSignKdtreeItem {
 	T GetIdAs() const
 	{
 		IDTypeCheck<T>();
-		return T(this->id);
+		if constexpr (std::is_integral_v<T> || std::is_enum_v<T>) {
+			return T(this->id);
+		} else {
+			return T(static_cast<typename T::BaseType>(this->id));
+		}
+
 	}
 
 	template <typename T>
 	void SetID(T id)
 	{
 		IDTypeCheck<T>();
-		this->id = id;
+		if constexpr (std::is_integral_v<T>) {
+			this->id = id;
+		} else if constexpr (std::is_enum_v<T>) {
+			this->id = to_underlying(id);
+		} else {
+			this->id = id.base();
+		}
 	}
 
 	bool operator== (const ViewportSignKdtreeItem &other) const
