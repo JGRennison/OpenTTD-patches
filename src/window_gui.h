@@ -633,6 +633,9 @@ public:
 	void ProcessScheduledInvalidations();
 	void ProcessHighlightedInvalidations();
 
+	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
+	void InvalidateData(T data, bool gui_scope = true) { this->InvalidateData(data.base(), gui_scope); }
+
 	/*** Event handling ***/
 
 	/**
