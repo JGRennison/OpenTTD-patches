@@ -135,7 +135,7 @@ private:
 	VehicleID sel = INVALID_VEHICLE;
 	VehicleID vehicle_over = INVALID_VEHICLE;
 	bool sell_hovered{};                           ///< A vehicle is being dragged/hovered over the sell button.
-	uint32_t template_index{};
+	TemplateID template_index = INVALID_TEMPLATE;
 	btree::btree_set<VehicleID> pending_deletions; ///< Vehicle IDs where deletion is in progress
 
 public:
@@ -151,7 +151,7 @@ public:
 		this->owner = _local_company;
 
 		this->create_window_open = window_open;
-		this->template_index = (to_edit != nullptr) ? to_edit->index : INVALID_VEHICLE;
+		this->template_index = (to_edit != nullptr) ? to_edit->index : INVALID_TEMPLATE;
 
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
@@ -207,7 +207,7 @@ public:
 	{
 		if (!gui_scope) return;
 
-		if (this->template_index != INVALID_VEHICLE) {
+		if (this->template_index != INVALID_TEMPLATE) {
 			if (TemplateVehicle::GetIfValid(this->template_index) == nullptr) {
 				this->Close();
 				return;
@@ -242,7 +242,7 @@ public:
 			case TCW_OK: {
 				if (this->virtual_train != nullptr) {
 					Command<CMD_REPLACE_TEMPLATE>::Post(STR_ERROR_CAN_T_DO_THIS, this->template_index, this->virtual_train->index);
-				} else if (this->template_index != INVALID_VEHICLE) {
+				} else if (this->template_index != INVALID_TEMPLATE) {
 					Command<CMD_DELETE_TEMPLATE_VEHICLE>::Post(this->template_index);
 				}
 				this->Close();

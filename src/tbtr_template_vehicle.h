@@ -34,7 +34,7 @@
 #include "zoom_func.h"
 
 /** A pool allowing to store up to ~64k templates */
-typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
+using TemplatePool = Pool<TemplateVehicle, TemplateID, 512, TemplateID::End().base()>;
 extern TemplatePool _template_pool;
 
 extern bool _template_vehicle_images_valid;
@@ -100,8 +100,6 @@ public:
 
 	uint8_t subtype;
 	RailType railtype;
-
-	VehicleID index;
 
 	uint16_t real_consist_length;
 

@@ -1168,7 +1168,7 @@ CommandCost CmdReplaceTemplateVehicle(DoCommandFlag flags, TemplateID template_i
 	}
 
 	if (flags & DC_EXEC) {
-		VehicleID old_ID = INVALID_VEHICLE;
+		TemplateID old_ID = INVALID_TEMPLATE;
 
 		bool restore_flags = false;
 		bool reuse_depot_vehicles = false;
@@ -1200,7 +1200,7 @@ CommandCost CmdReplaceTemplateVehicle(DoCommandFlag flags, TemplateID template_i
 		}
 
 		/* Make sure our replacements still point to the correct thing. */
-		if (old_ID != INVALID_VEHICLE && old_ID != template_vehicle->index) {
+		if (old_ID != INVALID_TEMPLATE && old_ID != template_vehicle->index) {
 			bool reindex = false;
 			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 				if (tr->GetTemplateVehicleID() == old_ID) {

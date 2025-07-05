@@ -10,10 +10,12 @@
 #ifndef TBTR_TEMPLATE_VEHICLE_TYPE_H
 #define TBTR_TEMPLATE_VEHICLE_TYPE_H
 
+#include "core/pool_id_type.hpp"
+
 struct TemplateVehicle;
 struct TemplateReplacement;
 
-typedef uint16_t TemplateID;
-static const TemplateID INVALID_TEMPLATE = 0xFFFF;
+using TemplateID = PoolID<uint16_t, struct TemplateIDTag, 64000, 0xFFFF>;
+static constexpr TemplateID INVALID_TEMPLATE = TemplateID::Invalid();
 
 #endif /* TBTR_TEMPLATE_VEHICLE_TYPE_H */
