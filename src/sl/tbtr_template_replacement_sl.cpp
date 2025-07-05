@@ -4,6 +4,11 @@
 
 #include "saveload.h"
 
+struct TemplateReplacement {
+	GroupID group;
+	TemplateID sel_template;
+};
+
 static const NamedSaveLoad _template_replacement_desc[] = {
 	NSL("sel_template", SLE_VAR(TemplateReplacement, sel_template, SLE_UINT16)),
 	NSL("group",        SLE_VAR(TemplateReplacement, group, SLE_UINT16)),
@@ -13,9 +18,13 @@ static void Save_TMPL_RPLS()
 {
 	SaveLoadTableData slt = SlTableHeader(_template_replacement_desc);
 
-	for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		SlSetArrayIndex(tr->index);
-		SlObjectSaveFiltered(tr, slt);
+	size_t index = 0;
+	TemplateReplacement tr{};
+	for (const auto &it : _template_replacements) {
+		tr.group = it.first;
+		tr.sel_template = it.second;
+		SlSetArrayIndex(index++);
+		SlObjectSaveFiltered(&tr, slt);
 	}
 }
 
@@ -24,9 +33,10 @@ static void Load_TMPL_RPLS()
 	SaveLoadTableData slt = SlTableHeaderOrRiff(_template_replacement_desc);
 
 	int index;
+	TemplateReplacement tr{};
 	while ((index = SlIterateArray()) != -1) {
-		TemplateReplacement *tr = new (index) TemplateReplacement();
-		SlObjectLoadFiltered(tr, slt);
+		SlObjectLoadFiltered(&tr, slt);
+		_template_replacements[tr.group] = tr.sel_template;
 	}
 	ReindexTemplateReplacements();
 }

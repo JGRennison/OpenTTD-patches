@@ -409,6 +409,7 @@ static void ShutdownGame()
 	ClearBridgeSimulatedSignalMapping();
 	ClearBridgeSignalStyleMapping();
 	ClearCargoPacketDeferredPayments();
+	ClearTemplateReplacements();
 	PoolBase::Clean(PT_ALL);
 
 	FreeSignalPrograms();

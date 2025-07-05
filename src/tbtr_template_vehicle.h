@@ -31,11 +31,15 @@
 
 #include "sl/saveload_common.h"
 
+#include "3rdparty/robin_hood/robin_hood.h"
+
 #include "zoom_func.h"
 
 /** A pool allowing to store up to ~64k templates */
 using TemplatePool = Pool<TemplateVehicle, TemplateID, 512, TemplateID::End().base()>;
 extern TemplatePool _template_pool;
+
+extern robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacements;
 
 extern bool _template_vehicle_images_valid;
 
@@ -185,41 +189,19 @@ public:
 
 };
 
-// TemplateReplacement stuff
-
-typedef Pool<TemplateReplacement, uint16_t, 16, 1024> TemplateReplacementPool;
-extern TemplateReplacementPool _template_replacement_pool;
-
-struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replacement_pool> {
-	GroupID group;
-	TemplateID sel_template;
-
-	TemplateReplacement(GroupID gid, TemplateID tid) : group(gid), sel_template(tid) {}
-	TemplateReplacement() {}
-	~TemplateReplacement();
-
-	inline GroupID Group() { return this->group; }
-	inline TemplateID Template() { return this->sel_template; }
-
-	inline void SetGroup(GroupID gid) { this->group = gid; }
-	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
-
-	inline TemplateID GetTemplateVehicleID() { return this->sel_template; }
-
-	static void PreCleanPool();
-};
-
-TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid);
 TemplateID GetTemplateIDByGroupID(GroupID gid);
 TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid);
-bool IssueTemplateReplacement(GroupID gid, TemplateID tid);
+void RemoveTemplateReplacement(GroupID gid);
+void IssueTemplateReplacement(GroupID gid, TemplateID tid);
+void RemoveTemplateReplacementsReferencingTemplate(TemplateID tid);
 bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehicle *tv);
 void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *tv);
 
-uint DeleteTemplateReplacementsByGroupID(const Group *g);
+void RemoveTemplateReplacementsFromGroupToBeDeleted(const Group *g);
 
+void ClearTemplateReplacements();
+void ReindexTemplateReplacementsForGroup(GroupID gid);
 void ReindexTemplateReplacements();
-void ReindexTemplateReplacementsRecursive();
 
 /**
  * Guard to inhibit re-indexing of the recursive group to template replacement cache,

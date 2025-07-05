@@ -34,6 +34,7 @@
 #include "vehicle_type.h"
 
 #include "3rdparty/robin_hood/robin_hood.h"
+#include "3rdparty/svector/svector.h"
 
 #include <functional>
 
@@ -42,11 +43,9 @@
 TemplatePool _template_pool("TemplatePool");
 INSTANTIATE_POOL_METHODS(Template)
 
-TemplateReplacementPool _template_replacement_pool("TemplateReplacementPool");
-INSTANTIATE_POOL_METHODS(TemplateReplacement)
-
-robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
+robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacements;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
+static ankerl::svector<GroupID, 16> _template_replacement_pending_group_updates;
 static constexpr uint32_t INDEX_RECURSIVE_GUARD_REINDEX_PENDING = 0x80000000;
 static uint32_t _template_replacement_index_recursive_guard = 0;
 
@@ -127,18 +126,9 @@ TemplateVehicle *TemplateVehicle::GetPrevUnit()
 	return tv;
 }
 
-TemplateReplacement::~TemplateReplacement()
+void ClearTemplateReplacements()
 {
-	if (CleaningPool()) return;
-
-	_template_replacement_index.erase(this->Group());
-	ReindexTemplateReplacementsRecursive();
-	MarkTrainsInGroupAsPendingTemplateReplacement(this->Group(), nullptr);
-}
-
-void TemplateReplacement::PreCleanPool()
-{
-	_template_replacement_index.clear();
+	_template_replacements.clear();
 	_template_replacement_index_recursive.clear();
 }
 
@@ -180,7 +170,7 @@ static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const Tem
 				if (g->parent == INVALID_GROUP) return false;
 				if (g->parent == gid) {
 					/* If this group has its own template defined, it's not a descendant for template inheriting purposes */
-					if (_template_replacement_index.find(g->index) != _template_replacement_index.end()) return false;
+					if (_template_replacements.find(g->index) != _template_replacements.end()) return false;
 					return true;
 				}
 				g = Group::Get(g->parent);
@@ -217,22 +207,10 @@ void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *
 	}
 }
 
-TemplateReplacement *GetTemplateReplacementByGroupID(GroupID gid)
-{
-	if (GetTemplateIDByGroupID(gid) == INVALID_TEMPLATE) return nullptr;
-
-	for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		if (tr->Group() == gid) {
-			return tr;
-		}
-	}
-	return nullptr;
-}
-
 TemplateID GetTemplateIDByGroupID(GroupID gid)
 {
-	auto iter = _template_replacement_index.find(gid);
-	if (iter == _template_replacement_index.end()) return INVALID_TEMPLATE;
+	auto iter = _template_replacements.find(gid);
+	if (iter == _template_replacements.end()) return INVALID_TEMPLATE;
 	return iter->second;
 }
 
@@ -243,70 +221,65 @@ TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid)
 	return iter->second;
 }
 
-bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
+void RemoveTemplateReplacement(GroupID gid)
 {
-	TemplateReplacement *tr = GetTemplateReplacementByGroupID(gid);
-
-	if (tr != nullptr) {
-		/* Then set the new TemplateVehicle and return */
-		tr->SetTemplate(tid);
-		_template_replacement_index[gid] = tid;
-		ReindexTemplateReplacementsRecursive();
-		MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::Get(tid));
-		return true;
-	} else if (TemplateReplacement::CanAllocateItem()) {
-		tr = new TemplateReplacement(gid, tid);
-		_template_replacement_index[gid] = tid;
-		ReindexTemplateReplacementsRecursive();
-		MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::Get(tid));
-		return true;
-	} else {
-		return false;
+	if (_template_replacements.erase(gid) > 0) {
+		ReindexTemplateReplacementsForGroup(gid);
 	}
+}
+
+void IssueTemplateReplacement(GroupID gid, TemplateID tid)
+{
+	_template_replacements[gid] = tid;
+	ReindexTemplateReplacements();
+	MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::Get(tid));
+}
+
+void RemoveTemplateReplacementsReferencingTemplate(TemplateID tid)
+{
+	bool update = false;
+	for (auto it = _template_replacements.begin(); it != _template_replacements.end();) {
+		if (it->second == tid) {
+			_template_replacement_pending_group_updates.push_back(it->first);
+			it = _template_replacements.erase(it);
+			update = true;
+		} else {
+			++it;
+		}
+	}
+	if (update) ReindexTemplateReplacements();
 }
 
 uint TemplateVehicle::NumGroupsUsingTemplate() const
 {
 	uint amount = 0;
-	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		if (tr->sel_template == this->index) {
+	for (const auto &it : _template_replacements) {
+		if (it.second == this->index) {
 			amount++;
 		}
 	}
 	return amount;
 }
 
-uint DeleteTemplateReplacementsByGroupID(const Group *g)
+/*
+ * A group which is about to be deleted is empty and has no children,
+ * so no additional work to update child groups or vehicles is required.
+ */
+void RemoveTemplateReplacementsFromGroupToBeDeleted(const Group *g)
 {
-	if (g->vehicle_type != VEH_TRAIN) return 0;
+	if (g->vehicle_type != VEH_TRAIN) return;
 
-	if (g->parent != INVALID_GROUP) {
-		/* Erase any inherited replacement */
-		_template_replacement_index_recursive.erase(g->index);
-	}
+	_template_replacements.erase(g->index);
+	_template_replacement_index_recursive.erase(g->index);
+}
 
-	if (GetTemplateIDByGroupID(g->index) == INVALID_TEMPLATE) return 0;
-
-	uint del_amount = 0;
-	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		if (tr->group == g->index) {
-			delete tr;
-			del_amount++;
-		}
-	}
-	return del_amount;
+void ReindexTemplateReplacementsForGroup(GroupID gid)
+{
+	_template_replacement_pending_group_updates.push_back(gid);
+	ReindexTemplateReplacements();
 }
 
 void ReindexTemplateReplacements()
-{
-	_template_replacement_index.clear();
-	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		_template_replacement_index[tr->group] = tr->sel_template;
-	}
-	ReindexTemplateReplacementsRecursive();
-}
-
-void ReindexTemplateReplacementsRecursive()
 {
 	if (_template_replacement_index_recursive_guard != 0) {
 		/* Perform the reindex later when the refcount falls to zero */
@@ -320,8 +293,8 @@ void ReindexTemplateReplacementsRecursive()
 
 		const Group *g = group;
 		while (true) {
-			auto iter = _template_replacement_index.find(g->index);
-			if (iter != _template_replacement_index.end()) {
+			auto iter = _template_replacements.find(g->index);
+			if (iter != _template_replacements.end()) {
 				_template_replacement_index_recursive[group->index] = iter->second;
 				break;
 			}
@@ -329,6 +302,12 @@ void ReindexTemplateReplacementsRecursive()
 			g = Group::Get(g->parent);
 		}
 	}
+
+	for (GroupID gid : _template_replacement_pending_group_updates) {
+		MarkTrainsInGroupAsPendingTemplateReplacement(gid, TemplateVehicle::GetIfValid(GetTemplateIDByGroupIDRecursive(gid)));
+	}
+	_template_replacement_pending_group_updates.clear();
+	_template_replacement_pending_group_updates.shrink_to_fit();
 }
 
 ReindexTemplateReplacementsRecursiveGuard::ReindexTemplateReplacementsRecursiveGuard()
@@ -342,7 +321,7 @@ ReindexTemplateReplacementsRecursiveGuard::~ReindexTemplateReplacementsRecursive
 	if (_template_replacement_index_recursive_guard == INDEX_RECURSIVE_GUARD_REINDEX_PENDING) {
 		/* The refcount is now 0 | the reindex pending bit, clear the bit and do the reindex. */
 		_template_replacement_index_recursive_guard = 0;
-		ReindexTemplateReplacementsRecursive();
+		ReindexTemplateReplacements();
 	}
 }
 
@@ -350,17 +329,13 @@ std::string ValidateTemplateReplacementCaches()
 {
 	assert(_template_replacement_index_recursive_guard == 0);
 
-	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index = std::move(_template_replacement_index);
 	robin_hood::unordered_flat_map<GroupID, TemplateID> saved_template_replacement_index_recursive = std::move(_template_replacement_index_recursive);
 
 	ReindexTemplateReplacements();
 
-	bool match = (saved_template_replacement_index == _template_replacement_index);
 	bool match_recursive = (saved_template_replacement_index_recursive == _template_replacement_index_recursive);
-	_template_replacement_index = std::move(saved_template_replacement_index);
 	_template_replacement_index_recursive = std::move(saved_template_replacement_index_recursive);
 
-	if (!match) return "Index cache does not match";
 	if (!match_recursive) return "Recursive index cache does not match";
 
 	return "";

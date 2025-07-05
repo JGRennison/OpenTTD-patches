@@ -835,7 +835,7 @@ struct RefitWindow : public Window {
 	VehicleID selected_vehicle;  ///< First vehicle in the current selection.
 	uint8_t num_vehicles;        ///< Number of selected vehicles.
 	bool auto_refit;             ///< Select cargo for auto-refitting.
-	bool is_virtual_train;       ///< TemplateReplacement, whether the selected vehicle is virtual
+	bool is_virtual_train;       ///< Template replacement, whether the selected vehicle is virtual
 	mutable std::map<VehicleID, std::string> ship_part_names; ///< Ship part name strings
 
 	/**

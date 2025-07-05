@@ -568,17 +568,13 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	/* Change ownership of template vehicles */
 	if (new_owner == INVALID_OWNER) {
+		ReindexTemplateReplacementsRecursiveGuard guard;
 		for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->owner == old_owner && tv->Prev() == nullptr) {
-				for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-					if (tr->Template() == tv->index) {
-						delete tr;
-					}
-				}
+				RemoveTemplateReplacementsReferencingTemplate(tv->index);
 				delete tv;
 			}
 		}
-		ReindexTemplateReplacements();
 	} else {
 		for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->owner == old_owner) tv->owner = new_owner;

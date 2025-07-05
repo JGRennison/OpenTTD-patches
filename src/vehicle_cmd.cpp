@@ -1202,9 +1202,9 @@ CommandCost CmdReplaceTemplateVehicle(DoCommandFlag flags, TemplateID template_i
 		/* Make sure our replacements still point to the correct thing. */
 		if (old_ID != INVALID_TEMPLATE && old_ID != template_vehicle->index) {
 			bool reindex = false;
-			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-				if (tr->GetTemplateVehicleID() == old_ID) {
-					tr->SetTemplate(template_vehicle->index);
+			for (auto &it : _template_replacements) {
+				if (it.second == old_ID) {
+					it.second = template_vehicle->index;
 					reindex = true;
 				}
 			}
@@ -1273,7 +1273,7 @@ CommandCost CmdTemplateVehicleFromTrain(DoCommandFlag flags, VehicleID veh_id)
  */
 CommandCost CmdDeleteTemplateVehicle(DoCommandFlag flags, TemplateID template_id)
 {
-	// Identify template to delete
+	/* Identify template to delete */
 	TemplateVehicle *del = TemplateVehicle::GetIfValid(template_id);
 
 	if (del == nullptr) return CMD_ERROR;
@@ -1281,13 +1281,8 @@ CommandCost CmdDeleteTemplateVehicle(DoCommandFlag flags, TemplateID template_id
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		// Remove corresponding template replacements if existing
-		for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-			if (tr->Template() == del->index) {
-				delete tr;
-			}
-		}
-
+		/* Remove corresponding template replacements if existing */
+		RemoveTemplateReplacementsReferencingTemplate(del->index);
 		delete del;
 
 		InvalidateWindowClassesData(WC_CREATE_TEMPLATE, 0);
@@ -1306,13 +1301,16 @@ CommandCost CmdDeleteTemplateVehicle(DoCommandFlag flags, TemplateID template_id
  */
 CommandCost CmdIssueTemplateReplacement(DoCommandFlag flags, GroupID group_id, TemplateID template_id)
 {
+	Group *g = Group::GetIfValid(group_id);
+	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
+
+	TemplateVehicle *tv = TemplateVehicle::GetIfValid(template_id);
+	if (tv == nullptr) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(tv->owner);
+	if (ret.Failed()) return ret;
+
 	if (flags & DC_EXEC) {
-		bool succeeded = IssueTemplateReplacement(group_id, template_id);
-
-		if (!succeeded) {
-			return CMD_ERROR;
-		}
-
+		IssueTemplateReplacement(group_id, template_id);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
 
@@ -1328,12 +1326,11 @@ CommandCost CmdIssueTemplateReplacement(DoCommandFlag flags, GroupID group_id, T
  */
 CommandCost CmdDeleteTemplateReplacement(DoCommandFlag flags, GroupID group_id)
 {
-	if (flags & DC_EXEC) {
-		TemplateReplacement *tr = GetTemplateReplacementByGroupID(group_id);
-		if (tr != nullptr) {
-			delete tr;
-		}
+	Group *g = Group::GetIfValid(group_id);
+	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
+	if (flags & DC_EXEC) {
+		RemoveTemplateReplacement(group_id);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
 
