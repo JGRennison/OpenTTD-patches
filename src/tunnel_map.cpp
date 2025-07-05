@@ -20,8 +20,8 @@
 TunnelPool _tunnel_pool("Tunnel");
 INSTANTIATE_POOL_METHODS(Tunnel)
 
-static robin_hood::unordered_map<TileIndex, TunnelID> tunnel_tile_index_map;
-static btree::btree_multimap<uint64_t, Tunnel*> tunnel_axis_height_index;
+static robin_hood::unordered_map<TileIndex, TunnelID> _tunnel_tile_index_map;
+static btree::btree_multimap<uint64_t, Tunnel *> _tunnel_axis_height_index;
 
 static uint64_t GetTunnelAxisHeightCacheKey(TileIndex tile, uint8_t height, bool y_axis) {
 	if (y_axis) {
@@ -33,7 +33,7 @@ static uint64_t GetTunnelAxisHeightCacheKey(TileIndex tile, uint8_t height, bool
 	}
 }
 
-static inline uint64_t GetTunnelAxisHeightCacheKey(const Tunnel* t) {
+static inline uint64_t GetTunnelAxisHeightCacheKey(const Tunnel *t) {
 	return GetTunnelAxisHeightCacheKey(t->tile_n, t->height, t->tile_s - t->tile_n > (TileIndexDiff)Map::MaxX());
 }
 
@@ -45,15 +45,15 @@ Tunnel::~Tunnel()
 	if (CleaningPool()) return;
 
 	if (this->index >= TUNNEL_ID_MAP_LOOKUP) {
-		tunnel_tile_index_map.erase(this->tile_n);
-		tunnel_tile_index_map.erase(this->tile_s);
+		_tunnel_tile_index_map.erase(this->tile_n);
+		_tunnel_tile_index_map.erase(this->tile_s);
 	}
 
 	[[maybe_unused]] bool have_erased = false;
 	const auto key = GetTunnelAxisHeightCacheKey(this);
-	for (auto it = tunnel_axis_height_index.lower_bound(key); it != tunnel_axis_height_index.end() && it->first == key; ++it) {
+	for (auto it = _tunnel_axis_height_index.lower_bound(key); it != _tunnel_axis_height_index.end() && it->first == key; ++it) {
 		if (it->second == this) {
-			tunnel_axis_height_index.erase(it);
+			_tunnel_axis_height_index.erase(it);
 			have_erased = true;
 			break;
 		}
@@ -67,11 +67,11 @@ Tunnel::~Tunnel()
 void Tunnel::UpdateIndexes()
 {
 	if (this->index >= TUNNEL_ID_MAP_LOOKUP) {
-		tunnel_tile_index_map[this->tile_n] = this->index;
-		tunnel_tile_index_map[this->tile_s] = this->index;
+		_tunnel_tile_index_map[this->tile_n] = this->index;
+		_tunnel_tile_index_map[this->tile_s] = this->index;
 	}
 
-	tunnel_axis_height_index.insert({ GetTunnelAxisHeightCacheKey(this), this });
+	_tunnel_axis_height_index.insert({ GetTunnelAxisHeightCacheKey(this), this });
 }
 
 /**
@@ -79,14 +79,14 @@ void Tunnel::UpdateIndexes()
  */
 void Tunnel::PreCleanPool()
 {
-	tunnel_tile_index_map.clear();
-	tunnel_axis_height_index.clear();
+	_tunnel_tile_index_map.clear();
+	_tunnel_axis_height_index.clear();
 }
 
 TunnelID GetTunnelIndexByLookup(TileIndex t)
 {
-	auto iter = tunnel_tile_index_map.find(t);
-	assert_tile(iter != tunnel_tile_index_map.end(), t);
+	auto iter = _tunnel_tile_index_map.find(t);
+	assert_tile(iter != _tunnel_tile_index_map.end(), t);
 	return iter->second;
 }
 
@@ -104,7 +104,7 @@ TileIndex GetOtherTunnelEnd(TileIndex tile)
 static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayFlags flags, bool y_axis, TileIndexDiff tile_diff)
 {
 	const auto key = GetTunnelAxisHeightCacheKey(tile, z, y_axis);
-	for (auto it = tunnel_axis_height_index.lower_bound(key); it != tunnel_axis_height_index.end() && it->first == key; ++it) {
+	for (auto it = _tunnel_axis_height_index.lower_bound(key); it != _tunnel_axis_height_index.end() && it->first == key; ++it) {
 		const Tunnel *t = it->second;
 		if (t->tile_n > tile || tile > t->tile_s) continue;
 
