@@ -17,6 +17,7 @@ struct StrongTypedefBase {
 	static inline constexpr bool string_parameter_as_base = true;
 	static inline constexpr bool script_stack_value_as_base = true;
 	static inline constexpr bool integer_type_hint = true;
+	static inline constexpr bool hash_as_base = true;
 };
 
 namespace StrongType {
