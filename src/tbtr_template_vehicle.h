@@ -194,7 +194,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	GroupID group;
 	TemplateID sel_template;
 
-	TemplateReplacement(GroupID gid, TemplateID tid) { this->group = gid; this->sel_template = tid; }
+	TemplateReplacement(GroupID gid, TemplateID tid) : group(gid), sel_template(tid) {}
 	TemplateReplacement() {}
 	~TemplateReplacement();
 
@@ -204,7 +204,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	inline void SetGroup(GroupID gid) { this->group = gid; }
 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
 
-	inline TemplateID GetTemplateVehicleID() { return sel_template; }
+	inline TemplateID GetTemplateVehicleID() { return this->sel_template; }
 
 	static void PreCleanPool();
 };
