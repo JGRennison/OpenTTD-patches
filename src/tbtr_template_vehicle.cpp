@@ -105,17 +105,19 @@ void TemplateVehicle::SetNext(TemplateVehicle *v) { this->next = v; }
 void TemplateVehicle::SetPrev(TemplateVehicle *v) { this->previous = v; }
 void TemplateVehicle::SetFirst(TemplateVehicle *v) { this->first = v; }
 
-TemplateVehicle* TemplateVehicle::GetNextUnit() const
+TemplateVehicle *TemplateVehicle::GetNextUnit() const
 {
 		TemplateVehicle *tv = this->Next();
-		while (tv && HasBit(tv->subtype, GVSF_ARTICULATED_PART)) {
+		while (tv != nullptr && HasBit(tv->subtype, GVSF_ARTICULATED_PART)) {
 			tv = tv->Next();
 		}
-		if (tv && HasBit(tv->subtype, GVSF_MULTIHEADED) && !HasBit(tv->subtype, GVSF_ENGINE)) tv = tv->Next();
+		if (tv != nullptr && HasBit(tv->subtype, GVSF_MULTIHEADED) && !HasBit(tv->subtype, GVSF_ENGINE)) {
+			tv = tv->Next();
+		}
 		return tv;
 }
 
-TemplateVehicle* TemplateVehicle::GetPrevUnit()
+TemplateVehicle *TemplateVehicle::GetPrevUnit()
 {
 	TemplateVehicle *tv = this->Prev();
 	while (tv && HasBit(tv->subtype, GVSF_ARTICULATED_PART|GVSF_ENGINE)) {
@@ -245,7 +247,7 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 {
 	TemplateReplacement *tr = GetTemplateReplacementByGroupID(gid);
 
-	if (tr) {
+	if (tr != nullptr) {
 		/* Then set the new TemplateVehicle and return */
 		tr->SetTemplate(tid);
 		_template_replacement_index[gid] = tid;
