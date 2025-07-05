@@ -66,8 +66,7 @@ CommandCost CmdAddPlanLine(DoCommandFlag flags, const PlanLineCmdData &data)
 		if (p->IsListable()) {
 			pl.SetVisibility(p->visible);
 			if (p->visible) pl.MarkDirty();
-			Window *w = FindWindowById(WC_PLANS, 0);
-			if (w != nullptr) w->InvalidateData(INVALID_PLAN, false);
+			InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
 		}
 	}
 	return CommandCost();
@@ -89,8 +88,7 @@ CommandCost CmdChangePlanVisibility(DoCommandFlag flags, PlanID plan, bool visib
 	if (flags & DC_EXEC) {
 		if (p->visible_by_all != visible) {
 			p->visible_by_all = visible;
-			Window *w = FindWindowById(WC_PLANS, 0);
-			if (w != nullptr) w->InvalidateData(INVALID_PLAN, false);
+			InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
 			if (p->owner != _local_company && p->visible) {
 				for (PlanLine &line : p->lines) {
 					if (line.visible) line.MarkDirty();
@@ -118,8 +116,7 @@ CommandCost CmdChangePlanColour(DoCommandFlag flags, PlanID plan, Colours colour
 	if (flags & DC_EXEC) {
 		p->colour = colour;
 		_plan_update_counter++;
-		Window *w = FindWindowById(WC_PLANS, 0);
-		if (w != nullptr) w->InvalidateData(INVALID_PLAN, false);
+		InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
 		for (const PlanLine &line : p->lines) {
 			if (line.visible) line.MarkDirty();
 		}
@@ -143,8 +140,7 @@ CommandCost CmdRemovePlan(DoCommandFlag flags, PlanID plan)
 	if (flags & DC_EXEC) {
 		if (p->IsListable()) {
 			p->SetVisibility(false);
-			Window *w = FindWindowById(WC_PLANS, 0);
-			if (w != nullptr) w->InvalidateData(p->index, false);
+			InvalidateWindowData(WC_PLANS, 0, p->index, false);
 		}
 		if (p == _current_plan) _current_plan = nullptr;
 		delete p;
@@ -170,8 +166,7 @@ CommandCost CmdRemovePlanLine(DoCommandFlag flags, PlanID plan, uint32_t line)
 		p->lines[line].SetVisibility(false);
 		p->lines.erase(p->lines.begin() + line);
 		if (p->IsListable()) {
-			Window *w = FindWindowById(WC_PLANS, 0);
-			if (w != nullptr) w->InvalidateData(p->index, false);
+			InvalidateWindowData(WC_PLANS, 0, p->index, false);
 		}
 	}
 	return CommandCost();
@@ -231,7 +226,7 @@ CommandCost CmdAcquireUnownedPlan(DoCommandFlag flags, PlanID plan)
 
 void PlanLineCmdData::Serialise(BufferSerialisationRef buffer) const
 {
-	buffer.Send_uint16(this->plan);
+	buffer.Send_uint16(this->plan.base());
 	buffer.Send_uint32((uint32_t)this->tiles.size());
 	for (TileIndex t : this->tiles) {
 		buffer.Send_uint32(t.base());
@@ -240,7 +235,7 @@ void PlanLineCmdData::Serialise(BufferSerialisationRef buffer) const
 
 bool PlanLineCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	this->plan = buffer.Recv_uint16();
+	this->plan = PlanID(buffer.Recv_uint16());
 	uint32_t size = buffer.Recv_uint32();
 	if (!buffer.CanRecvBytes(size * 4)) return false;
 	this->tiles.resize(size);

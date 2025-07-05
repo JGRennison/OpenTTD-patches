@@ -93,7 +93,7 @@ typedef GUIList<const Plan*, const bool &> GUIPlanList;
 struct PlansWindow : Window {
 	typedef struct {
 		bool is_plan;
-		int plan_id;
+		PlanID plan_id;
 		int line_id;
 	} ListItem;
 
@@ -155,7 +155,7 @@ private:
 
 	void RebuildList()
 	{
-		int old_focused_plan_id = this->selected == INT_MAX ? INT_MAX : this->list[this->selected].plan_id;
+		PlanID old_focused_plan_id = this->selected == INT_MAX ? INVALID_PLAN : this->list[this->selected].plan_id;
 		this->selected = INT_MAX;
 
 		int sbcnt = 0;
@@ -640,14 +640,14 @@ public:
 	{
 		if (wid == WID_PLN_FILTER) {
 			this->string_filter.SetFilterTerm(this->planname_editbox.text.GetText());
-			this->InvalidateData(INVALID_PLAN);
+			this->InvalidateData(INVALID_PLAN.base());
 		}
 	}
 
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		if (data != INVALID_PLAN && this->selected != INT_MAX) {
-			if (this->list[this->selected].plan_id == data) {
+		if (data != INVALID_PLAN.base() && this->selected != INT_MAX) {
+			if (this->list[this->selected].plan_id.base() == data) {
 				/* Invalidate the selection if the selected plan has been modified or deleted. */
 				this->selected = INT_MAX;
 
