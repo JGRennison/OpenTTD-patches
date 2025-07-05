@@ -15,7 +15,7 @@
 
 struct Tunnel;
 
-typedef Pool<Tunnel, TunnelID, 64, 1048576> TunnelPool;
+using TunnelPool = Pool<Tunnel, TunnelID, 64, TunnelID::End().base()>;
 extern TunnelPool _tunnel_pool;
 
 struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {

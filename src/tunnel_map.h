@@ -11,10 +11,11 @@
 #define TUNNEL_MAP_H
 
 #include "road_map.h"
+#include "core/pool_id_type.hpp"
 
-typedef uint32_t TunnelID; ///< Type for the unique identifier of tunnels.
+using TunnelID = PoolID<uint32_t, struct TunnelIDTag, 0x8000000, 0xFFFFFFFF>; ///< Type for the unique identifier of tunnels.
 
-static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to store in m2 to indicate that the ID should be looked up instead
+static constexpr TunnelID TUNNEL_ID_MAP_LOOKUP{0xFFFF}; ///< Sentinel ID value to store in m2 to indicate that the ID should be looked up instead
 
 /**
  * Is this a tunnel (entrance)?
@@ -49,7 +50,7 @@ inline TunnelID GetTunnelIndex(TileIndex t)
 	extern TunnelID GetTunnelIndexByLookup(TileIndex t);
 
 	dbg_assert_tile(IsTunnelTile(t), t);
-	TunnelID map_id = _m[t].m2;
+	TunnelID map_id{_m[t].m2};
 	return map_id == TUNNEL_ID_MAP_LOOKUP ? GetTunnelIndexByLookup(t) : map_id;
 }
 
@@ -108,7 +109,7 @@ bool IsTunnelInWay(TileIndex, int z, IsTunnelInWayFlags flags = ITIWF_NONE);
 inline void SetTunnelIndex(TileIndex t, TunnelID id)
 {
 	dbg_assert_tile(IsTunnelTile(t), t);
-	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
+	_m[t].m2 = ((id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id).base();
 }
 
 void SetTunnelSignalStyle(TileIndex t, uint8_t style);

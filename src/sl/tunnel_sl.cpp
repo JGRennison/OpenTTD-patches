@@ -41,7 +41,7 @@ static void Load_TUNN()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Tunnel *tunnel = new (index) Tunnel();
+		Tunnel *tunnel = new (TunnelID(index)) Tunnel();
 		SlObjectLoadFiltered(tunnel, slt);
 		tunnel->UpdateIndexes();
 	}
