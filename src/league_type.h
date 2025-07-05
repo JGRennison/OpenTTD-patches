@@ -10,7 +10,7 @@
 #ifndef LEAGUE_TYPE_H
 #define LEAGUE_TYPE_H
 
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 /** Types of the possible link targets. */
 enum LinkType : uint8_t {

@@ -27,6 +27,7 @@ add_files(
     pod_pool.hpp
     pool_func.cpp
     pool_func.hpp
+    pool_id_type.hpp
     pool_type.hpp
     random_func.cpp
     random_func.hpp

@@ -11,7 +11,7 @@
 #define NETWORK_TYPE_H
 
 #include "../core/enum_type.hpp"
-#include "../core/pool_type.hpp"
+#include "../core/pool_id_type.hpp"
 #include <vector>
 #include <string>
 

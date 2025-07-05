@@ -13,6 +13,7 @@
 #include "network_internal.h"
 #include "core/tcp_listen.h"
 #include "core/tcp_admin.h"
+#include "../core/pool_type.hpp"
 
 extern AdminID _redirect_console_to_admin;
 

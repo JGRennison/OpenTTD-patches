@@ -10,7 +10,7 @@
 #ifndef GROUP_TYPE_H
 #define GROUP_TYPE_H
 
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 using GroupID = PoolID<uint16_t, struct GroupIDTag, 64000, 0xFFFF>;
 static constexpr GroupID NEW_GROUP{0xFFFC}; ///< Sentinel for a to-be-created group.

@@ -11,7 +11,7 @@
 #define STORY_TYPE_H
 
 #include "core/enum_type.hpp"
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 using StoryPageElementID = PoolID<uint16_t, struct StoryPageElementIDTag, 64000, 0xFFFF>; ///< ID of a story page element
 using StoryPageID = PoolID<uint16_t, struct StoryPageIDTag, 64000, 0xFFFF>; ///< ID of a story page

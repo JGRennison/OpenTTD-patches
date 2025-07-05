@@ -10,7 +10,7 @@
 #ifndef OBJECT_TYPE_H
 #define OBJECT_TYPE_H
 
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 /** Types of objects. */
 typedef uint16_t ObjectType;

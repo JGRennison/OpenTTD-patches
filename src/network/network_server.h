@@ -12,6 +12,7 @@
 
 #include "network_internal.h"
 #include "core/tcp_listen.h"
+#include "../core/pool_type.hpp"
 
 class ServerNetworkGameSocketHandler;
 /** Make the code look slightly nicer/simpler. */

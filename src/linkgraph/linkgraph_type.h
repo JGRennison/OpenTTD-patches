@@ -10,7 +10,7 @@
 #ifndef LINKGRAPH_TYPE_H
 #define LINKGRAPH_TYPE_H
 
-#include "../core/pool_type.hpp"
+#include "../core/pool_id_type.hpp"
 
 using LinkGraphID = PoolID<uint16_t, struct LinkGraphIDTag, 0xFFFF, 0xFFFF>;
 static constexpr LinkGraphID INVALID_LINK_GRAPH = LinkGraphID::Invalid();

@@ -10,7 +10,7 @@
 #ifndef STATION_TYPE_H
 #define STATION_TYPE_H
 
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 #include "core/smallstack_type.hpp"
 #include "tilearea_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"

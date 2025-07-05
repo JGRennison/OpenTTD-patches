@@ -10,7 +10,7 @@
 #ifndef DEPOT_TYPE_H
 #define DEPOT_TYPE_H
 
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 using DepotID = PoolID<uint16_t, struct DepotIDTag, 64000, 0xFFFF>; ///< Type for the unique identifier of depots.
 struct Depot;

@@ -11,7 +11,7 @@
 #define SUBSIDY_TYPE_H
 
 #include "core/enum_type.hpp"
-#include "core/pool_type.hpp"
+#include "core/pool_id_type.hpp"
 
 /** What part of a subsidy is something? */
 enum PartOfSubsidy : uint8_t {
