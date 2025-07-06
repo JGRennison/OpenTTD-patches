@@ -147,7 +147,7 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 	const Company *c = Company::Get(t->owner);
 	if (tv->IsReplaceOldOnly() && !t->NeedsAutorenewing(c, false)) return false;
 	Money needed_money = c->settings.engine_renew_money;
-	if (needed_money > c->money) return false;
+	if (needed_money > GetAvailableMoney(c->index)) return false;
 	TBTRDiffFlags diff = TrainTemplateDifference(t, tv);
 	if (diff & TBTRDF_CONSIST) {
 		if (_settings_game.difficulty.infinite_money) return true;
