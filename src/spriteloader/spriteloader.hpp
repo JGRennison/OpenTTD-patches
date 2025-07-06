@@ -19,13 +19,13 @@
 struct Sprite;
 
 /** The different colour components a sprite can have. */
-enum SpriteColourComponent : uint8_t {
-	SCC_RGB   = 1 << 0, ///< Sprite has RGB.
-	SCC_ALPHA = 1 << 1, ///< Sprite has alpha.
-	SCC_PAL   = 1 << 2, ///< Sprite has palette data.
-	SCC_MASK  = SCC_RGB | SCC_ALPHA | SCC_PAL, ///< Mask of valid colour bits.
+enum class SpriteComponent : uint8_t {
+	RGB     = 0, ///< Sprite has RGB.
+	Alpha   = 1, ///< Sprite has alpha.
+	Palette = 2, ///< Sprite has palette data.
+	End,
 };
-DECLARE_ENUM_AS_BIT_SET(SpriteColourComponent)
+using SpriteComponents = EnumBitSet<SpriteComponent, uint8_t, SpriteComponent::End>;
 
 struct SpriteLoaderResult {
 	uint8_t loaded_sprites = 0;  ///< Bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
@@ -64,7 +64,7 @@ public:
 		int16_t x_offs;                  ///< The x-offset of where the sprite will be drawn
 		int16_t y_offs;                  ///< The y-offset of where the sprite will be drawn
 		SpriteType type;                 ///< The sprite type
-		SpriteColourComponent colours;   ///< The colour components of the sprite with useful information.
+		SpriteComponents colours;   ///< The colour components of the sprite with useful information.
 		SpriteLoader::CommonPixel *data; ///< The sprite itself
 
 		/**

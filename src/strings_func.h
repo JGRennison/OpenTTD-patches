@@ -164,6 +164,22 @@ std::string GetString(StringID string, Args &&... args)
 	return GetStringWithArgs(string, params);
 }
 
+EncodedString GetEncodedString(StringID str);
+EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
+
+/**
+ * Get an encoded string with parameters.
+ * @param string String ID to encode.
+ * @param args The parameters to set.
+ * @return The encoded string.
+ */
+template <typename... Args>
+EncodedString GetEncodedString(StringID string, Args &&... args)
+{
+	auto params = MakeParameters(std::forward<Args>(args)...);
+	return GetEncodedStringWithArgs(string, params);
+}
+
 /**
  * Resolve the given StringID and append in place into an existing format_buffer with most special stringcodes replaced by the string parameters.
  * @param result The format_buffer to append to.

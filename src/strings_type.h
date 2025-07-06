@@ -81,7 +81,7 @@ static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for 
 template<typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;
 
-using StringParameterData = std::variant<uint64_t, std::string>;
+using StringParameterData = std::variant<std::monostate, uint64_t, std::string>;
 
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
@@ -89,6 +89,11 @@ struct StringParameter {
 	char32_t type = 0; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
 
 private:
+	inline void Init(const std::monostate &v)
+	{
+		this->data = v;
+	}
+
 	inline void Init(uint64_t v)
 	{
 		this->data = v;
@@ -125,6 +130,29 @@ public:
 	{
 		this->Init(v);
 	}
+};
+
+/**
+ * Container for an encoded string, created by GetEncodedString.
+ */
+class EncodedString {
+public:
+	EncodedString() = default;
+
+	auto operator<=>(const EncodedString &) const = default;
+
+	std::string GetDecodedString() const;
+
+	inline void clear() { this->string.clear(); }
+	inline bool empty() const { return this->string.empty(); }
+
+private:
+	std::string string; ///< The encoded string.
+
+	/* An EncodedString can only be created by GetEncodedStringWithArgs(). */
+	explicit EncodedString(std::string &&string) : string(std::move(string)) {}
+
+	friend EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
 };
 
 #endif /* STRINGS_TYPE_H */

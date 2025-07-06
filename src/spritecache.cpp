@@ -665,14 +665,14 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
 			prev_id = id;
 			uint length = file.ReadDword();
 			if (length > 0) {
-				uint8_t colour = file.ReadByte() & SCC_MASK;
+				SpriteComponents colour{file.ReadByte()};
 				length--;
 				if (length > 0) {
 					uint8_t zoom = file.ReadByte();
 					length--;
-					if (colour != 0) {
+					if (colour.Any()) {
 						static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_NORMAL, ZOOM_LVL_IN_4X, ZOOM_LVL_IN_2X, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_4X, ZOOM_LVL_OUT_8X};
-						if (zoom < 6) SetBit(offset.control_flags, static_cast<uint>(zoom_lvl_map[zoom]) + static_cast<uint>((colour != SCC_PAL) ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START));
+						if (zoom < 6) SetBit(offset.control_flags, static_cast<uint>(zoom_lvl_map[zoom]) + static_cast<uint>((colour != SpriteComponent::Palette) ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START));
 					}
 				}
 			}

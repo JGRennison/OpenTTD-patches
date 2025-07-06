@@ -106,6 +106,66 @@ const StringParameter &StringParameters::GetNextParameterReference()
 }
 
 /**
+ * Encode a string with no parameters into an encoded string.
+ * @param str The StringID to format.
+ * @returns The encoded string.
+ */
+EncodedString GetEncodedString(StringID str)
+{
+	return GetEncodedStringWithArgs(str, {});
+}
+
+/**
+ * Encode a string with its parameters into an encoded string.
+ * The encoded string can be stored and decoded later without requiring parameters to be stored separately.
+ * @param str The StringID to format.
+ * @param params The parameters of the string.
+ * @returns The encoded string.
+ */
+EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params)
+{
+	std::string result;
+	auto output = std::back_inserter(result);
+	Utf8Encode(output, SCC_ENCODED_INTERNAL);
+	fmt::format_to(output, "{:X}", str);
+
+	struct visitor {
+		std::back_insert_iterator<std::string> &output;
+
+		void operator()(const std::monostate &) {}
+
+		void operator()(const uint64_t &arg)
+		{
+			Utf8Encode(output, SCC_ENCODED_NUMERIC);
+			fmt::format_to(this->output, "{:X}", arg);
+		}
+
+		void operator()(const std::string &value)
+		{
+			Utf8Encode(output, SCC_ENCODED_STRING);
+			fmt::format_to(this->output, "{}", value);
+		}
+	};
+
+	visitor v{output};
+	for (const auto &param : params) {
+		*output = SCC_RECORD_SEPARATOR;
+		std::visit(v, param.data);
+	}
+
+	return EncodedString{std::move(result)};
+}
+
+/**
+ * Decode the encoded string.
+ * @returns Decoded raw string.
+ */
+std::string EncodedString::GetDecodedString() const
+{
+	return GetString(STR_JUST_RAW_STRING, this->string);
+}
+
+/**
  * Set DParam n to some number that is suitable for string size computations.
  * @param n Index of the string parameter.
  * @param max_value The biggest value which shall be displayed.
@@ -1195,10 +1255,11 @@ uint ConvertDisplayQuantityToCargoQuantity(CargoType cargo, uint quantity)
 /**
  * Decodes an encoded string during FormatString.
  * @param str The buffer of the encoded string.
+ * @param game_script Set if decoding a GameScript-encoded string. This affects how string IDs are handled.
  * @param builder The string builder to write the string to.
  * @returns Updated position position in input buffer.
  */
-static const char *DecodeEncodedString(const char *str, StringBuilder &builder)
+static const char *DecodeEncodedString(const char *str, bool game_script, StringBuilder &builder)
 {
 	ArrayStringParameters<20> sub_args;
 
@@ -1209,7 +1270,7 @@ static const char *DecodeEncodedString(const char *str, StringBuilder &builder)
 		builder += "(invalid SCC_ENCODED)";
 		return p;
 	}
-	if (id >= TAB_SIZE_GAMESCRIPT) {
+	if (game_script && id >= TAB_SIZE_GAMESCRIPT) {
 		while (*p != '\0') p++;
 		builder += "(invalid StringID)";
 		return p;
@@ -1222,6 +1283,12 @@ static const char *DecodeEncodedString(const char *str, StringBuilder &builder)
 
 		/* Find end of the parameter. */
 		for (; *p != '\0' && *p != SCC_RECORD_SEPARATOR; ++p) {}
+
+		if (s == p) {
+			/* This is an empty parameter. */
+			sub_args.SetParam(i++, std::monostate{});
+			continue;
+		}
 
 		/* Get the parameter type. */
 		char32_t parameter_type;
@@ -1253,13 +1320,13 @@ static const char *DecodeEncodedString(const char *str, StringBuilder &builder)
 			}
 
 			default:
-				/* Skip unknown parameter. */
-				i++;
+				/* Unknown parameter, make it blank. */
+				sub_args.SetParam(i++, std::monostate{});
 				break;
 		}
 	}
 
-	StringID stringid = MakeStringID(TEXT_TAB_GAMESCRIPT_START, id);
+	StringID stringid = game_script ? MakeStringID(TEXT_TAB_GAMESCRIPT_START, id) : StringID{id.base()};
 	GetStringWithArgs(builder, stringid, sub_args, true);
 
 	return p;
@@ -1336,7 +1403,8 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 			args.SetTypeOfNextParameter(b);
 			switch (b) {
 				case SCC_ENCODED:
-					str = DecodeEncodedString(str, builder);
+				case SCC_ENCODED_INTERNAL:
+					str = DecodeEncodedString(str, b == SCC_ENCODED, builder);
 					break;
 
 				case SCC_NEWGRF_STRINL: {
