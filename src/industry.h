@@ -97,6 +97,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	TileArea location{INVALID_TILE, 0, 0}; ///< Location of the industry
 	Town *town = nullptr;                  ///< Nearest town
 	Station *neutral_station = nullptr;    ///< Associated neutral station
+	ValidHistoryMask valid_history = 0;    ///< Mask of valid history records.
 
 	StationList stations_near{};           ///< NOSAVE: List of nearby stations.
 	mutable std::string cached_name{};     ///< NOSAVE: Cache of the resolved name of the industry

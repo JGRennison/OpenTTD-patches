@@ -75,6 +75,24 @@ void LoadMoveOldAcceptsProduced(Industry *i)
 	}
 }
 
+void LoadSetIndustryHistoryValidMask(Industry *i, bool extended_history)
+{
+	/* The last month has always been recorded. */
+	size_t oldest_valid = LAST_MONTH;
+	if (extended_history) {
+		/* History was extended but we did not keep track of valid history, so assume it from the oldest non-zero value. */
+		for (const auto &p : i->Produced()) {
+			if (!IsValidCargoType(p.cargo)) continue;
+			for (size_t n = LAST_MONTH; n < std::size(p.history); ++n) {
+				if (p.history[n].production == 0 && p.history[n].transported == 0) continue;
+				oldest_valid = std::max(oldest_valid, n);
+			}
+		}
+	}
+	/* Set mask bits up to and including the oldest valid record. */
+	i->valid_history = (std::numeric_limits<uint64_t>::max() >> (std::numeric_limits<uint64_t>::digits - (oldest_valid + 1 - LAST_MONTH))) << LAST_MONTH;
+}
+
 static OldPersistentStorage _old_ind_persistent_storage;
 
 struct IndustryAcceptedStructHandler final : public TypedSaveLoadStructHandler<IndustryAcceptedStructHandler, Industry> {
@@ -258,6 +276,8 @@ static std::vector<NamedSaveLoad> MakeIndustryDesc()
 		NSL("random",                          SLE_CONDVAR(Industry, random,                     SLE_UINT16,                       SLV_82,                          SL_MAX_VERSION)),
 		NSL("text",                           SLE_CONDSSTR(Industry, text,                       SLE_STR | SLF_ALLOW_CONTROL,      SLV_INDUSTRY_TEXT,               SL_MAX_VERSION)),
 
+		NSLT("valid_history",                SLE_CONDVAR_X(Industry, valid_history,              SLE_UINT64,                       SL_MIN_VERSION,                  SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_INDUSTRY_CARGO_REORGANISE, 3))),
+
 		NSL("", SLE_CONDNULL(32, SLV_2, SLV_144)), // old reserved space
 	});
 	if (SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_REORGANISE)) {
@@ -314,6 +334,9 @@ static void Load_INDY()
 		}
 		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_REORGANISE)) {
 			LoadMoveOldAcceptsProduced(i);
+		}
+		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_REORGANISE, 3)) {
+			LoadSetIndustryHistoryValidMask(i, SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_REORGANISE, 2));
 		}
 	}
 }

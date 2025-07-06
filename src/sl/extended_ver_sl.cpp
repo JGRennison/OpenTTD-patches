@@ -221,7 +221,7 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_VEHICLE_ECONOMY_AGE,              XSCF_NULL,                1,   1, "slv_vehicle_economy_age",          nullptr, nullptr, nullptr          },
 	{ XSLFI_GROUP_NUMBERS,                    XSCF_IGNORABLE_UNKNOWN,   1,   1, "slv_group_numbers",                nullptr, nullptr, nullptr          },
 	{ XSLFI_WATER_TILE_TYPE,                  XSCF_NULL,                1,   1, "slv_water_tile_type",              nullptr, nullptr, nullptr          },
-	{ XSLFI_INDUSTRY_CARGO_REORGANISE,        XSCF_NULL,                2,   2, "slv_industry_cargo_reorganise",    nullptr, nullptr, nullptr          },
+	{ XSLFI_INDUSTRY_CARGO_REORGANISE,        XSCF_NULL,                3,   3, "slv_industry_cargo_reorganise",    nullptr, nullptr, nullptr          },
 	{ XSLFI_ENCODED_STRING_FORMAT,            XSCF_NULL,                2,   2, "slv_encoded_string_format",        nullptr, nullptr, nullptr          },
 	{ XSLFI_PROTECT_PLACED_HOUSES,            XSCF_NULL,                1,   1, "slv_protect_placed_houses",        nullptr, nullptr, nullptr          },
 	{ XSLFI_FACE_STYLES,                      XSCF_NULL,                1,   1, "slv_face_styles",                  nullptr, nullptr, nullptr          },

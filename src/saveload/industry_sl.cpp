@@ -20,6 +20,7 @@
 extern OldIndustryAccepted _old_industry_accepted;
 extern OldIndustryProduced _old_industry_produced;
 extern void LoadMoveOldAcceptsProduced(Industry *i);
+extern void LoadSetIndustryHistoryValidMask(Industry *i, bool extended_history);
 
 namespace upstream_sl {
 
@@ -169,6 +170,8 @@ static const SaveLoad _industry_desc[] = {
 	SLE_CONDVAR(Industry, random,                     SLE_UINT16,                SLV_82, SL_MAX_VERSION),
 	SLE_CONDSSTR(Industry, text,     SLE_STR | SLF_ALLOW_CONTROL,     SLV_INDUSTRY_TEXT, SL_MAX_VERSION),
 
+	SLE_CONDVAR(Industry, valid_history, SLE_UINT64, SLV_INDUSTRY_NUM_VALID_HISTORY, SL_MAX_VERSION),
+
 	SLEG_CONDSTRUCTLIST("accepted", SlIndustryAccepted,                          SLV_INDUSTRY_CARGO_REORGANISE, SL_MAX_VERSION),
 	SLEG_CONDSTRUCTLIST("produced", SlIndustryProduced,                          SLV_INDUSTRY_CARGO_REORGANISE, SL_MAX_VERSION),
 };
@@ -209,6 +212,10 @@ struct INDYChunkHandler : ChunkHandler {
 			}
 			if (IsSavegameVersionBefore(SLV_INDUSTRY_CARGO_REORGANISE)) {
 				LoadMoveOldAcceptsProduced(i);
+			}
+
+			if (IsSavegameVersionBefore(SLV_INDUSTRY_NUM_VALID_HISTORY)) {
+				LoadSetIndustryHistoryValidMask(i, !IsSavegameVersionBefore(SLV_PRODUCTION_HISTORY));
 			}
 		}
 	}

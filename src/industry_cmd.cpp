@@ -1896,6 +1896,8 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		for (auto &p : i->Produced()) {
 			if (IsValidCargoType(p.cargo)) p.history[LAST_MONTH].production += _industry_cargo_scaler.Scale(p.rate * 8);
 		}
+
+		UpdateValidHistory(i->valid_history);
 	}
 
 	if (indspec->callback_mask.Test(IndustryCallbackMask::DecideColour)) {
@@ -2594,6 +2596,8 @@ void GenerateIndustries()
  */
 static void UpdateIndustryStatistics(Industry *i)
 {
+	UpdateValidHistory(i->valid_history);
+
 	for (auto &p : i->Produced()) {
 		if (p.cargo != INVALID_CARGO) {
 			if (p.history[THIS_MONTH].production != 0) i->last_prod_year = EconTime::CurYear();
