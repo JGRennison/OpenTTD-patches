@@ -1457,8 +1457,8 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_TRAIN_IN_SLOT:
 				case TRIT_COND_SLOT_OCCUPANCY:
 					actions_used_flags |= TRPAUF_SLOT_CONDITIONALS;
-					if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0 ||
-							find_index(pbs_res_end_acquired_slots, item.GetValue()) >= 0) {
+					if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValueAsSlot()) >= 0 ||
+							find_index(pbs_res_end_acquired_slots, item.GetValueAsSlot()) >= 0) {
 						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 					}
 					break;
@@ -1561,19 +1561,19 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 						case TRSCOF_PBS_RES_END_ACQ_WAIT:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT | TRPAUF_SLOT_CONDITIONALS ;
-							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
-							include(pbs_res_end_acquired_slots, item.GetValue());
+							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValueAsSlot()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, item.GetValueAsSlot());
 							break;
 
 						case TRSCOF_PBS_RES_END_ACQ_TRY:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
-							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValue()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
-							include(pbs_res_end_acquired_slots, item.GetValue());
+							if (pbs_res_end_released_slot_group || find_index(pbs_res_end_released_slots, item.GetValueAsSlot()) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, item.GetValueAsSlot());
 							break;
 
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
-							include(pbs_res_end_released_slots, item.GetValue());
+							include(pbs_res_end_released_slots, item.GetValueAsSlot());
 							break;
 
 						default:
@@ -3370,7 +3370,7 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 	if (o->IsType(OT_CONDITIONAL) &&
 			(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
 			cond(static_cast<TraceRestrictSlotID>(o->GetXData()))) {
-		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID.base();
 		changed_order = true;
 	}
 	if (o->IsType(OT_SLOT) && cond(static_cast<TraceRestrictSlotID>(o->GetDestination().base()))) {
@@ -3463,7 +3463,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 		result.SetResultData(slot->index);
 
 		if (data.follow_up_cmd.has_value()) {
-			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index, flags);
+			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index.base(), flags);
 			if (follow_up_res.Failed()) {
 				delete slot;
 				return follow_up_res;
@@ -3475,7 +3475,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 	} else if (data.follow_up_cmd.has_value()) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
-		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index, flags);
+		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index.base(), flags);
 		delete slot;
 		if (follow_up_res.Failed()) return follow_up_res;
 	}
@@ -3623,7 +3623,7 @@ bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 	bool changed_order = false;
 	if (o->IsType(OT_CONDITIONAL) &&
 			o->GetConditionVariable() == OCV_VEH_IN_SLOT_GROUP &&
-			cond(static_cast<TraceRestrictSlotID>(o->GetXData()))) {
+			cond(static_cast<TraceRestrictSlotGroupID>(o->GetXData()))) {
 		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 		changed_order = true;
 	}

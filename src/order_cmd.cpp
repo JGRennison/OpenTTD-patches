@@ -56,6 +56,7 @@
  */
 static_assert(sizeof(DestinationID) >= sizeof(DepotID));
 static_assert(sizeof(DestinationID) >= sizeof(StationID));
+static_assert(sizeof(DestinationID) >= sizeof(TraceRestrictSlotID));
 
 /* OrderTypeMask must be large enough for all order types */
 static_assert(std::numeric_limits<OrderTypeMask>::digits >= OT_END);
@@ -1138,7 +1139,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 			switch (new_order.GetConditionVariable()) {
 				case OCV_SLOT_OCCUPANCY:
 				case OCV_VEH_IN_SLOT: {
-					TraceRestrictSlotID slot = new_order.GetXData();
+					TraceRestrictSlotID slot{new_order.GetXDataLow()};
 					if (slot != INVALID_TRACE_RESTRICT_SLOT_ID) {
 						const TraceRestrictSlot *trslot = TraceRestrictSlot::GetIfValid(slot);
 						if (trslot == nullptr) return CMD_ERROR;
@@ -1230,7 +1231,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_SLOT: {
-			TraceRestrictSlotID data = new_order.GetDestination().base();
+			TraceRestrictSlotID data = new_order.GetDestination().ToSlotID();
 			if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
@@ -2238,9 +2239,9 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 					case OCV_SLOT_OCCUPANCY:
 					case OCV_VEH_IN_SLOT:
 						if (!old_var_was_slot) {
-							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID.base();
 						} else if (order->GetConditionVariable() == OCV_VEH_IN_SLOT && order->GetXData() != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(order->GetXData())->vehicle_type != v->type) {
-							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID.base();
 						}
 						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
 						break;
@@ -3383,7 +3384,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_SLOT_OCCUPANCY: {
-			TraceRestrictSlotID slot_id = order->GetXData();
+			TraceRestrictSlotID slot_id{order->GetXDataLow()};
 			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(slot_id);
 			if (slot != nullptr) {
 				size_t count = slot->occupants.size();
@@ -3525,7 +3526,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 					switch (order->GetSlotSubType()) {
 						case OSST_RELEASE:
 							_pco_deferred_slot_membership.Initialise(v);
-							_pco_deferred_slot_membership.RemoveSlot(order->GetDestination().base());
+							_pco_deferred_slot_membership.RemoveSlot(order->GetDestination().ToSlotID());
 							break;
 						case OSST_TRY_ACQUIRE:
 							ExecuteVehicleInSlotOrderCondition(v, TraceRestrictSlot::Get(order->GetDestination().base()), PCO_DEFERRED, true);

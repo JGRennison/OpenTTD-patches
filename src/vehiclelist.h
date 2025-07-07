@@ -17,6 +17,7 @@
 #include "order_type.h"
 #include "station_type.h"
 #include "tile_type.h"
+#include "tracerestrict_id_type.h"
 #include "vehicle_type.h"
 #include "window_type.h"
 #include <vector>
@@ -35,7 +36,7 @@ enum VehicleListType : uint8_t {
 
 template<typename T>
 concept VehicleListIdentifierValidType = (std::is_same_v<T, CompanyID> || std::is_same_v<T, DestinationID> || std::is_same_v<T, GroupID> ||
-		std::is_same_v<T, StationID> || std::is_same_v<T, VehicleID>|| std::is_same_v<T, DepotID>) && !std::is_integral_v<T>;
+		std::is_same_v<T, StationID> || std::is_same_v<T, VehicleID> || std::is_same_v<T, DepotID> || std::is_same_v<T, TraceRestrictSlotID>) && !std::is_integral_v<T>;
 
 /** The information about a vehicle list. */
 struct VehicleListIdentifier {
@@ -64,6 +65,7 @@ struct VehicleListIdentifier {
 	constexpr GroupID ToGroupID() const { assert(this->type == VL_GROUP_LIST); return GroupID(this->index); }
 	constexpr StationID ToStationID() const { assert(this->type == VL_STATION_LIST); return StationID(this->index); }
 	constexpr VehicleID ToVehicleID() const { assert(this->type == VL_SHARED_ORDERS); return VehicleID(this->index); }
+	constexpr TraceRestrictSlotID ToSlotID() const { assert(this->type == VL_SLOT_LIST); return TraceRestrictSlotID(static_cast<TraceRestrictSlotID::BaseType>(this->index)); }
 
 	constexpr void SetIndex(uint32_t index) { this->index = index; }
 	constexpr void SetIndex(VehicleListIdentifierValidType auto index) { this->index = index.base(); }

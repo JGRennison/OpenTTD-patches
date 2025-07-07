@@ -76,7 +76,7 @@ static void WriteCondition(Buffer &b, SignalCondition *c)
 		case PSC_SLOT_OCC:
 		case PSC_SLOT_OCC_REM: {
 			SignalSlotCondition *cc = static_cast<SignalSlotCondition*>(c);
-			WriteVLI(b, cc->slot_id);
+			WriteVLI(b, cc->slot_id.base());
 			WriteVLI(b, cc->comparator);
 			WriteVLI(b, cc->value);
 			break;

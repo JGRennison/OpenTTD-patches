@@ -606,7 +606,7 @@ public:
 				ProgPresigModifyCommandType mode;
 				if (widget == PROGRAM_WIDGET_COND_SLOT) {
 					mode = PPMCT_SLOT;
-					TraceRestrictRecordRecentSlot(index);
+					TraceRestrictRecordRecentSlot(TraceRestrictSlotID(index));
 				} else {
 					mode = PPMCT_COUNTER;
 					TraceRestrictRecordRecentCounter(index);

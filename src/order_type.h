@@ -14,6 +14,7 @@
 #include "depot_type.h"
 #include "core/pool_type.hpp"
 #include "station_type.h"
+#include "tracerestrict_id_type.h"
 
 typedef uint16_t VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
 using OrderID = PoolID<uint32_t, struct OrderIDTag, 0xFF0000, 0xFFFFFF>;
@@ -33,14 +34,17 @@ struct DestinationID {
 	explicit DestinationID() = default;
 	constexpr DestinationID(size_t index) : value(static_cast<BaseType>(index)) {}
 	constexpr DestinationID(DepotID depot) : value(depot.base()) {}
+	constexpr DestinationID(TraceRestrictSlotID slot) : value(slot.base()) {}
 
 	constexpr DepotID ToDepotID() const noexcept { return static_cast<DepotID>(this->value); }
 	constexpr StationID ToStationID() const noexcept { return static_cast<StationID>(this->value); }
+	constexpr TraceRestrictSlotID ToSlotID() const noexcept { return static_cast<TraceRestrictSlotID>(this->value); }
 	constexpr BaseType base() const noexcept { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	constexpr bool operator ==(const DestinationID &destination) const { return this->value == destination.value; }
 	constexpr bool operator ==(const StationID &station) const { return this->value == station; }
+	constexpr bool operator ==(const TraceRestrictSlotID &slot) const { return this->value == slot.base(); }
 };
 
 /** Invalid vehicle order index (sentinel) */

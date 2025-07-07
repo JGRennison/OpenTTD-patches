@@ -180,7 +180,7 @@ static void Load_TRRS()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictSlot *slot = new (index) TraceRestrictSlot();
+		TraceRestrictSlot *slot = new (TraceRestrictSlotID(index)) TraceRestrictSlot();
 		SlObjectLoadFiltered(slot, slt);
 	}
 	TraceRestrictSlot::RebuildVehicleIndex();

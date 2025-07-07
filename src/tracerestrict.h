@@ -42,13 +42,13 @@ extern TraceRestrictProgramPool _tracerestrictprogram_pool;
 struct TraceRestrictSlot;
 
 /** Type of the pool for trace restrict slots. */
-typedef Pool<TraceRestrictSlot, TraceRestrictSlotID, 16, 0xFFF0> TraceRestrictSlotPool;
+using TraceRestrictSlotPool = Pool<TraceRestrictSlot, TraceRestrictSlotID, 64, TraceRestrictSlotID::End().base()>;
 /** The actual pool for trace restrict slots. */
 extern TraceRestrictSlotPool _tracerestrictslot_pool;
 
-static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // for GUI use only
-static const TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID = 0xFFFE; // for GUI use only
-static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
+static constexpr TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID{0xFFFD};        // for GUI use only
+static constexpr TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID{0xFFFE}; // for GUI use only
+static constexpr TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID{0xFFFF};
 
 static const uint32_t TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY = 1;
 
@@ -509,6 +509,12 @@ namespace TracerestrictDetail {
 				return static_cast<uint16_t>(GB(this->base(), TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
 			}
 
+			/** Get value field, as a slot ID */
+			TraceRestrictSlotID GetValueAsSlot() const
+			{
+				return TraceRestrictSlotID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -543,6 +549,12 @@ namespace TracerestrictDetail {
 			inline void SetValue(uint16_t value)
 			{
 				SB(this->edit_base(), TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
+			}
+
+			/** Set value field (slot ID) */
+			inline void SetValue(TraceRestrictSlotID value)
+			{
+				this->SetValue(value.base());
 			}
 
 			/** Is the type field a conditional type? */

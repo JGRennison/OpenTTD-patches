@@ -74,7 +74,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 DropDownList GetSlotGroupDropDownList(Owner owner, TraceRestrictSlotGroupID slot_group_id, int &selected, VehicleType vehtype);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
-StringID GetSlotGroupWarning(TraceRestrictSlotID slot_group, Owner owner);
+StringID GetSlotGroupWarning(TraceRestrictSlotGroupID slot_group, Owner owner);
 
 static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, ModifyOrderFlags mof, uint16_t data, bool error_msg = true)
 {
@@ -2376,7 +2376,7 @@ public:
 						}
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
 					} else if (is_slot_occupancy) {
-						TraceRestrictSlotID slot_id = (order != nullptr && TraceRestrictSlot::IsValidID(order->GetXData()) ? order->GetXData() : INVALID_TRACE_RESTRICT_SLOT_ID);
+						TraceRestrictSlotID slot_id = (order != nullptr && TraceRestrictSlot::IsValidID(order->GetXDataLow()) ? TraceRestrictSlotID(order->GetXDataLow()) : INVALID_TRACE_RESTRICT_SLOT_ID);
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT)->SetString((slot_id != INVALID_TRACE_RESTRICT_SLOT_ID) ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
@@ -3150,7 +3150,7 @@ public:
 			case WID_O_COND_SLOT: {
 				int selected;
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
-				TraceRestrictSlotID value = order->GetXData();
+				TraceRestrictSlotID value{order->GetXDataLow()};
 				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, order->GetConditionVariable() == OCV_SLOT_OCCUPANCY);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3423,7 +3423,7 @@ public:
 				}
 
 				int selected;
-				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
+				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().ToSlotID();
 				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, false);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3643,7 +3643,7 @@ public:
 					ShowSlotCreationQueryString(*this);
 					break;
 				}
-				TraceRestrictRecordRecentSlot(index);
+				TraceRestrictRecordRecentSlot(TraceRestrictSlotID(index));
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, index);
 				break;
 
@@ -3698,7 +3698,7 @@ public:
 					ShowSlotCreationQueryString(*this);
 					break;
 				}
-				TraceRestrictRecordRecentSlot(index);
+				TraceRestrictRecordRecentSlot(TraceRestrictSlotID(index));
 				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT, index);
 				break;
 			}
