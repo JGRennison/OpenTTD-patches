@@ -10,7 +10,6 @@
 #ifndef TRACERESTRICT_CMD_H
 #define TRACERESTRICT_CMD_H
 
-#include "stdafx.h"
 #include "command_type.h"
 #include "tracerestrict.h"
 
