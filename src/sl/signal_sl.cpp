@@ -84,7 +84,7 @@ static void WriteCondition(Buffer &b, SignalCondition *c)
 
 		case PSC_COUNTER: {
 			SignalCounterCondition *cc = static_cast<SignalCounterCondition*>(c);
-			WriteVLI(b, cc->ctr_id);
+			WriteVLI(b, cc->ctr_id.base());
 			WriteVLI(b, cc->comparator);
 			WriteVLI(b, cc->value);
 			break;

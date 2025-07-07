@@ -65,12 +65,12 @@ static constexpr TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP{0xFF
 struct TraceRestrictCounter;
 
 /** Type of the pool for trace restrict counters. */
-typedef Pool<TraceRestrictCounter, TraceRestrictCounterID, 16, 0xFFF0> TraceRestrictCounterPool;
+using TraceRestrictCounterPool = Pool<TraceRestrictCounter, TraceRestrictCounterID, 64, TraceRestrictCounterID::End().base()>;
 /** The actual pool for trace restrict counters. */
 extern TraceRestrictCounterPool _tracerestrictcounter_pool;
 
-static const TraceRestrictCounterID NEW_TRACE_RESTRICT_COUNTER_ID = 0xFFFE;        // for GUI use only
-static const TraceRestrictCounterID INVALID_TRACE_RESTRICT_COUNTER_ID = 0xFFFF;
+static constexpr TraceRestrictCounterID NEW_TRACE_RESTRICT_COUNTER_ID{0xFFFE};     // for GUI use only
+static constexpr TraceRestrictCounterID INVALID_TRACE_RESTRICT_COUNTER_ID{0xFFFF};
 
 extern const uint16_t _tracerestrict_pathfinder_penalty_preset_values[];
 
@@ -521,6 +521,12 @@ namespace TracerestrictDetail {
 				return TraceRestrictSlotGroupID(this->GetValue());
 			}
 
+			/** Get value field, as a counter ID */
+			TraceRestrictCounterID GetValueAsCounter() const
+			{
+				return TraceRestrictCounterID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -565,6 +571,12 @@ namespace TracerestrictDetail {
 
 			/** Set value field (slot group ID) */
 			inline void SetValue(TraceRestrictSlotGroupID value)
+			{
+				this->SetValue(value.base());
+			}
+
+			/** Set value field (counter ID) */
+			inline void SetValue(TraceRestrictCounterID value)
 			{
 				this->SetValue(value.base());
 			}

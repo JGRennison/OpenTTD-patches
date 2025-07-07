@@ -2401,7 +2401,7 @@ public:
 						}
 						aux_sel->SetDisplayedPlane(DP_COND_AUX_CARGO);
 					} else if (is_counter) {
-						TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetXDataHigh()) ? order->GetXDataHigh() : INVALID_TRACE_RESTRICT_COUNTER_ID);
+						TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetXDataHigh()) ? TraceRestrictCounterID(order->GetXDataHigh()) : INVALID_TRACE_RESTRICT_COUNTER_ID);
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_COUNTER)->SetString((ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						aux_sel->SetDisplayedPlane(DP_COND_COUNTER);
@@ -2480,7 +2480,7 @@ public:
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_COUNTER);
 					}
 
-					TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetDestination().base()) ? order->GetDestination().base() : INVALID_TRACE_RESTRICT_COUNTER_ID);
+					TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetDestination().base()) ? order->GetDestination().ToCounterID() : INVALID_TRACE_RESTRICT_COUNTER_ID);
 
 					this->GetWidget<NWidgetCore>(WID_O_CHANGE_COUNTER)->SetString((ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					break;
@@ -2839,7 +2839,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
-					TraceRestrictCounterID value = order->GetDestination().base();
+					TraceRestrictCounterID value = order->GetDestination().ToCounterID();
 					SetDParam(0, value);
 				}
 				break;
@@ -3167,7 +3167,7 @@ public:
 
 			case WID_O_COND_COUNTER: {
 				int selected;
-				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetXDataHigh();
+				TraceRestrictCounterID value{this->vehicle->GetOrder(this->OrderGetSel())->GetXDataHigh()};
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3441,7 +3441,7 @@ public:
 
 			case WID_O_CHANGE_COUNTER: {
 				int selected;
-				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
+				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().ToCounterID();
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_CHANGE_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3658,7 +3658,7 @@ public:
 					ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 					break;
 				}
-				TraceRestrictRecordRecentCounter(index);
+				TraceRestrictRecordRecentCounter(TraceRestrictCounterID(index));
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2, index);
 				break;
 
@@ -3713,7 +3713,7 @@ public:
 					ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 					break;
 				}
-				TraceRestrictRecordRecentCounter(index);
+				TraceRestrictRecordRecentCounter(TraceRestrictCounterID(index));
 				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_ID, index);
 				break;
 

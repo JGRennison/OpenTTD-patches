@@ -3852,7 +3852,7 @@ bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 	if (o->IsType(OT_CONDITIONAL) &&
 			(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
 			cond(static_cast<TraceRestrictCounterID>(o->GetXDataHigh()))) {
-		o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID);
+		o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID.base());
 		changed_order = true;
 	}
 	if (o->IsType(OT_COUNTER) && cond(static_cast<TraceRestrictCounterID>(o->GetDestination().base()))) {
@@ -3923,7 +3923,7 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestri
 		result.SetResultData(ctr->index);
 
 		if (data.follow_up_cmd.has_value()) {
-			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+			CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index.base(), flags);
 			if (follow_up_res.Failed()) {
 				delete ctr;
 				return follow_up_res;
@@ -3935,7 +3935,7 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestri
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 	} else if (data.follow_up_cmd.has_value()) {
 		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
-		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index.base(), flags);
 		delete ctr;
 		if (follow_up_res.Failed()) return follow_up_res;
 	}

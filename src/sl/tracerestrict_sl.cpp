@@ -249,7 +249,7 @@ static void Load_TRRC()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictCounter *ctr = new (index) TraceRestrictCounter();
+		TraceRestrictCounter *ctr = new (TraceRestrictCounterID(index)) TraceRestrictCounter();
 		SlObjectLoadFiltered(ctr, slt);
 	}
 }

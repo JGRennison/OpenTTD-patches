@@ -36,17 +36,20 @@ struct DestinationID {
 	constexpr DestinationID(DepotID depot) : value(depot.base()) {}
 	constexpr DestinationID(TraceRestrictSlotID slot) : value(slot.base()) {}
 	constexpr DestinationID(TraceRestrictSlotGroupID sg) : value(sg.base()) {}
+	constexpr DestinationID(TraceRestrictCounterID ctr) : value(ctr.base()) {}
 
 	constexpr DepotID ToDepotID() const noexcept { return static_cast<DepotID>(this->value); }
 	constexpr StationID ToStationID() const noexcept { return static_cast<StationID>(this->value); }
 	constexpr TraceRestrictSlotID ToSlotID() const noexcept { return static_cast<TraceRestrictSlotID>(this->value); }
 	constexpr TraceRestrictSlotGroupID ToSlotGroupID() const noexcept { return static_cast<TraceRestrictSlotGroupID>(this->value); }
+	constexpr TraceRestrictCounterID ToCounterID() const noexcept { return static_cast<TraceRestrictCounterID>(this->value); }
 	constexpr BaseType base() const noexcept { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	constexpr bool operator ==(const DestinationID &destination) const { return this->value == destination.value; }
 	constexpr bool operator ==(const StationID &station) const { return this->value == station; }
 	constexpr bool operator ==(const TraceRestrictSlotID &slot) const { return this->value == slot.base(); }
+	constexpr bool operator ==(const TraceRestrictCounterID &ctr) const { return this->value == ctr.base(); }
 };
 
 /** Invalid vehicle order index (sentinel) */

@@ -609,7 +609,7 @@ public:
 					TraceRestrictRecordRecentSlot(TraceRestrictSlotID(index));
 				} else {
 					mode = PPMCT_COUNTER;
-					TraceRestrictRecordRecentCounter(index);
+					TraceRestrictRecordRecentCounter(TraceRestrictCounterID(index));
 				}
 
 				Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, ins->Id(), mode, index, {});

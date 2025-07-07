@@ -867,7 +867,7 @@ CommandCost CmdProgPresigModifyInstruction(DoCommandFlag flags, TileIndex tile, 
 							sc->value = value;
 						} else if (mode == PPMCT_COUNTER) {
 							TraceRestrictCounterID ctr = (TraceRestrictCounterID)value;
-							if (ctr != INVALID_TRACE_RESTRICT_SLOT_ID) {
+							if (ctr != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 								const TraceRestrictCounter *c = TraceRestrictCounter::GetIfValid(ctr);
 								if (c == nullptr || !c->IsUsableByOwner(_current_company)) return CMD_ERROR;
 							}

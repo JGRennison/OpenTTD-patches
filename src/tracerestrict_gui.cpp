@@ -1080,9 +1080,9 @@ static void GetCounterDropDownListIntl(DropDownList &dlist, Owner owner, TraceRe
 	selected = -1;
 
 	for (const TraceRestrictCounter *s : list) {
-		if (ctr_id == s->index) selected = ctr_id;
+		if (ctr_id == s->index) selected = ctr_id.base();
 		SetDParam(0, s->index);
-		dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false));
+		dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index.base(), false));
 	}
 }
 
@@ -1109,7 +1109,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
 		}
 	} else {
-		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID, false);
+		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID.base(), false);
 		new_item->SetColourFlags(TC_FORCED);
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());
@@ -2657,7 +2657,7 @@ public:
 
 					case TRVT_COUNTER_INDEX_INT: {
 						int selected;
-						DropDownList dlist = GetCounterDropDownList(this->GetOwner(), item.GetValue(), selected);
+						DropDownList dlist = GetCounterDropDownList(this->GetOwner(), item.GetValueAsCounter(), selected);
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
 						break;
 					}
@@ -2871,7 +2871,7 @@ public:
 					TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID(index));
 				}
 				if (type.value_type == TRVT_COUNTER_INDEX_INT) {
-					TraceRestrictRecordRecentCounter(index);
+					TraceRestrictRecordRecentCounter(TraceRestrictCounterID(index));
 				}
 				return;
 			}
@@ -3936,14 +3936,10 @@ private:
 							}
 							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 
-							switch (item.GetValue()) {
-								case INVALID_TRACE_RESTRICT_COUNTER_ID:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
-									break;
-
-								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_COUNTER_NAME);
-									break;
+							if (item.GetValueAsCounter() == INVALID_TRACE_RESTRICT_COUNTER_ID) {
+								this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+							} else {
+								this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->SetString(STR_TRACE_RESTRICT_COUNTER_NAME);
 							}
 							break;
 						}
