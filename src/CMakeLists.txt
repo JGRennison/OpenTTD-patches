@@ -572,6 +572,7 @@ add_files(
     tracerestrict.cpp
     tracerestrict.h
     tracerestrict_cmd.h
+    tracerestrict_id_type.h
     tracerestrict_gui.cpp
     track_func.h
     track_type.h

@@ -10,6 +10,7 @@
 #ifndef TRACERESTRICT_H
 #define TRACERESTRICT_H
 
+#include "tracerestrict_id_type.h"
 #include "core/bitmath_func.hpp"
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
@@ -28,8 +29,6 @@
 struct Train;
 struct Window;
 
-/** Program pool ID type. */
-using TraceRestrictProgramID = PoolID<uint32_t, struct TraceRestrictProgramIDTag, 256000, 0xFFFFFFFF>;
 struct TraceRestrictProgram;
 
 /** Tile/track mapping type. */
@@ -40,8 +39,6 @@ using TraceRestrictProgramPool = Pool<TraceRestrictProgram, TraceRestrictProgram
 /** The actual pool for trace restrict nodes. */
 extern TraceRestrictProgramPool _tracerestrictprogram_pool;
 
-/** Slot pool ID type. */
-typedef uint16_t TraceRestrictSlotID;
 struct TraceRestrictSlot;
 
 /** Type of the pool for trace restrict slots. */
@@ -55,8 +52,6 @@ static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
 static const uint32_t TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY = 1;
 
-/** Slot group pool ID type. */
-typedef uint16_t TraceRestrictSlotGroupID;
 struct TraceRestrictSlotGroup;
 
 /** Type of the pool for trace restrict slot groups. */
@@ -67,8 +62,6 @@ extern TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool;
 static const TraceRestrictSlotGroupID NEW_TRACE_RESTRICT_SLOT_GROUP     = 0xFFFE; ///< Sentinel for a to-be-created group.
 static const TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP = 0xFFFF; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
 
-/** Counter pool ID type. */
-typedef uint16_t TraceRestrictCounterID;
 struct TraceRestrictCounter;
 
 /** Type of the pool for trace restrict counters. */
