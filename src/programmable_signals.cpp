@@ -839,7 +839,7 @@ CommandCost CmdProgPresigModifyInstruction(DoCommandFlag flags, TileIndex tile, 
 							if (value > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
 							sc->comparator = (SignalComparator)value;
-						} else if (mode == PPMCT_COMPARATOR) {
+						} else if (mode == PPMCT_VALUE) {
 							if (!exec) return CommandCost();
 							sc->value = value;
 						} else if (mode == PPMCT_SLOT) {
@@ -862,7 +862,7 @@ CommandCost CmdProgPresigModifyInstruction(DoCommandFlag flags, TileIndex tile, 
 							if (value > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
 							sc->comparator = (SignalComparator)value;
-						} else if (mode == PPMCT_COMPARATOR) {
+						} else if (mode == PPMCT_VALUE) {
 							if (!exec) return CommandCost();
 							sc->value = value;
 						} else if (mode == PPMCT_COUNTER) {
