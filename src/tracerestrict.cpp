@@ -1961,7 +1961,7 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	if (!insert_result.second) {
 		/* Value was not inserted, there is an existing mapping.
 		 * Unref the existing mapping before updating it. */
-		_tracerestrictprogram_pool.Get(insert_result.first->second.program_id)->DecrementRefCount(ref);
+		TraceRestrictProgram::Get(insert_result.first->second.program_id)->DecrementRefCount(ref);
 		insert_result.first->second = prog->index;
 	}
 	prog->IncrementRefCount(ref);
@@ -1982,7 +1982,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 	TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.find(ref);
 	if (iter != _tracerestrictprogram_mapping.end()) {
 		/* Found */
-		TraceRestrictProgram *prog = _tracerestrictprogram_pool.Get(iter->second.program_id);
+		TraceRestrictProgram *prog = TraceRestrictProgram::Get(iter->second.program_id);
 
 		bool update_reserve_through = (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS);
 		bool update_special_propagation = (prog->actions_used_flags & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK);
@@ -2069,7 +2069,7 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 	TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.find(ref);
 	if (iter != _tracerestrictprogram_mapping.end()) {
 		/* Found */
-		return _tracerestrictprogram_pool.Get(iter->second.program_id);
+		return TraceRestrictProgram::Get(iter->second.program_id);
 	} else if (create_new) {
 		/* Not found */
 
@@ -2097,7 +2097,7 @@ TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t)
 	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
 
 	if ((lower_bound != _tracerestrictprogram_mapping.end()) && (GetTraceRestrictRefIdTileIndex(lower_bound->first) == t)) {
-		return _tracerestrictprogram_pool.Get(lower_bound->second.program_id);
+		return TraceRestrictProgram::Get(lower_bound->second.program_id);
 	}
 	return nullptr;
 }

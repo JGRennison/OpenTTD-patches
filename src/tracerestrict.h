@@ -29,14 +29,14 @@ struct Train;
 struct Window;
 
 /** Program pool ID type. */
-typedef uint32_t TraceRestrictProgramID;
+using TraceRestrictProgramID = PoolID<uint32_t, struct TraceRestrictProgramIDTag, 256000, 0xFFFFFFFF>;
 struct TraceRestrictProgram;
 
 /** Tile/track mapping type. */
 typedef uint32_t TraceRestrictRefId;
 
 /** Type of the pool for trace restrict programs. */
-typedef Pool<TraceRestrictProgram, TraceRestrictProgramID, 16, 256000> TraceRestrictProgramPool;
+using TraceRestrictProgramPool = Pool<TraceRestrictProgram, TraceRestrictProgramID, 64, TraceRestrictProgramID::End().base()>;
 /** The actual pool for trace restrict nodes. */
 extern TraceRestrictProgramPool _tracerestrictprogram_pool;
 

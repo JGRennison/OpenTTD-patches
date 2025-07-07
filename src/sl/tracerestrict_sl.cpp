@@ -100,7 +100,7 @@ static void Load_TRRP()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictProgram *prog = new (index) TraceRestrictProgram();
+		TraceRestrictProgram *prog = new (TraceRestrictProgramID(index)) TraceRestrictProgram();
 		SlObjectLoadFiltered(prog, slt);
 
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
@@ -273,7 +273,7 @@ static void Save_TRRC()
 void AfterLoadTraceRestrict()
 {
 	for (const auto &it : _tracerestrictprogram_mapping) {
-		_tracerestrictprogram_pool.Get(it.second.program_id)->IncrementRefCount(it.first);
+		TraceRestrictProgram::Get(it.second.program_id)->IncrementRefCount(it.first);
 	}
 
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
