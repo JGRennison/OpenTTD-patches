@@ -19,7 +19,7 @@ using TraceRestrictProgramID = PoolID<uint32_t, struct TraceRestrictProgramIDTag
 using TraceRestrictSlotID = PoolID<uint16_t, struct TraceRestrictSlotIDTag, 0xFFF0, 0xFFFF>;
 
 /** Slot group pool ID type. */
-typedef uint16_t TraceRestrictSlotGroupID;
+using TraceRestrictSlotGroupID = PoolID<uint16_t, struct TraceRestrictSlotGroupIDTag, 0xFFF0, 0xFFFF>;
 
 /** Counter pool ID type. */
 typedef uint16_t TraceRestrictCounterID;

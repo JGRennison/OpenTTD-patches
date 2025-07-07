@@ -35,10 +35,12 @@ struct DestinationID {
 	constexpr DestinationID(size_t index) : value(static_cast<BaseType>(index)) {}
 	constexpr DestinationID(DepotID depot) : value(depot.base()) {}
 	constexpr DestinationID(TraceRestrictSlotID slot) : value(slot.base()) {}
+	constexpr DestinationID(TraceRestrictSlotGroupID sg) : value(sg.base()) {}
 
 	constexpr DepotID ToDepotID() const noexcept { return static_cast<DepotID>(this->value); }
 	constexpr StationID ToStationID() const noexcept { return static_cast<StationID>(this->value); }
 	constexpr TraceRestrictSlotID ToSlotID() const noexcept { return static_cast<TraceRestrictSlotID>(this->value); }
+	constexpr TraceRestrictSlotGroupID ToSlotGroupID() const noexcept { return static_cast<TraceRestrictSlotGroupID>(this->value); }
 	constexpr BaseType base() const noexcept { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 

@@ -1257,7 +1257,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 			} else {
-				StringID warning = GetSlotGroupWarning(order->GetDestination().base(), v->owner);
+				StringID warning = GetSlotGroupWarning(order->GetDestination().ToSlotGroupID(), v->owner);
 				if (warning != STR_NULL) {
 					SetDParam(1, warning);
 				} else {
@@ -2381,7 +2381,7 @@ public:
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT)->SetString((slot_id != INVALID_TRACE_RESTRICT_SLOT_ID) ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
 					} else if (is_slot_group_occupancy) {
-						TraceRestrictSlotGroupID slot_group_id = (order != nullptr && TraceRestrictSlotGroup::IsValidID(order->GetXData()) ? order->GetXData() : INVALID_TRACE_RESTRICT_SLOT_GROUP);
+						TraceRestrictSlotGroupID slot_group_id = (order != nullptr && TraceRestrictSlotGroup::IsValidID(order->GetXData()) ? TraceRestrictSlotGroupID(order->GetXDataLow()) : INVALID_TRACE_RESTRICT_SLOT_GROUP);
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT_GROUP)->SetString((slot_group_id != INVALID_TRACE_RESTRICT_SLOT_GROUP) ? STR_TRACE_RESTRICT_SLOT_GROUP_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT_GROUP);
@@ -3159,7 +3159,7 @@ public:
 			case WID_O_COND_SLOT_GROUP: {
 				int selected;
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
-				TraceRestrictSlotGroupID value = order->GetXData();
+				TraceRestrictSlotGroupID value{order->GetXDataLow()};
 				DropDownList list = GetSlotGroupDropDownList(this->vehicle->owner, value, selected, this->vehicle->type);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT_GROUP, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3416,7 +3416,7 @@ public:
 				if (o == nullptr) return;
 				if (o->IsType(OT_SLOT_GROUP)) {
 					int selected;
-					TraceRestrictSlotGroupID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().base();
+					TraceRestrictSlotGroupID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination().ToSlotGroupID();
 					DropDownList list = GetSlotGroupDropDownList(this->vehicle->owner, value, selected, this->vehicle->type);
 					if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 					break;
@@ -3648,7 +3648,7 @@ public:
 				break;
 
 			case WID_O_COND_SLOT_GROUP:
-				TraceRestrictRecordRecentSlotGroup(index);
+				TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID(index));
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, index);
 				break;
 
@@ -3688,7 +3688,7 @@ public:
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
 				if (o->IsType(OT_SLOT_GROUP)) {
-					TraceRestrictRecordRecentSlotGroup(index);
+					TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID(index));
 					this->ModifyOrder(this->OrderGetSel(), MOF_SLOT_GROUP, index);
 					break;
 				}

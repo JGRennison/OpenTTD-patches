@@ -1160,7 +1160,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 				}
 
 				case OCV_VEH_IN_SLOT_GROUP: {
-					TraceRestrictSlotGroupID slot_group = new_order.GetXData();
+					TraceRestrictSlotGroupID slot_group{new_order.GetXDataLow()};
 					if (slot_group != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 						const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(slot_group);
 						if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
@@ -1249,7 +1249,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 		}
 
 		case OT_SLOT_GROUP: {
-			TraceRestrictSlotGroupID data = new_order.GetDestination().base();
+			TraceRestrictSlotGroupID data = new_order.GetDestination().ToSlotGroupID();
 			if (data != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 				const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(data);
 				if (sg == nullptr || sg->vehicle_type != v->type) return CMD_ERROR;
@@ -2248,7 +2248,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 					case OCV_VEH_IN_SLOT_GROUP:
 						if (!old_var_was_slot_group) {
-							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP.base();
 						}
 						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
 						break;

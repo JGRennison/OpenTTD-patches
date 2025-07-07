@@ -55,12 +55,12 @@ static const uint32_t TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY = 1;
 struct TraceRestrictSlotGroup;
 
 /** Type of the pool for trace restrict slot groups. */
-typedef Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 16, 0xFFF0> TraceRestrictSlotGroupPool;
+using TraceRestrictSlotGroupPool = Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 64, TraceRestrictSlotGroupID::End().base()>;
 /** The actual pool for trace restrict slot groups. */
 extern TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool;
 
-static const TraceRestrictSlotGroupID NEW_TRACE_RESTRICT_SLOT_GROUP     = 0xFFFE; ///< Sentinel for a to-be-created group.
-static const TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP = 0xFFFF; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
+static constexpr TraceRestrictSlotGroupID NEW_TRACE_RESTRICT_SLOT_GROUP{0xFFFE};     ///< Sentinel for a to-be-created group.
+static constexpr TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP{0xFFFF}; ///< Sentinel for invalid slot groups. Ungrouped slots are in this group.
 
 struct TraceRestrictCounter;
 
@@ -515,6 +515,12 @@ namespace TracerestrictDetail {
 				return TraceRestrictSlotID(this->GetValue());
 			}
 
+			/** Get value field, as a slot group ID */
+			TraceRestrictSlotGroupID GetValueAsSlotGroup() const
+			{
+				return TraceRestrictSlotGroupID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -553,6 +559,12 @@ namespace TracerestrictDetail {
 
 			/** Set value field (slot ID) */
 			inline void SetValue(TraceRestrictSlotID value)
+			{
+				this->SetValue(value.base());
+			}
+
+			/** Set value field (slot group ID) */
+			inline void SetValue(TraceRestrictSlotGroupID value)
 			{
 				this->SetValue(value.base());
 			}

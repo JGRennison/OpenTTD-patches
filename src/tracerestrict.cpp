@@ -3624,7 +3624,7 @@ bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 	if (o->IsType(OT_CONDITIONAL) &&
 			o->GetConditionVariable() == OCV_VEH_IN_SLOT_GROUP &&
 			cond(static_cast<TraceRestrictSlotGroupID>(o->GetXData()))) {
-		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP;
+		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP.base();
 		changed_order = true;
 	}
 	if (o->IsType(OT_SLOT_GROUP) && cond(static_cast<TraceRestrictSlotGroupID>(o->GetDestination().base()))) {
@@ -4076,10 +4076,7 @@ void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) con
 
 void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) const
 {
-	buffer.Send_uint8(this->vehtype);
-	buffer.Send_uint16(this->parent);
-	buffer.Send_string(this->name);
-	buffer.Send_uint32(this->max_occupancy);
+	buffer.Send_generic_seq(this->vehtype, this->parent, this->name, this->max_occupancy);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
 	if (this->follow_up_cmd.has_value()) {
 		this->follow_up_cmd->Serialise(buffer);
@@ -4088,10 +4085,7 @@ void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) co
 
 bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	this->vehtype = static_cast<VehicleType>(buffer.Recv_uint8());
-	this->parent = buffer.Recv_uint16();
-	buffer.Recv_string(this->name, default_string_validation);
-	this->max_occupancy = buffer.Recv_uint32();
+	buffer.Recv_generic_seq(default_string_validation, this->vehtype, this->parent, this->name, this->max_occupancy);
 	if (buffer.Recv_bool()) {
 		if (!this->follow_up_cmd.emplace().Deserialise(buffer, default_string_validation)) return false;
 	}

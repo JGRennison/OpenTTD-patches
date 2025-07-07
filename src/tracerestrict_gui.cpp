@@ -788,6 +788,13 @@ struct SlotItem {
 		return { TYPE, id.base() };
 	}
 
+	template <SlotItemType TYPE>
+	static constexpr SlotItem Make(TraceRestrictSlotGroupID id)
+	{
+		static_assert(TYPE == SlotItemType::Group);
+		return { TYPE, id.base() };
+	}
+
 	SlotItemInfo GetInfo() const
 	{
 		if (this->type == SlotItemType::Slot) {
@@ -807,6 +814,12 @@ struct SlotItem {
 		return TraceRestrictSlotID(this->id);
 	}
 
+	TraceRestrictSlotGroupID GetSlotGroup() const
+	{
+		assert(this->type == SlotItemType::Group);
+		return TraceRestrictSlotGroupID(this->id);
+	}
+
 	SlotItem GetParentItem() const
 	{
 		TraceRestrictSlotGroupID parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
@@ -818,7 +831,7 @@ struct SlotItem {
 		if (parent == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 			return SlotItem{};
 		} else {
-			return SlotItem{ SlotItemType::Group, parent };
+			return SlotItem::Make<SlotItemType::Group>(parent);
 		}
 	}
 
@@ -827,7 +840,7 @@ struct SlotItem {
 		if (this->type == SlotItemType::Slot) {
 			return this->GetParentItem().GetClosestGroupID();
 		} else if (this->type == SlotItemType::Group) {
-			return this->id;
+			return TraceRestrictSlotGroupID(this->id);
 		} else {
 			return INVALID_TRACE_RESTRICT_SLOT_GROUP;
 		}
@@ -867,16 +880,16 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 
 	auto add_group = [&](const TraceRestrictSlotGroup *sg, TraceRestrictSlotGroupID id, uint indent) {
 		if (group_only_mode) {
-			if (selected_id == id) selected = id;
+			if (selected_id == id.base()) selected = selected_id;
 			SetDParam(0, id);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME, id, false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME, id.base(), false));
 		} else if (indent == 0 || sg->vehicle_type == vehtype) {
 			SetDParam(0, id);
-			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id, false));
+			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id.base(), false));
 		} else {
 			SetDParam(0, STR_REPLACE_VEHICLE_TRAIN + sg->vehicle_type);
 			SetDParam(1, id);
-			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, id, false));
+			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, id.base(), false));
 		}
 	};
 
@@ -908,7 +921,7 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 			}
 			TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(parent);
 			if (slot_group == nullptr) break;
-			list.push_back({ SlotItemType::Group, parent });
+			list.push_back(SlotItem::Make<SlotItemType::Group>(parent));
 			parent = slot_group->parent;
 		}
 	}
@@ -949,11 +962,11 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 			} else if (item.type == SlotItemType::Group) {
 				const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(item.id);
 				if (sg->parent != parent_filter) continue;
-				add_group(sg, item.id, indent);
+				add_group(sg, item.GetSlotGroup(), indent);
 
-				if (seen_parents.count(item.id)) {
+				if (seen_parents.count(item.GetSlotGroup())) {
 					/* Output child items */
-					output_items(indent + 1, item.id);
+					output_items(indent + 1, item.GetSlotGroup());
 				}
 			}
 		}
@@ -968,7 +981,7 @@ inline void GetSlotDropDownListIntl(DropDownList &dlist, Owner owner, TraceRestr
 
 inline void GetSlotDropDownListIntlGroupOnly(DropDownList &dlist, Owner owner, TraceRestrictSlotGroupID slot_group_id, int &selected, VehicleType vehtype, bool show_other_types, bool recently_used, bool public_only)
 {
-	GetSlotDropDownListIntlCommon(dlist, owner, slot_group_id, selected, vehtype, show_other_types, recently_used, public_only, true);
+	GetSlotDropDownListIntlCommon(dlist, owner, slot_group_id.base(), selected, vehtype, show_other_types, recently_used, public_only, true);
 }
 
 /**
@@ -1814,7 +1827,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 					} else {
-						StringID warning = GetSlotGroupWarning(item.GetValue(), owner);
+						StringID warning = GetSlotGroupWarning(item.GetValueAsSlotGroup(), owner);
 						if (warning != STR_NULL) {
 							SetDParam(2, warning);
 						} else {
@@ -2051,7 +2064,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 				} else {
-					StringID warning = GetSlotGroupWarning(item.GetValue(), owner);
+					StringID warning = GetSlotGroupWarning(item.GetValueAsSlotGroup(), owner);
 					if (warning != STR_NULL) {
 						SetDParam(0, warning);
 					} else {
@@ -2589,7 +2602,7 @@ public:
 
 					case TRVT_SLOT_GROUP_INDEX: {
 						int selected;
-						DropDownList dlist = GetSlotGroupDropDownList(this->GetOwner(), item.GetValue(), selected, VEH_TRAIN);
+						DropDownList dlist = GetSlotGroupDropDownList(this->GetOwner(), item.GetValueAsSlotGroup(), selected, VEH_TRAIN);
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
@@ -2855,7 +2868,7 @@ public:
 					TraceRestrictRecordRecentSlot(TraceRestrictSlotID(index));
 				}
 				if (type.value_type == TRVT_SLOT_GROUP_INDEX) {
-					TraceRestrictRecordRecentSlotGroup(index);
+					TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID(index));
 				}
 				if (type.value_type == TRVT_COUNTER_INDEX_INT) {
 					TraceRestrictRecordRecentCounter(index);
@@ -3886,14 +3899,10 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 
 							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->SetString(GetDropDownStringByValue(&_slot_op_subtypes, item.GetCombinedAuxCondOpField()));
-							switch (item.GetValue()) {
-								case INVALID_TRACE_RESTRICT_SLOT_GROUP:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
-									break;
-
-								default:
-									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
-									break;
+							if (item.GetValueAsSlotGroup() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
+								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+							} else {
+								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
 							}
 							break;
 						}
@@ -4384,7 +4393,7 @@ private:
 		}
 		for (const TraceRestrictSlotGroup *sg : TraceRestrictSlotGroup::Iterate()) {
 			if (sg->owner == owner && sg->vehicle_type == this->vli.vtype) {
-				list.push_back({ SlotItem{ SlotItemType::Group, sg->index }, sg->parent, &(sg->name) });
+				list.push_back({ SlotItem::Make<SlotItemType::Group>(sg->index), sg->parent, &(sg->name) });
 			}
 		}
 
@@ -4411,7 +4420,7 @@ private:
 				seen++;
 
 				if (item.item.type == SlotItemType::Group) {
-					TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(item.item.id);
+					TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::Get(item.item.GetSlotGroup());
 					if (sg->folded) {
 						/* Test if this group has children at all. If not, the folded flag should be cleared to avoid lingering unfold buttons in the list. */
 						bool has_children = std::any_of(list.begin(), list.end(), [&](const ListItem &it) { return it.parent == item.item.id; });
@@ -4421,7 +4430,7 @@ private:
 							sg->folded = false;
 						}
 					} else {
-						uint children = output_items(indent + 1, item.item.id);
+						uint children = output_items(indent + 1, item.item.GetSlotGroup());
 						if (children > 0) enable_collapse_all = true;
 					}
 				}
@@ -4795,7 +4804,7 @@ public:
 			if (w->slot_confirm.type == SlotItemType::Slot) {
 				Command<CMD_DELETE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE, w->slot_confirm.GetSlot());
 			} else if (w->slot_confirm.type == SlotItemType::Group) {
-				Command<CMD_DELETE_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE, w->slot_confirm.id);
+				Command<CMD_DELETE_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE, w->slot_confirm.GetSlotGroup());
 			}
 		}
 	}
@@ -4983,9 +4992,9 @@ public:
 
 		auto set_parent = [&](TraceRestrictSlotGroupID parent) {
 			if (this->slot_drag.type == SlotItemType::Slot) {
-				Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.GetSlot(), TRASO_SET_PARENT_GROUP, parent, {});
+				Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.GetSlot(), TRASO_SET_PARENT_GROUP, parent.base(), {});
 			} else if (this->slot_drag.type == SlotItemType::Group) {
-				Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.id, TRASGO_SET_PARENT_GROUP, parent, {});
+				Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, this->slot_drag.GetSlotGroup(), TRASGO_SET_PARENT_GROUP, parent, {});
 			}
 		};
 
@@ -5009,7 +5018,7 @@ public:
 				if (item.item.type != SlotItemType::Group) return; // Not a slot group
 
 				if (current_parent != item.item.id && item.item != this->slot_drag) {
-					set_parent(item.item.id);
+					set_parent(item.item.GetSlotGroup());
 				}
 
 				this->slot_drag = {};
@@ -5056,7 +5065,7 @@ public:
 						if (this->slot_query.id == NEW_TRACE_RESTRICT_SLOT_GROUP) {
 							Command<CMD_CREATE_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, this->vli.vtype, this->slot_sel.GetClosestGroupID(), std::move(*str));
 						} else {
-							Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.id, TRASGO_RENAME, {}, std::move(*str));
+							Command<CMD_ALTER_TRACERESTRICT_SLOT_GROUP>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.GetSlotGroup(), TRASGO_RENAME, {}, std::move(*str));
 						}
 					}
 					break;
@@ -5185,7 +5194,7 @@ public:
 	void ShowCreateSlotGroupWindow()
 	{
 		this->qsm_mode = QuerySelectorMode::Rename;
-		this->slot_query = { SlotItemType::Group, NEW_TRACE_RESTRICT_SLOT_GROUP };
+		this->slot_query = SlotItem::Make<SlotItemType::Group>(NEW_TRACE_RESTRICT_SLOT_GROUP);
 		ShowQueryString({}, STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
 	}
 

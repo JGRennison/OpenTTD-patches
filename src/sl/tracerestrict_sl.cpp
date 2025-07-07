@@ -215,7 +215,7 @@ static void Load_TRRG()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictSlotGroup *slot_group = new (index) TraceRestrictSlotGroup();
+		TraceRestrictSlotGroup *slot_group = new (TraceRestrictSlotGroupID(index)) TraceRestrictSlotGroup();
 		SlObjectLoadFiltered(slot_group, slt);
 	}
 }
