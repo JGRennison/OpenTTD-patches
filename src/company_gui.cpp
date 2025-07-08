@@ -580,14 +580,12 @@ struct CompanyFinancesWindow : Window {
 	{
 		switch (widget) {
 			case WID_CF_INCREASE_LOAN: {
-				SetDParam(0, STR_FINANCES_BORROW_TOOLTIP);
-				GuiShowTooltips(this, STR_FINANCES_BORROW_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_FINANCES_BORROW_TOOLTIP_EXTRA, STR_FINANCES_BORROW_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case WID_CF_REPAY_LOAN: {
-				SetDParam(0, STR_FINANCES_REPAY_TOOLTIP);
-				GuiShowTooltips(this, STR_FINANCES_REPAY_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_FINANCES_BORROW_TOOLTIP_EXTRA, STR_FINANCES_REPAY_TOOLTIP), close_cond);
 				return true;
 			}
 

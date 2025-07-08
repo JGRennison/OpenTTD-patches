@@ -1363,7 +1363,7 @@ void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index);
 void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index);
 void TraceRestrictClearRecentSlotsAndCounters();
 
-StringID TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype);
+class EncodedString TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype);
 
 static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maximum length of a slot name in characters including '\0'
 

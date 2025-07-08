@@ -1571,9 +1571,7 @@ struct StationViewWindow : public Window {
 	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_SV_RENAME) {
-			SetDParam(0, STR_STATION_VIEW_RENAME_TOOLTIP);
-			SetDParam(1, STR_BUTTON_DEFAULT);
-			GuiShowTooltips(this, STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, close_cond, 2);
+			GuiShowTooltips(this, GetEncodedString(STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA, STR_STATION_VIEW_RENAME_TOOLTIP, STR_BUTTON_DEFAULT), close_cond);
 			return true;
 		}
 

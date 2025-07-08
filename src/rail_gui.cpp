@@ -596,8 +596,7 @@ struct BuildRailToolbarWindow : Window {
 		bool can_build = CanBuildVehicleInfrastructure(VEH_TRAIN);
 		if (can_build) {
 			if (widget == WID_RAT_CONVERT_RAIL) {
-				SetDParam(0, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL);
-				GuiShowTooltips(this, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL), close_cond);
 				return true;
 			}
 			return false;
@@ -605,7 +604,7 @@ struct BuildRailToolbarWindow : Window {
 
 		if (std::ranges::find(can_build_widgets, widget) == std::end(can_build_widgets)) return false;
 
-		GuiShowTooltips(this, STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE, close_cond);
+		GuiShowTooltips(this, GetEncodedString(STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE), close_cond);
 		return true;
 	}
 

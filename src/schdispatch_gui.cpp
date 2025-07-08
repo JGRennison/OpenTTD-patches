@@ -452,43 +452,35 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_SCHDISPATCH_ENABLED: {
 				if (!this->TimeUnitsUsable()) {
-					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
-					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE);
-					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE), close_cond);
 				} else if (HasBit(this->vehicle->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
-					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION);
-					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), close_cond);
 				} else if (this->vehicle->HasUnbunchingOrder()) {
-					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
-					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING);
-					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), close_cond);
 				} else {
-					GuiShowTooltips(this, STR_SCHDISPATCH_ENABLED_TOOLTIP, close_cond);
+					GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_ENABLED_TOOLTIP), close_cond);
 				}
 				return true;
 			}
 
 			case WID_SCHDISPATCH_ADD: {
 				if (_settings_time.time_in_minutes) {
-					SetDParam(0, STR_SCHDISPATCH_ADD_TOOLTIP);
-					GuiShowTooltips(this, STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA, close_cond, 1);
+					GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA, STR_SCHDISPATCH_ADD_TOOLTIP), close_cond);
 					return true;
 				}
 				break;
 			}
 
 			case WID_SCHDISPATCH_ADJUST: {
-				SetDParam(0, STR_SCHDISPATCH_ADJUST_TOOLTIP);
-				GuiShowTooltips(this, STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED, STR_SCHDISPATCH_ADJUST_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
-				_temp_special_strings[0] = GetString(STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP);
+				format_buffer buf;
+				AppendStringInPlace(buf, STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP);
 				auto add_suffix = [&](StringID str) {
-					SetDParam(0, str);
-					_temp_special_strings[0] += GetString(STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX);
+					AppendStringInPlace(buf, STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX, str);
 				};
 				add_suffix(STR_SCHDISPATCH_CLEAR_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP);
@@ -496,18 +488,18 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP);
-				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				return true;
 			}
 
 			case WID_SCHDISPATCH_MANAGE_SLOT: {
-				_temp_special_strings[0] = GetString(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP);
+				format_buffer buf;
+				AppendStringInPlace(buf, STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP);
 				auto add_suffix = [&](StringID str) {
-					SetDParam(0, str);
-					_temp_special_strings[0] += GetString(STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX);
+					AppendStringInPlace(buf, STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX, str);
 				};
 				add_suffix(STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP);
-				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				return true;
 			}
 
@@ -520,31 +512,29 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (slot == nullptr) return false;
 
 				if (is_header && this->remove_slot_mode) {
-					GuiShowTooltips(this, STR_SCHDISPATCH_REMOVE_SLOT, close_cond);
+					GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_REMOVE_SLOT), close_cond);
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 					const StateTicks start_tick = ds.GetScheduledDispatchStartTick();
 
-					SetDParam(0, start_tick + slot->offset);
-					_temp_special_strings[0] = GetString(STR_SCHDISPATCH_SLOT_TOOLTIP);
+					format_buffer buf;
+					AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP, start_tick + slot->offset);
 					if (_settings_time.time_in_minutes) {
 						ClockFaceMinutes start_minutes = _settings_time.ToTickMinutes(start_tick).ToClockFaceMinutes();
 						if (start_minutes != 0) {
 							TickMinutes offset_minutes = TickMinutes{slot->offset / _settings_time.ticks_per_minute};
-							SetDParam(0, offset_minutes.ClockHHMM());
-							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE);
+							AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE, offset_minutes.ClockHHMM());
 						}
 					}
 
 					bool have_extra = false;
 					auto show_time = [&](StringID msg, StateTicks dispatch_tick) {
-						if (!have_extra) _temp_special_strings[0] += '\n';
-						_temp_special_strings[0] += GetString(msg);
+						if (!have_extra) buf.push_back('\n');
+						AppendStringInPlace(buf, msg);
 						if (_settings_time.time_in_minutes) {
 							ClockFaceMinutes mins = _settings_time.ToTickMinutes(dispatch_tick).ToClockFaceMinutes();
 							if (mins != _settings_time.ToTickMinutes(start_tick + slot->offset).ToClockFaceMinutes()) {
-								SetDParam(0, dispatch_tick);
-								_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX);
+								AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX, dispatch_tick);
 							}
 						}
 						have_extra = true;
@@ -573,21 +563,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					auto flags = slot->flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					if (flags != 0) {
-						_temp_special_strings[0] += '\n';
+						buf.push_back('\n');
 						if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
-							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
+							AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
 						}
 
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(flags, flag_bit)) {
-								SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-								SetDParamStr(1, name);
-								_temp_special_strings[0] += GetString(name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED);
+								AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 							}
 						}
 					}
-					GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+					GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				}
 				return true;
 			}

@@ -901,7 +901,7 @@ struct DepotWindow : Window {
 		}
 
 		/* Build tooltip string */
-		std::string details;
+		format_buffer details;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
 			CargoType cargo_type = cs->Index();
@@ -915,9 +915,11 @@ struct DepotWindow : Window {
 		}
 
 		/* Show tooltip window */
-		SetDParam(0, whole_chain ? num : v->engine_type);
-		SetDParamStr(1, std::move(details));
-		GuiShowTooltips(this, whole_chain ? STR_DEPOT_VEHICLE_TOOLTIP_CHAIN : STR_DEPOT_VEHICLE_TOOLTIP, TCC_RIGHT_CLICK, 2);
+		if (whole_chain) {
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP_CHAIN, num, details), TCC_RIGHT_CLICK);
+		} else {
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP, v->engine_type, details), TCC_RIGHT_CLICK);
+		}
 
 		return true;
 	}
@@ -1266,15 +1268,14 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 
 	if (totals.total_vehicle_count == 0) {
 		if (totals.free_wagon_count > 0) {
-			SetDParam(0, totals.free_wagon_count);
-			GuiShowTooltips(w, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, TCC_HOVER_VIEWPORT);
+			GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TCC_HOVER_VIEWPORT);
 		}
 		return;
 	}
 
-	StringID str;
+	StringParameter p1{totals.total_vehicle_count};
 
-	SetDParam(0, totals.total_vehicle_count);
+	StringID str;
 	if (_settings_client.gui.depot_tooltip_mode == DTM_SIMPLE || (totals.stopped_vehicle_count == 0 && totals.waiting_vehicle_count == 0)) {
 		str = STR_DEPOT_VIEW_COUNT_TOOLTIP;
 	} else if (totals.total_vehicle_count == totals.stopped_vehicle_count) {
@@ -1282,25 +1283,21 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 	} else if (totals.total_vehicle_count == totals.waiting_vehicle_count) {
 		str = STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP;
 	} else {
-		str = SPECSTR_TEMP_START;
-		_temp_special_strings[0] = GetString(STR_DEPOT_VIEW_TOTAL_TOOLTIP);
+		format_buffer buf;
+		AppendStringInPlace(buf, STR_DEPOT_VIEW_TOTAL_TOOLTIP, p1);
 		if (totals.stopped_vehicle_count > 0) {
-			SetDParam(0, totals.stopped_vehicle_count);
-			_temp_special_strings[0] += GetString(STR_DEPOT_VIEW_STOPPED_TOOLTIP);
+			AppendStringInPlace(buf, STR_DEPOT_VIEW_STOPPED_TOOLTIP, totals.stopped_vehicle_count);
 		}
 		if (totals.waiting_vehicle_count > 0) {
-			SetDParam(0, totals.waiting_vehicle_count);
-			_temp_special_strings[0] += GetString(STR_DEPOT_VIEW_WAITING_TOOLTIP);
+			AppendStringInPlace(buf, STR_DEPOT_VIEW_WAITING_TOOLTIP, totals.waiting_vehicle_count);
 		}
+		str = STR_JUST_RAW_STRING;
+		p1 = StringParameter((std::string_view)buf);
 	}
 
 	if (totals.free_wagon_count > 0) {
-		SetDParam(0, str);
-		SetDParam(1, totals.total_vehicle_count);
-		SetDParam(2, STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP);
-		SetDParam(3, totals.free_wagon_count);
-		str = STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP;
+		GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP, str, std::move(p1), STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TCC_HOVER_VIEWPORT);
+	} else {
+		GuiShowTooltips(w, GetEncodedString(str, std::move(p1)), TCC_HOVER_VIEWPORT);
 	}
-
-	GuiShowTooltips(w, str, TCC_HOVER_VIEWPORT);
 }

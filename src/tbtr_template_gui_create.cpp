@@ -423,22 +423,25 @@ public:
 		}
 
 		/* Build tooltipstring */
-		std::string details;
+		format_buffer details;
 
 		for (CargoType cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
 			if (capacity[cargo_type] == 0) continue;
 
-			SetDParam(0, cargo_type);           // {CARGO} #1
-			SetDParam(1, loaded[cargo_type]);   // {CARGO} #2
-			SetDParam(2, cargo_type);           // {SHORTCARGO} #1
-			SetDParam(3, capacity[cargo_type]); // {SHORTCARGO} #2
-			details = GetString(STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
+			AppendStringInPlace(details, STR_DEPOT_VEHICLE_TOOLTIP_CARGO,
+					cargo_type,           // {CARGO} #1
+					loaded[cargo_type],   // {CARGO} #2
+					cargo_type,           // {SHORTCARGO} #1
+					capacity[cargo_type]  // {SHORTCARGO} #2
+			);
 		}
 
 		/* Show tooltip window */
-		SetDParam(0, whole_chain ? num : v->engine_type);
-		SetDParamStr(1, std::move(details));
-		GuiShowTooltips(this, whole_chain ? STR_DEPOT_VEHICLE_TOOLTIP_CHAIN : STR_DEPOT_VEHICLE_TOOLTIP, TCC_RIGHT_CLICK, 2);
+		if (whole_chain) {
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP_CHAIN, num, details), TCC_RIGHT_CLICK);
+		} else {
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP, v->engine_type, details), TCC_RIGHT_CLICK);
+		}
 
 		return true;
 	}

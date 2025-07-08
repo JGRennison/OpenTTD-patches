@@ -3299,7 +3299,7 @@ struct IndustryCargoesWindow : public Window {
 
 			case CFT_INDUSTRY:
 				if (fld->u.industry.ind_type < NUM_INDUSTRYTYPES && (this->ind_cargo >= NUM_INDUSTRYTYPES || fieldxy.x != 2)) {
-					GuiShowTooltips(this, STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP, close_cond);
+					GuiShowTooltips(this, GetEncodedString(STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP), close_cond);
 				}
 				return true;
 
@@ -3308,8 +3308,7 @@ struct IndustryCargoesWindow : public Window {
 		}
 		if (cargo_type != INVALID_CARGO && (this->ind_cargo < NUM_INDUSTRYTYPES || cargo_type != this->ind_cargo - NUM_INDUSTRYTYPES)) {
 			const CargoSpec *csp = CargoSpec::Get(cargo_type);
-			SetDParam(0, csp->name);
-			GuiShowTooltips(this, STR_INDUSTRY_CARGOES_CARGO_TOOLTIP, close_cond, 1);
+			GuiShowTooltips(this, GetEncodedString(STR_INDUSTRY_CARGOES_CARGO_TOOLTIP, csp->name), close_cond);
 			return true;
 		}
 
@@ -3469,7 +3468,6 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (!msg.empty()) {
-		_temp_special_strings[0] = std::move(msg);
-		GuiShowTooltips(w, SPECSTR_TEMP_START, TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedString(STR_JUST_RAW_STRING, std::move(msg)), TCC_HOVER_VIEWPORT);
 	}
 }

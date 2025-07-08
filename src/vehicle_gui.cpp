@@ -3656,7 +3656,7 @@ struct VehicleDetailsWindow : Window {
 			} else {
 				tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS;
 			}
-			GuiShowTooltips(this, tool_tip, close_cond);
+			GuiShowTooltips(this, GetEncodedString(tool_tip), close_cond);
 			return true;
 		}
 
@@ -4450,10 +4450,9 @@ public:
 		if (widget == WID_VV_GOTO_DEPOT && _settings_client.gui.hover_delay_ms == 0) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
 			if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, TCC_RIGHT_CLICK);
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU), TCC_RIGHT_CLICK);
 			} else {
-				SetDParam(0, STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type);
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, TCC_RIGHT_CLICK, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type), TCC_RIGHT_CLICK);
 			}
 		}
 		return false;
@@ -4464,23 +4463,20 @@ public:
 		if (widget == WID_VV_GOTO_DEPOT) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
 			if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU), close_cond);
 			} else {
-				SetDParam(0, STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type);
-				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type), close_cond);
 			}
 			return true;
 		}
 		if (widget == WID_VV_LOCATION) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			SetDParam(0, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type);
-			GuiShowTooltips(this, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, close_cond, 1);
+			GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
 			return true;
 		}
 		if (widget == WID_VV_SHOW_ORDERS) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			SetDParam(0, STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type);
-			GuiShowTooltips(this, STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA, close_cond, 1);
+			GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA, STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type), close_cond);
 			return true;
 		}
 		return false;

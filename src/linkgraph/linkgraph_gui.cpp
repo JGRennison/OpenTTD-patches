@@ -584,16 +584,11 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			auto add_travel_time = [&](uint32_t time) {
 				if (time > 0) {
 					if (_settings_time.time_in_minutes) {
-						SetDParam(0, STR_TIMETABLE_MINUTES);
-						SetDParam(1, time / _settings_time.ticks_per_minute);
-						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL, STR_TIMETABLE_MINUTES, time / _settings_time.ticks_per_minute);
 					} else if (EconTime::UsingWallclockUnits() && DayLengthFactor() > 1) {
-						SetDParam(0, STR_UNITS_SECONDS);
-						SetDParam(1, time / (DAY_TICKS / 2));
-						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL, STR_UNITS_SECONDS, time / (DAY_TICKS / 2));
 					} else {
-						SetDParam(0, time / (DAY_TICKS * DayLengthFactor()));
-						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION, time / (DAY_TICKS * DayLengthFactor()));
 					}
 				}
 			};
@@ -608,9 +603,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 					SetDParam(1, info_link.planned);
 					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED);
 				}
-				SetDParam(0, info_link.cargo);
-				SetDParam(1, info_link.capacity);
-				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY);
+				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, info_link.cargo, info_link.capacity);
 				add_travel_time(info_link.time);
 			};
 
@@ -625,10 +618,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 					back_time = j->prop.time;
 					if (j->prop.Usage() > 0 || (_ctrl_pressed && j->prop.capacity > 0)) {
 						if (_ctrl_pressed) buf.push_back('\n');
-						SetDParam(0, j->prop.cargo);
-						SetDParam(1, j->prop.Usage());
-						SetDParam(2, j->prop.Usage() * 100 / (j->prop.capacity + 1));
-						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION, j->prop.cargo, j->prop.Usage(), j->prop.Usage() * 100 / (j->prop.capacity + 1));
 						if (_ctrl_pressed) {
 							add_extra_info(j->prop);
 						}
@@ -646,28 +636,22 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				buf.append("\n\n");
 				TileIndex t0 = Station::Get(i->from_id)->xy;
 				TileIndex t1 = Station::Get(i->to_id)->xy;
-				SetDParam(0, DistanceManhattan(t0, t1));
-				SetDParam(1, IntSqrt64(DistanceSquare64(t0, t1))); // Avoid overflow in DistanceSquare
-				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE);
+				uint32_t euclid_distance = IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
+				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE, DistanceManhattan(t0, t1), euclid_distance);
 			}
 
-			SetDParam(0, link.cargo);
-			SetDParam(1, link.Usage());
-			SetDParam(2, i->from_id);
-			SetDParam(3, i->to_id);
-			SetDParam(4, link.Usage() * 100 / (link.capacity + 1));
-			SetDParamStr(5, buf);
 			StringID msg;
 			if (EconTime::UsingWallclockUnits()) {
 				msg = ReplaceWallclockMinutesUnit() ? STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL : STR_LINKGRAPH_STATS_TOOLTIP_MINUTE;
 			} else {
 				msg = STR_LINKGRAPH_STATS_TOOLTIP_MONTH;
 			}
-			GuiShowTooltips(this->window, msg, close_cond);
+			EncodedString str = GetEncodedString(msg, link.cargo, link.Usage(), i->from_id, i->to_id, link.Usage() * 100 / (link.capacity + 1), (std::string_view)buf);
+			GuiShowTooltips(this->window, std::move(str), close_cond);
 			return true;
 		}
 	}
-	GuiShowTooltips(this->window, STR_NULL, close_cond);
+	GuiShowTooltips(this->window, {}, close_cond);
 	return false;
 }
 
@@ -899,18 +883,19 @@ bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, WidgetID widget, T
 {
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
 		if (this->IsWidgetDisabled(widget)) {
-			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES, close_cond);
+			GuiShowTooltips(this, GetEncodedString(STR_LINKGRAPH_LEGEND_SELECT_COMPANIES), close_cond);
 		} else {
-			CompanyID cid = (CompanyID)(widget - WID_LGL_COMPANY_FIRST);
-			SetDParam(0, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES);
-			SetDParam(1, cid);
-			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP, close_cond, 2);
+			GuiShowTooltips(this,
+				GetEncodedString(STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP,
+					STR_LINKGRAPH_LEGEND_SELECT_COMPANIES,
+					widget - WID_LGL_COMPANY_FIRST),
+				close_cond);
 		}
 		return true;
 	}
 	if (IsInsideMM(widget, WID_LGL_CARGO_FIRST, WID_LGL_CARGO_LAST + 1)) {
 		const CargoSpec *cargo = _sorted_cargo_specs[widget - WID_LGL_CARGO_FIRST];
-		GuiShowTooltips(this, cargo->name, close_cond);
+		GuiShowTooltips(this, GetEncodedString(cargo->name), close_cond);
 		return true;
 	}
 	return false;

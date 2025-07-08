@@ -1326,8 +1326,7 @@ public:
 	{
 		switch (widget) {
 			case WID_GL_RENAME_GROUP:
-				SetDParam(0, STR_GROUP_RENAME_TOOLTIP);
-				GuiShowTooltips(this, STR_GROUP_RENAME_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_GROUP_RENAME_TOOLTIP_EXTRA, STR_GROUP_RENAME_TOOLTIP), close_cond);
 				return true;
 
 			default:

@@ -5704,15 +5704,13 @@ void UpdateTileSelection()
 
 /**
  * Displays the measurement tooltips when selecting multiple tiles
- * @param str String to be displayed
- * @param paramcount number of params to deal with
- * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
+ * @param text String to be displayed
  * @param close_cond Condition for closing this tooltip.
  */
-static inline void ShowMeasurementTooltips(StringID str, uint paramcount, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT)
+static inline void ShowMeasurementTooltips(EncodedString &&text, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
-	GuiShowTooltips(_thd.GetCallbackWnd(), str, close_cond, paramcount);
+	GuiShowTooltips(_thd.GetCallbackWnd(), std::move(text), close_cond);
 }
 
 static void HideMeasurementTooltips()
@@ -5793,8 +5791,7 @@ void VpSetPresizeRange(TileIndex from, TileIndex to)
 
 	/* show measurement only if there is any length to speak of */
 	if (distance > 1) {
-		SetDParam(0, distance);
-		ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1);
+		ShowMeasurementTooltips(GetEncodedString(STR_MEASURE_LENGTH, distance));
 	} else {
 		HideMeasurementTooltips();
 	}
@@ -5971,11 +5968,8 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 
 static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT, bool show_single_tile_length = false)
 {
-	static const StringID measure_strings_length[] = {STR_NULL, STR_MEASURE_LENGTH, STR_MEASURE_LENGTH_HEIGHTDIFF};
-
 	if (_settings_client.gui.measure_tooltip) {
 		uint distance = DistanceManhattan(start_tile, end_tile) + 1;
-		uint index = 0;
 
 		if (show_single_tile_length || distance != 1) {
 			int heightdiff = CalcHeightdiff(style, distance, start_tile, end_tile);
@@ -5986,11 +5980,14 @@ static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, Ti
 				distance = CeilDiv(distance, 2);
 			}
 
-			SetDParam(index++, distance);
-			if (heightdiff != 0) SetDParam(index++, heightdiff);
+			if (heightdiff == 0) {
+				ShowMeasurementTooltips(GetEncodedString(STR_MEASURE_LENGTH, distance), close_cond);
+			} else {
+				ShowMeasurementTooltips(GetEncodedString(STR_MEASURE_LENGTH_HEIGHTDIFF, distance, heightdiff), close_cond);
+			}
+		} else {
+			HideMeasurementTooltips();
 		}
-
-		ShowMeasurementTooltips(measure_strings_length[index], index, close_cond);
 	}
 }
 
@@ -6557,21 +6554,18 @@ calc_heightdiff_single_direction:;
 			}
 
 			int heightdiff = 0;
+			uint32_t manhattan_distance = 0;
+			uint32_t euclid_distance = 0;
 
 			if (dx != 1 || dy != 1) {
 				heightdiff = CalcHeightdiff(style, 0, t0, t1);
-				SetDParam(0, DistanceManhattan(t0, t1));
-				SetDParam(1, IntSqrt64(DistanceSquare64(t0, t1))); // Avoid overflow in DistanceSquare
-			} else {
-				SetDParam(0, 0);
-				SetDParam(1, 0);
+				manhattan_distance = DistanceManhattan(t0, t1);
+				euclid_distance = IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
 			}
 
-			SetDParam(2, DistanceFromEdge(t1));
-			SetDParam(3, GetTileMaxZ(t1) * TILE_HEIGHT_STEP);
-			SetDParam(4, heightdiff);
 			/* Always show the measurement tooltip */
-			GuiShowTooltips(_thd.GetCallbackWnd(), STR_MEASURE_DIST_HEIGHTDIFF, TCC_EXIT_VIEWPORT, 5);
+			EncodedString str = GetEncodedString(STR_MEASURE_DIST_HEIGHTDIFF, manhattan_distance, euclid_distance, DistanceFromEdge(t1), GetTileMaxZ(t1) * TILE_HEIGHT_STEP, heightdiff);
+			GuiShowTooltips(_thd.GetCallbackWnd(), std::move(str), TCC_EXIT_VIEWPORT);
 			break;
 		}
 
@@ -6583,15 +6577,10 @@ calc_heightdiff_single_direction:;
 
 		case VPM_X_AND_Y: // drag an X by Y area
 			if (_settings_client.gui.measure_tooltip) {
-				static const StringID measure_strings_area[] = {
-					STR_NULL, STR_NULL, STR_MEASURE_AREA, STR_MEASURE_AREA_HEIGHTDIFF
-				};
-
 				TileIndex t0 = TileVirtXY(sx, sy);
 				TileIndex t1 = TileVirtXY(x, y);
 				uint dx = Delta(TileX(t0), TileX(t1)) + 1;
 				uint dy = Delta(TileY(t0), TileY(t1)) + 1;
-				uint index = 0;
 
 				/* If dragging an area (eg dynamite tool) and it is actually a single
 				 * row/column, change the type to 'line' to get proper calculation for height */
@@ -6636,12 +6625,15 @@ calc_heightdiff_single_direction:;
 				if (dx != 1 || dy != 1) {
 					int heightdiff = CalcHeightdiff(style, 0, t0, t1);
 
-					SetDParam(index++, dx - (style & HT_POINT ? 1 : 0));
-					SetDParam(index++, dy - (style & HT_POINT ? 1 : 0));
-					if (heightdiff != 0) SetDParam(index++, heightdiff);
-				}
+					dx -= (style & HT_POINT ? 1 : 0);
+					dy -= (style & HT_POINT ? 1 : 0);
 
-				ShowMeasurementTooltips(measure_strings_area[index], index);
+					if (heightdiff == 0) {
+						ShowMeasurementTooltips(GetEncodedString(STR_MEASURE_AREA, dx, dy));
+					} else {
+						ShowMeasurementTooltips(GetEncodedString(STR_MEASURE_AREA_HEIGHTDIFF, dx, dy, heightdiff));
+					}
+				}
 			}
 			break;
 

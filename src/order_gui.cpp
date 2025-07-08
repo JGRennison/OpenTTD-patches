@@ -3968,8 +3968,7 @@ public:
 		switch (widget) {
 			case WID_O_SHARED_ORDER_LIST: {
 				if (this->vehicle->owner == _local_company) {
-					SetDParam(0, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP);
-					GuiShowTooltips(this, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, close_cond, 1);
+					GuiShowTooltips(this, GetEncodedString(STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP), close_cond);
 					return true;
 				}
 				return false;
@@ -3980,7 +3979,7 @@ public:
 			case WID_O_COND_COUNTER:
 			case WID_O_SLOT:
 			case WID_O_CHANGE_COUNTER:
-				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(this->GetWidget<NWidgetCore>(widget)->GetToolTip(), this->vehicle->type), close_cond, 0);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(this->GetWidget<NWidgetCore>(widget)->GetToolTip(), this->vehicle->type), close_cond);
 				return true;
 
 			default:

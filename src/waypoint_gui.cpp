@@ -124,8 +124,8 @@ public:
 	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_W_RENAME) {
-			SetDParam(0, this->GetWidget<NWidgetCore>(WID_W_RENAME)->GetToolTip());
-			GuiShowTooltips(this, STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA, close_cond, 1);
+			StringID str = this->GetWidget<NWidgetCore>(WID_W_RENAME)->GetToolTip();
+			GuiShowTooltips(this, GetEncodedString(STR_WAYPOINT_VIEW_RENAME_TOOLTIP_EXTRA, str), close_cond);
 			return true;
 		}
 

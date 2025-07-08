@@ -246,13 +246,14 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	TownID town_id = GetTownIndex(tile);
 	const Town *town = Town::Get(town_id);
 
+	std::array<StringParameter, 4> params;
 	if (_settings_client.gui.population_in_label) {
-		SetDParam(0, STR_TOWN_NAME_POP_TOOLTIP);
-		SetDParam(1, town_id);
-		SetDParam(2, town->cache.population);
+		params[0] = STR_TOWN_NAME_POP_TOOLTIP;
+		params[1] = town_id;
+		params[2] = town->cache.population;
 	} else {
-		SetDParam(0, STR_TOWN_NAME_TOOLTIP);
-		SetDParam(1, town_id);
+		params[0] = STR_TOWN_NAME_TOOLTIP;
+		params[1] = town_id;
 	}
 
 	StringID tooltip_string;
@@ -264,12 +265,12 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 		int local_rating = town->ratings[_local_company];
 		StringID rating_string = STR_CARGO_RATING_APPALLING;
 		for (size_t i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
-		SetDParam(3, rating_string);
+		params[3] = rating_string;
 		tooltip_string = STR_TOWN_NAME_RATING_TOOLTIP;
 	} else {
 		tooltip_string = STR_JUST_STRING2;
 	}
-	GuiShowTooltips(w, tooltip_string, TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, GetEncodedStringWithArgs(tooltip_string, params), TCC_HOVER_VIEWPORT);
 }
 
 void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
@@ -277,8 +278,7 @@ void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
 	if (_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_OFF ||
 			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES))) return;
 
-	SetDParam(0, GetStationIndex(tile));
-	GuiShowTooltips(w, STR_WAYPOINT_NAME, TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, GetEncodedString(STR_WAYPOINT_NAME, GetStationIndex(tile)), TCC_HOVER_VIEWPORT);
 }
 
 void ShowStationViewportTooltip(Window *w, const TileIndex tile)
@@ -288,13 +288,11 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 
 	if (station == nullptr) return;
 
-	std::string msg;
+	format_buffer msg;
 
 	if ( _settings_client.gui.station_viewport_tooltip_name == STNM_ALWAYS_ON ||
 			(_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !HasBit(_display_opt, DO_SHOW_STATION_NAMES))) {
-		SetDParam(0, station_id);
-		SetDParam(1, station->facilities);
-		msg = GetString(STR_STATION_VIEW_NAME_TOOLTIP);
+		AppendStringInPlace(msg, STR_STATION_VIEW_NAME_TOOLTIP, station_id, station->facilities);
 	}
 
 	if (_settings_client.gui.station_viewport_tooltip_cargo) {
@@ -302,19 +300,14 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 			const GoodsEntry *goods_entry = &station->goods[cs->Index()];
 			if (!goods_entry->HasRating()) continue;
 
-			if (!msg.empty()) msg += '\n';
+			if (!msg.empty()) msg.push_back('\n');
 
-			SetDParam(0, cs->name);
-			SetDParam(1, ToPercent8(goods_entry->rating));
-			SetDParam(2, cs->Index());
-			SetDParam(3, goods_entry->CargoTotalCount());
-			msg += GetString(STR_STATION_VIEW_CARGO_LINE_TOOLTIP);
+			AppendStringInPlace(msg, STR_STATION_VIEW_CARGO_LINE_TOOLTIP, cs->name, ToPercent8(goods_entry->rating), cs->Index(), goods_entry->CargoTotalCount());
 		}
 	}
 
 	if (!msg.empty()) {
-		_temp_special_strings[0] = std::move(msg);
-		GuiShowTooltips(w, SPECSTR_TEMP_START, TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedString(STR_JUST_RAW_STRING, msg), TCC_HOVER_VIEWPORT);
 	}
 }
 

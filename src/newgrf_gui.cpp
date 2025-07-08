@@ -1371,20 +1371,17 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 	{
 		switch (widget) {
 			case WID_NS_UPGRADE: {
-				SetDParam(0, STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP);
-				GuiShowTooltips(this, STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP_EXTRA, STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case WID_NS_MOVE_UP: {
-				SetDParam(0, STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP);
-				GuiShowTooltips(this, STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP_EXTRA, STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case WID_NS_MOVE_DOWN: {
-				SetDParam(0, STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP);
-				GuiShowTooltips(this, STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP_EXTRA, STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP), close_cond);
 				return true;
 			}
 

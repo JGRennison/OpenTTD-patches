@@ -664,40 +664,35 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_VT_CHANGE_TIME: {
-				GuiShowTooltips(this, STR_TIMETABLE_WAIT_TIME_TOOLTIP, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_TIMETABLE_WAIT_TIME_TOOLTIP), close_cond);
 				return true;
 			}
 			case WID_VT_CLEAR_TIME: {
-				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_TIME_TOOLTIP, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_TIMETABLE_CLEAR_TIME_TOOLTIP), close_cond);
 				return true;
 			}
 			case WID_VT_CHANGE_SPEED: {
-				GuiShowTooltips(this, STR_TIMETABLE_CHANGE_SPEED_TOOLTIP, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_TIMETABLE_CHANGE_SPEED_TOOLTIP), close_cond);
 				return true;
 			}
 			case WID_VT_CLEAR_SPEED: {
-				GuiShowTooltips(this, STR_TIMETABLE_CLEAR_SPEED_TOOLTIP, close_cond);
+				GuiShowTooltips(this, GetEncodedString(STR_TIMETABLE_CLEAR_SPEED_TOOLTIP), close_cond);
 				return true;
 			}
 			case WID_VT_SHARED_ORDER_LIST: {
 				if (this->vehicle->owner == _local_company) {
-					SetDParam(0, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP);
-					GuiShowTooltips(this, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, close_cond, 1);
+					GuiShowTooltips(this, GetEncodedString(STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP), close_cond);
 					return true;
 				}
 				return false;
 			}
 			case WID_VT_AUTO_SEPARATION: {
 				if (HasBit(this->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-					SetDParam(0, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP);
-					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH);
-					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH), close_cond);
 				} else if (this->vehicle->HasUnbunchingOrder()) {
-					SetDParam(0, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP);
-					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING);
-					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), close_cond);
 				} else {
-					GuiShowTooltips(this, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP, close_cond);
+					GuiShowTooltips(this, GetEncodedString(STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP), close_cond);
 				}
 				return true;
 			}

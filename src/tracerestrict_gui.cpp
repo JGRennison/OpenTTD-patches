@@ -2217,15 +2217,12 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 }
 
 
-StringID TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype)
+EncodedString TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype)
 {
 	if (_settings_game.economy.infrastructure_sharing[vtype]) {
-		SetDParam(0, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA);
-		SetDParam(1, base_str);
-		return STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA;
+		return GetEncodedString(STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, base_str);
 	} else {
-		SetDParam(0, base_str);
-		return STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA;
+		return GetEncodedString(STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, base_str);
 	}
 }
 
@@ -3316,20 +3313,18 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_SHARE: {
-				SetDParam(0, STR_TRACE_RESTRICT_SHARE_TOOLTIP);
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_SHARE_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case TR_WIDGET_UNSHARE: {
-				SetDParam(0, STR_TRACE_RESTRICT_UNSHARE_TOOLTIP);
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
+				GuiShowTooltips(this, GetEncodedString(STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_UNSHARE_TOOLTIP), close_cond);
 				return true;
 			}
 
 			case TR_WIDGET_SHARE_ONTO: {
-				SetDParam(0, (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP);
-				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
+				StringID str = (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP;
+				GuiShowTooltips(this, GetEncodedString(STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, str), close_cond);
 				return true;
 			}
 
@@ -3337,14 +3332,12 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX:
 					case TRVT_SLOT_GROUP_INDEX:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond);
 						return true;
 
 					case TRVT_GROUP_INDEX:
 						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
-							SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
-							SetDParam(1, STR_NULL);
-							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, close_cond, 0);
+							GuiShowTooltips(this, GetEncodedString(STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, STR_NULL), close_cond);
 							return true;
 						}
 						return false;
@@ -3358,7 +3351,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX_INT:
 					case TRVT_COUNTER_INDEX_INT:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond, 0);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond);
 						return true;
 
 					default:

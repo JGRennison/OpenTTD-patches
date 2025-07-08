@@ -1239,12 +1239,13 @@ struct NewGRFInspectWindow final : Window {
 	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_NGRFI_MAINPANEL && this->sprite_dump) {
-			_temp_special_strings[0] = GetString(this->click_to_mark_mode ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK : STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT);
-			_temp_special_strings[0] += "\n";
-			_temp_special_strings[0] += GetString(STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE);
-			_temp_special_strings[0] += "\n";
-			_temp_special_strings[0] += GetString(STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP);
-			GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+			format_buffer buf;
+			AppendStringInPlace(buf, this->click_to_mark_mode ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK : STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT);
+			buf.push_back('\n');
+			AppendStringInPlace(buf, STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE);
+			buf.push_back('\n');
+			AppendStringInPlace(buf, STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP);
+			GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 			return true;
 		}
 
