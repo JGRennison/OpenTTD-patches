@@ -807,7 +807,7 @@ static void CompaniesGenStatistics()
 	}
 	cur_company.Restore();
 
-	/* Only run the economic statistics and update company stats every 3rd month (1st of quarter). */
+	/* Only run the economic statistics and update company stats every 3rd economy month (1st of quarter). */
 	if ((EconTime::CurMonth() % 3) != 0) return;
 
 	for (Company *c : Company::Iterate()) {

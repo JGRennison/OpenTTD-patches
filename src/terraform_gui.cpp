@@ -166,7 +166,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 					CmdPayload<CMD_CLEAR_AREA>::Make(start_tile, _ctrl_pressed), CommandCallback::PlaySound_EXPLOSION);
 
 			if (!_shift_pressed && IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
-				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
+				ShowQuery(GetEncodedString(STR_QUERY_CLEAR_AREA_CAPTION), GetEncodedString(STR_CLEAR_AREA_CONFIRMATION_TEXT), nullptr, DemolishAreaConfirmationCallback);
 			} else {
 				DemolishAreaConfirmationCallback(nullptr, true);
 			}
@@ -864,7 +864,10 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_RESET_LANDSCAPE: // Reset landscape
-				ShowQuery(STR_QUERY_RESET_LANDSCAPE_CAPTION, STR_RESET_LANDSCAPE_CONFIRMATION_TEXT, nullptr, ResetLandscapeConfirmationCallback);
+				ShowQuery(
+					GetEncodedString(STR_QUERY_RESET_LANDSCAPE_CAPTION),
+					GetEncodedString(STR_RESET_LANDSCAPE_CONFIRMATION_TEXT),
+					nullptr, ResetLandscapeConfirmationCallback);
 				break;
 
 			default: NOT_REACHED();

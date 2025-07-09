@@ -57,8 +57,7 @@ void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, StringID w
 void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID window_caption, Window *parent, QueryStringFlags flags);
 void ShowQueryString(std::string_view str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
-void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc *callback, bool focus = false);
-void ShowQuery(std::string caption, std::string message, Window *parent, QueryCallbackProc *callback, bool focus = false);
+void ShowQuery(EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback, bool focus = false);
 
 /** The number of 'characters' on the on-screen keyboard. */
 static const uint OSK_KEYBOARD_ENTRIES = 50;

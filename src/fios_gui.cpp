@@ -856,26 +856,32 @@ public:
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id && file_exists) {
 					/* The save has a different id to the current game */
 					/* Show a caption box asking whether the user is sure to overwrite the save */
-					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
+					ShowQuery(
+						GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID),
+						GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID),
+						this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && file_exists) {
 					if (this->selected != nullptr && !_load_check_data.sl_is_ext_version) {
 						const char *version = GamelogGetLastRevision(_load_check_data.gamelog_actions);
 
-						SetDParam(0, STR_SAVELOAD_OVERWRITE_TITLE);
-						std::string caption = GetString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX);
-
-						SetDParam(0, STR_SAVELOAD_OVERWRITE_WARNING);
+						EncodedString message;
 						if (version != nullptr) {
-							SetDParam(1, STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME);
-							SetDParamStr(2, version);
-						 } else {
-							SetDParam(1, STR_EMPTY);
-						 }
-						std::string message = GetString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX);
+							message = GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX,
+									STR_SAVELOAD_OVERWRITE_WARNING, STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME, version);
+						} else {
+							message = GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX,
+									STR_SAVELOAD_OVERWRITE_WARNING, STR_EMPTY, STR_NULL);
+						}
 
-						ShowQuery(std::move(caption), std::move(message), this, SaveLoadWindow::SaveGameConfirmationCallback);
+						ShowQuery(
+							GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX, STR_SAVELOAD_OVERWRITE_TITLE),
+							std::move(message),
+							this, SaveLoadWindow::SaveGameConfirmationCallback);
 					} else {
-						ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveGameConfirmationCallback);
+						ShowQuery(
+							GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE),
+							GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
+							this, SaveLoadWindow::SaveGameConfirmationCallback);
 					}
 				} else {
 					_switch_mode = SM_SAVE_GAME;
@@ -883,7 +889,10 @@ public:
 			} else {
 				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText());
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
-					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
+					ShowQuery(
+						GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE),
+						GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
+						this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
 				} else {
 					_switch_mode = SM_SAVE_HEIGHTMAP;
 				}

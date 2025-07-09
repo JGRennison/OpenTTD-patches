@@ -4884,7 +4884,7 @@ public:
 
 			case WID_TRSL_DELETE_SLOT: { // Delete the selected slot
 				this->slot_confirm = this->slot_sel;
-				ShowQuery(STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION, STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT, this, DeleteSlotCallback);
+				ShowQuery(GetEncodedString(STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION), GetEncodedString(STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT), this, DeleteSlotCallback);
 				break;
 			}
 
@@ -5517,7 +5517,7 @@ public:
 
 			case WID_TRCL_DELETE_COUNTER: { // Delete the selected counter
 				this->ctr_confirm = this->selected;
-				ShowQuery(STR_TRACE_RESTRICT_COUNTER_QUERY_DELETE_CAPTION, STR_TRACE_RESTRICT_COUNTER_DELETE_QUERY_TEXT, this, DeleteCounterCallback);
+				ShowQuery(GetEncodedString(STR_TRACE_RESTRICT_COUNTER_QUERY_DELETE_CAPTION), GetEncodedString(STR_TRACE_RESTRICT_COUNTER_DELETE_QUERY_TEXT), this, DeleteCounterCallback);
 				break;
 			}
 

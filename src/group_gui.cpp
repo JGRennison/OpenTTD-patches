@@ -918,7 +918,10 @@ public:
 
 			case WID_GL_DELETE_GROUP: { // Delete the selected group
 				this->group_confirm = this->vli.ToGroupID();
-				ShowQuery(STR_QUERY_GROUP_DELETE_CAPTION, STR_GROUP_DELETE_QUERY_TEXT, this, DeleteGroupCallback);
+				ShowQuery(
+					GetEncodedString(STR_QUERY_GROUP_DELETE_CAPTION),
+					GetEncodedString(STR_GROUP_DELETE_QUERY_TEXT),
+					this, DeleteGroupCallback);
 				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0, 0);
 				break;
 			}

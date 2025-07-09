@@ -1274,17 +1274,18 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						Command<CMD_SCH_DISPATCH_RESET_LAST_DISPATCH>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
 						break;
 
-					case SCH_MD_CLEAR_SCHEDULE:
+					case SCH_MD_CLEAR_SCHEDULE: {
 						if (this->GetSelectedSchedule().GetScheduledDispatch().empty()) return;
-						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
-						ShowQuery(STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_TEXT, this, ClearScheduleCallback);
-
+						EncodedString msg = GetEncodedString(STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_TEXT, this->GetSelectedSchedule().GetScheduledDispatch().size());
+						ShowQuery(GetEncodedString(STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_CAPTION), std::move(msg), this, ClearScheduleCallback);
 						break;
+					}
 
-					case SCH_MD_REMOVE_SCHEDULE:
-						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
-						ShowQuery(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT, this, RemoveScheduleCallback);
+					case SCH_MD_REMOVE_SCHEDULE: {
+						EncodedString msg = GetEncodedString(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT, this->GetSelectedSchedule().GetScheduledDispatch().size());
+						ShowQuery(GetEncodedString(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION), std::move(msg), this, RemoveScheduleCallback);
 						break;
+					}
 
 					case SCH_MD_DUPLICATE_SCHEDULE:
 						Command<CMD_SCH_DISPATCH_DUPLICATE_SCHEDULE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);

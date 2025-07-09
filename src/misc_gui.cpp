@@ -1325,39 +1325,15 @@ void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize
  */
 struct QueryWindow : public Window {
 	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	std::vector<StringParameterData> params; ///< local copy of #_global_string_params
-	StringID message;        ///< message shown for query window
-	StringID caption;        ///< title of window
-	bool precomposed;
-	std::string caption_str;
-	mutable std::string message_str;
+	EncodedString caption; ///< caption for query window.
+	EncodedString message; ///< message for query window.
 
-	QueryWindow(WindowDesc &desc, StringID caption, StringID message, Window *parent, QueryCallbackProc *callback) : Window(desc)
+	QueryWindow(WindowDesc &desc, EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback)
+		: Window(desc), proc(callback), caption(std::move(caption)), message(std::move(message))
 	{
-		/* Create a backup of the variadic arguments to strings because it will be
-		 * overridden pretty often. We will copy these back for drawing */
-		this->precomposed = false;
-		CopyOutDParam(this->params, 10);
-		this->message = message;
-		this->proc    = callback;
-		this->parent  = parent;
+		this->parent = parent;
 
 		this->CreateNestedTree();
-		this->GetWidget<NWidgetCore>(WID_Q_CAPTION)->SetString(caption);
-		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
-	}
-
-	QueryWindow(WindowDesc &desc, std::string caption, std::string message, Window *parent, QueryCallbackProc *callback) : Window(desc)
-	{
-		this->precomposed = true;
-		this->message = STR_EMPTY;
-		this->caption_str = std::move(caption);
-		this->message_str = std::move(message);
-		this->proc    = callback;
-		this->parent  = parent;
-
-		this->CreateNestedTree();
-		this->GetWidget<NWidgetCore>(WID_Q_CAPTION)->SetStringTip(STR_JUST_RAW_STRING, STR_NULL);
 		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
@@ -1379,17 +1355,7 @@ struct QueryWindow : public Window {
 	{
 		switch (widget) {
 			case WID_Q_CAPTION:
-				if (this->precomposed) {
-					SetDParamStr(0, this->caption_str.c_str());
-				} else {
-					CopyInDParam(this->params);
-				}
-				break;
-
-			case WID_Q_TEXT:
-				if (!this->precomposed) {
-					CopyInDParam(this->params);
-				}
+				SetDParamStr(0, this->caption.GetDecodedString());
 				break;
 		}
 	}
@@ -1398,18 +1364,14 @@ struct QueryWindow : public Window {
 	{
 		if (widget != WID_Q_TEXT) return;
 
-		if (!this->precomposed) this->message_str = GetString(this->message);
-
-		size = GetStringMultiLineBoundingBox(this->message_str, size);
+		size = GetStringMultiLineBoundingBox(this->message.GetDecodedString(), size);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_Q_TEXT) return;
 
-		if (!this->precomposed) this->message_str = GetString(this->message);
-
-		DrawStringMultiLine(r, this->message_str, TC_FROMSTRING, SA_CENTER);
+		DrawStringMultiLine(r, this->message.GetDecodedString(), TC_FROMSTRING, SA_CENTER);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -1458,7 +1420,7 @@ struct QueryWindow : public Window {
 static constexpr NWidgetPart _nested_query_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
-		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION), // The caption's string is set in the constructor
+		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION), SetToolTip(STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),
@@ -1502,26 +1464,7 @@ static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callbac
  * @param callback callback function pointer to set in the window descriptor
  * @param focus whether the window should be focussed (by default false)
  */
-void ShowQuery(StringID caption, StringID message, Window *parent, QueryCallbackProc *callback, bool focus)
-{
-	if (parent == nullptr) parent = GetMainWindow();
-
-	RemoveExistingQueryWindow(parent, callback);
-
-	QueryWindow *q = new QueryWindow(_query_desc, caption, message, parent, callback);
-	if (focus) SetFocusedWindow(q);
-}
-
-/**
- * Show a modal confirmation window with standard 'yes' and 'no' buttons
- * The window is aligned to the centre of its parent.
- * @param caption string shown as window caption
- * @param message string that will be shown for the window
- * @param parent pointer to parent window, if this pointer is nullptr the parent becomes
- * the main window WC_MAIN_WINDOW
- * @param callback callback function pointer to set in the window descriptor
- */
-void ShowQuery(std::string caption, std::string message, Window *parent, QueryCallbackProc *callback, bool focus)
+void ShowQuery(EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback, bool focus)
 {
 	if (parent == nullptr) parent = GetMainWindow();
 

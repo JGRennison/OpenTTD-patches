@@ -41,6 +41,11 @@ add_files(
 )
 
 add_files(
+    screenshot_png.cpp
+    CONDITION PNG_FOUND
+)
+
+add_files(
     soundloader_opus.cpp
     CONDITION OpusFile_FOUND
 )
@@ -430,6 +435,7 @@ add_files(
     schdispatch.h
     schdispatch_cmd.cpp
     schdispatch_gui.cpp
+    screenshot_bmp.cpp
     screenshot_gui.cpp
     screenshot_gui.h
     screenshot.cpp
@@ -437,6 +443,8 @@ add_files(
     scope.h
     scope_info.cpp
     scope_info.h
+    screenshot_type.h
+    screenshot_pcx.cpp
     settings.cpp
     settings_cmd.h
     settings_func.h
