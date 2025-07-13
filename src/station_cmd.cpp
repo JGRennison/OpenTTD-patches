@@ -3583,7 +3583,7 @@ draw_default_foundation:
 			if (group != nullptr && group->type == SGT_TILELAYOUT) {
 				const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
 				if (stopspec->flags.Test(RoadStopSpecFlag::DrawModeRegister)) {
-					stop_draw_mode = (RoadStopDrawMode)GetRegister(0x100);
+					stop_draw_mode = static_cast<RoadStopDrawModes>(GetRegister(0x100));
 				}
 				t = dts;
 				if (type == StationType::RoadWaypoint && stop_draw_mode.Test(RoadStopDrawMode::WaypGround)) {

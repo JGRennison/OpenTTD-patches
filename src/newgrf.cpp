@@ -5432,7 +5432,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x0C: // The draw mode
-				rs->draw_mode = static_cast<RoadStopDrawMode>(buf.ReadByte());
+				rs->draw_mode = RoadStopDrawModes{buf.ReadByte()};
 				break;
 
 			case A0RPI_ROADSTOP_TRIGGER_CARGOES:
