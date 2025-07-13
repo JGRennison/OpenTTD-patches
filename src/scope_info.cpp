@@ -119,14 +119,14 @@ void GeneralFmtDumper<BaseStation, const BaseStation *>::fmt_format_value(format
 		buf.append(GetString(waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME));
 		buf.format(", c:{}, facil: ", (int)st->owner);
 		auto dump_facil = [&](char c, StationFacility flag) {
-			if (st->facilities & flag) buf.push_back(c);
+			if (st->facilities.Test(flag)) buf.push_back(c);
 		};
-		dump_facil('R', FACIL_TRAIN);
-		dump_facil('T', FACIL_TRUCK_STOP);
-		dump_facil('B', FACIL_BUS_STOP);
-		dump_facil('A', FACIL_AIRPORT);
-		dump_facil('D', FACIL_DOCK);
-		dump_facil('W', FACIL_WAYPOINT);
+		dump_facil('R', StationFacility::Train);
+		dump_facil('T', StationFacility::TruckStop);
+		dump_facil('B', StationFacility::BusStop);
+		dump_facil('A', StationFacility::Airport);
+		dump_facil('D', StationFacility::Dock);
+		dump_facil('W', StationFacility::Waypoint);
 		buf.push_back(')');
 	} else {
 		buf.append("station/waypoint: nullptr");

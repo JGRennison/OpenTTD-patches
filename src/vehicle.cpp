@@ -1232,7 +1232,7 @@ void Vehicle::PreDestructor()
 		Station *st = GetTargetAirportIfValid(a);
 		if (st != nullptr) {
 			const auto &layout = st->airport.GetFTA()->layout;
-			CLRBITS(st->airport.flags, layout[a->previous_pos].block | layout[a->pos].block);
+			st->airport.blocks.Reset(layout[a->previous_pos].blocks | layout[a->pos].blocks);
 		}
 	}
 
@@ -4744,19 +4744,19 @@ bool CanVehicleUseStation(EngineID engine_type, const Station *st)
 
 	switch (e->type) {
 		case VEH_TRAIN:
-			return (st->facilities & FACIL_TRAIN) != 0;
+			return st->facilities.Test(StationFacility::Train);
 
 		case VEH_ROAD:
 			/* For road vehicles we need the vehicle to know whether it can actually
 			 * use the station, but if it doesn't have facilities for RVs it is
 			 * certainly not possible that the station can be used. */
-			return (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) != 0;
+			return st->facilities.Any({StationFacility::BusStop, StationFacility::TruckStop});
 
 		case VEH_SHIP:
-			return (st->facilities & FACIL_DOCK) != 0;
+			return st->facilities.Test(StationFacility::Dock);
 
 		case VEH_AIRCRAFT:
-			return (st->facilities & FACIL_AIRPORT) != 0 &&
+			return st->facilities.Test(StationFacility::Airport) &&
 					st->airport.GetFTA()->flags.Test(e->u.air.subtype & AIR_CTOL ? AirportFTAClass::Flag::Airplanes : AirportFTAClass::Flag::Helicopters);
 
 		default:
@@ -4817,7 +4817,7 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 			return STR_ERROR_NO_DOCK;
 
 		case VEH_AIRCRAFT:
-			if ((st->facilities & FACIL_AIRPORT) == 0) return STR_ERROR_NO_AIRPORT;
+			if (!st->facilities.Test(StationFacility::Airport)) return STR_ERROR_NO_AIRPORT;
 			if (v->GetEngine()->u.air.subtype & AIR_CTOL) {
 				return STR_ERROR_AIRPORT_NO_PLANES;
 			} else {

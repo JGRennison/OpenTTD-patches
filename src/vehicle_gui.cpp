@@ -2381,7 +2381,7 @@ private:
 	StringID GetChangeOrderStringID() const
 	{
 		if (VehicleListIdentifier::UnPack(this->window_number).type == VL_STATION_LIST) {
-			return (BaseStation::Get(this->vli.index)->facilities & FACIL_WAYPOINT) ? STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT : STR_VEHICLE_LIST_CHANGE_ORDER_STATION;
+			return (BaseStation::Get(this->vli.index)->facilities.Test(StationFacility::Waypoint)) ? STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT : STR_VEHICLE_LIST_CHANGE_ORDER_STATION;
 		} else if (VehicleListIdentifier::UnPack(this->window_number).type == VL_DEPOT_LIST) {
 			return STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT + this->vli.vtype;
 		} else {
@@ -2770,7 +2770,7 @@ public:
 				|| (IsRoadWaypointTile(tile) && this->vli.vtype == VEH_ROAD && IsInfraTileUsageAllowed(VEH_ROAD, this->vli.company, tile))
 				|| (IsBuoyTile(tile) && this->vli.vtype == VEH_SHIP)) {
 			if (this->vli.type != VL_STATION_LIST) return;
-			if (!(Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT)) return;
+			if (!Station::Get(this->vli.index)->facilities.Test(StationFacility::Waypoint)) return;
 			Command<CMD_MASS_CHANGE_ORDER>::Post(this->vli.index, this->vli.vtype, OT_GOTO_WAYPOINT, this->GetCargoFilter(), GetStationIndex(tile));
 			ResetObjectToPlace();
 			return;
@@ -2778,17 +2778,17 @@ public:
 
 		if (IsTileType(tile, MP_STATION)) {
 			if (this->vli.type != VL_STATION_LIST) return;
-			if (BaseStation::Get(this->vli.index)->facilities & FACIL_WAYPOINT) return;
+			if (BaseStation::Get(this->vli.index)->facilities.Test(StationFacility::Waypoint)) return;
 
 			StationID st_index = GetStationIndex(tile);
 			const Station *st = Station::Get(st_index);
 
 			if (!IsInfraUsageAllowed(this->vli.vtype, this->vli.company, st->owner)) return;
 
-			if ((this->vli.vtype == VEH_SHIP && st->facilities & FACIL_DOCK) ||
-					(this->vli.vtype == VEH_TRAIN && st->facilities & FACIL_TRAIN) ||
-					(this->vli.vtype == VEH_AIRCRAFT && st->facilities & FACIL_AIRPORT) ||
-					(this->vli.vtype == VEH_ROAD && st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP))) {
+			if ((this->vli.vtype == VEH_SHIP && st->facilities.Test(StationFacility::Dock)) ||
+					(this->vli.vtype == VEH_TRAIN && st->facilities.Test(StationFacility::Train)) ||
+					(this->vli.vtype == VEH_AIRCRAFT && st->facilities.Test(StationFacility::Airport)) ||
+					(this->vli.vtype == VEH_ROAD && st->facilities.Any({StationFacility::BusStop, StationFacility::TruckStop}))) {
 				Command<CMD_MASS_CHANGE_ORDER>::Post(this->vli.index, this->vli.vtype, OT_GOTO_STATION, this->GetCargoFilter(), GetStationIndex(tile));
 				ResetObjectToPlace();
 				return;

@@ -1096,7 +1096,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 				default: return CMD_ERROR;
 
 				case VEH_TRAIN: {
-					if (!(wp->facilities & FACIL_TRAIN)) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_RAIL_WAYPOINT);
+					if (!wp->facilities.Test(StationFacility::Train)) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_RAIL_WAYPOINT);
 
 					CommandCost ret = CheckInfraUsageAllowed(v->type, wp->owner);
 					if (ret.Failed()) return ret;
@@ -1104,7 +1104,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 				}
 
 				case VEH_ROAD: {
-					if (!(wp->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP))) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_ROAD_WAYPOINT);
+					if (!wp->facilities.Test(StationFacility::BusStop) && !wp->facilities.Test(StationFacility::TruckStop)) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_ROAD_WAYPOINT);
 
 					CommandCost ret = CheckInfraUsageAllowed(v->type, wp->owner);
 					if (ret.Failed()) return ret;
@@ -1112,7 +1112,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 				}
 
 				case VEH_SHIP:
-					if (!(wp->facilities & FACIL_DOCK)) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_BUOY);
+					if (!wp->facilities.Test(StationFacility::Dock)) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_BUOY);
 					if (wp->owner != OWNER_NONE) {
 						CommandCost ret = CheckInfraUsageAllowed(v->type, wp->owner);
 						if (ret.Failed()) return ret;
@@ -3135,7 +3135,7 @@ static uint16_t GetFreeStationPlatforms(StationID st_id)
 {
 	assert(Station::IsValidID(st_id));
 	const Station *st = Station::Get(st_id);
-	if (!(st->facilities & FACIL_TRAIN)) return 0;
+	if (!st->facilities.Test(StationFacility::Train)) return 0;
 	bool is_free;
 	TileIndex t2;
 	uint16_t counter = 0;
@@ -3877,7 +3877,7 @@ bool ProcessOrders(Vehicle *v)
 
 	/* If it is unchanged, keep it. */
 	if (order->Equals(v->current_order) && (v->type == VEH_AIRCRAFT || v->dest_tile != 0) &&
-			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination().ToStationID())->HasFacilities(FACIL_DOCK))) {
+			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination().ToStationID())->facilities.Test(StationFacility::Dock))) {
 		return false;
 	}
 

@@ -27,6 +27,7 @@ class BaseBitSet {
 public:
 	static inline constexpr bool fmt_as_base_hex = true;
 	static inline constexpr bool serialisation_as_base = true;
+	static inline constexpr bool string_parameter_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 	static inline constexpr bool integer_type_hint = true;
 

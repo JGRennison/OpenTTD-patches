@@ -126,7 +126,7 @@ void MoveWaypointsToBaseStations()
 
 		/* The tile really has our waypoint, so reassign the map array */
 		MakeRailWaypoint(t, GetTileOwner(t), new_wp->index, (Axis)GB(_m[t].m5, 0, 1), 0, GetRailType(t));
-		new_wp->facilities |= FACIL_TRAIN;
+		new_wp->facilities.Set(StationFacility::Train);
 		new_wp->owner = GetTileOwner(t);
 
 		SetRailStationReservation(t, reserved);

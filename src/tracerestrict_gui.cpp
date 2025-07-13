@@ -3098,7 +3098,7 @@ public:
 		} else if (IsTileType(tile, MP_STATION)) {
 			StationID st_index = GetStationIndex(tile);
 			const Station *st = Station::Get(st_index);
-			if (st->facilities & FACIL_TRAIN) {
+			if (st->facilities.Test(StationFacility::Train)) {
 				item.SetValue(st_index);
 				item.SetAuxField(TROCAF_STATION);
 			} else {

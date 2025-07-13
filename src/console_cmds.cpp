@@ -2778,7 +2778,7 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 	for (Station *st : Station::Iterate()) {
 		if (st->airport.tile == INVALID_TILE) continue;
 		if (st->airport.HasHangar()) continue;
-		if (!st->airport.flags) continue;
+		if (st->airport.blocks.None()) continue;
 
 		bool occupied = false;
 		for (const Aircraft *a : Aircraft::Iterate()) {
@@ -2788,7 +2788,7 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 			}
 		}
 		if (!occupied) {
-			st->airport.flags = 0;
+			st->airport.blocks = {};
 			count++;
 			SetDParam(0, st->index);
 			IConsolePrint(CC_DEFAULT, "Unblocked: {}", GetString(STR_STATION_NAME));
@@ -3600,7 +3600,7 @@ DEF_CONSOLE_CMD(ConShowStationWindow)
 
 	const BaseStation *bst = BaseStation::GetIfValid(atoi(argv[1]));
 	if (bst == nullptr) return true;
-	if (bst->facilities & FACIL_WAYPOINT) {
+	if (bst->facilities.Test(StationFacility::Waypoint)) {
 		ShowWaypointWindow(Waypoint::From(bst));
 	} else {
 		ShowStationViewWindow(bst->index);

@@ -91,7 +91,7 @@ private:
 	Town *town;    ///< Town being displayed.
 	int sel_index; ///< Currently selected town action, \c 0 to \c TACT_COUNT-1, \c -1 means no action selected.
 	Scrollbar *vscroll;
-	uint displayed_actions_on_previous_painting; ///< Actions that were available on the previous call to OnPaint()
+	TownActions displayed_actions_on_previous_painting; ///< Actions that were available on the previous call to OnPaint()
 
 	Dimension icon_size;      ///< Dimensions of company icon
 	Dimension exclusive_size; ///< Dimensions of exclusive icon
@@ -141,15 +141,14 @@ public:
 
 	void OnPaint() override
 	{
-		int numact;
-		uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
-		numact += SETTING_OVERRIDE_COUNT;
+		TownActions buttons = GetMaskOfTownActions(_local_company, this->town);
+		uint numact = CountBits(buttons.base()) + SETTING_OVERRIDE_COUNT;
 		if (buttons != displayed_actions_on_previous_painting) this->SetDirty();
 		displayed_actions_on_previous_painting = buttons;
 
 		this->vscroll->SetCount(numact + 1);
 
-		if (this->sel_index != -1 && this->sel_index < 0x100 && !HasBit(buttons, this->sel_index)) {
+		if (this->sel_index != -1 && this->sel_index < 0x100 && !HasBit(buttons.base(), this->sel_index)) {
 			this->sel_index = -1;
 		}
 
@@ -303,7 +302,7 @@ public:
 					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
 					break;
 			}
-			SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[action_index] >> 8);
+			SetDParam(0, _price[PR_TOWN_ACTION] * GetTownActionCost(static_cast<TownAction>(action_index)) >> 8);
 		}
 
 		return { text, colour };
@@ -319,9 +318,7 @@ public:
 				}
 				break;
 			case WID_TA_COMMAND_LIST: {
-				int numact;
-				uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
-				numact += SETTING_OVERRIDE_COUNT;
+				uint buttons = GetMaskOfTownActions(_local_company, this->town).base();
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
 				int pos = this->vscroll->GetPosition();
@@ -392,8 +389,8 @@ public:
 			case WID_TA_ACTION_INFO: {
 				assert(size.width > padding.width && size.height > padding.height);
 				Dimension d = {0, 0};
-				for (int i = 0; i < TACT_COUNT; i++) {
-					auto [text, _] = this->PrepareActionInfoString(i);
+				for (TownAction i = {}; i != TownAction::End; ++i) {
+					auto [text, _] = this->PrepareActionInfoString(to_underlying(i));
 					d = maxdim(d, GetStringMultiLineBoundingBox(text, size));
 				}
 				for (int i = TSOF_OVERRIDE_BEGIN; i < TSOF_OVERRIDE_END; i++) {
@@ -409,8 +406,8 @@ public:
 			case WID_TA_COMMAND_LIST:
 				size.height = (5 + SETTING_OVERRIDE_COUNT) * GetCharacterHeight(FS_NORMAL) + padding.height;
 				size.width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
-				for (uint i = 0; i < TACT_COUNT; i++ ) {
-					size.width = std::max(size.width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width + padding.width);
+				for (TownAction i = {}; i != TownAction::End; ++i) {
+					size.width = std::max(size.width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + to_underlying(i)).width + padding.width);
 				}
 				size.width += padding.width;
 				break;
@@ -444,7 +441,7 @@ public:
 
 				const uint setting_override_offset = 32 - SETTING_OVERRIDE_COUNT;
 
-				y = GetNthSetBit(GetMaskOfTownActions(nullptr, _local_company, this->town) | (UINT32_MAX << setting_override_offset), y + this->vscroll->GetPosition() - 1);
+				y = GetNthSetBit(GetMaskOfTownActions(_local_company, this->town).base() | (UINT32_MAX << setting_override_offset), y + this->vscroll->GetPosition() - 1);
 				if (y >= (int)setting_override_offset) {
 					this->sel_index = y + 0x100 - setting_override_offset;
 					this->SetDirty();
@@ -459,7 +456,7 @@ public:
 			}
 
 			case WID_TA_EXECUTE:
-				Command<CMD_DO_TOWN_ACTION>::Post(STR_ERROR_CAN_T_DO_THIS, this->town->xy, static_cast<TownID>(this->window_number), this->sel_index);
+				Command<CMD_DO_TOWN_ACTION>::Post(STR_ERROR_CAN_T_DO_THIS, this->town->xy, static_cast<TownID>(this->window_number), static_cast<TownAction>(this->sel_index));
 				break;
 
 			case WID_TA_SETTING: {
@@ -2137,7 +2134,6 @@ struct BuildHouseWindow : public PickerWindow {
 	{
 		HousePickerCallbacks::instance.SetClimateMask();
 		this->ConstructWindow();
-		this->InvalidateData();
 	}
 
 	void UpdateSelectSize(const HouseSpec *spec)
@@ -2272,7 +2268,8 @@ struct BuildHouseWindow : public PickerWindow {
 
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
 
-		if ((data & PickerWindow::PFI_POSITION) != 0) {
+		PickerInvalidations pi(data);
+		if (pi.Test(PickerInvalidation::Position)) {
 			UpdateSelectSize(spec);
 			this->house_info = GetHouseInformation(spec);
 		}

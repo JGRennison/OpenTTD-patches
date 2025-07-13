@@ -1265,16 +1265,14 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 			if (t == nullptr) {
 				/* No icon change */
-			} else if (t->facilities & FACIL_DOCK &&
-					t->facilities & FACIL_AIRPORT &&
+			} else if (t->facilities.Test(StationFacility::Dock) &&
+					t->facilities.Test(StationFacility::Airport) &&
 					d->vehicle->type != VEH_SHIP &&
 					d->vehicle->type != VEH_AIRCRAFT) {
 				icon = STR_DEPARTURES_STATION_PORTAIRPORT;
-			} else if (t->facilities & FACIL_DOCK &&
-					d->vehicle->type != VEH_SHIP) {
+			} else if (t->facilities.Test(StationFacility::Dock) && d->vehicle->type != VEH_SHIP) {
 				icon = STR_DEPARTURES_STATION_PORT;
-			} else if (t->facilities & FACIL_AIRPORT &&
-					d->vehicle->type != VEH_AIRCRAFT) {
+			} else if (t->facilities.Test(StationFacility::Airport) && d->vehicle->type != VEH_AIRCRAFT) {
 				icon = STR_DEPARTURES_STATION_AIRPORT;
 			}
 		}
@@ -1318,15 +1316,15 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						if (_settings_client.gui.departure_destination_type && Station::IsValidID(id)) {
 							Station *st = Station::Get(id);
 
-							if (st->facilities & FACIL_DOCK &&
-									st->facilities & FACIL_AIRPORT &&
+							if (st->facilities.Test(StationFacility::Dock) &&
+									st->facilities.Test(StationFacility::Airport) &&
 									d->vehicle->type != VEH_SHIP &&
 									d->vehicle->type != VEH_AIRCRAFT) {
 								icon_via = STR_DEPARTURES_STATION_PORTAIRPORT;
-							} else if (st->facilities & FACIL_DOCK &&
+							} else if (st->facilities.Test(StationFacility::Dock) &&
 									d->vehicle->type != VEH_SHIP) {
 								icon_via = STR_DEPARTURES_STATION_PORT;
-							} else if (st->facilities & FACIL_AIRPORT &&
+							} else if (st->facilities.Test(StationFacility::Airport) &&
 									d->vehicle->type != VEH_AIRCRAFT) {
 								icon_via = STR_DEPARTURES_STATION_AIRPORT;
 							}

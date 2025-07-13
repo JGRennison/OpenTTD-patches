@@ -285,14 +285,14 @@ protected:
 	/* Runtime saved values */
 	struct FilterState {
 		Listing last_sorting;
-		uint8_t facilities; ///< types of stations of interest
+		StationFacilities facilities; ///< types of stations of interest
 		bool include_no_rating; ///< Whether we should include stations with no cargo rating.
 		CargoTypes cargoes; ///< bitmap of cargo types to include
 	};
 
 	static inline FilterState initial_state = {
 		{false, 0},
-		FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_BUS_STOP | FACIL_AIRPORT | FACIL_DOCK,
+		{StationFacility::Train, StationFacility::TruckStop, StationFacility::BusStop, StationFacility::Airport, StationFacility::Dock},
 		true,
 		ALL_CARGOTYPES,
 	};
@@ -335,7 +335,7 @@ protected:
 		this->stations_per_cargo_type_no_rating = 0;
 
 		for (const Station *st : Station::Iterate()) {
-			if ((this->filter.facilities & st->facilities) != 0) { // only stations with selected facilities
+			if (this->filter.facilities.Any(st->facilities)) { // only stations with selected facilities
 				if (st->owner == owner || (st->owner == OWNER_NONE && HasStationInUse(st->index, true, owner))) {
 					bool has_rating = false;
 					/* Add to the station/cargo counts. */
@@ -431,23 +431,23 @@ protected:
 		return minr1 > minr2;
 	}
 
-	static void PrepareStationVehiclesCallingSorter(uint8_t facilities)
+	static void PrepareStationVehiclesCallingSorter(StationFacilities facilities)
 	{
 		station_vehicle_calling_counts.clear();
 
 		auto can_vehicle_use_facility = [&](const Vehicle *v) -> bool {
 			switch (v->type) {
 				case VEH_TRAIN:
-					return (facilities & FACIL_TRAIN);
+					return facilities.Test(StationFacility::Train);
 
 				case VEH_ROAD:
-					return (facilities & (RoadVehicle::From(v)->IsBus() ? FACIL_BUS_STOP : FACIL_TRUCK_STOP));
+					return facilities.Test(RoadVehicle::From(v)->IsBus() ? StationFacility::BusStop : StationFacility::TruckStop);
 
 				case VEH_AIRCRAFT:
-					return (facilities & FACIL_AIRPORT);
+					return facilities.Test(StationFacility::Airport);
 
 				case VEH_SHIP:
-					return (facilities & FACIL_DOCK);
+					return facilities.Test(StationFacility::Dock);
 
 				default:
 					return false;
@@ -456,7 +456,7 @@ protected:
 
 		robin_hood::unordered_flat_set<StationID> seen_stations;
 		for (const OrderList *l : OrderList::Iterate()) {
-			if (facilities != (FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_BUS_STOP | FACIL_AIRPORT | FACIL_DOCK)) {
+			if (facilities != StationFacilities{ StationFacility::Train, StationFacility::TruckStop, StationFacility::BusStop, StationFacility::Airport, StationFacility::Dock }) {
 				if (!can_vehicle_use_facility(l->GetFirstSharedVehicle())) continue;
 			}
 
@@ -519,7 +519,7 @@ public:
 		if (this->filter.cargoes == ALL_CARGOTYPES) this->filter.cargoes = _cargo_mask;
 
 		for (uint i = 0; i < 5; i++) {
-			if (HasBit(this->filter.facilities, i)) this->LowerWidget(i + WID_STL_TRAIN);
+			if (HasBit(this->filter.facilities.base(), i)) this->LowerWidget(i + WID_STL_TRAIN);
 		}
 
 		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->SetString(CompanyStationsWindow::sorter_names[this->stations.SortType()]);
@@ -718,13 +718,14 @@ public:
 			case WID_STL_AIRPLANE:
 			case WID_STL_SHIP:
 				if (_ctrl_pressed) {
-					ToggleBit(this->filter.facilities, widget - WID_STL_TRAIN);
+					this->filter.facilities.Flip(static_cast<StationFacility>(widget - WID_STL_TRAIN));
 					this->ToggleWidgetLoweredState(widget);
 				} else {
-					for (uint i : SetBitIterator(this->filter.facilities)) {
+					for (uint i : SetBitIterator(this->filter.facilities.base())) {
 						this->RaiseWidget(i + WID_STL_TRAIN);
 					}
-					this->filter.facilities = 1 << (widget - WID_STL_TRAIN);
+					this->filter.facilities = {};
+					this->filter.facilities.Set(static_cast<StationFacility>(widget - WID_STL_TRAIN));
 					this->LowerWidget(widget);
 				}
 				this->stations.ForceRebuild();
@@ -736,7 +737,7 @@ public:
 					this->LowerWidget(i);
 				}
 
-				this->filter.facilities = FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_BUS_STOP | FACIL_AIRPORT | FACIL_DOCK;
+				this->filter.facilities = {StationFacility::Train, StationFacility::TruckStop, StationFacility::BusStop, StationFacility::Airport, StationFacility::Dock};
 				this->stations.ForceRebuild();
 				this->SetDirty();
 				break;
@@ -1545,7 +1546,7 @@ struct StationViewWindow : public Window {
 				break;
 
 			case WID_SV_CLOSE_AIRPORT:
-				if (!(Station::Get(this->window_number)->facilities & FACIL_AIRPORT)) {
+				if (!Station::Get(this->window_number)->facilities.Test(StationFacility::Airport)) {
 					/* Hide 'Close Airport' button if no airport present. */
 					size.width = 0;
 					resize.width = 0;
@@ -1613,15 +1614,15 @@ struct StationViewWindow : public Window {
 
 		/* disable some buttons */
 		this->SetWidgetDisabledState(WID_SV_RENAME,   st->owner != _local_company);
-		this->SetWidgetDisabledState(WID_SV_TRAINS,   !(st->facilities & FACIL_TRAIN) && !HasBit(have_veh_types, VEH_TRAIN));
-		this->SetWidgetDisabledState(WID_SV_ROADVEHS, !(st->facilities & FACIL_TRUCK_STOP) && !(st->facilities & FACIL_BUS_STOP) && !HasBit(have_veh_types, VEH_ROAD));
-		this->SetWidgetDisabledState(WID_SV_SHIPS,    !(st->facilities & FACIL_DOCK) && !HasBit(have_veh_types, VEH_SHIP));
-		this->SetWidgetDisabledState(WID_SV_PLANES,   !(st->facilities & FACIL_AIRPORT) && !HasBit(have_veh_types, VEH_AIRCRAFT));
-		this->SetWidgetDisabledState(WID_SV_CLOSE_AIRPORT, !(st->facilities & FACIL_AIRPORT) || st->owner != _local_company || st->owner == OWNER_NONE); // Also consider SE, where _local_company == OWNER_NONE
-		this->SetWidgetLoweredState(WID_SV_CLOSE_AIRPORT, (st->facilities & FACIL_AIRPORT) && (st->airport.flags & AIRPORT_CLOSED_block) != 0);
+		this->SetWidgetDisabledState(WID_SV_TRAINS,   !st->facilities.Test(StationFacility::Train) && !HasBit(have_veh_types, VEH_TRAIN));
+		this->SetWidgetDisabledState(WID_SV_ROADVEHS, !st->facilities.Test(StationFacility::TruckStop) && !st->facilities.Test(StationFacility::BusStop) && !HasBit(have_veh_types, VEH_ROAD));
+		this->SetWidgetDisabledState(WID_SV_SHIPS,    !st->facilities.Test(StationFacility::Dock) && !HasBit(have_veh_types, VEH_SHIP));
+		this->SetWidgetDisabledState(WID_SV_PLANES,   !st->facilities.Test(StationFacility::Airport) && !HasBit(have_veh_types, VEH_AIRCRAFT));
+		this->SetWidgetDisabledState(WID_SV_CLOSE_AIRPORT, !st->facilities.Test(StationFacility::Airport) || st->owner != _local_company || st->owner == OWNER_NONE); // Also consider SE, where _local_company == OWNER_NONE
+		this->SetWidgetLoweredState(WID_SV_CLOSE_AIRPORT, st->facilities.Test(StationFacility::Airport) && st->airport.blocks.Test(AirportBlock::AirportClosed));
 
 		extern const Station *_viewport_highlight_station;
-		this->SetWidgetDisabledState(WID_SV_CATCHMENT, st->facilities == FACIL_NONE);
+		this->SetWidgetDisabledState(WID_SV_CATCHMENT, st->facilities == StationFacilities{});
 		this->SetWidgetLoweredState(WID_SV_CATCHMENT, _viewport_highlight_station == st);
 
 		this->DrawWidgets();

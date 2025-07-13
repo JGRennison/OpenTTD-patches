@@ -105,10 +105,10 @@ void MoveBuoysToWaypoints()
 			}
 
 			wp->train_station = train_st;
-			wp->facilities |= FACIL_TRAIN;
+			wp->facilities.Set(StationFacility::Train);
 		} else if (IsBuoyTile(xy) && GetStationIndex(xy) == index) {
 			wp->rect.BeforeAddTile(xy, StationRect::ADD_FORCE);
-			wp->facilities |= FACIL_DOCK;
+			wp->facilities.Set(StationFacility::Dock);
 		}
 	}
 }
@@ -190,9 +190,9 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6),  ///< Truck/bus stop status
 	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_5),  ///< Blocked months
 
-	SLE_CONDVAR(Station, airport.flags,              SLE_VAR_U64 | SLE_FILE_U16,  SL_MIN_VERSION,  SLV_3),
-	SLE_CONDVAR(Station, airport.flags,              SLE_VAR_U64 | SLE_FILE_U32,  SLV_3, SLV_46),
-	SLE_CONDVAR(Station, airport.flags,              SLE_UINT64,                 SLV_46, SL_MAX_VERSION),
+	SLE_CONDVAR(Station, airport.blocks,             SLE_VAR_U64 | SLE_FILE_U16,  SL_MIN_VERSION,  SLV_3),
+	SLE_CONDVAR(Station, airport.blocks,             SLE_VAR_U64 | SLE_FILE_U32,  SLV_3, SLV_46),
+	SLE_CONDVAR(Station, airport.blocks,             SLE_UINT64,                 SLV_46, SL_MAX_VERSION),
 
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_26), ///< last-vehicle
 	SLEG_CONDVAR_X(_old_last_vehicle_type,           SLE_UINT8,                  SLV_26, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ST_LAST_VEH_TYPE, 0, 0)),
@@ -736,7 +736,7 @@ static const NamedSaveLoad _station_desc[] = {
 	NSL("airport.type",                           SLE_VAR(Station, airport.type,                  SLE_UINT8)),
 	NSL("airport.layout",                     SLE_CONDVAR(Station, airport.layout,                SLE_UINT8,                   SLV_145,               SL_MAX_VERSION)),
 	NSL("",                                SLE_CONDNULL_X(1,                                                                   SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 1, 6))),
-	NSL("airport.flags",                          SLE_VAR(Station, airport.flags,                 SLE_UINT64)),
+	NSL("airport.flags",                          SLE_VAR(Station, airport.blocks,                SLE_UINT64)),
 	NSL("",                                SLE_CONDNULL_X(8,                                                                   SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 1, 6))),
 	NSL("airport.rotation",                   SLE_CONDVAR(Station, airport.rotation,              SLE_UINT8,                   SLV_145,               SL_MAX_VERSION)),
 	NSL("",                                  SLEG_CONDARR(_old_st_persistent_storage.storage,     SLE_UINT32, 16,              SLV_145,               SLV_161)),
@@ -862,13 +862,13 @@ struct NormalStationStructHandler final : public TypedSaveLoadStructHandler<Norm
 
 	void Save(BaseStation *bst) const override
 	{
-		if ((bst->facilities & FACIL_WAYPOINT) != 0) return;
+		if (bst->facilities.Test(StationFacility::Waypoint)) return;
 		SlObjectSaveFiltered(static_cast<Station *>(bst), this->GetLoadDescription());
 	}
 
 	void Load(BaseStation *bst) const override
 	{
-		if ((bst->facilities & FACIL_WAYPOINT) != 0) SlErrorCorrupt("Waypoint with normal station struct");
+		if (bst->facilities.Test(StationFacility::Waypoint)) SlErrorCorrupt("Waypoint with normal station struct");
 		SlObjectLoadFiltered(static_cast<Station *>(bst), this->GetLoadDescription());
 	}
 };
@@ -881,13 +881,13 @@ struct WaypointStructHandler final : public TypedSaveLoadStructHandler<WaypointS
 
 	void Save(BaseStation *bst) const override
 	{
-		if ((bst->facilities & FACIL_WAYPOINT) == 0) return;
+		if (!bst->facilities.Test(StationFacility::Waypoint)) return;
 		SlObjectSaveFiltered(static_cast<Waypoint *>(bst), this->GetLoadDescription());
 	}
 
 	void Load(BaseStation *bst) const override
 	{
-		if ((bst->facilities & FACIL_WAYPOINT) == 0) SlErrorCorrupt("Normal station with waypoint struct");
+		if (!bst->facilities.Test(StationFacility::Waypoint)) SlErrorCorrupt("Normal station with waypoint struct");
 		SlObjectLoadFiltered(static_cast<Waypoint *>(bst), this->GetLoadDescription());
 	}
 };
@@ -930,7 +930,7 @@ static void Load_STNN_table()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		bool waypoint = (SlReadByte() & FACIL_WAYPOINT) != 0;
+		bool waypoint = static_cast<StationFacilities>(SlReadByte()).Test(StationFacility::Waypoint);
 
 		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
 		SlObjectLoadFiltered(bst, slt);
@@ -968,7 +968,7 @@ static void Load_STNN()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		bool waypoint = (SlReadByte() & FACIL_WAYPOINT) != 0;
+		bool waypoint = static_cast<StationFacilities>(SlReadByte()).Test(StationFacility::Waypoint);
 
 		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
 		SlObjectLoadFiltered(bst, waypoint ? SaveLoadTable(filtered_waypoint_desc) : SaveLoadTable(filtered_station_desc));
@@ -977,7 +977,7 @@ static void Load_STNN()
 			Station *st = Station::From(bst);
 
 			/* Before savegame version 161, persistent storages were not stored in a pool. */
-			if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_145) && st->facilities & FACIL_AIRPORT) {
+			if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_145) && st->facilities.Test(StationFacility::Airport)) {
 				/* Store the old persistent storage. The GRFID will be added later. */
 				assert(PersistentStorage::CanAllocateItem());
 				st->airport.psa = new PersistentStorage(0, 0, {});

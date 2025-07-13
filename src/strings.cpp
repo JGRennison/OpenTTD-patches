@@ -214,7 +214,7 @@ void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num)
 	}
 }
 
-static void StationGetSpecialString(StringBuilder builder, StationFacility x);
+static void StationGetSpecialString(StringBuilder builder, StationFacilities x);
 static bool GetSpecialNameString(StringBuilder builder, StringID string, StringParameters &args);
 
 static void FormatString(StringBuilder builder, const char *str, StringParameters &args, uint case_index = 0, bool game_script = false, bool dry_run = false);
@@ -2217,7 +2217,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				}
 
 				case SCC_STATION_FEATURES: { // {STATIONFEATURES}
-					StationGetSpecialString(builder, args.GetNextParameter<StationFacility>());
+					StationGetSpecialString(builder, args.GetNextParameter<StationFacilities>());
 					break;
 				}
 
@@ -2243,13 +2243,13 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 }
 
 
-static void StationGetSpecialString(StringBuilder builder, StationFacility x)
+static void StationGetSpecialString(StringBuilder builder, StationFacilities x)
 {
-	if ((x & FACIL_TRAIN) != 0) builder.Utf8Encode(SCC_TRAIN);
-	if ((x & FACIL_TRUCK_STOP) != 0) builder.Utf8Encode(SCC_LORRY);
-	if ((x & FACIL_BUS_STOP) != 0) builder.Utf8Encode(SCC_BUS);
-	if ((x & FACIL_DOCK) != 0) builder.Utf8Encode(SCC_SHIP);
-	if ((x & FACIL_AIRPORT) != 0) builder.Utf8Encode(SCC_PLANE);
+	if (x.Test(StationFacility::Train)) builder.Utf8Encode(SCC_TRAIN);
+	if (x.Test(StationFacility::TruckStop)) builder.Utf8Encode(SCC_LORRY);
+	if (x.Test(StationFacility::BusStop)) builder.Utf8Encode(SCC_BUS);
+	if (x.Test(StationFacility::Dock)) builder.Utf8Encode(SCC_SHIP);
+	if (x.Test(StationFacility::Airport)) builder.Utf8Encode(SCC_PLANE);
 }
 
 static const char * const _silly_company_names[] = {

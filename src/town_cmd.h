@@ -12,6 +12,7 @@
 
 #include "command_type.h"
 #include "company_type.h"
+#include "town.h"
 #include "town_type.h"
 
 enum TownAcceptanceEffect : uint8_t;
@@ -21,7 +22,7 @@ using HouseID = uint16_t;
 DEF_CMD_TUPLE   (CMD_FOUND_TOWN,                      CmdFoundTown,                    CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownSize, bool, TownLayout, bool, uint32_t, std::string>) // founding random town can fail only in exec run
 DEF_CMD_TUPLE_NT(CMD_RENAME_TOWN,                     CmdRenameTown,                    CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, std::string>)
 DEF_CMD_TUPLE_NT(CMD_RENAME_TOWN_NON_ADMIN,           CmdRenameTownNonAdmin,                                {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, std::string>)
-DEF_CMD_TUPLE_LT(CMD_DO_TOWN_ACTION,                  CmdDoTownAction,                                      {}, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID, uint8_t>)
+DEF_CMD_TUPLE_LT(CMD_DO_TOWN_ACTION,                  CmdDoTownAction,                                      {}, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID, TownAction>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_CARGO_GOAL,                 CmdTownCargoGoal,                CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, TownAcceptanceEffect, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_GROWTH_RATE,                CmdTownGrowthRate,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, uint16_t>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_RATING,                     CmdTownRating,                   CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, CompanyID, int16_t>)

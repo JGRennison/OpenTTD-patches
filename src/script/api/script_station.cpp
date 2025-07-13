@@ -211,7 +211,7 @@ template <bool Tfrom, bool Tvia>
 	if (!IsValidStation(station_id)) return false;
 	if (!HasExactlyOneBit(station_type)) return false;
 
-	return (::Station::Get(station_id)->facilities & static_cast<StationFacility>(station_type)) != 0;
+	return ::Station::Get(station_id)->facilities.Any(static_cast<StationFacilities>(station_type));
 }
 
 /* static */ bool ScriptStation::HasRoadType(StationID station_id, ScriptRoad::RoadType road_type)
@@ -241,7 +241,7 @@ template <bool Tfrom, bool Tvia>
 	EnforcePrecondition(false, IsValidStation(station_id));
 	EnforcePrecondition(false, HasStationType(station_id, STATION_AIRPORT));
 
-	return (::Station::Get(station_id)->airport.flags & AIRPORT_CLOSED_block) != 0;
+	return ::Station::Get(station_id)->airport.blocks.Test(AirportBlock::AirportClosed);
 }
 
 /* static */ bool ScriptStation::OpenCloseAirport(StationID station_id)

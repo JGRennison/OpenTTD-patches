@@ -63,7 +63,7 @@ struct Waypoint final : SpecializedStation<Waypoint, true> {
 	 */
 	inline bool IsSingleTile() const
 	{
-		return (this->facilities & FACIL_TRAIN) != 0 && this->train_station.w == 1 && this->train_station.h == 1;
+		return this->facilities.Test(StationFacility::Train) && this->train_station.w == 1 && this->train_station.h == 1;
 	}
 
 	/**

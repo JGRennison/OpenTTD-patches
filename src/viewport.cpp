@@ -2088,7 +2088,7 @@ static void ViewportAddStationStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo 
 
 		Colours colour = (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner];
 		if (Station::IsExpected(st)) { /* Station */
-			str->FillDetails(small ? STR_STATION_NAME : STR_VIEWPORT_STATION, st->index, st->facilities, colour);
+			str->FillDetails(small ? STR_STATION_NAME : STR_VIEWPORT_STATION, st->index, st->facilities.base(), colour);
 		} else { /* Waypoint */
 			str->FillDetails(STR_WAYPOINT_NAME, st->index, 0, colour);
 		}
@@ -2119,10 +2119,10 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 				const BaseStation *st = BaseStation::Get(item.GetIdAs<StationID>());
 
 				/* If no facilities are present the station is a ghost station. */
-				StationFacility facilities = st->facilities;
-				if (facilities == FACIL_NONE) facilities = FACIL_GHOST;
+				StationFacilities facilities = st->facilities;
+				if (facilities == StationFacilities{}) facilities = STATION_FACILITY_GHOST;
 
-				if ((_facility_display_opt & facilities) == 0) break;
+				if (!facilities.Any(_facility_display_opt)) break;
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;

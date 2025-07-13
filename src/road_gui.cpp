@@ -1289,8 +1289,8 @@ public:
 	{
 		for (const Station *st : Station::Iterate()) {
 			if (st->owner != _local_company) continue;
-			if (roadstoptype == RoadStopType::Truck && !(st->facilities & FACIL_TRUCK_STOP)) continue;
-			if (roadstoptype == RoadStopType::Bus && !(st->facilities & FACIL_BUS_STOP)) continue;
+			if (roadstoptype == RoadStopType::Truck && !st->facilities.Test(StationFacility::TruckStop)) continue;
+			if (roadstoptype == RoadStopType::Bus && !st->facilities.Test(StationFacility::BusStop)) continue;
 			items.insert({0, 0, ROADSTOP_CLASS_DFLT, 0}); // We would need to scan the map to find out if default is used.
 			for (const auto &sm : st->roadstop_speclist) {
 				if (sm.spec == nullptr) continue;
@@ -1731,7 +1731,6 @@ struct BuildRoadWaypointWindow : public PickerWindow {
 	BuildRoadWaypointWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_ROAD, RoadWaypointPickerCallbacks::instance)
 	{
 		this->ConstructWindow();
-		this->InvalidateData();
 	}
 
 	static inline HotkeyList hotkeys{"buildroadwaypoint", {

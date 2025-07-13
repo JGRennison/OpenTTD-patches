@@ -68,7 +68,7 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFaci
 	StationFinder morestations(area);
 
 	for (const Station *st : morestations.GetStations()) {
-		if (st->owner != owner || !(st->facilities & facility_mask)) continue;
+		if (st->owner != owner || !st->facilities.Test(facility_mask)) continue;
 		Rect rect = st->GetCatchmentRect();
 		return TileArea(TileXY(rect.left, rect.top), TileXY(rect.right, rect.bottom)).Intersects(area);
 	}
@@ -239,19 +239,19 @@ SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 
 		for (const Station *st : ind->stations_near) {
 			if (st->owner == owner) {
-				if (st->facilities & (~(FACIL_BUS_STOP | FACIL_TRUCK_STOP)) || st->facilities == (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
-					return ZONING_INVALID_SPRITE_ID;
-				} else if (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
+				if (st->facilities == StationFacility::BusStop || st->facilities == StationFacility::TruckStop) {
 					for (const auto &p : ind->Produced()) {
-						if (p.cargo != INVALID_CARGO && st->facilities & (IsCargoInClass(p.cargo, CargoClass::Passengers) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
+						if (p.cargo != INVALID_CARGO && st->facilities.Test(IsCargoInClass(p.cargo, CargoClass::Passengers) ? StationFacility::BusStop : StationFacility::TruckStop)) {
 							return ZONING_INVALID_SPRITE_ID;
 						}
 					}
 					for (const auto &a : ind->Accepted()) {
-						if (a.cargo != INVALID_CARGO && st->facilities & (IsCargoInClass(a.cargo, CargoClass::Passengers) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
+						if (a.cargo != INVALID_CARGO && st->facilities.Test(IsCargoInClass(a.cargo, CargoClass::Passengers) ? StationFacility::BusStop : StationFacility::TruckStop)) {
 							return ZONING_INVALID_SPRITE_ID;
 						}
 					}
+				} else if (st->facilities.Any()) {
+					return ZONING_INVALID_SPRITE_ID;
 				}
 			}
 		}

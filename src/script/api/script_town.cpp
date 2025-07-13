@@ -259,7 +259,7 @@
 	EnforceCompanyModeValid(false);
 	if (!IsValidTown(town_id)) return false;
 
-	return HasBit(::GetMaskOfTownActions(nullptr, ScriptObject::GetCompany(), ::Town::Get(town_id)), town_action);
+	return ::GetMaskOfTownActions(ScriptObject::GetCompany(), ::Town::Get(town_id)).Test(::TownAction(town_action));
 }
 
 /* static */ bool ScriptTown::PerformTownAction(TownID town_id, TownAction town_action)
@@ -268,7 +268,7 @@
 	EnforcePrecondition(false, IsValidTown(town_id));
 	EnforcePrecondition(false, IsActionAvailable(town_id, town_action));
 
-	return ScriptObject::Command<CMD_DO_TOWN_ACTION>::Do(town_id, town_action);
+	return ScriptObject::Command<CMD_DO_TOWN_ACTION>::Do(town_id, ::TownAction(town_action));
 }
 
 /* static */ bool ScriptTown::ExpandTown(TownID town_id, SQInteger houses)
@@ -380,7 +380,7 @@
 
 	int num = 0;
 	for (const Station *st : Station::Iterate()) {
-		if (st->town == t && (st->facilities & FACIL_AIRPORT) && st->airport.type != AT_OILRIG) num++;
+		if (st->town == t && st->facilities.Test(StationFacility::Airport) && st->airport.type != AT_OILRIG) num++;
 	}
 	return std::max(0, 2 - num);
 }

@@ -519,7 +519,7 @@ void Station::UpdateVirtCoord()
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 
 	pt.y -= 32 * ZOOM_BASE;
-	if ((this->facilities & FACIL_AIRPORT) && this->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_BASE;
+	if (this->facilities.Test(StationFacility::Airport) && this->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_BASE;
 
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
@@ -719,8 +719,8 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 
 		/* Make sure the station can accept the goods type. */
 		bool is_passengers = IsCargoInClass(i, CargoClass::Passengers);
-		if ((!is_passengers && !(st->facilities & ~FACIL_BUS_STOP)) ||
-				(is_passengers && !(st->facilities & ~FACIL_TRUCK_STOP))) {
+		if ((!is_passengers && !st->facilities.Any({StationFacility::Train, StationFacility::TruckStop, StationFacility::Airport, StationFacility::Dock})) ||
+				(is_passengers && !st->facilities.Any({StationFacility::Train, StationFacility::BusStop, StationFacility::Airport, StationFacility::Dock}))) {
 			amt = 0;
 		}
 
@@ -1605,7 +1605,7 @@ CommandCost CmdBuildRailStation(DoCommandFlag flags, TileIndex tile_org, RailTyp
 
 	if (flags & DC_EXEC) {
 		st->train_station = new_location;
-		st->AddFacility(FACIL_TRAIN, new_location.tile);
+		st->AddFacility(StationFacility::Train, new_location.tile);
 
 		st->rect.BeforeAddRect(tile_org, w_org, h_org, StationRect::ADD_TRY);
 
@@ -1916,7 +1916,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 
 		/* if we deleted the whole station, delete the train facility. */
 		if (st->train_station.tile == INVALID_TILE) {
-			st->facilities &= ~FACIL_TRAIN;
+			st->facilities.Reset(StationFacility::Train);
 			SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 			SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
 			st->UpdateVirtCoord();
@@ -2231,7 +2231,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlag flags, TileIndex tile, uint8_t width,
 			}
 
 			/* Initialize an empty station. */
-			st->AddFacility(is_truck_stop ? FACIL_TRUCK_STOP : FACIL_BUS_STOP, cur_tile);
+			st->AddFacility(is_truck_stop ? StationFacility::TruckStop : StationFacility::BusStop, cur_tile);
 
 			st->rect.BeforeAddTile(cur_tile, StationRect::ADD_TRY);
 
@@ -2339,7 +2339,8 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int repl
 
 			/* if we deleted the whole waypoint, delete the road facility. */
 			if (wp->road_waypoint_area.tile == INVALID_TILE) {
-				wp->facilities &= ~(FACIL_BUS_STOP | FACIL_TRUCK_STOP);
+				wp->facilities.Reset(StationFacility::BusStop);
+				wp->facilities.Reset(StationFacility::TruckStop);
 				SetWindowWidgetDirty(WC_STATION_VIEW, wp->index, WID_SV_ROADVEHS);
 				wp->UpdateVirtCoord();
 				DeleteStationIfEmpty(wp);
@@ -2404,7 +2405,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_
 			*primary_stop = cur_stop->next;
 			/* removed the only stop? */
 			if (*primary_stop == nullptr) {
-				st->facilities &= (is_truck ? ~FACIL_TRUCK_STOP : ~FACIL_BUS_STOP);
+				st->facilities.Reset(is_truck ? StationFacility::TruckStop : StationFacility::BusStop);
 				SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 			}
 		} else {
@@ -2805,7 +2806,7 @@ CommandCost CmdBuildAirport(DoCommandFlag flags, TileIndex tile, uint8_t airport
 		Town *t = ClosestTownFromTile(tile, UINT_MAX);
 		uint num = 0;
 		for (const Station *st : Station::Iterate()) {
-			if (st->town == t && (st->facilities & FACIL_AIRPORT) && st->airport.type != AT_OILRIG) num++;
+			if (st->town == t && st->facilities.Test(StationFacility::Airport) && st->airport.type != AT_OILRIG) num++;
 		}
 		if (num >= 2) {
 			authority_refuse_message = STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT;
@@ -2864,10 +2865,10 @@ CommandCost CmdBuildAirport(DoCommandFlag flags, TileIndex tile, uint8_t airport
 		/* Always add the noise, so there will be no need to recalculate when option toggles */
 		nearest->noise_reached = newnoise_level;
 
-		st->AddFacility(FACIL_AIRPORT, tile);
+		st->AddFacility(StationFacility::Airport, tile);
 		st->airport.type = airport_type;
 		st->airport.layout = layout;
-		st->airport.flags = 0;
+		st->airport.blocks = {};
 		st->airport.rotation = rotation;
 
 		st->rect.BeforeAddRect(tile, w, h, StationRect::ADD_TRY);
@@ -2956,7 +2957,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		st->rect.AfterRemoveRect(st, st->airport);
 
 		st->airport.Clear();
-		st->facilities &= ~FACIL_AIRPORT;
+		st->facilities.Reset(StationFacility::Airport);
 		SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
@@ -2982,13 +2983,13 @@ CommandCost CmdOpenCloseAirport(DoCommandFlag flags, StationID station_id)
 	if (!Station::IsValidID(station_id)) return CMD_ERROR;
 	Station *st = Station::Get(station_id);
 
-	if (!(st->facilities & FACIL_AIRPORT) || st->owner == OWNER_NONE) return CMD_ERROR;
+	if (!st->facilities.Test(StationFacility::Airport) || st->owner == OWNER_NONE) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(st->owner);
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		st->airport.flags ^= AIRPORT_CLOSED_block;
+		st->airport.blocks.Flip(AirportBlock::AirportClosed);
 		SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_CLOSE_AIRPORT);
 	}
 	return CommandCost();
@@ -3095,7 +3096,7 @@ CommandCost CmdBuildDock(DoCommandFlag flags, TileIndex tile, StationID station_
 	if (flags & DC_EXEC) {
 		st->ship_station.Add(tile);
 		st->ship_station.Add(flat_tile);
-		st->AddFacility(FACIL_DOCK, tile);
+		st->AddFacility(StationFacility::Dock, tile);
 
 		st->rect.BeforeAddRect(dock_area.tile, dock_area.w, dock_area.h, StationRect::ADD_TRY);
 
@@ -3214,7 +3215,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 			st->ship_station.Clear();
 			st->docking_station.Clear();
 			st->docking_tiles.clear();
-			st->facilities &= ~FACIL_DOCK;
+			st->facilities.Reset(StationFacility::Dock);
 			SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 		}
 
@@ -3241,7 +3242,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 			/* If we no longer have a dock, mark the order as invalid and send
 			 * the ship to the next order (or, if there is none, make it
 			 * wander the world). */
-			if (s->current_order.IsType(OT_GOTO_STATION) && !(st->facilities & FACIL_DOCK)) {
+			if (s->current_order.IsType(OT_GOTO_STATION) && !st->facilities.Test(StationFacility::Dock)) {
 				s->SetDestTile(s->GetOrderStationLocation(st->index));
 			}
 		}
@@ -3960,7 +3961,7 @@ static bool ClickTile_Station(TileIndex tile)
 {
 	const BaseStation *bst = BaseStation::GetByTile(tile);
 
-	if (bst->facilities & FACIL_WAYPOINT) {
+	if (bst->facilities.Test(StationFacility::Waypoint)) {
 		ShowWaypointWindow(Waypoint::From(bst));
 	} else if (IsHangar(tile)) {
 		const Station *st = Station::From(bst);
@@ -4104,7 +4105,7 @@ static bool StationHandleBigTick(BaseStation *st)
 	}
 
 
-	if ((st->facilities & FACIL_WAYPOINT) == 0) UpdateStationAcceptance(Station::From(st), true);
+	if (!st->facilities.Test(StationFacility::Waypoint)) UpdateStationAcceptance(Station::From(st), true);
 
 	return true;
 }
@@ -4610,7 +4611,7 @@ void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint
 /* called for every station each tick */
 static void StationHandleSmallTick(BaseStation *st)
 {
-	if ((st->facilities & FACIL_WAYPOINT) != 0 || !st->IsInUse()) return;
+	if (st->facilities.Test(StationFacility::Waypoint) || !st->IsInUse()) return;
 
 	uint8_t b = st->delete_ctr + 1;
 	if (b >= STATION_RATING_TICKS) b = 0;
@@ -4776,13 +4777,13 @@ CommandCost CmdRenameStation(DoCommandFlag flags, StationID station_id, bool gen
 			st->name.clear();
 			if (generate && st->industry == nullptr) {
 				StationNaming name_class;
-				if (st->facilities & FACIL_AIRPORT) {
+				if (st->facilities.Test(StationFacility::Airport)) {
 					name_class = STATIONNAMING_AIRPORT;
-				} else if (st->facilities & FACIL_DOCK) {
+				} else if (st->facilities.Test(StationFacility::Dock)) {
 					name_class = STATIONNAMING_DOCK;
-				} else if (st->facilities & FACIL_TRAIN) {
+				} else if (st->facilities.Test(StationFacility::Train)) {
 					name_class = STATIONNAMING_RAIL;
-				} else if (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
+				} else if (st->facilities.Any({StationFacility::BusStop, StationFacility::TruckStop})) {
 					name_class = STATIONNAMING_ROAD;
 				} else {
 					name_class = STATIONNAMING_RAIL;
@@ -4915,10 +4916,10 @@ static bool CanMoveGoodsToStation(const Station *st, CargoType type)
 
 	if (IsCargoInClass(type, CargoClass::Passengers)) {
 		/* Passengers are never served by just a truck stop. */
-		if (st->facilities == FACIL_TRUCK_STOP) return false;
+		if (st->facilities == StationFacility::TruckStop) return false;
 	} else {
 		/* Non-passengers are never served by just a bus stop. */
-		if (st->facilities == FACIL_BUS_STOP) return false;
+		if (st->facilities == StationFacility::BusStop) return false;
 	}
 	return true;
 }
@@ -5062,7 +5063,7 @@ void BuildOilRig(TileIndex tile)
 	st->airport.type = AT_OILRIG;
 	st->airport.Add(tile);
 	st->ship_station.Add(tile);
-	st->facilities = FACIL_AIRPORT | FACIL_DOCK;
+	st->facilities = {StationFacility::Airport, StationFacility::Dock};
 	st->build_date = CalTime::CurDate();
 	UpdateStationDockingTiles(st);
 
@@ -5094,7 +5095,9 @@ void DeleteOilRig(TileIndex tile)
 
 	MakeWaterKeepingClass(tile, OWNER_NONE);
 
-	assert(st->facilities == (FACIL_AIRPORT | FACIL_DOCK) && st->airport.type == AT_OILRIG);
+	/* The oil rig station is not supposed to be shared with anything else */
+	[[maybe_unused]] static constexpr StationFacilities expected_facility{StationFacility::Airport, StationFacility::Dock};
+	assert(st->facilities == expected_facility && st->airport.type == AT_OILRIG);
 	if (st->industry != nullptr && st->industry->neutral_station == st) {
 		/* Don't leave dangling neutral station pointer */
 		st->industry->neutral_station = nullptr;
@@ -5104,6 +5107,7 @@ void DeleteOilRig(TileIndex tile)
 
 static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_owner)
 {
+
 	if (IsAnyRoadStopTile(tile)) {
 		for (RoadTramType rtt : _roadtramtypes) {
 			/* Update all roadtypes, no matter if they are present */

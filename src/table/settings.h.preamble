@@ -63,16 +63,17 @@ static bool CheckTTDPatchSettingFlag(uint flag);
  * on the appropriate macro.
  */
 
-template <typename T, std::enable_if_t<!std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
-constexpr T STUnwrap(T value)
-{
-	return value;
-}
+template<typename T>
+concept STUnwrapAsBase = T::serialisation_as_base || false;
 
-template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
-constexpr typename T::BaseType STUnwrap(T value)
+template <typename T>
+constexpr auto STUnwrap(T value)
 {
-	return value.base();
+	if constexpr (STUnwrapAsBase<T>) {
+		return value.base();
+	} else {
+		return value;
+	}
 }
 
 #define NSD(type, ...) std::unique_ptr<const SettingDesc>(new type##SettingDesc(__VA_ARGS__))
@@ -95,10 +96,10 @@ constexpr typename T::BaseType STUnwrap(T value)
 	NSD(String, SLEG_GENERAL_X(SL_STDSTR, var, type, sizeof(var), from, to, extver), name, flags, guiproc, startup, patxname, def, max_length, pre_check, post_callback)
 
 #define SDTG_OMANY(name, type, flags, var, def, max, full, str, strhelp, strval, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname)\
-	NSD(OneOfMany, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, max, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, full, nullptr)
+	NSD(OneOfMany, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), max, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, full, nullptr)
 
 #define SDTG_MMANY(name, type, flags, var, def, full, str, strhelp, strval, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, from, to, extver, cat, guiproc, startup, patxname)\
-	NSD(ManyOfMany, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, full, nullptr)
+	NSD(ManyOfMany, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), str, strhelp, strval, cat, pre_check, post_callback, get_title_hook, get_help_hook, set_value_dparams_hook, get_def_hook, full, nullptr)
 
 #define SDTG_NULL(length, from, to, extver)\
 	NSD(Null, SLE_CONDNULL_X(length, from, to, extver))

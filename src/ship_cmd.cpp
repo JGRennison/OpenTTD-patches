@@ -983,7 +983,7 @@ static void ShipController(Ship *v)
 						if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
 								IsDockingTile(gp.new_tile) && Company::Get(v->owner)->settings.remain_if_next_order_same_station) {
 							Station *st = Station::Get(station_id);
-							if (st->facilities & FACIL_DOCK && st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, station_id)) {
+							if (st->facilities.Test(StationFacility::Dock) && st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, station_id)) {
 								v->last_station_visited = station_id;
 								ShipArrivesAt(v, st);
 								v->BeginLoading();
@@ -1020,7 +1020,7 @@ static void ShipController(Ship *v)
 							Station *st = Station::Get(v->current_order.GetDestination().ToStationID());
 							if (st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, st->index)) {
 								v->last_station_visited = st->index;
-								if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
+								if (st->facilities.Test(StationFacility::Dock)) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
 									ShipArrivesAt(v, st);
 									v->BeginLoading();
 								} else { // leave stations without docks right away

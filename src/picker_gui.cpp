@@ -356,7 +356,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 			if (this->callbacks.GetSelectedClass() != *it || HasBit(this->callbacks.mode, PFM_ALL)) {
 				ClrBit(this->callbacks.mode, PFM_ALL); // Disable showing all.
 				this->callbacks.SetSelectedClass(*it);
-				this->InvalidateData(PFI_TYPE | PFI_POSITION | PFI_VALIDATE);
+				this->InvalidateData({PickerInvalidation::Type, PickerInvalidation::Position, PickerInvalidation::Validate});
 			}
 			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 			CloseWindowById(WC_SELECT_STATION, 0);
@@ -371,7 +371,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				/* Enabling used or saved filters automatically enables all. */
 				SetBit(this->callbacks.mode, PFM_ALL);
 			}
-			this->InvalidateData(PFI_CLASS | PFI_TYPE | PFI_POSITION);
+			this->InvalidateData({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 			break;
 
 		/* Type Picker */
@@ -387,14 +387,14 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				} else {
 					this->callbacks.saved.erase(it);
 				}
-				this->InvalidateData(PFI_TYPE);
+				this->InvalidateData(PickerInvalidation::Type);
 				break;
 			}
 
 			if (this->callbacks.IsTypeAvailable(item.class_index, item.index)) {
 				this->callbacks.SetSelectedClass(item.class_index);
 				this->callbacks.SetSelectedType(item.index);
-				this->InvalidateData(PFI_POSITION);
+				this->InvalidateData(PickerInvalidation::Position);
 			}
 			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 			CloseWindowById(WC_SELECT_STATION, 0);
@@ -407,16 +407,17 @@ void PickerWindow::OnInvalidateData(int data, bool gui_scope)
 {
 	if (!gui_scope) return;
 
-	if ((data & PFI_CLASS) != 0) this->classes.ForceRebuild();
-	if ((data & PFI_TYPE) != 0) this->types.ForceRebuild();
+	PickerInvalidations pi(data);
+	if (pi.Test(PickerInvalidation::Class)) this->classes.ForceRebuild();
+	if (pi.Test(PickerInvalidation::Type)) this->types.ForceRebuild();
 
 	this->BuildPickerClassList();
-	if ((data & PFI_VALIDATE) != 0) this->EnsureSelectedClassIsValid();
-	if ((data & PFI_POSITION) != 0) this->EnsureSelectedClassIsVisible();
+	if (pi.Test(PickerInvalidation::Validate)) this->EnsureSelectedClassIsValid();
+	if (pi.Test(PickerInvalidation::Position)) this->EnsureSelectedClassIsVisible();
 
 	this->BuildPickerTypeList();
-	if ((data & PFI_VALIDATE) != 0) this->EnsureSelectedTypeIsValid();
-	if ((data & PFI_POSITION) != 0) this->EnsureSelectedTypeIsVisible();
+	if (pi.Test(PickerInvalidation::Validate)) this->EnsureSelectedTypeIsValid();
+	if (pi.Test(PickerInvalidation::Position)) this->EnsureSelectedTypeIsVisible();
 
 	if (this->has_type_picker) {
 		SetWidgetLoweredState(WID_PW_MODE_ALL, HasBit(this->callbacks.mode, PFM_ALL));
@@ -449,7 +450,7 @@ void PickerWindow::OnEditboxChanged(WidgetID wid)
 		case WID_PW_CLASS_FILTER:
 			this->class_string_filter.SetFilterTerm(this->class_editbox.text.GetText());
 			this->classes.SetFilterState(!class_string_filter.IsEmpty());
-			this->InvalidateData(PFI_CLASS);
+			this->InvalidateData(PickerInvalidation::Class);
 			break;
 
 		case WID_PW_TYPE_FILTER:
@@ -460,7 +461,7 @@ void PickerWindow::OnEditboxChanged(WidgetID wid)
 				this->type_string_filter.btf.reset();
 			}
 			this->types.SetFilterState(!type_string_filter.IsEmpty());
-			this->InvalidateData(PFI_TYPE);
+			this->InvalidateData(PickerInvalidation::Type);
 			break;
 
 		default:
@@ -472,34 +473,34 @@ void PickerWindow::PickItem(int cls_id, int id)
 {
 	if (!this->callbacks.IsTypeAvailable(cls_id, id)) return;
 
-	uint invalidation_flags = PFI_POSITION;
+	PickerInvalidations invalidation_flags{PickerInvalidation::Position};
 	const PickerItem pick_item = this->callbacks.GetPickerItem(cls_id, id);
 	if (HasBit(this->callbacks.mode, PFM_USED)) {
 		if (std::none_of(std::begin(this->callbacks.used), std::end(this->callbacks.used), [pick_item](const PickerItem &item) { return item == pick_item; })) {
 			ClrBit(this->callbacks.mode, PFM_USED);
-			invalidation_flags |= PFI_CLASS | PFI_TYPE | PFI_POSITION;
+			invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 		}
 	}
 	if (HasBit(this->callbacks.mode, PFM_SAVED)) {
 		if (std::none_of(std::begin(this->callbacks.saved), std::end(this->callbacks.saved), [pick_item](const PickerItem &item) { return item == pick_item; })) {
 			ClrBit(this->callbacks.mode, PFM_SAVED);
-			invalidation_flags |= PFI_CLASS | PFI_TYPE | PFI_POSITION;
+			invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 		}
 	}
 
 	if (this->classes.IsFilterEnabled() && !ClassTagNameFilter(&(pick_item.class_index), this->class_string_filter)) {
 		this->ClearEditBox(WID_PW_CLASS_FILTER);
-		invalidation_flags |= PFI_CLASS | PFI_TYPE;
+		invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type});
 	}
 
 	if (this->types.IsFilterEnabled() && !TypeTagNameFilter(&pick_item, this->type_string_filter)) {
 		this->ClearEditBox(WID_PW_TYPE_FILTER);
-		invalidation_flags |= PFI_TYPE;
+		invalidation_flags.Set(PickerInvalidation::Type);
 	}
 
 	if (this->callbacks.GetSelectedClass() != cls_id) {
 		this->callbacks.SetSelectedClass(cls_id);
-		invalidation_flags |= PFI_TYPE;
+		invalidation_flags.Set(PickerInvalidation::Type);
 	}
 	this->callbacks.SetSelectedType(id);
 	this->InvalidateData(invalidation_flags);
@@ -572,7 +573,7 @@ void PickerWindow::RefreshUsedTypeList()
 
 	this->callbacks.used.clear();
 	this->callbacks.FillUsedItems(this->callbacks.used);
-	this->InvalidateData(PFI_TYPE);
+	this->InvalidateData(PickerInvalidation::Type);
 }
 
 /** Builds the filter list of types. */
@@ -739,10 +740,10 @@ std::unique_ptr<NWidgetBase> MakePickerTypeWidgets()
 
 void InvalidateAllPickerWindows()
 {
-	InvalidateWindowClassesData(WC_BUS_STATION, PickerWindow::PICKER_INVALIDATION_ALL);
-	InvalidateWindowClassesData(WC_TRUCK_STATION, PickerWindow::PICKER_INVALIDATION_ALL);
-	InvalidateWindowClassesData(WC_SELECT_STATION, PickerWindow::PICKER_INVALIDATION_ALL);
-	InvalidateWindowClassesData(WC_BUILD_WAYPOINT, PickerWindow::PICKER_INVALIDATION_ALL);
-	InvalidateWindowClassesData(WC_BUILD_OBJECT, PickerWindow::PICKER_INVALIDATION_ALL);
-	InvalidateWindowClassesData(WC_BUILD_HOUSE, PickerWindow::PICKER_INVALIDATION_ALL);
+	InvalidateWindowClassesData(WC_BUS_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WC_TRUCK_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WC_SELECT_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WC_BUILD_WAYPOINT, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WC_BUILD_OBJECT, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WC_BUILD_HOUSE, PickerWindow::PICKER_INVALIDATION_ALL.base());
 }
