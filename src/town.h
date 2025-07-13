@@ -15,7 +15,6 @@
 #include "subsidy_type.h"
 #include "newgrf_storage.h"
 #include "cargotype.h"
-#include "openttd.h"
 #include "table/strings.h"
 #include "company_func.h"
 #include "core/tinystring_type.hpp"
