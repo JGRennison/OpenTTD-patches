@@ -397,15 +397,16 @@ struct NetworkChatWindow : public Window {
 				/* We are pressing TAB again on the same name, is there another name
 				 *  that starts with this? */
 				if (!second_scan) {
+					const std::string_view tb_text = tb->GetText();
 					std::string_view view;
 
 					/* If we are completing at the begin of the line, skip the ': ' we added */
 					if (begin_of_line) {
-						view = std::string_view(tb->GetText(), (tb->bytes - 1) - 2);
+						view = tb_text.substr(0, tb_text.size() - 2);
 					} else {
 						/* Else, find the place we are completing at */
 						size_t offset = pre_buf.size() + 1;
-						view = std::string_view(tb->GetText() + offset, (tb->bytes - 1) - offset);
+						view = tb_text.substr(offset);
 					}
 
 					/* Compare if we have a match */

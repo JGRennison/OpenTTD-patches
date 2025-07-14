@@ -97,7 +97,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 	EndGameWindow(WindowDesc &desc) : EndGameHighScoreBaseWindow(desc)
 	{
 		/* Pause in single-player to have a look at the highscore at your own leisure */
-		if (!_networking) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+		if (!_networking) Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 
 		this->background_img = SPR_TYCOON_IMG1_BEGIN;
 
@@ -125,7 +125,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		if (!_networking) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, false); // unpause
+		if (!_networking) Command<CMD_PAUSE>::Post(PauseMode::Normal, false); // unpause
 		if (_game_mode != GM_MENU && !_exit_game) ShowHighscoreTable(this->window_number, this->rank);
 		this->EndGameHighScoreBaseWindow::Close();
 	}
@@ -159,8 +159,8 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 	HighScoreWindow(WindowDesc &desc, int difficulty, int8_t ranking) : EndGameHighScoreBaseWindow(desc)
 	{
 		/* pause game to show the chart */
-		this->game_paused_by_player = _pause_mode == PM_PAUSED_NORMAL;
-		if (!_networking && !this->game_paused_by_player) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+		this->game_paused_by_player = _pause_mode == PauseMode::Normal;
+		if (!_networking && !this->game_paused_by_player) Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 
 		/* Close all always on-top windows to get a clean screen */
 		if (_game_mode != GM_MENU) HideVitalWindows();
@@ -175,7 +175,7 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 	{
 		if (_game_mode != GM_MENU && !_exit_game) ShowVitalWindows();
 
-		if (!_networking && !this->game_paused_by_player) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, false); // unpause
+		if (!_networking && !this->game_paused_by_player) Command<CMD_PAUSE>::Post(PauseMode::Normal, false); // unpause
 
 		this->EndGameHighScoreBaseWindow::Close();
 	}

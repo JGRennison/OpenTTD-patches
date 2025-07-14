@@ -32,7 +32,7 @@ static const DrawTileSeqStruct _road_depot_NW[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _road_depot[] = {
+static const DrawTileSpriteSpan _road_depot[] = {
 	{ {0xA4A, PAL_NONE}, _road_depot_NE },
 	{ {0xA4A, PAL_NONE}, _road_depot_SE },
 	{ {0xA4A, PAL_NONE}, _road_depot_SW },
@@ -49,7 +49,7 @@ static const DrawTileSeqStruct _crossing_layout_ALL[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _crossing_layout = {
+static const DrawTileSpriteSpan _crossing_layout = {
 	{0, PAL_NONE}, _crossing_layout_ALL
 };
 
@@ -61,7 +61,7 @@ static const DrawTileSeqStruct _crossing_layout_SW_ALL[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _crossing_layout_SW = {
+static const DrawTileSpriteSpan _crossing_layout_SW = {
 	{0, PAL_NONE}, _crossing_layout_SW_ALL
 };
 
@@ -73,7 +73,7 @@ static const DrawTileSeqStruct _crossing_layout_NW_ALL[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _crossing_layout_NW = {
+static const DrawTileSpriteSpan _crossing_layout_NW = {
 	{0, PAL_NONE}, _crossing_layout_NW_ALL
 };
 
@@ -85,7 +85,7 @@ static const DrawTileSeqStruct _crossing_layout_NE_ALL[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _crossing_layout_NE = {
+static const DrawTileSpriteSpan _crossing_layout_NE = {
 	{0, PAL_NONE}, _crossing_layout_NE_ALL
 };
 
@@ -97,7 +97,7 @@ static const DrawTileSeqStruct _crossing_layout_SE_ALL[] = {
 	TILE_SEQ_END()
 };
 
-static const DrawTileSprites _crossing_layout_SE = {
+static const DrawTileSpriteSpan _crossing_layout_SE = {
 	{0, PAL_NONE}, _crossing_layout_SE_ALL
 };
 

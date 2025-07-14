@@ -783,22 +783,36 @@ DECLARE_ENUM_AS_BIT_SET(DoCommandIntlFlag)
  *
  * This enumeration defines flags for the _command_proc_table.
  */
-enum CommandFlags : uint16_t {
-	CMD_SERVER    =  0x001, ///< the command can only be initiated by the server
-	CMD_SPECTATOR =  0x002, ///< the command may be initiated by a spectator
-	CMD_OFFLINE   =  0x004, ///< the command cannot be executed in a multiplayer game; single-player only
-	CMD_AUTO      =  0x008, ///< set the DoCommandFlag::Auto flag on this command
-	CMD_ALL_TILES =  0x010, ///< allow this command also on MP_VOID tiles
-	CMD_NO_TEST   =  0x020, ///< the command's output may differ between test and execute due to town rating changes etc.
-	CMD_NO_WATER  =  0x040, ///< set the DoCommandFlag::NoWater flag on this command
-	CMD_CLIENT_ID =  0x080, ///< set p2 with the ClientID of the sending client.
-	CMD_DEITY     =  0x100, ///< the command may be executed by COMPANY_DEITY
-	CMD_STR_CTRL  =  0x200, ///< the command's string may contain control strings
-	CMD_NO_EST    =  0x400, ///< the command is never estimated.
-	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
-	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
+enum class CommandFlag : uint8_t {
+	Server,    ///< the command can only be initiated by the server
+	Spectator, ///< the command may be initiated by a spectator
+	Offline,   ///< the command cannot be executed in a multiplayer game; single-player only
+	Auto,      ///< set the DoCommandFlag::Auto flag on this command
+	AllTiles,  ///< allow this command also on MP_VOID tiles
+	NoTest,    ///< the command's output may differ between test and execute due to town rating changes etc.
+	NoWater,   ///< set the DoCommandFlag::NoWater flag on this command
+	ClientID,  ///< set p2 with the ClientID of the sending client.
+	Deity,     ///< the command may be executed by COMPANY_DEITY
+	StrCtrl,   ///< the command's string may contain control strings
+	NoEst,     ///< the command is never estimated.
+	ServerNS,  ///< the command can only be initiated by the server (this is not executed in spectator mode).
+	LogAux,    ///< the command should be logged in the auxiliary log instead of the main log.
 };
-DECLARE_ENUM_AS_BIT_SET(CommandFlags)
+using CommandFlags = EnumBitSet<CommandFlag, uint16_t>;
+
+static constexpr CommandFlags CMD_SERVER{CommandFlag::Server};
+static constexpr CommandFlags CMD_SPECTATOR{CommandFlag::Spectator};
+static constexpr CommandFlags CMD_OFFLINE{CommandFlag::Offline};
+static constexpr CommandFlags CMD_AUTO{CommandFlag::Auto};
+static constexpr CommandFlags CMD_ALL_TILES{CommandFlag::AllTiles};
+static constexpr CommandFlags CMD_NO_TEST{CommandFlag::NoTest};
+static constexpr CommandFlags CMD_NO_WATER{CommandFlag::NoWater};
+static constexpr CommandFlags CMD_CLIENT_ID{CommandFlag::ClientID};
+static constexpr CommandFlags CMD_DEITY{CommandFlag::Deity};
+static constexpr CommandFlags CMD_STR_CTRL{CommandFlag::StrCtrl};
+static constexpr CommandFlags CMD_NO_EST{CommandFlag::NoEst};
+static constexpr CommandFlags CMD_SERVER_NS{CommandFlag::ServerNS};
+static constexpr CommandFlags CMD_LOG_AUX{CommandFlag::LogAux};
 
 /** Types of commands we have. */
 enum CommandType : uint8_t {
@@ -831,7 +845,7 @@ enum CommandPauseLevel : uint8_t {
  * - Have a deserialisation function of the form below, which returns true on success:
  *   bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
  * - Have a FormatDebugSummary implementation where even remotely useful.
- * - Have a `ClientID &GetClientIDField()` function if used by commands with CMD_CLIENT_ID.
+ * - Have a `ClientID &GetClientIDField()` function if used by commands with CMD_CLIENT_ID/CommandFlag::ClientID.
  */
 struct CommandPayloadBase {
 	virtual ~CommandPayloadBase() {}

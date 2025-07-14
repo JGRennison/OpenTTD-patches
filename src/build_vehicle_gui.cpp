@@ -283,16 +283,14 @@ static bool EngineNameSorter(const GUIEngineListItem &a, const GUIEngineListItem
 
 	if (a.engine_id != _last_engine[0]) {
 		_last_engine[0] = a.engine_id;
-		SetDParam(0, PackEngineNameDParam(a.engine_id, EngineNameContext::PurchaseList));
 		last_name[0].clear();
-		AppendStringInPlace(last_name[0], STR_ENGINE_NAME);
+		AppendStringInPlace(last_name[0], STR_ENGINE_NAME, PackEngineNameDParam(a.engine_id, EngineNameContext::PurchaseList));
 	}
 
 	if (b.engine_id != _last_engine[1]) {
 		_last_engine[1] = b.engine_id;
-		SetDParam(0, PackEngineNameDParam(b.engine_id, EngineNameContext::PurchaseList));
 		last_name[1].clear();
-		AppendStringInPlace(last_name[1], STR_ENGINE_NAME);
+		AppendStringInPlace(last_name[1], STR_ENGINE_NAME, PackEngineNameDParam(b.engine_id, EngineNameContext::PurchaseList));
 	}
 
 	int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
@@ -1794,8 +1792,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* Filter engine name */
 		this->string_filter.ResetState();
-		SetDParam(0, PackEngineNameDParam(e->index, EngineNameContext::PurchaseList));
-		this->string_filter.AddLine(GetString(STR_ENGINE_NAME));
+		this->string_filter.AddLine(GetString(STR_ENGINE_NAME, PackEngineNameDParam(e->index, EngineNameContext::PurchaseList)));
 
 		/* Filter NewGRF extra text */
 		auto text = GetNewGRFAdditionalText(e->index);

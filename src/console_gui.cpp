@@ -93,7 +93,7 @@ static inline void IConsoleResetHistoryPos()
 }
 
 
-static const char *IConsoleHistoryAdd(const char *cmd);
+static const char *IConsoleHistoryAdd(std::string_view cmd);
 static void IConsoleHistoryNavigate(int direction);
 static void IConsoleTabCompletion();
 
@@ -412,13 +412,13 @@ void IConsoleClose()
  * @param cmd Text to be entered into the 'history'
  * @return the command to execute
  */
-static const char *IConsoleHistoryAdd(const char *cmd)
+static const char *IConsoleHistoryAdd(std::string_view cmd)
 {
 	/* Strip all spaces at the begin */
-	while (IsWhitespace(*cmd)) cmd++;
+	while (!cmd.empty() && IsWhitespace(cmd[0])) cmd.remove_prefix(1);
 
 	/* Do not put empty command in history */
-	if (StrEmpty(cmd)) return nullptr;
+	if (cmd.empty()) return nullptr;
 
 	/* Do not put in history if command is same as previous */
 	if (_iconsole_history.empty() || _iconsole_history.front() != cmd) {
@@ -449,17 +449,16 @@ static void IConsoleHistoryNavigate(int direction)
 
 static void IConsoleTabCompletion()
 {
-	const char *input = _iconsole_cmdline.GetText();
+	std::string_view input = _iconsole_cmdline.GetText();
 
 	/* Strip all spaces at the beginning */
-	while (IsWhitespace(*input)) input++;
+	while (!input.empty() && IsWhitespace(input[0])) input.remove_prefix(1);
 
 	/* Don't do tab completion for no input */
-	if (StrEmpty(input)) return;
+	if (input.empty()) return;
 
-	const char *cmdptr = input;
-	for (; *cmdptr != '\0'; cmdptr++) {
-		switch (*cmdptr) {
+	for (char c : input) {
+		switch (c) {
 		case ' ':
 		case '"':
 		case '\\':
@@ -477,7 +476,7 @@ static void IConsoleTabCompletion()
 	match_state match_input;
 	match_state match_input_no_underscores;
 
-	match_input.prefix = std::string(input, cmdptr - input);
+	match_input.prefix = input;
 	if (match_input.prefix.empty()) return;
 
 	extern std::string RemoveUnderscores(std::string_view name);

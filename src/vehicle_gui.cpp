@@ -1638,16 +1638,14 @@ static bool VehicleNameSorter(const Vehicle * const &a, const Vehicle * const &b
 
 	if (a != _last_vehicle[0]) {
 		_last_vehicle[0] = a;
-		SetDParam(0, a->index);
 		last_name[0].clear();
-		AppendStringInPlace(last_name[0], STR_VEHICLE_NAME);
+		AppendStringInPlace(last_name[0], STR_VEHICLE_NAME, a->index);
 	}
 
 	if (b != _last_vehicle[1]) {
 		_last_vehicle[1] = b;
-		SetDParam(0, b->index);
 		last_name[1].clear();
-		AppendStringInPlace(last_name[1], STR_VEHICLE_NAME);
+		AppendStringInPlace(last_name[1], STR_VEHICLE_NAME, b->index);
 	}
 
 	int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
@@ -4533,7 +4531,7 @@ public:
 
 	virtual void OnRealtimeTick(uint delta_ms) override
 	{
-		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+		if (_pause_mode.Any()) this->OnGameTick();
 	}
 
 	/**

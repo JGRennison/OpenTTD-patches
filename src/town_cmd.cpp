@@ -2472,8 +2472,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 				SetDParam(0, t->index);
 				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NewsType::IndustryOpen, tile);
 			} else {
-				SetDParam(0, _current_company);
-				std::string company_name = GetString(STR_COMPANY_NAME);
+				std::string company_name = GetString(STR_COMPANY_NAME, _current_company);
 
 				SetDParamStr(0, company_name);
 				SetDParam(1, t->index);
@@ -3697,8 +3696,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlags flags)
 	if (flags.Test(DoCommandFlag::Execute)) {
 		t->road_build_months = 6;
 
-		SetDParam(0, _current_company);
-		std::string company_name = GetString(STR_COMPANY_NAME);
+		std::string company_name = GetString(STR_COMPANY_NAME, _current_company);
 
 		SetDParam(0, t->index);
 		SetDParamStr(1, std::move(company_name));

@@ -631,7 +631,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
 	if (_generating_world) log_flags |= CLEF_GENERATING_WORLD;
 
-	CommandLog &cmd_log = (GetCommandFlags(cmd) & CMD_LOG_AUX) ? _command_log_aux : _command_log;
+	CommandLog &cmd_log = GetCommandFlags(cmd).Test(CommandFlag::LogAux) ? _command_log_aux : _command_log;
 
 	format_buffer summary;
 	payload.FormatDebugSummary(summary);
@@ -674,7 +674,7 @@ void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &paylo
 	static_assert(INVALID_CLIENT_ID == (ClientID)0);
 
 	auto cmd_check = [&]<Commands Tcmd>() -> bool {
-		if constexpr (CommandTraits<Tcmd>::flags & CMD_CLIENT_ID) {
+		if constexpr (CommandTraits<Tcmd>::flags.Test(CommandFlag::ClientID)) {
 			if (cmd == Tcmd) {
 				SetCommandPayloadClientID(static_cast<CmdPayload<Tcmd> &>(payload), client_id);
 				return true;
@@ -729,7 +729,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	bool estimate_only = _shift_pressed && IsLocalCompany() &&
 			!_generating_world &&
 			!(intl_flags & DCIF_NETWORK_COMMAND) &&
-			!(GetCommandFlags(cmd) & CMD_NO_EST);
+			!GetCommandFlags(cmd).Test(CommandFlag::NoEst);
 
 	/* We're only sending the command, so don't do
 	 * fancy things for 'success'. */
@@ -740,7 +740,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	int x = TileX(tile) * TILE_SIZE;
 	int y = TileY(tile) * TILE_SIZE;
 
-	if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
+	if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
 		ShowErrorMessage(error_msg, STR_ERROR_NOT_ALLOWED_WHILE_PAUSED, WL_INFO, x, y);
 		return false;
 	}
@@ -749,7 +749,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	const CommandPayloadBase *use_payload = &orig_payload;
 
 	/* Only set client ID when the command does not come from the network. */
-	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID) {
+	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd).Test(CommandFlag::ClientID)) {
 		modified_payload = orig_payload.Clone();
 		assert(IsCorrectCommandPayloadType(cmd, *modified_payload));
 		SetPreCheckedCommandPayloadClientID(cmd, *modified_payload, CLIENT_ID_SERVER);
@@ -771,7 +771,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	if (intl_flags & DCIF_NETWORK_COMMAND) log_flags |= CLEF_NETWORK;
 	AppendCommandLogEntry(res, tile, cmd, log_flags, *use_payload);
 
-	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
+	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !GetCommandFlags(cmd).Test(CommandFlag::LogAux)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
 		if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
 		CheckCaches(true, nullptr, flags);
@@ -816,7 +816,7 @@ CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadB
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, cmd, log_flags, payload);
 
-	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
+	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !GetCommandFlags(cmd).Test(CommandFlag::LogAux)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
 		if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
 		CheckCaches(true, nullptr, flags);
@@ -897,22 +897,22 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	DoCommandFlags flags = CommandFlagsToDCFlags(cmd_flags);
 
 	/* Do not even think about executing out-of-bounds tile-commands */
-	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && (cmd_flags & CMD_ALL_TILES) == 0))) return_dcpi(CMD_ERROR);
+	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && !cmd_flags.Test(CommandFlag::AllTiles)))) return_dcpi(CMD_ERROR);
 
 	/* Always execute server and spectator commands as spectator */
-	bool exec_as_spectator = (cmd_flags & (CMD_SPECTATOR | CMD_SERVER)) != 0;
+	bool exec_as_spectator = cmd_flags.Any({CommandFlag::Spectator, CommandFlag::Server});
 
 	/* If the company isn't valid it may only do server command or start a new company!
 	 * The server will ditch any server commands a client sends to it, so effectively
 	 * this guards the server from executing functions for an invalid company. */
-	if (_game_mode == GM_NORMAL && !exec_as_spectator && !Company::IsValidID(_current_company) && !(_current_company == OWNER_DEITY && (cmd_flags & CMD_DEITY) != 0)) {
+	if (_game_mode == GM_NORMAL && !exec_as_spectator && !Company::IsValidID(_current_company) && !(_current_company == OWNER_DEITY && cmd_flags.Test(CommandFlag::Deity))) {
 		return_dcpi(CMD_ERROR);
 	}
 
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	if (exec_as_spectator) cur_company.Change(COMPANY_SPECTATOR);
 
-	bool test_and_exec_can_differ = ((cmd_flags & CMD_NO_TEST) != 0) || HasChickenBit(DCBF_CMD_NO_TEST_ALL);
+	bool test_and_exec_can_differ = cmd_flags.Test(CommandFlag::NoTest) || HasChickenBit(DCBF_CMD_NO_TEST_ALL);
 
 	GameRandomSeedChecker random_state;
 
@@ -1042,7 +1042,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
 	/* Record if there was a command issues during pause; ignore pause/other setting related changes. */
-	if (_pause_mode != PM_UNPAUSED && command.type != CMDT_SERVER_SETTING) _pause_mode |= PM_COMMAND_DURING_PAUSE;
+	if (_pause_mode.Any() && command.type != CMDT_SERVER_SETTING) _pause_mode.Set(PauseMode::CommandDuringPause);
 
 	return_dcpi(res2);
 }
@@ -1234,12 +1234,12 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 {
 	this->cmd = static_cast<Commands>(buffer.Recv_uint16());
 	if (!IsValidCommand(this->cmd)) return "invalid command";
-	if (GetCommandFlags(this->cmd) & CMD_OFFLINE) return "single-player only command";
+	if (GetCommandFlags(this->cmd).Test(CommandFlag::Offline)) return "single-player only command";
 
 	this->error_msg = buffer.Recv_uint16();
 	this->tile = TileIndex(buffer.Recv_uint32());
 
-	StringValidationSettings default_settings = (!_network_server && (GetCommandFlags(this->cmd) & CMD_STR_CTRL) != 0) ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
+	StringValidationSettings default_settings = (!_network_server && GetCommandFlags(this->cmd).Test(CommandFlag::StrCtrl)) ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
 
 	uint16_t payload_size = buffer.Recv_uint16();
 	size_t expected_offset = buffer.GetDeserialisationPosition() + payload_size;

@@ -290,7 +290,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 		return false;
 	}
 
-	if ((GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
+	if (!GetCommandFlags(cmd).Test(CommandFlag::StrCtrl)) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
 		payload.SanitiseStrings(SVS_NONE);
@@ -362,7 +362,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	} else if (_networking) {
 		/* Suspend the script till the command is really executed. */
 		throw Script_Suspend(-(int)GetDoCommandDelay(), callback);
-	} else if (GetActiveInstance()->GetScriptType() == ScriptType::GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+	} else if (GetActiveInstance()->GetScriptType() == ScriptType::GS && _pause_mode.Test(PauseMode::GameScript)) {
 		/* Game is paused due to GS, just execute as fast as possible */
 		IncreaseDoCommandCosts(res.GetCost());
 		ScriptController::DecreaseOps(100);

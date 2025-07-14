@@ -488,7 +488,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	}
 
 	FixTitleGameZoom();
-	_pause_mode = PM_UNPAUSED;
+	_pause_mode = {};
 	_pause_countdown = 0;
 	_cursor.fix_at = false;
 
@@ -806,8 +806,7 @@ int openttd_main(std::span<char * const> arguments)
 				if (_load_check_data.HasErrors()) {
 					InitializeLanguagePacks(); // A language pack is needed for GetString()
 					format_buffer buf;
-					SetDParamStr(0, _load_check_data.error_msg);
-					AppendStringInPlace(buf, _load_check_data.error);
+					AppendStringInPlace(buf, _load_check_data.error, _load_check_data.error_msg);
 					buf.push_back('\n');
 					fwrite(buf.data(), 1, buf.size(), stderr);
 				}
@@ -1081,7 +1080,7 @@ static void OnStartGame(bool dedicated_server)
 		SetLocalCompany(dedicated_server ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
 	}
 	if (_ctrl_pressed && !dedicated_server) {
-		Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+		Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 	}
 
 	NetworkOnGameStart();
@@ -1100,7 +1099,7 @@ static void MakeNewGameDone()
 	/* In a dedicated server, the server does not play */
 	if (!VideoDriver::GetInstance()->HasGUI()) {
 		OnStartGame(true);
-		if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+		if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 		return;
 	}
 
@@ -1135,7 +1134,7 @@ static void MakeNewGameDone()
 		NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 	}
 
-	if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+	if (_settings_client.gui.pause_on_newgame) Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 
 	CheckEngines();
 	CheckIndustries();
@@ -1380,7 +1379,7 @@ void SwitchToMode(SwitchMode new_mode)
 				}
 				OnStartGame(_network_dedicated);
 				/* Decrease pause counter (was increased from opening load dialog) */
-				Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
+				Command<CMD_PAUSE>::Post(PauseMode::SaveLoad, false);
 			}
 
 			UpdateSocialIntegration(GM_NORMAL);
@@ -1414,7 +1413,7 @@ void SwitchToMode(SwitchMode new_mode)
 				GenerateSavegameId();
 				_settings_newgame.game_creation.starting_year = CalTime::CurYear();
 				/* Cancel the saveload pausing */
-				Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
+				Command<CMD_PAUSE>::Post(PauseMode::SaveLoad, false);
 			} else {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			}
@@ -1511,7 +1510,7 @@ void StateGameLoop()
 	}
 
 	/* Don't execute the state loop during pause or when modal windows are open. */
-	if (_pause_mode != PM_UNPAUSED || HasModalProgress()) {
+	if (_pause_mode.Any() || HasModalProgress()) {
 		PerformanceMeasurer::Paused(PFE_GAMELOOP);
 		PerformanceMeasurer::Paused(PFE_GL_ECONOMY);
 		PerformanceMeasurer::Paused(PFE_GL_TRAINS);
@@ -1653,7 +1652,7 @@ void StateGameLoop()
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
 	if (_pause_countdown > 0 && --_pause_countdown == 0) {
-		_pause_mode = PM_PAUSED_NORMAL;
+		_pause_mode = PauseMode::Normal;
 		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
 	}
 
@@ -1690,7 +1689,7 @@ static IntervalTimer<TimerGameRealtime> _autosave_interval({std::chrono::millise
 {
 	/* We reset the command-during-pause mode here, so we don't continue
 	 * to make auto-saves when nothing more is changing. */
-	_pause_mode &= ~PM_COMMAND_DURING_PAUSE;
+	_pause_mode.Reset(PauseMode::CommandDuringPause);
 
 	_do_autosave = true;
 	DoAutosave();
@@ -1816,7 +1815,7 @@ void GameLoop()
 	}
 	ExecuteCommandQueue();
 
-	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) {
+	if (_pause_mode.None() && HasBit(_display_opt, DO_FULL_ANIMATION)) {
 		extern std::mutex _cur_palette_mutex;
 		std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
 		DoPaletteAnimations();

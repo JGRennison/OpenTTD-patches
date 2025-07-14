@@ -804,7 +804,7 @@ void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
 
 uint32_t ScriptInstance::GetMaxOpsTillSuspend() const
 {
-	if (this->script_type == ScriptType::GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
+	if (this->script_type == ScriptType::GS && _pause_mode.Test(PauseMode::GameScript)) {
 		/* Boost opcodes till suspend when paused due to game script */
 		return std::min<uint32_t>(250000, _settings_game.script.script_max_opcode_till_suspend * 10);
 	}

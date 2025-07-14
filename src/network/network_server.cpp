@@ -1249,12 +1249,12 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 	Commands cmd = cp.command_container.cmd;
 
-	if ((GetCommandFlags(cmd) & (CMD_SERVER | CMD_SERVER_NS)) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+	if (GetCommandFlags(cmd).Any({CommandFlag::Server, CommandFlag::ServerNS}) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
 		IConsolePrint(CC_ERROR, "WARNING: server only command {} from client {} (IP: {}), kicking...", cmd, ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
-	if ((GetCommandFlags(cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+	if (GetCommandFlags(cmd).Test(CommandFlag::Spectator) && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
 		IConsolePrint(CC_ERROR, "WARNING: spectator (client: {}, IP: {}) issued non-spectator command {}, kicking...", ci->client_id, this->GetClientIP(), cmd);
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
@@ -1269,9 +1269,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 		cca = static_cast<const CmdPayload<CMD_COMPANY_CTRL> &>(*cp.command_container.payload).cca;
 	}
 	if (!(cmd == CMD_COMPANY_CTRL && cca == CCA_NEW && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
-			!((GetCommandFlags(cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
+			!(GetCommandFlags(cmd).Any({CommandFlag::Server, CommandFlag::ServerNS}) && this->settings_authed)) {
 		IConsolePrint(CC_ERROR, "WARNING: client {} (IP: {}) tried to execute a command as company {}, kicking...",
-		               ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
+				ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);
 	}
 
@@ -1289,7 +1289,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 	// Handling of CMD_COMPANY_ADD_ALLOW_LIST would go here
 
-	if (GetCommandFlags(cmd) & CMD_CLIENT_ID) SetPreCheckedCommandPayloadClientID(cmd, *cp.command_container.payload, this->client_id);
+	if (GetCommandFlags(cmd).Test(CommandFlag::ClientID)) SetPreCheckedCommandPayloadClientID(cmd, *cp.command_container.payload, this->client_id);
 	cp.client_id = this->client_id;
 
 	this->incoming_queue.push_back(std::move(cp));
@@ -1590,8 +1590,7 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, co
 			if (ci != nullptr && show_local) {
 				if (from_id == CLIENT_ID_SERVER) {
 					StringID str = Company::IsValidID(ci_to->client_playas) ? STR_COMPANY_NAME : STR_NETWORK_SPECTATORS;
-					SetDParam(0, ci_to->client_playas);
-					std::string name = GetString(str);
+					std::string name = GetString(str, ci_to->client_playas);
 					NetworkTextMessage(action, GetDrawStringCompanyColour(ci_own->client_playas), true, name, msg, data);
 				} else {
 					for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
@@ -2370,8 +2369,7 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 		NetworkServerSendChat(NETWORK_ACTION_COMPANY_SPECTATOR, DESTTYPE_BROADCAST, 0, "", client_id);
 	} else {
 		/* The client has joined another company. */
-		SetDParam(0, company_id);
-		std::string company_name = GetString(STR_COMPANY_NAME);
+		std::string company_name = GetString(STR_COMPANY_NAME, company_id);
 		NetworkServerSendChat(NETWORK_ACTION_COMPANY_JOIN, DESTTYPE_BROADCAST, 0, company_name, client_id);
 	}
 

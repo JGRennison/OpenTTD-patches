@@ -181,9 +181,9 @@ constexpr CommandFlags GetCommandFlags()
 inline DoCommandFlags CommandFlagsToDCFlags(CommandFlags cmd_flags)
 {
 	DoCommandFlags flags = {};
-	if (cmd_flags & CMD_NO_WATER) flags.Set(DoCommandFlag::NoWater);
-	if (cmd_flags & CMD_AUTO) flags.Set(DoCommandFlag::Auto);
-	if (cmd_flags & CMD_ALL_TILES) flags.Set(DoCommandFlag::AllTiles);
+	if (cmd_flags.Test(CommandFlag::NoWater)) flags.Set(DoCommandFlag::NoWater);
+	if (cmd_flags.Test(CommandFlag::Auto)) flags.Set(DoCommandFlag::Auto);
+	if (cmd_flags.Test(CommandFlag::AllTiles)) flags.Set(DoCommandFlag::AllTiles);
 	return flags;
 }
 

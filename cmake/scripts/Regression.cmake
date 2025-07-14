@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.17)
 
 #
 # Runs a single regressoion test
@@ -87,32 +87,15 @@ set(ERROR NO)
 list(LENGTH REGRESSION_EXPECTED REGRESSION_EXPECTED_LENGTH)
 
 # Compare the output
-if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
-    foreach(RESULT IN LISTS REGRESSION_RESULT)
-        unset(EXPECTED)
-        if(ARGC LESS REGRESSION_EXPECTED_LENGTH)
-            list(GET REGRESSION_EXPECTED ${ARGC} EXPECTED)
-        endif()
+foreach(RESULT EXPECTED IN ZIP_LISTS REGRESSION_RESULT REGRESSION_EXPECTED)
+    math(EXPR ARGC "${ARGC} + 1")
 
-        math(EXPR ARGC "${ARGC} + 1")
-
-        if(NOT RESULT STREQUAL EXPECTED)
-            message("${ARGC}: - ${EXPECTED}")
-            message("${ARGC}: + ${RESULT}")
-            set(ERROR YES)
-        endif()
-    endforeach()
-else()
-    foreach(RESULT EXPECTED IN ZIP_LISTS REGRESSION_RESULT REGRESSION_EXPECTED)
-        math(EXPR ARGC "${ARGC} + 1")
-
-        if(NOT RESULT STREQUAL EXPECTED)
-            message("${ARGC}: - ${EXPECTED}")
-            message("${ARGC}: + ${RESULT}")
-            set(ERROR YES)
-        endif()
-    endforeach()
-endif()
+    if(NOT RESULT STREQUAL EXPECTED)
+        message("${ARGC}: - ${EXPECTED}")
+        message("${ARGC}: + ${RESULT}")
+        set(ERROR YES)
+    endif()
+endforeach()
 
 if(NOT REGRESSION_EXPECTED_LENGTH EQUAL ARGC)
     message("(${REGRESSION_EXPECTED_LENGTH} lines were expected but ${ARGC} were found)")

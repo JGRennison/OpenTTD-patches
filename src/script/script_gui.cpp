@@ -1108,7 +1108,7 @@ struct ScriptDebugWindow : public Window {
 				}
 
 				/* If the last AI/Game Script is unpaused, unpause the game too. */
-				if ((_pause_mode & PM_PAUSED_NORMAL) == PM_PAUSED_NORMAL) {
+				if (_pause_mode.Test(PauseMode::Normal)) {
 					bool all_unpaused = !Game::IsPaused();
 					if (all_unpaused) {
 						for (const Company *c : Company::Iterate()) {
@@ -1119,7 +1119,7 @@ struct ScriptDebugWindow : public Window {
 						}
 						if (all_unpaused) {
 							/* All scripts have been unpaused => unpause the game. */
-							Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, false);
+							Command<CMD_PAUSE>::Post(PauseMode::Normal, false);
 						}
 					}
 				}
@@ -1171,8 +1171,8 @@ struct ScriptDebugWindow : public Window {
 					}
 
 					/* Pause the game. */
-					if ((_pause_mode & PM_PAUSED_NORMAL) == PM_UNPAUSED) {
-						Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, true);
+					if (!_pause_mode.Test(PauseMode::Normal)) {
+						Command<CMD_PAUSE>::Post(PauseMode::Normal, true);
 					}
 
 					/* Highlight row that matched */

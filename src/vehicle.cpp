@@ -439,23 +439,23 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		SetDParamStr(0, grfconfig->GetName());
 		SetDParam(1, engine);
 		ShowErrorMessage(part1, part2, WL_CRITICAL);
-		if (!_networking) Command<CMD_PAUSE>::Do(DoCommandFlag::Execute, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, true);
+		if (!_networking) Command<CMD_PAUSE>::Do(DoCommandFlag::Execute, critical ? PauseMode::Error : PauseMode::Normal, true);
 	}
+
+	std::array<StringParameter, 2> params = { grfconfig->GetName(), engine };
 
 	std::string log_msg;
 	auto log = [&](StringID str) {
-		std::string msg = GetString(str);
+		std::string msg = GetStringWithArgs(str, params);
 		const char *start = strip_leading_colours(msg);
 		Debug(grf, 0, "{}", start);
 		log_msg += start;
 	};
 
-	SetDParamStr(0, grfconfig->GetName());
 	log(part1);
 
 	log_msg += ", ";
 
-	SetDParam(1, engine);
 	log(part2);
 
 	AppendSpecialEventsLogEntry(std::move(log_msg));

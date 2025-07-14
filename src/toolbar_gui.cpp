@@ -112,9 +112,7 @@ public:
 			DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>>(SPR_COMPANY_ICON, COMPANY_SPRITE_COLOUR(company), NetworkCompanyIsPassworded(company) ? SPR_LOCK : SPR_EMPTY, PAL_NONE, STR_NULL, company, false, shaded),
 			selectable(selectable)
 	{
-		SetDParam(0, company);
-		SetDParam(1, company);
-		this->SetString(GetString(STR_COMPANY_NAME_COMPANY_NUM));
+		this->SetString(GetString(STR_COMPANY_NAME_COMPANY_NUM, company, company));
 	}
 
 	bool Selectable() const override { return this->selectable; }
@@ -221,7 +219,7 @@ static CallBackFunction ToolbarPauseClick(Window *)
 {
 	if (IsNonAdminNetworkClient()) return CBF_NONE; // only server can pause the game
 
-	if (Command<CMD_PAUSE>::Post(PM_PAUSED_NORMAL, _pause_mode == PM_UNPAUSED)) {
+	if (Command<CMD_PAUSE>::Post(PauseMode::Normal, _pause_mode.None())) {
 		if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
 	}
 	return CBF_NONE;
@@ -2305,7 +2303,7 @@ struct MainToolbarWindow : Window {
 		if (!this->timer.Elapsed(delta_ms)) return;
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 
-		if (this->IsWidgetLowered(WID_TN_PAUSE) != !!_pause_mode) {
+		if (this->IsWidgetLowered(WID_TN_PAUSE) != _pause_mode.Any()) {
 			this->ToggleWidgetLoweredState(WID_TN_PAUSE);
 			this->SetWidgetDirty(WID_TN_PAUSE);
 		}
@@ -2709,7 +2707,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		if (!this->timer.Elapsed(delta_ms)) return;
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 
-		if (this->IsWidgetLowered(WID_TE_PAUSE) != !!_pause_mode) {
+		if (this->IsWidgetLowered(WID_TE_PAUSE) != _pause_mode.Any()) {
 			this->ToggleWidgetLoweredState(WID_TE_PAUSE);
 			this->SetDirty();
 		}

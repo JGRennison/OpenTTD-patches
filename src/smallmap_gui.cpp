@@ -1658,7 +1658,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 /* virtual */ void SmallMapWindow::OnRealtimeTick(uint delta_ms)
 {
-	if (_pause_mode != PM_UNPAUSED) delta_ms = this->PausedAdjustRefreshTimeDelta(delta_ms);
+	if (_pause_mode.Any()) delta_ms = this->PausedAdjustRefreshTimeDelta(delta_ms);
 
 	/* Update the window every now and then */
 	if (!this->refresh.Elapsed(delta_ms)) return;

@@ -376,15 +376,15 @@ class NetworkContentListWindow : public Window, ContentCallback {
 			buffer.append("do=searchtext&q=");
 
 			/* Escape search term */
-			for (const char *search = this->filter_editbox.text.GetText(); *search != '\0'; search++) {
+			for (char c : this->filter_editbox.text.GetText()) {
 				/* Remove quotes */
-				if (*search == '\'' || *search == '"') continue;
+				if (c == '\'' || c == '"') continue;
 
 				/* Escape special chars, such as &%,= */
-				if (*search < 0x30) {
-					buffer.format("%{:02X}", *search);
+				if (c < 0x30) {
+					buffer.format("%{:02X}", c);
 				} else {
-					buffer.push_back(*search);
+					buffer.push_back(c);
 				}
 			}
 		}

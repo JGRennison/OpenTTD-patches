@@ -291,7 +291,7 @@ protected:
 
 		this->RefreshVehicleList();
 
-		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+		if (_pause_mode.Any()) this->OnGameTick();
 	}
 
 	void UpdateViaButtonState()
@@ -527,7 +527,7 @@ public:
 				}
 				/* We need to recompute the departures list. */
 				this->RefreshVehicleList();
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				if (_pause_mode.Any()) this->OnGameTick();
 				break;
 			}
 
@@ -535,7 +535,7 @@ public:
 				this->show_arrival_times = !this->show_arrival_times;
 				this->SetWidgetLoweredState(widget, this->show_arrival_times);
 				this->SetWidgetDirty(widget);
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				if (_pause_mode.Any()) this->OnGameTick();
 				break;
 
 			case WID_DB_SHOW_EMPTY:
@@ -548,7 +548,7 @@ public:
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
 				this->SetWidgetDirty(widget);
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				if (_pause_mode.Any()) this->OnGameTick();
 				break;
 
 			case WID_DB_SHOW_VIA:
@@ -561,7 +561,7 @@ public:
 
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				if (_pause_mode.Any()) this->OnGameTick();
 				break;
 
 			case WID_DB_LIST: {  // Matrix to show departures
@@ -674,7 +674,7 @@ public:
 				if (this->cargo_mode != index) {
 					this->cargo_mode = static_cast<DeparturesCargoMode>(index);
 					this->calc_tick_countdown = 0;
-					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+					if (_pause_mode.Any()) this->OnGameTick();
 				}
 				this->SetWidgetDirty(widget);
 				break;
@@ -684,7 +684,7 @@ public:
 				if (this->mode != index) {
 					this->mode = static_cast<DeparturesMode>(index);
 					this->calc_tick_countdown = 0;
-					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+					if (_pause_mode.Any()) this->OnGameTick();
 				}
 				if (this->source_type == DST_STATION) {
 					_settings_client.gui.departure_default_mode = this->mode;
@@ -701,7 +701,7 @@ public:
 					}
 					this->vehicles_invalid = true;
 					this->calc_tick_countdown = 0;
-					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+					if (_pause_mode.Any()) this->OnGameTick();
 				}
 				_settings_client.gui.departure_default_source = this->source_mode;
 				this->SetWidgetDirty(widget);
@@ -777,7 +777,7 @@ public:
 
 	virtual void OnGameTick() override
 	{
-		if (_pause_mode == PM_UNPAUSED) {
+		if (_pause_mode.None()) {
 			this->calc_tick_countdown -= 1;
 		}
 
@@ -860,7 +860,7 @@ public:
 	virtual void OnRealtimeTick(uint delta_ms) override
 	{
 		this->elapsed_ms += delta_ms;
-		if (_pause_mode != PM_UNPAUSED && this->calc_tick_countdown <= 0) {
+		if (_pause_mode.Any() && this->calc_tick_countdown <= 0) {
 			this->OnGameTick();
 		} else if (this->scroll_refresh) {
 			this->SetWidgetDirty(WID_DB_LIST);
@@ -905,7 +905,7 @@ public:
 			this->SetWidgetDisabledState(WID_DB_SHOW_TIMES, !_settings_time.time_in_minutes);
 			this->SetupValues();
 			this->ReInit();
-			if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+			if (_pause_mode.Any()) this->OnGameTick();
 		}
 	}
 

@@ -181,8 +181,8 @@ struct StatusBarWindow : Window {
 					DrawString(tr, STR_STATUSBAR_SAVING_GAME, TC_FROMSTRING, SA_HOR_CENTER | SA_VERT_CENTER);
 				} else if (_do_autosave) {
 					DrawString(tr, STR_STATUSBAR_AUTOSAVE, TC_FROMSTRING, SA_HOR_CENTER);
-				} else if (_pause_mode != PM_UNPAUSED) {
-					StringID msg = (_pause_mode & PM_PAUSED_LINK_GRAPH) ? STR_STATUSBAR_PAUSED_LINK_GRAPH : STR_STATUSBAR_PAUSED;
+				} else if (_pause_mode.Any()) {
+					StringID msg = _pause_mode.Test(PauseMode::LinkGraph) ? STR_STATUSBAR_PAUSED_LINK_GRAPH : STR_STATUSBAR_PAUSED;
 					DrawString(tr, msg, TC_FROMSTRING, SA_HOR_CENTER);
 				} else if (this->ticker_scroll < TICKER_STOP && GetStatusbarNews() != nullptr && GetStatusbarNews()->string_id != 0) {
 					/* Draw the scrolling news text */
@@ -245,7 +245,7 @@ struct StatusBarWindow : Window {
 
 	void OnRealtimeTick(uint delta_ms) override
 	{
-		if (_pause_mode != PM_UNPAUSED) return;
+		if (_pause_mode.Any()) return;
 
 		if (_settings_time.time_in_minutes) {
 			const TickMinutes now = _settings_time.NowInTickMinutes();

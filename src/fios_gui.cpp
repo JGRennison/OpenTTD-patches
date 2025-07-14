@@ -430,7 +430,7 @@ public:
 		/* pause is only used in single-player, non-editor mode, non-menu mode. It
 		 * will be unpaused in the WE_DESTROY event handler. */
 		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR) {
-			Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, true);
+			Command<CMD_PAUSE>::Post(PauseMode::SaveLoad, true);
 		}
 		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
 
@@ -473,7 +473,7 @@ public:
 	{
 		/* pause is only used in single-player, non-editor mode, non menu mode */
 		if (!_networking && _game_mode != GM_EDITOR && _game_mode != GM_MENU) {
-			Command<CMD_PAUSE>::Post(PM_PAUSED_SAVELOAD, false);
+			Command<CMD_PAUSE>::Post(PauseMode::SaveLoad, false);
 		}
 		this->Window::Close();
 	}
@@ -840,7 +840,7 @@ public:
 		if (this->fop != SLO_SAVE) return;
 
 		if (this->IsWidgetLowered(WID_SL_DELETE_SELECTION)) { // Delete button clicked
-			if (!FiosDelete(this->filename_editbox.text.GetText())) {
+			if (!FiosDelete(this->filename_editbox.text.GetText().c_str())) {
 				ShowErrorMessage(STR_ERROR_UNABLE_TO_DELETE_FILE, INVALID_STRING_ID, WL_ERROR);
 			} else {
 				this->InvalidateData(SLIWD_RESCAN_FILES);
@@ -849,7 +849,7 @@ public:
 			}
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
 			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
-				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.GetText());
+				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.GetText().c_str());
 				const bool known_id = _load_check_data.settings.game_creation.generation_unique_id != 0;
 				const bool different_id = known_id && _load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id;
 				const bool file_exists = FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR);
@@ -887,7 +887,7 @@ public:
 					_switch_mode = SM_SAVE_GAME;
 				}
 			} else {
-				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText());
+				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText().c_str());
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
 					ShowQuery(
 						GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE),

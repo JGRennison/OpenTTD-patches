@@ -453,37 +453,37 @@ StringID GetNetworkErrorMsg(NetworkErrorCode err)
  * @param prev_mode The previous pause mode.
  * @param changed_mode The pause mode that got changed.
  */
-void NetworkHandlePauseChange(PauseMode prev_mode, PauseMode changed_mode)
+void NetworkHandlePauseChange(PauseModes prev_mode, PauseMode changed_mode)
 {
 	if (!_networking) return;
 
 	switch (changed_mode) {
-		case PM_PAUSED_NORMAL:
-		case PM_PAUSED_JOIN:
-		case PM_PAUSED_GAME_SCRIPT:
-		case PM_PAUSED_ACTIVE_CLIENTS:
-		case PM_PAUSED_LINK_GRAPH: {
-			bool changed = ((_pause_mode == PM_UNPAUSED) != (prev_mode == PM_UNPAUSED));
-			bool paused = (_pause_mode != PM_UNPAUSED);
+		case PauseMode::Normal:
+		case PauseMode::Join:
+		case PauseMode::GameScript:
+		case PauseMode::ActiveClients:
+		case PauseMode::LinkGraph: {
+			bool changed = _pause_mode.None() != prev_mode.None();
+			bool paused = _pause_mode.Any();
 			if (!paused && !changed) return;
 
 			StringID str;
 			if (!changed) {
 				int i = -1;
 
-				if ((_pause_mode & PM_PAUSED_NORMAL) != PM_UNPAUSED)         SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL);
-				if ((_pause_mode & PM_PAUSED_JOIN) != PM_UNPAUSED)           SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS);
-				if ((_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED)    SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT);
-				if ((_pause_mode & PM_PAUSED_ACTIVE_CLIENTS) != PM_UNPAUSED) SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS);
-				if ((_pause_mode & PM_PAUSED_LINK_GRAPH) != PM_UNPAUSED)     SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH);
+				if (_pause_mode.Test(PauseMode::Normal))         SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL);
+				if (_pause_mode.Test(PauseMode::Join))           SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS);
+				if (_pause_mode.Test(PauseMode::GameScript))    SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT);
+				if (_pause_mode.Test(PauseMode::ActiveClients)) SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS);
+				if (_pause_mode.Test(PauseMode::LinkGraph))     SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH);
 				str = STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1 + i;
 			} else {
 				switch (changed_mode) {
-					case PM_PAUSED_NORMAL:         SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL); break;
-					case PM_PAUSED_JOIN:           SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS); break;
-					case PM_PAUSED_GAME_SCRIPT:    SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT); break;
-					case PM_PAUSED_ACTIVE_CLIENTS: SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS); break;
-					case PM_PAUSED_LINK_GRAPH:     SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH); break;
+					case PauseMode::Normal:         SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL); break;
+					case PauseMode::Join:           SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS); break;
+					case PauseMode::GameScript:    SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT); break;
+					case PauseMode::ActiveClients: SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS); break;
+					case PauseMode::LinkGraph:     SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH); break;
 					default: NOT_REACHED();
 				}
 				str = paused ? STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED : STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED;
@@ -509,7 +509,7 @@ void NetworkHandlePauseChange(PauseMode prev_mode, PauseMode changed_mode)
  */
 static void CheckPauseHelper(bool pause, PauseMode pm)
 {
-	if (pause == ((_pause_mode & pm) != PM_UNPAUSED)) return;
+	if (pause == _pause_mode.Test(pm)) return;
 
 	Command<CMD_PAUSE>::Post(pm, pause);
 }
@@ -537,12 +537,12 @@ static uint NetworkCountActiveClients()
  */
 static void CheckMinActiveClients()
 {
-	if ((_pause_mode & PM_PAUSED_ERROR) != PM_UNPAUSED ||
+	if (_pause_mode.Test(PauseMode::Error) ||
 			!_network_dedicated ||
-			(_settings_client.network.min_active_clients == 0 && (_pause_mode & PM_PAUSED_ACTIVE_CLIENTS) == PM_UNPAUSED)) {
+			(_settings_client.network.min_active_clients == 0 && !_pause_mode.Test(PauseMode::ActiveClients))) {
 		return;
 	}
-	CheckPauseHelper(NetworkCountActiveClients() < _settings_client.network.min_active_clients, PM_PAUSED_ACTIVE_CLIENTS);
+	CheckPauseHelper(NetworkCountActiveClients() < _settings_client.network.min_active_clients, PauseMode::ActiveClients);
 }
 
 /**
@@ -563,11 +563,11 @@ static bool NetworkHasJoiningClient()
  */
 static void CheckPauseOnJoin()
 {
-	if ((_pause_mode & PM_PAUSED_ERROR) != PM_UNPAUSED ||
-			(!_settings_client.network.pause_on_join && (_pause_mode & PM_PAUSED_JOIN) == PM_UNPAUSED)) {
+	if (_pause_mode.Test(PauseMode::Error) ||
+			(!_settings_client.network.pause_on_join && !_pause_mode.Test(PauseMode::Join))) {
 		return;
 	}
-	CheckPauseHelper(NetworkHasJoiningClient(), PM_PAUSED_JOIN);
+	CheckPauseHelper(NetworkHasJoiningClient(), PauseMode::Join);
 }
 
 /**
@@ -1378,7 +1378,7 @@ void NetworkGameLoop()
 				cp->command_container.tile = {};
 				cp->company = COMPANY_SPECTATOR;
 				cp->command_container.cmd = CMD_PAUSE;
-				cp->command_container.payload = CmdPayload<CMD_PAUSE>::Make(PM_PAUSED_NORMAL, true).Clone();
+				cp->command_container.payload = CmdPayload<CMD_PAUSE>::Make(PauseMode::Normal, true).Clone();
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);

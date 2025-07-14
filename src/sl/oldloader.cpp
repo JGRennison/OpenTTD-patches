@@ -326,7 +326,7 @@ bool LoadOldSaveGame(const std::string &file)
 		return false;
 	}
 
-	_pause_mode = PM_PAUSED_SAVELOAD;
+	_pause_mode = PauseMode::SaveLoad;
 
 	return true;
 }

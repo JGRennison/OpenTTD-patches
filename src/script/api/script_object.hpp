@@ -132,7 +132,7 @@ protected:
 	template <Commands cmd>
 	static bool DoCommand(TileIndex tile, typename CommandTraits<cmd>::PayloadType &&payload, Script_SuspendCallbackProc *callback = nullptr)
 	{
-		if constexpr (CommandTraits<cmd>::flags & CMD_CLIENT_ID) {
+		if constexpr (CommandTraits<cmd>::flags.Test(CommandFlag::ClientID)) {
 			SetCommandPayloadClientID(payload, (ClientID)UINT32_MAX);
 		}
 		return ScriptObject::DoCommandImplementation(cmd, tile, std::move(payload), callback, DCIF_TYPE_CHECKED);

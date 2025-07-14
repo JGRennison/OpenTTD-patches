@@ -2214,7 +2214,7 @@ struct SavePresetWindow : public Window {
 
 			case WID_SVP_SAVE: {
 				Window *w = FindWindowById(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
-				if (w != nullptr && !StrEmpty(this->presetname_editbox.text.GetText())) w->OnQueryTextFinished(this->presetname_editbox.text.GetText());
+				if (w != nullptr && !this->presetname_editbox.text.GetText().empty()) w->OnQueryTextFinished(this->presetname_editbox.text.GetText());
 				this->Close();
 				break;
 			}

@@ -395,8 +395,7 @@ static void FiosGetFileList(SaveLoadOperation fop, bool show_dirs, fios_getlist_
 				fios->type = FIOS_TYPE_DIR;
 				fios->mtime = 0;
 				fios->name = d_name;
-				SetDParamStr(0, fios->name + PATHSEP);
-				fios->title = GetString(STR_SAVELOAD_DIRECTORY);
+				fios->title = GetString(STR_SAVELOAD_DIRECTORY, fios->name + PATHSEP);
 			}
 		}
 		closedir(dir);

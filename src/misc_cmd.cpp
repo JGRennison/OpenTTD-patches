@@ -154,7 +154,7 @@ CommandCost CmdSetCompanyMaxLoan(DoCommandFlags flags, CompanyID company, Money 
 static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 {
 	if (confirmed) {
-		Command<CMD_PAUSE>::Post(PM_PAUSED_ERROR, false);
+		Command<CMD_PAUSE>::Post(PauseMode::Error, false);
 	}
 }
 
@@ -171,22 +171,22 @@ static void AskUnsafeUnpauseCallback(Window *, bool confirmed)
 CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 {
 	switch (mode) {
-		case PM_PAUSED_SAVELOAD:
-		case PM_PAUSED_ERROR:
-		case PM_PAUSED_NORMAL:
-		case PM_PAUSED_GAME_SCRIPT:
-		case PM_PAUSED_LINK_GRAPH:
+		case PauseMode::SaveLoad:
+		case PauseMode::Error:
+		case PauseMode::Normal:
+		case PauseMode::GameScript:
+		case PauseMode::LinkGraph:
 			break;
 
-		case PM_PAUSED_JOIN:
-		case PM_PAUSED_ACTIVE_CLIENTS:
+		case PauseMode::Join:
+		case PauseMode::ActiveClients:
 			if (!_networking) return CMD_ERROR;
 			break;
 
 		default: return CMD_ERROR;
 	}
 	if (flags.Test(DoCommandFlag::Execute)) {
-		if (mode == PM_PAUSED_NORMAL && _pause_mode & PM_PAUSED_ERROR) {
+		if (mode == PauseMode::Normal && _pause_mode.Test(PauseMode::Error)) {
 			ShowQuery(
 				GetEncodedString(STR_NEWGRF_UNPAUSE_WARNING_TITLE),
 				GetEncodedString(STR_NEWGRF_UNPAUSE_WARNING),
@@ -194,16 +194,16 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 				AskUnsafeUnpauseCallback
 			);
 		} else {
-			PauseMode prev_mode = _pause_mode;
+			PauseModes prev_mode = _pause_mode;
 
 			if (pause) {
-				_pause_mode |= mode;
+				_pause_mode.Set(mode);
 			} else {
-				_pause_mode &= ~mode;
+				_pause_mode.Reset(mode);
 
 				/* If the only remaining reason to be paused is that we saw a command during pause, unpause. */
-				if (_pause_mode == PM_COMMAND_DURING_PAUSE) {
-					_pause_mode = PM_UNPAUSED;
+				if (_pause_mode == PauseMode::CommandDuringPause) {
+					_pause_mode = {};
 				}
 			}
 
@@ -218,8 +218,8 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 
 void UnpauseStepGame(uint32_t steps)
 {
-	CmdPause(DoCommandFlag::Execute, PM_PAUSED_NORMAL, false);
-	if (_pause_mode == PM_UNPAUSED) {
+	CmdPause(DoCommandFlag::Execute, PauseMode::Normal, false);
+	if (_pause_mode.None()) {
 		_pause_countdown = steps;
 	}
 }

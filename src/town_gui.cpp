@@ -2168,18 +2168,14 @@ struct BuildHouseWindow : public PickerWindow {
 				AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS_ANY);
 				return;
 			}
-			SetDParam(0, max_year);
-			AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS_UNTIL);
+			AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS_UNTIL, max_year);
 			return;
 		}
 		if (max_year == CalTime::MAX_YEAR) {
-			SetDParam(0, min_year);
-			AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS_FROM);
+			AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS_FROM, min_year);
 			return;
 		}
-		SetDParam(0, min_year);
-		SetDParam(1, max_year);
-		AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS);
+		AppendStringInPlace(buffer, STR_HOUSE_PICKER_YEARS, min_year, max_year);
 		return;
 	}
 
@@ -2192,12 +2188,10 @@ struct BuildHouseWindow : public PickerWindow {
 	{
 		format_buffer line;
 
-		SetDParam(0, GetHouseName(hs));
-		AppendStringInPlace(line, STR_HOUSE_PICKER_NAME);
+		AppendStringInPlace(line, STR_HOUSE_PICKER_NAME, GetHouseName(hs));
 		line.push_back('\n');
 
-		SetDParam(0, hs->population);
-		AppendStringInPlace(line, STR_HOUSE_PICKER_POPULATION);
+		AppendStringInPlace(line, STR_HOUSE_PICKER_POPULATION, hs->population);
 		line.push_back('\n');
 
 		GetHouseYear(line, hs->min_year, hs->max_year);
@@ -2208,9 +2202,7 @@ struct BuildHouseWindow : public PickerWindow {
 		if (hs->building_flags.Test(BuildingFlag::Size2x1)) size = 0x21;
 		if (hs->building_flags.Test(BuildingFlag::Size1x2)) size = 0x12;
 		if (hs->building_flags.Test(BuildingFlag::Size2x2)) size = 0x22;
-		SetDParam(0, GB(size, 0, 4));
-		SetDParam(1, GB(size, 4, 4));
-		AppendStringInPlace(line, STR_HOUSE_PICKER_SIZE);
+		AppendStringInPlace(line, STR_HOUSE_PICKER_SIZE, GB(size, 0, 4), GB(size, 4, 4));
 
 		auto cargo_string = BuildCargoAcceptanceString(GetAcceptedCargoOfHouse(hs), STR_HOUSE_PICKER_CARGO_ACCEPTED);
 		if (cargo_string.has_value()) {

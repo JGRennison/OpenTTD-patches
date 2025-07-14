@@ -175,7 +175,7 @@ struct SignListWindow : Window, SignList {
 	 * new string is zero-length or not the clear button is made
 	 * disabled/enabled. The sign list is updated according to the new filter.
 	 */
-	void SetFilterString(const char *new_filter_string)
+	void SetFilterString(std::string_view new_filter_string)
 	{
 		/* check if there is a new filter string */
 		this->string_filter.SetFilterTerm(new_filter_string);

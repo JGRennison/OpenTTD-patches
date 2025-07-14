@@ -595,13 +595,9 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 
 			auto add_extra_info = [&](const LinkProperties &info_link) {
 				if (info_link.usage < info_link.planned) {
-					SetDParam(0, info_link.cargo);
-					SetDParam(1, info_link.usage);
-					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_USAGE);
+					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_USAGE, info_link.cargo, info_link.usage);
 				} else if (info_link.planned < info_link.usage) {
-					SetDParam(0, info_link.cargo);
-					SetDParam(1, info_link.planned);
-					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED);
+					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED, info_link.cargo, info_link.planned);
 				}
 				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY, info_link.cargo, info_link.capacity);
 				add_travel_time(info_link.time);

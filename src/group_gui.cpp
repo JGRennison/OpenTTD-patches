@@ -180,8 +180,7 @@ void BuildGuiGroupList(GUIGroupList &dst, GroupFoldBits fold, Owner owner, Vehic
 			if (group != last_group[index].first) {
 				last_group[index].first = group;
 				last_group[index].second.clear();
-				SetDParam(0, group->index);
-				AppendStringInPlace(last_group[index].second, STR_GROUP_NAME);
+				AppendStringInPlace(last_group[index].second, STR_GROUP_NAME, group->index);
 			}
 		};
 		process_group(0, a.group);
