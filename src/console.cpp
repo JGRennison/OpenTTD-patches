@@ -290,19 +290,12 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, uint8_t tokencount, ch
  * individual tokens (separated by spaces), then execute it if possible
  * @param command_string string to be parsed and executed
  */
-void IConsoleCmdExec(const std::string &command_string, const uint recurse_count)
+void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 {
-	const char *cmdptr;
-	char *tokens[ICON_TOKEN_COUNT], tokenstream[ICON_MAX_STREAMSIZE];
-	uint t_index, tstream_i;
+	if (command_string.empty() || command_string[0] == '#') return; // comments
 
-	bool longtoken = false;
-	bool foundtoken = false;
-
-	if (command_string[0] == '#') return; // comments
-
-	for (cmdptr = command_string.c_str(); *cmdptr != '\0'; cmdptr++) {
-		if (!IsValidChar(*cmdptr, CS_ALPHANUMERAL)) {
+	for (char c : command_string) {
+		if (!IsValidChar(c, CS_ALPHANUMERAL)) {
 			IConsolePrint(CC_ERROR, "Command '{}' contains malformed characters.", command_string);
 			return;
 		}
@@ -310,14 +303,19 @@ void IConsoleCmdExec(const std::string &command_string, const uint recurse_count
 
 	Debug(console, 4, "Executing cmdline: '{}'", command_string);
 
-	memset(&tokens, 0, sizeof(tokens));
-	memset(&tokenstream, 0, sizeof(tokenstream));
+	std::array<char *, ICON_TOKEN_COUNT> tokens{};
+	std::array<char, ICON_MAX_STREAMSIZE> tokenstream{};
+	size_t t_index = 0;
+	size_t tstream_i = 0;
+
+	bool longtoken = false;
+	bool foundtoken = false;
 
 	/* 1. Split up commandline into tokens, separated by spaces, commands
 	 * enclosed in "" are taken as one token. We can only go as far as the amount
 	 * of characters in our stream or the max amount of tokens we can handle */
-	for (cmdptr = command_string.c_str(), t_index = 0, tstream_i = 0; *cmdptr != '\0'; cmdptr++) {
-		if (tstream_i >= lengthof(tokenstream)) {
+	for (const char *cmdptr = command_string.data(); cmdptr != command_string.data() + command_string.size(); cmdptr++) {
+		if (tstream_i >= tokenstream.size()) {
 			IConsolePrint(CC_ERROR, "Command line too long.");
 			return;
 		}
@@ -338,7 +336,7 @@ void IConsoleCmdExec(const std::string &command_string, const uint recurse_count
 		case '"': // Tokens enclosed in "" are one token
 			longtoken = !longtoken;
 			if (!foundtoken) {
-				if (t_index >= lengthof(tokens)) {
+				if (t_index >= tokens.size()) {
 					IConsolePrint(CC_ERROR, "Command line too long.");
 					return;
 				}
@@ -347,7 +345,7 @@ void IConsoleCmdExec(const std::string &command_string, const uint recurse_count
 			}
 			break;
 		case '\\': // Escape character for ""
-			if (cmdptr[1] == '"' && tstream_i + 1 < lengthof(tokenstream)) {
+			if (cmdptr[1] == '"' && tstream_i + 1 < tokenstream.size()) {
 				tokenstream[tstream_i++] = *++cmdptr;
 				break;
 			}
@@ -356,7 +354,7 @@ void IConsoleCmdExec(const std::string &command_string, const uint recurse_count
 			tokenstream[tstream_i++] = *cmdptr;
 
 			if (!foundtoken) {
-				if (t_index >= lengthof(tokens)) {
+				if (t_index >= tokens.size()) {
 					IConsolePrint(CC_ERROR, "Command line too long.");
 					return;
 				}
@@ -367,11 +365,11 @@ void IConsoleCmdExec(const std::string &command_string, const uint recurse_count
 		}
 	}
 
-	for (uint i = 0; i < lengthof(tokens) && tokens[i] != nullptr; i++) {
+	for (size_t i = 0; i < tokens.size() && tokens[i] != nullptr; i++) {
 		Debug(console, 8, "Token {} is: '{}'", i, tokens[i]);
 	}
 
-	IConsoleCmdExecTokens(t_index, tokens, recurse_count);
+	IConsoleCmdExecTokens((uint)t_index, tokens.data(), recurse_count);
 }
 
 /**
