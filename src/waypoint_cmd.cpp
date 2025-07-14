@@ -136,7 +136,7 @@ Axis GetAxisForNewRoadWaypoint(TileIndex tile)
 	return INVALID_AXIS;
 }
 
-extern CommandCost ClearTile_Station(TileIndex tile, DoCommandFlag flags);
+extern CommandCost ClearTile_Station(TileIndex tile, DoCommandFlags flags);
 
 /**
  * Check whether the given tile is suitable for a waypoint.
@@ -151,7 +151,7 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 	 * Or it points to a waypoint if we're only allowed to build on exactly that waypoint. */
 	if (waypoint != nullptr && IsTileType(tile, MP_STATION)) {
 		if (!IsRailWaypoint(tile)) {
-			return ClearTile_Station(tile, DC_AUTO); // get error message
+			return ClearTile_Station(tile, DoCommandFlag::Auto); // get error message
 		} else {
 			StationID wp = GetStationIndex(tile);
 			if (*waypoint == INVALID_STATION) {
@@ -197,7 +197,7 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
  * @param adjacent allow waypoints directly adjacent to other waypoints.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRailWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, StationClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
+CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, StationClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
 {
 	if (!IsValidAxis(axis)) return CMD_ERROR;
 	/* Check if the given station class is valid */
@@ -273,7 +273,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
 	/* Check if we can allocate a custom stationspec to this station */
 	if (AllocateSpecToStation(spec, wp, false) == -1) return CommandCost(STR_ERROR_TOO_MANY_STATION_SPECS);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (wp == nullptr) {
 			wp = new Waypoint(start_tile);
 		} else if (!wp->IsInUse()) {
@@ -334,7 +334,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
  * @param adjacent allow waypoints directly adjacent to other waypoints.
  * @return the cost of this operation or an error.
  */
-CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, RoadStopClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
+CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axis axis, uint8_t width, uint8_t height, RoadStopClassID spec_class, uint16_t spec_index, StationID station_to_join, bool adjacent)
 {
 	if (!IsValidAxis(axis)) return CMD_ERROR;
 	/* Check if the given road stop class is valid */
@@ -370,7 +370,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
 	}
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = INVALID_STATION;
-	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
+	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
 	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, 5 << axis, true, StationType::RoadWaypoint, axis, &est, INVALID_ROADTYPE, true);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
@@ -398,7 +398,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
 	/* Check if we can allocate a custom stationspec to this station */
 	if (AllocateRoadStopSpecToStation(spec, wp, false) == -1) return CommandCost(STR_ERROR_TOO_MANY_STATION_SPECS);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (wp == nullptr) {
 			wp = new Waypoint(start_tile);
 			SetBit(wp->waypoint_flags, WPF_ROAD);
@@ -444,7 +444,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
 				}
 			}
 
-			extern CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index);
+			extern CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement_spec_index);
 			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
 				RemoveRoadStop(cur_tile, flags, map_spec_index);
 			}
@@ -485,7 +485,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlag flags, TileIndex start_tile, Axis
  * @param tile tile where to place the buoy
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildBuoy(DoCommandFlag flags, TileIndex tile)
+CommandCost CmdBuildBuoy(DoCommandFlags flags, TileIndex tile)
 {
 	if (tile == 0 || !HasTileWaterGround(tile)) return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 
@@ -497,12 +497,12 @@ CommandCost CmdBuildBuoy(DoCommandFlag flags, TileIndex tile)
 
 	CommandCost cost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_WAYPOINT_BUOY]);
 	if (!IsWaterTile(tile)) {
-		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DC_AUTO, tile);
+		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::Auto, tile);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (wp == nullptr) {
 			wp = new Waypoint(tile);
 		} else {
@@ -541,21 +541,21 @@ CommandCost CmdBuildBuoy(DoCommandFlag flags, TileIndex tile)
  * @pre IsBuoyTile(tile)
  * @return cost or failure of operation
  */
-CommandCost RemoveBuoy(TileIndex tile, DoCommandFlag flags)
+CommandCost RemoveBuoy(TileIndex tile, DoCommandFlags flags)
 {
 	/* XXX: strange stuff, allow clearing as invalid company when clearing landscape */
-	if (!Company::IsValidID(_current_company) && !(flags & DC_BANKRUPT)) return CommandCost(INVALID_STRING_ID);
+	if (!Company::IsValidID(_current_company) && !flags.Test(DoCommandFlag::Bankrupt)) return CommandCost(INVALID_STRING_ID);
 
 	Waypoint *wp = Waypoint::GetByTile(tile);
 
 	if (HasStationInUse(wp->index, false, _current_company)) return CommandCost(STR_ERROR_BUOY_IS_IN_USE);
 	/* remove the buoy if there is a ship on tile when company goes bankrupt... */
-	if (!(flags & DC_BANKRUPT)) {
+	if (!flags.Test(DoCommandFlag::Bankrupt)) {
 		CommandCost ret = EnsureNoVehicleOnGround(tile);
 		if (ret.Failed()) return ret;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		wp->facilities.Reset(StationFacility::Dock);
 
 		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
@@ -595,7 +595,7 @@ static bool IsUniqueWaypointName(std::string_view name)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameWaypoint(DoCommandFlag flags, StationID waypoint_id, const std::string &text)
+CommandCost CmdRenameWaypoint(DoCommandFlags flags, StationID waypoint_id, const std::string &text)
 {
 	Waypoint *wp = Waypoint::GetIfValid(waypoint_id);
 	if (wp == nullptr) return CMD_ERROR;
@@ -612,7 +612,7 @@ CommandCost CmdRenameWaypoint(DoCommandFlag flags, StationID waypoint_id, const 
 		if (!IsUniqueWaypointName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (reset) {
 			wp->name.clear();
 		} else {
@@ -631,7 +631,7 @@ CommandCost CmdRenameWaypoint(DoCommandFlag flags, StationID waypoint_id, const 
  * @param hidden hidden state
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetWaypointLabelHidden(DoCommandFlag flags, StationID waypoint_id, bool hidden)
+CommandCost CmdSetWaypointLabelHidden(DoCommandFlags flags, StationID waypoint_id, bool hidden)
 {
 	Waypoint *wp = Waypoint::GetIfValid(waypoint_id);
 	if (wp == nullptr) return CMD_ERROR;
@@ -641,7 +641,7 @@ CommandCost CmdSetWaypointLabelHidden(DoCommandFlag flags, StationID waypoint_id
 		if (ret.Failed()) return ret;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		AssignBit(wp->waypoint_flags, WPF_HIDE_LABEL, hidden);
 
 		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
@@ -661,7 +661,7 @@ CommandCost CmdSetWaypointLabelHidden(DoCommandFlag flags, StationID waypoint_id
  * @param waypoint_id2 station ID to exchange name with
  * @return the cost of this operation or an error
  */
-CommandCost CmdExchangeWaypointNames(DoCommandFlag flags, StationID waypoint_id1, StationID waypoint_id2)
+CommandCost CmdExchangeWaypointNames(DoCommandFlags flags, StationID waypoint_id1, StationID waypoint_id2)
 {
 	Waypoint *wp = Waypoint::GetIfValid(waypoint_id1);
 	if (wp == nullptr) return CMD_ERROR;
@@ -682,7 +682,7 @@ CommandCost CmdExchangeWaypointNames(DoCommandFlag flags, StationID waypoint_id1
 	if (wp->town != wp2->town) return CommandCost(STR_ERROR_WAYPOINTS_NOT_IN_SAME_TOWN);
 	if (!wp->IsOfType(wp2)) return CommandCost(STR_ERROR_WAYPOINTS_NOT_COMPATIBLE);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		wp->cached_name.clear();
 		wp2->cached_name.clear();
 		std::swap(wp->name, wp2->name);

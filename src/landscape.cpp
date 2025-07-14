@@ -586,25 +586,25 @@ void ClearSnowLine()
  * @param tile tile to clear
  * @return the cost of this operation or an error
  */
-CommandCost CmdLandscapeClear(DoCommandFlag flags, TileIndex tile)
+CommandCost CmdLandscapeClear(DoCommandFlags flags, TileIndex tile)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	bool do_clear = false;
 	/* Test for stuff which results in water when cleared. Then add the cost to also clear the water. */
-	if ((flags & DC_FORCE_CLEAR_TILE) && HasTileWaterClass(tile) && IsTileOnWater(tile) && !IsWaterTile(tile) && !IsCoastTile(tile)) {
-		if ((flags & DC_AUTO) && GetWaterClass(tile) == WATER_CLASS_CANAL) return CommandCost(STR_ERROR_MUST_DEMOLISH_CANAL_FIRST);
+	if (flags.Test(DoCommandFlag::ForceClearTile) && HasTileWaterClass(tile) && IsTileOnWater(tile) && !IsWaterTile(tile) && !IsCoastTile(tile)) {
+		if (flags.Test(DoCommandFlag::Auto) && GetWaterClass(tile) == WATER_CLASS_CANAL) return CommandCost(STR_ERROR_MUST_DEMOLISH_CANAL_FIRST);
 		do_clear = true;
 		const bool is_canal = GetWaterClass(tile) == WATER_CLASS_CANAL;
-		if (!is_canal && _game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !(flags & DC_ALLOW_REMOVE_WATER)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
+		if (!is_canal && _game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !flags.Test(DoCommandFlag::AllowRemoveWater)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 		cost.AddCost(is_canal ? _price[PR_CLEAR_CANAL] : _price[PR_CLEAR_WATER]);
 	}
 
-	Company *c = (flags & (DC_AUTO | DC_BANKRUPT)) ? nullptr : Company::GetIfValid(_current_company);
+	Company *c = flags.Any({DoCommandFlag::Auto, DoCommandFlag::Bankrupt}) ? nullptr : Company::GetIfValid(_current_company);
 	if (c != nullptr && (int)GB(c->clear_limit, 16, 16) < 1) {
 		return CommandCost(STR_ERROR_CLEARING_LIMIT_REACHED);
 	}
 
-	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
+	if (flags.Test(DoCommandFlag::Town) && !MayTownModifyRoad(tile)) return CMD_ERROR;
 
 	const ClearedObjectArea *coa = FindClearedObject(tile);
 
@@ -616,14 +616,14 @@ CommandCost CmdLandscapeClear(DoCommandFlag flags, TileIndex tile)
 		 * However, we need to check stuff, which is not the same for all object tiles. (e.g. being on water or not) */
 
 		/* If a object is removed, it leaves either bare land or water. */
-		if ((flags & DC_NO_WATER) && HasTileWaterClass(tile) && IsTileOnWater(tile)) {
+		if (flags.Test(DoCommandFlag::NoWater) && HasTileWaterClass(tile) && IsTileOnWater(tile)) {
 			return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 		}
 	} else {
 		cost.AddCost(_tile_type_procs[GetTileType(tile)]->clear_tile_proc(tile, flags));
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (c != nullptr) c->clear_limit -= 1 << 16;
 		if (do_clear) ForceClearWaterTile(tile);
 	}
@@ -638,7 +638,7 @@ CommandCost CmdLandscapeClear(DoCommandFlag flags, TileIndex tile)
  * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdClearArea(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal)
+CommandCost CmdClearArea(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, bool diagonal)
 {
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 
@@ -647,15 +647,15 @@ CommandCost CmdClearArea(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
 
-	const Company *c = (flags & (DC_AUTO | DC_BANKRUPT)) ? nullptr : Company::GetIfValid(_current_company);
+	const Company *c = flags.Any({DoCommandFlag::Auto, DoCommandFlag::Bankrupt}) ? nullptr : Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->clear_limit, 16, 16));
 
-	if (tile != start_tile) flags |= DC_FORCE_CLEAR_TILE;
+	if (tile != start_tile) flags.Set(DoCommandFlag::ForceClearTile);
 
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags & ~DC_EXEC, t);
+		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -665,7 +665,7 @@ CommandCost CmdClearArea(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 		}
 
 		had_success = true;
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				cost.SetAdditionalCashRequired(ret.GetCost());

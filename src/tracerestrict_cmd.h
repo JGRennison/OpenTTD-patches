@@ -63,7 +63,7 @@ struct TraceRestrictFollowUpCmdData final : public CommandPayloadSerialisable<Tr
 
 	void Serialise(BufferSerialisationRef buffer) const override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
+	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlags flags) const;
 	void FormatDebugSummary(struct format_target &) const override;
 };
 

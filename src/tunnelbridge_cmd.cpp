@@ -301,9 +301,9 @@ static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope 
  * @param flags       Type of operation.
  * @return A succeeded (the requested bridge is available) or failed (it cannot be built) command.
  */
-CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlag flags)
+CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlags flags)
 {
-	if (flags & DC_QUERY_COST) {
+	if (flags.Test(DoCommandFlag::QueryCost)) {
 		if (bridge_len <= _settings_game.construction.max_bridge_length) return CommandCost();
 		return CommandCost(STR_ERROR_BRIDGE_TOO_LONG);
 	}
@@ -375,7 +375,7 @@ static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)
  * @param build_flags build bridge flags.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex tile_start, TransportType transport_type, BridgeType bridge_type, uint8_t road_rail_type, BuildBridgeFlags build_flags)
+CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex tile_start, TransportType transport_type, BridgeType bridge_type, uint8_t road_rail_type, BuildBridgeFlags build_flags)
 {
 	CompanyID company = _current_company;
 
@@ -404,7 +404,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 			return CMD_ERROR;
 	}
 
-	if ((flags & DC_TOWN) && !(MayTownModifyRoad(tile_start) && MayTownModifyRoad(tile_end))) return CMD_ERROR;
+	if (flags.Test(DoCommandFlag::Town) && !(MayTownModifyRoad(tile_start) && MayTownModifyRoad(tile_end))) return CMD_ERROR;
 
 	if (company == OWNER_DEITY) {
 		if (transport_type != TRANSPORT_ROAD) return CMD_ERROR;
@@ -478,7 +478,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 			}
 		}
 
-		if (!(flags & DC_QUERY_COST)) {
+		if (!flags.Test(DoCommandFlag::QueryCost)) {
 			/* Do not replace the bridge with the same bridge type. */
 			if ((bridge_type == GetBridgeType(tile_start)) && (transport_type != TRANSPORT_ROAD || (GetRoadType(tile_start, GetRoadTramType(roadtype)) == roadtype && GetRoadType(tile_end, GetRoadTramType(roadtype)) == roadtype))) {
 				return CommandCost(STR_ERROR_ALREADY_BUILT);
@@ -514,7 +514,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 					if (v != nullptr) {
 						CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
 						if (ret.Failed()) return ret;
-						if (flags & DC_EXEC) {
+						if (flags.Test(DoCommandFlag::Execute)) {
 							FreeTrainTrackReservation(v);
 							vehicles_affected.push_back(v);
 						}
@@ -705,7 +705,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 					break;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				/* We do this here because when replacing a bridge with another
 				 * type calling SetBridgeMiddle isn't needed. After all, the
 				 * tile already has the has_bridge_above bits set. */
@@ -718,7 +718,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 	}
 
 	/* do the drill? */
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		DiagDirection dir = AxisToDiagDir(direction);
 
 		Company *c = Company::GetIfValid(company);
@@ -800,7 +800,7 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 		DirtyCompanyInfrastructureWindows(company);
 	}
 
-	if ((flags & DC_EXEC) && transport_type == TRANSPORT_RAIL) {
+	if (flags.Test(DoCommandFlag::Execute) && transport_type == TRANSPORT_RAIL) {
 		Track track = AxisToTrack(direction);
 		AddSideToSignalBuffer(tile_start, INVALID_DIAGDIR, company);
 		YapfNotifyTrackLayoutChange(tile_start, track);
@@ -809,12 +809,12 @@ CommandCost CmdBuildBridge(DoCommandFlag flags, TileIndex tile_end, TileIndex ti
 		}
 	}
 
-	/* Human players that build bridges get a selection to choose from (DC_QUERY_COST)
+	/* Human players that build bridges get a selection to choose from (DoCommandFlag::QueryCost)
 	 * It's unnecessary to execute this command every time for every bridge.
 	 * So it is done only for humans and cost is computed in bridge_gui.cpp.
 	 * For (non-spectated) AI, Towns this has to be of course calculated. */
 	Company *c = Company::GetIfValid(company);
-	if (!(flags & DC_QUERY_COST) || (c != nullptr && c->is_ai && company != _local_company)) {
+	if (!flags.Test(DoCommandFlag::QueryCost) || (c != nullptr && c->is_ai && company != _local_company)) {
 		switch (transport_type) {
 			case TRANSPORT_ROAD: {
 				cost.AddCost(bridge_len * 2 * RoadBuildCost(roadtype));
@@ -952,7 +952,7 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
  * @param road_rail_type railtype or roadtype
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildTunnel(DoCommandFlag flags, TileIndex start_tile, TransportType transport_type, uint8_t road_rail_type)
+CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, TransportType transport_type, uint8_t road_rail_type)
 {
 	CompanyID company = _current_company;
 
@@ -1115,7 +1115,7 @@ CommandCost CmdBuildTunnel(DoCommandFlag flags, TileIndex start_tile, TransportT
 
 	if (is_chunnel) cost.MultiplyCost(2);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Company *c = Company::GetIfValid(company);
 		uint num_pieces = (tiles + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 
@@ -1205,7 +1205,7 @@ static inline CommandCost CheckAllowRemoveTunnelBridge(TileIndex tile)
  * @param flags Command flags.
  * @return Succeeded or failed command.
  */
-static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
+static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlags flags)
 {
 	CommandCost ret = CheckAllowRemoveTunnelBridge(tile);
 	if (ret.Failed()) return ret;
@@ -1252,7 +1252,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 	Money base_cost = TunnelBridgeClearCost(tile, PR_CLEAR_TUNNEL);
 	uint len = GetTunnelBridgeLength(tile, endtile) + 2; // Don't forget the end tiles.
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 			/* We first need to request values before calling DoClearSquare */
 			DiagDirection dir = GetTunnelBridgeDirection(tile);
@@ -1328,7 +1328,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
  * @param flags Command flags.
  * @return Succeeded or failed command.
  */
-static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
+static CommandCost DoClearBridge(TileIndex tile, DoCommandFlags flags)
 {
 	CommandCost ret = CheckAllowRemoveTunnelBridge(tile);
 	if (ret.Failed()) return ret;
@@ -1385,7 +1385,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 
 	cost.AddCost(len * base_cost);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* read this value before actual removal of bridge */
 		Owner owner = GetTileOwner(tile);
 		int height = GetBridgeHeight(tile);
@@ -1499,13 +1499,13 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
  * @param flags Command flags.
  * @return Succeeded or failed command.
  */
-static CommandCost ClearTile_TunnelBridge(TileIndex tile, DoCommandFlag flags)
+static CommandCost ClearTile_TunnelBridge(TileIndex tile, DoCommandFlags flags)
 {
 	if (IsTunnel(tile)) {
-		if (flags & DC_AUTO) return CommandCost(STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST);
+		if (flags.Test(DoCommandFlag::Auto)) return CommandCost(STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST);
 		return DoClearTunnel(tile, flags);
 	} else { // IsBridge(tile)
-		if (flags & DC_AUTO) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+		if (flags.Test(DoCommandFlag::Auto)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 		return DoClearBridge(tile, flags);
 	}
 }
@@ -3129,7 +3129,7 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 		if (tt == TRANSPORT_RAIL) {
 			/* Since all of our vehicles have been removed, it is safe to remove the rail
 			 * bridge / tunnel. */
-			[[maybe_unused]] CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_BANKRUPT, tile);
+			[[maybe_unused]] CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
 			assert(ret.Succeeded());
 		} else {
 			/* In any other case, we can safely reassign the ownership to OWNER_NONE. */
@@ -3390,7 +3390,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 	return VETSB_CONTINUE;
 }
 
-static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
+static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	if (_settings_game.construction.build_on_slopes && AutoslopeEnabled() && IsBridge(tile) && GetTunnelBridgeTransportType(tile) != TRANSPORT_WATER) {
 		DiagDirection direction = GetTunnelBridgeDirection(tile);

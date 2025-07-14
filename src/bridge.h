@@ -96,7 +96,7 @@ inline const BridgeSpec *GetBridgeSpec(BridgeType i)
 
 void DrawBridgeMiddle(const TileInfo *ti);
 
-CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlag flags = DC_NONE);
+CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlags flags = {});
 bool MayTownBuildBridgeType(BridgeType bridge_type);
 int CalcBridgeLenCostFactor(int x);
 BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, BridgeType bridge_type, TransportType bridge_transport_type);

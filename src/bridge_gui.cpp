@@ -385,7 +385,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	 * unless the result is bridge too low for station or pillars obstruct station, in which case it is bridge-type dependent.
 	 * returns CMD_ERROR on failure, and price on success */
 	StringID errmsg = INVALID_STRING_ID;
-	CommandCost ret = Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()) | DC_QUERY_COST, end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
+	CommandCost ret = Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
 
 	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
 
@@ -429,13 +429,13 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 			CommandCost type_check = CheckBridgeAvailability(brd_type, bridge_len);
 			if (type_check.Succeeded()) {
 				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
-				if (query_per_bridge_type && Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()) | DC_QUERY_COST, end, start, transport_type, brd_type, road_rail_type, BuildBridgeFlags::None).Failed()) continue;
+				if (query_per_bridge_type && Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, brd_type, road_rail_type, BuildBridgeFlags::None).Failed()) continue;
 				/* bridge is accepted, add to list */
 				BuildBridgeData &item = bl.emplace_back();
 				item.index = brd_type;
 				item.spec = GetBridgeSpec(brd_type);
 				/* Add to terraforming & bulldozing costs the cost of the
-				 * bridge itself (not computed with DC_QUERY_COST) */
+				 * bridge itself (not computed with DoCommandFlag::QueryCost) */
 				item.cost = ret.GetCost() + (((int64_t)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
 				any_available = true;
 			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID && !query_per_bridge_type) {

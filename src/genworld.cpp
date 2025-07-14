@@ -426,7 +426,7 @@ struct ExternalTownData {
 static bool TryFoundTownNearby(TileIndex tile, void *user_data)
 {
 	ExternalTownData &town = *static_cast<ExternalTownData *>(user_data);
-	CommandCost result = Command<CMD_FOUND_TOWN>::Do(DC_EXEC, tile, TSZ_SMALL, town.is_city, _settings_game.economy.town_layout, false, 0, town.name);
+	CommandCost result = Command<CMD_FOUND_TOWN>::Do(DoCommandFlag::Execute, tile, TSZ_SMALL, town.is_city, _settings_game.economy.town_layout, false, 0, town.name);
 	if (result.HasResultData()) {
 		/* The command succeeded, send the ID back through user_data. */
 		town.town_id = result.GetResultData<TownID>();

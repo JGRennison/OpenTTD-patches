@@ -1457,14 +1457,14 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
  * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
-static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **ret)
+static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
 	/* Check that the wagon can drive on the track in question */
 	if (!IsCompatibleRail(rvi->railtype, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Train *v = new Train();
 		*ret = v;
 		v->spritenum = rvi->image_index;
@@ -1534,7 +1534,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 			return a->index < b->index;
 		});
 		for (Train *w : candidates) {
-			if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DC_EXEC, v->index, w->Last()->index, MoveRailVehicleFlags::MoveChain).Succeeded()) {
+			if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, w->Last()->index, MoveRailVehicleFlags::MoveChain).Succeeded()) {
 				break;
 			}
 		}
@@ -1561,7 +1561,7 @@ void NormalizeTrainVehInDepot(const Train *u)
 		return a->index < b->index;
 	});
 	for (Train *v : candidates) {
-		if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DC_EXEC, v->index, u->index, MoveRailVehicleFlags::MoveChain).Failed()) {
+		if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, u->index, MoveRailVehicleFlags::MoveChain).Failed()) {
 			break;
 		}
 	}
@@ -1614,7 +1614,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
  * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
-CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **ret)
+CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -1624,7 +1624,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 	 * We need to see if the engine got power on the tile to avoid electric engines in non-electric depots */
 	if (!HasPowerOnRail(rvi->railtype, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		DiagDirection dir = GetRailDepotDirection(tile);
 		int x = TileX(tile) * TILE_SIZE + _vehicle_initial_x_fract[dir];
 		int y = TileY(tile) * TILE_SIZE + _vehicle_initial_y_fract[dir];
@@ -2066,7 +2066,7 @@ static void NormaliseTrainHead(Train *head)
 	head->unitnumber = Company::Get(head->owner)->freeunits[head->type].UseID(GetFreeUnitNumber(VEH_TRAIN));
 }
 
-CommandCost CmdMoveVirtualRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
+CommandCost CmdMoveVirtualRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
 {
 	Train *src = Train::GetIfValid(src_veh);
 	if (src == nullptr || !src->IsVirtual()) return CMD_ERROR;
@@ -2077,13 +2077,13 @@ CommandCost CmdMoveVirtualRailVehicle(DoCommandFlag flags, VehicleID src_veh, Ve
 /**
  * Move a rail vehicle around inside the depot.
  * @param flags type of operation
- *              Note: DC_AUTOREPLACE is set when autoreplace tries to undo its modifications or moves vehicles to temporary locations inside the depot.
+ *              Note: DoCommandFlag::AutoReplace is set when autoreplace tries to undo its modifications or moves vehicles to temporary locations inside the depot.
  * @param src_veh source vehicle index
  * @param dest_veh what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
  * @param move_chain move all vehicles following the source vehicle
  * @return the cost of this operation or an error
  */
-CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
+CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
 {
 	bool move_chain = HasFlag(move_flags, MoveRailVehicleFlags::MoveChain);
 	bool new_head = HasFlag(move_flags, MoveRailVehicleFlags::NewHead);
@@ -2102,7 +2102,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
 	/* if nothing is selected as destination, try and find a matching vehicle to drag to. */
 	Train *dst;
 	if (dest_veh == INVALID_VEHICLE) {
-		if (!src->IsEngine() && !src->IsVirtual() && !(flags & DC_AUTOREPLACE)) {
+		if (!src->IsEngine() && !src->IsVirtual() && !flags.Test(DoCommandFlag::AutoReplace)) {
 			/* Try each possible destination target, if none succeed do not append to a free wagon chain */
 			std::vector<Train *> destination_candidates = FindGoodVehiclePosList(src);
 			for (Train *try_dest : destination_candidates) {
@@ -2190,7 +2190,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
 	/* (Re)arrange the trains in the wanted arrangement. */
 	ArrangeTrains(&dst_head, dst, &src_head, src, move_chain);
 
-	if ((flags & DC_AUTOREPLACE) == 0) {
+	if (!flags.Test(DoCommandFlag::AutoReplace)) {
 		/* If the autoreplace flag is set we do not need to test for the validity
 		 * because we are going to revert the train to its original state. As we
 		 * assume the original state was correct autoreplace can skip this. */
@@ -2204,7 +2204,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
 	}
 
 	/* do it? */
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Remove old heads from the statistics */
 		if (original_src_head_front_engine) GroupStatistics::CountVehicle(original_src_head, -1);
 		if (original_dst_head_front_engine) GroupStatistics::CountVehicle(original_dst_head, -1);
@@ -2282,7 +2282,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
 		if (src_head != nullptr && src_head->IsFrontEngine()) GroupStatistics::CountVehicle(src_head, 1);
 		if (dst_head != nullptr && dst_head->IsFrontEngine()) GroupStatistics::CountVehicle(dst_head, 1);
 
-		if ((flags & DC_NO_CARGO_CAP_CHECK) == 0) {
+		if (!flags.Test(DoCommandFlag::NoCargoCapacityCheck)) {
 			CheckCargoCapacity(src_head);
 			CheckCargoCapacity(dst_head);
 		}
@@ -2330,7 +2330,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlag flags, VehicleID src_veh, VehicleID
  * @param user  the user for the order backup.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, bool backup_order, ClientID user)
+CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, bool backup_order, ClientID user)
 {
 	Train *v = Train::From(t)->GetFirstEnginePart();
 	Train *first = v->First();
@@ -2350,7 +2350,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, b
 	ArrangeTrains(&sell_head, nullptr, &new_head, v, sell_chain);
 
 	/* We don't need to validate the second train; it's going to be sold. */
-	CommandCost ret = ValidateTrains(nullptr, nullptr, first, new_head, (flags & DC_AUTOREPLACE) == 0);
+	CommandCost ret = ValidateTrains(nullptr, nullptr, first, new_head, !flags.Test(DoCommandFlag::AutoReplace));
 	if (ret.Failed()) {
 		/* Restore the train we had. */
 		RestoreTrainBackup(original);
@@ -2367,7 +2367,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, bool sell_chain, b
 	for (Train *part = sell_head; part != nullptr; part = part->Next()) cost.AddCost(-part->value);
 
 	/* do it? */
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* First normalise the sub types of the chain. */
 		NormaliseSubtypes(new_head);
 
@@ -3175,7 +3175,7 @@ void ReverseTrainDirection(Train *v)
  * @param reverse_single_veh if true, reverse a unit in a train (needs to be in a depot)
  * @return the cost of this operation or an error
  */
-CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool reverse_single_veh)
+CommandCost CmdReverseTrainDirection(DoCommandFlags flags, VehicleID veh_id, bool reverse_single_veh)
 {
 	Train *v = Train::GetIfValid(veh_id);
 	if (v == nullptr) return CMD_ERROR;
@@ -3196,7 +3196,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool
 			return CommandCost(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 		}
 
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			ToggleBit(v->flags, VRF_REVERSE_DIRECTION);
 
 			front->ConsistChanged(CCF_ARRANGE);
@@ -3210,7 +3210,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool
 		if (!v->IsPrimaryVehicle()) return CMD_ERROR;
 		if ((v->vehstatus & VS_CRASHED) || HasBit(v->flags, VRF_BREAKDOWN_STOPPED)) return CMD_ERROR;
 
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			/* Properly leave the station if we are loading and won't be loading anymore */
 			if (v->current_order.IsAnyLoadingType()) {
 				const Vehicle *last = v;
@@ -3251,7 +3251,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlag flags, VehicleID veh_id, bool
  * @param veh_id train to ignore the red signal
  * @return the cost of this operation or an error
  */
-CommandCost CmdForceTrainProceed(DoCommandFlag flags, VehicleID veh_id)
+CommandCost CmdForceTrainProceed(DoCommandFlags flags, VehicleID veh_id)
 {
 	Train *t = Train::GetIfValid(veh_id);
 	if (t == nullptr) return CMD_ERROR;
@@ -3262,7 +3262,7 @@ CommandCost CmdForceTrainProceed(DoCommandFlag flags, VehicleID veh_id)
 	if (ret.Failed()) return ret;
 
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* If we are forced to proceed, cancel that order.
 		 * If we are marked stuck we would want to force the train
 		 * to proceed to the next signal. In the other cases we
@@ -7224,7 +7224,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
  * @param move_target Where to move the virtual train vehicle after construction
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoType cargo, ClientID client, VehicleID move_target)
+CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, CargoType cargo, ClientID client, VehicleID move_target)
 {
 	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
 		return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
@@ -7235,7 +7235,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlag flags, EngineID eid, CargoT
 
 	CommandCost cost;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		StringID err = INVALID_STRING_ID;
 		Train *train = BuildVirtualRailVehicle(eid, err, client, false);
 
@@ -7296,7 +7296,7 @@ void ClearVehicleWindows(const Train *v)
  */
 static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_callback)
 {
-	return CmdStartStopVehicle(DC_EXEC | DC_AUTOREPLACE, v->index, evaluate_callback);
+	return CmdStartStopVehicle({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, v->index, evaluate_callback);
 }
 
 /**
@@ -7306,7 +7306,7 @@ static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_ca
 * @param outgoing the replaced train, or incoming.
 * @return the cost of this operation or an error
 */
-static CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, Train *incoming, Train *&outgoing)
+static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incoming, Train *&outgoing)
 {
 	CommandCost buy(EXPENSES_NEW_VEHICLES);
 
@@ -7373,7 +7373,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, Train *incomin
 		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
 	};
 
-	if (!(flags & DC_EXEC)) {
+	if (!flags.Test(DoCommandFlag::Execute)) {
 		/* Simplified operation for cost estimation, this doesn't have to exactly match the actual cost due to CMD_NO_TEST */
 		if (need_replacement || need_refit) {
 			std::vector<const Train *> in;
@@ -7609,7 +7609,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, Train *incomin
 * @param veh_id the ID of the vehicle to replace.
 * @return the cost of this operation or an error
 */
-CommandCost CmdTemplateReplaceVehicle(DoCommandFlag flags, VehicleID veh_id)
+CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, VehicleID veh_id)
 {
 	Train *incoming = Train::GetIfValid(veh_id);
 
@@ -7820,7 +7820,7 @@ void Train::UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed)
  * @param speed new speed restriction value
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetTrainSpeedRestriction(DoCommandFlag flags, VehicleID veh_id, uint16_t speed)
+CommandCost CmdSetTrainSpeedRestriction(DoCommandFlags flags, VehicleID veh_id, uint16_t speed)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 	if (v == nullptr || v->type != VEH_TRAIN || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -7830,7 +7830,7 @@ CommandCost CmdSetTrainSpeedRestriction(DoCommandFlag flags, VehicleID veh_id, u
 
 	if (v->vehstatus & VS_CRASHED) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Train *t = Train::From(v);
 		if (HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION)) {
 			_pending_speed_restriction_change_map.erase(t->index);

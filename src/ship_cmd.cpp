@@ -1142,10 +1142,10 @@ void Ship::SetDestTile(TileIndex tile)
  * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
-CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **ret)
+CommandCost CmdBuildShip(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
 	tile = GetShipDepotNorthTile(tile);
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		int x;
 		int y;
 

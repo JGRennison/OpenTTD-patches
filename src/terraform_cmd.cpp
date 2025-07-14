@@ -171,7 +171,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
  * @param dir_up direction; eg up (true) or down (false)
  * @return the cost of this operation or an error
  */
-CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, bool dir_up)
+CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, bool dir_up)
 {
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
 	int direction = (dir_up ? 1 : -1);
@@ -275,10 +275,10 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
 			/* Check tiletype-specific things, and add extra-cost */
 			Backup<bool> old_generating_world(_generating_world, FILE_LINE);
 			if (_game_mode == GM_EDITOR) old_generating_world.Change(true); // used to create green terraformed land
-			DoCommandFlag tile_flags = flags | DC_AUTO | DC_FORCE_CLEAR_TILE;
+			DoCommandFlags tile_flags = flags | DoCommandFlag::Auto | DoCommandFlag::ForceClearTile;
 			if (pass == 0) {
-				tile_flags &= ~DC_EXEC;
-				tile_flags |= DC_NO_MODIFY_TOWN_RATING;
+				tile_flags.Reset(DoCommandFlag::Execute);
+				tile_flags.Set(DoCommandFlag::NoModifyTownRating);
 			}
 			CommandCost cost;
 			if (indirectly_cleared) {
@@ -300,7 +300,7 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
 		return CommandCost(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Mark affected areas dirty. */
 		for (const auto &t : ts.dirty_tiles) {
 			MarkTileDirtyByTile(t);
@@ -332,7 +332,7 @@ CommandCost CmdTerraformLand(DoCommandFlag flags, TileIndex tile, Slope slope, b
  * @param LevelMode Mode of leveling \c LevelMode.
  * @return the cost of this operation or an error
  */
-CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal, LevelMode lm)
+CommandCost CmdLevelLand(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, bool diagonal, LevelMode lm)
 {
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 
@@ -365,7 +365,7 @@ CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 		TileIndex t = *iter;
 		uint curh = TileHeight(t);
 		while (curh != h) {
-			CommandCost ret = Command<CMD_TERRAFORM_LAND>::Do(flags & ~DC_EXEC, t, SLOPE_N, curh <= h);
+			CommandCost ret = Command<CMD_TERRAFORM_LAND>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, SLOPE_N, curh <= h);
 			if (ret.Failed()) {
 				last_error = ret;
 
@@ -374,7 +374,7 @@ CommandCost CmdLevelLand(DoCommandFlag flags, TileIndex tile, TileIndex start_ti
 				break;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				money -= ret.GetCost();
 				if (money < 0) {
 					cost.SetAdditionalCashRequired(ret.GetCost());

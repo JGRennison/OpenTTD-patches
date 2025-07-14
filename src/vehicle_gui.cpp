@@ -1137,7 +1137,7 @@ struct RefitWindow : public Window {
 	StringID GetCapacityString(const RefitOption &option) const
 	{
 		assert(_current_company == _local_company);
-		CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DC_QUERY_COST, this->selected_vehicle, option.cargo, option.subtype, this->auto_refit, false, this->num_vehicles);
+		CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::QueryCost, this->selected_vehicle, option.cargo, option.subtype, this->auto_refit, false, this->num_vehicles);
 
 		if (cost.Failed()) return INVALID_STRING_ID;
 

@@ -25,11 +25,11 @@
  * @param flags type of operation
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlan(DoCommandFlag flags)
+CommandCost CmdAddPlan(DoCommandFlags flags)
 {
 	if (!Plan::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_PLANS);
 	CommandCost cost;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Plan *plan = new Plan(_current_company);
 		cost.SetResultData(plan->index);
 	}
@@ -50,7 +50,7 @@ bool AddPlanLine(PlanID plan, std::vector<TileIndex> tiles)
  * @param data plan data
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(DoCommandFlag flags, const PlanLineCmdData &data)
+CommandCost CmdAddPlanLine(DoCommandFlags flags, const PlanLineCmdData &data)
 {
 	Plan *p = Plan::GetIfValid(data.plan);
 	if (p == nullptr) return CMD_ERROR;
@@ -59,7 +59,7 @@ CommandCost CmdAddPlanLine(DoCommandFlag flags, const PlanLineCmdData &data)
 	if (ret.Failed()) return ret;
 
 	if (data.tiles.size() > (MAX_PLAN_PAYLOAD_SIZE / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		PlanLine &pl = p->NewLine();
 		pl.tiles = data.tiles;
 		pl.UpdateVisualExtents();
@@ -79,13 +79,13 @@ CommandCost CmdAddPlanLine(DoCommandFlag flags, const PlanLineCmdData &data)
  * @param visible visibility
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangePlanVisibility(DoCommandFlag flags, PlanID plan, bool visible)
+CommandCost CmdChangePlanVisibility(DoCommandFlags flags, PlanID plan, bool visible)
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (p->visible_by_all != visible) {
 			p->visible_by_all = visible;
 			InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
@@ -106,14 +106,14 @@ CommandCost CmdChangePlanVisibility(DoCommandFlag flags, PlanID plan, bool visib
  * @param p2 colour
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangePlanColour(DoCommandFlag flags, PlanID plan, Colours colour)
+CommandCost CmdChangePlanColour(DoCommandFlags flags, PlanID plan, Colours colour)
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
 	if (colour >= COLOUR_END) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		p->colour = colour;
 		_plan_update_counter++;
 		InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
@@ -131,13 +131,13 @@ CommandCost CmdChangePlanColour(DoCommandFlag flags, PlanID plan, Colours colour
  * @param plan plan id
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemovePlan(DoCommandFlag flags, PlanID plan)
+CommandCost CmdRemovePlan(DoCommandFlags flags, PlanID plan)
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (p->IsListable()) {
 			p->SetVisibility(false);
 			InvalidateWindowData(WC_PLANS, 0, p->index, false);
@@ -155,14 +155,14 @@ CommandCost CmdRemovePlan(DoCommandFlag flags, PlanID plan)
  * @param line line id
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemovePlanLine(DoCommandFlag flags, PlanID plan, uint32_t line)
+CommandCost CmdRemovePlanLine(DoCommandFlags flags, PlanID plan, uint32_t line)
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (line >= p->lines.size()) return CMD_ERROR;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		p->lines[line].SetVisibility(false);
 		p->lines.erase(p->lines.begin() + line);
 		if (p->IsListable()) {
@@ -179,7 +179,7 @@ CommandCost CmdRemovePlanLine(DoCommandFlag flags, PlanID plan, uint32_t line)
 * @param text the new name
 * @return the cost of this operation or an error
 */
-CommandCost CmdRenamePlan(DoCommandFlag flags, PlanID plan, const std::string &text)
+CommandCost CmdRenamePlan(DoCommandFlags flags, PlanID plan, const std::string &text)
 {
 	if (text.empty()) return CMD_ERROR;
 
@@ -190,7 +190,7 @@ CommandCost CmdRenamePlan(DoCommandFlag flags, PlanID plan, const std::string &t
 
 	if (Utf8StringLength(text) >= MAX_LENGTH_PLAN_NAME_CHARS) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		p->name = text;
 		InvalidateWindowClassesData(WC_PLANS);
 	}
@@ -204,14 +204,14 @@ CommandCost CmdRenamePlan(DoCommandFlag flags, PlanID plan, const std::string &t
 * @param plan ID of plan
 * @return the cost of this operation or an error
 */
-CommandCost CmdAcquireUnownedPlan(DoCommandFlag flags, PlanID plan)
+CommandCost CmdAcquireUnownedPlan(DoCommandFlags flags, PlanID plan)
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
 	if (Company::IsValidID(p->owner)) return CMD_ERROR;
 	if (!Company::IsValidID(_current_company)) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		p->owner = _current_company;
 		InvalidateWindowClassesData(WC_PLANS);
 		if (p->visible) {

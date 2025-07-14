@@ -104,7 +104,7 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 }
 
 template <bool no_tile, typename F, typename T, size_t... Tindices>
-CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlag flags, const T &payload, std::index_sequence<Tindices...>)
+CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags flags, const T &payload, std::index_sequence<Tindices...>)
 {
 	if constexpr (no_tile) {
 		return proc(flags, std::get<Tindices>(payload.GetValues())...);
@@ -549,7 +549,7 @@ static int _docommand_recursive = 0;
 
  * @return the cost
  */
-CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, DoCommandFlag flags, DoCommandIntlFlag intl_flags)
+CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, DoCommandFlags flags, DoCommandIntlFlag intl_flags)
 {
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
@@ -569,17 +569,17 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	CommandCost res;
 
 	/* Do not even think about executing out-of-bounds tile-commands */
-	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && (flags & DC_ALL_TILES) == 0))) return CMD_ERROR;
+	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && !flags.Test(DoCommandFlag::AllTiles)))) return CMD_ERROR;
 
 	const CommandInfo &command = _command_proc_table[cmd];
 
 	_docommand_recursive++;
 
 	/* only execute the test call if it's toplevel, or we're not execing. */
-	if (_docommand_recursive == 1 || !(flags & DC_EXEC) ) {
+	if (_docommand_recursive == 1 || !flags.Test(DoCommandFlag::Execute)) {
 		if (_docommand_recursive == 1) _cleared_object_areas.clear();
 		SetTownRatingTestMode(true);
-		res = command.exec({ tile, flags & ~DC_EXEC, payload });
+		res = command.exec({ tile, DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), payload });
 		SetTownRatingTestMode(false);
 		if (res.Failed()) {
 			_docommand_recursive--;
@@ -587,14 +587,14 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 		}
 
 		if (_docommand_recursive == 1 &&
-				!(flags & DC_QUERY_COST) &&
-				!(flags & DC_BANKRUPT) &&
+				!flags.Test(DoCommandFlag::QueryCost) &&
+				!flags.Test(DoCommandFlag::Bankrupt) &&
 				!CheckCompanyHasMoney(res)) { // CheckCompanyHasMoney() modifies 'res' to an error if it fails.
 			_docommand_recursive--;
 			return res;
 		}
 
-		if (!(flags & DC_EXEC)) {
+		if (!flags.Test(DoCommandFlag::Execute)) {
 			_docommand_recursive--;
 			return res;
 		}
@@ -610,7 +610,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	}
 
 	/* if toplevel, subtract the money. */
-	if (--_docommand_recursive == 0 && !(flags & DC_BANKRUPT)) {
+	if (--_docommand_recursive == 0 && !flags.Test(DoCommandFlag::Bankrupt)) {
 		SubtractMoneyFromCompany(res);
 	}
 
@@ -894,7 +894,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	/* Command flags are used internally */
 	CommandFlags cmd_flags = GetCommandFlags(cmd);
 	/* Flags get send to the DoCommand */
-	DoCommandFlag flags = CommandFlagsToDCFlags(cmd_flags);
+	DoCommandFlags flags = CommandFlagsToDCFlags(cmd_flags);
 
 	/* Do not even think about executing out-of-bounds tile-commands */
 	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && (cmd_flags & CMD_ALL_TILES) == 0))) return_dcpi(CMD_ERROR);
@@ -990,7 +990,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	 * use the construction one */
 	_cleared_object_areas.clear();
 	BasePersistentStorageArray::SwitchMode(PSM_ENTER_COMMAND);
-	CommandCost res2 = command.exec({ tile, flags | DC_EXEC, payload });
+	CommandCost res2 = command.exec({ tile, flags | DoCommandFlag::Execute, payload });
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_COMMAND);
 
 	if (cmd == CMD_COMPANY_CTRL) {

@@ -2378,14 +2378,14 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictPr
  * @param text Label text for TRDCT_SET_TEXT
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t data, const std::string &text)
+CommandCost CmdProgramSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t data, const std::string &text)
 {
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
 	if (ret.Failed()) {
 		return ret;
 	}
 
-	bool can_make_new = (type == TRDCT_INSERT_ITEM) && (flags & DC_EXEC);
+	bool can_make_new = (type == TRDCT_INSERT_ITEM) && (flags.Test(DoCommandFlag::Execute));
 	bool need_existing = (type != TRDCT_INSERT_ITEM);
 	TraceRestrictProgram *prog = GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), can_make_new);
 	if (need_existing && prog == nullptr) {
@@ -2514,7 +2514,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 			if (Utf8StringLength(text) >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 
 			/* Setting the label before calling validate here is OK, only the instruction value field is changed */
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				old_iter.InstructionRef().SetValue(UINT16_MAX); // Unreference the old label before calling TrimLabels
 				prog->TrimLabels(items);
 				old_iter.InstructionRef().SetValue(prog->AddLabel(text));
@@ -2532,7 +2532,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlag flags, TileIndex tile, T
 		return validation_result;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		assert(prog != nullptr);
 
 		size_t old_size = prog->items.size();
@@ -2590,7 +2590,7 @@ static void TraceRestrictUpdateLabelInstructionsFromSource(std::span<TraceRestri
  * @param source_track Source track, for share/copy operations
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlag flags, TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type, TileIndex source_tile, Track source_track)
+CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex tile, Track track, TraceRestrictMgmtDoCommandType type, TileIndex source_tile, Track source_track)
 {
 	TraceRestrictRefId self = MakeTraceRestrictRefId(tile, track);
 	TraceRestrictRefId source = MakeTraceRestrictRefId(source_tile, source_track);
@@ -2621,7 +2621,7 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlag flags, TileIndex til
 		return CMD_ERROR;
 	}
 
-	if (!(flags & DC_EXEC)) {
+	if (!flags.Test(DoCommandFlag::Execute)) {
 		return CommandCost();
 	}
 
@@ -3432,7 +3432,7 @@ static bool IsUniqueSlotName(std::string_view name)
  * @param data command data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictCreateSlotCmdData &data)
+CommandCost CmdCreateTraceRestrictSlot(DoCommandFlags flags, const TraceRestrictCreateSlotCmdData &data)
 {
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (data.name.empty()) return CMD_ERROR;
@@ -3452,7 +3452,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 
 	CommandCost result;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
 		slot->name = data.name;
 		slot->max_occupancy = data.max_occupancy;
@@ -3487,12 +3487,12 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlag flags, const TraceRestrictC
 /**
  * Deletes a slot.
  */
-CommandCost CmdDeleteTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID slot_id)
+CommandCost CmdDeleteTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID slot_id)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(slot_id);
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Notify tracerestrict that group is about to be deleted */
 		TraceRestrictRemoveSlotID(slot->index);
 
@@ -3509,7 +3509,7 @@ CommandCost CmdDeleteTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID 
 /**
  * Alter a slot
  */
-CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID slot_id, TraceRestrictAlterSlotOperation op, uint32_t data, const std::string &name)
+CommandCost CmdAlterTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID slot_id, TraceRestrictAlterSlotOperation op, uint32_t data, const std::string &name)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(slot_id);
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
@@ -3522,21 +3522,21 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 			if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 			if (!IsUniqueSlotName(name)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot->name = name;
 			}
 			break;
 		}
 
 		case TRASO_CHANGE_MAX_OCCUPANCY:
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot->max_occupancy = data;
 				slot->UpdateSignals();
 			}
 			break;
 
 		case TRASO_SET_PUBLIC:
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot->flags.Set(TraceRestrictSlot::Flag::Public, data != 0);
 			}
 			break;
@@ -3548,7 +3548,7 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 				if (slot_group == nullptr || slot_group->owner != slot->owner || slot_group->vehicle_type != slot->vehicle_type) return CMD_ERROR;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot->RemoveFromParentGroups();
 				slot->parent_group = gid;
 				slot->AddToParentGroups();
@@ -3560,7 +3560,7 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 			return CMD_ERROR;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
@@ -3574,7 +3574,7 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID s
 /**
  * Add a vehicle to a slot
  */
-CommandCost CmdAddVehicleTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID slot_id, VehicleID vehicle_id)
+CommandCost CmdAddVehicleTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID slot_id, VehicleID vehicle_id)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(slot_id);
 	Vehicle *v = Vehicle::GetIfValid(vehicle_id);
@@ -3582,7 +3582,7 @@ CommandCost CmdAddVehicleTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlo
 	if (v == nullptr || v->owner != _current_company) return CMD_ERROR;
 	if (v->type != slot->vehicle_type || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		slot->Occupy(v, true);
 	}
 
@@ -3592,14 +3592,14 @@ CommandCost CmdAddVehicleTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlo
 /**
  * Remove a vehicle from a slot
  */
-CommandCost CmdRemoveVehicleTraceRestrictSlot(DoCommandFlag flags, TraceRestrictSlotID slot_id, VehicleID vehicle_id)
+CommandCost CmdRemoveVehicleTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID slot_id, VehicleID vehicle_id)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(slot_id);
 	Vehicle *v = Vehicle::GetIfValid(vehicle_id);
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 	if (v == nullptr) return CMD_ERROR; // permit removing vehicles of other owners from your own slot
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		slot->Vacate(v);
 	}
 
@@ -3668,7 +3668,7 @@ void TraceRestrictRemoveSlotGroupID(TraceRestrictSlotGroupID index)
 /**
  * Create a new slot group.
  */
-CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlag flags, VehicleType vehtype, TraceRestrictSlotGroupID parent, const std::string &name)
+CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlags flags, VehicleType vehtype, TraceRestrictSlotGroupID parent, const std::string &name)
 {
 	if (!TraceRestrictSlotGroup::CanAllocateItem()) return CMD_ERROR;
 	if (name.empty()) return CMD_ERROR;
@@ -3688,7 +3688,7 @@ CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlag flags, VehicleType veh
 	}
 
 	CommandCost result;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		TraceRestrictSlotGroup *slot_group = new TraceRestrictSlotGroup(_current_company, vehtype);
 		slot_group->name = name;
 		if (pg != nullptr) slot_group->parent = pg->index;
@@ -3704,7 +3704,7 @@ CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlag flags, VehicleType veh
 /**
  * Alters a slot group.
  */
-CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlotGroupID slot_group_id, TraceRestrictAlterSlotGroupOperation op, TraceRestrictSlotGroupID parent, const std::string &name)
+CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlags flags, TraceRestrictSlotGroupID slot_group_id, TraceRestrictAlterSlotGroupOperation op, TraceRestrictSlotGroupID parent, const std::string &name)
 {
 	TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(slot_group_id);
 	if (slot_group == nullptr || slot_group->owner != _current_company) return CMD_ERROR;
@@ -3720,7 +3720,7 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 				if (sg->vehicle_type == slot_group->vehicle_type && sg->owner == _current_company && sg->name == name) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot_group->name = name;
 			}
 			break;
@@ -3741,7 +3741,7 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 				}
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				slot_group->RemoveSlotsFromParentGroups();
 				slot_group->parent = (pg == nullptr) ? INVALID_TRACE_RESTRICT_SLOT_GROUP : pg->index;
 				slot_group->AddSlotsToParentGroups();
@@ -3749,7 +3749,7 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 		}
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
@@ -3761,7 +3761,7 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlo
 /**
  * Deletes a slot group.
  */
-CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSlotGroupID slot_group_id)
+CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlags flags, TraceRestrictSlotGroupID slot_group_id)
 {
 	TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::GetIfValid(slot_group_id);
 	if (slot_group == nullptr || slot_group->owner != _current_company) return CMD_ERROR;
@@ -3773,7 +3773,7 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlag flags, TraceRestrictSl
 		}
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		for (TraceRestrictSlotID slot_id : slot_group->contained_slots) {
 			TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
 			if (slot->parent_group == slot_group_id) {
@@ -3905,7 +3905,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
  * @param data new counter data
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestrictCreateCounterCmdData &data)
+CommandCost CmdCreateTraceRestrictCounter(DoCommandFlags flags, const TraceRestrictCreateCounterCmdData &data)
 {
 	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
 	if (data.name.empty()) return CMD_ERROR;
@@ -3917,7 +3917,7 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestri
 
 	CommandCost result;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
 		ctr->name = data.name;
 		result.SetResultData(ctr->index);
@@ -3947,12 +3947,12 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlag flags, const TraceRestri
 /**
  * Deletes a counter.
  */
-CommandCost CmdDeleteTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCounterID ctr_id)
+CommandCost CmdDeleteTraceRestrictCounter(DoCommandFlags flags, TraceRestrictCounterID ctr_id)
 {
 	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(ctr_id);
 	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Notify tracerestrict that counter is about to be deleted */
 		TraceRestrictRemoveCounterID(ctr->index);
 
@@ -3969,7 +3969,7 @@ CommandCost CmdDeleteTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCoun
 /**
  * Alter a counter
  */
-CommandCost CmdAlterTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCounterID ctr_id, TraceRestrictAlterCounterOperation op, uint32_t data, const std::string &name)
+CommandCost CmdAlterTraceRestrictCounter(DoCommandFlags flags, TraceRestrictCounterID ctr_id, TraceRestrictAlterCounterOperation op, uint32_t data, const std::string &name)
 {
 	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(ctr_id);
 	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
@@ -3982,20 +3982,20 @@ CommandCost CmdAlterTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCount
 			if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 			if (!IsUniqueCounterName(name)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				ctr->name = name;
 			}
 			break;
 		}
 
 		case TRACO_CHANGE_VALUE:
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				ctr->UpdateValue(data);
 			}
 			break;
 
 		case TRACO_SET_PUBLIC:
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				ctr->flags.Set(TraceRestrictCounter::Flag::Public, data != 0);
 			}
 			break;
@@ -4004,7 +4004,7 @@ CommandCost CmdAlterTraceRestrictCounter(DoCommandFlag flags, TraceRestrictCount
 			return CMD_ERROR;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
@@ -4026,7 +4026,7 @@ bool TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, St
 	return err == nullptr;
 }
 
-CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlag flags) const
+CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlags flags) const
 {
 	switch (cmd.cmd) {
 		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {

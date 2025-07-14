@@ -258,7 +258,7 @@ void UpdateObjectColours(const Company *c)
 }
 
 extern CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge);
-static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags);
+static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags);
 
 /**
  * Build an object object
@@ -268,7 +268,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags);
  * @param view the view for the object
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type, uint8_t view)
+CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type, uint8_t view)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
@@ -307,7 +307,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 				if (!IsWaterTile(t)) {
 					/* Normal water tiles don't have to be cleared. For all other tile types clear
 					 * the tile but leave the water. */
-					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags & ~DC_NO_WATER & ~DC_EXEC, t));
+					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::NoWater).Reset(DoCommandFlag::Execute), t));
 				} else {
 					/* Can't build on water owned by another company. */
 					Owner o = GetTileOwner(t);
@@ -325,7 +325,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 						IsTileType(t, MP_OBJECT) &&
 						IsTileOwner(t, _current_company) &&
 						IsObjectType(t, OBJECT_HQ))) {
-					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags & ~DC_EXEC, t));
+					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t));
 				}
 			}
 		}
@@ -351,16 +351,16 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 			}
 		}
 
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			/* This is basically a copy of the loop above with the exception that we now
 			 * execute the commands and don't check for errors, since that's already done. */
 			for (TileIndex t : ta) {
 				if (HasTileWaterGround(t)) {
 					if (!IsWaterTile(t)) {
-						Command<CMD_LANDSCAPE_CLEAR>::Do((flags & ~DC_NO_WATER) | DC_NO_MODIFY_TOWN_RATING, t);
+						Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::NoWater).Set(DoCommandFlag::NoModifyTownRating), t);
 					}
 				} else {
-					Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DC_NO_MODIFY_TOWN_RATING, t);
+					Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::NoModifyTownRating, t);
 				}
 			}
 		}
@@ -411,7 +411,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 				_current_company = c->index;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				hq_score = UpdateCompanyRatingAndValue(c, false);
 				c->location_of_HQ = tile;
 				SetWindowDirty(WC_COMPANY, c->index);
@@ -437,7 +437,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
 		}
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		BuildObject(type, tile, _current_company == OWNER_DEITY ? OWNER_NONE : _current_company, nullptr, view);
 
 		/* Make sure the HQ starts at the right size. */
@@ -459,7 +459,7 @@ CommandCost CmdBuildObject(DoCommandFlag flags, TileIndex tile, ObjectType type,
  * @param diagonal Whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPurchaseLandArea(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, bool diagonal)
+CommandCost CmdPurchaseLandArea(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, bool diagonal)
 {
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 	if (_settings_game.construction.purchase_land_permitted == 0) return CommandCost(STR_PURCHASE_LAND_NOT_PERMITTED);
@@ -476,7 +476,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlag flags, TileIndex tile, TileIndex s
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(flags & ~DC_EXEC, t, OBJECT_OWNED_LAND, 0);
+		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, OBJECT_OWNED_LAND, 0);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -486,7 +486,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlag flags, TileIndex tile, TileIndex s
 		}
 
 		had_success = true;
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				cost.SetAdditionalCashRequired(ret.GetCost());
@@ -513,7 +513,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlag flags, TileIndex tile, TileIndex s
  * @param diagonal Whether to use the Orthogonal (0) or Diagonal (1) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObjectArea(DoCommandFlag flags, TileIndex tile, TileIndex start_tile, ObjectType type, uint8_t view, bool diagonal)
+CommandCost CmdBuildObjectArea(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, ObjectType type, uint8_t view, bool diagonal)
 {
 	if (start_tile >= Map::Size() || type == OBJECT_OWNED_LAND) return CMD_ERROR;
 	if (!_settings_game.construction.build_object_area_permitted) return CommandCost(STR_BUILD_OBJECT_NOT_PERMITTED_BULK);
@@ -535,7 +535,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlag flags, TileIndex tile, TileIndex st
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(flags & ~DC_EXEC, t, type, view);
+		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, type, view);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -545,7 +545,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlag flags, TileIndex tile, TileIndex st
 		}
 
 		had_success = true;
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			money -= ret.GetCost();
 			if (ret.GetCost() > 0 && money < 0) {
 				cost.SetAdditionalCashRequired(ret.GetCost());
@@ -722,7 +722,7 @@ ClearedObjectArea *FindClearedObject(TileIndex tile)
 	return nullptr;
 }
 
-static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
+static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 {
 	/* Get to the northern most tile. */
 	Object *o = Object::GetByTile(tile);
@@ -739,10 +739,10 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 
 	/* Water can remove everything! */
 	if (_current_company != OWNER_WATER) {
-		if ((flags & DC_NO_WATER) && IsTileOnWater(tile)) {
+		if (flags.Test(DoCommandFlag::NoWater) && IsTileOnWater(tile)) {
 			/* There is water under the object, treat it as water tile. */
 			return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
-		} else if (!spec->flags.Test(ObjectFlag::Autoremove) && (flags & DC_AUTO)) {
+		} else if (!spec->flags.Test(ObjectFlag::Autoremove) && flags.Test(DoCommandFlag::Auto)) {
 			/* No automatic removal by overbuilding stuff. */
 			return CommandCost(type == OBJECT_HQ ? STR_ERROR_COMPANY_HEADQUARTERS_IN : STR_ERROR_OBJECT_IN_THE_WAY);
 		} else if (_game_mode == GM_EDITOR) {
@@ -771,7 +771,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 	switch (type) {
 		case OBJECT_HQ: {
 			Company *c = Company::Get(GetTileOwner(tile));
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				c->location_of_HQ = INVALID_TILE; // reset HQ position
 				SetWindowDirty(WC_COMPANY, c->index);
 				CargoPacket::InvalidateAllFrom({c->index, SourceType::Headquarters});
@@ -783,7 +783,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 		}
 
 		case OBJECT_STATUE:
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				Town *town = o->town;
 				town->statues.Reset(GetTileOwner(tile));
 				SetWindowDirty(WC_TOWN_AUTHORITY, town->index);
@@ -796,7 +796,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 
 	_cleared_object_areas.push_back({tile, ta});
 
-	if (flags & DC_EXEC) ReallyClearObjectTile(o);
+	if (flags.Test(DoCommandFlag::Execute)) ReallyClearObjectTile(o);
 
 	return cost;
 }
@@ -1150,7 +1150,7 @@ void GenerateObjects()
 
 				default:
 					uint8_t view = RandomRange(spec.views);
-					if (CmdBuildObject(DC_EXEC | DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, RandomTile(), spec.Index(), view).Succeeded()) amount--;
+					if (CmdBuildObject({DoCommandFlag::Execute, DoCommandFlag::Auto, DoCommandFlag::NoTestTownRating, DoCommandFlag::NoModifyTownRating}, RandomTile(), spec.Index(), view).Succeeded()) amount--;
 					break;
 			}
 		}
@@ -1204,7 +1204,7 @@ static int GetObjectEffectiveZ(TileIndex tile, const ObjectSpec *spec, int z, Sl
 	return z + GetSlopeMaxZ(tileh);
 }
 
-static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
+static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	ObjectType type = GetObjectType(tile);
 
@@ -1223,7 +1223,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		/* Owned land remains unsold */
 		CommandCost ret = CheckTileOwnership(tile);
 		if (ret.Succeeded()) {
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
 				update_water_class();
 			}
@@ -1233,7 +1233,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		const ObjectSpec *spec = ObjectSpec::Get(type);
 
 		auto pre_success_checks = [&]() {
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				SetObjectFoundationType(tile, tileh_new, type, spec);
 				if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
 				update_water_class();

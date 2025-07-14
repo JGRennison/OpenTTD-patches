@@ -1530,7 +1530,7 @@ struct BuildVehicleWindowBase : Window {
 				StringID err;
 				Train *t = BuildVirtualRailVehicle(engine, err, (ClientID)0, false);
 				if (t != nullptr) {
-					const CommandCost ret = Command<CMD_REFIT_VEHICLE>::Do(DC_QUERY_COST, t->index, cargo, 0, false, false, 1);
+					const CommandCost ret = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::QueryCost, t->index, cargo, 0, false, false, 1);
 					te.cost          = ret.GetCost();
 					te.capacity      = _returned_refit_capacity;
 					te.mail_capacity = _returned_mail_refit_capacity;
@@ -1545,7 +1545,7 @@ struct BuildVehicleWindowBase : Window {
 			}
 		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
-			CommandCost ret = Command<CMD_BUILD_VEHICLE>::Do(DC_QUERY_COST, TileIndex(this->window_number), engine, true, cargo, INVALID_CLIENT_ID);
+			CommandCost ret = Command<CMD_BUILD_VEHICLE>::Do(DoCommandFlag::QueryCost, TileIndex(this->window_number), engine, true, cargo, INVALID_CLIENT_ID);
 			if (ret.Succeeded()) {
 				te.cost          = ret.GetCost() - e->GetCost();
 				te.capacity      = _returned_refit_capacity;

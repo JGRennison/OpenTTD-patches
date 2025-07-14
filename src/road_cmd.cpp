@@ -553,7 +553,7 @@ void NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(TileIndex start, TileInd
  * @param town_check Shall the town rating checked/affected
  * @return A succeeded command when it is allowed to remove the road bits, a failed command otherwise.
  */
-CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, RoadTramType rtt, DoCommandFlag flags, bool town_check)
+CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, RoadTramType rtt, DoCommandFlags flags, bool town_check)
 {
 	if (_game_mode == GM_EDITOR || remove == ROAD_NONE) return CommandCost();
 
@@ -625,7 +625,7 @@ static void UpdateRoadStopTileDisallowedRoadDirection(TileIndex tile, Disallowed
  * @param rt roadtype to remove
  * @param town_check should we check if the town allows removal?
  */
-static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits pieces, RoadTramType rtt, bool town_check)
+static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pieces, RoadTramType rtt, bool town_check)
 {
 	assert(pieces != ROAD_NONE);
 
@@ -708,7 +708,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 			pieces_count += CountBits(other_end_pieces & other_end_existing);
 
 			cost.AddCost(pieces_count * RoadClearCost(existing_rt));
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
 				const RoadBits bits = existing & ~pieces;
@@ -753,7 +753,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 		} else {
 			assert_tile(IsDriveThroughStopTile(tile), tile);
 			cost.AddCost(RoadClearCost(existing_rt) * 2);
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				/* A full diagonal road tile has two road bits. */
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -2);
 				if (rtt == RTT_ROAD && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) {
@@ -806,7 +806,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				return CMD_ERROR;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				if (HasRoadWorks(tile)) {
 					/* flooding tile with road works, don't forget to remove the effect vehicle too */
 					assert(_current_company == OWNER_WATER);
@@ -862,7 +862,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				return CMD_ERROR;
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				UpdateAdjacentLevelCrossingTilesOnRemove(tile, GetCrossingRoadAxis(tile));
 
 				/* A full diagonal road tile has two road bits. */
@@ -997,7 +997,7 @@ static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
  * @param build_flags build road flags
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, RoadType rt, DisallowedRoadDirections toggle_drd, TownID town_id, BuildRoadFlags build_flags)
+CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, RoadType rt, DisallowedRoadDirections toggle_drd, TownID town_id, BuildRoadFlags build_flags)
 {
 	CompanyID company = _current_company;
 	CommandCost cost(EXPENSES_CONSTRUCTION);
@@ -1025,7 +1025,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 	/* do not allow building 'zero' road bits, code wouldn't handle it */
 	if (pieces == ROAD_NONE || !IsValidRoadBits(pieces) || !IsValidDisallowedRoadDirections(toggle_drd)) return CMD_ERROR;
 	if (!ValParamRoadType(rt)) return CMD_ERROR;
-	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
+	if (flags.Test(DoCommandFlag::Town) && !MayTownModifyRoad(tile)) return CMD_ERROR;
 
 	Slope tileh = GetTileSlope(tile);
 	RoadTramType rtt = GetRoadTramType(rt);
@@ -1070,7 +1070,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 							}
 
 							/* Ignore half built tiles */
-							if ((flags & DC_EXEC) && IsStraightRoad(existing)) {
+							if (flags.Test(DoCommandFlag::Execute) && IsStraightRoad(existing)) {
 								SetDisallowedRoadDirections(tile, dis_new);
 								MarkTileDirtyByTile(tile);
 								NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
@@ -1155,7 +1155,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 			CommandCost ret = EnsureNoVehicleOnGround(tile);
 			if (ret.Failed()) return ret;
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				Track railtrack = AxisToTrack(OtherAxis(roaddir));
 				YapfNotifyTrackLayoutChange(tile, railtrack);
 				/* Update company infrastructure counts. A level crossing has two road bits. */
@@ -1209,7 +1209,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 						if (ret.Failed()) return ret;
 					}
 
-					if (flags & DC_EXEC) {
+					if (flags.Test(DoCommandFlag::Execute)) {
 						UpdateRoadStopTileDisallowedRoadDirection(tile, dis_new);
 						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 						NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
@@ -1279,7 +1279,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 						}
 
 						/* Ignore half built tiles */
-						if (flags & DC_EXEC) {
+						if (flags.Test(DoCommandFlag::Execute)) {
 							SetBridgeDisallowedRoadDirections(tile, dis_new);
 							SetBridgeDisallowedRoadDirections(other_end, dis_new);
 							MarkTileDirtyByTile(tile);
@@ -1375,7 +1375,7 @@ CommandCost CmdBuildRoad(DoCommandFlag flags, TileIndex tile, RoadBits pieces, R
 
 				cost.AddCost(added_pieces_count * RoadBuildCost(rt));
 
-				if (flags & DC_EXEC) {
+				if (flags.Test(DoCommandFlag::Execute)) {
 					SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
 					SetRoadType(tile, rtt, rt);
@@ -1492,7 +1492,7 @@ do_clear:;
 
 	cost.AddCost(num_pieces * RoadBuildCost(rt));
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		switch (GetTileType(tile)) {
 			case MP_ROAD: {
 				RoadTileType rttype = GetRoadTileType(tile);
@@ -1596,7 +1596,7 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
  *      - true = Fail if an obstacle is found. Always take into account start_half and end_half. This behavior is used for scripts
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, DisallowedRoadDirections drd, bool start_half, bool end_half, bool is_ai)
+CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, DisallowedRoadDirections drd, bool start_half, bool end_half, bool is_ai)
 {
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 
@@ -1689,7 +1689,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex 
  * @param end_half end tile starts in the 2nd half of tile
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, bool start_half, bool end_half)
+CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, bool start_half, bool end_half)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
@@ -1726,12 +1726,12 @@ CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex
 		/* try to remove the halves. */
 		if (bits != 0) {
 			RoadTramType rtt = GetRoadTramType(rt);
-			CommandCost ret = RemoveRoad(tile, flags & ~DC_EXEC, bits, rtt, true);
+			CommandCost ret = RemoveRoad(tile, DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), bits, rtt, true);
 			if (ret.Succeeded()) {
-				if (flags & DC_EXEC) {
+				if (flags.Test(DoCommandFlag::Execute)) {
 					money_spent += ret.GetCost();
 					if (money_spent > 0 && money_spent > money_available) {
-						cost.SetAdditionalCashRequired(Command<CMD_REMOVE_LONG_ROAD>::Do(flags & ~DC_EXEC, end_tile, start_tile, rt, axis, start_half, end_half).GetCost());
+						cost.SetAdditionalCashRequired(Command<CMD_REMOVE_LONG_ROAD>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), end_tile, start_tile, rt, axis, start_half, end_half).GetCost());
 						return cost;
 					}
 					RemoveRoad(tile, flags, bits, rtt, false);
@@ -1769,7 +1769,7 @@ CommandCost CmdRemoveLongRoad(DoCommandFlag flags, TileIndex end_tile, TileIndex
  * @todo When checking for the tile slope,
  * distinguish between "Flat land required" and "land sloped in wrong direction"
  */
-CommandCost CmdBuildRoadDepot(DoCommandFlag flags, TileIndex tile, RoadType rt, DiagDirection dir)
+CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt, DiagDirection dir)
 {
 	if (!ValParamRoadType(rt) || !IsValidDiagDirection(dir)) return CMD_ERROR;
 
@@ -1790,7 +1790,7 @@ CommandCost CmdBuildRoadDepot(DoCommandFlag flags, TileIndex tile, RoadType rt, 
 
 	if (!Depot::CanAllocateItem()) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Depot *dep = new Depot(tile);
 		dep->build_date = CalTime::CurDate();
 
@@ -1807,7 +1807,7 @@ CommandCost CmdBuildRoadDepot(DoCommandFlag flags, TileIndex tile, RoadType rt, 
 	return cost;
 }
 
-static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
+static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlags flags)
 {
 	if (_current_company != OWNER_WATER) {
 		CommandCost ret = CheckTileOwnership(tile);
@@ -1817,7 +1817,7 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
 	CommandCost ret = EnsureNoVehicleOnGround(tile);
 	if (ret.Failed()) return ret;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Company *c = Company::GetIfValid(GetTileOwner(tile));
 		if (c != nullptr) {
 			/* A road depot has two road bits. */
@@ -1837,14 +1837,14 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_ROAD]);
 }
 
-static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
+static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 {
 	switch (GetRoadTileType(tile)) {
 		case ROAD_TILE_NORMAL: {
 			RoadBits b = GetAllRoadBits(tile);
 
-			/* Clear the road if only one piece is on the tile OR we are not using the DC_AUTO flag */
-			if ((HasExactlyOneBit(b) && GetRoadBits(tile, RTT_TRAM) == ROAD_NONE) || !(flags & DC_AUTO)) {
+			/* Clear the road if only one piece is on the tile OR we are not using the DoCommandFlag::Auto flag */
+			if ((HasExactlyOneBit(b) && GetRoadBits(tile, RTT_TRAM) == ROAD_NONE) || !flags.Test(DoCommandFlag::Auto)) {
 				CommandCost ret(EXPENSES_CONSTRUCTION);
 				for (RoadTramType rtt : _roadtramtypes) {
 					if (!MayHaveRoad(tile) || GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
@@ -1861,7 +1861,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 		case ROAD_TILE_CROSSING: {
 			CommandCost ret(EXPENSES_CONSTRUCTION);
 
-			if (flags & DC_AUTO) return CommandCost(STR_ERROR_MUST_REMOVE_ROAD_FIRST);
+			if (flags.Test(DoCommandFlag::Auto)) return CommandCost(STR_ERROR_MUST_REMOVE_ROAD_FIRST);
 
 			/* Must iterate over the roadtypes in a reverse manner because
 			 * tram tracks must be removed before the road bits. */
@@ -1873,7 +1873,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 				ret.AddCost(tmp_ret);
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 			}
 			return ret;
@@ -1881,7 +1881,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 
 		default:
 		case ROAD_TILE_DEPOT:
-			if (flags & DC_AUTO) {
+			if (flags.Test(DoCommandFlag::Auto)) {
 				return CommandCost(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
 			}
 			return RemoveRoadDepot(tile, flags);
@@ -2683,7 +2683,7 @@ static void TileLoop_Road(TileIndex tile)
 			const RoadBits new_rb = CleanUpRoadBits(tile, old_rb);
 
 			if (old_rb != new_rb) {
-				RemoveRoad(tile, DC_EXEC | DC_AUTO | DC_NO_WATER, (old_rb ^ new_rb), RTT_ROAD, true);
+				RemoveRoad(tile, {DoCommandFlag::Execute, DoCommandFlag::Auto, DoCommandFlag::NoWater}, (old_rb ^ new_rb), RTT_ROAD, true);
 
 				/* If new_rb is 0, there are now no road pieces left and the tile is no longer a road tile */
 				if (new_rb == 0) {
@@ -2956,7 +2956,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	if (IsRoadDepot(tile)) {
 		if (GetTileOwner(tile) == old_owner) {
 			if (new_owner == INVALID_OWNER) {
-				Command<CMD_LANDSCAPE_CLEAR>::Do(DC_EXEC | DC_BANKRUPT, tile);
+				Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
 			} else {
 				/* A road depot has two road bits. No need to dirty windows here, we'll redraw the whole screen anyway. */
 				RoadType rt = GetRoadTypeRoad(tile);
@@ -2993,7 +2993,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	if (IsLevelCrossing(tile)) {
 		if (GetTileOwner(tile) == old_owner) {
 			if (new_owner == INVALID_OWNER) {
-				Command<CMD_REMOVE_SINGLE_RAIL>::Do(DC_EXEC | DC_BANKRUPT, tile, GetCrossingRailTrack(tile));
+				Command<CMD_REMOVE_SINGLE_RAIL>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, GetCrossingRailTrack(tile));
 			} else {
 				/* Update infrastructure counts. No need to dirty windows here, we'll redraw the whole screen anyway. */
 				Company::Get(old_owner)->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR;
@@ -3005,7 +3005,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	}
 }
 
-static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
+static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	if (_settings_game.construction.build_on_slopes && AutoslopeEnabled()) {
 		switch (GetRoadTileType(tile)) {
@@ -3100,7 +3100,7 @@ static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, R
  * @param to_type new roadtype to convert to.
  * @return the cost of this operation or an error
  */
-CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_start, RoadType to_type)
+CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_start, RoadType to_type)
 {
 	TileIndex area_end = tile;
 
@@ -3159,7 +3159,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 		 * acceptance of destructive actions. */
 		if (owner == OWNER_TOWN) {
 			Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
-			CommandCost ret = CheckforTownRating(DC_NONE, t, tt == MP_TUNNELBRIDGE ? TUNNELBRIDGE_REMOVE : ROAD_REMOVE);
+			CommandCost ret = CheckforTownRating({}, t, tt == MP_TUNNELBRIDGE ? TUNNELBRIDGE_REMOVE : ROAD_REMOVE);
 			if (ret.Failed()) {
 				error = ret;
 				continue;
@@ -3201,7 +3201,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 			found_convertible_road = true;
 			cost.AddCost(num_pieces * RoadConvertCost(from_type, to_type));
 
-			if (flags & DC_EXEC) { // we can safely convert, too
+			if (flags.Test(DoCommandFlag::Execute)) { // we can safely convert, too
 				/* Update the company infrastructure counters. */
 				if (!IsAnyRoadStopTile(tile) && owner == _current_company) {
 					ConvertRoadTypeOwner(tile, num_pieces, owner, from_type, to_type);
@@ -3284,7 +3284,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 			uint end_pieces = include_middle ? num_pieces_per_side(endtile, false) : 0;
 			cost.AddCost((tile_pieces + end_pieces) * RoadConvertCost(from_type, to_type));
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				/* Update the company infrastructure counters. */
 				SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
 
@@ -3310,7 +3310,7 @@ CommandCost CmdConvertRoad(DoCommandFlag flags, TileIndex tile, TileIndex area_s
 		}
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Roadtype changed, update roadvehicles as when entering different track */
 		for (RoadVehicle *v : affected_rvs) {
 			v->CargoChanged();

@@ -76,7 +76,7 @@ enum CmdInsertOrderIntlFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(CmdInsertOrderIntlFlags)
 
-static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags);
+static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags);
 
 extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled, bool wait_fixed);
 
@@ -910,7 +910,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * Add an order to the orderlist of a vehicle.
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(DoCommandFlag flags, const InsertOrderCmdData &data)
+CommandCost CmdInsertOrder(DoCommandFlags flags, const InsertOrderCmdData &data)
 {
 	Order new_order{};
 	new_order.GetCmdRefTuple() = data.new_order;
@@ -925,7 +925,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, const InsertOrderCmdData &data)
  * @param sel_ord The order to duplicate
  * @return the cost of this operation or an error
  */
-CommandCost CmdDuplicateOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
+CommandCost CmdDuplicateOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -950,7 +950,7 @@ CommandCost CmdDuplicateOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrde
 	new_order.SetDispatchScheduleIndex(-1);
 	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE);
 	if (cost.Failed()) return cost;
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Order *order = v->orders->GetOrderAt(sel_ord + 1);
 		order->SetRefit(new_order.GetRefitCargo());
 		order->SetMaxSpeed(new_order.GetMaxSpeed());
@@ -960,7 +960,7 @@ CommandCost CmdDuplicateOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrde
 	return CommandCost();
 }
 
-static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags) {
+static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags) {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
@@ -1306,7 +1306,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 	if (v->GetNumOrders() >= MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
 	if (v->orders == nullptr && !OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		InsertOrder(v, Order(new_order), sel_ord);
 	}
 
@@ -1399,9 +1399,9 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
  * @param *dst delete the orders of this vehicle
  * @param flags execution flags
  */
-static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
+static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
 {
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Clear scheduled dispatch flag if any */
 		if (HasBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 			ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
@@ -1434,7 +1434,7 @@ static CargoType GetFirstValidCargo()
  * @param sel_ord the order to delete
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeleteOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
+CommandCost CmdDeleteOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1448,7 +1448,7 @@ CommandCost CmdDeleteOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID
 
 	if (v->GetOrder(sel_ord) == nullptr) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		DeleteOrder(v, sel_ord);
 	}
 	return CommandCost();
@@ -1552,7 +1552,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
  * @param sel_ord the selected order to which we want to skip
  * @return the cost of this operation or an error
  */
-CommandCost CmdSkipToOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID sel_ord)
+CommandCost CmdSkipToOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderID sel_ord)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1561,7 +1561,7 @@ CommandCost CmdSkipToOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (v->current_order.IsAnyLoadingType()) v->LeaveStation();
 		if (v->current_order.IsType(OT_WAITING)) v->HandleWaiting(true);
 
@@ -1600,7 +1600,7 @@ CommandCost CmdSkipToOrder(DoCommandFlag flags, VehicleID veh_id, VehicleOrderID
  * @note The target order will move one place down in the orderlist
  *  if you move the order upwards else it'll move it one place down
  */
-CommandCost CmdMoveOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID moving_order, VehicleOrderID target_order)
+CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID moving_order, VehicleOrderID target_order)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -1616,7 +1616,7 @@ CommandCost CmdMoveOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID movi
 	/* Don't move an empty order */
 	if (moving_one == nullptr) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		v->orders->MoveOrder(moving_order, target_order);
 
 		/* Update shared list */
@@ -1696,7 +1696,7 @@ CommandCost CmdMoveOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID movi
  * @param op operation to perform
  * @return the cost of this operation or an error
  */
-CommandCost CmdReverseOrderList(DoCommandFlag flags, VehicleID veh, ReverseOrderOperation op)
+CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrderOperation op)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -1732,7 +1732,7 @@ CommandCost CmdReverseOrderList(DoCommandFlag flags, VehicleID veh, ReverseOrder
 				new_order.SetTravelFixed(false);
 				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE);
 				if (cost.Failed()) return cost;
-				if (flags & DC_EXEC) {
+				if (flags.Test(DoCommandFlag::Execute)) {
 					Order *order = v->orders->GetOrderAt(order_count);
 					order->SetRefit(new_order.GetRefitCargo());
 					order->SetMaxSpeed(new_order.GetMaxSpeed());
@@ -1763,7 +1763,7 @@ CommandCost CmdReverseOrderList(DoCommandFlag flags, VehicleID veh, ReverseOrder
  * @param text for MOF_LABEL_TEXT
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, CargoType cargo_id, const std::string &text)
+CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, CargoType cargo_id, const std::string &text)
 {
 	if (mof >= MOF_END) return CMD_ERROR;
 
@@ -2124,7 +2124,7 @@ CommandCost CmdModifyOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 			break;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		switch (mof) {
 			case MOF_NON_STOP:
 				order->SetNonStopType((OrderNonStopFlags)data);
@@ -2518,7 +2518,7 @@ static bool CheckAircraftOrderDistance(const Aircraft *v_new, const Vehicle *v_o
 	return true;
 }
 
-static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlag flags)
+static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlags flags)
 {
 	const Company *owner = Company::GetIfValid(v->owner);
 	if (!owner || !owner->settings.advance_order_on_clone || !v->IsInDepot() || !IsDepotTile(v->tile)) return;
@@ -2566,7 +2566,7 @@ static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle
  * @param veh_src source vehicle to clone orders from, if any (none for CO_UNSHARE)
  * @return the cost of this operation or an error
  */
-CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID veh_dst, VehicleID veh_src)
+CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID veh_dst, VehicleID veh_src)
 {
 	Vehicle *dst = Vehicle::GetIfValid(veh_dst);
 	if (dst == nullptr || !dst->IsPrimaryVehicle()) return CMD_ERROR;
@@ -2619,7 +2619,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 				return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				/* If the destination vehicle had a OrderList, destroy it.
 				 * We reset the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
@@ -2706,7 +2706,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 				return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 			}
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				/* If the destination vehicle had an order list, destroy the chain but keep the OrderList.
 				 * We only the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
@@ -2779,7 +2779,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
  * @param cargo CargoType
  * @return the cost of this operation or an error
  */
-CommandCost CmdOrderRefit(DoCommandFlag flags, VehicleID veh, VehicleOrderID order_number, CargoType cargo)
+CommandCost CmdOrderRefit(DoCommandFlags flags, VehicleID veh, VehicleOrderID order_number, CargoType cargo)
 {
 	if (cargo >= NUM_CARGO && cargo != CARGO_NO_REFIT && cargo != CARGO_AUTO_REFIT) return CMD_ERROR;
 
@@ -2797,7 +2797,7 @@ CommandCost CmdOrderRefit(DoCommandFlag flags, VehicleID veh, VehicleOrderID ord
 
 	if (order->GetLoadType() & OLFB_NO_LOAD) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		order->SetRefit(cargo);
 
 		/* Make the depot order an 'always go' order. */
@@ -3655,7 +3655,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 					v->current_order.SetDestination(closestDepot.destination);
 
 					/* If there is no depot in front, reverse automatically (trains only) */
-					if (v->type == VEH_TRAIN && closestDepot.reverse) Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DC_EXEC, v->index, false);
+					if (v->type == VEH_TRAIN && closestDepot.reverse) Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, v->index, false);
 
 					if (v->type == VEH_AIRCRAFT) {
 						Aircraft *a = Aircraft::From(v);
@@ -3971,9 +3971,9 @@ bool Order::CanLeaveWithCargo(bool has_cargo, CargoType cargo) const
  * @param to_dest The destination ID to change to
  * @return the cost of this operation or an error
  */
-CommandCost CmdMassChangeOrder(DoCommandFlag flags, DestinationID from_dest, VehicleType vehtype, OrderType order_type, CargoType cargo_filter, DestinationID to_dest)
+CommandCost CmdMassChangeOrder(DoCommandFlags flags, DestinationID from_dest, VehicleType vehtype, OrderType order_type, CargoType cargo_filter, DestinationID to_dest)
 {
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(vehtype)) {
 			if (v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
 				int index = 0;

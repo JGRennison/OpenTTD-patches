@@ -26,7 +26,7 @@
 
 bool _allow_rocks_desert = false;
 
-static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
+static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlags flags)
 {
 	static constexpr Price clear_price_table[] = {
 		PR_CLEAR_GRASS,
@@ -48,7 +48,7 @@ static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 		price.AddCost(_price[clear_price_table[ground]]);
 	}
 
-	if (flags & DC_EXEC) DoClearSquare(tile);
+	if (flags.Test(DoCommandFlag::Execute)) DoClearSquare(tile);
 
 	return price;
 }
@@ -460,7 +460,7 @@ static void ChangeTileOwner_Clear(TileIndex, Owner, Owner)
 	return;
 }
 
-static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlag flags, int, Slope)
+static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlags flags, int, Slope)
 {
 	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }

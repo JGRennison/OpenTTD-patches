@@ -102,7 +102,7 @@
 	if (!ScriptEngine::IsBuildable(engine_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
 
-	CommandCost res = ::Command<CMD_BUILD_VEHICLE>::Do(DC_QUERY_COST, depot, engine_id, true, cargo, INVALID_CLIENT_ID);
+	CommandCost res = ::Command<CMD_BUILD_VEHICLE>::Do(DoCommandFlag::QueryCost, depot, engine_id, true, cargo, INVALID_CLIENT_ID);
 	return res.Succeeded() ? _returned_refit_capacity : -1;
 }
 
@@ -151,7 +151,7 @@
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
 
-	CommandCost res = ::Command<CMD_REFIT_VEHICLE>::Do(DC_QUERY_COST, vehicle_id, cargo, 0, false, false, 0);
+	CommandCost res = ::Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::QueryCost, vehicle_id, cargo, 0, false, false, 0);
 	return res.Succeeded() ? _returned_refit_capacity : -1;
 }
 

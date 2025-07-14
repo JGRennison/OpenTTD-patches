@@ -395,7 +395,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			for (i = 0; i < 4; i++) {
 				if (c->share_owners[i] == old_owner) {
 					/* Sell its shares */
-					CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do(DC_EXEC | DC_BANKRUPT, c->index);
+					CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, c->index);
 					/* Because we are in a DoCommand, we can't just execute another one and
 					 *  expect the money to be removed. We need to do it ourself! */
 					SubtractMoneyFromCompany(res);
@@ -415,7 +415,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			} else {
 				cur_company2.Change(c->share_owners[i]);
 				/* Sell the shares */
-				CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do(DC_EXEC | DC_BANKRUPT, old_owner);
+				CommandCost res = Command<CMD_SELL_SHARE_IN_COMPANY>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, old_owner);
 				/* Because we are in a DoCommand, we can't just execute another one and
 				 *  expect the money to be removed. We need to do it ourself! */
 				SubtractMoneyFromCompany(res);
@@ -534,7 +534,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 					 * However, do not rely on that behaviour.
 					 */
 					int interval = CompanyServiceInterval(new_company, v->type);
-					Command<CMD_CHANGE_SERVICE_INT>::Do(DC_EXEC | DC_BANKRUPT, v->index, interval, false, new_company->settings.vehicle.servint_ispercent);
+					Command<CMD_CHANGE_SERVICE_INT>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, v->index, interval, false, new_company->settings.vehicle.servint_ispercent);
 				}
 
 				v->owner = new_owner;
@@ -1821,7 +1821,7 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 			if (st->goods[cid].data != nullptr && st->goods[cid].data->cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
 				 * the returned refit capacity will be greater than zero. */
-				Command<CMD_REFIT_VEHICLE>::Do(DC_QUERY_COST, v_start->index, cid, 0xFF, true, false, 1); // Auto-refit and only this vehicle including artic parts.
+				Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::QueryCost, v_start->index, cid, 0xFF, true, false, 1); // Auto-refit and only this vehicle including artic parts.
 				/* Try to balance different loadable cargoes between parts of the consist, so that
 				 * all of them can be loaded. Avoid a situation where all vehicles suddenly switch
 				 * to the first loadable cargo for which there is only one packet. If the capacities
@@ -1844,7 +1844,7 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 		 * "via any station" before reserving. We rather produce some more "any station" cargo than
 		 * misrouting it. */
 		IterateVehicleParts(v_start, ReturnCargoAction(st, INVALID_STATION));
-		CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DC_EXEC, v_start->index, new_cid, 0xFF, true, false, 1); // Auto-refit and only this vehicle including artic parts.
+		CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v_start->index, new_cid, 0xFF, true, false, 1); // Auto-refit and only this vehicle including artic parts.
 		if (cost.Succeeded()) v->First()->profit_this_year -= cost.GetCost() << 8;
 	}
 
@@ -2560,7 +2560,7 @@ void PostAcquireCompany(Company *c)
  * @param target_company company to buy the shares from
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuyShareInCompany(DoCommandFlag flags, CompanyID target_company)
+CommandCost CmdBuyShareInCompany(DoCommandFlags flags, CompanyID target_company)
 {
 	CommandCost cost(EXPENSES_OTHER);
 	Company *c = Company::GetIfValid(target_company);
@@ -2583,7 +2583,7 @@ CommandCost CmdBuyShareInCompany(DoCommandFlag flags, CompanyID target_company)
 
 
 	cost.AddCost(CalculateCompanyValue(c) >> 2);
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		auto unowned_share = std::find(c->share_owners.begin(), c->share_owners.end(), INVALID_OWNER);
 		assert(unowned_share != c->share_owners.end()); // share owners is guaranteed to contain at least one INVALID_OWNER, i.e. unowned share
 		*unowned_share = _current_company;
@@ -2604,7 +2604,7 @@ CommandCost CmdBuyShareInCompany(DoCommandFlag flags, CompanyID target_company)
  * @param target_company company to sell the shares from
  * @return the cost of this operation or an error
  */
-CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
+CommandCost CmdSellShareInCompany(DoCommandFlags flags, CompanyID target_company)
 {
 	Company *c = Company::GetIfValid(target_company);
 
@@ -2613,7 +2613,7 @@ CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
 
 	/* Check if selling shares is allowed (protection against modified clients).
 	 * However, we must sell shares of companies being closed down. */
-	if (!_settings_game.economy.allow_shares && !(flags & DC_BANKRUPT)) return CMD_ERROR;
+	if (!_settings_game.economy.allow_shares && !flags.Test(DoCommandFlag::Bankrupt)) return CMD_ERROR;
 
 	/* Those lines are here for network-protection (clients can be slow) */
 	if (GetAmountOwnedBy(c, _current_company) == 0) return CommandCost();
@@ -2622,7 +2622,7 @@ CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
 	Money cost = CalculateCompanyValue(c) >> 2;
 	cost = -(cost - (cost >> 7));
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		auto our_owner = std::find(c->share_owners.begin(), c->share_owners.end(), _current_company);
 		assert(our_owner != c->share_owners.end()); // share owners is guaranteed to contain at least one INVALID_OWNER
 		*our_owner = INVALID_OWNER;
@@ -2642,7 +2642,7 @@ CommandCost CmdSellShareInCompany(DoCommandFlag flags, CompanyID target_company)
  * @param hostile_takeover whether to buy up the company even if it is not bankrupt
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool hostile_takeover)
+CommandCost CmdBuyCompany(DoCommandFlags flags, CompanyID target_company, bool hostile_takeover)
 {
 	Company *c = Company::GetIfValid(target_company);
 	if (c == nullptr) return CMD_ERROR;
@@ -2673,7 +2673,7 @@ CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool ho
 	 * for hostile takeover you pay the current price. */
 	CommandCost cost(EXPENSES_OTHER, hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		DoAcquireCompany(c, hostile_takeover);
 	}
 	return cost;
@@ -2687,12 +2687,12 @@ CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool ho
  * @param target_company company to decline to buy up
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeclineBuyCompany(DoCommandFlag flags, CompanyID target_company)
+CommandCost CmdDeclineBuyCompany(DoCommandFlags flags, CompanyID target_company)
 {
 	Company *c = Company::GetIfValid(target_company);
 	if (c == nullptr) return CommandCost();
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (c->bankrupt_last_asked == _current_company) {
 			c->bankrupt_timeout = 0;
 		}

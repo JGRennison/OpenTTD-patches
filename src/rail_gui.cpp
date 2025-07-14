@@ -467,7 +467,7 @@ static void HandleAutodirPlacement()
 	 * snap point without altering the user with the "already built" error. Don't
 	 * execute the command right away, firstly check if tracks are being overbuilt. */
 	if (!(_thd.place_mode & HT_POLY) || _shift_pressed ||
-			std::visit([](const auto &val) -> StringID { return DoCommandContainer(val, DC_AUTO | DC_NO_WATER).GetErrorMessage(); }, cmd) != STR_ERROR_ALREADY_BUILT) {
+			std::visit([](const auto &val) -> StringID { return DoCommandContainer(val, {DoCommandFlag::Auto, DoCommandFlag::NoWater}).GetErrorMessage(); }, cmd) != STR_ERROR_ALREADY_BUILT) {
 		/* place tracks */
 		if (!std::visit([](const auto &val) -> bool { return DoCommandPContainer(val); }, cmd)) return;
 	}
@@ -1009,7 +1009,7 @@ struct BuildRailToolbarWindow : Window {
 
 	void OnPlacePresize([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		Command<CMD_BUILD_TUNNEL>::Do(DC_AUTO, tile, TRANSPORT_RAIL, _cur_railtype);
+		Command<CMD_BUILD_TUNNEL>::Do(DoCommandFlag::Auto, tile, TRANSPORT_RAIL, _cur_railtype);
 		VpSetPresizeRange(tile, _build_tunnel_endtile == 0 ? tile : _build_tunnel_endtile);
 	}
 

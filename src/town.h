@@ -258,7 +258,7 @@ enum TownFlags {
 	TOWN_CUSTOM_GROWTH  = 3,   ///< Growth rate is controlled by GS.
 };
 
-CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType type);
+CommandCost CheckforTownRating(DoCommandFlags flags, Town *t, TownRatingCheckType type);
 
 
 TileIndexDiff GetHouseNorthPart(HouseID &house);
@@ -287,9 +287,9 @@ void ClearTownHouse(Town *t, TileIndex tile);
 void UpdateTownMaxPass(Town *t);
 void UpdateTownRadius(Town *t);
 void UpdateTownRadii();
-CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlag flags);
+CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlags flags);
 Town *ClosestTownFromTile(TileIndex tile, uint threshold);
-void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags);
+void ChangeTownRating(Town *t, int add, int max, DoCommandFlags flags);
 HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile);
 HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile);
 void SetTownRatingTestMode(bool mode);

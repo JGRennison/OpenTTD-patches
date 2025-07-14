@@ -963,7 +963,7 @@ public:
 
 	virtual void SetDestTile(TileIndex tile) { this->dest_tile = tile; }
 
-	CommandCost SendToDepot(DoCommandFlag flags, DepotCommandFlags command, TileIndex specific_depot = {});
+	CommandCost SendToDepot(DoCommandFlags flags, DepotCommandFlags command, TileIndex specific_depot = {});
 
 	void UpdateVisualEffect(bool allow_power_change = true);
 	void ShowVisualEffect(uint max_speed) const;

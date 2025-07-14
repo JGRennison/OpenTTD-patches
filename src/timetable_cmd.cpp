@@ -159,7 +159,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32_t va
  * @param ctrl_flags Control flags (MTCF_CLEAR_FIELD to clear timetable wait/travel time)
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(DoCommandFlag flags, VehicleID veh, VehicleOrderID order_number, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
+CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrderID order_number, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -261,7 +261,7 @@ CommandCost CmdChangeTimetable(DoCommandFlag flags, VehicleID veh, VehicleOrderI
 	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
 	if (leave_type != order->GetLeaveType() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		switch (mtf) {
 			case MTF_WAIT_TIME:
 				/* Set time if changing the value or confirming an estimated time as timetabled. */
@@ -331,7 +331,7 @@ CommandCost CmdChangeTimetable(DoCommandFlag flags, VehicleID veh, VehicleOrderI
  * @param ctrl_flags Control flags (MTCF_CLEAR_FIELD to clear timetable wait/travel time)
  * @return the cost of this operation or an error
  */
-CommandCost CmdBulkChangeTimetable(DoCommandFlag flags, VehicleID veh, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
+CommandCost CmdBulkChangeTimetable(DoCommandFlags flags, VehicleID veh, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -343,7 +343,7 @@ CommandCost CmdBulkChangeTimetable(DoCommandFlag flags, VehicleID veh, ModifyTim
 
 	if (v->GetNumOrders() == 0) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		for (VehicleOrderID order_number = 0; order_number < v->GetNumOrders(); order_number++) {
 			Order *order = v->GetOrder(order_number);
 			if (order == nullptr || order->IsType(OT_IMPLICIT)) continue;
@@ -366,7 +366,7 @@ CommandCost CmdBulkChangeTimetable(DoCommandFlag flags, VehicleID veh, ModifyTim
  * @param apply_to_group Set to reset the late counter for all vehicles sharing the orders.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetVehicleOnTime(DoCommandFlag flags, VehicleID veh, bool apply_to_group)
+CommandCost CmdSetVehicleOnTime(DoCommandFlags flags, VehicleID veh, bool apply_to_group)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
@@ -378,7 +378,7 @@ CommandCost CmdSetVehicleOnTime(DoCommandFlag flags, VehicleID veh, bool apply_t
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (apply_to_group) {
 			int32_t most_late = 0;
 			for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
@@ -461,7 +461,7 @@ static bool VehicleTimetableSorter(Vehicle * const &a, Vehicle * const &b)
  * @param start_state_tick The state tick when the timetable starts.
  * @return The error or cost of the operation.
  */
-CommandCost CmdSetTimetableStart(DoCommandFlag flags, VehicleID veh, bool timetable_all, StateTicks start_state_tick)
+CommandCost CmdSetTimetableStart(DoCommandFlags flags, VehicleID veh, bool timetable_all, StateTicks start_state_tick)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
@@ -476,7 +476,7 @@ CommandCost CmdSetTimetableStart(DoCommandFlag flags, VehicleID veh, bool timeta
 
 	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		std::vector<Vehicle *> vehs;
 
 		if (timetable_all) {
@@ -526,7 +526,7 @@ CommandCost CmdSetTimetableStart(DoCommandFlag flags, VehicleID veh, bool timeta
  * @param preserve_wait_time Set to preserve waiting times in non-destructive mode
  * @return the cost of this operation or an error
  */
-CommandCost CmdAutofillTimetable(DoCommandFlag flags, VehicleID veh, bool autofill, bool preserve_wait_time)
+CommandCost CmdAutofillTimetable(DoCommandFlags flags, VehicleID veh, bool autofill, bool preserve_wait_time)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
@@ -534,7 +534,7 @@ CommandCost CmdAutofillTimetable(DoCommandFlag flags, VehicleID veh, bool autofi
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (autofill) {
 			/* Start autofilling the timetable, which clears the
 			 * "timetable has started" bit. Times are not cleared anymore, but are
@@ -572,7 +572,7 @@ CommandCost CmdAutofillTimetable(DoCommandFlag flags, VehicleID veh, bool autofi
  * @param automate Whether to enable/disable automation.
  * @return the cost of this operation or an error
  */
-CommandCost CmdAutomateTimetable(DoCommandFlag flags, VehicleID veh, bool automate)
+CommandCost CmdAutomateTimetable(DoCommandFlags flags, VehicleID veh, bool automate)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -580,7 +580,7 @@ CommandCost CmdAutomateTimetable(DoCommandFlag flags, VehicleID veh, bool automa
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (automate) {
 				/* Automated timetable. Set flags and clear current times if also auto-separating. */
@@ -614,7 +614,7 @@ CommandCost CmdAutomateTimetable(DoCommandFlag flags, VehicleID veh, bool automa
  * @param separation Whether to enable/disable auto separatiom.
  * @return the cost of this operation or an error
  */
-CommandCost CmdTimetableSeparation(DoCommandFlag flags, VehicleID veh, bool separation)
+CommandCost CmdTimetableSeparation(DoCommandFlags flags, VehicleID veh, bool separation)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -624,7 +624,7 @@ CommandCost CmdTimetableSeparation(DoCommandFlag flags, VehicleID veh, bool sepa
 
 	if (separation && (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (separation) {
 				SetBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);

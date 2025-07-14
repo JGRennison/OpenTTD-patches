@@ -439,7 +439,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		SetDParamStr(0, grfconfig->GetName());
 		SetDParam(1, engine);
 		ShowErrorMessage(part1, part2, WL_CRITICAL);
-		if (!_networking) Command<CMD_PAUSE>::Do(DC_EXEC, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, true);
+		if (!_networking) Command<CMD_PAUSE>::Do(DoCommandFlag::Execute, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, true);
 	}
 
 	std::string log_msg;
@@ -1767,7 +1767,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(DC_EXEC, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+		CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -1803,13 +1803,13 @@ void CallVehicleTicks()
 		tmpl_cur_company.Change(t->owner);
 
 
-		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DC_EXEC, t->index);
+		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index);
 		if (res.HasResultData()) {
 			t = Train::Get(res.GetResultData());
 		}
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, t->index, true);
+		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index, true);
 		if (res2.HasResultData()) {
 			t = Train::Get(res2.GetResultData());
 		}
@@ -1852,7 +1852,7 @@ void CallVehicleTicks()
 
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DC_EXEC, v->index, false);
+		CommandCost res = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, v->index, false);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
@@ -2784,7 +2784,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		if (v->current_order.IsRefit()) {
 			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
-			CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DC_EXEC, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
+			CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
 			cur_company.Restore();
 
 			if (cost.Failed()) {
@@ -3999,7 +3999,7 @@ bool Vehicle::IsWaitingForUnbunching() const
  * @param specific_depot specific depot to use, if DepotCommandFlags::Specific is set.
  * @return the cost of the depot action.
  */
-CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command, TileIndex specific_depot)
+CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command, TileIndex specific_depot)
 {
 	CommandCost ret = CheckOwnership(this->owner);
 	if (ret.Failed()) return ret;
@@ -4009,7 +4009,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 		if (command.Test(DepotCommandFlag::Sell) && !command.Test(DepotCommandFlag::Cancel) && (!command.Test(DepotCommandFlag::Specific) || specific_depot == this->tile)) {
 			/* Sell vehicle immediately */
 
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				int x = this->x_pos;
 				int y = this->y_pos;
 				int z = this->z_pos;
@@ -4030,10 +4030,10 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 	}
 
 	/* No matter why we're headed to the depot, unbunching data is no longer valid. */
-	if (flags & DC_EXEC) this->ResetDepotUnbunching();
+	if (flags.Test(DoCommandFlag::Execute)) this->ResetDepotUnbunching();
 
 	auto cancel_order = [&]() {
-		if (flags & DC_EXEC) {
+		if (flags.Test(DoCommandFlag::Execute)) {
 			/* If the orders to 'goto depot' are in the orders list (forced servicing),
 			 * then skip to the next order; effectively cancelling this forced service */
 			if (this->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) this->IncrementRealOrderIndex();
@@ -4075,7 +4075,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 			/* We called with a different DepotCommandFlag::Service or DepotCommandFlag::Sell setting.
 			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
 			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
-			if (flags & DC_EXEC) {
+			if (flags.Test(DoCommandFlag::Execute)) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
@@ -4109,7 +4109,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 		if (!closest_depot.found) return CommandCost(no_depot[this->type]);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (this->current_order.IsAnyLoadingType()) this->LeaveStation();
 		if (this->current_order.IsType(OT_WAITING)) this->HandleWaiting(true);
 
@@ -4141,7 +4141,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommandFlags command,
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
 		if (this->type == VEH_TRAIN && (closest_depot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
-			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DC_EXEC, this->index, false);
+			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, this->index, false);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {

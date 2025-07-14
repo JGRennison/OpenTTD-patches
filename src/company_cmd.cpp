@@ -941,7 +941,7 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
  * @param to_merge_id CompanyID to merge (with CCA_MERGE)
  * @return the cost of this operation or an error
  */
-CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID company_id, CompanyRemoveReason reason, ClientID client_id, CompanyID to_merge_id)
+CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyID company_id, CompanyRemoveReason reason, ClientID client_id, CompanyID to_merge_id)
 {
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
 
@@ -951,7 +951,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			if (!_networking) return CMD_ERROR;
 
 			/* Has the network client a correct ClientID? */
-			if (!(flags & DC_EXEC)) return CommandCost();
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 
@@ -1007,7 +1007,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			/* For network games, company deletion is delayed. */
 			if (!_networking && company_id != INVALID_COMPANY && Company::IsValidID(company_id)) return CMD_ERROR;
 
-			if (!(flags & DC_EXEC)) return CommandCost();
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			/* For network game, just assume deletion happened. */
 			assert(company_id == INVALID_COMPANY || !Company::IsValidID(company_id));
@@ -1030,7 +1030,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
 
-			if (!(flags & DC_EXEC)) return CommandCost();
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			Debug(desync, 1, "delete_company: {}, company_id: {}, reason: {}", debug_date_dumper().HexDate(), company_id, reason);
 
@@ -1065,7 +1065,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
 
-			if (!(flags & DC_EXEC)) return CommandCost();
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			c->bankrupt_flags |= CBRF_SALE;
 			if (c->bankrupt_asked.None()) c->bankrupt_flags |= CBRF_SALE_ONLY;
@@ -1085,7 +1085,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlag flags, CompanyCtrlAction cca, CompanyID
 			Company *to_merge = Company::GetIfValid(to_merge_id);
 			if (to_merge == nullptr) return CMD_ERROR;
 
-			if (!(flags & DC_EXEC)) return CommandCost();
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			SubtractMoneyFromAnyCompany(c, CommandCost(EXPENSES_OTHER, to_merge->current_loan - to_merge->money));
 
@@ -1138,7 +1138,7 @@ static bool ExecuteAllowListCtrlAction(CompanyAllowListCtrlAction action, Compan
  * @param public_key The public key of the client to add or remove.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdCompanyAllowListCtrl(DoCommandFlag flags, CompanyAllowListCtrlAction action, const std::string &public_key)
+CommandCost CmdCompanyAllowListCtrl(DoCommandFlags flags, CompanyAllowListCtrlAction action, const std::string &public_key)
 {
 	Company *c = Company::GetIfValid(_current_company);
 	if (c == nullptr) return CMD_ERROR;
@@ -1155,7 +1155,7 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlag flags, CompanyAllowListCtrlAct
 			return CMD_ERROR;
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (ExecuteAllowListCtrlAction(action, c, public_key)) {
 			InvalidateWindowData(WC_CLIENT_LIST, 0);
 			SetWindowDirty(WC_COMPANY, _current_company);
@@ -1171,11 +1171,11 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlag flags, CompanyAllowListCtrlAct
  * @param cmf face bitmasked
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyManagerFace(DoCommandFlag flags, CompanyManagerFace cmf)
+CommandCost CmdSetCompanyManagerFace(DoCommandFlags flags, CompanyManagerFace cmf)
 {
 	if (!IsValidCompanyManagerFace(cmf)) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Company::Get(_current_company)->face = cmf;
 		MarkWholeScreenDirty();
 	}
@@ -1204,7 +1204,7 @@ void UpdateCompanyLiveries(Company *c)
  * @param colour new colour for vehicles, property, etc.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyColour(DoCommandFlag flags, LiveryScheme scheme, bool primary, Colours colour)
+CommandCost CmdSetCompanyColour(DoCommandFlags flags, LiveryScheme scheme, bool primary, Colours colour)
 {
 	if (scheme >= LS_END || (colour >= COLOUR_END && colour != INVALID_COLOUR)) return CMD_ERROR;
 
@@ -1220,7 +1220,7 @@ CommandCost CmdSetCompanyColour(DoCommandFlag flags, LiveryScheme scheme, bool p
 		}
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		if (primary) {
 			if (scheme != LS_DEFAULT) AssignBit(c->livery[scheme].in_use, 0, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour1;
@@ -1310,7 +1310,7 @@ static bool IsUniqueCompanyName(std::string_view name)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameCompany(DoCommandFlag flags, const std::string &text)
+CommandCost CmdRenameCompany(DoCommandFlags flags, const std::string &text)
 {
 	bool reset = text.empty();
 
@@ -1319,7 +1319,7 @@ CommandCost CmdRenameCompany(DoCommandFlag flags, const std::string &text)
 		if (!IsUniqueCompanyName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Company *c = Company::Get(_current_company);
 		if (reset) {
 			c->name.clear();
@@ -1358,7 +1358,7 @@ static bool IsUniquePresidentName(std::string_view name)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenamePresident(DoCommandFlag flags, const std::string &text)
+CommandCost CmdRenamePresident(DoCommandFlags flags, const std::string &text)
 {
 	bool reset = text.empty();
 
@@ -1367,7 +1367,7 @@ CommandCost CmdRenamePresident(DoCommandFlag flags, const std::string &text)
 		if (!IsUniquePresidentName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		Company *c = Company::Get(_current_company);
 
 		if (reset) {
@@ -1376,7 +1376,7 @@ CommandCost CmdRenamePresident(DoCommandFlag flags, const std::string &text)
 			c->president_name = text;
 
 			if (c->name_1 == STR_SV_UNNAMED && c->name.empty()) {
-				Command<CMD_RENAME_COMPANY>::Do(DC_EXEC, text + " Transport");
+				Command<CMD_RENAME_COMPANY>::Do(DoCommandFlag::Execute, text + " Transport");
 			}
 		}
 

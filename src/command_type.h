@@ -742,24 +742,22 @@ template <Commands Tcmd> struct CommandHandlerTraits;
  *
  * This enums defines some flags which can be used for the commands.
  */
-enum DoCommandFlag : uint16_t {
-	DC_NONE                  = 0x000, ///< no flag is set
-	DC_EXEC                  = 0x001, ///< execute the given command
-	DC_AUTO                  = 0x002, ///< don't allow building on structures
-	DC_QUERY_COST            = 0x004, ///< query cost only,  don't build.
-	DC_NO_WATER              = 0x008, ///< don't allow building on water
-	// 0x010 is unused
-	DC_NO_TEST_TOWN_RATING   = 0x020, ///< town rating does not disallow you from building
-	DC_BANKRUPT              = 0x040, ///< company bankrupts, skip money check, skip vehicle on tile check in some cases
-	DC_AUTOREPLACE           = 0x080, ///< autoreplace/autorenew is in progress, this shall disable vehicle limits when building, and ignore certain restrictions when undoing things (like vehicle attach callback)
-	DC_NO_CARGO_CAP_CHECK    = 0x100, ///< when autoreplace/autorenew is in progress, this shall prevent truncating the amount of cargo in the vehicle to prevent testing the command to remove cargo
-	DC_ALL_TILES             = 0x200, ///< allow this command also on MP_VOID tiles
-	DC_NO_MODIFY_TOWN_RATING = 0x400, ///< do not change town rating
-	DC_FORCE_CLEAR_TILE      = 0x800, ///< do not only remove the object on the tile, but also clear any water left on it
-	DC_ALLOW_REMOVE_WATER    = 0x1000,///< always allow removing water
-	DC_TOWN                  = 0x2000,///< town operation
+enum class DoCommandFlag : uint8_t {
+	Execute,              ///< execute the given command
+	Auto,                 ///< don't allow building on structures
+	QueryCost,            ///< query cost only,  don't build.
+	NoWater,              ///< don't allow building on water
+	NoTestTownRating,     ///< town rating does not disallow you from building
+	Bankrupt,             ///< company bankrupts, skip money check, skip vehicle on tile check in some cases
+	AutoReplace,          ///< autoreplace/autorenew is in progress, this shall disable vehicle limits when building, and ignore certain restrictions when undoing things (like vehicle attach callback)
+	NoCargoCapacityCheck, ///< when autoreplace/autorenew is in progress, this shall prevent truncating the amount of cargo in the vehicle to prevent testing the command to remove cargo
+	AllTiles,             ///< allow this command also on MP_VOID tiles
+	NoModifyTownRating,   ///< do not change town rating
+	ForceClearTile,       ///< do not only remove the object on the tile, but also clear any water left on it
+	AllowRemoveWater,     ///< always allow removing water
+	Town,                 ///< town operation
 };
-DECLARE_ENUM_AS_BIT_SET(DoCommandFlag)
+using DoCommandFlags = EnumBitSet<DoCommandFlag, uint16_t>;
 
 enum DoCommandIntlFlag : uint8_t {
 	DCIF_NONE                = 0x0, ///< no flag is set
@@ -789,10 +787,10 @@ enum CommandFlags : uint16_t {
 	CMD_SERVER    =  0x001, ///< the command can only be initiated by the server
 	CMD_SPECTATOR =  0x002, ///< the command may be initiated by a spectator
 	CMD_OFFLINE   =  0x004, ///< the command cannot be executed in a multiplayer game; single-player only
-	CMD_AUTO      =  0x008, ///< set the DC_AUTO flag on this command
+	CMD_AUTO      =  0x008, ///< set the DoCommandFlag::Auto flag on this command
 	CMD_ALL_TILES =  0x010, ///< allow this command also on MP_VOID tiles
 	CMD_NO_TEST   =  0x020, ///< the command's output may differ between test and execute due to town rating changes etc.
-	CMD_NO_WATER  =  0x040, ///< set the DC_NO_WATER flag on this command
+	CMD_NO_WATER  =  0x040, ///< set the DoCommandFlag::NoWater flag on this command
 	CMD_CLIENT_ID =  0x080, ///< set p2 with the ClientID of the sending client.
 	CMD_DEITY     =  0x100, ///< the command may be executed by COMPANY_DEITY
 	CMD_STR_CTRL  =  0x200, ///< the command's string may contain control strings
@@ -899,8 +897,8 @@ namespace TupleCmdDataDetail {
 	 */
 	template <typename... T>
 	struct EMPTY_BASES BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
-		using CommandProc = CommandCost(DoCommandFlag, TileIndex, typename CommandProcTupleAdapter::replace_string_t<T>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::replace_string_t<T>...);
 		using Tuple = std::tuple<T...>;
 		Tuple values;
 
@@ -961,8 +959,8 @@ private:
 
 	template <typename... Targs>
 	struct TupleHelper<std::tuple<Targs...>> {
-		using CommandProc = CommandCost(DoCommandFlag, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlag, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
 		using ValueTuple = std::tuple<std::remove_cvref_t<Targs>...>;
 		using ConstRefTuple = std::tuple<const std::remove_reference_t<Targs> &...>;
 
@@ -1013,8 +1011,8 @@ struct EMPTY_BASES CmdDataT<std::string, std::string, std::string> final : publi
 
 template <>
 struct EMPTY_BASES CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
-	using CommandProc = CommandCost(DoCommandFlag, TileIndex);
-	using CommandProcNoTile = CommandCost(DoCommandFlag);
+	using CommandProc = CommandCost(DoCommandFlags, TileIndex);
+	using CommandProcNoTile = CommandCost(DoCommandFlags);
 	using Tuple = std::tuple<>;
 
 	Tuple GetValues() const { return {}; }
@@ -1100,16 +1098,16 @@ struct DynCommandContainer {
 
 struct CommandExecData {
 	TileIndex tile;
-	DoCommandFlag flags;
+	DoCommandFlags flags;
 	const CommandPayloadBase &payload;
 };
 
 using CommandPayloadDeserialiser = std::unique_ptr<CommandPayloadBase>(DeserialisationBuffer &, StringValidationSettings default_string_validation);
 
 template <typename T>
-using CommandProcDirect = CommandCost(DoCommandFlag flags, TileIndex tile, const T &data);
+using CommandProcDirect = CommandCost(DoCommandFlags flags, TileIndex tile, const T &data);
 template <typename T>
-using CommandProcDirectNoTile = CommandCost(DoCommandFlag flags, const T &data);
+using CommandProcDirectNoTile = CommandCost(DoCommandFlags flags, const T &data);
 
 #ifdef CMD_DEFINE
 #define DEF_CMD_HANDLER(cmd_, proctype_, proc_, flags_, type_) \

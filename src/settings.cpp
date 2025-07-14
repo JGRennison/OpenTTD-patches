@@ -3279,7 +3279,7 @@ std::vector<const SettingDesc *> GetFilteredSettingCollection(std::function<bool
  * @return the cost of this operation or an error
  * @see _settings
  */
-CommandCost CmdChangeSetting(DoCommandFlag flags, const std::string &name, int32_t value)
+CommandCost CmdChangeSetting(DoCommandFlags flags, const std::string &name, int32_t value)
 {
 	if (name.empty()) return CMD_ERROR;
 	const SettingDesc *sd = GetSettingFromName(name);
@@ -3290,7 +3290,7 @@ CommandCost CmdChangeSetting(DoCommandFlag flags, const std::string &name, int32
 
 	if (!sd->IsEditable(true)) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		SCOPE_INFO_FMT([=], "CmdChangeSetting: {} -> {}", sd->name, value);
 
 		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), value, ConfigSaveFlagsUsingGameSettingsFor(sd));
@@ -3307,7 +3307,7 @@ CommandCost CmdChangeSetting(DoCommandFlag flags, const std::string &name, int32
  * The new value is properly clamped to its minimum/maximum when setting
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeCompanySetting(DoCommandFlag flags, const std::string &name, int32_t value)
+CommandCost CmdChangeCompanySetting(DoCommandFlags flags, const std::string &name, int32_t value)
 {
 	if (name.empty()) return CMD_ERROR;
 	const SettingDesc *sd = GetCompanySettingFromName(name);
@@ -3315,7 +3315,7 @@ CommandCost CmdChangeCompanySetting(DoCommandFlag flags, const std::string &name
 	if (sd == nullptr) return CMD_ERROR;
 	if (!sd->IsIntSetting()) return CMD_ERROR;
 
-	if (flags & DC_EXEC) {
+	if (flags.Test(DoCommandFlag::Execute)) {
 		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: {} -> {}", sd->name, value);
 
 		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, value, STCF_NONE);
