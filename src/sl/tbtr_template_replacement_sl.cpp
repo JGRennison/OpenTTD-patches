@@ -18,7 +18,7 @@ static void Save_TMPL_RPLS()
 {
 	SaveLoadTableData slt = SlTableHeader(_template_replacement_desc);
 
-	size_t index = 0;
+	uint index = 0;
 	TemplateReplacement tr{};
 	for (const auto &it : _template_replacements) {
 		tr.group = it.first;
