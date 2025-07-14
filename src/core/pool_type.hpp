@@ -13,6 +13,7 @@
 #include "enum_type.hpp"
 #include "pool_id_type.hpp"
 #include "../debug_dbg_assert.h"
+#include <limits>
 #include <vector>
 
 /** Various types of a pool. */
