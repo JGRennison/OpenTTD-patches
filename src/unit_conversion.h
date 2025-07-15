@@ -10,6 +10,11 @@
 #ifndef UNIT_CONVERSION_H
 #define UNIT_CONVERSION_H
 
+struct DecimalValue {
+	int64_t value;
+	int64_t decimals;
+};
+
 uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type);
 uint ConvertSpeedToUnitDisplaySpeed(uint speed, VehicleType type);
 uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type);
@@ -19,8 +24,8 @@ uint ConvertPowerToDisplayPower(uint power);
 uint ConvertDisplayPowerToPower(uint power);
 int64_t ConvertForceToDisplayForce(int64_t force);
 int64_t ConvertDisplayForceToForce(int64_t force);
-void ConvertPowerWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals);
-void ConvertForceWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals);
+DecimalValue ConvertPowerWeightRatioToDisplay(int64_t ratio);
+DecimalValue ConvertForceWeightRatioToDisplay(int64_t ratio);
 uint ConvertDisplayToPowerWeightRatio(double in);
 uint ConvertDisplayToForceWeightRatio(double in);
 

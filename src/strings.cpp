@@ -1138,10 +1138,10 @@ int64_t ConvertDisplayForceToForce(int64_t force)
 	return _units_force[_settings_game.locale.units_force].c.FromDisplay(force);
 }
 
-static void ConvertWeightRatioToDisplay(const Units &unit, int64_t ratio, int64_t &value, int64_t &decimals)
+static DecimalValue ConvertWeightRatioToDisplay(const Units &unit, int64_t ratio)
 {
 	int64_t input = ratio;
-	decimals = 2;
+	int64_t decimals = 2;
 	if (_settings_game.locale.units_weight == 2) {
 		input *= 1000;
 		decimals += 3;
@@ -1151,12 +1151,14 @@ static void ConvertWeightRatioToDisplay(const Units &unit, int64_t ratio, int64_
 	UnitConversion conv = unit.c;
 	conv.factor /= weight_conv.factor;
 
-	value = conv.ToDisplay(input);
+	int64_t value = conv.ToDisplay(input);
 
 	if (unit.c.factor > 100) {
 		value /= 100;
 		decimals -= 2;
 	}
+
+	return { value, decimals };
 }
 
 static uint ConvertDisplayToWeightRatio(const Units &unit, double in)
@@ -1180,33 +1182,30 @@ static void FormatUnitWeightRatio(StringBuilder builder, const Units &unit, int6
 	str_replace_wchar(insert_pt, lastof(tmp_buffer), SCC_DECIMAL, '/');
 	str_replace_wchar(insert_pt, lastof(tmp_buffer), 0xA0 /* NBSP */, 0);
 
-	int64_t value, decimals;
-	ConvertWeightRatioToDisplay(unit, raw_value, value, decimals);
+	DecimalValue dv = ConvertWeightRatioToDisplay(unit, raw_value);
 
-	auto tmp_params = MakeParameters(value, decimals);
+	auto tmp_params = MakeParameters(dv.value, dv.decimals);
 	FormatString(builder, tmp_buffer, tmp_params);
 }
 
 /**
  * Convert the given internal power / weight ratio to the display decimal.
  * @param ratio the power / weight ratio to convert
- * @param value the output value
- * @param decimals the output decimal offset
+ * @return value the output value and decimal offset
  */
-void ConvertPowerWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals)
+DecimalValue ConvertPowerWeightRatioToDisplay(int64_t ratio)
 {
-	ConvertWeightRatioToDisplay(_units_power[_settings_game.locale.units_power], ratio, value, decimals);
+	return ConvertWeightRatioToDisplay(_units_power[_settings_game.locale.units_power], ratio);
 }
 
 /**
  * Convert the given internal force / weight ratio to the display decimal.
  * @param ratio the force / weight ratio to convert
- * @param value the output value
- * @param decimals the output decimal offset
+ * @return value the output value and decimal offset
  */
-void ConvertForceWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals)
+DecimalValue ConvertForceWeightRatioToDisplay(int64_t ratio)
 {
-	ConvertWeightRatioToDisplay(_units_force[_settings_game.locale.units_force], ratio, value, decimals);
+	return ConvertWeightRatioToDisplay(_units_force[_settings_game.locale.units_force], ratio);
 }
 
 /**

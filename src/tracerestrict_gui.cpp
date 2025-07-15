@@ -1378,21 +1378,17 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 /**
  * Convert integer values to decimal display units
  */
-static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64_t &value, int64_t &decimal)
+static DecimalValue ConvertValueToDecimal(TraceRestrictValueType type, uint in)
 {
 	switch (type) {
 		case TRVT_POWER_WEIGHT_RATIO:
-			ConvertPowerWeightRatioToDisplay(in, value, decimal);
-			break;
+			return ConvertPowerWeightRatioToDisplay(in);
 
 		case TRVT_FORCE_WEIGHT_RATIO:
-			ConvertForceWeightRatioToDisplay(static_cast<int64_t>(in) * 1000, value, decimal);
-			break;
+			return ConvertForceWeightRatioToDisplay(static_cast<int64_t>(in) * 1000);
 
 		case TRVT_SPEED:
-			decimal = _settings_game.locale.units_velocity == 3 ? 1 : 0;
-			value = ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN);
-			break;
+			return { ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN), _settings_game.locale.units_velocity == 3 ? 1 : 0 };
 
 		default:
 			NOT_REACHED();
@@ -2512,11 +2508,10 @@ public:
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
-					int64_t value, decimal;
-					ConvertValueToDecimal(type, item.GetValue(), value, decimal);
+					DecimalValue dv = ConvertValueToDecimal(type, item.GetValue());
 					std::string saved = std::move(_settings_game.locale.digit_group_separator);
 					_settings_game.locale.digit_group_separator.clear();
-					this->TraceRestrictShowQueryString(GetString(STR_JUST_DECIMAL, value, decimal), STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(GetString(STR_JUST_DECIMAL, dv.value, dv.decimals), STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
 					_settings_game.locale.digit_group_separator = std::move(saved);
 				}
 				break;
@@ -2814,9 +2809,8 @@ public:
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			value = ConvertDecimalToValue(type, atof(tmp_buffer));
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
-				int64_t value, decimal;
-				ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1, value, decimal);
-				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, value, decimal), {}, WL_INFO);
+				DecimalValue dv = ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1);
+				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, dv.value, dv.decimals), {}, WL_INFO);
 				return;
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
@@ -3261,10 +3255,9 @@ public:
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
-					int64_t value, decimal;
-					ConvertValueToDecimal(type, item.GetValue(), value, decimal);
-					SetDParam(0, value);
-					SetDParam(1, decimal);
+					DecimalValue dv = ConvertValueToDecimal(type, item.GetValue());
+					SetDParam(0, dv.value);
+					SetDParam(1, dv.decimals);
 				}
 				break;
 			}
