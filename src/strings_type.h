@@ -142,6 +142,7 @@ public:
 	auto operator<=>(const EncodedString &) const = default;
 
 	std::string GetDecodedString() const;
+	void AppendDecodedStringInPlace(struct format_buffer &result) const;
 
 	inline void clear() { this->string.clear(); }
 	inline bool empty() const { return this->string.empty(); }

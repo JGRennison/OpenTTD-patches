@@ -157,6 +157,15 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 }
 
 /**
+ * Decode the encoded string and append in place into an existing format_buffer.
+ * @param result The format_buffer to append to.
+ */
+void EncodedString::AppendDecodedStringInPlace(format_buffer &result) const
+{
+	AppendStringInPlace(result, STR_JUST_RAW_STRING, this->string);
+}
+
+/**
  * Decode the encoded string.
  * @returns Decoded raw string.
  */
