@@ -2801,9 +2801,7 @@ public:
 		if (IsIntegerValueType(type) || type == TRVT_PF_PENALTY) {
 			value = ConvertIntegerValue(type, atoi(str->c_str()), false);
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
-				SetDParam(0, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true));
-				SetDParam(1, 0);
-				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true), 0), {}, WL_INFO);
 				return;
 			}
 
@@ -2818,9 +2816,7 @@ public:
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
 				int64_t value, decimal;
 				ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1, value, decimal);
-				SetDParam(0, value);
-				SetDParam(1, decimal);
-				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, value, decimal), {}, WL_INFO);
 				return;
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
@@ -3009,10 +3005,10 @@ public:
 	/**
 	 * Common OnPlaceObject handler for program management actions which involve clicking on a signal
 	 */
-	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, WidgetID widget, int error_message)
+	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, WidgetID widget, StringID error_message)
 	{
 		if (!IsPlainRailTile(source_tile) && !IsRailTunnelBridgeTile(source_tile)) {
-			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 			return;
 		}
 
@@ -3026,28 +3022,28 @@ public:
 		}
 		Track source_track = FindFirstTrack(trackbits);
 		if (source_track == INVALID_TRACK) {
-			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 			return;
 		}
 
 		if (IsTileType(source_tile, MP_RAILWAY)) {
 			if (!HasTrack(source_tile, source_track)) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 				return;
 			}
 
 			if (!HasSignalOnTrack(source_tile, source_track)) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
 				return;
 			}
 		} else {
 			if (!HasTrack(GetTunnelBridgeTrackBits(source_tile), source_track)) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 				return;
 			}
 
 			if (!IsTunnelBridgeWithSignalSimulation(source_tile) || !HasTrack(GetAcrossTunnelBridgeTrackBits(source_tile), source_track)) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
 				return;
 			}
 		}
@@ -3078,7 +3074,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting an order target
 	 */
-	void OnPlaceObjectDestination(Point pt, TileIndex tile, WidgetID widget, int error_message)
+	void OnPlaceObjectDestination(Point pt, TileIndex tile, WidgetID widget, StringID error_message)
 	{
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
 		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_ORDER) return;
@@ -3107,7 +3103,7 @@ public:
 		}
 
 		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
-			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
 			return;
 		}
 
@@ -3117,14 +3113,14 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting a signal tile value
 	 */
-	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
+	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, WidgetID widget, StringID error_message)
 	{
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
 		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
-			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
 			return;
 		}
 
@@ -3134,12 +3130,12 @@ public:
 			/* OK */
 		} else {
 			if (!IsPlainRailTile(tile)) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 				return;
 			}
 
 			if (GetPresentSignals(tile) == 0) {
-				ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
 				return;
 			}
 		}
@@ -3150,7 +3146,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting a tile value
 	 */
-	void OnPlaceObjectTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
+	void OnPlaceObjectTileValue(Point pt, TileIndex tile, WidgetID widget, StringID error_message)
 	{
 		TraceRestrictInstructionItem item = this->GetSelected().instruction;
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;

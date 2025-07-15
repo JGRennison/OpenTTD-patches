@@ -23,6 +23,8 @@
 #include "../clear_map.h"
 #include "../vehicle_func.h"
 #include "../string_func.h"
+#include "../strings_func.h"
+#include "../window_func.h"
 #include "../date_func.h"
 #include "../roadveh.h"
 #include "../train.h"
@@ -84,7 +86,6 @@
 #include <algorithm>
 
 #include "../safeguards.h"
-#include "../window_func.h"
 
 extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev);
 
@@ -2404,7 +2405,7 @@ bool AfterLoadGame()
 		 * There would be trams without tram track under causing crashes sooner or later. */
 		for (RoadVehicle *v : RoadVehicle::IterateFrontOnly()) {
 			if (EngInfo(v->engine_type)->misc_flags.Test(EngineMiscFlag::RoadIsTram)) {
-				ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_TRAMS, INVALID_STRING_ID, WL_CRITICAL);
+				ShowErrorMessage(GetEncodedString(STR_WARNING_LOADGAME_REMOVED_TRAMS), {}, WL_CRITICAL);
 				delete v;
 			}
 		}
@@ -4585,8 +4586,8 @@ bool AfterLoadGame()
 
 	/* Show this message last to avoid covering up an error message if we bail out part way */
 	switch (gcf_res) {
-		case GLC_COMPATIBLE: ShowErrorMessage(STR_NEWGRF_COMPATIBLE_LOAD_WARNING, INVALID_STRING_ID, WL_CRITICAL); break;
-		case GLC_NOT_FOUND:  ShowErrorMessage(STR_NEWGRF_DISABLED_WARNING, INVALID_STRING_ID, WL_CRITICAL); _pause_mode = PauseMode::Error; break;
+		case GLC_COMPATIBLE: ShowErrorMessage(GetEncodedString(STR_NEWGRF_COMPATIBLE_LOAD_WARNING), {}, WL_CRITICAL); break;
+		case GLC_NOT_FOUND:  ShowErrorMessage(GetEncodedString(STR_NEWGRF_DISABLED_WARNING), {}, WL_CRITICAL); _pause_mode = PauseMode::Error; break;
 		default: break;
 	}
 

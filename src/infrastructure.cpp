@@ -292,7 +292,7 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	}
 
 	if (error_message != STR_NULL) {
-		ShowErrorMessage(error_message, INVALID_STRING_ID, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(error_message), {}, WL_ERROR);
 		return false;
 	}
 

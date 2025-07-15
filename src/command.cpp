@@ -742,7 +742,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	int y = TileY(tile) * TILE_SIZE;
 
 	if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
-		ShowErrorMessage(error_msg, STR_ERROR_NOT_ALLOWED_WHILE_PAUSED, WL_INFO, x, y);
+		ShowErrorMessage(GetEncodedString(error_msg), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, x, y);
 		return false;
 	}
 
@@ -781,7 +781,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	if (res.Failed()) {
 		/* Only show the error when it's for us. */
 		if (estimate_only || (IsLocalCompany() && error_msg != 0 && !(intl_flags & DCIF_NOT_MY_CMD))) {
-			ShowErrorMessage(error_msg, res.GetErrorMessage(), WL_INFO, x, y, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
+			ShowErrorMessage(GetEncodedString(error_msg), x, y, res);
 		}
 	} else if (estimate_only) {
 		ShowEstimatedCostOrIncome(res.GetCost(), x, y);
@@ -1022,8 +1022,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 		 * So make sure the signal buffer is empty even in this case */
 		UpdateSignalsInBuffer();
 		if (_extra_aspects > 0) FlushDeferredAspectUpdates();
-		SetDParam(0, res2.GetAdditionalCashRequired());
-		return CommandCost(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
+		return CommandCostWithParam(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY, res2.GetAdditionalCashRequired());
 	}
 
 	/* update last build coordinate of company. */
@@ -1065,6 +1064,37 @@ CommandCost &CommandCost::operator=(const CommandCost &other)
 }
 
 /**
+ * Set the encoded message string. If set, this is used by the error message window instead of the error StringID,
+ * to allow more information to be displayed to the local player.
+ * @note Do not set an encoded message if the error is not for the local player, as it will never be seen.
+ * @param message EncodedString message to set.
+ */
+void CommandCost::SetEncodedMessage(EncodedString &&message)
+{
+	if (this->GetInlineType() != CommandCostInlineType::AuxiliaryData) {
+		this->AllocAuxData();
+	}
+
+	this->inl.aux_data->encoded_message = std::move(message);
+}
+
+/**
+ * Get the last encoded error message.
+ * @returns Reference to the encoded message.
+ */
+EncodedString &CommandCost::GetEncodedMessage()
+{
+	static EncodedString empty;
+
+	if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+		return this->inl.aux_data->encoded_message;
+	} else {
+		empty.clear();
+		return empty;
+	}
+}
+
+/**
  * Adds the cost of the given command return value to this cost.
  * Also takes a possible error message when it is set.
  * @param ret The command to add the cost of.
@@ -1075,6 +1105,9 @@ void CommandCost::AddCost(const CommandCost &ret)
 	if (this->Succeeded() && !ret.Succeeded()) {
 		this->message = ret.message;
 		this->flags &= ~CCIF_SUCCESS;
+		if (ret.GetInlineType() == CommandCostInlineType::AuxiliaryData && !ret.inl.aux_data->encoded_message.empty()) {
+			this->SetEncodedMessage(EncodedString{ret.inl.aux_data->encoded_message});
+		}
 	}
 }
 
@@ -1244,4 +1277,19 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	if (this->payload == nullptr || expected_offset != buffer.GetDeserialisationPosition()) return "failed to deserialise command payload";
 
 	return nullptr;
+}
+
+/**
+ * Return an error status, with string and parameter.
+ * @param str StringID of error.
+ * @param value Single parameter for error.
+ * @returns CommandCost representing the error.
+ */
+CommandCost CommandCostWithParam(StringID str, uint64_t value)
+{
+	CommandCost error = CommandCost(str);
+	if (IsLocalCompany()) {
+		error.SetEncodedMessage(GetEncodedString(str, value));
+	}
+	return error;
 }

@@ -1667,7 +1667,7 @@ public:
 			case WID_SCMF_LOAD:
 				this->face = _company_manager_face;
 				ScaleAllCompanyManagerFaceBits(this->face);
-				ShowErrorMessage(STR_FACE_LOAD_DONE, INVALID_STRING_ID, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_FACE_LOAD_DONE), {}, WL_INFO);
 				this->UpdateData();
 				this->SetDirty();
 				break;
@@ -1680,7 +1680,7 @@ public:
 			/* Save button */
 			case WID_SCMF_SAVE:
 				_company_manager_face = this->face;
-				ShowErrorMessage(STR_FACE_SAVE_DONE, INVALID_STRING_ID, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_FACE_SAVE_DONE), {}, WL_INFO);
 				break;
 
 			/* Toggle gender (male/female) button */
@@ -1757,11 +1757,11 @@ public:
 		if (!str->empty()) {
 			this->face = std::strtoul(str->c_str(), nullptr, 10);
 			ScaleAllCompanyManagerFaceBits(this->face);
-			ShowErrorMessage(STR_FACE_FACECODE_SET, INVALID_STRING_ID, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_FACE_FACECODE_SET), {}, WL_INFO);
 			this->UpdateData();
 			this->SetDirty();
 		} else {
-			ShowErrorMessage(STR_FACE_FACECODE_ERR, INVALID_STRING_ID, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_FACE_FACECODE_ERR), {}, WL_INFO);
 		}
 	}
 };
@@ -2855,8 +2855,7 @@ struct BuyCompanyWindow : Window {
 	{
 		switch (widget) {
 			case WID_BC_CAPTION:
-				SetDParam(0, STR_COMPANY_NAME);
-				SetDParam(1, Company::Get((CompanyID)this->window_number)->index);
+				SetDParam(0, Company::Get((CompanyID)this->window_number)->index);
 				break;
 		}
 	}

@@ -10,6 +10,7 @@
 #ifndef COMMAND_TYPE_H
 #define COMMAND_TYPE_H
 
+#include "company_type.h"
 #include "economy_type.h"
 #include "string_type.h"
 #include "strings_type.h"
@@ -40,6 +41,7 @@ class CommandCost {
 	Money cost;                                 ///< The cost of this action
 	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
 	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
+	Owner owner = INVALID_COMPANY;              ///< Originator owner of error.
 	StringID message;                           ///< Warning message for when success is unset
 
 	enum class CommandCostInlineType {
@@ -64,6 +66,7 @@ class CommandCost {
 		uint32_t textref_stack[16] = {};
 		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
 		uint textref_stack_size = 0;                    ///< Number of uint32_t values to put on the #TextRefStack for the error message.
+		EncodedString encoded_message;                  ///< Encoded error message, used if the error message includes parameters.
 		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
 		TileIndex tile = INVALID_TILE;
 		uint32_t result = 0;
@@ -139,6 +142,25 @@ public:
 	 */
 	CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
+	/**
+	 * Set the 'owner' (the originator) of this error message. This is used to show a company owner's face if you
+	 * attempt an action on something owned by other company.
+	 */
+	inline void SetErrorOwner(Owner owner)
+	{
+		this->owner = owner;
+	}
+
+	void SetEncodedMessage(EncodedString &&message);
+	EncodedString &GetEncodedMessage();
+
+	/**
+	 * Get the originator owner for this error.
+	 */
+	inline CompanyID GetErrorOwner() const
+	{
+		return this->owner;
+	}
 
 	/**
 	 * Adds the given cost to the cost of the command.
@@ -353,6 +375,8 @@ public:
 	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
 	inline void SetResultData(T result) { this->SetResultData(static_cast<uint32_t>(result.base())); }
 };
+
+CommandCost CommandCostWithParam(StringID str, uint64_t value);
 
 /**
  * Define a default return value for a failed command.

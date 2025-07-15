@@ -448,16 +448,15 @@ size_t IntSettingDesc::ParseValue(const char *str) const
 			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;
 			if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0) return 0;
 		}
-		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
-		msg.SetDParamStr(0, str);
-		msg.SetDParamStr(1, this->name);
-		_settings_error_list.push_back(msg);
+		_settings_error_list.emplace_back(
+			GetEncodedString(STR_CONFIG_ERROR),
+			GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, str, this->name));
 		return this->GetDefaultValue();
 	}
 	if (*end != '\0') {
-		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_TRAILING_CHARACTERS);
-		msg.SetDParamStr(0, this->name);
-		_settings_error_list.push_back(msg);
+		_settings_error_list.emplace_back(
+			GetEncodedString(STR_CONFIG_ERROR),
+			GetEncodedString(STR_CONFIG_ERROR_TRAILING_CHARACTERS, this->name));
 	}
 	return val;
 }
@@ -470,10 +469,9 @@ size_t OneOfManySettingDesc::ParseValue(const char *str) const
 	if (r == SIZE_MAX && this->many_cnvt != nullptr) r = this->many_cnvt(str);
 	if (r != SIZE_MAX) return r; // and here goes converted value
 
-	ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
-	msg.SetDParamStr(0, str);
-	msg.SetDParamStr(1, this->name);
-	_settings_error_list.push_back(msg);
+	_settings_error_list.emplace_back(
+		GetEncodedString(STR_CONFIG_ERROR),
+		GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, str, this->name));
 	return this->GetDefaultValue();
 }
 
@@ -481,10 +479,10 @@ size_t ManyOfManySettingDesc::ParseValue(const char *str) const
 {
 	size_t r = LookupManyOfMany(this->many, str);
 	if (r != SIZE_MAX) return r;
-	ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
-	msg.SetDParamStr(0, str);
-	msg.SetDParamStr(1, this->name);
-	_settings_error_list.push_back(msg);
+
+	_settings_error_list.emplace_back(
+		GetEncodedString(STR_CONFIG_ERROR),
+		GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, str, this->name));
 	return this->GetDefaultValue();
 }
 
@@ -493,10 +491,9 @@ size_t BoolSettingDesc::ParseValue(const char *str) const
 	auto r = BoolSettingDesc::ParseSingleValue(str);
 	if (r.has_value()) return *r;
 
-	ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_VALUE);
-	msg.SetDParamStr(0, str);
-	msg.SetDParamStr(1, this->name);
-	_settings_error_list.push_back(msg);
+	_settings_error_list.emplace_back(
+		GetEncodedString(STR_CONFIG_ERROR),
+		GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, str, this->name));
 	return this->GetDefaultValue();
 }
 
@@ -820,9 +817,9 @@ void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
 	const char *str = (item == nullptr) ? this->def : item->value.has_value() ? item->value->c_str() : nullptr;
 	void *ptr = GetVariableAddress(object, this->save);
 	if (!LoadIntList(str, ptr, this->save.length, GetVarMemType(this->save.conv))) {
-		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY);
-		msg.SetDParamStr(0, this->name);
-		_settings_error_list.push_back(msg);
+		_settings_error_list.emplace_back(
+			GetEncodedString(STR_CONFIG_ERROR),
+			GetEncodedString(STR_CONFIG_ERROR_ARRAY, this->name));
 
 		/* Use default */
 		LoadIntList(this->def, ptr, this->save.length, GetVarMemType(this->save.conv));
@@ -1451,7 +1448,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 				uint signals = GetPresentSignals(t);
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 					/* Signals in both directions */
-					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WL_ERROR);
 					ShowExtraViewportWindow(t);
 					SetRedErrorSquare(t);
 					return false;
@@ -1459,7 +1456,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 				if (((signals & 0x3) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_LOWER))) ||
 						((signals & 0xC) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_UPPER)))) {
 					/* Banned signal types present */
-					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WL_ERROR);
 					ShowExtraViewportWindow(t);
 					SetRedErrorSquare(t);
 					return false;
@@ -1864,7 +1861,7 @@ static void MaxNoAIsChange(int32_t new_value)
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&
 			AI::GetInfoList()->size() == 0 &&
 			!IsNonAdminNetworkClient()) {
-		ShowErrorMessage(STR_WARNING_NO_SUITABLE_AI, INVALID_STRING_ID, WL_CRITICAL);
+		ShowErrorMessage(GetEncodedString(STR_WARNING_NO_SUITABLE_AI), {}, WL_CRITICAL);
 	}
 
 	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
@@ -1908,39 +1905,39 @@ static bool CheckFreeformEdges(int32_t &new_value)
 		for (Ship *s : Ship::Iterate()) {
 			/* Check if there is a ship on the northern border. */
 			if (TileX(s->tile) == 0 || TileY(s->tile) == 0) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_EMPTY, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WL_ERROR);
 				return false;
 			}
 		}
 		for (const BaseStation *st : BaseStation::Iterate()) {
 			/* Check if there is a non-deleted buoy on the northern border. */
 			if (st->IsInUse() && (TileX(st->xy) == 0 || TileY(st->xy) == 0)) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_EMPTY, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WL_ERROR);
 				return false;
 			}
 		}
 	} else {
 		for (uint i = 0; i < Map::MaxX(); i++) {
 			if (TileHeight(TileXY(i, 1)) != 0) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
 		}
 		for (uint i = 1; i < Map::MaxX(); i++) {
 			if (!IsTileType(TileXY(i, Map::MaxY() - 1), MP_WATER) || TileHeight(TileXY(1, Map::MaxY())) != 0) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
 		}
 		for (uint i = 0; i < Map::MaxY(); i++) {
 			if (TileHeight(TileXY(1, i)) != 0) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
 		}
 		for (uint i = 1; i < Map::MaxY(); i++) {
 			if (!IsTileType(TileXY(Map::MaxX() - 1, i), MP_WATER) || TileHeight(TileXY(Map::MaxX(), i)) != 0) {
-				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
 		}
@@ -2004,7 +2001,7 @@ static bool CheckMapEdgeMode(int32_t &new_value)
 	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return true;
 
 	if (!CheckMapEdgesAreWater(true)) {
-		ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 		return false;
 	}
 
@@ -2036,7 +2033,7 @@ static bool CheckDynamicEngines(int32_t &new_value)
 	if (_game_mode == GM_MENU) return true;
 
 	if (!EngineOverrideManager::ResetToCurrentNewGRFConfig()) {
-		ShowErrorMessage(STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES, INVALID_STRING_ID, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES), {}, WL_ERROR);
 		return false;
 	}
 
@@ -2052,7 +2049,7 @@ static bool CheckMaxHeightLevel(int32_t &new_value)
 	 * If yes, disallow the change. */
 	for (TileIndex t(0); t < Map::Size(); t++) {
 		if ((int32_t)TileHeight(t) > new_value) {
-			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN), {}, WL_ERROR);
 			/* Return old, unchanged value */
 			return false;
 		}
@@ -2160,7 +2157,7 @@ static bool CheckTTDPatchSettingFlag(uint flag)
 {
 	extern bool HasTTDPatchFlagBeenObserved(uint flag);
 	if (_networking && HasTTDPatchFlagBeenObserved(flag)) {
-		ShowErrorMessage(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED, STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED), GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF), WL_ERROR);
 		return false;
 	}
 
@@ -2534,8 +2531,9 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 			if (params.has_value()) {
 				BaseGraphics::ini_data.extra_params = params.value();
 			} else {
-				SetDParamStr(0, BaseGraphics::ini_data.name);
-				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+					GetEncodedString(STR_CONFIG_ERROR_ARRAY, BaseGraphics::ini_data.name),
+					WL_CRITICAL);
 			}
 		}
 	}
@@ -2600,36 +2598,39 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, const char *grpname, bool
 			if (params.has_value()) {
 				c->SetParams(params.value());
 			} else {
-				SetDParamStr(0, filename);
-				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+					GetEncodedString(STR_CONFIG_ERROR_ARRAY, filename),
+					WL_CRITICAL);
 			}
 		}
 
 		/* Check if item is valid */
 		if (!FillGRFDetails(*c, is_static) || c->flags.Test(GRFConfigFlag::Invalid)) {
+			StringID reason;
 			if (c->status == GCS_NOT_FOUND) {
-				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND);
+				reason = STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND;
 			} else if (c->flags.Test(GRFConfigFlag::Unsafe)) {
-				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNSAFE);
+				reason = STR_CONFIG_ERROR_INVALID_GRF_UNSAFE;
 			} else if (c->flags.Test(GRFConfigFlag::System)) {
-				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_SYSTEM);
+				reason = STR_CONFIG_ERROR_INVALID_GRF_SYSTEM;
 			} else if (c->flags.Test(GRFConfigFlag::Invalid)) {
-				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE);
+				reason = STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE;
 			} else {
-				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
+				reason = STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN;
 			}
 
-			SetDParamStr(0, filename.empty() ? item.name.c_str() : filename);
-			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+				GetEncodedString(STR_CONFIG_ERROR_INVALID_GRF, filename.empty() ? item.name.c_str() : filename, reason),
+				WL_CRITICAL);
 			continue;
 		}
 
 		/* Check for duplicate GRFID (will also check for duplicate filenames) */
 		auto found = std::ranges::find_if(list, [&c](const auto &gc) { return gc->ident.grfid == c->ident.grfid; });
 		if (found != std::end(list)) {
-			SetDParamStr(0, c->filename);
-			SetDParamStr(1, (*found)->filename);
-			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_DUPLICATE_GRFID, WL_CRITICAL);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+				GetEncodedString(STR_CONFIG_ERROR_DUPLICATE_GRFID, c->filename, (*found)->filename),
+				WL_CRITICAL);
 			continue;
 		}
 
@@ -2638,7 +2639,8 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, const char *grpname, bool
 			c->flags.Set(GRFConfigFlag::Static);
 		} else if (++num_grfs > NETWORK_MAX_GRF_COUNT) {
 			/* Check we will not load more non-static NewGRFs than allowed. This could trigger issues for game servers. */
-			ShowErrorMessage(STR_CONFIG_ERROR, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED, WL_CRITICAL);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+				GetEncodedString(STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED), WL_CRITICAL);
 			break;
 		}
 

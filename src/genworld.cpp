@@ -449,7 +449,8 @@ void LoadTownData()
 	auto f = FioFOpenFile(_file_to_saveload.name, "rb", HEIGHTMAP_DIR, &filesize);
 
 	if (!f.has_value()) {
-		ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED),
+			GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 		return;
 	}
 
@@ -457,7 +458,8 @@ void LoadTownData()
 	size_t len = fread(text.data(), filesize, 1, *f);
 	f.reset();
 	if (len != 1) {
-		ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED),
+			GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 		return;
 	}
 
@@ -466,13 +468,13 @@ void LoadTownData()
 	try {
 		town_data = nlohmann::json::parse(text);
 	} catch (nlohmann::json::exception &) {
-		ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED), GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 		return;
 	}
 
 	/* Check for JSON formatting errors with the array of towns. */
 	if (!town_data.is_array()) {
-		ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED), GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 		return;
 	}
 
@@ -485,14 +487,14 @@ void LoadTownData()
 
 		/* Ensure JSON is formatted properly. */
 		if (!feature.is_object()) {
-			ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED), GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 			return;
 		}
 
 		/* Check to ensure all fields exist and are of the correct type.
 		 * If the town name is formatted wrong, all we can do is give a general warning. */
 		if (!feature.contains("name") || !feature.at("name").is_string()) {
-			ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED), GetEncodedString(STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY), WL_ERROR);
 			return;
 		}
 
@@ -502,8 +504,8 @@ void LoadTownData()
 				!feature.contains("x") || !feature.at("x").is_number() ||
 				!feature.contains("y") || !feature.at("y").is_number()) {
 			feature.at("name").get_to(town.name);
-			SetDParamStr(0, town.name);
-			ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED),
+				GetEncodedString(STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY, town.name), WL_ERROR);
 			return;
 		}
 
@@ -518,8 +520,8 @@ void LoadTownData()
 
 		/* Check for improper coordinates and warn the player. */
 		if (town.x_proportion <= 0.0f || town.y_proportion <= 0.0f || town.x_proportion >= 1.0f || town.y_proportion >= 1.0f) {
-			SetDParamStr(0, town.name);
-			ShowErrorMessage(STR_TOWN_DATA_ERROR_LOAD_FAILED, STR_TOWN_DATA_ERROR_BAD_COORDINATE, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED),
+				GetEncodedString(STR_TOWN_DATA_ERROR_BAD_COORDINATE, town.name), WL_ERROR);
 			return;
 		}
 
@@ -555,8 +557,7 @@ void LoadTownData()
 
 	/* If we couldn't found a town (or multiple), display a message to the player with the number of failed towns. */
 	if (failed_towns > 0) {
-		SetDParam(0, failed_towns);
-		ShowErrorMessage(STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN, INVALID_STRING_ID, WL_WARNING);
+		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN, failed_towns), {}, WL_WARNING);
 	}
 
 	/* Now that we've created the towns, let's grow them to their target populations. */

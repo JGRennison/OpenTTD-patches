@@ -279,8 +279,8 @@ void CcBuildIndustry(const CommandCost &result, TileIndex tile, IndustryType ind
 	if (indtype < NUM_INDUSTRYTYPES) {
 		const IndustrySpec *indsp = GetIndustrySpec(indtype);
 		if (indsp->enabled) {
-			SetDParam(0, indsp->name);
-			ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HERE, result.GetErrorMessage(), WL_INFO, TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE);
+			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_BUILD_HERE, indsp->name),
+				GetEncodedString(result.GetErrorMessage()), WL_INFO, TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE);
 		}
 	}
 }
@@ -640,7 +640,7 @@ public:
 		if (!confirmed) return;
 
 		if (Town::GetNumItems() == 0) {
-			ShowErrorMessage(STR_ERROR_CAN_T_GENERATE_INDUSTRIES, STR_ERROR_MUST_FOUND_TOWN_FIRST, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_GENERATE_INDUSTRIES), GetEncodedString(STR_ERROR_MUST_FOUND_TOWN_FIRST), WL_INFO);
 		} else {
 			Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 			BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
@@ -760,8 +760,8 @@ public:
 		if (_game_mode == GM_EDITOR) {
 			/* Show error if no town exists at all */
 			if (Town::GetNumItems() == 0) {
-				SetDParam(0, indsp->name);
-				ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HERE, STR_ERROR_MUST_FOUND_TOWN_FIRST, WL_INFO, pt.x, pt.y);
+				ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_BUILD_HERE, indsp->name),
+					GetEncodedString(STR_ERROR_MUST_FOUND_TOWN_FIRST), WL_INFO, pt.x, pt.y);
 				return;
 			}
 

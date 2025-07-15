@@ -15,6 +15,7 @@
 #include "../network_internal.h"
 #include "../../debug.h"
 #include "../../error.h"
+#include "../../strings_func.h"
 #include "../../window_func.h"
 
 #include "table/strings.h"
@@ -113,7 +114,7 @@ NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool)
 		CloseNetworkClientWindows();
 		_switch_mode = SM_MENU;
 		_networking = false;
-		ShowErrorMessage(STR_NETWORK_ERROR_LOSTCONNECTION, INVALID_STRING_ID, WL_CRITICAL);
+		ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_LOSTCONNECTION), {}, WL_CRITICAL);
 
 		return this->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
 	}
