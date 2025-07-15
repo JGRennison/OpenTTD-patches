@@ -1482,10 +1482,9 @@ void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v,
 {
 	buffer.format(": type {}, vehicle {} ({}), company {}, unit number {}, wagon {}, engine: ",
 			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
-	SetDParam(0, u->engine_type);
 	{
 		format_buffer engname;
-		AppendStringInPlace(engname, STR_ENGINE_NAME);
+		AppendStringInPlace(engname, STR_ENGINE_NAME, u->engine_type);
 		buffer.append(engname);
 	}
 	uint32_t grfid = u->GetGRFID();

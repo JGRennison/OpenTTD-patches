@@ -95,9 +95,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 		for (CargoType i = 0; i < NUM_CARGO; i++) {
 			if (max_cargo[i] > 0) {
 				if (!first) capacity.append(", ");
-				SetDParam(0, i);
-				SetDParam(1, max_cargo[i]);
-				AppendStringInPlace(capacity, STR_JUST_CARGO);
+				AppendStringInPlace(capacity, STR_JUST_CARGO, i, max_cargo[i]);
 
 				if (subtype_text[i] != 0) {
 					AppendStringInPlace(capacity, subtype_text[i]);

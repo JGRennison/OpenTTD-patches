@@ -85,13 +85,11 @@ std::string DumpCargoPacketDeferredPaymentStats()
 	for (uint i = 0; i < 256; i++) {
 		for (uint j = 0; j < 4; j++) {
 			if (payments[i][j] != 0) {
-				SetDParam(0, i);
-				AppendStringInPlace(buffer, STR_COMPANY_NAME);
+				AppendStringInPlace(buffer, STR_COMPANY_NAME, i);
 				buffer.append(" (");
 				AppendStringInPlace(buffer, STR_REPLACE_VEHICLE_TRAIN + j);
 				buffer.append("): ");
-				SetDParam(0, payments[i][j]);
-				AppendStringInPlace(buffer, STR_JUST_CURRENCY_LONG);
+				AppendStringInPlace(buffer, STR_JUST_CURRENCY_LONG, payments[i][j]);
 				buffer.push_back('\n');
 			}
 		}

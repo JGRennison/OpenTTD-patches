@@ -375,14 +375,14 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 		if (textref_stack_size > 0) StartTextRefStackUsage(textref_stack_grffile, textref_stack_size, textref_stack);
 
 		format_buffer message;
-		AppendStringInPlace(message, summary_msg);
+		AppendStringInPlaceGlobalParams(message, summary_msg);
 		if (detailed_msg != INVALID_STRING_ID) {
 			message.push_back(' ');
-			AppendStringInPlace(message, detailed_msg);
+			AppendStringInPlaceGlobalParams(message, detailed_msg);
 		}
 		if (extra_msg != INVALID_STRING_ID) {
 			message.push_back(' ');
-			AppendStringInPlace(message, extra_msg);
+			AppendStringInPlaceGlobalParams(message, extra_msg);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();

@@ -3449,9 +3449,8 @@ struct VehicleDetailsWindow : Window {
 				if (should_show_slots) {
 					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
 
-					SetDParam(0, slots.size());
 					format_buffer buffer;
-					AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
+					AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER, slots.size());
 
 					for (size_t i = 0; i < slots.size(); i++) {
 						if (i != 0) AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);

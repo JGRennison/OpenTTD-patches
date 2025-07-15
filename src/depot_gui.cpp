@@ -905,11 +905,13 @@ struct DepotWindow : Window {
 			CargoType cargo_type = cs->Index();
 			if (capacity[cargo_type] == 0) continue;
 
-			SetDParam(0, cargo_type);           // {CARGO} #1
-			SetDParam(1, loaded[cargo_type]);   // {CARGO} #2
-			SetDParam(2, cargo_type);           // {SHORTCARGO} #1
-			SetDParam(3, capacity[cargo_type]); // {SHORTCARGO} #2
-			AppendStringInPlace(details, STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
+
+			AppendStringInPlace(details, STR_DEPOT_VEHICLE_TOOLTIP_CARGO,
+				cargo_type,          // {CARGO} #1
+				loaded[cargo_type],  // {CARGO} #2
+				cargo_type,          // {SHORTCARGO} #1
+				capacity[cargo_type] // {SHORTCARGO} #2
+			);
 		}
 
 		/* Show tooltip window */

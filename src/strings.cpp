@@ -387,26 +387,12 @@ std::string GetString(StringID string)
 }
 
 /**
- * Resolve the given StringID and append in place into an existing std::string with all the associated
- * DParam lookups and formatting.
- * @param result The std::string to place the translated string.
- * @param string The unique identifier of the translatable string.
- */
-void AppendStringInPlace(std::string &result, StringID string)
-{
-	_global_string_params.PrepareForNextRun();
-	format_buffer buffer;
-	GetStringWithArgs(StringBuilder(buffer), string, _global_string_params);
-	result += (std::string_view)buffer;
-}
-
-/**
  * Resolve the given StringID and append in place into an existing format_buffer with all the associated
  * DParam lookups and formatting.
  * @param result The format_buffer to place the translated string.
  * @param string The unique identifier of the translatable string.
  */
-void AppendStringInPlace(format_buffer &result, StringID string)
+void AppendStringInPlaceGlobalParams(format_buffer &result, StringID string)
 {
 	_global_string_params.PrepareForNextRun();
 	GetStringWithArgs(StringBuilder(result), string, _global_string_params);
@@ -414,8 +400,7 @@ void AppendStringInPlace(format_buffer &result, StringID string)
 
 /**
  * Resolve the given StringID and append in place with most special stringcodes replaced by the string parameters.
- * DParam lookups and formatting.
- * @param result The format_buffer to place the translated string.
+ * @param result The format_buffer to append the translated string.
  * @param string The unique identifier of the translatable string.
  * @param args Span of arguments for the string.
  */
@@ -423,6 +408,19 @@ void AppendStringInPlaceWithArgs(format_buffer &result, StringID string, std::sp
 {
 	StringParameters params{args};
 	GetStringWithArgs(StringBuilder(result), string, params);
+}
+
+/**
+ * Resolve the given StringID and append in place with most special stringcodes replaced by the string parameters.
+ * @param result The std::string to append the translated string.
+ * @param string The unique identifier of the translatable string.
+ * @param args Span of arguments for the string.
+ */
+void AppendStringInPlaceWithArgs(std::string &result, StringID string, std::span<StringParameter> args)
+{
+	format_buffer buffer;
+	AppendStringInPlaceWithArgs(buffer, string, args);
+	result += (std::string_view)buffer;
 }
 
 /**

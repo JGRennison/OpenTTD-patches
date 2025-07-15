@@ -64,9 +64,9 @@ inline StringID MakeStringID(StringTab tab, StringIndexInTab index)
 std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
-void AppendStringInPlace(std::string &result, StringID string);
-void AppendStringInPlace(struct format_buffer &result, StringID string);
+void AppendStringInPlaceGlobalParams(struct format_buffer &result, StringID string);
 void AppendStringInPlaceWithArgs(struct format_buffer &result, StringID string, std::span<StringParameter> args);
+void AppendStringInPlaceWithArgs(std::string &result, StringID string, std::span<StringParameter> args);
 uint32_t GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);
@@ -188,6 +188,19 @@ EncodedString GetEncodedString(StringID string, Args &&... args)
  */
 template <typename... Args>
 void AppendStringInPlace(struct format_buffer &result, StringID string, Args &&... args)
+{
+	auto params = MakeParameters(std::forward<Args>(args)...);
+	return AppendStringInPlaceWithArgs(result, string, params);
+}
+
+/**
+ * Resolve the given StringID and append in place into an existing format_buffer with most special stringcodes replaced by the string parameters.
+ * @param result The std::string to append to.
+ * @param string String ID to format.
+ * @param args The parameters to set.
+ */
+template <typename... Args>
+void AppendStringInPlace(std::string &result, StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
 	return AppendStringInPlaceWithArgs(result, string, params);

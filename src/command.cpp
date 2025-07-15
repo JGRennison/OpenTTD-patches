@@ -1111,11 +1111,11 @@ std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 		buf.format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
 			buf.push_back(' ');
-			AppendStringInPlace(buf, cmd_msg);
+			AppendStringInPlaceGlobalParams(buf, cmd_msg);
 		}
 		if (this->message != INVALID_STRING_ID) {
 			buf.push_back(' ');
-			AppendStringInPlace(buf, this->message);
+			AppendStringInPlaceGlobalParams(buf, this->message);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();

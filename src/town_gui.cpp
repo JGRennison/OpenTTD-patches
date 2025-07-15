@@ -1156,7 +1156,7 @@ public:
 					format_buffer buffer;
 					AppendStringInPlace(buffer, GetTownString(t), t->index, t->cache.population);
 					if (_settings_client.gui.show_town_growth_status) {
-						AppendStringInPlaceWithArgs(buffer, GetTownGrowthStatusString(t), {});
+						AppendStringInPlace(buffer, GetTownGrowthStatusString(t));
 					}
 
 					DrawString(tr.left, tr.right, tr.top + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, (std::string_view)buffer);
