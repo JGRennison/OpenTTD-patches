@@ -29,6 +29,7 @@
 #include "object_base.h"
 #include "newgrf_text.h"
 #include "string_func.h"
+#include "scope.h"
 #include "scope_info.h"
 #include "core/random_func.hpp"
 #include "settings_func.h"
@@ -855,12 +856,6 @@ void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const Command
 
 
 /**
- * Helper to deduplicate the code for returning.
- * @param cmd   the command cost to return.
- */
-#define return_dcpi(cmd) { _docommand_recursive = 0; return cmd; }
-
-/**
  * Helper function for the toplevel network safe docommand function for the current company.
  *
  * @param cmd The command to execute (a CMD_* value)
@@ -877,6 +872,9 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	/* Prevent recursion; it gives a mess over the network */
 	assert(_docommand_recursive == 0);
 	_docommand_recursive = 1;
+	auto guard = scope_guard([]() {
+		_docommand_recursive = 0;
+	});
 
 	assert(IsValidCommand(cmd));
 
@@ -887,7 +885,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	assert(command.exec != nullptr);
 
 	if ((intl_flags & DCIF_TYPE_CHECKED) == 0) {
-		if (!IsCorrectCommandPayloadType(cmd, payload)) return_dcpi(CMD_ERROR);
+		if (!IsCorrectCommandPayloadType(cmd, payload)) return CMD_ERROR;
 		intl_flags |= DCIF_TYPE_CHECKED;
 	}
 
@@ -897,7 +895,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	DoCommandFlags flags = CommandFlagsToDCFlags(cmd_flags);
 
 	/* Do not even think about executing out-of-bounds tile-commands */
-	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && !cmd_flags.Test(CommandFlag::AllTiles)))) return_dcpi(CMD_ERROR);
+	if (tile != 0 && (tile >= Map::Size() || (!IsValidTile(tile) && !cmd_flags.Test(CommandFlag::AllTiles)))) return CMD_ERROR;
 
 	/* Always execute server and spectator commands as spectator */
 	bool exec_as_spectator = cmd_flags.Any({CommandFlag::Spectator, CommandFlag::Server});
@@ -906,7 +904,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	 * The server will ditch any server commands a client sends to it, so effectively
 	 * this guards the server from executing functions for an invalid company. */
 	if (_game_mode == GM_NORMAL && !exec_as_spectator && !Company::IsValidID(_current_company) && !(_current_company == OWNER_DEITY && cmd_flags.Test(CommandFlag::Deity))) {
-		return_dcpi(CMD_ERROR);
+		return CMD_ERROR;
 	}
 
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
@@ -965,7 +963,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 			log_desync_cmd("cmdf");
 		}
 		cur_company.Restore();
-		return_dcpi(res);
+		return res;
 	}
 
 	/*
@@ -982,7 +980,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 		 * This way it's not handled by DoCommand and only the
 		 * actual execution of the command causes messages. Also
 		 * reset the storages as we've not executed the command. */
-		return_dcpi(CommandCost());
+		return CommandCost();
 	}
 	log_desync_cmd("cmd");
 
@@ -1014,7 +1012,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 				"Command: cmd: 0x{:X} ({}), Test: {}, Exec: {}", cmd, GetCommandName(cmd),
 				res.SummaryMessage(error_msg), res2.SummaryMessage(error_msg)); // sanity check
 	} else if (res2.Failed()) {
-		return_dcpi(res2);
+		return res2;
 	}
 
 	/* If we're needing more money and we haven't done
@@ -1025,7 +1023,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 		UpdateSignalsInBuffer();
 		if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 		SetDParam(0, res2.GetAdditionalCashRequired());
-		return_dcpi(CommandCost(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY));
+		return CommandCost(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
 	}
 
 	/* update last build coordinate of company. */
@@ -1044,9 +1042,8 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	/* Record if there was a command issues during pause; ignore pause/other setting related changes. */
 	if (_pause_mode.Any() && command.type != CMDT_SERVER_SETTING) _pause_mode.Set(PauseMode::CommandDuringPause);
 
-	return_dcpi(res2);
+	return res2;
 }
-#undef return_dcpi
 
 CommandCost::CommandCost(const CommandCost &other)
 {
