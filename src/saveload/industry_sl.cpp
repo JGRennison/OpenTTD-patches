@@ -24,12 +24,53 @@ extern void LoadSetIndustryHistoryValidMask(Industry *i, bool extended_history);
 
 namespace upstream_sl {
 
+class SlIndustryAcceptedHistory : public DefaultSaveLoadHandler<SlIndustryAcceptedHistory, Industry::AcceptedCargo> {
+public:
+	static inline const SaveLoad description[] = {
+		 SLE_VAR(Industry::AcceptedHistory, accepted, SLE_FILE_U16 | SLE_VAR_U32),
+		 SLE_VAR(Industry::AcceptedHistory, waiting, SLE_UINT16),
+	};
+	static inline const SaveLoadCompatTable compat_description = {};
+
+	void Save(Industry::AcceptedCargo *a) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(Industry::AcceptedCargo *a) const override
+	{
+		size_t len = SlGetStructListLength(UINT32_MAX);
+		if (len == 0) return;
+
+		auto &history = a->GetOrCreateHistory();
+
+		if (len > history.size()) {
+			/* Truncate larger history */
+			for (auto &h : history) {
+				SlObject(&h, this->GetLoadDescription());
+			}
+			Industry::AcceptedHistory tmp{};
+			for (size_t i = 0; i < len - history.size(); i++) {
+				SlObject(&tmp, this->GetDescription());
+			}
+			return;
+		}
+
+		for (auto &h : history) {
+			if (--len > history.size()) break; // unsigned so wraps after hitting zero.
+			SlObject(&h, this->GetLoadDescription());
+		}
+	}
+};
+
 class SlIndustryAccepted : public DefaultSaveLoadHandler<SlIndustryAccepted, Industry> {
 public:
 	inline static const SaveLoad description[] = {
 		 SLE_VAR(Industry::AcceptedCargo, cargo, SLE_UINT8),
 		 SLE_VAR(Industry::AcceptedCargo, waiting, SLE_UINT16),
 		 SLE_VAR(Industry::AcceptedCargo, last_accepted, SLE_INT32),
+		SLE_CONDVAR(Industry::AcceptedCargo, accumulated_waiting, SLE_UINT32, SLV_INDUSTRY_ACCEPTED_HISTORY, SL_MAX_VERSION),
+		SLEG_CONDSTRUCTLIST("history", SlIndustryAcceptedHistory, SLV_INDUSTRY_ACCEPTED_HISTORY, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = {};
 

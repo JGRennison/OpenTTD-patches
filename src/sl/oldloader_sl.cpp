@@ -863,7 +863,7 @@ static bool LoadOldIndustry(LoadgameState &ls, int num)
 		i->accepted_cargo_count = INDUSTRY_ORIGINAL_NUM_INPUTS;
 		i->produced = std::make_unique<Industry::ProducedCargo[]>(INDUSTRY_ORIGINAL_NUM_OUTPUTS);
 		i->produced_cargo_count = INDUSTRY_ORIGINAL_NUM_OUTPUTS;
-		std::copy(std::begin(_old_accepted), std::end(_old_accepted), i->accepted.get());
+		std::move(std::begin(_old_accepted), std::end(_old_accepted), i->accepted.get());
 		std::copy(std::begin(_old_produced), std::end(_old_produced), i->produced.get());
 
 		i->town = RemapTown(i->location.tile);

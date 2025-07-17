@@ -1189,6 +1189,7 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoType cargo_type,
 
 		uint amount = std::min(num_pieces, 0xFFFFu - acc.waiting);
 		acc.waiting += amount;
+		acc.GetOrCreateHistory()[THIS_MONTH].accepted += amount;
 		acc.last_accepted = EconTime::CurDate();
 		num_pieces -= amount;
 		accepted += amount;

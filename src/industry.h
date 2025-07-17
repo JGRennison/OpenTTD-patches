@@ -85,14 +85,32 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 		HistoryData<ProducedHistory> history{};    ///< History of cargo produced and transported for this month and 24 previous months
 	};
 
+	struct AcceptedHistory {
+		uint32_t accepted = 0;                     /// Total accepted.
+		uint16_t waiting = 0;                      /// Average waiting.
+	};
+
 	struct AcceptedCargo {
-		CargoType cargo{};              ///< Cargo type
-		uint16_t waiting = 0;           ///< Amount of cargo waiting to processed
-		EconTime::Date last_accepted{}; ///< Last day cargo was accepted by this industry
+		CargoType cargo{};                                       ///< Cargo type
+		uint16_t waiting = 0;                                    ///< Amount of cargo waiting to processed
+		uint32_t accumulated_waiting = 0;                        ///< Accumulated waiting total over the last month, used to calculate average.
+		EconTime::Date last_accepted{};                          ///< Last day cargo was accepted by this industry
+		std::unique_ptr<HistoryData<AcceptedHistory>> history{}; ///< History of accepted and waiting cargo.
+
+		/**
+		 * Get history data, creating it if necessary.
+		 * @return Accepted history data.
+		 */
+		inline HistoryData<AcceptedHistory> &GetOrCreateHistory()
+		{
+			if (this->history == nullptr) this->history = std::make_unique<HistoryData<AcceptedHistory>>();
+			return *this->history;
+		}
 	};
 
 	IndustryType type = 0;                 ///< Type of industry.
 	Owner owner = INVALID_OWNER;           ///< Owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
+	uint8_t accumulated_wait_count = 0;    ///< Number of waits added to AcceptedCargo::accumulated_waiting
 	CalTime::Date construction_date{};     ///< Date of the construction of the industry
 	TileArea location{INVALID_TILE, 0, 0}; ///< Location of the industry
 	Town *town = nullptr;                  ///< Nearest town
@@ -165,7 +183,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	 */
 	inline const AcceptedCargo &GetAccepted(size_t slot) const
 	{
-		static const AcceptedCargo empty{INVALID_CARGO, 0, {}};
+		static const AcceptedCargo empty{INVALID_CARGO, 0, 0, {}, {}};
 		return slot < (size_t)this->accepted_cargo_count ? this->accepted[slot] : empty;
 	}
 

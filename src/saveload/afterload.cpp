@@ -4526,6 +4526,13 @@ bool AfterLoadGame()
 		_settings_game.station.truncate_cargo = true;
 	}
 
+	if (!IsSavegameVersionBefore(SLV_INDUSTRY_ACCEPTED_HISTORY)) {
+		uint8_t accumulated_wait_count = EconTime::CurDay() - 1;
+		for (Industry *i : Industry::Iterate()) {
+			i->accumulated_wait_count = accumulated_wait_count;
+		}
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}

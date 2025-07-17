@@ -1290,6 +1290,11 @@ void OnTick_Industry()
 	_scaled_production_ticks = _industry_inverse_cargo_scaler.Scale(INDUSTRY_PRODUCE_TICKS);
 	for (Industry *i : Industry::Iterate()) {
 		ProduceIndustryGoods(i);
+
+		if ((_tick_counter + i->index) % DAY_TICKS == 0) {
+			for (auto &a : i->Accepted()) a.accumulated_waiting += a.waiting;
+			i->accumulated_wait_count++;
+		}
 	}
 }
 
@@ -2604,6 +2609,15 @@ static void UpdateIndustryStatistics(Industry *i)
 
 			RotateHistory(p.history);
 		}
+	}
+
+	for (auto &a : i->Accepted()) {
+		if (!IsValidCargoType(a.cargo)) continue;
+		if (a.history == nullptr) continue;
+
+		(*a.history)[THIS_MONTH].waiting = GetAndResetAccumulatedAverage<uint16_t>(a.accumulated_waiting, i->accumulated_wait_count);
+		i->accumulated_wait_count = 0;
+		RotateHistory(*a.history);
 	}
 }
 

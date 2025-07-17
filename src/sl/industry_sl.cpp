@@ -95,6 +95,45 @@ void LoadSetIndustryHistoryValidMask(Industry *i, bool extended_history)
 
 static OldPersistentStorage _old_ind_persistent_storage;
 
+
+struct IndustryAcceptedHistoryStructHandler final : public TypedSaveLoadStructHandler<IndustryAcceptedHistoryStructHandler, Industry::AcceptedCargo> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad _industry_accepted_history_desc[] = {
+			NSL("accepted",        SLE_VAR(Industry::AcceptedHistory, accepted,      SLE_UINT32)),
+			NSL("waiting",         SLE_VAR(Industry::AcceptedHistory, waiting,       SLE_UINT16)),
+		};
+		return _industry_accepted_history_desc;
+	}
+
+	void Save(Industry::AcceptedCargo *a) const override
+	{
+		if (!IsValidCargoType(a->cargo) || a->history == nullptr) {
+			/* Don't save any history if cargo slot isn't used. */
+			SlSetStructListLength(0);
+			return;
+		}
+
+		SlSetStructListLength(a->history->size());
+
+		for (auto &h : *a->history) {
+			SlObject(&h, this->GetLoadDescription());
+		}
+	}
+
+	void Load(Industry::AcceptedCargo *a) const override
+	{
+		size_t len = SlGetStructListLength(UINT32_MAX);
+		if (len == 0) return;
+
+		auto &history = a->GetOrCreateHistory();
+		for (auto &h : history) {
+			if (--len > history.size()) break; // unsigned so wraps after hitting zero.
+			SlObject(&h, this->GetLoadDescription());
+		}
+	}
+};
+
 struct IndustryAcceptedStructHandler final : public TypedSaveLoadStructHandler<IndustryAcceptedStructHandler, Industry> {
 	NamedSaveLoadTable GetDescription() const override
 	{
@@ -102,6 +141,8 @@ struct IndustryAcceptedStructHandler final : public TypedSaveLoadStructHandler<I
 			NSL("cargo",           SLE_VAR(Industry::AcceptedCargo, cargo,         SLE_UINT8)),
 			NSL("waiting",         SLE_VAR(Industry::AcceptedCargo, waiting,       SLE_UINT16)),
 			NSL("last_accepted",   SLE_VAR(Industry::AcceptedCargo, last_accepted, SLE_INT32)),
+			NSL("accumulated_wait_count", SLE_VAR(Industry::AcceptedCargo, accumulated_waiting, SLE_UINT32)),
+			NSLT_STRUCTLIST<IndustryAcceptedHistoryStructHandler>("history"),
 		};
 		return _industry_accepted_desc;
 	}
@@ -277,6 +318,7 @@ static std::vector<NamedSaveLoad> MakeIndustryDesc()
 		NSL("text",                           SLE_CONDSSTR(Industry, text,                       SLE_STR | SLF_ALLOW_CONTROL,      SLV_INDUSTRY_TEXT,               SL_MAX_VERSION)),
 
 		NSLT("valid_history",                SLE_CONDVAR_X(Industry, valid_history,              SLE_UINT64,                       SL_MIN_VERSION,                  SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_INDUSTRY_CARGO_REORGANISE, 3))),
+		NSLT("accumulated_wait_count",             SLE_VAR(Industry, accumulated_wait_count,     SLE_UINT8)),
 
 		NSL("", SLE_CONDNULL(32, SLV_2, SLV_144)), // old reserved space
 	});
