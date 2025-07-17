@@ -239,7 +239,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
 
 /**
  * Zeppeliner handling, v->state states:
- * 0: Zeppeliner initialization has found a small airport, go there and crash
+ * 0: Zeppeliner initialization has found an airport, go there and crash
  * 1: Create crash and animate falling down for extra dramatic effect
  * 2: Create more smoke and leave debris on ground
  * 2: Clear the runway after some time and remove crashed zeppeliner
@@ -287,7 +287,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 
 		if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
 			Station *st = Station::GetByTile(v->tile);
-			st->airport.blocks.Reset(AirportBlock::RunwayIn);
+			st->airport.blocks.Reset({AirportBlock::Zeppeliner, AirportBlock::RunwayIn});
 			AI::NewEvent(GetTileOwner(v->tile), new ScriptEventDisasterZeppelinerCleared(st->index));
 		}
 
@@ -324,7 +324,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 	}
 
 	if (IsValidTile(v->tile) && IsAirportTile(v->tile)) {
-		Station::GetByTile(v->tile)->airport.blocks.Set(AirportBlock::RunwayIn);
+		Station::GetByTile(v->tile)->airport.blocks.Reset({AirportBlock::Zeppeliner, AirportBlock::RunwayIn});
 	}
 
 	return true;
@@ -749,14 +749,14 @@ typedef void DisasterInitProc();
 
 
 /**
- * Zeppeliner which crashes on a small airport if one found,
+ * Zeppeliner which crashes on an airport if one found,
  * otherwise crashes on a random tile
  */
 static void Disaster_Zeppeliner_Init()
 {
 	if (!Vehicle::CanAllocateItem(2)) return;
 
-	/* Pick a random place, unless we find a small airport */
+	/* Pick a random place, unless we find an airport */
 	int x = TileX(RandomTile()) * TILE_SIZE + TILE_SIZE / 2;
 
 	for (const Station *st : Station::Iterate()) {

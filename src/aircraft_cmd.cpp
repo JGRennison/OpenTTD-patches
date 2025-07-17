@@ -1166,6 +1166,15 @@ static bool AircraftController(Aircraft *v)
 		}
 
 		if (amd.flags.Test(AirportMovingDataFlag::Land)) {
+			if (st->airport.blocks.Test(AirportBlock::Zeppeliner)) {
+				/* Zeppeliner blocked the runway, abort landing */
+				v->state = FLYING;
+				UpdateAircraftCache(v);
+				SetAircraftPosition(v, gp.x, gp.y, GetAircraftFlightLevel(v));
+				v->pos = v->previous_pos;
+				continue;
+			}
+
 			if (st->airport.tile == INVALID_TILE) {
 				/* Airport has been removed, abort the landing procedure */
 				v->state = FLYING;
@@ -1887,6 +1896,11 @@ static void AirportClearBlock(const Aircraft *v, const AirportFTAClass *apc)
 	/* we have left the previous block, and entered the new one. Free the previous block */
 	if (apc->layout[v->previous_pos].blocks != apc->layout[v->pos].blocks) {
 		Station *st = Station::Get(v->targetairport);
+
+		if (st->airport.blocks.Test(AirportBlock::Zeppeliner) &&
+				apc->layout[v->previous_pos].blocks == AirportBlock::RunwayIn) {
+			return;
+		}
 
 		st->airport.blocks.Reset(apc->layout[v->previous_pos].blocks);
 	}
