@@ -372,9 +372,6 @@ inline constexpr size_t SlVarSize(VarType type)
 	}
 }
 
-template<typename T>
-concept SlIsPrimitiveType = T::saveload_primitive_type || false;
-
 /**
  * Check whether the variable size/type of the variable in the saveload configuration
  * matches with the actual variable size, for primitive types.

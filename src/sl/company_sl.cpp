@@ -811,7 +811,7 @@ static void Save_PLYP()
 			SlSetLength(0);
 		} else {
 			SlSetLength(2 + _saved_PLYP_data.size());
-			SlWriteUint16(_saved_PLYP_invalid_mask.base());
+			SlWriteUint16(_saved_PLYP_invalid_mask);
 			MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_saved_PLYP_data.data(), _saved_PLYP_data.size());
 		}
 		return;
@@ -822,7 +822,7 @@ static void Save_PLYP()
 		MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 
 		for (const Company *c : Company::Iterate()) {
-			SlWriteUint16(c->index.base());
+			SlWriteUint16(c->index);
 
 			const std::string &password = _network_company_states[c->index].password;
 			SlWriteUint32((uint32_t)password.size());

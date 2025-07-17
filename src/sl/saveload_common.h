@@ -12,6 +12,9 @@
 
 #include "../strings_type.h"
 
+template<typename T>
+concept SlIsPrimitiveType = T::saveload_primitive_type || false;
+
 struct SaveLoad;
 struct NamedSaveLoad;
 
@@ -455,6 +458,24 @@ uint64_t SlReadUint64();
 void SlWriteUint16(uint16_t v);
 void SlWriteUint32(uint32_t v);
 void SlWriteUint64(uint64_t v);
+
+inline void SlWriteByte(const SlIsPrimitiveType auto &data)
+{
+	static_assert(sizeof(data.base()) == 1);
+	SlWriteByte((uint8_t)data.base());
+}
+
+inline void SlWriteUint16(const SlIsPrimitiveType auto &data)
+{
+	static_assert(sizeof(data.base()) <= 2);
+	SlWriteUint16((uint16_t)data.base());
+}
+
+inline void SlWriteUint32(const SlIsPrimitiveType auto &data)
+{
+	static_assert(sizeof(data.base()) <= 4);
+	SlWriteUint16((uint32_t)data.base());
+}
 
 void SlSkipBytes(size_t length);
 

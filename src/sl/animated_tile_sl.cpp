@@ -37,7 +37,7 @@ struct AnimatedTileStructHandler : public SaveLoadStructHandler {
 		SlSetStructListLength(count);
 		for (const auto &it : _animated_tiles) {
 			if (it.second.pending_deletion) continue;
-			SlWriteUint32(it.first.base());
+			SlWriteUint32(it.first);
 			SlWriteByte(it.second.speed);
 		}
 	}
