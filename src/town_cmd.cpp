@@ -161,7 +161,7 @@ Town::~Town()
 	}
 	this->psa_list.clear();
 
-	Source src{this->index, SourceType::Town};
+	Source src = Source::Make<SourceType::Town>(this->index);
 	DeleteSubsidyWith(src);
 	DeleteNewGRFInspectWindow(GSF_FAKE_TOWNS, this->index);
 	CargoPacket::InvalidateAllFrom(src);
@@ -606,7 +606,7 @@ static void TownGenerateCargo(Town *t, CargoType ct, uint amount, StationFinder 
 	if (amount == 0) return;
 
 	t->supplied[ct].new_max += amount;
-	t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, {t->index, SourceType::Town}, stations.GetStations());
+	t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, Source::Make<SourceType::Town>(t->index), stations.GetStations());
 }
 
 /**

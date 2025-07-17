@@ -293,9 +293,9 @@ bool FindSubsidyPassengerRoute()
 	}
 
 	if (DistanceManhattan(src->xy, dst->xy) > SUBSIDY_MAX_DISTANCE) return false;
-	if (CheckSubsidyDuplicate(cargo_type, {src->index, SourceType::Town}, {dst->index, SourceType::Town})) return false;
+	if (CheckSubsidyDuplicate(cargo_type, Source::Make<SourceType::Town>(src->index), Source::Make<SourceType::Town>(dst->index))) return false;
 
-	CreateSubsidy(cargo_type, {src->index, SourceType::Town}, {dst->index, SourceType::Town});
+	CreateSubsidy(cargo_type, Source::Make<SourceType::Town>(src->index), Source::Make<SourceType::Town>(dst->index));
 
 	return true;
 }
@@ -353,7 +353,7 @@ bool FindSubsidyTownCargoRoute()
 	/* Quit if the percentage transported is large enough. */
 	if (src_town->GetPercentTransported(cargo_type) > SUBSIDY_MAX_PCT_TRANSPORTED) return false;
 
-	return FindSubsidyCargoDestination(cargo_type, {src_town->index, SourceType::Town});
+	return FindSubsidyCargoDestination(cargo_type, Source::Make<SourceType::Town>(src_town->index));
 }
 
 /**
@@ -400,7 +400,7 @@ bool FindSubsidyIndustryCargoRoute()
 		return false;
 	}
 
-	return FindSubsidyCargoDestination(cargo_type, {src_ind->index, SourceType::Industry});
+	return FindSubsidyCargoDestination(cargo_type, Source::Make<SourceType::Industry>(src_ind->index));
 }
 
 /**

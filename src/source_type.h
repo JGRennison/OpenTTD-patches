@@ -34,6 +34,12 @@ public:
 	SourceID id; ///< Index of industry/town/HQ, Source::Invalid if unknown/invalid.
 	SourceType type; ///< Type of \c source_id.
 
+	template <SourceType TYPE>
+	static constexpr Source Make(uint16_t id)
+	{
+		return { id, TYPE };
+	}
+
 	constexpr CompanyID ToCompanyID() const { assert(this->type == SourceType::Headquarters); return static_cast<CompanyID>(this->id); }
 	constexpr IndustryID ToIndustryID() const { assert(this->type == SourceType::Industry); return static_cast<IndustryID>(this->id); }
 	constexpr TownID ToTownID() const { assert(this->type == SourceType::Town); return static_cast<TownID>(this->id); }

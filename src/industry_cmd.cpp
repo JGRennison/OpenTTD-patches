@@ -195,7 +195,7 @@ Industry::~Industry()
 	CloseWindowById(WC_INDUSTRY_PRODUCTION, this->index);
 	DeleteNewGRFInspectWindow(GSF_INDUSTRIES, this->index);
 
-	Source src{this->index, SourceType::Industry};
+	Source src = Source::Make<SourceType::Industry>(this->index);
 	DeleteSubsidyWith(src);
 	CargoPacket::InvalidateAllFrom(src);
 
@@ -542,7 +542,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 
 			p.history[THIS_MONTH].production = SaturatingAdd<uint32_t>(p.history[THIS_MONTH].production, cw);
 
-			uint am = MoveGoodsToStation(p.cargo, cw, {i->index, SourceType::Industry}, i->stations_near, i->exclusive_consumer);
+			uint am = MoveGoodsToStation(p.cargo, cw, Source::Make<SourceType::Industry>(i->index), i->stations_near, i->exclusive_consumer);
 			p.history[THIS_MONTH].transported = SaturatingAdd<uint32_t>(p.history[THIS_MONTH].transported, am);
 
 			moved_cargo |= (am != 0);

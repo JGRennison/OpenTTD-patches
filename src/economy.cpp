@@ -1207,7 +1207,7 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoType cargo_type,
 		accepted += amount;
 
 		/* Update the cargo monitor. */
-		AddCargoDelivery(cargo_type, company, amount, {source, SourceType::Industry}, st, ind->index);
+		AddCargoDelivery(cargo_type, company, amount, Source::Make<SourceType::Industry>(source), st, ind->index);
 
 		return num_pieces != 0;
 	});
@@ -1248,7 +1248,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoType cargo_type, uint
 		include(_cargo_delivery_destinations, e.ind);
 		e.acc->waiting += e.delivered;
 		e.acc->last_accepted = EconTime::CurDate();
-		AddCargoDelivery(cargo_type, company, e.delivered, {source, SourceType::Industry}, st, e.ind->index);
+		AddCargoDelivery(cargo_type, company, e.delivered, Source::Make<SourceType::Industry>(source), st, e.ind->index);
 	};
 
 	if (acceptingIndustries.size() == 1) {
