@@ -481,6 +481,9 @@ public:
 			if ((TrackFollower::DoTrackMasking() || n.flags_u.flags_s.reverse_pending) && entering && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 				n.segment->end_segment_reason.Set(EndSegmentReason::SafeTile);
 			}
+
+			/* Record the entrance signal as a passed signal */
+			if (entering) n.num_signals_passed++;
 		}
 		return cost;
 	}
