@@ -205,7 +205,7 @@ inline void SetTileOwner(TileIndex tile, Owner owner)
 	dbg_assert_tile(IsValidTile(tile), tile);
 	dbg_assert_tile(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), tile);
 
-	SB(_m[tile].m1, 0, 5, owner);
+	SB(_m[tile].m1, 0, 5, owner.base());
 }
 
 /**

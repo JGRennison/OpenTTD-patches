@@ -18,6 +18,7 @@
 #include "table/strings.h"
 #include "company_func.h"
 #include "core/tinystring_type.hpp"
+#include "core/typed_container.hpp"
 #include <array>
 #include <memory>
 
@@ -99,10 +100,10 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	/* Company ratings. */
 	CompanyMask have_ratings;        ///< which companies have a rating
-	uint8_t unwanted[MAX_COMPANIES]; ///< how many months companies aren't wanted by towns (bribe)
+	TypedIndexContainer<std::array<uint8_t, MAX_COMPANIES>, CompanyID> unwanted{}; ///< how many months companies aren't wanted by towns (bribe)
 	CompanyID exclusivity;           ///< which company has exclusivity
 	uint8_t exclusive_counter;       ///< months till the exclusivity expires
-	int16_t ratings[MAX_COMPANIES];  ///< ratings of each company for this town
+	TypedIndexContainer<std::array<int16_t, MAX_COMPANIES>, CompanyID, TypedIndexContainerPolicy::AllowInteger> ratings{}; ///< ratings of each company for this town
 	uint8_t town_label_rating;       ///< Label dependent on _local_company rating.
 
 	TransportedCargoStat<uint32_t> supplied[NUM_CARGO]; ///< Cargo statistics about supplied cargo.

@@ -60,7 +60,7 @@ void UpdateObjectColours(const Company *c);
 CompanyID _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyID _current_company; ///< Company currently doing an action.
 CompanyID _loaded_local_company; ///< Local company in loaded savegame
-Colours _company_colours[MAX_COMPANIES];  ///< NOSAVE: can be determined from company structs.
+TypedIndexContainer<std::array<Colours, MAX_COMPANIES>, CompanyID> _company_colours; ///< NOSAVE: can be determined from company structs.
 CompanyManagerFace _company_manager_face; ///< for company manager face storage in openttd.cfg
 uint _cur_company_tick_index;             ///< used to generate a name for one company that doesn't have a name yet per tick
 
@@ -1404,7 +1404,7 @@ CompanyID GetDefaultLocalCompany()
 	if (_loaded_local_company < MAX_COMPANIES && Company::IsValidID(_loaded_local_company)) {
 		return _loaded_local_company;
 	}
-	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
+	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) {
 		if (Company::IsValidID(i)) return i;
 	}
 	return COMPANY_FIRST;

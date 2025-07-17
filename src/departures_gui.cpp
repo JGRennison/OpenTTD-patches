@@ -1431,7 +1431,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int toc_left = ltr ? text_right - toc_width : text_left;
 			const int toc_right = ltr ? text_right : text_left + toc_width;
 
-			SetDParam(0, (uint64_t)(d->vehicle->owner));
+			SetDParam(0, d->vehicle->owner);
 			DrawString(toc_left, toc_right, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_RIGHT);
 		}
 

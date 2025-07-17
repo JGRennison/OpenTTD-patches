@@ -43,7 +43,7 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
 		uint64_t k = iter->first;
 		if ((CompanyID) GB(k, 24, 8) == old_owner) {
 			if (new_owner != INVALID_OWNER) {
-				SB(k, 24, 8, new_owner);
+				SB(k, 24, 8, new_owner.base());
 				to_merge.push_back({ k, iter->second });
 			}
 			iter = _cargo_packet_deferred_payments.erase(iter);
@@ -58,7 +58,7 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
 
 inline uint64_t CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
 {
-	return (((uint64_t) id.base()) << 32) | (cid << 24) | (type << 22);
+	return (((uint64_t) id.base()) << 32) | (cid.base() << 24) | (type << 22);
 }
 
 template <typename F>

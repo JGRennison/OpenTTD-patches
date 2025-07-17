@@ -499,7 +499,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 
 void MakeNewgameSettingsLive()
 {
-	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
 		if (_settings_game.ai_config[c] != nullptr) {
 			delete _settings_game.ai_config[c];
 		}
@@ -514,7 +514,7 @@ void MakeNewgameSettingsLive()
 	_settings_time = _settings_game.game_time = (TimeSettings)_settings_client.gui;
 	_old_vds = _settings_client.company.vehicle;
 
-	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
 		_settings_game.ai_config[c] = nullptr;
 		if (_settings_newgame.ai_config[c] != nullptr) {
 			_settings_game.ai_config[c] = new AIConfig(_settings_newgame.ai_config[c]);
@@ -1478,7 +1478,7 @@ void SwitchToMode(SwitchMode new_mode)
 void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v, uint length)
 {
 	buffer.format(": type {}, vehicle {} ({}), company {}, unit number {}, wagon {}, engine: ",
-			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
+			u->type, u->index, v->index, u->owner, v->unitnumber, length);
 	{
 		format_buffer engname;
 		AppendStringInPlace(engname, STR_ENGINE_NAME, u->engine_type);

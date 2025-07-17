@@ -84,12 +84,12 @@ static int32_t ClickChangeCompanyCheat(int32_t new_value, int32_t change_directi
 		if (Company::IsValidID((CompanyID)new_value)) {
 			OrderBackup::Reset();
 			SetLocalCompany((CompanyID)new_value);
-			return _local_company;
+			return _local_company.base();
 		}
 		new_value += change_direction;
 	}
 
-	return _local_company;
+	return _local_company.base();
 }
 
 /**

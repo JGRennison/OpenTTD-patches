@@ -86,7 +86,7 @@
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	for (const Company *c : Company::Iterate()) {
 		if (c->is_ai) {
-			SCOPE_INFO_FMT([&], "AI::GameLoop: {}: {} (v{})\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
+			SCOPE_INFO_FMT([&], "AI::GameLoop: {}: {} (v{})\n", c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 			PerformanceMeasurer framerate((PerformanceElement)(PFE_AI0 + c->index));
 			cur_company.Change(c->index);
 			c->ai_instance->GameLoop();
@@ -188,7 +188,7 @@
 		ResetConfig();
 	} else {
 		/* Do not bother re-scanning AI files, just delete config */
-		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
 			if (_settings_game.ai_config[c] != nullptr) {
 				delete _settings_game.ai_config[c];
 				_settings_game.ai_config[c] = nullptr;
@@ -206,7 +206,7 @@
 	/* Check for both newgame as current game if we can reload the AIInfo inside
 	 *  the AIConfig. If not, remove the AI from the list (which will assign
 	 *  a random new AI on reload). */
-	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
 		if (_settings_game.ai_config[c] != nullptr && _settings_game.ai_config[c]->HasScript()) {
 			if (!_settings_game.ai_config[c]->ResetInfo(true)) {
 				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName());
@@ -268,7 +268,7 @@
 	}
 
 	/* Try to send the event to all AIs */
-	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
 		if (c != skip_company) AI::NewEvent(c, event);
 	}
 }

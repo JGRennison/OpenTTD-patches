@@ -97,7 +97,7 @@ void DumpSpecialEventsLog(format_target &buffer)
 
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
 		buffer.format(" {:3} | {:4}-{:02}-{:02}, {:2}, {:3} | cc: {:3}, lc: {:3} | {}\n",
-				i, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, (uint) entry.current_company, (uint) entry.local_company, entry.msg.c_str());
+				i, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.current_company, entry.local_company, entry.msg.c_str());
 	}
 }
 

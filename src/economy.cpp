@@ -107,7 +107,7 @@ const ScoreInfo _score_info[] = {
 	{       0,   0}  // SCORE_TOTAL
 };
 
-int64_t _score_part[MAX_COMPANIES][SCORE_END];
+TypedIndexContainer<std::array<std::array<int64_t, SCORE_END>, MAX_COMPANIES>, CompanyID> _score_part;
 Economy _economy;
 Prices _price;
 Money _additional_cash_required;
@@ -231,7 +231,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	Owner owner = c->index;
 	int score = 0;
 
-	memset(_score_part[owner], 0, sizeof(_score_part[owner]));
+	_score_part[owner] = {};
 
 	/* Count vehicles */
 	{
@@ -2517,7 +2517,7 @@ static void DoAcquireCompany(Company *c, bool hostile_takeover)
 {
 	CompanyID ci = c->index;
 
-	Debug(desync, 1, "buy_company: {}, buyer: {}, bought: {}", debug_date_dumper().HexDate(), (uint) _current_company, (uint) ci);
+	Debug(desync, 1, "buy_company: {}, buyer: {}, bought: {}", debug_date_dumper().HexDate(), _current_company, ci);
 
 	auto cni = std::make_unique<CompanyNewsInformation>(c, Company::Get(_current_company));
 

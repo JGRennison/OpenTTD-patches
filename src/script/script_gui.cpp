@@ -762,9 +762,9 @@ struct ScriptDebugWindow : public Window {
 	 */
 	bool IsValidDebugCompany(CompanyID company) const
 	{
-		switch (company) {
-			case INVALID_COMPANY: return false;
-			case OWNER_DEITY:     return Game::GetInstance() != nullptr;
+		switch (company.base()) {
+			case INVALID_COMPANY.base(): return false;
+			case OWNER_DEITY.base(): return Game::GetInstance() != nullptr;
 			default:              return Company::IsValidAiID(company);
 		}
 	}
@@ -997,7 +997,7 @@ struct ScriptDebugWindow : public Window {
 	void UpdateAIButtonsState()
 	{
 		/* Update company buttons */
-		for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
+		for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) {
 			/* Mark dead/paused AIs by setting the background colour. */
 			bool valid = Company::IsValidAiID(i);
 			bool dead = valid && Company::Get(i)->ai_instance->IsDead();

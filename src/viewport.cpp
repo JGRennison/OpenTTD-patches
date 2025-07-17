@@ -2404,7 +2404,7 @@ static void ViewportDrawBoundingBoxes(const DrawPixelInfo *dpi, const ParentSpri
 static void ViewportMapStoreBridge(const Viewport * const vp, const TileIndex tile)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
-	extern uint _company_to_list_pos[MAX_COMPANIES];
+	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 	/* No need to bother for hidden things */
 	if (!_settings_client.gui.show_bridges_on_map) return;
@@ -2460,7 +2460,7 @@ static void ViewportMapStoreBridge(const Viewport * const vp, const TileIndex ti
 void ViewportMapStoreTunnel(const TileIndex tile, const TileIndex tile_south, const int tunnel_z, const bool insert_sorted)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
-	extern uint _company_to_list_pos[MAX_COMPANIES];
+	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 	/* No need to bother for hidden things */
 	if (!_settings_client.gui.show_tunnels_on_map) return;
@@ -3342,7 +3342,7 @@ template <bool is_32bpp, bool show_slope>
 static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType t, const uint colour_index)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
-	extern uint _company_to_list_pos[MAX_COMPANIES];
+	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 	switch (t) {
 		case MP_INDUSTRY: return IS32(PC_DARK_GREY);
@@ -3725,7 +3725,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
-	extern uint _company_to_list_pos[MAX_COMPANIES];
+	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 	TileIndex tile = tbtm->from_tile;
 	const Owner o = GetTileOwner(tile);

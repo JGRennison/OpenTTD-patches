@@ -48,6 +48,12 @@ struct BufferSerialisationHelper {
 		BufferSend_uint8(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
 	}
 
+	void Send_uint8(const SerialisationAsBase auto &data)
+	{
+		static_assert(sizeof(data.base()) == 1);
+		this->Send_uint8((uint8_t)data.base());
+	}
+
 	void Send_uint16(uint16_t data)
 	{
 		T *self = static_cast<T *>(this);

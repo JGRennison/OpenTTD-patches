@@ -100,9 +100,9 @@ public:
 		text_buf.append("\nCompanies:\n");
 		for (const Company *c : Company::Iterate()) {
 			if (c->ai_info == nullptr) {
-				text_buf.format("{:2}: Human\n", (int)c->index);
+				text_buf.format("{:2}: Human\n", c->index);
 			} else {
-				text_buf.format("{:2}: {} (v{})\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
+				text_buf.format("{:2}: {} (v{})\n", c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 			}
 		}
 		text_buf.push_back('\0'); // libpng expects null-terminated text

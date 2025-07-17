@@ -1000,13 +1000,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet
 	if (this->HasClientQuit()) return NETWORK_RECV_STATUS_CLIENT_QUIT;
 
 	/* join another company does not affect these values */
-	switch (playas) {
-		case COMPANY_NEW_COMPANY: // New company
+	switch (playas.base()) {
+		case COMPANY_NEW_COMPANY.base(): // New company
 			if (Company::GetNumItems() >= _settings_client.network.max_companies) {
 				return this->SendError(NETWORK_ERROR_FULL);
 			}
 			break;
-		case COMPANY_SPECTATOR: // Spectator
+		case COMPANY_SPECTATOR.base(): // Spectator
 			break;
 		default: // Join another company (companies 1-8 (index 0-7))
 			if (!Company::IsValidHumanID(playas)) {
@@ -1037,7 +1037,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet
 	ci->client_name = client_name;
 	ci->client_playas = playas;
 	//ci->public_key = this->peer_public_key;
-	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), ci->index, (int)ci->client_playas);
+	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), ci->index, ci->client_playas);
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	Company *c = Company::GetIfValid(playas);
@@ -1819,12 +1819,11 @@ std::string ServerNetworkGameSocketHandler::GetDebugInfo() const
 }
 
 /**
- * Populate the company stats.
- * @param stats the stats to update
+ * Get the company stats.
  */
-void NetworkPopulateCompanyStats(NetworkCompanyStats *stats)
+NetworkCompanyStatsArray NetworkGetCompanyStats()
 {
-	memset(stats, 0, sizeof(*stats) * MAX_COMPANIES);
+	NetworkCompanyStatsArray stats = {};
 
 	/* Go through all vehicles and count the type of vehicles */
 	for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
@@ -1852,6 +1851,8 @@ void NetworkPopulateCompanyStats(NetworkCompanyStats *stats)
 			if (s->facilities.Test(StationFacility::Dock))      npi->num_station[NETWORK_VEH_SHIP]++;
 		}
 	}
+
+	return stats;
 }
 
 /**
@@ -1864,7 +1865,7 @@ void NetworkUpdateClientInfo(ClientID client_id)
 
 	if (ci == nullptr) return;
 
-	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), client_id, (int)ci->client_playas);
+	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), client_id, ci->client_playas);
 
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) {

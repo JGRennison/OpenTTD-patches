@@ -170,7 +170,7 @@ static IndustryType _smallmap_industry_highlight = IT_INVALID;
 /** State of highlight blinking */
 static bool _smallmap_industry_highlight_state;
 /** For connecting company ID to position in owner list (small map legend) */
-uint _company_to_list_pos[MAX_COMPANIES];
+TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 static void NotifyAllViewports(ViewportMapType map_type)
 {
@@ -235,7 +235,7 @@ void BuildIndustriesLegend()
 void BuildLinkStatsLegend()
 {
 	/* Clear the legend */
-	memset(_legend_linkstats, 0, sizeof(_legend_linkstats));
+	std::fill(std::begin(_legend_linkstats), std::end(_legend_linkstats), LegendAndColour{});
 
 	uint i = 0;
 	for (; i < _sorted_cargo_specs.size(); ++i) {

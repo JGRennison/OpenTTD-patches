@@ -2720,7 +2720,7 @@ static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *g
 
 static void PopulateRegistersUsedByNewGRFSpriteLayout(const NewGRFSpriteLayout &dts, std::bitset<256> &bits)
 {
-	const TileLayoutRegisters *registers = dts.registers;
+	const TileLayoutRegisters *registers = dts.registers.data();
 
 	auto process_registers = [&](uint i, bool is_parent) {
 		const TileLayoutRegisters *reg = registers + i;
@@ -2741,10 +2741,9 @@ static void PopulateRegistersUsedByNewGRFSpriteLayout(const NewGRFSpriteLayout &
 	process_registers(0, false);
 
 	uint offset = 0; // offset 0 is the ground sprite
-	const DrawTileSeqStruct *element;
-	foreach_draw_tile_seq(element, dts.seq) {
+	for (const DrawTileSeqStruct &element : dts.seq) {
 		offset++;
-		process_registers(offset, element->IsParentSprite());
+		process_registers(offset, element.IsParentSprite());
 	}
 }
 
@@ -2831,7 +2830,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 			}
 			if (sg != nullptr && sg->type == SGT_TILELAYOUT) {
 				const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
-				if (tlsg->dts.registers != nullptr) {
+				if (!tlsg->dts.registers.empty()) {
 					PopulateRegistersUsedByNewGRFSpriteLayout(tlsg->dts, bits);
 				}
 			}
@@ -3287,7 +3286,7 @@ static void PopulateRailStationAdvancedLayoutVariableUsage()
 
 			std::bitset<256> bits;
 			for (const NewGRFSpriteLayout &dts : statspec->renderdata) {
-				if (dts.registers != nullptr) {
+				if (!dts.registers.empty()) {
 					PopulateRegistersUsedByNewGRFSpriteLayout(dts, bits);
 				}
 			}

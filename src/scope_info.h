@@ -76,7 +76,6 @@ struct GeneralFmtDumper {
 
 struct DumpTileInfoTag{};
 
-using CompanyInfoDumper = GeneralFmtDumper<struct Company, int>;
 using VehicleInfoDumper = GeneralFmtDumper<struct Vehicle, const struct Vehicle *>;
 using StationInfoDumper = GeneralFmtDumper<struct BaseStation, const struct BaseStation *>;
 using TileInfoDumper = GeneralFmtDumper<DumpTileInfoTag, TileIndex>;

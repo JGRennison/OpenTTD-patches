@@ -661,7 +661,7 @@ static void Load_PLYR()
 		if (!SlIsTableChunk()) {
 			helper.Load_PLYR_common(c, cprops);
 		}
-		_company_colours[index] = (Colours)c->colour;
+		_company_colours[CompanyID(index)] = (Colours)c->colour;
 
 		/* settings moved from game settings to company settings */
 		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 2)) {
@@ -822,7 +822,7 @@ static void Save_PLYP()
 		MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 
 		for (const Company *c : Company::Iterate()) {
-			SlWriteUint16(c->index);
+			SlWriteUint16(c->index.base());
 
 			const std::string &password = _network_company_states[c->index].password;
 			SlWriteUint32((uint32_t)password.size());

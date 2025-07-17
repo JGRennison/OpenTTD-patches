@@ -27,7 +27,7 @@ struct SRNDChunkHandler : ChunkHandler {
 	{
 		SlTableHeader(_randomizer_desc);
 
-		for (Owner owner = OWNER_BEGIN; owner < OWNER_END; owner++) {
+		for (Owner owner = OWNER_BEGIN; owner < OWNER_END; ++owner) {
 			SlSetArrayIndex(owner);
 			SlObject(&ScriptObject::GetRandomizer(owner), _randomizer_desc);
 		}

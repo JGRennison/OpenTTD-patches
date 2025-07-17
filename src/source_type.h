@@ -37,7 +37,15 @@ public:
 	template <SourceType TYPE>
 	static constexpr Source Make(uint16_t id)
 	{
+		static_assert(TYPE != SourceType::Headquarters);
 		return { id, TYPE };
+	}
+
+	template <SourceType TYPE>
+	static constexpr Source Make(CompanyID id)
+	{
+		static_assert(TYPE == SourceType::Headquarters);
+		return { id.base(), TYPE };
 	}
 
 	constexpr CompanyID ToCompanyID() const { assert(this->type == SourceType::Headquarters); return static_cast<CompanyID>(this->id); }

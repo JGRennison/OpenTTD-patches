@@ -382,7 +382,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 }
 
 
-/* static */ Randomizer ScriptObject::random_states[OWNER_END];
+/* static */ ScriptObject::RandomizerArray ScriptObject::random_states;
 
 Randomizer &ScriptObject::GetRandomizer(Owner owner)
 {
@@ -392,7 +392,7 @@ Randomizer &ScriptObject::GetRandomizer(Owner owner)
 void ScriptObject::InitializeRandomizers()
 {
 	Randomizer random = _random;
-	for (Owner owner = OWNER_BEGIN; owner < OWNER_END; owner++) {
+	for (Owner owner = OWNER_BEGIN; owner < OWNER_END; ++owner) {
 		ScriptObject::GetRandomizer(owner).SetSeed(random.Next());
 	}
 }

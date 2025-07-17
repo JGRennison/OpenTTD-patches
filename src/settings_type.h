@@ -23,6 +23,7 @@
 #include "rail_gui_type.h"
 #include "station_type.h"
 #include "signal_type.h"
+#include "core/typed_container.hpp"
 
 /* Used to validate sizes of "max" value in settings. */
 const size_t MAX_SLE_UINT8 = UINT8_MAX;
@@ -901,7 +902,7 @@ struct GameSettings {
 	ConstructionSettings construction;       ///< construction of things in-game
 	AISettings           ai;                 ///< what may the AI do?
 	ScriptSettings       script;             ///< settings for scripts
-	class AIConfig      *ai_config[MAX_COMPANIES]; ///< settings per company
+	TypedIndexContainer<std::array<class AIConfig *, MAX_COMPANIES>, CompanyID> ai_config; ///< settings per company
 	class GameConfig    *game_config;        ///< settings for gamescript
 	PathfinderSettings   pf;                 ///< settings for all pathfinders
 	OrderSettings        order;              ///< settings related to orders

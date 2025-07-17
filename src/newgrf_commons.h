@@ -110,9 +110,9 @@ static const uint TLR_MAX_VAR10 = 7; ///< Maximum value for var 10.
  * In contrast to #DrawTileSprites this struct is for allocated
  * layouts on the heap. It allocates data and frees them on destruction.
  */
-struct NewGRFSpriteLayout : ZeroedMemoryAllocator, DrawTileSprites {
-	std::vector<DrawTileSeqStruct> seq;
-	const TileLayoutRegisters *registers;
+struct NewGRFSpriteLayout : DrawTileSprites {
+	std::vector<DrawTileSeqStruct> seq{};
+	std::vector<TileLayoutRegisters> registers{};
 
 	/**
 	 * Number of sprites in all referenced spritesets.
@@ -122,26 +122,6 @@ struct NewGRFSpriteLayout : ZeroedMemoryAllocator, DrawTileSprites {
 
 	void Allocate(uint num_sprites);
 	void AllocateRegisters();
-	void Clone(const NewGRFSpriteLayout *source);
-
-	/**
-	 * Clone a spritelayout.
-	 * @param source The spritelayout to copy.
-	 */
-	void Clone(const DrawTileSprites *source)
-	{
-		assert(source != nullptr && this != source);
-
-		auto source_sequence = source->GetSequence();
-		assert(this->seq.empty() && !source_sequence.empty());
-		this->ground = source->ground;
-		this->seq.insert(this->seq.end(), source_sequence.begin(), source_sequence.end());
-	}
-
-	virtual ~NewGRFSpriteLayout()
-	{
-		free(this->registers);
-	}
 
 	/**
 	 * Tests whether this spritelayout needs preprocessing by
@@ -151,7 +131,7 @@ struct NewGRFSpriteLayout : ZeroedMemoryAllocator, DrawTileSprites {
 	 */
 	bool NeedsPreprocessing() const
 	{
-		return this->registers != nullptr;
+		return !this->registers.empty();
 	}
 
 	uint32_t PrepareLayout(uint32_t orig_offset, uint32_t newgrf_ground_offset, uint32_t newgrf_offset, uint constr_stage, bool separate_ground) const;

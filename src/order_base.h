@@ -40,7 +40,7 @@ inline uint32_t OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid
 {
 	static_assert(sizeof(dest) == 2);
 	static_assert(OT_END <= 16);
-	return (((uint32_t) dest.base()) << 16) | (((uint32_t) cid) << 8) | (((uint32_t) order_type) << 4) | ((uint32_t) veh_type);
+	return (((uint32_t) dest.base()) << 16) | (((uint32_t) cid.base()) << 8) | (((uint32_t) order_type) << 4) | ((uint32_t) veh_type);
 }
 
 template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID dest, F handler)

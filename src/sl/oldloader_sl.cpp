@@ -42,7 +42,6 @@
 
 static bool _read_ttdpatch_flags;    ///< Have we (tried to) read TTDPatch extra flags?
 static uint16_t _old_extra_chunk_nums; ///< Number of extra TTDPatch chunks
-static uint8_t _old_vehicle_multiplier; ///< TTDPatch vehicle multiplier
 
 void FixOldMapArray()
 {
@@ -154,14 +153,12 @@ static void FixOldTowns()
 	}
 }
 
-static StringID *_old_vehicle_names;
-
 /**
  * Convert the old style vehicles into something that resembles
  * the old new style savegames. Then #AfterLoadGame can handle
  * the rest of the conversion.
  */
-void FixOldVehicles()
+void FixOldVehicles(LoadgameState &ls)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if ((size_t)v->next == 0xFFFF) {
@@ -180,7 +177,7 @@ void FixOldVehicles()
 		/* Vehicle-subtype is different in TTD(Patch) */
 		if (v->type == VEH_EFFECT) v->subtype = v->subtype >> 1;
 
-		v->name = CopyFromOldName(_old_vehicle_names[v->index]);
+		v->name = CopyFromOldName(ls.vehicle_names[v->index]);
 
 		/* We haven't used this bit for stations for ages */
 		if (v->type == VEH_ROAD) {
@@ -509,34 +506,34 @@ static Town *RemapTown(TileIndex fallback)
 	return t;
 }
 
-static void ReadTTDPatchFlags()
+static void ReadTTDPatchFlags(LoadgameState &ls)
 {
 	if (_read_ttdpatch_flags) return;
 
 	_read_ttdpatch_flags = true;
 
 	/* Set default values */
-	_old_vehicle_multiplier = 1;
+	ls.vehicle_multiplier = 1;
 	_ttdp_version = 0;
 	_old_extra_chunk_nums = 0;
 	_bump_assert_value = 0;
 
 	if (_savegame_type == SGT_TTO) return;
 
-	/* TTDPatch misuses _old_map3 for flags.. read them! */
-	_old_vehicle_multiplier = _m[TileIndex(0)].m3;
+	/* TTDPatch misuses old map3 (now m3/m4) for flags.. read them! */
+	ls.vehicle_multiplier = _m[TileIndex(0)].m3;
 	/* Somehow.... there was an error in some savegames, so 0 becomes 1
 	 * and 1 becomes 2. The rest of the values are okay */
-	if (_old_vehicle_multiplier < 2) _old_vehicle_multiplier++;
+	if (ls.vehicle_multiplier < 2) ls.vehicle_multiplier++;
 
-	_old_vehicle_names = MallocT<StringID>(_old_vehicle_multiplier * 850);
+	ls.vehicle_names.resize(ls.vehicle_multiplier * 850);
 
 	/* TTDPatch increases the Vehicle-part in the middle of the game,
 	 * so if the multiplier is anything else but 1, the assert fails..
 	 * bump the assert value so it doesn't!
 	 * (1 multiplier == 850 vehicles
 	 * 1 vehicle   == 128 bytes */
-	_bump_assert_value = (_old_vehicle_multiplier - 1) * 850 * 128;
+	_bump_assert_value = (ls.vehicle_multiplier - 1) * 850 * 128;
 
 	/* The first 17 bytes are used by TTDP1, which translates to the first 9 m3s and first 8 m4s. */
 	for (TileIndex i(0); i <= 8; i++) { // check tile 0, too
@@ -560,7 +557,7 @@ static void ReadTTDPatchFlags()
 
 	if (_savegame_type == SGT_TTDP2) Debug(oldloader, 2, "Found TTDPatch game");
 
-	Debug(oldloader, 3, "Vehicle-multiplier is set to {} ({} vehicles)", _old_vehicle_multiplier, _old_vehicle_multiplier * 850);
+	Debug(oldloader, 3, "Vehicle-multiplier is set to {} ({} vehicles)", ls.vehicle_multiplier, ls.vehicle_multiplier * 850);
 }
 
 static const OldChunks town_chunk[] = {
@@ -615,7 +612,7 @@ static const OldChunks town_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldTown(LoadgameState *ls, int num)
+static bool LoadOldTown(LoadgameState &ls, int num)
 {
 	Town *t = new (TownID(num)) Town();
 	if (!LoadChunk(ls, t, town_chunk)) return false;
@@ -638,7 +635,7 @@ static const OldChunks order_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldOrder(LoadgameState *ls, int num)
+static bool LoadOldOrder(LoadgameState &ls, int num)
 {
 	if (!LoadChunk(ls, nullptr, order_chunk)) return false;
 
@@ -657,7 +654,7 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 	return true;
 }
 
-static bool LoadOldAnimTileList(LoadgameState *ls, int)
+static bool LoadOldAnimTileList(LoadgameState &ls, int)
 {
 	TileIndex anim_list[256];
 	const OldChunks anim_chunk[] = {
@@ -682,7 +679,7 @@ static const OldChunks depot_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldDepot(LoadgameState *ls, int num)
+static bool LoadOldDepot(LoadgameState &ls, int num)
 {
 	Depot *d = new (DepotID(num)) Depot();
 	if (!LoadChunk(ls, d, depot_chunk)) return false;
@@ -713,7 +710,7 @@ static const OldChunks goods_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldGood(LoadgameState *ls, int num)
+static bool LoadOldGood(LoadgameState &ls, int num)
 {
 	/* for TTO games, 12th (num == 11) goods entry is created in the Station constructor */
 	if (_savegame_type == SGT_TTO && num == 11) return true;
@@ -770,7 +767,7 @@ static const OldChunks station_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldStation(LoadgameState *ls, int num)
+static bool LoadOldStation(LoadgameState &ls, int num)
 {
 	Station *st = new (num) Station();
 	_current_station_id = num;
@@ -852,7 +849,7 @@ static const OldChunks industry_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldIndustry(LoadgameState *ls, int num)
+static bool LoadOldIndustry(LoadgameState &ls, int num)
 {
 	Industry *i = new (num) Industry();
 	if (!LoadChunk(ls, i, industry_chunk)) return false;
@@ -891,7 +888,7 @@ static const OldChunks _company_yearly_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldCompanyYearly(LoadgameState *ls, int num)
+static bool LoadOldCompanyYearly(LoadgameState &ls, int num)
 {
 	Company *c = Company::Get(_current_company_id);
 
@@ -918,7 +915,7 @@ static const OldChunks _company_economy_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldCompanyEconomy(LoadgameState *ls, int)
+static bool LoadOldCompanyEconomy(LoadgameState &ls, int)
 {
 	Company *c = Company::Get(_current_company_id);
 
@@ -981,7 +978,7 @@ static const OldChunks _company_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldCompany(LoadgameState *ls, int num)
+static bool LoadOldCompany(LoadgameState &ls, int num)
 {
 	Company *c = new (CompanyID(num)) Company();
 
@@ -1045,7 +1042,7 @@ static bool LoadOldCompany(LoadgameState *ls, int num)
 		if (c->money == 893288) c->money = c->current_loan = 100000;
 	}
 
-	_company_colours[num] = c->colour;
+	_company_colours[CompanyID(num)] = c->colour;
 	c->inaugurated_year -= CalTime::ORIGINAL_BASE_YEAR.AsDelta();
 
 	return true;
@@ -1123,10 +1120,10 @@ static const OldChunks vehicle_empty_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldVehicleUnion(LoadgameState *ls, int)
+static bool LoadOldVehicleUnion(LoadgameState &ls, int)
 {
 	Vehicle *v = Vehicle::GetIfValid(_current_vehicle_id);
-	uint temp = ls->total_read;
+	uint temp = ls.total_read;
 	bool res;
 
 	if (v == nullptr) {
@@ -1144,7 +1141,7 @@ static bool LoadOldVehicleUnion(LoadgameState *ls, int)
 	}
 
 	/* This chunk size should always be 10 bytes */
-	if (ls->total_read - temp != 10) {
+	if (ls.total_read - temp != 10) {
 		Debug(oldloader, 0, "Assert failed in VehicleUnion: invalid chunk size");
 		return false;
 	}
@@ -1249,13 +1246,13 @@ static const OldChunks vehicle_chunk[] = {
  * @param num The number of vehicles to load.
  * @return True iff loading went without problems.
  */
-bool LoadOldVehicle(LoadgameState *ls, int num)
+bool LoadOldVehicle(LoadgameState &ls, int num)
 {
 	/* Read the TTDPatch flags, because we need some info from it */
-	ReadTTDPatchFlags();
+	ReadTTDPatchFlags(ls);
 
-	for (uint i = 0; i < _old_vehicle_multiplier; i++) {
-		_current_vehicle_id = num * _old_vehicle_multiplier + i;
+	for (uint i = 0; i < ls.vehicle_multiplier; i++) {
+		_current_vehicle_id = num * ls.vehicle_multiplier + i;
 
 		Vehicle *v;
 
@@ -1339,7 +1336,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 				default:     _old_string_id += 0x2A00;                    break; // custom name
 			}
 
-			_old_vehicle_names[_current_vehicle_id] = _old_string_id;
+			ls.vehicle_names[_current_vehicle_id] = _old_string_id;
 		} else {
 			/* Read the vehicle type and allocate the right vehicle */
 			switch (ReadByte(ls)) {
@@ -1357,7 +1354,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 			if (v == nullptr) continue;
 			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
 
-			_old_vehicle_names[_current_vehicle_id] = RemapOldStringID(_old_string_id);
+			ls.vehicle_names[_current_vehicle_id] = RemapOldStringID(_old_string_id);
 
 			/* This should be consistent, else we have a big problem... */
 			if (v->index != _current_vehicle_id) {
@@ -1399,7 +1396,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
  * @param index The index of the loaded custom string.
  * @return Always true.
  */
-bool LoadOldCustomString(LoadgameState *ls, int index)
+bool LoadOldCustomString(LoadgameState &ls, int index)
 {
 	/*
 	 * Data is stored in fixed size "cells"; read these completely.
@@ -1423,7 +1420,7 @@ static const OldChunks sign_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldSign(LoadgameState *ls, int num)
+static bool LoadOldSign(LoadgameState &ls, int num)
 {
 	Sign *si = new (SignID(num)) Sign();
 	if (!LoadChunk(ls, si, sign_chunk)) return false;
@@ -1465,13 +1462,13 @@ static const OldChunks engine_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldEngine(LoadgameState *ls, int num)
+static bool LoadOldEngine(LoadgameState &ls, int num)
 {
 	Engine *e = _savegame_type == SGT_TTO ? &_old_engines[num] : GetTempDataEngine(num);
 	return LoadChunk(ls, e, engine_chunk);
 }
 
-static bool LoadOldEngineName(LoadgameState *ls, int num)
+static bool LoadOldEngineName(LoadgameState &ls, int num)
 {
 	Engine *e = GetTempDataEngine(num);
 	e->name = CopyFromOldName(RemapOldStringID(ReadUint16(ls)));
@@ -1487,7 +1484,7 @@ static const OldChunks subsidy_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldSubsidy(LoadgameState *ls, int num)
+static bool LoadOldSubsidy(LoadgameState &ls, int num)
 {
 	Subsidy *s = new (SubsidyID(num)) Subsidy();
 	bool ret = LoadChunk(ls, s, subsidy_chunk);
@@ -1516,7 +1513,7 @@ static const OldChunks game_difficulty_chunk[] = {
 	OCL_END()
 };
 
-static bool LoadOldGameDifficulty(LoadgameState *ls, int)
+static bool LoadOldGameDifficulty(LoadgameState &ls, int)
 {
 	bool ret = LoadChunk(ls, &_settings_game.difficulty, game_difficulty_chunk);
 	_settings_game.difficulty.max_loan *= 1000;
@@ -1524,7 +1521,7 @@ static bool LoadOldGameDifficulty(LoadgameState *ls, int)
 }
 
 
-static bool LoadOldMapPart1(LoadgameState *ls, int)
+static bool LoadOldMapPart1(LoadgameState &ls, int)
 {
 	if (_savegame_type == SGT_TTO) {
 		AllocateMap(256, 256);
@@ -1555,7 +1552,7 @@ static bool LoadOldMapPart1(LoadgameState *ls, int)
 	return true;
 }
 
-static bool LoadOldMapPart2(LoadgameState *ls, int)
+static bool LoadOldMapPart2(LoadgameState &ls, int)
 {
 	for (TileIndex i(0); i < OLD_MAP_SIZE; i++) {
 		_m[i].type = ReadByte(ls);
@@ -1567,9 +1564,9 @@ static bool LoadOldMapPart2(LoadgameState *ls, int)
 	return true;
 }
 
-static bool LoadTTDPatchExtraChunks(LoadgameState *ls, int)
+static bool LoadTTDPatchExtraChunks(LoadgameState &ls, int)
 {
-	ReadTTDPatchFlags();
+	ReadTTDPatchFlags(ls);
 
 	Debug(oldloader, 2, "Found {} extra chunk(s)", _old_extra_chunk_nums);
 
@@ -1799,23 +1796,16 @@ static const OldChunks main_chunk[] = {
 	OCL_END()
 };
 
-bool LoadTTDMain(LoadgameState *ls)
+bool LoadTTDMain(LoadgameState &ls)
 {
 	Debug(oldloader, 3, "Reading main chunk...");
 
 	_read_ttdpatch_flags = false;
 
 	/* Load the biggest chunk */
-	_old_vehicle_names = nullptr;
-	try {
-		if (!LoadChunk(ls, nullptr, main_chunk)) {
-			Debug(oldloader, 0, "Loading failed");
-			free(_old_vehicle_names);
-			return false;
-		}
-	} catch (...) {
-		free(_old_vehicle_names);
-		throw;
+	if (!LoadChunk(ls, nullptr, main_chunk)) {
+		Debug(oldloader, 0, "Loading failed");
+		return false;
 	}
 
 	Debug(oldloader, 3, "Done, converting game data...");
@@ -1828,7 +1818,7 @@ bool LoadTTDMain(LoadgameState *ls)
 
 	/* Fix the game to be compatible with OpenTTD */
 	FixOldTowns();
-	FixOldVehicles();
+	FixOldVehicles(ls);
 
 	/* We have a new difficulty setting */
 	_settings_game.difficulty.town_council_tolerance = Clamp(_old_diff_level, 0, 2);
@@ -1836,12 +1826,10 @@ bool LoadTTDMain(LoadgameState *ls)
 	Debug(oldloader, 3, "Finished converting game data");
 	Debug(oldloader, 1, "TTD(Patch) savegame successfully converted");
 
-	free(_old_vehicle_names);
-
 	return true;
 }
 
-bool LoadTTOMain(LoadgameState *ls)
+bool LoadTTOMain(LoadgameState &ls)
 {
 	Debug(oldloader, 3, "Reading main chunk...");
 
@@ -1849,8 +1837,6 @@ bool LoadTTOMain(LoadgameState *ls)
 
 	std::array<uint8_t, 103 * sizeof(Engine)> engines; // we don't want to call Engine constructor here
 	_old_engines = (Engine *)engines.data();
-	std::array<StringID, 800> vehnames;
-	_old_vehicle_names = vehnames.data();
 
 	/* Load the biggest chunk */
 	if (!LoadChunk(ls, nullptr, main_chunk)) {
@@ -1870,7 +1856,7 @@ bool LoadTTOMain(LoadgameState *ls)
 	}
 
 	FixOldTowns();
-	FixOldVehicles();
+	FixOldVehicles(ls);
 	FixTTOCompanies();
 
 	/* We have a new difficulty setting */

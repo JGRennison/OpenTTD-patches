@@ -751,7 +751,7 @@ class NIHStation : public NIHelper {
 			output.Print("Tile Layout {}:", i);
 			const NewGRFSpriteLayout &dts = statspec->renderdata[i];
 
-			const TileLayoutRegisters *registers = dts.registers;
+			const TileLayoutRegisters *registers = dts.registers.empty() ? nullptr : dts.registers.data();
 			auto print_reg_info = [&](uint i, bool is_parent) {
 				if (registers == nullptr) {
 					output.FinishPrint();
@@ -793,20 +793,19 @@ class NIHStation : public NIHelper {
 			print_reg_info(0, false); // this calls output.FinishPrint() as needed
 
 			uint offset = 0; // offset 0 is the ground sprite
-			const DrawTileSeqStruct *element;
-			foreach_draw_tile_seq(element, dts.seq) {
+			for (const DrawTileSeqStruct &element : dts.seq) {
 				offset++;
-				if (element->IsParentSprite()) {
+				if (element.IsParentSprite()) {
 					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {}, {}), s: ({}, {}, {})",
-							offset, element->image.sprite, element->image.pal,
-							element->delta_x, element->delta_y, element->delta_z,
-							element->size_x, element->size_y, element->size_z);
+							offset, element.image.sprite, element.image.pal,
+							element.delta_x, element.delta_y, element.delta_z,
+							element.size_x, element.size_y, element.size_z);
 				} else {
 					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {})",
-							offset, element->image.sprite, element->image.pal,
-							element->delta_x, element->delta_y);
+							offset, element.image.sprite, element.image.pal,
+							element.delta_x, element.delta_y);
 				}
-				print_reg_info(offset, element->IsParentSprite()); // this calls output.FinishPrint() as needed
+				print_reg_info(offset, element.IsParentSprite()); // this calls output.FinishPrint() as needed
 			}
 		}
 	}

@@ -15,6 +15,7 @@
 #include "../../road_type.h"
 #include "../../rail_type.h"
 #include "../../core/random_func.hpp"
+#include "../../core/typed_container.hpp"
 
 #include "script_types.hpp"
 #include "script_log_types.hpp"
@@ -380,7 +381,8 @@ protected:
 private:
 	static std::pair<uint32_t, bool> GetLastCommandResultDataRaw();
 
-	static Randomizer random_states[OWNER_END]; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
+	using RandomizerArray = TypedIndexContainer<std::array<Randomizer, OWNER_END.base()>, Owner>;
+	static RandomizerArray random_states; ///< Random states for each of the scripts (game script uses OWNER_DEITY)
 };
 
 /**

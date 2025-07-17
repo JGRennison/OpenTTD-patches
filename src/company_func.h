@@ -14,6 +14,7 @@
 #include "company_type.h"
 #include "gfx_type.h"
 #include "vehicle_type.h"
+#include "core/typed_container.hpp"
 
 bool CheckTakeoverVehicleLimit(CompanyID cbig, CompanyID small);
 void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner);
@@ -37,7 +38,7 @@ extern CompanyID _local_company;
 extern CompanyID _current_company;
 extern CompanyID _loaded_local_company;
 
-extern Colours _company_colours[MAX_COMPANIES];
+extern TypedIndexContainer<std::array<Colours, MAX_COMPANIES>, CompanyID> _company_colours;
 extern CompanyManagerFace _company_manager_face;
 
 /**

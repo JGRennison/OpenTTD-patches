@@ -176,7 +176,7 @@ static void ConvertTownOwner()
 		switch (GetTileType(tile)) {
 			case MP_ROAD:
 				if (GB(_m[tile].m5, 4, 2) == ROAD_TILE_CROSSING && HasBit(_m[tile].m3, 7)) {
-					_m[tile].m3 = OWNER_TOWN;
+					_m[tile].m3 = OWNER_TOWN.base();
 				}
 				[[fallthrough]];
 
@@ -1399,7 +1399,7 @@ bool AfterLoadGame()
 					if (!IsStationRoadStop(t)) break;
 
 					if (fix_roadtypes) SB(_me[t].m7, 6, 2, (RoadTypes)GB(_m[t].m3, 0, 3));
-					SB(_me[t].m7, 0, 5, HasBit(_me[t].m6, 2) ? OWNER_TOWN : GetTileOwner(t));
+					SB(_me[t].m7, 0, 5, (HasBit(_me[t].m6, 2) ? OWNER_TOWN : GetTileOwner(t)).base());
 					SB(_m[t].m3, 4, 4, _m[t].m1);
 					_m[t].m4 = 0;
 					break;
@@ -1410,8 +1410,8 @@ bool AfterLoadGame()
 						if (fix_roadtypes) SB(_me[t].m7, 6, 2, (RoadTypes)GB(_m[t].m3, 0, 3));
 
 						Owner o = GetTileOwner(t);
-						SB(_me[t].m7, 0, 5, o); // road owner
-						SB(_m[t].m3, 4, 4, o == OWNER_NONE ? OWNER_TOWN : o); // tram owner
+						SB(_me[t].m7, 0, 5, o.base()); // road owner
+						SB(_m[t].m3, 4, 4, (o == OWNER_NONE ? OWNER_TOWN : o).base()); // tram owner
 					}
 					SB(_me[t].m6, 2, 4, GB(_m[t].m2, 4, 4)); // bridge type
 					SB(_me[t].m7, 5, 1, GB(_m[t].m4, 7, 1)); // snow/desert
@@ -2145,7 +2145,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_83)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			if (IsShipDepotTile(t)) {
-				_m[t].m4 = (TileHeight(t) == 0) ? OWNER_WATER : OWNER_NONE;
+				_m[t].m4 = (TileHeight(t) == 0 ? OWNER_WATER : OWNER_NONE).base();
 			}
 		}
 	}
@@ -4695,7 +4695,7 @@ void ReloadNewGRFData()
 	/* Delete news referring to no longer existing entities */
 	DeleteInvalidEngineNews();
 	/* Update livery selection windows */
-	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) InvalidateWindowData(WC_COMPANY_COLOUR, i);
+	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) InvalidateWindowData(WC_COMPANY_COLOUR, i);
 	/* Update company infrastructure counts. */
 	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
 	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);

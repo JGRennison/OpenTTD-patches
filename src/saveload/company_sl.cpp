@@ -332,7 +332,7 @@ struct PLYRChunkHandler : ChunkHandler {
 			Company *c = new (CompanyID(index)) Company();
 			SetDefaultCompanySettings(c->index);
 			SlObject((CompanyProperties *)c, slt);
-			_company_colours[index] = c->colour;
+			_company_colours[CompanyID(index)] = c->colour;
 		}
 	}
 

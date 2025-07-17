@@ -4012,14 +4012,14 @@ private:
 			list.emplace_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
-		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
+		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY.base(), false));
 		if (INVALID_COMPANY == value) missing_ok = true;
 
 		assert(missing_ok == true);
 		assert(button == TR_WIDGET_VALUE_DROPDOWN);
 		this->value_drop_down_is_company = true;
 
-		ShowDropDownList(this, std::move(list), value, button, 0);
+		ShowDropDownList(this, std::move(list), value.base(), button, 0);
 	}
 
 	/**

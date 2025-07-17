@@ -795,7 +795,7 @@ static void ReadSpriteLayoutRegisters(ByteReader &buf, TileLayoutFlags flags, bo
 {
 	if (!(flags & TLF_DRAWING_FLAGS)) return;
 
-	if (dts->registers == nullptr) dts->AllocateRegisters();
+	if (dts->registers.empty()) dts->AllocateRegisters();
 	TileLayoutRegisters &regs = const_cast<TileLayoutRegisters&>(dts->registers[index]);
 	regs.flags = flags & TLF_DRAWING_FLAGS;
 
@@ -920,9 +920,9 @@ static bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool us
 	/* When the Action1 sets are unknown, everything should be 0 (no spriteset usage) or UINT16_MAX (some spriteset usage) */
 	assert(use_cur_spritesets || (is_consistent && (dts->consistent_max_offset == 0 || dts->consistent_max_offset == UINT16_MAX)));
 
-	if (!is_consistent || dts->registers != nullptr) {
+	if (!is_consistent || !dts->registers.empty()) {
 		dts->consistent_max_offset = 0;
-		if (dts->registers == nullptr) dts->AllocateRegisters();
+		if (dts->registers.empty()) dts->AllocateRegisters();
 
 		for (uint i = 0; i < num_building_sprites + 1; i++) {
 			TileLayoutRegisters &regs = const_cast<TileLayoutRegisters&>(dts->registers[i]);
@@ -2069,7 +2069,9 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 					if (buf.HasData(4) && buf.PeekDWord() == 0) {
 						buf.Skip(4);
 						extern const DrawTileSpriteSpan _station_display_datas_rail[8];
-						dts->Clone(&_station_display_datas_rail[t % 8]);
+						const DrawTileSpriteSpan &dtss = _station_display_datas_rail[t % 8];
+						dts->ground = dtss.ground;
+						dts->seq.insert(dts->seq.end(), dtss.GetSequence().begin(), dtss.GetSequence().end());
 						continue;
 					}
 
@@ -2079,12 +2081,12 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 					std::vector<DrawTileSeqStruct> tmp_layout;
 					for (;;) {
+						uint8_t delta_x = buf.ReadByte();
+						if (delta_x == 0x80) break;
+
 						/* no relative bounding box support */
 						DrawTileSeqStruct &dtss = tmp_layout.emplace_back();
-						MemSetT(&dtss, 0);
-
-						dtss.delta_x = buf.ReadByte();
-						if (dtss.IsTerminator()) break;
+						dtss.delta_x = delta_x;
 						dtss.delta_y = buf.ReadByte();
 						dtss.delta_z = buf.ReadByte();
 						dtss.size_x = buf.ReadByte();
@@ -2119,8 +2121,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				statspec->renderdata.reserve(srcstatspec->renderdata.size());
 
 				for (const auto &it : srcstatspec->renderdata) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
-					dts->Clone(&it);
+					statspec->renderdata.emplace_back(it);
 				}
 				break;
 			}
@@ -10768,7 +10769,7 @@ static void ResetNewGRF()
 	_grf_file_map.clear();
 	_cur.grffile   = nullptr;
 	_new_signals_grfs.clear();
-	MemSetT<NewSignalStyle>(_new_signal_styles.data(), 0, MAX_NEW_SIGNAL_STYLES);
+	_new_signal_styles.fill({});
 	_num_new_signal_styles = 0;
 	_new_landscape_rocks_grfs.clear();
 }

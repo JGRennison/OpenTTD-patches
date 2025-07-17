@@ -779,7 +779,7 @@ static void loadLC(const SlxiSubChunkInfo &info, uint32_t length)
 
 static uint32_t saveLC(const SlxiSubChunkInfo &info, bool dry_run)
 {
-	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company);
+	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company.base());
 	return 1;
 }
 

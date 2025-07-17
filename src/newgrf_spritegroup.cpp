@@ -855,7 +855,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 			print("Tile Layout{} [{}]", extra_info(), sg->nfo_line);
 			emit_start();
 
-			const TileLayoutRegisters *registers = tlsg->dts.registers;
+			const TileLayoutRegisters *registers = tlsg->dts.registers.empty() ? nullptr : tlsg->dts.registers.data();
 			auto print_reg_info = [&](uint i, bool is_parent) {
 				if (registers == nullptr) {
 					finish_print();
@@ -899,21 +899,20 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 			print_reg_info(0, false);
 
 			uint offset = 0; // offset 0 is the ground sprite
-			const DrawTileSeqStruct *element;
-			foreach_draw_tile_seq(element, tlsg->dts.seq) {
+			for (const DrawTileSeqStruct &element : tlsg->dts.seq) {
 				offset++;
 				start_print();
-				if (element->IsParentSprite()) {
+				if (element.IsParentSprite()) {
 					buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {}, {}), s: ({}, {}, {})",
-							offset, element->image.sprite, element->image.pal,
-							element->delta_x, element->delta_y, element->delta_z,
-							element->size_x, element->size_y, element->size_z);
+							offset, element.image.sprite, element.image.pal,
+							element.delta_x, element.delta_y, element.delta_z,
+							element.size_x, element.size_y, element.size_z);
 				} else {
 					buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {})",
-							offset, element->image.sprite, element->image.pal,
-							element->delta_x, element->delta_y);
+							offset, element.image.sprite, element.image.pal,
+							element.delta_x, element.delta_y);
 				}
-				print_reg_info(offset, element->IsParentSprite());
+				print_reg_info(offset, element.IsParentSprite());
 			}
 			break;
 		}

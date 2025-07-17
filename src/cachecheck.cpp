@@ -42,12 +42,12 @@ extern void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehi
 
 static bool SignalInfraTotalMatches()
 {
-	std::array<int, MAX_COMPANIES> old_signal_totals = {};
+	TypedIndexContainer<std::array<uint, MAX_COMPANIES>, CompanyID> old_signal_totals = {};
 	for (const Company *c : Company::Iterate()) {
 		old_signal_totals[c->index] = c->infrastructure.signal;
 	}
 
-	std::array<int, MAX_COMPANIES> new_signal_totals = {};
+	TypedIndexContainer<std::array<uint, MAX_COMPANIES>, CompanyID> new_signal_totals = {};
 	for (TileIndex tile(0); tile < Map::Size(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_RAILWAY:
@@ -257,7 +257,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		uint i = 0;
 		for (const Company *c : Company::Iterate()) {
 			if (old_infrastructure[i] != c->infrastructure) {
-				cclog("infrastructure cache mismatch: company {}", (int)c->index);
+				cclog("infrastructure cache mismatch: company {}", c->index);
 				format_buffer infra_buffer;
 				old_infrastructure[i].Dump(infra_buffer);
 				cclog("Previous:");
@@ -323,7 +323,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		for (Vehicle *v : Vehicle::Iterate()) {
 			extern bool ValidateVehicleTileHash(const Vehicle *v);
 			if (!ValidateVehicleTileHash(v)) {
-				cclog("vehicle tile hash mismatch: type {}, vehicle {}, company {}, unit number {}", (int)v->type, v->index, (int)v->owner, v->unitnumber);
+				cclog("vehicle tile hash mismatch: type {}, vehicle {}, company {}, unit number {}", v->type, v->index, v->owner, v->unitnumber);
 			}
 
 			extern void FillNewGRFVehicleCache(const Vehicle *v);
@@ -518,7 +518,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				if (st->goods[c].data->cargo.CargoPeriodsInTransit() != old_cargo_periods_in_transit) SetBit(changed, 1);
 				if (changed != 0) {
 					cclog("station cargo cache mismatch: station {}, company {}, cargo {}: {}{}",
-							st->index, (int)st->owner, c,
+							st->index, st->owner, c,
 							HasBit(changed, 0) ? 't' : '-',
 							HasBit(changed, 1) ? 'd' : '-');
 				}
@@ -534,7 +534,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			UpdateStationDockingTiles(st);
 			if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
 				cclog("station docking mismatch: station {}, company {}, prev: ({:X}, {}, {}), recalc: ({:X}, {}, {})",
-						st->index, (int)st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+						st->index, st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
 			}
 			for (TileIndex tile : ta) {
 				if ((docking_tiles.find(tile) != docking_tiles.end()) != IsDockingTile(tile)) {

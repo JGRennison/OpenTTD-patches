@@ -264,8 +264,8 @@ extern VehiclePool _vehicle_pool;
 struct GroundVehicleCache;
 extern NamedSaveLoadTable GetVehicleDescription(VehicleType vt);
 struct LoadgameState;
-extern bool LoadOldVehicle(LoadgameState *ls, int num);
-extern void FixOldVehicles();
+extern bool LoadOldVehicle(LoadgameState &ls, int num);
+extern void FixOldVehicles(LoadgameState &ls);
 
 struct GRFFile;
 
@@ -314,9 +314,9 @@ private:
 
 public:
 	friend NamedSaveLoadTable GetVehicleDescription(VehicleType vt); ///< So we can use private/protected variables in the saveload code
-	friend void FixOldVehicles();
+	friend void FixOldVehicles(LoadgameState &ls);
 	friend void AfterLoadVehiclesPhase1(bool part_of_load);     ///< So we can set the #previous and #first pointers while loading
-	friend bool LoadOldVehicle(LoadgameState *ls, int num);     ///< So we can set the proper next pointer while loading
+	friend bool LoadOldVehicle(LoadgameState &ls, int num);     ///< So we can set the proper next pointer while loading
 
 	friend upstream_sl::SlVehicleCommon;
 	friend upstream_sl::SlVehicleDisaster;

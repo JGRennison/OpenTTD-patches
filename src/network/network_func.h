@@ -18,13 +18,14 @@
 // #define DEBUG_FAILED_DUMP_COMMANDS
 
 #include "network_type.h"
+#include "../core/typed_container.hpp"
 #include "../console_type.h"
 #include "../gfx_type.h"
 #include "../openttd.h"
 #include "../company_type.h"
 #include "../string_type.h"
 
-extern NetworkCompanyState *_network_company_states;
+extern TypedIndexContainer<std::array<NetworkCompanyState, MAX_COMPANIES>, CompanyID> _network_company_states;
 extern std::string _network_company_server_id;
 extern std::array<uint8_t, 16> _network_company_password_storage_token;
 extern std::array<uint8_t, 32> _network_company_password_storage_key;
@@ -51,7 +52,8 @@ void NetworkDisconnect(bool close_admins = true);
 void NetworkGameLoop();
 void NetworkBackgroundLoop();
 std::string_view ParseFullConnectionString(const std::string &connection_string, uint16_t &port, CompanyID *company_id = nullptr);
-void NetworkPopulateCompanyStats(NetworkCompanyStats *stats);
+using NetworkCompanyStatsArray = TypedIndexContainer<std::array<NetworkCompanyStats, MAX_COMPANIES>, CompanyID>;
+NetworkCompanyStatsArray NetworkGetCompanyStats();
 
 void NetworkUpdateClientInfo(ClientID client_id);
 void NetworkClientsToSpectators(CompanyID cid);

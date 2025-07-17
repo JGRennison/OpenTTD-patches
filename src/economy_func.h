@@ -16,12 +16,13 @@
 #include "vehicle_type.h"
 #include "company_type.h"
 #include "source_type.h"
+#include "core/typed_container.hpp"
 
 void ResetPriceBaseMultipliers();
 void SetPriceBaseMultiplier(Price price, int factor);
 
 extern const ScoreInfo _score_info[];
-extern int64_t _score_part[MAX_COMPANIES][SCORE_END];
+extern TypedIndexContainer<std::array<std::array<int64_t, SCORE_END>, MAX_COMPANIES>, CompanyID> _score_part;
 extern Economy _economy;
 /* Prices and also the fractional part. */
 extern Prices _price;

@@ -74,7 +74,7 @@ bool _network_available;                                ///< is network mode ava
 bool _network_dedicated;                                ///< are we a dedicated server?
 bool _is_network_server;                                ///< Does this client wants to be a network-server?
 bool _network_settings_access;                          ///< Can this client change server settings?
-NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
+TypedIndexContainer<std::array<NetworkCompanyState, MAX_COMPANIES>, CompanyID> _network_company_states; ///< Statistics about some companies.
 std::string _network_company_server_id;                 ///< Server ID string used for company passwords
 std::array<uint8_t, 16> _network_company_password_storage_token; ///< Non-secret token for storage of company passwords in savegames
 std::array<uint8_t, 32> _network_company_password_storage_key;   ///< Key for storage of company passwords in savegames
@@ -726,8 +726,7 @@ void NetworkClose(bool close_admins)
 
 	NetworkFreeLocalCommandQueue();
 
-	delete[] _network_company_states;
-	_network_company_states = nullptr;
+	_network_company_states.fill({});
 	_network_company_server_id.clear();
 	_network_company_passworded = {};
 
@@ -1019,7 +1018,7 @@ bool NetworkServerStart()
 	Debug(net, 5, "Starting listeners for incoming server queries");
 	NetworkUDPServerListen();
 
-	_network_company_states = new NetworkCompanyState[MAX_COMPANIES];
+	_network_company_states.fill({});
 	_network_company_server_id = NetworkGenerateRandomKeyString(16);
 	_network_server = true;
 	_networking = true;

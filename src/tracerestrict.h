@@ -527,6 +527,12 @@ namespace TracerestrictDetail {
 				return TraceRestrictCounterID(this->GetValue());
 			}
 
+			/** Get value field, as a company ID */
+			CompanyID GetValueAsCompany() const
+			{
+				return CompanyID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -577,6 +583,12 @@ namespace TracerestrictDetail {
 
 			/** Set value field (counter ID) */
 			inline void SetValue(TraceRestrictCounterID value)
+			{
+				this->SetValue(value.base());
+			}
+
+			/** Set value field (company ID) */
+			inline void SetValue(CompanyID value)
 			{
 				this->SetValue(value.base());
 			}

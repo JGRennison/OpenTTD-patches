@@ -288,12 +288,12 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 
 	this->CrashLogFaultSectionCheckpoint(buffer);
 
-	buffer.format("AI Configuration (local: {}) (current: {}):\n", (int)_local_company, (int)_current_company);
+	buffer.format("AI Configuration (local: {}) (current: {}):\n", _local_company, _current_company);
 	for (const Company *c : Company::Iterate()) {
 		if (c->ai_info == nullptr) {
-			buffer.format(" {:2}: Human\n", (int)c->index);
+			buffer.format(" {:2}: Human\n", c->index);
 		} else {
-			buffer.format(" {:2}: {} (v{})\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
+			buffer.format(" {:2}: {} (v{})\n", c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
 		}
 	}
 

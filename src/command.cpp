@@ -430,7 +430,7 @@ static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry 
 			script_fc(), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 			fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_NETWORK, 'n'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f')
 			);
-	buffer.format("cc: {:3}, lc: {:3}", (uint) entry.current_company, (uint) entry.local_company);
+	buffer.format("cc: {:3}, lc: {:3}", entry.current_company, entry.local_company);
 	if (_network_server) {
 		buffer.format(", client: {:4}", entry.client_id);
 	}
@@ -925,7 +925,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	if (!random_state.Check()) {
 		format_buffer buffer;
 		buffer.format("Random seed changed in test command: company: {:02x}; tile: {:06x} ({} x {}); cmd: {:03x}; {}; payload: ",
-				(int)_current_company, tile, TileX(tile), TileY(tile), cmd, GetCommandName(cmd));
+				_current_company, tile, TileX(tile), TileY(tile), cmd, GetCommandName(cmd));
 		payload.FormatDebugSummary(buffer);
 		Debug(desync, 0, "msg: {}; {}", debug_date_dumper().HexDate(), buffer);
 		LogDesyncMsg(buffer.to_string());
@@ -945,7 +945,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 			}
 
 			Debug(desync, 1, "{}: {}; company: {:02x}; tile: {:06x} ({} x {}); cmd: {:03x}; <{}> ({})",
-					prefix, debug_date_dumper().HexDate(), (int)_current_company, tile, TileX(tile), TileY(tile),
+					prefix, debug_date_dumper().HexDate(), _current_company, tile, TileX(tile), TileY(tile),
 					cmd, aux_str, GetCommandName(cmd));
 		}
 	};
