@@ -867,6 +867,8 @@ public:
 	template <typename T> requires (std::is_enum_v<T> || std::is_class_v<T>)
 	operator T() const { return static_cast<T>(value); };
 
+	constexpr bool operator==(const WindowNumber &rhs) const = default;
+
 	constexpr bool operator==(const std::integral auto &rhs) const { return this->value == static_cast<int32_t>(rhs); }
 
 	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
