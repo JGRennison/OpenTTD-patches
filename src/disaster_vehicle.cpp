@@ -378,7 +378,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 					return false;
 				}
 				/* Target it. */
-				v->dest_tile = TileIndex{u->index};
+				v->dest_tile = TileIndex{u->index.base()};
 				v->age = CalTime::DateDelta{0};
 				break;
 			}
@@ -502,7 +502,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 		if (!IsTileType(tile, MP_INDUSTRY)) return true;
 
 		IndustryID ind = GetIndustryIndex(tile);
-		v->dest_tile = TileIndex{ind};
+		v->dest_tile = TileIndex{ind.base()};
 
 		if (GetIndustrySpec(Industry::Get(ind)->type)->behaviour.Test(behaviour)) {
 			v->state = 1;
@@ -1010,7 +1010,7 @@ void ReleaseDisastersTargetingIndustry(IndustryID i)
 		/* primary disaster vehicles that have chosen target */
 		if (v->subtype == ST_AIRPLANE || v->subtype == ST_HELICOPTER) {
 			/* if it has chosen target, and it is this industry (yes, dest_tile is IndustryID here), set order to "leaving map peacefully" */
-			if (v->state > 0 && v->dest_tile == (uint32_t)i) v->state = 3;
+			if (v->state > 0 && v->dest_tile == i.base()) v->state = 3;
 		}
 	}
 }

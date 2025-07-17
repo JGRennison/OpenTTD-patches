@@ -700,7 +700,7 @@ public:
 	void ShowNewGRFInspectWindow() const override
 	{
 		if (this->virtual_train != nullptr) {
-			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VEH_TRAIN), this->virtual_train->index);
+			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VEH_TRAIN), this->virtual_train->index.base());
 		}
 	}
 };

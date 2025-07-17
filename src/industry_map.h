@@ -279,7 +279,7 @@ inline void MakeIndustry(TileIndex t, IndustryID index, IndustryGfx gfx, uint8_t
 {
 	SetTileType(t, MP_INDUSTRY);
 	_m[t].m1 = 0;
-	_m[t].m2 = index;
+	_m[t].m2 = index.base();
 	SetIndustryRandomBits(t, random); // m3
 	_m[t].m4 = 0;
 	SetIndustryGfx(t, gfx); // m5, part of m6

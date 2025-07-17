@@ -11,13 +11,11 @@
 #define TOWN_TYPE_H
 
 #include "core/enum_type.hpp"
+#include "core/pool_id_type.hpp"
 #include <vector>
 
-enum TownID : uint16_t {
-	TOWN_BEGIN = 0,
-	TOWN_END = 64000,
-	INVALID_TOWN = 0xFFFF
-};
+using TownID = PoolID<uint16_t, struct TownIDTag, 64000, 0xFFFF>;
+static constexpr TownID INVALID_TOWN = TownID::Invalid();
 
 struct Town;
 

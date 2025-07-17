@@ -12,6 +12,7 @@
 
 #include "engine_type.h"
 #include "vehicle_type.h"
+#include "core/typed_container.hpp"
 
 #include "3rdparty/robin_hood/robin_hood.h"
 #include <vector>
@@ -28,7 +29,7 @@ struct EngineIDMapping {
  * Note: This is not part of Engine, as the data in the EngineOverrideManager and the engine pool get resetted in different cases.
  */
 struct EngineOverrideManager {
-	std::vector<EngineIDMapping> mappings;
+	TypedIndexContainer<std::vector<EngineIDMapping>, EngineID> mappings;
 
 	static const uint NUM_DEFAULT_ENGINES; ///< Number of default entries
 

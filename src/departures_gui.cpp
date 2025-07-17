@@ -207,7 +207,7 @@ protected:
 							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
 								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 							} else {
-								SetDParam(0, v->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
+								SetDParam(0, v->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
 								int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
 								if (width > this->veh_width) this->veh_width = width;
 							}
@@ -1413,7 +1413,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int veh_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - veh_width : text_left + PadWidth(toc_width) + PadWidth(group_width);
 			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
 
-			SetDParam(0, d->vehicle->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
+			SetDParam(0, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
 			DrawString(veh_left, veh_right, y + 1, STR_DEPARTURES_VEH);
 		}
 

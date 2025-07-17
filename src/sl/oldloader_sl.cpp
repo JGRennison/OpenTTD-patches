@@ -177,7 +177,7 @@ void FixOldVehicles(LoadgameState &ls)
 		/* Vehicle-subtype is different in TTD(Patch) */
 		if (v->type == VEH_EFFECT) v->subtype = v->subtype >> 1;
 
-		v->name = CopyFromOldName(ls.vehicle_names[v->index]);
+		v->name = CopyFromOldName(ls.vehicle_names[v->index.base()]);
 
 		/* We haven't used this bit for stations for ages */
 		if (v->type == VEH_ROAD) {
@@ -373,23 +373,23 @@ static bool FixTTOEngines()
 
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->engine_type >= lengthof(tto_to_ttd)) return false;
-		v->engine_type = static_cast<EngineID>(tto_to_ttd[v->engine_type]);
+		v->engine_type = static_cast<EngineID>(tto_to_ttd[v->engine_type.base()]);
 	}
 
 	/* Load the default engine set. Many of them will be overridden later */
 	{
-		EngineID j = ENGINE_BEGIN;
-		for (uint16_t i = 0; i < lengthof(_orig_rail_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_TRAIN, i);
-		for (uint16_t i = 0; i < lengthof(_orig_road_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_ROAD, i);
-		for (uint16_t i = 0; i < lengthof(_orig_ship_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_SHIP, i);
-		for (uint16_t i = 0; i < lengthof(_orig_aircraft_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_AIRCRAFT, i);
+		EngineID j = EngineID::Begin();
+		for (uint16_t i = 0; i < lengthof(_orig_rail_vehicle_info); ++i, ++j) new (GetTempDataEngine(j)) Engine(VEH_TRAIN, i);
+		for (uint16_t i = 0; i < lengthof(_orig_road_vehicle_info); ++i, ++j) new (GetTempDataEngine(j)) Engine(VEH_ROAD, i);
+		for (uint16_t i = 0; i < lengthof(_orig_ship_vehicle_info); ++i, ++j) new (GetTempDataEngine(j)) Engine(VEH_SHIP, i);
+		for (uint16_t i = 0; i < lengthof(_orig_aircraft_vehicle_info); ++i, ++j) new (GetTempDataEngine(j)) Engine(VEH_AIRCRAFT, i);
 	}
 
 	CalTime::Date aging_date = std::min(CalTime::CurDate() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), CalTime::ConvertYMDToDate(CalTime::Year{2050}, 0, 1));
 	CalTime::YearMonthDay aging_ymd = CalTime::ConvertDateToYMD(aging_date);
 
-	for (EngineID i = ENGINE_BEGIN; i < 256; i++) {
-		OldEngineID oi = ttd_to_tto[i];
+	for (EngineID i = EngineID::Begin(); i < 256; ++i) {
+		OldEngineID oi = ttd_to_tto[i.base()];
 		Engine *e = GetTempDataEngine(i);
 
 		if (oi == 255) {
@@ -851,7 +851,7 @@ static const OldChunks industry_chunk[] = {
 
 static bool LoadOldIndustry(LoadgameState &ls, int num)
 {
-	Industry *i = new (num) Industry();
+	Industry *i = new (IndustryID(num)) Industry();
 	if (!LoadChunk(ls, i, industry_chunk)) return false;
 
 	if (i->location.tile != 0) {
@@ -1050,7 +1050,7 @@ static bool LoadOldCompany(LoadgameState &ls, int num)
 
 static uint32_t _old_order_ptr;
 static uint16_t _old_next_ptr;
-static VehicleID _current_vehicle_id;
+static typename VehicleID::BaseType _current_vehicle_id;
 
 static const OldChunks vehicle_train_chunk[] = {
 	OCL_SVAR(  OC_UINT8, Train, track ),
@@ -1252,7 +1252,7 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 	ReadTTDPatchFlags(ls);
 
 	for (uint i = 0; i < ls.vehicle_multiplier; i++) {
-		_current_vehicle_id = static_cast<VehicleID>(num * ls.vehicle_multiplier + i);
+		_current_vehicle_id = num * ls.vehicle_multiplier + i;
 
 		Vehicle *v;
 
@@ -1262,12 +1262,12 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 				default: return false;
 				case 0x00 /* VEH_INVALID  */: v = nullptr;                                        break;
 				case 0x25 /* MONORAIL     */:
-				case 0x20 /* VEH_TRAIN    */: v = new (_current_vehicle_id) Train();           break;
-				case 0x21 /* VEH_ROAD     */: v = new (_current_vehicle_id) RoadVehicle();     break;
-				case 0x22 /* VEH_SHIP     */: v = new (_current_vehicle_id) Ship();            break;
-				case 0x23 /* VEH_AIRCRAFT */: v = new (_current_vehicle_id) Aircraft();        break;
-				case 0x24 /* VEH_EFFECT   */: v = new (_current_vehicle_id) EffectVehicle();   break;
-				case 0x26 /* VEH_DISASTER */: v = new (_current_vehicle_id) DisasterVehicle(); break;
+				case 0x20 /* VEH_TRAIN    */: v = new (VehicleID(_current_vehicle_id)) Train();           break;
+				case 0x21 /* VEH_ROAD     */: v = new (VehicleID(_current_vehicle_id)) RoadVehicle();     break;
+				case 0x22 /* VEH_SHIP     */: v = new (VehicleID(_current_vehicle_id)) Ship();            break;
+				case 0x23 /* VEH_AIRCRAFT */: v = new (VehicleID(_current_vehicle_id)) Aircraft();        break;
+				case 0x24 /* VEH_EFFECT   */: v = new (VehicleID(_current_vehicle_id)) EffectVehicle();   break;
+				case 0x26 /* VEH_DISASTER */: v = new (VehicleID(_current_vehicle_id)) DisasterVehicle(); break;
 			}
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
@@ -1342,12 +1342,12 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 			switch (ReadByte(ls)) {
 				default: SlErrorCorrupt("Invalid vehicle type");
 				case 0x00 /* VEH_INVALID */: v = nullptr;                                        break;
-				case 0x10 /* VEH_TRAIN   */: v = new (_current_vehicle_id) Train();           break;
-				case 0x11 /* VEH_ROAD    */: v = new (_current_vehicle_id) RoadVehicle();     break;
-				case 0x12 /* VEH_SHIP    */: v = new (_current_vehicle_id) Ship();            break;
-				case 0x13 /* VEH_AIRCRAFT*/: v = new (_current_vehicle_id) Aircraft();        break;
-				case 0x14 /* VEH_EFFECT  */: v = new (_current_vehicle_id) EffectVehicle();   break;
-				case 0x15 /* VEH_DISASTER*/: v = new (_current_vehicle_id) DisasterVehicle(); break;
+				case 0x10 /* VEH_TRAIN   */: v = new (VehicleID(_current_vehicle_id)) Train();           break;
+				case 0x11 /* VEH_ROAD    */: v = new (VehicleID(_current_vehicle_id)) RoadVehicle();     break;
+				case 0x12 /* VEH_SHIP    */: v = new (VehicleID(_current_vehicle_id)) Ship();            break;
+				case 0x13 /* VEH_AIRCRAFT*/: v = new (VehicleID(_current_vehicle_id)) Aircraft();        break;
+				case 0x14 /* VEH_EFFECT  */: v = new (VehicleID(_current_vehicle_id)) EffectVehicle();   break;
+				case 0x15 /* VEH_DISASTER*/: v = new (VehicleID(_current_vehicle_id)) DisasterVehicle(); break;
 			}
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;

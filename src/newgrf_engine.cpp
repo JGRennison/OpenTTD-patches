@@ -916,8 +916,8 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 		case 0x01: return MapOldSubType(v);
 		case 0x02: break; // not implemented
 		case 0x03: break; // not implemented
-		case 0x04: return v->index;
-		case 0x05: return GB(v->index, 8, 8);
+		case 0x04: return v->index.base();
+		case 0x05: return GB(v->index.base(), 8, 8);
 		case 0x06: break; // not implemented
 		case 0x07: break; // not implemented
 		case 0x08: break; // not implemented
@@ -1029,7 +1029,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 		case 0x57: return GB(ClampTo<int32_t>(v->GetDisplayProfitLastYear()),  8, 24);
 		case 0x58: return GB(ClampTo<int32_t>(v->GetDisplayProfitLastYear()), 16, 16);
 		case 0x59: return GB(ClampTo<int32_t>(v->GetDisplayProfitLastYear()), 24,  8);
-		case 0x5A: return v->Next() == nullptr ? INVALID_VEHICLE : v->Next()->index;
+		case 0x5A: return (v->Next() == nullptr ? INVALID_VEHICLE : v->Next()->index).base();
 		case 0x5B: break; // not implemented
 		case 0x5C: return ClampTo<int32_t>(v->value);
 		case 0x5D: return GB(ClampTo<int32_t>(v->value),  8, 24);
@@ -1081,8 +1081,8 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				case 0x75: return GB(t->gcache.cached_power,  8, 24);
 				case 0x76: return GB(t->gcache.cached_power, 16, 16);
 				case 0x77: return GB(t->gcache.cached_power, 24,  8);
-				case 0x7C: return t->First()->index;
-				case 0x7D: return GB(t->First()->index, 8, 8);
+				case 0x7C: return t->First()->index.base();
+				case 0x7D: return GB(t->First()->index.base(), 8, 8);
 				case 0x7F: return 0; // Used for vehicle reversing hack in TTDP
 			}
 			break;
@@ -1157,7 +1157,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			case 0xC4: return (Clamp(CalTime::CurYear(), CalTime::ORIGINAL_BASE_YEAR, CalTime::ORIGINAL_MAX_YEAR) - CalTime::ORIGINAL_BASE_YEAR).base(); // Build year
 			case 0xC6: return Engine::Get(this->self_type)->grf_prop.local_id;
 			case 0xC7: return GB(Engine::Get(this->self_type)->grf_prop.local_id, 8, 8);
-			case 0xDA: return INVALID_VEHICLE; // Next vehicle
+			case 0xDA: return INVALID_VEHICLE.base(); // Next vehicle
 			case 0xF2: return 0; // Cargo subtype
 		}
 
@@ -1557,7 +1557,7 @@ void CommitVehicleListOrderChanges()
 {
 	/* Build a list of EngineIDs. EngineIDs are sequential from 0 up to the number of pool items with no gaps. */
 	std::vector<EngineID> ordering(Engine::GetNumItems());
-	std::iota(std::begin(ordering), std::end(ordering), ENGINE_BEGIN);
+	std::iota(std::begin(ordering), std::end(ordering), EngineID::Begin());
 
 	/* Pre-sort engines by scope-grfid and local index */
 	std::ranges::sort(ordering, EnginePreSort);

@@ -28,6 +28,7 @@
 #include "network/network_sync.h"
 #include "language.h"
 #include "fontcache.h"
+#include "news_func.h"
 #include "news_gui.h"
 #include "scope_info.h"
 #include "command_func.h"
@@ -466,8 +467,9 @@ void CrashLog::LogRecentNews(format_target &buffer) const
 	for (const auto &news : GetNews()) {
 		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(news.date);
 		buffer.format("({}-{:02}-{:02}) StringID: {}, Type: {}, Ref1: {}, {}, Ref2: {}, {}\n",
-			   ymd.year, ymd.month + 1, ymd.day, news.string_id, news.type,
-			   news.reftype1, news.ref1, news.reftype2, news.ref2);
+				ymd.year, ymd.month + 1, ymd.day, news.string_id, news.type,
+				news.ref1.index(), SerialiseNewsReference(news.ref1),
+				news.ref2.index(), SerialiseNewsReference(news.ref2));
 		if (++i > 32) break;
 	}
 	buffer.push_back('\n');

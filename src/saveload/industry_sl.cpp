@@ -186,7 +186,7 @@ struct INDYChunkHandler : ChunkHandler {
 		_old_industry_produced.Reset();
 
 		while ((index = SlIterateArray()) != -1) {
-			Industry *i = new (index) Industry();
+			Industry *i = new (IndustryID(index)) Industry();
 			SlObject(i, slt);
 
 			/* Before savegame version 161, persistent storages were not stored in a pool. */

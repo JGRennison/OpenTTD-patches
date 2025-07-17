@@ -607,7 +607,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, TrackBits tracks)
 		track = YapfShipChooseTrack(v, tile, path_found, v->cached_path);
 	}
 	DEBUG_UPDATESTATECHECKSUM("ChooseShipTrack: v: {}, path_found: {}, track: {}", v->index, path_found, track);
-	UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | track);
+	UpdateStateChecksum((((uint64_t) v->index.base()) << 32) | (path_found << 16) | track);
 
 	v->HandlePathfindingResult(path_found);
 	return track;

@@ -613,7 +613,7 @@ static void ShowRejectOrAcceptNews(const Station *st, CargoTypes cargoes, bool r
 	SetDParam(0, st->index);
 	SetDParam(1, cargoes);
 	StringID msg = reject ? STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST : STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST;
-	AddNewsItem(msg, NewsType::Acceptance, NewsStyle::Small, NewsFlag::InColour, NewsReferenceType::Station, st->index);
+	AddNewsItem(msg, NewsType::Acceptance, NewsStyle::Small, NewsFlag::InColour, st->index);
 }
 
 /**
@@ -4025,9 +4025,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 						SetDParam(0, front->index);
 						SetDParam(1, IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME);
 						SetDParam(2, station_id);
-						AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-								NewsReferenceType::Vehicle, v->index,
-								NewsReferenceType::Station, station_id);
+						AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index, station_id);
 					}
 					for (Train *u = front; u != nullptr; u = u->Next()) {
 						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);

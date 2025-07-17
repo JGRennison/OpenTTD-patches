@@ -61,10 +61,22 @@ struct BufferSerialisationHelper {
 		BufferSend_uint16(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
 	}
 
+	void Send_uint16(const SerialisationAsBase auto &data)
+	{
+		static_assert(sizeof(data.base()) <= 2);
+		this->Send_uint16((uint16_t)data.base());
+	}
+
 	void Send_uint32(uint32_t data)
 	{
 		T *self = static_cast<T *>(this);
 		BufferSend_uint32(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
+	}
+
+	void Send_uint32(const SerialisationAsBase auto &data)
+	{
+		static_assert(sizeof(data.base()) <= 4);
+		this->Send_uint32((uint32_t)data.base());
 	}
 
 	void Send_uint64(uint64_t data)

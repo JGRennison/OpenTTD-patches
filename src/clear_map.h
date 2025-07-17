@@ -195,7 +195,7 @@ inline IndustryID GetIndustryIndexOfField(TileIndex t)
 inline void SetIndustryIndexOfField(TileIndex t, IndustryID i)
 {
 	dbg_assert_tile(GetClearGround(t) == CLEAR_FIELDS, t);
-	_m[t].m2 = i;
+	_m[t].m2 = i.base();
 }
 
 
@@ -270,7 +270,7 @@ inline void MakeField(TileIndex t, uint field_type, IndustryID industry)
 	SetTileType(t, MP_CLEAR);
 	_m[t].m1 = 0;
 	SetTileOwner(t, OWNER_NONE);
-	_m[t].m2 = industry;
+	_m[t].m2 = industry.base();
 	_m[t].m3 = field_type;
 	_m[t].m4 = 0 << 5 | 0 << 2;
 	SetClearGroundDensity(t, CLEAR_FIELDS, 3);

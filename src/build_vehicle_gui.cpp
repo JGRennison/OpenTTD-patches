@@ -3318,7 +3318,7 @@ void CcAddVirtualEngine(const CommandCost &result)
 		Train *train = Train::Get(result.GetResultData());
 		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
-		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(result.GetResultData(), SellVehicleFlags::None, INVALID_CLIENT_ID);
+		Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(result.GetResultData<VehicleID>(), SellVehicleFlags::None, INVALID_CLIENT_ID);
 	}
 }
 

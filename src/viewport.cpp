@@ -2040,7 +2040,7 @@ static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 	for (const Town *t : towns) {
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &t->cache.sign, flags);
 		if (str != nullptr) {
-			str->FillDetails(stringid, t->index, t->LabelParam2(), INVALID_COLOUR);
+			str->FillDetails(stringid, t->index.base(), t->LabelParam2(), INVALID_COLOUR);
 		}
 	}
 }

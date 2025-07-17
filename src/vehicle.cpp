@@ -1314,7 +1314,7 @@ Vehicle::~Vehicle()
 	UpdateVehicleViewportHash(this, INVALID_COORD, 0);
 	if (this->type != VEH_EFFECT) {
 		DeleteVehicleNews(this->index);
-		DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
+		DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index.base());
 	}
 }
 
@@ -1471,8 +1471,7 @@ void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
 	if (find_index(_train_news_too_heavy_this_tick, v->index) < 0) {
 		_train_news_too_heavy_this_tick.push_back(v->index);
 		SetDParam(0, v->index);
-		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-				NewsReferenceType::Vehicle, v->index);
+		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index);
 	}
 }
 
@@ -1508,13 +1507,13 @@ void RebuildVehicleTickCaches()
 {
 	ClearVehicleTickCaches();
 
-	for (VehicleID i = 0; i < Vehicle::GetPoolSize(); i++) {
+	for (VehicleID i = VehicleID(0); i < Vehicle::GetPoolSize(); ++i) {
 		Vehicle *v = Vehicle::Get(i);
 		if (v == nullptr) continue;
 
 #if OTTD_UPPER_TAGGED_PTR
 		/* Avoid needing to de-reference v */
-		uintptr_t ptr = _vehicle_pool.GetRaw(i);
+		uintptr_t ptr = _vehicle_pool.GetRaw(i.base());
 		const VehicleType vtype = VehiclePoolOps::GetVehicleType(ptr);
 		const bool is_front = !VehiclePoolOps::IsNonFrontVehiclePtr(ptr);
 #else
@@ -1633,7 +1632,7 @@ void CallVehicleTicks()
 		Vehicle *v = nullptr;
 		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: {}", VehicleInfoDumper(v));
 		for (size_t i = (size_t)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
-			v = Vehicle::Get(i);
+			v = Vehicle::Get(VehicleID(i));
 			if (v == nullptr) continue;
 
 			/* This is called once per day for each vehicle, but not in the first tick of the day */
@@ -4453,7 +4452,7 @@ void Vehicle::SetNext(Vehicle *next)
 		}
 		this->next->previous = nullptr;
 #if OTTD_UPPER_TAGGED_PTR
-		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index), false);
+		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index.base()), false);
 #endif
 	}
 
@@ -4464,7 +4463,7 @@ void Vehicle::SetNext(Vehicle *next)
 		if (this->next->previous != nullptr) this->next->previous->next = nullptr;
 		this->next->previous = this;
 #if OTTD_UPPER_TAGGED_PTR
-		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index), true);
+		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index.base()), true);
 #endif
 		for (Vehicle *v = this->next; v != nullptr; v = v->Next()) {
 			v->first = this->first;
@@ -4536,7 +4535,7 @@ void Vehicle::RemoveFromShared()
 	} else if (were_first) {
 		/* If we were the first one, update to the new first one.
 		 * Note: FirstShared() is already the new first */
-		InvalidateWindowData(GetWindowClassForVehicleType(this->type), vli.ToWindowNumber(), this->FirstShared()->index | (1U << 31));
+		InvalidateWindowData(GetWindowClassForVehicleType(this->type), vli.ToWindowNumber(), this->FirstShared()->index.base() | (1U << 31));
 	}
 
 	this->next_shared     = nullptr;

@@ -292,7 +292,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 		if (v->Next() != nullptr) {
 			v->Next()->previous = v;
 #if OTTD_UPPER_TAGGED_PTR
-			VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(v->Next()->index), true);
+			VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(v->Next()->index.base()), true);
 #endif
 			if (v->type == VEH_TRAIN && (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL))) {
 				SlErrorCorrupt("Mixed virtual/non-virtual train consist");
@@ -1433,12 +1433,13 @@ void Load_VEHS()
 		}
 	}
 
-	int index;
-	while ((index = SlIterateArray()) != -1) {
+	int idx;
+	while ((idx = SlIterateArray()) != -1) {
 		_old_order_item_ref = 0;
 
 		Vehicle *v;
 		VehicleType vtype = (VehicleType)SlReadByte();
+		VehicleID index = static_cast<VehicleID>(idx);
 
 		switch (vtype) {
 			case VEH_TRAIN:    v = new (index) Train();           break;
@@ -1685,7 +1686,7 @@ void Load_VENC()
 
 	_vehicle_vencs.resize(SlReadUint32());
 	for (vehicle_venc &venc : _vehicle_vencs) {
-		venc.id = SlReadUint32();
+		venc.id = static_cast<VehicleID>(SlReadUint32());
 		venc.vcache.cached_max_speed = SlReadUint16();
 		venc.vcache.cached_cargo_age_period = SlReadUint16();
 		venc.vcache.cached_vis_effect = SlReadByte();
@@ -1701,13 +1702,13 @@ void Load_VENC()
 		cache.cached_power = SlReadUint32();
 		cache.cached_air_drag = SlReadUint32();
 		cache.cached_total_length = SlReadUint16();
-		cache.first_engine = SlReadUint16();
+		cache.first_engine = static_cast<EngineID>(SlReadUint16());
 		cache.cached_veh_length = SlReadByte();
 	};
 
 	_train_vencs.resize(SlReadUint32());
 	for (train_venc &venc : _train_vencs) {
-		venc.id = SlReadUint32();
+		venc.id = static_cast<VehicleID>(SlReadUint32());
 		read_gv_cache(venc.gvcache);
 		venc.cached_tflags = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
@@ -1723,13 +1724,13 @@ void Load_VENC()
 
 	_roadvehicle_vencs.resize(SlReadUint32());
 	for (roadvehicle_venc &venc : _roadvehicle_vencs) {
-		venc.id = SlReadUint32();
+		venc.id = static_cast<VehicleID>(SlReadUint32());
 		read_gv_cache(venc.gvcache);
 	}
 
 	_aircraft_vencs.resize(SlReadUint32());
 	for (aircraft_venc &venc : _aircraft_vencs) {
-		venc.id = SlReadUint32();
+		venc.id = static_cast<VehicleID>(SlReadUint32());
 		venc.cached_max_range = SlReadUint16();
 	}
 }

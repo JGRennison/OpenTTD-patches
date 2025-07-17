@@ -377,6 +377,7 @@ public:
 };
 
 CommandCost CommandCostWithParam(StringID str, uint64_t value);
+CommandCost CommandCostWithParam(StringID str, StringParameterAsBase auto value) { return CommandCostWithParam(str, value.base()); }
 
 /**
  * Define a default return value for a failed command.

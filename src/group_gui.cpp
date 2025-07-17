@@ -885,7 +885,7 @@ public:
 				}
 				if (v != nullptr) {
 					if (_ctrl_pressed && _shift_pressed && _settings_client.gui.newgrf_developer_tools) {
-						::ShowNewGRFInspectWindow(GetGrfSpecFeature(v->type), v->index);
+						::ShowNewGRFInspectWindow(GetGrfSpecFeature(v->type), v->index.base());
 					} else if (_ctrl_pressed && this->grouping == GB_SHARED_ORDERS) {
 						ShowOrdersWindow(v);
 					} else {

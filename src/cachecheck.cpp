@@ -212,26 +212,26 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		i = 0;
 		for (Station *st : Station::Iterate()) {
 			if (old_station_industries_nears[i] != st->industries_near) {
-				cclog("station industries_near mismatch: st {}, (old size: {}, new size: {})", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
+				cclog("station industries_near mismatch: st {}, (old size: {}, new size: {})", st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 			}
 			if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
 				cclog("station catchment_tiles mismatch: st {}", (int)st->index);
 			}
 			if (!(old_station_tiles[i] == st->station_tiles)) {
-				cclog("station station_tiles mismatch: st {}, (old: {}, new: {})", (int)st->index, old_station_tiles[i], st->station_tiles);
+				cclog("station station_tiles mismatch: st {}, (old: {}, new: {})", st->index, old_station_tiles[i], st->station_tiles);
 			}
 			i++;
 		}
 		i = 0;
 		for (Industry *ind : Industry::Iterate()) {
 			if (old_industry_stations_nears[i] != ind->stations_near) {
-				cclog("industry stations_near mismatch: ind {}, (old size: {}, new size: {})", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
+				cclog("industry stations_near mismatch: ind {}, (old size: {}, new size: {})", ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 			}
 			StationList stlist;
 			if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
 				stlist.insert(ind->neutral_station);
 				if (ind->stations_near != stlist) {
-					cclog("industry neutral station stations_near mismatch: ind {}, (recalc size: {}, neutral size: {})", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+					cclog("industry neutral station stations_near mismatch: ind {}, (recalc size: {}, neutral size: {})", ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 				}
 			} else {
 				ForAllStationsAroundTiles(ind->location, [ind, &stlist](Station *st, TileIndex tile) {
@@ -240,7 +240,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 					return true;
 				});
 				if (ind->stations_near != stlist) {
-					cclog("industry FindStationsAroundTiles mismatch: ind {}, (recalc size: {}, find size: {})", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+					cclog("industry FindStationsAroundTiles mismatch: ind {}, (recalc size: {}, find size: {})", ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 				}
 			}
 			i++;

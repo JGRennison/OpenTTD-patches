@@ -40,6 +40,7 @@
 #include "core/ring_buffer.hpp"
 #include "core/checksum_func.hpp"
 #include "3rdparty/nlohmann/json.hpp"
+#include "3rdparty/fmt/std.h"
 #include <array>
 #include <typeinfo>
 

@@ -1991,7 +1991,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 					if (_local_company == v->owner) {
 						SetDParam(0, front->index);
 						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-								NewsReferenceType::Vehicle, front->index);
+								front->index);
 					}
 					break;
 				}
@@ -2002,8 +2002,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 						SetDParam(0, front->index);
 						SetDParam(1, order->GetDestination().base());
 						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-								NewsReferenceType::Vehicle, front->index,
-								NewsReferenceType::Station, order->GetDestination().ToStationID());
+								front->index, order->GetDestination().ToStationID());
 					}
 					break;
 				}

@@ -10,10 +10,10 @@
 #ifndef NEWS_CMD_H
 #define NEWS_CMD_H
 
-#include "command_type.h"
+#include "command_func.h"
 #include "company_type.h"
-#include "news_type.h"
+#include "news_func.h"
 
-DEF_CMD_TUPLE_NT(CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem, CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<NewsType, NewsReferenceType, CompanyID, uint32_t, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem, CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<NewsType, CompanyID, NewsReference, std::string>)
 
 #endif /* NEWS_CMD_H */

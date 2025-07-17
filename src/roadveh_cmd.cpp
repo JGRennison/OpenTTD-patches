@@ -1287,7 +1287,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 	best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->GetOrCreatePathCache());
 	DEBUG_UPDATESTATECHECKSUM("RoadFindPathToDest: v: {}, path_found: {}, best_track: {}", v->index, path_found, best_track);
-	UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | best_track);
+	UpdateStateChecksum((((uint64_t) v->index.base()) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
 found_best_track:;

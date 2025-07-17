@@ -639,10 +639,10 @@ void EngineOverrideManager::RemoveFromIndex(EngineID id)
 void EngineOverrideManager::ReIndex()
 {
 	this->mapping_index.clear();
-	EngineID index = 0;
+	EngineID index = EngineID::Begin();
 	for (const EngineIDMapping &eid : this->mappings) {
 		this->mapping_index.insert({ HashKey(eid), index });
-		index++;
+		++index;
 	}
 }
 
@@ -655,14 +655,14 @@ void SetupEngines()
 	_engine_pool.CleanPool();
 
 	assert(_engine_mngr.mappings.size() >= EngineOverrideManager::NUM_DEFAULT_ENGINES);
-	[[maybe_unused]] uint index = 0;
+	[[maybe_unused]] EngineID index = EngineID::Begin();
 	for (const EngineIDMapping &eid : _engine_mngr.mappings) {
 		/* Assert is safe; there won't be more than 256 original vehicles
 		 * in any case, and we just cleaned the pool. */
 		assert(Engine::CanAllocateItem());
 		[[maybe_unused]] const Engine *e = new Engine(eid.type, eid.internal_id);
 		assert(e->index == index);
-		index++;
+		++index;
 	}
 }
 
@@ -810,7 +810,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	}
 
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
-	              (re->index << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
+	              (re->index.base() << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
 	              (re->info.lifelength.base() << 4) ^ re->info.retire_early ^
 	              e->type ^
 	              e->GetGRFID());
@@ -1208,7 +1208,7 @@ static void NewVehicleAvailable(Engine *e)
 	if (!IsVehicleTypeDisabled(e->type, false) && !e->info.extra_flags.Test(ExtraEngineFlag::NoNews)) {
 		SetDParam(0, GetEngineCategoryName(index));
 		SetDParam(1, PackEngineNameDParam(index, EngineNameContext::PreviewNews));
-		AddNewsItem(STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE, NewsType::NewVehicles, NewsStyle::Vehicle, {}, NewsReferenceType::Engine, index);
+		AddNewsItem(STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE, NewsType::NewVehicles, NewsStyle::Vehicle, {}, index);
 	}
 
 	/* Update the toolbar. */

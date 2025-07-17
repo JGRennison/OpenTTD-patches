@@ -1557,7 +1557,7 @@ CommandCost CmdCloneVehicleFromTemplate(DoCommandFlags flags, TileIndex tile, Te
 
 	Train *virt = Train::Get(ret.GetResultData());
 
-	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, ret.GetResultData(), false);
+	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, ret.GetResultData<VehicleID>(), false);
 
 	delete virt;
 

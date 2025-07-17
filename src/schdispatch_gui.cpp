@@ -1078,12 +1078,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ADD: {
 				if (!this->IsScheduleSelected()) break;
 				if (_settings_time.time_in_minutes && _ctrl_pressed) {
-					void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_number);
+					void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number);
 					ShowScheduledDispatchAddSlotsWindow(this, v->index);
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString({}, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
-					ShowSetDateWindow(this, v->index, _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
+					ShowSetDateWindow(this, v->index.base(), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
 							ScheduleAddCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(this->schedule_index)), STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
@@ -1102,7 +1102,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(GetString(STR_JUST_INT, _settings_time.NowInTickMinutes().ClockHHMM()), STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index, _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
+					ShowSetDateWindow(this, v->index.base(), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
 							SetScheduleStartDateCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(this->schedule_index)), STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
@@ -1753,7 +1753,7 @@ static WindowDesc _scheduled_dispatch_add_desc(__FILE__, __LINE__,
 	_nested_scheduled_dispatch_add_widgets
 );
 
-void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_number)
+void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number)
 {
 	CloseWindowByClass(WC_SET_DATE);
 

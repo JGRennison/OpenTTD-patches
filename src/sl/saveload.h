@@ -516,7 +516,11 @@ size_t SaveLoadCustomContainerHandler(void *list, SaveLoadCustomContainerOp op, 
 
 		case SaveLoadCustomContainerOp::Save:
 			for (const typename T::value_type &val : *l) {
-				SlSaveValue(val, conv);
+				if constexpr (SlIsPrimitiveType<typename T::value_type>) {
+					SlSaveValue(val.base(), conv);
+				} else {
+					SlSaveValue(val, conv);
+				}
 			}
 			return 0;
 

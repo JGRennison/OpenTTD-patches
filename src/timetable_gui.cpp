@@ -977,8 +977,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 					this->set_start_date_all = set_all;
 					ShowQueryString(GetString(STR_JUST_INT, _settings_time.NowInTickMinutes().ClockHHMM()), STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index,
-							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(set_all ? 1 : 0)));
+					ShowSetDateWindow(this, v->index.base(), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15,
+							ChangeTimetableStartCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(set_all ? 1 : 0)));
 				}
 				break;
 			}

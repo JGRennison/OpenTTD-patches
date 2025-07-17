@@ -163,7 +163,7 @@ Town::~Town()
 
 	Source src = Source::Make<SourceType::Town>(this->index);
 	DeleteSubsidyWith(src);
-	DeleteNewGRFInspectWindow(GSF_FAKE_TOWNS, this->index);
+	DeleteNewGRFInspectWindow(GSF_FAKE_TOWNS, this->index.base());
 	CargoPacket::InvalidateAllFrom(src);
 	MarkWholeScreenDirty();
 }
@@ -3709,7 +3709,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlags flags)
 		} else {
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
-		AddNewsItem(msg, NewsType::General, NewsStyle::Normal, {}, NewsReferenceType::Town, t->index, NewsReferenceType::None, UINT32_MAX);
+		AddNewsItem(msg, NewsType::General, NewsStyle::Normal, {}, t->index);
 		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 		Game::NewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 	}
@@ -3868,7 +3868,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlags flags)
 		}
 		SetDParam(2, t->index);
 		SetDParamStr(3, cni->company_name);
-		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NewsType::General, NewsStyle::Company, {}, NewsReferenceType::Town, t->index, NewsReferenceType::None, UINT32_MAX, std::move(cni));
+		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NewsType::General, NewsStyle::Company, {}, t->index, {}, std::move(cni));
 		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 		Game::NewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 	}

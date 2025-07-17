@@ -416,7 +416,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		if (!HasBit(this->subtype, GVSF_VIRTUAL)) SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
-		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index);
+		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index.base());
 	}
 	if (allowed_changes & CCF_LENGTH) {
 		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
@@ -2239,7 +2239,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 			CloseWindowById(WC_VEHICLE_DETAILS, src->index);
 			CloseWindowById(WC_VEHICLE_TIMETABLE, src->index);
 			CloseWindowById(WC_SCHDISPATCH_SLOTS, src->index);
-			DeleteNewGRFInspectWindow(GSF_TRAINS, src->index);
+			DeleteNewGRFInspectWindow(GSF_TRAINS, src->index.base());
 			SetWindowDirty(WC_COMPANY, _current_company);
 
 			if (src_head != nullptr && src_head->IsFrontEngine()) {
@@ -2949,8 +2949,7 @@ void ReverseTrainDirection(Train *v)
 		SetDParam(0, v->index);
 		SetDParam(1, v->current_order.GetDestination().ToStationID());
 		AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-				NewsReferenceType::Vehicle, v->index,
-				NewsReferenceType::Station, v->current_order.GetDestination().ToStationID());
+				v->index, v->current_order.GetDestination().ToStationID());
 	}
 	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
 		v->LeaveStation();
@@ -4535,7 +4534,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 
 		Track next_track = DoTrainPathfind(v, new_tile, dest_enterdir, tracks, path_found, do_track_reservation, &res_dest, &final_dest);
 		DEBUG_UPDATESTATECHECKSUM("ChooseTrainTrack: v: {}, path_found: {}, next_track: {}", v->index, path_found, next_track);
-		UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | next_track);
+		UpdateStateChecksum((((uint64_t) v->index.base()) << 32) | (path_found << 16) | next_track);
 		if (new_tile == tile) best_track = next_track;
 		v->HandlePathfindingResult(path_found);
 	}

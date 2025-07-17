@@ -20,14 +20,14 @@
 
 #include "../safeguards.h"
 
-static std::vector<Engine*> _temp_engine;
+static TypedIndexContainer<std::vector<Engine *>, EngineID> _temp_engine;
 
 /**
  * Allocate an Engine structure, but not using the pools.
  * The allocated Engine must be freed using FreeEngine;
  * @return Allocated engine.
  */
-static Engine* CallocEngine()
+static Engine *CallocEngine()
 {
 	uint8_t *zero = CallocT<uint8_t>(sizeof(Engine));
 	Engine *engine = new (zero) Engine();
@@ -107,9 +107,9 @@ static void Load_ENGS()
 	SlArray(names, lengthof(names), SLE_STRINGID);
 
 	/* Copy each string into the temporary engine array. */
-	for (EngineID engine = 0; engine < lengthof(names); engine++) {
+	for (EngineID engine = EngineID::Begin(); engine < lengthof(names); ++engine) {
 		Engine *e = GetTempDataEngine(engine);
-		e->name = CopyFromOldName(names[engine]);
+		e->name = CopyFromOldName(names[engine.base()]);
 	}
 }
 
@@ -161,7 +161,7 @@ void Load_ERNC()
 	const uint32_t count = SlReadUint32();
 	_engine_refit_network_caches.reserve(count);
 	for (uint32_t idx = 0; idx < count; idx++) {
-		EngineID id = SlReadUint16();
+		EngineID id = static_cast<EngineID>(SlReadUint16());
 		CargoTypes refit_mask = SlReadUint64();
 		_engine_refit_network_caches.push_back({ id, refit_mask });
 	}

@@ -46,7 +46,7 @@ enum TownCouncilAttitudes {
 	TOWN_COUNCIL_PERMISSIVE = 3,
 };
 
-typedef Pool<Town, TownID, 64, TOWN_END> TownPool;
+typedef Pool<Town, TownID, 64, TownID::End().base()> TownPool;
 extern TownPool _town_pool;
 
 /** Data structure with cached data of towns. */

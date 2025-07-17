@@ -253,9 +253,9 @@ struct VehiclePoolOps {
 	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { AssignBit(ptr, 63, non_front); }
 };
 
-typedef Pool<Vehicle, VehicleID, 512, VEHICLE_END, PoolType::Normal, false, true, VehiclePoolOps> VehiclePool;
+typedef Pool<Vehicle, VehicleID, 512, VehicleID::End().base(), PoolType::Normal, false, true, VehiclePoolOps> VehiclePool;
 #else
-typedef Pool<Vehicle, VehicleID, 512, VEHICLE_END> VehiclePool;
+typedef Pool<Vehicle, VehicleID, 512, VehicleID::End().base()> VehiclePool;
 #endif
 
 extern VehiclePool _vehicle_pool;
@@ -1388,9 +1388,9 @@ struct SpecializedVehicle : public Vehicle {
 		return Vehicle::NewWithParam(size, Type);
 	}
 
-	inline void *operator new(size_t size, size_t index)
+	inline void *operator new(size_t size, VehicleID index)
 	{
-		return Vehicle::NewWithParam(size, index, Type);
+		return Vehicle::NewWithParam(size, index.base(), Type);
 	}
 
 	inline void operator delete(void *p)
@@ -1497,7 +1497,7 @@ struct SpecializedVehicle : public Vehicle {
 	static inline bool IsValidID(auto index)
 	{
 #if OTTD_UPPER_TAGGED_PTR
-		return Vehicle::IsValidID(index) && VehiclePoolOps::GetVehicleType(_vehicle_pool.GetRaw(index)) == Type;
+		return Vehicle::IsValidID(index) && VehiclePoolOps::GetVehicleType(_vehicle_pool.GetRaw(GetRawIndex(index))) == Type;
 #else
 		return Vehicle::IsValidID(index) && Vehicle::Get(index)->type == Type;
 #endif
@@ -1668,6 +1668,12 @@ public:
 	{
 		return Pool::IterateWrapperFiltered<T, VehicleFrontOnlyFilter>(from, VehicleFrontOnlyFilter{});
 	}
+
+private:
+	/* Temporary helper functions to get the raw index from either strongly and non-strongly typed pool items. */
+	static constexpr size_t GetRawIndex(size_t index) { return index; }
+	template <typename S> requires std::is_base_of_v<PoolIDBase, S>
+	static constexpr size_t GetRawIndex(const S &index) { return index.base(); }
 };
 
 /** Sentinel for an invalid coordinate. */

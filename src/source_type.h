@@ -35,10 +35,17 @@ public:
 	SourceType type; ///< Type of \c source_id.
 
 	template <SourceType TYPE>
-	static constexpr Source Make(uint16_t id)
+	static constexpr Source Make(IndustryID id)
 	{
-		static_assert(TYPE != SourceType::Headquarters);
-		return { id, TYPE };
+		static_assert(TYPE == SourceType::Industry);
+		return { id.base(), TYPE };
+	}
+
+	template <SourceType TYPE>
+	static constexpr Source Make(TownID id)
+	{
+		static_assert(TYPE == SourceType::Town);
+		return { id.base(), TYPE };
 	}
 
 	template <SourceType TYPE>
