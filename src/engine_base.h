@@ -36,7 +36,7 @@ enum class EngineDisplayFlag : uint8_t {
 
 using EngineDisplayFlags = EnumBitSet<EngineDisplayFlag, uint8_t>;
 
-typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
+typedef Pool<Engine, EngineID, 64, ENGINE_END> EnginePool;
 extern EnginePool _engine_pool;
 
 struct EngineRefitCapacityValue {

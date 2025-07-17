@@ -63,7 +63,7 @@ enum IndustryGraphics : uint8_t {
 inline IndustryID GetIndustryIndex(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
-	return _m[t].m2;
+	return static_cast<IndustryID>(_m[t].m2);
 }
 
 /**
