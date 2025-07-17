@@ -14,6 +14,7 @@
 
 #include "../core/format.hpp"
 #include "../3rdparty/fmt/ranges.h"
+#include "../3rdparty/fmt/std.h"
 
 template <typename T>
 bool TestGenericSerialisation(T value, std::initializer_list<uint8_t> expected)
@@ -70,4 +71,12 @@ TEST_CASE("Generic integer")
 	CHECK(TestGenericSerialisation<int64_t>(INT32_MIN, { 0xF0, 0xFF, 0xFF, 0xFF, 0xFF }));
 	CHECK(TestGenericSerialisation<int64_t>(INT64_MAX, { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE }));
 	CHECK(TestGenericSerialisation<int64_t>(INT64_MIN, { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }));
+}
+
+TEST_CASE("std::variant")
+{
+	CHECK(TestGenericSerialisation<std::variant<std::monostate, uint8_t>>(std::monostate{}, { 0 }));
+	CHECK(TestGenericSerialisation<std::variant<std::monostate, uint8_t>>((uint8_t)0, { 1, 0 }));
+	CHECK(TestGenericSerialisation<std::variant<uint8_t, std::string>>((uint8_t)42, { 0, 42 }));
+	CHECK(TestGenericSerialisation<std::variant<uint8_t, std::string>>("ABCD", { 1, 0x41, 0x42, 0x43, 0x44, 0 }));
 }

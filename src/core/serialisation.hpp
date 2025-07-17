@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <variant>
 #include <limits>
 
 template<typename T>
@@ -160,6 +161,27 @@ struct BufferSerialisationHelper {
 			((this->Send_generic(std::get<Tindices>(data))), ...);
 		};
 		handler(std::index_sequence_for<V...>{});
+	}
+
+	template <typename... V>
+	void Send_generic(const std::variant<V...> &data)
+	{
+		static_assert(sizeof...(V) < 256);
+		this->Send_uint8(static_cast<uint8_t>(data.index()));
+
+		const size_t idx = data.index();
+		auto subhandler = [&]<size_t Tidx>() {
+			if (idx == Tidx) this->Send_generic(std::get<Tidx>(data));
+		};
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((subhandler.template operator()<Tindices>()), ...);
+		};
+		handler(std::index_sequence_for<V...>{});
+	}
+
+	void Send_generic(const std::monostate &data)
+	{
+		/* Do nothing */
 	}
 
 	template <typename... V>
@@ -482,6 +504,29 @@ public:
 			((this->Recv_generic(std::get<Tindices>(data), settings)), ...);
 		};
 		handler(std::index_sequence_for<V...>{});
+	}
+
+	template <typename... V>
+	void Recv_generic(std::variant<V...> &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	{
+		static_assert(sizeof...(V) < 256);
+		const size_t idx = Recv_uint8();
+		auto subhandler = [&]<size_t Tidx>() {
+			if (idx == Tidx) {
+				std::variant_alternative_t<Tidx, std::variant<V...>> value;
+				this->Recv_generic(value, settings);
+				data = value;
+			}
+		};
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((subhandler.template operator()<Tindices>()), ...);
+		};
+		handler(std::index_sequence_for<V...>{});
+	}
+
+	void Recv_generic(std::monostate &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	{
+		/* Do nothing */
 	}
 
 	template <typename... V>
