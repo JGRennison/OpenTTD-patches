@@ -3,6 +3,7 @@ add_test_files(
     enum_over_optimisation.cpp
     flatset_type.cpp
     format_target.cpp
+    history_func.cpp
     landscape_partial_pixel_z.cpp
     math_func.cpp
     mock_environment.h
