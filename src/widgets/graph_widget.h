@@ -38,6 +38,7 @@ enum GraphWidgets : WidgetID {
 	WID_GRAPH_MATRIX_SCROLLBAR,///< Cargo list scrollbar.
 
 	WID_GRAPH_RANGE_MATRIX, ///< Range list.
+	WID_GRAPH_SCALE_MATRIX, ///< Horizontal axis scale list.
 
 	WID_CPR_DAYS,            ///< Days in transit mode.
 	WID_CPR_SPEED,           ///< Speed mode.
