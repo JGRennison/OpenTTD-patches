@@ -37,8 +37,6 @@ bool MakeScreenshot(ScreenshotType t, std::string name, uint32_t width = 0, uint
 bool MakeMinimapWorldScreenshot(const char *name);
 bool MakeTopographyScreenshot(const char *name);
 bool MakeIndustryScreenshot(const char *name);
-void SetScreenshotAuxiliaryText(const char *key, const char *value);
-inline void ClearScreenshotAuxiliaryText() { SetScreenshotAuxiliaryText(nullptr, nullptr); }
 
 extern std::string _screenshot_format_name;
 extern std::string _full_screenshot_path;

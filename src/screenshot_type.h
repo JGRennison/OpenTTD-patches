@@ -39,4 +39,21 @@ public:
 	virtual bool MakeImage(const char *name, ScreenshotCallback *callb, void *userdata, uint w, uint h, int pixelformat, const Colour *palette) = 0;
 };
 
+struct ScreenshotAuxiliaryText {
+	static const char *key;
+	static const char *value;
+
+	static void Set(const char *key, const char *value)
+	{
+		ScreenshotAuxiliaryText::key = key;
+		ScreenshotAuxiliaryText::value = value;
+	}
+
+	static void Clear()
+	{
+		ScreenshotAuxiliaryText::key = nullptr;
+		ScreenshotAuxiliaryText::value = nullptr;
+	}
+};
+
 #endif /* SCREENSHOT_TYPE_H */

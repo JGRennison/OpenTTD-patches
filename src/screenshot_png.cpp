@@ -25,15 +25,6 @@
 
 #include "safeguards.h"
 
-static const char *_screenshot_aux_text_key = nullptr;
-static const char *_screenshot_aux_text_value = nullptr;
-
-void SetScreenshotAuxiliaryText(const char *key, const char *value)
-{
-	_screenshot_aux_text_key = key;
-	_screenshot_aux_text_value = value;
-}
-
 class ScreenshotProvider_Png : public ScreenshotProvider {
 public:
 	ScreenshotProvider_Png() : ScreenshotProvider("png", "PNG", 0) {}
@@ -110,13 +101,13 @@ public:
 		text[1].text = text_buf.data();
 		text[1].text_length = text_buf.size() - 1;
 		text[1].compression = PNG_TEXT_COMPRESSION_zTXt;
-		if (_screenshot_aux_text_key != nullptr && _screenshot_aux_text_value != nullptr) {
-			text[2].key = const_cast<char *>(_screenshot_aux_text_key);
-			text[2].text = const_cast<char *>(_screenshot_aux_text_value);
-			text[2].text_length = strlen(_screenshot_aux_text_value);
+		if (ScreenshotAuxiliaryText::key != nullptr && ScreenshotAuxiliaryText::value != nullptr) {
+			text[2].key = const_cast<char *>(ScreenshotAuxiliaryText::key);
+			text[2].text = const_cast<char *>(ScreenshotAuxiliaryText::value);
+			text[2].text_length = strlen(ScreenshotAuxiliaryText::value);
 			text[2].compression = PNG_TEXT_COMPRESSION_zTXt;
 		}
-		png_set_text(png_ptr, info_ptr, text, _screenshot_aux_text_key && _screenshot_aux_text_value ? 3 : 2);
+		png_set_text(png_ptr, info_ptr, text, ScreenshotAuxiliaryText::key && ScreenshotAuxiliaryText::value ? 3 : 2);
 #endif /* PNG_TEXT_SUPPORTED */
 
 		if (pixelformat == 8) {

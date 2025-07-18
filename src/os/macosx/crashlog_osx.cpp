@@ -420,7 +420,7 @@ public:
 		}
 
 		this->WriteToStdout("Writing crash screenshot...\n");
-		SetScreenshotAuxiliaryText("Crash Log", buffer);
+		ScreenshotAuxiliaryText::Set("Crash Log", buffer);
 		if (!this->WriteScreenshot(this->screenshot_filename, lastof(this->screenshot_filename), name_buffer)) {
 			this->screenshot_filename[0] = '\0';
 			ret = false;

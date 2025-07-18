@@ -22,6 +22,7 @@
 #include "video/video_driver.hpp"
 #include "sl/saveload.h"
 #include "screenshot.h"
+#include "screenshot_type.h"
 #include "gfx_func.h"
 #include "network/network.h"
 #include "network/network_survey.h"
@@ -983,7 +984,7 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 		this->WriteToStdout(buf);
 	}
 
-	SetScreenshotAuxiliaryText("Crash Log", buffer);
+	ScreenshotAuxiliaryText::Set("Crash Log", buffer);
 	_savegame_DBGL_data = buffer;
 	_save_DBGC_data = true;
 

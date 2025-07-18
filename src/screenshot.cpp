@@ -44,6 +44,9 @@ static std::string _screenshot_name;  ///< Filename of the screenshot file.
 std::string _full_screenshot_path;    ///< Pathname of the screenshot file.
 uint _heightmap_highest_peak;         ///< When saving a heightmap, this contains the highest peak on the map.
 
+const char *ScreenshotAuxiliaryText::key = nullptr;
+const char *ScreenshotAuxiliaryText::value = nullptr;
+
 /**
  * Get the screenshot provider for the selected format.
  * If the selected provider is not found, then the first provider will be used instead.
