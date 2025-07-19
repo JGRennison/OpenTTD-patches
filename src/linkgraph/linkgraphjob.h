@@ -149,7 +149,7 @@ protected:
 	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
 	std::atomic<bool> job_aborted;    ///< Has the job been aborted. This is accessed by multiple threads and reads may be stale.
 
-	void EraseFlows(NodeID from);
+	void EraseFlows(StationID from);
 	void JoinThread();
 	void SetJobGroup(std::shared_ptr<LinkGraphJobGroup> group);
 
