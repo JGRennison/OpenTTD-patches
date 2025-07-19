@@ -1827,7 +1827,7 @@ STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(No unloading a
 STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Unload by cargo type)
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Unload by cargo type and wait for full load)
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Unload by cargo type and wait for any full load)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Unload by cargo type and leave empty)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Unload by cargo type and no loading)
 STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Unload by cargo type and load by cargo type)
 STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Load by cargo type with refit to {STRING})
 STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Unload and load by cargo type with refit to {STRING})
