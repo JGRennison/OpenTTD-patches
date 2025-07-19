@@ -2088,9 +2088,9 @@ static void ViewportAddStationStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo 
 
 		Colours colour = (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner];
 		if (Station::IsExpected(st)) { /* Station */
-			str->FillDetails(small ? STR_STATION_NAME : STR_VIEWPORT_STATION, st->index, st->facilities.base(), colour);
+			str->FillDetails(small ? STR_STATION_NAME : STR_VIEWPORT_STATION, st->index.base(), st->facilities.base(), colour);
 		} else { /* Waypoint */
-			str->FillDetails(STR_WAYPOINT_NAME, st->index, 0, colour);
+			str->FillDetails(STR_WAYPOINT_NAME, st->index.base(), 0, colour);
 		}
 	}
 }

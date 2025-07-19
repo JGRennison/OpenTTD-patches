@@ -43,7 +43,6 @@ uint32_t _old_num_dests;
 uint _cargo_reserved_count;
 
 struct FlowSaveLoad {
-	FlowSaveLoad() : source(0), via(0), share(0), restricted(false) {}
 	StationID source;
 	StationID via;
 	uint32_t share;
@@ -154,7 +153,7 @@ public:
 	{
 		size_t num_flows = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? _old_num_flows : SlGetStructListLength(UINT32_MAX);
 
-		FlowSaveLoad flow;
+		FlowSaveLoad flow{};
 		FlowStat *fs = nullptr;
 		StationID prev_source = INVALID_STATION;
 		for (uint32_t j = 0; j < num_flows; ++j) {
@@ -249,7 +248,7 @@ public:
 				AssignBit(ge.status, GoodsEntry::GES_ACCEPTANCE, HasBit(_waiting_acceptance, 15));
 				if (GB(_waiting_acceptance, 0, 12) != 0) {
 					/* In old versions, enroute_from used 0xFF as INVALID_STATION */
-					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? INVALID_STATION : _cargo_source;
+					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? INVALID_STATION : static_cast<StationID>(_cargo_source);
 
 					/* Make sure we can allocate the CargoPacket. This is safe
 					 * as there can only be ~64k stations and 32 cargoes in these
@@ -473,7 +472,7 @@ struct STNNChunkHandler : ChunkHandler {
 		while ((index = SlIterateArray()) != -1) {
 			bool waypoint = static_cast<StationFacilities>(SlReadByte()).Test(StationFacility::Waypoint);
 
-			BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
+			BaseStation *bst = waypoint ? (BaseStation *)new (StationID(index)) Waypoint() : new (StationID(index)) Station();
 			SlObject(bst, slt);
 		}
 	}

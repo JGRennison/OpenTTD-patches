@@ -277,7 +277,7 @@ static bool TestOrderCondition(const Order *order, TraceRestrictInstructionItem 
  */
 static bool TestStationCondition(StationID station, TraceRestrictInstructionItem item)
 {
-	bool result = (item.GetAuxField() == TROCAF_STATION) && (station == item.GetValue());
+	bool result = (item.GetAuxField() == TROCAF_STATION) && (station == item.GetValueAsStation());
 	return TestBinaryConditionCommon(item, result);
 
 }

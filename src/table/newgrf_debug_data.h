@@ -312,17 +312,19 @@ class NIHVehicle : public NIHelper {
 					output.buffer.format("      Start: {} (dist: {}), end: {} (dist: {}), z: {}, ",
 							item.start, item.start - l.current_position, item.end, item.end - l.current_position, item.z_pos);
 					switch (item.type) {
-						case TRLIT_STATION:
-							output.buffer.format("station: {}, {}", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
-							if (t->current_order.ShouldStopAtStation(t->last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+						case TRLIT_STATION: {
+							const StationID st = static_cast<StationID>(item.data_id);
+							output.buffer.format("station: {}, {}", st, BaseStation::IsValidID(st) ? BaseStation::Get(st)->GetCachedName() : "[invalid]");
+							if (t->current_order.ShouldStopAtStation(t->last_station_visited, st, Waypoint::GetIfValid(st) != nullptr)) {
 								extern int PredictStationStoppingLocation(const Train *v, const Order *order, int station_length, DestinationID dest);
-								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, item.data_id);
+								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, st);
 								output.buffer.format(", stop_position: {}", item.start + stop_position);
 								print_braking_speed(item.start + stop_position, 0, item.z_pos);
-							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == item.data_id && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
+							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == st && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 								print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
 							}
 							break;
+						}
 						case TRLIT_REVERSE:
 							output.buffer.format("reverse");
 							print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
@@ -1784,7 +1786,7 @@ static const NIVariable _niv_airporttiles[] = {
 
 class NIHAirportTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->grf_prop.HasGrfFile(); }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(TileIndex{index})); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index})); }
 	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }

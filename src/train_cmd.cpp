@@ -943,14 +943,15 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 
 	switch (item.type) {
 		case TRLIT_STATION: {
-			if (order->ShouldStopAtStation(last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
-				limit_advisory_speed(item.start + PredictStationStoppingLocation(v, order, item.end - item.start, item.data_id), 0, item.z_pos);
-				last_station_visited = item.data_id;
-			} else if (order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == item.data_id && (order->GetWaypointFlags() & OWF_REVERSE)) {
+			const StationID st = static_cast<StationID>(item.data_id);
+			if (order->ShouldStopAtStation(last_station_visited, st, Waypoint::GetIfValid(st) != nullptr)) {
+				limit_advisory_speed(item.start + PredictStationStoppingLocation(v, order, item.end - item.start, st), 0, item.z_pos);
+				last_station_visited = st;
+			} else if (order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == st && (order->GetWaypointFlags() & OWF_REVERSE)) {
 				limit_advisory_speed(item.start + v->gcache.cached_total_length, 0, item.z_pos);
-				if (order->IsWaitTimetabled()) last_station_visited = item.data_id;
+				if (order->IsWaitTimetabled()) last_station_visited = st;
 			}
-			if (order->IsBaseStationOrder() && order->GetDestination() == item.data_id && v->GetNumOrders() > 0) {
+			if (order->IsBaseStationOrder() && order->GetDestination() == st && v->GetNumOrders() > 0) {
 				current_order_index++;
 				AdvanceOrderIndex(v, current_order_index);
 				order = v->GetOrder(current_order_index);
@@ -4130,27 +4131,29 @@ public:
 		for (size_t i = state.order_items_start; i < lookahead->items.size(); i++) {
 			const TrainReservationLookAheadItem &item = lookahead->items[i];
 			switch (item.type) {
-				case TRLIT_STATION:
+				case TRLIT_STATION: {
+					const StationID st = static_cast<StationID>(item.data_id);
 					if (this->v->current_order.IsBaseStationOrder()) {
 						/* we've already seen this station in the lookahead, advance current order */
-						if (this->v->current_order.ShouldStopAtStation(this->v, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+						if (this->v->current_order.ShouldStopAtStation(this->v, st, Waypoint::GetIfValid(st) != nullptr)) {
 							SetBit(state.flags, CTTLASF_STOP_FOUND);
-							this->v->last_station_visited = item.data_id;
-						} else if (this->v->current_order.IsType(OT_GOTO_WAYPOINT) && this->v->current_order.GetDestination() == item.data_id && (this->v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
+							this->v->last_station_visited = st;
+						} else if (this->v->current_order.IsType(OT_GOTO_WAYPOINT) && this->v->current_order.GetDestination() == st && (this->v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 							if (!HasBit(state.flags, CTTLASF_REVERSE_FOUND)) {
 								SetBit(state.flags, CTTLASF_REVERSE_FOUND);
-								state.reverse_dest = item.data_id;
+								state.reverse_dest = st;
 								if (this->v->current_order.IsWaitTimetabled()) {
-									this->v->last_station_visited = item.data_id;
+									this->v->last_station_visited = st;
 									SetBit(state.flags, CTTLASF_STOP_FOUND);
 								}
 							}
 						}
-						if (this->v->current_order.GetDestination() == item.data_id) {
+						if (this->v->current_order.GetDestination() == st) {
 							this->SwitchToNextOrder(true);
 						}
 					}
 					break;
+				}
 
 				default:
 					break;
@@ -5641,7 +5644,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 					if (HasBit(r, VETS_ENTERED_STATION)) {
 						/* The new position is the end of the platform */
-						TrainEnterStation(v->First(), r >> VETS_STATION_ID_OFFSET);
+						TrainEnterStation(v->First(), StationID(r >> VETS_STATION_ID_OFFSET));
 					}
 					if (old_direction != v->direction) notify_direction_changed(old_direction, v->direction);
 				}
@@ -5905,7 +5908,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				if (HasBit(r, VETS_ENTERED_STATION)) {
 					/* The new position is the location where we want to stop */
-					TrainEnterStation(v->First(), r >> VETS_STATION_ID_OFFSET);
+					TrainEnterStation(v->First(), StationID(r >> VETS_STATION_ID_OFFSET));
 				}
 			}
 		} else {

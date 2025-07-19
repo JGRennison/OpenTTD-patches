@@ -2864,7 +2864,7 @@ DEF_CONSOLE_CMD(ConDeleteVehicleID)
 		uint32_t result;
 		if (GetArgumentInteger(&result, argv[1])) {
 			extern void ConsoleRemoveVehicle(VehicleID id);
-			ConsoleRemoveVehicle(result);
+			ConsoleRemoveVehicle(VehicleID(result));
 			return true;
 		}
 	}

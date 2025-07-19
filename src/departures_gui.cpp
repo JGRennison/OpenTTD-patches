@@ -329,7 +329,7 @@ public:
 	{
 		this->ConstructWidgetLayout(station);
 
-		this->title_params[1] = station;
+		this->title_params[1] = station.base();
 
 		if (Waypoint::IsValidID(station)) {
 			this->source_type = DST_WAYPOINT;

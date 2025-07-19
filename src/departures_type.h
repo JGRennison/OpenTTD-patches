@@ -49,11 +49,11 @@ private:
 	constexpr CallAtTargetID(uint32_t id) : id(id) {}
 
 public:
-	constexpr CallAtTargetID() : id(INVALID_STATION) {}
+	constexpr CallAtTargetID() : id(INVALID_STATION.base()) {}
 
 	static CallAtTargetID FromTile(TileIndex tile);
 	static CallAtTargetID FromOrder(const Order *order);
-	static constexpr CallAtTargetID FromStation(StationID station) { return CallAtTargetID(station); }
+	static constexpr CallAtTargetID FromStation(StationID station) { return CallAtTargetID(station.base()); }
 
 	inline bool IsValid() const { return id != INVALID_STATION; }
 	inline bool IsStationID() const { return (id & DEPOT_TAG) == 0; }

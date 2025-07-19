@@ -34,6 +34,7 @@ struct DestinationID {
 	explicit DestinationID() = default;
 	constexpr DestinationID(size_t index) : value(static_cast<BaseType>(index)) {}
 	constexpr DestinationID(DepotID depot) : value(depot.base()) {}
+	constexpr DestinationID(StationID station) : value(station.base()) {}
 	constexpr DestinationID(TraceRestrictSlotID slot) : value(slot.base()) {}
 	constexpr DestinationID(TraceRestrictSlotGroupID sg) : value(sg.base()) {}
 	constexpr DestinationID(TraceRestrictCounterID ctr) : value(ctr.base()) {}

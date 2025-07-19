@@ -215,7 +215,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				cclog("station industries_near mismatch: st {}, (old size: {}, new size: {})", st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 			}
 			if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
-				cclog("station catchment_tiles mismatch: st {}", (int)st->index);
+				cclog("station catchment_tiles mismatch: st {}", st->index);
 			}
 			if (!(old_station_tiles[i] == st->station_tiles)) {
 				cclog("station station_tiles mismatch: st {}, (old: {}, new: {})", st->index, old_station_tiles[i], st->station_tiles);

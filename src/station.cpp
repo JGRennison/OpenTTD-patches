@@ -154,7 +154,7 @@ Station::~Station()
 	}
 
 	CloseWindowById(WC_STATION_VIEW, index);
-	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index);
+	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index.base());
 
 	/* Now delete all orders that go to the station */
 	RemoveOrderFromAllVehicles(OT_GOTO_STATION, this->index);

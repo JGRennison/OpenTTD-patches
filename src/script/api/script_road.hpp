@@ -13,6 +13,7 @@
 #include "script_tile.hpp"
 #include "../squirrel_helper_type.hpp"
 #include "../../../road.h"
+#include "../../station_type.h"
 #include <optional>
 
 /**

@@ -2965,7 +2965,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlags flags)
 
 		st->AfterStationTileSetChange(false, StationType::Airport);
 
-		DeleteNewGRFInspectWindow(GSF_AIRPORTS, st->index);
+		DeleteNewGRFInspectWindow(GSF_AIRPORTS, st->index.base());
 	}
 
 	return cost;
@@ -4032,7 +4032,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 					}
 					return VETSB_CONTINUE;
 				}
-				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
+				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id.base() << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
 				if (front->UsingRealisticBraking() && front->cur_speed > 30) {
 					/* Travelling too fast, take no action */

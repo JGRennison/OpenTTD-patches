@@ -2250,7 +2250,7 @@ void InitializeGraphGui()
 /* STATION CARGO HISTORY */
 /*************************/
 struct StationCargoGraphWindow final : BaseGraphWindow {
-	StationID station_id;
+	const StationID station_id;
 	uint line_height {};  ///< Pixel height of each cargo type row.
 	Scrollbar *vscroll;   ///< Cargo list scrollbar.
 	uint legend_width {}; ///< Width of legend 'blob'.
@@ -2258,10 +2258,8 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	CargoTypes present_cargoes;
 
 	StationCargoGraphWindow(WindowDesc &desc, WindowNumber window) :
-		BaseGraphWindow(desc, STR_JUST_COMMA)
+		BaseGraphWindow(desc, STR_JUST_COMMA), station_id(static_cast<StationID>(window))
 	{
-		station_id = static_cast<uint16_t>(window);
-
 		this->num_on_x_axis = MAX_STATION_CARGO_HISTORY_DAYS; // Four weeks
 		this->num_vert_lines = MAX_STATION_CARGO_HISTORY_DAYS;
 		this->draw_dates = false;

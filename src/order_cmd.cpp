@@ -2373,7 +2373,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_COND_VALUE_3:
-				order->SetConditionViaStationID(data);
+				order->SetConditionViaStationID(StationID(data));
 				break;
 
 			case MOF_COND_VALUE_4:
@@ -2381,7 +2381,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_COND_STATION_ID:
-				order->SetConditionStationID(data);
+				order->SetConditionStationID(StationID(data));
 				if (ConditionVariableTestsCargoWaitingAmount(order->GetConditionVariable()) && data == order->GetConditionViaStationID()) {
 					/* Clear via if station is set to the same ID */
 					order->ClearConditionViaStation();

@@ -153,7 +153,7 @@ void LinkGraphJob::FinaliseJob()
 			if (new_it == flows.end()) {
 				if (_settings_game.linkgraph.GetDistributionType(this->Cargo()) != DT_MANUAL) {
 					if (it->Invalidate()) {
-						NodeID origin = it->GetOrigin();
+						StationID origin = it->GetOrigin();
 						FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
 						it->SwapShares(shares);
 						it = geflows.erase(it);

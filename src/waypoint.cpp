@@ -60,7 +60,7 @@ Waypoint::~Waypoint()
 {
 	if (CleaningPool()) return;
 	CloseWindowById(WC_WAYPOINT_VIEW, this->index);
-	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index);
+	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index.base());
 	RemoveOrderFromAllVehicles(OT_GOTO_WAYPOINT, this->index);
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 	TraceRestrictRemoveDestinationID(TROCAF_WAYPOINT, this->index);

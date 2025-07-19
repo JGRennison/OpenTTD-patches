@@ -3240,7 +3240,7 @@ public:
 				if (this->goto_type != OPOS_NONE) {
 					ResetObjectToPlace();
 				} else if (this->vehicle->GetOrder(this->OrderGetSel())->HasConditionViaStation()) {
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3, ORDER_NO_VIA_STATION);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3, ORDER_NO_VIA_STATION.base());
 				} else {
 					this->OrderClick_Goto(OPOS_COND_VIA);
 				}
@@ -3842,7 +3842,7 @@ public:
 					st = in->neutral_station;
 				}
 				if (st != nullptr && IsInfraUsageAllowed(this->vehicle->type, this->vehicle->owner, st->owner)) {
-					if (this->ModifyOrder(this->OrderGetSel(), (this->goto_type == OPOS_COND_VIA ? MOF_COND_VALUE_3 : MOF_COND_STATION_ID), st->index)) {
+					if (this->ModifyOrder(this->OrderGetSel(), (this->goto_type == OPOS_COND_VIA ? MOF_COND_VALUE_3 : MOF_COND_STATION_ID), st->index.base())) {
 						ResetObjectToPlace();
 					}
 				}

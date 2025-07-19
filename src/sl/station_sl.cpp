@@ -306,7 +306,7 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 			uint32_t sum_shares = 0;
 
 			RawMemoryDumper dump = dumper->BorrowRawWriteBytes(2 + 2 + SlGetMaxGammaLength());
-			dump.RawWriteUint16(stat.GetOrigin());
+			dump.RawWriteUint16(stat.GetOrigin().base());
 			dump.RawWriteUint16(stat.GetRawFlags());
 			dump.RawWriteSimpleGamma(stat.size());
 			dumper->ReturnRawWriteBytes(dump);
@@ -320,7 +320,7 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 
 				/* This is performance-sensitive, manually unroll */
 				dump = dumper->RawWriteBytes(2 + 4 + 1);
-				dump.RawWriteUint16(via);
+				dump.RawWriteUint16(via.base());
 				dump.RawWriteUint32(share);
 				dump.RawWriteByte(restricted ? 1 : 0);
 			}
@@ -337,19 +337,19 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 		flows.reserve(num_flows);
 		for (uint32_t j = 0; j < num_flows; ++j) {
 			RawReadBuffer buf = reader->ReadRawBytes(2 + 2);
-			StationID source = buf.RawReadUint16();
+			StationID source = StationID(buf.RawReadUint16());
 			uint16_t flags = buf.RawReadUint16();
 			uint32_t flow_count = SlReadSimpleGamma();
 
 			buf = reader->ReadRawBytes(2 + 4 + 1);
-			StationID via = buf.RawReadUint16();
+			StationID via = StationID(buf.RawReadUint16());
 			uint32_t share = buf.RawReadUint32();
 			bool restricted = (buf.RawReadByte() != 0);
 			FlowStat &fs = *(flows.insert(flows.end(), FlowStat(source, via, share, restricted)));
 			fs.SetRawFlags(flags);
 			for (uint32_t k = 1; k < flow_count; ++k) {
 				buf = reader->ReadRawBytes(2 + 4 + 1);
-				via = buf.RawReadUint16();
+				via = StationID(buf.RawReadUint16());
 				share = buf.RawReadUint32();
 				restricted = (buf.RawReadByte() != 0);
 				fs.AppendShare(via, share, restricted);
@@ -487,7 +487,7 @@ static void Load_STNS()
 	uint num_cargo = IsSavegameVersionBefore(SLV_55) ? 12 : IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Station *st = new (index) Station();
+		Station *st = new (StationID(index)) Station();
 
 		SlObject(st, _old_station_desc);
 
@@ -502,7 +502,7 @@ static void Load_STNS()
 				SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
 				if (GB(_waiting_acceptance, 0, 12) != 0) {
 					/* In old versions, enroute_from used 0xFF as INVALID_STATION */
-					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? INVALID_STATION : _cargo_source;
+					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? INVALID_STATION : StationID(_cargo_source);
 
 					/* Make sure we can allocate the CargoPacket. This is safe
 					 * as there can only be ~64k stations and 32 cargoes in these
@@ -932,7 +932,7 @@ static void Load_STNN_table()
 	while ((index = SlIterateArray()) != -1) {
 		bool waypoint = static_cast<StationFacilities>(SlReadByte()).Test(StationFacility::Waypoint);
 
-		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
+		BaseStation *bst = waypoint ? (BaseStation *)new (StationID(index)) Waypoint() : new (StationID(index)) Station();
 		SlObjectLoadFiltered(bst, slt);
 		PostLoadStation_STNN(bst);
 	}
@@ -970,7 +970,7 @@ static void Load_STNN()
 	while ((index = SlIterateArray()) != -1) {
 		bool waypoint = static_cast<StationFacilities>(SlReadByte()).Test(StationFacility::Waypoint);
 
-		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
+		BaseStation *bst = waypoint ? (BaseStation *)new (StationID(index)) Waypoint() : new (StationID(index)) Station();
 		SlObjectLoadFiltered(bst, waypoint ? SaveLoadTable(filtered_waypoint_desc) : SaveLoadTable(filtered_station_desc));
 
 		if (!waypoint) {
@@ -1001,17 +1001,17 @@ static void Load_STNN()
 					for (uint32_t j = 0; j < _num_flows; ++j) {
 						FlowSaveLoad flow;
 						RawReadBuffer buf = reader->ReadRawBytes(2 + 4);
-						flow.source = buf.RawReadUint16();
+						flow.source = StationID(buf.RawReadUint16());
 						uint32_t flow_count = buf.RawReadUint32();
 
 						buf = reader->ReadRawBytes(2 + 4 + 1);
-						flow.via = buf.RawReadUint16();
+						flow.via = StationID(buf.RawReadUint16());
 						flow.share = buf.RawReadUint32();
 						flow.restricted = (buf.RawReadByte() != 0);
 						FlowStat *fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 						for (uint32_t k = 1; k < flow_count; ++k) {
 							buf = reader->ReadRawBytes(2 + 4 + 1);
-							flow.via = buf.RawReadUint16();
+							flow.via = StationID(buf.RawReadUint16());
 							flow.share = buf.RawReadUint32();
 							flow.restricted = (buf.RawReadByte() != 0);
 							fs->AppendShare(flow.via, flow.share, flow.restricted);
@@ -1024,8 +1024,8 @@ static void Load_STNN()
 					for (uint32_t j = 0; j < _num_flows; ++j) {
 						// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
 						RawReadBuffer buf = reader->ReadRawBytes(2 + 2 + 4 + (read_restricted ? 1 : 0));
-						flow.source = buf.RawReadUint16();
-						flow.via = buf.RawReadUint16();
+						flow.source = StationID(buf.RawReadUint16());
+						flow.via = StationID(buf.RawReadUint16());
 						flow.share = buf.RawReadUint32();
 						if (read_restricted) flow.restricted = (buf.RawReadByte() != 0);
 

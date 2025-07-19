@@ -111,7 +111,7 @@ struct TrainReservationLookAhead {
 	void AddStation(int tiles, StationID id, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id, 0, TRLIT_STATION });
+		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id.base(), 0, TRLIT_STATION });
 	}
 
 	void AddReverse(int16_t z_pos)

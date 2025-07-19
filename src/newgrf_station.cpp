@@ -490,7 +490,7 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 			case 1: return GB(std::min(g->CargoTotalCount(), 4095u), 0, 4) | (GB(g->status, GoodsEntry::GES_ACCEPTANCE, 1) << 7);
 			case 2: return g->time_since_pickup;
 			case 3: return g->rating;
-			case 4: return g->data != nullptr ? g->data->cargo.GetFirstStation() : INVALID_STATION;
+			case 4: return (g->data != nullptr ? g->data->cargo.GetFirstStation() : INVALID_STATION).base();
 			case 5: return g->data != nullptr ? g->data->cargo.PeriodsInTransit() : 0;
 			case 6: return g->last_speed;
 			case 7: return g->last_age;
@@ -524,7 +524,7 @@ uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t vari
 	if (variable >= 0x8C && variable <= 0xEC) {
 		switch (GB(variable - 0x8C, 0, 3)) {
 			case 3: return INITIAL_STATION_RATING;
-			case 4: return INVALID_STATION;
+			case 4: return INVALID_STATION.base();
 			default: return 0;
 		}
 	}

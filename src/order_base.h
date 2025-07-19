@@ -34,7 +34,7 @@ extern OrderListPool _orderlist_pool;
 extern btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;
 extern bool _order_destination_refcount_map_valid;
 
-static const StationID ORDER_NO_VIA_STATION = 0xFFFE;
+static const StationID ORDER_NO_VIA_STATION{0xFFFE};
 
 inline uint32_t OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
 {

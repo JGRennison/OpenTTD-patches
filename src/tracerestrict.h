@@ -21,6 +21,7 @@
 #include "group_type.h"
 #include "vehicle_type.h"
 #include "signal_type.h"
+#include "station_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/svector/svector.h"
 #include <map>
@@ -533,6 +534,12 @@ namespace TracerestrictDetail {
 				return CompanyID(this->GetValue());
 			}
 
+			/** Get value field, as a station ID */
+			StationID GetValueAsStation() const
+			{
+				return StationID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -589,6 +596,12 @@ namespace TracerestrictDetail {
 
 			/** Set value field (company ID) */
 			inline void SetValue(CompanyID value)
+			{
+				this->SetValue(value.base());
+			}
+
+			/** Set value field (station ID) */
+			inline void SetValue(StationID value)
 			{
 				this->SetValue(value.base());
 			}
