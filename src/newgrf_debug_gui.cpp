@@ -336,6 +336,11 @@ protected:
 		SetDParam(2, index);
 		SetDParam(3, tile);
 	}
+
+	inline void SetObjectAtStringParameters(StringID string, StringParameterAsBase auto index, TileIndex tile) const
+	{
+		this->SetObjectAtStringParameters(string, index.base(), tile);
+	}
 };
 
 
