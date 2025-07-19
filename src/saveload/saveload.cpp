@@ -36,7 +36,7 @@
 #include "../autoreplace_base.h"
 #include "../core/string_builder.hpp"
 #include "../core/string_consumer.hpp"
-#include "../core/ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include <atomic>
 #include <vector>
@@ -1186,7 +1186,7 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 }
 
 template <typename T, typename U>
-using ring_buffer_sl = ring_buffer<T>;
+using ring_buffer_sl = jgr::ring_buffer<T>;
 
 /**
  * Template class to help with list-like types.

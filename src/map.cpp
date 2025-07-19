@@ -16,7 +16,7 @@
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
 #include "pathfinder/water_regions.h"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 #include <array>
@@ -436,7 +436,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 	static_assert(MAX_MAP_TILES_BITS <= 30);
 
 	robin_hood::unordered_flat_set<TileIndex> processed_tiles;
-	ring_buffer<uint32_t> candidates;
+	jgr::ring_buffer<uint32_t> candidates;
 	uint matching_count = 0;
 
 	auto process_tile = [&](TileIndex t, DiagDirection exclude_onward_dir) {

@@ -1,20 +1,49 @@
-/*
- * This file is part of OpenTTD.
- * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
- * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
- */
+// Resizing ring buffer implementation
+// https://github.com/JGRennison/cpp-ring-buffer
+//
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Jonathan Rennison <j.g.rennison@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-/** @file ring_buffer.hpp Resizing ring buffer implementation. */
+#ifndef JGR_RING_BUFFER_HPP
+#define JGR_RING_BUFFER_HPP
 
-#ifndef RING_BUFFER_HPP
-#define RING_BUFFER_HPP
-
-#include "alloc_type.hpp"
-#include "bitmath_func.hpp"
-
+#include <assert.h>
+#include <string.h>
+#include <algorithm>
+#include <bit>
+#include <stdexcept>
 #include <iterator>
+#include <memory>
 #include <type_traits>
+
+namespace jgr {
+
+#if defined(_MSC_VER) && _MSC_VER >= 1929
+#	define JGR_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#elif defined(__has_cpp_attribute) && __has_cpp_attribute(no_unique_address)
+#	define JGR_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#else
+#	define JGR_NO_UNIQUE_ADDRESS
+#endif
 
 /**
  * Self-resizing ring-buffer
@@ -22,23 +51,31 @@
  * Insertion of an item invalidates existing iterators.
  * Erasing an item which is not at the front or the back invalidates existing iterators.
  */
-template <class T>
-class ring_buffer
-{
-	std::unique_ptr<char, FreeDeleter> data;
+template <class T, class Allocator = std::allocator<T>>
+class ring_buffer {
+	using Storage = T;
+	static constexpr size_t MAX_SIZE = 1U << 31;
+
+	Storage *data = nullptr;
 	uint32_t head = 0;
 	uint32_t count = 0;
 	uint32_t mask = (uint32_t)-1;
+	JGR_NO_UNIQUE_ADDRESS Allocator allocator;
 
-	static uint32_t round_up_size(uint32_t size)
+	static uint8_t find_last_bit(uint32_t value)
 	{
-		if (size <= 4) return 4;
-		uint8_t bit = FindLastBit(size - 1);
-		return 1 << (bit + 1);
+		return std::countl_zero<uint32_t>(1) - std::countl_zero<uint32_t>(value);
 	}
 
-	class ring_buffer_iterator_base
+	static uint32_t round_up_size(size_t size)
 	{
+		if (size <= 4) return 4;
+		if (size > MAX_SIZE) throw std::length_error("jgr::ring_buffer: maximum size exceeded");
+		uint8_t bit = find_last_bit((uint32_t)size - 1);
+		return 1U << (bit + 1);
+	}
+
+	class ring_buffer_iterator_base {
 		friend class ring_buffer;
 
 	protected:
@@ -54,10 +91,41 @@ class ring_buffer
 		uint32_t debug_raw_position() const { return this->pos; }
 	};
 
+	void allocate_storage(uint32_t cap)
+	{
+		this->data = this->allocator.allocate(cap);
+		this->mask = cap - 1;
+	}
+
+	void deallocate_storage()
+	{
+		if (this->data != nullptr) {
+			this->allocator.deallocate(this->data, this->mask + 1);
+		}
+	}
+
+	void replace_storage(Storage *data, uint32_t cap)
+	{
+		this->deallocate_storage();
+		this->data = data;
+		this->mask = cap - 1;
+	}
+
+	void move_assign_data(ring_buffer &&other) noexcept
+	{
+		this->data = other.data;
+		this->head = other.head;
+		this->count = other.count;
+		this->mask = other.mask;
+		other.data = nullptr;
+		other.head = 0;
+		other.count = 0;
+		other.mask = (uint32_t)-1;
+	}
+
 public:
 	template <class V, bool REVERSE>
-	class ring_buffer_iterator : public ring_buffer_iterator_base
-	{
+	class ring_buffer_iterator : public ring_buffer_iterator_base {
 		friend class ring_buffer;
 
 	public:
@@ -177,7 +245,7 @@ public:
 
 		std::ptrdiff_t operator -(const ring_buffer_iterator &other) const
 		{
-			dbg_assert(this->ring == other.ring);
+			assert(this->ring == other.ring);
 			if (REVERSE) {
 				return (int32_t)(other.pos - this->pos);
 			} else {
@@ -189,6 +257,7 @@ public:
 	using difference_type = std::ptrdiff_t;
 	using size_type = size_t;
 	using value_type = T;
+	using allocator_type = Allocator;
 	using reference = T &;
 	using const_reference = const T &;
 	typedef ring_buffer_iterator<T, false> iterator;
@@ -202,18 +271,44 @@ private:
 		return (a.ring == b.ring) && (a.pos == b.pos);
 	}
 
-	template <typename U>
-	void construct_from(const U &other)
+	template <typename InputIt>
+	void construct_from(size_t size, InputIt first, InputIt last)
 	{
-		uint32_t cap = round_up_size((uint32_t)other.size());
-		this->data.reset(MallocT<char>(cap * sizeof(T)));
-		this->mask = cap - 1;
+		uint32_t cap = round_up_size(size);
+		this->allocate_storage(cap);
 		this->head = 0;
-		this->count = (uint32_t)other.size();
-		char *ptr = this->data.get();
-		for (const T &item : other) {
-			new (ptr) T(item);
-			ptr += sizeof(T);
+		this->count = (uint32_t)size;
+		Storage *ptr = this->data;
+		for (auto iter = first; iter != last; ++iter) {
+			new (ptr) T(*iter);
+			ptr++;
+		}
+	}
+
+	void copy_data_from(const ring_buffer &other)
+	{
+		this->head = 0;
+		this->count = other.count;
+		if constexpr (std::is_trivially_copyable_v<T>) {
+			other.memcpy_to(this->data);
+		} else {
+			Storage *ptr = this->data;
+			for (const T &item : other) {
+				new (ptr) T(item);
+				ptr++;
+			}
+		}
+	}
+
+	void copy_assign_from(const ring_buffer &other)
+	{
+		if (!other.empty()) {
+			if (other.size() > this->capacity()) {
+				uint32_t cap = round_up_size(other.size());
+				this->deallocate_storage();
+				this->allocate_storage(cap);
+			}
+			this->copy_data_from(other);
 		}
 	}
 
@@ -228,45 +323,51 @@ public:
 		return ring_buffer::iter_equal(a, b);
 	}
 
-	ring_buffer() = default;
+	ring_buffer() noexcept(noexcept(Allocator())) : allocator(Allocator()) {}
 
-	ring_buffer(const ring_buffer &other)
+	ring_buffer(const ring_buffer &other) : allocator(std::allocator_traits<Allocator>::select_on_container_copy_construction(other.allocator))
 	{
 		if (!other.empty()) {
-			this->construct_from(other);
+			this->allocate_storage(round_up_size(other.size()));
+			this->copy_data_from(other);
 		}
 	}
 
-	ring_buffer(ring_buffer &&other) noexcept
+	ring_buffer(const ring_buffer &other, const Allocator &alloc) : allocator(alloc)
 	{
-		std::swap(this->data, other.data);
-		std::swap(this->head, other.head);
-		std::swap(this->count, other.count);
-		std::swap(this->mask, other.mask);
+		if (!other.empty()) {
+			this->allocate_storage(round_up_size(other.size()));
+			this->copy_data_from(other);
+		}
 	}
 
-	ring_buffer(std::initializer_list<T> init)
+	ring_buffer(ring_buffer &&other) noexcept : allocator(std::move(other.allocator))
+	{
+		this->move_assign_data(std::move(other));
+	}
+
+	ring_buffer(ring_buffer &&other, const Allocator &alloc) : allocator(alloc)
+	{
+		if (alloc == other.allocator) {
+			this->move_assign_data(std::move(other));
+		} else if (!other.empty()) {
+			this->allocate_storage(round_up_size(other.size()));
+			this->copy_data_from(other);
+		}
+	}
+
+	ring_buffer(std::initializer_list<T> init, const Allocator &alloc = Allocator()) : allocator(alloc)
 	{
 		if (init.size() > 0) {
-			this->construct_from(init);
+			this->construct_from(init.size(), init.begin(), init.end());
 		}
 	}
 
 	template <typename InputIt, typename = std::enable_if_t<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category, std::input_iterator_tag>::value>>
-	ring_buffer(InputIt first, InputIt last)
+	ring_buffer(InputIt first, InputIt last, const Allocator &alloc = Allocator()) : allocator(alloc)
 	{
-		if (first == last) return;
-
-		uint32_t size = (uint32_t)std::distance(first, last);
-		uint32_t cap = round_up_size(size);
-		this->data.reset(MallocT<char>(cap * sizeof(T)));
-		this->mask = cap - 1;
-		this->head = 0;
-		this->count = size;
-		char *ptr = this->data.get();
-		for (auto iter = first; iter != last; ++iter) {
-			new (ptr) T(*iter);
-			ptr += sizeof(T);
+		if (first != last) {
+			this->construct_from(std::distance(first, last), first, last);
 		}
 	}
 
@@ -274,35 +375,28 @@ public:
 	{
 		if (&other != this) {
 			this->clear();
-			if (!other.empty()) {
-				if (other.size() > this->capacity()) {
-					uint32_t cap = round_up_size(other.count);
-					this->data.reset(MallocT<char>(cap * sizeof(T)));
-					this->mask = cap - 1;
-				}
-				this->head = 0;
-				this->count = other.count;
-				if constexpr (std::is_trivially_copyable_v<T>) {
-					other.memcpy_to(this->data.get());
-				} else {
-					char *ptr = this->data.get();
-					for (const T &item : other) {
-						new (ptr) T(item);
-						ptr += sizeof(T);
-					}
-				}
+			if constexpr (std::allocator_traits<Allocator>::propagate_on_container_copy_assignment::value) {
+				if (this->allocator != other.allocator) this->replace_storage(nullptr, 0); // Do not re-use existing storage if allocators do not match
+				this->allocator = other.allocator;
 			}
+			this->copy_assign_from(other);
 		}
 		return *this;
 	}
 
-	ring_buffer& operator =(ring_buffer &&other) noexcept
+	ring_buffer& operator =(ring_buffer &&other) noexcept(std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value || std::allocator_traits<Allocator>::is_always_equal::value)
 	{
 		if (&other != this) {
-			std::swap(this->data, other.data);
-			std::swap(this->head, other.head);
-			std::swap(this->count, other.count);
-			std::swap(this->mask, other.mask);
+			this->clear();
+			if constexpr (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value) {
+				this->allocator = other.allocator;
+			} else if (this->allocator != other.allocator) {
+				// Do not move existing storage if allocators do not match
+				this->copy_assign_from(other);
+				return *this;
+			}
+			this->deallocate_storage();
+			this->move_assign_data(std::move(other));
 		}
 		return *this;
 	}
@@ -312,6 +406,7 @@ public:
 		for (T &item : *this) {
 			item.~T();
 		}
+		this->deallocate_storage();
 	}
 
 	void swap(ring_buffer &other) noexcept
@@ -320,19 +415,27 @@ public:
 		std::swap(this->head, other.head);
 		std::swap(this->count, other.count);
 		std::swap(this->mask, other.mask);
+		if constexpr (std::allocator_traits<Allocator>::propagate_on_container_swap::value) {
+			std::swap(this->allocator, other.allocator);
+		}
 	}
 
-	bool operator ==(const ring_buffer& other) const
+	friend bool operator ==(const ring_buffer &a, const ring_buffer &b)
 	{
-		if (this->count != other.count) return false;
-		if (this->empty()) return true;
+		if (a.count != b.count) return false;
+		if (a.empty()) return true;
 
-		auto other_iter = other.begin();
-		for (const T &item : *this) {
+		auto other_iter = b.begin();
+		for (const T &item : a) {
 			if (item != *other_iter) return false;
 			++other_iter;
 		}
 		return true;
+	}
+
+	friend auto operator <=>(const ring_buffer &a, const ring_buffer &b)
+	{
+		return std::lexicographical_compare_three_way(a.begin(), a.end(), b.begin(), b.end());
 	}
 
 	size_t size() const
@@ -359,57 +462,66 @@ public:
 		this->head = 0;
 	}
 
+	allocator_type get_allocator() const noexcept
+	{
+		return this->allocator;
+	}
+
+	constexpr size_t max_size() const
+	{
+		return MAX_SIZE;
+	}
+
 private:
-	char *memcpy_to(char *target, uint32_t start_pos, uint32_t end_pos) const
+	Storage *memcpy_to(Storage *target, uint32_t start_pos, uint32_t end_pos) const
 	{
 		if (start_pos == end_pos) return target;
 
-		const char *start_ptr = static_cast<const char *>(this->raw_ptr_at_pos(start_pos));
-		const char *end_ptr = static_cast<const char *>(this->raw_ptr_at_pos(end_pos));
+		const Storage *start_ptr = static_cast<Storage *>(this->raw_ptr_at_pos(start_pos));
+		const Storage *end_ptr = static_cast<Storage *>(this->raw_ptr_at_pos(end_pos));
 		if (end_ptr <= start_ptr) {
 			/* Copy in two chunks due to wrap */
 
-			const char *buffer_end = this->data.get() + (this->capacity() * sizeof(T));
-			memcpy(target, start_ptr, buffer_end - start_ptr);
+			const Storage *buffer_end = this->data + this->capacity();
+			memcpy(target, start_ptr, (buffer_end - start_ptr) * sizeof(T));
 			target += buffer_end - start_ptr;
 
-			memcpy(target, this->data.get(), end_ptr - this->data.get());
-			target += end_ptr - this->data.get();
+			memcpy(target, this->data, (end_ptr - this->data) * sizeof(T));
+			target += end_ptr - this->data;
 		} else {
 			/* Copy in one chunk */
-			memcpy(target, start_ptr, end_ptr - start_ptr);
+			memcpy(target, start_ptr, (end_ptr - start_ptr) * sizeof(T));
 			target += end_ptr - start_ptr;
 		}
 		return target;
 	}
 
-	char *memcpy_to(char *target) const
+	Storage *memcpy_to(Storage *target) const
 	{
 		return this->memcpy_to(target, this->head, this->head + this->count);
 	}
 
-	void reallocate(uint32_t new_cap)
+	void reallocate(size_t new_cap)
 	{
 		const uint32_t cap = round_up_size(new_cap);
-		char *new_buf = MallocT<char>(cap * sizeof(T));
+		Storage *new_buf = this->allocator.allocate(cap);
 		if constexpr (std::is_trivially_copyable_v<T>) {
 			this->memcpy_to(new_buf);
 		} else {
-			char *pos = new_buf;
+			Storage *pos = new_buf;
 			for (T &item : *this) {
 				new (pos) T(std::move(item));
 				item.~T();
-				pos += sizeof(T);
+				pos++;
 			}
 		}
-		this->mask = cap - 1;
+		this->replace_storage(new_buf, cap);
 		this->head = 0;
-		this->data.reset(new_buf);
 	}
 
 	void *raw_ptr_at_pos(uint32_t idx) const
 	{
-		return this->data.get() + (sizeof(T) * (idx & this->mask));
+		return this->data + (idx & this->mask);
 	}
 
 	void *raw_ptr_at_offset(uint32_t idx) const
@@ -571,34 +683,33 @@ public:
 	}
 
 private:
-	uint32_t setup_insert(uint32_t pos, uint32_t num)
+	uint32_t setup_insert(uint32_t pos, size_t num)
 	{
-		if (this->count + num > (uint32_t)this->capacity()) {
+		if (this->count + num > this->capacity()) {
 			/* grow container */
 			const uint32_t cap = round_up_size(this->count + num);
-			char *new_buf = MallocT<char>(cap * sizeof(T));
+			Storage *new_buf = this->allocator.allocate(cap);
 			if constexpr (std::is_trivially_copyable_v<T>) {
-				char *insert_gap = this->memcpy_to(new_buf, this->head, pos);
-				this->memcpy_to(insert_gap + (num * sizeof(T)), pos, this->head + this->count);
+				Storage *insert_gap = this->memcpy_to(new_buf, this->head, pos);
+				this->memcpy_to(insert_gap + num, pos, this->head + this->count);
 			} else {
-				char *write_to = new_buf;
+				Storage *write_to = new_buf;
 				const uint32_t end = this->head + this->count;
 				for (uint32_t idx = this->head; idx != end; idx++) {
 					if (idx == pos) {
 						/* gap for inserted items */
-						write_to += num * sizeof(T);
+						write_to += num;
 					}
 					T &item = *this->ptr_at_pos(idx);
 					new (write_to) T(std::move(item));
 					item.~T();
-					write_to += sizeof(T);
+					write_to++;
 				}
 			}
 			uint32_t res = pos - this->head;
-			this->mask = cap - 1;
+			this->replace_storage(new_buf, cap);
 			this->head = 0;
 			this->count += num;
-			this->data.reset(new_buf);
 			return res;
 		} else if (pos == this->head) {
 			/* front */
@@ -657,7 +768,7 @@ public:
 	template <typename... Args>
 	iterator emplace(ring_buffer_iterator_base pos, Args&&... args)
 	{
-		dbg_assert(pos.ring == this);
+		assert(pos.ring == this);
 
 		uint32_t new_pos = this->setup_insert(pos.pos, 1);
 		new (this->raw_ptr_at_pos(new_pos)) T(std::forward<Args>(args)...);
@@ -678,9 +789,9 @@ public:
 	{
 		if (count == 0) return iterator(pos);
 
-		dbg_assert(pos.ring == this);
+		assert(pos.ring == this);
 
-		const uint32_t new_pos_start = this->setup_insert(pos.pos, (uint32_t)count);
+		const uint32_t new_pos_start = this->setup_insert(pos.pos, count);
 		uint32_t new_pos = new_pos_start;
 		for (size_t i = 0; i != count; i++) {
 			new (this->raw_ptr_at_pos(new_pos)) T(value);
@@ -694,9 +805,9 @@ public:
 	{
 		if (first == last) return iterator(pos);
 
-		dbg_assert(pos.ring == this);
+		assert(pos.ring == this);
 
-		const uint32_t new_pos_start = this->setup_insert(pos.pos, (uint32_t)std::distance(first, last));
+		const uint32_t new_pos_start = this->setup_insert(pos.pos, std::distance(first, last));
 		uint32_t new_pos = new_pos_start;
 		for (auto iter = first; iter != last; ++iter) {
 			new (this->raw_ptr_at_pos(new_pos)) T(*iter);
@@ -759,7 +870,7 @@ private:
 public:
 	iterator erase(ring_buffer_iterator_base pos)
 	{
-		dbg_assert(pos.ring == this);
+		assert(pos.ring == this);
 
 		return iterator(this, this->do_erase(pos.pos, 1));
 	}
@@ -768,7 +879,7 @@ public:
 	{
 		if (first.ring == last.ring && first.pos == last.pos) return last;
 
-		dbg_assert(first.ring == this && last.ring == this);
+		assert(first.ring == this && last.ring == this);
 
 		return iterator(this, this->do_erase(first.pos, last.pos - first.pos));
 	}
@@ -777,7 +888,7 @@ public:
 	{
 		if (new_cap <= this->capacity()) return;
 
-		this->reallocate((uint32_t)new_cap);
+		this->reallocate(new_cap);
 	}
 
 	void resize(size_t new_size)
@@ -788,7 +899,7 @@ public:
 			}
 		} else if (new_size > this->size()) {
 			if (new_size > this->capacity()) {
-				this->reallocate((uint32_t)new_size);
+				this->reallocate(new_size);
 			}
 			for (uint32_t i = this->count; i != (uint32_t)new_size; i++) {
 				new (this->raw_ptr_at_offset(i)) T();
@@ -801,8 +912,7 @@ public:
 	{
 		if (this->empty()) {
 			this->clear();
-			this->data.reset();
-			this->mask = (uint32_t)-1;
+			this->replace_storage(nullptr, 0);
 		} else if (round_up_size(this->count) < this->capacity()) {
 			this->reallocate(this->count);
 		}
@@ -817,6 +927,22 @@ public:
 	{
 		return *this->ptr_at_offset((uint32_t)index);
 	}
+
+	T &at(size_t index)
+	{
+		if (index >= this->size()) throw std::out_of_range("jgr::ring_buffer::at: index out of range");
+		return *this->ptr_at_offset((uint32_t)index);
+	}
+
+	const T &at(size_t index) const
+	{
+		if (index >= this->size()) throw std::out_of_range("jgr::ring_buffer::at: index out of range");
+		return *this->ptr_at_offset((uint32_t)index);
+	}
 };
 
-#endif /* RING_BUFFER_HPP */
+}
+
+#undef JGR_NO_UNIQUE_ADDRESS
+
+#endif /* JGR_RING_BUFFER_HPP */

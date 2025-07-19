@@ -31,7 +31,6 @@ add_files(
     pool_type.hpp
     random_func.cpp
     random_func.hpp
-    ring_buffer.hpp
     ring_buffer_queue.hpp
     serialisation.cpp
     serialisation.hpp

@@ -8,6 +8,7 @@ add_subdirectory(nlohmann)
 add_subdirectory(opengl)
 add_subdirectory(openttd_social_integration_api)
 add_subdirectory(cpp-btree)
+add_subdirectory(cpp-ring-buffer)
 add_subdirectory(robin_hood)
 
 if (MINGW AND OPTION_MINGW_STDTHREADS)

@@ -22,7 +22,7 @@
 #include "console_func.h"
 #include "rev.h"
 #include "video/video_driver.hpp"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <string>
 
 #include "widgets/console_widget.h"
@@ -66,14 +66,14 @@ struct IConsoleLine {
 };
 
 /** The console backlog buffer. Item index 0 is the newest line. */
-static ring_buffer<IConsoleLine> _iconsole_buffer;
+static jgr::ring_buffer<IConsoleLine> _iconsole_buffer;
 
 static bool TruncateBuffer();
 
 
 /* ** main console cmd buffer ** */
 static Textbuf _iconsole_cmdline(ICON_CMDLN_SIZE);
-static ring_buffer<std::string> _iconsole_history;
+static jgr::ring_buffer<std::string> _iconsole_history;
 static ptrdiff_t _iconsole_historypos;
 IConsoleModes _iconsole_mode;
 

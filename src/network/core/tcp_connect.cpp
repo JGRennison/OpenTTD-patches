@@ -15,7 +15,7 @@
 #include "tcp.h"
 #include "../network_coordinator.h"
 #include "../network_internal.h"
-#include "../../core/ring_buffer.hpp"
+#include "../../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include "../../safeguards.h"
 
@@ -148,7 +148,7 @@ bool TCPConnecter::TryNextAddress()
  */
 void TCPConnecter::OnResolved(addrinfo *ai)
 {
-	ring_buffer<addrinfo *> addresses_ipv4, addresses_ipv6;
+	jgr::ring_buffer<addrinfo *> addresses_ipv4, addresses_ipv6;
 
 	/* Apply "Happy Eyeballs" if it is likely IPv6 is functional. */
 

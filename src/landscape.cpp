@@ -35,10 +35,10 @@
 #include "sl/saveload.h"
 #include "framerate_type.h"
 #include "town.h"
-#include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
-#include "core/ring_buffer.hpp"
 #include "network/network_sync.h"
+#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <array>
 #include <list>
 #include <set>
@@ -1255,7 +1255,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 	marks.insert(begin);
 
 	/* Breadth first search for the closest tile we can flow down to. */
-	ring_buffer<TileIndex> queue;
+	jgr::ring_buffer<TileIndex> queue;
 	queue.push_back(begin);
 
 	bool found = false;

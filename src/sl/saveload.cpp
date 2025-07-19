@@ -47,7 +47,7 @@
 #include "../scope.h"
 #include "../newgrf_railtype.h"
 #include "../newgrf_roadtype.h"
-#include "../core/ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "../timer/timer_game_tick.h"
 #include <atomic>
 #include <string>
@@ -422,7 +422,7 @@ static void SlNullPointers()
 	_sl.action = SLA_NULL;
 
 	/* Do upstream chunk tests before clearing version data */
-	ring_buffer<uint32_t> upstream_null_chunks;
+	jgr::ring_buffer<uint32_t> upstream_null_chunks;
 	for (auto &ch : ChunkHandlers()) {
 		_sl.current_chunk_id = ch.id;
 		if (ch.special_proc != nullptr && ch.special_proc(ch.id, CSLSO_PRE_NULL_PTRS) == CSLSOR_UPSTREAM_NULL_PTRS) {
@@ -1836,15 +1836,15 @@ static void SlVarList(void *list, VarType conv)
 static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: return SlStorageHelper<ring_buffer, bool>::SlCalcLen(ring, conv);
-		case SLE_VAR_I8: return SlStorageHelper<ring_buffer, int8_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U8: return SlStorageHelper<ring_buffer, uint8_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I16: return SlStorageHelper<ring_buffer, int16_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U16: return SlStorageHelper<ring_buffer, uint16_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I32: return SlStorageHelper<ring_buffer, int32_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U32: return SlStorageHelper<ring_buffer, uint32_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I64: return SlStorageHelper<ring_buffer, int64_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U64: return SlStorageHelper<ring_buffer, uint64_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_BL: return SlStorageHelper<jgr::ring_buffer, bool>::SlCalcLen(ring, conv);
+		case SLE_VAR_I8: return SlStorageHelper<jgr::ring_buffer, int8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U8: return SlStorageHelper<jgr::ring_buffer, uint8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I16: return SlStorageHelper<jgr::ring_buffer, int16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U16: return SlStorageHelper<jgr::ring_buffer, uint16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I32: return SlStorageHelper<jgr::ring_buffer, int32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U32: return SlStorageHelper<jgr::ring_buffer, uint32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I64: return SlStorageHelper<jgr::ring_buffer, int64_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U64: return SlStorageHelper<jgr::ring_buffer, uint64_t>::SlCalcLen(ring, conv);
 		default: NOT_REACHED();
 	}
 }
@@ -1858,15 +1858,15 @@ template <SaveLoadAction action>
 static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64_t>::SlSaveLoad<action>(ring, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_BL: SlStorageHelper<jgr::ring_buffer, bool>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<jgr::ring_buffer, int8_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<jgr::ring_buffer, uint8_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<jgr::ring_buffer, int16_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<jgr::ring_buffer, uint16_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<jgr::ring_buffer, int32_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<jgr::ring_buffer, uint32_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<jgr::ring_buffer, int64_t>::SlSaveLoad<action>(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<jgr::ring_buffer, uint64_t>::SlSaveLoad<action>(ring, conv); break;
 		default: NOT_REACHED();
 	}
 }
@@ -1948,7 +1948,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 				case SL_ARR: return SlCalcArrayLen(sld.length, sld.conv);
 				case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld.length, sld.conv);
 				case SL_REFLIST: return SlCalcRefListLen<std::list<void *>>(GetVariableAddress(object, sld));
-				case SL_REFRING: return SlCalcRefListLen<ring_buffer<void *>>(GetVariableAddress(object, sld));
+				case SL_REFRING: return SlCalcRefListLen<jgr::ring_buffer<void *>>(GetVariableAddress(object, sld));
 				case SL_REFVEC: return SlCalcRefListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				case SL_RING: return SlCalcRingLen(GetVariableAddress(object, sld), sld.conv);
 				case SL_VARVEC: {
@@ -2116,7 +2116,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
 				case SL_STR: SlString<action>(ptr, sld.length, sld.conv); break;
 				case SL_REFLIST: SlRefList<action, std::list<void *>>(ptr, (SLRefType)conv); break;
-				case SL_REFRING: SlRefList<action, ring_buffer<void *>>(ptr, (SLRefType)conv); break;
+				case SL_REFRING: SlRefList<action, jgr::ring_buffer<void *>>(ptr, (SLRefType)conv); break;
 				case SL_REFVEC: SlRefList<action, std::vector<void *>>(ptr, (SLRefType)conv); break;
 				case SL_RING: SlRing<action>(ptr, conv); break;
 				case SL_VARVEC: {

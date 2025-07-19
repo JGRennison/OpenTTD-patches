@@ -14,7 +14,7 @@
 #include "../fileio_type.h"
 #include "../fios.h"
 #include "../strings_type.h"
-#include "../core/ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <optional>
 #include <string>
 #include <vector>
@@ -388,11 +388,11 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 		case SL_STR: return sizeof(void *) == size;
 		case SL_STDSTR: return SlVarSize(type) == size;
 		case SL_ARR: return SlVarSize(type) * length <= size; // Partial load of array is permitted.
-		case SL_RING: return sizeof(ring_buffer<void *>) == size;
+		case SL_RING: return sizeof(jgr::ring_buffer<void *>) == size;
 		case SL_VECTOR: return sizeof(std::vector<void *>) == size;
 		case SL_REFLIST: return sizeof(std::list<void *>) == size;
 		case SL_REFVECTOR: return sizeof(std::vector<void *>) == size;
-		case SL_REFRING: return sizeof(ring_buffer<void *>) == size;
+		case SL_REFRING: return sizeof(jgr::ring_buffer<void *>) == size;
 		case SL_SAVEBYTE: return true;
 		default: NOT_REACHED();
 	}

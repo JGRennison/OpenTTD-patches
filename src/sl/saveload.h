@@ -15,7 +15,7 @@
 #include "../fios.h"
 #include "../strings_type.h"
 #include "../scope.h"
-#include "../core/ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "../core/tinystring_type.hpp"
 #include "../core/strong_typedef_type.hpp"
 
@@ -450,7 +450,7 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			return false;
 
 		case SL_REFRING:
-			if constexpr (sl_is_instance<T, ring_buffer>{}) {
+			if constexpr (sl_is_instance<T, jgr::ring_buffer>{}) {
 				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
 			}
 			return false;
@@ -462,7 +462,7 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			return false;
 
 		case SL_RING:
-			if constexpr (sl_is_instance<T, ring_buffer>{}) {
+			if constexpr (sl_is_instance<T, jgr::ring_buffer>{}) {
 				return SlCheckPrimitiveTypeVar<typename T::value_type>(type);
 			}
 			return false;

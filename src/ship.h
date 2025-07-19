@@ -14,14 +14,14 @@
 
 #include "vehicle_base.h"
 #include "water_map.h"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 extern const DiagDirection _ship_search_directions[TRACK_END][DIAGDIR_END];
 
 void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 WaterClass GetEffectiveWaterClass(TileIndex tile);
 
-typedef ring_buffer<Trackdir> ShipPathCache;
+typedef jgr::ring_buffer<Trackdir> ShipPathCache;
 
 /** Maximum segments of ship path cache */
 static const uint8_t SHIP_PATH_CACHE_LENGTH = 32;

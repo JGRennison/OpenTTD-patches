@@ -37,8 +37,8 @@
 #include "debug_settings.h"
 #include "debug_desync.h"
 #include "order_backup.h"
-#include "core/ring_buffer.hpp"
 #include "core/checksum_func.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/nlohmann/json.hpp"
 #include "3rdparty/fmt/std.h"
 #include <array>
@@ -400,7 +400,7 @@ struct CommandQueueItem {
 	CompanyID company;
 	DoCommandIntlFlag intl_flags;
 };
-static ring_buffer<CommandQueueItem> _command_queue;
+static jgr::ring_buffer<CommandQueueItem> _command_queue;
 
 void ClearCommandLog()
 {

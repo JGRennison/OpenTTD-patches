@@ -22,7 +22,7 @@
 #include "network_client.h"
 #include "network_base.h"
 #include "../core/format.hpp"
-#include "../core/ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include "../widgets/network_chat_widget.h"
 
@@ -43,7 +43,7 @@ struct ChatMessage {
 };
 
 /* used for chat window */
-static ring_buffer<ChatMessage> _chatmsg_list; ///< The actual chat message list.
+static jgr::ring_buffer<ChatMessage> _chatmsg_list; ///< The actual chat message list.
 static bool _chatmessage_dirty = false;   ///< Does the chat message need repainting?
 static bool _chatmessage_visible = false; ///< Is a chat message visible.
 static bool _chat_tab_completion_active;  ///< Whether tab completion is active.

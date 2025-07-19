@@ -14,7 +14,7 @@
 
 #include "address.h"
 #include "packet.h"
-#include "../../core/ring_buffer.hpp"
+#include "../../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -34,8 +34,8 @@ enum SendPacketsState : uint8_t {
 /** Base socket handler for all TCP sockets */
 class NetworkTCPSocketHandler : public NetworkSocketHandler {
 private:
-	ring_buffer<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
-	std::unique_ptr<Packet> packet_recv;               ///< Partially received packet
+	jgr::ring_buffer<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
+	std::unique_ptr<Packet> packet_recv;                    ///< Partially received packet
 
 public:
 	SOCKET sock = INVALID_SOCKET; ///< The socket currently connected to

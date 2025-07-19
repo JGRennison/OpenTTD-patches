@@ -20,7 +20,7 @@
 #include "company_type.h"
 #include "core/multimap.hpp"
 #include "sl/saveload_common.h"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 /** Unique identifier for a single cargo packet. */
@@ -368,7 +368,7 @@ public:
 	void InvalidateCache();
 };
 
-typedef ring_buffer<CargoPacket *> CargoPacketList;
+typedef jgr::ring_buffer<CargoPacket *> CargoPacketList;
 
 /**
  * CargoList that is used for vehicles.

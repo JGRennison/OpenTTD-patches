@@ -10,11 +10,11 @@
 #ifndef RING_BUFFER_QUEUE_HPP
 #define RING_BUFFER_QUEUE_HPP
 
-#include "ring_buffer.hpp"
+#include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include <queue>
 
 template <class T>
-using ring_buffer_queue = std::queue<T, ring_buffer<T>>;
+using ring_buffer_queue = std::queue<T, jgr::ring_buffer<T>>;
 
 #endif /* RING_BUFFER_QUEUE_HPP */

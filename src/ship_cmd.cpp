@@ -38,7 +38,7 @@
 #include "industry_map.h"
 #include "core/checksum_func.hpp"
 #include "articulated_vehicles.h"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
@@ -163,7 +163,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 	const uint max_region_distance = (max_distance / WATER_REGION_EDGE_LENGTH) + 1;
 
 	static robin_hood::unordered_flat_set<uint32_t> visited_patch_hashes;
-	static ring_buffer<WaterRegionPatchDesc> patches_to_search;
+	static jgr::ring_buffer<WaterRegionPatchDesc> patches_to_search;
 	visited_patch_hashes.clear();
 	patches_to_search.clear();
 

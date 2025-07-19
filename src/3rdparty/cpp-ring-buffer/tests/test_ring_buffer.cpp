@@ -1,18 +1,35 @@
-/*
- * This file is part of OpenTTD.
- * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
- * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
- */
+// Tests: Resizing ring buffer implementation
+// https://github.com/JGRennison/cpp-ring-buffer
+//
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Jonathan Rennison <j.g.rennison@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-/** @file ring_buffer.cpp Test functionality from core/ring_buffer.hpp */
+#include "../../../stdafx.h"
+#include "../../catch2/catch.hpp"
+#include "../ring_buffer.hpp"
+#include <compare>
+#include <sstream>
 
-#include "../stdafx.h"
-
-#include "../3rdparty/catch2/catch.hpp"
-
-#include "../core/ring_buffer.hpp"
-#include "../core/format.hpp"
+using jgr::ring_buffer;
 
 struct NonTrivialTestType {
 	uint32_t value;
@@ -50,20 +67,20 @@ std::ostream &operator<<(std::ostream &os, const typename ring_buffer<T>::iterat
 template <typename T>
 void DumpRing(const ring_buffer<T> &ring)
 {
-	format_buffer buffer;
-	buffer.format("Ring: Size: {}, Cap: {}, {{", ring.size(), ring.capacity());
+	std::stringstream buffer;
+	buffer << "Ring: Size: " << ring.size() << ", Cap: " << ring.capacity() << ", {";
 	bool done_first = false;
 	for (const auto &it : ring) {
 		if (done_first) {
-			buffer.push_back(',');
+			buffer << ',';
 		} else {
 			done_first = true;
 		}
-		buffer.format(" {}", TestValueOf(it));
+		buffer << ' ' << TestValueOf(it);
 	}
-	buffer.append(" }");
+	buffer << " }";
 
-	WARN((std::string_view)buffer);
+	WARN(buffer.str());
 }
 
 template <typename T>
@@ -94,6 +111,8 @@ TEMPLATE_TEST_CASE("RingBuffer - basic tests", "[ring]", uint8_t, uint32_t, NonT
 {
 	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6 });
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+	CHECK(ring[0] == 1);
+	CHECK(ring.at(3) == 4);
 
 	ring.push_front(0);
 	CHECK(Matches(ring, { 0, 1, 2, 3, 4, 5, 6 }));
@@ -112,6 +131,8 @@ TEMPLATE_TEST_CASE("RingBuffer - basic tests", "[ring]", uint8_t, uint32_t, NonT
 
 	CHECK(ring[0] == 2);
 	CHECK(ring[4] == 10);
+	CHECK(ring.at(5) == 11);
+	CHECK_THROWS_AS(ring.at(6), std::out_of_range);
 }
 
 TEMPLATE_TEST_CASE("RingBuffer - front resize", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
@@ -533,6 +554,11 @@ TEMPLATE_TEST_CASE("RingBuffer - resize", "[ring]", uint8_t, uint32_t, NonTrivia
 	ring.resize(12);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0 }));
 	CHECK(ring.capacity() == 16);
+
+	ring.pop_front();
+	ring.resize(7);
+	CHECK(Matches(ring, { 2, 3, 4, 5, 6, 7, 8 }));
+	CHECK(ring.capacity() == 16);
 }
 
 TEMPLATE_TEST_CASE("RingBuffer - basic move-only test", "[ring]", uint8_t, uint32_t, NonTrivialTestType, MoveOnlyTestType)
@@ -558,4 +584,89 @@ TEMPLATE_TEST_CASE("RingBuffer - basic move-only test", "[ring]", uint8_t, uint3
 
 	CHECK(ring[0] == 2);
 	CHECK(ring[4] == 10);
+}
+
+TEMPLATE_TEST_CASE("RingBuffer - copy/move constructors and assignment", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
+{
+	std::initializer_list<TestType> init{ 1, 2, 3, 4, 5, 6 };
+	ring_buffer<TestType> ring(init);
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+
+	ring_buffer<TestType> ring2(ring.begin() + 1, ring.end() - 2);
+	CHECK(Matches(ring2, { 2, 3, 4 }));
+
+	ring_buffer<TestType> ring3(ring2);
+	CHECK(Matches(ring3, { 2, 3, 4 }));
+	CHECK(Matches(ring2, { 2, 3, 4 }));
+
+	TestType *expect_front = &ring3[0];
+
+	ring_buffer<TestType> ring4(std::move(ring3));
+	CHECK(Matches(ring4, { 2, 3, 4 }));
+	CHECK(Matches(ring3, {}));
+	CHECK(ring3.capacity() == 0);
+	CHECK(expect_front == &ring4[0]);
+
+	ring4.insert(++ring4.begin(), { 10, 11, 12 });
+	CHECK(Matches(ring4, { 2, 10, 11, 12, 3, 4 }));
+
+	TestType *expect_rpos = &*(ring4.rbegin() + 2);
+	ring2.swap(ring4);
+	CHECK(Matches(ring2, { 2, 10, 11, 12, 3, 4 }));
+	CHECK(Matches(ring4, { 2, 3, 4 }));
+	CHECK(expect_rpos == &*(ring2.rbegin() += 2));
+
+	ring4 = ring;
+	CHECK(Matches(ring4, { 1, 2, 3, 4, 5, 6 }));
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+
+	TestType *expect_back = &ring2.back();
+	ring4 = std::move(ring2);
+	CHECK(Matches(ring4, { 2, 10, 11, 12, 3, 4 }));
+	CHECK(Matches(ring2, {}));
+	CHECK(ring2.capacity() == 0);
+	CHECK(expect_back == &ring4.back());
+}
+
+TEMPLATE_TEST_CASE("RingBuffer - copy reverse", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
+{
+	ring_buffer<TestType> ring({ 3, 4, 5, 6 });
+	ring.insert(ring.begin(), { 1, 2 });
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+
+	ring_buffer<TestType> ring2(ring.rbegin(), ring.rend());
+	CHECK(Matches(ring2, { 6, 5, 4, 3, 2, 1 }));
+
+	ring_buffer<TestType> ring3(ring.crbegin() += 2, ring.crend() - 1);
+	CHECK(Matches(ring3, { 4, 3, 2 }));
+
+	ring_buffer<TestType> ring4({ 10, 20, 30, 40, 50, 60 });
+	ring4.insert(ring4.end() - 2, ring.rbegin(), ring.rend());
+	CHECK(Matches(ring4, { 10, 20, 30, 40, 6, 5, 4, 3, 2, 1, 50, 60 }));
+}
+
+TEMPLATE_TEST_CASE("RingBuffer - equality tests", "[ring]", uint8_t, uint32_t)
+{
+	ring_buffer<TestType> ring1({ 1, 2, 3, 4, 5, 6 });
+	ring_buffer<TestType> ring2({ 3, 4, 5, 6 });
+	CHECK(ring1 != ring2);
+
+	ring2.push_front(2);
+	ring2.push_front(2);
+	CHECK(ring1 != ring2);
+
+	ring2.front() = 1;
+	CHECK(Matches(ring1, { 1, 2, 3, 4, 5, 6 }));
+	CHECK(Matches(ring2, { 1, 2, 3, 4, 5, 6 }));
+	CHECK(ring1 == ring2);
+}
+
+TEMPLATE_TEST_CASE("RingBuffer - operator <=>", "[ring]", uint8_t, uint32_t)
+{
+	CHECK((ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6 }) <=> ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6 })) == std::weak_ordering::equivalent);
+	CHECK((ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6 }) <=> ring_buffer<TestType>({ 2, 3, 4, 5, 6 })) == std::weak_ordering::less);
+	CHECK((ring_buffer<TestType>({ 1, 2, 3 }) <=> ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6 })) == std::weak_ordering::less);
+	CHECK((ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6 }) <=> ring_buffer<TestType>({ 1, 2, 3 })) == std::weak_ordering::greater);
+	CHECK((ring_buffer<TestType>({}) <=> ring_buffer<TestType>({ 1 })) == std::weak_ordering::less);
+	CHECK((ring_buffer<TestType>({}) <=> ring_buffer<TestType>({})) == std::weak_ordering::equivalent);
 }

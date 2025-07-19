@@ -49,19 +49,19 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
-#include "core/ring_buffer.hpp"
 #include "core/y_combinator.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 #include "safeguards.h"
 
 static constexpr uint RECENT_SLOT_HISTORY_SIZE = 8;
-static std::array<ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recent_slots;
-static std::array<ring_buffer<TraceRestrictSlotGroupID>, VEH_COMPANY_END> _recent_slot_groups;
-static ring_buffer<TraceRestrictCounterID> _recent_counters;
+static std::array<jgr::ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recent_slots;
+static std::array<jgr::ring_buffer<TraceRestrictSlotGroupID>, VEH_COMPANY_END> _recent_slot_groups;
+static jgr::ring_buffer<TraceRestrictCounterID> _recent_counters;
 
 template <typename T>
-void EraseRecentSlotOrCounter(ring_buffer<T> &ring, T id)
+void EraseRecentSlotOrCounter(jgr::ring_buffer<T> &ring, T id)
 {
 	for (auto it = ring.begin(); it != ring.end();) {
 		if (*it == id) {
@@ -73,7 +73,7 @@ void EraseRecentSlotOrCounter(ring_buffer<T> &ring, T id)
 }
 
 template <typename T>
-void RecordRecentSlotOrCounter(ring_buffer<T> &ring, T id)
+void RecordRecentSlotOrCounter(jgr::ring_buffer<T> &ring, T id)
 {
 	EraseRecentSlotOrCounter(ring, id);
 	if (ring.size() >= RECENT_SLOT_HISTORY_SIZE) ring.erase(ring.begin() + RECENT_SLOT_HISTORY_SIZE - 1, ring.end());
@@ -82,14 +82,14 @@ void RecordRecentSlotOrCounter(ring_buffer<T> &ring, T id)
 
 void TraceRestrictEraseRecentSlot(TraceRestrictSlotID index)
 {
-	for (ring_buffer<TraceRestrictSlotID> &ring : _recent_slots) {
+	for (jgr::ring_buffer<TraceRestrictSlotID> &ring : _recent_slots) {
 		EraseRecentSlotOrCounter(ring, index);
 	}
 }
 
 void TraceRestrictEraseRecentSlotGroup(TraceRestrictSlotGroupID index)
 {
-	for (ring_buffer<TraceRestrictSlotGroupID> &ring : _recent_slot_groups) {
+	for (jgr::ring_buffer<TraceRestrictSlotGroupID> &ring : _recent_slot_groups) {
 		EraseRecentSlotOrCounter(ring, index);
 	}
 }

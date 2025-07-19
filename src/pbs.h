@@ -14,7 +14,7 @@
 #include "direction_type.h"
 #include "track_type.h"
 #include "vehicle_type.h"
-#include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 TrackBits GetReservedTrackbits(TileIndex t);
 
@@ -99,8 +99,8 @@ struct TrainReservationLookAhead {
 	int16_t tunnel_bridge_reserved_tiles; ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
 	TrainReservationLookAheadFlags flags; ///< Flags
 	uint16_t speed_restriction;
-	ring_buffer<TrainReservationLookAheadItem> items;
-	ring_buffer<TrainReservationLookAheadCurve> curves;
+	jgr::ring_buffer<TrainReservationLookAheadItem> items;
+	jgr::ring_buffer<TrainReservationLookAheadCurve> curves;
 	int32_t cached_zpos = 0;              ///< Cached z position as used in TrainDecelerationStats
 
 	int32_t RealEndPosition() const

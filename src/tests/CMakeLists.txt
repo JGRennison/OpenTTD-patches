@@ -8,7 +8,6 @@ add_test_files(
     mock_fontcache.h
     mock_spritecache.cpp
     mock_spritecache.h
-    ring_buffer.cpp
     serialisation.cpp
     string_func.cpp
     strings_func.cpp

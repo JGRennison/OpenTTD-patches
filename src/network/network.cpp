@@ -99,8 +99,8 @@ uint32_t _last_sync_frame_counter;                      ///< "
 bool _network_first_time;                               ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded;                ///< Bitmask of the password status of all companies.
 
-ring_buffer<NetworkSyncRecord> _network_sync_records;
-ring_buffer<uint> _network_sync_record_counts;
+jgr::ring_buffer<NetworkSyncRecord> _network_sync_records;
+jgr::ring_buffer<uint> _network_sync_record_counts;
 bool _record_sync_records = false;
 
 /** The amount of clients connected */

@@ -10,7 +10,7 @@
 #ifndef SCRIPT_LOG_TYPES_HPP
 #define SCRIPT_LOG_TYPES_HPP
 
-#include "../../core/ring_buffer.hpp"
+#include "../../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
 namespace ScriptLogTypes {
 	/**
@@ -42,7 +42,7 @@ namespace ScriptLogTypes {
 	 *  This has no use for you, as script writer.
 	 * @api -all
 	 */
-	using LogData = ring_buffer<LogLine>; ///< The log type
+	using LogData = jgr::ring_buffer<LogLine>; ///< The log type
 };
 
 #endif /* SCRIPT_LOG_TYPES_HPP */

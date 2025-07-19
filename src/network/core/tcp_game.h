@@ -15,7 +15,7 @@
 #include "os_abstraction.h"
 #include "tcp.h"
 #include "../network_type.h"
-#include "../../core/ring_buffer.hpp"
+#include "../../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <memory>
 #include <chrono>
 
@@ -153,8 +153,8 @@ struct OutgoingCommandPacket;
  * Not a std::queue because, when paused, some commands remain on the queue.
  * In other words, you do not always pop the first element from this queue.
  */
-using CommandQueue = ring_buffer<CommandPacket>;
-using OutgoingCommandQueue = ring_buffer<OutgoingCommandPacket>;
+using CommandQueue = jgr::ring_buffer<CommandPacket>;
+using OutgoingCommandQueue = jgr::ring_buffer<OutgoingCommandPacket>;
 
 /** Base socket handler for all TCP sockets */
 class NetworkGameSocketHandler : public NetworkTCPSocketHandler {
