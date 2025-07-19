@@ -8,6 +8,7 @@
 /** @file order_sl.cpp Code handling saving and loading of orders */
 
 #include "../stdafx.h"
+#include "../core/alloc_type.hpp"
 #include "../order_backup.h"
 #include "../settings_type.h"
 #include "../network/network.h"
