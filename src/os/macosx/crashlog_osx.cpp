@@ -14,6 +14,7 @@
 #include "../../sl/saveload.h"
 #include "../../thread.h"
 #include "../../screenshot.h"
+#include "../../screenshot_type.h"
 #include "../../debug.h"
 #include "../../video/video_driver.hpp"
 #include "../../scope.h"
