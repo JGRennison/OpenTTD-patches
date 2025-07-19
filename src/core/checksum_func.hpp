@@ -49,7 +49,7 @@ inline bool ShouldLogUpdateStateChecksum()
 	return _networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE));
 }
 #	define DEBUG_UPDATESTATECHECKSUM(str, ...) do { if (ShouldLogUpdateStateChecksum()) Debug(statecsum, 0, "{}; {:04x}; {:02x}; {:016x}; {}:{} " str, \
-		debug_date_dumper().HexDate(), _frame_counter, (uint8_t)_current_company, _state_checksum.state, __FILE__, __LINE__, __VA_ARGS__); } while(false)
+		debug_date_dumper().HexDate(), _frame_counter, _current_company, _state_checksum.state, __FILE__, __LINE__, __VA_ARGS__); } while(false)
 #else
 #	define DEBUG_UPDATESTATECHECKSUM(str, ...)
 #endif /* RANDOM_DEBUG */
