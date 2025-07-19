@@ -317,8 +317,8 @@ struct EMPTY_BASES ST : public StrongTypedefBase, public TTraits::FmtTag, public
 
 	explicit constexpr ST(const BaseType &value) : value(value) {}
 
-	constexpr ST &operator =(const ST &rhs) { this->value = rhs.value; return *this; }
-	constexpr ST &operator =(ST &&rhs) { this->value = std::move(rhs.value); return *this; }
+	constexpr ST &operator =(const ST &rhs) = default;
+	constexpr ST &operator =(ST &&rhs) = default;
 
 	/* Only allow conversion to BaseType via method. */
 	constexpr BaseType base() const { return this->value; }
@@ -351,7 +351,7 @@ struct EMPTY_BASES STRef : public StrongTypedefBase, public TTraits::FmtTag, pub
 
 	explicit constexpr STRef(BaseType &value) : value(value) {}
 
-	constexpr STRef &operator =(const STRef &rhs) { this->value = rhs.value; return *this; }
+	constexpr STRef &operator =(const STRef &rhs) = default;
 	constexpr STRef &operator =(STRef &&rhs) { this->value = std::move(rhs.value); return *this; }
 	constexpr STRef &operator =(const ValueType &rhs) { this->value = rhs.base(); return *this; }
 	constexpr STRef &operator =(ValueType &&rhs) { this->value = std::move(rhs.edit_base()); return *this; }

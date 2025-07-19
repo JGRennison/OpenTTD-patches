@@ -43,8 +43,8 @@ struct EMPTY_BASES PoolID : PoolIDBase {
 
 	explicit constexpr PoolID(const TBaseType &value) : value(value) {}
 
-	constexpr PoolID &operator =(const PoolID &rhs) { this->value = rhs.value; return *this; }
-	constexpr PoolID &operator =(PoolID &&rhs) { this->value = std::move(rhs.value); return *this; }
+	constexpr PoolID &operator =(const PoolID &rhs) = default;
+	constexpr PoolID &operator =(PoolID &&rhs) = default;
 
 	/* Only allow conversion to BaseType via method. */
 	constexpr TBaseType base() const noexcept { return this->value; }
