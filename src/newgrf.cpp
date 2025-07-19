@@ -2793,7 +2793,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				break;
 
 			case 0x22: // long maximum year
-				housespec->max_year = housespec->max_year = CalTime::Year{buf.ReadWord()};
+				housespec->max_year = CalTime::Year{buf.ReadWord()};
 				if (housespec->max_year == UINT16_MAX) housespec->max_year = CalTime::MAX_YEAR;
 				break;
 
