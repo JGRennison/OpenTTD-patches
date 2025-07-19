@@ -595,13 +595,13 @@ EngineID EngineOverrideManager::GetID(VehicleType type, uint16_t grf_local_id, u
 	EngineID id = (iter != this->mapping_index.end()) ? iter->second : INVALID_ENGINE;
 
 #ifdef _DEBUG
-	EngineID index = 0;
+	EngineID index = EngineID::Begin();
 	for (const EngineIDMapping &eid : this->mappings) {
 		if (eid.type == type && eid.grfid == grfid && eid.internal_id == grf_local_id) {
 			assert(id == index);
 			return index;
 		}
-		index++;
+		++index;
 	}
 	assert(id == INVALID_ENGINE);
 #endif
