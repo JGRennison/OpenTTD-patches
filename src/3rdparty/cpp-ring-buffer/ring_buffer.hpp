@@ -26,7 +26,6 @@
 #ifndef JGR_RING_BUFFER_HPP
 #define JGR_RING_BUFFER_HPP
 
-#include <assert.h>
 #include <string.h>
 #include <algorithm>
 #include <bit>
@@ -70,7 +69,9 @@ class ring_buffer {
 	static uint32_t round_up_size(size_t size)
 	{
 		if (size <= 4) return 4;
+#ifdef WITH_FULL_ASSERTS
 		if (size > MAX_SIZE) throw std::length_error("jgr::ring_buffer: maximum size exceeded");
+#endif
 		uint8_t bit = find_last_bit((uint32_t)size - 1);
 		return 1U << (bit + 1);
 	}
@@ -245,7 +246,7 @@ public:
 
 		std::ptrdiff_t operator -(const ring_buffer_iterator &other) const
 		{
-			assert(this->ring == other.ring);
+			dbg_assert(this->ring == other.ring);
 			if (REVERSE) {
 				return (int32_t)(other.pos - this->pos);
 			} else {
@@ -768,7 +769,7 @@ public:
 	template <typename... Args>
 	iterator emplace(ring_buffer_iterator_base pos, Args&&... args)
 	{
-		assert(pos.ring == this);
+		dbg_assert(pos.ring == this);
 
 		uint32_t new_pos = this->setup_insert(pos.pos, 1);
 		new (this->raw_ptr_at_pos(new_pos)) T(std::forward<Args>(args)...);
@@ -789,7 +790,7 @@ public:
 	{
 		if (count == 0) return iterator(pos);
 
-		assert(pos.ring == this);
+		dbg_assert(pos.ring == this);
 
 		const uint32_t new_pos_start = this->setup_insert(pos.pos, count);
 		uint32_t new_pos = new_pos_start;
@@ -805,7 +806,7 @@ public:
 	{
 		if (first == last) return iterator(pos);
 
-		assert(pos.ring == this);
+		dbg_assert(pos.ring == this);
 
 		const uint32_t new_pos_start = this->setup_insert(pos.pos, std::distance(first, last));
 		uint32_t new_pos = new_pos_start;
@@ -870,7 +871,7 @@ private:
 public:
 	iterator erase(ring_buffer_iterator_base pos)
 	{
-		assert(pos.ring == this);
+		dbg_assert(pos.ring == this);
 
 		return iterator(this, this->do_erase(pos.pos, 1));
 	}
@@ -879,7 +880,7 @@ public:
 	{
 		if (first.ring == last.ring && first.pos == last.pos) return last;
 
-		assert(first.ring == this && last.ring == this);
+		dbg_assert(first.ring == this && last.ring == this);
 
 		return iterator(this, this->do_erase(first.pos, last.pos - first.pos));
 	}
