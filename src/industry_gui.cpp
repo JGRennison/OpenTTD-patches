@@ -261,25 +261,6 @@ void SortIndustryTypes()
 	});
 }
 
-/**
- * Command callback. In case of failure to build an industry, show an error message.
- * @param result Result of the command.
- * @param tile   Tile where the industry is placed.
- * @param indtype Industry type.
- */
-void CcBuildIndustry(const CommandCost &result, TileIndex tile, IndustryType indtype, uint32_t first_layout, bool fund, uint32_t seed)
-{
-	if (result.Succeeded()) return;
-
-	if (indtype < NUM_INDUSTRYTYPES) {
-		const IndustrySpec *indsp = GetIndustrySpec(indtype);
-		if (indsp->enabled) {
-			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_BUILD_HERE, indsp->name),
-				GetEncodedString(result.GetErrorMessage()), WL_INFO, TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE);
-		}
-	}
-}
-
 static constexpr NWidgetPart _nested_build_industry_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
@@ -757,7 +738,7 @@ public:
 			Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 			_ignore_restrictions = true;
 
-			Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, CommandCallback::BuildIndustry, tile, this->selected_type, layout_index, false, seed);
+			Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
 
 			cur_company.Restore();
 			old_generating_world.Restore();

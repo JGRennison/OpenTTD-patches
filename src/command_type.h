@@ -669,9 +669,6 @@ enum class CommandCallback : uint8_t {
 	CreateGroup,
 	AddVehicleNewGroup,
 
-	/* industry_gui.cpp */
-	BuildIndustry,
-
 	/* main_gui.cpp */
 	PlaySound_EXPLOSION,
 	PlaceSign,
