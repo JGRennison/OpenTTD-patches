@@ -44,6 +44,26 @@ namespace jgr {
 #	define JGR_NO_UNIQUE_ADDRESS
 #endif
 
+#if defined(_MSC_VER)
+#	define JGR_NOINLINE __declspec(noinline)
+#else
+#	define JGR_NOINLINE __attribute__((noinline))
+#endif
+
+namespace detail {
+	struct ring_buffer_util {
+		[[noreturn]] static inline JGR_NOINLINE void throw_length_error()
+		{
+			throw std::length_error("jgr::ring_buffer: maximum size exceeded");
+		}
+
+		[[noreturn]] static inline JGR_NOINLINE void throw_at_out_of_range()
+		{
+			throw std::out_of_range("jgr::ring_buffer::at: index out of range");
+		}
+	};
+};
+
 /**
  * Self-resizing ring-buffer
  *
@@ -70,7 +90,9 @@ class ring_buffer {
 	{
 		if (size <= 4) return 4;
 #ifdef WITH_FULL_ASSERTS
-		if (size > MAX_SIZE) throw std::length_error("jgr::ring_buffer: maximum size exceeded");
+		if (size > MAX_SIZE) [[unlikely]] {
+			detail::ring_buffer_util::throw_length_error();
+		}
 #endif
 		uint8_t bit = find_last_bit((uint32_t)size - 1);
 		return 1U << (bit + 1);
@@ -502,7 +524,9 @@ private:
 		return this->memcpy_to(target, this->head, this->head + this->count);
 	}
 
-	void reallocate(size_t new_cap)
+	/* Use noinline here to avoid this being inlined into new_front_ptr/new_back_ptr,
+	 * which then prevents those from being inlined. */
+	JGR_NOINLINE void reallocate(size_t new_cap)
 	{
 		const uint32_t cap = round_up_size(new_cap);
 		Storage *new_buf = this->allocator.allocate(cap);
@@ -684,11 +708,13 @@ public:
 	}
 
 private:
-	uint32_t setup_insert(uint32_t pos, size_t num)
+	uint32_t setup_insert(uint32_t pos, size_t num_to_insert)
 	{
-		if (this->count + num > this->capacity()) {
+		/* Use size_t num_to_insert in capacity check and call to round_up_size */
+		const uint32_t num = static_cast<uint32_t>(num_to_insert);
+		if (this->count + num_to_insert > this->capacity()) {
 			/* grow container */
-			const uint32_t cap = round_up_size(this->count + num);
+			const uint32_t cap = round_up_size(this->count + num_to_insert);
 			Storage *new_buf = this->allocator.allocate(cap);
 			if constexpr (std::is_trivially_copyable_v<T>) {
 				Storage *insert_gap = this->memcpy_to(new_buf, this->head, pos);
@@ -931,13 +957,17 @@ public:
 
 	T &at(size_t index)
 	{
-		if (index >= this->size()) throw std::out_of_range("jgr::ring_buffer::at: index out of range");
+		if (index >= this->size()) [[unlikely]] {
+			detail::ring_buffer_util::throw_at_out_of_range();
+		}
 		return *this->ptr_at_offset((uint32_t)index);
 	}
 
 	const T &at(size_t index) const
 	{
-		if (index >= this->size()) throw std::out_of_range("jgr::ring_buffer::at: index out of range");
+		if (index >= this->size()) [[unlikely]] {
+			detail::ring_buffer_util::throw_at_out_of_range();
+		}
 		return *this->ptr_at_offset((uint32_t)index);
 	}
 };
@@ -945,5 +975,6 @@ public:
 }
 
 #undef JGR_NO_UNIQUE_ADDRESS
+#undef JGR_NOINLINE
 
 #endif /* JGR_RING_BUFFER_HPP */
