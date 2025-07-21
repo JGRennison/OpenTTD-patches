@@ -500,21 +500,22 @@ private:
 	{
 		if (start_pos == end_pos) return target;
 
-		const Storage *start_ptr = static_cast<Storage *>(this->raw_ptr_at_pos(start_pos));
-		const Storage *end_ptr = static_cast<Storage *>(this->raw_ptr_at_pos(end_pos));
-		if (end_ptr <= start_ptr) {
+		const uint32_t start_offset = start_pos & this->mask;
+		const uint32_t end_offset = end_pos & this->mask;
+		if (end_offset <= start_offset) {
 			/* Copy in two chunks due to wrap */
 
-			const Storage *buffer_end = this->data + this->capacity();
-			memcpy(target, start_ptr, (buffer_end - start_ptr) * sizeof(T));
-			target += buffer_end - start_ptr;
+			const uint32_t to_copy = (uint32_t)this->capacity() - start_offset;
+			memcpy(target, this->data + start_offset, to_copy * sizeof(T));
+			target += to_copy;
 
-			memcpy(target, this->data, (end_ptr - this->data) * sizeof(T));
-			target += end_ptr - this->data;
+			memcpy(target, this->data, end_offset * sizeof(T));
+			target += end_offset;
 		} else {
 			/* Copy in one chunk */
-			memcpy(target, start_ptr, (end_ptr - start_ptr) * sizeof(T));
-			target += end_ptr - start_ptr;
+			const uint32_t to_copy = end_offset - start_offset;
+			memcpy(target, this->data + start_offset, to_copy * sizeof(T));
+			target += to_copy;
 		}
 		return target;
 	}
