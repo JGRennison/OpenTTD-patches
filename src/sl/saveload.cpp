@@ -1607,9 +1607,9 @@ static size_t SlReadListLength()
 /**
  * Template class to help with list-like types.
  */
-template <template <typename> typename Tstorage, typename Tvar>
+template <template <typename, typename> typename Tstorage, typename Tvar, typename Tallocator = std::allocator<Tvar>>
 class SlStorageHelper {
-	typedef Tstorage<Tvar> SlStorageT;
+	typedef Tstorage<Tvar, Tallocator> SlStorageT;
 public:
 	/**
 	 * Internal templated helper to return the size in bytes of a list-like type.
