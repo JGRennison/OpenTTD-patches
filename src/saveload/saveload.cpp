@@ -1185,9 +1185,6 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 	}
 }
 
-template <typename T, typename U>
-using ring_buffer_sl = jgr::ring_buffer<T>;
-
 /**
  * Template class to help with list-like types.
  */
@@ -1344,7 +1341,7 @@ static void SlRefVector(void *vector, VarType conv)
  */
 static inline size_t SlCalcRefRingLen(const void *list, VarType conv)
 {
-	return SlStorageHelper<ring_buffer_sl, void *>::SlCalcLen(list, conv, SL_REF);
+	return SlStorageHelper<jgr::ring_buffer, void *>::SlCalcLen(list, conv, SL_REF);
 }
 
 /**
@@ -1361,7 +1358,7 @@ static void SlRefRing(void *list, VarType conv)
 		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
-	SlStorageHelper<ring_buffer_sl, void *>::SlSaveLoad(list, conv, SL_REF);
+	SlStorageHelper<jgr::ring_buffer, void *>::SlSaveLoad(list, conv, SL_REF);
 }
 
 /**
@@ -1372,15 +1369,15 @@ static void SlRefRing(void *list, VarType conv)
 static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: return SlStorageHelper<ring_buffer_sl, bool>::SlCalcLen(ring, conv);
-		case SLE_VAR_I8: return SlStorageHelper<ring_buffer_sl, int8_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U8: return SlStorageHelper<ring_buffer_sl, uint8_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I16: return SlStorageHelper<ring_buffer_sl, int16_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U16: return SlStorageHelper<ring_buffer_sl, uint16_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I32: return SlStorageHelper<ring_buffer_sl, int32_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U32: return SlStorageHelper<ring_buffer_sl, uint32_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_I64: return SlStorageHelper<ring_buffer_sl, int64_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_U64: return SlStorageHelper<ring_buffer_sl, uint64_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_BL: return SlStorageHelper<jgr::ring_buffer, bool>::SlCalcLen(ring, conv);
+		case SLE_VAR_I8: return SlStorageHelper<jgr::ring_buffer, int8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U8: return SlStorageHelper<jgr::ring_buffer, uint8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I16: return SlStorageHelper<jgr::ring_buffer, int16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U16: return SlStorageHelper<jgr::ring_buffer, uint16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I32: return SlStorageHelper<jgr::ring_buffer, int32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U32: return SlStorageHelper<jgr::ring_buffer, uint32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I64: return SlStorageHelper<jgr::ring_buffer, int64_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U64: return SlStorageHelper<jgr::ring_buffer, uint64_t>::SlCalcLen(ring, conv);
 
 		case SLE_VAR_STR:
 			/* Strings are a length-prefixed field type in the savegame table format,
@@ -1399,15 +1396,15 @@ static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL: SlStorageHelper<ring_buffer_sl, bool>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<ring_buffer_sl, int8_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<ring_buffer_sl, uint8_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<ring_buffer_sl, int16_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<ring_buffer_sl, uint16_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<ring_buffer_sl, int32_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<ring_buffer_sl, uint32_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<ring_buffer_sl, int64_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<ring_buffer_sl, uint64_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_BL: SlStorageHelper<jgr::ring_buffer, bool>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<jgr::ring_buffer, int8_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<jgr::ring_buffer, uint8_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<jgr::ring_buffer, int16_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<jgr::ring_buffer, uint16_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<jgr::ring_buffer, int32_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<jgr::ring_buffer, uint32_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<jgr::ring_buffer, int64_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<jgr::ring_buffer, uint64_t>::SlSaveLoad(ring, conv); break;
 
 		case SLE_VAR_STR:
 			/* Strings are a length-prefixed field type in the savegame table format,
@@ -1415,7 +1412,7 @@ static void SlRing(void *ring, VarType conv)
 			 * This is permitted for load-related actions, because invalid fields of this type are present
 			 * from SLV_COMPANY_ALLOW_LIST up to SLV_COMPANY_ALLOW_LIST_V2. */
 			assert(_sl.action != SLA_SAVE);
-			SlStorageHelper<ring_buffer_sl, std::string>::SlSaveLoad(ring, conv, SL_STDSTR);
+			SlStorageHelper<jgr::ring_buffer, std::string>::SlSaveLoad(ring, conv, SL_STDSTR);
 			break;
 
 		default: NOT_REACHED();
