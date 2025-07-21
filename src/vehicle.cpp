@@ -1631,7 +1631,7 @@ void CallVehicleTicks()
 
 		Vehicle *v = nullptr;
 		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: {}", VehicleInfoDumper(v));
-		for (size_t i = (size_t)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
+		for (VehicleID::BaseType i = (VehicleID::BaseType)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
 			v = Vehicle::Get(static_cast<VehicleID>(i));
 			if (v == nullptr) continue;
 
