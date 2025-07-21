@@ -12,7 +12,8 @@
 
 #include "core/pool_id_type.hpp"
 
-using PlanID = PoolID<uint16_t, struct PlanIDTag, 64000, 0xFFFF>;
+struct PlanIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using PlanID = PoolID<PlanIDTag>;
 static constexpr PlanID INVALID_PLAN = PlanID::Invalid(); ///< Sentinel for an invalid plan.
 
 struct PlanLine;

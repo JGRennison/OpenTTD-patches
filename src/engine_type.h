@@ -23,7 +23,8 @@
 #include <variant>
 
 /** Unique identification number of an engine. */
-using EngineID = PoolID<uint16_t, struct EngineIDTag, 64000, 0xFFFF>;
+struct EngineIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using EngineID = PoolID<EngineIDTag>;
 static constexpr EngineID INVALID_ENGINE = EngineID::Invalid(); ///< Constant denoting an invalid engine.
 
 struct Engine;

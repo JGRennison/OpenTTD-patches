@@ -15,12 +15,14 @@
 #include "tilearea_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
-using StationID = PoolID<uint16_t, struct StationIDTag, 64000, 0xFFFF>;
+struct StationIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using StationID = PoolID<StationIDTag>;
 static constexpr StationID NEW_STATION{0xFFFD};
 static constexpr StationID ADJACENT_STATION{0xFFFE};
 static constexpr StationID INVALID_STATION = StationID::Invalid();
 
-using RoadStopID = PoolID<uint16_t, struct RoadStopIDTag, 64000, 0xFFFF>;
+struct RoadStopIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using RoadStopID = PoolID<RoadStopIDTag>;
 
 struct BaseStation;
 struct Station;

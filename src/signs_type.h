@@ -13,7 +13,8 @@
 #include "core/pool_id_type.hpp"
 
 /** The type of the IDs of signs. */
-using SignID = PoolID<uint16_t, struct SignIDTag, 64000, 0xFFFF>;
+struct SignIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using SignID = PoolID<SignIDTag>;
 static constexpr SignID INVALID_SIGN = SignID::Invalid(); ///< Sentinel for an invalid sign.
 
 struct Sign;

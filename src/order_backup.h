@@ -20,7 +20,8 @@
 #include <vector>
 
 /** Unique identifier for an order backup. */
-using OrderBackupID = PoolID<uint8_t, struct OrderBackupIDTag, 255, 0xFF>;
+struct OrderBackupIDTag : public PoolIDTraits<uint8_t, 255, 0xFF> {};
+using OrderBackupID = PoolID<OrderBackupIDTag>;
 struct OrderBackup;
 
 /** The pool type for order backups. */

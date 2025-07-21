@@ -13,7 +13,8 @@
 #include "road_map.h"
 #include "core/pool_id_type.hpp"
 
-using TunnelID = PoolID<uint32_t, struct TunnelIDTag, 0x8000000, 0xFFFFFFFF>; ///< Type for the unique identifier of tunnels.
+struct TunnelIDTag : public PoolIDTraits<uint32_t, 0x8000000, 0xFFFFFFFF> {};
+using TunnelID = PoolID<TunnelIDTag>; ///< Type for the unique identifier of tunnels.
 
 static constexpr TunnelID TUNNEL_ID_MAP_LOOKUP{0xFFFF}; ///< Sentinel ID value to store in m2 to indicate that the ID should be looked up instead
 

@@ -24,7 +24,8 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 
 /** Unique identifier for a single cargo packet. */
-using CargoPacketID = PoolID<uint32_t, struct CargoPacketIDTag, 0xFFF000, 0xFFFFFF>;
+struct CargoPacketIDTag : public PoolIDTraits<uint32_t, 0xFFF000, 0xFFFFFF> {};
+using CargoPacketID = PoolID<CargoPacketIDTag>;
 struct CargoPacket;
 
 /** Type of the pool for cargo packets for a little over 16 million packets. */

@@ -243,7 +243,8 @@ static const uint ROAD_STOP_TRACKBIT_FACTOR = 2;
 static const uint LOCK_DEPOT_TILE_FACTOR = 2;
 
 struct CargoPayment;
-using CargoPaymentID = PoolID<uint32_t, struct CargoPaymentIDTag, 0xFF000, 0xFFFFF>;
+struct CargoPaymentIDTag : public PoolIDTraits<uint32_t, 0xFF000, 0xFFFFF> {};
+using CargoPaymentID = PoolID<CargoPaymentIDTag>;
 
 enum CargoPaymentAlgorithm : uint8_t {
 	CPA_BEGIN = 0,       ///< Used for iterations and limit testing

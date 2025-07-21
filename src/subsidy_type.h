@@ -21,7 +21,8 @@ enum PartOfSubsidy : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(PartOfSubsidy)
 
-using SubsidyID = PoolID<uint16_t, struct SubsidyIDTag, 256, 0xFFFF>; ///< ID of a subsidy
+struct SubsidyIDTag : public PoolIDTraits<uint16_t, 256, 0xFFFF> {};
+using SubsidyID = PoolID<SubsidyIDTag>; ///< ID of a subsidy
 struct Subsidy;
 
 #endif /* SUBSIDY_TYPE_H */

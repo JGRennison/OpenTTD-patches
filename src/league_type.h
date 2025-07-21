@@ -31,11 +31,13 @@ struct Link {
 	Link(): Link(LT_NONE, 0) {}
 };
 
-using LeagueTableID = PoolID<uint8_t, struct LeagueTableIDTag, 255, 0xFF>; ///< ID of a league table
+struct LeagueTableIDTag : public PoolIDTraits<uint8_t, 255, 0xFF> {};
+using LeagueTableID = PoolID<LeagueTableIDTag>; ///< ID of a league table
 struct LeagueTable;
 static constexpr LeagueTableID INVALID_LEAGUE_TABLE = LeagueTableID::Invalid(); ///< Invalid/unknown index of LeagueTable
 
-using LeagueTableElementID = PoolID<uint16_t, struct LeagueTableElementIDTag, 64000, 0xFFFF>; ///< ID of a league table
+struct LeagueTableElementIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using LeagueTableElementID = PoolID<LeagueTableElementIDTag>; ///< ID of a league table
 struct LeagueTableElement;
 static constexpr LeagueTableElementID INVALID_LEAGUE_TABLE_ELEMENT = LeagueTableElementID::Invalid(); ///< Invalid/unknown index of LeagueTableElement
 

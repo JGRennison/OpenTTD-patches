@@ -14,7 +14,8 @@
 
 struct TemplateVehicle;
 
-using TemplateID = PoolID<uint16_t, struct TemplateIDTag, 64000, 0xFFFF>;
+struct TemplateIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using TemplateID = PoolID<TemplateIDTag>;
 static constexpr TemplateID INVALID_TEMPLATE = TemplateID::Invalid();
 
 #endif /* TBTR_TEMPLATE_VEHICLE_TYPE_H */

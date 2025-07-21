@@ -36,7 +36,8 @@ enum GoalType : uint8_t {
 typedef uint32_t GoalTypeID; ///< Contains either tile, industry ID, town ID, company ID, or story page ID
 
 /** ID of a goal */
-using GoalID = PoolID<uint16_t, struct GoalIDTag, 64000, 0xFFFF>;
+struct GoalIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using GoalID = PoolID<GoalIDTag>;
 
 struct Goal;
 static constexpr GoalID INVALID_GOAL = GoalID::Invalid(); ///< Constant representing a non-existing goal.

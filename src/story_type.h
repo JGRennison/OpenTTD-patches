@@ -13,8 +13,10 @@
 #include "core/enum_type.hpp"
 #include "core/pool_id_type.hpp"
 
-using StoryPageElementID = PoolID<uint16_t, struct StoryPageElementIDTag, 64000, 0xFFFF>; ///< ID of a story page element
-using StoryPageID = PoolID<uint16_t, struct StoryPageIDTag, 64000, 0xFFFF>; ///< ID of a story page
+struct StoryPageElementIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using StoryPageElementID = PoolID<StoryPageElementIDTag>; ///< ID of a story page element
+struct StoryPageIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using StoryPageID = PoolID<StoryPageIDTag>; ///< ID of a story page
 struct StoryPageElement;
 struct StoryPage;
 enum StoryPageElementType : uint8_t;

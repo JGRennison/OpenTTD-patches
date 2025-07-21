@@ -27,7 +27,8 @@ static const ObjectType NUM_OBJECTS_PER_GRF = NUM_OBJECTS; ///< Number of suppor
 static const ObjectType INVALID_OBJECT_TYPE = 0xFFFF; ///< An invalid object
 
 /** Unique identifier for an object. */
-using ObjectID = PoolID<uint32_t, struct ObjectIDTag, 0xFF0000, 0xFFFFFFFF>;
+struct ObjectIDTag : public PoolIDTraits<uint32_t, 0xFF0000, 0xFFFFFFFF> {};
+using ObjectID = PoolID<ObjectIDTag>;
 
 struct Object;
 struct ObjectSpec;

@@ -13,15 +13,19 @@
 #include "core/pool_type.hpp"
 
 /** Program pool ID type. */
-using TraceRestrictProgramID = PoolID<uint32_t, struct TraceRestrictProgramIDTag, 256000, 0xFFFFFFFF>;
+struct TraceRestrictProgramIDTag : public PoolIDTraits<uint32_t, 256000, 0xFFFFFFFF> {};
+using TraceRestrictProgramID = PoolID<TraceRestrictProgramIDTag>;
 
 /** Slot pool ID type. */
-using TraceRestrictSlotID = PoolID<uint16_t, struct TraceRestrictSlotIDTag, 0xFFF0, 0xFFFF>;
+struct TraceRestrictSlotIDTag : public PoolIDTraits<uint16_t, 0xFFF0, 0xFFFF> {};
+using TraceRestrictSlotID = PoolID<TraceRestrictSlotIDTag>;
 
 /** Slot group pool ID type. */
-using TraceRestrictSlotGroupID = PoolID<uint16_t, struct TraceRestrictSlotGroupIDTag, 0xFFF0, 0xFFFF>;
+struct TraceRestrictSlotGroupIDTag : public PoolIDTraits<uint16_t, 0xFFF0, 0xFFFF> {};
+using TraceRestrictSlotGroupID = PoolID<TraceRestrictSlotGroupIDTag>;
 
 /** Counter pool ID type. */
-using TraceRestrictCounterID = PoolID<uint16_t, struct TraceRestrictCounterIDTag, 0xFFF0, 0xFFFF>;
+struct TraceRestrictCounterIDTag : public PoolIDTraits<uint16_t, 0xFFF0, 0xFFFF> {};
+using TraceRestrictCounterID = PoolID<TraceRestrictCounterIDTag>;
 
 #endif /* TRACERESTRICT_ID_TYPE_H */

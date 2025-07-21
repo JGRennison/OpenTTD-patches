@@ -13,7 +13,8 @@
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
 
-using CompanyID = PoolID<uint8_t, struct CompanyIDTag, 0xF, 0xFF>;
+struct CompanyIDTag : public PoolIDTraits<uint8_t, 0xF, 0xFF> {};
+using CompanyID = PoolID<CompanyIDTag>;
 static constexpr CompanyID COMPANY_FIRST = CompanyID::Begin();
 static constexpr CompanyID INVALID_COMPANY = CompanyID::Invalid(); ///< An invalid company
 

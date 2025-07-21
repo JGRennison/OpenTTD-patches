@@ -10,7 +10,8 @@
 #ifndef INDUSTRY_TYPE_H
 #define INDUSTRY_TYPE_H
 
-using IndustryID = PoolID<uint16_t, struct IndustryIDTag, 64000, 0xFFFF>;
+struct IndustryIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using IndustryID = PoolID<IndustryIDTag>;
 static constexpr IndustryID INVALID_INDUSTRY = IndustryID::Invalid();
 
 typedef uint16_t IndustryGfx;

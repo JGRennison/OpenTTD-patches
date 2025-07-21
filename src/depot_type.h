@@ -12,7 +12,8 @@
 
 #include "core/pool_id_type.hpp"
 
-using DepotID = PoolID<uint16_t, struct DepotIDTag, 64000, 0xFFFF>; ///< Type for the unique identifier of depots.
+struct DepotIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using DepotID = PoolID<DepotIDTag>; ///< Type for the unique identifier of depots.
 struct Depot;
 
 static constexpr DepotID INVALID_DEPOT = DepotID::Invalid();

@@ -15,7 +15,8 @@
 #include "engine_type.h"
 #include "group_type.h"
 
-using EngineRenewID = PoolID<uint16_t, struct EngineRenewIDTag, 64000, 0xFFFF>;
+struct EngineRenewIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using EngineRenewID = PoolID<EngineRenewIDTag>;
 
 /**
  * Memory pool for engine renew elements. DO NOT USE outside of engine.c. Is

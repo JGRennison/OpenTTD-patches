@@ -12,7 +12,8 @@
 
 #include "core/pool_id_type.hpp"
 
-using GroupID = PoolID<uint16_t, struct GroupIDTag, 64000, 0xFFFF>;
+struct GroupIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using GroupID = PoolID<GroupIDTag>;
 static constexpr GroupID NEW_GROUP{0xFFFC}; ///< Sentinel for a to-be-created group.
 static constexpr GroupID ALL_GROUP{0xFFFD}; ///< All vehicles are in this group.
 static constexpr GroupID DEFAULT_GROUP{0xFFFE}; ///< Ungrouped vehicles are in this group.

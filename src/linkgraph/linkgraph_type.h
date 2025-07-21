@@ -12,10 +12,12 @@
 
 #include "../core/pool_id_type.hpp"
 
-using LinkGraphID = PoolID<uint16_t, struct LinkGraphIDTag, 0xFFFF, 0xFFFF>;
+struct LinkGraphIDTag : public PoolIDTraits<uint16_t, 0xFFFF, 0xFFFF> {};
+using LinkGraphID = PoolID<LinkGraphIDTag>;
 static constexpr LinkGraphID INVALID_LINK_GRAPH = LinkGraphID::Invalid();
 
-using LinkGraphJobID = PoolID<uint16_t, struct LinkGraphJobIDTag, 0xFFFF, 0xFFFF>;
+struct LinkGraphJobIDTag : public PoolIDTraits<uint16_t, 0xFFFF, 0xFFFF> {};
+using LinkGraphJobID = PoolID<LinkGraphJobIDTag>;
 static constexpr LinkGraphJobID INVALID_LINK_GRAPH_JOB = LinkGraphJobID::Invalid();
 
 typedef uint16_t NodeID;

@@ -14,7 +14,8 @@
 #include "core/pool_type.hpp"
 
 /** The type all our vehicle IDs have. */
-using VehicleID = PoolID<uint32_t, struct VehicleIDTag, 0xFF000, 0xFFFFF>;
+struct VehicleIDTag : public PoolIDTraits<uint32_t, 0xFF000, 0xFFFFF> {};
+using VehicleID = PoolID<VehicleIDTag>;
 static constexpr VehicleID INVALID_VEHICLE = VehicleID::Invalid(); ///< Constant representing a non-existing vehicle.
 
 static const int GROUND_ACCELERATION = 9800; ///< Acceleration due to gravity, 9.8 m/s^2

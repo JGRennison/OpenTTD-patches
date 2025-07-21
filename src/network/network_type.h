@@ -49,10 +49,12 @@ enum ClientID : uint32_t {
 };
 
 /** Indices into the client related pools */
-using ClientPoolID = PoolID<uint16_t, struct ClientPoolIDTag, MAX_CLIENTS + 1 /* dedicated server. */, 0xFFFF>;
+struct ClientPoolIDTag : public PoolIDTraits<uint16_t, MAX_CLIENTS + 1 /* dedicated server. */, 0xFFFF> {};
+using ClientPoolID = PoolID<ClientPoolIDTag>;
 
 /** Indices into the admin tables. */
-using AdminID = PoolID<uint8_t, struct AdminIDTag, 16, 0xFF>;
+struct AdminIDTag : public PoolIDTraits<uint8_t, 16, 0xFF> {};
+using AdminID = PoolID<AdminIDTag>;
 
 /** An invalid admin marker. */
 static constexpr AdminID INVALID_ADMIN_ID = AdminID::Invalid();

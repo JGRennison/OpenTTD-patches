@@ -17,8 +17,10 @@
 #include "tracerestrict_id_type.h"
 
 typedef uint16_t VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
-using OrderID = PoolID<uint32_t, struct OrderIDTag, 0xFF0000, 0xFFFFFF>;
-using OrderListID = PoolID<uint16_t, struct OrderListIDTag, 64000, 0xFFFF>;
+struct OrderIDTag : public PoolIDTraits<uint32_t, 0xFF0000, 0xFFFFFF> {};
+using OrderID = PoolID<OrderIDTag>;
+struct OrderListIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
+using OrderListID = PoolID<OrderListIDTag>;
 typedef uint32_t TimetableTicks;
 
 struct DestinationID {
