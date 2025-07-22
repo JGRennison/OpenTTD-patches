@@ -167,7 +167,7 @@ static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const Tem
 
 		auto is_descendant = [gid](const Group *g) -> bool {
 			while (true) {
-				if (g->parent == INVALID_GROUP) return false;
+				if (g->parent == GroupID::Invalid()) return false;
 				if (g->parent == gid) {
 					/* If this group has its own template defined, it's not a descendant for template inheriting purposes */
 					if (_template_replacements.find(g->index) != _template_replacements.end()) return false;
@@ -298,7 +298,7 @@ void ReindexTemplateReplacements()
 				_template_replacement_index_recursive[group->index] = iter->second;
 				break;
 			}
-			if (g->parent == INVALID_GROUP) break;
+			if (g->parent == GroupID::Invalid()) break;
 			g = Group::Get(g->parent);
 		}
 	}

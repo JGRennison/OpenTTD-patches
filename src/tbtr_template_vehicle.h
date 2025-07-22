@@ -36,7 +36,7 @@
 #include "zoom_func.h"
 
 /** A pool allowing to store up to ~64k templates */
-using TemplatePool = Pool<TemplateVehicle, TemplateID, 512, TemplateID::End().base()>;
+using TemplatePool = Pool<TemplateVehicle, TemplateID, 512>;
 extern TemplatePool _template_pool;
 
 extern robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacements;
@@ -121,7 +121,7 @@ public:
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
 	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
-	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, Owner = _local_company);
+	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = EngineID::Invalid(), Owner = _local_company);
 
 	TemplateVehicle(EngineID eid)
 	{

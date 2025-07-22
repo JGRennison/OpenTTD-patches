@@ -14,11 +14,9 @@
 
 struct LinkGraphIDTag : public PoolIDTraits<uint16_t, 0xFFFF, 0xFFFF> {};
 using LinkGraphID = PoolID<LinkGraphIDTag>;
-static constexpr LinkGraphID INVALID_LINK_GRAPH = LinkGraphID::Invalid();
 
 struct LinkGraphJobIDTag : public PoolIDTraits<uint16_t, 0xFFFF, 0xFFFF> {};
 using LinkGraphJobID = PoolID<LinkGraphJobIDTag>;
-static constexpr LinkGraphJobID INVALID_LINK_GRAPH_JOB = LinkGraphJobID::Invalid();
 
 typedef uint16_t NodeID;
 static const NodeID INVALID_NODE = UINT16_MAX;

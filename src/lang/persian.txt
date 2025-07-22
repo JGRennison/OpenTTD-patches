@@ -3525,7 +3525,6 @@ STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}تصوی
 
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}پیام
-STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}پیام از {STRING}
 
 # Generic construction errors
 STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}خارج از نقشه
@@ -4303,3 +4302,4 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+

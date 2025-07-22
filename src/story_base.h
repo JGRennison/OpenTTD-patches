@@ -17,8 +17,8 @@
 #include "vehicle_type.h"
 #include "core/pool_type.hpp"
 
-using StoryPageElementPool = Pool<StoryPageElement, StoryPageElementID, 64, StoryPageElementID::End().base()>;
-using StoryPagePool = Pool<StoryPage, StoryPageID, 64, StoryPageID::End().base()>;
+using StoryPageElementPool = Pool<StoryPageElement, StoryPageElementID, 64>;
+using StoryPagePool = Pool<StoryPage, StoryPageID, 64>;
 extern StoryPageElementPool _story_page_element_pool;
 extern StoryPagePool _story_page_pool;
 extern uint32_t _story_page_element_next_sort_value;
@@ -164,7 +164,7 @@ struct StoryPageElement : StoryPageElementPool::PoolItem<&_story_page_element_po
 struct StoryPage : StoryPagePool::PoolItem<&_story_page_pool> {
 	uint32_t sort_value;          ///< A number that increases for every created story page. Used for sorting. The id of a story page is the pool index.
 	CalTime::Date date;           ///< Date when the page was created.
-	CompanyID company;            ///< StoryPage is for a specific company; INVALID_COMPANY if it is global
+	CompanyID company;            ///< StoryPage is for a specific company; CompanyID::Invalid() if it is global
 
 	std::string title;            ///< Title of story page
 

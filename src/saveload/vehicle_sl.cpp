@@ -601,10 +601,10 @@ struct VEHSChunkHandler : ChunkHandler {
 #if 0
 			/* Old savegames used 'last_station_visited = 0xFF' */
 			if (IsSavegameVersionBefore(SLV_5) && v->last_station_visited == 0xFF) {
-				v->last_station_visited = INVALID_STATION;
+				v->last_station_visited = StationID::Invalid();
 			}
 
-			if (IsSavegameVersionBefore(SLV_182)) v->last_loading_station = INVALID_STATION;
+			if (IsSavegameVersionBefore(SLV_182)) v->last_loading_station = StationID::Invalid();
 
 			if (IsSavegameVersionBefore(SLV_5)) {
 				/* Convert the current_order.type (which is a mix of type and flags, because

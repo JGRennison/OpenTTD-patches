@@ -147,14 +147,14 @@ extern CommandCost ClearTile_Station(TileIndex tile, DoCommandFlags flags);
 static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *waypoint)
 {
 	/* if waypoint is set, then we have special handling to allow building on top of already existing waypoints.
-	 * so waypoint points to INVALID_STATION if we can build on any waypoint.
+	 * so waypoint points to StationID::Invalid() if we can build on any waypoint.
 	 * Or it points to a waypoint if we're only allowed to build on exactly that waypoint. */
 	if (waypoint != nullptr && IsTileType(tile, MP_STATION)) {
 		if (!IsRailWaypoint(tile)) {
 			return ClearTile_Station(tile, DoCommandFlag::Auto); // get error message
 		} else {
 			StationID wp = GetStationIndex(tile);
-			if (*waypoint == INVALID_STATION) {
+			if (*waypoint == StationID::Invalid()) {
 				*waypoint = wp;
 			} else if (*waypoint != wp) {
 				return CommandCost(STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING);
@@ -213,8 +213,8 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 	if (count == 0 || count > _settings_game.station.station_spread) return CMD_ERROR;
 
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -229,7 +229,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 	}
 
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
-	StationID est = INVALID_STATION;
+	StationID est = StationID::Invalid();
 
 	/* Check whether the tiles we're building on are valid rail or not. */
 	TileIndexDiff offset = TileOffsByAxis(OtherAxis(axis));
@@ -352,8 +352,8 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 	if (count == 0 || count > _settings_game.station.station_spread) return CMD_ERROR;
 
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -369,7 +369,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		unit_cost = _price[PR_BUILD_STATION_TRUCK];
 	}
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
-	StationID est = INVALID_STATION;
+	StationID est = StationID::Invalid();
 	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
 	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, 5 << axis, true, StationType::RoadWaypoint, axis, &est, INVALID_ROADTYPE, true);
 	if (ret.Failed()) return ret;

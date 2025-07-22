@@ -65,15 +65,14 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_GROUP_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::Command<CMD_ALTER_GROUP>::Do(AlterGroupMode::Rename, group_id, ::INVALID_GROUP, text);
+	return ScriptObject::Command<CMD_ALTER_GROUP>::Do(AlterGroupMode::Rename, group_id, ::GroupID::Invalid(), text);
 }
 
 /* static */ std::optional<std::string> ScriptGroup::GetName(GroupID group_id)
 {
 	if (!IsValidGroup(group_id)) return std::nullopt;
 
-	::SetDParam(0, group_id);
-	return GetString(STR_GROUP_NAME);
+	return ::StrMakeValid(::GetString(STR_GROUP_NAME, group_id));
 }
 
 /* static */ bool ScriptGroup::SetParent(GroupID group_id, GroupID parent_group_id)
@@ -87,7 +86,7 @@
 
 /* static */ GroupID ScriptGroup::GetParent(GroupID group_id)
 {
-	EnforcePrecondition(INVALID_GROUP, IsValidGroup(group_id));
+	EnforcePrecondition(::GroupID::Invalid(), IsValidGroup(group_id));
 
 	const Group *g = ::Group::GetIfValid(group_id);
 	return g->parent;
@@ -163,8 +162,8 @@
 
 /* static */ EngineID ScriptGroup::GetEngineReplacement(GroupID group_id, EngineID engine_id)
 {
-	EnforceCompanyModeValid(::INVALID_ENGINE);
-	if (!IsValidGroup(group_id) && group_id != GROUP_DEFAULT && group_id != GROUP_ALL) return ::INVALID_ENGINE;
+	EnforceCompanyModeValid(::EngineID::Invalid());
+	if (!IsValidGroup(group_id) && group_id != GROUP_DEFAULT && group_id != GROUP_ALL) return ::EngineID::Invalid();
 
 	return ::EngineReplacementForCompany(Company::Get(ScriptObject::GetCompany()), engine_id, group_id);
 }
@@ -174,7 +173,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidGroup(group_id) || group_id == GROUP_DEFAULT || group_id == GROUP_ALL);
 
-	return ScriptObject::Command<CMD_SET_AUTOREPLACE>::Do(group_id, engine_id, ::INVALID_ENGINE, false);
+	return ScriptObject::Command<CMD_SET_AUTOREPLACE>::Do(group_id, engine_id, ::EngineID::Invalid(), false);
 }
 
 /* static */ Money ScriptGroup::GetProfitThisYear(GroupID group_id)

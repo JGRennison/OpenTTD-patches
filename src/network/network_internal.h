@@ -111,7 +111,7 @@ struct NetworkSharedSecrets {
 template <typename T>
 struct GeneralCommandPacket {
 	/** Make sure the pointer is nullptr. */
-	GeneralCommandPacket() : frame(0), client_id(INVALID_CLIENT_ID), company(INVALID_COMPANY), my_cmd(false) {}
+	GeneralCommandPacket() : frame(0), client_id(INVALID_CLIENT_ID), company(CompanyID::Invalid()), my_cmd(false) {}
 
 	uint32_t frame;      ///< the frame in which this packet is executed
 	ClientID client_id;  ///< originating client ID (or INVALID_CLIENT_ID if not specified)

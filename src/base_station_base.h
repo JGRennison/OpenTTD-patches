@@ -19,7 +19,7 @@
 #include <memory>
 #include <vector>
 
-typedef Pool<BaseStation, StationID, 32, StationID::End().base()> StationPool;
+typedef Pool<BaseStation, StationID, 32> StationPool;
 extern StationPool _station_pool;
 
 template <typename T>

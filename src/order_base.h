@@ -27,8 +27,8 @@
 #include <vector>
 #include "3rdparty/cpp-btree/btree_map.h"
 
-using OrderPool = Pool<OrderPoolItem, OrderID, 256, OrderID::End().base()>;
-using OrderListPool = Pool<OrderList, OrderListID, 128, OrderListID::End().base()>;
+using OrderPool = Pool<OrderPoolItem, OrderID, 256>;
+using OrderListPool = Pool<OrderList, OrderListID, 128>;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
 extern btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;
@@ -771,7 +771,7 @@ private:
 
 public:
 	CargoStationIDStackSet()
-			: first(ALL_CARGOTYPES, INVALID_STATION) {}
+			: first(ALL_CARGOTYPES, StationID::Invalid()) {}
 
 	const StationIDStack& Get(CargoType cargo) const
 	{

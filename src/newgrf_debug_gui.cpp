@@ -604,7 +604,7 @@ struct NewGRFInspectWindow final : Window {
 				GrfSpecFeature f = this->target_id.grf_feature;
 				int h = GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height;
 				int y = CenterBounds(br.top, br.bottom, h);
-				DrawVehicleImage(v->First(), br, INVALID_VEHICLE, EIT_IN_DETAILS, skip);
+				DrawVehicleImage(v->First(), br, VehicleID::Invalid(), EIT_IN_DETAILS, skip);
 
 				/* Highlight the articulated part (this is different to the whole-vehicle highlighting of DrawVehicleImage */
 				if (_current_text_dir == TD_RTL) {

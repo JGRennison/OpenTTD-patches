@@ -56,7 +56,7 @@ struct ResolverObject;
  * sprite. 64 = 2^6, so 2^30 should be enough (for now) */
 struct SpriteGroupIDTag : public PoolIDTraits<uint32_t, 1U << 30, 0xFFFFFFFF> {};
 using SpriteGroupID = PoolID<SpriteGroupIDTag>;
-using SpriteGroupPool = Pool<SpriteGroup, SpriteGroupID, 1024, SpriteGroupID::End().base(), PoolType::Data>;
+using SpriteGroupPool = Pool<SpriteGroup, SpriteGroupID, 1024, PoolType::Data>;
 extern SpriteGroupPool _spritegroup_pool;
 
 enum SpriteGroupFlags : uint8_t {

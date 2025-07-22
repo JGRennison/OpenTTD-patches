@@ -299,7 +299,7 @@ bool Vehicle::NeedsServicing() const
 		EngineID new_engine = EngineReplacementForCompany(c, v->engine_type, v->group_id, &replace_when_old);
 
 		/* Check engine availability */
-		if (new_engine == INVALID_ENGINE || !Engine::Get(new_engine)->company_avail.Test(v->owner)) continue;
+		if (new_engine == EngineID::Invalid() || !Engine::Get(new_engine)->company_avail.Test(v->owner)) continue;
 		/* Is the vehicle old if we are not always replacing? */
 		if (replace_when_old && !v->NeedsAutorenewing(c, false)) continue;
 
@@ -496,8 +496,8 @@ Vehicle::Vehicle(VehicleType type)
 	this->first              = this;
 	this->colourmap          = PAL_NONE;
 	this->cargo_age_counter  = 1;
-	this->last_station_visited = INVALID_STATION;
-	this->last_loading_station = INVALID_STATION;
+	this->last_station_visited = StationID::Invalid();
+	this->last_loading_station = StationID::Invalid();
 	this->last_loading_tick = StateTicks{0};
 	this->cur_image_valid_dir  = INVALID_DIR;
 	this->vcache.cached_veh_flags = 0;
@@ -1205,7 +1205,7 @@ void Vehicle::PreDestructor()
 		st->loading_vehicles.erase(std::remove(st->loading_vehicles.begin(), st->loading_vehicles.end(), this), st->loading_vehicles.end());
 
 		HideFillingPercent(&this->fill_percent_te_id);
-		this->CancelReservation(INVALID_STATION, st);
+		this->CancelReservation(StationID::Invalid(), st);
 		delete this->cargo_payment;
 		dbg_assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
 	}
@@ -2821,7 +2821,7 @@ void VehicleEnterDepot(Vehicle *v)
 			/* Invalidate last_loading_station. As the link from the station
 			 * before the stop to the station after the stop can't be predicted
 			 * we shouldn't construct it when the vehicle visits the next stop. */
-			v->last_loading_station = INVALID_STATION;
+			v->last_loading_station = StationID::Invalid();
 			ClrBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 
 			/* Clear unbunching data. */
@@ -3124,7 +3124,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
 /**
  * Determines the #LiveryScheme for a vehicle.
  * @param engine_type Engine of the vehicle.
- * @param parent_engine_type Engine of the front vehicle, #INVALID_ENGINE if vehicle is at front itself.
+ * @param parent_engine_type Engine of the front vehicle, #EngineID::Invalid() if vehicle is at front itself.
  * @param v the vehicle, \c nullptr if in purchase list etc.
  * @return livery scheme to use.
  */
@@ -3135,7 +3135,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 	switch (e->type) {
 		default: NOT_REACHED();
 		case VEH_TRAIN:
-			if (v != nullptr && parent_engine_type != INVALID_ENGINE && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->u.rail.railveh_type != RAILVEH_WAGON))) {
+			if (v != nullptr && parent_engine_type != EngineID::Invalid() && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->u.rail.railveh_type != RAILVEH_WAGON))) {
 				/* Wagonoverrides use the colour scheme of the front engine.
 				 * Articulated parts use the colour scheme of the first part. (Not supported for articulated wagons) */
 				engine_type = parent_engine_type;
@@ -3148,7 +3148,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			assert(IsValidCargoType(cargo_type));
 			if (e->u.rail.railveh_type == RAILVEH_WAGON) {
 				if (!CargoSpec::Get(cargo_type)->is_freight) {
-					if (parent_engine_type == INVALID_ENGINE) {
+					if (parent_engine_type == EngineID::Invalid()) {
 						return LS_PASSENGER_WAGON_STEAM;
 					} else {
 						bool is_mu = EngInfo(parent_engine_type)->misc_flags.Test(EngineMiscFlag::RailIsMU);
@@ -3179,7 +3179,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 
 		case VEH_ROAD:
 			/* Always use the livery of the front */
-			if (v != nullptr && parent_engine_type != INVALID_ENGINE) {
+			if (v != nullptr && parent_engine_type != EngineID::Invalid()) {
 				engine_type = parent_engine_type;
 				e = Engine::Get(engine_type);
 				cargo_type = v->First()->cargo_type;
@@ -3217,7 +3217,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
  * Determines the livery for a vehicle.
  * @param engine_type EngineID of the vehicle
  * @param company Owner of the vehicle
- * @param parent_engine_type EngineID of the front vehicle. INVALID_VEHICLE if vehicle is at front itself.
+ * @param parent_engine_type EngineID of the front vehicle. VehicleID::Invalid() if vehicle is at front itself.
  * @param v the vehicle. nullptr if in purchase list etc.
  * @param livery_setting The livery settings to use for acquiring the livery information.
  * @param ignore_group Ignore group overrides.
@@ -3233,7 +3233,7 @@ const Livery *GetEngineLivery(EngineID engine_type, CompanyID company, EngineID 
 			const Group *g = Group::GetIfValid(v->First()->group_id);
 			if (g != nullptr) {
 				/* Traverse parents until we find a livery or reach the top */
-				while (g->livery.in_use == 0 && g->parent != INVALID_GROUP) {
+				while (g->livery.in_use == 0 && g->parent != GroupID::Invalid()) {
 					g = Group::Get(g->parent);
 				}
 				if (g->livery.in_use != 0) return &g->livery;
@@ -3303,7 +3303,7 @@ static PaletteID GetEngineColourMap(EngineID engine_type, CompanyID company, Eng
  */
 PaletteID GetEnginePalette(EngineID engine_type, CompanyID company)
 {
-	return GetEngineColourMap(engine_type, company, INVALID_ENGINE, nullptr);
+	return GetEngineColourMap(engine_type, company, EngineID::Invalid(), nullptr);
 }
 
 /**
@@ -3317,7 +3317,7 @@ PaletteID GetVehiclePalette(const Vehicle *v)
 		return GetEngineColourMap(v->engine_type, v->owner, v->GetGroundVehicleCache()->first_engine, v);
 	}
 
-	return GetEngineColourMap(v->engine_type, v->owner, INVALID_ENGINE, v);
+	return GetEngineColourMap(v->engine_type, v->owner, EngineID::Invalid(), v);
 }
 
 /**
@@ -3384,7 +3384,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
 		StateTicks loading_tick = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_tick : front->last_loading_tick;
 		if (v->refit_cap > 0 &&
-				last_loading_station != INVALID_STATION &&
+				last_loading_station != StationID::Invalid() &&
 				last_loading_station != front->last_station_visited &&
 				((front->current_order.GetCargoLoadType(v->cargo_type) & OLFB_NO_LOAD) == 0 ||
 				(front->current_order.GetCargoUnloadType(v->cargo_type) & OUFB_NO_UNLOAD) == 0)) {
@@ -3553,11 +3553,11 @@ void Vehicle::CancelReservation(StationID next, Station *st)
 CargoTypes Vehicle::GetLastLoadingStationValidCargoMask() const
 {
 	if (!HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP)) {
-		return (this->last_loading_station != INVALID_STATION) ? ALL_CARGOTYPES : 0;
+		return (this->last_loading_station != StationID::Invalid()) ? ALL_CARGOTYPES : 0;
 	} else {
 		CargoTypes cargo_mask = 0;
 		for (const Vehicle *u = this; u != nullptr; u = u->Next()) {
-			if (u->cargo_type < NUM_CARGO && u->last_loading_station != INVALID_STATION) {
+			if (u->cargo_type < NUM_CARGO && u->last_loading_station != StationID::Invalid()) {
 				SetBit(cargo_mask, u->cargo_type);
 			}
 		}
@@ -3622,7 +3622,7 @@ void Vehicle::LeaveStation()
 
 			/* if the vehicle couldn't load and had to unload or transfer everything
 			 * set the last loading station to invalid as it will leave empty. */
-			this->last_loading_station = INVALID_STATION;
+			this->last_loading_station = StationID::Invalid();
 			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		} else {
 			/* mix of cargoes loadable or could not leave with all cargoes */
@@ -3638,7 +3638,7 @@ void Vehicle::LeaveStation()
 						u->last_loading_station = this->last_station_visited;
 						u->last_loading_tick = _state_ticks;
 					} else {
-						u->last_loading_station = INVALID_STATION;
+						u->last_loading_station = StationID::Invalid();
 					}
 				} else {
 					u->last_loading_station = last_loading_station;
@@ -3651,7 +3651,7 @@ void Vehicle::LeaveStation()
 
 	this->current_order.MakeLeaveStation();
 	Station *st = Station::Get(this->last_station_visited);
-	this->CancelReservation(INVALID_STATION, st);
+	this->CancelReservation(StationID::Invalid(), st);
 	st->loading_vehicles.erase(std::remove(st->loading_vehicles.begin(), st->loading_vehicles.end(), this), st->loading_vehicles.end());
 
 	HideFillingPercent(&this->fill_percent_te_id);

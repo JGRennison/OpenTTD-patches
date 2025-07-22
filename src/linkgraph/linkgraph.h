@@ -27,7 +27,7 @@ class LinkGraph;
  * Type of the pool for link graph components. Each station can be in at up to
  * 32 link graphs. So we allow for plenty of them to be created.
  */
-using LinkGraphPool = Pool<LinkGraph, LinkGraphID, 32, LinkGraphID::End().base()>;
+using LinkGraphPool = Pool<LinkGraph, LinkGraphID, 32>;
 /** The actual pool with link graphs. */
 extern LinkGraphPool _link_graph_pool;
 
@@ -58,7 +58,7 @@ public:
 		StationID station;       ///< Station ID.
 		TileIndex xy;            ///< Location of the station referred to by the node.
 		EconTime::Date last_update; ///< When the supply was last updated.
-		void Init(TileIndex xy = INVALID_TILE, StationID st = INVALID_STATION, uint demand = 0);
+		void Init(TileIndex xy = INVALID_TILE, StationID st = StationID::Invalid(), uint demand = 0);
 	};
 
 	/**

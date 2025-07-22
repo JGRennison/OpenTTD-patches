@@ -16,7 +16,6 @@
 
 struct TownIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using TownID = PoolID<TownIDTag>;
-static constexpr TownID INVALID_TOWN = TownID::Invalid();
 
 struct Town;
 

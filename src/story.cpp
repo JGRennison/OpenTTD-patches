@@ -63,7 +63,7 @@ static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElement
 		case SPET_GOAL:
 			if (!Goal::IsValidID((GoalID)reference)) return false;
 			/* Reject company specific goals on global pages */
-			if (StoryPage::Get(page_id)->company == INVALID_COMPANY && Goal::Get((GoalID)reference)->company != INVALID_COMPANY) return false;
+			if (StoryPage::Get(page_id)->company == CompanyID::Invalid() && Goal::Get((GoalID)reference)->company != CompanyID::Invalid()) return false;
 			break;
 		case SPET_BUTTON_PUSH:
 			if (!button_data.ValidateColour()) return false;
@@ -212,7 +212,7 @@ CommandCost CmdCreateStoryPage(DoCommandFlags flags, CompanyID company, const st
 	if (!StoryPage::CanAllocateItem()) return CMD_ERROR;
 
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
-	if (company != INVALID_COMPANY && !Company::IsValidID(company)) return CMD_ERROR;
+	if (company != CompanyID::Invalid() && !Company::IsValidID(company)) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (StoryPage::GetNumItems() == 0) {
@@ -375,7 +375,7 @@ CommandCost CmdShowStoryPage(DoCommandFlags flags, StoryPageID page_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		StoryPage *g = StoryPage::Get(page_id);
-		if ((g->company != INVALID_COMPANY && g->company == _local_company) || (g->company == INVALID_COMPANY && Company::IsValidID(_local_company))) ShowStoryBook(_local_company, page_id, true);
+		if ((g->company != CompanyID::Invalid() && g->company == _local_company) || (g->company == CompanyID::Invalid() && Company::IsValidID(_local_company))) ShowStoryBook(_local_company, page_id, true);
 	}
 
 	return CommandCost();
@@ -447,7 +447,7 @@ CommandCost CmdStoryPageButton(DoCommandFlags flags, TileIndex tile, StoryPageEl
 
 	/* Check the player belongs to the company that owns the page. */
 	const StoryPage *const sp = StoryPage::Get(pe->page);
-	if (sp->company != INVALID_COMPANY && sp->company != _current_company) return CMD_ERROR;
+	if (sp->company != CompanyID::Invalid() && sp->company != _current_company) return CMD_ERROR;
 
 	switch (pe->type) {
 		case SPET_BUTTON_PUSH:

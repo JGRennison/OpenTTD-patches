@@ -16,14 +16,14 @@
 #include "subsidy_type.h"
 #include "core/pool_type.hpp"
 
-using SubsidyPool = Pool<Subsidy, SubsidyID, 1, SubsidyID::End().base()>;
+using SubsidyPool = Pool<Subsidy, SubsidyID, 1>;
 extern SubsidyPool _subsidy_pool;
 
 /** Struct about subsidies, offered and awarded */
 struct Subsidy : SubsidyPool::PoolItem<&_subsidy_pool> {
 	CargoType cargo_type;///< Cargo type involved in this subsidy, INVALID_CARGO for invalid subsidy
 	uint16_t remaining;  ///< Remaining months when this subsidy is valid
-	CompanyID awarded;   ///< Subsidy is awarded to this company; INVALID_COMPANY if it's not awarded to anyone
+	CompanyID awarded;   ///< Subsidy is awarded to this company; CompanyID::Invalid() if it's not awarded to anyone
 	Source src; ///< Source of subsidised path
 	Source dst; ///< Destination of subsidised path
 
@@ -43,7 +43,7 @@ struct Subsidy : SubsidyPool::PoolItem<&_subsidy_pool> {
 	 */
 	inline bool IsAwarded() const
 	{
-		return this->awarded != INVALID_COMPANY;
+		return this->awarded != CompanyID::Invalid();
 	}
 
 	void AwardTo(CompanyID company);

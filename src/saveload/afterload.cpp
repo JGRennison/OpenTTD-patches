@@ -193,7 +193,7 @@ static void ConvertTownOwner()
 static void UpdateExclusiveRights()
 {
 	for (Town *t : Town::Iterate()) {
-		t->exclusivity = INVALID_COMPANY;
+		t->exclusivity = CompanyID::Invalid();
 	}
 
 	/* FIXME old exclusive rights status is not being imported (stored in s->blocked_months_obsolete)
@@ -1285,7 +1285,7 @@ bool AfterLoadGame()
 		 * becomes company 0, unless we are in the scenario editor where all the
 		 * companies are 'invalid'.
 		 */
-		Company *c = Company::GetIfValid(COMPANY_FIRST);
+		Company *c = Company::GetIfValid(CompanyID::Begin());
 		if (!_network_dedicated && c != nullptr) {
 			c->settings = _settings_client.company;
 		}
@@ -2262,7 +2262,7 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_84)) {
-		/* Set all share owners to INVALID_COMPANY for
+		/* Set all share owners to CompanyID::Invalid() for
 		 * 1) all inactive companies
 		 *     (when inactive companies were stored in the savegame - TTD, TTDP and some
 		 *      *really* old revisions of OTTD; else it is already set in InitializeCompanies())
@@ -2270,8 +2270,8 @@ bool AfterLoadGame()
 		 *     (caused by cheating clients in earlier revisions) */
 		for (Company *c : Company::Iterate()) {
 			for (auto &share_owner : c->share_owners) {
-				if (share_owner == INVALID_COMPANY) continue;
-				if (!Company::IsValidID(share_owner) || share_owner == c->index) share_owner = INVALID_COMPANY;
+				if (share_owner == CompanyID::Invalid()) continue;
+				if (!Company::IsValidID(share_owner) || share_owner == c->index) share_owner = CompanyID::Invalid();
 			}
 		}
 	}
@@ -2738,7 +2738,7 @@ bool AfterLoadGame()
 			if (s->remaining < 12) {
 				/* Converting nonawarded subsidy */
 				s->remaining = 12 - s->remaining; // convert "age" to "remaining"
-				s->awarded = INVALID_COMPANY; // not awarded to anyone
+				s->awarded = CompanyID::Invalid(); // not awarded to anyone
 				const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
 				switch (cs->town_acceptance_effect) {
 					case TAE_PASSENGERS:
@@ -4177,7 +4177,7 @@ bool AfterLoadGame()
 
 					order = order_list->GetNext(order);
 				}
-				return INVALID_STATION;
+				return StationID::Invalid();
 			};
 
 			for (Order *order : order_list->Orders()) {
@@ -4185,13 +4185,13 @@ bool AfterLoadGame()
 				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
 					StationID next_id = get_real_station(order);
 					order->SetConditionStationID(next_id);
-					if (next_id != INVALID_STATION && order->GetConditionViaStationID() == next_id) {
+					if (next_id != StationID::Invalid() && order->GetConditionViaStationID() == next_id) {
 						/* Duplicate next and via, remove via */
 						order->ClearConditionViaStation();
 					}
 					if (order->HasConditionViaStation() && !Station::IsValidID(order->GetConditionViaStationID())) {
 						/* Via station is invalid */
-						order->SetConditionViaStationID(INVALID_STATION);
+						order->SetConditionViaStationID(StationID::Invalid());
 					}
 				}
 			}
@@ -4694,7 +4694,7 @@ void ReloadNewGRFData()
 	/* Delete news referring to no longer existing entities */
 	DeleteInvalidEngineNews();
 	/* Update livery selection windows */
-	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) InvalidateWindowData(WC_COMPANY_COLOUR, i);
+	for (CompanyID i = CompanyID::Begin(); i < MAX_COMPANIES; ++i) InvalidateWindowData(WC_COMPANY_COLOUR, i);
 	/* Update company infrastructure counts. */
 	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
 	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);

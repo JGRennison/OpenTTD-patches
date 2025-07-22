@@ -25,7 +25,7 @@ using OrderBackupID = PoolID<OrderBackupIDTag>;
 struct OrderBackup;
 
 /** The pool type for order backups. */
-using OrderBackupPool = Pool<OrderBackup, OrderBackupID, 1, OrderBackupID::End().base()>;
+using OrderBackupPool = Pool<OrderBackup, OrderBackupID, 1>;
 /** The pool with order backups. */
 extern OrderBackupPool _order_backup_pool;
 

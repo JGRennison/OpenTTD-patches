@@ -277,7 +277,7 @@ static inline void UpdateNumEngineGroup(const Vehicle *v, GroupID old_g, GroupID
 
 const Livery *GetParentLivery(const Group *g)
 {
-	if (g->parent == INVALID_GROUP) {
+	if (g->parent == GroupID::Invalid()) {
 		const Company *c = Company::Get(g->owner);
 		return &c->livery[LS_DEFAULT];
 	}
@@ -292,7 +292,7 @@ static inline bool IsGroupDescendantOfGroupID(const Group *g, const GroupID top_
 
 	while (true) {
 		if (g->parent == top_gid) return true;
-		if (g->parent == INVALID_GROUP) return false;
+		if (g->parent == GroupID::Invalid()) return false;
 		g = Group::Get(g->parent);
 	}
 
@@ -306,7 +306,7 @@ static inline bool IsGroupDescendantOfGroup(const Group *g, const Group *top)
 
 static inline bool IsGroupIDDescendantOfGroupID(const GroupID gid, const GroupID top_gid, const Owner owner)
 {
-	if (IsTopLevelGroupID(gid) || gid == INVALID_GROUP) return false;
+	if (IsTopLevelGroupID(gid) || gid == GroupID::Invalid()) return false;
 
 	return IsGroupDescendantOfGroupID(Group::Get(gid), top_gid, owner);
 }
@@ -356,7 +356,7 @@ static void PropagateChildLivery(const GroupID top_gid, const Owner owner, const
 				is_descendant = true;
 				break;
 			}
-			if (pg->parent == INVALID_GROUP) break;
+			if (pg->parent == GroupID::Invalid()) break;
 			pg = Group::Get(pg->parent);
 			if (!HasBit(livery.in_use, 0)) livery.colour1 = pg->livery.colour1;
 			if (!HasBit(livery.in_use, 1)) livery.colour2 = pg->livery.colour2;
@@ -389,7 +389,7 @@ static void PropagateChildLivery(const Group *g, bool reset_cache)
  */
 void UpdateCompanyGroupLiveries(const Company *c)
 {
-	PropagateChildLivery(INVALID_GROUP, c->index, c->livery[LS_DEFAULT]);
+	PropagateChildLivery(GroupID::Invalid(), c->index, c->livery[LS_DEFAULT]);
 }
 
 Group::Group(Owner owner)
@@ -422,7 +422,7 @@ CommandCost CmdCreateGroup(DoCommandFlags flags, VehicleType vt, GroupID parent_
 	if (flags.Test(DoCommandFlag::Execute)) {
 		Group *g = new Group(_current_company);
 		g->vehicle_type = vt;
-		g->parent = INVALID_GROUP;
+		g->parent = GroupID::Invalid();
 
 		Company *c = Company::Get(g->owner);
 		g->number = c->freegroups.UseID(c->freegroups.NextID());
@@ -550,7 +550,7 @@ CommandCost CmdAlterGroup(DoCommandFlags flags, AlterGroupMode mode, GroupID gro
 		}
 
 		if (flags.Test(DoCommandFlag::Execute)) {
-			g->parent = (pg == nullptr) ? INVALID_GROUP : pg->index;
+			g->parent = (pg == nullptr) ? GroupID::Invalid() : pg->index;
 			GroupStatistics::UpdateAutoreplace(g->owner);
 			if (g->vehicle_type == VEH_TRAIN) ReindexTemplateReplacementsForGroup(g->index);
 
@@ -592,7 +592,7 @@ CommandCost CmdCreateGroupFromList(DoCommandFlags flags, VehicleListIdentifier v
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
 	if (!GenerateVehicleSortList(&list, vli, cargo)) return CMD_ERROR;
 
-	CommandCost ret = Command<CMD_CREATE_GROUP>::Do(flags, vli.vtype, INVALID_GROUP);
+	CommandCost ret = Command<CMD_CREATE_GROUP>::Do(flags, vli.vtype, GroupID::Invalid());
 	if (ret.Failed()) return ret;
 
 	if (!name.empty()) {
@@ -605,7 +605,7 @@ CommandCost CmdCreateGroupFromList(DoCommandFlags flags, VehicleListIdentifier v
 		if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
 		if (!name.empty()) {
-			Command<CMD_ALTER_GROUP>::Do(flags, AlterGroupMode::Rename, g->index, INVALID_GROUP, name);
+			Command<CMD_ALTER_GROUP>::Do(flags, AlterGroupMode::Rename, g->index, GroupID::Invalid(), name);
 		}
 
 		for (const Vehicle *v : list) {
@@ -677,7 +677,7 @@ CommandCost CmdAddVehicleGroup(DoCommandFlags flags, GroupID group_id, VehicleID
 	CommandCost ret;
 	if (new_g == NEW_GROUP) {
 		/* Create new group. */
-		ret = CmdCreateGroup(flags, v->type, INVALID_GROUP);
+		ret = CmdCreateGroup(flags, v->type, GroupID::Invalid());
 		if (ret.Failed()) return ret;
 		if (ret.HasResultData()) {
 			new_g = ret.GetResultData<GroupID>();
@@ -718,13 +718,13 @@ static TownID GetTownFromDestination(const DestinationID destination)
 		return st->town->index;
 	}
 
-	return INVALID_TOWN;
+	return TownID::Invalid();
 }
 
 static std::pair<TownID, TownID> GetAutoGroupMostRelevantTowns(const Vehicle *vehicle)
 {
-	TownID first = INVALID_TOWN;
-	TownID last = INVALID_TOWN;
+	TownID first = TownID::Invalid();
+	TownID last = TownID::Invalid();
 	robin_hood::unordered_flat_set<TownID> seen_towns;
 
 	for (const Order *order : vehicle->Orders()) {
@@ -733,9 +733,9 @@ static std::pair<TownID, TownID> GetAutoGroupMostRelevantTowns(const Vehicle *ve
 		const DestinationID dest = order->GetDestination();
 		TownID town = GetTownFromDestination(dest);
 
-		if (town != INVALID_TOWN && seen_towns.insert(town).second) {
+		if (town != TownID::Invalid() && seen_towns.insert(town).second) {
 			/* Town not seen before and now inserted into seen_towns. */
-			if (first == INVALID_TOWN) first = town;
+			if (first == TownID::Invalid()) first = town;
 			last = town;
 		}
 	}
@@ -758,7 +758,7 @@ static CargoTypes GetVehicleCargoList(const Vehicle *vehicle)
 std::string GenerateAutoNameForVehicleGroup(const Vehicle *v)
 {
 	auto [town_from, town_to] = GetAutoGroupMostRelevantTowns(v);
-	if (town_from == INVALID_TOWN) return "";
+	if (town_from == TownID::Invalid()) return "";
 
 	CargoTypes cargoes = GetVehicleCargoList(v);
 
@@ -1067,7 +1067,7 @@ bool GroupIsInGroup(GroupID search, GroupID group)
 	do {
 		if (search == group) return true;
 		search = Group::Get(search)->parent;
-	} while (search != INVALID_GROUP);
+	} while (search != GroupID::Invalid());
 
 	return false;
 }

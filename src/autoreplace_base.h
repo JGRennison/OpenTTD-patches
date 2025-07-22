@@ -23,7 +23,7 @@ using EngineRenewID = PoolID<EngineRenewIDTag>;
  * placed here so the only exception to this rule, the saveload code, can use
  * it.
  */
-using EngineRenewPool = Pool<EngineRenew, EngineRenewID, 16, EngineRenewID::End().base()>;
+using EngineRenewPool = Pool<EngineRenew, EngineRenewID, 16>;
 extern EngineRenewPool _enginerenew_pool;
 
 /**
@@ -38,7 +38,7 @@ struct EngineRenew : EngineRenewPool::PoolItem<&_enginerenew_pool> {
 	GroupID group_id;
 	bool replace_when_old; ///< Do replacement only when vehicle is old.
 
-	EngineRenew(EngineID from = INVALID_ENGINE, EngineID to = INVALID_ENGINE) : from(from), to(to) {}
+	EngineRenew(EngineID from = EngineID::Invalid(), EngineID to = EngineID::Invalid()) : from(from), to(to) {}
 	~EngineRenew() {}
 };
 

@@ -19,7 +19,6 @@ struct StationIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using StationID = PoolID<StationIDTag>;
 static constexpr StationID NEW_STATION{0xFFFD};
 static constexpr StationID ADJACENT_STATION{0xFFFE};
-static constexpr StationID INVALID_STATION = StationID::Invalid();
 
 struct RoadStopIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using RoadStopID = PoolID<RoadStopIDTag>;
@@ -32,7 +31,7 @@ struct Waypoint;
 
 static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;
 
-using StationIDStack = SmallStack<StationID, StationID::BaseType, INVALID_STATION.base(), 8, StationID::End().base()>;
+using StationIDStack = SmallStack<StationID, StationID::BaseType, StationID::Invalid().base(), 8, StationID::End().base()>;
 
 /** Station types */
 enum class StationType : uint8_t {

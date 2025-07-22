@@ -2281,7 +2281,7 @@ struct BuildHouseWindow : public PickerWindow {
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
 		CommandContainer<CMD_PLACE_HOUSE> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
-				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), this->house_protected, INVALID_TOWN), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
+				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), this->house_protected, TownID::Invalid()), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd_container);
 		} else {

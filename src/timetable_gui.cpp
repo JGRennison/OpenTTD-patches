@@ -470,7 +470,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	int GetOrderFromTimetableWndPt(int y, [[maybe_unused]] const Vehicle *v)
 	{
 		int32_t sel = this->vscroll->GetScrolledRowFromWidget(y, this, WID_VT_TIMETABLE_PANEL, WidgetDimensions::scaled.framerect.top);
-		if (sel == INT32_MAX) return INVALID_ORDER.base();
+		if (sel == INT32_MAX) return OrderID::Invalid().base();
 		assert(IsInsideBS(sel, 0, v->GetNumOrders() * 2));
 		return sel;
 	}
@@ -954,14 +954,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				/* Allow change time by double-clicking order */
 				if (click_count == 2) {
-					this->sel_index = selected == INVALID_ORDER ? -1 : selected;
+					this->sel_index = (selected == OrderID::Invalid()) ? -1 : selected;
 					this->SetButtonDisabledStates();
 					if (!this->IsWidgetDisabled(WID_VT_CHANGE_TIME)) {
 						this->OnClick(pt, WID_VT_CHANGE_TIME, click_count);
 					}
 					return;
 				} else {
-					this->sel_index = (selected == INVALID_ORDER.base() || selected == this->sel_index) ? -1 : selected;
+					this->sel_index = (selected == OrderID::Invalid() || selected == this->sel_index) ? -1 : selected;
 				}
 
 				this->CloseChildWindows();

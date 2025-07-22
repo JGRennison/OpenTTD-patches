@@ -191,7 +191,7 @@ struct PersistentStorageIDTag : public PoolIDTraits<uint32_t, 0xFF000, 0xFFFFF> 
 using PersistentStorageID = PoolID<PersistentStorageIDTag>;
 
 struct PersistentStorage;
-using PersistentStoragePool = Pool<PersistentStorage, PersistentStorageID, 1, PersistentStorageID::End().base()>;
+using PersistentStoragePool = Pool<PersistentStorage, PersistentStorageID, 1>;
 
 extern PersistentStoragePool _persistent_storage_pool;
 

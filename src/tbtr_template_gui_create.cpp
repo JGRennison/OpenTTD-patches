@@ -121,7 +121,7 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 
 	if (wagon == v) return;
 
-	VehicleID target = (wagon == nullptr) ? INVALID_VEHICLE : wagon->index;
+	VehicleID target = (wagon == nullptr) ? VehicleID::Invalid() : wagon->index;
 	MoveRailVehicleFlags move_flags = (_ctrl_pressed ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
 	Command<CMD_MOVE_VIRTUAL_RAIL_VEHICLE>::Post(STR_ERROR_CAN_T_MOVE_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, v->index, target, move_flags);
 }
@@ -132,8 +132,8 @@ private:
 	Scrollbar *vscroll = nullptr;
 	Train *virtual_train = nullptr;
 	bool *create_window_open = nullptr;            /// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
-	VehicleID sel = INVALID_VEHICLE;
-	VehicleID vehicle_over = INVALID_VEHICLE;
+	VehicleID sel = VehicleID::Invalid();
+	VehicleID vehicle_over = VehicleID::Invalid();
 	bool sell_hovered{};                           ///< A vehicle is being dragged/hovered over the sell button.
 	TemplateID template_index = INVALID_TEMPLATE;
 	btree::btree_set<VehicleID> pending_deletions; ///< Vehicle IDs where deletion is in progress
@@ -153,8 +153,8 @@ public:
 		this->create_window_open = window_open;
 		this->template_index = (to_edit != nullptr) ? to_edit->index : INVALID_TEMPLATE;
 
-		this->sel = INVALID_VEHICLE;
-		this->vehicle_over = INVALID_VEHICLE;
+		this->sel = VehicleID::Invalid();
+		this->vehicle_over = VehicleID::Invalid();
 		this->sell_hovered = false;
 
 		if (to_edit != nullptr) {
@@ -280,8 +280,8 @@ public:
 
 	virtual void OnPlaceObjectAbort() override
 	{
-		this->sel = INVALID_VEHICLE;
-		this->vehicle_over = INVALID_VEHICLE;
+		this->sel = VehicleID::Invalid();
+		this->vehicle_over = VehicleID::Invalid();
 		this->RaiseButtons();
 		this->SetDirty();
 	}
@@ -453,17 +453,17 @@ public:
 				const Vehicle *v = nullptr;
 				VehicleID sel = this->sel;
 
-				this->sel = INVALID_VEHICLE;
+				this->sel = VehicleID::Invalid();
 				this->SetDirty();
 
 				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(TCW_NEW_TMPL_PANEL);
 				GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 
-				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
+				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != VehicleID::Invalid()) {
 					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
 						Command<CMD_REVERSE_TRAIN_DIRECTION>::Post(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true);
 					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
-						this->vehicle_over = INVALID_VEHICLE;
+						this->vehicle_over = VehicleID::Invalid();
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
 					}
 				}
@@ -471,7 +471,7 @@ public:
 			}
 			case TCW_SELL_TMPL: {
 				if (this->IsWidgetDisabled(widget)) return;
-				if (this->sel == INVALID_VEHICLE) return;
+				if (this->sel == VehicleID::Invalid()) return;
 
 				Train *train_to_delete = Train::Get(this->sel);
 
@@ -488,26 +488,26 @@ public:
 				SellVehicleFlags sell_flags = _ctrl_pressed ? SellVehicleFlags::SellChain : SellVehicleFlags::None;
 				Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(STR_ERROR_CAN_T_SELL_TRAIN, CommandCallback::DeleteVirtualTrain, this->sel, sell_flags, INVALID_CLIENT_ID);
 
-				this->sel = INVALID_VEHICLE;
+				this->sel = VehicleID::Invalid();
 
 				this->SetDirty();
 				UpdateButtonState();
 				break;
 			}
 			default:
-				this->sel = INVALID_VEHICLE;
+				this->sel = VehicleID::Invalid();
 				this->SetDirty();
 				break;
 		}
 		this->sell_hovered = false;
 		_cursor.vehchain = false;
-		this->sel = INVALID_VEHICLE;
+		this->sel = VehicleID::Invalid();
 		this->SetDirty();
 	}
 
 	virtual void OnMouseDrag(Point pt, WidgetID widget) override
 	{
-		if (this->sel == INVALID_VEHICLE) return;
+		if (this->sel == VehicleID::Invalid()) return;
 
 		bool is_sell_widget = widget == TCW_SELL_TMPL;
 		if (is_sell_widget != this->sell_hovered) {
@@ -518,8 +518,8 @@ public:
 
 		/* A rail vehicle is dragged.. */
 		if (widget != TCW_NEW_TMPL_PANEL) { // ..outside of the depot matrix.
-			if (this->vehicle_over != INVALID_VEHICLE) {
-				this->vehicle_over = INVALID_VEHICLE;
+			if (this->vehicle_over != VehicleID::Invalid()) {
+				this->vehicle_over = VehicleID::Invalid();
 				this->SetWidgetDirty(TCW_NEW_TMPL_PANEL);
 			}
 			return;
@@ -530,7 +530,7 @@ public:
 		GetDepotVehiclePtData gdvp = {nullptr, nullptr};
 
 		if (this->GetVehicleFromDepotWndPt(pt.x - matrix->pos_x, pt.y - matrix->pos_y, &v, &gdvp) != MODE_DRAG_VEHICLE) return;
-		VehicleID new_vehicle_over = INVALID_VEHICLE;
+		VehicleID new_vehicle_over = VehicleID::Invalid();
 		if (gdvp.head != nullptr) {
 			if (gdvp.wagon == nullptr && gdvp.head->Last()->index != this->sel) { // ..at the end of the train.
 				/* NOTE: As a wagon can't be moved at the begin of a train, head index isn't used to mark a drag-and-drop
@@ -647,8 +647,8 @@ public:
 		if (v != nullptr && VehicleClicked(v)) return;
 		VehicleID sel = this->sel;
 
-		if (sel != INVALID_VEHICLE) {
-			this->sel = INVALID_VEHICLE;
+		if (sel != VehicleID::Invalid()) {
+			this->sel = VehicleID::Invalid();
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != nullptr) {
 			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
@@ -662,7 +662,7 @@ public:
 
 	EventState OnCTRLStateChange() override
 	{
-		if (this->sel != INVALID_VEHICLE) {
+		if (this->sel != VehicleID::Invalid()) {
 			_cursor.vehchain = _ctrl_pressed;
 			this->SetWidgetDirty(TCW_NEW_TMPL_PANEL);
 			return ES_HANDLED;

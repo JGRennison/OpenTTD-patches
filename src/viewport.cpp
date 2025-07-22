@@ -710,7 +710,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		x = TileX(TileIndex{follow_flags}) * TILE_SIZE;
 		y = TileY(TileIndex{follow_flags}) * TILE_SIZE;
 
-		vp->follow_vehicle = INVALID_VEHICLE;
+		vp->follow_vehicle = VehicleID::Invalid();
 		pt = MapXYZToViewport(vp, x, y, GetSlopePixelZ(x, y));
 	}
 
@@ -2607,7 +2607,7 @@ static inline Vehicle *GetVehicleFromWindow(const Window *w)
 			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
 			case WC_SCHDISPATCH_SLOTS:
-				if (wn != INVALID_VEHICLE) return Vehicle::GetIfValid(wn);
+				if (wn != VehicleID::Invalid()) return Vehicle::GetIfValid(wn);
 				break;
 			case WC_TRAINS_LIST:
 			case WC_ROADVEH_LIST:
@@ -4425,7 +4425,7 @@ void UpdateNextViewportPosition(Window *w, uint32_t delta_ms)
 {
 	const Viewport *vp = w->viewport;
 
-	if (w->viewport->follow_vehicle != INVALID_VEHICLE) {
+	if (w->viewport->follow_vehicle != VehicleID::Invalid()) {
 		const Vehicle *veh = Vehicle::Get(w->viewport->follow_vehicle);
 		Point pt = MapXYZToViewport(vp, veh->x_pos, veh->y_pos, veh->z_pos);
 
@@ -7148,7 +7148,7 @@ bool IsViewportMouseHoverActive()
  */
 void ViewportData::CancelFollow(const Window &viewport_window)
 {
-	if (this->follow_vehicle == INVALID_VEHICLE) return;
+	if (this->follow_vehicle == VehicleID::Invalid()) return;
 
 	if (viewport_window.window_class == WC_MAIN_WINDOW) {
 		/* We're cancelling follow in the main viewport, so we need to check for a vehicle view window
@@ -7157,5 +7157,5 @@ void ViewportData::CancelFollow(const Window &viewport_window)
 		if (vehicle_window != nullptr) vehicle_window->RaiseWidgetWhenLowered(WID_VV_LOCATION);
 	}
 
-	this->follow_vehicle = INVALID_VEHICLE;
+	this->follow_vehicle = VehicleID::Invalid();
 }

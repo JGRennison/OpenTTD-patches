@@ -36,14 +36,14 @@ struct TraceRestrictProgram;
 typedef uint32_t TraceRestrictRefId;
 
 /** Type of the pool for trace restrict programs. */
-using TraceRestrictProgramPool = Pool<TraceRestrictProgram, TraceRestrictProgramID, 64, TraceRestrictProgramID::End().base()>;
+using TraceRestrictProgramPool = Pool<TraceRestrictProgram, TraceRestrictProgramID, 64>;
 /** The actual pool for trace restrict nodes. */
 extern TraceRestrictProgramPool _tracerestrictprogram_pool;
 
 struct TraceRestrictSlot;
 
 /** Type of the pool for trace restrict slots. */
-using TraceRestrictSlotPool = Pool<TraceRestrictSlot, TraceRestrictSlotID, 64, TraceRestrictSlotID::End().base()>;
+using TraceRestrictSlotPool = Pool<TraceRestrictSlot, TraceRestrictSlotID, 64>;
 /** The actual pool for trace restrict slots. */
 extern TraceRestrictSlotPool _tracerestrictslot_pool;
 
@@ -56,7 +56,7 @@ static const uint32_t TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY = 1;
 struct TraceRestrictSlotGroup;
 
 /** Type of the pool for trace restrict slot groups. */
-using TraceRestrictSlotGroupPool = Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 64, TraceRestrictSlotGroupID::End().base()>;
+using TraceRestrictSlotGroupPool = Pool<TraceRestrictSlotGroup, TraceRestrictSlotGroupID, 64>;
 /** The actual pool for trace restrict slot groups. */
 extern TraceRestrictSlotGroupPool _tracerestrictslotgroup_pool;
 
@@ -66,7 +66,7 @@ static constexpr TraceRestrictSlotGroupID INVALID_TRACE_RESTRICT_SLOT_GROUP{0xFF
 struct TraceRestrictCounter;
 
 /** Type of the pool for trace restrict counters. */
-using TraceRestrictCounterPool = Pool<TraceRestrictCounter, TraceRestrictCounterID, 64, TraceRestrictCounterID::End().base()>;
+using TraceRestrictCounterPool = Pool<TraceRestrictCounter, TraceRestrictCounterID, 64>;
 /** The actual pool for trace restrict counters. */
 extern TraceRestrictCounterPool _tracerestrictcounter_pool;
 
@@ -540,6 +540,12 @@ namespace TracerestrictDetail {
 				return StationID(this->GetValue());
 			}
 
+			/** Get value field, as a group ID */
+			GroupID GetValueAsGroup() const
+			{
+				return GroupID(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -602,6 +608,12 @@ namespace TracerestrictDetail {
 
 			/** Set value field (station ID) */
 			inline void SetValue(StationID value)
+			{
+				this->SetValue(value.base());
+			}
+
+			/** Set value field (group ID) */
+			inline void SetValue(GroupID value)
 			{
 				this->SetValue(value.base());
 			}
@@ -1418,7 +1430,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	static void ValidateSlotGroupDescendants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
-	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type) {}
+	TraceRestrictSlot(CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type) {}
 
 	~TraceRestrictSlot()
 	{
@@ -1506,7 +1518,7 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
 	ankerl::svector<TraceRestrictSlotID, 8> contained_slots; ///< NOSAVE: slots directly and indirectly contained in this slot group, sorted
 	bool folded = false;        ///< NOSAVE: Is this slot group folded in the slot view?
 
-	TraceRestrictSlotGroup(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
+	TraceRestrictSlotGroup(CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
 
 	void AddSlotsToParentGroups();
 	void RemoveSlotsFromParentGroups();
@@ -1529,7 +1541,7 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	std::string name;
 	ankerl::svector<SignalReference, 0> progsig_dependants;
 
-	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY) : owner(owner) {}
+	TraceRestrictCounter(CompanyID owner = CompanyID::Invalid()) : owner(owner) {}
 
 	void UpdateValue(int32_t new_value);
 

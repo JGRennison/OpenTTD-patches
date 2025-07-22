@@ -107,7 +107,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::Command<CMD_BUILD_ROAD>::Do(&::_DoCommandReturnBuildBridge2, start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2), (::RoadType)ScriptRoad::GetCurrentRoadType(), DRD_NONE, INVALID_TOWN, BuildRoadFlags::NoCustomBridgeHeads);
+	return ScriptObject::Command<CMD_BUILD_ROAD>::Do(&::_DoCommandReturnBuildBridge2, start + ::TileOffsByDiagDir(dir_1), ::DiagDirToRoadBits(dir_2), (::RoadType)ScriptRoad::GetCurrentRoadType(), DRD_NONE, TownID::Invalid(), BuildRoadFlags::NoCustomBridgeHeads);
 }
 
 /* static */ bool ScriptBridge::_BuildBridgeRoad2()
@@ -121,7 +121,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	DiagDirection dir_1 = ::DiagdirBetweenTiles(end, start);
 	DiagDirection dir_2 = ::ReverseDiagDir(dir_1);
 
-	return ScriptObject::Command<CMD_BUILD_ROAD>::Do(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1), (::RoadType)ScriptRoad::GetCurrentRoadType(), DRD_NONE, INVALID_TOWN, BuildRoadFlags::NoCustomBridgeHeads);
+	return ScriptObject::Command<CMD_BUILD_ROAD>::Do(end + ::TileOffsByDiagDir(dir_2), ::DiagDirToRoadBits(dir_1), (::RoadType)ScriptRoad::GetCurrentRoadType(), DRD_NONE, TownID::Invalid(), BuildRoadFlags::NoCustomBridgeHeads);
 }
 
 /* static */ bool ScriptBridge::RemoveBridge(TileIndex tile)
@@ -136,7 +136,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	EnforcePrecondition(std::nullopt, vehicle_type == ScriptVehicle::VT_ROAD || vehicle_type == ScriptVehicle::VT_RAIL || vehicle_type == ScriptVehicle::VT_WATER);
 	if (!IsValidBridge(bridge_type)) return std::nullopt;
 
-	return GetString(vehicle_type == ScriptVehicle::VT_WATER ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : ::GetBridgeSpec(bridge_type)->transport_name[vehicle_type]);
+	return ::StrMakeValid(::GetString(vehicle_type == ScriptVehicle::VT_WATER ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : ::GetBridgeSpec(bridge_type)->transport_name[vehicle_type]));
 }
 
 /* static */ SQInteger ScriptBridge::GetMaxSpeed(BridgeType bridge_type)

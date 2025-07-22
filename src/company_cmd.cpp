@@ -87,7 +87,7 @@ Company::Company(StringID name_1, bool is_ai)
 	this->build_object_limit = (uint32_t)_settings_game.construction.build_object_frame_burst << 16;
 
 	std::fill(this->share_owners.begin(), this->share_owners.end(), INVALID_OWNER);
-	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
+	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, CompanyID::Invalid());
 }
 
 /** Destructor. */
@@ -614,7 +614,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	Colours colour = GenerateCompanyColour();
 
 	Company *c;
-	if (company == INVALID_COMPANY) {
+	if (company == CompanyID::Invalid()) {
 		c = new Company(STR_SV_UNNAMED, is_ai);
 	} else {
 		if (Company::IsValidID(company)) return nullptr;
@@ -680,7 +680,7 @@ TimeoutTimer<TimerGameTick> _new_competitor_timeout({ TimerGameTick::Priority::C
 
 	/* Send a command to all clients to start up a new AI.
 	 * Works fine for Multiplayer and Singleplayer */
-	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
 });
 
 /** Start of a new game. */
@@ -841,7 +841,7 @@ void OnTick_Companies(bool main_tick)
 			for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
 				if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) break;
 				if (n++ >= _settings_game.difficulty.max_no_competitors) break;
-				Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
+				Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
 			}
 			timeout = 10 * 60 * TICKS_PER_SECOND;
 		}
@@ -989,15 +989,15 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 		}
 
 		case CCA_NEW_AI: { // Make a new AI company
-			if (company_id != INVALID_COMPANY && company_id >= MAX_COMPANIES) return CMD_ERROR;
+			if (company_id != CompanyID::Invalid() && company_id >= MAX_COMPANIES) return CMD_ERROR;
 
 			/* For network games, company deletion is delayed. */
-			if (!_networking && company_id != INVALID_COMPANY && Company::IsValidID(company_id)) return CMD_ERROR;
+			if (!_networking && company_id != CompanyID::Invalid() && Company::IsValidID(company_id)) return CMD_ERROR;
 
 			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
 			/* For network game, just assume deletion happened. */
-			assert(company_id == INVALID_COMPANY || !Company::IsValidID(company_id));
+			assert(company_id == CompanyID::Invalid() || !Company::IsValidID(company_id));
 
 			Company *c = DoStartupNewCompany(DSNC_AI, company_id);
 			if (c != nullptr) {
@@ -1404,10 +1404,10 @@ CompanyID GetDefaultLocalCompany()
 	if (_loaded_local_company < MAX_COMPANIES && Company::IsValidID(_loaded_local_company)) {
 		return _loaded_local_company;
 	}
-	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) {
+	for (CompanyID i = CompanyID::Begin(); i < MAX_COMPANIES; ++i) {
 		if (Company::IsValidID(i)) return i;
 	}
-	return COMPANY_FIRST;
+	return CompanyID::Begin();
 }
 
 /**

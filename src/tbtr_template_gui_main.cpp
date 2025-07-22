@@ -208,7 +208,7 @@ private:
 	GUITemplateList templates;
 
 	int selected_template_index = -1;
-	GroupID selected_group = INVALID_GROUP;
+	GroupID selected_group = GroupID::Invalid();
 
 	bool edit_in_progress = false;
 
@@ -509,14 +509,14 @@ public:
 							group_display->pos_x + WidgetDimensions::scaled.framerect.left + it->indent * WidgetDimensions::scaled.hsep_indent;
 					if (click_count > 1 || (pt.x >= x && pt.x < (int)(x + this->fold_sprite_dim.width))) {
 						GroupID g = this->selected_group;
-						if (g != INVALID_GROUP) {
+						if (g != GroupID::Invalid()) {
 							do {
 								g = Group::Get(g)->parent;
 								if (g == it->group->index) {
 									this->selected_group = g;
 									break;
 								}
-							} while (g != INVALID_GROUP);
+							} while (g != GroupID::Invalid());
 						}
 
 						ToggleFlag(const_cast<Group *>(it->group)->folded_mask, GroupFoldBits::TemplateReplaceView);
@@ -545,7 +545,7 @@ public:
 			}
 
 			case TRW_WIDGET_START: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != INVALID_GROUP) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != GroupID::Invalid()) {
 					TemplateID tv_index = ((this->templates)[selected_template_index])->index;
 
 					Command<CMD_ISSUE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group, tv_index);
@@ -555,7 +555,7 @@ public:
 			}
 
 			case TRW_WIDGET_STOP: {
-				if (this->selected_group != INVALID_GROUP) {
+				if (this->selected_group != GroupID::Invalid()) {
 					Command<CMD_DELETE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group);
 					this->UpdateButtonState();
 				}
@@ -624,7 +624,7 @@ public:
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!Group::IsValidID(this->selected_group)) {
-			this->selected_group = INVALID_GROUP;
+			this->selected_group = GroupID::Invalid();
 		}
 		this->groups.ForceRebuild();
 		this->templates.ForceRebuild();
@@ -662,7 +662,7 @@ public:
 		bool enable_collapse_all = false;
 
 		for (const Group *g : Group::Iterate()) {
-			if (g->owner == owner && g->vehicle_type == VEH_TRAIN && g->parent != INVALID_GROUP) {
+			if (g->owner == owner && g->vehicle_type == VEH_TRAIN && g->parent != GroupID::Invalid()) {
 				if (Group::Get(g->parent)->IsFolded(GroupFoldBits::TemplateReplaceView)) {
 					enable_expand_all = true;
 				} else {
@@ -983,7 +983,7 @@ public:
 		this->BuildTemplateGuiList();
 
 		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size());
-		bool group_ok = this->selected_group != INVALID_GROUP;
+		bool group_ok = this->selected_group != GroupID::Invalid();
 
 		const TemplateID tid = GetTemplateIDByGroupID(this->selected_group);
 		const bool disable_selection_buttons = this->edit_in_progress || !selected_ok;
@@ -1008,7 +1008,7 @@ public:
 	{
 		for (const Group *g : Group::Iterate()) {
 			if (g->owner == this->owner && g->vehicle_type == VEH_TRAIN) {
-				if (g->parent != INVALID_GROUP) {
+				if (g->parent != GroupID::Invalid()) {
 					SetFlagState(Group::Get(g->parent)->folded_mask, GroupFoldBits::TemplateReplaceView, folded);
 				}
 			}

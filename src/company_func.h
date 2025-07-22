@@ -74,6 +74,6 @@ enum DoStartupNewCompanyFlag {
 };
 DECLARE_ENUM_AS_BIT_SET(DoStartupNewCompanyFlag)
 
-Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company = INVALID_COMPANY);
+Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company = CompanyID::Invalid());
 
 #endif /* COMPANY_FUNC_H */

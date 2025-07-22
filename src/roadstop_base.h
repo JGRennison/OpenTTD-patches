@@ -17,7 +17,7 @@
 #include "roadveh.h"
 #include "road_map.h"
 
-using RoadStopPool = Pool<RoadStop, RoadStopID, 32, RoadStopID::End().base()>;
+using RoadStopPool = Pool<RoadStop, RoadStopID, 32>;
 extern RoadStopPool _roadstop_pool;
 
 /** A Stop for a Road Vehicle */

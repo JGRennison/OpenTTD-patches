@@ -33,8 +33,6 @@ using ObjectID = PoolID<ObjectIDTag>;
 struct Object;
 struct ObjectSpec;
 
-static constexpr ObjectID INVALID_OBJECT = ObjectID::Invalid(); ///< An invalid object
-
 enum ObjectEffectiveFoundationType {
 	OEFT_NONE,
 	OEFT_FLAT,

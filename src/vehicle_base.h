@@ -253,9 +253,9 @@ struct VehiclePoolOps {
 	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { AssignBit(ptr, 63, non_front); }
 };
 
-typedef Pool<Vehicle, VehicleID, 512, VehicleID::End().base(), PoolType::Normal, false, true, VehiclePoolOps> VehiclePool;
+typedef Pool<Vehicle, VehicleID, 512, PoolType::Normal, false, true, VehiclePoolOps> VehiclePool;
 #else
-typedef Pool<Vehicle, VehicleID, 512, VehicleID::End().base()> VehiclePool;
+typedef Pool<Vehicle, VehicleID, 512> VehiclePool;
 #endif
 
 extern VehiclePool _vehicle_pool;
@@ -872,7 +872,7 @@ public:
 
 	/**
 	 * Get the next station the vehicle will stop at.
-	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
+	 * @return ID of the next station the vehicle will stop at or StationID::Invalid().
 	 */
 	inline CargoStationIDStackSet GetNextStoppingStation() const
 	{
@@ -883,7 +883,7 @@ public:
 
 	/**
 	 * Get the next station the vehicle will stop at.
-	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
+	 * @return ID of the next station the vehicle will stop at or StationID::Invalid().
 	 */
 	inline StationIDStack GetNextStoppingStationCargoIndependent() const
 	{
@@ -1670,7 +1670,6 @@ public:
 	}
 
 private:
-	/* Temporary helper functions to get the raw index from either strongly and non-strongly typed pool items. */
 	static constexpr size_t GetRawIndex(size_t index) { return index; }
 	template <typename S> requires std::is_base_of_v<PoolIDBase, S>
 	static constexpr size_t GetRawIndex(const S &index) { return index.base(); }

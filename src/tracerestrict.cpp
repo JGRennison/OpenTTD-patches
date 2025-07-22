@@ -518,7 +518,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_TRAIN_GROUP: {
-						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, GroupID(item.GetValue())));
+						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, item.GetValueAsGroup()));
 						break;
 					}
 
@@ -1815,7 +1815,7 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 			break;
 
 		case TRVT_ORDER:
-			item.SetValue(INVALID_STATION);
+			item.SetValue(StationID::Invalid());
 			item.SetAuxField(TROCAF_STATION);
 			break;
 
@@ -1836,7 +1836,7 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 			break;
 
 		case TRVT_GROUP_INDEX:
-			item.SetValue(INVALID_GROUP.base());
+			item.SetValue(GroupID::Invalid());
 			item.SetAuxField(0);
 			break;
 

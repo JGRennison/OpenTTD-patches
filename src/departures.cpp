@@ -356,10 +356,10 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 					d->terminus = d->calling_at[new_terminus_offset];
 
 					auto remove_via = [&](StationID st) {
-						if (d->via2 == st) d->via2 = INVALID_STATION;
+						if (d->via2 == st) d->via2 = StationID::Invalid();
 						if (d->via == st) {
 							d->via = d->via2;
-							d->via2 = INVALID_STATION;
+							d->via2 = StationID::Invalid();
 						}
 					};
 					if (d->terminus.target.IsStationID()) {
@@ -695,9 +695,9 @@ static bool IsCallingPointTargetOrder(const Order *order)
 
 struct DepartureViaTerminusState {
 	/* We keep track of potential via stations along the way. If we call at a station immediately after going via it, then it is the via station. */
-	StationID candidate_via = INVALID_STATION;
-	StationID pending_via = INVALID_STATION;
-	StationID pending_via2 = INVALID_STATION;
+	StationID candidate_via = StationID::Invalid();
+	StationID pending_via = StationID::Invalid();
+	StationID pending_via2 = StationID::Invalid();
 
 	/* We only need to consider each order at most once. */
 	bool found_terminus = false;
@@ -731,11 +731,11 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 	if ((order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
 			order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) &&
 			order->GetType() == OT_GOTO_STATION &&
-			d->via == INVALID_STATION) {
+			d->via == StationID::Invalid()) {
 		this->candidate_via = order->GetDestination().ToStationID();
 	}
 
-	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && this->pending_via == INVALID_STATION) {
+	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == StationID::Invalid() && this->pending_via == StationID::Invalid()) {
 		this->pending_via = order->GetDestination().ToStationID();
 		const Order *next = v->orders->GetNext(order);
 		if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && next->GetDestination().ToStationID() != this->pending_via) {
@@ -776,11 +776,11 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	}
 
 	/* Add the station to the calling at list and make it the candidate terminus. */
-	if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
+	if (d->via == StationID::Invalid() && pending_via != StationID::Invalid()) {
 		d->via = this->pending_via;
 		d->via2 = this->pending_via2;
 	}
-	if (d->via == INVALID_STATION && this->candidate_via == order->GetDestination().ToStationID()) {
+	if (d->via == StationID::Invalid() && this->candidate_via == order->GetDestination().ToStationID()) {
 		d->via = order->GetDestination().ToStationID();
 	}
 
@@ -826,7 +826,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 				/* Remove all possible origins of this station */
 				for (auto &item : possible_origins) {
 					if (item.first == o->GetDestination().ToStationID()) {
-						item.first = INVALID_STATION;
+						item.first = StationID::Invalid();
 					}
 				}
 
@@ -842,7 +842,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 	ArrivalHistoryEntry origin = { nullptr, 0 };
 	uint origin_arrival_history_index = 0;
 	for (const auto &item : possible_origins) {
-		if (item.first != INVALID_STATION) {
+		if (item.first != StationID::Invalid()) {
 			origin_arrival_history_index = item.second;
 			origin = arrival_history[item.second];
 			break;

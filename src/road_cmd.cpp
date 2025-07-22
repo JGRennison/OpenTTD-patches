@@ -829,7 +829,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 						if (rtt == RTT_ROAD && IsRoadOwner(tile, rtt, OWNER_TOWN)) {
 							/* Update nearest-town index */
 							const Town *town = CalcClosestTownFromTile(tile);
-							SetTownIndex(tile, town == nullptr ? INVALID_TOWN : town->index);
+							SetTownIndex(tile, town == nullptr ? TownID::Invalid() : town->index);
 						}
 						if (rtt == RTT_ROAD) SetDisallowedRoadDirections(tile, DRD_NONE);
 						SetRoadBits(tile, ROAD_NONE, rtt);
@@ -992,7 +992,7 @@ static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
  * @param pieces road pieces to build (RoadBits)
  * @param rt road type
  * @param toggle_drd disallowed directions to toggle
- * @param town_id the town that is building the road (INVALID_TOWN if not applicable)
+ * @param town_id the town that is building the road (TownID::Invalid() if not applicable)
  * @param build_flags build road flags
  * @return the cost of this operation or an error
  */
@@ -1006,10 +1006,10 @@ CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, 
 
 	/* Road pieces are max 4 bitset values (NE, NW, SE, SW) and town can only be non-zero
 	 * if a non-company is building the road */
-	if ((Company::IsValidID(company) && town_id != INVALID_TOWN) || (company == OWNER_TOWN && !Town::IsValidID(town_id)) || (company == OWNER_DEITY && town_id != INVALID_TOWN)) return CMD_ERROR;
+	if ((Company::IsValidID(company) && town_id != TownID::Invalid()) || (company == OWNER_TOWN && !Town::IsValidID(town_id)) || (company == OWNER_DEITY && town_id != TownID::Invalid())) return CMD_ERROR;
 	if (company != OWNER_TOWN) {
 		const Town *town = CalcClosestTownFromTile(tile);
-		town_id = (town != nullptr) ? town->index : INVALID_TOWN;
+		town_id = (town != nullptr) ? town->index : TownID::Invalid();
 
 		if (company == OWNER_DEITY) {
 			company = OWNER_TOWN;
@@ -1648,7 +1648,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex
 			if (tile == start_tile && start_half) bits &= DiagDirToRoadBits(dir);
 		}
 
-		CommandCost ret = Command<CMD_BUILD_ROAD>::Do(flags, tile, bits, rt, drd, INVALID_TOWN, is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
+		CommandCost ret = Command<CMD_BUILD_ROAD>::Do(flags, tile, bits, rt, drd, TownID::Invalid(), is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
 		if (ret.Failed()) {
 			last_error = ret;
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
@@ -2541,7 +2541,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 
 	for (TileIndex t(0); t < Map::Size(); t++) {
 		if (IsTileType(t, MP_ROAD) && !IsRoadDepot(t) && !HasTownOwnedRoad(t)) {
-			TownID tid = INVALID_TOWN;
+			TownID tid = TownID::Invalid();
 			if (!invalidate) {
 				const Town *town = CalcClosestTownFromTile(t);
 				if (town != nullptr) tid = town->index;

@@ -992,7 +992,7 @@ void FillLookAheadCurveDataFromTrainPosition(Train *t)
 
 static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 {
-	StationID prev = INVALID_STATION;
+	StationID prev = StationID::Invalid();
 	int offset = 0;
 	int start_offset_tiles = 0;
 	TileIndex cur_tile = start_tile;
@@ -1040,7 +1040,7 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 				prev = current;
 			}
 		} else {
-			prev = INVALID_STATION;
+			prev = StationID::Invalid();
 		}
 		if (!HasBit(u->flags, VRF_BEYOND_PLATFORM_END)) break;
 	}

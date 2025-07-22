@@ -270,7 +270,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	dbg_assert(this->IsFrontEngine() || this->IsFreeWagon());
 
 	const RailVehicleInfo *rvi_v = RailVehInfo(this->engine_type);
-	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : INVALID_ENGINE;
+	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : EngineID::Invalid();
 	this->gcache.cached_total_length = 0;
 	this->compatible_railtypes = RAILTYPES_NONE;
 	this->tcache.cached_num_engines = 0;
@@ -287,7 +287,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 				VehicleInfoDumper(u), VehicleInfoDumper(this));
 
 		/* update the 'first engine' */
-		u->gcache.first_engine = this == u ? INVALID_ENGINE : first_engine;
+		u->gcache.first_engine = this == u ? EngineID::Invalid() : first_engine;
 		u->railtype = rvi_u->railtype;
 
 		if (u->IsEngine()) first_engine = u->engine_type;
@@ -1469,7 +1469,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 		v->spritenum = rvi->image_index;
 
 		v->engine_type = e->index;
-		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+		v->gcache.first_engine = EngineID::Invalid(); // needs to be set before first callback
 
 		DiagDirection dir = GetRailDepotDirection(tile);
 
@@ -1644,14 +1644,14 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		assert(IsValidCargoType(v->cargo_type));
 		v->cargo_cap = rvi->capacity;
 		v->refit_cap = 0;
-		v->last_station_visited = INVALID_STATION;
-		v->last_loading_station = INVALID_STATION;
+		v->last_station_visited = StationID::Invalid();
+		v->last_loading_station = StationID::Invalid();
 		v->reverse_distance = 0;
 		v->speed_restriction = 0;
 		v->signal_speed_restriction = 0;
 
 		v->engine_type = e->index;
-		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+		v->gcache.first_engine = EngineID::Invalid(); // needs to be set before first callback
 
 		v->reliability = e->reliability;
 		v->reliability_spd_dec = e->reliability_spd_dec;
@@ -1918,7 +1918,7 @@ static CommandCost CheckTrainAttachment(Train *t)
 		if (!t->IsArticulatedPart() && !t->IsRearDualheaded()) {
 			/* Back up and clear the first_engine data to avoid using wagon override group */
 			EngineID first_engine = t->gcache.first_engine;
-			t->gcache.first_engine = INVALID_ENGINE;
+			t->gcache.first_engine = EngineID::Invalid();
 
 			/* We don't want the cache to interfere. head's cache is cleared before
 			 * the loop and after each callback does not need to be cleared here. */
@@ -2078,7 +2078,7 @@ CommandCost CmdMoveVirtualRailVehicle(DoCommandFlags flags, VehicleID src_veh, V
  * @param flags type of operation
  *              Note: DoCommandFlag::AutoReplace is set when autoreplace tries to undo its modifications or moves vehicles to temporary locations inside the depot.
  * @param src_veh source vehicle index
- * @param dest_veh what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
+ * @param dest_veh what wagon to put the source wagon AFTER, XXX - VehicleID::Invalid() to make a new line
  * @param move_chain move all vehicles following the source vehicle
  * @return the cost of this operation or an error
  */
@@ -2100,7 +2100,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 
 	/* if nothing is selected as destination, try and find a matching vehicle to drag to. */
 	Train *dst;
-	if (dest_veh == INVALID_VEHICLE) {
+	if (dest_veh == VehicleID::Invalid()) {
 		if (!src->IsEngine() && !src->IsVirtual() && !flags.Test(DoCommandFlag::AutoReplace)) {
 			/* Try each possible destination target, if none succeed do not append to a free wagon chain */
 			std::vector<Train *> destination_candidates = FindGoodVehiclePosList(src);
@@ -2287,11 +2287,11 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		}
 
 		if (src_head != nullptr) {
-			src_head->last_loading_station = INVALID_STATION;
+			src_head->last_loading_station = StationID::Invalid();
 			ClrBit(src_head->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		}
 		if (dst_head != nullptr) {
-			dst_head->last_loading_station = INVALID_STATION;
+			dst_head->last_loading_station = StationID::Invalid();
 			ClrBit(dst_head->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		}
 
@@ -3735,7 +3735,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 	TileIndex tile = origin != INVALID_TILE ? origin : v->tile;
 	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : v->GetVehicleTrackdir();
 	bool      free_tile = tile != v->tile || !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
-	StationID station_id = IsRailStationTile(v->tile) ? GetStationIndex(v->tile) : INVALID_STATION;
+	StationID station_id = IsRailStationTile(v->tile) ? GetStationIndex(v->tile) : StationID::Invalid();
 
 	/* Can't be holding a reservation if we enter a depot. */
 	if (IsRailDepotTile(tile) && TrackdirToExitdir(td) != GetRailDepotDirection(tile)) return;
@@ -4809,7 +4809,7 @@ static bool CheckReverseTrain(const Train *v)
  */
 TileIndex Train::GetOrderStationLocation(StationID station)
 {
-	if (station == this->last_station_visited) this->last_station_visited = INVALID_STATION;
+	if (station == this->last_station_visited) this->last_station_visited = StationID::Invalid();
 
 	const Station *st = Station::Get(station);
 	if (!st->facilities.Test(StationFacility::Train)) {
@@ -7086,7 +7086,7 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 	v->spritenum = rvi->image_index;
 
 	v->engine_type = e->index;
-	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+	v->gcache.first_engine = EngineID::Invalid(); // needs to be set before first callback
 
 	v->direction = DIR_W;
 	v->tile = {};
@@ -7166,11 +7166,11 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->spritenum = rvi->image_index;
 	v->cargo_type = e->GetDefaultCargoType();
 	v->cargo_cap = rvi->capacity;
-	v->last_station_visited = INVALID_STATION;
+	v->last_station_visited = StationID::Invalid();
 	v->motion_counter = (uint32_t)user;
 
 	v->engine_type = e->index;
-	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+	v->gcache.first_engine = EngineID::Invalid(); // needs to be set before first callback
 
 	v->reliability = e->reliability;
 	v->reliability_spd_dec = e->reliability_spd_dec;
@@ -7256,7 +7256,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, Cargo
 			}
 		}
 
-		if (move_target != INVALID_VEHICLE) {
+		if (move_target != VehicleID::Invalid()) {
 			Train *move_target_train = Train::GetIfValid(move_target);
 
 			CommandCost move_result = CMD_ERROR;
@@ -7445,7 +7445,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				new_chain = incoming;
 				remainder_chain = incoming->GetNextUnit();
 				if (remainder_chain) {
-					CommandCost move_cost = CmdMoveRailVehicle(flags, remainder_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::MoveChain);
+					CommandCost move_cost = CmdMoveRailVehicle(flags, remainder_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::MoveChain);
 					if (move_cost.Failed()) {
 						/* This should not fail, if it does give up immediately */
 						return move_cost;
@@ -7458,7 +7458,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			new_chain = ChainContainsEngine(eid, incoming);
 			if (new_chain != nullptr) {
 				/* new_chain is the needed engine, move it to an empty spot in the depot */
-				CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::None);
+				CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					remainder_chain = incoming;
 					return CommandCost();
@@ -7470,7 +7470,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				new_chain = depot_vehicles.ContainsEngine(eid, incoming);
 				if (new_chain != nullptr) {
 					ClearVehicleWindows(new_chain);
-					CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, INVALID_VEHICLE, MoveRailVehicleFlags::None);
+					CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
 					if (move_cost.Succeeded()) {
 						depot_vehicles.RemoveVehicle(new_chain->index);
 						remainder_chain = incoming;

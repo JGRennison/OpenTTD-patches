@@ -125,7 +125,7 @@ static constexpr NWidgetPart _nested_group_widgets[] = {
  * @param parent Current tree parent (set by self with recursion).
  * @param indent Current tree indentation level (set by self with recursion).
  */
-static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, GroupFoldBits fold, GroupID parent = INVALID_GROUP, uint8_t indent = 0)
+static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, GroupFoldBits fold, GroupID parent = GroupID::Invalid(), uint8_t indent = 0)
 {
 	for (const auto &item : src) {
 		if (item.group->parent != parent) continue;
@@ -191,7 +191,7 @@ void BuildGuiGroupList(GUIGroupList &dst, GroupFoldBits fold, Owner owner, Vehic
 		return r < 0;
 	});
 
-	GuiGroupListAddChildren(dst, list, fold, INVALID_GROUP, 0);
+	GuiGroupListAddChildren(dst, list, fold, GroupID::Invalid(), 0);
 }
 
 class VehicleGroupWindow : public BaseVehicleListWindow {
@@ -209,8 +209,8 @@ private:
 	};
 
 	GroupID group_sel;     ///< Selected group (for drag/drop)
-	GroupID group_rename;  ///< Group being renamed, INVALID_GROUP if none
-	GroupID group_over;    ///< Group over which a vehicle is dragged, INVALID_GROUP if none
+	GroupID group_rename;  ///< Group being renamed, GroupID::Invalid() if none
+	GroupID group_over;    ///< Group over which a vehicle is dragged, GroupID::Invalid() if none
 	GroupID group_confirm; ///< Group awaiting delete confirmation
 	GUIGroupList groups;   ///< List of groups
 	uint tiny_step_height; ///< Step height for the group list
@@ -237,7 +237,7 @@ private:
 		bool enable_collapse_all = false;
 
 		for (const Group *g : Group::Iterate()) {
-			if (g->owner == owner && g->vehicle_type == this->vli.vtype && g->parent != INVALID_GROUP) {
+			if (g->owner == owner && g->vehicle_type == this->vli.vtype && g->parent != GroupID::Invalid()) {
 				if (Group::Get(g->parent)->IsFolded(GroupFoldBits::GroupView)) {
 					enable_expand_all = true;
 				} else {
@@ -413,7 +413,7 @@ private:
 	 */
 	void DirtyHighlightedGroupWidget()
 	{
-		if (this->group_over == INVALID_GROUP) return;
+		if (this->group_over == GroupID::Invalid()) return;
 
 		if (IsAllGroupID(this->group_over)) {
 			this->SetWidgetDirty(WID_GL_ALL_VEHICLES);
@@ -428,7 +428,7 @@ private:
 	{
 		for (const Group *g : Group::Iterate()) {
 			if (g->owner == this->owner && g->vehicle_type == this->vli.vtype) {
-				if (g->parent != INVALID_GROUP) {
+				if (g->parent != GroupID::Invalid()) {
 					SetFlagState(Group::Get(g->parent)->folded_mask, GroupFoldBits::GroupView, folded);
 				}
 			}
@@ -479,9 +479,9 @@ public:
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
 
 		this->vli.SetIndex(ALL_GROUP);
-		this->group_sel = INVALID_GROUP;
-		this->group_rename = INVALID_GROUP;
-		this->group_over = INVALID_GROUP;
+		this->group_sel = GroupID::Invalid();
+		this->group_rename = GroupID::Invalid();
+		this->group_over = GroupID::Invalid();
 
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
@@ -581,9 +581,9 @@ public:
 		}
 
 		/* Process ID-invalidation in command-scope as well */
-		if (this->group_rename != INVALID_GROUP && !Group::IsValidID(this->group_rename)) {
+		if (this->group_rename != GroupID::Invalid() && !Group::IsValidID(this->group_rename)) {
 			CloseWindowByClass(WC_QUERY_STRING);
-			this->group_rename = INVALID_GROUP;
+			this->group_rename = GroupID::Invalid();
 		}
 
 		GroupID group = this->vli.ToGroupID();
@@ -833,7 +833,7 @@ public:
 									this->vli.SetIndex(g);
 									break;
 								}
-							} while (g != INVALID_GROUP);
+							} while (g != GroupID::Invalid());
 						}
 
 						ToggleFlag(const_cast<Group *>(it->group)->folded_mask, GroupFoldBits::GroupView);
@@ -931,7 +931,7 @@ public:
 					if (!this->vehgroups.empty()) {
 						std::string name = GenerateAutoNameForVehicleGroup(this->vehgroups[0].vehicles_begin[0]);
 						if (!name.empty()) {
-							Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->vli.ToGroupID(), INVALID_GROUP, name);
+							Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->vli.ToGroupID(), GroupID::Invalid(), name);
 							return;
 						}
 					}
@@ -985,8 +985,8 @@ public:
 	{
 		const Group *g = Group::GetIfValid(this->group_sel);
 		if (g == nullptr) {
-			this->group_sel = INVALID_GROUP;
-			this->group_over = INVALID_GROUP;
+			this->group_sel = GroupID::Invalid();
+			this->group_over = GroupID::Invalid();
 			this->SetDirty();
 			return;
 		}
@@ -994,25 +994,25 @@ public:
 		switch (widget) {
 			case WID_GL_ALL_VEHICLES: // All vehicles
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles
-				if (g->parent != INVALID_GROUP) {
-					Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, AlterGroupMode::SetParent, this->group_sel, INVALID_GROUP, {});
+				if (g->parent != GroupID::Invalid()) {
+					Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, AlterGroupMode::SetParent, this->group_sel, GroupID::Invalid(), {});
 				}
 
-				this->group_sel = INVALID_GROUP;
-				this->group_over = INVALID_GROUP;
+				this->group_sel = GroupID::Invalid();
+				this->group_over = GroupID::Invalid();
 				this->SetDirty();
 				break;
 
 			case WID_GL_LIST_GROUP: { // Matrix group
 				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
-				GroupID new_g = it == this->groups.end() ? INVALID_GROUP : it->group->index;
+				GroupID new_g = it == this->groups.end() ? GroupID::Invalid() : it->group->index;
 
 				if (this->group_sel != new_g && g->parent != new_g) {
 					Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_SET_PARENT, AlterGroupMode::SetParent, this->group_sel, new_g, {});
 				}
 
-				this->group_sel = INVALID_GROUP;
-				this->group_over = INVALID_GROUP;
+				this->group_sel = GroupID::Invalid();
+				this->group_over = GroupID::Invalid();
 				this->SetDirty();
 				break;
 			}
@@ -1025,16 +1025,16 @@ public:
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles
 				Command<CMD_ADD_VEHICLE_GROUP>::Post(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE, DEFAULT_GROUP, this->vehicle_sel, _ctrl_pressed || this->grouping == GB_SHARED_ORDERS);
 
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->group_over = INVALID_GROUP;
+				this->vehicle_sel = VehicleID::Invalid();
+				this->group_over = GroupID::Invalid();
 
 				this->SetDirty();
 				break;
 
 			case WID_GL_LIST_GROUP: { // Matrix group
 				const VehicleID vindex = this->vehicle_sel;
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->group_over = INVALID_GROUP;
+				this->vehicle_sel = VehicleID::Invalid();
+				this->group_over = GroupID::Invalid();
 				this->SetDirty();
 
 				auto it = this->group_sb->GetScrolledItemFromWidget(this->groups, pt.y, this, WID_GL_LIST_GROUP);
@@ -1046,8 +1046,8 @@ public:
 
 			case WID_GL_LIST_VEHICLE: { // Matrix vehicle
 				const VehicleID vindex = this->vehicle_sel;
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->group_over = INVALID_GROUP;
+				this->vehicle_sel = VehicleID::Invalid();
+				this->group_over = GroupID::Invalid();
 				this->SetDirty();
 
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->vehgroups, pt.y, this, WID_GL_LIST_VEHICLE);
@@ -1085,8 +1085,8 @@ public:
 
 			case WID_GL_CREATE_GROUP: { // make new group with auto generated vehicle specific name and add vehicle
 				const Vehicle *v = Vehicle::Get(vehicle_sel);
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->group_over = INVALID_GROUP;
+				this->vehicle_sel = VehicleID::Invalid();
+				this->group_over = GroupID::Invalid();
 				this->SetDirty();
 
 				std::string name = GenerateAutoNameForVehicleGroup(v);
@@ -1105,16 +1105,16 @@ public:
 
 	void OnDragDrop(Point pt, WidgetID widget) override
 	{
-		if (this->vehicle_sel != INVALID_VEHICLE) OnDragDrop_Vehicle(pt, widget);
-		if (this->group_sel != INVALID_GROUP) OnDragDrop_Group(pt, widget);
+		if (this->vehicle_sel != VehicleID::Invalid()) OnDragDrop_Vehicle(pt, widget);
+		if (this->group_sel != GroupID::Invalid()) OnDragDrop_Group(pt, widget);
 
 		_cursor.vehchain = false;
 	}
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str.has_value()) Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->group_rename, INVALID_GROUP, *str);
-		this->group_rename = INVALID_GROUP;
+		if (str.has_value()) Command<CMD_ALTER_GROUP>::Post(STR_ERROR_GROUP_CAN_T_RENAME, AlterGroupMode::Rename, this->group_rename, GroupID::Invalid(), *str);
+		this->group_rename = GroupID::Invalid();
 	}
 
 	void OnResize() override
@@ -1208,10 +1208,10 @@ public:
 	void OnPlaceObjectAbort() override
 	{
 		/* abort drag & drop */
-		this->vehicle_sel = INVALID_VEHICLE;
+		this->vehicle_sel = VehicleID::Invalid();
 		this->DirtyHighlightedGroupWidget();
-		this->group_sel = INVALID_GROUP;
-		this->group_over = INVALID_GROUP;
+		this->group_sel = GroupID::Invalid();
+		this->group_over = GroupID::Invalid();
 		this->SetWidgetDirty(WID_GL_LIST_VEHICLE);
 		this->SetVehicleDraggedOverCreateGroupButton(false);
 	}
@@ -1232,10 +1232,10 @@ public:
 
 	void OnMouseDrag(Point pt, WidgetID widget) override
 	{
-		if (this->vehicle_sel == INVALID_VEHICLE && this->group_sel == INVALID_GROUP) return;
+		if (this->vehicle_sel == VehicleID::Invalid() && this->group_sel == GroupID::Invalid()) return;
 
 		/* A vehicle is dragged over... */
-		GroupID new_group_over = INVALID_GROUP;
+		GroupID new_group_over = GroupID::Invalid();
 
 		bool create_group_drag_over = false;
 		switch (widget) {
@@ -1250,7 +1250,7 @@ public:
 			}
 
 			case WID_GL_CREATE_GROUP: {
-				if (this->vehicle_sel != INVALID_VEHICLE) create_group_drag_over = true;
+				if (this->vehicle_sel != VehicleID::Invalid()) create_group_drag_over = true;
 				break;
 			}
 		}
@@ -1258,10 +1258,10 @@ public:
 		this->SetVehicleDraggedOverCreateGroupButton(create_group_drag_over);
 
 		/* Do not highlight when dragging over the current group */
-		if (this->vehicle_sel != INVALID_VEHICLE) {
-			if (Vehicle::Get(vehicle_sel)->group_id == new_group_over) new_group_over = INVALID_GROUP;
-		} else if (this->group_sel != INVALID_GROUP) {
-			if (this->group_sel == new_group_over || Group::Get(this->group_sel)->parent == new_group_over) new_group_over = INVALID_GROUP;
+		if (this->vehicle_sel != VehicleID::Invalid()) {
+			if (Vehicle::Get(vehicle_sel)->group_id == new_group_over) new_group_over = GroupID::Invalid();
+		} else if (this->group_sel != GroupID::Invalid()) {
+			if (this->group_sel == new_group_over || Group::Get(this->group_sel)->parent == new_group_over) new_group_over = GroupID::Invalid();
 		}
 
 		/* Mark widgets as dirty if the group changed. */
@@ -1301,7 +1301,7 @@ public:
 	 */
 	void SelectGroup(const GroupID g_id)
 	{
-		if (g_id == INVALID_GROUP || g_id == this->vli.ToGroupID()) return;
+		if (g_id == GroupID::Invalid() || g_id == this->vli.ToGroupID()) return;
 
 		this->vli.SetIndex(g_id);
 		if (g_id != ALL_GROUP && g_id != DEFAULT_GROUP) {
@@ -1372,7 +1372,7 @@ static WindowDesc _vehicle_group_desc[] = {
  * Show the group window for the given company and vehicle type.
  * @param company The company to show the window for.
  * @param vehicle_type The type of vehicle to show it for.
- * @param group The group to be selected. Defaults to INVALID_GROUP.
+ * @param group The group to be selected. Defaults to GroupID::Invalid().
  * @tparam Tneed_existing_window Whether the existing window is needed.
  */
 template <bool Tneed_existing_window>
@@ -1390,7 +1390,7 @@ static void ShowCompanyGroupInternal(CompanyID company, VehicleType vehicle_type
  * Show the group window for the given company and vehicle type.
  * @param company The company to show the window for.
  * @param vehicle_type The type of vehicle to show it for.
- * @param group The group to be selected. Defaults to INVALID_GROUP.
+ * @param group The group to be selected. Defaults to GroupID::Invalid().
  */
 void ShowCompanyGroup(CompanyID company, VehicleType vehicle_type, GroupID group)
 {
@@ -1442,7 +1442,7 @@ void CcAddVehicleNewGroup(const CommandCost &result)
 
 	const Group *g = Group::GetIfValid(result.GetResultData());
 	if (g != nullptr) {
-		CcCreateGroup(result, g->vehicle_type, INVALID_GROUP);
+		CcCreateGroup(result, g->vehicle_type, GroupID::Invalid());
 	}
 }
 

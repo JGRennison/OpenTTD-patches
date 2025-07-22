@@ -11,11 +11,12 @@
 #include "script_map.hpp"
 #include "script_station.hpp"
 #include "script_cargo.hpp"
-#include "../../newgrf_roadstop.h"
 #include "../../station_base.h"
-#include "../../station_cmd.h"
 #include "../../landscape_cmd.h"
 #include "../../road_cmd.h"
+#include "../../station_cmd.h"
+#include "../../strings_func.h"
+#include "../../newgrf_roadstop.h"
 #include "../../script/squirrel_helper_type.hpp"
 
 #include "../../safeguards.h"
@@ -29,7 +30,7 @@
 {
 	if (!IsRoadTypeAvailable(road_type)) return std::nullopt;
 
-	return GetString(GetRoadTypeInfo((::RoadType)road_type)->strings.name);
+	return ::StrMakeValid(::GetString(GetRoadTypeInfo((::RoadType)road_type)->strings.name));
 }
 
 /* static */ bool ScriptRoad::IsRoadTile(TileIndex tile)
@@ -622,7 +623,7 @@ static bool NeighbourHasReachableRoad(::RoadType rt, TileIndex start_tile, DiagD
 
 	DiagDirection entrance_dir = DiagdirBetweenTiles(tile, front);
 	RoadStopType stop_type = road_veh_type == ROADVEHTYPE_TRUCK ? RoadStopType::Truck : RoadStopType::Bus;
-	StationID to_join = ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION;
+	StationID to_join = ScriptStation::IsValidStation(station_id) ? station_id : StationID::Invalid();
 	return ScriptObject::Command<CMD_BUILD_ROAD_STOP>::Do(tile, 1, 1, stop_type, drive_through, entrance_dir, ScriptObject::GetRoadType(), ROADSTOP_CLASS_DFLT, 0, to_join, station_id != ScriptStation::STATION_JOIN_ADJACENT);
 }
 

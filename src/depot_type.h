@@ -16,8 +16,6 @@ struct DepotIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using DepotID = PoolID<DepotIDTag>; ///< Type for the unique identifier of depots.
 struct Depot;
 
-static constexpr DepotID INVALID_DEPOT = DepotID::Invalid();
-
 static const uint MAX_LENGTH_DEPOT_NAME_CHARS = 128; ///< The maximum length of a depot name in characters including '\0'
 
 #endif /* DEPOT_TYPE_H */

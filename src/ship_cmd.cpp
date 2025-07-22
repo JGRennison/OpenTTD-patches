@@ -344,7 +344,7 @@ void Ship::PlayLeaveStationSound(bool force) const
 
 TileIndex Ship::GetOrderStationLocation(StationID station)
 {
-	if (station == this->last_station_visited) this->last_station_visited = INVALID_STATION;
+	if (station == this->last_station_visited) this->last_station_visited = StationID::Invalid();
 
 	const Station *st = Station::Get(station);
 	if (CanVehicleUseStation(this, st)) {
@@ -1171,8 +1171,8 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlags flags, const Engine *e, 
 		v->cargo_cap = svi->capacity;
 		v->refit_cap = 0;
 
-		v->last_station_visited = INVALID_STATION;
-		v->last_loading_station = INVALID_STATION;
+		v->last_station_visited = StationID::Invalid();
+		v->last_loading_station = StationID::Invalid();
 		v->engine_type = e->index;
 
 		v->reliability = e->reliability;

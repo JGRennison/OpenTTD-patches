@@ -310,42 +310,42 @@ void ScriptInstance::CollectGarbage()
 
 /* static */ void ScriptInstance::DoCommandReturnVehicleID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<VehicleID>(::INVALID_VEHICLE));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<VehicleID>(::VehicleID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnSignID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<SignID>(::INVALID_SIGN));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<SignID>(::SignID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnGroupID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GroupID>(::INVALID_GROUP));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GroupID>(::GroupID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GoalID>(::INVALID_GOAL));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GoalID>(::GoalID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageID>(::INVALID_STORY_PAGE));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageID>(::StoryPageID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnStoryPageElementID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageElementID>(::INVALID_STORY_PAGE_ELEMENT));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageElementID>(::StoryPageElementID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableElementID>(::INVALID_LEAGUE_TABLE_ELEMENT));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableElementID>(::LeagueTableElementID::Invalid()));
 }
 
 /* static */ void ScriptInstance::DoCommandReturnLeagueTableID(ScriptInstance *instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableID>(::INVALID_LEAGUE_TABLE));
+	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableID>(::LeagueTableID::Invalid()));
 }
 
 

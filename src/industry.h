@@ -18,7 +18,7 @@
 #include "station_base.h"
 
 
-typedef Pool<Industry, IndustryID, 64, IndustryID::End().base()> IndustryPool;
+typedef Pool<Industry, IndustryID, 64> IndustryPool;
 extern IndustryPool _industry_pool;
 
 struct IndustryLocationCacheEntry {

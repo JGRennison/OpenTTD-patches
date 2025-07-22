@@ -15,7 +15,6 @@
 /** The type of the IDs of signs. */
 struct SignIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using SignID = PoolID<SignIDTag>;
-static constexpr SignID INVALID_SIGN = SignID::Invalid(); ///< Sentinel for an invalid sign.
 
 struct Sign;
 

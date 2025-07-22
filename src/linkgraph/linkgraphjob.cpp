@@ -154,7 +154,7 @@ void LinkGraphJob::FinaliseJob()
 				if (_settings_game.linkgraph.GetDistributionType(this->Cargo()) != DT_MANUAL) {
 					if (it->Invalidate()) {
 						StationID origin = it->GetOrigin();
-						FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
+						FlowStat shares(StationID::Invalid(), StationID::Invalid(), 1);
 						it->SwapShares(shares);
 						it = geflows.erase(it);
 						for (FlowStat::const_iterator shares_it(shares.begin());
@@ -165,7 +165,7 @@ void LinkGraphJob::FinaliseJob()
 						++it;
 					}
 				} else {
-					FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
+					FlowStat shares(StationID::Invalid(), StationID::Invalid(), 1);
 					it->SwapShares(shares);
 					it = geflows.erase(it);
 					for (FlowStat::const_iterator shares_it(shares.begin());

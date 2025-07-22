@@ -120,14 +120,14 @@ CommandCost GetStationAround(TileArea ta, StationID closest_station, CompanyID c
 		if (IsTileType(tile_cur, MP_STATION)) {
 			StationID t = GetStationIndex(tile_cur);
 			if (!T::IsValidID(t) || T::Get(t)->owner != company || !filter(T::Get(t))) continue;
-			if (closest_station == INVALID_STATION) {
+			if (closest_station == StationID::Invalid()) {
 				closest_station = t;
 			} else if (closest_station != t) {
 				return CommandCost(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
 			}
 		}
 	}
-	*st = (closest_station == INVALID_STATION) ? nullptr : T::Get(closest_station);
+	*st = (closest_station == StationID::Invalid()) ? nullptr : T::Get(closest_station);
 	return CommandCost();
 }
 
@@ -1046,14 +1046,14 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 		}
 
 		/* if station is set, then we have special handling to allow building on top of already existing stations.
-		 * so station points to INVALID_STATION if we can build on any station.
+		 * so station points to StationID::Invalid() if we can build on any station.
 		 * Or it points to a station if we're only allowed to build on exactly that station. */
 		if (station != nullptr && IsTileType(tile_cur, MP_STATION)) {
 			if (!IsRailStation(tile_cur)) {
 				return ClearTile_Station(tile_cur, DoCommandFlag::Auto); // get error message
 			} else {
 				StationID st = GetStationIndex(tile_cur);
-				if (*station == INVALID_STATION) {
+				if (*station == StationID::Invalid()) {
 					*station = st;
 				} else if (*station != st) {
 					return CommandCost(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
@@ -1138,7 +1138,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 		}
 
 		/* If station is set, then we have special handling to allow building on top of already existing stations.
-		 * Station points to INVALID_STATION if we can build on any station.
+		 * Station points to StationID::Invalid() if we can build on any station.
 		 * Or it points to a station if we're only allowed to build on exactly that station. */
 		if (station != nullptr && IsTileType(cur_tile, MP_STATION)) {
 			if (!IsAnyRoadStop(cur_tile)) {
@@ -1153,7 +1153,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 					return CommandCost(STR_ERROR_DRIVE_THROUGH_DIRECTION);
 				}
 				StationID st = GetStationIndex(cur_tile);
-				if (*station == INVALID_STATION) {
+				if (*station == StationID::Invalid()) {
 					*station = st;
 				} else if (*station != st) {
 					return CommandCost(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
@@ -1252,14 +1252,14 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 
 		/* if station is set, then allow building on top of an already
 		 * existing airport, either the one in *station if it is not
-		 * INVALID_STATION, or anyone otherwise and store which one
+		 * StationID::Invalid(), or anyone otherwise and store which one
 		 * in *station */
 		if (station != nullptr && IsTileType(tile_cur, MP_STATION)) {
 			if (!IsAirport(tile_cur)) {
 				return ClearTile_Station(tile_cur, DoCommandFlag::Auto); // get error message
 			} else {
 				StationID st = GetStationIndex(tile_cur);
-				if (*station == INVALID_STATION) {
+				if (*station == StationID::Invalid()) {
 					*station = st;
 				} else if (*station != st) {
 					return CommandCost(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
@@ -1367,7 +1367,7 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 	assert(*st == nullptr);
 	bool check_surrounding = true;
 
-	if (existing_station != INVALID_STATION) {
+	if (existing_station != StationID::Invalid()) {
 		if (adjacent && existing_station != station_to_join) {
 			/* You can't build an adjacent station over the top of one that
 			 * already exists. */
@@ -1392,7 +1392,7 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 	}
 
 	/* Distant join */
-	if (*st == nullptr && station_to_join != INVALID_STATION) *st = T::GetIfValid(station_to_join);
+	if (*st == nullptr && station_to_join != StationID::Invalid()) *st = T::GetIfValid(station_to_join);
 
 	return CommandCost();
 }
@@ -1529,8 +1529,8 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 	if (!IsValidTile(tile_org) || TileAddWrap(tile_org, w_org - 1, h_org - 1) == INVALID_TILE) return CMD_ERROR;
 
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Station::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -1540,7 +1540,7 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 	TileArea new_location(tile_org, w_org, h_org);
 
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
-	StationID est = INVALID_STATION;
+	StationID est = StationID::Invalid();
 	std::vector<Train *> affected_vehicles;
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
@@ -2116,8 +2116,8 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 {
 	if (!ValParamRoadType(rt) || !IsValidDiagDirection(ddir) || stop_type >= RoadStopType::End) return CMD_ERROR;
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	/* Check if the given station class is valid */
 	if (static_cast<uint>(spec_class) >= RoadStopClass::GetClassCount()) return CMD_ERROR;
@@ -2162,7 +2162,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 		unit_cost = _price[is_truck_stop ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS];
 	}
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
-	StationID est = INVALID_STATION;
+	StationID est = StationID::Invalid();
 	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, station_type, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
@@ -2721,8 +2721,8 @@ static CommandCost CanRemoveAirport(Station *st, DoCommandFlags flags)
 CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airport_type, uint8_t layout, StationID station_to_join, bool allow_adjacent)
 {
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Station::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -2746,7 +2746,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		return CommandCost(STR_ERROR_STATION_TOO_SPREAD_OUT);
 	}
 
-	StationID est = INVALID_STATION;
+	StationID est = StationID::Invalid();
 	AirportTileTableIterator iter(as->layouts[layout].tiles.data(), tile);
 	CommandCost cost = CheckFlatLandAirport(iter, flags, &est);
 	if (cost.Failed()) return cost;
@@ -2767,7 +2767,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		AIRPORT_ADD,      // add an airport to an existing station
 		AIRPORT_UPGRADE,  // upgrade the airport in a station
 	} action =
-		(est != INVALID_STATION) ? AIRPORT_UPGRADE :
+		(est != StationID::Invalid()) ? AIRPORT_UPGRADE :
 		(st != nullptr) ? AIRPORT_ADD : AIRPORT_NEW;
 
 	if (action == AIRPORT_ADD && st->airport.tile != INVALID_TILE) {
@@ -3035,8 +3035,8 @@ static const uint8_t _dock_h_chk[4] = { 1, 2, 1, 2 };
 CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station_to_join, bool adjacent)
 {
 	bool reuse = (station_to_join != NEW_STATION);
-	if (!reuse) station_to_join = INVALID_STATION;
-	bool distant_join = (station_to_join != INVALID_STATION);
+	if (!reuse) station_to_join = StationID::Invalid();
+	bool distant_join = (station_to_join != StationID::Invalid());
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Station::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -3083,7 +3083,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 
 	/* middle */
 	Station *st = nullptr;
-	ret = FindJoiningStation(INVALID_STATION, station_to_join, adjacent, dock_area, &st);
+	ret = FindJoiningStation(StationID::Invalid(), station_to_join, adjacent, dock_area, &st);
 	if (ret.Failed()) return ret;
 
 	/* Distant join */
@@ -4303,7 +4303,7 @@ static void UpdateStationRating(Station *st)
 				uint waiting = ge->CargoAvailableCount();
 
 				/* num_dests is at least 1 if there is any cargo as
-				 * INVALID_STATION is also a destination.
+				 * StationID::Invalid() is also a destination.
 				 */
 				const uint num_dests = ge->data != nullptr ? (uint)ge->data->cargo.Packets()->MapSize() : 0;
 
@@ -4311,7 +4311,7 @@ static void UpdateStationRating(Station *st)
 				 * with only one or two next hops. They are allowed to have more
 				 * cargo waiting per next hop.
 				 * With manual cargo distribution waiting_avg = waiting / 2 as then
-				 * INVALID_STATION is the only destination.
+				 * StationID::Invalid() is the only destination.
 				 */
 				const uint waiting_avg = waiting / (num_dests + 1);
 
@@ -4565,8 +4565,8 @@ void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint
 	Station *st2 = Station::Get(next_station_id);
 	GoodsEntry &ge2 = st2->goods[cargo];
 	LinkGraph *lg = nullptr;
-	if (ge1.link_graph == INVALID_LINK_GRAPH) {
-		if (ge2.link_graph == INVALID_LINK_GRAPH) {
+	if (ge1.link_graph == LinkGraphID::Invalid()) {
+		if (ge2.link_graph == LinkGraphID::Invalid()) {
 			if (LinkGraph::CanAllocateItem()) {
 				lg = new LinkGraph(cargo);
 				LinkGraphSchedule::instance.Queue(lg);
@@ -4582,7 +4582,7 @@ void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint
 			ge1.link_graph = lg->index;
 			ge1.node = lg->AddNode(st);
 		}
-	} else if (ge2.link_graph == INVALID_LINK_GRAPH) {
+	} else if (ge2.link_graph == LinkGraphID::Invalid()) {
 		lg = LinkGraph::Get(ge1.link_graph);
 		ge2.link_graph = lg->index;
 		ge2.node = lg->AddNode(st2);
@@ -4706,7 +4706,7 @@ static uint UpdateStationWaiting(Station *st, CargoType type, uint amount, Sourc
 	StationID next = ge.GetVia(st->index);
 	ge.CreateData().cargo.Append(new CargoPacket(st->index, amount, source), next);
 	LinkGraph *lg = nullptr;
-	if (ge.link_graph == INVALID_LINK_GRAPH) {
+	if (ge.link_graph == LinkGraphID::Invalid()) {
 		if (LinkGraph::CanAllocateItem()) {
 			lg = new LinkGraph(type);
 			LinkGraphSchedule::instance.Queue(lg);
@@ -5367,7 +5367,7 @@ uint FlowStat::GetShare(StationID st) const
  */
 StationID FlowStat::GetVia(StationID excluded, StationID excluded2) const
 {
-	if (this->unrestricted == 0) return INVALID_STATION;
+	if (this->unrestricted == 0) return StationID::Invalid();
 	assert(!this->empty());
 	const_iterator it = std::upper_bound(this->data(), this->data() + this->count, RandomRange(this->unrestricted));
 	assert(it != this->end() && it->first <= this->unrestricted);
@@ -5379,7 +5379,7 @@ StationID FlowStat::GetVia(StationID excluded, StationID excluded2) const
 	uint end = it->first;
 	uint begin = (it == this->begin() ? 0 : (--it)->first);
 	uint interval = end - begin;
-	if (interval >= this->unrestricted) return INVALID_STATION; // Only one station in the map.
+	if (interval >= this->unrestricted) return StationID::Invalid(); // Only one station in the map.
 	uint new_max = this->unrestricted - interval;
 	uint rand = RandomRange(new_max);
 	const_iterator it2 = (rand < begin) ? this->upper_bound(rand) :
@@ -5393,7 +5393,7 @@ StationID FlowStat::GetVia(StationID excluded, StationID excluded2) const
 	uint end2 = it2->first;
 	uint begin2 = (it2 == this->begin() ? 0 : (--it2)->first);
 	uint interval2 = end2 - begin2;
-	if (interval2 >= new_max) return INVALID_STATION; // Only the two excluded stations in the map.
+	if (interval2 >= new_max) return StationID::Invalid(); // Only the two excluded stations in the map.
 	new_max -= interval2;
 	if (begin > begin2) {
 		Swap(begin, begin2);
@@ -5562,11 +5562,11 @@ void FlowStatMap::PassOnFlow(StationID origin, StationID via, uint flow)
 	FlowStatMap::iterator prev_it = this->find(origin);
 	if (prev_it == this->end()) {
 		FlowStat fs(origin, via, flow);
-		fs.AppendShare(INVALID_STATION, flow);
+		fs.AppendShare(StationID::Invalid(), flow);
 		this->insert(std::move(fs));
 	} else {
 		prev_it->ChangeShare(via, flow);
-		prev_it->ChangeShare(INVALID_STATION, flow);
+		prev_it->ChangeShare(StationID::Invalid(), flow);
 		assert(!prev_it->empty());
 	}
 }
@@ -5578,14 +5578,14 @@ void FlowStatMap::PassOnFlow(StationID origin, StationID via, uint flow)
 void FlowStatMap::FinalizeLocalConsumption(StationID self)
 {
 	for (FlowStat &fs : *this) {
-		uint local = fs.GetShare(INVALID_STATION);
+		uint local = fs.GetShare(StationID::Invalid());
 		if (local > INT_MAX) { // make sure it fits in an int
 			fs.ChangeShare(self, -INT_MAX);
-			fs.ChangeShare(INVALID_STATION, -INT_MAX);
+			fs.ChangeShare(StationID::Invalid(), -INT_MAX);
 			local -= INT_MAX;
 		}
 		fs.ChangeShare(self, -(int)local);
-		fs.ChangeShare(INVALID_STATION, -(int)local);
+		fs.ChangeShare(StationID::Invalid(), -(int)local);
 
 		/* If the local share is used up there must be a share for some
 		 * remote station. */

@@ -272,7 +272,7 @@ Train *TemplateDepotVehicles::ContainsEngine(EngineID eid, Train *not_in)
 void NeutralizeStatus(Train *t)
 {
 	Command<CMD_ADD_VEHICLE_GROUP>::Do(DoCommandFlag::Execute, DEFAULT_GROUP, t->index, false);
-	Command<CMD_CLONE_ORDER>::Do(DoCommandFlag::Execute, CO_SHARE, t->index, INVALID_VEHICLE);
+	Command<CMD_CLONE_ORDER>::Do(DoCommandFlag::Execute, CO_SHARE, t->index, VehicleID::Invalid());
 	Command<CMD_RENAME_VEHICLE>::Do(DoCommandFlag::Execute, t->index, {});
 }
 
@@ -305,7 +305,7 @@ void BreakUpRemainders(Train *t)
 		if (HasBit(t->subtype, GVSF_ENGINE)) {
 			Train *move = t;
 			t = t->Next();
-			Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, move->index, INVALID_VEHICLE, MoveRailVehicleFlags::NewHead);
+			Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, move->index, VehicleID::Invalid(), MoveRailVehicleFlags::NewHead);
 			NeutralizeStatus(move);
 		} else {
 			t = t->Next();

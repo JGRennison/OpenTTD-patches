@@ -37,7 +37,7 @@
 
 /* static */ IndustryID ScriptIndustry::GetIndustryID(TileIndex tile)
 {
-	if (!::IsValidTile(tile) || !::IsTileType(tile, MP_INDUSTRY)) return INVALID_INDUSTRY;
+	if (!::IsValidTile(tile) || !::IsTileType(tile, MP_INDUSTRY)) return IndustryID::Invalid();
 	return ::GetIndustryIndex(tile);
 }
 
@@ -45,8 +45,7 @@
 {
 	if (!IsValidIndustry(industry_id)) return std::nullopt;
 
-	::SetDParam(0, industry_id);
-	return GetString(STR_INDUSTRY_NAME);
+	return ::StrMakeValid(::GetString(STR_INDUSTRY_NAME, industry_id));
 }
 
 /* static */ ScriptDate::Date ScriptIndustry::GetConstructionDate(IndustryID industry_id)

@@ -19,7 +19,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <string>
 
-using GroupPool = Pool<Group, GroupID, 16, GroupID::End().base()>;
+using GroupPool = Pool<Group, GroupID, 16>;
 extern GroupPool _group_pool; ///< Pool of groups.
 
 /** Statistics and caches on the vehicles in a group. */
@@ -92,7 +92,7 @@ struct Group : GroupPool::PoolItem<&_group_pool> {
 	GroupID parent;             ///< Parent group
 	uint16_t number;            ///< Per-company group number.
 
-	Group(CompanyID owner = INVALID_COMPANY);
+	Group(CompanyID owner = CompanyID::Invalid());
 
 	bool IsFolded(GroupFoldBits fold_bit) const { return (this->folded_mask & fold_bit) != GroupFoldBits::None; }
 };

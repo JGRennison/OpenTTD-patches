@@ -55,7 +55,7 @@ void EngList_Sort(GUIEngineList &el, EngList_SortTypeFunction compare);
 void EngList_SortPartial(GUIEngineList &el, EngList_SortTypeFunction compare, size_t begin, size_t num_items);
 
 StringID GetEngineCategoryName(EngineID engine);
-StringID GetEngineInfoString(EngineID engine);
+std::string GetEngineInfoString(EngineID engine);
 
 void DrawVehicleEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type);
 void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type);
@@ -74,6 +74,6 @@ extern EngList_SortTypeFunction * const _engine_sort_functions[][13];
 uint GetEngineListHeight(VehicleType type);
 void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selected, WidgetID button);
 void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_list, const class Scrollbar &sb, EngineID selected_id, bool show_count, GroupID selected_group, const GUIBadgeClasses &badge_classes);
-void GUIEngineListAddChildren(GUIEngineList &dst, const GUIEngineList &src, EngineID parent = INVALID_ENGINE, uint8_t indent = 0);
+void GUIEngineListAddChildren(GUIEngineList &dst, const GUIEngineList &src, EngineID parent = EngineID::Invalid(), uint8_t indent = 0);
 
 #endif /* ENGINE_GUI_H */

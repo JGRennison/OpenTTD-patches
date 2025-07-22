@@ -40,6 +40,5 @@ struct GoalIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using GoalID = PoolID<GoalIDTag>;
 
 struct Goal;
-static constexpr GoalID INVALID_GOAL = GoalID::Invalid(); ///< Constant representing a non-existing goal.
 
 #endif /* GOAL_TYPE_H */

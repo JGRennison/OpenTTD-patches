@@ -15,8 +15,6 @@
 
 struct CompanyIDTag : public PoolIDTraits<uint8_t, 0xF, 0xFF> {};
 using CompanyID = PoolID<CompanyIDTag>;
-static constexpr CompanyID COMPANY_FIRST = CompanyID::Begin();
-static constexpr CompanyID INVALID_COMPANY = CompanyID::Invalid(); ///< An invalid company
 
 /* 'Fake' companies used for networks */
 static constexpr CompanyID COMPANY_INACTIVE_CLIENT{253}; ///< The client is joining

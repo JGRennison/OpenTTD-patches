@@ -60,9 +60,9 @@ extern btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
 	}
 
 	if (IsSavegameVersionBefore(SLV_120)) {
-		/* CargoPacket's first_station should be either INVALID_STATION or a valid station */
+		/* CargoPacket's first_station should be either StationID::Invalid() or a valid station */
 		for (CargoPacket *cp : CargoPacket::Iterate()) {
-			if (!Station::IsValidID(cp->first_station)) cp->first_station = INVALID_STATION;
+			if (!Station::IsValidID(cp->first_station)) cp->first_station = StationID::Invalid();
 		}
 	}
 

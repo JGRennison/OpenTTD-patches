@@ -49,13 +49,13 @@ private:
 	constexpr CallAtTargetID(uint32_t id) : id(id) {}
 
 public:
-	constexpr CallAtTargetID() : id(INVALID_STATION.base()) {}
+	constexpr CallAtTargetID() : id(StationID::Invalid().base()) {}
 
 	static CallAtTargetID FromTile(TileIndex tile);
 	static CallAtTargetID FromOrder(const Order *order);
 	static constexpr CallAtTargetID FromStation(StationID station) { return CallAtTargetID(station.base()); }
 
-	inline bool IsValid() const { return id != INVALID_STATION; }
+	inline bool IsValid() const { return id != StationID::Invalid(); }
 	inline bool IsStationID() const { return (id & DEPOT_TAG) == 0; }
 	inline StationID GetStationID() const { return (StationID)this->id; }
 	inline DestinationID GetDepotDestinationID() const { return this->id & ~DEPOT_TAG; }
@@ -104,8 +104,8 @@ struct Departure {
 
 	StateTicks scheduled_tick{0};          ///< The tick this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
 	Ticks lateness = 0;                    ///< How delayed the departure is expected to be
-	StationID via = INVALID_STATION;       ///< The station the departure should list as going via
-	StationID via2 = INVALID_STATION;      ///< Secondary station the departure should list as going via
+	StationID via = StationID::Invalid();  ///< The station the departure should list as going via
+	StationID via2 = StationID::Invalid(); ///< Secondary station the departure should list as going via
 	CallAt terminus = CallAtTargetID();    ///< The station at which the vehicle will terminate following this departure
 	std::vector<CallAt> calling_at;        ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
 	std::vector<RemoveVia> remove_vias;    ///< Vias to remove when using smart terminus.

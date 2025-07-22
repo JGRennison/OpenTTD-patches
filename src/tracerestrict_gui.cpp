@@ -750,7 +750,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 			}
 		}
 	});
-	output_groups(0, INVALID_GROUP);
+	output_groups(0, GroupID::Invalid());
 
 	return dlist;
 }
@@ -1606,7 +1606,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_ORDER: {
 					switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {
 						case TROCAF_STATION:
-							if (item.GetValue() != INVALID_STATION) {
+							if (item.GetValue() != StationID::Invalid()) {
 								instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION;
 								DrawInstructionStringConditionalIntegerCommon(item, properties);
 							} else {
@@ -1721,7 +1721,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					assert(item.GetCondFlags() <= TRCF_OR);
 					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
 					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					if (item.GetValue() == INVALID_GROUP) {
+					if (item.GetValue() == GroupID::Invalid()) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
 						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 					} else if (item.GetValue() == DEFAULT_GROUP) {
@@ -1745,7 +1745,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_OWNER: {
 					assert(item.GetCondFlags() <= TRCF_OR);
 					CompanyID cid = static_cast<CompanyID>(item.GetValue());
-					if (cid == INVALID_COMPANY) {
+					if (cid == CompanyID::Invalid()) {
 						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_OWNER;
@@ -3819,7 +3819,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							switch (item.GetValue()) {
-								case INVALID_GROUP.base():
+								case GroupID::Invalid().base():
 									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 									break;
 
@@ -4012,8 +4012,8 @@ private:
 			list.emplace_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
-		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY.base(), false));
-		if (INVALID_COMPANY == value) missing_ok = true;
+		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, CompanyID::Invalid().base(), false));
+		if (CompanyID::Invalid() == value) missing_ok = true;
 
 		assert(missing_ok == true);
 		assert(button == TR_WIDGET_VALUE_DROPDOWN);
@@ -4912,7 +4912,7 @@ public:
 				if (this->slot_sel.type == SlotItemType::Slot) {
 					Command<CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE, TraceRestrictSlotID(this->slot_sel.id), this->vehicle_sel);
 
-					this->vehicle_sel = INVALID_VEHICLE;
+					this->vehicle_sel = VehicleID::Invalid();
 					this->slot_over = {};
 
 					this->SetDirty();
@@ -4921,7 +4921,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: { // Matrix slot
 				const VehicleID vindex = this->vehicle_sel;
-				this->vehicle_sel = INVALID_VEHICLE;
+				this->vehicle_sel = VehicleID::Invalid();
 				this->slot_over = {};
 				this->SetDirty();
 
@@ -4941,7 +4941,7 @@ public:
 
 			case WID_TRSL_LIST_VEHICLE: { // Matrix vehicle
 				const VehicleID vindex = this->vehicle_sel;
-				this->vehicle_sel = INVALID_VEHICLE;
+				this->vehicle_sel = VehicleID::Invalid();
 				this->slot_over = {};
 				this->SetDirty();
 
@@ -4960,7 +4960,7 @@ public:
 	void OnDragDrop_Slot(Point pt, WidgetID widget)
 	{
 		if (this->slot_drag.IsInvalid()) {
-			this->vehicle_sel = INVALID_VEHICLE;
+			this->vehicle_sel = VehicleID::Invalid();
 			this->slot_drag = {};
 			this->SetDirty();
 			return;
@@ -5007,7 +5007,7 @@ public:
 
 	virtual void OnDragDrop(Point pt, WidgetID widget) override
 	{
-		if (this->vehicle_sel != INVALID_VEHICLE) OnDragDrop_Vehicle(pt, widget);
+		if (this->vehicle_sel != VehicleID::Invalid()) OnDragDrop_Vehicle(pt, widget);
 		if (!this->slot_drag.IsNone()) OnDragDrop_Slot(pt, widget);
 
 		_cursor.vehchain = false;
@@ -5090,7 +5090,7 @@ public:
 	virtual void OnPlaceObjectAbort() override
 	{
 		/* Abort drag & drop */
-		this->vehicle_sel = INVALID_VEHICLE;
+		this->vehicle_sel = VehicleID::Invalid();
 		this->slot_drag = {};
 		this->DirtyHighlightedSlotWidget();
 		this->slot_over = {};
@@ -5099,7 +5099,7 @@ public:
 
 	virtual void OnMouseDrag(Point pt, WidgetID widget) override
 	{
-		if (this->vehicle_sel == INVALID_VEHICLE && this->slot_drag.IsNone()) return;
+		if (this->vehicle_sel == VehicleID::Invalid() && this->slot_drag.IsNone()) return;
 
 		/* A vehicle is dragged over... */
 		SlotItem new_slot_over = {};
@@ -5120,7 +5120,7 @@ public:
 		/* Do not highlight when dragging over the current slot/group */
 		if (this->slot_sel == new_slot_over) new_slot_over = {};
 
-		if (this->vehicle_sel != INVALID_VEHICLE) {
+		if (this->vehicle_sel != VehicleID::Invalid()) {
 			/* Do not highlight dragging vehicles over groups */
 			if (new_slot_over.type == SlotItemType::Group) new_slot_over = {};
 		}

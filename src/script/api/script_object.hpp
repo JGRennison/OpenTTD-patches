@@ -369,11 +369,6 @@ protected:
 	 */
 	static ScriptLogTypes::LogData &GetLogData();
 
-	/**
-	 * Get an allocated string with all control codes stripped off.
-	 */
-	static std::string GetString(StringID string);
-
 	static bool IsNewUniqueLogMessage(const std::string &msg);
 
 	static void RegisterUniqueLogMessage(std::string &&msg);

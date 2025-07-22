@@ -213,7 +213,7 @@ protected:
 							}
 						}
 
-						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
+						if (v->group_id != GroupID::Invalid() && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
 							groups.insert(v->group_id);
 						}
 
@@ -1281,9 +1281,9 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		StationID via2 = d->via2;
 		if (d->terminus.target.MatchesStationID(via) || this->source.StationMatches(via)) {
 			via = via2;
-			via2 = INVALID_STATION;
+			via2 = StationID::Invalid();
 		}
-		if (d->terminus.target.MatchesStationID(via2) || this->source.StationMatches(via2)) via2 = INVALID_STATION;
+		if (d->terminus.target.MatchesStationID(via2) || this->source.StationMatches(via2)) via2 = StationID::Invalid();
 
 		/* Arrival time */
 		if (arrival_time_width != 0 && d->terminus.scheduled_tick != 0) {
@@ -1304,7 +1304,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int dest_left = ltr ? text_left + time_width + type_width + PadWidth(arrival_time_width) + ScaleGUITrad(6) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + PadWidth(status_width);
 			const int dest_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - PadWidth(status_width) : text_right - time_width - type_width - PadWidth(arrival_time_width) - ScaleGUITrad(6);
 
-			if (via == INVALID_STATION) {
+			if (via == StationID::Invalid()) {
 				/* Only show the terminus. */
 				FillCallingAtTargetDParam(0, d, d->terminus.target);
 				SetDParam(3, icon);
@@ -1335,7 +1335,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					};
 					get_single_via_string(0, via);
 
-					if (via2 != INVALID_STATION) {
+					if (via2 != StationID::Invalid()) {
 						get_single_via_string(1, via2);
 
 						auto tmp_params = MakeParameters(SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1);
@@ -1418,7 +1418,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		}
 
 		/* Group name */
-		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != INVALID_GROUP && d->vehicle->group_id != DEFAULT_GROUP) {
+		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != GroupID::Invalid() && d->vehicle->group_id != DEFAULT_GROUP) {
 			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
 			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
 

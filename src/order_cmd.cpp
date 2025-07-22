@@ -576,7 +576,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
  * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest. This may be 0 to ignore cargo types entirely.
  * @param first Order to start searching at or nullptr to start at cur_implicit_order_index + 1.
  * @param hops Number of orders we have already looked at.
- * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stopping station or INVALID_STATION.
+ * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stopping station or StationID::Invalid().
  * @pre The vehicle is currently loading and v->last_station_visited is meaningful.
  * @note This function may draw a random number. Don't use it from the GUI.
  */
@@ -584,7 +584,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 {
 	static std::vector<bool> seen_orders_container;
 	if (hops == 0) {
-		if (this->GetNumOrders() == 0) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // No orders at all
+		if (this->GetNumOrders() == 0) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // No orders at all
 		seen_orders_container.assign(this->GetNumOrders(), false);
 	}
 
@@ -593,7 +593,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 		next = this->GetOrderAt(v->cur_implicit_order_index);
 		if (next == nullptr) {
 			next = this->GetFirstOrder();
-			if (next == nullptr) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
+			if (next == nullptr) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
 		} else {
 			/* GetNext never returns nullptr if there is a valid station in the list.
 			 * As the given "next" is already valid and a station in the list, we
@@ -607,11 +607,11 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 	auto seen_order = [&](const Order *o) -> std::vector<bool>::reference { return seen_orders_container[o - order_span.data()]; };
 
 	do {
-		if (seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // Already handled
+		if (seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // Already handled
 
 		const Order *decision_node = this->GetNextDecisionNode(next, ++hops, cargo_mask);
 
-		if (decision_node == nullptr || seen_order(decision_node)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // Invalid or already handled
+		if (decision_node == nullptr || seen_order(decision_node)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // Invalid or already handled
 
 		seen_order(next) = true;
 		seen_order(decision_node) = true;
@@ -639,7 +639,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 				return st1;
 			}
 
-			if (next == nullptr || seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
+			if (next == nullptr || seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
 			++hops;
 		}
 
@@ -652,7 +652,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
 				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
 			});
-			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
+			if (invalid) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
 		}
 	} while (next->IsType(OT_GOTO_DEPOT) || next->IsSlotCounterOrder() || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
@@ -805,7 +805,7 @@ void OrderList::DebugCheckSanity() const
 static inline bool OrderGoesToStation(const Vehicle *v, const Order *o)
 {
 	return o->IsType(OT_GOTO_STATION) ||
-			(v->type == VEH_AIRCRAFT && o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) && o->GetDestination() != INVALID_STATION);
+			(v->type == VEH_AIRCRAFT && o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) && o->GetDestination() != StationID::Invalid());
 }
 
 /**
@@ -847,7 +847,7 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 
 		case OT_GOTO_DEPOT:
 			if (this->GetDepotActionType() & ODATFB_NEAREST_DEPOT) return INVALID_TILE;
-			if (this->GetDestination() == INVALID_DEPOT) return INVALID_TILE;
+			if (this->GetDestination() == DepotID::Invalid()) return INVALID_TILE;
 			return (v->type == VEH_AIRCRAFT) ? Station::Get(this->GetDestination().ToStationID())->xy : Depot::Get(this->GetDestination().ToDepotID())->xy;
 
 		default:
@@ -2227,7 +2227,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				order->SetConditionVariable(new_condition);
 
 				if (ConditionVariableHasStationID(new_condition) && !ConditionVariableHasStationID(old_condition)) {
-					order->SetConditionStationID(INVALID_STATION);
+					order->SetConditionStationID(StationID::Invalid());
 				}
 				OrderConditionComparator occ = order->GetConditionComparator();
 				switch (new_condition) {
@@ -2961,7 +2961,7 @@ void StopRemoveOrderFromAllVehiclesBatch()
  */
 void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool hangar)
 {
-	if (destination == ((type == OT_GOTO_DEPOT) ? (DestinationID)INVALID_DEPOT : (DestinationID)INVALID_STATION)) return;
+	if (destination == ((type == OT_GOTO_DEPOT) ? (DestinationID)DepotID::Invalid() : (DestinationID)StationID::Invalid())) return;
 
 	OrderBackup::RemoveOrder(type, destination, hangar);
 
@@ -2993,10 +2993,10 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 			OrderType ot = o->GetType();
 			if (ot == OT_CONDITIONAL) {
 				if (type == OT_GOTO_STATION && ConditionVariableTestsCargoWaitingAmount(o->GetConditionVariable())) {
-					if (order->GetConditionViaStationID() == destination) order->SetConditionViaStationID(INVALID_STATION);
+					if (order->GetConditionViaStationID() == destination) order->SetConditionViaStationID(StationID::Invalid());
 				}
 				if (type == OT_GOTO_STATION && ConditionVariableHasStationID(o->GetConditionVariable())) {
-					if (order->GetConditionStationID() == destination) order->SetConditionStationID(INVALID_STATION);
+					if (order->GetConditionStationID() == destination) order->SetConditionStationID(StationID::Invalid());
 				}
 				return false;
 			}

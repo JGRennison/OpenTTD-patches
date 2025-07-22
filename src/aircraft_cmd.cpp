@@ -117,15 +117,15 @@ enum HelicopterRotorStates : uint8_t {
 
 /**
  * Find the nearest hangar to v
- * INVALID_STATION is returned, if the company does not have any suitable
+ * StationID::Invalid() is returned, if the company does not have any suitable
  * airports (like helipads only)
  * @param v vehicle looking for a hangar
- * @return the StationID if one is found, otherwise, INVALID_STATION
+ * @return the StationID if one is found, otherwise, StationID::Invalid()
  */
 static StationID FindNearestHangar(const Aircraft *v)
 {
 	uint best = 0;
-	StationID index = INVALID_STATION;
+	StationID index = StationID::Invalid();
 	TileIndex vtile = TileVirtXYClampedToMap(v->x_pos, v->y_pos);
 	const AircraftVehicleInfo *avi = AircraftVehInfo(v->engine_type);
 	uint max_range = v->acache.cached_max_range_sqr;
@@ -164,7 +164,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 
 		/* v->tile can't be used here, when aircraft is flying v->tile is set to 0 */
 		uint distance = DistanceSquare(vtile, st->airport.tile);
-		if (distance < best || index == INVALID_STATION) {
+		if (distance < best || index == StationID::Invalid()) {
 			best = distance;
 			index = st->index;
 		}
@@ -333,8 +333,8 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlags flags, const Engine 
 		}
 
 		v->name.clear();
-		v->last_station_visited = INVALID_STATION;
-		v->last_loading_station = INVALID_STATION;
+		v->last_station_visited = StationID::Invalid();
+		v->last_loading_station = StationID::Invalid();
 
 		v->acceleration = avi->acceleration;
 		v->engine_type = e->index;
@@ -427,7 +427,7 @@ ClosestDepot Aircraft::FindClosestDepot()
 		/* the aircraft has to search for a hangar on its own */
 		StationID station = FindNearestHangar(this);
 
-		if (station == INVALID_STATION) return ClosestDepot();
+		if (station == StationID::Invalid()) return ClosestDepot();
 
 		st = Station::Get(station);
 	}
@@ -1215,7 +1215,7 @@ void FindBreakdownDestination(Aircraft *v)
 {
 	assert(v->type == VEH_AIRCRAFT && v->breakdown_ctr == 1);
 
-	DestinationID destination = INVALID_STATION;
+	DestinationID destination = StationID::Invalid();
 	if (v->breakdown_type == BREAKDOWN_AIRCRAFT_DEPOT) {
 		/* Go to a hangar, if possible at our current destination */
 		ClosestDepot closest_depot = v->FindClosestDepot();
@@ -1227,7 +1227,7 @@ void FindBreakdownDestination(Aircraft *v)
 		NOT_REACHED();
 	}
 
-	if (destination != INVALID_STATION) {
+	if (destination != StationID::Invalid()) {
 		if (destination != v->current_order.GetDestination()) {
 			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
 			if (v->state == FLYING) {
@@ -1239,7 +1239,7 @@ void FindBreakdownDestination(Aircraft *v)
 			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
 		}
 	} else {
-		if (v->state != FLYING && v->targetairport != INVALID_STATION) {
+		if (v->state != FLYING && v->targetairport != StationID::Invalid()) {
 			/* Crashing whilst in an airport state machine is inconvenient
 			 * as any blocks would need to then be marked unoccupied.
 			 * Change the breakdown type to a speed reduction. */
@@ -1248,7 +1248,7 @@ void FindBreakdownDestination(Aircraft *v)
 			return;
 		}
 		/* If no hangar was found, crash */
-		v->targetairport = INVALID_STATION;
+		v->targetairport = StationID::Invalid();
 		CrashAirplane(v);
 	}
 }
@@ -1449,7 +1449,7 @@ static void CrashAirplane(Aircraft *v)
 		newstype = NewsType::AccidentOther;
 	}
 
-	AddTileNewsItem(newsitem, newstype, vt, st != nullptr ? st->index : INVALID_STATION);
+	AddTileNewsItem(newsitem, newstype, vt, st != nullptr ? st->index : StationID::Invalid());
 
 	ModifyStationRatingAround(vt, v->owner, -160, 30);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_12_EXPLOSION, v);

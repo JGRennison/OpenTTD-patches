@@ -720,7 +720,7 @@ struct ScriptDebugWindow : public Window {
 
 	static inline FilterState initial_state = {
 		"",
-		INVALID_COMPANY,
+		CompanyID::Invalid(),
 		true,
 		false,
 	};
@@ -763,14 +763,14 @@ struct ScriptDebugWindow : public Window {
 	bool IsValidDebugCompany(CompanyID company) const
 	{
 		switch (company.base()) {
-			case INVALID_COMPANY.base(): return false;
+			case CompanyID::Invalid().base(): return false;
 			case OWNER_DEITY.base(): return Game::GetInstance() != nullptr;
 			default:              return Company::IsValidAiID(company);
 		}
 	}
 
 	/**
-	 * Ensure that \c script_debug_company refers to a valid AI company or GS, or is set to #INVALID_COMPANY.
+	 * Ensure that \c script_debug_company refers to a valid AI company or GS, or is set to #CompanyID::Invalid().
 	 * If no valid company is selected, it selects the first valid AI or GS if any.
 	 */
 	void SelectValidDebugCompany()
@@ -778,7 +778,7 @@ struct ScriptDebugWindow : public Window {
 		/* Check if the currently selected company is still active. */
 		if (this->IsValidDebugCompany(this->filter.script_debug_company)) return;
 
-		this->filter.script_debug_company = INVALID_COMPANY;
+		this->filter.script_debug_company = CompanyID::Invalid();
 
 		for (const Company *c : Company::Iterate()) {
 			if (c->is_ai) {
@@ -818,7 +818,7 @@ struct ScriptDebugWindow : public Window {
 		this->break_editbox.text.Assign(this->filter.break_string);
 		this->break_string_filter.SetFilterTerm(this->filter.break_string);
 
-		if (show_company == INVALID_COMPANY) {
+		if (show_company == CompanyID::Invalid()) {
 			this->SelectValidDebugCompany();
 		} else {
 			this->ChangeToScript(show_company);
@@ -867,7 +867,7 @@ struct ScriptDebugWindow : public Window {
 			SetDParam(0, STR_AI_DEBUG_NAME_AND_VERSION);
 			SetDParamStr(1, info->GetName());
 			SetDParam(2, info->GetVersion());
-		} else if (this->filter.script_debug_company == INVALID_COMPANY || !Company::IsValidAiID(this->filter.script_debug_company)) {
+		} else if (this->filter.script_debug_company == CompanyID::Invalid() || !Company::IsValidAiID(this->filter.script_debug_company)) {
 			SetDParam(0, STR_EMPTY);
 		} else {
 			const AIInfo *info = Company::Get(this->filter.script_debug_company)->ai_info;
@@ -913,7 +913,7 @@ struct ScriptDebugWindow : public Window {
 	 */
 	void DrawWidgetLog(const Rect &r) const
 	{
-		if (this->filter.script_debug_company == INVALID_COMPANY) return;
+		if (this->filter.script_debug_company == CompanyID::Invalid()) return;
 
 		const ScriptLogTypes::LogData &log = this->GetLogData();
 		if (log.empty()) return;
@@ -962,8 +962,8 @@ struct ScriptDebugWindow : public Window {
 	 */
 	void UpdateLogScroll()
 	{
-		this->SetWidgetsDisabledState(this->filter.script_debug_company == INVALID_COMPANY, WID_SCRD_VSCROLLBAR, WID_SCRD_HSCROLLBAR);
-		if (this->filter.script_debug_company == INVALID_COMPANY) return;
+		this->SetWidgetsDisabledState(this->filter.script_debug_company == CompanyID::Invalid(), WID_SCRD_VSCROLLBAR, WID_SCRD_HSCROLLBAR);
+		if (this->filter.script_debug_company == CompanyID::Invalid()) return;
 
 		ScriptLogTypes::LogData &log = this->GetLogData();
 
@@ -997,7 +997,7 @@ struct ScriptDebugWindow : public Window {
 	void UpdateAIButtonsState()
 	{
 		/* Update company buttons */
-		for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) {
+		for (CompanyID i = CompanyID::Begin(); i < MAX_COMPANIES; ++i) {
 			/* Mark dead/paused AIs by setting the background colour. */
 			bool valid = Company::IsValidAiID(i);
 			bool dead = valid && Company::Get(i)->ai_instance->IsDead();
@@ -1186,14 +1186,14 @@ struct ScriptDebugWindow : public Window {
 		this->SelectValidDebugCompany();
 
 		uint max_width = 0;
-		if (this->filter.script_debug_company != INVALID_COMPANY) {
+		if (this->filter.script_debug_company != CompanyID::Invalid()) {
 			for (auto &line : this->GetLogData()) {
 				if (line.width == 0 || data == -1) line.width = GetStringBoundingBox(line.text).width;
 				max_width = std::max(max_width, line.width);
 			}
 		}
 
-		this->vscroll->SetCount(this->filter.script_debug_company != INVALID_COMPANY ? this->GetLogData().size() : 0);
+		this->vscroll->SetCount(this->filter.script_debug_company != CompanyID::Invalid() ? this->GetLogData().size() : 0);
 		this->hscroll->SetCount(max_width + WidgetDimensions::scaled.frametext.Horizontal());
 
 		this->UpdateAIButtonsState();
@@ -1202,14 +1202,14 @@ struct ScriptDebugWindow : public Window {
 		this->SetWidgetLoweredState(WID_SCRD_BREAK_STR_ON_OFF_BTN, this->filter.break_check_enabled);
 		this->SetWidgetLoweredState(WID_SCRD_MATCH_CASE_BTN, this->filter.case_sensitive_break_check);
 
-		this->SetWidgetDisabledState(WID_SCRD_SETTINGS, this->filter.script_debug_company == INVALID_COMPANY ||
+		this->SetWidgetDisabledState(WID_SCRD_SETTINGS, this->filter.script_debug_company == CompanyID::Invalid() ||
 			GetConfig(this->filter.script_debug_company)->GetConfigList()->empty());
 		extern CompanyID _local_company;
 		this->SetWidgetDisabledState(WID_SCRD_RELOAD_TOGGLE,
-				this->filter.script_debug_company == INVALID_COMPANY ||
+				this->filter.script_debug_company == CompanyID::Invalid() ||
 				this->filter.script_debug_company == _local_company ||
 				(this->filter.script_debug_company == OWNER_DEITY && !UserIsAllowedToChangeGameScript()));
-		this->SetWidgetDisabledState(WID_SCRD_CONTINUE_BTN, this->filter.script_debug_company == INVALID_COMPANY ||
+		this->SetWidgetDisabledState(WID_SCRD_CONTINUE_BTN, this->filter.script_debug_company == CompanyID::Invalid() ||
 			(this->filter.script_debug_company == OWNER_DEITY ? !Game::IsPaused() : !AI::IsPaused(this->filter.script_debug_company)));
 	}
 
@@ -1236,7 +1236,7 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRowsScriptDebug()
 static EventState ScriptDebugGlobalHotkeys(int hotkey)
 {
 	if (_game_mode != GM_NORMAL) return ES_NOT_HANDLED;
-	Window *w = ShowScriptDebugWindow(INVALID_COMPANY);
+	Window *w = ShowScriptDebugWindow(CompanyID::Invalid());
 	if (w == nullptr) return ES_NOT_HANDLED;
 	return w->OnHotkey(hotkey);
 }
@@ -1365,7 +1365,7 @@ Window *ShowScriptDebugWindow(CompanyID show_company, bool new_window)
  */
 void InitializeScriptGui()
 {
-	ScriptDebugWindow::initial_state.script_debug_company = INVALID_COMPANY;
+	ScriptDebugWindow::initial_state.script_debug_company = CompanyID::Invalid();
 }
 
 /** Open the AI debug window if one of the AI scripts has crashed. */

@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-using PlanPool = Pool<Plan, PlanID, 16, PlanID::End().base()>;
+using PlanPool = Pool<Plan, PlanID, 16>;
 extern PlanPool _plan_pool;
 
 static constexpr size_t MAX_PLAN_PAYLOAD_SIZE = 32000;

@@ -41,7 +41,7 @@ class CommandCost {
 	Money cost;                                 ///< The cost of this action
 	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
 	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
-	Owner owner = INVALID_COMPANY;              ///< Originator owner of error.
+	Owner owner = CompanyID::Invalid();         ///< Originator owner of error.
 	StringID message;                           ///< Warning message for when success is unset
 
 	enum class CommandCostInlineType {

@@ -29,7 +29,7 @@ using CargoPacketID = PoolID<CargoPacketIDTag>;
 struct CargoPacket;
 
 /** Type of the pool for cargo packets for a little over 16 million packets. */
-using CargoPacketPool = Pool<CargoPacket, CargoPacketID, 1024, CargoPacketID::End().base(), PoolType::Normal, true, false>;
+using CargoPacketPool = Pool<CargoPacket, CargoPacketID, 1024, PoolType::Normal, true, false>;
 /** The actual pool with cargo packets. */
 extern CargoPacketPool _cargopacket_pool;
 
@@ -69,9 +69,9 @@ private:
 
 	Source source{Source::Invalid, SourceType::Industry}; ///< Source of the cargo
 
-	uint8_t flags = 0;                             ///< NOSAVE: temporary flags
-	StationID first_station = INVALID_STATION;     ///< The station where the cargo came from first.
-	StationID next_hop = INVALID_STATION;          ///< Station where the cargo wants to go next.
+	uint8_t flags = 0;                              ///< NOSAVE: temporary flags
+	StationID first_station = StationID::Invalid(); ///< The station where the cargo came from first.
+	StationID next_hop = StationID::Invalid();      ///< Station where the cargo wants to go next.
 
 	/** Cargo packet flag bits in CargoPacket::flags. */
 	enum CargoPacketFlags {
@@ -451,7 +451,7 @@ public:
 	 */
 	inline StationID GetFirstStation() const
 	{
-		return this->count == 0 ? INVALID_STATION : this->packets.front()->first_station;
+		return this->count == 0 ? StationID::Invalid() : this->packets.front()->first_station;
 	}
 
 	/**
@@ -612,8 +612,8 @@ public:
 		while (!next.IsEmpty()) {
 			if (this->packets.find(StationID{next.Pop()}) != this->packets.end()) return true;
 		}
-		/* Packets for INVALID_STATION can go anywhere. */
-		return this->packets.find(INVALID_STATION) != this->packets.end();
+		/* Packets for StationID::Invalid() can go anywhere. */
+		return this->packets.find(StationID::Invalid()) != this->packets.end();
 	}
 
 	/**
@@ -622,7 +622,7 @@ public:
 	 */
 	inline StationID GetFirstStation() const
 	{
-		return this->count == 0 ? INVALID_STATION : this->packets.begin()->second.front()->first_station;
+		return this->count == 0 ? StationID::Invalid() : this->packets.begin()->second.front()->first_station;
 	}
 
 	/**

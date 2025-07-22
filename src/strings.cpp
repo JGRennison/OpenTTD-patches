@@ -2004,7 +2004,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (group == nullptr) break;
 
 					auto handle_group = y_combinator([&](auto handle_group, const Group *g) -> void {
-						if (recurse && g->parent != INVALID_GROUP) {
+						if (recurse && g->parent != GroupID::Invalid()) {
 							handle_group(Group::Get(g->parent));
 							auto tmp_params = MakeParameters();
 							GetStringWithArgs(builder, STR_HIERARCHY_SEPARATOR, tmp_params);

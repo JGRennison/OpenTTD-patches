@@ -1155,7 +1155,7 @@ private:
 
 CargoDataEntry::CargoDataEntry() :
 	parent(nullptr),
-	station(INVALID_STATION),
+	station(StationID::Invalid()),
 	num_children(0),
 	count(0),
 	children(new CargoDataSet(CargoSorter(CargoSortType::CargoType)))
@@ -1732,7 +1732,7 @@ struct StationViewWindow : public Window {
 			}
 
 			if (tmp.GetCount() == 0) {
-				dest->InsertOrRetrieve(INVALID_STATION)->Update(count);
+				dest->InsertOrRetrieve(StationID::Invalid())->Update(count);
 			} else {
 				uint sum_estimated = 0;
 				while (sum_estimated < count) {
@@ -1759,7 +1759,7 @@ struct StationViewWindow : public Window {
 				}
 			}
 		} else {
-			dest->InsertOrRetrieve(INVALID_STATION)->Update(count);
+			dest->InsertOrRetrieve(StationID::Invalid())->Update(count);
 		}
 	}
 
@@ -1801,13 +1801,13 @@ struct StationViewWindow : public Window {
 
 			const CargoDataEntry *source_entry = source_dest->Retrieve(cp->GetFirstStation());
 			if (source_entry == nullptr) {
-				this->ShowCargo(cargo, i, cp->GetFirstStation(), next, INVALID_STATION, cp->Count());
+				this->ShowCargo(cargo, i, cp->GetFirstStation(), next, StationID::Invalid(), cp->Count());
 				continue;
 			}
 
 			const CargoDataEntry *via_entry = source_entry->Retrieve(next);
 			if (via_entry == nullptr) {
-				this->ShowCargo(cargo, i, cp->GetFirstStation(), next, INVALID_STATION, cp->Count());
+				this->ShowCargo(cargo, i, cp->GetFirstStation(), next, StationID::Invalid(), cp->Count());
 				continue;
 			}
 
@@ -1896,7 +1896,7 @@ struct StationViewWindow : public Window {
 	{
 		if (station == this->window_number) {
 			return here;
-		} else if (station == INVALID_STATION) {
+		} else if (station == StationID::Invalid()) {
 			return any;
 		} else if (station == NEW_STATION) {
 			return STR_STATION_VIEW_RESERVED;
@@ -2704,7 +2704,7 @@ static bool StationJoinerNeeded(TileArea ta, const StationPickerCmdProc &proc)
 	if (!_ctrl_pressed) return false;
 
 	/* Now check if we could build there */
-	if (!proc(true, INVALID_STATION)) return false;
+	if (!proc(true, StationID::Invalid())) return false;
 
 	return FindStationsNearby<T>(ta, false) == nullptr;
 }
@@ -2722,7 +2722,7 @@ void ShowSelectBaseStationIfNeeded(TileArea ta, StationPickerCmdProc&& proc)
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 		new SelectStationWindow<T>(_select_station_desc, ta, std::move(proc));
 	} else {
-		proc(false, INVALID_STATION);
+		proc(false, StationID::Invalid());
 	}
 }
 

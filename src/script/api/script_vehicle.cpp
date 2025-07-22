@@ -133,7 +133,7 @@
 		while (dest_wagon-- > 0) w = w->GetNextUnit();
 	}
 
-	return ScriptObject::Command<CMD_MOVE_RAIL_VEHICLE>::Do(v->index, w == nullptr ? ::INVALID_VEHICLE : w->index, move_attached_wagons ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
+	return ScriptObject::Command<CMD_MOVE_RAIL_VEHICLE>::Do(v->index, w == nullptr ? VehicleID::Invalid() : w->index, move_attached_wagons ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
 }
 
 /* static */ bool ScriptVehicle::MoveWagon(VehicleID source_vehicle_id, SQInteger source_wagon, SQInteger dest_vehicle_id, SQInteger dest_wagon)
@@ -274,15 +274,15 @@
 
 /* static */ EngineID ScriptVehicle::GetEngineType(VehicleID vehicle_id)
 {
-	if (!IsValidVehicle(vehicle_id)) return INVALID_ENGINE;
+	if (!IsValidVehicle(vehicle_id)) return ::EngineID::Invalid();
 
 	return ::Vehicle::Get(vehicle_id)->engine_type;
 }
 
 /* static */ EngineID ScriptVehicle::GetWagonEngineType(VehicleID vehicle_id, SQInteger wagon)
 {
-	if (!IsValidVehicle(vehicle_id)) return INVALID_ENGINE;
-	if (wagon >= GetNumWagons(vehicle_id)) return INVALID_ENGINE;
+	if (!IsValidVehicle(vehicle_id)) return ::EngineID::Invalid();
+	if (wagon >= GetNumWagons(vehicle_id)) return ::EngineID::Invalid();
 
 	const Vehicle *v = ::Vehicle::Get(vehicle_id);
 	if (v->type == VEH_TRAIN) {
@@ -302,8 +302,7 @@
 {
 	if (!IsPrimaryVehicle(vehicle_id)) return std::nullopt;
 
-	::SetDParam(0, vehicle_id);
-	return GetString(STR_VEHICLE_NAME);
+	return ::StrMakeValid(::GetString(STR_VEHICLE_NAME, vehicle_id));
 }
 
 /* static */ SQInteger ScriptVehicle::GetAge(VehicleID vehicle_id)

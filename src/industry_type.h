@@ -12,7 +12,6 @@
 
 struct IndustryIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using IndustryID = PoolID<IndustryIDTag>;
-static constexpr IndustryID INVALID_INDUSTRY = IndustryID::Invalid();
 
 typedef uint16_t IndustryGfx;
 typedef uint8_t IndustryType;

@@ -437,7 +437,7 @@ struct NewsWindow : Window {
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		StringID str = STR_NULL;
+		std::string str;
 		switch (widget) {
 			case WID_N_CAPTION: {
 				/* Caption is not a real caption (so that the window cannot be moved)
@@ -454,16 +454,16 @@ struct NewsWindow : Window {
 
 			case WID_N_MESSAGE:
 				CopyInDParam(this->ni->params);
-				str = this->ni->string_id;
+				str = GetString(this->ni->string_id);
 				break;
 
 			case WID_N_COMPANY_MSG:
-				str = this->GetCompanyMessageString();
+				str = GetString(this->GetCompanyMessageString());
 				break;
 
 			case WID_N_VEH_NAME:
 			case WID_N_VEH_TITLE:
-				str = this->GetNewVehicleMessageString(widget);
+				str = GetString(this->GetNewVehicleMessageString(widget));
 				break;
 
 			case WID_N_VEH_INFO: {
@@ -560,7 +560,7 @@ struct NewsWindow : Window {
 			case WID_N_VEH_INFO: {
 				assert(std::holds_alternative<EngineID>(ni->ref1));
 				EngineID engine = std::get<EngineID>(this->ni->ref1);
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, GetEngineInfoString(engine), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, GetEngineInfoString(engine), TC_BLACK, SA_CENTER);
 				break;
 			}
 		}

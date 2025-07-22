@@ -2274,7 +2274,7 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	for (uint i = 0; i != MAX_COMPANIES; i++) t->ratings[i] = RATING_INITIAL;
 
 	t->have_ratings = {};
-	t->exclusivity = INVALID_COMPANY;
+	t->exclusivity = CompanyID::Invalid();
 	t->exclusive_counter = 0;
 	t->statues = {};
 
@@ -3177,7 +3177,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
  * @param tile Tile on which to place the house.
  * @param HouseID The HouseID of the house spec.
  * @param is_protected Whether the house is protected from the town upgrading it.
- * @param town_id Town ID, or INVALID_TOWN to pick a town automatically.
+ * @param town_id Town ID, or TownID::Invalid() to pick a town automatically.
  * @return Empty cost or an error.
  */
 CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, bool is_protected, TownID town_id)
@@ -3191,7 +3191,7 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 	if (!hs->enabled) return CMD_ERROR;
 
 	Town *t;
-	if (town_id == INVALID_TOWN) {
+	if (town_id == TownID::Invalid()) {
 		t = ClosestTownFromTile(tile, UINT_MAX);
 	} else {
 		t = Town::GetIfValid(town_id);
@@ -3848,7 +3848,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlags flags)
 {
 	/* Check if it's allowed to buy the rights */
 	if (!_settings_game.economy.exclusive_rights) return CMD_ERROR;
-	if (t->exclusivity != INVALID_COMPANY) return CMD_ERROR;
+	if (t->exclusivity != CompanyID::Invalid()) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		t->exclusive_counter = 12;
@@ -3910,8 +3910,8 @@ static CommandCost TownActionBribe(Town *t, DoCommandFlags flags)
 			}
 		} else {
 			ChangeTownRating(t, RATING_BRIBE_UP_STEP, RATING_BRIBE_MAXIMUM, DoCommandFlag::Execute);
-			if (t->exclusivity != _current_company && t->exclusivity != INVALID_COMPANY) {
-				t->exclusivity = INVALID_COMPANY;
+			if (t->exclusivity != _current_company && t->exclusivity != CompanyID::Invalid()) {
+				t->exclusivity = CompanyID::Invalid();
 				t->exclusive_counter = 0;
 			}
 		}
@@ -4359,8 +4359,8 @@ Town *ClosestTownFromTile(TileIndex tile, uint threshold)
 			if (!HasTownOwnedRoad(tile)) {
 				TownID tid = GetTownIndex(tile);
 
-				if (tid == INVALID_TOWN) {
-					/* in the case we are generating "many random towns", this value may be INVALID_TOWN */
+				if (tid == TownID::Invalid()) {
+					/* in the case we are generating "many random towns", this value may be TownID::Invalid() */
 					if (_generating_world) return CalcClosestTownFromTile(tile, threshold);
 					assert(Town::GetNumItems() == 0);
 					return nullptr;
@@ -4533,7 +4533,7 @@ void TownsMonthlyLoop()
 		if (t->fund_buildings_months != 0) t->fund_buildings_months--;
 
 		if (t->exclusive_counter != 0) {
-			if (--t->exclusive_counter == 0) t->exclusivity = INVALID_COMPANY;
+			if (--t->exclusive_counter == 0) t->exclusivity = CompanyID::Invalid();
 		}
 
 		/* Check for active failed bribe cooloff periods and decrement them. */

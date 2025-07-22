@@ -57,7 +57,7 @@ struct GraphLegendWindow : Window {
 	{
 		this->InitNested(window_number);
 
-		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
+		for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
 			if (!_legend_excluded_companies.Test(c)) this->LowerWidget(WID_GL_FIRST_COMPANY + c);
 
 			this->OnInvalidateData(c.base());
@@ -699,7 +699,7 @@ public:
 		CompanyMask excluded_companies = _legend_excluded_companies;
 
 		/* Exclude the companies which aren't valid */
-		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
+		for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
 			if (!Company::IsValidID(c)) excluded_companies.Set(c);
 		}
 
@@ -727,7 +727,7 @@ public:
 		this->month = mo;
 
 		this->data.clear();
-		for (CompanyID k = COMPANY_FIRST; k < MAX_COMPANIES; ++k) {
+		for (CompanyID k = CompanyID::Begin(); k < MAX_COMPANIES; ++k) {
 			const Company *c = Company::GetIfValid(k);
 			if (c == nullptr) continue;
 
@@ -1087,7 +1087,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 		CompanyMask excluded_companies = _legend_excluded_companies;
 
 		/* Exclude the companies which aren't valid */
-		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; ++c) {
+		for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
 			if (!Company::IsValidID(c)) excluded_companies.Set(c);
 		}
 
@@ -1127,7 +1127,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
 				bool is_valid = false;
 				OverflowSafeInt64 total_delivered = 0;
-				for (CompanyID k = COMPANY_FIRST; k < MAX_COMPANIES; ++k) {
+				for (CompanyID k = CompanyID::Begin(); k < MAX_COMPANIES; ++k) {
 					if (excluded_companies.Test(k)) continue;
 
 					/* Invalid companies are excluded by excluded_companies */
@@ -1676,7 +1676,7 @@ struct PerformanceRatingDetailWindow : Window {
 		this->UpdateCompanyStats();
 
 		this->InitNested(window_number);
-		this->OnInvalidateData(INVALID_COMPANY.base());
+		this->OnInvalidateData(CompanyID::Invalid().base());
 	}
 
 	void UpdateCompanyStats()
@@ -1760,7 +1760,7 @@ struct PerformanceRatingDetailWindow : Window {
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		/* No need to draw when there's nothing to draw */
-		if (this->company == INVALID_COMPANY) return;
+		if (this->company == CompanyID::Invalid()) return;
 
 		if (IsInsideMM(widget, WID_PRD_COMPANY_FIRST, WID_PRD_COMPANY_LAST + 1)) {
 			if (this->IsWidgetDisabled(widget)) return;
@@ -1867,18 +1867,18 @@ struct PerformanceRatingDetailWindow : Window {
 	{
 		if (!gui_scope) return;
 		/* Disable the companies who are not active */
-		for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; ++i) {
+		for (CompanyID i = CompanyID::Begin(); i < MAX_COMPANIES; ++i) {
 			this->SetWidgetDisabledState(WID_PRD_COMPANY_FIRST + i, !Company::IsValidID(i));
 		}
 
 		/* Check if the currently selected company is still active. */
-		if (this->company != INVALID_COMPANY && !Company::IsValidID(this->company)) {
+		if (this->company != CompanyID::Invalid() && !Company::IsValidID(this->company)) {
 			/* Raise the widget for the previous selection. */
 			this->RaiseWidget(WID_PRD_COMPANY_FIRST + this->company);
-			this->company = INVALID_COMPANY;
+			this->company = CompanyID::Invalid();
 		}
 
-		if (this->company == INVALID_COMPANY) {
+		if (this->company == CompanyID::Invalid()) {
 			for (const Company *c : Company::Iterate()) {
 				this->company = c->index;
 				break;
@@ -1886,13 +1886,13 @@ struct PerformanceRatingDetailWindow : Window {
 		}
 
 		/* Make sure the widget is lowered */
-		if (this->company != INVALID_COMPANY) {
+		if (this->company != CompanyID::Invalid()) {
 			this->LowerWidget(WID_PRD_COMPANY_FIRST + this->company);
 		}
 	}
 };
 
-CompanyID PerformanceRatingDetailWindow::company = INVALID_COMPANY;
+CompanyID PerformanceRatingDetailWindow::company = CompanyID::Invalid();
 
 /*******************************/
 /* INDUSTRY PRODUCTION HISTORY */

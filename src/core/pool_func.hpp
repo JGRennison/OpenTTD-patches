@@ -21,8 +21,9 @@
  * @param type The return type of the method.
  */
 #define DEFINE_POOL_METHOD(type) \
-	template <class Titem, typename Tindex, size_t Tgrowth_step, size_t Tmax_size, PoolType Tpool_type, bool Tcache, bool Tzero, typename Tops> \
-	type Pool<Titem, Tindex, Tgrowth_step, Tmax_size, Tpool_type, Tcache, Tzero, Tops>
+	template <class Titem, typename Tindex, size_t Tgrowth_step, PoolType Tpool_type, bool Tcache, bool Tzero, typename Tops> \
+	requires std::is_base_of_v<PoolIDBase, Tindex> \
+	type Pool<Titem, Tindex, Tgrowth_step, Tpool_type, Tcache, Tzero, Tops>
 
 /**
  * Create a clean pool.
@@ -48,14 +49,14 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
  * Resizes the pool so 'index' can be addressed
  * @param index index we will allocate later
  * @pre index >= this->size
- * @pre index < Tmax_size
+ * @pre index < MAX_SIZE
  */
 DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
 {
 	dbg_assert(index >= this->size);
-	dbg_assert(index < Tmax_size);
+	dbg_assert(index < MAX_SIZE);
 
-	size_t new_size = std::min<size_t>(Tmax_size, Align(std::max<size_t>(index + 1, (this->size * 3) / 2), std::max<uint>(64, static_cast<uint>(Tgrowth_step))));
+	size_t new_size = std::min<size_t>(MAX_SIZE, Align(std::max<size_t>(index + 1, (this->size * 3) / 2), std::max<uint>(64, static_cast<uint>(Tgrowth_step))));
 
 	this->data = ReallocT(this->data, new_size);
 	MemSetT(this->data + this->size, 0, new_size - this->size);
@@ -90,12 +91,12 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 
 	dbg_assert(this->first_unused == this->size);
 
-	if (this->first_unused < Tmax_size) {
+	if (this->first_unused < MAX_SIZE) {
 		this->ResizeFor(this->first_unused);
 		return this->first_unused;
 	}
 
-	dbg_assert(this->first_unused == Tmax_size);
+	dbg_assert(this->first_unused == MAX_SIZE);
 
 	return NO_FREE_ITEM;
 }
@@ -131,12 +132,8 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 	}
 	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);
-	if constexpr (std::is_base_of_v<PoolIDBase, Tindex>) {
-		/* MSVC complains about casting to narrower type, so first cast to the base type... then to the strong type. */
-		item->index = static_cast<Tindex>(static_cast<Tindex::BaseType>(index));
-	} else {
-		item->index = static_cast<Tindex>(index);
-	}
+	/* MSVC complains about casting to narrower type, so first cast to the base type... then to the strong type. */
+	item->index = static_cast<Tindex>(static_cast<Tindex::BaseType>(index));
 	return item;
 }
 
@@ -172,9 +169,9 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
  */
 DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index, Pool::ParamType param)
 {
-	if (unlikely(index >= Tmax_size)) {
+	if (unlikely(index >= MAX_SIZE)) {
 		[[noreturn]] extern void PoolOutOfRangeError(const char *name, size_t index, size_t max_size);
-		PoolOutOfRangeError(this->name, index, Tmax_size);
+		PoolOutOfRangeError(this->name, index, MAX_SIZE);
 	}
 
 	if (index >= this->size) this->ResizeFor(index);

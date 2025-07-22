@@ -1280,7 +1280,7 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 		default:
 			/* From a user pov 0 is a new company, internally it's different and all
 			 * companies are offset by one to ease up on users (eg companies 1-8 not 0-7) */
-			if (playas < COMPANY_FIRST + 1 || playas > MAX_COMPANIES + 1) return false;
+			if (playas < CompanyID::Begin() + 1 || playas > MAX_COMPANIES + 1) return false;
 			break;
 	}
 
@@ -1634,7 +1634,7 @@ DEF_CONSOLE_CMD(ConStartAI)
 	}
 
 	/* Start a new AI company */
-	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, INVALID_COMPANY, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
 
 	return true;
 }
@@ -2122,7 +2122,7 @@ DEF_CONSOLE_CMD(ConSay)
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_CHAT, DESTTYPE_BROADCAST, 0 /* param does not matter */, argv[1]);
 	} else {
-		bool from_admin = (_redirect_console_to_admin < INVALID_ADMIN_ID);
+		bool from_admin = (_redirect_console_to_admin < AdminID::Invalid());
 		NetworkServerSendChat(NETWORK_ACTION_CHAT, DESTTYPE_BROADCAST, 0, argv[1], CLIENT_ID_SERVER, from_admin);
 	}
 
@@ -2148,7 +2148,7 @@ DEF_CONSOLE_CMD(ConSayCompany)
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id.base(), argv[2]);
 	} else {
-		bool from_admin = (_redirect_console_to_admin < INVALID_ADMIN_ID);
+		bool from_admin = (_redirect_console_to_admin < AdminID::Invalid());
 		NetworkServerSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id.base(), argv[2], CLIENT_ID_SERVER, from_admin);
 	}
 
@@ -2168,7 +2168,7 @@ DEF_CONSOLE_CMD(ConSayClient)
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, atoi(argv[1]), argv[2]);
 	} else {
-		bool from_admin = (_redirect_console_to_admin < INVALID_ADMIN_ID);
+		bool from_admin = (_redirect_console_to_admin < AdminID::Invalid());
 		NetworkServerSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, atoi(argv[1]), argv[2], CLIENT_ID_SERVER, from_admin);
 	}
 
@@ -2236,7 +2236,7 @@ enum ConNetworkAuthorizedKeyAction : uint8_t {
 	CNAKA_REMOVE,
 };
 
-static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuthorizedKeys *authorized_keys, ConNetworkAuthorizedKeyAction action, const std::string &authorized_key, CompanyID company = INVALID_COMPANY)
+static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuthorizedKeys *authorized_keys, ConNetworkAuthorizedKeyAction action, const std::string &authorized_key, CompanyID company = CompanyID::Invalid())
 {
 	switch (action) {
 		case CNAKA_LIST:
@@ -2250,7 +2250,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				return;
 			}
 
-			if (company == INVALID_COMPANY) {
+			if (company == CompanyID::Invalid()) {
 				authorized_keys->Add(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
@@ -2265,7 +2265,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				return;
 			}
 
-			if (company == INVALID_COMPANY) {
+			if (company == CompanyID::Invalid()) {
 				authorized_keys->Remove(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);

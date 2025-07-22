@@ -239,7 +239,7 @@ const StringID BaseVehicleListWindow::vehicle_depot_sell_name[] = {
 BaseVehicleListWindow::BaseVehicleListWindow(WindowDesc &desc, const VehicleListIdentifier &vli) : Window(desc), vli(vli)
 {
 	this->grouping = _grouping[vli.type][vli.vtype];
-	this->vehicle_sel = INVALID_VEHICLE;
+	this->vehicle_sel = VehicleID::Invalid();
 	this->UpdateSortingFromGrouping();
 }
 
@@ -460,9 +460,9 @@ void BaseVehicleListWindow::FilterVehicleList()
 	this->vehgroups.Filter(this->cargo_filter_criteria);
 	if (this->vehicles.empty()) {
 		/* No vehicle passed through the filter, invalidate the previously selected vehicle */
-		this->vehicle_sel = INVALID_VEHICLE;
-	} else if (this->vehicle_sel != INVALID_VEHICLE && std::ranges::find(this->vehicles, Vehicle::Get(this->vehicle_sel)) == this->vehicles.end()) { // previously selected engine didn't pass the filter, remove selection
-		this->vehicle_sel = INVALID_VEHICLE;
+		this->vehicle_sel = VehicleID::Invalid();
+	} else if (this->vehicle_sel != VehicleID::Invalid() && std::ranges::find(this->vehicles, Vehicle::Get(this->vehicle_sel)) == this->vehicles.end()) { // previously selected engine didn't pass the filter, remove selection
+		this->vehicle_sel = VehicleID::Invalid();
 	}
 }
 
@@ -1040,7 +1040,7 @@ struct RefitWindow : public Window {
 
 	void Close(int data = 0) override
 	{
-		if (this->window_number != INVALID_VEHICLE) {
+		if (this->window_number != VehicleID::Invalid()) {
 			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		}
 		this->Window::Close();
@@ -1179,7 +1179,7 @@ struct RefitWindow : public Window {
 			case WID_VR_VEHICLE_PANEL_DISPLAY: {
 				Vehicle *v = Vehicle::Get(this->window_number);
 				DrawVehicleImage(v, {this->sprite_left, r.top, this->sprite_right, r.bottom},
-					INVALID_VEHICLE, EIT_IN_DETAILS, this->hscroll != nullptr ? this->hscroll->GetPosition() : 0);
+					VehicleID::Invalid(), EIT_IN_DETAILS, this->hscroll != nullptr ? this->hscroll->GetPosition() : 0);
 
 				/* Highlight selected vehicles. */
 				if (this->order != INVALID_VEH_ORDER_ID) break;
@@ -2535,7 +2535,7 @@ public:
 				break;
 
 			case WID_VL_LIST:
-				this->DrawVehicleListItems(INVALID_VEHICLE, this->resize.step_height, r);
+				this->DrawVehicleListItems(VehicleID::Invalid(), this->resize.step_height, r);
 				break;
 		}
 	}
@@ -2553,7 +2553,7 @@ public:
 
 		/* Hide the widgets that we will not use in this window
 		 * Some windows contains actions only fit for the owner */
-		bool show_buttons = this->owner == _local_company || (_local_company != INVALID_COMPANY && _settings_game.economy.infrastructure_sharing[this->vli.vtype]);
+		bool show_buttons = this->owner == _local_company || (_local_company != CompanyID::Invalid() && _settings_game.economy.infrastructure_sharing[this->vli.vtype]);
 		int plane_to_show = show_buttons ? BP_SHOW_BUTTONS : BP_HIDE_BUTTONS;
 		NWidgetStacked *nwi = this->GetWidget<NWidgetStacked>(WID_VL_HIDE_BUTTONS);
 		if (plane_to_show != nwi->shown_plane) {
@@ -2797,7 +2797,7 @@ public:
 	void OnGameTick() override
 	{
 		if (this->vehgroups.NeedResort()) {
-			StationID station = (this->vli.type == VL_STATION_LIST) ? this->vli.ToStationID() : INVALID_STATION;
+			StationID station = (this->vli.type == VL_STATION_LIST) ? this->vli.ToStationID() : StationID::Invalid();
 
 			Debug(misc, 3, "Periodic resort {} list company {} at station {}", this->vli.vtype, this->owner, station);
 			this->SetDirty();
@@ -3077,7 +3077,7 @@ struct VehicleDetailsWindow : Window {
 
 	void Close(int data = 0) override
 	{
-		if (this->window_number != INVALID_VEHICLE) {
+		if (this->window_number != VehicleID::Invalid()) {
 			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		}
 		this->Window::Close();
@@ -3136,7 +3136,7 @@ struct VehicleDetailsWindow : Window {
 
 	bool ShouldShowGroupLine(const Vehicle *v) const
 	{
-		return (_settings_client.gui.show_vehicle_group_in_details && v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP);
+		return (_settings_client.gui.show_vehicle_group_in_details && v->group_id != GroupID::Invalid() && v->group_id != DEFAULT_GROUP);
 	}
 
 	bool ShouldShowWeightRatioLine(const Vehicle *v) const
@@ -3504,10 +3504,10 @@ struct VehicleDetailsWindow : Window {
 
 				/* Articulated road vehicles use a complete line. */
 				if (v->type == VEH_ROAD && v->HasArticulatedPart()) {
-					DrawVehicleImage(v, tr.WithHeight(ScaleGUITrad(GetVehicleHeight(v->type)), false), INVALID_VEHICLE, EIT_IN_DETAILS, 0);
+					DrawVehicleImage(v, tr.WithHeight(ScaleGUITrad(GetVehicleHeight(v->type)), false), VehicleID::Invalid(), EIT_IN_DETAILS, 0);
 				} else {
 					Rect sr = tr.WithWidth(sprite_width, rtl);
-					DrawVehicleImage(v, sr.WithHeight(ScaleGUITrad(GetVehicleHeight(v->type)), false), INVALID_VEHICLE, EIT_IN_DETAILS, 0);
+					DrawVehicleImage(v, sr.WithHeight(ScaleGUITrad(GetVehicleHeight(v->type)), false), VehicleID::Invalid(), EIT_IN_DETAILS, 0);
 				}
 
 				DrawVehicleDetails(v, tr.Indent(sprite_width, rtl), 0, 0, this->tab);
@@ -4174,7 +4174,7 @@ public:
 					SetDParam(0, v->type);
 					SetDParam(1, v->current_order.GetDestination().ToDepotID());
 					SetDParam(2, PackVelocity(v->GetDisplaySpeed(), v->type));
-					if (v->current_order.GetDestination() == INVALID_DEPOT) {
+					if (v->current_order.GetDestination() == DepotID::Invalid()) {
 						/* This case *only* happens when multiple nearest depot orders
 						 * follow each other (including an order list only one order: a
 						 * nearest depot order) and there are no reachable depots.
@@ -4310,7 +4310,7 @@ public:
 						/* main window 'follows' vehicle */
 						mainwindow->viewport->follow_vehicle = v->index;
 					} else {
-						if (mainwindow->viewport->follow_vehicle == v->index) mainwindow->viewport->follow_vehicle = INVALID_VEHICLE;
+						if (mainwindow->viewport->follow_vehicle == v->index) mainwindow->viewport->follow_vehicle = VehicleID::Invalid();
 						ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos);
 					}
 					this->HandleButtonClick(widget);
