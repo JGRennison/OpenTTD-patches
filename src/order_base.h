@@ -53,7 +53,6 @@ template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID
 
 void IntialiseOrderDestinationRefcountMap();
 void ClearOrderDestinationRefcountMap();
-void importJsonOrderList(const Vehicle * veh, std::string str);
 
 /*
  * xflags bits:
@@ -1273,5 +1272,7 @@ public:
 };
 
 void UpdateOrderUIOnDateChange();
+
+void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
 
 #endif /* ORDER_BASE_H */
