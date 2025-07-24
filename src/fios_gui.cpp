@@ -32,6 +32,7 @@
 #include "gamelog.h"
 #include "misc_cmd.h"
 #include "vehicle_base.h"
+#include "order_serialisation.h"
 
 #include "widgets/fios_widget.h"
 
@@ -1017,7 +1018,7 @@ public:
 			} else if (this->abstract_filetype == FT_ORDERLIST) {
 				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
 				if (fh.has_value()) {
-					std::string data = this->veh->orders->ToJSONString();
+					std::string data = OrderListToJSONString(this->veh->orders);
 					fwrite(data.data(), 1, data.size(), *fh);
 					this->Close();
 				}

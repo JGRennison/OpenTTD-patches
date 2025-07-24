@@ -103,13 +103,6 @@ namespace upstream_sl {
 	class SlVehicleDisaster;
 }
 
-enum JsonOrderImportErrorType : uint8_t {
-	JOIET_OK,			///< Used to suppress errors / check no error occured
-	JOIET_MINOR,		///< A cosmetic attribute of the order was malformed
-	JOIET_MAJOR,		///< An important part of the order was malformed, but it was not strictly required for creating the order
-	JOIET_CRITICAL,		///< Makes building an order completely impossible, in these cases the order is replaced by a label
-};
-
 /* If you change this, keep in mind that it is saved in 3 places:
  * - Load_ORDR, all the global orders
  * - Vehicle -> current_order
@@ -289,7 +282,6 @@ public:
 	void MakeReleaseSlotGroup();
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
-	std::string ToJSONString(VehicleType vt) const;
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -882,7 +874,6 @@ public:
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(StateTicks now);
 	void UpdateScheduledDispatch(const Vehicle *v);
-	std::string ToJSONString();
 
 	/**
 	 * Set the scheduled dispatch duration, in scaled tick
@@ -1016,7 +1007,6 @@ public:
 	OrderIterator<T> begin() { return OrderIterator<T>(this->begin_ptr); }
 	OrderIterator<T> end() { return OrderIterator<T>(this->end_ptr); }
 	bool empty() { return this->begin_ptr == this->end_ptr; }
-	std::string ToJSONString();
 };
 
 /**
@@ -1187,7 +1177,6 @@ public:
 	void InsertOrderAt(Order &&new_order, VehicleOrderID index);
 	void DeleteOrderAt(VehicleOrderID index);
 	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
-	std::string ToJSONString();
 
 	/**
 	 * Is this a shared order list?
@@ -1272,7 +1261,5 @@ public:
 };
 
 void UpdateOrderUIOnDateChange();
-
-void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
 
 #endif /* ORDER_BASE_H */
