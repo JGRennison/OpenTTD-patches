@@ -252,12 +252,10 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 		json["name"] = sd.ScheduleName();
 	}
 
-	if (sd.GetScheduledDispatchDuration() != _settings_client.company.default_sched_dispatch_duration) {
-		json["duration"] = sd.GetScheduledDispatchDuration();
-	}
+	json["duration"] = sd.GetScheduledDispatchDuration();
 
 	if (sd.GetScheduledDispatchDelay() != 0) {
-		json["delay"] = sd.GetScheduledDispatchDelay();
+		json["max-delay"] = sd.GetScheduledDispatchDelay();
 	}
 
 	if (sd.GetScheduledDispatchReuseSlots()) {
@@ -296,8 +294,6 @@ std::string OrderListToJSONString(const OrderList *ol)
 	const auto &sd_data = ol->GetScheduledDispatchScheduleSet();
 
 	if (sd_data.size() != 0) {
-		game_properties["default-scheduled-dispatch-duration"] = _settings_client.company.default_sched_dispatch_duration;
-
 		auto schedules = nlohmann::ordered_json::array();
 		for (const auto &sd : sd_data) {
 			schedules.push_back(DispatchScheduleToJSON(sd));
@@ -526,7 +522,7 @@ public:
 		error_msg = "Error imoprting schedule " + std::to_string(schedule_index) + " : " + error_msg;
 		return ParserFuncWrapper(error_type, error_msg,
 			[&]() {
-				return Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post((StringID)0, this->veh->index, schedule_index, offset, flags, flags);
+				return Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(this->veh->index, schedule_index, offset, flags, flags);
 			});
 	}
 
@@ -536,7 +532,7 @@ public:
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
 		return ParserFuncWrapper<T>(std::move(field), default_val, error_type, std::nullopt,
 			[&](T val) {
-				return Command<cmd>::Post((StringID)0, this->veh->index, schedule_index, offset, val);
+				return Command<cmd>::Post(this->veh->index, schedule_index, offset, val);
 			});
 	}
 
@@ -546,7 +542,7 @@ public:
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
 		return ParserFuncWrapper<T>(std::move(field), default_val, error_type, std::nullopt,
 			[&](T val) {
-				return Command<cmd>::Post((StringID)0, this->veh->index, schedule_index, val);
+				return Command<cmd>::Post(this->veh->index, schedule_index, val);
 			});
 	}
 
@@ -693,6 +689,8 @@ static void ImportJsonOrder(JSONToVehicleCommandParser json_importer)
 		return;
 	}
 
+	// TODO: More changes required for this to work in multiplayer
+
 	json_importer.TryApplyTimetableCommand("max-speed", MTF_TRAVEL_SPEED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("wait-time", MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
@@ -811,14 +809,24 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser json_importer)
 	const Vehicle *veh = json_importer.GetVehicle();
 	const nlohmann::json &json = json_importer.GetJson();
 
-	AddNewScheduledDispatchSchedule(veh->index);
-
 	if (json.is_null()) {
 		return;
 	}
 
+	uint32_t duration = 0;
+	if (!json_importer.TryGetField("duration", duration, JOIET_MAJOR)) {
+		return;
+	}
+	if (duration == 0) {
+		return;
+	}
+
+	// TODO: More changes required for this to work in multiplayer
+
+	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
+	Command<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>::Post(veh->index, start_tick, duration);
+
 	json_importer.TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_SCHEDULE>("name", JOIET_MINOR, std::nullopt);
-	json_importer.TryApplySchDispatchCommand<uint, CMD_SCH_DISPATCH_SET_DURATION>("duration", JOIET_MAJOR, json_importer.importSettings.company.default_sched_dispatch_duration);
 	json_importer.TryApplySchDispatchCommand<uint, CMD_SCH_DISPATCH_SET_DELAY>("max-delay", JOIET_MAJOR, std::nullopt);
 	json_importer.TryApplySchDispatchCommand<bool, CMD_SCH_DISPATCH_SET_REUSE_SLOTS>("re-use-all-slots", JOIET_MAJOR, std::nullopt);
 
@@ -849,7 +857,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser json_importer)
 
 				if (slotData.is_object() || slotData.is_null()) {
 					auto local_importer = json_importer["slots"][it.key()];
-					Command<CMD_SCH_DISPATCH_ADD>::Post((StringID)0, veh->index, veh->orders->GetScheduledDispatchScheduleCount() - 1, offset, 0, 0);
+					Command<CMD_SCH_DISPATCH_ADD>::Post(veh->index, veh->orders->GetScheduledDispatchScheduleCount() - 1, offset, 0, 0);
 
 					bool re_use_slot = false;
 					local_importer.TryGetField("re-use-slot", re_use_slot, JOIET_MAJOR, true);
@@ -963,6 +971,8 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 	std::vector<VehicleOrderID> order_index;
 	order_index.reserve(orders_json.size());
 
+	bool have_schedule = false;
+
 	VehicleOrderID orders_inserted = 0;
 	for (const auto &value : orders_json) {
 		auto order_importer = json_importer.WithNewJson(value);
@@ -982,16 +992,28 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		if (order_importer.TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
 			jump_map[jump_label] = num_orders - 1;
 		};
+
+		if (order_importer.Contains("schedule-index")) have_schedule = true;
 	}
 
 	if (json.contains("schedules") && json["schedules"].is_array()) {
+		if (have_schedule && HasBit(veh->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+			Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
+		}
+
 		const auto &schedules = json["schedules"];
 		if (schedules.is_array()) {
 			for (const auto &value : schedules) {
 				ImportJsonDispatchSchedule(json_importer.WithNewJson(value));
 			}
 		}
+
+		if (have_schedule && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			Command<CMD_SCH_DISPATCH>::Post(veh->index, true);
+		}
 	}
+
+	// TODO: More work required to handle dispatch insert errors with respect to MTF_ASSIGN_SCHEDULE
 
 	/* Post processing (link jumps and assign schedules) */
 	size_t idx = 0;
