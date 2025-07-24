@@ -1579,7 +1579,7 @@ void importJsonDispatchSchedule(JSONToVehicleCommandParser jsonImporter)
 	return;
 }
 
-void importJsonOrderList(const Vehicle * veh, std::string json_str)
+void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 {
 	assert(veh != nullptr);
 

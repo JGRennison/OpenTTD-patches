@@ -827,14 +827,12 @@ public:
 						if (!confirmed) return;
 						SaveLoadWindow *slo = (SaveLoadWindow *)w;
 
-						auto file = FioFOpenFile(slo->selected->name, "r", NO_DIRECTORY);
-
+						auto file = FioFOpenFile(slo->selected->name, "rb", NO_DIRECTORY);
 						if (file.has_value()) {
-							std::ifstream t(file.value());
-							std::stringstream buffer;
-							buffer << t.rdbuf();
-
-							importJsonOrderList(slo->veh, buffer.str());
+							std::optional<UniqueBuffer<uint8_t>> buffer = ReadFileToBuffer(*file, 1 << 20);
+							if (buffer.has_value()) {
+								ImportJsonOrderList(slo->veh, std::string_view((const char *)buffer->get(), buffer->size()));
+							}
 						}
 
 						slo->Close();
