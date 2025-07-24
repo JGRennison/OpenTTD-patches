@@ -334,6 +334,13 @@ static Colours ErrorTypeToColour(JsonOrderImportErrorType error_type)
 	}
 }
 
+struct JSONImportSettings {
+	OrderStopLocation stop_location;
+	bool new_nonstop;
+
+	JSONImportSettings() : stop_location((OrderStopLocation)_settings_client.gui.stop_location), new_nonstop(_settings_client.gui.new_nonstop) {}
+};
+
 class JSONToVehicleCommandParser {
 public:
 	struct Errors {
@@ -346,7 +353,7 @@ public:
 		robin_hood::unordered_map<VehicleOrderID, Error> order_error;
 	};
 
-	const ClientSettings &importSettings;
+	const JSONImportSettings &import_settings;
 
 private:
 	const Vehicle *veh;
@@ -391,8 +398,8 @@ private:
 
 public:
 
-	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, Errors &errors, const ClientSettings &importSettings = _settings_client)
-			: importSettings(importSettings), veh(veh), json(json), errors(errors) {}
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, Errors &errors, const JSONImportSettings &import_settings)
+			: import_settings(import_settings), veh(veh), json(json), errors(errors) {}
 
 	const Vehicle *GetVehicle() const { return this->veh; }
 	const nlohmann::json &GetJson() const { return this->json; }
@@ -555,7 +562,7 @@ public:
 
 	JSONToVehicleCommandParser WithNewJson(const nlohmann::json &new_json)
 	{
-		return JSONToVehicleCommandParser(this->veh,new_json, this->errors, this->importSettings);
+		return JSONToVehicleCommandParser(this->veh, new_json, this->errors, this->import_settings);
 	}
 
 	JSONToVehicleCommandParser operator[](auto val)
@@ -696,7 +703,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser json_importer)
 	json_importer.TryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
 
 	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR,
-			veh->type == VEH_TRAIN ? std::optional((OrderStopLocation)json_importer.importSettings.gui.stop_location) : std::nullopt);
+			veh->type == VEH_TRAIN ? std::optional(json_importer.import_settings.stop_location) : std::nullopt);
 
 	json_importer.TryApplyModifyOrder<DiagDirection>("stop-direction", MOF_RV_TRAVEL_DIR, JOIET_MINOR);
 	json_importer.TryApplyModifyOrder<OrderWaypointFlags>("waypoint-action", MOF_WAYPOINT_FLAGS, JOIET_MAJOR);
@@ -704,16 +711,16 @@ static void ImportJsonOrder(JSONToVehicleCommandParser json_importer)
 	json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
 	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
 
-	bool isDefaultNonStop = json_importer.importSettings.gui.new_nonstop || _settings_game.order.nonstop_only;
-	OrderNonStopFlags defaultNonStop;
+	bool is_default_non_stop = json_importer.import_settings.new_nonstop || _settings_game.order.nonstop_only;
+	OrderNonStopFlags default_non_stop;
 	if (new_order.IsType(OT_GOTO_WAYPOINT)) {
-		defaultNonStop = isDefaultNonStop ? ONSF_NO_STOP_AT_ANY_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS;
+		default_non_stop = is_default_non_stop ? ONSF_NO_STOP_AT_ANY_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS;
 	} else {
-		defaultNonStop = isDefaultNonStop ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE;
+		default_non_stop = is_default_non_stop ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE;
 	}
 
 	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR,
-			veh->IsGroundVehicle() ? std::optional(defaultNonStop) : std::nullopt);
+			veh->IsGroundVehicle() ? std::optional(default_non_stop) : std::nullopt);
 
 	json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition", MOF_COND_VARIABLE, type == OT_CONDITIONAL ? JOIET_CRITICAL : JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<OrderConditionComparator>("comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
@@ -925,7 +932,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		return;
 	}
 
-	ClientSettings import_settings_client = _settings_client;
+	JSONImportSettings import_settings_client{};
 
 	/* If the json cntains game-properties, we will try to parse them and apply them */
 	if (json.contains("game-properties") && json["game-properties"].is_object()) {
@@ -935,7 +942,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		if (osl == OSL_END) {
 			errors.global_errors.push_back({ "'default-stop-location' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 		} else {
-			import_settings_client.gui.stop_location = osl;
+			import_settings_client.stop_location = osl;
 		}
 
 		if (game_properties.contains("new-nonstop") && game_properties["new-nonstop"].is_boolean()) {
@@ -943,18 +950,9 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 			if (!new_nonstop && _settings_game.order.nonstop_only) {
 				errors.global_errors.push_back({ "'new-nonstop' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 			}
-			import_settings_client.gui.new_nonstop = new_nonstop;
+			import_settings_client.new_nonstop = new_nonstop;
 		} else {
 			errors.global_errors.push_back({ "'new-nonstop' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
-		}
-
-		if (json.contains("schedules")) {
-			if (game_properties.contains("default-scheduled-dispatch-duration") && game_properties["default-scheduled-dispatch-duration"].is_number_integer() && game_properties["default-scheduled-dispatch-duration"] > 0) {
-				int def_sched_dispatch_duration = game_properties["default-scheduled-dispatch-duration"];
-				import_settings_client.company.default_sched_dispatch_duration = def_sched_dispatch_duration;
-			} else {
-				errors.global_errors.push_back({ "'default-scheduled-dispatch-duration' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
-			}
 		}
 	} else {
 		errors.global_errors.push_back({ "no valid 'game-properties' found, current setings will be assumed to be correct", JOIET_MAJOR });
