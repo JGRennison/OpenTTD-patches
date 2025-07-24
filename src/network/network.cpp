@@ -586,9 +586,9 @@ std::string_view ParseCompanyFromConnectionString(const std::string &connection_
 		std::string_view company_string = ip.substr(offset + 1);
 		ip = ip.substr(0, offset);
 
-		uint8_t company_value;
-		bool success = IntFromChars(company_string.data(), company_string.data() + company_string.size(), company_value);
-		if (success) {
+		auto result = IntFromChars<uint8_t>(company_string, true);
+		if (result.has_value()) {
+			uint8_t company_value = *result;
 			if (company_value != COMPANY_NEW_COMPANY && company_value != COMPANY_SPECTATOR) {
 				if (company_value > MAX_COMPANIES || company_value == 0) {
 					*company_id = COMPANY_SPECTATOR;
@@ -629,7 +629,8 @@ std::string_view ParseFullConnectionString(const std::string &connection_string,
 	if (port_offset != std::string::npos && (ipv6_close == std::string::npos || ipv6_close < port_offset)) {
 		std::string_view port_string = ip.substr(port_offset + 1);
 		ip = ip.substr(0, port_offset);
-		IntFromChars(port_string.data(), port_string.data() + port_string.size(), port);
+		auto port_result = IntFromChars<uint16_t>(port_string, true);
+		if (port_result.has_value()) port = *port_result;
 	}
 	return ip;
 }

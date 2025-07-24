@@ -11,6 +11,8 @@
 #include "string_func.h"
 #include <string>
 #include <limits>
+#include <optional>
+#include <type_traits>
 
 template <typename F>
 inline void ProcessLineByLine(std::string_view str, F line_functor)
@@ -30,15 +32,20 @@ inline void ProcessLineByLine(std::string_view str, F line_functor)
 
 /*
  * Cut down version of std::from_chars, base is fixed at 10.
- * Returns true on success
+ * @param str The characters to parse
+ * @param allow_trailing Whether to allow trailing characters after the integer
+ * @return The parsed integer or std::nullopt
  */
 template <typename T>
-inline bool IntFromChars(const char* first, const char* last, T& value)
+[[nodiscard]] inline std::optional<T> IntFromChars(std::string_view str, bool allow_trailing = false)
 {
 	static_assert(std::is_integral<T>::value && !std::is_same<T, bool>::value, "T must be an integer");
 
+	const char *first = str.data();
+	const char *last = first + str.size();
+
 	bool negative = false;
-	if (std::is_signed<T>::value) {
+	if constexpr (std::is_signed<T>::value) {
 		if (first != last && *first == '-') {
 			first++;
 			negative = true;
@@ -51,12 +58,12 @@ inline bool IntFromChars(const char* first, const char* last, T& value)
 		const char c = *first;
 		if (c >= '0' && c <= '9') {
 #ifdef WITH_OVERFLOW_BUILTINS
-			if (unlikely(__builtin_mul_overflow(out, 10, &out))) return false;
-			if (unlikely(__builtin_add_overflow(out, c - '0', &out))) return false;
+			if (unlikely(__builtin_mul_overflow(out, 10, &out))) return std::nullopt;
+			if (unlikely(__builtin_add_overflow(out, c - '0', &out))) return std::nullopt;
 #else
-			if (unlikely(out > std::numeric_limits<T>::max() / 10)) return false;
+			if (unlikely(out > std::numeric_limits<T>::max() / 10)) return std::nullopt;
 			out *= 10;
-			if (unlikely(out > (std::numeric_limits<T>::max() - (c - '0')))) return false;
+			if (unlikely(out > (std::numeric_limits<T>::max() - (c - '0')))) return std::nullopt;
 			out += (c - '0');
 #endif
 			first++;
@@ -64,20 +71,12 @@ inline bool IntFromChars(const char* first, const char* last, T& value)
 			break;
 		}
 	}
-	if (start == first) return false;
-	if (std::is_signed<T>::value) {
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4146)
-#endif
-		value = negative ? -out : out;
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-	} else {
-		value = out;
+	if (start == first) return std::nullopt;
+	if (first != last && !allow_trailing) return std::nullopt;
+	if constexpr (std::is_signed<T>::value) {
+		if (negative) out = -out;
 	}
-	return true;
+	return out;
 }
 
 #endif /* STRING_FUNC_EXTRA_H */

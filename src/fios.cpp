@@ -806,8 +806,8 @@ FiosNumberedSaveName::FiosNumberedSaveName(std::string_view prefix) : prefix(pre
 		std::sort(list.begin(), list.end());
 		_savegame_sort_order = order;
 
-		std::string_view name = list.begin()->title;
-		IntFromChars(name.data() + this->prefix.size(), name.data() + name.size(), this->number);
+		auto number_result = IntFromChars<uint>(list.begin()->title.substr(this->prefix.size()), true);
+		if (number_result.has_value()) this->number = *number_result;
 	}
 }
 
@@ -824,7 +824,7 @@ std::string FiosNumberedSaveName::Filename()
  * Generate a savegame name and number according to max_saves.
  * @return A filename in format "<prefix><number>.sav".
 */
-std::string FiosNumberedSaveName::FilenameUsingMaxSaves(int max_saves)
+std::string FiosNumberedSaveName::FilenameUsingMaxSaves(uint max_saves)
 {
 	if (++this->number >= max_saves) this->number = 0;
 	return fmt::format("{}{}.sav", this->prefix, this->number);

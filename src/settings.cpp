@@ -2660,10 +2660,10 @@ static IniFileVersion LoadVersionFromConfig(const IniFile &ini)
 	/* Older ini-file versions don't have this key yet. */
 	if (version_number == nullptr || !version_number->value.has_value()) return IFV_0;
 
-	uint32_t version = 0;
-	IntFromChars(version_number->value->data(), version_number->value->data() + version_number->value->size(), version);
+	auto version_result = IntFromChars<uint32_t>(*version_number->value);
+	if (!version_result.has_value()) return IFV_0;
 
-	return static_cast<IniFileVersion>(version);
+	return static_cast<IniFileVersion>(*version_result);
 }
 
 static void AISaveConfig(IniFile &ini, const char *grpname)

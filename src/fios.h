@@ -79,15 +79,15 @@ const char *FindScenario(const ContentInfo *ci, bool md5sum);
 struct FiosNumberedSaveName {
 	FiosNumberedSaveName(std::string_view prefix);
 	std::string Filename();
-	std::string FilenameUsingMaxSaves(int max_saves);
+	std::string FilenameUsingMaxSaves(uint max_saves);
 	void FilenameUsingNumber(struct format_target &buffer, int num, const char *suffix) const;
 	std::string Extension();
-	int GetLastNumber() const { return this->number; }
+	uint GetLastNumber() const { return this->number; }
 	std::string_view GetSavePath() const { return this->save_path; }
 private:
 	std::string prefix;
 	std::string save_path;
-	int number;
+	uint number;
 };
 
 #endif /* FIOS_H */
