@@ -95,7 +95,7 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 		static std::mutex thread_startup_mutex;
 		std::lock_guard<std::mutex> lock(thread_startup_mutex);
 
-		std::thread t([] (const char *name, TFn&& F, TArgs&&... A) {
+		std::thread t([] (const char *name, TFn&& F, TArgs&&... A) noexcept {
 				/* Delay starting the thread till the main thread is finished
 				 * with the administration. This prevent race-conditions on
 				 * startup. */
@@ -105,14 +105,9 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 
 				SetCurrentThreadName(name);
 				PerThreadSetup(true);
-				try {
-					/* Call user function with the given arguments. */
-					F(A...);
-				} catch (std::exception &e) {
-					FatalError("Unhandled exception in {} thread: {}", name, e.what());
-				} catch (...) {
-					NOT_REACHED();
-				}
+
+				/* Call user function with the given arguments. */
+				F(A...);
 			}, std::forward<const char *>(name), std::forward<TFn>(_Fx), std::forward<TArgs>(_Ax)...);
 
 		if (thr != nullptr) {
