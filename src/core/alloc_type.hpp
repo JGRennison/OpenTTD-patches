@@ -191,6 +191,12 @@ public:
 	{
 		return (bool)this->buffer;
 	}
+
+	std::unique_ptr<T[]> release_buffer() noexcept
+	{
+		this->buffer_size = 0;
+		return std::move(this->buffer);
+	}
 };
 
 #endif /* ALLOC_TYPE_HPP */
