@@ -10,6 +10,7 @@
 #ifndef FILEIO_FUNC_H
 #define FILEIO_FUNC_H
 
+#include "core/alloc_type.hpp"
 #include "core/enum_type.hpp"
 #include "fileio_type.h"
 #include <string>
@@ -30,7 +31,8 @@ const char *FiosGetScreenshotDir();
 void SanitizeFilename(std::string &filename);
 void AppendPathSeparator(std::string &buf);
 void DeterminePaths(const char *exe, bool only_local_path);
-std::unique_ptr<char[]> ReadFileToMem(const std::string &filename, size_t &lenp, size_t maxsize);
+std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(const std::string &filename, size_t maxsize);
+std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(FileHandle &fh, size_t maxsize);
 bool FileExists(const std::string &filename);
 bool ExtractTar(const std::string &tar_filename, Subdirectory subdir);
 

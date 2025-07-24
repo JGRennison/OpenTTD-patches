@@ -8,6 +8,7 @@
 /** @file fileio.cpp Standard In/Out file operations */
 
 #include "stdafx.h"
+#include "core/alloc_type.hpp"
 #include "fileio_func.h"
 #include "spriteloader/spriteloader.hpp"
 #include "debug.h"
@@ -1054,30 +1055,40 @@ void SanitizeFilename(std::string &filename)
 }
 
 /**
- * Load a file into memory.
+ * Read an entire file into a buffer.
  * @param filename Name of the file to load.
- * @param[out] lenp Length of loaded data.
  * @param maxsize Maximum size to load.
- * @return Pointer to new memory containing the loaded data, or \c nullptr if loading failed.
+ * @return Buffer containing the loaded data, or \c std::nullopt if loading failed.
  * @note If \a maxsize less than the length of the file, loading fails.
  */
-std::unique_ptr<char[]> ReadFileToMem(const std::string &filename, size_t &lenp, size_t maxsize)
+std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(const std::string &filename, size_t maxsize)
 {
 	auto in = FileHandle::Open(filename, "rb");
-	if (!in.has_value()) return nullptr;
+	if (!in.has_value()) return std::nullopt;
 
-	fseek(*in, 0, SEEK_END);
-	size_t len = ftell(*in);
-	fseek(*in, 0, SEEK_SET);
-	if (len > maxsize) return nullptr;
+	return ReadFileToBuffer(*in, maxsize);
+}
 
-	std::unique_ptr<char[]> mem = std::make_unique<char[]>(len + 1);
+/**
+ * Read an entire file into a buffer.
+ * @param fh File handle to load, the current file position is not preserved.
+ * @param maxsize Maximum size to load.
+ * @return Buffer containing the loaded data, or \c std::nullopt if loading failed.
+ * @note If \a maxsize less than the length of the file, loading fails.
+ */
+std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(FileHandle &fh, size_t maxsize)
+{
+	fseek(fh, 0, SEEK_END);
+	size_t len = ftell(fh);
+	fseek(fh, 0, SEEK_SET);
+	if (len > maxsize) return std::nullopt;
+
+	std::unique_ptr<uint8_t[]> mem = std::make_unique<uint8_t[]>(len + 1);
 
 	mem.get()[len] = 0;
-	if (fread(mem.get(), len, 1, *in) != 1) return nullptr;
+	if (fread(mem.get(), len, 1, fh) != 1) return std::nullopt;
 
-	lenp = len;
-	return mem;
+	return UniqueBuffer<uint8_t>(std::move(mem), len);
 }
 
 /**

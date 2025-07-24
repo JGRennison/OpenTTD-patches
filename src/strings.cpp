@@ -254,7 +254,7 @@ struct LanguagePackDeleter {
 	void operator()(LanguagePack *langpack)
 	{
 		/* LanguagePack is in fact reinterpreted char[], we need to reinterpret it back to free it properly. */
-		delete[] reinterpret_cast<char*>(langpack);
+		delete[] reinterpret_cast<uint8_t *>(langpack);
 	}
 };
 
@@ -2428,11 +2428,13 @@ bool LanguagePackHeader::IsReasonablyFinished() const
 bool ReadLanguagePack(const LanguageMetadata *lang)
 {
 	/* Current language pack */
-	size_t len = 0;
-	std::unique_ptr<LanguagePack, LanguagePackDeleter> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
-	if (!lang_pack) return false;
+	std::optional<UniqueBuffer<uint8_t>> result = ReadFileToBuffer(lang->file, 1U << 20);
+	if (!result.has_value() || !*result) return false;
 
-	/* End of read data (+ terminating zero added in ReadFileToMem()) */
+	size_t len = result->size();
+	std::unique_ptr<LanguagePack, LanguagePackDeleter> lang_pack(reinterpret_cast<LanguagePack *>(result->release_buffer().release()));
+
+	/* End of read data (+ terminating zero added in ReadFileToBuffer()) */
 	const char *end = (char *)lang_pack.get() + len + 1;
 
 	/* We need at least one byte of lang_pack->data */
