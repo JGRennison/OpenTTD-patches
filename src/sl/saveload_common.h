@@ -474,7 +474,7 @@ inline void SlWriteUint16(const SlIsPrimitiveType auto &data)
 inline void SlWriteUint32(const SlIsPrimitiveType auto &data)
 {
 	static_assert(sizeof(data.base()) <= 4);
-	SlWriteUint16((uint32_t)data.base());
+	SlWriteUint32((uint32_t)data.base());
 }
 
 void SlSkipBytes(size_t length);
