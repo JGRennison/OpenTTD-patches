@@ -33,11 +33,6 @@
 #include "misc_cmd.h"
 #include "vehicle_base.h"
 
-#include <string>
-#include <sstream>
-#include <streambuf>
-#include <fstream>
-
 #include "widgets/fios_widget.h"
 
 #include "table/sprites.h"
@@ -934,15 +929,6 @@ public:
 			case WID_SL_SAVE_GAME: // Save game
 				/* Note, this is also called via the OSK; and we need to lower the button. */
 				this->HandleButtonClick(WID_SL_SAVE_GAME);
-				if (this->abstract_filetype == FT_ORDERLIST) {
-					std::string fileName = FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str());
-					std::ofstream output;
-					output.open(fileName);
-					output << this->veh->orders->ToJSONString();
-
-					output.close();
-					this->Close();
-				}
 				break;
 		}
 	}
@@ -1028,6 +1014,14 @@ public:
 				} else {
 					_switch_mode = SM_SAVE_GAME;
 				}
+			} else if (this->abstract_filetype == FT_ORDERLIST) {
+				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
+				if (fh.has_value()) {
+					std::string data = this->veh->orders->ToJSONString();
+					fwrite(data.data(), 1, data.size(), *fh);
+					this->Close();
+				}
+				return;
 			} else {
 				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText().c_str());
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
