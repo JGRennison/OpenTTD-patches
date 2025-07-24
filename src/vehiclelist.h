@@ -34,7 +34,7 @@ enum VehicleListType : uint8_t {
 	VLT_END
 };
 
-template<typename T>
+template <typename T>
 concept VehicleListIdentifierValidType = (std::is_same_v<T, CompanyID> || std::is_same_v<T, DestinationID> || std::is_same_v<T, GroupID> ||
 		std::is_same_v<T, StationID> || std::is_same_v<T, VehicleID> || std::is_same_v<T, DepotID> || std::is_same_v<T, TraceRestrictSlotID>) && !std::is_integral_v<T>;
 

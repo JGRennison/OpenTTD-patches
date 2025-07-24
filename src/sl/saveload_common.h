@@ -12,7 +12,7 @@
 
 #include "../strings_type.h"
 
-template<typename T>
+template <typename T>
 concept SlIsPrimitiveType = T::saveload_primitive_type || false;
 
 struct SaveLoad;

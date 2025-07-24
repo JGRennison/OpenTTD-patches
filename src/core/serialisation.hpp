@@ -20,7 +20,7 @@
 #include <variant>
 #include <limits>
 
-template<typename T>
+template <typename T>
 concept SerialisationAsBase = T::serialisation_as_base || false;
 
 void   BufferSend_bool  (std::vector<uint8_t> &buffer, size_t limit, bool     data);

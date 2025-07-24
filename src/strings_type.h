@@ -78,7 +78,7 @@ static constexpr StringID SPECSTR_PRESIDENT_NAME = 0x70E7; ///< Special string f
 
 static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for _temp_special_strings
 
-template<typename T>
+template <typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;
 
 using StringParameterData = std::variant<std::monostate, uint64_t, std::string>;

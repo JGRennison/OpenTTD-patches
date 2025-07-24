@@ -32,7 +32,7 @@ namespace TupleCmdDataDetail {
 		((SanitiseGeneric(std::get<Tindices>(values), settings)), ...);
 	}
 
-	template<typename T, size_t Tindex>
+	template <typename T, size_t Tindex>
 	constexpr auto MakeRefTupleWithoutStringsItem(const T &values)
 	{
 		const auto &val = std::get<Tindex>(values);
