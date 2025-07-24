@@ -51,6 +51,7 @@
 #include "walltime_func.h"
 
 #include <bit>
+#include <exception>
 
 #ifdef WITH_ALLEGRO
 #	include <allegro.h>
@@ -1169,6 +1170,23 @@ void CrashLog::MakeCrashSavegameAndScreenshot(const char *name_buffer)
 	}
 
 	return nullptr;
+}
+
+/* static */ void CrashLog::InitialiseExceptionTerminateHandler()
+{
+	std::set_terminate([]() {
+		std::exception_ptr eptr = std::current_exception();
+		if (eptr) {
+			try {
+				std::rethrow_exception(eptr);
+			} catch (const std::exception &e) {
+				FatalError("std::terminate called: exception: {}", e.what());
+			} catch (...) {
+				FatalErrorI("std::terminate called: other exception");
+			}
+		}
+		FatalErrorI("std::terminate called");
+	});
 }
 
 #if defined(WITH_BFD)

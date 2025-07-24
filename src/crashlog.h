@@ -208,6 +208,8 @@ public:
 	inline const char *GetMessage() const { return this->message; }
 
 	static const char *GetAbortCrashlogReason();
+
+	static void InitialiseExceptionTerminateHandler();
 };
 
 #endif /* CRASHLOG_H */

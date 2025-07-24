@@ -26,6 +26,7 @@ int CDECL main(int argc, char *argv[])
 
 	PerThreadSetupInit();
 	CrashLog::InitialiseCrashLog();
+	CrashLog::InitialiseExceptionTerminateHandler();
 
 	SetRandomSeed(time(nullptr));
 
