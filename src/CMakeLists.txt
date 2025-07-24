@@ -377,9 +377,12 @@ add_files(
     order_cmd.cpp
     order_cmd.h
     order_dest_func.h
+    order_enums_to_json.h
     order_func.h
     order_gui.cpp
     order_type.h
+    order_serialisation.cpp
+    order_serialisation.h
     osk_gui.cpp
     palette.cpp
     palette_func.h

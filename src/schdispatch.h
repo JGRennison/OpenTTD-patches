@@ -42,4 +42,5 @@ public:
 
 using GetVehicleLastDispatchRecordFunctor = std::function<const LastDispatchRecord *(uint16_t)>;
 OrderConditionEvalResult EvaluateDispatchSlotConditionalOrder(const Order *order, std::span<const DispatchSchedule> schedules, StateTicks state_ticks, GetVehicleLastDispatchRecordFunctor get_vehicle_record);
+
 #endif /* SCHDISPATCH_H */
