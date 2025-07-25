@@ -194,7 +194,7 @@ template <Commands Tcmd>
 void EnqueueDoCommandP(TileIndex tile, const CmdPayload<Tcmd> &payload, StringID error_msg, CommandCallback callback = CommandCallback::None, CallbackParameter callback_param = 0, DoCommandIntlFlag intl_flags = DCIF_NONE)
 {
 	extern void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags);
-	return EnqueueDoCommandPImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED);
+	return EnqueueDoCommandPImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, intl_flags | DCIF_TYPE_CHECKED | DCIF_NO_ESTIMATE);
 }
 
 #endif /* COMMAND_FUNC_H */

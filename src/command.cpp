@@ -731,6 +731,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	bool estimate_only = _shift_pressed && IsLocalCompany() &&
 			!_generating_world &&
 			!(intl_flags & DCIF_NETWORK_COMMAND) &&
+			!(intl_flags & DCIF_NO_ESTIMATE) &&
 			!GetCommandFlags(cmd).Test(CommandFlag::NoEst);
 
 	/* We're only sending the command, so don't do

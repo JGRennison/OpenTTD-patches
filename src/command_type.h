@@ -789,6 +789,7 @@ enum DoCommandIntlFlag : uint8_t {
 	DCIF_TYPE_CHECKED        = 0x1, ///< payload type has been checked
 	DCIF_NETWORK_COMMAND     = 0x2, ///< execute the command without sending it on the network
 	DCIF_NOT_MY_CMD          = 0x4, ///< not my own DoCommandP
+	DCIF_NO_ESTIMATE         = 0x8, ///< disable command estimation
 };
 DECLARE_ENUM_AS_BIT_SET(DoCommandIntlFlag)
 
