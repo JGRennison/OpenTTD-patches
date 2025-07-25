@@ -48,10 +48,10 @@ private:
 	std::map<void *, size_t> allocations;
 #endif
 
-	void CheckLimitFailed() const;
+	void CheckLimitFailed();
 
 public:
-	inline void CheckLimit() const
+	inline void CheckLimit()
 	{
 		if (this->allocated_size > this->allocation_limit) this->CheckLimitFailed();
 	}

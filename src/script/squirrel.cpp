@@ -33,8 +33,9 @@ static const size_t SAFE_LIMIT = 0x8000000; ///< 128 MiB, a safe choice for almo
 
 /* NB: Indented to reduce upstream diff */
 
-	void ScriptAllocator::CheckLimitFailed() const
+	void ScriptAllocator::CheckLimitFailed()
 	{
+		this->error_thrown = true;
 		throw Script_FatalError("Maximum memory allocation exceeded");
 	}
 
