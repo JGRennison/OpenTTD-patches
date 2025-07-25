@@ -87,6 +87,7 @@ CommandCost CmdSchDispatchAdd(DoCommandFlags flags, VehicleID veh, uint32_t sche
 			if (time >= ds.GetScheduledDispatchDuration()) time -= ds.GetScheduledDispatchDuration();
 			ds.AddScheduledDispatch(time);
 		}
+		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -745,7 +746,6 @@ void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
 		return;
 	}
 	this->scheduled_dispatch.insert(insert_position, { offset, 0 });
-	this->UpdateScheduledDispatch(nullptr);
 }
 
 /**
