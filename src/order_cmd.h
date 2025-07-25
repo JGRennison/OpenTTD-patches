@@ -21,7 +21,7 @@ enum class ReverseOrderOperation : uint8_t {
 
 struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderCmdData> {
 	VehicleID veh;
-	VehicleOrderID sel_ord;
+	VehicleOrderID sel_ord; // This may be INVALID_VEH_ORDER_ID to append to the end of the order list
 	typename TupleTypeAdapter<decltype(std::declval<Order>().GetCmdRefTuple())>::Value new_order;
 
 	InsertOrderCmdData() = default;
