@@ -428,12 +428,13 @@ public:
 		VehicleOrderID order_index = oid.value_or(veh->GetNumOrders() - 1);
 
 		if (error_type == JOIET_CRITICAL) {
-			/* If the order id is not defined and it's a critical error, we are adding a label at the end of the list. */
-			if (!oid.has_value()) {
-				order_index += 1;
-			} else {
-				/* If we are get critical error on an existing orrer (oid defined), it will be replaced with a label, so we are deleting it. */
+			
+			if (oid.has_value()) {
+				/* If a critical error on an existing order (oid defined) is found, it will be replaced with a label, so we must delete the order. */
 				Command<CMD_DELETE_ORDER>::Post(veh->tile, veh->index, order_index);
+			} else {
+				/* A critical error on an undefined order id refers to an order that has not been added to the list yet, therefore we must increment the order_index */
+				order_index += 1;
 			}
 
 			Order error_order;
