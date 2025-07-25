@@ -155,7 +155,7 @@ struct BufferSerialisationHelper {
 	template <typename V>
 	void Send_generic(const V &data)
 	{
-		if constexpr (std::is_same_v<V, std::string>) {
+		if constexpr (std::is_same_v<V, std::string> || std::is_same_v<V, std::string_view>) {
 			this->Send_string(data);
 		} else if constexpr (SerialisationAsBase<V>) {
 			this->Send_generic_integer(data.base());
