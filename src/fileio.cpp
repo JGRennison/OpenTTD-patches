@@ -1071,7 +1071,7 @@ std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(const std::string &filenam
 
 /**
  * Read an entire file into a buffer.
- * @param fh File handle to load, the current file position is not preserved.
+ * @param fh File handle to load, the current file position is not preserved, the file handle must have been opened in binary (not text) mode.
  * @param maxsize Maximum size to load.
  * @return Buffer containing the loaded data, or \c std::nullopt if loading failed.
  * @note If \a maxsize less than the length of the file, loading fails.
