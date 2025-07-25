@@ -435,7 +435,7 @@ public:
 		VehicleOrderID order_index = oid.value_or(veh->GetNumOrders() - 1);
 
 		if (error_type == JOIET_CRITICAL) {
-			
+
 			if (oid.has_value()) {
 				/* If a critical error on an existing order (oid defined) is found, it will be replaced with a label, so we must delete the order. */
 				Command<CMD_DELETE_ORDER>::Post(veh->tile, veh->index, order_index);
@@ -529,15 +529,17 @@ public:
 			});
 	}
 
-
-	bool TryApplySchDispatchSlotFlagsCommand(JsonOrderImportErrorType error_type, std::string error_msg, uint32_t offset, uint32_t flags)
+	bool TryApplySchDispatchAddSlotsCommand(JsonOrderImportErrorType error_type, std::string error_msg, std::vector<std::pair<uint32_t, uint16_t>> &&slots)
 	{
-		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		error_msg = "Error imoprting schedule " + std::to_string(schedule_index) + " : " + error_msg;
-		return ParserFuncWrapper(error_type, error_msg,
-			[&]() {
-				return Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(this->veh->index, schedule_index, offset, flags, flags);
-			});
+		SchDispatchBulkAddCmdData payload;
+		payload.veh = this->veh->index;
+		payload.schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
+		payload.slots = std::move(slots);
+		bool result = DoCommandP<CMD_SCH_DISPATCH_BULK_ADD>(veh->tile, payload, (StringID)0);
+		if (!result) {
+			this->LogError("Error importing schedule " + std::to_string(payload.schedule_index) + " : " + error_msg, error_type, true);
+		}
+		return result;
 	}
 
 	template <typename T, Commands cmd>
@@ -859,6 +861,13 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser json_importer)
 	if (json.contains("slots")) {
 		const auto &slotsJson = json.at("slots");
 		if (slotsJson.is_object()) {
+			std::vector<std::pair<uint32_t, uint16_t>> slots_to_add;
+			auto flush = [&]() {
+				if (slots_to_add.empty()) return;
+				json_importer.TryApplySchDispatchAddSlotsCommand(JOIET_MAJOR, "Could not load slots", std::move(slots_to_add));
+				slots_to_add.clear();
+			};
+
 			for (const auto &it : slotsJson.items()) {
 				auto res = IntFromChars<uint32_t>(it.key());
 				if (!res.has_value()) {
@@ -871,7 +880,6 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser json_importer)
 
 				if (slotData.is_object() || slotData.is_null()) {
 					auto local_importer = json_importer["slots"][it.key()];
-					Command<CMD_SCH_DISPATCH_ADD>::Post(veh->index, veh->orders->GetScheduledDispatchScheduleCount() - 1, offset, 0, 0);
 
 					bool re_use_slot = false;
 					local_importer.TryGetField("re-use-slot", re_use_slot, JOIET_MAJOR, true);
@@ -895,9 +903,13 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser json_importer)
 						}
 					}
 
-					local_importer.TryApplySchDispatchSlotFlagsCommand(JOIET_MAJOR, "Could not load slot flags", offset, flags);
+					slots_to_add.push_back({ offset, flags });
+
+					if (slots_to_add.size() >= 512) flush(); // Limit number of slots per command
 				}
 			}
+
+			flush();
 		}
 	}
 }
