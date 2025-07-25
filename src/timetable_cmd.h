@@ -65,4 +65,16 @@ DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SWAP_SCHEDULES,      CmdSchDispatchSwapSchedul
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SET_SLOT_FLAGS,      CmdSchDispatchSetSlotFlags,       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, uint16_t, uint16_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_RENAME_TAG,          CmdSchDispatchRenameTag,          {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint16_t, std::string>)
 
+struct SchDispatchBulkAddCmdData final : public CommandPayloadSerialisable<SchDispatchBulkAddCmdData> {
+	VehicleID veh;
+	uint32_t schedule_index;
+	std::vector<std::pair<uint32_t, uint16_t>> slots;
+
+	void Serialise(BufferSerialisationRef buffer) const override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void FormatDebugSummary(format_target &output) const override;
+};
+
+DEF_CMD_DIRECT_NT(CMD_SCH_DISPATCH_BULK_ADD,           CmdSchDispatchBulkAdd,            {}, CMDT_ROUTE_MANAGEMENT, SchDispatchBulkAddCmdData)
+
 #endif /* TIMETABLE_CMD_H */

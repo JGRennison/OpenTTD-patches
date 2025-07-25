@@ -640,6 +640,7 @@ enum Commands : uint8_t {
 
 	CMD_SCH_DISPATCH,                           ///< scheduled dispatch start
 	CMD_SCH_DISPATCH_ADD,                       ///< scheduled dispatch add
+	CMD_SCH_DISPATCH_BULK_ADD,                  ///< scheduled dispatch bulk add
 	CMD_SCH_DISPATCH_REMOVE,                    ///< scheduled dispatch remove
 	CMD_SCH_DISPATCH_SET_DURATION,              ///< scheduled dispatch set schedule duration
 	CMD_SCH_DISPATCH_SET_START_DATE,            ///< scheduled dispatch set start date
