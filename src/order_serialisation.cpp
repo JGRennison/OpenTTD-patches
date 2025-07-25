@@ -372,28 +372,35 @@ private:
 	}
 
 	template <typename T, typename F>
-	bool ParserFuncWrapper(std::optional<std::string> field, std::optional<T> default_val, JsonOrderImportErrorType error_type, std::optional<VehicleOrderID> oid, F exec)
+	bool ParserFuncWrapper(std::string_view field, std::optional<T> default_val, JsonOrderImportErrorType error_type, std::optional<VehicleOrderID> oid, F exec)
 	{
 		static_assert(std::is_same_v<T, std::string> || std::is_convertible_v<T, int> || std::is_base_of_v<PoolIDBase, T>, "data is either a string or it's convertible to int");
-		assert(field.has_value() || default_val.has_value());
 
 		T val;
-		bool suppress_error = false;
-		if (!field || !this->TryGetField<T>(*field, val, error_type, !oid.has_value(), oid)) {
-			suppress_error = true;
+		bool default_used = false;
+		if (!this->TryGetField<T>(field, val, error_type, !oid.has_value(), oid)) {
 			if (default_val) {
+				default_used = true;
 				val = *default_val;
-			} else {
-				return false;
-			}
+			} else return false;
 		}
 
 		bool success = exec(val);
-		if (field.has_value() && !success && !suppress_error) {
-			this->LogError("Value for '" + field.value_or("<INTERNAL_ERROR>") + "' is invalid", error_type, !oid.has_value(), oid);
+
+		/*
+		 * NB: If a default value is used and 'exec' fails, this is intentional.
+		 * The default is provided as a fallback, but it is not guaranteed to be valid in the current context.
+		 * Validation is delegated entirely to the 'exec' function, and therefore the command system.
+		 * If the command system determines the value is invalid,
+		 * it simply skips applying it — no error is logged in this case.
+		 */
+		if (default_used) return true;
+
+		if (!success) {
+			this->LogError(fmt::format("Value for '{}' is invalid", field), error_type, !oid.has_value(), oid);
 		}
 
-		return success || suppress_error;
+		return success;
 	}
 
 public:
@@ -479,39 +486,38 @@ public:
 			}
 		} else if (fail_type == JOIET_CRITICAL) {
 			LogError(fmt::format("Required '{}' is missing", key), fail_type, is_global_error, oid);
-			return false;
 		}
 		return false;
 	}
 
 	template <typename T = uint16_t>
-	bool TryApplyTimetableCommand(std::optional<std::string> field, ModifyTimetableFlags mtf, JsonOrderImportErrorType error_type) {
-		return TryApplyTimetableCommand(std::move(field), mtf, error_type, this->veh->GetNumOrders() - 1);
+	bool TryApplyTimetableCommand(std::string_view field, ModifyTimetableFlags mtf, JsonOrderImportErrorType error_type) {
+		return TryApplyTimetableCommand(std::move(field), mtf, this->veh->GetNumOrders() - 1, error_type);
 	}
 
 	template <typename T = uint16_t>
-	bool TryApplyTimetableCommand(std::optional<std::string> field, ModifyTimetableFlags mtf, JsonOrderImportErrorType error_type, VehicleOrderID oid)
+	bool TryApplyTimetableCommand(std::string_view field, ModifyTimetableFlags mtf, VehicleOrderID oid, JsonOrderImportErrorType error_type)
 	{
 		VehicleID vid = this->veh->index;
 
 		static_assert(std::is_convertible_v<T,int>, "Timetable operations only take numerical values");
 		return ParserFuncWrapper<T>(std::move(field), std::nullopt, error_type, oid,
 			[&](T val) {
-				return Command<CMD_CHANGE_TIMETABLE>::Post(vid, oid, mtf, val, MTCF_NONE);
+			return Command<CMD_CHANGE_TIMETABLE>::Post(vid, oid, mtf, val, MTCF_NONE);
 			}
 		);
 
 	}
 
 	template <typename T>
-	bool TryApplyModifyOrder(std::optional<std::string> field, ModifyOrderFlags mof, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO) {
-		return TryApplyModifyOrder(std::move(field), mof, veh->GetNumOrders() - 1, error_type, default_val, cargo);
+	bool TryApplyModifyOrder(std::string_view field, ModifyOrderFlags mof, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO) {
+		return TryApplyModifyOrder(field, mof, veh->GetNumOrders() - 1, error_type, default_val, cargo);
 	}
 
 	template <typename T>
-	bool TryApplyModifyOrder(std::optional<std::string> field, ModifyOrderFlags mof, VehicleOrderID oid, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO)
+	bool TryApplyModifyOrder(std::string_view field, ModifyOrderFlags mof, VehicleOrderID oid, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO)
 	{
-		return ParserFuncWrapper<T>(std::move(field), default_val, error_type, oid,
+		return ParserFuncWrapper<T>(field, default_val, error_type, oid,
 			[&](T val) {
 				if constexpr (std::is_same_v<std::string, T>) {
 					return ModifyOrder(mof, 0, cargo, val);
@@ -535,20 +541,20 @@ public:
 	}
 
 	template <typename T, Commands cmd>
-	bool TryApplySchDispatchCommand(std::optional<std::string> field, JsonOrderImportErrorType error_type, std::optional<T> default_val, uint32_t offset)
+	bool TryApplySchDispatchCommand(std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val, uint32_t offset)
 	{
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		return ParserFuncWrapper<T>(std::move(field), default_val, error_type, std::nullopt,
+		return ParserFuncWrapper<T>(field, default_val, error_type, std::nullopt,
 			[&](T val) {
 				return Command<cmd>::Post(this->veh->index, schedule_index, offset, val);
 			});
 	}
 
 	template <typename T, Commands cmd>
-	bool TryApplySchDispatchCommand(std::optional<std::string> field, JsonOrderImportErrorType error_type, std::optional<T> default_val)
+	bool TryApplySchDispatchCommand(std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val)
 	{
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		return ParserFuncWrapper<T>(std::move(field), default_val, error_type, std::nullopt,
+		return ParserFuncWrapper<T>(field, default_val, error_type, std::nullopt,
 			[&](T val) {
 				return Command<cmd>::Post(this->veh->index, schedule_index, val);
 			});
@@ -1022,7 +1028,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 		auto local_importer = json_importer.WithNewJson(value);
 
-		local_importer.TryApplyTimetableCommand<uint64_t>("schedule-index", MTF_ASSIGN_SCHEDULE, JOIET_MAJOR, order_id);
+		local_importer.TryApplyTimetableCommand("schedule-index", MTF_ASSIGN_SCHEDULE, order_id, JOIET_MAJOR);
 
 		std::string jump_label;
 		if (local_importer.TryGetField("jump-to", jump_label, JOIET_MAJOR)) {
