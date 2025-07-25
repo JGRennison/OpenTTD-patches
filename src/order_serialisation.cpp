@@ -988,7 +988,30 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 	std::vector<VehicleOrderID> order_index;
 	order_index.reserve(orders_json.size());
 
-	bool have_schedule = false;
+	if (json.contains("schedules")) {
+		const auto &schedules = json["schedules"];
+		if (schedules.is_array() && schedules.size() > 0) {
+			bool have_schedule = false;
+			for (const auto &value : orders_json) {
+				if (value.contains("schedule-index")) {
+					have_schedule = true;
+					break;
+				}
+			}
+
+			if (have_schedule && HasBit(veh->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+				Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
+			}
+
+			for (const auto &value : schedules) {
+				ImportJsonDispatchSchedule(json_importer.WithNewJson(value));
+			}
+
+			if (have_schedule && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+				Command<CMD_SCH_DISPATCH>::Post(veh->index, true);
+			}
+		}
+	}
 
 	VehicleOrderID orders_inserted = 0;
 	for (const auto &value : orders_json) {
@@ -1009,25 +1032,6 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		if (order_importer.TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
 			jump_map[jump_label] = num_orders - 1;
 		};
-
-		if (order_importer.Contains("schedule-index")) have_schedule = true;
-	}
-
-	if (json.contains("schedules") && json["schedules"].is_array()) {
-		if (have_schedule && HasBit(veh->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-			Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
-		}
-
-		const auto &schedules = json["schedules"];
-		if (schedules.is_array()) {
-			for (const auto &value : schedules) {
-				ImportJsonDispatchSchedule(json_importer.WithNewJson(value));
-			}
-		}
-
-		if (have_schedule && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-			Command<CMD_SCH_DISPATCH>::Post(veh->index, true);
-		}
 	}
 
 	// TODO: More work required to handle dispatch insert errors with respect to MTF_ASSIGN_SCHEDULE

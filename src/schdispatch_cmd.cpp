@@ -400,10 +400,14 @@ CommandCost CmdSchDispatchAddNewSchedule(DoCommandFlags flags, VehicleID veh, St
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders == nullptr) return CMD_ERROR;
-	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
+	if (v->orders != nullptr && v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
+
+	if (v->orders == nullptr && !OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
+		if (v->orders == nullptr) {
+			v->orders = new OrderList(nullptr, v);
+		}
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
 		ds.SetScheduledDispatchDuration(duration);
