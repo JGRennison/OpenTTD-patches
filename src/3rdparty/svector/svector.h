@@ -707,6 +707,9 @@ public:
         }
 
         if (s == c) {
+#if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
+            if (s + 1 == 0) __builtin_unreachable();
+#endif
             auto new_capacity = calculate_new_capacity(s + 1, c);
             realloc(new_capacity);
             // reallocation happened, so we definitely are now in indirect mode
