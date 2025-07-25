@@ -831,6 +831,7 @@ CommandCost DoCommandPScript(Commands cmd, TileIndex tile, const CommandPayloadB
 void ExecuteCommandQueue()
 {
 	while (!_command_queue.empty()) {
+		if (_network_client_commands_sent >= 2) break; // Too many network client commands sent this tick already
 		Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 		cur_company.Change(_command_queue.front().company);
 		DoCommandPContainer(_command_queue.front().cmd, _command_queue.front().intl_flags);
@@ -846,7 +847,8 @@ void ClearCommandQueue()
 
 void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags)
 {
-	if (_docommand_recursive == 0) {
+	/* Do not execute immediately if we are already in DoCommand context or there have already been multiple client commands sent this tick. */
+	if (_docommand_recursive == 0 || _network_client_commands_sent >= 2) {
 		DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags);
 	} else {
 		CommandQueueItem &item = _command_queue.emplace_back();

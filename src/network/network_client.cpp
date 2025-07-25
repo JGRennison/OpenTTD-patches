@@ -163,6 +163,7 @@ ClientNetworkGameSocketHandler::~ClientNetworkGameSocketHandler()
 	assert(ClientNetworkGameSocketHandler::my_client == this);
 	ClientNetworkGameSocketHandler::my_client = nullptr;
 	_network_settings_access = false;
+	_network_client_commands_sent = 0;
 
 	delete this->GetInfo();
 
@@ -588,6 +589,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCommand(const OutgoingComm
 	my_client->NetworkGameSocketHandler::SendCommand(*p, cp);
 
 	my_client->SendPacket(std::move(p));
+	_network_client_commands_sent++;
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -1158,6 +1160,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FRAME(Packet &p
 		Debug(net, 7, "Sent ACK at {}", _frame_counter);
 		SendAck();
 	}
+
+	_network_client_commands_sent = 0;
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

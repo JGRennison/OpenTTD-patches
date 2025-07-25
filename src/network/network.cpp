@@ -74,6 +74,8 @@ bool _network_available;                                ///< is network mode ava
 bool _network_dedicated;                                ///< are we a dedicated server?
 bool _is_network_server;                                ///< Does this client wants to be a network-server?
 bool _network_settings_access;                          ///< Can this client change server settings?
+uint32_t _network_client_commands_sent;                 ///< Commands sent in this measurement period
+
 TypedIndexContainer<std::array<NetworkCompanyState, MAX_COMPANIES>, CompanyID> _network_company_states; ///< Statistics about some companies.
 std::string _network_company_server_id;                 ///< Server ID string used for company passwords
 std::array<uint8_t, 16> _network_company_password_storage_token; ///< Non-secret token for storage of company passwords in savegames
