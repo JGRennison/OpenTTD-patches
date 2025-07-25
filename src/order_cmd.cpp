@@ -966,6 +966,8 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
+	if (sel_ord == INVALID_VEH_ORDER_ID) sel_ord = v->GetNumOrders(); // Append to end of list
+
 	/* Check if the inserted order is to the correct destination (owner, type),
 	 * and has the correct flags if any */
 	switch (new_order.GetType()) {
@@ -1310,7 +1312,9 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 		InsertOrder(v, Order(new_order), sel_ord);
 	}
 
-	return CommandCost();
+	CommandCost cost;
+	cost.SetResultData(sel_ord);
+	return cost;
 }
 
 /**
