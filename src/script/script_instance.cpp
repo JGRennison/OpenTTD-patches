@@ -206,7 +206,7 @@ void ScriptInstance::Died()
 	this->engine = nullptr;
 }
 
-void ScriptInstance::GameLoop()
+void ScriptInstance::GameLoop() noexcept
 {
 	ScriptObject::ActiveInstance active(this);
 
@@ -295,7 +295,7 @@ void ScriptInstance::GameLoop()
 	}
 }
 
-void ScriptInstance::CollectGarbage()
+void ScriptInstance::CollectGarbage() noexcept
 {
 	if (this->is_started && !this->IsDead()) {
 		ScriptObject::ActiveInstance active(this);

@@ -83,12 +83,12 @@ public:
 	/**
 	 * Run the GameLoop of a script.
 	 */
-	void GameLoop();
+	void GameLoop() noexcept;
 
 	/**
 	 * Let the VM collect any garbage.
 	 */
-	void CollectGarbage();
+	void CollectGarbage() noexcept;
 
 	/**
 	 * Get the storage of this script.
