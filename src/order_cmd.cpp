@@ -4112,9 +4112,25 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 		VehicleOrderID modify_pos = INVALID_VEH_ORDER_ID;
 		CommandCost last_result = CommandCost();
 
+		uint active_schedule_id = UINT_MAX;
+		DispatchSchedule *active_schedule = nullptr;
+		uint32_t active_schedule_after_end = 0;
+		bool update_active_schedule = false;
+
+		bool dirty_dispatch_windows = false;
+
+		auto flush_active_schedule = [&]() {
+			if (update_active_schedule) {
+				active_schedule->UpdateScheduledDispatch(nullptr);
+				update_active_schedule = false;
+				dirty_dispatch_windows = true;
+			}
+		};
+
 		DeserialisationBuffer buf(cmd_data.cmds.data(), cmd_data.cmds.size());
 		while (buf.CanDeserialiseBytes(1, false)) {
-			switch (static_cast<BulkOrderOp>(buf.Recv_uint8())) {
+			const BulkOrderOp op = static_cast<BulkOrderOp>(buf.Recv_uint8());
+			switch (op) {
 				case BulkOrderOp::ClearOrders:
 					for (VehicleOrderID i = v->GetNumOrders(); i > 0; i--) {
 						/* Delete individually to avoid breaking shared order relationships */
@@ -4204,7 +4220,125 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					if (modify_pos >= v->GetNumOrders()) modify_pos = INVALID_VEH_ORDER_ID;
 					last_result = CommandCost();
 					break;
+
+				/* Scheduled dispatch opcodes follow */
+
+				case BulkOrderOp::AppendSchedule: {
+					flush_active_schedule();
+
+					StateTicks start_tick;
+					uint32_t duration;
+					buf.Recv_generic_seq({}, start_tick, duration);
+					if (buf.error) return CMD_ERROR;
+					if (CmdSchDispatchAddNewSchedule(flags, cmd_data.veh, start_tick, duration).Succeeded()) {
+						active_schedule_id = v->orders->GetScheduledDispatchScheduleCount() - 1;
+						active_schedule = &v->orders->GetDispatchScheduleByIndex(active_schedule_id);
+						active_schedule_after_end = 0;
+					} else {
+						active_schedule_id = UINT_MAX;
+						active_schedule = nullptr;
+					}
+					break;
+				}
+
+				case BulkOrderOp::SelectSchedule: {
+					flush_active_schedule();
+
+					buf.Recv_generic_seq({}, active_schedule_id);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id >= v->orders->GetScheduledDispatchScheduleCount()) {
+						active_schedule_id = UINT_MAX;
+						active_schedule = nullptr;
+					} else {
+						active_schedule = &v->orders->GetDispatchScheduleByIndex(active_schedule_id);
+						const std::vector<DispatchSlot> &dslist = active_schedule->GetScheduledDispatch();
+						active_schedule_after_end = dslist.empty() ? 0 : dslist.back().offset + 1;
+					}
+					break;
+				}
+
+				case BulkOrderOp::SetDispatchEnabled: {
+					bool enabled;
+					buf.Recv_generic_seq({}, enabled);
+					if (buf.error) return CMD_ERROR;
+					CmdSchDispatch(flags, cmd_data.veh, enabled);
+					break;
+				}
+
+				case BulkOrderOp::RenameSchedule: {
+					std::string text;
+					buf.Recv_generic_seq({}, text);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						CmdSchDispatchRenameSchedule(flags, cmd_data.veh, active_schedule_id, text);
+					}
+					break;
+				}
+
+				case BulkOrderOp::RenameScheduleTag: {
+					uint16_t tag_id;
+					std::string text;
+					buf.Recv_generic_seq({}, tag_id, text);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						CmdSchDispatchRenameTag(flags, cmd_data.veh, active_schedule_id, tag_id, text);
+					}
+					break;
+				}
+
+				case BulkOrderOp::SetScheduleMaxDelay: {
+					uint32_t delay;
+					buf.Recv_generic_seq({}, delay);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						active_schedule->SetScheduledDispatchDelay(delay);
+						dirty_dispatch_windows = true;
+					}
+					break;
+				}
+
+				case BulkOrderOp::SetScheduleReuseSlots: {
+					bool reuse;
+					buf.Recv_generic_seq({}, reuse);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						active_schedule->SetScheduledDispatchReuseSlots(reuse);
+						dirty_dispatch_windows = true;
+					}
+					break;
+				}
+
+				case BulkOrderOp::AddScheduleSlot:
+				case BulkOrderOp::AddScheduleSlotWithFlags: {
+					uint32_t offset;
+					uint16_t flags = 0;
+					buf.Recv_generic_seq({}, offset);
+					if (op == BulkOrderOp::AddScheduleSlotWithFlags) buf.Recv_generic_seq({}, flags);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						std::vector<DispatchSlot> &dslist = active_schedule->GetScheduledDispatchMutable();
+						if (offset >= active_schedule_after_end) {
+							/* Append to end, fast path */
+							dslist.push_back({ offset, flags });
+							active_schedule_after_end = offset + 1;
+						} else {
+							auto insert_position = std::lower_bound(dslist.begin(), dslist.end(), DispatchSlot{ offset, 0 });
+							if (insert_position != dslist.end() && insert_position->offset == offset) {
+								insert_position->flags = flags;
+							} else {
+								dslist.insert(insert_position, { offset, flags });
+							}
+						}
+						update_active_schedule = true;
+					}
+					break;
+				}
 			}
+		}
+
+		flush_active_schedule();
+		if (dirty_dispatch_windows) {
+			SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 		}
 
 		if (buf.error) return CMD_ERROR;

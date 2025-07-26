@@ -353,7 +353,8 @@ struct JSONBulkOrderCommandBuffer {
 	BulkOrderCmdData cmd_data;
 	BulkOrderOpSerialiser op_serialiser;
 	std::vector<uint8_t> next_buffer;
-	size_t order_pos = 0;
+	size_t cut_pos = 0;
+	uint dispatch_schedule_select = UINT32_MAX;
 
 	JSONBulkOrderCommandBuffer(const Vehicle *v) : tile(v->tile), op_serialiser(this->cmd_data.cmds)
 	{
@@ -365,6 +366,7 @@ struct JSONBulkOrderCommandBuffer {
 	JSONBulkOrderCommandBuffer &operator=(const JSONBulkOrderCommandBuffer &) = delete;
 	JSONBulkOrderCommandBuffer &operator=(JSONBulkOrderCommandBuffer &&) = delete;
 
+private:
 	void SendCmd()
 	{
 		if (!this->cmd_data.cmds.empty()) {
@@ -373,22 +375,49 @@ struct JSONBulkOrderCommandBuffer {
 		}
 	}
 
-	void StartOrder()
+	void CheckMaxSize()
 	{
 		if (this->cmd_data.cmds.size() >= BULK_ORDER_MAX_CMD_SIZE) {
 			this->next_buffer.clear();
-			this->next_buffer.insert(this->next_buffer.begin(), this->cmd_data.cmds.begin() + this->order_pos, this->cmd_data.cmds.end());
-			this->cmd_data.cmds.resize(this->order_pos);
+			if (this->dispatch_schedule_select != UINT32_MAX) {
+				BulkOrderOpSerialiser next_serialiser(this->next_buffer);
+				next_serialiser.SelectSchedule(this->dispatch_schedule_select);
+			}
+			this->next_buffer.insert(this->next_buffer.end(), this->cmd_data.cmds.begin() + this->cut_pos, this->cmd_data.cmds.end());
+			this->cmd_data.cmds.resize(this->cut_pos);
 			this->SendCmd();
 			this->cmd_data.cmds.swap(this->next_buffer);
 			this->next_buffer.clear();
 		}
-		this->order_pos = this->cmd_data.cmds.size();
+		this->cut_pos = this->cmd_data.cmds.size();
+	}
+
+public:
+	inline void StartOrder()
+	{
+		this->CheckMaxSize();
+	}
+
+	inline void PostDispatchCmd()
+	{
+		this->CheckMaxSize();
+	}
+
+	inline void SetDispatchScheduleId(uint32_t schedule_id)
+	{
+		this->CheckMaxSize();
+		this->dispatch_schedule_select = schedule_id;
+	}
+
+	inline void DispatchSchedulesDone()
+	{
+		this->CheckMaxSize();
+		this->dispatch_schedule_select = UINT32_MAX;
 	}
 
 	void Flush()
 	{
-		this->StartOrder();
+		this->CheckMaxSize();
 		this->SendCmd();
 	}
 };
@@ -586,42 +615,6 @@ public:
 				}
 				if (error_type == JOIET_CRITICAL) this->cmd_buffer.op_serialiser.ReplaceOnFail();
 				return true;
-			});
-	}
-
-	bool TryApplySchDispatchAddSlotsCommand (JsonOrderImportErrorType error_type, std::string error_msg, std::vector<std::pair<uint32_t, uint16_t>> &&slots)
-	requires (TMode == JSONToVehicleMode::Dispatch)
-	{
-		SchDispatchBulkAddCmdData payload;
-		payload.veh = this->veh->index;
-		payload.schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		payload.slots = std::move(slots);
-		bool result = DoCommandP<CMD_SCH_DISPATCH_BULK_ADD>(veh->tile, payload, (StringID)0);
-		if (!result) {
-			this->LogError(fmt::format("Error importing schedule {}: {} ", std::to_string(payload.schedule_index), error_msg), error_type);
-		}
-		return result;
-	}
-
-	template <typename T, Commands cmd>
-	bool TryApplySchDispatchCommand(std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val, uint32_t offset)
-	requires (TMode == JSONToVehicleMode::Dispatch)
-	{
-		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		return ParserFuncWrapper<T>(field, default_val, error_type,
-			[&](T val) {
-				return Command<cmd>::Post(this->veh->index, schedule_index, offset, val);
-			});
-	}
-
-	template <typename T, Commands cmd>
-	bool TryApplySchDispatchCommand (std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt)
-	requires (TMode == JSONToVehicleMode::Dispatch)
-	{
-		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
-		return ParserFuncWrapper<T>(field, default_val, error_type,
-			[&](T val) {
-				return Command<cmd>::Post(this->veh->index, schedule_index, val);
 			});
 	}
 
@@ -870,29 +863,39 @@ static int TagStringToIndex(std::string_view tag)
 
 static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleMode::Dispatch> json_importer)
 {
-	const Vehicle *veh = json_importer.GetVehicle();
 	const nlohmann::json &json = json_importer.GetJson();
 
+	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
+
+	auto create_error_schedule = [&]() {
+		/* Create an empty error schedule to avoid disrupting schedule indices. */
+		json_importer.cmd_buffer.op_serialiser.AppendSchedule(start_tick, 24 * 60 * _settings_time.ticks_per_minute);
+		json_importer.cmd_buffer.op_serialiser.RenameSchedule("[Parse Error]");
+	};
+
 	if (json.is_null()) {
+		create_error_schedule();
 		return;
 	}
 
 	uint32_t duration = 0;
-	if (!json_importer.TryGetField("duration", duration, JOIET_MAJOR)) {
+	if (!json_importer.TryGetField("duration", duration, JOIET_MAJOR) || duration == 0) {
+		create_error_schedule();
 		return;
 	}
-	if (duration == 0) {
-		return;
+
+	json_importer.cmd_buffer.op_serialiser.AppendSchedule(start_tick, duration);
+
+	if (auto result = json_importer.TryGetField<std::string_view>("name", JOIET_MINOR)) {
+		json_importer.cmd_buffer.op_serialiser.RenameSchedule(*result);
 	}
-
-	// TODO: More changes required for this to work in multiplayer
-
-	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
-	Command<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>::Post(veh->index, start_tick, duration);
-
-	json_importer.TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_SCHEDULE>("name", JOIET_MINOR);
-	json_importer.TryApplySchDispatchCommand<uint, CMD_SCH_DISPATCH_SET_DELAY>("max-delay", JOIET_MAJOR);
-	json_importer.TryApplySchDispatchCommand<bool, CMD_SCH_DISPATCH_SET_REUSE_SLOTS>("re-use-all-slots", JOIET_MAJOR);
+	if (auto result = json_importer.TryGetField<uint>("max-delay", JOIET_MINOR)) {
+		json_importer.cmd_buffer.op_serialiser.SetScheduleMaxDelay(*result);
+	}
+	if (auto result = json_importer.TryGetField<bool>("re-use-all-slots", JOIET_MINOR)) {
+		json_importer.cmd_buffer.op_serialiser.SetScheduleReuseSlots(*result);
+	}
+	json_importer.cmd_buffer.PostDispatchCmd();
 
 	if (json.contains("renamed-tags") && json["renamed-tags"].is_object()) {
 		for (const auto &names : json["renamed-tags"].items()) {
@@ -901,7 +904,10 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 			if (index == -1 || !names.value().is_string()) {
 				json_importer.LogError(fmt::format("'{}' is not a valid tag index.", names.key()), JOIET_MINOR);
 			} else {
-				json_importer["renamed-tags"].TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_TAG>(names.key(), JOIET_MINOR, std::nullopt, index);
+				if (auto result = json_importer.TryGetField<std::string_view>(names.key(), JOIET_MINOR)) {
+					json_importer.cmd_buffer.op_serialiser.RenameScheduleTag((uint16_t)index, *result);
+					json_importer.cmd_buffer.PostDispatchCmd();
+				}
 			}
 		}
 	}
@@ -909,13 +915,6 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	if (json.contains("slots")) {
 		const auto &slotsJson = json.at("slots");
 		if (slotsJson.is_object()) {
-			std::vector<std::pair<uint32_t, uint16_t>> slots_to_add;
-			auto flush = [&]() {
-				if (slots_to_add.empty()) return;
-				json_importer.TryApplySchDispatchAddSlotsCommand(JOIET_MAJOR, "Could not load slots", std::move(slots_to_add));
-				slots_to_add.clear();
-			};
-
 			for (const auto &it : slotsJson.items()) {
 				auto res = IntFromChars<uint32_t>(it.key());
 				if (!res.has_value()) {
@@ -932,7 +931,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 					bool re_use_slot = false;
 					local_importer.TryGetField("re-use-slot", re_use_slot, JOIET_MAJOR);
 
-					uint32_t flags =  0;
+					uint16_t flags = 0;
 					if (re_use_slot) {
 						SetBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					}
@@ -951,13 +950,14 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 						}
 					}
 
-					slots_to_add.push_back({ offset, flags });
-
-					if (slots_to_add.size() >= 512) flush(); // Limit number of slots per command
+					if (flags != 0) {
+						json_importer.cmd_buffer.op_serialiser.AddScheduleSlotWithFlags(offset, flags);
+					} else {
+						json_importer.cmd_buffer.op_serialiser.AddScheduleSlot(offset);
+					}
+					json_importer.cmd_buffer.PostDispatchCmd();
 				}
 			}
-
-			flush();
 		}
 	}
 }
@@ -1049,12 +1049,14 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 			uint schedule_index = 0;
 			for (const auto &value : schedules) {
+				cmd_buffer.SetDispatchScheduleId(schedule_index);
 				ImportJsonDispatchSchedule(json_importer.WithNewTarget<JSONToVehicleMode::Dispatch>(value, schedule_index));
 				schedule_index++;
 			}
+			cmd_buffer.DispatchSchedulesDone();
 
 			if (have_schedule && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-				Command<CMD_SCH_DISPATCH>::Post(veh->index, true);
+				cmd_buffer.op_serialiser.SetDispatchEnabled(true);
 			}
 		}
 	}

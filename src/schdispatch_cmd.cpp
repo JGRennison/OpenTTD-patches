@@ -28,9 +28,6 @@
 
 #include "safeguards.h"
 
-static constexpr uint16_t DISPATCH_SLOT_PERMITTED_MASK = GetBitMaskSC<uint16_t>(DispatchSlot::SDSF_REUSE_SLOT, 1) |
-		GetBitMaskFL<uint16_t>(DispatchSlot::SDSF_FIRST_TAG, DispatchSlot::SDSF_LAST_TAG);
-
 /**
  * Enable or disable scheduled dispatch
  * @param flags Operation to perform.
@@ -146,7 +143,7 @@ CommandCost CmdSchDispatchBulkAdd(DoCommandFlags flags, const SchDispatchBulkAdd
 
 	if (data.slots.size() > 512) return CommandCost(STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS);
 	for (const auto &it : data.slots) {
-		if ((it.second & DISPATCH_SLOT_PERMITTED_MASK) != it.second) return CMD_ERROR;
+		if ((it.second & DispatchSlot::PERMITTED_FLAG_MASK) != it.second) return CMD_ERROR;
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
@@ -777,7 +774,7 @@ CommandCost CmdSchDispatchSwapSchedules(DoCommandFlags flags, VehicleID veh, uin
  */
 CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, uint16_t values, uint16_t mask)
 {
-	if ((mask & DISPATCH_SLOT_PERMITTED_MASK) != mask) return CMD_ERROR;
+	if ((mask & DispatchSlot::PERMITTED_FLAG_MASK) != mask) return CMD_ERROR;
 	if ((values & (~mask)) != 0) return CMD_ERROR;
 
 	Vehicle *v = Vehicle::GetIfValid(veh);

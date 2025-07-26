@@ -23,6 +23,15 @@ enum class BulkOrderOp {
 	ReplaceOnFail,
 	InsertFail,
 	SeekTo,
+	AppendSchedule,
+	SelectSchedule,
+	SetDispatchEnabled,
+	RenameSchedule,
+	RenameScheduleTag,
+	SetScheduleMaxDelay,
+	SetScheduleReuseSlots,
+	AddScheduleSlot,
+	AddScheduleSlotWithFlags,
 };
 
 static constexpr size_t BULK_ORDER_MAX_CMD_SIZE = 2048;
@@ -81,6 +90,60 @@ public:
 	{
 		this->OpCode(BulkOrderOp::SeekTo);
 		this->serialiser.Send_generic(order_id);
+	}
+
+	void AppendSchedule(StateTicks start_tick, uint32_t duration)
+	{
+		this->OpCode(BulkOrderOp::AppendSchedule);
+		this->serialiser.Send_generic_seq(start_tick, duration);
+	}
+
+	void SelectSchedule(uint schedule_id)
+	{
+		this->OpCode(BulkOrderOp::SelectSchedule);
+		this->serialiser.Send_generic(schedule_id);
+	}
+
+	void SetDispatchEnabled(bool enabled)
+	{
+		this->OpCode(BulkOrderOp::SetDispatchEnabled);
+		this->serialiser.Send_generic(enabled);
+	}
+
+	void RenameSchedule(std::string_view text)
+	{
+		this->OpCode(BulkOrderOp::RenameSchedule);
+		this->serialiser.Send_generic(text);
+	}
+
+	void RenameScheduleTag(uint16_t tag_id, std::string_view text)
+	{
+		this->OpCode(BulkOrderOp::RenameScheduleTag);
+		this->serialiser.Send_generic_seq(tag_id, text);
+	}
+
+	void SetScheduleMaxDelay(uint32_t delay)
+	{
+		this->OpCode(BulkOrderOp::SetScheduleMaxDelay);
+		this->serialiser.Send_generic(delay);
+	}
+
+	void SetScheduleReuseSlots(bool reuse)
+	{
+		this->OpCode(BulkOrderOp::SetScheduleReuseSlots);
+		this->serialiser.Send_generic(reuse);
+	}
+
+	void AddScheduleSlot(uint32_t offset)
+	{
+		this->OpCode(BulkOrderOp::AddScheduleSlot);
+		this->serialiser.Send_generic(offset);
+	}
+
+	void AddScheduleSlotWithFlags(uint32_t offset, uint16_t flags)
+	{
+		this->OpCode(BulkOrderOp::AddScheduleSlotWithFlags);
+		this->serialiser.Send_generic_seq(offset, flags);
 	}
 };
 
