@@ -32,6 +32,7 @@
 #include "company_base.h"
 #include "infrastructure_func.h"
 #include "order_backup.h"
+#include "order_bulk.h"
 #include "order_cmd.h"
 #include "cheat_type.h"
 #include "viewport_func.h"
@@ -4066,4 +4067,148 @@ void InsertOrderCmdData::FormatDebugSummary(format_target &output) const
 		output.format(Order::CMD_TUPLE_FMT, std::get<Tindices>(this->new_order)...);
 	};
 	handler(std::make_index_sequence<std::tuple_size_v<decltype(this->new_order)>>{});
+}
+
+void BulkOrderCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_generic(this->veh);
+	buffer.Send_buffer(this->cmds);
+}
+
+bool BulkOrderCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	buffer.Recv_generic(this->veh, default_string_validation);
+	this->cmds = buffer.Recv_buffer();
+	if (this->cmds.size() > BULK_ORDER_MAX_CMD_SIZE) return false;
+	return true;
+}
+
+void BulkOrderCmdData::FormatDebugSummary(format_target &output) const
+{
+	output.format("{}, {} command bytes", this->veh, this->cmds.size());
+}
+
+/**
+ * Bulk order operation
+ * @param flags Operation to perform.
+ * @param cmd_data Command data.
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
+{
+	Vehicle *v = Vehicle::GetIfValid(cmd_data.veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		if (v->orders == nullptr) {
+			if (!OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
+			v->orders = new OrderList(nullptr, v);
+		}
+
+		VehicleOrderID insert_pos = INVALID_VEH_ORDER_ID;
+		VehicleOrderID modify_pos = INVALID_VEH_ORDER_ID;
+		CommandCost last_result = CommandCost();
+
+		DeserialisationBuffer buf(cmd_data.cmds.data(), cmd_data.cmds.size());
+		while (buf.CanDeserialiseBytes(1, false)) {
+			switch (static_cast<BulkOrderOp>(buf.Recv_uint8())) {
+				case BulkOrderOp::ClearOrders:
+					for (VehicleOrderID i = v->GetNumOrders(); i > 0; i--) {
+						/* Delete individually to avoid breaking shared order relationships */
+						DeleteOrder(v, i - 1);
+					}
+					insert_pos = INVALID_VEH_ORDER_ID;
+					modify_pos = INVALID_VEH_ORDER_ID;
+					break;
+
+				case BulkOrderOp::Insert: {
+					Order new_order{};
+					auto ref_tuple = new_order.GetCmdRefTuple();
+					buf.Recv_generic(ref_tuple, {});
+					if (buf.error) return CMD_ERROR;
+					last_result = CmdInsertOrderIntl(flags, v, insert_pos, new_order, CIOIF_NONE);
+					if (last_result.Succeeded() && last_result.HasResultData()) {
+						modify_pos = last_result.GetResultData();
+						if (insert_pos != INVALID_VEH_ORDER_ID) insert_pos++;
+					} else {
+						modify_pos = INVALID_VEH_ORDER_ID;
+					}
+					break;
+				}
+
+				case BulkOrderOp::Modify: {
+					ModifyOrderFlags mof;
+					uint16_t data;
+					CargoType cargo_id;
+					std::string text;
+					buf.Recv_generic_seq({}, mof, data, cargo_id, text);
+					if (buf.error) return CMD_ERROR;
+					if (modify_pos != INVALID_VEH_ORDER_ID) {
+						last_result = CmdModifyOrder(flags, cmd_data.veh, modify_pos, mof, data, cargo_id, text);
+					}
+					break;
+				}
+
+				case BulkOrderOp::Refit: {
+					CargoType cargo;
+					buf.Recv_generic(cargo, {});
+					if (buf.error) return CMD_ERROR;
+					if (modify_pos != INVALID_VEH_ORDER_ID) {
+						last_result = CmdOrderRefit(flags, cmd_data.veh, modify_pos, cargo);
+					}
+					break;
+				}
+
+				case BulkOrderOp::Timetable: {
+					ModifyTimetableFlags mtf;
+					uint32_t data;
+					ModifyTimetableCtrlFlags ctrl_flags;
+					buf.Recv_generic_seq({}, mtf, data, ctrl_flags);
+					if (buf.error) return CMD_ERROR;
+					if (modify_pos != INVALID_VEH_ORDER_ID) {
+						last_result = CmdChangeTimetable(flags, cmd_data.veh, modify_pos, mtf, data, ctrl_flags);
+					}
+					break;
+				}
+
+				case BulkOrderOp::InsertFail:
+					modify_pos = INVALID_VEH_ORDER_ID;
+					last_result = CMD_ERROR;
+					[[fallthrough]];
+
+				case BulkOrderOp::ReplaceOnFail:
+					if (last_result.Failed()) {
+						Order error_order;
+						error_order.MakeLabel(OLST_TEXT);
+						error_order.SetColour(COLOUR_RED);
+						error_order.SetLabelText("[Error] This order could not be parsed");
+
+						if (modify_pos != INVALID_VEH_ORDER_ID) {
+							DeleteOrder(v, modify_pos);
+							InsertOrder(v, std::move(error_order), modify_pos);
+							modify_pos = INVALID_VEH_ORDER_ID;
+						} else {
+							if (v->GetNumOrders() < MAX_VEH_ORDER_ID) InsertOrder(v, std::move(error_order), insert_pos);
+						}
+						last_result = CommandCost();
+					}
+					break;
+
+				case BulkOrderOp::SeekTo:
+					buf.Recv_generic_integer(insert_pos);
+					modify_pos = insert_pos;
+					if (insert_pos > v->GetNumOrders()) insert_pos = INVALID_VEH_ORDER_ID;
+					if (modify_pos >= v->GetNumOrders()) modify_pos = INVALID_VEH_ORDER_ID;
+					last_result = CommandCost();
+					break;
+			}
+		}
+
+		if (buf.error) return CMD_ERROR;
+	}
+
+	return CommandCost();
 }

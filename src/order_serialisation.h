@@ -23,5 +23,6 @@ enum JsonOrderImportErrorType : uint8_t {
 
 void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
 std::string OrderListToJSONString(const OrderList *ol);
+Colours ErrorTypeToColour(JsonOrderImportErrorType error_type);
 
 #endif /* ORDER_SERIALISATION_H */

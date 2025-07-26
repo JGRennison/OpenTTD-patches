@@ -374,6 +374,7 @@ add_files(
     order_backup.cpp
     order_backup.h
     order_base.h
+    order_bulk.h
     order_cmd.cpp
     order_cmd.h
     order_dest_func.h
