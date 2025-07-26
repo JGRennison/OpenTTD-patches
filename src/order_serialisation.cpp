@@ -404,17 +404,31 @@ struct JsonErrors {
 	robin_hood::unordered_map<int, Error> schedule_errors;
 };
 
-//temp
-typedef int ScheduleDispatchID;
+enum class JSONToVehicleMode {
+	Global,
+	Order,
+	Dispatch,
+};
 
-template <typename ID=void*>
+template <JSONToVehicleMode Tmode> struct JSONToVehicleModeTraits;
+
+template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Global> {
+	using IDType = std::monostate;
+};
+
+template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Order> {
+	using IDType = VehicleOrderID;
+};
+
+template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Dispatch> {
+	using IDType = uint;
+};
+
+template <JSONToVehicleMode TMode = JSONToVehicleMode::Global>
 class JSONToVehicleCommandParser {
-	static_assert(
-		std::is_same_v<ID, void*> || std::is_same_v<ID, VehicleOrderID> || std::is_same_v<ID, ScheduleDispatchID>,
-		"JSONToVehicleCommandParser: ID must be void*, VehicleOrderID, or ScheduleDispatchID"
-		);
-
 public:
+	using ID = typename JSONToVehicleModeTraits<TMode>::IDType;
+
 	const JSONImportSettings &import_settings;
 	JSONBulkOrderCommandBuffer &cmd_buffer;
 
@@ -460,7 +474,13 @@ private:
 	}
 
 public:
-	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, JsonErrors &errors, const JSONImportSettings &import_settings, ID target_index = nullptr)
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, JsonErrors &errors, const JSONImportSettings &import_settings)
+			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index({}), errors(errors)
+	{
+		static_assert(TMode == JSONToVehicleMode::Global);
+	}
+
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, JsonErrors &errors, const JSONImportSettings &import_settings, ID target_index)
 			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index(target_index), errors(errors) {}
 
 	const Vehicle *GetVehicle() const { return this->veh; }
@@ -478,12 +498,12 @@ public:
 	{
 		if (error_type == JOIET_OK) return;
 
-		if constexpr (std::is_same_v<ID, void*>) {
+		if constexpr (TMode == JSONToVehicleMode::Global) {
 			LogGlobalError(error, error_type);
-		} else if constexpr (std::is_same_v<ID, VehicleOrderID>) {
+		} else if constexpr (TMode == JSONToVehicleMode::Order) {
 			Debug(misc, 1, "Order import error: {}, type: {}, order: {}", error, error_type, this->target_index);
 			this->errors.order_errors[this->target_index] = { std::move(error), error_type };
-		} else if constexpr (std::is_same_v<ID, ScheduleDispatchID >){
+		} else if constexpr (TMode == JSONToVehicleMode::Dispatch) {
 			Debug(misc, 1, "Order import error: {}, type: {}, dispatch_slot: {}", error, error_type, this->target_index);
 			this->errors.schedule_errors[this->target_index] = { std::move(error), error_type };
 		}
@@ -520,8 +540,8 @@ public:
 
 	template <typename T = uint16_t>
 	bool TryApplyTimetableCommand(std::string_view field, ModifyTimetableFlags mtf,
-		JsonOrderImportErrorType error_type, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
-	requires std::is_same_v<ID, VehicleOrderID>
+			JsonOrderImportErrorType error_type, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
+	requires (TMode == JSONToVehicleMode::Order)
 	{
 		static_assert(std::is_convertible_v<T, int>, "Timetable operations only take numerical values");
 
@@ -535,7 +555,7 @@ public:
 	}
 
 	void ModifyOrder(ModifyOrderFlags mof, uint16_t val, CargoType cargo = INVALID_CARGO, std::string text = {}, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
-	requires std::is_same_v<ID, VehicleOrderID>
+	requires (TMode == JSONToVehicleMode::Order)
 	{
 		if (oid != INVALID_VEH_ORDER_ID) this->cmd_buffer.op_serialiser.SeekTo(oid);
 		this->cmd_buffer.op_serialiser.Modify(mof, val, cargo, std::move(text));
@@ -543,7 +563,7 @@ public:
 
 	template <typename T>
 	bool TryApplyModifyOrder(std::string_view field, ModifyOrderFlags mof, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
-	requires std::is_same_v<ID, VehicleOrderID>
+	requires (TMode == JSONToVehicleMode::Order)
 	{
 		return ParserFuncWrapper<T>(field, default_val, error_type,
 			[&](T val) {
@@ -560,7 +580,7 @@ public:
 	}
 
 	bool TryApplySchDispatchAddSlotsCommand (JsonOrderImportErrorType error_type, std::string error_msg, std::vector<std::pair<uint32_t, uint16_t>> &&slots)
-	requires std::is_same_v<ID, ScheduleDispatchID>
+	requires (TMode == JSONToVehicleMode::Dispatch)
 	{
 		SchDispatchBulkAddCmdData payload;
 		payload.veh = this->veh->index;
@@ -575,7 +595,7 @@ public:
 
 	template <typename T, Commands cmd>
 	bool TryApplySchDispatchCommand(std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val, uint32_t offset)
-	requires std::is_same_v<ID, ScheduleDispatchID>
+	requires (TMode == JSONToVehicleMode::Dispatch)
 	{
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
 		return ParserFuncWrapper<T>(field, default_val, error_type,
@@ -586,7 +606,7 @@ public:
 
 	template <typename T, Commands cmd>
 	bool TryApplySchDispatchCommand (std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt)
-	requires std::is_same_v<ID, ScheduleDispatchID>
+	requires (TMode == JSONToVehicleMode::Dispatch)
 	{
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
 		return ParserFuncWrapper<T>(field, default_val, error_type,
@@ -600,10 +620,10 @@ public:
 		return JSONToVehicleCommandParser(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, this->target_index);
 	}
 
-	template <typename T=ID>
-	JSONToVehicleCommandParser<T> WithNewTarget(T order_id)
+	template <JSONToVehicleMode TNewMode>
+	JSONToVehicleCommandParser<TNewMode> WithNewTarget(const nlohmann::json &new_json, typename JSONToVehicleModeTraits<TNewMode>::IDType target_id)
 	{
-		return JSONToVehicleCommandParser<T> (this->veh, this->json, this->cmd_buffer, this->errors, this->import_settings, order_id);
+		return JSONToVehicleCommandParser<TNewMode>(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, target_id);
 	}
 
 	JSONToVehicleCommandParser operator[](auto val)
@@ -612,7 +632,7 @@ public:
 	}
 };
 
-static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_importer)
+static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order> json_importer)
 {
 	const Vehicle *veh = json_importer.GetVehicle();
 	const nlohmann::json &json = json_importer.GetJson();
@@ -838,7 +858,7 @@ static int TagStringToIndex(std::string_view tag)
 	return -1;
 }
 
-static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<ScheduleDispatchID> json_importer)
+static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleMode::Dispatch> json_importer)
 {
 	const Vehicle *veh = json_importer.GetVehicle();
 	const nlohmann::json &json = json_importer.GetJson();
@@ -1017,9 +1037,9 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 				Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
 			}
 
-			ScheduleDispatchID schedule_index = 0;
+			uint schedule_index = 0;
 			for (const auto &value : schedules) {
-				ImportJsonDispatchSchedule(json_importer.WithNewJson(value).WithNewTarget(schedule_index));
+				ImportJsonDispatchSchedule(json_importer.WithNewTarget<JSONToVehicleMode::Dispatch>(value, schedule_index));
 				schedule_index++;
 			}
 
@@ -1034,13 +1054,13 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 	VehicleOrderID order_id = 0;
 	for (const auto &value : orders_json) {
-		auto order_importer = json_importer.WithNewJson(value).WithNewTarget(order_id);
+		auto order_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
 		ImportJsonOrder(order_importer);
 
 		std::string jump_label;
-		if (order_importer.WithNewTarget(order_id).TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
+		if (order_importer.TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
 			jump_map[jump_label] = order_id;
 		}
 
@@ -1050,7 +1070,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 	/* Post processing (link jumps and assign schedules) */
 	order_id = 0;
 	for (const auto &value : orders_json) {
-		auto local_importer = json_importer.WithNewJson(value).WithNewTarget(order_id);
+		auto local_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
 		local_importer.TryApplyTimetableCommand("schedule-index", MTF_ASSIGN_SCHEDULE, JOIET_MAJOR, order_id);
