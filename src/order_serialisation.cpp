@@ -241,17 +241,25 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 		}
 	}
 
+	nlohmann::ordered_json &slots_array = json["slots"];
+	nlohmann::ordered_json slot_object{};
 	for (const auto &sd_slot : sd.GetScheduledDispatch()) {
-		auto &slotJson = json["slots"][std::to_string(sd_slot.offset)];
-
 		if (HasBit(sd_slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) {
-			slotJson["re-use-slot"] = true;
+			slot_object["re-use-slot"] = true;
 		}
 
 		for (uint i = 0; i <= (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); i++) {
 			if (HasBit(sd_slot.flags, DispatchSlot::SDSF_FIRST_TAG + i)) {
-				slotJson["tags"].push_back(std::to_string(i + 1));
+				slot_object["tags"].push_back(std::to_string(i + 1));
 			}
+		}
+
+		if (slot_object.is_object()) {
+			slot_object["offset"] = sd_slot.offset;
+			slots_array.push_back(std::move(slot_object));
+			slot_object = {};
+		} else {
+			slots_array.push_back(sd_slot.offset);
 		}
 	}
 
@@ -913,20 +921,16 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 
 	if (json.contains("slots")) {
-		const auto &slotsJson = json.at("slots");
-		if (slotsJson.is_object()) {
-			for (const auto &it : slotsJson.items()) {
-				auto res = IntFromChars<uint32_t>(it.key());
-				if (!res.has_value()) {
-					json_importer.LogError("Dispatch schedule slot key not in ticks", JOIET_MAJOR);
-					continue;
-				}
-				uint32_t offset = *res;
+		const auto &slots_json = json.at("slots");
+		if (slots_json.is_array()) {
+			for (const auto &slot_data : slots_json) {
+				if (slot_data.is_object()) {
+					auto local_importer = json_importer.WithNewJson(slot_data);
 
-				const nlohmann::json &slotData = it.value();
-
-				if (slotData.is_object() || slotData.is_null()) {
-					auto local_importer = json_importer["slots"][it.key()];
+					uint32_t offset;
+					if (!local_importer.TryGetField("offset", offset, JOIET_MAJOR)) {
+						continue;
+					}
 
 					bool re_use_slot = false;
 					local_importer.TryGetField("re-use-slot", re_use_slot, JOIET_MAJOR);
@@ -936,13 +940,13 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 						SetBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					}
 
-					if (slotData.contains("tags") && slotData["tags"].is_array()) {
-						for (nlohmann::json::const_reference tag : slotData["tags"]) {
+					if (slot_data.contains("tags") && slot_data["tags"].is_array()) {
+						for (nlohmann::json::const_reference tag : slot_data["tags"]) {
 							if (tag.is_string()) {
 								std::string tagString = std::string(tag);
 								int tag = TagStringToIndex(tagString);
 								if (tag == -1) {
-									json_importer.LogError(fmt::format("'{}' is not a valid tag index",tagString), JOIET_MAJOR);
+									json_importer.LogError(fmt::format("'{}' is not a valid tag index", tagString), JOIET_MAJOR);
 									continue;
 								}
 								SetBit(flags, DispatchSlot::SDSF_FIRST_TAG + tag);
@@ -955,8 +959,16 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 					} else {
 						json_importer.cmd_buffer.op_serialiser.AddScheduleSlot(offset);
 					}
-					json_importer.cmd_buffer.PostDispatchCmd();
+				} else {
+					try {
+						uint32_t offset = (uint32_t)slot_data;
+						json_importer.cmd_buffer.op_serialiser.AddScheduleSlot(offset);
+					} catch (...) {
+						json_importer.LogError("Dispatch schedule slot key not in ticks", JOIET_MAJOR);
+						continue;
+					}
 				}
+				json_importer.cmd_buffer.PostDispatchCmd();
 			}
 		}
 	}
