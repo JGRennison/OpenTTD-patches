@@ -325,12 +325,17 @@ std::string OrderListToJSONString(const OrderList *ol)
 	std::string tag = fmt::format("{:04X}-", InteractiveRandomRange(0xFFFF));
 
 	for (auto &val : orders) {
-		if (val.contains("jump-to")) {
-			const auto &target = orders[(VehicleOrderID)val["jump-to"]];
-			std::string label = target.contains("jump-from") ? (std::string)target["jump-from"] : tag + std::to_string((VehicleOrderID)val["jump-to"]);
+		if (auto jt = val.find("jump-to"); jt != val.end()) {
+			auto &target = orders[(VehicleOrderID)*jt];
+			std::string label;
+			if (auto jf = target.find("jump-from"); jf != target.end()) {
+				label = (std::string)*jf;
+			} else {
+				label = (std::string)tag + std::to_string((VehicleOrderID)*jt);
+				target["jump-from"] = label;
+			}
 
-			orders[(VehicleOrderID)val["jump-to"]]["jump-from"] = label;
-			val["jump-to"] = std::move(label);
+			*jt = std::move(label);
 		}
 	}
 
@@ -549,10 +554,11 @@ public:
 	template <typename T>
 	std::optional<T> TryGetField(std::string_view key, JsonOrderImportErrorType fail_type)
 	{
-		if (json.contains(key)) {
+		auto iter = json.find(key);
+		if (iter != json.end()) {
 			try {
 				using TTemp = std::conditional_t<std::is_same_v<T, std::string_view>, std::string, T>;
-				const TTemp &temp = (TTemp)json[key];
+				const TTemp &temp = (TTemp)*iter;
 
 				/* Special case for enums, here we can also check if the value is valid. */
 				if constexpr (std::is_enum<T>::value) {
@@ -682,8 +688,8 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 				destination = DepotID(destination.edit_base());
 			} else {
 				destination = DepotID::Invalid();
-				if (json.contains("depot-id")) {
-					if (!json["depot-id"].is_string() || !(json["depot-id"] == "nearest")) {
+				if (auto it = json.find("depot-id"); it != json.end()) {
+					if (!it->is_string() || !(*it == "nearest")) {
 						json_importer.LogError("Value of 'depot-id' is invalid", JOIET_MAJOR);
 					}
 				}
@@ -811,9 +817,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyModifyOrder<OrderLoadFlags>("load", MOF_LOAD, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<OrderUnloadFlags>("unload", MOF_UNLOAD, JOIET_MAJOR);
 
-	if (json.contains("load-by-cargo-type")) {
-		if (json["load-by-cargo-type"].is_object()) {
-			for (const auto &[key, val] : json["load-by-cargo-type"].items()) {
+	if (auto it = json.find("load-by-cargo-type"); it != json.end()) {
+		if (it->is_object()) {
+			for (const auto &[key, val] : it->items()) {
 				auto cargo_res = IntFromChars<CargoType>((std::string_view)key);
 				if (!cargo_res.has_value() || *cargo_res >= NUM_CARGO) {
 					json_importer.LogError(fmt::format("in 'load-by-cargo-type','{}' is not a valid cargo_id", key), JOIET_MAJOR);
@@ -840,9 +846,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	}
 
 	/* Refit works in a weird way, so it gets treated weirdly. */
-	if (json.contains("refit-cargo")) {
-		if (json["refit-cargo"].is_string()) {
-			if (json["refit-cargo"] == "auto") {
+	if (auto it = json.find("refit-cargo"); it != json.end()) {
+		if (it->is_string()) {
+			if (*it == "auto") {
 				json_importer.cmd_buffer.op_serialiser.Refit(CARGO_AUTO_REFIT);
 			} else {
 				json_importer.LogError("Value of 'refit-cargo' is invalid", JOIET_MAJOR);
@@ -905,8 +911,8 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 	json_importer.cmd_buffer.PostDispatchCmd();
 
-	if (json.contains("renamed-tags") && json["renamed-tags"].is_object()) {
-		for (const auto &names : json["renamed-tags"].items()) {
+	if (auto it = json.find("renamed-tags"); it != json.end() && it->is_object()) {
+		for (const auto &names : it->items()) {
 			int index = TagStringToIndex(names.key());
 
 			if (index == -1 || !names.value().is_string()) {
@@ -920,8 +926,8 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 		}
 	}
 
-	if (json.contains("slots")) {
-		const auto &slots_json = json.at("slots");
+	if (auto it = json.find("slots"); it != json.end()) {
+		const auto &slots_json = *it;
 		if (slots_json.is_array()) {
 			for (const auto &slot_data : slots_json) {
 				if (slot_data.is_object()) {
@@ -940,8 +946,8 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 						SetBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					}
 
-					if (slot_data.contains("tags") && slot_data["tags"].is_array()) {
-						for (nlohmann::json::const_reference tag : slot_data["tags"]) {
+					if (auto it = slot_data.find("tags"); it != slot_data.end() && it->is_array()) {
+						for (nlohmann::json::const_reference tag : *it) {
 							if (tag.is_string()) {
 								std::string tagString = std::string(tag);
 								int tag = TagStringToIndex(tagString);
@@ -988,7 +994,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		return;
 	}
 
-	if (!json.contains("orders") || !json["orders"].is_array() || json["orders"].size() == 0) {
+	if (auto it = json.find("orders"); it == json.end() || !it->is_array() || it->size() == 0) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS), WL_ERROR);
 		return;
 	}
@@ -1014,8 +1020,8 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 	JSONImportSettings import_settings_client{};
 
 	/* If the json cntains game-properties, we will try to parse them and apply them */
-	if (json.contains("game-properties") && json["game-properties"].is_object()) {
-		const auto &game_properties = json["game-properties"];
+	if (auto it = json.find("game-properties"); it != json.end() && it->is_object()) {
+		const auto &game_properties = *it;
 
 		OrderStopLocation osl = game_properties.value<OrderStopLocation>("default-stop-location", OSL_END);
 		if (osl == OSL_END) {
@@ -1024,8 +1030,8 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 			import_settings_client.stop_location = osl;
 		}
 
-		if (game_properties.contains("new-nonstop") && game_properties["new-nonstop"].is_boolean()) {
-			bool new_nonstop = game_properties["new-nonstop"];
+		if (auto nnit = game_properties.find("new-nonstop"); nnit != game_properties.end() && nnit->is_boolean()) {
+			bool new_nonstop = *nnit;
 			if (!new_nonstop && _settings_game.order.nonstop_only) {
 				errors.global_errors.push_back({ "'new-nonstop' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 			}
@@ -1044,8 +1050,8 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 	robin_hood::unordered_map<std::string, VehicleOrderID> jump_map; // Associates jump labels to actual order-ids until all orders are added
 
-	if (json.contains("schedules")) {
-		const auto &schedules = json["schedules"];
+	if (auto it = json.find("schedules"); it != json.end()) {
+		const auto &schedules = *it;
 		if (schedules.is_array() && schedules.size() > 0) {
 			bool have_schedule = false;
 			for (const auto &value : orders_json) {
