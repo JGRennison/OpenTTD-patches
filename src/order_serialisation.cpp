@@ -510,11 +510,12 @@ public:
 	}
 
 	template <typename T>
-	bool TryGetField(std::string_view key, T &value, JsonOrderImportErrorType fail_type)
+	std::optional<T> TryGetField(std::string_view key, JsonOrderImportErrorType fail_type)
 	{
 		if (json.contains(key)) {
 			try {
-				const T &temp = (T)json[key];
+				using TTemp = std::conditional_t<std::is_same_v<T, std::string_view>, std::string, T>;
+				const TTemp &temp = (TTemp)json[key];
 
 				/* Special case for enums, here we can also check if the value is valid. */
 				if constexpr (std::is_enum<T>::value) {
@@ -522,18 +523,27 @@ public:
 					to_json(result, temp);
 					if (result == nullptr) {
 						LogError(fmt::format("Value of '{}' is invalid", key), fail_type);
-						return false;
+						return std::nullopt;
 					}
 				}
 
-				value = temp;
-				return true;
+				return temp;
 			} catch (...) {
 				LogError(fmt::format("Data type of '{}' is invalid", key), fail_type);
-				return false;
+				return std::nullopt;
 			}
 		} else if (fail_type == JOIET_CRITICAL) {
 			LogError(fmt::format("Required '{}' is missing", key), fail_type);
+		}
+		return std::nullopt;
+	}
+
+	template <typename T>
+	bool TryGetField(std::string_view key, T &value, JsonOrderImportErrorType fail_type)
+	{
+		if (auto result = this->TryGetField<T>(key, fail_type)) {
+			value = *result;
+			return true;
 		}
 		return false;
 	}
