@@ -823,6 +823,9 @@ struct DispatchSlot {
 		SDSF_FIRST_TAG                            = 8,  ///< First tag flag
 		SDSF_LAST_TAG                             = 11, ///< Last tag flag
 	};
+
+	static constexpr uint16_t PERMITTED_FLAG_MASK = GetBitMaskSC<uint16_t>(SDSF_REUSE_SLOT, 1) |
+			GetBitMaskFL<uint16_t>(SDSF_FIRST_TAG, SDSF_LAST_TAG);
 };
 
 enum ScheduledDispatchSupplementaryNameType : uint16_t {
