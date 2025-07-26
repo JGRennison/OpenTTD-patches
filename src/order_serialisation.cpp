@@ -560,7 +560,7 @@ public:
 		payload.slots = std::move(slots);
 		bool result = DoCommandP<CMD_SCH_DISPATCH_BULK_ADD>(veh->tile, payload, (StringID)0);
 		if (!result) {
-			this->LogError("Error importing schedule " + std::to_string(payload.schedule_index) + " : " + error_msg, error_type);
+			this->LogError(fmt::format("Error importing schedule {}: {} ", std::to_string(payload.schedule_index), error_msg), error_type);
 		}
 		return result;
 	}
@@ -788,13 +788,13 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_impo
 			for (const auto &[key, val] : json["load-by-cargo-type"].items()) {
 				auto cargo_res = IntFromChars<CargoType>((std::string_view)key);
 				if (!cargo_res.has_value() || *cargo_res >= NUM_CARGO) {
-					json_importer.LogError("in 'load-by-cargo-type','" + key + "' is not a valid cargo_id", JOIET_MAJOR);
+					json_importer.LogError(fmt::format("in 'load-by-cargo-type','{}' is not a valid cargo_id", key), JOIET_MAJOR);
 					continue;
 				}
 				CargoType cargo_id = *cargo_res;
 
 				if (!val.is_object()) {
-					json_importer.LogError("loading options in 'load-by-cargo-type'[" + key + "] are not valid", JOIET_MAJOR);
+					json_importer.LogError(fmt::format("loading options in 'load-by-cargo-type'[{}] are not valid",key), JOIET_MAJOR);
 					continue;
 				};
 
@@ -872,7 +872,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<ScheduleDispat
 			int index = TagStringToIndex(names.key());
 
 			if (index == -1 || !names.value().is_string()) {
-				json_importer.LogError("'" + names.key() + "' is not a tag.", JOIET_MINOR);
+				json_importer.LogError(fmt::format("'{}' is not a valid tag index.", names.key()), JOIET_MINOR);
 			} else {
 				json_importer["renamed-tags"].TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_TAG>(names.key(), JOIET_MINOR, std::nullopt, index);
 			}
@@ -916,7 +916,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<ScheduleDispat
 								std::string tagString = std::string(tag);
 								int tag = TagStringToIndex(tagString);
 								if (tag == -1) {
-									json_importer.LogError("'" + tagString + "' is not a tag.", JOIET_MAJOR);
+									json_importer.LogError(fmt::format("'{}' is not a valid tag index",tagString), JOIET_MAJOR);
 									continue;
 								}
 								SetBit(flags, DispatchSlot::SDSF_FIRST_TAG + tag);
@@ -1064,7 +1064,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 			if (jm_iter != jump_map.end()) {
 				local_importer.ModifyOrder(MOF_COND_DESTINATION, jm_iter->second, INVALID_CARGO, {}, order_id);
 			} else {
-				local_importer.LogError("Unknown jump label '" + jump_label + "'", JOIET_MAJOR);
+				local_importer.LogError(fmt::format("Unknown jump label '{}'",jump_label), JOIET_MAJOR);
 			}
 		}
 
