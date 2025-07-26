@@ -45,4 +45,15 @@ DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,    CmdDuplicateOrder,                  {}
 DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,  CmdMassChangeOrder,                 {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<DestinationID, VehicleType, OrderType, CargoType, DestinationID>)
 DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP, CmdClearOrderBackup,     CMD_CLIENT_ID, CMDT_SERVER_SETTING,   CmdDataT<ClientID>)
 
+struct BulkOrderCmdData final : public CommandPayloadSerialisable<BulkOrderCmdData> {
+	VehicleID veh;
+	std::vector<uint8_t> cmds;
+
+	void Serialise(BufferSerialisationRef buffer) const override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void FormatDebugSummary(format_target &output) const override;
+};
+
+DEF_CMD_DIRECT_NT(CMD_BULK_ORDER,         CmdBulkOrder,              CMD_NO_TEST, CMDT_ROUTE_MANAGEMENT, BulkOrderCmdData)
+
 #endif /* ORDER_CMD_H */

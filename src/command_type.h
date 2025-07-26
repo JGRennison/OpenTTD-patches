@@ -464,6 +464,7 @@ enum Commands : uint8_t {
 	CMD_INSERT_ORDER,                 ///< insert a new order
 	CMD_DUPLICATE_ORDER,              ///< duplicate an order
 	CMD_MASS_CHANGE_ORDER,            ///< mass change the target of an order
+	CMD_BULK_ORDER,                   ///< bulk order operations
 
 	CMD_CHANGE_SERVICE_INT,           ///< change the service interval of a vehicle
 
