@@ -127,7 +127,13 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	}
 
 	if (o.IsSlotCounterOrder()) {
-		json["id"] = o.GetDestination().ToSlotID().base();
+		DestinationID::BaseType id = o.GetDestination().ToSlotID().base();
+		switch (o.GetType()) {
+			case OT_COUNTER: json["counter-id"] = id; break;
+			case OT_SLOT: json["slot-id"] = id; break;
+			case OT_SLOT_GROUP: json["slot-group-id"] = id; break;
+			default: break;
+		}
 	}
 
 	if (o.IsType(OT_LABEL)) {
@@ -138,25 +144,25 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 	}
 	if (o.IsType(OT_COUNTER)) {
-		json["operator"] = o.GetCounterOperation();
-		json["value"] = o.GetXData();
+		json["counter-operation"] = o.GetCounterOperation();
+		json["counter-value"] = o.GetXData();
 	}
 
 	if (o.IsType(OT_SLOT)) {
-		json["operation"] = o.GetSlotSubType();
+		json["slot-action"] = o.GetSlotSubType();
 	}
 
 	if (o.IsType(OT_CONDITIONAL)) {
 		json["condition"] = o.GetConditionVariable();
 
 		if (o.GetConditionVariable() != OCV_UNCONDITIONALLY) {
-			json["comparator"] = o.GetConditionComparator();
+			json["condition-comparator"] = o.GetConditionComparator();
 		}
 
 		json["jump-to"] = o.GetConditionSkipToOrder(); // NB: this gets overwritten later by the labeling system.
 
 		if (ConditionVariableHasStationID(o.GetConditionVariable())) {
-			json["station"] = o.GetConditionStationID().base();
+			json["condition-station"] = o.GetConditionStationID().base();
 		}
 
 		switch (o.GetConditionVariable()) {
@@ -169,27 +175,27 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			case OCV_TIMETABLE:
 			case OCV_VEH_IN_SLOT_GROUP:
 			case OCV_VEH_IN_SLOT:
-				json["value1"] = o.GetXData();
+				json["condition-value1"] = o.GetXData();
 				break;
 
 			case OCV_COUNTER_VALUE:
 			case OCV_CARGO_WAITING_AMOUNT:
 			case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
-				json["value1"] = o.GetXDataLow();
+				json["condition-value1"] = o.GetXDataLow();
 				break;
 
 			default:
-				json["value1"] = o.GetConditionValue();
+				json["condition-value1"] = o.GetConditionValue();
 				break;
 		}
 
 		switch (o.GetConditionVariable()) {
 			case OCV_COUNTER_VALUE:
-				json["value2"] = o.GetXDataHigh();
+				json["condition-value2"] = o.GetXDataHigh();
 				break;
 
 			case OCV_DISPATCH_SLOT:
-				json["value2"] = o.GetConditionDispatchScheduleID();
+				json["condition-value2"] = o.GetConditionDispatchScheduleID();
 				break;
 
 			case OCV_CARGO_LOAD_PERCENTAGE:
@@ -197,7 +203,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 			case OCV_TIME_DATE:
 			case OCV_TIMETABLE:
-				json["value2"] = o.GetConditionValue();
+				json["condition-value2"] = o.GetConditionValue();
 				break;
 
 			default:
@@ -205,11 +211,11 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 
 		if (o.HasConditionViaStation()) {
-			json["value3"] = o.GetConditionViaStationID().base();
+			json["condition-value3"] = o.GetConditionViaStationID().base();
 		}
 
 		if (o.GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
-			json["value4"] = GB(o.GetXData2(), 16, 1);
+			json["condition-value4"] = GB(o.GetXData2(), 16, 1);
 		}
 	}
 
@@ -462,6 +468,8 @@ public:
 
 	void LogGlobalError(std::string error, JsonOrderImportErrorType error_type)
 	{
+		if (error_type == JOIET_OK) return;
+
 		Debug(misc, 1, "Order import error: {}, type: {}, global", error, error_type);
 		this->errors.global_errors.push_back({ error, error_type });
 	}
@@ -525,7 +533,7 @@ public:
 			}
 		);
 	}
-	
+
 	void ModifyOrder(ModifyOrderFlags mof, uint16_t val, CargoType cargo = INVALID_CARGO, std::string text = {}, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
 	requires std::is_same_v<ID, VehicleOrderID>
 	{
@@ -577,7 +585,7 @@ public:
 	}
 
 	template <typename T, Commands cmd>
-	bool TryApplySchDispatchCommand (std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val)
+	bool TryApplySchDispatchCommand (std::string_view field, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt)
 	requires std::is_same_v<ID, ScheduleDispatchID>
 	{
 		uint schedule_index = (this->veh->orders == nullptr) ? 0 : this->veh->orders->GetScheduledDispatchScheduleCount() - 1;
@@ -597,7 +605,7 @@ public:
 	{
 		return JSONToVehicleCommandParser<T> (this->veh, this->json, this->cmd_buffer, this->errors, this->import_settings, order_id);
 	}
-	
+
 	JSONToVehicleCommandParser operator[](auto val)
 	{
 		return this->WithNewJson(this->json[val]);
@@ -693,7 +701,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_impo
 
 		case OT_SLOT:
 			OrderSlotSubType osst;
-			if (!json_importer.TryGetField("operation", osst, JOIET_CRITICAL)) {
+			if (!json_importer.TryGetField("slot-action", osst, JOIET_CRITICAL)) {
 				return;
 			}
 			switch (osst) {
@@ -727,18 +735,24 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_impo
 	json_importer.cmd_buffer.op_serialiser.Insert(new_order);
 	json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
 
+	/* If we are parsing a conditional order, "condition" becomes required. */
+	if (!json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition", MOF_COND_VARIABLE,
+			type == OT_CONDITIONAL ? JOIET_CRITICAL : JOIET_MAJOR, OCV_END)) return;
+
+	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
+
 	json_importer.TryApplyTimetableCommand("max-speed", MTF_TRAVEL_SPEED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("wait-time", MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
 
-	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR,
-			veh->type == VEH_TRAIN ? std::optional(json_importer.import_settings.stop_location) : std::nullopt);
-
+	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
 	json_importer.TryApplyModifyOrder<DiagDirection>("stop-direction", MOF_RV_TRAVEL_DIR, JOIET_MINOR);
+
 	json_importer.TryApplyModifyOrder<OrderWaypointFlags>("waypoint-action", MOF_WAYPOINT_FLAGS, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<std::string>("label-text", MOF_LABEL_TEXT, JOIET_MINOR);
+
 	json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
-	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
+
+	json_importer.TryApplyModifyOrder<std::string>("label-text", MOF_LABEL_TEXT, JOIET_MINOR);
 
 	bool is_default_non_stop = json_importer.import_settings.new_nonstop || _settings_game.order.nonstop_only;
 	OrderNonStopFlags default_non_stop;
@@ -747,38 +761,21 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_impo
 	} else {
 		default_non_stop = is_default_non_stop ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE;
 	}
+	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR,default_non_stop);
 
-	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR,
-			veh->IsGroundVehicle() ? std::optional(default_non_stop) : std::nullopt);
+	json_importer.TryApplyModifyOrder<OrderConditionComparator>("condition-comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<StationID>("condition-station", MOF_COND_STATION_ID, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("condition-value1", MOF_COND_VALUE, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("condition-value2", MOF_COND_VALUE_2, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("condition-value3", MOF_COND_VALUE_3, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("condition-value4", MOF_COND_VALUE_4, JOIET_MAJOR);
 
-	if (type == OT_CONDITIONAL) {
-		json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition", MOF_COND_VARIABLE, JOIET_CRITICAL, OCV_END);
-		json_importer.TryApplyModifyOrder<OrderConditionComparator>("comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
-	}
-	json_importer.TryApplyModifyOrder<StationID>("station", MOF_COND_STATION_ID, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("value1", MOF_COND_VALUE, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("value2", MOF_COND_VALUE_2, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("value3", MOF_COND_VALUE_3, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("value4", MOF_COND_VALUE_4, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("counter-id", MOF_COUNTER_ID, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("slot-id", MOF_SLOT, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("slot-group-id", MOF_SLOT_GROUP, JOIET_MAJOR);
 
-	switch (type) {
-		case OT_SLOT:
-			json_importer.TryApplyModifyOrder<uint16_t>("id", MOF_SLOT, JOIET_MAJOR);
-			break;
-
-		case OT_SLOT_GROUP:
-			json_importer.TryApplyModifyOrder<uint16_t>("id", MOF_SLOT_GROUP, JOIET_MAJOR);
-			break;
-
-		case OT_COUNTER:
-			json_importer.TryApplyModifyOrder<uint16_t>("id", MOF_COUNTER_ID, JOIET_MAJOR);
-			json_importer.TryApplyModifyOrder<uint8_t>("operator", MOF_COUNTER_OP, JOIET_MAJOR);
-			json_importer.TryApplyModifyOrder<uint16_t>("value", MOF_COUNTER_VALUE, JOIET_MAJOR);
-			break;
-
-		default:
-			break;
-	}
+	json_importer.TryApplyModifyOrder<uint8_t>("counter-operation", MOF_COUNTER_OP, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>("counter-value", MOF_COUNTER_VALUE, JOIET_MAJOR);
 
 	json_importer.TryApplyModifyOrder<OrderLoadFlags>("load", MOF_LOAD, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<OrderUnloadFlags>("unload", MOF_UNLOAD, JOIET_MAJOR);
@@ -806,7 +803,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<VehicleOrderID> json_impo
 					json_importer["load-by-cargo-type"][key].TryApplyModifyOrder<OrderUnloadFlags>("unload", MOF_CARGO_TYPE_UNLOAD, JOIET_MAJOR, std::nullopt, cargo_id);
 				}
 			}
-		} else { // 'load-by-cargo-type' is not an object
+		} else {
 			json_importer.LogError("'load-by-cargo-type' must be an object", JOIET_MAJOR);
 		}
 	}
@@ -862,10 +859,10 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<ScheduleDispat
 
 	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
 	Command<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>::Post(veh->index, start_tick, duration);
-	
-	json_importer.TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_SCHEDULE>("name", JOIET_MINOR, std::nullopt);
-	json_importer.TryApplySchDispatchCommand<uint, CMD_SCH_DISPATCH_SET_DELAY>("max-delay", JOIET_MAJOR, std::nullopt);
-	json_importer.TryApplySchDispatchCommand<bool, CMD_SCH_DISPATCH_SET_REUSE_SLOTS>("re-use-all-slots", JOIET_MAJOR, std::nullopt);
+
+	json_importer.TryApplySchDispatchCommand<std::string, CMD_SCH_DISPATCH_RENAME_SCHEDULE>("name", JOIET_MINOR);
+	json_importer.TryApplySchDispatchCommand<uint, CMD_SCH_DISPATCH_SET_DELAY>("max-delay", JOIET_MAJOR);
+	json_importer.TryApplySchDispatchCommand<bool, CMD_SCH_DISPATCH_SET_REUSE_SLOTS>("re-use-all-slots", JOIET_MAJOR);
 
 	if (json.contains("renamed-tags") && json["renamed-tags"].is_object()) {
 		for (const auto &names : json["renamed-tags"].items()) {
@@ -1043,7 +1040,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		ImportJsonOrder(order_importer);
 
 		std::string jump_label;
-		if (order_importer.TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
+		if (order_importer.WithNewTarget(order_id).TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
 			jump_map[jump_label] = order_id;
 		}
 
