@@ -561,13 +561,6 @@ public:
 			});
 	}
 
-
-	/* Exposing some useful functions from json for easier access */
-	bool Contains(std::string_view val) const { return json.contains(val); }
-	bool IsObject() const { return json.is_object(); }
-	bool IsNumber() const { return json.is_number(); }
-	bool IsString() const { return json.is_string(); }
-
 	JSONToVehicleCommandParser WithNewJson(const nlohmann::json &new_json)
 	{
 		return JSONToVehicleCommandParser(this->veh, new_json, this->errors, this->import_settings, this->order_index);
