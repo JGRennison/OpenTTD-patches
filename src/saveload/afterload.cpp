@@ -775,6 +775,9 @@ bool AfterLoadGame()
 			}
 		}
 	}
+	if (SlXvIsFeaturePresent(XSLFI_HEIGHT_8_BIT, 2, 2)) {
+		_settings_game.construction.map_height_limit = 255;
+	}
 
 	/* in version 2.1 of the savegame, town owner was unified. */
 	if (IsSavegameVersionBefore(SLV_2, 1)) ConvertTownOwner();
