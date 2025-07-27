@@ -3169,7 +3169,7 @@ struct IndustryCargoesWindow : public Window {
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->ToggleWidgetLoweredState(WID_IC_NOTIFY);
 					this->SetWidgetDirty(WID_IC_NOTIFY);
-					if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+					SndClickBeep();
 
 					if (this->IsWidgetLowered(WID_IC_NOTIFY)) {
 						_link_mode = ILM_ALL;

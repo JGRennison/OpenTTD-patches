@@ -1506,7 +1506,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
 			Point zoom_pt = { (int)wid->current_x / 2, (int)wid->current_y / 2};
 			this->SetZoomLevel((widget == WID_SM_ZOOM_IN) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &zoom_pt);
-			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+			SndClickBeep();
 			break;
 		}
 
@@ -1518,13 +1518,13 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		case WID_SM_VEGETATION: // Show vegetation
 		case WID_SM_OWNERS:     // Show land owners
 			this->SwitchMapType((SmallMapType)(widget - WID_SM_CONTOUR));
-			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+			SndClickBeep();
 			break;
 
 		case WID_SM_CENTERMAP: // Center the smallmap again
 			this->SmallMapCenterOnCurrentPos();
 			this->HandleButtonClick(WID_SM_CENTERMAP);
-			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+			SndClickBeep();
 			break;
 
 		case WID_SM_TOGGLETOWNNAME: // Toggle town names
@@ -1532,7 +1532,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			this->SetWidgetLoweredState(WID_SM_TOGGLETOWNNAME, this->show_towns);
 
 			this->SetDirty();
-			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+			SndClickBeep();
 			break;
 
 		case WID_SM_SHOW_IND_NAMES: // Toggle industry names
@@ -1540,7 +1540,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			this->SetWidgetLoweredState(WID_SM_SHOW_IND_NAMES, this->show_ind_names);
 
 			this->SetDirty();
-			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+			SndClickBeep();
 			break;
 
 		case WID_SM_LEGEND: // Legend

@@ -84,7 +84,7 @@ class BuildTreesWindow : public Window
 	{
 		if (this->trees_to_plant.Any()) {
 			/* Activate placement */
-			if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
+			SndConfirmBeep();
 			TreeTypes trees_archive = this->trees_to_plant;
 			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT | HT_DIAGONAL, this->window_class, this->window_number);
 			this->trees_to_plant = trees_archive; // This is to handle the case where SetObjectToPlace was previously active and is reset (in OnPlaceObjectAbort).
@@ -217,13 +217,13 @@ public:
 			}
 
 			case WID_BT_MANY_RANDOM: // place trees randomly over the landscape
-				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
+				SndConfirmBeep();
 				PlaceTreesRandomly();
 				MarkWholeNonMapViewportsDirty();
 				break;
 
 			case WID_BT_REMOVE_ALL: // remove all trees over the landscape
-				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
+				SndConfirmBeep();
 				RemoveAllTrees();
 				MarkWholeNonMapViewportsDirty();
 				break;
