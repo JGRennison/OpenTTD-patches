@@ -12,6 +12,10 @@
 
 #include "order_type.h"
 #include "vehicle_type.h"
+#include "gfx_type.h"
+
+#include "3rdparty/robin_hood/robin_hood.h"
+
 #include <string_view>
 
 enum JsonOrderImportErrorType : uint8_t {
@@ -21,8 +25,23 @@ enum JsonOrderImportErrorType : uint8_t {
 	JOIET_CRITICAL,     ///< Makes building an order completely impossible, in these cases the order is replaced by a label
 };
 
-void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
+struct OrderImportErrors {
+	struct Error {
+		std::string msg;
+		JsonOrderImportErrorType type;
+	};
+
+	std::vector<Error> global;
+	robin_hood::unordered_map<VehicleOrderID, std::vector<Error>> order;
+	robin_hood::unordered_map<int, std::vector<Error>> schedule;
+
+	bool HasErrors() const;
+};
+
+OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
 std::string OrderListToJSONString(const OrderList *ol);
-Colours ErrorTypeToColour(JsonOrderImportErrorType error_type);
+
+Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type);
+void ShowOrderListImportErrorsWindow(const Vehicle *v, const OrderImportErrors errors);
 
 #endif /* ORDER_SERIALISATION_H */

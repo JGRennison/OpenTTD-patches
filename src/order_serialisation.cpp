@@ -31,6 +31,8 @@
 
 #include <type_traits>
 
+#include "safeguards.h"
+
 static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
 static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
@@ -344,7 +346,7 @@ std::string OrderListToJSONString(const OrderList *ol)
 	return json.dump(4);
 }
 
-Colours ErrorTypeToColour(JsonOrderImportErrorType error_type)
+Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type)
 {
 	switch (error_type) {
 		case JOIET_CRITICAL: return COLOUR_RED;
@@ -435,17 +437,6 @@ public:
 	}
 };
 
-struct JsonErrors {
-	struct Error {
-		std::string error;
-		JsonOrderImportErrorType error_type;
-	};
-
-	std::vector<Error> global_errors;
-	robin_hood::unordered_map<VehicleOrderID, Error> order_errors;
-	robin_hood::unordered_map<int, Error> schedule_errors;
-};
-
 enum class JSONToVehicleMode {
 	Global,
 	Order,
@@ -479,7 +470,7 @@ private:
 	const nlohmann::json &json;
 	const ID target_index;
 
-	JsonErrors &errors;
+	OrderImportErrors &errors;
 
 	template <typename T, typename F>
 	bool ParserFuncWrapper(std::string_view field, std::optional<T> default_val, JsonOrderImportErrorType error_type, F exec)
@@ -516,13 +507,13 @@ private:
 	}
 
 public:
-	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, JsonErrors &errors, const JSONImportSettings &import_settings)
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, OrderImportErrors &errors, const JSONImportSettings &import_settings)
 			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index({}), errors(errors)
 	{
 		static_assert(TMode == JSONToVehicleMode::Global);
 	}
 
-	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, JsonErrors &errors, const JSONImportSettings &import_settings, ID target_index)
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, OrderImportErrors &errors, const JSONImportSettings &import_settings, ID target_index)
 			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index(target_index), errors(errors) {}
 
 	const Vehicle *GetVehicle() const { return this->veh; }
@@ -533,7 +524,7 @@ public:
 		if (error_type == JOIET_OK) return;
 
 		Debug(misc, 1, "Order import error: {}, type: {}, global", error, error_type);
-		this->errors.global_errors.push_back({ error, error_type });
+		this->errors.global.push_back({ error, error_type });
 	}
 
 	void LogError(std::string error, JsonOrderImportErrorType error_type)
@@ -544,10 +535,10 @@ public:
 			LogGlobalError(error, error_type);
 		} else if constexpr (TMode == JSONToVehicleMode::Order) {
 			Debug(misc, 1, "Order import error: {}, type: {}, order: {}", error, error_type, this->target_index);
-			this->errors.order_errors[this->target_index] = { std::move(error), error_type };
+			this->errors.order[this->target_index].push_back({std::move(error), error_type});
 		} else if constexpr (TMode == JSONToVehicleMode::Dispatch) {
 			Debug(misc, 1, "Order import error: {}, type: {}, dispatch_slot: {}", error, error_type, this->target_index);
-			this->errors.schedule_errors[this->target_index] = { std::move(error), error_type };
+			this->errors.schedule[this->target_index].push_back({ std::move(error), error_type });
 		}
 	}
 
@@ -980,29 +971,29 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 }
 
-void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
+OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 {
 	assert(veh != nullptr);
 
 	nlohmann::json json;
-	JsonErrors errors = {};
+	OrderImportErrors errors = {};
 
 	try {
 		json = nlohmann::json::parse(json_str);
 	} catch (const nlohmann::json::parse_error &) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_MALFORMED_JSON), WL_ERROR);
-		return;
+		return errors;
 	}
 
-	if (auto it = json.find("orders"); it == json.end() || !it->is_array() || it->size() == 0) {
+	if (json.contains("orders") && !json["orders"].is_array()) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS), WL_ERROR);
-		return;
+		return errors;
 	}
 
 	/* Checking if the vehicle type matches */
 	if (!json.contains("vehicle-type")) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_MISSING), WL_ERROR);
-		return;
+		return errors;
 	}
 
 	VehicleType vt;
@@ -1014,7 +1005,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 	if (vt != veh->type) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_DOES_NOT_MATCH), WL_ERROR);
-		return;
+		return errors;
 	}
 
 	JSONImportSettings import_settings_client{};
@@ -1025,7 +1016,7 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 		OrderStopLocation osl = game_properties.value<OrderStopLocation>("default-stop-location", OSL_END);
 		if (osl == OSL_END) {
-			errors.global_errors.push_back({ "'default-stop-location' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+			errors.global.push_back({ "'default-stop-location' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 		} else {
 			import_settings_client.stop_location = osl;
 		}
@@ -1033,14 +1024,14 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 		if (auto nnit = game_properties.find("new-nonstop"); nnit != game_properties.end() && nnit->is_boolean()) {
 			bool new_nonstop = *nnit;
 			if (!new_nonstop && _settings_game.order.nonstop_only) {
-				errors.global_errors.push_back({ "'new-nonstop' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+				errors.global.push_back({ "'new-nonstop' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 			}
 			import_settings_client.new_nonstop = new_nonstop;
 		} else {
-			errors.global_errors.push_back({ "'new-nonstop' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+			errors.global.push_back({ "'new-nonstop' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
 		}
 	} else {
-		errors.global_errors.push_back({ "no valid 'game-properties' found, current setings will be assumed to be correct", JOIET_MAJOR });
+		errors.global.push_back({ "no valid 'game-properties' found, current setings will be assumed to be correct", JOIET_MAJOR });
 	}
 
 	JSONBulkOrderCommandBuffer cmd_buffer(veh);
@@ -1122,4 +1113,10 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 	}
 
 	cmd_buffer.Flush();
+	return errors;
+}
+
+bool OrderImportErrors::HasErrors() const
+{
+	return !this->global.empty() || !this->order.empty() || !this->schedule.empty();
 }

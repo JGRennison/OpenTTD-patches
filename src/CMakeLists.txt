@@ -384,6 +384,7 @@ add_files(
     order_type.h
     order_serialisation.cpp
     order_serialisation.h
+    order_serialisation_gui.cpp
     osk_gui.cpp
     palette.cpp
     palette_func.h
