@@ -26,6 +26,8 @@ enum OrderWidgets : WidgetID {
 	WID_OIE_CAPTION,                   ///< Caption of the window.
 	WID_OIE_ORDER_LIST,                ///< Order list panel.
 	WID_OIE_SCROLLBAR,                 ///< Order list scrollbar.
+	WID_OIE_TOGGLE_NON_ERROR,          ///< Whether to show non-error orders.
+	WID_OIE_TOGGLE_NON_ERROR_SEL,      ///< Selection for WID_OIE_TOGGLE_NON_ERROR_SEL.
 };
 
 /** Nested widget definition for order import errors. */
@@ -33,6 +35,9 @@ static constexpr NWidgetPart _nested_order_import_error_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_OIE_CAPTION), SetStringTip(STR_ORDER_IMPORT_ERROR_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_OIE_TOGGLE_NON_ERROR_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_OIE_TOGGLE_NON_ERROR), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
+		EndContainer(),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -57,12 +62,14 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 {
 	const OrderImportErrors errs;
 	Scrollbar *vscroll;
+	bool show_non_error_order = false;
 
 	OrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors errs) : GeneralVehicleWindow(_order_list_import_errors_desc, v), errs(std::move(errs))
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_OIE_SCROLLBAR);
 		this->vscroll->SetCount(this->CountRows());
+		this->GetWidget<NWidgetStacked>(WID_OIE_TOGGLE_NON_ERROR_SEL)->SetDisplayedPlane(this->errs.order.empty() ? SZSP_NONE : 0);
 		this->FinishInitNested(v->index);
 
 		this->owner = v->owner;
@@ -79,9 +86,12 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 		if (this->errs.schedule.size() > 0) count++;
 
 		const VehicleOrderID order_count = this->vehicle->GetNumOrders();
-		count += order_count;
+		if (this->show_non_error_order) count += order_count;
 		for (const auto &it : this->errs.order) {
-			if (it.first < order_count) count += it.second.size();
+			if (it.first < order_count) {
+				count += it.second.size();
+				if (!this->show_non_error_order) count++;
+			}
 		}
 		if (this->errs.order.size() > 0) count++;
 
@@ -179,9 +189,13 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 			for (const Order *order : this->vehicle->Orders()) {
 				const bool order_has_errors = this->errs.order.contains(order_index);
+				if (!this->show_non_error_order && !order_has_errors) {
+					order_index++;
+					continue;
+				}
 
 				if (CheckVisibleAndIncrementRow()) {
-					if (order_has_errors) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
+					if (order_has_errors && this->show_non_error_order) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
 					DrawOrderString(this->vehicle, order, order_index, y, false, false, ir.left, middle, ir.right, false);
 					y += line_height;
 				}
@@ -190,7 +204,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 					const std::vector<OrderImportErrors::Error> &errors = this->errs.order.at(order_index);
 					for (const OrderImportErrors::Error &e : errors) {
 						if (CheckVisibleAndIncrementRow()) {
-							DrawHighlight(COLOUR_RED, SHADE_NORMAL);
+							if (this->show_non_error_order) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
 							DrawRawString(e.msg, GetTColorFromError(e.type), true);
 						}
 					}
@@ -233,6 +247,15 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (gui_scope) {
+			this->vscroll->SetCount(this->CountRows());
+			this->SetDirty();
+		}
+	}
+
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
+	{
+		if (widget == WID_OIE_TOGGLE_NON_ERROR) {
+			this->show_non_error_order = !this->show_non_error_order;
 			this->vscroll->SetCount(this->CountRows());
 			this->SetDirty();
 		}

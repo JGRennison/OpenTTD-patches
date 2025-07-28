@@ -1962,6 +1962,7 @@ STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topograp
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industries screenshot
 
 STR_ORDER_IMPORT_ERROR_LIST_CAPTION                             :{WHITE}Order list import errors
+STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS              :{BLACK}Toggle showing orders that imported without any errors
 
 # Plans window
 STR_PLANS_CAPTION                                               :{WHITE}Plans
