@@ -31,7 +31,7 @@
 
 #include <type_traits>
 
-static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 0;
+static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
 static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 {
