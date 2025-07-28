@@ -15,6 +15,7 @@
 #include "widget_type.h"
 #include "window_func.h"
 #include "window_gui.h"
+#include "core/backup_type.hpp"
 #include "core/format.hpp"
 #include "core/geometry_func.hpp"
 #include "table/sprites.h"
@@ -63,16 +64,27 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	const OrderImportErrors errs;
 	Scrollbar *vscroll;
 	bool show_non_error_order = false;
+	OrderList saved_orders{};
+	uint32_t saved_vehicle_flags{};
 
 	OrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors errs) : GeneralVehicleWindow(_order_list_import_errors_desc, v), errs(std::move(errs))
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_OIE_SCROLLBAR);
+		this->SaveOrders();
 		this->vscroll->SetCount(this->CountRows());
 		this->GetWidget<NWidgetStacked>(WID_OIE_TOGGLE_NON_ERROR_SEL)->SetDisplayedPlane(this->errs.order.empty() ? SZSP_NONE : 0);
 		this->FinishInitNested(v->index);
 
 		this->owner = v->owner;
+	}
+
+	void SaveOrders()
+	{
+		this->saved_vehicle_flags = this->vehicle->vehicle_flags;
+		if (this->vehicle->orders != nullptr) {
+			this->saved_orders = *this->vehicle->orders;
+		}
 	}
 
 	size_t CountRows() const
@@ -85,7 +97,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 		}
 		if (this->errs.schedule.size() > 0) count++;
 
-		const VehicleOrderID order_count = this->vehicle->GetNumOrders();
+		const VehicleOrderID order_count = this->saved_orders.GetNumOrders();
 		if (this->show_non_error_order) count += order_count;
 		for (const auto &it : this->errs.order) {
 			if (it.first < order_count) {
@@ -187,7 +199,11 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 		if (this->errs.order.size() > 0) {
 			DrawSectionTitle("[Order Errors]");
 
-			for (const Order *order : this->vehicle->Orders()) {
+			AutoRestoreBackup(const_cast<Vehicle *>(this->vehicle)->vehicle_flags, this->saved_vehicle_flags);
+			AutoRestoreBackup(const_cast<Vehicle *>(this->vehicle)->orders, const_cast<OrderList *>(&this->saved_orders));
+			AutoRestoreBackup(const_cast<Vehicle *>(this->vehicle)->cur_real_order_index, INVALID_VEH_ORDER_ID);
+
+			for (const Order *order : this->saved_orders.Orders()) {
 				const bool order_has_errors = this->errs.order.contains(order_index);
 				if (!this->show_non_error_order && !order_has_errors) {
 					order_index++;
@@ -196,7 +212,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 				if (CheckVisibleAndIncrementRow()) {
 					if (order_has_errors && this->show_non_error_order) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
-					DrawOrderString(this->vehicle, order, order_index, y, false, false, ir.left, middle, ir.right, false);
+					DrawOrderString(this->vehicle, order, order_index, y, false, false, ir.left, middle, ir.right);
 					y += line_height;
 				}
 
@@ -247,6 +263,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (gui_scope) {
+			this->SaveOrders();
 			this->vscroll->SetCount(this->CountRows());
 			this->SetDirty();
 		}
