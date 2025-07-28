@@ -1961,6 +1961,8 @@ STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Whole ma
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topography screenshot
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industries screenshot
 
+STR_ORDER_IMPORT_ERROR_LIST_CAPTION                             :{WHITE}Order list import errors
+
 # Plans window
 STR_PLANS_CAPTION                                               :{WHITE}Plans
 STR_PLANS_NEW_PLAN                                              :{BLACK}New
@@ -2482,6 +2484,7 @@ STR_ERROR_ORDERLIST_MALFORMED_JSON                              :{WHITE}Input JS
 STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS                           :{WHITE}No orders found, can't instantiate order list
 STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_MISSING                   :{WHITE}No valid 'vehicle-type' found
 STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_DOES_NOT_MATCH            :{WHITE}Vehicle types do not match
+STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}Order list imported with errors
 STR_ERROR_JSON                                                  :{WHITE}JSON error
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}Importing will replace all existing orders in the order list. Do you want to continue?
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirm order list import

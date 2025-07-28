@@ -2240,6 +2240,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 			CloseWindowById(WC_VEHICLE_DETAILS, src->index);
 			CloseWindowById(WC_VEHICLE_TIMETABLE, src->index);
 			CloseWindowById(WC_SCHDISPATCH_SLOTS, src->index);
+			CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, src->index);
 			DeleteNewGRFInspectWindow(GSF_TRAINS, src->index.base());
 			SetWindowDirty(WC_COMPANY, _current_company);
 
@@ -7285,6 +7286,7 @@ void ClearVehicleWindows(const Train *v)
 		CloseWindowById(WC_SCHDISPATCH_SLOTS, v->index);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, v->index);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, v->index);
+		CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
 	}
 }
 

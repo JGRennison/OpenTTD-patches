@@ -232,6 +232,12 @@ enum WindowClass : uint16_t {
 	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS,
 
 	/**
+	 * Vehicle order import errors; %Window numbers:
+	 *   - #VehicleID = #OrderWidgets
+	 */
+	WC_VEHICLE_ORDER_IMPORT_ERRORS,
+
+	/**
 	 * Replace vehicle window; %Window numbers:
 	 *   - #VehicleType = #ReplaceVehicleWidgets
 	 */

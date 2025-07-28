@@ -4103,6 +4103,8 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 	if (ret.Failed()) return ret;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
+		InvalidateWindowData(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
+
 		if (v->orders == nullptr) {
 			if (!OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 			v->orders = new OrderList(nullptr, v);

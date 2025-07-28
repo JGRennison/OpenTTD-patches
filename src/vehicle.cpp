@@ -1268,6 +1268,7 @@ void Vehicle::PreDestructor()
 		CloseWindowById(WC_SCHDISPATCH_SLOTS, this->index);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->index);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->index);
+		CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, this->index);
 		SetWindowDirty(WC_COMPANY, this->owner);
 		OrderBackup::ClearVehicle(this);
 	}

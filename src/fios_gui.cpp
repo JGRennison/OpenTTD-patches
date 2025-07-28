@@ -827,7 +827,11 @@ public:
 						if (file.has_value()) {
 							std::optional<UniqueBuffer<uint8_t>> buffer = ReadFileToBuffer(*file, 1 << 20);
 							if (buffer.has_value()) {
-								ImportJsonOrderList(slo->veh, std::string_view((const char *)buffer->get(), buffer->size()));
+								OrderImportErrors errs = ImportJsonOrderList(slo->veh, std::string_view((const char *)buffer->get(), buffer->size()));
+								if (errs.HasErrors()) {
+									ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS), WL_ERROR);
+									ShowOrderListImportErrorsWindow(slo->veh, std::move(errs));
+								}
 							}
 						}
 
