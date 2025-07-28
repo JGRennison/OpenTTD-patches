@@ -893,7 +893,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 
 	uint32_t duration = 0;
-	if (!json_importer.TryGetField("duration", duration, JOIET_MAJOR) || duration == 0) {
+	if (!json_importer.TryGetField("duration", duration, JOIET_CRITICAL) || duration == 0) {
 		create_error_schedule();
 		return;
 	}
