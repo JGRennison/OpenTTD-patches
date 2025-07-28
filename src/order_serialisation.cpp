@@ -1052,7 +1052,10 @@ void ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 
 	if (auto it = json.find("schedules"); it != json.end()) {
 		const auto &schedules = *it;
-		if (schedules.is_array() && schedules.size() > 0) {
+
+		if (!schedules.is_array()) {
+			json_importer.LogGlobalError("'schedules' must be an array", JOIET_CRITICAL);
+		} else if (schedules.size() > 0) {
 			bool have_schedule = false;
 			for (const auto &value : orders_json) {
 				if (value.contains("schedule-index")) {
