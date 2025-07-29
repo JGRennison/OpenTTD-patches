@@ -4348,6 +4348,9 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					}
 					break;
 				}
+
+				default:
+					return CMD_ERROR;
 			}
 		}
 
