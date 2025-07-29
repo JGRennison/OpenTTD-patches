@@ -155,7 +155,12 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	}
 
 	if (o.IsType(OT_CONDITIONAL)) {
-		json["condition"] = o.GetConditionVariable();
+
+		if (o.IsWaitTimetabled()) {
+			json["jump-taken-travel-time"] = o.GetWaitTime();
+		}
+
+		json["condition-variable"] = o.GetConditionVariable();
 
 		if (o.GetConditionVariable() != OCV_UNCONDITIONALLY) {
 			json["condition-comparator"] = o.GetConditionComparator();
@@ -767,8 +772,8 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.cmd_buffer.op_serialiser.Insert(new_order);
 	json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
 
-	/* If we are parsing a conditional order, "condition" becomes required. */
-	if (!json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition", MOF_COND_VARIABLE,
+	/* If we are parsing a conditional order, "condition-variable" becomes required. */
+	if (!json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition-variable", MOF_COND_VARIABLE,
 			type == OT_CONDITIONAL ? JOIET_CRITICAL : JOIET_MAJOR, OCV_END)) return;
 
 	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
@@ -776,6 +781,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyTimetableCommand("max-speed", MTF_TRAVEL_SPEED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("wait-time", MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand("jump-taken-travel-time", MTF_WAIT_TIME, JOIET_MINOR);
 
 	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
 	json_importer.TryApplyModifyOrder<DiagDirection>("stop-direction", MOF_RV_TRAVEL_DIR, JOIET_MINOR);
