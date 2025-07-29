@@ -165,4 +165,11 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderSlotSubType, {
 	{OSST_TRY_ACQUIRE, "try-acquire"}
 })
 
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderDispatchConditionSources, {
+	{static_cast<OrderDispatchConditionSources>(-1), nullptr},
+	{ODCS_NEXT, "next"},
+	{ODCS_LAST, "last"},
+	{ODCS_VEH,  "vehicle"}
+})
+
 #endif
