@@ -2385,9 +2385,9 @@ static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
-static std::pair<StringParameter, StringParameter> WallclockModeDisabledValueText(const IntSettingDesc &sd, int32_t value)
+static std::pair<StringParameter, StringParameter> WallclockModeDisabledDropDownText(const IntSettingDesc &sd, int32_t value)
 {
-	return {EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK : sd.str_val, value};
+	return {EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK : sd.str_val + value, std::monostate{}};
 }
 
 static bool WallclockModeDisabledGUI(SettingOnGuiCtrlData &data)
