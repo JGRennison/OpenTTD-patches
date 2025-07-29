@@ -548,20 +548,24 @@ public:
 		auto iter = json.find(key);
 		if (iter != json.end()) {
 			try {
-				using TTemp = std::conditional_t<std::is_same_v<T, std::string_view>, std::string, T>;
-				const TTemp &temp = (TTemp)*iter;
+				if constexpr (std::is_same_v<T, std::string_view>) {
+					const std::string &ref = iter->get_ref<const std::string &>();
+					return ref;
+				} else {
+					T temp = (T)*iter;
 
-				/* Special case for enums, here we can also check if the value is valid. */
-				if constexpr (std::is_enum<T>::value) {
-					const char *result = nullptr;
-					to_json(result, temp);
-					if (result == nullptr) {
-						LogError(fmt::format("Value of '{}' is invalid", key), fail_type);
-						return std::nullopt;
+					/* Special case for enums, here we can also check if the value is valid. */
+					if constexpr (std::is_enum<T>::value) {
+						const char *result = nullptr;
+						to_json(result, temp);
+						if (result == nullptr) {
+							LogError(fmt::format("Value of '{}' is invalid", key), fail_type);
+							return std::nullopt;
+						}
 					}
-				}
 
-				return temp;
+					return std::move(temp);
+				}
 			} catch (...) {
 				LogError(fmt::format("Data type of '{}' is invalid", key), fail_type);
 				return std::nullopt;
