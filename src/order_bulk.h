@@ -23,6 +23,7 @@ enum class BulkOrderOp {
 	ReplaceOnFail,
 	InsertFail,
 	SeekTo,
+	ClearSchedules,
 	AppendSchedule,
 	SelectSchedule,
 	SetDispatchEnabled,
@@ -90,6 +91,11 @@ public:
 	{
 		this->OpCode(BulkOrderOp::SeekTo);
 		this->serialiser.Send_generic(order_id);
+	}
+
+	void ClearSchedules()
+	{
+		this->OpCode(BulkOrderOp::ClearSchedules);
 	}
 
 	void AppendSchedule(StateTicks start_tick, uint32_t duration)

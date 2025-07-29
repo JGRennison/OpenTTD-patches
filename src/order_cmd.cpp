@@ -4225,6 +4225,19 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 
 				/* Scheduled dispatch opcodes follow */
 
+				case BulkOrderOp::ClearSchedules:
+					if (v->GetNumOrders() == 0) {
+						/* No orders, fast path */
+						v->orders->GetScheduledDispatchScheduleSet().clear();
+						SchdispatchInvalidateWindows(v);
+					} else {
+						/* Delete schedules individually, perform order updates */
+						for (uint i = v->orders->GetScheduledDispatchScheduleCount(); i > 0; i--) {
+							CmdSchDispatchRemoveSchedule(flags, cmd_data.veh, i - 1);
+						}
+					}
+					break;
+
 				case BulkOrderOp::AppendSchedule: {
 					flush_active_schedule();
 

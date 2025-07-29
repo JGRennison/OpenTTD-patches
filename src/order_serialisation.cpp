@@ -1010,7 +1010,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 
 	JSONImportSettings import_settings_client{};
 
-	/* If the json cntains game-properties, we will try to parse them and apply them */
+	/* If the json contains game-properties, we will try to parse them and apply them */
 	if (auto it = json.find("game-properties"); it != json.end() && it->is_object()) {
 		const auto &game_properties = *it;
 
@@ -1036,6 +1036,10 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 
 	JSONBulkOrderCommandBuffer cmd_buffer(veh);
 	JSONToVehicleCommandParser<> json_importer(veh, json, cmd_buffer, errors, import_settings_client);
+
+	/* Delete all orders before setting the new orders */
+	cmd_buffer.op_serialiser.ClearOrders();
+	cmd_buffer.op_serialiser.ClearSchedules();
 
 	const auto &orders_json = json["orders"];
 
@@ -1072,9 +1076,6 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 			}
 		}
 	}
-
-	/* Delete all orders before setting the new orders */
-	cmd_buffer.op_serialiser.ClearOrders();
 
 	VehicleOrderID order_id = 0;
 	for (const auto &value : orders_json) {
