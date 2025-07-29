@@ -155,7 +155,6 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	}
 
 	if (o.IsType(OT_CONDITIONAL)) {
-
 		if (o.IsWaitTimetabled()) {
 			json["jump-taken-travel-time"] = o.GetWaitTime();
 		}
@@ -175,6 +174,26 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		switch (o.GetConditionVariable()) {
 			case OCV_UNCONDITIONALLY:
 				break;
+
+			case OCV_DISPATCH_SLOT: {
+				json["condition-dispatch-schedule"] = o.GetConditionDispatchScheduleID();
+
+				const uint16_t value = o.GetConditionValue();
+
+				json["condition-slot-source"] = (OrderDispatchConditionSources)GB(o.GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
+
+				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
+					case ODCM_FIRST_LAST:
+						json["condition-check-slot"] = HasBit(value, ODFLCB_LAST_SLOT) ? "first" : "last";
+						break;
+
+					case OCDM_TAG:
+						json["condition-check-tag"] = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1;
+						break;
+				}
+
+				break;
+			}
 
 			case OCV_SLOT_OCCUPANCY:
 			case OCV_CARGO_LOAD_PERCENTAGE:
@@ -201,10 +220,6 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 				json["condition-value2"] = o.GetXDataHigh();
 				break;
 
-			case OCV_DISPATCH_SLOT:
-				json["condition-value2"] = o.GetConditionDispatchScheduleID();
-				break;
-
 			case OCV_CARGO_LOAD_PERCENTAGE:
 			case OCV_CARGO_WAITING_AMOUNT:
 			case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
@@ -217,7 +232,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 				break;
 		}
 
-		if (o.HasConditionViaStation()) {
+		if (ConditionVariableTestsCargoWaitingAmount(o.GetConditionVariable()) && o.HasConditionViaStation()) {
 			json["condition-value3"] = o.GetConditionViaStationID().base();
 		}
 
@@ -807,6 +822,39 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyModifyOrder<uint16_t>("condition-value2", MOF_COND_VALUE_2, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<uint16_t>("condition-value3", MOF_COND_VALUE_3, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<uint16_t>("condition-value4", MOF_COND_VALUE_4, JOIET_MAJOR);
+
+	/* Non trivial cases for conditionals. */
+
+	bool has_cond_ds_schedule = json_importer.TryApplyModifyOrder<uint16_t>("condition-dispatch-schedule", MOF_COND_VALUE_2, JOIET_MAJOR);
+	if (has_cond_ds_schedule) {
+		uint16_t val = 0;
+
+		auto odscs = json_importer.TryGetField<OrderDispatchConditionSources>("condition-slot-source", JOIET_MAJOR);
+		if (odscs.has_value()) {
+			SB(val, ODCB_SRC_START, ODCB_SRC_COUNT, *odscs);
+		}
+
+		auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>("condition-check-slot", JOIET_MAJOR);
+		auto cond_dispatch_tag = json_importer.TryGetField<uint>("condition-check-tag", JOIET_MAJOR);
+
+		if (cond_dispatch_slot.has_value() && cond_dispatch_tag.has_value()) {
+			json_importer.LogError("'condition-check-slot' and 'condition-check-tag' are incompatible", JOIET_MAJOR);
+		} else if (cond_dispatch_slot.has_value()) {
+			if (cond_dispatch_slot.value() == "last") {
+				SetBit(val, ODFLCB_LAST_SLOT);
+			} else if (cond_dispatch_slot.value() == "first") {
+				/* No bit needs to be set. */
+			} else {
+				json_importer.LogError("Invalid value in 'condition-check-slot'", JOIET_MAJOR);
+			}
+		} else if (cond_dispatch_tag.has_value()) {
+			SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
+			SB(val, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, cond_dispatch_tag.value() - 1);
+		} else {
+			json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
+		}
+		json_importer.ModifyOrder(MOF_COND_VALUE, val);
+	}
 
 	json_importer.TryApplyModifyOrder<uint16_t>("counter-id", MOF_COUNTER_ID, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<uint16_t>("slot-id", MOF_SLOT, JOIET_MAJOR);
