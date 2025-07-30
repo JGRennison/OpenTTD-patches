@@ -11,6 +11,7 @@
 #include "command_func.h"
 #include "debug.h"
 #include "error.h"
+#include "group.h"
 #include "order_base.h"
 #include "order_bulk.h"
 #include "order_cmd.h"
@@ -314,8 +315,17 @@ std::string OrderListToJSONString(const OrderList *ol)
 		return json;
 	};
 
-	VehicleType vt = ol->GetFirstSharedVehicle()->type;
+	const Vehicle *veh = ol->GetFirstSharedVehicle();
+	VehicleType vt = veh->type;
+	const Group *group = Group::GetIfValid(veh->group_id);
+
 	json["vehicle-type"] = vt;
+	if (!veh->name.empty()) {
+		json["vehicle-name"] = veh->name;
+	}
+	if (group != nullptr && !group->name.empty()) {
+		json["vehicle-group-name"] = group->name;
+	}
 
 	auto &game_properties = json["game-properties"];
 
