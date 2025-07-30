@@ -554,7 +554,7 @@ public:
 		if (iter != json.end()) {
 			try {
 				if constexpr (std::is_same_v<T, std::string_view>) {
-					const std::string &ref = iter->get_ref<const std::string &>();
+					const std::string &ref = iter->template get_ref<const std::string &>();
 					return ref;
 				} else {
 					T temp = (T)*iter;
