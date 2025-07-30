@@ -4129,6 +4129,22 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 			}
 		};
 
+		auto create_error_order = [&]() {
+			Order error_order;
+			error_order.MakeLabel(OLST_TEXT);
+			error_order.SetColour(COLOUR_RED);
+			error_order.SetLabelText("[Error] This order could not be parsed");
+
+			if (modify_pos != INVALID_VEH_ORDER_ID) {
+				DeleteOrder(v, modify_pos);
+				InsertOrder(v, std::move(error_order), modify_pos);
+				modify_pos = INVALID_VEH_ORDER_ID;
+			} else {
+				if (v->GetNumOrders() < MAX_VEH_ORDER_ID) InsertOrder(v, std::move(error_order), insert_pos);
+			}
+			last_result = CommandCost();
+		};
+
 		DeserialisationBuffer buf(cmd_data.cmds.data(), cmd_data.cmds.size());
 		while (buf.CanDeserialiseBytes(1, false)) {
 			const BulkOrderOp op = static_cast<BulkOrderOp>(buf.Recv_uint8());
@@ -4194,24 +4210,18 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 
 				case BulkOrderOp::InsertFail:
 					modify_pos = INVALID_VEH_ORDER_ID;
-					last_result = CMD_ERROR;
-					[[fallthrough]];
+					create_error_order();
+					break;
+
+				case BulkOrderOp::ReplaceWithFail:
+					if (modify_pos != INVALID_VEH_ORDER_ID) {
+						create_error_order();
+					}
+					break;
 
 				case BulkOrderOp::ReplaceOnFail:
 					if (last_result.Failed()) {
-						Order error_order;
-						error_order.MakeLabel(OLST_TEXT);
-						error_order.SetColour(COLOUR_RED);
-						error_order.SetLabelText("[Error] This order could not be parsed");
-
-						if (modify_pos != INVALID_VEH_ORDER_ID) {
-							DeleteOrder(v, modify_pos);
-							InsertOrder(v, std::move(error_order), modify_pos);
-							modify_pos = INVALID_VEH_ORDER_ID;
-						} else {
-							if (v->GetNumOrders() < MAX_VEH_ORDER_ID) InsertOrder(v, std::move(error_order), insert_pos);
-						}
-						last_result = CommandCost();
+						create_error_order();
 					}
 					break;
 

@@ -777,19 +777,13 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 	if (!veh->IsGroundVehicle()) {
 		new_order.SetNonStopType(ONSF_STOP_EVERYWHERE);
-	} else {
-		if (_settings_game.order.nonstop_only) {
-			new_order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
-		}
+	} else if (_settings_game.order.nonstop_only) {
+		new_order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 	}
 
 	/* Create the order */
 	json_importer.cmd_buffer.op_serialiser.Insert(new_order);
 	json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
-
-	/* If we are parsing a conditional order, "condition-variable" becomes required. */
-	if (!json_importer.TryApplyModifyOrder<OrderConditionVariable>("condition-variable", MOF_COND_VARIABLE,
-			type == OT_CONDITIONAL ? JOIET_CRITICAL : JOIET_MAJOR, OCV_END)) return;
 
 	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
 
@@ -814,46 +808,59 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	} else {
 		default_non_stop = is_default_non_stop ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE;
 	}
-	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR,default_non_stop);
+	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR, default_non_stop);
 
-	json_importer.TryApplyModifyOrder<OrderConditionComparator>("condition-comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<StationID>("condition-station", MOF_COND_STATION_ID, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("condition-value1", MOF_COND_VALUE, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("condition-value2", MOF_COND_VALUE_2, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("condition-value3", MOF_COND_VALUE_3, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("condition-value4", MOF_COND_VALUE_4, JOIET_MAJOR);
-
-	/* Non trivial cases for conditionals. */
-
-	bool has_cond_ds_schedule = json_importer.TryApplyModifyOrder<uint16_t>("condition-dispatch-schedule", MOF_COND_VALUE_2, JOIET_MAJOR);
-	if (has_cond_ds_schedule) {
-		uint16_t val = 0;
-
-		auto odscs = json_importer.TryGetField<OrderDispatchConditionSources>("condition-slot-source", JOIET_MAJOR);
-		if (odscs.has_value()) {
-			SB(val, ODCB_SRC_START, ODCB_SRC_COUNT, *odscs);
+	if (type == OT_CONDITIONAL) {
+		/* If we are parsing a conditional order, "condition-variable" is required. */
+		auto cvresult = json_importer.TryGetField<OrderConditionVariable>("condition-variable", JOIET_CRITICAL);
+		if (!cvresult.has_value()) {
+			json_importer.cmd_buffer.op_serialiser.ReplaceWithFail();
+			return;
 		}
 
-		auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>("condition-check-slot", JOIET_MAJOR);
-		auto cond_dispatch_tag = json_importer.TryGetField<uint>("condition-check-tag", JOIET_MAJOR);
+		const OrderConditionVariable condvar = *cvresult;
+		json_importer.ModifyOrder(MOF_COND_VARIABLE, condvar);
+		json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
 
-		if (cond_dispatch_slot.has_value() && cond_dispatch_tag.has_value()) {
-			json_importer.LogError("'condition-check-slot' and 'condition-check-tag' are incompatible", JOIET_MAJOR);
-		} else if (cond_dispatch_slot.has_value()) {
-			if (cond_dispatch_slot.value() == "last") {
-				SetBit(val, ODFLCB_LAST_SLOT);
-			} else if (cond_dispatch_slot.value() == "first") {
-				/* No bit needs to be set. */
-			} else {
-				json_importer.LogError("Invalid value in 'condition-check-slot'", JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<OrderConditionComparator>("condition-comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<StationID>("condition-station", MOF_COND_STATION_ID, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>("condition-value1", MOF_COND_VALUE, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>("condition-value2", MOF_COND_VALUE_2, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>("condition-value3", MOF_COND_VALUE_3, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>("condition-value4", MOF_COND_VALUE_4, JOIET_MAJOR);
+
+		/* Non trivial cases for conditionals. */
+		if (condvar == OCV_DISPATCH_SLOT) {
+			uint16_t val = 0;
+
+			auto odscs = json_importer.TryGetField<OrderDispatchConditionSources>("condition-slot-source", JOIET_MAJOR);
+			if (odscs.has_value()) {
+				SB(val, ODCB_SRC_START, ODCB_SRC_COUNT, *odscs);
 			}
-		} else if (cond_dispatch_tag.has_value()) {
-			SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
-			SB(val, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, cond_dispatch_tag.value() - 1);
-		} else {
-			json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
+
+			auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>("condition-check-slot", JOIET_MAJOR);
+			auto cond_dispatch_tag = json_importer.TryGetField<uint>("condition-check-tag", JOIET_MAJOR);
+
+			if (cond_dispatch_slot.has_value() && cond_dispatch_tag.has_value()) {
+				json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
+			} else if (cond_dispatch_slot.has_value()) {
+				if (cond_dispatch_slot.value() == "last") {
+					SetBit(val, ODFLCB_LAST_SLOT);
+				} else if (cond_dispatch_slot.value() == "first") {
+					/* No bit needs to be set. */
+				} else {
+					json_importer.LogError("Invalid value in 'condition-check-slot'", JOIET_MAJOR);
+				}
+			} else if (cond_dispatch_tag.has_value()) {
+				SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
+				SB(val, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, cond_dispatch_tag.value() - 1);
+			} else {
+				json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
+			}
+			json_importer.ModifyOrder(MOF_COND_VALUE, val);
+
+			json_importer.TryApplyModifyOrder<uint16_t>("condition-dispatch-schedule", MOF_COND_VALUE_2, JOIET_MAJOR);
 		}
-		json_importer.ModifyOrder(MOF_COND_VALUE, val);
 	}
 
 	json_importer.TryApplyModifyOrder<uint16_t>("counter-id", MOF_COUNTER_ID, JOIET_MAJOR);

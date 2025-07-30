@@ -21,6 +21,7 @@ enum class BulkOrderOp {
 	Refit,
 	Timetable,
 	ReplaceOnFail,
+	ReplaceWithFail,
 	InsertFail,
 	SeekTo,
 	ClearSchedules,
@@ -80,6 +81,11 @@ public:
 	void ReplaceOnFail()
 	{
 		this->OpCode(BulkOrderOp::ReplaceOnFail);
+	}
+
+	void ReplaceWithFail()
+	{
+		this->OpCode(BulkOrderOp::ReplaceWithFail);
 	}
 
 	void InsertFail()
