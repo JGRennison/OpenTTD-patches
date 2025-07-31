@@ -3071,6 +3071,36 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 }
 
 /**
+ * Delete all orders from a vehicle, without unsharing orders or freeing order lists
+ * @param v                   Vehicle whose orders to reset
+ * @param reset_order_indices If true, reset cur_implicit_order_index and cur_real_order_index
+ *                            and cancel the current full load order (if the vehicle is loading).
+ *                            If false, _you_ have to make sure the order indices are valid after
+ *                            your messing with them!
+ */
+static void ClearVehicleOrders(Vehicle *v, bool reset_order_indices = true)
+{
+	if (v->orders == nullptr) return;
+
+	DeleteOrderWarnings(v->FirstShared());
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	v->orders->FreeChain(true);
+
+	for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+		/* Unbunching data is no longer valid. */
+		u->ResetDepotUnbunching();
+
+		if (reset_order_indices) {
+			u->cur_implicit_order_index = u->cur_real_order_index = 0;
+			u->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
+			if (u->current_order.IsAnyLoadingType()) {
+				CancelLoadingDueToDeletedOrder(u);
+			}
+		}
+	}
+}
+
+/**
  * Clamp the service interval to the correct min/max. The actual min/max values
  * depend on whether it's in days, minutes, or percent.
  * @param interval The proposed service interval.
@@ -4150,10 +4180,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 			const BulkOrderOp op = static_cast<BulkOrderOp>(buf.Recv_uint8());
 			switch (op) {
 				case BulkOrderOp::ClearOrders:
-					for (VehicleOrderID i = v->GetNumOrders(); i > 0; i--) {
-						/* Delete individually to avoid breaking shared order relationships */
-						DeleteOrder(v, i - 1);
-					}
+					ClearVehicleOrders(v);
 					insert_pos = INVALID_VEH_ORDER_ID;
 					modify_pos = INVALID_VEH_ORDER_ID;
 					break;
