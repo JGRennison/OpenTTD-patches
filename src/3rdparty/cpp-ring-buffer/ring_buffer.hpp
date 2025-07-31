@@ -525,22 +525,24 @@ private:
 		return this->memcpy_to(target, this->head, this->head + this->count);
 	}
 
-	/* Use noinline here to avoid this being inlined into new_front_ptr/new_back_ptr,
-	 * which then prevents those from being inlined. */
-	JGR_NOINLINE void reallocate(size_t new_cap)
+	void move_on_reallocate(Storage *move_to)
+	{
+		if constexpr (std::is_trivially_copyable_v<T>) {
+			this->memcpy_to(move_to);
+		} else {
+			for (T &item : *this) {
+				new (move_to) T(std::move(item));
+				item.~T();
+				move_to++;
+			}
+		}
+	}
+
+	void reallocate(size_t new_cap)
 	{
 		const uint32_t cap = round_up_size(new_cap);
 		Storage *new_buf = this->allocator.allocate(cap);
-		if constexpr (std::is_trivially_copyable_v<T>) {
-			this->memcpy_to(new_buf);
-		} else {
-			Storage *pos = new_buf;
-			for (T &item : *this) {
-				new (pos) T(std::move(item));
-				item.~T();
-				pos++;
-			}
-		}
+		this->move_on_reallocate(new_buf);
 		this->replace_storage(new_buf, cap);
 		this->head = 0;
 	}
@@ -565,54 +567,96 @@ private:
 		return static_cast<T *>(this->raw_ptr_at_offset(idx));
 	}
 
-	void *new_back_ptr()
+	template <typename... Args>
+	T &emplace_back_realloc(Args&&... args)
 	{
-		if (this->count == this->capacity()) this->reallocate(this->count + 1);
+		const uint32_t cap = round_up_size(this->count + 1);
+		Storage *new_buf = this->allocator.allocate(cap);
+		T &result = *(new (new_buf + this->count) T(std::forward<Args>(args)...));
+		this->move_on_reallocate(new_buf);
+		this->replace_storage(new_buf, cap);
+		this->head = 0;
 		this->count++;
-		return this->raw_ptr_at_offset(this->count - 1);
+		return result;
 	}
 
-	void *new_front_ptr()
+	template <typename... Args>
+	T &emplace_front_realloc(Args&&... args)
 	{
-		if (this->count == this->capacity()) this->reallocate(this->count + 1);
+		const uint32_t cap = round_up_size(this->count + 1);
+		Storage *new_buf = this->allocator.allocate(cap);
+		T &result = *(new (new_buf) T(std::forward<Args>(args)...));
+		this->move_on_reallocate(new_buf + 1);
+		this->replace_storage(new_buf, cap);
+		this->head = 0;
 		this->count++;
-		this->head--;
-		return this->raw_ptr_at_offset(0);
+		return result;
 	}
 
 public:
 	void push_back(const T &item)
 	{
-		new (this->new_back_ptr()) T(item);
+		if (this->count != this->capacity()) {
+			this->count++;
+			new (this->raw_ptr_at_offset(this->count - 1)) T(item);
+		} else {
+			this->emplace_back_realloc(item);
+		}
 	}
 
 	void push_back(T &&item)
 	{
-		new (this->new_back_ptr()) T(std::move(item));
+		if (this->count != this->capacity()) {
+			this->count++;
+			new (this->raw_ptr_at_offset(this->count - 1)) T(std::move(item));
+		} else {
+			this->emplace_back_realloc(std::move(item));
+		}
 	}
 
 	template <typename... Args>
 	T &emplace_back(Args&&... args)
 	{
-		void *ptr = this->new_back_ptr();
-		return *(new (ptr) T(std::forward<Args>(args)...));
+		if (this->count != this->capacity()) {
+			this->count++;
+			return *(new (this->raw_ptr_at_offset(this->count - 1)) T(std::forward<Args>(args)...));
+		} else {
+			return this->emplace_back_realloc(std::forward<Args>(args)...);
+		}
 	}
 
 	void push_front(const T &item)
 	{
-		new (this->new_front_ptr()) T(item);
+		if (this->count != this->capacity()) {
+			this->count++;
+			this->head--;
+			new (this->raw_ptr_at_offset(0)) T(item);
+		} else {
+			this->emplace_front_realloc(item);
+		}
 	}
 
 	void push_front(T &&item)
 	{
-		new (this->new_front_ptr()) T(std::move(item));
+		if (this->count != this->capacity()) {
+			this->count++;
+			this->head--;
+			new (this->raw_ptr_at_offset(0)) T(std::move(item));
+		} else {
+			this->emplace_front_realloc(std::move(item));
+		}
 	}
 
 	template <typename... Args>
 	T &emplace_front(Args&&... args)
 	{
-		void *ptr = this->new_front_ptr();
-		return *(new (ptr) T(std::forward<Args>(args)...));
+		if (this->count != this->capacity()) {
+			this->count++;
+			this->head--;
+			return *(new (this->raw_ptr_at_offset(0)) T(std::forward<Args>(args)...));
+		} else {
+			return this->emplace_front_realloc(std::forward<Args>(args)...);
+		}
 	}
 
 	void pop_back()

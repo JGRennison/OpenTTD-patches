@@ -670,3 +670,60 @@ TEMPLATE_TEST_CASE("RingBuffer - operator <=>", "[ring]", uint8_t, uint32_t)
 	CHECK((ring_buffer<TestType>({}) <=> ring_buffer<TestType>({ 1 })) == std::weak_ordering::less);
 	CHECK((ring_buffer<TestType>({}) <=> ring_buffer<TestType>({})) == std::weak_ordering::equivalent);
 }
+
+
+TEMPLATE_TEST_CASE("RingBuffer - insert with ref to existing element", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
+{
+	ring_buffer<TestType> ring({ 1 });
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.push_back(ring.back());
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+
+	ring.resize(1);
+	ring.shrink_to_fit();
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.push_front(ring.back());
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+
+	ring.resize(1);
+	ring.shrink_to_fit();
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.push_back(std::move(ring.back()));
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+
+	ring.resize(1);
+	ring.shrink_to_fit();
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.push_front(std::move(ring.back()));
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+
+	ring.resize(1);
+	ring.shrink_to_fit();
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.emplace_back(std::move(ring.back()));
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+
+	ring.resize(1);
+	ring.shrink_to_fit();
+	CHECK(ring.capacity() == 4);
+	for (size_t i = 0; i < 7; i++) {
+		ring.emplace_front(std::move(ring.back()));
+	}
+	CHECK(Matches(ring, { 1, 1, 1, 1, 1, 1, 1, 1 }));
+	CHECK(ring.capacity() == 8);
+}
