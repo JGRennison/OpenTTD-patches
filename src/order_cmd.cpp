@@ -511,6 +511,7 @@ void OrderList::FreeChain(bool keep_orderlist)
 	if (keep_orderlist) {
 		this->num_manual_orders = 0;
 		this->timetable_duration = 0;
+		this->total_duration = 0;
 	} else {
 		delete this;
 	}
