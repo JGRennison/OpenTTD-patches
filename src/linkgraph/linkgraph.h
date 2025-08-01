@@ -53,11 +53,12 @@ public:
 	 * in a separate thread.
 	 */
 	struct BaseNode {
-		uint supply;             ///< Supply at the station.
-		uint demand;             ///< Acceptance at the station.
-		StationID station;       ///< Station ID.
-		TileIndex xy;            ///< Location of the station referred to by the node.
-		EconTime::Date last_update; ///< When the supply was last updated.
+		uint supply = 0;                          ///< Supply at the station.
+		uint demand = 0;                          ///< Acceptance at the station.
+		StationID station = StationID::Invalid(); ///< Station ID.
+		TileIndex xy = INVALID_TILE;              ///< Location of the station referred to by the node.
+		EconTime::Date last_update{};             ///< When the supply was last updated.
+
 		void Init(TileIndex xy = INVALID_TILE, StationID st = StationID::Invalid(), uint demand = 0);
 	};
 
@@ -68,12 +69,12 @@ public:
 	 * the column as next_edge.
 	 */
 	struct BaseEdge {
-		uint capacity;                 ///< Capacity of the link.
-		uint usage;                    ///< Usage of the link.
-		uint64_t travel_time_sum;      ///< Sum of the travel times of the link, in ticks.
-		EconTime::Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
-		EconTime::Date last_restricted_update;   ///< When the restricted part of the link was last updated.
-		EconTime::Date last_aircraft_update;     ///< When aircraft capacity of the link was last updated.
+		uint capacity = 0;                         ///< Capacity of the link.
+		uint usage = 0;                            ///< Usage of the link.
+		uint64_t travel_time_sum = 0;              ///< Sum of the travel times of the link, in ticks.
+		EconTime::Date last_unrestricted_update{}; ///< When the unrestricted part of the link was last updated.
+		EconTime::Date last_restricted_update{};   ///< When the restricted part of the link was last updated.
+		EconTime::Date last_aircraft_update{};     ///< When aircraft capacity of the link was last updated.
 
 		void Init()
 		{
@@ -306,7 +307,7 @@ public:
 	}
 
 	/** Bare constructor, only for save/load. */
-	LinkGraph() : cargo(INVALID_CARGO), last_compression(0) {}
+	LinkGraph() {}
 	/**
 	 * Real constructor.
 	 * @param cargo Cargo the link graph is about.
@@ -393,10 +394,10 @@ protected:
 
 	friend void LinkGraphFixupAfterLoad(bool compression_was_date);
 
-	CargoType cargo;         ///< Cargo of this component's link graph.
-	ScaledTickCounter last_compression; ///< Last time the capacities and supplies were compressed.
-	NodeVector nodes;      ///< Nodes in the component.
-	EdgeMatrix edges;      ///< Edges in the component.
+	CargoType cargo = INVALID_CARGO;      ///< Cargo of this component's link graph.
+	ScaledTickCounter last_compression{}; ///< Last time the capacities and supplies were compressed.
+	NodeVector nodes{};                   ///< Nodes in the component.
+	EdgeMatrix edges{};                   ///< Edges in the component.
 
 public:
 	const EdgeMatrix &GetEdges() const { return this->edges; }

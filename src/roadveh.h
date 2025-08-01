@@ -140,19 +140,19 @@ enum RoadVehicleFlags {
  * Buses, trucks and trams belong to this class.
  */
 struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
-	uint8_t state;                                 ///< @see RoadVehicleStates
-	uint8_t frame;
-	uint16_t blocked_ctr;
-	uint8_t overtaking;                            ///< Set to #RVSB_DRIVE_SIDE when overtaking, otherwise 0.
-	uint8_t overtaking_ctr;                        ///< The length of the current overtake attempt.
-	std::unique_ptr<RoadVehPathCache> cached_path; ///< Cached path.
-	RoadTypes compatible_roadtypes;                ///< Roadtypes this consist is powered on.
-	uint16_t crashed_ctr;                          ///< Animation counter when the vehicle has crashed. @see RoadVehIsCrashed
-	uint8_t reverse_ctr;
-	uint8_t critical_breakdown_count;              ///< Counter for the number of critical breakdowns since last service
-	uint8_t rvflags;                               ///< Road vehicle flags
+	uint8_t state = 0;                                 ///< @see RoadVehicleStates
+	uint8_t frame = 0;
+	uint16_t blocked_ctr = 0;
+	uint8_t overtaking = 0;                            ///< Set to #RVSB_DRIVE_SIDE when overtaking, otherwise 0.
+	uint8_t overtaking_ctr = 0;                        ///< The length of the current overtake attempt.
+	std::unique_ptr<RoadVehPathCache> cached_path{};   ///< Cached path.
+	RoadTypes compatible_roadtypes{};                  ///< Roadtypes this consist is powered on.
+	uint16_t crashed_ctr = 0;                          ///< Animation counter when the vehicle has crashed. @see RoadVehIsCrashed
+	uint8_t reverse_ctr = 0;
+	uint8_t critical_breakdown_count = 0;              ///< Counter for the number of critical breakdowns since last service
+	uint8_t rvflags = 0;                               ///< Road vehicle flags
 
-	RoadType roadtype;                             ///< Roadtype of this vehicle.
+	RoadType roadtype{};                               ///< Roadtype of this vehicle.
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	RoadVehicle() : GroundVehicleBase() {}

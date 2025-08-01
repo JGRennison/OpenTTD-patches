@@ -1791,7 +1791,6 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		Depot *dep = new Depot(tile);
-		dep->build_date = CalTime::CurDate();
 
 		/* A road depot has two road bits. */
 		UpdateCompanyRoadInfrastructure(rt, _current_company, ROAD_DEPOT_TRACKBIT_FACTOR);

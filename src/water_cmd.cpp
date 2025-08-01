@@ -148,7 +148,6 @@ CommandCost CmdBuildShipDepot(DoCommandFlags flags, TileIndex tile, Axis axis)
 		InvalidateWaterRegion(tile2);
 
 		Depot *depot = new Depot(tile);
-		depot->build_date = CalTime::CurDate();
 
 		uint new_water_infra = 2 * LOCK_DEPOT_TILE_FACTOR;
 		/* Update infrastructure counts after the tile clears earlier.

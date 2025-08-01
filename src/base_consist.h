@@ -30,22 +30,22 @@ struct LastDispatchRecord {
 
 /** Various front vehicle properties that are preserved when autoreplacing, using order-backup or switching front engines within a consist. */
 struct BaseConsist {
-	TinyString name;                          ///< Name of vehicle
+	TinyString name{};                            ///< Name of vehicle
 
-	btree::btree_map<uint16_t, LastDispatchRecord> dispatch_records; ///< Records of last scheduled dispatches
+	btree::btree_map<uint16_t, LastDispatchRecord> dispatch_records{}; ///< Records of last scheduled dispatches
 
 	/* Used for timetabling. */
-	uint32_t current_order_time;              ///< How many ticks have passed since this order started.
-	int32_t lateness_counter;                 ///< How many ticks late (or early if negative) this vehicle is.
-	StateTicks timetable_start;               ///< When the vehicle is supposed to start the timetable.
+	uint32_t current_order_time = 0;              ///< How many ticks have passed since this order started.
+	int32_t lateness_counter = 0;                 ///< How many ticks late (or early if negative) this vehicle is.
+	StateTicks timetable_start{};                 ///< When the vehicle is supposed to start the timetable.
 
-	uint16_t service_interval;                ///< The interval for (automatic) servicing; either in days or %.
+	uint16_t service_interval = 0;                ///< The interval for (automatic) servicing; either in days or %.
 
-	VehicleOrderID cur_real_order_index;      ///< The index to the current real (non-implicit) order
-	VehicleOrderID cur_implicit_order_index;  ///< The index to the current implicit order
-	VehicleOrderID cur_timetable_order_index; ///< The index to the current real (non-implicit) order used for timetable updates
+	VehicleOrderID cur_real_order_index = 0;      ///< The index to the current real (non-implicit) order
+	VehicleOrderID cur_implicit_order_index = 0;  ///< The index to the current implicit order
+	VehicleOrderID cur_timetable_order_index = 0; ///< The index to the current real (non-implicit) order used for timetable updates
 
-	uint32_t vehicle_flags;                   ///< Used for gradual loading and other miscellaneous things (@see VehicleFlags enum)
+	uint32_t vehicle_flags = 0;                   ///< Used for gradual loading and other miscellaneous things (@see VehicleFlags enum)
 
 	virtual ~BaseConsist() = default;
 

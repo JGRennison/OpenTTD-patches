@@ -115,10 +115,10 @@ private:
 
 /** Location information about a sign as seen on the viewport */
 struct ViewportSign {
-	int32_t center;        ///< The center position of the sign
-	int32_t top;           ///< The top of the sign
-	uint16_t width_normal; ///< The width when not zoomed out (normal font)
-	uint16_t width_small;  ///< The width when zoomed out (small font)
+	int32_t center = 0; ///< The center position of the sign
+	int32_t top = 0; ///< The top of the sign
+	uint16_t width_normal = 0; ///< The width when not zoomed out (normal font)
+	uint16_t width_small = 0; ///< The width when zoomed out (small font)
 
 	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small = STR_NULL);
 	void MarkDirty(ZoomLevel maxzoom) const;
@@ -126,7 +126,7 @@ struct ViewportSign {
 
 /** Specialised ViewportSign that tracks whether it is valid for entering into a Kdtree */
 struct TrackedViewportSign : ViewportSign {
-	bool kdtree_valid; ///< Are the sign data valid for use with the _viewport_sign_kdtree?
+	bool kdtree_valid = false; ///< Are the sign data valid for use with the _viewport_sign_kdtree?
 
 	/**
 	 * Update the position of the viewport sign.
@@ -136,11 +136,6 @@ struct TrackedViewportSign : ViewportSign {
 	{
 		this->kdtree_valid = true;
 		this->ViewportSign::UpdatePosition(maxzoom, center, top, params, str, str_small);
-	}
-
-
-	TrackedViewportSign() : kdtree_valid{ false }
-	{
 	}
 };
 

@@ -36,7 +36,7 @@ public:
 	 * Annotation for a link graph demand edge.
 	 */
 	struct DemandAnnotation {
-		NodeID dest;                 ///< Target node
+		NodeID dest = INVALID_NODE;  ///< Target node
 		uint demand = 0;             ///< Transport demand between the nodes.
 		uint unsatisfied_demand = 0; ///< Demand over this edge that hasn't been satisfied yet.
 	};
@@ -46,12 +46,12 @@ public:
 	 */
 	struct Edge {
 	private:
-		NodeID from;             ///< From Node.
-		NodeID to;               ///< To Node.
-		uint capacity;           ///< Capacity of the link.
-		uint distance_anno;      ///< Pre-computed distance annotation.
+		NodeID from = INVALID_NODE;  ///< From Node.
+		NodeID to = INVALID_NODE;    ///< To Node.
+		uint capacity = 0;           ///< Capacity of the link.
+		uint distance_anno = 0;      ///< Pre-computed distance annotation.
 
-		uint flow;               ///< Planned flow over this edge.
+		uint flow = 0;               ///< Planned flow over this edge.
 
 	public:
 		/**
@@ -117,12 +117,13 @@ private:
 	 * Annotation for a link graph node.
 	 */
 	struct NodeAnnotation {
-		uint undelivered_supply; ///< Amount of supply that hasn't been distributed yet.
-		uint received_demand;    ///< Received demand towards this node.
-		PathList paths;          ///< Paths through this node, sorted so that those with flow == 0 are in the back.
-		FlowStatMap flows;       ///< Planned flows to other nodes.
-		std::span<DemandAnnotation> demands; ///< Demand annotations belonging to this node.
-		std::span<Edge> edges;               ///< Edges with annotations belonging to this node.
+		uint undelivered_supply = 0;           ///< Amount of supply that hasn't been distributed yet.
+		uint received_demand = 0;              ///< Received demand towards this node.
+		PathList paths{};                      ///< Paths through this node, sorted so that those with flow == 0 are in the back.
+		FlowStatMap flows{};                   ///< Planned flows to other nodes.
+		std::span<DemandAnnotation> demands{}; ///< Demand annotations belonging to this node.
+		std::span<Edge> edges{};               ///< Edges with annotations belonging to this node.
+
 		void Init(uint supply);
 	};
 
@@ -156,7 +157,7 @@ protected:
 public:
 
 	std::unique_ptr<uint[]> demand_matrix;                        ///< Demand matrix.
-	uint demand_matrix_count;                                     ///< Count of non-zero entries in demand_matrix.
+	uint demand_matrix_count = 0;                                 ///< Count of non-zero entries in demand_matrix.
 	std::vector<DemandAnnotation> demand_annotation_store;        ///< Demand annotation store.
 
 	DynUniformArenaAllocator path_allocator; ///< Arena allocator used for paths
@@ -458,15 +459,15 @@ protected:
 	static constexpr int PATH_CAP_MIN_FREE = (INT_MIN + 1) / PATH_CAP_MULTIPLIER;
 	static constexpr int PATH_CAP_MAX_FREE = (INT_MAX - 1) / PATH_CAP_MULTIPLIER;
 
-	uint distance;     ///< Sum(distance of all legs up to this one).
-	uint capacity;     ///< This capacity is min(capacity) fom all edges.
-	int free_capacity; ///< This capacity is min(edge.capacity - edge.flow) for the current run of Dijkstra.
-	uint flow;         ///< Flow the current run of the mcf solver assigns.
-	NodeID node;       ///< Link graph node this leg passes.
-	NodeID origin;     ///< Link graph node this path originates from.
-	uint num_children; ///< Number of child legs that have been forked from this path.
+	uint distance = 0;            ///< Sum(distance of all legs up to this one).
+	uint capacity = 0;            ///< This capacity is min(capacity) fom all edges.
+	int free_capacity = 0;        ///< This capacity is min(edge.capacity - edge.flow) for the current run of Dijkstra.
+	uint flow = 0;                ///< Flow the current run of the mcf solver assigns.
+	NodeID node = INVALID_NODE;   ///< Link graph node this leg passes.
+	NodeID origin = INVALID_NODE; ///< Link graph node this path originates from.
+	uint num_children = 0;        ///< Number of child legs that have been forked from this path.
 
-	uintptr_t parent_storage; ///< Parent leg of this one, flag in LSB of pointer
+	uintptr_t parent_storage{};   ///< Parent leg of this one, flag in LSB of pointer
 
 public:
 	/** Set the parent leg of this one, only for internal use, or when moving parent path. */

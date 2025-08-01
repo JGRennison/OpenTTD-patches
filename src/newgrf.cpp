@@ -604,8 +604,7 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 		if (engine != EngineID::Invalid()) {
 			Engine *e = Engine::Get(engine);
 			if (!e->grf_prop.HasGrfFile()) {
-				e->grf_prop.grfid = file->grfid;
-				e->grf_prop.grffile = file;
+				e->grf_prop.SetGRFFile(file);
 			}
 			return e;
 		}
@@ -617,8 +616,7 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 		Engine *e = Engine::Get(engine);
 
 		if (!e->grf_prop.HasGrfFile()) {
-			e->grf_prop.grfid = file->grfid;
-			e->grf_prop.grffile = file;
+			e->grf_prop.SetGRFFile(file);
 			GrfMsg(5, "Replaced engine at index {} for GRFID {:x}, type {}, index {}", e->index, std::byteswap(file->grfid), type, internal_id);
 		}
 
@@ -644,8 +642,7 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 
 	/* ... it's not, so create a new one based off an existing engine */
 	Engine *e = new Engine(type, internal_id);
-	e->grf_prop.grfid = file->grfid;
-	e->grf_prop.grffile = file;
+	e->grf_prop.SetGRFFile(file);
 
 	/* Reserve the engine slot */
 	assert(_engine_mngr.mappings.size() == e->index);
@@ -2615,8 +2612,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 					housespec->enabled = true;
 					housespec->grf_prop.local_id = id;
 					housespec->grf_prop.subst_id = subs_id;
-					housespec->grf_prop.grfid = _cur.grffile->grfid;
-					housespec->grf_prop.grffile = _cur.grffile;
+					housespec->grf_prop.SetGRFFile(_cur.grffile);
 					/* Set default colours for randomization, used if not overridden. */
 					housespec->random_colour[0] = COLOUR_RED;
 					housespec->random_colour[1] = COLOUR_BLUE;
@@ -3575,8 +3571,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 
 					tsp->grf_prop.local_id = id;
 					tsp->grf_prop.subst_id = subs_id;
-					tsp->grf_prop.grfid = _cur.grffile->grfid;
-					tsp->grf_prop.grffile = _cur.grffile;
+					tsp->grf_prop.SetGRFFile(_cur.grffile);
 					_industile_mngr.AddEntityID(id, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
 				break;
@@ -3843,8 +3838,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					indsp->enabled = true;
 					indsp->grf_prop.local_id = id;
 					indsp->grf_prop.subst_id = subs_id;
-					indsp->grf_prop.grfid = _cur.grffile->grfid;
-					indsp->grf_prop.grffile = _cur.grffile;
+					indsp->grf_prop.SetGRFFile(_cur.grffile);
 					/* If the grf industry needs to check its surrounding upon creation, it should
 					 * rely on callbacks, not on the original placement functions */
 					indsp->check_proc = CHECK_NOTHING;
@@ -4223,8 +4217,7 @@ static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const
 					as->enabled = true;
 					as->grf_prop.local_id = id;
 					as->grf_prop.subst_id = subs_id;
-					as->grf_prop.grfid = _cur.grffile->grfid;
-					as->grf_prop.grffile = _cur.grffile;
+					as->grf_prop.SetGRFFile(_cur.grffile);
 					/* override the default airport */
 					_airport_mngr.Add(id, _cur.grffile->grfid, subs_id);
 				}
@@ -5277,8 +5270,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint first, uint last, int prop, 
 
 					tsp->grf_prop.local_id = id;
 					tsp->grf_prop.subst_id = subs_id;
-					tsp->grf_prop.grfid = _cur.grffile->grfid;
-					tsp->grf_prop.grffile = _cur.grffile;
+					tsp->grf_prop.SetGRFFile(_cur.grffile);
 					_airporttile_mngr.AddEntityID(id, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
 				break;
@@ -6883,8 +6875,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		}
 
 		statspec->grf_prop.SetSpriteGroup(SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
-		statspec->grf_prop.grfid = _cur.grffile->grfid;
-		statspec->grf_prop.grffile = _cur.grffile;
+		statspec->grf_prop.SetGRFFile(_cur.grffile);
 		statspec->grf_prop.local_id = stations[i];
 		StationClass::Assign(statspec);
 	}
@@ -7098,8 +7089,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		}
 
 		spec->grf_prop.SetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT, GetGroupByID(groupid));
-		spec->grf_prop.grfid = _cur.grffile->grfid;
-		spec->grf_prop.grffile = _cur.grffile;
+		spec->grf_prop.SetGRFFile(_cur.grffile);
 		spec->grf_prop.local_id = objects[i];
 	}
 }
@@ -7280,8 +7270,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		}
 
 		roadstopspec->grf_prop.SetSpriteGroup(SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
-		roadstopspec->grf_prop.grfid = _cur.grffile->grfid;
-		roadstopspec->grf_prop.grffile = _cur.grffile;
+		roadstopspec->grf_prop.SetGRFFile(_cur.grffile);
 		roadstopspec->grf_prop.local_id = roadstops[i];
 		RoadStopClass::Assign(roadstopspec);
 	}
@@ -7332,7 +7321,7 @@ static void BadgeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 		auto &badge = *GetBadge(found->second);
 		badge.grf_prop.SetSpriteGroup(GSF_END, _cur.spritegroups[groupid]);
-		badge.grf_prop.grffile = _cur.grffile;
+		badge.grf_prop.SetGRFFile(_cur.grffile);
 		badge.grf_prop.local_id = local_id;
 	}
 }

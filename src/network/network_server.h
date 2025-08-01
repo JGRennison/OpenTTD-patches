@@ -29,7 +29,7 @@ class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<
 
 protected:
 	std::unique_ptr<class NetworkAuthenticationServerHandler> authentication_handler = nullptr; ///< The handler for the authentication.
-	std::string peer_public_key; ///< The public key of our client.
+	std::string peer_public_key{}; ///< The public key of our client.
 
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet &p) override;
 	NetworkRecvStatus Receive_CLIENT_IDENTIFY(Packet &p) override;
@@ -87,7 +87,7 @@ public:
 	uint8_t last_token = 0;                ///< The last random token we did send to verify the client is listening
 	uint32_t last_token_frame = 0;         ///< The last frame we received the right token
 	ClientStatus status = STATUS_INACTIVE; ///< Status of this client
-	OutgoingCommandQueue outgoing_queue;   ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
+	OutgoingCommandQueue outgoing_queue{}; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
 	size_t receive_limit = 0;              ///< Amount of bytes that we can receive at this moment
 	bool settings_authed = false;          ///< Authorised to control all game settings
 	bool supports_zstd = false;            ///< Client supports zstd compression

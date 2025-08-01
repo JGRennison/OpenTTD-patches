@@ -2956,6 +2956,12 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (IsSavegameVersionBefore(SLV_145)) {
+		for (Station *st : Station::Iterate()) {
+			if (st->facilities.Test(StationFacility::Airport)) st->airport.rotation = DIR_N;
+		}
+	}
+
 	/* In old versions it was possible to remove an airport while a plane was
 	 * taking off or landing. This gives all kind of problems when building
 	 * another airport in the same station so we don't allow that anymore.

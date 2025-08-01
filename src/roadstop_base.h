@@ -34,14 +34,14 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 	/** Container for each entry point of a drive through road stop */
 	struct Entry {
 	private:
-		int length;      ///< The length of the stop in tile 'units'
-		int occupied;    ///< The amount of occupied stop in tile 'units'
+		int length = 0; ///< The length of the stop in tile 'units'
+		int occupied = 0; ///< The amount of occupied stop in tile 'units'
 
 	public:
 		friend struct RoadStop; ///< Oh yeah, the road stop may play with me.
 
 		/** Create an entry */
-		Entry() : length(0), occupied(0) {}
+		Entry() {}
 
 		/**
 		 * Get the length of this drive through stop.
@@ -75,9 +75,9 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 		void Rebuild(const RoadStop *rs, int side = -1);
 	};
 
-	uint8_t         status; ///< Current status of the Stop, @see RoadStopSatusFlag. Access using *Bay and *Busy functions.
-	TileIndex       xy;     ///< Position on the map
-	struct RoadStop *next;  ///< Next stop of the given type at this station
+	uint8_t status = 0;          ///< Current status of the Stop, @see RoadStopSatusFlag. Access using *Bay and *Busy functions.
+	TileIndex xy = INVALID_TILE; ///< Position on the map
+	RoadStop *next = nullptr;    ///< Next stop of the given type at this station
 
 	/** Initializes a RoadStop */
 	inline RoadStop(TileIndex tile = INVALID_TILE) :
@@ -172,8 +172,8 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 	void DebugReEnter(const RoadVehicle *rv);
 
 private:
-	Entry *east; ///< The vehicles that entered from the east
-	Entry *west; ///< The vehicles that entered from the west
+	Entry *east = nullptr; ///< The vehicles that entered from the east
+	Entry *west = nullptr; ///< The vehicles that entered from the west
 
 	/**
 	 * Allocates a bay

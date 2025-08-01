@@ -2196,7 +2196,7 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, std::s
 
 	format_buffer buffer;
 
-	AppendStringInPlaceWithArgs(buffer, str, params);
+	AppendStringWithArgsInPlace(buffer, str, params);
 	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 	this->center = center;
 
@@ -2206,7 +2206,7 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, std::s
 		for (StringParameter &param : params) {
 			param.type = 0;
 		}
-		AppendStringInPlaceWithArgs(buffer, str_small, params);
+		AppendStringWithArgsInPlace(buffer, str_small, params);
 	}
 	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 

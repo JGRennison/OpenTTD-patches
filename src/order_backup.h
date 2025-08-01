@@ -46,15 +46,15 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	template <typename T>
 	friend class upstream_sl::SlOrders;
-	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
-	friend void Save_BKOR();   ///< Saving orders upon savegame saving.
+	friend void Load_BKOR();              ///< Creating empty orders upon savegame loading.
+	friend void Save_BKOR();              ///< Saving orders upon savegame saving.
 	friend upstream_sl::BKORChunkHandler;
-	uint32_t user;             ///< The user that requested the backup.
-	TileIndex tile;            ///< Tile of the depot where the order was changed.
-	GroupID group;             ///< The group the vehicle was part of.
+	uint32_t user = 0;                    ///< The user that requested the backup.
+	TileIndex tile = INVALID_TILE;        ///< Tile of the depot where the order was changed.
+	GroupID group = GroupID::Invalid();   ///< The group the vehicle was part of.
 
-	const Vehicle *clone;      ///< Vehicle this vehicle was a clone of.
-	std::vector<Order> orders; ///< The actual orders if the vehicle was not a clone.
+	const Vehicle *clone = nullptr;       ///< Vehicle this vehicle was a clone of.
+	std::vector<Order> orders;            ///< The actual orders if the vehicle was not a clone.
 
 	std::vector<DispatchSchedule> dispatch_schedules; ///< Scheduled dispatch schedules
 

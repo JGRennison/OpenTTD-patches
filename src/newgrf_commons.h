@@ -297,6 +297,8 @@ struct GRFFilePropsBase {
 
 	using IndexType = uint8_t;
 
+	void SetGRFFile(const struct GRFFile *grffile);
+
 	/**
 	 * Test if this entity was introduced by NewGRF.
 	 * @returns true iff the grfid property is set.

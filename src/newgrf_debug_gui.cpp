@@ -781,7 +781,7 @@ struct NewGRFInspectWindow final : Window {
 					if (name != nullptr) {
 						format_buffer buffer;
 						if (HasVariableParameter(niv)) {
-							if (widest_num == 0) widest_num = GetBroadestDigitsValue(2);
+							if (widest_num == 0) widest_num = GetParamMaxDigits(2);
 							buffer.format("  {} [{}]: ", name, widest_num);
 						} else {
 							buffer.format("  {}: ", name);

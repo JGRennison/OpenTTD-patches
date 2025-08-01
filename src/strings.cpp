@@ -175,17 +175,19 @@ std::string EncodedString::GetDecodedString() const
 }
 
 /**
- * Set DParam n to some number that is suitable for string size computations.
- * @param n Index of the string parameter.
- * @param max_value The biggest value which shall be displayed.
- *                  For the result only the number of digits of \a max_value matter.
- * @param min_count Minimum number of digits independent of \a max.
+ * Get some number that is suitable for string size computations.
+ * @param count Number of digits which shall be displayable.
  * @param size  Font of the number
+ * @returns Number to use for string size computations.
  */
-void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count, FontSize size)
+uint64_t GetParamMaxDigits(uint count, FontSize size)
 {
-	uint num_digits = GetBase10DigitsRequired(max_value);
-	SetDParamMaxDigits(n, std::max(min_count, num_digits), size);
+	auto [front, next] = GetBroadestDigit(size);
+	uint64_t val = count > 1 ? front : next;
+	for (; count > 1; count--) {
+		val = 10 * val + next;
+	}
+	return val;
 }
 
 /**
@@ -196,7 +198,34 @@ void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count, FontSize si
  */
 void SetDParamMaxDigits(size_t n, uint count, FontSize size)
 {
-	SetDParam(n, GetBroadestDigitsValue(count, size));
+	SetDParam(n, GetParamMaxDigits(count, size));
+}
+
+/**
+ * Get some number that is suitable for string size computations.
+ * @param max_value The biggest value which shall be displayed.
+ *                  For the result only the number of digits of \a max_value matter.
+ * @param min_count Minimum number of digits independent of \a max.
+ * @param size  Font of the number
+ * @returns Number to use for string size computations.
+ */
+uint64_t GetParamMaxValue(uint64_t max_value, uint min_count, FontSize size)
+{
+	uint num_digits = GetBase10DigitsRequired(max_value);
+	return GetParamMaxDigits(std::max(min_count, num_digits), size);
+}
+
+/**
+ * Set DParam n to some number that is suitable for string size computations.
+ * @param n Index of the string parameter.
+ * @param max_value The biggest value which shall be displayed.
+ *                  For the result only the number of digits of \a max_value matter.
+ * @param min_count Minimum number of digits independent of \a max.
+ * @param size  Font of the number
+ */
+void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count, FontSize size)
+{
+	SetDParam(n, GetParamMaxValue(max_value, min_count, size));
 }
 
 /**
@@ -413,7 +442,7 @@ void AppendStringInPlaceGlobalParams(format_buffer &result, StringID string)
  * @param string The unique identifier of the translatable string.
  * @param args Span of arguments for the string.
  */
-void AppendStringInPlaceWithArgs(format_buffer &result, StringID string, std::span<StringParameter> args)
+void AppendStringWithArgsInPlace(format_buffer &result, StringID string, std::span<StringParameter> args)
 {
 	StringParameters params{args};
 	GetStringWithArgs(StringBuilder(result), string, params);
@@ -425,10 +454,10 @@ void AppendStringInPlaceWithArgs(format_buffer &result, StringID string, std::sp
  * @param string The unique identifier of the translatable string.
  * @param args Span of arguments for the string.
  */
-void AppendStringInPlaceWithArgs(std::string &result, StringID string, std::span<StringParameter> args)
+void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args)
 {
 	format_buffer buffer;
-	AppendStringInPlaceWithArgs(buffer, string, args);
+	AppendStringWithArgsInPlace(buffer, string, args);
 	result += (std::string_view)buffer;
 }
 

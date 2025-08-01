@@ -122,21 +122,21 @@ DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
 	/* Cached wagon override spritegroup */
-	const struct SpriteGroup *cached_override;
+	const struct SpriteGroup *cached_override = nullptr;
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
-	TrainCacheFlags cached_tflags;  ///< train cached flags
-	uint8_t cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
-	uint16_t cached_centre_mass;    ///< Cached position of the centre of mass, from the front
-	uint16_t cached_braking_length; ///< Cached effective length used for deceleration force and power purposes
-	uint16_t cached_veh_weight;     ///< Cached individual vehicle weight
-	uint16_t cached_uncapped_decel; ///< Uncapped cached deceleration for realistic braking lookahead purposes
-	uint8_t cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes
+	TrainCacheFlags cached_tflags{};     ///< train cached flags
+	uint8_t cached_num_engines = 0;      ///< total number of engines, including rear ends of multiheaded engines
+	uint16_t cached_centre_mass = 0;     ///< Cached position of the centre of mass, from the front
+	uint16_t cached_braking_length = 0;  ///< Cached effective length used for deceleration force and power purposes
+	uint16_t cached_veh_weight = 0;      ///< Cached individual vehicle weight
+	uint16_t cached_uncapped_decel = 0;  ///< Uncapped cached deceleration for realistic braking lookahead purposes
+	uint8_t cached_deceleration = 0;     ///< Cached deceleration for realistic braking lookahead purposes
 
-	uint8_t user_def_data;          ///< Cached property 0x25. Can be set by Callback 0x36.
+	uint8_t user_def_data = 0;           ///< Cached property 0x25. Can be set by Callback 0x36.
 
-	int16_t cached_curve_speed_mod; ///< curve speed modifier of the entire train
-	uint16_t cached_max_curve_speed; ///< max consist speed limited by curves
+	int16_t cached_curve_speed_mod = 0;  ///< curve speed modifier of the entire train
+	uint16_t cached_max_curve_speed = 0; ///< max consist speed limited by curves
 
 	bool operator==(const TrainCache &) const = default;
 };
@@ -145,29 +145,29 @@ struct TrainCache {
  * 'Train' is either a loco or a wagon.
  */
 struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
-	TrackBits track;
-	RailType railtype;
-	uint32_t flags;
-	TrainCache tcache;
+	TrackBits track{};
+	RailType railtype{};
+	uint32_t flags = 0;
+	TrainCache tcache{};
 
 	/* Link between the two ends of a multiheaded engine */
-	Train *other_multiheaded_part;
+	Train *other_multiheaded_part = nullptr;
 
-	std::unique_ptr<TrainReservationLookAhead> lookahead;
+	std::unique_ptr<TrainReservationLookAhead> lookahead{};
 
-	RailTypes compatible_railtypes;
+	RailTypes compatible_railtypes{};
 
-	TrainForceProceeding force_proceed;
-	uint8_t critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
+	TrainForceProceeding force_proceed{};
+	uint8_t critical_breakdown_count = 0; ///< Counter for the number of critical breakdowns since last service
 
 	/** Ticks waiting in front of a signal, ticks being stuck or a counter for forced proceeding through signals. */
-	uint16_t wait_counter;
+	uint16_t wait_counter = 0;
 
-	uint16_t reverse_distance;
-	uint16_t tunnel_bridge_signal_num;
-	uint16_t speed_restriction;
-	uint16_t signal_speed_restriction;
-	uint16_t crash_anim_pos; ///< Crash animation counter, also used for realistic braking train brake overheating
+	uint16_t reverse_distance = 0;
+	uint16_t tunnel_bridge_signal_num = 0;
+	uint16_t speed_restriction = 0;
+	uint16_t signal_speed_restriction = 0;
+	uint16_t crash_anim_pos = 0; ///< Crash animation counter, also used for realistic braking train brake overheating
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Train() : GroundVehicleBase() {}

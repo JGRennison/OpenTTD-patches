@@ -118,7 +118,7 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				if (_settings_time.time_in_minutes) {
-					StringID str = PrepareHHMMDateString(GetBroadestDigitsValue(4), CalTime::MAX_DATE, CalTime::MAX_YEAR);
+					StringID str = PrepareHHMMDateString(GetParamMaxDigits(4), CalTime::MAX_DATE, CalTime::MAX_YEAR);
 					d = GetStringBoundingBox(str);
 				} else {
 					SetDParam(0, CalTime::MAX_DATE);

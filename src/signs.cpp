@@ -25,14 +25,6 @@
 SignPool _sign_pool("Sign");
 INSTANTIATE_POOL_METHODS(Sign)
 
-/**
- * Creates a new sign
- */
-Sign::Sign(Owner owner)
-{
-	this->owner = owner;
-}
-
 /** Destroy the sign */
 Sign::~Sign()
 {

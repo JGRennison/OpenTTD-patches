@@ -85,12 +85,7 @@ CommandCost CmdCreateGoal(DoCommandFlags flags, CompanyID company, GoalType type
 	if (!Goal::IsValidGoalDestination(company, type, dest)) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Goal *g = new Goal();
-		g->type = type;
-		g->dst = dest;
-		g->company = company;
-		g->text = text;
-		g->completed = false;
+		Goal *g = new Goal(type, dest, company, text);
 
 		if (g->company == CompanyID::Invalid()) {
 			InvalidateWindowClassesData(WC_GOALS_LIST);

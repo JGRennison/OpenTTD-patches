@@ -65,8 +65,8 @@ std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
 void AppendStringInPlaceGlobalParams(struct format_buffer &result, StringID string);
-void AppendStringInPlaceWithArgs(struct format_buffer &result, StringID string, std::span<StringParameter> args);
-void AppendStringInPlaceWithArgs(std::string &result, StringID string, std::span<StringParameter> args);
+void AppendStringWithArgsInPlace(struct format_buffer &result, StringID string, std::span<StringParameter> args);
+void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
 uint32_t GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);
@@ -100,6 +100,9 @@ inline void SetDParam(size_t n, T &&v) {
 	assert(n < _global_string_params_data.size());
 	_global_string_params_data[n] = StringParameter{std::forward<T>(v)};
 }
+
+uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
+uint64_t GetParamMaxDigits(uint count, FontSize size = FS_NORMAL);
 
 void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
@@ -202,7 +205,7 @@ template <typename... Args>
 void AppendStringInPlace(struct format_buffer &result, StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
-	return AppendStringInPlaceWithArgs(result, string, params);
+	return AppendStringWithArgsInPlace(result, string, params);
 }
 
 /**
@@ -215,7 +218,7 @@ template <typename... Args>
 void AppendStringInPlace(std::string &result, StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
-	return AppendStringInPlaceWithArgs(result, string, params);
+	return AppendStringWithArgsInPlace(result, string, params);
 }
 
 /**

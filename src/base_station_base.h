@@ -24,18 +24,18 @@ extern StationPool _station_pool;
 
 template <typename T>
 struct SpecMapping {
-	const T *spec;       ///< Custom spec.
-	uint32_t grfid;      ///< GRF ID of this custom station
-	uint16_t localidx;   ///< Station ID within GRF of station
+	const T *spec = nullptr; ///< Custom spec.
+	uint32_t grfid = 0;      ///< GRF ID of this custom spec.
+	uint16_t localidx = 0;   ///< Local ID within GRF of this custom spec.
 };
 
 using StationSpecList = SpecMapping<StationSpec>;
 using RoadStopSpecList = SpecMapping<RoadStopSpec>;
 
 struct RoadStopTileData {
-	TileIndex tile;
-	uint8_t random_bits;
-	uint8_t animation_frame;
+	TileIndex tile = INVALID_TILE;
+	uint8_t random_bits = 0;
+	uint8_t animation_frame = 0;
 };
 
 /** StationRect - used to track station spread out rectangle - cheaper than scanning whole map */
@@ -62,44 +62,40 @@ struct StationRect : public Rect {
 
 /** Base class for all station-ish types */
 struct BaseStation : StationPool::PoolItem<&_station_pool> {
-	Owner owner;                    ///< The owner of this station
-	StationFacilities facilities;   ///< The facilities that this station has
-	TileIndex xy;                   ///< Base tile of the station
-	TrackedViewportSign sign;       ///< NOSAVE: Dimensions of sign
+	Owner owner = INVALID_OWNER;            ///< The owner of this station
+	StationFacilities facilities{};         ///< The facilities that this station has
+	TileIndex xy = INVALID_TILE;            ///< Base tile of the station
+	TrackedViewportSign sign{};             ///< NOSAVE: Dimensions of sign
 
-	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the station, if not using a custom name
-	TinyString name;                ///< Custom name
-	StringID string_id;             ///< Default name (town area) of station
+	mutable std::string cached_name{};      ///< NOSAVE: Cache of the resolved name of the station, if not using a custom name
+	TinyString name{};                      ///< Custom name
+	StringID string_id = INVALID_STRING_ID; ///< Default name (town area) of station
 
-	CalTime::Date build_date;       ///< Date of construction
+	CalTime::Date build_date{};             ///< Date of construction
 
-	Town *town;                     ///< The town this station is associated with
+	Town *town = nullptr;                   ///< The town this station is associated with
 
-	std::vector<StationSpecList> speclist;           ///< List of rail station specs of this station.
-	std::vector<RoadStopSpecList> roadstop_speclist; ///< List of road stop specs of this station
+	std::vector<StationSpecList> speclist{};           ///< List of rail station specs of this station.
+	std::vector<RoadStopSpecList> roadstop_speclist{}; ///< List of road stop specs of this station
 
-	uint16_t random_bits;           ///< Random bits assigned to this station
-	uint8_t waiting_triggers;       ///< Waiting triggers (NewGRF) for this station
-	uint8_t delete_ctr;             ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
-	uint8_t cached_anim_triggers;              ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
-	uint8_t cached_roadstop_anim_triggers;     ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
-	CargoTypes cached_cargo_triggers;          ///< NOSAVE: Combined cargo trigger bitmask
-	CargoTypes cached_roadstop_cargo_triggers; ///< NOSAVE: Combined cargo trigger bitmask for road stops
+	uint16_t random_bits = 0;                    ///< Random bits assigned to this station
+	uint8_t waiting_triggers = 0;                ///< Waiting triggers (NewGRF) for this station
+	uint8_t delete_ctr = 0;                      ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
+	uint8_t cached_anim_triggers = 0;            ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
+	uint8_t cached_roadstop_anim_triggers = 0;   ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
+	CargoTypes cached_cargo_triggers{};          ///< NOSAVE: Combined cargo trigger bitmask
+	CargoTypes cached_roadstop_cargo_triggers{}; ///< NOSAVE: Combined cargo trigger bitmask for road stops
 
-	TileArea train_station;         ///< Tile area the train 'station' part covers
-	StationRect rect;               ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
+	TileArea train_station{INVALID_TILE, 0, 0}; ///< Tile area the train 'station' part covers
+	StationRect rect{}; ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
 
-	std::vector<RoadStopTileData> custom_roadstop_tile_data; ///< List of custom road stop tile data
+	std::vector<RoadStopTileData> custom_roadstop_tile_data{}; ///< List of custom road stop tile data
 
 	/**
 	 * Initialize the base station.
 	 * @param tile The location of the station sign
 	 */
-	BaseStation(TileIndex tile) :
-		xy(tile),
-		train_station(INVALID_TILE, 0, 0)
-	{
-	}
+	BaseStation(TileIndex tile) : xy(tile) {}
 
 	virtual ~BaseStation();
 

@@ -1027,20 +1027,18 @@ private:
 
 	std::vector<Order> orders;        ///< Order list.
 
-	VehicleOrderID num_manual_orders; ///< NOSAVE: How many manually added orders are there in the list.
-	uint num_vehicles;                ///< NOSAVE: Number of vehicles that share this order list.
-	Vehicle *first_shared;            ///< NOSAVE: pointer to the first vehicle in the shared order chain.
+	VehicleOrderID num_manual_orders = 0; ///< NOSAVE: How many manually added orders are there in the list.
+	uint num_vehicles = 0;                ///< NOSAVE: Number of vehicles that share this order list.
+	Vehicle *first_shared = nullptr;      ///< NOSAVE: pointer to the first vehicle in the shared order chain.
 
-	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
-	Ticks total_duration;             ///< NOSAVE: Total (timetabled or not) duration of the order list.
+	Ticks timetable_duration{};           ///< NOSAVE: Total timetabled duration of the order list.
+	Ticks total_duration{};               ///< NOSAVE: Total (timetabled or not) duration of the order list.
 
-	std::vector<DispatchSchedule> dispatch_schedules; ///< Scheduled dispatch schedules
+	std::vector<DispatchSchedule> dispatch_schedules{}; ///< Scheduled dispatch schedules
 
 public:
 	/** Default constructor producing an invalid order list. */
-	OrderList()
-		: num_manual_orders(0), num_vehicles(0), first_shared(nullptr),
-		  timetable_duration(0), total_duration(0) { }
+	OrderList() {}
 
 	/**
 	 * Create an order list with the given order chain for the given vehicle.

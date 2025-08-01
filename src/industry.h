@@ -68,8 +68,8 @@ static const int LAST_MONTH = 1;
  */
 struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	struct ProducedHistory {
-		uint32_t production; ///< Total produced
-		uint32_t transported; ///< Total transported
+		uint32_t production = 0;  ///< Total produced
+		uint32_t transported = 0; ///< Total transported
 
 		uint8_t PctTransported() const
 		{
@@ -79,27 +79,27 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	};
 
 	struct ProducedCargo {
-		CargoType cargo;                         ///< Cargo type
-		uint8_t rate;                            ///< Production rate
-		uint16_t waiting;                        ///< Amount of cargo produced
-		std::array<ProducedHistory, 25> history; ///< History of cargo produced and transported
+		CargoType cargo{};                         ///< Cargo type
+		uint8_t rate = 0;                          ///< Production rate
+		uint16_t waiting = 0;                      ///< Amount of cargo produced
+		std::array<ProducedHistory, 25> history{}; ///< History of cargo produced and transported
 	};
 
 	struct AcceptedCargo {
-		CargoType cargo;              ///< Cargo type
-		uint16_t waiting;             ///< Amount of cargo waiting to processed
-		EconTime::Date last_accepted; ///< Last day cargo was accepted by this industry
+		CargoType cargo{};              ///< Cargo type
+		uint16_t waiting = 0;           ///< Amount of cargo waiting to processed
+		EconTime::Date last_accepted{}; ///< Last day cargo was accepted by this industry
 	};
 
-	IndustryType type;                                          ///< Type of industry.
-	Owner owner;                                                ///< Owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
-	CalTime::Date construction_date;                            ///< Date of the construction of the industry
-	TileArea location;                                          ///< Location of the industry
-	Town *town;                                                 ///< Nearest town
-	Station *neutral_station;                                   ///< Associated neutral station
+	IndustryType type = 0;                 ///< Type of industry.
+	Owner owner = INVALID_OWNER;           ///< Owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
+	CalTime::Date construction_date{};     ///< Date of the construction of the industry
+	TileArea location{INVALID_TILE, 0, 0}; ///< Location of the industry
+	Town *town = nullptr;                  ///< Nearest town
+	Station *neutral_station = nullptr;    ///< Associated neutral station
 
-	StationList stations_near;          ///< NOSAVE: List of nearby stations.
-	mutable std::string cached_name;    ///< NOSAVE: Cache of the resolved name of the industry
+	StationList stations_near{};           ///< NOSAVE: List of nearby stations.
+	mutable std::string cached_name{};     ///< NOSAVE: Cache of the resolved name of the industry
 
 	std::unique_ptr<ProducedCargo[]> produced;
 	std::unique_ptr<AcceptedCargo[]> accepted;
@@ -111,25 +111,25 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	std::span<AcceptedCargo> Accepted() { return { this->accepted.get(), this->accepted_cargo_count }; }
 	std::span<const AcceptedCargo> Accepted() const { return { this->accepted.get(), this->accepted_cargo_count }; }
 
-	uint16_t counter;                   ///< used for animation and/or production (if available cargo)
-	uint8_t prod_level;                 ///< general production level
-	Colours random_colour;              ///< randomized colour of the industry, for display purpose
-	EconTime::Year last_prod_year;      ///< last year of production
-	uint8_t was_cargo_delivered;        ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
-	IndustryControlFlags ctlflags;      ///< flags overriding standard behaviours
+	uint16_t counter = 0;                     ///< used for animation and/or production (if available cargo)
+	uint8_t prod_level = 0;                   ///< general production level
+	Colours random_colour{};                  ///< randomized colour of the industry, for display purpose
+	EconTime::Year last_prod_year{};          ///< last year of production
+	uint8_t was_cargo_delivered = 0;          ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
+	IndustryControlFlags ctlflags{};          ///< flags overriding standard behaviours
 
-	PartOfSubsidy part_of_subsidy;      ///< NOSAVE: is this industry a source/destination of a subsidy?
+	PartOfSubsidy part_of_subsidy{};          ///< NOSAVE: is this industry a source/destination of a subsidy?
 
-	Owner founder;                      ///< Founder of the industry
-	uint8_t construction_type;          ///< Way the industry was constructed (@see IndustryConstructionType)
-	uint8_t selected_layout;            ///< Which tile layout was used when creating the industry
-	Owner exclusive_supplier;           ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
-	Owner exclusive_consumer;           ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)
-	std::string text;                   ///< General text with additional information.
+	Owner founder = INVALID_OWNER;            ///< Founder of the industry
+	uint8_t construction_type;                ///< Way the industry was constructed (@see IndustryConstructionType)
+	uint8_t selected_layout;                  ///< Which tile layout was used when creating the industry
+	Owner exclusive_supplier = INVALID_OWNER; ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
+	Owner exclusive_consumer = INVALID_OWNER; ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)
+	std::string text{};                       ///< General text with additional information.
 
-	uint16_t random;                    ///< Random value used for randomisation of all kinds of things
+	uint16_t random = 0;                      ///< Random value used for randomisation of all kinds of things
 
-	PersistentStorage *psa;             ///< Persistent storage for NewGRF industries.
+	PersistentStorage *psa = nullptr;         ///< Persistent storage for NewGRF industries.
 
 	Industry(TileIndex tile = INVALID_TILE) : location(tile, 0, 0) {}
 	~Industry();
