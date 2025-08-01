@@ -110,44 +110,44 @@ struct TrainReservationLookAhead {
 
 	void AddStation(int tiles, StationID id, int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
-		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id.base(), 0, TRLIT_STATION });
+		int32_t end = this->RealEndPosition();
+		this->items.push_back({ end, end + (((int32_t)TILE_SIZE) * tiles), z_pos, id.base(), 0, TRLIT_STATION });
 	}
 
 	void AddReverse(int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end, end, z_pos, 0, 0, TRLIT_REVERSE });
 	}
 
 	void AddTrackSpeedLimit(uint16_t speed, int offset, int duration, int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_TRACK_SPEED });
 	}
 
 	void AddSpeedRestriction(uint16_t speed, int offset, int duration, int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_SPEED_RESTRICTION });
 		this->speed_restriction = speed;
 	}
 
 	void AddSignal(uint16_t target_speed, int offset, int16_t z_pos, uint16_t flags)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, flags, TRLIT_SIGNAL });
 	}
 
 	void AddCurveSpeedLimit(uint16_t target_speed, int offset, int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, 0, TRLIT_CURVE_SPEED });
 	}
 
 	void AddSpeedAdaptation(TileIndex signal_tile, uint16_t signal_track, int offset, int16_t z_pos)
 	{
-		int end = this->RealEndPosition();
+		int32_t end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, signal_tile.base(), signal_track, TRLIT_SPEED_ADAPTATION });
 	}
 

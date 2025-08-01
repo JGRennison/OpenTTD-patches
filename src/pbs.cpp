@@ -466,7 +466,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	auto check_direction = [&](Direction new_dir, int offset, TileIndex tile) {
 		if (dir == new_dir) return;
 		DirDiff dirdiff = DirDifference(dir, new_dir);
-		int end = lookahead->RealEndPosition() + 4;
+		int32_t end = lookahead->RealEndPosition() + 4;
 		lookahead->curves.push_back({ end + offset, dirdiff });
 		dir = new_dir;
 		CheckCurveLookAhead(v, lookahead, end + offset, z, rt);
