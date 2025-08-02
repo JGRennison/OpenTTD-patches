@@ -63,9 +63,6 @@ class CommandCost {
 
 	struct CommandCostAuxiliaryData {
 		Money additional_cash_required = 0;
-		uint32_t textref_stack[16] = {};
-		const GRFFile *textref_stack_grffile = nullptr; ///< NewGRF providing the #TextRefStack content.
-		uint textref_stack_size = 0;                    ///< Number of uint32_t values to put on the #TextRefStack for the error message.
 		EncodedString encoded_message;                  ///< Encoded error message, used if the error message includes parameters.
 		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
 		TileIndex tile = INVALID_TILE;
@@ -216,35 +213,6 @@ public:
 		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
 			this->inl.aux_data->extra_message = INVALID_STRING_ID;
 		}
-	}
-
-	void UseTextRefStack(const GRFFile *grffile, uint num_registers);
-
-	/**
-	 * Returns the NewGRF providing the #TextRefStack of the error message.
-	 * @return the NewGRF.
-	 */
-	const GRFFile *GetTextRefStackGRF() const
-	{
-		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack_grffile : 0;
-	}
-
-	/**
-	 * Returns the number of uint32_t values for the #TextRefStack of the error message.
-	 * @return number of uint32_t values.
-	 */
-	uint GetTextRefStackSize() const
-	{
-		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack_size : 0;
-	}
-
-	/**
-	 * Returns a pointer to the values for the #TextRefStack of the error message.
-	 * @return uint32_t values for the #TextRefStack
-	 */
-	const uint32_t *GetTextRefStack() const
-	{
-		return this->GetInlineType() == CommandCostInlineType::AuxiliaryData ? this->inl.aux_data->textref_stack : nullptr;
 	}
 
 	/**

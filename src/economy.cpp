@@ -66,6 +66,8 @@
 #include "table/strings.h"
 #include "table/pricebase.h"
 
+#include <ranges>
+
 #include "safeguards.h"
 
 
@@ -276,19 +278,9 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	{
 		int numec = std::min<uint>(c->num_valid_stat_ent, 12u);
 		if (numec != 0) {
-			const CompanyEconomyEntry *cee = c->old_economy;
-			Money min_income = cee->income + cee->expenses;
-			Money max_income = cee->income + cee->expenses;
+			auto [min_income, max_income] = std::ranges::minmax(c->old_economy | std::views::take(numec) | std::views::transform([](const auto &ce) { return ce.income + ce.expenses; }));
 
-			do {
-				min_income = std::min(min_income, cee->income + cee->expenses);
-				max_income = std::max(max_income, cee->income + cee->expenses);
-			} while (++cee, --numec);
-
-			if (min_income > 0) {
-				_score_part[owner][SCORE_MIN_INCOME] = min_income;
-			}
-
+			if (min_income > 0) _score_part[owner][SCORE_MIN_INCOME] = min_income;
 			_score_part[owner][SCORE_MAX_INCOME] = max_income;
 		}
 	}
@@ -297,11 +289,8 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	{
 		int numec = std::min<uint>(c->num_valid_stat_ent, 4u);
 		if (numec != 0) {
-			const CompanyEconomyEntry *cee = c->old_economy;
 			OverflowSafeInt64 total_delivered = 0;
-			do {
-				total_delivered += cee->delivered_cargo.GetSum<OverflowSafeInt64>();
-			} while (++cee, --numec);
+			for (auto &ce : c->old_economy | std::views::take(numec)) total_delivered += ce.delivered_cargo.GetSum<OverflowSafeInt64>();
 
 			_score_part[owner][SCORE_DELIVERED] = total_delivered;
 		}
@@ -309,7 +298,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 
 	/* Generate score for variety of cargo */
 	{
-		_score_part[owner][SCORE_CARGO] = c->old_economy->delivered_cargo.GetCount();
+		_score_part[owner][SCORE_CARGO] = c->old_economy[0].delivered_cargo.GetCount();
 	}
 
 	/* Generate score for company's money */
@@ -812,7 +801,7 @@ static void CompaniesGenStatistics()
 
 	for (Company *c : Company::Iterate()) {
 		/* Drop the oldest history off the end */
-		std::copy_backward(c->old_economy, c->old_economy + MAX_HISTORY_QUARTERS - 1, c->old_economy + MAX_HISTORY_QUARTERS);
+		std::copy_backward(c->old_economy.data(), c->old_economy.data() + MAX_HISTORY_QUARTERS - 1, c->old_economy.data() + MAX_HISTORY_QUARTERS);
 		c->old_economy[0] = c->cur_economy;
 		c->cur_economy = {};
 
@@ -1008,7 +997,7 @@ static void HandleEconomyFluctuations()
  */
 void ResetPriceBaseMultipliers()
 {
-	memset(_price_base_multiplier, 0, sizeof(_price_base_multiplier));
+	_price_base_multiplier.fill(0);
 }
 
 /**

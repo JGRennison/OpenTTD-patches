@@ -848,17 +848,6 @@ static void DrawOutline(const Window *, const NWidgetBase *wid)
  */
 
 /**
- * Base class constructor.
- * @param tp Nested widget type.
- */
-NWidgetBase::NWidgetBase(WidgetType tp) : ZeroedMemoryAllocator()
-{
-	this->type = tp;
-}
-
-/* ~NWidgetContainer() takes care of #next and #prev data members. */
-
-/**
  * @fn void NWidgetBase::SetupSmallestSize(Window *w)
  * Compute smallest size needed by the widget.
  *
@@ -1118,10 +1107,7 @@ NWidgetCore::NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fil
 	this->colour = colour;
 	this->widget_data = widget_data;
 	this->SetToolTip(tool_tip);
-	this->scrollbar_index = -1;
 	this->text_colour = tp == WWT_CAPTION ? TC_WHITE : TC_BLACK;
-	this->text_size = FS_NORMAL;
-	this->align = SA_CENTER;
 }
 
 void NWidgetCore::FillWidgetLookup(WidgetLookup &widget_lookup)
@@ -1218,13 +1204,6 @@ void NWidgetContainer::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widget
 			child_wid->FillDirtyWidgets(dirty_widgets);
 		}
 	}
-}
-
-/**
- * Widgets stacked on top of each other.
- */
-NWidgetStacked::NWidgetStacked(WidgetID index) : NWidgetContainer(NWID_SELECTION), index(index)
-{
 }
 
 void NWidgetStacked::SetupSmallestSize(Window *w)
@@ -1365,7 +1344,7 @@ bool NWidgetStacked::IsChildSelected(const NWidgetBase *child) const
 
 class NWidgetLayer : public NWidgetContainer {
 public:
-	NWidgetLayer(WidgetID index);
+	NWidgetLayer(WidgetID index) : NWidgetContainer(NWID_LAYER), index(index) {}
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
@@ -1374,8 +1353,6 @@ public:
 
 	const WidgetID index; ///< If non-negative, index in the #Window::widget_lookup.
 };
-
-NWidgetLayer::NWidgetLayer(WidgetID index) : NWidgetContainer(NWID_LAYER), index(index) {}
 
 void NWidgetLayer::SetupSmallestSize(Window *w)
 {
@@ -1891,7 +1868,7 @@ void NWidgetSpacer::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 	/* Spacer widget never need repainting. */
 }
 
-NWidgetMatrix::NWidgetMatrix(Colours colour, WidgetID index) : NWidgetPIPContainer(NWID_MATRIX, NWidContainerFlag::EqualSize), index(index), clicked(-1), count(-1)
+NWidgetMatrix::NWidgetMatrix(Colours colour, WidgetID index) : NWidgetPIPContainer(NWID_MATRIX, NWidContainerFlag::EqualSize), index(index)
 {
 	this->colour = colour;
 }

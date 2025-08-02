@@ -927,14 +927,6 @@ void *CacheSpriteAllocator::AllocatePtr(size_t mem_req)
 	return this->last_sprite_allocation.GetPtr();
 }
 
-/**
- * Sprite allocator simply using malloc.
- */
-void *SimpleSpriteAllocator::AllocatePtr(size_t size)
-{
-	return MallocT<uint8_t>(size);
-}
-
 void *UniquePtrSpriteAllocator::AllocatePtr(size_t size)
 {
 	this->data = std::make_unique<uint8_t[]>(size);

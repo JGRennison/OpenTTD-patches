@@ -763,11 +763,9 @@ int GetStringHeight(StringID str, int maxw)
  * @param maxw maximum string width
  * @return number of lines of string when it is drawn
  */
-int GetStringLineCount(StringID str, int maxw)
+int GetStringLineCount(std::string_view str, int maxw)
 {
-	format_buffer buf;
-	AppendStringInPlaceGlobalParams(buf, str);
-	Layouter layout(buf, maxw);
+	Layouter layout(str, maxw);
 	return (uint)layout.size();
 }
 

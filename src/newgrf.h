@@ -316,13 +316,13 @@ enum GRFFileCtrlFlags {
 struct NewSignalStyle;
 
 /** Dynamic data of a loaded NewGRF */
-struct GRFFile : ZeroedMemoryAllocator {
-	std::string filename;
-	uint32_t grfid;
-	uint8_t grf_version;
+struct GRFFile {
+	std::string filename{};
+	uint32_t grfid = 0;
+	uint8_t grf_version = 0;
 
-	uint sound_offset;
-	uint16_t num_sounds;
+	uint sound_offset = 0;
+	uint16_t num_sounds = 0;
 
 	std::vector<std::unique_ptr<struct StationSpec>> stations;
 	std::vector<std::unique_ptr<struct HouseSpec>> housespec;
@@ -333,60 +333,60 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<std::unique_ptr<struct AirportTileSpec>> airtspec;
 	std::vector<std::unique_ptr<struct RoadStopSpec>> roadstops;
 
-	GRFFeatureMapRemapSet feature_id_remaps;
-	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
-	btree::btree_map<uint32_t, GRFFilePropertyRemapEntry> action0_extended_property_remaps;
-	Action5TypeRemapSet action5_type_remaps;
-	std::vector<GRFVariableMapEntry> grf_variable_remaps;
-	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;
+	GRFFeatureMapRemapSet feature_id_remaps{};
+	GRFFilePropertyRemapSet action0_property_remaps[GSF_END]{};
+	btree::btree_map<uint32_t, GRFFilePropertyRemapEntry> action0_extended_property_remaps{};
+	Action5TypeRemapSet action5_type_remaps{};
+	std::vector<GRFVariableMapEntry> grf_variable_remaps{};
+	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names{};
 
-	std::vector<uint32_t> param;
+	std::vector<uint32_t> param{};
 
-	std::vector<GRFLabel> labels;                   ///< List of labels
+	std::vector<GRFLabel> labels{}; ///< List of labels
 
-	std::vector<CargoLabel> cargo_list;             ///< Cargo translation table (local ID -> label)
+	std::vector<CargoLabel> cargo_list{};           ///< Cargo translation table (local ID -> label)
 	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoType -> local ID)
 
-	std::vector<BadgeID> badge_list; ///< Badge translation table (local index -> global index)
-	std::unordered_map<uint16_t, BadgeID> badge_map;
+	std::vector<BadgeID> badge_list{}; ///< Badge translation table (local index -> global index)
+	std::unordered_map<uint16_t, BadgeID> badge_map{};
 
-	std::vector<RailTypeLabel> railtype_list;       ///< Railtype translation table
+	std::vector<RailTypeLabel> railtype_list{}; ///< Railtype translation table
 	std::array<RailType, RAILTYPE_END> railtype_map{};
 
-	std::vector<RoadTypeLabel> roadtype_list;       ///< Roadtype translation table (road)
+	std::vector<RoadTypeLabel> roadtype_list{}; ///< Roadtype translation table (road)
 	std::array<RoadType, ROADTYPE_END> roadtype_map{};
 
-	std::vector<RoadTypeLabel> tramtype_list;       ///< Roadtype translation table (tram)
+	std::vector<RoadTypeLabel> tramtype_list{}; ///< Roadtype translation table (tram)
 	std::array<RoadType, ROADTYPE_END> tramtype_map{};
 
-	CanalProperties canal_local_properties[CF_END]; ///< Canal properties as set by this NewGRF
+	std::array<CanalProperties, CF_END> canal_local_properties{}; ///< Canal properties as set by this NewGRF
 
-	robin_hood::unordered_node_map<uint8_t, LanguageMap> language_map; ///< Mappings related to the languages.
+	robin_hood::unordered_node_map<uint8_t, LanguageMap> language_map{}; ///< Mappings related to the languages.
 
-	int traininfo_vehicle_pitch;  ///< Vertical offset for drawing train images in depot GUI and vehicle details
-	uint traininfo_vehicle_width; ///< Width (in pixels) of a 8/8 train vehicle in depot GUI and vehicle details
+	int traininfo_vehicle_pitch = 0;                    ///< Vertical offset for drawing train images in depot GUI and vehicle details
+	uint traininfo_vehicle_width = 0;                   ///< Width (in pixels) of a 8/8 train vehicle in depot GUI and vehicle details
 
-	uint32_t grf_features;                   ///< Bitset of GrfSpecFeature the grf uses
-	PriceMultipliers price_base_multipliers; ///< Price base multipliers as set by the grf.
+	uint32_t grf_features = 0;                          ///< Bitset of GrfSpecFeature the grf uses
+	PriceMultipliers price_base_multipliers{};          ///< Price base multipliers as set by the grf.
 
-	uint32_t var8D_overlay;                  ///< Overlay for global variable 8D (action 0x14)
-	uint32_t var9D_overlay;                  ///< Overlay for global variable 9D (action 0x14)
-	std::vector<uint32_t> var91_values;      ///< Test result values for global variable 91 (action 0x14, only testable using action 7/9)
+	uint32_t var8D_overlay = 0;                         ///< Overlay for global variable 8D (action 0x14)
+	uint32_t var9D_overlay = 0;                         ///< Overlay for global variable 9D (action 0x14)
+	std::vector<uint32_t> var91_values{};               ///< Test result values for global variable 91 (action 0x14, only testable using action 7/9)
 
-	uint32_t observed_feature_tests;         ///< Observed feature test bits (see: GRFFeatureTestObservationFlag)
+	uint32_t observed_feature_tests = 0;                ///< Observed feature test bits (see: GRFFeatureTestObservationFlag)
 
-	const SpriteGroup *new_signals_group;    ///< New signals sprite group
-	uint8_t new_signal_ctrl_flags;           ///< Ctrl flags for new signals
-	uint8_t new_signal_extra_aspects;        ///< Number of extra aspects for new signals
-	uint16_t new_signal_style_mask;          ///< New signal styles usable with this GRF
-	NewSignalStyle *current_new_signal_style; ///< Current new signal style being defined by this GRF
+	const SpriteGroup *new_signals_group = nullptr;     ///< New signals sprite group
+	uint8_t new_signal_ctrl_flags = 0;                  ///< Ctrl flags for new signals
+	uint8_t new_signal_extra_aspects = 0;               ///< Number of extra aspects for new signals
+	uint16_t new_signal_style_mask = 0;                 ///< New signal styles usable with this GRF
+	NewSignalStyle *current_new_signal_style = nullptr; ///< Current new signal style being defined by this GRF
 
-	const SpriteGroup *new_rocks_group;      ///< New landscape rocks group
-	uint8_t new_landscape_ctrl_flags;        ///< Ctrl flags for new landscape
+	const SpriteGroup *new_rocks_group = nullptr;       ///< New landscape rocks group
+	uint8_t new_landscape_ctrl_flags = 0;               ///< Ctrl flags for new landscape
 
-	uint8_t ctrl_flags;                      ///< General GRF control flags
+	uint8_t ctrl_flags = 0;                             ///< General GRF control flags
 
-	btree::btree_map<GRFStringID, StringIndexInTab> string_map; ///< Map of local GRF string ID to string ID
+	btree::btree_map<GRFStringID, StringIndexInTab> string_map{}; ///< Map of local GRF string ID to string ID
 
 	GRFFile(const struct GRFConfig &config);
 

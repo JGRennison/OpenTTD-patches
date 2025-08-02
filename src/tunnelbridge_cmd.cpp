@@ -189,18 +189,7 @@ uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
 /** Reset the data been eventually changed by the grf loaded. */
 void ResetBridges()
 {
-	/* First, free sprite table data */
-	for (BridgeType i = 0; i < MAX_BRIDGES; i++) {
-		if (_bridge[i].sprite_table != nullptr) {
-			for (BridgePieces j = BRIDGE_PIECE_NORTH; j < NUM_BRIDGE_PIECES; j++) free(_bridge[i].sprite_table[j]);
-			free(_bridge[i].sprite_table);
-		}
-	}
-
-	/* Then, wipe out current bridges */
-	memset(&_bridge, 0, sizeof(_bridge));
-	/* And finally, reinstall default data */
-	memcpy(&_bridge, &_orig_bridge, sizeof(_orig_bridge));
+	std::ranges::copy(_orig_bridge, std::begin(_bridge));
 }
 
 /**
@@ -253,15 +242,13 @@ bool HasBridgeFlatRamp(Slope tileh, Axis axis)
 	return (tileh != SLOPE_FLAT);
 }
 
-static inline const PalSpriteID *GetBridgeSpriteTable(int index, BridgePieces table)
+static inline std::span<const PalSpriteID> GetBridgeSpriteTable(int index, BridgePieces table)
 {
 	const BridgeSpec *bridge = GetBridgeSpec(index);
 	assert(table < NUM_BRIDGE_PIECES);
-	if (bridge->sprite_table == nullptr || bridge->sprite_table[table] == nullptr) {
-		return _bridge_sprite_table[index][table];
-	} else {
-		return bridge->sprite_table[table];
-	}
+	if (table < bridge->sprite_table.size() && !bridge->sprite_table[table].empty()) return bridge->sprite_table[table];
+
+	return _bridge_sprite_table[index][table];
 }
 
 
@@ -2475,7 +2462,7 @@ BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northe
 			base_offset = 8;
 		}
 
-		const PalSpriteID *psid = base_offset + GetBridgeSpriteTable(bridge_type, piece);
+		const PalSpriteID *psid = &GetBridgeSpriteTable(bridge_type, piece)[base_offset];
 		if (axis == AXIS_Y) psid += 4;
 		return (BridgePiecePillarFlags) (psid[2].sprite != 0 ? BPPF_ALL_CORNERS : 0);
 	}
@@ -2543,7 +2530,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 			base_offset = 8;
 		}
 
-		psid = base_offset + GetBridgeSpriteTable(type, piece);
+		psid = &GetBridgeSpriteTable(type, piece)[base_offset];
 	} else {
 		drawfarpillar = true;
 		psid = _aqueduct_sprites;

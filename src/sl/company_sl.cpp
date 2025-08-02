@@ -442,7 +442,7 @@ struct CompanyOldEconomyStructHandler final : public TypedSaveLoadStructHandler<
 
 	void Load(CompanyProperties *cprops) const override
 	{
-		cprops->num_valid_stat_ent = static_cast<uint8_t>(SlGetStructListLength(lengthof(cprops->old_economy)));
+		cprops->num_valid_stat_ent = static_cast<uint8_t>(SlGetStructListLength(std::size(cprops->old_economy)));
 
 		for (int i = 0; i < cprops->num_valid_stat_ent; i++) {
 			SlObjectLoadFiltered(&cprops->old_economy[i], this->GetLoadDescription());
@@ -615,7 +615,7 @@ void PLYRNonTableHelper::Load_PLYR_common(Company *c, CompanyProperties *cprops)
 	SlObjectLoadFiltered(&cprops->cur_economy, this->economy_desc);
 
 	/* Write old economy entries. */
-	if (cprops->num_valid_stat_ent > lengthof(cprops->old_economy)) SlErrorCorrupt("Too many old economy entries");
+	if (cprops->num_valid_stat_ent > std::size(cprops->old_economy)) SlErrorCorrupt("Too many old economy entries");
 	for (uint i = 0; i < cprops->num_valid_stat_ent; i++) {
 		SlObjectLoadFiltered(&cprops->old_economy[i], this->economy_desc);
 	}

@@ -1115,35 +1115,11 @@ void CommandCost::AddCost(const CommandCost &ret)
 	}
 }
 
-/**
- * Activate usage of the NewGRF #TextRefStack for the error message.
- * @param grffile NewGRF that provides the #TextRefStack
- * @param num_registers number of entries to copy from the temporary NewGRF registers
- */
-void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
-{
-	extern TemporaryStorageArray<int32_t, 0x110> _temp_store;
-
-	if (this->GetInlineType() != CommandCostInlineType::AuxiliaryData) {
-		this->AllocAuxData();
-	}
-
-	assert(num_registers < lengthof(this->inl.aux_data->textref_stack));
-	this->inl.aux_data->textref_stack_grffile = grffile;
-	this->inl.aux_data->textref_stack_size = num_registers;
-	for (uint i = 0; i < num_registers; i++) {
-		this->inl.aux_data->textref_stack[i] = _temp_store.GetValue(0x100 + i);
-	}
-}
-
 std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 {
 	if (this->Succeeded()) {
 		return fmt::format("Success: cost: {}", (int64_t) this->GetCost());
 	} else {
-		const uint textref_stack_size = this->GetTextRefStackSize();
-		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
-
 		format_buffer buf;
 		buf.format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
@@ -1154,8 +1130,6 @@ std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 			buf.push_back(' ');
 			AppendStringInPlaceGlobalParams(buf, this->message);
 		}
-
-		if (textref_stack_size > 0) StopTextRefStackUsage();
 
 		return buf.to_string();
 	}

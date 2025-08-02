@@ -16,6 +16,7 @@
 #include "tile_type.h"
 #include "widget_type.h"
 #include "string_type.h"
+#include "core/alloc_type.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include <algorithm>

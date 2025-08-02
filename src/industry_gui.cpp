@@ -124,9 +124,7 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 		if (indspec->grf_prop.grffile->grf_version < 8) {
 			if (GB(callback, 0, 8) == 0xFF) return;
 			if (callback < 0x400) {
-				StartTextRefStackUsage(indspec->grf_prop.grffile, 6);
-				suffix.text = GetString(GetGRFStringID(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback));
-				StopTextRefStackUsage();
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
 				suffix.display = CSD_CARGO_AMOUNT_TEXT;
 				return;
 			}
@@ -140,16 +138,12 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 				return;
 			}
 			if (callback < 0x400) {
-				StartTextRefStackUsage(indspec->grf_prop.grffile, 6);
-				suffix.text = GetString(GetGRFStringID(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback));
-				StopTextRefStackUsage();
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback, 6);
 				suffix.display = CSD_CARGO_AMOUNT_TEXT;
 				return;
 			}
 			if (callback >= 0x800 && callback < 0xC00) {
-				StartTextRefStackUsage(indspec->grf_prop.grffile, 6);
-				suffix.text = GetString(GetGRFStringID(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT - 0x800 + callback));
-				StopTextRefStackUsage();
+				suffix.text = GetGRFStringWithTextStack(indspec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback - 0x800, 6);
 				suffix.display = CSD_CARGO_TEXT;
 				return;
 			}
@@ -621,11 +615,9 @@ public:
 						if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(indsp->grf_prop.grfid, CBID_INDUSTRY_FUND_MORE_TEXT, callback_res);
 						} else {
-							StringID str = GetGRFStringID(indsp->grf_prop.grfid, GRFSTR_MISC_GRF_TEXT + callback_res);  // No. here's the new string
-							if (str != STR_UNDEFINED) {
-								StartTextRefStackUsage(indsp->grf_prop.grffile, 6);
+							std::string str = GetGRFStringWithTextStack(indsp->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, 6);
+							if (!str.empty()) {
 								DrawStringMultiLine(ir, str, TC_YELLOW);
-								StopTextRefStackUsage();
 							}
 						}
 					}
@@ -953,6 +945,9 @@ public:
 		bool first = true;
 		bool has_accept = false;
 
+		/* Use all the available space past the rect, so that we can enlarge the window if needed. */
+		ir.bottom = INT_MAX;
+
 		if (i->prod_level == PRODLEVEL_CLOSURE) {
 			DrawString(ir, STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE);
 			ir.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_wide;
@@ -1059,16 +1054,10 @@ public:
 				if (callback_res > 0x400) {
 					ErrorUnknownCallbackResult(ind->grf_prop.grfid, CBID_INDUSTRY_WINDOW_MORE_TEXT, callback_res);
 				} else {
-					StringID message = GetGRFStringID(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res);
-					if (message != STR_NULL && message != STR_UNDEFINED) {
+					std::string str = GetGRFStringWithTextStack(ind->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, 6);
+					if (!str.empty()) {
 						ir.top += WidgetDimensions::scaled.vsep_wide;
-
-						StartTextRefStackUsage(ind->grf_prop.grffile, 6);
-						/* Use all the available space left from where we stand up to the
-						 * end of the window. We ALSO enlarge the window if needed, so we
-						 * can 'go' wild with the bottom of the window. */
-						ir.top = DrawStringMultiLine(ir.left, ir.right, ir.top, UINT16_MAX, message, TC_BLACK);
-						StopTextRefStackUsage();
+						ir.top = DrawStringMultiLine(ir, str, TC_YELLOW);
 					}
 				}
 			}
@@ -1077,7 +1066,7 @@ public:
 		if (!i->text.empty()) {
 			SetDParamStr(0, i->text);
 			ir.top += WidgetDimensions::scaled.vsep_wide;
-			ir.top = DrawStringMultiLine(ir.left, ir.right, ir.top, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+			ir.top = DrawStringMultiLine(ir, STR_JUST_RAW_STRING, TC_BLACK);
 		}
 
 		/* Return required bottom position, the last pixel row plus some padding. */

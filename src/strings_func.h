@@ -61,6 +61,15 @@ inline StringID MakeStringID(StringTab tab, StringIndexInTab index)
 	return (tab << TAB_SIZE_BITS) + index.base();
 }
 
+/**
+ * Prepare the string parameters for the next formatting run, resetting the type information.
+ * This is only necessary if parameters are reused for multiple format runs.
+ */
+static inline void PrepareArgsForNextRun(std::span<StringParameter> args)
+{
+	for (auto &param : args) param.type = 0;
+}
+
 std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
@@ -103,6 +112,12 @@ inline void SetDParam(size_t n, T &&v) {
 
 uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 uint64_t GetParamMaxDigits(uint count, FontSize size = FS_NORMAL);
+
+template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
+uint64_t GetParamMaxValue(T max_value, uint min_count = 0, FontSize size = FS_NORMAL)
+{
+	return GetParamMaxValue(max_value.base(), min_count, size);
+}
 
 void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);

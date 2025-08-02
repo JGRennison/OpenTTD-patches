@@ -66,6 +66,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include <ranges>
 #include <variant>
 
 #include "safeguards.h"
@@ -2404,10 +2405,11 @@ static ChangeInfoResult BridgeChangeInfo(uint first, uint last, int prop, const 
 			case 0x0D: { // Bridge sprite tables
 				uint8_t tableid = buf.ReadByte();
 				uint8_t numtables = buf.ReadByte();
+				size_t size = tableid + numtables;
 
-				if (bridge->sprite_table == nullptr) {
+				if (bridge->sprite_table.size() < size) {
 					/* Allocate memory for sprite table pointers and zero out */
-					bridge->sprite_table = CallocT<PalSpriteID*>(NUM_BRIDGE_PIECES);
+					bridge->sprite_table.resize(std::min<size_t>(size, NUM_BRIDGE_PIECES));
 				}
 
 				for (; numtables-- != 0; tableid++) {
@@ -2417,8 +2419,8 @@ static ChangeInfoResult BridgeChangeInfo(uint first, uint last, int prop, const 
 						continue;
 					}
 
-					if (bridge->sprite_table[tableid] == nullptr) {
-						bridge->sprite_table[tableid] = MallocT<PalSpriteID>(SPRITES_PER_BRIDGE_PIECE);
+					if (bridge->sprite_table[tableid].empty()) {
+						bridge->sprite_table[tableid].resize(SPRITES_PER_BRIDGE_PIECE);
 					}
 
 					for (uint8_t sprite = 0; sprite < SPRITES_PER_BRIDGE_PIECE; sprite++) {
@@ -6599,7 +6601,7 @@ static void NewSpriteGroup(ByteReader &buf)
 						group->again = buf.ReadByte();
 					} else if (type == 2) {
 						group->num_input = buf.ReadByte();
-						if (group->num_input > lengthof(group->subtract_input)) {
+						if (group->num_input > std::size(group->subtract_input)) {
 							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
 							error->data = "too many inputs (max 16)";
 							return;
@@ -6612,7 +6614,7 @@ static void NewSpriteGroup(ByteReader &buf)
 								 * as long as the result is not used. Mark it invalid so this
 								 * can be tested later. */
 								group->version = 0xFF;
-							} else if (std::find(group->cargo_input, group->cargo_input + i, cargo) != group->cargo_input + i) {
+							} else if (auto v = group->cargo_input | std::views::take(i); std::ranges::find(v, cargo) != v.end()) {
 								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
 								error->data = "duplicate input cargo";
 								return;
@@ -6621,7 +6623,7 @@ static void NewSpriteGroup(ByteReader &buf)
 							group->subtract_input[i] = buf.ReadByte();
 						}
 						group->num_output = buf.ReadByte();
-						if (group->num_output > lengthof(group->add_output)) {
+						if (group->num_output > std::size(group->add_output)) {
 							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
 							error->data = "too many outputs (max 16)";
 							return;
@@ -6632,7 +6634,7 @@ static void NewSpriteGroup(ByteReader &buf)
 							if (!IsValidCargoType(cargo)) {
 								/* Mark this result as invalid to use */
 								group->version = 0xFF;
-							} else if (std::find(group->cargo_output, group->cargo_output + i, cargo) != group->cargo_output + i) {
+							} else if (auto v = group->cargo_output | std::views::take(i); std::ranges::find(v, cargo) != v.end()) {
 								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
 								error->data = "duplicate output cargo";
 								return;
@@ -10950,9 +10952,7 @@ GRFFile::GRFFile(const GRFConfig &config)
 	this->new_landscape_ctrl_flags = 0;
 
 	/* Mark price_base_multipliers as 'not set' */
-	for (Price i = PR_BEGIN; i < PR_END; i++) {
-		this->price_base_multipliers[i] = INVALID_PRICE_MODIFIER;
-	}
+	this->price_base_multipliers.fill(INVALID_PRICE_MODIFIER);
 
 	/* Initialise rail type map with default rail types */
 	this->railtype_map.fill(INVALID_RAILTYPE);

@@ -857,42 +857,42 @@ struct StationSettings {
 
 /** Default settings for vehicles. */
 struct VehicleDefaultSettings {
-	bool   servint_ispercent;                ///< service intervals are in percents
-	uint16_t servint_trains;                 ///< service interval for trains
-	uint16_t servint_roadveh;                ///< service interval for road vehicles
-	uint16_t servint_aircraft;               ///< service interval for aircraft
-	uint16_t servint_ships;                  ///< service interval for ships
-	bool   auto_timetable_by_default;        ///< use automatic timetables by default
-	bool   auto_separation_by_default;       ///< use automatic timetable separation by default
+	bool servint_ispercent = false;          ///< service intervals are in percents
+	uint16_t servint_trains = 0;             ///< service interval for trains
+	uint16_t servint_roadveh = 0;            ///< service interval for road vehicles
+	uint16_t servint_aircraft = 0;           ///< service interval for aircraft
+	uint16_t servint_ships = 0;              ///< service interval for ships
+	bool auto_timetable_by_default = false;  ///< use automatic timetables by default
+	bool auto_separation_by_default = false; ///< use automatic timetable separation by default
 };
 
 /** Settings that can be set per company. */
 struct CompanySettings {
-	bool engine_renew;                       ///< is autorenew enabled
-	int16_t engine_renew_months;             ///< months before/after the maximum vehicle age a vehicle should be renewed
-	uint32_t engine_renew_money;             ///< minimum amount of money before autorenew is used
-	bool renew_keep_length;                  ///< sell some wagons if after autoreplace the train is longer than before
-	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
-	uint8_t order_occupancy_smoothness;      ///< percentage smoothness of occupancy measurement changes
-	uint8_t  auto_timetable_separation_rate; ///< percentage of auto timetable separation change to apply
-	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
-	uint16_t timetable_autofill_rounding;    ///< round up timetable times to be a multiple of this number of ticks
-	bool advance_order_on_clone;             ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
-	bool copy_clone_add_to_group;            ///< whether to add cloned vehicles to the source vehicle's group, when cloning a vehicle without sharing orders
-	bool remain_if_next_order_same_station;  ///< if the next order is for the same station, start loading/unloading again instead of leaving.
-	uint16_t default_sched_dispatch_duration;///< default scheduled dispatch duration
+	bool engine_renew = false;                      ///< is autorenew enabled
+	int16_t engine_renew_months = 0;                ///< months before/after the maximum vehicle age a vehicle should be renewed
+	uint32_t engine_renew_money = 0;                ///< minimum amount of money before autorenew is used
+	bool renew_keep_length = false;                 ///< sell some wagons if after autoreplace the train is longer than before
+	VehicleDefaultSettings vehicle{};               ///< default settings for vehicles
+	uint8_t order_occupancy_smoothness = 0;         ///< percentage smoothness of occupancy measurement changes
+	uint8_t  auto_timetable_separation_rate = 0;    ///< percentage of auto timetable separation change to apply
+	bool infra_others_buy_in_depot[4]{};            ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
+	uint16_t timetable_autofill_rounding = 0;       ///< round up timetable times to be a multiple of this number of ticks
+	bool advance_order_on_clone = false;            ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
+	bool copy_clone_add_to_group = false;           ///< whether to add cloned vehicles to the source vehicle's group, when cloning a vehicle without sharing orders
+	bool remain_if_next_order_same_station = false; ///< if the next order is for the same station, start loading/unloading again instead of leaving.
+	uint16_t default_sched_dispatch_duration = 0;   ///< default scheduled dispatch duration
 
-	uint8_t old_simulated_wormhole_signals;  ///< no longer needs a setting: tunnel/bridge signal simulation spacing
+	uint8_t old_simulated_wormhole_signals = 0;     ///< no longer needs a setting: tunnel/bridge signal simulation spacing
 };
 
 /** Debug settings. */
 struct DebugSettings {
-	uint32_t chicken_bits;                   ///< chicken bits
-	uint32_t newgrf_optimiser_flags;         ///< NewGRF optimiser flags
+	uint32_t chicken_bits = 0;               ///< chicken bits
+	uint32_t newgrf_optimiser_flags = 0;     ///< NewGRF optimiser flags
 };
 /** Settings related to currency/unit systems. */
 struct ClientLocaleSettings {
-	bool sync_locale_network_server;         ///< sync locale settings with network server
+	bool sync_locale_network_server = false; ///< sync locale settings with network server
 };
 
 /** All settings together for the game. */

@@ -354,7 +354,7 @@ public:
 
 private:
 	int current_index = -1;
-	std::vector<SocialIntegrationPlugin *> plugins;
+	std::vector<SocialIntegrationPlugin *> plugins{};
 };
 
 /** Construct nested container widget for managing the list of social plugins. */
@@ -572,17 +572,17 @@ struct GameOptionsWindow : Window {
 		switch (widget) {
 			case WID_GO_BASE_GRF_DESCRIPTION:
 				SetDParamStr(0, BaseGraphics::GetUsedSet()->GetDescription(GetCurrentLanguageIsoCode()));
-				DrawStringMultiLine(r.left, r.right, r.top, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+				DrawStringMultiLine(r, STR_JUST_RAW_STRING, TC_BLACK);
 				break;
 
 			case WID_GO_BASE_SFX_DESCRIPTION:
 				SetDParamStr(0, BaseSounds::GetUsedSet()->GetDescription(GetCurrentLanguageIsoCode()));
-				DrawStringMultiLine(r.left, r.right, r.top, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+				DrawStringMultiLine(r, STR_JUST_RAW_STRING, TC_BLACK);
 				break;
 
 			case WID_GO_BASE_MUSIC_DESCRIPTION:
 				SetDParamStr(0, BaseMusic::GetUsedSet()->GetDescription(GetCurrentLanguageIsoCode()));
-				DrawStringMultiLine(r.left, r.right, r.top, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+				DrawStringMultiLine(r, STR_JUST_RAW_STRING, TC_BLACK);
 				break;
 
 			case WID_GO_GUI_SCALE:
@@ -2894,8 +2894,7 @@ struct GameSettingsWindow : Window {
 		if (this->warn_missing == WHR_NONE) {
 			new_warn_lines = 0;
 		} else {
-			SetDParam(0, _game_settings_restrict_dropdown[this->filter.min_cat]);
-			new_warn_lines = GetStringLineCount(warn_str, panel.Width());
+			new_warn_lines = GetStringLineCount(GetString(warn_str, _game_settings_restrict_dropdown[this->filter.min_cat]), panel.Width());
 		}
 		if (this->warn_lines != new_warn_lines) {
 			this->vscroll->SetCount(this->vscroll->GetCount() - this->warn_lines + new_warn_lines);

@@ -72,7 +72,7 @@ struct BridgeSpec {
 	PaletteID pal;               ///< the palette which is used in the GUI
 	StringID material;           ///< the string that contains the bridge description
 	StringID transport_name[2];  ///< description of the bridge, when built for road or rail
-	PalSpriteID **sprite_table;  ///< table of sprites for drawing the bridge
+	std::vector<std::vector<PalSpriteID>> sprite_table; ///< table of sprites for drawing the bridge
 	uint8_t flags;               ///< bit 0 set: disable drawing of far pillars.
 	uint8_t ctrl_flags;          ///< control flags
 	uint8_t pillar_flags[12];    ///< bridge pillar flags: 6 x pairs of x and y flags
