@@ -342,20 +342,17 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, const TemplateVehicle *tv, DoCom
 }
 
 /* Set unit direction of each vehicle in t as is in tv, assume t and tv contain the same types of vehicles */
-CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle *tv, DoCommandFlags flags)
+void CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle *tv, DoCommandFlags flags)
 {
-	CommandCost cost(t->GetExpenseType(false));
-
 	while (t != nullptr && tv != nullptr) {
 		/* Refit t as tv */
 		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
-			cost.AddCost(Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(flags, t->index, true));
+			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(flags, t->index, true);
 		}
 
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
 	}
-	return cost;
 }
 
 /** Using CmdTemplateReplaceVehicle as a test function (i.e. without DoCommandFlag::Execute) is not a good idea as that function relies on

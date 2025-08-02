@@ -7582,7 +7582,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 		buy.AddCost(CmdRefitTrainFromTemplate(new_chain, tv, flags));
 	}
 
-	buy.AddCost(CmdSetTrainUnitDirectionFromTemplate(new_chain, tv, flags));
+	CmdSetTrainUnitDirectionFromTemplate(new_chain, tv, flags);
 
 	if (new_chain != nullptr && remainder_chain != nullptr) {
 		for (Train *ct = remainder_chain; ct != nullptr; ct = ct->Next()) {
