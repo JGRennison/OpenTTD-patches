@@ -2000,9 +2000,10 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 	BuildRoadToolbarWindow *w = GetRoadToolbarWindowForRoadStop(spec, rtt_preferred);
 	if (w == nullptr) return;
 
-	auto trigger_widget = [&](WidgetID widget) {
-		if (!w->IsWidgetLowered(widget)) {
-			w->OnHotkey(widget);
+	auto trigger_widget = [&](WidgetID widget_id) {
+		const NWidgetCore *widget = w->GetWidget<NWidgetCore>(widget_id);
+		if (widget != nullptr && !widget->IsLowered()) {
+			w->OnHotkey(widget_id);
 		}
 	};
 
