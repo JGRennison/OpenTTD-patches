@@ -24,5 +24,6 @@ void ShowCargoPaymentRates();
 void ShowPerformanceRatingDetail();
 void ShowStationCargo(StationID);
 void ShowIndustryProductionGraph(WindowNumber window_number);
+void ShowTownCargoGraph(WindowNumber window_number);
 
 #endif /* GRAPH_GUI_H */
