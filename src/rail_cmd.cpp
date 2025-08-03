@@ -4460,22 +4460,22 @@ static bool ClickTile_Track(TileIndex tile)
 	return true;
 }
 
-static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
+static void GetTileDesc_Track(TileIndex tile, TileDesc &td)
 {
 	RailType rt = GetRailType(tile);
 	const RailTypeInfo *rti = GetRailTypeInfo(rt);
-	td->rail_speed = rti->max_speed;
-	td->railtype = rti->strings.name;
+	td.rail_speed = rti->max_speed;
+	td.railtype = rti->strings.name;
 	RailType secondary_rt = GetTileSecondaryRailTypeIfValid(tile);
 	if (secondary_rt != rt && secondary_rt != INVALID_RAILTYPE) {
 		const RailTypeInfo *secondary_rti = GetRailTypeInfo(secondary_rt);
-		td->rail_speed2 = secondary_rti->max_speed;
-		td->railtype2 = secondary_rti->strings.name;
+		td.rail_speed2 = secondary_rti->max_speed;
+		td.railtype2 = secondary_rti->strings.name;
 	}
-	td->owner[0] = GetTileOwner(tile);
+	td.owner[0] = GetTileOwner(tile);
 	switch (GetRailTileType(tile)) {
 		case RAIL_TILE_NORMAL:
-			td->str = STR_LAI_RAIL_DESCRIPTION_TRACK;
+			td.str = STR_LAI_RAIL_DESCRIPTION_TRACK;
 			break;
 
 		case RAIL_TILE_SIGNALS: {
@@ -4580,40 +4580,40 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 				primary_style = GetSignalStyle(tile, TRACK_LOWER);
 			}
 
-			td->str = signal_type[secondary_signal][primary_signal];
+			td.str = signal_type[secondary_signal][primary_signal];
 
 			if (primary_style > 0 || secondary_style > 0) {
 				/* Add suffix about signal style */
-				td->dparam[0] = td->str;
-				td->dparam[1] = primary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[primary_style - 1].name;
+				td.dparam[0] = td.str;
+				td.dparam[1] = primary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[primary_style - 1].name;
 				if (secondary_style >= 0) {
-					td->dparam[2] = secondary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[secondary_style - 1].name;
-					td->str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2;
+					td.dparam[2] = secondary_style == 0 ? STR_BUILD_SIGNAL_DEFAULT_STYLE : _new_signal_styles[secondary_style - 1].name;
+					td.str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE2;
 				} else {
-					td->str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE;
+					td.str = STR_LAI_RAIL_DESCRIPTION_TRACK_SIGNAL_STYLE;
 				}
 			}
 
 			if (IsRestrictedSignal(tile)) {
-				td->dparam[3] = td->dparam[2];
-				td->dparam[2] = td->dparam[1];
-				td->dparam[1] = td->dparam[0];
-				td->dparam[0] = td->str;
-				td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+				td.dparam[3] = td.dparam[2];
+				td.dparam[2] = td.dparam[1];
+				td.dparam[1] = td.dparam[0];
+				td.dparam[0] = td.str;
+				td.str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
 			}
 			break;
 		}
 
 		case RAIL_TILE_DEPOT:
-			td->str = STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT;
+			td.str = STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT;
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-				if (td->rail_speed > 0) {
-					td->rail_speed = std::min<uint16_t>(td->rail_speed, _settings_game.vehicle.rail_depot_speed_limit);
+				if (td.rail_speed > 0) {
+					td.rail_speed = std::min<uint16_t>(td.rail_speed, _settings_game.vehicle.rail_depot_speed_limit);
 				} else {
-					td->rail_speed = _settings_game.vehicle.rail_depot_speed_limit;
+					td.rail_speed = _settings_game.vehicle.rail_depot_speed_limit;
 				}
 			}
-			td->build_date = Depot::GetByTile(tile)->build_date;
+			td.build_date = Depot::GetByTile(tile)->build_date;
 			break;
 
 		default:
@@ -4696,9 +4696,8 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 
 	auto abort_load_through = [&](bool leave_station) {
 		if (_local_company == v->owner) {
-			SetDParam(0, v->index);
-			SetDParam(1, v->current_order.GetDestination().ToStationID());
-			AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+			EncodedString msg = GetEncodedString(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, v->index, v->current_order.GetDestination().ToStationID());
+			AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
 					v->index, v->current_order.GetDestination().ToStationID());
 		}
 		if (leave_station) {

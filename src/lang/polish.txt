@@ -1218,7 +1218,7 @@ STR_STATUSBAR_INFINITE_MONEY                                    :{WHITE}(niesko�
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Poprzednie wiadomości
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Lista ostatnich wiadomości
-STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
+STR_MESSAGE_NEWS_FORMAT                                         :{STRING} - {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Wiadomość
 STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
@@ -2235,7 +2235,7 @@ STR_CONFIG_SETTING_SERVINT_VALUE_PERCENTAGE                     :{COMMA}{NBSP}%
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Wyłączone
 
-STR_CONFIG_SETTING_NOSERVICE                                    :Wyłącz serwisowanie jeśli awarie pojazdów są wyłączone: {STRING}
+STR_CONFIG_SETTING_NOSERVICE                                    :Wyłącz serwisowanie, jeśli awarie pojazdów są wyłączone: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Kiedy włączone, pojazdy nie są serwisowane, jeśli nie mogą się popsuć
 
 STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :Obniżenie prędkości załadunku pociągów dłuższych niż stacja: {STRING}
@@ -2463,7 +2463,7 @@ STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Im wyższą war
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Wpływ odległości na dystrybucję: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Jeśli ładunki z jednej stacji trafiają na kilka różnych stacji, na ich dystrybucję wpływ ma odległość. Im wyższą wartość ustawisz, tym bliższe stacje będą preferowane. Zerowa wartość ustawienia sprawi, że odległość nie będzie wpływała na podział dystrybucji
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :Ilość powracającego ładunku dla trybu symetrycznego: {STRING}
-STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Ustawienie tego na mniej niż 100% powoduje, że symetryczna dystrybucja zachowuje się podobnie do asymetrycznej. Mniej ładunku będzie zwróconego jeśli określona ilość zostanie wysłana do stacji. Jeśli ustawisz to na 0%, to symetryczna dystrybucja zachowuje się jak asymetryczna
+STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Ustawienie tego na mniej niż 100% powoduje, że symetryczna dystrybucja zachowuje się podobnie do asymetrycznej. Mniej ładunku będzie zwróconego, jeśli określona ilość zostanie wysłana do stacji. Jeśli ustawisz to na 0%, to symetryczna dystrybucja zachowuje się jak asymetryczna
 
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Nasycenie krótkich tras przed wybraniem tras o dużej przepustowości: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Często istnieje wiele możliwych tras pomiędzy dwiema danymi stacjami. Mechanizm dystrybucji ładunków najpierw nasyci najkrótszą trasę, następnie użyje drugiej najkrótszej trasy, aż do jej nasycenia itd. Nasycenie jest ustalane na podstawie szacunkowej oceny przepustowości i planowanego wykorzystania. Po nasyceniu wszystkich tras, jeśli nadal istnieje zapotrzebowanie, algorytm przeciąży wszystkie trasy, preferując te o dużej przepustowości. W większości przypadków algorytm nie oszacuje jednak dokładnie przepustowości. To ustawienie pozwala określić, do jakiej wartości procentowej krótsza trasa musi zostać nasycona w pierwszym kroku, zanim zostanie wybrana kolejna, dłuższa trasa. Ustaw wartość mniejszą niż 100%, aby uniknąć przepełnionych stacji w przypadku przeszacowania przepustowości
@@ -2829,7 +2829,7 @@ STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Rozpoczn
 STR_NETWORK_START_SERVER_NEW_GAME_NAME                          :{BLACK}Nazwa gry:
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Nazwa gry będzie wyświetlana u innych graczy w menu gry wieloosobowej
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Ustaw hasło
-STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Zabezpiecz grę hasłem jeśli nie chcesz, by była publicznie dostępna
+STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Zabezpiecz swoją rozgrywkę hasłem, jeśli nie chcesz, aby była dostępna publicznie
 
 STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Widoczność:
 STR_NETWORK_START_SERVER_VISIBILITY_TOOLTIP                     :{BLACK}Czy inni ludzie mogą zobaczyć twój serwer na publicznej liście
@@ -3157,8 +3157,8 @@ STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP                     :{BLACK}Nie pod�
 STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP                      :{BLACK}Podświetl zasięg projektowanej stacji
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Akceptuje: {GOLD}{CARGO_LIST}
 STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}Zasoby: {GOLD}{CARGO_LIST}
-STR_STATION_BUILD_INFRASTRUCTURE_COST_YEAR                      :{BLACK}Kosz utrzymania: {GOLD}{CURRENCY_SHORT}/rok
-STR_STATION_BUILD_INFRASTRUCTURE_COST_PERIOD                    :{BLACK}Kosz utrzymania: {GOLD}{CURRENCY_SHORT}/okres
+STR_STATION_BUILD_INFRASTRUCTURE_COST_YEAR                      :{BLACK}Koszt utrzymania: {GOLD}{CURRENCY_SHORT}/rok
+STR_STATION_BUILD_INFRASTRUCTURE_COST_PERIOD                    :{BLACK}Koszt utrzymania: {GOLD}{CURRENCY_SHORT}/okres
 
 # Join station window
 STR_JOIN_STATION_CAPTION                                        :{WHITE}Połącz stację
@@ -4525,8 +4525,8 @@ STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Prędko�
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}Prędkość: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}Prędkość na oceanie: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_CANAL                                   :{BLACK}Prędkość na kanale/rzece: {GOLD}{VELOCITY}
-STR_PURCHASE_INFO_RUNNINGCOST_YEAR                              :{BLACK}Kosz Utrzymania: {GOLD}{CURRENCY_LONG}/rok
-STR_PURCHASE_INFO_RUNNINGCOST_PERIOD                            :{BLACK}Kosz Utrzymania: {GOLD}{CURRENCY_LONG}/okres
+STR_PURCHASE_INFO_RUNNINGCOST_YEAR                              :{BLACK}Koszt utrzymania: {GOLD}{CURRENCY_LONG}/rok
+STR_PURCHASE_INFO_RUNNINGCOST_PERIOD                            :{BLACK}Koszt utrzymania: {GOLD}{CURRENCY_LONG}/okres
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Ładowność: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(przebudowywalny)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Zaprojektowany: {GOLD}{NUM}{BLACK} Żywotność: {GOLD}{COMMA} lat
@@ -4731,8 +4731,8 @@ STR_ENGINE_PREVIEW_SPEED_POWER                                  :Prędkość: {V
 STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Prędkość: {VELOCITY}  Moc: {POWER}  Maksymalna siła pociągowa: {FORCE}
 STR_ENGINE_PREVIEW_TYPE                                         :Typ samolotu: {STRING}
 STR_ENGINE_PREVIEW_TYPE_RANGE                                   :Typ samolotu: {STRING} Zasięg: {COMMA} p{P ole ola ól}
-STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Kosz Utrzymania: {CURRENCY_LONG}/rok
-STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Kosz Utrzymania: {CURRENCY_LONG}/okres
+STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Koszt utrzymania: {CURRENCY_LONG}/okres
 STR_ENGINE_PREVIEW_CAPACITY                                     :Ładowność: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Ładowność: {CARGO_LONG}, {CARGO_LONG}
 
@@ -4980,7 +4980,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Otwórz 
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Lista poleceń - kliknij na polecenie, aby je zaznaczyć. Użyj Ctrl, aby przenieść się do miejsca docelowego
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Koniec poleceń - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Koniec współdzielonych poleceń - -
@@ -4994,14 +4993,14 @@ STR_ORDER_GO_NON_STOP_VIA                                       :Idź bezpośred
 STR_ORDER_TOOLTIP_NON_STOP                                      :{BLACK}Zmień sposób przejazdu w zaznaczonym poleceniu
 
 STR_ORDER_TOGGLE_FULL_LOAD                                      :{BLACK}Pełny załadunek czegokolwiek
-STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Załaduj jeśli dostępne
+STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Załaduj, jeśli dostępne
 STR_ORDER_DROP_FULL_LOAD_ALL                                    :Pełny załadunek wszystkiego
 STR_ORDER_DROP_FULL_LOAD_ANY                                    :Pełny załadunek czegokolwiek
 STR_ORDER_DROP_NO_LOADING                                       :Nie ładuj
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Zmień sposób załadunku w zaznaczonym poleceniu
 
 STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Rozładuj wszystko
-STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Rozładuj jeśli akceptowane
+STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Rozładuj, jeśli akceptowane
 STR_ORDER_DROP_UNLOAD                                           :Rozładuj wszystko
 STR_ORDER_DROP_TRANSFER                                         :Pozostaw do przeładunku
 STR_ORDER_DROP_NO_UNLOADING                                     :Nie rozładowuj
@@ -5015,7 +5014,7 @@ STR_ORDER_DROP_REFIT_AUTO                                       :Ustalony ładun
 STR_ORDER_DROP_REFIT_AUTO_ANY                                   :Dostępny ładunek
 
 STR_ORDER_DROP_GO_ALWAYS_DEPOT                                  :Zawsze do
-STR_ORDER_DROP_SERVICE_DEPOT                                    :Serwisuj jeśli trzeba
+STR_ORDER_DROP_SERVICE_DEPOT                                    :Serwisuj, jeśli trzeba
 STR_ORDER_DROP_HALT_DEPOT                                       :Zatrzymaj
 STR_ORDER_DROP_UNBUNCH                                          :Separuj
 
@@ -5079,63 +5078,62 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Idź bezpośred
 STR_ORDER_SERVICE_AT                                            :Serwisuj w
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Serwisuj bezpośrednio w
 
-STR_ORDER_NEAREST_DEPOT                                         :najbliższego
-STR_ORDER_NEAREST_HANGAR                                        :najbliższego hangaru
 ###length 3
-STR_ORDER_TRAIN_DEPOT                                           :serwisu w warsztatach
-STR_ORDER_ROAD_VEHICLE_DEPOT                                    :serwisu w zajezdni
-STR_ORDER_SHIP_DEPOT                                            :Doku
+STR_ORDER_TRAIN_DEPOT                                           :Hali Warsztatów
+STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Zajezdni
+STR_ORDER_SHIP_DEPOT                                            :Stoczni
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
+STR_ORDER_GO_TO_NEAREST_HANGAR_FORMAT                           :{STRING} najbliższej Hali Hangaru
+STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} najbliższej {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
-STR_ORDER_REFIT_ORDER                                           :(Przebuduj na {STRING.b})
-STR_ORDER_REFIT_STOP_ORDER                                      :(Przebuduj na {STRING.b} i zatrzymaj)
-STR_ORDER_STOP_ORDER                                            :(Zatrzymaj)
+STR_ORDER_REFIT_ORDER                                           :{SPACE}(Przebuduj na {STRING.b})
+STR_ORDER_REFIT_STOP_ORDER                                      :{SPACE}(Przebuduj na {STRING.b} i zatrzymaj)
+STR_ORDER_STOP_ORDER                                            :{SPACE}(Zatrzymaj)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(Czekaj na separację)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :{SPACE}(Czekaj na separację)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Nie może korzystać ze stacji){POP_COLOUR} {STRING} {STATION}
 
-STR_ORDER_IMPLICIT                                              :(sugerowany)
+STR_ORDER_IMPLICIT                                              :{SPACE}(Sugerowany)
 
-STR_ORDER_FULL_LOAD                                             :(Pełny załadunek)
-STR_ORDER_FULL_LOAD_ANY                                         :(Pełny załadunek czegokolwiek)
-STR_ORDER_NO_LOAD                                               :(Nie ładuj)
-STR_ORDER_UNLOAD                                                :(Rozładuj i zabierz ładunek)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :(Rozładuj i czekaj na pełny załadunek)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :(Rozładuj i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_UNLOAD_NO_LOAD                                        :(Rozładuj i pozostaw pusty)
-STR_ORDER_TRANSFER                                              :(Pozostaw do przeładunku i załaduj)
-STR_ORDER_TRANSFER_FULL_LOAD                                    :(Pozostaw do przeładunku i czekaj na pełny załadunek)
-STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :(Pozostaw do przeładunku i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_TRANSFER_NO_LOAD                                      :(Pozostaw do przeładunku i nie ładuj)
-STR_ORDER_NO_UNLOAD                                             :(Nie rozładowuj i zabierz ładunek)
-STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :(Nie rozładowuj i czekaj na pełny załadunek)
-STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :(Nie rozładowuj i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_NO_UNLOAD_NO_LOAD                                     :(Nie rozładowuj i nie ładuj)
+STR_ORDER_FULL_LOAD                                             :{SPACE}(Pełny załadunek)
+STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Pełny załadunek czegokolwiek)
+STR_ORDER_NO_LOAD                                               :{SPACE}(Nie ładuj)
+STR_ORDER_UNLOAD                                                :{SPACE}(Rozładuj i zabierz ładunek)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Rozładuj i czekaj na pełny załadunek)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Rozładuj i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Rozładuj i pozostaw pusty)
+STR_ORDER_TRANSFER                                              :{SPACE}(Pozostaw do przeładunku i załaduj)
+STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Pozostaw do przeładunku i czekaj na pełny załadunek)
+STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Pozostaw do przeładunku i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_TRANSFER_NO_LOAD                                      :{SPACE}(Pozostaw do przeładunku i nie ładuj)
+STR_ORDER_NO_UNLOAD                                             :{SPACE}(Nie rozładowuj i zabierz ładunek)
+STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :{SPACE}(Nie rozładowuj i czekaj na pełny załadunek)
+STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :{SPACE}(Nie rozładowuj i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Nie rozładowuj i nie ładuj)
 
-STR_ORDER_AUTO_REFIT                                            :(Przebuduj na {STRING.b})
-STR_ORDER_FULL_LOAD_REFIT                                       :(Przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_FULL_LOAD_ANY_REFIT                                   :(Przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_UNLOAD_REFIT                                          :(Rozładuj, przebuduj na {STRING.b} i zabierz ładunek)
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_TRANSFER_REFIT                                        :(Pozostaw do przeładunku, przebuduj na {STRING.b} i załaduj)
-STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_NO_UNLOAD_REFIT                                       :(Nie rozładowuj, przebuduj na {STRING.b} i zabierz ładunek)
-STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na dowolny pełny załadunek)
+STR_ORDER_AUTO_REFIT                                            :{SPACE}(Przebuduj na {STRING.b})
+STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Przebuduj na {STRING.b} i czekaj na pełny załadunek)
+STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Rozładuj, przebuduj na {STRING.b} i zabierz ładunek)
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i załaduj)
+STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek)
+STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_NO_UNLOAD_REFIT                                       :{SPACE}(Nie rozładowuj, przebuduj na {STRING.b} i zabierz ładunek)
+STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :{SPACE}(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
+STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :{SPACE}(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na dowolny pełny załadunek)
 
 STR_ORDER_AUTO_REFIT_ANY                                        :dostępny ładunek
 
 ###length 3
-STR_ORDER_STOP_LOCATION_NEAR_END                                :[bliższy koniec]
-STR_ORDER_STOP_LOCATION_MIDDLE                                  :[środek]
-STR_ORDER_STOP_LOCATION_FAR_END                                 :[dalszy koniec]
+STR_ORDER_STOP_LOCATION_NEAR_END                                :{SPACE}[bliższy koniec]
+STR_ORDER_STOP_LOCATION_MIDDLE                                  :{SPACE}[środek]
+STR_ORDER_STOP_LOCATION_FAR_END                                 :{SPACE}[dalszy koniec]
 
 STR_ORDER_OUT_OF_RANGE                                          :{RED} (Kolejny punkt docelowy jest poza zasięgiem)
 
@@ -5155,13 +5153,13 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Rozkład
 STR_TIMETABLE_NO_TRAVEL                                         :Nie podróżuje
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Podróż (automatycznie; zaplanowana przez następne ręczne polecenie)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Przejazd (bez ustalonego czasu)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Podróżuj (poza rozkładem) z maksymalną prędkością {2:VELOCITY}
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Podróżuj (poza rozkładem) z maksymalną prędkością {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR                                        :Przejazd przez {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Podróżuj przez {STRING} z maksymalną prędkością {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Przejazd przez {STRING} (poza rozkładem)
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Podróżuj przez {STRING} z prędkością {VELOCITY} maks. (poza rozkładem)
-STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(postój w {STRING} poza rozkładem)
-STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(przejazd przez {STRING} poza rozkładem)
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(postój przez {STRING}, poza rozkładem)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(przejazd przez {STRING}, poza rozkładem)
 STR_TIMETABLE_STAY_FOR                                          :i zostań tam przez {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :i podróżuje przez{STRING}
 
@@ -5783,7 +5781,7 @@ STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... samo
 STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Brak stacji kolejowej
 STR_ERROR_NO_BUS_STATION                                        :{WHITE}Brak przystanku autobusowego
 STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Brak stacji dla ciężarówek
-STR_ERROR_NO_DOCK                                               :{WHITE}Brak doku
+STR_ERROR_NO_DOCK                                               :{WHITE}Brak stoczni
 STR_ERROR_NO_AIRPORT                                            :{WHITE}Brak lotniska/lądowiska
 STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Brak przystanków na odpowiednim typie drogi
 STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Brak odpowiednich przystanków dla tego typu tramwajów

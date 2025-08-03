@@ -4145,15 +4145,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Rach gun stad s
 STR_ORDER_SERVICE_AT                                            :Obair-ghlèidhidh aig
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Obair-ghlèidhidh gun stad aig
 
-STR_ORDER_NEAREST_DEPOT                                         :as fhaisge
-STR_ORDER_NEAREST_HANGAR                                        :’n hangar as fhaisge
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :’n trèan-lann
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :’n gharaids
 STR_ORDER_SHIP_DEPOT                                            :’n chala
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{0:STRING} {2:STRING} {1:STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Mùth airson {STRING})
@@ -4219,7 +4216,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Clàr-am
 STR_TIMETABLE_NO_TRAVEL                                         :Na siubhail
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Siubhail (fèin-obrachail; clàr-ama ga chruthachadh leis an ath-òrdugh a làimh)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Siubhail (gun chlàr-ama)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Siubhal le {2:VELOCITY} as motha (gun chlàr-ama)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Siubhal le {VELOCITY} as motha (gun chlàr-ama)
 STR_TIMETABLE_TRAVEL_FOR                                        :Siubhail fad {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Siubhail fad {STRING} le {VELOCITY} as motha
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Siubhail (fad {STRING} gun chlàr-ama)

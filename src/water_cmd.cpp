@@ -1023,27 +1023,27 @@ static Foundation GetFoundation_Water(TileIndex, Slope)
 	return FOUNDATION_NONE;
 }
 
-static void GetTileDesc_Water(TileIndex tile, TileDesc *td)
+static void GetTileDesc_Water(TileIndex tile, TileDesc &td)
 {
 	switch (GetWaterTileType(tile)) {
 		case WATER_TILE_CLEAR:
 			switch (GetWaterClass(tile)) {
-				case WATER_CLASS_SEA:   td->str = STR_LAI_WATER_DESCRIPTION_WATER; break;
-				case WATER_CLASS_CANAL: td->str = STR_LAI_WATER_DESCRIPTION_CANAL; break;
-				case WATER_CLASS_RIVER: td->str = STR_LAI_WATER_DESCRIPTION_RIVER; break;
+				case WATER_CLASS_SEA:   td.str = STR_LAI_WATER_DESCRIPTION_WATER; break;
+				case WATER_CLASS_CANAL: td.str = STR_LAI_WATER_DESCRIPTION_CANAL; break;
+				case WATER_CLASS_RIVER: td.str = STR_LAI_WATER_DESCRIPTION_RIVER; break;
 				default: NOT_REACHED();
 			}
 			break;
-		case WATER_TILE_COAST: td->str = STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK; break;
-		case WATER_TILE_LOCK : td->str = STR_LAI_WATER_DESCRIPTION_LOCK;               break;
+		case WATER_TILE_COAST: td.str = STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK; break;
+		case WATER_TILE_LOCK : td.str = STR_LAI_WATER_DESCRIPTION_LOCK;               break;
 		case WATER_TILE_DEPOT:
-			td->str = STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT;
-			td->build_date = Depot::GetByTile(tile)->build_date;
+			td.str = STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT;
+			td.build_date = Depot::GetByTile(tile)->build_date;
 			break;
 		default: NOT_REACHED();
 	}
 
-	td->owner[0] = GetTileOwner(tile);
+	td.owner[0] = GetTileOwner(tile);
 }
 
 /**
@@ -1057,8 +1057,7 @@ static void FloodVehicle(Vehicle *v)
 
 	AI::NewEvent(v->owner, new ScriptEventVehicleCrashed(v->index, v->tile, ScriptEventVehicleCrashed::CRASH_FLOODED, victims, v->owner));
 	Game::NewEvent(new ScriptEventVehicleCrashed(v->index, v->tile, ScriptEventVehicleCrashed::CRASH_FLOODED, victims, v->owner));
-	SetDParam(0, victims);
-	AddTileNewsItem(STR_NEWS_DISASTER_FLOOD_VEHICLE, NewsType::Accident, v->tile);
+	AddTileNewsItem(GetEncodedString(STR_NEWS_DISASTER_FLOOD_VEHICLE, victims), NewsType::Accident, v->tile);
 	CreateEffectVehicleRel(v, 4, 4, 8, EV_EXPLOSION_LARGE);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_12_EXPLOSION, v);
 }

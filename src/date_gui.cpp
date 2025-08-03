@@ -25,11 +25,11 @@
 
 /** Window to select a date graphically by using dropdowns */
 struct SetDateWindow : Window {
-	SetTickCallback *callback;   ///< Callback to call when a date has been selected
-	void *callback_data;         ///< Data provided to callback
-	EconTime::YearMonthDay date; ///< The currently selected date
-	EconTime::Year min_year;     ///< The minimum year in the year dropdown
-	EconTime::Year max_year;     ///< The maximum year (inclusive) in the year dropdown
+	SetTickCallback *callback = nullptr; ///< Callback to call when a date has been selected
+	void *callback_data = nullptr;       ///< Data provided to callback
+	EconTime::YearMonthDay date{};       ///< The currently selected date
+	EconTime::Year min_year{};           ///< The minimum year in the year dropdown
+	EconTime::Year max_year{};           ///< The maximum year (inclusive) in the year dropdown
 
 	/**
 	 * Create the new 'set date' window

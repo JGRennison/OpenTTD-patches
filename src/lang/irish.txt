@@ -4227,15 +4227,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Gabh gan stad t
 STR_ORDER_SERVICE_AT                                            :Seirbhísigh ag
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Seirbhísigh gan stad ag
 
-STR_ORDER_NEAREST_DEPOT                                         :is gaire
-STR_ORDER_NEAREST_HANGAR                                        :an Haingear is gaire
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Iosta Traenach
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Iosta Feithiclí Bóthair
 STR_ORDER_SHIP_DEPOT                                            :Iosta Traenach
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Athfheistigh go {STRING})
@@ -4302,7 +4299,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Amchlár
 STR_TIMETABLE_NO_TRAVEL                                         :Ná taisteal
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Taisteal (uathoibríoch; curtha ar an gclár ama ag an chéad ordú de láimh eile)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Taisteal (gan amchlár)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Taisteal (gan amchlár) ag {2:VELOCITY} ar a mhéad
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Taisteal (gan amchlár) ag {VELOCITY} ar a mhéad
 STR_TIMETABLE_TRAVEL_FOR                                        :Taisteal ar feadh {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Taisteal ar feadh {STRING} le {VELOCITY} ar a mhéad
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Taisteal (ar feadh {STRING}, gan amchlár)

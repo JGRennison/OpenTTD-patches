@@ -1360,11 +1360,11 @@ enum BuildVehicleHotkeys : int32_t {
 };
 
 struct BuildVehicleWindowBase : Window {
-	VehicleType vehicle_type;                   ///< Type of vehicles shown in the window.
-	TileIndex tile;                             ///< Original tile.
-	bool virtual_train_mode;                    ///< Are we building a virtual train?
-	Train **virtual_train_out;                  ///< Virtual train ptr
-	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
+	VehicleType vehicle_type = VEH_INVALID;   ///< Type of vehicles shown in the window.
+	TileIndex tile = INVALID_TILE;            ///< Original tile.
+	bool virtual_train_mode = false;          ///< Are we building a virtual train?
+	Train **virtual_train_out = nullptr;      ///< Virtual train ptr
+	bool listview_mode = false;               ///< If set, only display the available vehicles and do not show a 'build' button.
 
 	BuildVehicleWindowBase(WindowDesc &desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
 	{
@@ -1534,21 +1534,21 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	union {
 		RailType railtype;   ///< Rail type to show, or #INVALID_RAILTYPE.
 		RoadType roadtype;   ///< Road type to show, or #INVALID_ROADTYPE.
-	} filter;                                   ///< Filter to apply.
-	bool descending_sort_order;                 ///< Sort direction, @see _engine_sort_direction
-	uint8_t sort_criteria;                      ///< Current sort criterium.
-	bool show_hidden_engines;                   ///< State of the 'show hidden engines' button.
-	EngineID sel_engine;                        ///< Currently selected engine, or #EngineID::Invalid()
-	EngineID rename_engine;                     ///< Engine being renamed.
-	GUIEngineList eng_list;
-	CargoType cargo_filter_criteria;              ///< Selected cargo filter
-	int details_height;                         ///< Minimal needed height of the details panels, in text lines (found so far).
-	Scrollbar *vscroll;
-	TestedEngineDetails te;                     ///< Tested cost and capacity after refit.
-	GUIBadgeClasses badge_classes;
+	} filter{};                                   ///< Filter to apply.
+	bool descending_sort_order = false;           ///< Sort direction, @see _engine_sort_direction
+	uint8_t sort_criteria = 0;                    ///< Current sort criterium.
+	bool show_hidden_engines = false;             ///< State of the 'show hidden engines' button.
+	EngineID sel_engine = EngineID::Invalid();    ///< Currently selected engine, or #EngineID::Invalid()
+	EngineID rename_engine = EngineID::Invalid(); ///< Engine being renamed.
+	GUIEngineList eng_list{};
+	CargoType cargo_filter_criteria{};            ///< Selected cargo filter
+	int details_height = 0;                       ///< Minimal needed height of the details panels, in text lines (found so far).
+	Scrollbar *vscroll = nullptr;
+	TestedEngineDetails te{};                     ///< Tested cost and capacity after refit.
+	GUIBadgeClasses badge_classes{};
 
-	StringFilter string_filter;                 ///< Filter for vehicle name
-	QueryString vehicle_editbox;                ///< Filter editbox
+	StringFilter string_filter{}; ///< Filter for vehicle name
+	QueryString vehicle_editbox; ///< Filter editbox
 
 	void SetBuyVehicleText()
 	{
@@ -1574,8 +1574,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 	BuildVehicleWindow(WindowDesc &desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, type, virtual_train_out), vehicle_editbox(MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS)
 	{
-		this->sel_engine = EngineID::Invalid();
-
 		this->sort_criteria         = _engine_sort_last_criteria[type];
 		this->descending_sort_order = _engine_sort_last_order[type];
 		this->show_hidden_engines   = _engine_sort_show_hidden_engines[type];
@@ -2371,8 +2369,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		QueryString vehicle_editbox { MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS }; ///< Filter editbox
 	};
 
-	PanelState loco {};
-	PanelState wagon {};
+	PanelState loco{};
+	PanelState wagon{};
 	bool wagon_selected = false;
 	bool dual_button_mode = false;
 	GUIBadgeClasses badge_classes;

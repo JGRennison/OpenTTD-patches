@@ -96,11 +96,10 @@ static TileIndex GetOtherAqueductEnd(TileIndex tile_from, TileIndex *tile_to = n
 
 /** Toolbar window for constructing water infrastructure. */
 struct BuildDocksToolbarWindow : Window {
-	DockToolbarWidgets last_clicked_widget; ///< Contains the last widget that has been clicked on this toolbar.
+	DockToolbarWidgets last_clicked_widget = WID_DT_INVALID; ///< Contains the last widget that has been clicked on this toolbar.
 
 	BuildDocksToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
-		this->last_clicked_widget = WID_DT_INVALID;
 		this->CreateNestedTree();
 		if (_game_mode != GM_EDITOR) {
 			this->GetWidget<NWidgetStacked>(WID_DT_RIVER_SEL)->SetDisplayedPlane(_settings_game.construction.enable_build_river ? 0 : SZSP_NONE);

@@ -3994,15 +3994,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Gaan sonder-sto
 STR_ORDER_SERVICE_AT                                            :Diens by
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Diens geen-stop by
 
-STR_ORDER_NEAREST_DEPOT                                         :die naaste
-STR_ORDER_NEAREST_HANGAR                                        :die naaste vliegtuigloods
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Treindepot
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Pad Voertuig Diensstasie
 STR_ORDER_SHIP_DEPOT                                            :Skeepswerf
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Herbou na {STRING})
@@ -4068,7 +4065,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Rooster 
 STR_TIMETABLE_NO_TRAVEL                                         :Geen reis
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Reis (outomaties; getabuleer volgens eiehandige bevel)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Reis (Nie op rooster nie)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Reis nie meer as {2:VELOCITY} nie (nie volgens tydrooster nie)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Reis nie meer as {VELOCITY} nie (nie volgens tydrooster nie)
 STR_TIMETABLE_TRAVEL_FOR                                        :Reis vir {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Reis vir {STRING} met die meeste {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Reis (vir {STRING}, nie volgens tydrooster nie)

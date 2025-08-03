@@ -4136,15 +4136,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :I continue per 
 STR_ORDER_SERVICE_AT                                            :Ministrare ad
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Ministrare continue ad
 
-STR_ORDER_NEAREST_DEPOT                                         :proxmimum
-STR_ORDER_NEAREST_HANGAR                                        :proxmimum tugurium
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :receptaculum traminum
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :receptaculum viarium
 STR_ORDER_SHIP_DEPOT                                            :receptaculum navium
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Reficere {STRING.dat})
@@ -4210,7 +4207,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Horarius
 STR_TIMETABLE_NO_TRAVEL                                         :(Non est navigandum)
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Iter (horarius curatur a secundo fixo iusso)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Iter (sine horario)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Iter cum {2:VELOCITY} velocitas maxima (sine horario)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Iter cum {VELOCITY} velocitas maxima (sine horario)
 STR_TIMETABLE_TRAVEL_FOR                                        :Iter {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Iter {STRING} cum {VELOCITY} velocitas maxima
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Iter ({STRING}, sine horario)

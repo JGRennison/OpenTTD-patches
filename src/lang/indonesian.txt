@@ -4399,7 +4399,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Tampilka
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Daftar perintah - klik pada perintah untuk menandainya. CTRL + klik untuk mengunjungi tujuan
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Akhir Perintah - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Akhir Perintah Bersama - -
@@ -4493,15 +4492,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Pergi non stop 
 STR_ORDER_SERVICE_AT                                            :Perbaikan di
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Perbaikan non-stop di
 
-STR_ORDER_NEAREST_DEPOT                                         :terdekat
-STR_ORDER_NEAREST_HANGAR                                        :Hangar terdekat
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Depo Lokomotif
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Bengkel Kendaraan
 STR_ORDER_SHIP_DEPOT                                            :Galangan Kapal
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{0:STRING} {2:STRING} {1:STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Pasang ulang menjadi {STRING})
@@ -4568,7 +4564,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Daftar J
 STR_TIMETABLE_NO_TRAVEL                                         :Tidak berjalan
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Perjalanan (otomatis; akan dijadwalkan pada perintah manual berikutnya)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Perjalanan belum terjadwal
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Bergerak dengan kecepatan maks. {2:VELOCITY} (not timetabled)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Bergerak dengan kecepatan maks. {VELOCITY} (not timetabled)
 STR_TIMETABLE_TRAVEL_FOR                                        :Berjalan selama {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Bergerak {STRING} dengan maks. kecepatan {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Berjalan (untuk {STRING}, tidak berjadwal)

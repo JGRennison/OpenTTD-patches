@@ -3,7 +3,6 @@
  */
 
 #include "../../../stdafx.h"
-#include "../../../core/alloc_func.hpp"
 #include "../../../core/format.hpp"
 
 #include <squirrel.h>

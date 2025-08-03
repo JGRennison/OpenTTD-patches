@@ -17,7 +17,6 @@
 #include <sqstdaux.h>
 #include <../squirrel/sqpcheader.h>
 #include <../squirrel/sqvm.h>
-#include "../core/alloc_func.hpp"
 
 #include <map>
 

@@ -3812,15 +3812,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Køyr utan stop
 STR_ORDER_SERVICE_AT                                            :Vedlikehald ved
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Vedlikehald direkte ved
 
-STR_ORDER_NEAREST_DEPOT                                         :næraste
-STR_ORDER_NEAREST_HANGAR                                        :den næraste hangaren
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Togstall
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Garasje
 STR_ORDER_SHIP_DEPOT                                            :Skipsdokk
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Bygg om til {STRING})
@@ -3886,7 +3883,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Rutetabe
 STR_TIMETABLE_NO_TRAVEL                                         :Ingen reise
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Reis (automatisk; blir sett på ruteplan med neste manuelle ordre)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Reis (ikkje på rutetabell)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Reis med maks {2:VELOCITY} (utan rutetabell)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Reis med maks {VELOCITY} (utan rutetabell)
 STR_TIMETABLE_TRAVEL_FOR                                        :Reis i {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Reis i {STRING} med maks {VELOCITY}
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(reis {STRING}, ikkje på rutetabell)

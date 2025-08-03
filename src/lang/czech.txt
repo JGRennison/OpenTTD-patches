@@ -4652,7 +4652,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Přepnou
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Seznam příkazů - stiskni příkaz pro označení. Kliknutím na příkaz se stisknutým CTRL se nastaví pohled na cíl seznamu
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Konec příkazů - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Konec sdílených příkazů - -
@@ -4751,15 +4750,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Jet bez zastáv
 STR_ORDER_SERVICE_AT                                            :Údržba v
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Údržba bez zastavení v
 
-STR_ORDER_NEAREST_DEPOT                                         :nebližšího
-STR_ORDER_NEAREST_HANGAR                                        :nejbližší hangár
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :železničním depu
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :silničním depu
 STR_ORDER_SHIP_DEPOT                                            :lodním depu
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Přestavět na {STRING})
@@ -4827,7 +4823,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Jízdní
 STR_TIMETABLE_NO_TRAVEL                                         :Nikam nejet
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Jet do (automatický; jizdní řád podle následujícího ručního příkazu)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Jet do (mimo jízdní řád)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Jet (mimo jízdní řád) maximální rychlostí {2:VELOCITY}
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Jet (mimo jízdní řád) maximální rychlostí {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR                                        :Jet do {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Jeď {STRING} a maximálně {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Jeď ({STRING}, mimo jízdní řád)

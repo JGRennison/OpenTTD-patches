@@ -4607,7 +4607,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Átkapcs
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Utasításlista - kattints egy célpontra a kijelöléséhez. Ctrl+kattintással az utasítás helyszínére görget
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Utasítások vége - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Megosztott utasításlista vége - -
@@ -4706,15 +4705,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Megállás nél
 STR_ORDER_SERVICE_AT                                            :Javításra menj
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Javításra megállás nélkül menj
 
-STR_ORDER_NEAREST_DEPOT                                         :a legközelebbi
-STR_ORDER_NEAREST_HANGAR                                        :a legközelebbi hangárba
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :járműtelepre
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :garázsba
 STR_ORDER_SHIP_DEPOT                                            :dokkba
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Átalakít erre: {STRING})
@@ -4782,7 +4778,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Menetren
 STR_TIMETABLE_NO_TRAVEL                                         :Nincs menet
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Menet (automata; menetrend a következő kézi utasítás alapján)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Következő célpontig a menetidő időzítetlen
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Menet {2:VELOCITY} max. sebességgel (nincs menetrend)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Menet {VELOCITY} max. sebességgel (nincs menetrend)
 STR_TIMETABLE_TRAVEL_FOR                                        :Menetidő: {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Menetidő: {STRING} {VELOCITY} max. sebességgel
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Menet ({STRING}ig, időzítetlen)

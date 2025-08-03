@@ -12,6 +12,8 @@
 
 #include "company_type.h"
 #include "industry_type.h"
+#include "news_type.h"
+#include "strings_type.h"
 #include "town_type.h"
 
 /** Types of cargo source and destination */
@@ -64,6 +66,9 @@ public:
 
 	constexpr bool IsValid() const noexcept { return this->id != Source::Invalid; }
 	auto operator<=>(const Source &source) const = default;
+
+	NewsReference GetNewsReference() const;
+	StringID GetFormat() const;
 
 	template <typename T>
 	void Serialise(T &&buffer) const { buffer.Send_generic_seq(this->id, this->type); }

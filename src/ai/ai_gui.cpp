@@ -92,9 +92,9 @@ static WindowDesc _ai_config_desc(__FILE__, __LINE__,
  * Window to configure which AIs will start.
  */
 struct AIConfigWindow : public Window {
-	CompanyID selected_slot; ///< The currently selected AI slot or \c CompanyID::Invalid().
-	int line_height;         ///< Height of a single AI-name line.
-	Scrollbar *vscroll;      ///< Cache of the vertical scrollbar.
+	CompanyID selected_slot = CompanyID::Invalid(); ///< The currently selected AI slot or \c CompanyID::Invalid().
+	int line_height = 0; ///< Height of a single AI-name line.
+	Scrollbar *vscroll = nullptr; ///< Cache of the vertical scrollbar.
 
 	AIConfigWindow() : Window(_ai_config_desc)
 	{

@@ -433,17 +433,17 @@ private:
 
 	const Vehicle *veh;           ///< Vehicle ID used for order list import.
 	QueryString filename_editbox; ///< Filename editbox.
-	AbstractFileType abstract_filetype; /// Type of file to select.
-	SaveLoadOperation fop;        ///< File operation to perform.
-	FileList fios_items;          ///< Save game list.
-	FiosItem o_dir;               ///< Original dir (home dir for this browser)
-	const FiosItem *selected;     ///< Selected game in #fios_items, or \c nullptr.
-	const FiosItem *highlighted;  ///< Item in fios_items highlighted by mouse pointer, or \c nullptr.
-	Scrollbar *vscroll;
+	AbstractFileType abstract_filetype{}; /// Type of file to select.
+	SaveLoadOperation fop{}; ///< File operation to perform.
+	FileList fios_items{}; ///< Save game list.
+	FiosItem o_dir{}; ///< Original dir (home dir for this browser)
+	const FiosItem *selected = nullptr; ///< Selected game in #fios_items, or \c nullptr.
+	const FiosItem *highlighted = nullptr; ///< Item in fios_items highlighted by mouse pointer, or \c nullptr.
+	Scrollbar *vscroll = nullptr;
 
-	StringFilter string_filter; ///< Filter for available games.
+	StringFilter string_filter{}; ///< Filter for available games.
 	QueryString filter_editbox; ///< Filter editbox;
-	std::vector<FiosItem *> display_list; ///< Filtered display list
+	std::vector<FiosItem *> display_list{}; ///< Filtered display list
 
 	static void SaveGameConfirmationCallback(Window *, bool confirmed)
 	{

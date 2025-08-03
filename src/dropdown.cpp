@@ -75,21 +75,21 @@ static WindowDesc _dropdown_desc(__FILE__, __LINE__,
 
 /** Drop-down menu window */
 struct DropdownWindow : Window {
-	WindowToken parent_wnd_token; ///< Parent window token.
-	WidgetID parent_button;       ///< Parent widget number where the window is dropped from.
-	Rect wi_rect;                 ///< Rect of the button that opened the dropdown.
-	DropDownList list;            ///< List with dropdown menu items.
-	int selected_result;          ///< Result value of the selected item in the list.
-	uint8_t click_delay = 0;      ///< Timer to delay selection.
+	WindowToken parent_wnd_token{}; ///< Parent window token.
+	WidgetID parent_button{};       ///< Parent widget number where the window is dropped from.
+	Rect wi_rect{};                 ///< Rect of the button that opened the dropdown.
+	DropDownList list{};            ///< List with dropdown menu items.
+	int selected_result{};          ///< Result value of the selected item in the list.
+	uint8_t click_delay = 0;        ///< Timer to delay selection.
 	bool drag_mode = true;
-	DropDownModeFlags mode_flags; ///< Mode flags.
-	int scrolling = 0;            ///< If non-zero, auto-scroll the item list (one time).
-	GUITimer scrolling_timer;     ///< Timer for auto-scroll of the item list.
-	Point position;               ///< Position of the topleft corner of the window.
-	Scrollbar *vscroll;
-	DropDownSyncFocus sync_parent_focus; ///< Call parent window's OnFocus[Lost]().
+	DropDownModeFlags mode_flags{}; ///< Mode flags.
+	int scrolling = 0;              ///< If non-zero, auto-scroll the item list (one time).
+	GUITimer scrolling_timer{};     ///< Timer for auto-scroll of the item list.
+	Point position{};               ///< Position of the topleft corner of the window.
+	Scrollbar *vscroll = nullptr;
+	DropDownSyncFocus sync_parent_focus{}; ///< Call parent window's OnFocus[Lost]().
 
-	Dimension items_dim; ///< Calculated cropped and padded dimension for the items widget.
+	Dimension items_dim{}; ///< Calculated cropped and padded dimension for the items widget.
 
 	/**
 	 * Create a dropdown menu.

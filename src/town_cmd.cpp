@@ -928,25 +928,25 @@ CargoArray GetAcceptedCargoOfHouse(const HouseSpec *hs)
 	return acceptance;
 }
 
-static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
+static void GetTileDesc_Town(TileIndex tile, TileDesc &td)
 {
 	const HouseID house = GetHouseType(tile);
 
-	td->str = GetHouseName(house, tile);
-	td->town_can_upgrade = !IsHouseProtected(tile);
+	td.str = GetHouseName(house, tile);
+	td.town_can_upgrade = !IsHouseProtected(tile);
 
 	if (!IsHouseCompleted(tile)) {
-		td->dparam[0] = td->str;
-		td->str = STR_LAI_TOWN_INDUSTRY_DESCRIPTION_UNDER_CONSTRUCTION;
+		td.dparam[0] = td.str;
+		td.str = STR_LAI_TOWN_INDUSTRY_DESCRIPTION_UNDER_CONSTRUCTION;
 	}
 
 	const HouseSpec *hs = HouseSpec::Get(house);
 	if (hs->grf_prop.HasGrfFile()) {
 		const GRFConfig *gc = GetGRFConfig(hs->grf_prop.grfid);
-		td->grf = gc->GetName();
+		td.grf = gc->GetName();
 	}
 
-	td->owner[0] = OWNER_TOWN;
+	td.owner[0] = OWNER_TOWN;
 }
 
 static TrackStatus GetTileTrackStatus_Town(TileIndex, TransportType, uint, DiagDirection)
@@ -2471,15 +2471,10 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 			assert(!random_location);
 
 			if (_current_company == OWNER_DEITY) {
-				SetDParam(0, t->index);
-				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NewsType::IndustryOpen, tile);
+				AddTileNewsItem(GetEncodedString(STR_NEWS_NEW_TOWN_UNSPONSORED, t->index), NewsType::IndustryOpen, tile);
 			} else {
 				std::string company_name = GetString(STR_COMPANY_NAME, _current_company);
-
-				SetDParamStr(0, company_name);
-				SetDParam(1, t->index);
-
-				AddTileNewsItem(STR_NEWS_NEW_TOWN, NewsType::IndustryOpen, tile);
+				AddTileNewsItem(GetEncodedString(STR_NEWS_NEW_TOWN, company_name, t->index), NewsType::IndustryOpen, tile);
 			}
 			AI::BroadcastNewEvent(new ScriptEventTownFounded(t->index));
 			Game::NewEvent(new ScriptEventTownFounded(t->index));
@@ -3700,16 +3695,15 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlags flags)
 
 		std::string company_name = GetString(STR_COMPANY_NAME, _current_company);
 
-		SetDParam(0, t->index);
-		SetDParamStr(1, std::move(company_name));
-
 		StringID msg;
 		if (EconTime::UsingWallclockUnits()) {
 			msg = ReplaceWallclockMinutesUnit() ? STR_NEWS_ROAD_REBUILDING_PERIODS : STR_NEWS_ROAD_REBUILDING_MINUTES;
 		} else {
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
-		AddNewsItem(msg, NewsType::General, NewsStyle::Normal, {}, t->index);
+		AddNewsItem(
+			GetEncodedString(msg, t->index, company_name),
+			NewsType::General, NewsStyle::Normal, {}, t->index);
 		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 		Game::NewEvent(new ScriptEventRoadReconstruction(_current_company, t->index));
 	}
@@ -3859,16 +3853,16 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlags flags)
 		SetWindowClassesDirty(WC_STATION_VIEW);
 
 		/* Spawn news message */
-		auto cni = std::make_unique<CompanyNewsInformation>(Company::Get(_current_company));
-		SetDParam(0, STR_NEWS_EXCLUSIVE_RIGHTS_TITLE);
+		auto cni = std::make_unique<CompanyNewsInformation>(STR_NEWS_EXCLUSIVE_RIGHTS_TITLE, Company::Get(_current_company));
+		StringID str;
 		if (EconTime::UsingWallclockUnits()) {
-			SetDParam(1, ReplaceWallclockMinutesUnit() ? STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD : STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES);
+			str = ReplaceWallclockMinutesUnit() ? STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD : STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES;
 		} else {
-			SetDParam(1, STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS);
+			str = STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS;
 		}
-		SetDParam(2, t->index);
-		SetDParamStr(3, cni->company_name);
-		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NewsType::General, NewsStyle::Company, {}, t->index, {}, std::move(cni));
+		EncodedString message = GetEncodedString(str, t->index, cni->company_name);
+		AddNewsItem(std::move(message),
+			NewsType::General, NewsStyle::Company, {}, t->index, {}, std::move(cni));
 		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 		Game::NewEvent(new ScriptEventExclusiveTransportRights(_current_company, t->index));
 	}

@@ -468,8 +468,8 @@ void CrashLog::LogRecentNews(format_target &buffer) const
 	int i = 0;
 	for (const auto &news : GetNews()) {
 		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(news.date);
-		buffer.format("({}-{:02}-{:02}) StringID: {}, Type: {}, Ref1: {}, {}, Ref2: {}, {}\n",
-				ymd.year, ymd.month + 1, ymd.day, news.string_id, news.type,
+		buffer.format("({}-{:02}-{:02}) String: {}, Type: {}, Ref1: {}, {}, Ref2: {}, {}\n",
+				ymd.year, ymd.month + 1, ymd.day, news.GetStatusText(), news.type,
 				news.ref1.index(), SerialiseNewsReference(news.ref1),
 				news.ref2.index(), SerialiseNewsReference(news.ref2));
 		if (++i > 32) break;

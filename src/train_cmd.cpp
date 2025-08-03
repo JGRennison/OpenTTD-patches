@@ -2948,9 +2948,8 @@ void ReverseTrainDirection(Train *v)
 	}
 
 	if (_local_company == v->owner && (v->current_order.IsType(OT_LOADING_ADVANCE) || HasBit(v->flags, VRF_BEYOND_PLATFORM_END))) {
-		SetDParam(0, v->index);
-		SetDParam(1, v->current_order.GetDestination().ToStationID());
-		AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
+		EncodedString msg = GetEncodedString(STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK, v->index, v->current_order.GetDestination().ToStationID());
+		AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
 				v->index, v->current_order.GetDestination().ToStationID());
 	}
 	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
@@ -4909,9 +4908,8 @@ static void TrainEnterStation(Train *v, StationID station)
 	Station *st = Station::From(bst);
 	if (!(st->had_vehicle_of_type & HVOT_TRAIN)) {
 		st->had_vehicle_of_type |= HVOT_TRAIN;
-		SetDParam(0, st->index);
 		AddVehicleNewsItem(
-			STR_NEWS_FIRST_TRAIN_ARRIVAL,
+			GetEncodedString(STR_NEWS_FIRST_TRAIN_ARRIVAL, st->index),
 			v->owner == _local_company ? NewsType::ArrivalCompany : NewsType::ArrivalOther,
 			v->index,
 			st->index
@@ -5168,8 +5166,7 @@ static bool CheckTrainCollision(Train *v)
 	/* any dead -> no crash */
 	if (tcc.num == 0) return false;
 
-	SetDParam(0, tcc.num);
-	AddTileNewsItem(STR_NEWS_TRAIN_CRASH, NewsType::Accident, v->tile);
+	AddTileNewsItem(GetEncodedString(STR_NEWS_TRAIN_CRASH, tcc.num), NewsType::Accident, v->tile);
 
 	ModifyStationRatingAround(v->tile, v->owner, -160, 30);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_13_TRAIN_COLLISION, v);
@@ -6737,8 +6734,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 			if (HasBit(v->flags, VRF_TRAIN_STUCK) && v->wait_counter > 2 * _settings_game.pf.wait_for_pbs_path * DAY_TICKS) {
 				/* Show message to player. */
 				if (v->owner == _local_company && (HasBit(v->flags, VRF_WAITING_RESTRICTION) ? _settings_client.gui.restriction_wait_vehicle_warn : _settings_client.gui.lost_vehicle_warn)) {
-					SetDParam(0, v->index);
-					AddVehicleAdviceNewsItem(AdviceType::TrainStuck, STR_NEWS_TRAIN_IS_STUCK, v->index);
+					AddVehicleAdviceNewsItem(AdviceType::TrainStuck, GetEncodedString(STR_NEWS_TRAIN_IS_STUCK, v->index), v->index);
 				}
 				v->wait_counter = 0;
 			}

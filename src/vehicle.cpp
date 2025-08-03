@@ -1188,8 +1188,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 	/* Notify user about the event. */
 	AI::NewEvent(this->owner, new ScriptEventVehicleLost(this->index));
 	if (_settings_client.gui.lost_vehicle_warn && this->owner == _local_company) {
-		SetDParam(0, this->index);
-		AddVehicleAdviceNewsItem(AdviceType::VehicleLost, STR_NEWS_VEHICLE_IS_LOST, this->index);
+		AddVehicleAdviceNewsItem(AdviceType::VehicleLost, GetEncodedString(STR_NEWS_VEHICLE_IS_LOST, this->index), this->index);
 	}
 }
 
@@ -1453,16 +1452,14 @@ static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *
 
 	if (error_message == STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY) error_message = STR_ERROR_AUTOREPLACE_MONEY_LIMIT;
 
-	StringID message;
+	EncodedString headline;
 	if (error_message == STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT) {
-		message = error_message;
+		headline = GetEncodedString(error_message, v->index);
 	} else {
-		message = STR_NEWS_VEHICLE_AUTORENEW_FAILED;
+		headline = GetEncodedString(STR_NEWS_VEHICLE_AUTORENEW_FAILED, v->index, error_message, std::monostate{});
 	}
 
-	SetDParam(0, v->index);
-	SetDParam(1, error_message);
-	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, message, v->index);
+	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, std::move(headline), v->index);
 }
 
 static std::vector<VehicleID> _train_news_too_heavy_this_tick;
@@ -1471,8 +1468,7 @@ void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
 {
 	if (find_index(_train_news_too_heavy_this_tick, v->index) < 0) {
 		_train_news_too_heavy_this_tick.push_back(v->index);
-		SetDParam(0, v->index);
-		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index);
+		AddNewsItem(GetEncodedString(STR_ERROR_TRAIN_TOO_HEAVY, v->index), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index);
 	}
 }
 
@@ -2593,8 +2589,7 @@ void AgeVehicle(Vehicle *v)
 		return;
 	}
 
-	SetDParam(0, v->index);
-	AddVehicleAdviceNewsItem(AdviceType::VehicleOld, str, v->index);
+	AddVehicleAdviceNewsItem(AdviceType::VehicleOld, GetEncodedString(str, v->index), v->index);
 }
 
 /**
@@ -2790,8 +2785,7 @@ void VehicleEnterDepot(Vehicle *v)
 				_vehicles_to_autoreplace[v->index] = false;
 				if (v->owner == _local_company) {
 					/* Notify the user that we stopped the vehicle */
-					SetDParam(0, v->index);
-					AddVehicleAdviceNewsItem(AdviceType::RefitFailed, STR_NEWS_ORDER_REFIT_FAILED, v->index);
+					AddVehicleAdviceNewsItem(AdviceType::RefitFailed, GetEncodedString(STR_NEWS_ORDER_REFIT_FAILED, v->index), v->index);
 				}
 			} else if (cost.GetCost() != 0) {
 				v->profit_this_year -= cost.GetCost() << 8;
@@ -2830,8 +2824,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 			/* Announce that the vehicle is waiting to players and AIs. */
 			if (v->owner == _local_company) {
-				SetDParam(0, v->index);
-				AddVehicleAdviceNewsItem(AdviceType::VehicleWaiting, STR_NEWS_TRAIN_IS_WAITING + v->type, v->index);
+				AddVehicleAdviceNewsItem(AdviceType::VehicleWaiting, GetEncodedString(STR_NEWS_TRAIN_IS_WAITING + v->type, v->index), v->index);
 			}
 			AI::NewEvent(v->owner, new ScriptEventVehicleWaitingInDepot(v->index));
 		}
@@ -4705,9 +4698,9 @@ void VehiclesYearlyLoop()
 			Money profit = v->GetDisplayProfitThisYear();
 			if (v->economy_age >= VEHICLE_PROFIT_MIN_AGE && profit < 0) {
 				if (_settings_client.gui.vehicle_income_warn && v->owner == _local_company) {
-					SetDParam(0, v->index);
-					SetDParam(1, profit);
-					AddVehicleAdviceNewsItem(AdviceType::VehicleUnprofitable, EconTime::UsingWallclockUnits() ? STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD : STR_NEWS_VEHICLE_UNPROFITABLE_YEAR, v->index);
+					AddVehicleAdviceNewsItem(AdviceType::VehicleUnprofitable,
+						GetEncodedString(EconTime::UsingWallclockUnits() ? STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD : STR_NEWS_VEHICLE_UNPROFITABLE_YEAR, v->index, profit),
+						v->index);
 				}
 				AI::NewEvent(v->owner, new ScriptEventVehicleUnprofitable(v->index));
 			}

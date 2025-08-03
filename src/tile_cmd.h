@@ -50,26 +50,26 @@ struct TileInfo {
 
 /** Tile description for the 'land area information' tool */
 struct TileDesc {
-	StringID str;               ///< Description of the tile
-	Owner owner[4];             ///< Name of the owner(s)
-	StringID owner_type[4];     ///< Type of each owner
-	CalTime::Date build_date;   ///< Date of construction of tile contents
-	StringID station_class;     ///< Class of station
-	StringID station_name;      ///< Type of station within the class
-	StringID airport_class;     ///< Name of the airport class
-	StringID airport_name;      ///< Name of the airport
-	StringID airport_tile_name; ///< Name of the airport tile
-	const char *grf;            ///< newGRF used for the tile contents
-	uint64_t dparam[4];         ///< Parameters of the \a str string
-	StringID railtype;          ///< Type of rail on the tile.
-	StringID railtype2;         ///< Type of second rail on the tile.
-	uint16_t rail_speed;        ///< Speed limit of rail (bridges and track)
-	uint16_t rail_speed2;       ///< Speed limit of second rail (bridges and track)
-	StringID roadtype;          ///< Type of road on the tile.
-	uint16_t road_speed;        ///< Speed limit of road (bridges and track)
-	StringID tramtype;          ///< Type of tram on the tile.
-	uint16_t tram_speed;        ///< Speed limit of tram (bridges and track)
-	std::optional<bool> town_can_upgrade; ///< Whether the town can upgrade this house during town growth.
+	StringID str{};                                   ///< Description of the tile
+	std::array<uint64_t, 4> dparam{};                 ///< Parameters of the \a str string
+	std::array<Owner, 4> owner{};                     ///< Name of the owner(s)
+	std::array<StringID, 4> owner_type{};             ///< Type of each owner
+	CalTime::Date build_date = CalTime::INVALID_DATE; ///< Date of construction of tile contents
+	StringID station_class{};                         ///< Class of station
+	StringID station_name{};                          ///< Type of station within the class
+	StringID airport_class{};                         ///< Name of the airport class
+	StringID airport_name{};                          ///< Name of the airport
+	StringID airport_tile_name{};                     ///< Name of the airport tile
+	const char *grf = nullptr;                        ///< newGRF used for the tile contents
+	StringID railtype{};                              ///< Type of rail on the tile.
+	StringID railtype2{};                             ///< Type of second rail on the tile.
+	uint16_t rail_speed = 0;                          ///< Speed limit of rail (bridges and track)
+	uint16_t rail_speed2 = 0;                         ///< Speed limit of second rail (bridges and track)
+	StringID roadtype{};                              ///< Type of road on the tile.
+	uint16_t road_speed = 0;                          ///< Speed limit of road (bridges and track)
+	StringID tramtype{};                              ///< Type of tram on the tile.
+	uint16_t tram_speed = 0;                          ///< Speed limit of tram (bridges and track)
+	std::optional<bool> town_can_upgrade = std::nullopt; ///< Whether the town can upgrade this house during town growth.
 };
 
 struct DrawTileProcParams {
@@ -111,7 +111,7 @@ typedef void AddAcceptedCargoProc(TileIndex tile, CargoArray &acceptance, CargoT
  * @param tile Tile being queried
  * @param td   Storage pointer for returned tile description
  */
-typedef void GetTileDescProc(TileIndex tile, TileDesc *td);
+typedef void GetTileDescProc(TileIndex tile, TileDesc &td);
 
 /**
  * Tile callback function signature for getting the possible tracks
@@ -198,7 +198,7 @@ inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, uint
 
 VehicleEnterTileStatus VehicleEnterTile(Vehicle *v, TileIndex tile, int x, int y);
 void ChangeTileOwner(TileIndex tile, Owner old_owner, Owner new_owner);
-void GetTileDesc(TileIndex tile, TileDesc *td);
+void GetTileDesc(TileIndex tile, TileDesc &td);
 
 inline void AddAcceptedCargo(TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted)
 {

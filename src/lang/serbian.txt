@@ -4612,7 +4612,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Prelazi 
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Spisak naredbi - klikom se obeležava naredba. Ctrl+klik pomera prikaz na lokaciju stanice
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Kraj Naredbi - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Kraj Zajedničkih Naredbi - -
@@ -4708,15 +4707,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Idi direktno pr
 STR_ORDER_SERVICE_AT                                            :Servisiranje u
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Diektno na servisiranje u
 
-STR_ORDER_NEAREST_DEPOT                                         :najbliži
-STR_ORDER_NEAREST_HANGAR                                        :najbliži Hangar
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Železnički depo
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Drumski Depo
 STR_ORDER_SHIP_DEPOT                                            :Brodogradilište
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Prepravi za {STRING})
@@ -4783,7 +4779,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Raspored
 STR_TIMETABLE_NO_TRAVEL                                         :Nema putovanja
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Putovanje (automatski; raspored po redu naredbi)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Putovanje (bez rasporeda)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Putovanje sa najviše {2:VELOCITY} (bez rasporeda)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Putovanje sa najviše {VELOCITY} (bez rasporeda)
 STR_TIMETABLE_TRAVEL_FOR                                        :Putovanje za {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Putovanje do {STRING} sa najviše {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Putovanje (za{STRING}, bez rasporeda)

@@ -3871,15 +3871,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :توجة بشك
 STR_ORDER_SERVICE_AT                                            :الصيانة في
 STR_ORDER_SERVICE_NON_STOP_AT                                   :الصيانة بدون توقف في
 
-STR_ORDER_NEAREST_DEPOT                                         :الأقرب
-STR_ORDER_NEAREST_HANGAR                                        :الحظيرة الأقرب
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :مستودع قطار
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :مستودع العربات
 STR_ORDER_SHIP_DEPOT                                            :حوض صيانة السفن
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :هيئة الى {STRING}
@@ -3946,7 +3943,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}جدول
 STR_TIMETABLE_NO_TRAVEL                                         :لا رحيل
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :مسافرة (ذاتي: مجدول بواسطة الامر اليدوي التالي)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :مسافرة (غير مجدول)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :مسافرة (ليس مجدول) بسرعة لا تتعدى {2:VELOCITY}
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :مسافرة (ليس مجدول) بسرعة لا تتعدى {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR                                        :مسافر لـ {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :سافر لي {STRING} بمعدل {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :مسافرة (ل {STRING}، ليس مجدول)

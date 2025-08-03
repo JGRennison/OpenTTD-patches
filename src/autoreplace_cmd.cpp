@@ -317,20 +317,25 @@ static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle
 {
 	if (!IsLocalCompany() || !flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
-	SetDParam(0, old_veh->index);
+	VehicleID old_veh_id = (old_veh->type == VEH_TRAIN) ? Train::From(old_veh)->First()->index : old_veh->index;
+	EncodedString headline;
 
 	int order_id = GetIncompatibleRefitOrderIdForAutoreplace(old_veh, e);
 	if (order_id != -1) {
 		/* Orders contained a refit order that is incompatible with the new vehicle. */
-		SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT);
-		SetDParam(2, order_id + 1); // 1-based indexing for display
+		headline = GetEncodedString(STR_NEWS_VEHICLE_AUTORENEW_FAILED,
+			old_veh_id,
+			STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT,
+			order_id + 1); // 1-based indexing for display
 	} else {
 		/* Current cargo is incompatible with the new vehicle. */
-		SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
-		SetDParam(2, CargoSpec::Get(old_veh->cargo_type)->name);
+		headline = GetEncodedString(STR_NEWS_VEHICLE_AUTORENEW_FAILED,
+			old_veh_id,
+			STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO,
+			CargoSpec::Get(old_veh->cargo_type)->name);
 	}
 
-	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+	AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, std::move(headline), old_veh_id);
 	return CommandCost();
 }
 
@@ -435,10 +440,8 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 	if (remaining != 0) {
 		if (new_vehicle == nullptr) return CMD_ERROR; // dry-run: failure
 		if (IsLocalCompany()) {
-			SetDParam(0, old_veh->index);
-			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
-			SetDParam(2, CargoSpec::Get(FindFirstBit(remaining))->name);
-			AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+			EncodedString msg = GetEncodedString(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO, CargoSpec::Get(FindFirstBit(remaining))->name);
+			AddVehicleAdviceNewsItem(AdviceType::AutorenewFailed, std::move(msg), old_veh->index);
 		}
 		return CommandCost();
 	}

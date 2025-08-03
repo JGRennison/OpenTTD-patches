@@ -15,6 +15,7 @@
 #include "settings_type.h"
 #include "date_func.h"
 #include "string_type.h"
+#include "strings_func.h"
 
 #include "table/strings.h"
 
@@ -147,7 +148,7 @@ void CheckSwitchToEuro()
 			_currency_specs[_settings_game.locale.currency].to_euro != CF_ISEURO &&
 			CalTime::CurYear() >= _currency_specs[_settings_game.locale.currency].to_euro) {
 		_settings_game.locale.currency = 2; // this is the index of euro above.
-		AddNewsItem(STR_NEWS_EURO_INTRODUCTION, NewsType::Economy, NewsStyle::Normal, {});
+		AddNewsItem(GetEncodedString(STR_NEWS_EURO_INTRODUCTION), NewsType::Economy, NewsStyle::Normal, {});
 	}
 }
 

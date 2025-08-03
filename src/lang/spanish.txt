@@ -4574,7 +4574,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Cambia a
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Lista de órdenes - Clica en una orden para resaltarla. Ctrl+clic para desplazarse a la estación de la orden
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Fin de órdenes - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Fin de órdenes compartidas - -
@@ -4673,15 +4672,12 @@ STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Ir sin paradas 
 STR_ORDER_SERVICE_AT                                            :Mantenimiento en
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Mantenimiento sin parada en
 
-STR_ORDER_NEAREST_DEPOT                                         :el más cercano
-STR_ORDER_NEAREST_HANGAR                                        :el hangar más cercano
 ###length 3
 STR_ORDER_TRAIN_DEPOT                                           :Depósito de tren
 STR_ORDER_ROAD_VEHICLE_DEPOT                                    :Depósito de vehículos de carretera
 STR_ORDER_SHIP_DEPOT                                            :Astillero de barcos
 ###next-name-looks-similar
 
-STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
 
 STR_ORDER_REFIT_ORDER                                           :(Reformar a {STRING})
@@ -4749,7 +4745,7 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Horario 
 STR_TIMETABLE_NO_TRAVEL                                         :No viajar
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Viajar (automático; programado por la próxima orden manual)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Viajar (sin programar)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Viajar (sin programar) a {2:VELOCITY} como máximo
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Viajar (sin programar) a {VELOCITY} como máximo
 STR_TIMETABLE_TRAVEL_FOR                                        :Viajar durante {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Viajar durante {STRING} a {VELOCITY} como máximo
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Viajar (durante {STRING}, sin programar)
