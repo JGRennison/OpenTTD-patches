@@ -70,7 +70,7 @@ void SetTimetableParams(int first_param, Ticks ticks, bool long_mode)
  * @param ticks  the number of ticks to 'draw'
  * @param long_mode long output format
  */
-std::pair<struct StringParameter, struct StringParameter> MakeTimetableParams(Ticks ticks, bool long_mode)
+std::pair<struct StringParameter, struct StringParameter> GetTimetableParameters(Ticks ticks, bool long_mode)
 {
 	return { long_mode ? STR_JUST_TT_TICKS_LONG : STR_JUST_TT_TICKS, ticks };
 }

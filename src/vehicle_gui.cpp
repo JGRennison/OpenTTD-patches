@@ -2100,7 +2100,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 						str = STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME;
 					} else {
 						str = v->lateness_counter > 0 ? STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE : STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY;
-						std::tie(params[3], params[4]) = MakeTimetableParams(std::abs(v->lateness_counter));
+						std::tie(params[3], params[4]) = GetTimetableParameters(std::abs(v->lateness_counter));
 					}
 					break;
 				}
