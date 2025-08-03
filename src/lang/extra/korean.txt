@@ -30,7 +30,7 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :{G=m}배차일�
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :{G=m}대기 화물 / 수송량
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :{G=m}열차 슬롯 그룹
 
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[차례로 나눠 싣기]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[차례로 나눠 싣기]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
@@ -1759,24 +1759,24 @@ STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLAC
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :완행 경유 {WAYPOINT} (회차)
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :직행 경유 {WAYPOINT} (회차)
-STR_ORDER_SELL_ORDER                                            :(판매)
-STR_ORDER_CARGO_TYPE_LOAD                                       :(화물 종류에 따라 싣기)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(화물 하차 후 화물 종류에 따라 싣기)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(환승 후 화물 종류에 따라 싣기)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(내리지 않고 화물 종류에 따라 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD                                     :(화물 종류에 따라 하차)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(화물 종류에 따라 하차 후 모든 화물을 가득 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(화물 종류에 따라 하차 후 아무 화물이나 가득 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(화물 종류에 따라 하차 후 빈 차로 출발)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(화물 종류에 따라 하차 후 화물 종류에 따라 싣기)
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 싣기)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 화물 종류에 따라 싣기)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :({STRING}{G 0 "으" ""}로 개조하며 환승 후 화물 하차 후 적재)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :({STRING}{G 0 "으" ""}로 개조하며 화물을 내리지 않고 화물 종류에 따라 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 적재)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 모든 화물을 가득 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 아무 화물이나 가득 싣기)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 화물 종류에 따라 싣기)
+STR_ORDER_SELL_ORDER                                            :{SPACE}(판매)
+STR_ORDER_CARGO_TYPE_LOAD                                       :{SPACE}(화물 종류에 따라 싣기)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :{SPACE}(화물 하차 후 화물 종류에 따라 싣기)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :{SPACE}(환승 후 화물 종류에 따라 싣기)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :{SPACE}(내리지 않고 화물 종류에 따라 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :{SPACE}(화물 종류에 따라 하차)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :{SPACE}(화물 종류에 따라 하차 후 모든 화물을 가득 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :{SPACE}(화물 종류에 따라 하차 후 아무 화물이나 가득 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :{SPACE}(화물 종류에 따라 하차 후 빈 차로 출발)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :{SPACE}(화물 종류에 따라 하차 후 화물 종류에 따라 싣기)
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 싣기)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 화물 종류에 따라 싣기)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 화물 하차 후 적재)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물을 내리지 않고 화물 종류에 따라 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 적재)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 모든 화물을 가득 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 아무 화물이나 가득 싣기)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 화물 종류에 따라 싣기)
 
 STR_ORDER_RV_DIR_ANY                                            :[아무데나]
 STR_ORDER_RV_DIR_NE                                             :[북동쪽 방향]
@@ -1833,9 +1833,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}선택된 경로의 시간 값을 고정하거나 고정 해제합니다.(CTRL + 클릭하면 모두 고정하거나 고정 해제).{}고정된 시간 값은 자동 시간 설정이나 자동 시간표가 변경하지 않습니다
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[시간표 대기 무시]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[아무 화물이나 가득 실으면 시간표 대기 무시]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[모든 화물을 가득 실으면 시간표 대기 무시]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[시간표 대기 무시]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[아무 화물이나 가득 실으면 시간표 대기 무시]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[모든 화물을 가득 실으면 시간표 대기 무시]
 STR_TIMETABLE_LEAVE_NORMAL                                      :출발 시각까지 대기
 STR_TIMETABLE_LEAVE_EARLY                                       :출발 시각 무시
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :아무 화물이나 가득 실으면 출발 시각 무시

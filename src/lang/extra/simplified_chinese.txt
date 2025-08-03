@@ -30,7 +30,7 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :发车时间
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路签组路签
 
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[通过式装载]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极慢
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :很慢
@@ -1818,9 +1818,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}锁定/解锁突出显示的调度任务的时间量（按住 <Ctrl> 键操作以为所有调度任务设置锁定状态）。{}锁定时，时刻表自动填充或自动调整不会更改时间
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[提前离开]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[如果任意货物装满则提前离开]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[如果全部货物装满则提前离开]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[提前离开]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[如果任意货物装满则提前离开]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[如果全部货物装满则提前离开]
 STR_TIMETABLE_LEAVE_NORMAL                                      :按表定时间离开
 STR_TIMETABLE_LEAVE_EARLY                                       :提前离开
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :如果任意货物装满则提前离开

@@ -28,7 +28,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuální čas
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Stav jízdního řádu
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Výpravní slot
 
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[postupná nakládka]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[postupná nakládka]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
@@ -1497,24 +1497,24 @@ STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLAC
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Jet přes {WAYPOINT} a obrátit se tam
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Jet bez zastavení přes {WAYPOINT} a obrátit se tam
-STR_ORDER_SELL_ORDER                                            :(prodat vozidlo)
-STR_ORDER_CARGO_TYPE_LOAD                                       :(naložit podle druhu)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(vyložit vše a naložit podle druhu)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(přeložit vše a naložit podle druhu)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(nic nevykládat and naložit podle druhu)
-STR_ORDER_CARGO_TYPE_UNLOAD                                     :(vyložit podle druhu)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(vyložit podle druhu a plně naložit vším)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(vyložit podle druhu a plně naložit čímkoli)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(vyložit podle druhu a nechat prázdné)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(vyložit podle druhu a naložit podle druhu)
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(přestavět na {STRING} a naložit podle druhu)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(vyložit, přestavět na {STRING} a naložit podle druhu)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(přeložit, přestavět na {STRING} a naložit podle druhu)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(nevykládat, přestavět na {STRING} a naložit podle druhu)
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(vyložit podle druhu, přestavět na {STRING} a naložit)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(vyložit podle druhu, přestavět na {STRING} a plně naložit vším)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(vyložit podle druhu, přestavět na {STRING} a plně naložit čímkoli)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(vyložit podle druhu, přestavět na {STRING} a naložit podle druhu)
+STR_ORDER_SELL_ORDER                                            :{SPACE}(prodat vozidlo)
+STR_ORDER_CARGO_TYPE_LOAD                                       :{SPACE}(naložit podle druhu)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :{SPACE}(vyložit vše a naložit podle druhu)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :{SPACE}(přeložit vše a naložit podle druhu)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :{SPACE}(nic nevykládat and naložit podle druhu)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :{SPACE}(vyložit podle druhu)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :{SPACE}(vyložit podle druhu a plně naložit vším)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :{SPACE}(vyložit podle druhu a plně naložit čímkoli)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :{SPACE}(vyložit podle druhu a nechat prázdné)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :{SPACE}(vyložit podle druhu a naložit podle druhu)
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :{SPACE}(přestavět na {STRING} a naložit podle druhu)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :{SPACE}(vyložit, přestavět na {STRING} a naložit podle druhu)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :{SPACE}(přeložit, přestavět na {STRING} a naložit podle druhu)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :{SPACE}(nevykládat, přestavět na {STRING} a naložit podle druhu)
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :{SPACE}(vyložit podle druhu, přestavět na {STRING} a naložit)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :{SPACE}(vyložit podle druhu, přestavět na {STRING} a plně naložit vším)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :{SPACE}(vyložit podle druhu, přestavět na {STRING} a plně naložit čímkoli)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :{SPACE}(vyložit podle druhu, přestavět na {STRING} a naložit podle druhu)
 
 STR_ORDER_RV_DIR_NE                                             :[severovýchodní směr]
 STR_ORDER_RV_DIR_SE                                             :[jihovýchodní směr]
@@ -1561,9 +1561,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Zamknout/odemknout daný čas pro zvýrazeněný příkaz (Ctrl+kliknutí zamkne čas u všech příkazů).{}Když je zamčený, čas se nebude měnit automatizovaným jízdním řádem ani automatickým vyplněním.
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[odjet dříve]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[odjet dříve, je-li cokoli plně naloženo]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[odjet dříve, je-li vše plně naloženo]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[odjet dříve]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[odjet dříve, je-li cokoli plně naloženo]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[odjet dříve, je-li vše plně naloženo]
 STR_TIMETABLE_LEAVE_NORMAL                                      :Odjezd dle jízdního řádu
 STR_TIMETABLE_LEAVE_EARLY                                       :Brzký odjezd
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :Brzký odjezd (cokoli plné)

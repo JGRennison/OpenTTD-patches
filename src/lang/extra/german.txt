@@ -26,7 +26,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuelle(s) Zei
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Fahrplanstatus
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Abfahrztszeitfenster
 
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[durchgehendes Laden]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[durchgehendes Laden]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extrem langsam
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
@@ -1326,24 +1326,24 @@ STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}Erstelle
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Fahre über und wende bei {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Fahre ohne Zwischenhalt über und wende bei {WAYPOINT}
-STR_ORDER_SELL_ORDER                                            :(Verkaufe Fahrzeug)
-STR_ORDER_CARGO_TYPE_LOAD                                       :(Laden nach Frachttyp)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(Entladen und laden nach Frachttyp)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(Umladen und laden nach Frachttyp)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(Nicht entladen, aber laden nach Frachttyp)
-STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Entladen nach Frachttyp)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Entladen nach Frachttyp und auf volle Ladung warten)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Entladen nach Frachttyp und beladen mit beliebiger Fracht)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Entladen nach Frachttyp und leer verlassen)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Entladen nach Frachttyp und laden nach Frachttyp)
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Laden nach Frachttyp mit Umrüstung auf {STRING})
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(Umladen und laden nach Frachttyp mit Umrüstung auf {STRING})
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(Nicht entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(Entladen nach Frachttyp und laden mit Umrüstung auf {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Entladen nach Frachttyp und warten auf volle Zuladung mit Umrüstung auf {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Entladen nach Frachttyp und warten auf volle Zuladung einer Frachtart mit Umrüstung auf {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Entladen nach Frachttyp und laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_SELL_ORDER                                            :{SPACE}(Verkaufe Fahrzeug)
+STR_ORDER_CARGO_TYPE_LOAD                                       :{SPACE}(Laden nach Frachttyp)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :{SPACE}(Entladen und laden nach Frachttyp)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :{SPACE}(Umladen und laden nach Frachttyp)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :{SPACE}(Nicht entladen, aber laden nach Frachttyp)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :{SPACE}(Entladen nach Frachttyp)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :{SPACE}(Entladen nach Frachttyp und auf volle Ladung warten)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :{SPACE}(Entladen nach Frachttyp und beladen mit beliebiger Fracht)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :{SPACE}(Entladen nach Frachttyp und leer verlassen)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :{SPACE}(Entladen nach Frachttyp und laden nach Frachttyp)
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :{SPACE}(Laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :{SPACE}(Entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :{SPACE}(Umladen und laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :{SPACE}(Nicht entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :{SPACE}(Entladen nach Frachttyp und laden mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :{SPACE}(Entladen nach Frachttyp und warten auf volle Zuladung mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :{SPACE}(Entladen nach Frachttyp und warten auf volle Zuladung einer Frachtart mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :{SPACE}(Entladen nach Frachttyp und laden nach Frachttyp mit Umrüstung auf {STRING})
 
 STR_ORDER_RV_DIR_NE                                             :[Nordost-Richtung]
 STR_ORDER_RV_DIR_SE                                             :[Südost-Richtung]
@@ -1389,9 +1389,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NB
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Sperrt/entsperrt den Zeitrahmen für den markierten Auftrag (Strg+Klick setzt den Sperrzustand für alle Aufträge).{}Wenn gesperrt, wird der Zeitrahmen nicht durch Erfassen/Automatisieren geändert.
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[verlasse früh]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[verlasse früh, wenn eine Fracht voll beladen]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[verlasse früh, wenn jede Fracht voll beladen]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[verlasse früh]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[verlasse früh, wenn eine Fracht voll beladen]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[verlasse früh, wenn jede Fracht voll beladen]
 STR_TIMETABLE_LEAVE_NORMAL                                      :Verlasse wie geplant
 STR_TIMETABLE_LEAVE_EARLY                                       :Verlasse früh
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :Verlasse früh, wenn eine voll

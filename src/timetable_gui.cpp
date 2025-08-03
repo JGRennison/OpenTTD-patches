@@ -290,9 +290,17 @@ static void ChangeTimetableStartCallback(const Window *w, StateTicks tick, void 
 	Command<CMD_SET_TIMETABLE_START>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, reinterpret_cast<uintptr_t>(callback_data) != 0, tick);
 }
 
-void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, bool)> handler)
+void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_view, bool)> handler_func, bool no_text = false)
 {
 	Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
+
+	auto handler = [&](StringID str, bool warning) {
+		if (no_text) {
+			handler_func({}, warning);
+		} else {
+			handler_func(GetStringPtr(str), warning);
+		}
+	};
 
 	bool have_conditional = false;
 	bool have_missing_wait = false;
@@ -359,12 +367,12 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 	if (total_time && have_non_timetabled_conditional_branch) handler(STR_TIMETABLE_NON_TIMETABLED_BRANCH, false);
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders != nullptr) {
 		auto sd_warning = [&](int schedule_index, StringID str) {
-			if (v->orders->GetScheduledDispatchScheduleCount() > 1) {
-				SetDParam(0, schedule_index + 1);
-				SetDParam(1, str);
-				handler(STR_TIMETABLE_WARNING_SCHEDULE_ID, true);
+			if (no_text) {
+				handler_func({}, true);
+			} else if (v->orders->GetScheduledDispatchScheduleCount() > 1) {
+				handler_func(GetString(STR_TIMETABLE_WARNING_SCHEDULE_ID, schedule_index + 1, str), true);
 			} else {
-				handler(str, true);
+				handler_func(GetString(str), true);
 			}
 		};
 		std::vector<bool> seen_sched_dispatch_orders(v->orders->GetScheduledDispatchScheduleCount());
@@ -385,6 +393,14 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 	}
 }
 
+bool HaveTimetableWarnings(const Vehicle *v)
+{
+	bool show_warning = false;
+	ProcessTimetableWarnings(v, [&](std::string_view text, bool warning) {
+		if (warning) show_warning = true;
+	}, true);
+	return show_warning;
+}
 
 struct TimetableWindow : GeneralVehicleWindow {
 	int sel_index;
@@ -450,18 +466,27 @@ struct TimetableWindow : GeneralVehicleWindow {
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
-			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
+			case WID_VT_ARRIVAL_DEPARTURE_PANEL: {
+				int64_t param;
 				if (_settings_time.time_in_minutes) {
-					SetDParam(0, 0);
+					param = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(GetBroadestHourDigitsValue(), (int)GetParamMaxDigits(2))).base();
 				} else if (EconTime::UsingWallclockUnits()) {
-					SetDParam(0, _state_ticks + (TICKS_PER_SECOND * 9999));
+					param = _state_ticks.base() + (TICKS_PER_SECOND * 9999);
 				} else {
-					SetDParam(0, EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
+					param = EconTime::MAX_YEAR.base() * DAYS_IN_YEAR;
 				}
-				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width;
-				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
+
+				format_buffer buf;
+				auto get_width = [&](StringID str) {
+					buf.clear();
+					AppendStringInPlace(buf, str, param);
+					return GetStringBoundingBox(buf).width;
+				};
+				this->deparr_time_width = get_width(STR_JUST_TT_TIME);
+				this->deparr_abbr_width = std::max(get_width(STR_TIMETABLE_ARRIVAL_ABBREVIATION), get_width(STR_TIMETABLE_DEPARTURE_ABBREVIATION));
 				size.width = this->deparr_abbr_width + this->deparr_time_width + padding.width;
 				[[fallthrough]];
+			}
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
@@ -726,9 +751,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 				VehicleOrderID order_id = (i + 1) / 2;
 				bool final_order = false;
 
+				format_buffer buffer;
+
 				bool rtl = _current_text_dir == TD_RTL;
-				SetDParamMaxValue(0, v->GetNumOrders(), 2);
-				int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
+				int index_column_width = GetStringBoundingBox(GetStringInPlace(buffer, STR_ORDER_INDEX, GetParamMaxValue(v->GetNumOrders(), 2))).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
 				int middle = rtl ? tr.right - index_column_width : tr.left + index_column_width;
 
 				const Order *order = v->GetOrder(order_id);
@@ -748,32 +774,37 @@ struct TimetableWindow : GeneralVehicleWindow {
 							order = v->orders->GetNext(order);
 						}
 					} else {
-						StringID string;
 						TextColour colour = (i == selected) ? TC_WHITE : TC_BLACK;
 						if (order->IsType(OT_CONDITIONAL) || order->HasNoTimetableTimes()) {
-							string = STR_TIMETABLE_NO_TRAVEL;
+							GetStringInPlace(buffer, STR_TIMETABLE_NO_TRAVEL);
 						} else if (order->IsType(OT_IMPLICIT)) {
-							string = STR_TIMETABLE_NOT_TIMETABLEABLE;
+							GetStringInPlace(buffer, STR_TIMETABLE_NOT_TIMETABLEABLE);
 							colour = ((i == selected) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
 						} else if (!order->IsTravelTimetabled()) {
 							if (order->GetTravelTime() > 0) {
-								SetTimetableParams(0, order->GetTravelTime());
-								string = order->GetMaxSpeed() != UINT16_MAX ?
-										STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED  :
-										STR_TIMETABLE_TRAVEL_FOR_ESTIMATED;
+								auto [str, value] = GetTimetableParameters(order->GetTravelTime());
+								if (order->GetMaxSpeed() != UINT16_MAX) {
+									GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED, str, value, PackVelocity(order->GetMaxSpeed(), v->type));
+								} else {
+									GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_FOR_ESTIMATED, str, value);
+								}
 							} else {
-								string = order->GetMaxSpeed() != UINT16_MAX ?
-										STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED :
-										STR_TIMETABLE_TRAVEL_NOT_TIMETABLED;
+								if (order->GetMaxSpeed() != UINT16_MAX) {
+									GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED, PackVelocity(order->GetMaxSpeed(), v->type));
+								} else {
+									GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_NOT_TIMETABLED);
+								}
 							}
 						} else {
-							SetTimetableParams(0, order->GetTimetabledTravel());
-							string = order->GetMaxSpeed() != UINT16_MAX ?
-									STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
+							auto [str, value] = GetTimetableParameters(order->GetTimetabledTravel());
+							if (order->GetMaxSpeed() != UINT16_MAX) {
+								GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_FOR_SPEED, str, value, PackVelocity(order->GetMaxSpeed(), v->type));
+							} else {
+								GetStringInPlace(buffer, STR_TIMETABLE_TRAVEL_FOR, str, value);
+							}
 						}
-						SetDParam(2, PackVelocity(order->GetMaxSpeed(), v->type));
 
-						int edge = DrawString(rtl ? tr.left : middle, rtl ? middle : tr.right, tr.top, string, colour);
+						int edge = DrawString(rtl ? tr.left : middle, rtl ? middle : tr.right, tr.top, buffer, colour);
 
 						if (order->IsTravelFixed()) {
 							Dimension lock_d = GetSpriteSize(SPR_LOCK);
@@ -819,28 +850,35 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Rect abbr = tr.WithWidth(this->deparr_abbr_width, rtl);
 				Rect time = tr.WithWidth(this->deparr_time_width, !rtl);
 
+				format_buffer buffer;
+				auto draw_time = [&]<typename... T>(TextColour colour, StringID str, T&&... params) {
+					DrawString(time.left, time.right, tr.top, GetStringInPlace(buffer, str, std::forward<T>(params)...), colour);
+				};
+
+				std::string_view arrival_abbr = GetStringPtr(STR_TIMETABLE_ARRIVAL_ABBREVIATION);
+				std::string_view departure_abbr = GetStringPtr(STR_TIMETABLE_DEPARTURE_ABBREVIATION);
+
 				for (int i = this->vscroll->GetPosition(); i / 2 < v->GetNumOrders(); ++i) { // note: i is also incremented in the loop
 					/* Don't draw anything if it extends past the end of the window. */
 					if (!this->vscroll->IsVisible(i)) break;
 
 					if (i % 2 == 0) {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
-							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
+							DrawString(abbr.left, abbr.right, tr.top, arrival_abbr, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
-								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival);
-								DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME, TC_GREEN);
+								draw_time(TC_GREEN, STR_JUST_TT_TIME, _state_ticks + arr_dep[i / 2].arrival);
 							} else {
-								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
-								DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME,
-										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
+								draw_time(HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK),
+										STR_JUST_TT_TIME,
+										_state_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
 							}
 						}
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
-							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, _state_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
-							DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME,
-									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
+							DrawString(abbr.left, abbr.right, tr.top, departure_abbr, i == selected ? TC_WHITE : TC_BLACK);
+							draw_time(HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK),
+									STR_JUST_TT_TIME,
+									_state_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
 						}
 					}
 					tr.top += line_height;
@@ -851,9 +889,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_SUMMARY_PANEL: {
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
+				format_buffer buffer;
+				auto draw = [&]<typename... T>(StringID str, T&&... params) {
+					DrawString(tr, GetStringInPlace(buffer, str, std::forward<T>(params)...));
+				};
+
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
-					SetTimetableParams(0, total_time, true);
+					auto params = GetTimetableParameters(total_time, true);
 					StringID str;
 					if (!v->orders->IsCompleteTimetable()) {
 						str = STR_TIMETABLE_TOTAL_TIME_INCOMPLETE;
@@ -862,7 +905,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						str = STR_TIMETABLE_TOTAL_TIME;
 					}
-					DrawString(tr, str);
+					draw(str, params.first, params.second);
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
@@ -870,22 +913,19 @@ struct TimetableWindow : GeneralVehicleWindow {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
-						SetDParam(0, (v->timetable_start - _state_ticks) / TICKS_PER_SECOND);
-						DrawString(tr, STR_TIMETABLE_STATUS_START_IN_SECONDS);
+						draw(STR_TIMETABLE_STATUS_START_IN_SECONDS, (v->timetable_start - _state_ticks) / TICKS_PER_SECOND);
 					} else {
-						SetDParam(0, STR_JUST_TT_TIME);
-						SetDParam(1, v->timetable_start);
-						DrawString(tr, STR_TIMETABLE_STATUS_START_AT_DATE);
+						draw(STR_TIMETABLE_STATUS_START_AT_DATE, STR_JUST_TT_TIME, v->timetable_start);
 					}
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
-					DrawString(tr, STR_TIMETABLE_STATUS_NOT_STARTED);
+					draw(STR_TIMETABLE_STATUS_NOT_STARTED);
 				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && abs(v->lateness_counter) < TimetableDisplayUnitSize())) {
-					DrawString(tr, STR_TIMETABLE_STATUS_ON_TIME);
+					draw(STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
-					SetTimetableParams(0, abs(v->lateness_counter), true);
-					DrawString(tr, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
+					auto params = GetTimetableParameters(abs(v->lateness_counter), true);
+					draw(v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE, params.first, params.second);
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
@@ -896,7 +936,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 					const bool rtl = _current_text_dir == TD_RTL;
 
-					auto draw_warning = [&](StringID text, bool warning) {
+					auto draw_warning = [&](std::string_view text, bool warning) {
 						int left = tr.left;
 						int right = tr.right;
 						if (warning) {
@@ -914,13 +954,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 					int warning_count = 0;
 					int warning_limit = this->summary_warnings > MAX_SUMMARY_WARNINGS ? MAX_SUMMARY_WARNINGS - 1 : std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings);
 
-					ProcessTimetableWarnings(v, [&](StringID text, bool warning) {
+					ProcessTimetableWarnings(v, [&](std::string_view text, bool warning) {
 						if (warning_count < warning_limit) draw_warning(text, warning);
 						warning_count++;
 					});
 					if (warning_count > warning_limit) {
-						SetDParam(0, warning_count - warning_limit);
-						draw_warning(STR_TIMETABLE_WARNINGS_OMITTED, true);
+						draw_warning(GetStringInPlace(buffer, STR_TIMETABLE_WARNINGS_OMITTED, warning_count - warning_limit), true);
 					}
 
 					if (warning_count != this->summary_warnings) {

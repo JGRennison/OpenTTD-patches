@@ -2,7 +2,6 @@
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autorenew failed on {VEHICLE}{}{STRING1}
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}The NewGRF "{RAW_STRING}" has returned a fatal error: {}{STRING7}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}The NewGRF "{RAW_STRING}" has returned an error: {}{STRING7}
-STR_ORDER_TEXT                                                  :{STRING6} {STRING2} {STRING} {STRING}
 ##override off
 
 ##no-translate on
@@ -63,7 +62,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo /
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Train in slot group
 
 ##after STR_ORDER_STOP_LOCATION_FAR_END
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[through load]
 
 ##before STR_CONFIG_SETTING_TOWN_GROWTH_NONE
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
@@ -1824,24 +1823,24 @@ STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLAC
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Go via and reverse at {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Go non-stop via and reverse at {WAYPOINT}
-STR_ORDER_SELL_ORDER                                            :(Sell vehicle)
-STR_ORDER_CARGO_TYPE_LOAD                                       :(Load by cargo type)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(Unload and load by cargo type)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(Transfer and load by cargo type)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(No unloading and load by cargo type)
-STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Unload by cargo type)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Unload by cargo type and wait for full load)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Unload by cargo type and wait for any full load)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Unload by cargo type and no loading)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Unload by cargo type and load by cargo type)
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Load by cargo type with refit to {STRING})
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Unload and load by cargo type with refit to {STRING})
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(Transfer and load by cargo type with refit to {STRING})
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(No unloading and load by cargo type with refit to {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(Unload by cargo type and take cargo with refit to {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Unload by cargo type and wait for full load with refit to {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Unload by cargo type and wait for any full load with refit to {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Unload by cargo type and load by cargo type with refit to {STRING})
+STR_ORDER_SELL_ORDER                                            :{SPACE}(Sell vehicle)
+STR_ORDER_CARGO_TYPE_LOAD                                       :{SPACE}(Load by cargo type)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :{SPACE}(Unload and load by cargo type)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :{SPACE}(Transfer and load by cargo type)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :{SPACE}(No unloading and load by cargo type)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :{SPACE}(Unload by cargo type)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :{SPACE}(Unload by cargo type and wait for full load)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :{SPACE}(Unload by cargo type and wait for any full load)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :{SPACE}(Unload by cargo type and no loading)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :{SPACE}(Unload by cargo type and load by cargo type)
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :{SPACE}(Load by cargo type with refit to {STRING})
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :{SPACE}(Unload and load by cargo type with refit to {STRING})
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :{SPACE}(Transfer and load by cargo type with refit to {STRING})
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :{SPACE}(No unloading and load by cargo type with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :{SPACE}(Unload by cargo type and take cargo with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :{SPACE}(Unload by cargo type and wait for full load with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :{SPACE}(Unload by cargo type and wait for any full load with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :{SPACE}(Unload by cargo type and load by cargo type with refit to {STRING})
 
 STR_ORDER_RV_DIR_ANY                                            :[any direction]
 STR_ORDER_RV_DIR_NE                                             :[north-east direction]
@@ -1869,7 +1868,7 @@ STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {RAW_STRING} {STRING} {STRING}
 
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} percent of {STRING} capacity
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} percent of refit to {STRING} capacity
@@ -1900,9 +1899,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{RAW_STRING}{NB
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Lock/unlock the amount of time for the highlighted order (Ctrl+Click set lock state for all orders).{}When locked the time will not be changed by timetable autofill or automate.
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[leave early]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[leave early if any cargo full]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[leave early if all cargoes full]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[leave early]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[leave early if any cargo full]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[leave early if all cargoes full]
 STR_TIMETABLE_LEAVE_NORMAL                                      :Leave as timetabled
 STR_TIMETABLE_LEAVE_EARLY                                       :Leave early
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :Leave early if any full

@@ -30,7 +30,7 @@ STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Slot de despach
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Agardando carga / capacidade
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Tren en grupo de slots
 
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[a través da carga]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[a través da carga]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremadamente lento
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
@@ -1762,24 +1762,24 @@ STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLAC
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Ir vía e cambiar o sentido en {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Ir sen parada vía e cambiar o sentido en {WAYPOINT}
-STR_ORDER_SELL_ORDER                                            :(Vender o vehículo)
-STR_ORDER_CARGO_TYPE_LOAD                                       :(Cargar por tipo de cargamento)
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(Descargar e cargar por tipo de cargamento)
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(Transferir e cargar por tipo de cargamento)
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(Non descargar e cargar por tipo de cargamento)
-STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Descargar por tipo de cargamento)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Descargar por tipo de cargamento e agardar por carga completa)
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Descargar por tipo de cargamento e agardar por calquera carga completa)
-STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Descargar por tipo de cargamento e saír baleiro)
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Descargar por tipo de cargamento e cargar por tipo de cargamento)
-STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Cargar por tipo de cargamento con reaxuste a {STRING})
-STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Descargar e cargar por tipo de cargamento con reaxuste a {STRING})
-STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(Transferir e cargar por tipo de cargamento con reaxuste a {STRING})
-STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(Non descargar e cargar por tipo de cargamento con reaxuste a {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(Descargar por tipo de cargamento e tomar carga con reaxuste a {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Descargar por tipo de cargamento e agardar por carga completa con reaxuste a {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Descargar por tipo de cargamento e agardar por calquera carga completa con reaxuste a {STRING})
-STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Descargar por tipo de cargamento e cargar por tipo de cargamento con reaxuste a {STRING})
+STR_ORDER_SELL_ORDER                                            :{SPACE}(Vender o vehículo)
+STR_ORDER_CARGO_TYPE_LOAD                                       :{SPACE}(Cargar por tipo de cargamento)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :{SPACE}(Descargar e cargar por tipo de cargamento)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :{SPACE}(Transferir e cargar por tipo de cargamento)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :{SPACE}(Non descargar e cargar por tipo de cargamento)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :{SPACE}(Descargar por tipo de cargamento)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :{SPACE}(Descargar por tipo de cargamento e agardar por carga completa)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :{SPACE}(Descargar por tipo de cargamento e agardar por calquera carga completa)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :{SPACE}(Descargar por tipo de cargamento e saír baleiro)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :{SPACE}(Descargar por tipo de cargamento e cargar por tipo de cargamento)
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :{SPACE}(Cargar por tipo de cargamento con reaxuste a {STRING})
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :{SPACE}(Descargar e cargar por tipo de cargamento con reaxuste a {STRING})
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :{SPACE}(Transferir e cargar por tipo de cargamento con reaxuste a {STRING})
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :{SPACE}(Non descargar e cargar por tipo de cargamento con reaxuste a {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :{SPACE}(Descargar por tipo de cargamento e tomar carga con reaxuste a {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :{SPACE}(Descargar por tipo de cargamento e agardar por carga completa con reaxuste a {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :{SPACE}(Descargar por tipo de cargamento e agardar por calquera carga completa con reaxuste a {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :{SPACE}(Descargar por tipo de cargamento e cargar por tipo de cargamento con reaxuste a {STRING})
 
 STR_ORDER_RV_DIR_ANY                                            :[calquera dirección]
 STR_ORDER_RV_DIR_NE                                             :[dirección nordeste]
@@ -1836,9 +1836,9 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Bloquear/desbloquear a cantidade de tempo para a orde resaltada (Ctrl+Click fixa o estado de bloqueo para todas as ordes).{}Cando estea bloqueado, a hora non se modificará mediante o autocompletado ou automatización do horario.
 
-STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[saír cedo]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[saír cedo se calquera cargamento está cheo]
-STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[saír cedo se todos os cargamentos están cheos]
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :{SPACE}[saír cedo]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :{SPACE}[saír cedo se calquera cargamento está cheo]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :{SPACE}[saír cedo se todos os cargamentos están cheos]
 STR_TIMETABLE_LEAVE_NORMAL                                      :Saír segundo o horario
 STR_TIMETABLE_LEAVE_EARLY                                       :Saír cedo
 STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :Saír cedo se calquera está cheo
