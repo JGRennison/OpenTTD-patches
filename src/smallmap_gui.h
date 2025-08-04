@@ -97,19 +97,19 @@ protected:
 	static const uint FORCE_REFRESH_PERIOD_LINK_GRAPH = 2850; ///< map is redrawn after that many milliseconds (link graph mode).
 	static const uint BLINK_PERIOD         = 450;             ///< highlight blinking interval in milliseconds.
 
-	uint min_number_of_columns;    ///< Minimal number of columns in legends.
-	uint min_number_of_fixed_rows; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SMT_INDUSTRY).
-	uint column_width;             ///< Width of a column in the #WID_SM_LEGEND widget.
-	uint legend_width;             ///< Width of legend 'blob'.
+	uint min_number_of_columns = 0;    ///< Minimal number of columns in legends.
+	uint min_number_of_fixed_rows = 0; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SMT_INDUSTRY).
+	uint column_width = 0;             ///< Width of a column in the #WID_SM_LEGEND widget.
+	uint legend_width = 0;             ///< Width of legend 'blob'.
 
-	int32_t scroll_x;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
-	int32_t scroll_y;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
-	int tile_zoom;     ///< Tile zoom level. Bigger number means more zoom-out (further away).
-	int ui_zoom;       ///< UI (pixel doubling) Zoom level. Bigger number means more zoom-in (closer).
-	int zoom = 1;      ///< Zoom level. Bigger number means more zoom-out (further away).
+	int32_t scroll_x = 0;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
+	int32_t scroll_y = 0;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
+	int tile_zoom = 0;     ///< Tile zoom level. Bigger number means more zoom-out (further away).
+	int ui_zoom = 0;       ///< UI (pixel doubling) Zoom level. Bigger number means more zoom-in (closer).
+	int zoom = 1;          ///< Zoom level. Bigger number means more zoom-out (further away).
 
-	GUITimer refresh; ///< Refresh timer.
-	std::unique_ptr<LinkGraphOverlay> overlay;
+	GUITimer refresh{}; ///< Refresh timer.
+	std::unique_ptr<LinkGraphOverlay> overlay{};
 
 	static void BreakIndustryChainLink();
 
