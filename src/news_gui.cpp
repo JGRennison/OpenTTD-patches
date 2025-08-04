@@ -456,7 +456,7 @@ struct NewsWindow : Window {
 
 			case WID_N_VEH_NAME:
 			case WID_N_VEH_TITLE:
-				str = GetString(this->GetNewVehicleMessageString(widget));
+				str = this->GetNewVehicleMessageString(widget);
 				break;
 
 			case WID_N_VEH_INFO: {
@@ -520,42 +520,41 @@ struct NewsWindow : Window {
 
 			case WID_N_MESSAGE:
 			case WID_N_COMPANY_MSG:
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, this->ni->headline.GetDecodedString(), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, this->ni->headline.GetDecodedString(), TC_FROMSTRING, SA_CENTER);
 				break;
 
 			case WID_N_MGR_FACE: {
 				const CompanyNewsInformation *cni = static_cast<const CompanyNewsInformation*>(this->ni->data.get());
 				DrawCompanyManagerFace(cni->face, cni->colour, r);
-				GfxFillRect(r.left, r.top, r.right, r.bottom, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+				GfxFillRect(r, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 				break;
 			}
 			case WID_N_MGR_NAME: {
 				const CompanyNewsInformation *cni = static_cast<const CompanyNewsInformation*>(this->ni->data.get());
-				SetDParamStr(0, cni->president_name);
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, STR_JUST_RAW_STRING, TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, GetString(STR_JUST_RAW_STRING, cni->president_name), TC_FROMSTRING, SA_CENTER);
 				break;
 			}
 
 			case WID_N_VEH_BKGND:
-				GfxFillRect(r.left, r.top, r.right, r.bottom, PC_GREY);
+				GfxFillRect(r, PC_GREY);
 				break;
 
 			case WID_N_VEH_NAME:
 			case WID_N_VEH_TITLE:
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, this->GetNewVehicleMessageString(widget), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, this->GetNewVehicleMessageString(widget), TC_FROMSTRING, SA_CENTER);
 				break;
 
 			case WID_N_VEH_SPR: {
 				assert(std::holds_alternative<EngineID>(ni->ref1));
 				EngineID engine = std::get<EngineID>(this->ni->ref1);
 				DrawVehicleEngine(r.left, r.right, CenterBounds(r.left, r.right, 0), CenterBounds(r.top, r.bottom, 0), engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
-				GfxFillRect(r.left, r.top, r.right, r.bottom, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+				GfxFillRect(r, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 				break;
 			}
 			case WID_N_VEH_INFO: {
 				assert(std::holds_alternative<EngineID>(ni->ref1));
 				EngineID engine = std::get<EngineID>(this->ni->ref1);
-				DrawStringMultiLine(r.left, r.right, r.top, r.bottom, GetEngineInfoString(engine), TC_BLACK, SA_CENTER);
+				DrawStringMultiLine(r, GetEngineInfoString(engine), TC_BLACK, SA_CENTER);
 				break;
 			}
 		}
@@ -619,8 +618,7 @@ struct NewsWindow : Window {
 
 		NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_N_MGR_NAME);
 		if (wid != nullptr) {
-			SetDParamStr(0, static_cast<const CompanyNewsInformation *>(this->ni->data.get())->president_name);
-			int y = GetStringHeight(STR_JUST_RAW_STRING, wid->current_x);
+			int y = GetStringHeight(GetString(STR_JUST_RAW_STRING, static_cast<const CompanyNewsInformation *>(this->ni->data.get())->president_name), wid->current_x);
 			if (wid->UpdateVerticalSize(y)) this->ReInit(0, 0);
 		}
 	}
@@ -673,19 +671,17 @@ private:
 		SetDirtyBlocks(this->left, mintop, this->left + this->width, maxtop + this->height);
 	}
 
-	StringID GetNewVehicleMessageString(WidgetID widget) const
+	std::string GetNewVehicleMessageString(WidgetID widget) const
 	{
 		assert(std::holds_alternative<EngineID>(ni->ref1));
 		EngineID engine = std::get<EngineID>(this->ni->ref1);
 
 		switch (widget) {
 			case WID_N_VEH_TITLE:
-				SetDParam(0, GetEngineCategoryName(engine));
-				return STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE;
+				return GetString(STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE, GetEngineCategoryName(engine));
 
 			case WID_N_VEH_NAME:
-				SetDParam(0, PackEngineNameDParam(engine, EngineNameContext::PreviewNews));
-				return STR_NEWS_NEW_VEHICLE_TYPE;
+				return GetString(STR_NEWS_NEW_VEHICLE_TYPE, PackEngineNameDParam(engine, EngineNameContext::PreviewNews));
 
 			default:
 				NOT_REACHED();
@@ -1219,8 +1215,7 @@ struct MessageHistoryWindow : Window {
 
 			/* Months are off-by-one, so it's actually 8. Not using
 			 * month 12 because the 1 is usually less wide. */
-			SetDParam(0, CalTime::ConvertYMDToDate(CalTime::ORIGINAL_MAX_YEAR, 7, 30));
-			this->date_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width + WidgetDimensions::scaled.hsep_wide;
+			this->date_width = GetStringBoundingBox(GetString(STR_JUST_DATE_TINY, CalTime::ConvertYMDToDate(CalTime::ORIGINAL_MAX_YEAR, 7, 30))).width + WidgetDimensions::scaled.hsep_wide;
 
 			size.height = 4 * resize.height + WidgetDimensions::scaled.framerect.Vertical(); // At least 4 lines are visible.
 			size.width = std::max(200u, size.width); // At least 200 pixels wide.
@@ -1239,8 +1234,7 @@ struct MessageHistoryWindow : Window {
 
 		auto [first, last] = this->vscroll->GetVisibleRangeIterators(_news);
 		for (auto ni = first; ni != last; ++ni) {
-			SetDParam(0, ni->date);
-			DrawString(date.left, date.right, y, STR_JUST_DATE_TINY, TC_WHITE);
+			DrawString(date.left, date.right, y, GetString(STR_JUST_DATE_TINY, ni->date), TC_WHITE);
 
 			DrawNewsString(news.left, news.right, y, TC_WHITE, &*ni);
 			y += this->line_height;

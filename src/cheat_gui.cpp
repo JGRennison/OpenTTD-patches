@@ -308,6 +308,7 @@ struct CheatWindow : Window {
 
 			DrawSprite((*ce->been_used) ? SPR_BOX_CHECKED : SPR_BOX_EMPTY, PAL_NONE, box_left, y + box_y_offset);
 
+			std::string str;
 			switch (ce->type) {
 				case SLF_ALLOW_CONTROL: {
 					/* Change inflation factors */
@@ -316,8 +317,7 @@ struct CheatWindow : Window {
 					DrawArrowButtons(button_left, y + button_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
 
 					uint64_t val = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
-					SetDParam(0, val * 1000 >> 16);
-					SetDParam(1, 3);
+					str = GetString(ce->str, val * 1000 >> 16, 3);
 					break;
 				}
 
@@ -325,7 +325,7 @@ struct CheatWindow : Window {
 					bool on = (*(bool*)ce->variable);
 
 					DrawBoolButton(button_left, y + button_y_offset, on, true);
-					SetDParam(0, on ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+					str = GetString(ce->str, on ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 					break;
 				}
 
@@ -337,23 +337,27 @@ struct CheatWindow : Window {
 
 					switch (ce->str) {
 						/* Display date for change date cheat */
-						case STR_CHEAT_CHANGE_DATE: SetDParam(0, CalTime::CurDate()); break;
+						case STR_CHEAT_CHANGE_DATE:
+							str = GetString(ce->str, CalTime::CurDate());
+							break;
 
 						/* Draw coloured flag for change company cheat */
 						case STR_CHEAT_CHANGE_COMPANY: {
-							SetDParam(0, val + 1);
-							uint offset = WidgetDimensions::scaled.hsep_indent + GetStringBoundingBox(ce->str).width;
+							str = GetString(ce->str, val + 1);
+							uint offset = WidgetDimensions::scaled.hsep_indent + GetStringBoundingBox(str).width;
 							DrawCompanyIcon(_local_company, rtl ? text_right - offset - WidgetDimensions::scaled.hsep_indent : text_left + offset, y + icon_y_offset);
 							break;
 						}
 
-						default: SetDParam(0, val);
+						default:
+							str = GetString(ce->str, val);
+							break;
 					}
 					break;
 				}
 			}
 
-			DrawString(text_left, text_right, y + text_y_offset, ce->str);
+			DrawString(text_left, text_right, y + text_y_offset, str);
 
 			y += this->line_height;
 		}
@@ -423,29 +427,24 @@ struct CheatWindow : Window {
 					break;
 
 				case SLE_BOOL:
-					SetDParam(0, STR_CONFIG_SETTING_ON);
-					width = std::max(width, GetStringBoundingBox(ce.str).width);
-					SetDParam(0, STR_CONFIG_SETTING_OFF);
-					width = std::max(width, GetStringBoundingBox(ce.str).width);
+					width = std::max(width, GetStringBoundingBox(GetString(ce.str, STR_CONFIG_SETTING_ON)).width);
+					width = std::max(width, GetStringBoundingBox(GetString(ce.str, STR_CONFIG_SETTING_OFF)).width);
 					break;
 
 				default:
 					switch (ce.str) {
 						/* Display date for change date cheat */
 						case STR_CHEAT_CHANGE_DATE:
-							SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31));
-							width = std::max(width, GetStringBoundingBox(ce.str).width);
+							width = std::max(width, GetStringBoundingBox(GetString(ce.str, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31))).width);
 							break;
 
 						/* Draw coloured flag for change company cheat */
 						case STR_CHEAT_CHANGE_COMPANY:
-							SetDParamMaxValue(0, MAX_COMPANIES);
-							width = std::max(width, GetStringBoundingBox(ce.str).width + WidgetDimensions::scaled.hsep_wide * 4);
+							width = std::max(width, GetStringBoundingBox(GetString(ce.str, MAX_COMPANIES)).width + WidgetDimensions::scaled.hsep_wide * 4);
 							break;
 
 						default:
-							SetDParam(0, INT64_MAX);
-							width = std::max(width, GetStringBoundingBox(ce.str).width);
+							width = std::max(width, GetStringBoundingBox(GetString(ce.str, INT64_MAX)).width);
 							break;
 					}
 					break;

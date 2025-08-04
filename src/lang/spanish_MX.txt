@@ -1511,7 +1511,7 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Vehículos siem
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Todos los modelos de vehículos estarán disponibles para siempre tras haber sido lanzados
 
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS                            :Transcurso de tiempo: {STRING}
-STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :Seleccionar cómo transcurre el tiempo en el juego. Esto no puede cambiarse más tarde.{}{}La experiencia típica de OpenTTD es por un calendario de 12 meses, con 28 a 31 días por mes.{}{}En el modo reloj, la producción de carga y las finanzas se basan en incrementos de un minuto, más o menos lo que dura un mes de 30 días en el modo calendario.{}{}En cualquiera de los dos modos siempre hay un calendario normal, utilizado para las fechas de lanzamiento de vehículos, casas y otra infraestructura
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :Elegir el transcurso del tiempo en el juego. Esto no puede cambiarse más tarde.{}{}La experiencia típica de OpenTTD es por un calendario de 12 meses, con 28 a 31 días por mes.{}{}En el modo reloj, la producción de carga y las finanzas se basan en incrementos de un minuto, más o menos lo que dura un mes de 30 días en el modo calendario.{}{}En cualquiera de los dos modos siempre hay un calendario normal, utilizado para las fechas de lanzamiento de vehículos, casas y otra infraestructura
 ###length 2
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendario
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Reloj
@@ -2568,7 +2568,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Equipo] a {STR
 STR_NETWORK_CHAT_CLIENT                                         :[Privado] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Privado] a {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Todos] {STRING}: {WHITE}{STRING}
-STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Introducir mensaje para el chat en red
 
 # Network messages
@@ -2626,7 +2626,7 @@ STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN                           :el procesado de
 STR_NETWORK_ERROR_CLIENT_INVALID_CLIENT_NAME                    :nombre de cliente no válido
 
 # Network related errors
-STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
+STR_NETWORK_SERVER_MESSAGE                                      :*** {STRING}
 
 ###length 12
 STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED                          :Partida en pausa ({STRING})
@@ -2644,13 +2644,13 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :esperando actua
 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :saliendo
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} se unió a la partida
-STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {0:STRING} se unió a la partida (Cliente #{2:NUM})
+STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} se unió a la partida (Cliente #{NUM})
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} se unió a {STRING}
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} se unió como espectador
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} creó una nueva empresa (#{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} salió de la partida ({2:STRING})
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} creó una nueva empresa (#{NUM})
+STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} salió de la partida ({STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} cambió su nombre a {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} le transfirió {2:CURRENCY_LONG} a {1:STRING}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} le transfirió {CURRENCY_LONG} a {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}El servidor ha cerrado la sesión
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Se está reiniciando el servidor...{}Espera por favor...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} ha sido expulsado. Razón: ({STRING})
@@ -2832,11 +2832,11 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Arrastra
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Construir una estación mediante arrastrar y soltar el ratón
 
 STR_PICKER_MODE_ALL                                             :Todos
-STR_PICKER_MODE_ALL_TOOLTIP                                     :Alternar vista de elementos de todas las clases
-STR_PICKER_MODE_USED                                            :Utilizados
-STR_PICKER_MODE_USED_TOOLTIP                                    :Alternar vista de solo los elementos existentes
+STR_PICKER_MODE_ALL_TOOLTIP                                     :Mostrar u ocultar elementos de todas las clases
+STR_PICKER_MODE_USED                                            :Usados
+STR_PICKER_MODE_USED_TOOLTIP                                    :Ver solo los elementos existentes
 STR_PICKER_MODE_SAVED                                           :Guardados
-STR_PICKER_MODE_SAVED_TOOLTIP                                   :Alternar vista de solo los elementos guardados
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Ver solo los elementos guardados
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Elegir qué clase de estación mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Elegir qué tipo de estación construir. Ctrl+Clic lo añade o elimina de guardados
@@ -2866,7 +2866,7 @@ STR_HOUSE_PICKER_CLASS_ZONE1                                    :Extremos
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Afueras
 STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbios exteriores
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbios interiores
-STR_HOUSE_PICKER_CLASS_ZONE5                                    :Zona centro
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro
 
 STR_HOUSE_PICKER_PROTECT_TITLE                                  :Prevenir mejoras
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Optar por que el edificio no sea reemplazado cuando la localidad crezca
@@ -2905,7 +2905,6 @@ STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Selecci�
 STR_SELECT_BRIDGE_SELECTION_TOOLTIP                             :{BLACK}Selección de puente. Clic para construir
 STR_SELECT_BRIDGE_INFO_NAME                                     :{GOLD}{STRING}
 STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED                           :{GOLD}{STRING},{} {VELOCITY}
-STR_SELECT_BRIDGE_INFO_NAME_COST                                :{GOLD}{0:STRING},{} {WHITE}{2:CURRENCY_LONG}
 STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED_COST                      :{GOLD}{STRING},{} {VELOCITY} {WHITE}{CURRENCY_LONG}
 STR_BRIDGE_NAME_SUSPENSION_STEEL                                :Colgante (acero)
 STR_BRIDGE_NAME_GIRDER_STEEL                                    :Vigas (acero)
@@ -3689,8 +3688,8 @@ STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Habitant
 STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} último mes: {ORANGE}{COMMA}{BLACK}  máx.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX                             :{BLACK}{CARGO_LIST} útlimo minuto: {ORANGE}{COMMA}{BLACK} máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carga necesaria para crecimiento:
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} (requerida)
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} (requerida en invierno)
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} (requerid{G 0 o a}s)
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} (requerid{G 0 o a}s en invierno)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} (entregada)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY}/{CARGO_LONG}{RED} (todavía requerid{G 1 o a}{P 1 "" s})
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY}/{CARGO_LONG}{GREEN} (entregad{G 1 o a}{P 1 "" s})
@@ -3840,8 +3839,8 @@ STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPAN
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Evaluación
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Ver evaluación de la estación
-STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH                     :{BLACK}Suministro por mes y calificación local:
-STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE                    :{BLACK}Suministro por minuto y calificación local:
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH                     :{BLACK}Abastecimiento por mes y calificación local:
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE                    :{BLACK}Abastecimiento por minuto y calificación local:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA}/{STRING} ({COMMA}%)
 
 STR_STATION_VIEW_GROUP                                          :{BLACK}Agrupar por
@@ -4040,8 +4039,6 @@ STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produce:
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Requiere:
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{0:STRING}{BLACK}{3:STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} esperando{STRING}
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Cambiar producción (múltiplo de 8, máximo 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Cambiar nivel de producción (porcentaje, máximo 800%)
@@ -4150,7 +4147,7 @@ STR_PURCHASE_INFO_RUNNINGCOST_YEAR                              :{BLACK}Costo de
 STR_PURCHASE_INFO_RUNNINGCOST_PERIOD                            :{BLACK}Costo de operación: {GOLD}{CURRENCY_LONG}/período
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Capacidad: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(reformable)
-STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Diseñado: {GOLD}{NUM}{BLACK} Duración: {GOLD}{COMMA} año{P "" s}
+STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Diseñado: {GOLD}{NUM}{BLACK} Vida útil: {GOLD}{COMMA} año{P "" s}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Máx. fiabilidad: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Costo: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo de reformación: {GOLD}{CURRENCY_LONG}{BLACK})
@@ -5496,7 +5493,7 @@ STR_INDUSTRY_NAME_DIAMOND_MINE                                  :{G=f}Mina de di
 STR_INDUSTRY_NAME_IRON_ORE_MINE                                 :{G=f}Mina de hierro
 STR_INDUSTRY_NAME_FRUIT_PLANTATION                              :{G=f}Plantación de fruta
 STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :{G=f}Plantación de caucho
-STR_INDUSTRY_NAME_WATER_SUPPLY                                  :{G=m}Suministro de agua
+STR_INDUSTRY_NAME_WATER_SUPPLY                                  :{G=m}Pozo de agua
 STR_INDUSTRY_NAME_WATER_TOWER                                   :{G=f}Torre de agua
 STR_INDUSTRY_NAME_FACTORY_2                                     :{G=f}Fábrica
 STR_INDUSTRY_NAME_FARM_2                                        :{G=f}Granja

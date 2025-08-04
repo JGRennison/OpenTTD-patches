@@ -318,69 +318,73 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
 /* This puts a text-message to the console, or in the future, the chat-box,
  *  (to keep it all a bit more general)
  * If 'self_send' is true, this is the client who is sending the message */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str, NetworkTextMessageData data, const char *data_str)
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, std::string_view name, std::string_view str, NetworkTextMessageData data, std::string_view data_str)
 {
-	std::string_view name_view = name;
 	std::string replacement_name;
-
-	StringID strid;
-	switch (action) {
-		case NETWORK_ACTION_SERVER_MESSAGE:
-			/* Ignore invalid messages */
-			strid = STR_NETWORK_SERVER_MESSAGE;
-			colour = CC_DEFAULT;
-			break;
-		case NETWORK_ACTION_COMPANY_SPECTATOR:
-			colour = CC_DEFAULT;
-			strid = STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE;
-			break;
-		case NETWORK_ACTION_COMPANY_JOIN:
-			colour = CC_DEFAULT;
-			strid = STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN;
-			break;
-		case NETWORK_ACTION_COMPANY_NEW:
-			colour = CC_DEFAULT;
-			strid = STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW;
-			break;
-		case NETWORK_ACTION_JOIN:
-			/* Show the Client ID for the server but not for the client. */
-			strid = _network_server ? STR_NETWORK_MESSAGE_CLIENT_JOINED_ID :  STR_NETWORK_MESSAGE_CLIENT_JOINED;
-			break;
-		case NETWORK_ACTION_LEAVE:          strid = STR_NETWORK_MESSAGE_CLIENT_LEFT; break;
-		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
-
-		case NETWORK_ACTION_GIVE_MONEY: {
-			replacement_name = GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, name, data.auxdata >> 16);
-			name_view = replacement_name;
-
-			extern uint8_t GetCurrentGrfLangID();
-			uint8_t lang_id = GetCurrentGrfLangID();
-			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
-			if (use_specific_string && self_send) {
-				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
-			} else if (use_specific_string && (CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
-				strid = STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE;
-			} else {
-				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
-			}
-			break;
-		}
-
-		case NETWORK_ACTION_CHAT_COMPANY:   strid = self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY; break;
-		case NETWORK_ACTION_CHAT_CLIENT:    strid = self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT;  break;
-		case NETWORK_ACTION_KICKED:         strid = STR_NETWORK_MESSAGE_KICKED; break;
-		case NETWORK_ACTION_EXTERNAL_CHAT:  strid = STR_NETWORK_CHAT_EXTERNAL; break;
-		default:                            strid = STR_NETWORK_CHAT_ALL; break;
-	}
-
-	format_buffer message;
 
 	/* All of these strings start with "***". These characters are interpreted as both left-to-right and
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the
 	 * user name's characters will influence the direction of the "***" instead of the language setting
 	 * of the game. Manually set the direction of the "***" by inserting a text-direction marker. */
+	format_buffer message;
 	StringBuilder(message).Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
-	AppendStringInPlace(message, strid, name_view, str, data.data, data_str);
+
+	switch (action) {
+		case NETWORK_ACTION_SERVER_MESSAGE:
+			/* Ignore invalid messages */
+			AppendStringInPlace(message, STR_NETWORK_SERVER_MESSAGE, data_str);
+			colour = CC_DEFAULT;
+			break;
+		case NETWORK_ACTION_COMPANY_SPECTATOR:
+			colour = CC_DEFAULT;
+			AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE, name);
+			break;
+		case NETWORK_ACTION_COMPANY_JOIN:
+			colour = CC_DEFAULT;
+			AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN, name, str);
+			break;
+		case NETWORK_ACTION_COMPANY_NEW:
+			colour = CC_DEFAULT;
+			AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW, name, data.data);
+			break;
+		case NETWORK_ACTION_JOIN:
+			/* Show the Client ID for the server but not for the client. */
+			if (_network_server) {
+				AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_JOINED_ID, name, data.data);
+			} else {
+				AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_JOINED, name);
+			}
+			break;
+		case NETWORK_ACTION_LEAVE:
+			AppendStringInPlace(message, STR_NETWORK_MESSAGE_CLIENT_LEFT, name, data.data);
+			break;
+		case NETWORK_ACTION_NAME_CHANGE:
+			AppendStringInPlace(message, STR_NETWORK_MESSAGE_NAME_CHANGE, name, str);
+			break;
+
+		case NETWORK_ACTION_GIVE_MONEY: {
+			replacement_name = GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, name, data.auxdata >> 16);
+			name = replacement_name;
+
+			extern uint8_t GetCurrentGrfLangID();
+			uint8_t lang_id = GetCurrentGrfLangID();
+			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
+			if (use_specific_string && self_send) {
+				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY, str, data.data);
+			} else if (use_specific_string && (CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
+				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE, name, data.data);
+			} else {
+				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GIVE_MONEY, name, data.data, str);
+			}
+			break;
+		}
+
+		case NETWORK_ACTION_CHAT_COMPANY:   AppendStringInPlace(message, self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY, name, str); break;
+		case NETWORK_ACTION_CHAT_CLIENT:    AppendStringInPlace(message, self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT, name, str);  break;
+		case NETWORK_ACTION_KICKED:         AppendStringInPlace(message, STR_NETWORK_MESSAGE_KICKED, name, str); break;
+		case NETWORK_ACTION_EXTERNAL_CHAT:  AppendStringInPlace(message, STR_NETWORK_CHAT_EXTERNAL, data_str, name, str); break;
+		default:                            AppendStringInPlace(message, STR_NETWORK_CHAT_ALL, name, str); break;
+	}
 
 	Debug(desync, 1, "msg: {}; {}", debug_date_dumper().HexDate(), message);
 	IConsolePrint(colour, message.to_string());
@@ -469,29 +473,30 @@ void NetworkHandlePauseChange(PauseModes prev_mode, PauseMode changed_mode)
 			bool paused = _pause_mode.Any();
 			if (!paused && !changed) return;
 
-			StringID str;
+			std::string str;
 			if (!changed) {
-				int i = -1;
-
-				if (_pause_mode.Test(PauseMode::Normal))         SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL);
-				if (_pause_mode.Test(PauseMode::Join))           SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS);
-				if (_pause_mode.Test(PauseMode::GameScript))    SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT);
-				if (_pause_mode.Test(PauseMode::ActiveClients)) SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS);
-				if (_pause_mode.Test(PauseMode::LinkGraph))     SetDParam(++i, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH);
-				str = STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1 + i;
+				std::array<StringParameter, 5> params{};
+				auto it = params.begin();
+				if (_pause_mode.Test(PauseMode::Normal))        *it++ = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL;
+				if (_pause_mode.Test(PauseMode::Join))          *it++ = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS;
+				if (_pause_mode.Test(PauseMode::GameScript))    *it++ = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT;
+				if (_pause_mode.Test(PauseMode::ActiveClients)) *it++ = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS;
+				if (_pause_mode.Test(PauseMode::LinkGraph))     *it++ = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH;
+				str = GetStringWithArgs(STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1 + std::distance(params.begin(), it) - 1, {params.begin(), it});
 			} else {
+				StringID reason;
 				switch (changed_mode) {
-					case PauseMode::Normal:         SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL); break;
-					case PauseMode::Join:           SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS); break;
-					case PauseMode::GameScript:    SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT); break;
-					case PauseMode::ActiveClients: SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS); break;
-					case PauseMode::LinkGraph:     SetDParam(0, STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH); break;
+					case PauseMode::Normal:        reason = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL; break;
+					case PauseMode::Join:          reason = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS; break;
+					case PauseMode::GameScript:    reason = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT; break;
+					case PauseMode::ActiveClients: reason = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS; break;
+					case PauseMode::LinkGraph:     reason = STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH; break;
 					default: NOT_REACHED();
 				}
-				str = paused ? STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED : STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED;
+				str = GetString(paused ? STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED : STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED, reason);
 			}
 
-			NetworkTextMessage(NETWORK_ACTION_SERVER_MESSAGE, CC_DEFAULT, false, "", GetString(str));
+			NetworkTextMessage(NETWORK_ACTION_SERVER_MESSAGE, CC_DEFAULT, false, {}, str);
 			break;
 		}
 

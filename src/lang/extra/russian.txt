@@ -765,8 +765,8 @@ STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}Изм�
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}Изменение уровня инфляции доходов
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}Рейтинг у городской администрации зафиксирован на «Великолепном» уровне: {ORANGE}{STRING}
 
-STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} даёт вашей компании {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Вы дали {1:STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} даёт вашей компании {CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Вы дали {STRING} {CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Переключение прозрачности индикаторов загрузки. Ctrl+клик - заблокировать.

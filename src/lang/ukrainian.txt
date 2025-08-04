@@ -2686,7 +2686,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Команда
 STR_NETWORK_CHAT_CLIENT                                         :[Приватно] {STRING}:{WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Приватно] до {STRING}:{WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Всім] {STRING}:{WHITE}{STRING}
-STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Введіть текст для мережевого чату
 
 # Network messages
@@ -2744,7 +2744,7 @@ STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN                           :карта ду
 STR_NETWORK_ERROR_CLIENT_INVALID_CLIENT_NAME                    :неприпустима назва клієєнта
 
 # Network related errors
-STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
+STR_NETWORK_SERVER_MESSAGE                                      :*** {STRING}
 
 ###length 12
 STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED                          :Гра призупинена ({STRING})
@@ -2762,12 +2762,12 @@ STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :зачекай�
 
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :виходжу...
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} приєднався до гри
-STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :{G=m}*** {0:STRING} приєднався до гри (Клієнт #{2:NUM})
+STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :{G=m}*** {STRING} приєднався до гри (Клієнт #{NUM})
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} став спостерігачем
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {0:STRING} заснував нову компанію (№{2:NUM})
-STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {0:STRING} покинув гру ({2:STRING})
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} заснував нову компанію (№{NUM})
+STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} покинув гру ({STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} змінив(-ла) ім'я на {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Від {0:STRING} до {1:STRING} передано {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Від {0:STRING} до {2:STRING} передано {1:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Сервер закрив сеанс
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Перезавантаження сервера...{}Зачекайте...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} відключено. Причина: ({STRING})
@@ -3012,7 +3012,6 @@ STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Вибе
 STR_SELECT_BRIDGE_SELECTION_TOOLTIP                             :{BLACK}Вибір мосту - натисніть на міст, який бажаєте збудувати
 STR_SELECT_BRIDGE_INFO_NAME                                     :{GOLD}{STRING}
 STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED                           :{GOLD}{STRING},{} {VELOCITY}
-STR_SELECT_BRIDGE_INFO_NAME_COST                                :{GOLD}{0:STRING},{} {WHITE}{2:CURRENCY_LONG}
 STR_SELECT_BRIDGE_INFO_NAME_MAX_SPEED_COST                      :{GOLD}{STRING},{} {VELOCITY} {WHITE}{CURRENCY_LONG}
 STR_BRIDGE_NAME_SUSPENSION_STEEL                                :Підвісний сталевий
 STR_BRIDGE_NAME_GIRDER_STEEL                                    :Балочний сталевий
@@ -4136,8 +4135,6 @@ STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Виро
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Потребує:
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{0:STRING}{BLACK}{3:STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} очікує{STRING}
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Змінити виробництво (кратне 8, до 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Змінити обсяг виробництва (до 800%)

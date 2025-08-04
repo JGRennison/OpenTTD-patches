@@ -2622,8 +2622,7 @@ struct ScenarioEditorToolbarWindow : Window {
 				break;
 
 			case WID_TE_DATE:
-				SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 0, 1));
-				size = GetStringBoundingBox(STR_JUST_DATE_LONG);
+				size = GetStringBoundingBox(GetString(STR_JUST_DATE_LONG, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 0, 1)));
 				break;
 		}
 	}

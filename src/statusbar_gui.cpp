@@ -85,24 +85,20 @@ struct StatusBarWindow : Window {
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
-	StringID PrepareHHMMDateString(int hhmm, CalTime::Date date, CalTime::Year year) const
+	std::string PrepareHHMMDateString(int hhmm, CalTime::Date date, CalTime::Year year) const
 	{
-		SetDParam(0, hhmm);
 		switch (_settings_client.gui.date_with_time) {
 			case 0:
-				return STR_JUST_TIME_HHMM;
+				return GetString(STR_JUST_TIME_HHMM, hhmm);
 
 			case 1:
-				SetDParam(1, year);
-				return STR_HHMM_WITH_DATE_Y;
+				return GetString(STR_HHMM_WITH_DATE_Y, year);
 
 			case 2:
-				SetDParam(1, date);
-				return STR_HHMM_WITH_DATE_YM;
+				return GetString(STR_HHMM_WITH_DATE_YM, date);
 
 			case 3:
-				SetDParam(1, date);
-				return STR_HHMM_WITH_DATE_YMD;
+				return GetString(STR_HHMM_WITH_DATE_YMD, date);
 
 			default:
 				NOT_REACHED();
@@ -115,19 +111,16 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				if (_settings_time.time_in_minutes) {
-					StringID str = PrepareHHMMDateString(GetParamMaxDigits(4), CalTime::MAX_DATE, CalTime::MAX_YEAR);
-					d = GetStringBoundingBox(str);
+					d = GetStringBoundingBox(PrepareHHMMDateString(GetParamMaxDigits(4), CalTime::MAX_DATE, CalTime::MAX_YEAR));
 				} else {
-					SetDParam(0, CalTime::MAX_DATE);
-					d = GetStringBoundingBox(STR_JUST_DATE_LONG);
+					d = GetStringBoundingBox(GetString(STR_JUST_DATE_LONG, CalTime::MAX_DATE));
 				}
 				break;
 
 			case WID_S_RIGHT: {
 				int64_t max_money = UINT32_MAX;
 				for (const Company *c : Company::Iterate()) max_money = std::max<int64_t>(c->money, max_money);
-				SetDParam(0, 100LL * max_money);
-				d = GetStringBoundingBox(STR_JUST_CURRENCY_LONG);
+				d = GetStringBoundingBox(GetString(STR_JUST_CURRENCY_LONG, 100LL * max_money));
 				break;
 			}
 
@@ -148,11 +141,10 @@ struct StatusBarWindow : Window {
 			case WID_S_LEFT:
 				/* Draw the date */
 				if (_settings_time.time_in_minutes) {
-					StringID str = PrepareHHMMDateString(_settings_time.ToTickMinutes(_state_ticks).ClockHHMM(), CalTime::CurDate(), CalTime::CurYear());
+					std::string str = PrepareHHMMDateString(_settings_time.ToTickMinutes(_state_ticks).ClockHHMM(), CalTime::CurDate(), CalTime::CurYear());
 					DrawString(tr, str, TC_WHITE, SA_HOR_CENTER);
 				} else {
-					SetDParam(0, CalTime::CurDate());
-					DrawString(tr, STR_JUST_DATE_LONG, TC_WHITE, SA_HOR_CENTER);
+					DrawString(tr, GetString(STR_JUST_DATE_LONG, CalTime::CurDate()), TC_WHITE, SA_HOR_CENTER);
 				}
 				break;
 
@@ -165,8 +157,7 @@ struct StatusBarWindow : Window {
 					/* Draw company money, if any */
 					const Company *c = Company::GetIfValid(_local_company);
 					if (c != nullptr) {
-						SetDParam(0, c->money);
-						DrawString(tr, STR_JUST_CURRENCY_LONG, TC_WHITE, SA_HOR_CENTER);
+						DrawString(tr, GetString(STR_JUST_CURRENCY_LONG, c->money), TC_WHITE, SA_HOR_CENTER);
 					}
 				}
 				break;
@@ -187,15 +178,13 @@ struct StatusBarWindow : Window {
 						InvalidateWindowData(WC_STATUS_BAR, 0, SBI_NEWS_DELETED);
 						if (Company::IsValidID(_local_company)) {
 							/* This is the default text */
-							SetDParam(0, _local_company);
-							DrawString(tr, STR_STATUSBAR_COMPANY_NAME, TC_FROMSTRING, SA_HOR_CENTER);
+							DrawString(tr, GetString(STR_STATUSBAR_COMPANY_NAME, _local_company), TC_FROMSTRING, SA_HOR_CENTER);
 						}
 					}
 				} else {
 					if (Company::IsValidID(_local_company)) {
 						/* This is the default text */
-						SetDParam(0, _local_company);
-						DrawString(tr, STR_STATUSBAR_COMPANY_NAME, TC_FROMSTRING, SA_HOR_CENTER);
+						DrawString(tr, GetString(STR_STATUSBAR_COMPANY_NAME, _local_company), TC_FROMSTRING, SA_HOR_CENTER);
 					}
 				}
 

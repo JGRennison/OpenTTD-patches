@@ -608,8 +608,11 @@ public:
 
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 
-				if (free_space.has_value()) SetDParam(0, free_space.value());
-				DrawString(ir.left, ir.right, ir.top + GetCharacterHeight(FS_NORMAL), free_space.has_value() ? STR_SAVELOAD_BYTES_FREE : STR_ERROR_UNABLE_TO_READ_DRIVE);
+				if (free_space.has_value()) {
+					DrawString(ir.left, ir.right, ir.top + GetCharacterHeight(FS_NORMAL), GetString(STR_SAVELOAD_BYTES_FREE, free_space.value()));
+				} else {
+					DrawString(ir.left, ir.right, ir.top + GetCharacterHeight(FS_NORMAL), STR_ERROR_UNABLE_TO_READ_DRIVE);
+				}
 				DrawString(ir.left, ir.right, ir.top, path, TC_BLACK);
 				break;
 			}
@@ -670,8 +673,7 @@ public:
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		} else if (_load_check_data.error != INVALID_STRING_ID) {
 			/* Incompatible / broken savegame */
-			SetDParamStr(0, _load_check_data.error_msg);
-			tr.top = DrawStringMultiLine(tr, _load_check_data.error, TC_RED);
+			tr.top = DrawStringMultiLine(tr, GetString(_load_check_data.error, _load_check_data.error_msg), TC_RED);
 		} else {
 			/* Warning if save unique id differ when saving */
 			if (this->fop == SLO_SAVE) {
@@ -685,17 +687,14 @@ public:
 			}
 
 			/* Mapsize */
-			SetDParam(0, _load_check_data.map_size_x);
-			SetDParam(1, _load_check_data.map_size_y);
-			DrawString(tr, STR_NETWORK_SERVER_LIST_MAP_SIZE);
+			DrawString(tr, GetString(STR_NETWORK_SERVER_LIST_MAP_SIZE, _load_check_data.map_size_x, _load_check_data.map_size_y));
 			tr.top += GetCharacterHeight(FS_NORMAL);
 			if (tr.top > tr.bottom) return;
 
 			/* Climate */
 			LandscapeType landscape = _load_check_data.settings.game_creation.landscape;
 			if (to_underlying(landscape) < NUM_LANDSCAPE) {
-				SetDParam(0, STR_CLIMATE_TEMPERATE_LANDSCAPE + to_underlying(landscape));
-				DrawString(tr, STR_NETWORK_SERVER_LIST_LANDSCAPE);
+				DrawString(tr, GetString(STR_NETWORK_SERVER_LIST_LANDSCAPE, STR_CLIMATE_TEMPERATE_LANDSCAPE + to_underlying(landscape)));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 
@@ -704,8 +703,7 @@ public:
 
 			/* Start date (if available) */
 			if (_load_check_data.settings.game_creation.starting_year != 0) {
-				SetDParam(0, CalTime::ConvertYMDToDate(_load_check_data.settings.game_creation.starting_year, 0, 1));
-				DrawString(tr, STR_NETWORK_SERVER_LIST_START_DATE);
+				DrawString(tr, GetString(STR_NETWORK_SERVER_LIST_START_DATE, CalTime::ConvertYMDToDate(_load_check_data.settings.game_creation.starting_year, 0, 1)));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 			if (tr.top > tr.bottom) return;
@@ -713,8 +711,7 @@ public:
 			/* Hide current date for scenarios */
 			if (this->abstract_filetype != FT_SCENARIO) {
 				/* Current date */
-				SetDParam(0, _load_check_data.current_date);
-				DrawString(tr, STR_NETWORK_SERVER_LIST_CURRENT_DATE);
+				DrawString(tr, GetString(STR_NETWORK_SERVER_LIST_CURRENT_DATE, _load_check_data.current_date));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 
@@ -724,9 +721,7 @@ public:
 				if (tr.top > tr.bottom) return;
 
 				/* NewGrf compatibility */
-				SetDParam(0, _load_check_data.grfconfig.empty() ? STR_NEWGRF_LIST_NONE :
-						STR_NEWGRF_LIST_ALL_FOUND + _load_check_data.grf_compatibility);
-				DrawString(tr, STR_SAVELOAD_DETAIL_GRFSTATUS);
+				DrawString(tr, GetString(STR_SAVELOAD_DETAIL_GRFSTATUS, _load_check_data.grfconfig.empty() ? STR_NEWGRF_LIST_NONE : STR_NEWGRF_LIST_ALL_FOUND + _load_check_data.grf_compatibility));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 			if (tr.top > tr.bottom) return;
@@ -738,16 +733,13 @@ public:
 
 				/* Companies / AIs */
 				for (auto &pair : _load_check_data.companies) {
-					SetDParam(0, pair.first + 1);
 					const CompanyProperties &c = *pair.second;
-					if (!c.name.empty()) {
-						SetDParam(1, STR_JUST_RAW_STRING);
-						SetDParamStr(2, c.name);
+					if (c.name.empty()) {
+						DrawString(tr, GetString(STR_SAVELOAD_DETAIL_COMPANY_INDEX, pair.first + 1, c.name_1, c.name_2));
 					} else {
-						SetDParam(1, c.name_1);
-						SetDParam(2, c.name_2);
+						DrawString(tr, GetString(STR_SAVELOAD_DETAIL_COMPANY_INDEX, pair.first + 1, STR_JUST_RAW_STRING, c.name));
 					}
-					DrawString(tr, STR_SAVELOAD_DETAIL_COMPANY_INDEX);
+
 					tr.top += GetCharacterHeight(FS_NORMAL);
 					if (tr.top > tr.bottom) break;
 				}

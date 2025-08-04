@@ -780,8 +780,8 @@ STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}인플�
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}인플레이션 수익 배수를 변경합니다
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}회사에 대한 도시 평판을 항상 훌륭함으로: {ORANGE}{STRING}
 
-STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 님이 당신에게 {2:CURRENCY_LONG}만큼의 돈을 보내셨습니다
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} 님에게 {2:CURRENCY_LONG}만큼의 돈을 보냈습니다
+STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 님이 당신에게 {CURRENCY_LONG}만큼의 돈을 보내셨습니다
+STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {STRING} 님에게 {CURRENCY_LONG}만큼의 돈을 보냈습니다
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}적재율을 보여줄 지 선택합니다. 고정하려면 CTRL + 클릭하세요

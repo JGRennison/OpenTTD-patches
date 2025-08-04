@@ -161,6 +161,18 @@ public:
 		if (!this->IsShaded()) this->DrawRatings();
 	}
 
+	StringID GetRatingString(int rating) const
+	{
+		if (rating > RATING_EXCELLENT) return STR_CARGO_RATING_OUTSTANDING;
+		if (rating > RATING_VERYGOOD)  return STR_CARGO_RATING_EXCELLENT;
+		if (rating > RATING_GOOD)      return STR_CARGO_RATING_VERY_GOOD;
+		if (rating > RATING_MEDIOCRE)  return STR_CARGO_RATING_GOOD;
+		if (rating > RATING_POOR)      return STR_CARGO_RATING_MEDIOCRE;
+		if (rating > RATING_VERYPOOR)  return STR_CARGO_RATING_POOR;
+		if (rating > RATING_APPALLING) return STR_CARGO_RATING_VERY_POOR;
+		return STR_CARGO_RATING_APPALLING;
+	}
+
 	/** Draw the contents of the ratings panel. May request a resize of the window if the contents does not fit. */
 	void DrawRatings()
 	{
@@ -183,25 +195,12 @@ public:
 			if ((this->town->have_ratings.Test(c->index) || this->town->exclusivity == c->index)) {
 				DrawCompanyIcon(c->index, icon.left, text.top + icon_y_offset);
 
-				SetDParam(0, c->index);
-				SetDParam(1, c->index);
-
-				int rating = this->town->ratings[c->index];
-				StringID str = STR_CARGO_RATING_APPALLING;
-				if (rating > RATING_APPALLING) str++;
-				if (rating > RATING_VERYPOOR)  str++;
-				if (rating > RATING_POOR)      str++;
-				if (rating > RATING_MEDIOCRE)  str++;
-				if (rating > RATING_GOOD)      str++;
-				if (rating > RATING_VERYGOOD)  str++;
-				if (rating > RATING_EXCELLENT) str++;
-
-				SetDParam(2, str);
 				if (this->town->exclusivity == c->index) {
 					DrawSprite(SPR_EXCLUSIVE_TRANSPORT, COMPANY_SPRITE_COLOUR(c->index), exclusive.left, text.top + exclusive_y_offset);
 				}
 
-				DrawString(text.left, text.right, text.top + text_y_offset, STR_LOCAL_AUTHORITY_COMPANY_RATING);
+				int rating = this->town->ratings[c->index];
+				DrawString(text.left, text.right, text.top + text_y_offset, GetString(STR_LOCAL_AUTHORITY_COMPANY_RATING, c->index, c->index, GetRatingString(rating)));
 				text.top += this->resize.step_height;
 			}
 		}
@@ -246,63 +245,63 @@ public:
 		}
 	}
 
-	std::pair<StringID, TextColour> PrepareActionInfoString(int action_index) const
+	std::pair<std::string, TextColour> PrepareActionInfoString(int action_index) const
 	{
 		TextColour colour = TC_FROMSTRING;
-		StringID text = STR_NULL;
+		std::string text;
 		if (action_index >= 0x100) {
-			SetDParam(1, STR_EMPTY);
+			StringID param = STR_NULL;
 			switch (action_index - 0x100) {
 				case TSOF_OVERRIDE_BUILD_ROADS:
-					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT);
+					param = STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT;
 					break;
 				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
-					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT);
+					param = STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT;
 					break;
 				case TSOF_OVERRIDE_BUILD_TUNNELS:
-					SetDParam(1, STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT);
+					param = STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT;
 					break;
 				case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
-					SetDParam(1, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT);
+					param = STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT;
 					break;
 				case TSOF_OVERRIDE_GROWTH:
-					SetDParam(1, STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT);
+					param = STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT;
 					break;
 				case TSOF_OVERRIDE_BUILD_BRIDGES:
-					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT);
+					param = STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT;
 					break;
 			}
-			text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
-			SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + action_index - 0x100);
+			text = GetString(STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + action_index - 0x100, param);
 		} else {
 			colour = TC_YELLOW;
+			StringID str = STR_NULL;
 			switch (action_index) {
 				case 0:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING;
 					break;
 				case 1:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING;
 					break;
 				case 2:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING;
 					break;
 				case 3:
-					text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS;
+					str = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS;
 					break;
 				case 4:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY;
 					break;
 				case 5:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS;
 					break;
 				case 6:
-					text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS;
+					str = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS;
 					break;
 				case 7:
-					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
+					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
 					break;
 			}
-			SetDParam(0, _price[PR_TOWN_ACTION] * GetTownActionCost(static_cast<TownAction>(action_index)) >> 8);
+			text = GetString(str, _price[PR_TOWN_ACTION] * GetTownActionCost(static_cast<TownAction>(action_index)) >> 8);
 		}
 
 		return { text, colour };
@@ -600,9 +599,7 @@ public:
 
 		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
-		SetDParam(0, this->town->cache.population);
-		SetDParam(1, this->town->cache.num_houses);
-		DrawString(tr, STR_TOWN_VIEW_POPULATION_HOUSES);
+		DrawString(tr, GetString(STR_TOWN_VIEW_POPULATION_HOUSES, this->town->cache.population, this->town->cache.num_houses));
 		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		StringID str_last_period;
@@ -614,10 +611,7 @@ public:
 
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
 			for (CargoType cid : CargoSpec::town_production_cargoes[tpe]) {
-				SetDParam(0, 1ULL << cid);
-				SetDParam(1, this->town->supplied[cid].old_act);
-				SetDParam(2, this->town->supplied[cid].old_max);
-				DrawString(tr, str_last_period);
+				DrawString(tr, GetString(str_last_period, 1ULL << cid, this->town->supplied[cid].old_act, this->town->supplied[cid].old_max));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 		}
@@ -656,25 +650,19 @@ public:
 					}
 				}
 
-				SetDParam(0, cargo->name);
+				DrawString(tr.Indent(20, rtl), GetString(string, cargo->name));
 			} else {
 				string = STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED;
 				if (this->town->received[i].old_act < this->town->goal[i]) {
 					string = STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED;
 				}
-
-				SetDParam(0, cargo->Index());
-				SetDParam(1, this->town->received[i].old_act);
-				SetDParam(2, cargo->Index());
-				SetDParam(3, this->town->goal[i]);
+				DrawString(tr.Indent(20, rtl), GetString(string, cargo->Index(), this->town->received[i].old_act, cargo->Index(), this->town->goal[i]));
 			}
-			DrawString(tr.Indent(20, rtl), string);
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		if (HasBit(this->town->flags, TOWN_IS_GROWING)) {
-			SetDParam(0, RoundDivSU(this->town->growth_rate + 1, DAY_TICKS));
-			DrawString(tr, this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED);
+			DrawString(tr, GetString(this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED, RoundDivSU(this->town->growth_rate + 1, DAY_TICKS)));
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		} else {
 			DrawString(tr, STR_TOWN_VIEW_TOWN_GROW_STOPPED);
@@ -684,15 +672,12 @@ public:
 		/* only show the town noise, if the noise option is activated. */
 		if (_settings_game.economy.station_noise_level) {
 			uint16_t max_noise = this->town->MaxTownNoise();
-			SetDParam(0, this->town->noise_reached);
-			SetDParam(1, max_noise);
-			DrawString(tr, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
+			DrawString(tr, GetString(max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN, this->town->noise_reached, max_noise));
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text);
-			tr.top = DrawStringMultiLine(tr, STR_JUST_RAW_STRING, TC_BLACK);
+			tr.top = DrawStringMultiLine(tr, GetString(STR_JUST_RAW_STRING, this->town->text), TC_BLACK);
 		}
 	}
 
@@ -771,8 +756,7 @@ public:
 		if (_settings_game.economy.station_noise_level) aimed_height += GetCharacterHeight(FS_NORMAL);
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text);
-			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WidgetDimensions::scaled.framerect.Horizontal());
+			aimed_height += GetStringHeight(GetString(STR_JUST_RAW_STRING, this->town->text), width - WidgetDimensions::scaled.framerect.Horizontal());
 		}
 
 		return aimed_height;
@@ -1113,9 +1097,9 @@ public:
 	 * @param t Town to draw.
 	 * @return The string to use.
 	 */
-	static StringID GetTownString(const Town *t)
+	static std::string GetTownString(const Town *t, uint64_t population)
 	{
-		return t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN;
+		return GetString(t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN, t->index, population);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -1154,7 +1138,7 @@ public:
 					}
 
 					format_buffer buffer;
-					AppendStringInPlace(buffer, GetTownString(t), t->index, t->cache.population);
+					AppendStringInPlace(buffer, t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN, t->index, t->cache.population);
 					if (_settings_client.gui.show_town_growth_status) {
 						AppendStringInPlace(buffer, GetTownGrowthStatusString(t));
 					}
@@ -1187,16 +1171,13 @@ public:
 			}
 			case WID_TD_LIST: {
 				Dimension d = GetStringBoundingBox(STR_TOWN_DIRECTORY_NONE);
+				uint64_t max_value = GetParamMaxDigits(8);
 				for (uint i = 0; i < this->towns.size(); i++) {
 					const Town *t = this->towns[i];
 
 					assert(t != nullptr);
 
-					SetDParam(0, t->index);
-					SetDParam(1, t->cache.population);
-					SetDParamMaxDigits(1, 8);
-
-					d = maxdim(d, GetStringBoundingBox(GetTownString(t)));
+					d = maxdim(d, GetStringBoundingBox(GetTownString(t, max_value)));
 				}
 				if (_settings_client.gui.show_town_growth_status) {
 					Dimension suffix{};
@@ -1217,8 +1198,7 @@ public:
 				break;
 			}
 			case WID_TD_WORLD_POPULATION: {
-				SetDParamMaxDigits(0, 10);
-				Dimension d = GetStringBoundingBox(STR_TOWN_POPULATION);
+				Dimension d = GetStringBoundingBox(GetString(STR_TOWN_POPULATION, GetParamMaxDigits(10)));
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);

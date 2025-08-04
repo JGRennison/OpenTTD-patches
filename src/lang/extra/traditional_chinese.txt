@@ -777,8 +777,8 @@ STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}改變�
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}改變收入通脹因數
 STR_CHEAT_TOWN_RATING                                           :{LTBLUE}市鎮評價鎖定為「完美」：{ORANGE}{STRING}
 
-STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 給了你的公司 {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 你給了 {1:STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} 給了你的公司 {CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 你給了 {STRING} {CURRENCY_LONG}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING}（{COMPANY}）
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}切換裝載進度指示是否透明{}按住 <Ctrl> 鍵點擊可鎖定
