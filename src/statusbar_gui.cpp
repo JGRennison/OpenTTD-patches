@@ -92,13 +92,13 @@ struct StatusBarWindow : Window {
 				return GetString(STR_JUST_TIME_HHMM, hhmm);
 
 			case 1:
-				return GetString(STR_HHMM_WITH_DATE_Y, year);
+				return GetString(STR_HHMM_WITH_DATE_Y, hhmm, year);
 
 			case 2:
-				return GetString(STR_HHMM_WITH_DATE_YM, date);
+				return GetString(STR_HHMM_WITH_DATE_YM, hhmm, date);
 
 			case 3:
-				return GetString(STR_HHMM_WITH_DATE_YMD, date);
+				return GetString(STR_HHMM_WITH_DATE_YMD, hhmm, date);
 
 			default:
 				NOT_REACHED();
