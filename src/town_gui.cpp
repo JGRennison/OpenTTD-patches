@@ -1683,9 +1683,9 @@ void ShowFoundTownWindow()
  * Window for selecting towns to build a house in.
  */
 struct SelectTownWindow : Window {
-	TownList towns;       ///< list of towns
-	CommandContainer<CMD_PLACE_HOUSE> cmd; ///< command to build the house
-	Scrollbar *vscroll;   ///< scrollbar for the town list
+	TownList towns{};                        ///< list of towns
+	CommandContainer<CMD_PLACE_HOUSE> cmd{}; ///< command to build the house
+	Scrollbar *vscroll = nullptr;            ///< scrollbar for the town list
 
 	SelectTownWindow(WindowDesc &desc, const CommandContainer<CMD_PLACE_HOUSE> &cmd) : Window(desc), cmd(cmd)
 	{
