@@ -69,26 +69,9 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 	}
 }
 
-TemplateVehicle::TemplateVehicle(VehicleType type, EngineID eid, Owner current_owner)
+TemplateVehicle::TemplateVehicle(VehicleType type, EngineID eid, Owner current_owner) : BaseVehicle(type), first(this), owner(current_owner), engine_type(eid)
 {
-	this->type = type;
-	this->engine_type = eid;
-
-	this->reuse_depot_vehicles = false;
-	this->keep_remaining_vehicles = false;
-	this->refit_as_template = true;
-	this->replace_old_only = false;
-
-	this->first = this;
-	this->next = 0x0;
-	this->previous = 0x0;
-
 	this->sprite_seq.Set(SPR_IMG_QUERY);
-
-	this->owner = current_owner;
-
-	this->real_consist_length = 0;
-	this->ctrl_flags = 0;
 }
 
 TemplateVehicle::~TemplateVehicle()

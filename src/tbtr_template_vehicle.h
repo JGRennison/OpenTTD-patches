@@ -80,59 +80,51 @@ enum TemplateVehicleControlFlags {
 
 struct TemplateVehicle : TemplatePool::PoolItem<&_template_pool>, BaseVehicle {
 private:
-	TemplateVehicle *next;                      ///< pointer to the next vehicle in the chain
-	TemplateVehicle *previous;                  ///< NOSAVE: pointer to the previous vehicle in the chain
-	TemplateVehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
+	TemplateVehicle *next = nullptr;           ///< pointer to the next vehicle in the chain
+	TemplateVehicle *previous = nullptr;       ///< NOSAVE: pointer to the previous vehicle in the chain
+	TemplateVehicle *first = nullptr;          ///< NOSAVE: pointer to the first vehicle in the chain
 
 public:
 	friend NamedSaveLoadTable GetTemplateVehicleDesc();
 	friend void AfterLoadTemplateVehicles();
 
 	// Template usage configuration
-	bool reuse_depot_vehicles;
-	bool keep_remaining_vehicles;
-	bool refit_as_template;
-	bool replace_old_only;
+	bool reuse_depot_vehicles = false;
+	bool keep_remaining_vehicles = false;
+	bool refit_as_template = true;
+	bool replace_old_only = false;
 
 	// Things derived from a virtual train
-	Owner owner;
+	Owner owner = INVALID_OWNER;
 
-	EngineID engine_type;               ///< The type of engine used for this vehicle.
-	CargoType cargo_type;               ///< type of cargo this vehicle is carrying
-	uint16_t cargo_cap;                 ///< total capacity
-	uint8_t cargo_subtype;
+	EngineID engine_type;                 ///< The type of engine used for this vehicle.
+	CargoType cargo_type = INVALID_CARGO; ///< type of cargo this vehicle is carrying
+	uint16_t cargo_cap = 0;               ///< total capacity
+	uint8_t cargo_subtype = 0;
 
-	uint8_t subtype;
-	RailType railtype;
+	uint8_t subtype = 0;
+	RailType railtype{};
 
-	uint16_t real_consist_length;
+	uint16_t real_consist_length = 0;
 
-	uint16_t max_speed;
-	uint32_t power;
-	uint32_t empty_weight;
-	uint32_t full_weight;
-	uint32_t max_te;
-	uint32_t air_drag;
+	uint16_t max_speed = 0;
+	uint32_t power = 0;
+	uint32_t empty_weight = 0;
+	uint32_t full_weight = 0;
+	uint32_t max_te = 0;
+	uint32_t air_drag = 0;
 
-	uint32_t ctrl_flags;                ///< See: TemplateVehicleControlFlags
-	std::string name;
+	uint32_t ctrl_flags = 0;            ///< See: TemplateVehicleControlFlags
+	std::string name{};
 
-	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
-	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
-	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
+	VehicleSpriteSeq sprite_seq{};                     ///< NOSAVE: Vehicle appearance.
+	TemplateVehicleImageDimensions image_dimensions{}; ///< NOSAVE: image dimensions
+	SpriteID colourmap{};                              ///< NOSAVE: cached colour mapping
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = EngineID::Invalid(), Owner = _local_company);
 
-	TemplateVehicle(EngineID eid)
+	TemplateVehicle(EngineID eid) : first(this), engine_type(eid)
 	{
-		next = nullptr;
-		previous = nullptr;
-		first = this;
-		engine_type = eid;
-		this->reuse_depot_vehicles = false;
-		this->keep_remaining_vehicles = false;
-		this->refit_as_template = true;
-		this->replace_old_only = false;
 		this->sprite_seq.count = 1;
 	}
 
