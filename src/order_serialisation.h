@@ -42,6 +42,6 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 std::string OrderListToJSONString(const OrderList *ol);
 
 Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type);
-void ShowOrderListImportErrorsWindow(const Vehicle *v, const OrderImportErrors errors);
+void ShowOrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors &&errors);
 
 #endif /* ORDER_SERIALISATION_H */

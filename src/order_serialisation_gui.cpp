@@ -280,8 +280,8 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	}
 };
 
-void ShowOrderListImportErrorsWindow(const Vehicle *v, const OrderImportErrors errors)
+void ShowOrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors &&errors)
 {
 	CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
-	new OrderListImportErrorsWindow(v, errors);
+	new OrderListImportErrorsWindow(v, std::move(errors));
 }
