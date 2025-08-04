@@ -1571,9 +1571,9 @@ enum ScheduledDispatchAddSlotsWindowWidgets : WidgetID {
 };
 
 struct ScheduledDispatchAddSlotsWindow : Window {
-	ClockFaceMinutes start;
-	ClockFaceMinutes step;
-	ClockFaceMinutes end;
+	ClockFaceMinutes start{};
+	ClockFaceMinutes step{};
+	ClockFaceMinutes end{};
 
 	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent) :
 			Window(desc)
