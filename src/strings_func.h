@@ -74,7 +74,7 @@ std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
 void AppendStringInPlaceGlobalParams(struct format_buffer &result, StringID string);
-void AppendStringWithArgsInPlace(struct format_buffer &result, StringID string, std::span<StringParameter> args);
+void AppendStringWithArgsInPlace(struct format_target &result, StringID string, std::span<StringParameter> args);
 void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
 uint32_t GetStringGRFID(StringID string);
 
@@ -212,12 +212,12 @@ EncodedString GetEncodedString(StringID string, Args &&... args)
 
 /**
  * Resolve the given StringID and append in place into an existing format_buffer with most special stringcodes replaced by the string parameters.
- * @param result The format_buffer to append to.
+ * @param result The format_target to append to.
  * @param string String ID to format.
  * @param args The parameters to set.
  */
 template <typename... Args>
-void AppendStringInPlace(struct format_buffer &result, StringID string, Args &&... args)
+void AppendStringInPlace(struct format_target &result, StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
 	return AppendStringWithArgsInPlace(result, string, params);
