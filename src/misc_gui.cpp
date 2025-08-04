@@ -215,7 +215,6 @@ public:
 
 		/* Build date */
 		if (td.build_date != CalTime::INVALID_DATE) {
-			SetDParam(0, td.build_date);
 			this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_BUILD_DATE, td.build_date));
 		}
 
@@ -256,14 +255,12 @@ public:
 
 		/* 2nd Rail type name */
 		if (td.railtype2 != STR_NULL) {
-			SetDParam(0, td.railtype2);
-			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_TYPE));
+			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_TYPE, td.railtype2));
 		}
 
 		/* 2nd Rail speed limit */
 		if (td.rail_speed2 != 0) {
-			SetDParam(0, td.rail_speed2);
-			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT));
+			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, td.rail_speed2));
 		}
 
 		/* Road type name */
