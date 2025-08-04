@@ -19,13 +19,12 @@ using TunnelPool = Pool<Tunnel, TunnelID, 64>;
 extern TunnelPool _tunnel_pool;
 
 struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
-
-	TileIndex tile_n; ///< North tile of tunnel.
-	TileIndex tile_s; ///< South tile of tunnel.
-	uint8_t height;   ///< Tunnel height
-	bool is_chunnel;  ///< Whether this tunnel is a chunnel
-	uint8_t style_n;  ///< Style (new signals) of north tile of tunnel.
-	uint8_t style_s;  ///< Style (new signals) of south tile of tunnel.
+	TileIndex tile_n = INVALID_TILE; ///< North tile of tunnel.
+	TileIndex tile_s = INVALID_TILE; ///< South tile of tunnel.
+	uint8_t height = 0;              ///< Tunnel height
+	bool is_chunnel = false;         ///< Whether this tunnel is a chunnel
+	uint8_t style_n = 0;             ///< Style (new signals) of north tile of tunnel.
+	uint8_t style_s = 0;             ///< Style (new signals) of south tile of tunnel.
 
 	Tunnel() {}
 	~Tunnel();
