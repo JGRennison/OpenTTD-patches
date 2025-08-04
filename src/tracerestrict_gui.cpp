@@ -2214,17 +2214,17 @@ EncodedString TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, Ve
 
 /** Main GUI window class */
 class TraceRestrictWindow: public Window {
-	TileIndex tile;                                                             ///< tile this window is for
-	Track track;                                                                ///< track this window is for
-	int selected_instruction;                                                   ///< selected instruction index, this is offset by one due to the display of the "start" item
-	Scrollbar *vscroll;                                                         ///< scrollbar widget
+	const TileIndex tile;                                                       ///< tile this window is for
+	const Track track;                                                          ///< track this window is for
+	int selected_instruction = -1;                                              ///< selected instruction index, this is offset by one due to the display of the "start" item
+	Scrollbar *vscroll = nullptr;                                               ///< scrollbar widget
 	btree::btree_map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
-	bool value_drop_down_is_company;                                            ///< TR_WIDGET_VALUE_DROPDOWN is a company list
-	TraceRestrictInstructionItem expecting_inserted_item;                       ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
-	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
-	int current_left_aux_plane;                                                 ///< current plane for TR_WIDGET_SEL_TOP_LEFT_AUX widget
-	int base_copy_plane;                                                        ///< base plane for TR_WIDGET_SEL_COPY widget
-	int base_share_plane;                                                       ///< base plane for TR_WIDGET_SEL_SHARE widget
+	bool value_drop_down_is_company = false;                                    ///< TR_WIDGET_VALUE_DROPDOWN is a company list
+	TraceRestrictInstructionItem expecting_inserted_item{};                     ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
+	int current_placement_widget = -1;                                          ///< which widget has a SetObjectToPlaceWnd, if any
+	int current_left_aux_plane = 0;                                             ///< current plane for TR_WIDGET_SEL_TOP_LEFT_AUX widget
+	int base_copy_plane = 0;                                                    ///< base plane for TR_WIDGET_SEL_COPY widget
+	int base_share_plane = 0;                                                   ///< base plane for TR_WIDGET_SEL_SHARE widget
 
 	enum QuerySubMode : uint8_t {
 		QSM_DEFAULT,
@@ -2253,14 +2253,8 @@ class TraceRestrictWindow: public Window {
 
 public:
 	TraceRestrictWindow(WindowDesc &desc, TileIndex tile, Track track)
-			: Window(desc)
+			: Window(desc), tile(tile), track(track)
 	{
-		this->tile = tile;
-		this->track = track;
-		this->selected_instruction = -1;
-		this->expecting_inserted_item = {};
-		this->current_placement_widget = -1;
-
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(TR_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_AUX)->SetDisplayedPlane(SZSP_NONE);
@@ -5279,16 +5273,16 @@ private:
 		QTO_SET_VALUE,
 	};
 
-	Owner ctr_company;                  ///< Company
-	QueryTextOperation qto;             ///< Active query text operation
-	TraceRestrictCounterID ctr_qt_op;   ///< Counter being adjusted in query text operation, INVALID_TRACE_RESTRICT_COUNTER_ID if none
-	TraceRestrictCounterID ctr_confirm; ///< Counter awaiting delete confirmation
-	TraceRestrictCounterID selected;    ///< Selected counter
-	GUIList<const TraceRestrictCounter*> ctrs; ///< List of slots
-	uint tiny_step_height;              ///< Step height for the counter list
-	uint value_col_width;               ///< Value column width
-	uint public_col_width;              ///< Public column width
-	Scrollbar *sb;
+	Owner ctr_company = INVALID_OWNER;                                      ///< Company
+	QueryTextOperation qto{};                                               ///< Active query text operation
+	TraceRestrictCounterID ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;   ///< Counter being adjusted in query text operation, INVALID_TRACE_RESTRICT_COUNTER_ID if none
+	TraceRestrictCounterID ctr_confirm = INVALID_TRACE_RESTRICT_COUNTER_ID; ///< Counter awaiting delete confirmation
+	TraceRestrictCounterID selected = INVALID_TRACE_RESTRICT_COUNTER_ID;    ///< Selected counter
+	GUIList<const TraceRestrictCounter*> ctrs{};                            ///< List of slots
+	uint tiny_step_height = 0;                                              ///< Step height for the counter list
+	uint value_col_width = 0;                                               ///< Value column width
+	uint public_col_width = 0;                                              ///< Public column width
+	Scrollbar *sb = nullptr;
 
 	void BuildCounterList()
 	{
@@ -5367,10 +5361,6 @@ public:
 		this->CreateNestedTree();
 
 		this->sb = this->GetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR);
-
-		this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
-		this->ctr_confirm = INVALID_TRACE_RESTRICT_COUNTER_ID;
-		this->selected = INVALID_TRACE_RESTRICT_COUNTER_ID;
 
 		this->ctrs.ForceRebuild();
 		this->ctrs.NeedResort();
