@@ -138,30 +138,30 @@ struct DeparturesWindow : public Window {
 protected:
 	DepartureSourceType source_type{};          ///< Source type.
 	DepartureOrderDestinationDetector source{}; ///< Source order detector.
-	DepartureList departures;                   ///< The current list of departures from this station.
-	DepartureList arrivals;                     ///< The current list of arrivals from this station.
+	DepartureList departures{};                 ///< The current list of departures from this station.
+	DepartureList arrivals{};                   ///< The current list of arrivals from this station.
 	bool departures_invalid = true;             ///< The departures and arrivals list are currently invalid.
 	bool vehicles_invalid = true;               ///< The vehicles list is currently invalid.
-	uint entry_height;                          ///< The height of an entry in the departures list.
+	uint entry_height = 0;                      ///< The height of an entry in the departures list.
 	uint64_t elapsed_ms = 0;                    ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown = 0;                ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
-	bool show_types[4];                         ///< The vehicle types to show in the departure list.
+	bool show_types[4]{};                       ///< The vehicle types to show in the departure list.
 	DeparturesCargoMode cargo_mode = DCF_ALL_CARGOES;
 	DeparturesMode mode = DM_DEPARTURES;
 	DeparturesSourceMode source_mode = DSM_LIVE;
 	bool show_via = false;
 	bool show_empty = false;
 	bool show_arrival_times = false;
-	mutable bool scroll_refresh; ///< Whether the window should be refreshed when paused due to scrolling
-	uint min_width = 400;                  ///< The minimum width of this window.
+	mutable bool scroll_refresh = false;     ///< Whether the window should be refreshed when paused due to scrolling
+	uint min_width = 400;                    ///< The minimum width of this window.
 	Scrollbar *vscroll;
-	std::vector<const Vehicle *> vehicles; ///< current set of vehicles
-	int veh_width;                         ///< current width of vehicle field
-	int group_width;                       ///< current width of group field
-	int toc_width;                         ///< current width of company field
-	std::array<uint32_t, 3> title_params{};///< title string parameters
-	CallAtTargetID filter_target;          ///< Filter target
-	const OrderList *order_list_filter{};  ///< Shared order list filter
+	std::vector<const Vehicle *> vehicles{}; ///< current set of vehicles
+	int veh_width = 0;                       ///< current width of vehicle field
+	int group_width = 0;                     ///< current width of group field
+	int toc_width = 0;                       ///< current width of company field
+	std::array<uint32_t, 3> title_params{};  ///< title string parameters
+	CallAtTargetID filter_target{};          ///< Filter target
+	const OrderList *order_list_filter{};    ///< Shared order list filter
 
 	uint GetScrollbarCapacity() const;
 	uint GetMinWidth() const;
