@@ -1438,7 +1438,7 @@ OpenGLSprite::OpenGLSprite(const SpriteLoader::SpriteCollection &sprite) :
 	}
 
 	/* Upload texture data. */
-	for (int i = 0; i < (sprite[ZOOM_LVL_MIN].type == SpriteType::Font ? 1 : ZOOM_LVL_END); i++) {
+	for (int i = 0; i < levels; i++) {
 		this->Update(sprite[i].width, sprite[i].height, i, sprite[i].data);
 	}
 
