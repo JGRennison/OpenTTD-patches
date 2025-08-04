@@ -2777,7 +2777,7 @@ struct StationRatingTooltipWindow : public Window
 private:
 	const Station *st;
 	const CargoSpec *cs;
-	bool newgrf_rating_used;
+	bool newgrf_rating_used = false;
 
 	static const uint RATING_TOOLTIP_MAX_LINES = 9;
 	static const uint RATING_TOOLTIP_NEWGRF_INDENT = 20;
@@ -2785,12 +2785,9 @@ private:
 public:
 	std::string data[RATING_TOOLTIP_MAX_LINES + 1]{};
 
-	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(_station_rating_tooltip_desc)
+	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(_station_rating_tooltip_desc), st(st), cs(cs)
 	{
 		this->parent = parent;
-		this->st = st;
-		this->cs = cs;
-		this->newgrf_rating_used = false;
 		this->InitNested();
 		this->flags.Reset(WindowFlag::WhiteBorder);
 	}
