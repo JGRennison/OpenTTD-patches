@@ -86,22 +86,22 @@ struct CargoTypeOrdersWindow : public Window {
 private:
 	CargoTypeOrdersWindowVariant variant;
 
-	const Vehicle *vehicle;  ///< Vehicle owning the orders being displayed and manipulated.
-	VehicleOrderID order_id; ///< Index of the order concerned by this window.
+	const Vehicle *vehicle = nullptr;               ///< Vehicle owning the orders being displayed and manipulated.
+	VehicleOrderID order_id = INVALID_VEH_ORDER_ID; ///< Index of the order concerned by this window.
 
-	VehicleOrderID order_count; ///< Count of the orders of the vehicle owning this window
-	const Order *order;         ///< Order pointer at construction time;
+	VehicleOrderID order_count = 0;                 ///< Count of the orders of the vehicle owning this window
+	const Order *order = nullptr;                   ///< Order pointer at construction time;
 
 	static const uint8_t CARGO_ICON_WIDTH  = 12;
 	static const uint8_t CARGO_ICON_HEIGHT =  8;
 
-	std::span<const StringID> cargo_type_order_dropdown; ///< Strings used to populate order dropdowns.
-	uint32_t cargo_type_order_dropdown_hmask;  ///< Hidden mask for order dropdowns.
+	std::span<const StringID> cargo_type_order_dropdown{}; ///< Strings used to populate order dropdowns.
+	uint32_t cargo_type_order_dropdown_hmask = 0;          ///< Hidden mask for order dropdowns.
 
-	uint max_cargo_name_width;     ///< Greatest width of cargo names.
-	uint max_cargo_dropdown_width; ///< Greatest width of order names.
+	uint max_cargo_name_width = 0;     ///< Greatest width of cargo names.
+	uint max_cargo_dropdown_width = 0; ///< Greatest width of order names.
 
-	uint set_to_all_dropdown_sel;     ///< Selected entry for the 'set to all' dropdown
+	uint set_to_all_dropdown_sel = 0;  ///< Selected entry for the 'set to all' dropdown
 
 	/**
 	 * Initialize \c max_cargo_name_width and \c max_cargo_dropdown_width.
