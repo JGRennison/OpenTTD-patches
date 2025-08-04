@@ -64,7 +64,7 @@ typedef GUIList<const Town*, const bool &> GUITownList;
 static constexpr NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION), SetStringTip(STR_LOCAL_AUTHORITY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION),
 		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetStringTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
@@ -79,7 +79,7 @@ static constexpr NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TA_BTN_SEL),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_TA_EXECUTE),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_LOCAL_AUTHORITY_DO_IT_BUTTON, STR_LOCAL_AUTHORITY_DO_IT_TOOLTIP),
-			NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TA_SETTING),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_JUST_STRING1, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP),
+			NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TA_SETTING),  SetMinimalSize(317, 12), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 	EndContainer()
@@ -212,37 +212,34 @@ public:
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_TA_CAPTION) {
-			SetDParam(0, this->window_number);
-		} else if (widget == WID_TA_SETTING) {
-			SetDParam(0, STR_EMPTY);
+		if (widget == WID_TA_CAPTION) return GetString(STR_LOCAL_AUTHORITY_CAPTION, this->window_number);
+
+		if (widget == WID_TA_SETTING) {
 			if (this->sel_index >= 0x100 && this->sel_index < (int)(0x100 + SETTING_OVERRIDE_COUNT)) {
 				if (!HasBit(this->town->override_flags, this->sel_index - 0x100)) {
-					SetDParam(0, STR_COLOUR_DEFAULT);
+					return GetString(STR_COLOUR_DEFAULT);
 				} else {
 					int idx = this->sel_index - 0x100;
 					switch (idx) {
 						case TSOF_OVERRIDE_BUILD_ROADS:
 						case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 						case TSOF_OVERRIDE_BUILD_BRIDGES:
-							SetDParam(0, HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
-							break;
+							return GetString(HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 						case TSOF_OVERRIDE_BUILD_TUNNELS:
-							SetDParam(0, STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + this->town->build_tunnels);
-							break;
+							return GetString(STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + this->town->build_tunnels);
 						case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
-							SetDParam(0, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((this->town->max_road_slope == 0) ? 1 : 0));
-							SetDParam(1, this->town->max_road_slope);
-							break;
+							return GetString(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((this->town->max_road_slope == 0) ? 1 : 0), this->town->max_road_slope);
 						case TSOF_OVERRIDE_GROWTH:
-							SetDParam(0, HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_TOWN_GROWTH_NONE);
-							break;
+							return GetString(HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_TOWN_GROWTH_NONE);
 					}
 				}
 			}
+			return {};
 		}
+
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	std::pair<std::string, TextColour> PrepareActionInfoString(int action_index) const
@@ -578,9 +575,11 @@ public:
 		this->Window::Close();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_TV_CAPTION) SetDParam(0, this->town->index);
+		if (widget == WID_TV_CAPTION) return GetString(STR_TOWN_VIEW_TOWN_CAPTION, this->town->index);
+
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	void OnPaint() override
@@ -827,7 +826,7 @@ static constexpr NWidgetPart _nested_town_game_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TV_CAPTION), SetStringTip(STR_TOWN_VIEW_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TV_CAPTION),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_DEBUGBOX, COLOUR_BROWN),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
@@ -902,7 +901,7 @@ void ShowTownViewWindow(TownID town)
 static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TD_CAPTION), SetStringTip(STR_TOWN_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TD_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -911,13 +910,13 @@ static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TD_SORT_ORDER), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TD_SORT_CRITERIA), SetStringTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TD_SORT_CRITERIA), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_TD_FILTER), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetToolTip(STR_TOWN_DIRECTORY_LIST_TOOLTIP),
 							SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TOWN_POPULATION),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -1074,21 +1073,20 @@ public:
 		this->townname_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_TD_CAPTION:
-				SetDParam(0, this->vscroll->GetCount());
-				SetDParam(1, Town::GetNumItems());
-				break;
+				return GetString(STR_TOWN_DIRECTORY_CAPTION, this->vscroll->GetCount(), Town::GetNumItems());
 
 			case WID_TD_WORLD_POPULATION:
-				SetDParam(0, GetWorldPopulation());
-				break;
+				return GetString(STR_TOWN_POPULATION, GetWorldPopulation());
 
 			case WID_TD_SORT_CRITERIA:
-				SetDParam(0, TownDirectoryWindow::sorter_names[this->towns.SortType()]);
-				break;
+				return GetString(TownDirectoryWindow::sorter_names[this->towns.SortType()]);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 

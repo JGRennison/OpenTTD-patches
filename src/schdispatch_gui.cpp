@@ -1183,9 +1183,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
 					if (selected_slot != nullptr) {
 						const DispatchSchedule &ds = this->GetSelectedSchedule();
-						SetDParam(0, ds.GetScheduledDispatchStartTick() + selected_slot->offset);
-						SetDParam(1, caption);
-						std::string caption_str = GetString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED);
+						EncodedString caption_str = GetEncodedString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED,
+								ds.GetScheduledDispatchStartTick() + selected_slot->offset, caption);
 
 						this->adjust_slot_offset = selected_slot->offset;
 						ShowQueryString(GetString(STR_JUST_INT, 0), std::move(caption_str), 31, this, charset_filter, QSF_NONE);

@@ -162,19 +162,9 @@ public:
 			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);
 	bool ShouldShowActionDropdownList() const;
 
-	std::span<const StringID> GetVehicleSorterNames()
-	{
-		switch (this->grouping) {
-			case GB_NONE:
-				return EconTime::UsingWallclockUnits() ? vehicle_group_none_sorter_names_wallclock : vehicle_group_none_sorter_names_calendar;
-			case GB_SHARED_ORDERS:
-				return EconTime::UsingWallclockUnits() ? vehicle_group_shared_orders_sorter_names_wallclock : vehicle_group_shared_orders_sorter_names_calendar;
-			default:
-				NOT_REACHED();
-		}
-	}
+	std::span<const StringID> GetVehicleSorterNames() const;
 
-	std::span<VehicleGroupSortFunction * const> GetVehicleSorterFuncs()
+	std::span<VehicleGroupSortFunction * const> GetVehicleSorterFuncs() const
 	{
 		switch (this->grouping) {
 			case GB_NONE:

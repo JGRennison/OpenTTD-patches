@@ -52,16 +52,14 @@ struct GoalListWindow : public Window {
 		this->OnInvalidateData(0);
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget != WID_GOAL_CAPTION) return;
+		if (widget != WID_GOAL_CAPTION) return this->Window::GetWidgetString(widget, stringid);
 
 		if (this->window_number == CompanyID::Invalid()) {
-			SetDParam(0, STR_GOALS_SPECTATOR_CAPTION);
-		} else {
-			SetDParam(0, STR_GOALS_CAPTION);
-			SetDParam(1, this->window_number);
+			return GetString(STR_GOALS_SPECTATOR_CAPTION);
 		}
+		return GetString(STR_GOALS_CAPTION, this->window_number);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -281,7 +279,7 @@ struct GoalListWindow : public Window {
 static constexpr NWidgetPart _nested_goals_list_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_GOAL_CAPTION), SetStringTip(STR_JUST_STRING1, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_GOAL_CAPTION),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GOAL_SELECT_BUTTONS),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_GOAL_GLOBAL_BUTTON), SetMinimalSize(50, 0), SetStringTip(STR_GOALS_GLOBAL_BUTTON, STR_GOALS_GLOBAL_BUTTON_HELPTEXT),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_GOAL_COMPANY_BUTTON), SetMinimalSize(50, 0), SetStringTip(STR_GOALS_COMPANY_BUTTON, STR_GOALS_COMPANY_BUTTON_HELPTEXT),
@@ -349,20 +347,20 @@ struct GoalQuestionWindow : public Window {
 	}
 
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_GQ_BUTTON_1:
-				SetDParam(0, STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[0]);
-				break;
+				return GetString(STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[0]);
 
 			case WID_GQ_BUTTON_2:
-				SetDParam(0, STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[1]);
-				break;
+				return GetString(STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[1]);
 
 			case WID_GQ_BUTTON_3:
-				SetDParam(0, STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[2]);
-				break;
+				return GetString(STR_GOAL_QUESTION_BUTTON_CANCEL + this->button[2]);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -419,16 +417,16 @@ struct NestedGoalWidgets {
 				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GQ_QUESTION), SetMinimalSize(300, 0), SetFill(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GQ_BUTTONS),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(85, WidgetDimensions::unscaled.hsep_wide, 85),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetFill(1, 0),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(65, WidgetDimensions::unscaled.hsep_wide, 65),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_2), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_2), SetFill(1, 0),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(25, WidgetDimensions::unscaled.hsep_wide, 25),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_2), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
-						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_3), SetStringTip(STR_JUST_STRING), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_1), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_2), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, btn_colour, WID_GQ_BUTTON_3), SetFill(1, 0),
 					EndContainer(),
 				EndContainer(),
 			EndContainer(),

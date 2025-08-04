@@ -137,7 +137,7 @@ class NIHVehicle : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { const Vehicle *first = Vehicle::Get(index)->First(); return InspectTargetId(GetGrfSpecFeature(first->type), first->index.base()); }
 	const void *GetInstance(uint index) const override   { return Vehicle::Get(index); }
 	const void *GetSpec(uint index) const override       { return Vehicle::Get(index)->GetEngine(); }
-	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_VEHICLE_NAME, Vehicle::Get(index)->First()->index.base()); }
+	std::string GetName(uint index) const override       { return GetString(STR_VEHICLE_NAME, Vehicle::Get(index)->First()->index.base()); }
 	uint32_t GetGRFID(uint index) const override         { return Vehicle::Get(index)->GetGRFID(); }
 	std::span<const BadgeID> GetBadges(uint index) const override { return Vehicle::Get(index)->GetEngine()->badges; }
 
@@ -725,7 +725,7 @@ class NIHStation : public NIHelper {
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetStationSpec(TileIndex{index}); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetStationSpec(TileIndex{index})->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return this->IsInspectable(index) ? GetStationSpec(TileIndex{index})->badges : std::span<const BadgeID>{}; }
 
@@ -885,7 +885,7 @@ class NIHHouse : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, GetTownIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(TileIndex{index})); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_TOWN_NAME, GetTownIndex(TileIndex{index}), TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_TOWN_NAME, GetTownIndex(TileIndex{index}), TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return HouseSpec::Get(GetHouseType(TileIndex{index}))->badges; }
 
@@ -983,7 +983,7 @@ class NIHIndustryTile : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_INDUSTRIES, GetIndustryIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index})); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_INDUSTRY_NAME, GetIndustryIndex(TileIndex{index}), TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_INDUSTRY_NAME, GetIndustryIndex(TileIndex{index}), TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}))->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}))->badges; }
 
@@ -1140,12 +1140,12 @@ class NIHIndustry : public NIHelper {
 		}
 	}
 
-	void SetStringParameters(uint index) const override
+	std::string GetName(uint index) const override
 	{
 		if (HasBit(index, 26)) {
-			SetDParam(0, GetIndustrySpec(GB(index, 0, 16))->name);
+			return GetString(GetIndustrySpec(GB(index, 0, 16))->name);
 		} else {
-			this->SetSimpleStringParameters(STR_INDUSTRY_NAME, index);
+			return GetString(STR_INDUSTRY_NAME, index);
 		}
 	}
 
@@ -1257,7 +1257,7 @@ class NIHCargo : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return CargoSpec::Get(index); }
-	void SetStringParameters(uint index) const override  { SetDParam(0, CargoSpec::Get(index)->name); }
+	std::string GetName(uint index) const override       { return GetString(CargoSpec::Get(index)->name); }
 	uint32_t GetGRFID(uint index) const override         { return (!this->ShowExtraInfoOnly(index)) ? CargoSpec::Get(index)->grffile->grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
 
@@ -1386,7 +1386,7 @@ class NIHSignals : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, INVALID_STRING_ID, TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
 
@@ -1521,7 +1521,7 @@ class NIHObject : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(Object::GetByTile(TileIndex{index})->town); }
 	const void *GetInstance(uint index)const override    { return Object::GetByTile(TileIndex{index}); }
 	const void *GetSpec(uint index) const override       { return ObjectSpec::GetByTile(TileIndex{index}); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT, INVALID_STRING_ID, TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (!this->ShowExtraInfoOnly(index)) ? ObjectSpec::GetByTile(TileIndex{index})->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return ObjectSpec::GetByTile(TileIndex{index})->badges; }
 
@@ -1649,7 +1649,7 @@ class NIHRailType : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return GetRailTypeInfo(GetRailType(TileIndex{index}))->badges; }
 
@@ -1789,7 +1789,7 @@ class NIHAirportTile : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index})); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->badges; }
 
@@ -1842,7 +1842,7 @@ class NIHAirport : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, Station::Get(index)->town->index.base()); }
 	const void *GetInstance(uint index)const override    { return Station::Get(index); }
 	const void *GetSpec(uint index) const override       { return AirportSpec::Get(Station::Get(index)->airport.type); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, index, Station::Get(index)->airport.tile); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, index, Station::Get(index)->airport.tile); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? AirportSpec::Get(Station::Get(index)->airport.type)->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return AirportSpec::Get(Station::Get(index)->airport.type)->badges; }
 
@@ -1897,7 +1897,7 @@ class NIHTown : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return Town::Get(index); }
 	const void *GetSpec(uint) const override             { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_TOWN_NAME, index); }
+	std::string GetName(uint index) const override       { return GetString(STR_TOWN_NAME, index); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 	bool PSAWithParameter() const override               { return true; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
@@ -1998,13 +1998,13 @@ class NIHStationStruct : public NIHelper {
 	const void *GetSpec(uint index) const override       { return nullptr; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
 
-	void SetStringParameters(uint index) const override
+	std::string GetName(uint index) const override
 	{
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (bst != nullptr && !Station::IsExpected(bst)) {
-			this->SetSimpleStringParameters(STR_WAYPOINT_NAME, index);
+			return GetString(STR_WAYPOINT_NAME, index);
 		} else {
-			this->SetSimpleStringParameters(STR_STATION_NAME, index);
+			return GetString(STR_STATION_NAME, index);
 		}
 	}
 
@@ -2127,11 +2127,11 @@ class NIHTraceRestrict : public NIHelper {
 	const void *GetSpec(uint index) const override       { return nullptr; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
 
-	void SetStringParameters(uint index) const override
+	std::string GetName(uint index) const override
 	{
-		SetDParam(0, STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT);
-		SetDParam(1, GetTraceRestrictRefIdTileIndex(static_cast<TraceRestrictRefId>(index)));
-		SetDParam(2, GetTraceRestrictRefIdTrack(static_cast<TraceRestrictRefId>(index)));
+		return GetString(STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT,
+				GetTraceRestrictRefIdTileIndex(static_cast<TraceRestrictRefId>(index)),
+				GetTraceRestrictRefIdTrack(static_cast<TraceRestrictRefId>(index)));
 	}
 
 	uint32_t GetGRFID(uint index) const override         { return 0; }
@@ -2243,7 +2243,7 @@ private:
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index) const override   { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 
 	std::span<const BadgeID> GetBadges(uint index) const override
@@ -2385,7 +2385,7 @@ class NIHRoadStop : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return GetTownInspectTargetId(BaseStation::GetByTile(TileIndex{index})->town); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetRoadStopSpec(TileIndex{index}); }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return (this->IsInspectable(index)) ? GetRoadStopSpec(TileIndex{index})->grf_prop.grfid : 0; }
 	std::span<const BadgeID> GetBadges(uint index) const override { return this->IsInspectable(index) ? GetRoadStopSpec(TileIndex{index})->badges : std::span<const BadgeID>{}; }
 
@@ -2452,7 +2452,7 @@ class NIHNewLandscape : public NIHelper {
 	InspectTargetId GetParent(uint index) const override { return InspectTargetId::Invalid(); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_LAI_CLEAR_DESCRIPTION_ROCKS, INVALID_STRING_ID, TileIndex{index}); }
+	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_LAI_CLEAR_DESCRIPTION_ROCKS, INVALID_STRING_ID, TileIndex{index}); }
 	uint32_t GetGRFID(uint index) const override         { return 0; }
 	std::span<const BadgeID> GetBadges(uint) const override { return {}; }
 

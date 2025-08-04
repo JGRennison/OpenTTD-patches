@@ -641,22 +641,23 @@ public:
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_SB_SEL_PAGE: {
-				StoryPage *page = this->GetSelPage();
-				SetDParamStr(0, page != nullptr && !page->title.empty() ? page->title : this->selected_generic_title);
-				break;
+				const StoryPage *page = this->GetSelPage();
+				/* Encoded string from game script needs to be formatted. */
+				return GetString(STR_JUST_RAW_STRING, page != nullptr && !page->title.empty() ? page->title : this->selected_generic_title);
 			}
+
 			case WID_SB_CAPTION:
 				if (this->window_number == CompanyID::Invalid()) {
-					SetDParam(0, STR_STORY_BOOK_SPECTATOR_CAPTION);
-				} else {
-					SetDParam(0, STR_STORY_BOOK_CAPTION);
-					SetDParam(1, this->window_number);
+					return GetString(STR_STORY_BOOK_SPECTATOR_CAPTION);
 				}
-				break;
+				return GetString(STR_STORY_BOOK_CAPTION, this->window_number);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -940,7 +941,7 @@ const std::initializer_list<GUIStoryPageElementList::SortFunction * const> Story
 static constexpr NWidgetPart _nested_story_book_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SB_CAPTION), SetStringTip(STR_JUST_STRING1, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SB_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -952,7 +953,7 @@ static constexpr NWidgetPart _nested_story_book_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_SB_PREV_PAGE), SetMinimalSize(100, 0), SetFill(0, 0), SetStringTip(STR_STORY_BOOK_PREV_PAGE, STR_STORY_BOOK_PREV_PAGE_TOOLTIP),
 		NWidget(NWID_BUTTON_DROPDOWN, COLOUR_BROWN, WID_SB_SEL_PAGE), SetMinimalSize(93, 12), SetFill(1, 0),
-												SetStringTip(STR_JUST_RAW_STRING, STR_STORY_BOOK_SEL_PAGE_TOOLTIP), SetResize(1, 0),
+												SetToolTip(STR_STORY_BOOK_SEL_PAGE_TOOLTIP), SetResize(1, 0),
 		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_SB_NEXT_PAGE), SetMinimalSize(100, 0), SetFill(0, 0), SetStringTip(STR_STORY_BOOK_NEXT_PAGE, STR_STORY_BOOK_NEXT_PAGE_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 	EndContainer(),

@@ -56,7 +56,7 @@ struct QueryEditboxDescription
 void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, StringID window_caption, Window *parent, QueryStringFlags flags);
 void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID window_caption, Window *parent, QueryStringFlags flags);
 void ShowQueryString(std::string_view str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
-void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
+void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQuery(EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback, bool focus = false);
 
 /** The number of 'characters' on the on-screen keyboard. */

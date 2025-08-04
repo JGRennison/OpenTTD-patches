@@ -283,7 +283,7 @@ static void DrawYearColumn(const Rect &r, int year, const Expenses &tbl)
 static constexpr NWidgetPart _nested_company_finances_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_CF_CAPTION), SetStringTip(STR_FINANCES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_CF_CAPTION),
 		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_CF_TOGGLE_SIZE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -306,23 +306,23 @@ static constexpr NWidgetPart _nested_company_finances_widgets[] = {
 				NWidget(WWT_TEXT, INVALID_COLOUR), SetStringTip(STR_FINANCES_BANK_BALANCE_TITLE), SetPadding(WidgetDimensions::unscaled.vsep_normal, 0, 0, 0),
 			EndContainer(),
 			NWidget(NWID_VERTICAL), // Vertical column with bank balance amount, loan amount, and total.
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_OWN_VALUE), SetStringTip(STR_FINANCES_TOTAL_CURRENCY), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_LOAN_VALUE), SetStringTip(STR_FINANCES_TOTAL_CURRENCY), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_OWN_VALUE), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_LOAN_VALUE), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_CF_BALANCE_LINE), SetMinimalSize(0, WidgetDimensions::unscaled.vsep_normal),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_BALANCE_VALUE), SetStringTip(STR_FINANCES_BANK_BALANCE), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_BALANCE_VALUE), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_CF_SEL_MAXLOAN),
 				NWidget(NWID_VERTICAL), SetPIPRatio(0, 0, 1), // Max loan information
-					NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_INTEREST_RATE), SetStringTip(STR_FINANCES_INTEREST_RATE),
-					NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_MAXLOAN_VALUE), SetStringTip(STR_FINANCES_MAX_LOAN),
+					NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_INTEREST_RATE),
+					NWidget(WWT_TEXT, INVALID_COLOUR, WID_CF_MAXLOAN_VALUE),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_CF_SEL_BUTTONS),
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INCREASE_LOAN), SetFill(1, 0), SetStringTip(STR_FINANCES_BORROW_BUTTON, STR_NULL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_REPAY_LOAN), SetFill(1, 0), SetStringTip(STR_FINANCES_REPAY_BUTTON, STR_NULL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INCREASE_LOAN), SetFill(1, 0),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_REPAY_LOAN), SetFill(1, 0),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INFRASTRUCTURE), SetFill(1, 0), SetStringTip(STR_FINANCES_INFRASTRUCTURE_BUTTON, STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
@@ -349,46 +349,43 @@ struct CompanyFinancesWindow : Window {
 		this->InvalidateData();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_CF_CAPTION:
-				SetDParam(0, (CompanyID)this->window_number);
-				SetDParam(1, (CompanyID)this->window_number);
-				break;
+				return GetString(STR_FINANCES_CAPTION, this->window_number, this->window_number);
 
 			case WID_CF_BALANCE_VALUE: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				SetDParam(0, c->money);
-				break;
+				return GetString(STR_FINANCES_BANK_BALANCE, c->money);
 			}
 
 			case WID_CF_LOAN_VALUE: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				SetDParam(0, c->current_loan);
-				break;
+				return GetString(STR_FINANCES_TOTAL_CURRENCY, c->current_loan);
 			}
 
 			case WID_CF_OWN_VALUE: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				SetDParam(0, c->money - c->current_loan);
-				break;
+				return GetString(STR_FINANCES_TOTAL_CURRENCY, c->money - c->current_loan);
 			}
 
 			case WID_CF_INTEREST_RATE:
-				SetDParam(0, _settings_game.difficulty.initial_interest);
-				break;
+				return GetString(STR_FINANCES_INTEREST_RATE, _settings_game.difficulty.initial_interest);
 
 			case WID_CF_MAXLOAN_VALUE: {
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				SetDParam(0, c->GetMaxLoan());
-				break;
+				return GetString(STR_FINANCES_MAX_LOAN, c->GetMaxLoan());
 			}
 
 			case WID_CF_INCREASE_LOAN:
+				return GetString(STR_FINANCES_BORROW_BUTTON, LOAN_INTERVAL);
+
 			case WID_CF_REPAY_LOAN:
-				SetDParam(0, LOAN_INTERVAL);
-				break;
+				return GetString(STR_FINANCES_REPAY_BUTTON, LOAN_INTERVAL);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -846,12 +843,11 @@ public:
 		this->DrawWidgets();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_SCL_CAPTION:
-				SetDParam(0, (CompanyID)this->window_number);
-				break;
+				return GetString(STR_LIVERY_CAPTION, this->window_number);
 
 			case WID_SCL_PRI_COL_DROPDOWN:
 			case WID_SCL_SEC_COL_DROPDOWN: {
@@ -880,9 +876,11 @@ public:
 						}
 					}
 				}
-				SetDParam(0, colour);
-				break;
+				return GetString(colour);
 			}
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -1111,7 +1109,7 @@ public:
 static constexpr NWidgetPart _nested_select_company_livery_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCL_CAPTION), SetStringTip(STR_LIVERY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCL_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -1134,8 +1132,8 @@ static constexpr NWidgetPart _nested_select_company_livery_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_SCL_SPACER_DROPDOWN), SetFill(1, 1), SetResize(1, 0), EndContainer(),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCL_PRI_COL_DROPDOWN), SetFill(0, 1), SetStringTip(STR_JUST_STRING, STR_LIVERY_PRIMARY_TOOLTIP),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCL_SEC_COL_DROPDOWN), SetFill(0, 1), SetStringTip(STR_JUST_STRING, STR_LIVERY_SECONDARY_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCL_PRI_COL_DROPDOWN), SetFill(0, 1), SetToolTip(STR_LIVERY_PRIMARY_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCL_SEC_COL_DROPDOWN), SetFill(0, 1), SetToolTip(STR_LIVERY_SECONDARY_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };
@@ -1251,12 +1249,12 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 								NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_HAS_MOUSTACHE_EARRING_TEXT), SetFill(1, 0),
 									SetStringTip(STR_FACE_EYECOLOUR), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
-								NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_MOUSTACHE_EARRING), SetStringTip(STR_JUST_STRING1, STR_FACE_MOUSTACHE_EARRING_TOOLTIP), SetTextStyle(TC_WHITE),
+								NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_MOUSTACHE_EARRING), SetToolTip(STR_FACE_MOUSTACHE_EARRING_TOOLTIP), SetTextStyle(TC_WHITE),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 								NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCMF_HAS_GLASSES_TEXT), SetFill(1, 0),
 									SetStringTip(STR_FACE_GLASSES), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
-								NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_GLASSES), SetStringTip(STR_JUST_STRING1, STR_FACE_GLASSES_TOOLTIP), SetTextStyle(TC_WHITE),
+								NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAS_GLASSES), SetToolTip(STR_FACE_GLASSES_TOOLTIP), SetTextStyle(TC_WHITE),
 							EndContainer(),
 						EndContainer(),
 						NWidget(NWID_VERTICAL),
@@ -1265,7 +1263,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_HAIR), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_HAIR_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_HAIR_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAIR), SetStringTip(STR_JUST_STRING1, STR_FACE_HAIR_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_HAIR), SetToolTip(STR_FACE_HAIR_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_HAIR_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_HAIR_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1274,7 +1272,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_EYEBROWS), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYEBROWS_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_EYEBROWS_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYEBROWS), SetStringTip(STR_JUST_STRING1, STR_FACE_EYEBROWS_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYEBROWS), SetToolTip(STR_FACE_EYEBROWS_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYEBROWS_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_EYEBROWS_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1283,7 +1281,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_EYECOLOUR), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_EYECOLOUR_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR), SetStringTip(STR_JUST_STRING1, STR_FACE_EYECOLOUR_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR), SetToolTip(STR_FACE_EYECOLOUR_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_EYECOLOUR_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_EYECOLOUR_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1292,7 +1290,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_GLASSES), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_GLASSES_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_GLASSES_TOOLTIP_2),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_GLASSES), SetStringTip(STR_JUST_STRING1, STR_FACE_GLASSES_TOOLTIP_2), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_GLASSES), SetToolTip(STR_FACE_GLASSES_TOOLTIP_2), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_GLASSES_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_GLASSES_TOOLTIP_2),
 								EndContainer(),
 							EndContainer(),
@@ -1301,7 +1299,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_NOSE), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_NOSE_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_NOSE_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_NOSE), SetStringTip(STR_JUST_STRING1, STR_FACE_NOSE_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_NOSE), SetToolTip(STR_FACE_NOSE_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_NOSE_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_NOSE_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1310,7 +1308,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_MOUSTACHE), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_LIPS_MOUSTACHE_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE), SetStringTip(STR_JUST_STRING1, STR_FACE_LIPS_MOUSTACHE_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE), SetToolTip(STR_FACE_LIPS_MOUSTACHE_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_LIPS_MOUSTACHE_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_LIPS_MOUSTACHE_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1319,7 +1317,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_CHIN), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_CHIN_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_CHIN_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_CHIN), SetStringTip(STR_JUST_STRING1, STR_FACE_CHIN_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_CHIN), SetToolTip(STR_FACE_CHIN_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_CHIN_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_CHIN_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1328,7 +1326,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_JACKET), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_JACKET_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_JACKET_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_JACKET), SetStringTip(STR_JUST_STRING1, STR_FACE_JACKET_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_JACKET), SetToolTip(STR_FACE_JACKET_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_JACKET_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_JACKET_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1337,7 +1335,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_COLLAR), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_COLLAR_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_COLLAR_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_COLLAR), SetStringTip(STR_JUST_STRING1, STR_FACE_COLLAR_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_COLLAR), SetToolTip(STR_FACE_COLLAR_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_COLLAR_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_COLLAR_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1346,7 +1344,7 @@ static constexpr NWidgetPart _nested_select_company_manager_face_widgets[] = {
 										SetStringTip(STR_FACE_EARRING), SetTextStyle(TC_GOLD), SetAlignment(SA_VERT_CENTER | SA_RIGHT),
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING_L), SetArrowWidgetTypeTip(AWV_DECREASE, STR_FACE_TIE_EARRING_TOOLTIP),
-									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING), SetStringTip(STR_JUST_STRING1, STR_FACE_TIE_EARRING_TOOLTIP), SetTextStyle(TC_WHITE),
+									NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING), SetToolTip(STR_FACE_TIE_EARRING_TOOLTIP), SetTextStyle(TC_WHITE),
 									NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_SCMF_TIE_EARRING_R), SetArrowWidgetTypeTip(AWV_INCREASE, STR_FACE_TIE_EARRING_TOOLTIP),
 								EndContainer(),
 							EndContainer(),
@@ -1376,27 +1374,23 @@ class SelectCompanyManagerFaceWindow : public Window
 	Dimension number_dim{}; ///< Dimension of a number widget of a part in the advanced face window.
 
 	/**
-	 * Set parameters for value of face control buttons.
+	 * Get the string for the value of face control buttons.
 	 *
 	 * @param widget_index   index of this widget in the window
+	 * @param stringid       formatting string for the button.
 	 * @param val            the value which will be displayed
 	 * @param is_bool_widget is it a bool button
 	 */
-	void SetFaceStringParameters(WidgetID widget_index, uint8_t val, bool is_bool_widget) const
+	std::string GetFaceString(WidgetID widget_index, uint8_t val, bool is_bool_widget) const
 	{
 		const NWidgetCore *nwi_widget = this->GetWidget<NWidgetCore>(widget_index);
-		if (nwi_widget->IsDisabled()) {
-			SetDParam(0, STR_EMPTY);
-		} else {
-			if (is_bool_widget) {
-				/* if it a bool button write yes or no */
-				SetDParam(0, (val != 0) ? STR_FACE_YES : STR_FACE_NO);
-			} else {
-				/* else write the value + 1 */
-				SetDParam(0, STR_JUST_INT);
-				SetDParam(1, val + 1);
-			}
-		}
+		if (nwi_widget->IsDisabled()) return {};
+
+		/* If it a bool button write yes or no. */
+		if (is_bool_widget) return GetString((val != 0) ? STR_FACE_YES : STR_FACE_NO);
+
+		/* Else write the value + 1. */
+		return GetString(STR_JUST_INT, val + 1);
 	}
 
 	void UpdateData()
@@ -1567,64 +1561,51 @@ public:
 		this->DrawWidgets();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
-			case WID_SCMF_HAS_MOUSTACHE_EARRING:
-				if (this->is_female) { // Only for female faces
-					this->SetFaceStringParameters(WID_SCMF_HAS_MOUSTACHE_EARRING, GetCompanyManagerFaceBits(this->face, CMFV_HAS_TIE_EARRING, this->ge), true);
-				} else { // Only for male faces
-					this->SetFaceStringParameters(WID_SCMF_HAS_MOUSTACHE_EARRING, GetCompanyManagerFaceBits(this->face, CMFV_HAS_MOUSTACHE,   this->ge), true);
-				}
-				break;
+			case WID_SCMF_HAS_MOUSTACHE_EARRING: {
+				CompanyManagerFaceVariable facepart = this->is_female ? CMFV_HAS_TIE_EARRING : CMFV_HAS_MOUSTACHE;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, facepart, this->ge), true);
+			}
 
 			case WID_SCMF_TIE_EARRING:
-				this->SetFaceStringParameters(WID_SCMF_TIE_EARRING, GetCompanyManagerFaceBits(this->face, CMFV_TIE_EARRING, this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_TIE_EARRING, this->ge), false);
 
-			case WID_SCMF_LIPS_MOUSTACHE:
-				if (this->is_moust_male) { // Only for male faces with moustache
-					this->SetFaceStringParameters(WID_SCMF_LIPS_MOUSTACHE, GetCompanyManagerFaceBits(this->face, CMFV_MOUSTACHE, this->ge), false);
-				} else { // Only for female faces or male faces without moustache
-					this->SetFaceStringParameters(WID_SCMF_LIPS_MOUSTACHE, GetCompanyManagerFaceBits(this->face, CMFV_LIPS,      this->ge), false);
-				}
-				break;
+			case WID_SCMF_LIPS_MOUSTACHE: {
+				CompanyManagerFaceVariable facepart = this->is_moust_male ? CMFV_MOUSTACHE : CMFV_LIPS;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, facepart, this->ge), false);
+			}
 
 			case WID_SCMF_HAS_GLASSES:
-				this->SetFaceStringParameters(WID_SCMF_HAS_GLASSES, GetCompanyManagerFaceBits(this->face, CMFV_HAS_GLASSES, this->ge), true );
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_HAS_GLASSES, this->ge), true );
 
 			case WID_SCMF_HAIR:
-				this->SetFaceStringParameters(WID_SCMF_HAIR,        GetCompanyManagerFaceBits(this->face, CMFV_HAIR,        this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_HAIR,        this->ge), false);
 
 			case WID_SCMF_EYEBROWS:
-				this->SetFaceStringParameters(WID_SCMF_EYEBROWS,    GetCompanyManagerFaceBits(this->face, CMFV_EYEBROWS,    this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_EYEBROWS,    this->ge), false);
 
 			case WID_SCMF_EYECOLOUR:
-				this->SetFaceStringParameters(WID_SCMF_EYECOLOUR,   GetCompanyManagerFaceBits(this->face, CMFV_EYE_COLOUR,  this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_EYE_COLOUR,  this->ge), false);
 
 			case WID_SCMF_GLASSES:
-				this->SetFaceStringParameters(WID_SCMF_GLASSES,     GetCompanyManagerFaceBits(this->face, CMFV_GLASSES,     this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_GLASSES,     this->ge), false);
 
 			case WID_SCMF_NOSE:
-				this->SetFaceStringParameters(WID_SCMF_NOSE,        GetCompanyManagerFaceBits(this->face, CMFV_NOSE,        this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_NOSE,        this->ge), false);
 
 			case WID_SCMF_CHIN:
-				this->SetFaceStringParameters(WID_SCMF_CHIN,        GetCompanyManagerFaceBits(this->face, CMFV_CHIN,        this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_CHIN,        this->ge), false);
 
 			case WID_SCMF_JACKET:
-				this->SetFaceStringParameters(WID_SCMF_JACKET,      GetCompanyManagerFaceBits(this->face, CMFV_JACKET,      this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_JACKET,      this->ge), false);
 
 			case WID_SCMF_COLLAR:
-				this->SetFaceStringParameters(WID_SCMF_COLLAR,      GetCompanyManagerFaceBits(this->face, CMFV_COLLAR,      this->ge), false);
-				break;
+				return this->GetFaceString(widget, GetCompanyManagerFaceBits(this->face, CMFV_COLLAR,      this->ge), false);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -1785,7 +1766,7 @@ static void DoSelectCompanyManagerFace(Window *parent)
 static constexpr NWidgetPart _nested_company_infrastructure_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_CI_CAPTION), SetStringTip(STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_CI_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
@@ -1882,12 +1863,14 @@ struct CompanyInfrastructureWindow : Window
 		return total;
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_CI_CAPTION:
-				SetDParam(0, (CompanyID)this->window_number);
-				break;
+				return GetString(STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION, this->window_number);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -2184,7 +2167,7 @@ static void ShowCompanyInfrastructure(CompanyID company)
 static constexpr NWidgetPart _nested_company_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_C_CAPTION), SetStringTip(STR_COMPANY_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_C_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
@@ -2197,7 +2180,7 @@ static constexpr NWidgetPart _nested_company_widgets[] = {
 			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
 				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 					NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-						NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INAUGURATION), SetStringTip(STR_JUST_STRING2), SetFill(1, 0),
+						NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INAUGURATION), SetFill(1, 0),
 						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 							NWidget(WWT_LABEL, INVALID_COLOUR, WID_C_DESC_COLOUR_SCHEME), SetStringTip(STR_COMPANY_VIEW_COLOUR_SCHEME_TITLE),
 							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_COLOUR_SCHEME_EXAMPLE), SetMinimalSize(30, 0), SetFill(1, 1),
@@ -2219,7 +2202,7 @@ static constexpr NWidgetPart _nested_company_widgets[] = {
 					EndContainer(),
 				EndContainer(),
 
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_VALUE), SetStringTip(STR_COMPANY_VIEW_COMPANY_VALUE), SetFill(1, 0),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_COMPANY_VALUE), SetFill(1, 0),
 
 				NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 					NWidget(WWT_TEXT, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE), SetStringTip(STR_COMPANY_VIEW_INFRASTRUCTURE),  SetAlignment(SA_LEFT | SA_TOP),
@@ -2555,30 +2538,25 @@ struct CompanyWindow : Window
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_C_CAPTION:
-				SetDParam(0, (CompanyID)this->window_number);
-				SetDParam(1, (CompanyID)this->window_number);
-				break;
+				return GetString(STR_COMPANY_VIEW_CAPTION, this->window_number, this->window_number);
 
 			case WID_C_DESC_INAUGURATION: {
-				const Company *c = Company::Get(static_cast<CompanyID>(this->window_number));
-				if (EconTime::UsingWallclockUnits() ) {
-					SetDParam(0, STR_COMPANY_VIEW_INAUGURATED_TITLE_WALLCLOCK);
-					SetDParam(1, c->inaugurated_year);
-					SetDParam(2, c->display_inaugurated_period);
-				} else {
-					SetDParam(0, STR_COMPANY_VIEW_INAUGURATED_TITLE);
-					SetDParam(1, c->inaugurated_year);
+				const Company &c = *Company::Get(this->window_number);
+				if (EconTime::UsingWallclockUnits()) {
+					return GetString(STR_COMPANY_VIEW_INAUGURATED_TITLE_WALLCLOCK, c.inaugurated_year, c.display_inaugurated_period);
 				}
-				break;
+				return GetString(STR_COMPANY_VIEW_INAUGURATED_TITLE, c.inaugurated_year);
 			}
 
 			case WID_C_DESC_COMPANY_VALUE:
-				SetDParam(0, CalculateCompanyValue(Company::Get((CompanyID)this->window_number)));
-				break;
+				return GetString(STR_COMPANY_VIEW_COMPANY_VALUE, CalculateCompanyValue(Company::Get(this->window_number)));
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -2836,12 +2814,14 @@ struct BuyCompanyWindow : Window {
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_BC_CAPTION:
-				SetDParam(0, Company::Get((CompanyID)this->window_number)->index);
-				break;
+				return GetString(STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY, Company::Get((CompanyID)this->window_number)->index);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -2899,7 +2879,7 @@ private:
 static constexpr NWidgetPart _nested_buy_company_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_LIGHT_BLUE),
-		NWidget(WWT_CAPTION, COLOUR_LIGHT_BLUE, WID_BC_CAPTION), SetStringTip(STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_LIGHT_BLUE, WID_BC_CAPTION),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_LIGHT_BLUE),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),

@@ -215,7 +215,7 @@ public:
 	Point GetStationMiddle(const Station *st) const;
 
 	void Close([[maybe_unused]] int data = 0) override;
-	void SetStringParameters(WidgetID widget) const override;
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override;
 	void OnInit() override;
 	void OnPaint() override;
 	void DrawWidget(const Rect &r, WidgetID widget) const override;

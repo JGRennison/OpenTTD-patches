@@ -175,7 +175,6 @@ public:
 		this->set_to_all_dropdown_sel = 0;
 
 		this->CreateNestedTree();
-		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetStringTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 		this->GetWidget<NWidgetCore>(WID_CTO_HEADER)->SetStringTip(STR_CARGO_TYPE_ORDERS_LOAD_TITLE + this->variant, STR_NULL);
 		this->GetWidget<NWidgetStacked>(WID_CTO_SELECT)->SetDisplayedPlane((_sorted_standard_cargo_specs.size() >= 32) ? 0 : SZSP_NONE);
 		this->InitDropdownSelectedTypes();
@@ -285,16 +284,16 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		if (!this->CheckOrderStillValid()) {
-			return;
+			return {};
 		}
 		if (widget == WID_CTO_CAPTION) {
-			SetDParam(0, this->vehicle->index);
-			SetDParam(1, this->order_id + 1);
-			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination().base());
+			return GetString(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant,
+					this->vehicle->index, this->order_id + 1, this->vehicle->GetOrder(this->order_id)->GetDestination());
 		}
+		return {};
 	}
 
 	/**
@@ -2406,7 +2405,6 @@ public:
 						this->GetWidget<NWidgetCore>(WID_O_COND_TIMETABLE)->SetString(STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue());
 						aux_sel->SetDisplayedPlane(DP_COND_TIMETABLE);
 					} else if (is_sched_dispatch) {
-						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_SELECT)->SetString(STR_JUST_STRING1);
 						aux_sel->SetDisplayedPlane(DP_COND_SCHED_SELECT);
 					} else {
 						aux_sel->SetDisplayedPlane(SZSP_NONE);
@@ -2665,7 +2663,7 @@ public:
 		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TC_FROMSTRING, SA_HOR_CENTER);
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_O_COND_VALUE: {
@@ -2697,9 +2695,9 @@ public:
 					}
 					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
 					if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
-					SetDParam(0, value);
+					return GetString(STR_JUST_COMMA, value);
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_COND_COMPARATOR: {
@@ -2707,9 +2705,9 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-					SetDParam(0, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
+					return GetString(stringid, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_COND_SLOT:
@@ -2719,9 +2717,9 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					SetDParam(0, order->GetXData());
+					return GetString(stringid, order->GetXData());
 				}
-				break;
+				return GetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 			}
 
 			case WID_O_COND_SCHED_SELECT: {
@@ -2733,57 +2731,43 @@ public:
 					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
 						const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
 						if (!ds.ScheduleName().empty()) {
-							SetDParam(0, STR_JUST_RAW_STRING);
-							SetDParamStr(1, ds.ScheduleName().c_str());
-							break;
+							return ds.ScheduleName();
 						}
 					}
-					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_ID);
-					SetDParam(1, schedule_index + 1);
+					return GetString(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, schedule_index + 1);
 				} else {
-					SetDParam(0, STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
+					return GetString(STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
 				}
-				break;
 			}
 
 			case WID_O_CAPTION:
-				SetDParam(0, this->vehicle->index);
-				break;
+				return GetString(STR_ORDERS_CAPTION, this->vehicle->index);
 
 			case WID_O_DEPOT_ACTION: {
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
-				if (order == nullptr || !order->IsType(OT_GOTO_DEPOT)) {
-					/* We can't leave this param unset or the undefined behavior can cause a crash. */
-					SetDParam(0, STR_EMPTY);
-					break;
-				};
+				if (order == nullptr || !order->IsType(OT_GOTO_DEPOT)) return {};
 
 				/* Select the current action selected in the dropdown. The flags don't match the dropdown so we can't just use an index. */
 				if (order->GetDepotActionType() & ODATFB_SELL) {
-					SetDParam(0, STR_ORDER_DROP_SELL_DEPOT);
+					return GetString( STR_ORDER_DROP_SELL_DEPOT);
 				} else if (order->GetDepotOrderType() & ODTFB_SERVICE) {
-					SetDParam(0, STR_ORDER_DROP_SERVICE_DEPOT);
+					return GetString(STR_ORDER_DROP_SERVICE_DEPOT);
 				} else if (order->GetDepotActionType() & ODATFB_HALT) {
-					SetDParam(0, STR_ORDER_DROP_HALT_DEPOT);
+					return GetString(STR_ORDER_DROP_HALT_DEPOT);
 				} else if (order->GetDepotActionType() & ODATFB_UNBUNCH) {
-					SetDParam(0, STR_ORDER_DROP_UNBUNCH);
+					return GetString(STR_ORDER_DROP_UNBUNCH);
 				} else {
-					SetDParam(0, STR_ORDER_DROP_GO_ALWAYS_DEPOT);
+					return GetString(STR_ORDER_DROP_GO_ALWAYS_DEPOT);
 				}
-				break;
 			}
 
 			case WID_O_OCCUPANCY_TOGGLE:
 				const_cast<Vehicle *>(this->vehicle)->RecalculateOrderOccupancyAverage();
 				if (this->vehicle->order_occupancy_average >= 16) {
-					SetDParam(0, STR_JUST_INT);
-					SetDParam(1, this->vehicle->order_occupancy_average - 16);
-				} else {
-					SetDParam(0, STR_EMPTY);
-					SetDParam(1, 0);
+					return GetString(STR_JUST_INT, this->vehicle->order_occupancy_average - 16);
 				}
-				break;
+				return {};
 
 			case WID_O_SLOT: {
 				VehicleOrderID sel = this->OrderGetSel();
@@ -2791,22 +2775,18 @@ public:
 
 				if (order != nullptr && order->IsType(OT_SLOT)) {
 					if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_ID) {
-						SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+						return GetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					} else {
-						SetDParam(0, STR_TRACE_RESTRICT_SLOT_NAME);
-						SetDParam(1, order->GetDestination().base());
+						return GetString(STR_TRACE_RESTRICT_SLOT_NAME, order->GetDestination().base());
 					}
 				} else if (order != nullptr && order->IsType(OT_SLOT_GROUP)) {
 					if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
-						SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+						return GetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 					} else {
-						SetDParam(0, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
-						SetDParam(1, order->GetDestination().base());
+						return GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, order->GetDestination().base());
 					}
-				} else {
-					SetDParam(0, STR_EMPTY);
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_COUNTER_OP: {
@@ -2814,11 +2794,9 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
-					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_INCREASE + order->GetCounterOperation());
-				} else {
-					SetDParam(0, STR_EMPTY);
+					return GetString(STR_TRACE_RESTRICT_COUNTER_INCREASE + order->GetCounterOperation());
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_CHANGE_COUNTER: {
@@ -2827,9 +2805,9 @@ public:
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
 					TraceRestrictCounterID value = order->GetDestination().ToCounterID();
-					SetDParam(0, value);
+					return GetString(stringid, value);
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_COUNTER_VALUE: {
@@ -2837,9 +2815,9 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_COUNTER)) {
-					SetDParam(0, order->GetXData());
+					return GetString(STR_JUST_COMMA, order->GetXData());
 				}
-				break;
+				return {};
 			}
 
 			case WID_O_DEPARTURE_VIA_TYPE: {
@@ -2849,22 +2827,20 @@ public:
 				if (order != nullptr && order->IsType(OT_LABEL) && IsDeparturesOrderLabelSubType(order->GetLabelSubType())) {
 					switch (order->GetLabelSubType()) {
 						case OLST_DEPARTURES_VIA:
-							SetDParam(0, STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA);
-							break;
+							return GetString(STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA);
 
 						case OLST_DEPARTURES_REMOVE_VIA:
-							SetDParam(0, STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT);
-							break;
+							return GetString(STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT);
 
 						default:
-							SetDParam(0, STR_EMPTY);
 							break;
 					}
-				} else {
-					SetDParam(0, STR_EMPTY);
 				}
-				break;
+				return {};
 			}
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -4004,7 +3980,7 @@ HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);
 static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetStringTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetToolTip(STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetStringTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -4079,9 +4055,9 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 															SetToolTip(STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
-															SetStringTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
+															SetToolTip(STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(62, 12), SetFill(0, 0),
-															SetStringTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
+															SetToolTip(STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetToolTip(STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
@@ -4093,8 +4069,7 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_JUST_STRING1, STR_NULL), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_SLOT), SetMinimalSize(124, 12), SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COUNTER_OP), SetMinimalSize(124, 12), SetFill(1, 0),
@@ -4102,7 +4077,7 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_CHANGE_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetToolTip(STR_ORDER_CHANGE_COUNTER_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COUNTER_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_JUST_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
@@ -4160,7 +4135,7 @@ static WindowDesc _orders_train_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _nested_orders_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetStringTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetToolTip(STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetStringTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -4193,7 +4168,7 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_REFIT), SetMinimalSize(186, 12), SetFill(1, 0),
 													SetStringTip(STR_ORDER_REFIT, STR_ORDER_REFIT_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_BUTTON_DROPDOWN, COLOUR_GREY, WID_O_DEPOT_ACTION), SetMinimalSize(124, 12), SetFill(1, 0),
-													SetStringTip(STR_JUST_STRING), SetResize(1, 0),
+													SetResize(1, 0),
 			EndContainer(),
 
 			/* Buttons for setting a condition. */
@@ -4257,7 +4232,7 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_CHANGE_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetToolTip(STR_ORDER_CHANGE_COUNTER_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COUNTER_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_JUST_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 
 			/* Buttons for changing a text label */
@@ -4320,7 +4295,7 @@ static WindowDesc _orders_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _nested_other_orders_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetStringTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetToolTip(STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetStringTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),

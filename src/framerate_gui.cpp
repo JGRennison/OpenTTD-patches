@@ -24,6 +24,8 @@
 #include "ai/ai_instance.hpp"
 #include "game/game.hpp"
 #include "game/game_instance.hpp"
+#include "timer/timer.h"
+#include "timer/timer_window.h"
 
 #include "widgets/framerate_widget.h"
 
@@ -367,15 +369,15 @@ static const char * GetAIName(int ai_index)
 static constexpr NWidgetPart _framerate_window_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_FRW_CAPTION), SetStringTip(STR_FRAMERATE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_FRW_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_VERTICAL), SetPadding(WidgetDimensions::unscaled.frametext), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_GAMELOOP), SetStringTip(STR_FRAMERATE_RATE_GAMELOOP, STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_DRAWING),  SetStringTip(STR_FRAMERATE_RATE_BLITTER,  STR_FRAMERATE_RATE_BLITTER_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_FACTOR),   SetStringTip(STR_FRAMERATE_SPEED_FACTOR,  STR_FRAMERATE_SPEED_FACTOR_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_GAMELOOP), SetToolTip(STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_DRAWING),  SetToolTip(STR_FRAMERATE_RATE_BLITTER_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_RATE_FACTOR), SetToolTip(STR_FRAMERATE_SPEED_FACTOR_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -387,7 +389,7 @@ static constexpr NWidgetPart _framerate_window_widgets[] = {
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_FRW_TIMES_AVERAGE), SetScrollbar(WID_FRW_SCROLLBAR),
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_FRW_ALLOCSIZE), SetScrollbar(WID_FRW_SCROLLBAR),
 				EndContainer(),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_INFO_DATA_POINTS), SetStringTip(STR_FRAMERATE_DATA_POINTS), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_FRW_INFO_DATA_POINTS), SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -398,8 +400,6 @@ static constexpr NWidgetPart _framerate_window_widgets[] = {
 };
 
 struct FramerateWindow : Window {
-	bool small = false;
-	GUITimer next_update{};
 	int num_active = 0;
 	int num_displayed = 0;
 
@@ -423,11 +423,8 @@ struct FramerateWindow : Window {
 			this->strid = (value < threshold_good) ? STR_FRAMERATE_MS_GOOD : (value > threshold_bad) ? STR_FRAMERATE_MS_BAD : STR_FRAMERATE_MS_WARN;
 		}
 
-		inline void InsertDParams(uint n) const
-		{
-			SetDParam(n, this->value);
-			SetDParam(n + 1, 2);
-		}
+		inline uint32_t GetValue() const { return this->value; }
+		inline uint32_t GetDecimals() const { return 2; }
 	};
 
 	CachedDecimal rate_gameloop{}; ///< cached game loop tick rate
@@ -441,32 +438,18 @@ struct FramerateWindow : Window {
 	FramerateWindow(WindowDesc &desc, WindowNumber number) : Window(desc)
 	{
 		this->InitNested(number);
-		this->small = this->IsShaded();
 		this->UpdateData();
 		this->num_displayed = this->num_active;
-		this->next_update.SetInterval(100);
 
 		/* Window is always initialised to MIN_ELEMENTS height, resize to contain num_displayed */
 		ResizeWindow(this, 0, (std::max(MIN_ELEMENTS, this->num_displayed) - MIN_ELEMENTS) * GetCharacterHeight(FS_NORMAL));
 	}
 
-	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
-	{
-		bool elapsed = this->next_update.Elapsed(delta_ms);
-
-		/* Check if the shaded state has changed, switch caption text if it has */
-		if (this->small != this->IsShaded()) {
-			this->small = this->IsShaded();
-			this->GetWidget<NWidgetLeaf>(WID_FRW_CAPTION)->SetStringTip(this->small ? STR_FRAMERATE_CAPTION_SMALL : STR_FRAMERATE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
-			elapsed = true;
-		}
-
-		if (elapsed) {
-			this->UpdateData();
-			this->SetDirty();
-			this->next_update.SetInterval(100);
-		}
-	}
+ 	/** Update the window on a regular interval. */
+ 	IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
+ 		this->UpdateData();
+ 		this->SetDirty();
+ 	}};
 
 	void UpdateData()
 	{
@@ -474,7 +457,7 @@ struct FramerateWindow : Window {
 		double gl_rate = _pf_data[PFE_GAMELOOP].GetRate();
 		this->rate_gameloop.SetRate(gl_rate, _pf_data[PFE_GAMELOOP].expected_rate);
 		this->speed_gameloop.SetRate(gl_rate / _pf_data[PFE_GAMELOOP].expected_rate, 1.0);
-		if (this->small) return; // in small mode, this is everything needed
+		if (this->IsShaded()) return; // in small mode, this is everything needed
 
 		this->rate_drawing.SetRate(_pf_data[PFE_DRAWING].GetRate(), _settings_client.gui.refresh_rate);
 
@@ -495,31 +478,29 @@ struct FramerateWindow : Window {
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_FRW_CAPTION:
 				/* When the window is shaded, the caption shows game loop rate and speed factor */
-				if (!this->small) break;
-				SetDParam(0, this->rate_gameloop.strid);
-				this->rate_gameloop.InsertDParams(1);
-				this->speed_gameloop.InsertDParams(3);
-				break;
+				if (!this->IsShaded()) return GetString(STR_FRAMERATE_CAPTION);
+
+				return GetString(STR_FRAMERATE_CAPTION_SMALL, this->rate_gameloop.strid, this->rate_gameloop.GetValue(), this->rate_gameloop.GetDecimals(), this->speed_gameloop.GetValue(), this->speed_gameloop.GetDecimals());
 
 			case WID_FRW_RATE_GAMELOOP:
-				SetDParam(0, this->rate_gameloop.strid);
-				this->rate_gameloop.InsertDParams(1);
-				break;
+				return GetString(STR_FRAMERATE_RATE_GAMELOOP, this->rate_gameloop.strid, this->rate_gameloop.GetValue(), this->rate_gameloop.GetDecimals());
+
 			case WID_FRW_RATE_DRAWING:
-				SetDParam(0, this->rate_drawing.strid);
-				this->rate_drawing.InsertDParams(1);
-				break;
+				return GetString(STR_FRAMERATE_RATE_BLITTER, this->rate_drawing.strid, this->rate_drawing.GetValue(), this->rate_drawing.GetDecimals());
+
 			case WID_FRW_RATE_FACTOR:
-				this->speed_gameloop.InsertDParams(0);
-				break;
+				return GetString(STR_FRAMERATE_SPEED_FACTOR, this->speed_gameloop.GetValue(), this->speed_gameloop.GetDecimals());
+
 			case WID_FRW_INFO_DATA_POINTS:
-				SetDParam(0, NUM_FRAMERATE_POINTS);
-				break;
+				return GetString(STR_FRAMERATE_DATA_POINTS, NUM_FRAMERATE_POINTS);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -582,8 +563,7 @@ struct FramerateWindow : Window {
 			if (skip > 0) {
 				skip--;
 			} else {
-				values[e].InsertDParams(0);
-				DrawString(r.left, r.right, y, values[e].strid, TC_FROMSTRING, SA_RIGHT);
+				DrawString(r.left, r.right, y, GetString(values[e].strid, values[e].GetValue(), values[e].GetDecimals()), TC_FROMSTRING, SA_RIGHT);
 				y += GetCharacterHeight(FS_NORMAL);
 				drawable--;
 				if (drawable == 0) break;
@@ -708,7 +688,7 @@ static WindowDesc _framerate_display_desc(__FILE__, __LINE__,
 static constexpr NWidgetPart _frametime_graph_window_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_FGW_CAPTION), SetStringTip(STR_JUST_STRING2, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_FGW_CAPTION), SetTextStyle(TC_WHITE),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
@@ -732,18 +712,17 @@ struct FrametimeGraphWindow : Window {
 		this->InitNested(number);
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_FGW_CAPTION:
 				if (this->element < PFE_AI0) {
-					SetDParam(0, STR_FRAMETIME_CAPTION_GAMELOOP + this->element);
-				} else {
-					SetDParam(0, STR_FRAMETIME_CAPTION_AI);
-					SetDParam(1, this->element - PFE_AI0 + 1);
-					SetDParamStr(2, GetAIName(this->element - PFE_AI0));
+					return GetString(STR_FRAMETIME_CAPTION_GAMELOOP + this->element);
 				}
-				break;
+				return GetString(STR_FRAMETIME_CAPTION_AI, this->element - PFE_AI0 + 1, GetAIName(this->element - PFE_AI0));
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 

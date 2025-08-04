@@ -1171,12 +1171,14 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	BuildLandLegend();
 }
 
-/* virtual */ void SmallMapWindow::SetStringParameters(WidgetID widget) const
+/* virtual */ std::string SmallMapWindow::GetWidgetString(WidgetID widget, StringID stringid) const
 {
 	switch (widget) {
 		case WID_SM_CAPTION:
-			SetDParam(0, STR_SMALLMAP_TYPE_CONTOURS + this->map_type);
-			break;
+			return GetString(STR_SMALLMAP_CAPTION, STR_SMALLMAP_TYPE_CONTOURS + this->map_type);
+
+		default:
+			return this->Window::GetWidgetString(widget, stringid);
 	}
 }
 
@@ -1933,7 +1935,7 @@ static std::unique_ptr<NWidgetBase> SmallMapDisplay()
 static constexpr NWidgetPart _nested_smallmap_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SM_CAPTION), SetStringTip(STR_SMALLMAP_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SM_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),

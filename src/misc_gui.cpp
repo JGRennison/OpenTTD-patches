@@ -363,10 +363,10 @@ static constexpr NWidgetPart _nested_about_widgets[] = {
 		NWidget(WWT_FRAME, COLOUR_GREY), SetPadding(0, 5, 1, 5),
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_A_SCROLLING_TEXT),
 		EndContainer(),
-		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE), SetStringTip(STR_JUST_RAW_STRING),
-		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE1), SetStringTip(STR_JUST_RAW_STRING),
-		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE2), SetStringTip(STR_JUST_RAW_STRING),
-		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_COPYRIGHT), SetStringTip(STR_ABOUT_COPYRIGHT_OPENTTD),
+		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE),
+		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE1),
+		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_WEBSITE2),
+		NWidget(WWT_LABEL, INVALID_COLOUR, WID_A_COPYRIGHT),
 	EndContainer(),
 };
 
@@ -461,12 +461,13 @@ struct AboutWindow : public Window {
 		this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Main project website: https://www.openttd.org");
-		if (widget == WID_A_WEBSITE1) SetDParamStr(0, "Patchpack thread: https://www.tt-forums.net/viewtopic.php?f=33&t=73469");
-		if (widget == WID_A_WEBSITE2) SetDParamStr(0, "Patchpack Github: https://github.com/JGRennison/OpenTTD-patches");
-		if (widget == WID_A_COPYRIGHT) SetDParamStr(0, _openttd_revision_year);
+		if (widget == WID_A_WEBSITE) return "Website: https://www.openttd.org";
+		if (widget == WID_A_WEBSITE1) return "Patchpack thread: https://www.tt-forums.net/viewtopic.php?f=33&t=73469";
+		if (widget == WID_A_WEBSITE2) return "Patchpack Github: https://github.com/JGRennison/OpenTTD-patches";
+		if (widget == WID_A_COPYRIGHT) return GetString(STR_ABOUT_COPYRIGHT_OPENTTD, _openttd_revision_year);
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -968,8 +969,7 @@ template <int N = 1>
 struct QueryStringWindow : public Window {
 	static_assert(N == 1 || N == 2);
 	QueryString editboxes[N];   ///< Editboxes.
-	StringID window_caption{};  ///< Title for the whole query window
-	std::string caption_str{};  ///< Pre-composed caption string.
+	EncodedString caption{};    ///< Title for the whole query window
 	QueryStringFlags flags{};   ///< Flags controlling behaviour of the window.
 	Dimension warning_size{};   ///< How much space to use for the warning text
 
@@ -992,8 +992,8 @@ struct QueryStringWindow : public Window {
 	 *
 	 * For the parameters, see #ShowQueryString.
 	 */
-	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string caption_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
-			: QueryStringWindow(std::make_index_sequence<N>{}, ed, window_caption, caption_str, desc, parent, flags)
+	QueryStringWindow(std::span<QueryEditboxDescription, N> ed, EncodedString &&caption, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+			: QueryStringWindow(std::make_index_sequence<N>{}, ed, std::move(caption), desc, parent, flags)
 	{}
 
 private:
@@ -1005,11 +1005,10 @@ private:
 	 * though #QueryString is neither default- nor copy-constructible.
 	 */
 	template <std::size_t... j>
-	QueryStringWindow(std::index_sequence<j...>, std::span<QueryEditboxDescription, N> ed, StringID window_caption, std::string caption_str, WindowDesc &desc, Window *parent, QueryStringFlags flags)
+	QueryStringWindow(std::index_sequence<j...>, std::span<QueryEditboxDescription, N> ed, EncodedString &&caption, WindowDesc &desc, Window *parent, QueryStringFlags flags)
 			: Window(desc),
 			editboxes{QueryString(max_bytes(ed[j], flags), ed[j].max_size)...},
-			window_caption(window_caption),
-			caption_str(std::move(caption_str))
+			caption(std::move(caption))
 	{
 		static_assert(sizeof...(j) == N);
 
@@ -1040,9 +1039,6 @@ private:
 		this->flags = flags;
 
 		this->CreateNestedTree();
-		if (!this->caption_str.empty()) {
-			this->GetWidget<NWidgetCore>(WID_QS_CAPTION)->SetString(STR_JUST_RAW_STRING);
-		}
 		this->FinishInitNested(WN_QUERY_STRING);
 		if constexpr (N > 1) {
 			this->GetWidget<NWidgetCore>(WID_QS_LABEL1)->SetString(ed[0].label);
@@ -1130,15 +1126,11 @@ public:
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_QS_CAPTION) {
-			if (!this->caption_str.empty()) {
-				SetDParamStr(0, this->caption_str);
-			} else {
-				SetDParam(0, this->window_caption);
-			}
-		}
+		if (widget == WID_QS_CAPTION) return this->caption.GetDecodedString();
+
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	void OnOk()
@@ -1196,7 +1188,7 @@ public:
 static constexpr NWidgetPart _nested_query_string_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_QS_CAPTION), SetStringTip(STR_JUST_STRING), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_QS_CAPTION), SetTextStyle(TC_WHITE),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::BigFirst),
@@ -1233,14 +1225,14 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
  */
 void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, StringID window_caption, Window *parent, QueryStringFlags flags) {
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow<1>(ed, window_caption, {}, _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, GetEncodedString(window_caption), _query_string_desc, parent, flags);
 }
 
 /** Ditto, but with two textboxes. */
 void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID window_caption, Window *parent, QueryStringFlags flags)
 {
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow<2>(ed, window_caption, {}, _query_string_desc, parent, flags);
+	new QueryStringWindow<2>(ed, GetEncodedString(window_caption), _query_string_desc, parent, flags);
 }
 
 /**
@@ -1253,7 +1245,7 @@ void ShowQueryString(std::string_view str, StringID caption, uint maxsize, Windo
 		{str, caption, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow<1>(ed, caption, {}, _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, GetEncodedString(caption), _query_string_desc, parent, flags);
 }
 
 /**
@@ -1261,13 +1253,13 @@ void ShowQueryString(std::string_view str, StringID caption, uint maxsize, Windo
  *
  * @param caption_str Precomposed string for the query window's title bar. Not used for the editbox's caption.
  */
-void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
+void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	QueryEditboxDescription ed[1]{
 		{str, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
 	};
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow<1>(ed, {}, std::move(caption_str), _query_string_desc, parent, flags);
+	new QueryStringWindow<1>(ed, std::move(caption), _query_string_desc, parent, flags);
 }
 
 /**
@@ -1301,12 +1293,14 @@ struct QueryWindow : public Window {
 		this->SetDirty();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_Q_CAPTION:
-				SetDParamStr(0, this->caption.GetDecodedString());
-				break;
+				return this->caption.GetDecodedString();
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -1370,7 +1364,7 @@ struct QueryWindow : public Window {
 static constexpr NWidgetPart _nested_query_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
-		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION), SetStringTip(STR_JUST_RAW_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_RED, WID_Q_CAPTION),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_RED),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.modalpopup),

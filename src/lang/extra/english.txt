@@ -7,7 +7,9 @@ STR_NEWGRF_ERROR_POPUP                                          :{WHITE}The NewG
 ##no-translate on
 STR_JUST_DECIMAL1                                               :{DECIMAL1}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
+STR_JUST_STRING2                                                :{STRING2}
 STR_JUST_STRING3                                                :{STRING3}
+STR_JUST_STRING4                                                :{STRING4}
 STR_JUST_STRING6                                                :{STRING6}
 STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}

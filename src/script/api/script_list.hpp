@@ -207,6 +207,9 @@ protected:
 		return this->items.size();
 	}
 
+	virtual bool SaveObject(HSQUIRRELVM vm) override;
+	virtual bool LoadObject(HSQUIRRELVM vm) override;
+
 public:
 	ScriptListMap items;       ///< The items in the list
 	ScriptListValueSet values; ///< The items in the list, sorted by value
