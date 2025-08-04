@@ -241,7 +241,7 @@ enum GlobalHotKeys : int32_t {
 
 struct MainWindow : Window
 {
-	GUITimer refresh;
+	GUITimer refresh{};
 
 	/* Refresh times in milliseconds */
 	static const uint LINKGRAPH_REFRESH_PERIOD = 7650;

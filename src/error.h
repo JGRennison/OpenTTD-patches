@@ -30,7 +30,7 @@ enum WarningLevel : uint8_t {
 /** The data of the error message. */
 class ErrorMessageData {
 protected:
-	GUITimer display_timer;         ///< Timer before closing the message.
+	GUITimer display_timer{};       ///< Timer before closing the message.
 	EncodedString summary_msg;      ///< General error message showed in first line. Must be valid.
 	EncodedString detailed_msg;     ///< Detailed error message showed in second line. Can be #INVALID_STRING_ID.
 	EncodedString extra_msg;        ///< Extra error message shown in third line. Can be #INVALID_STRING_ID.

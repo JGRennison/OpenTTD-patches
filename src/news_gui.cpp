@@ -354,7 +354,7 @@ struct NewsWindow : Window {
 	static int duration; ///< Remaining time for showing the current news message (may only be access while a news item is displayed).
 
 	static const uint TIMER_INTERVAL = 210; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain the 15ms at normal zoom.
-	GUITimer timer;
+	GUITimer timer{};
 
 	NewsWindow(WindowDesc &desc, const NewsItem *ni) : Window(desc), ni(ni)
 	{

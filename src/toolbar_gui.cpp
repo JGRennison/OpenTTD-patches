@@ -2164,7 +2164,7 @@ static ToolbarButtonProc * const _toolbar_button_procs[] = {
 
 /** Main toolbar. */
 struct MainToolbarWindow : Window {
-	GUITimer timer;
+	GUITimer timer{};
 
 	MainToolbarWindow(WindowDesc &desc) : Window(desc)
 	{
@@ -2554,7 +2554,7 @@ enum MainToolbarEditorHotkeys : int32_t {
 };
 
 struct ScenarioEditorToolbarWindow : Window {
-	GUITimer timer;
+	GUITimer timer{};
 
 	ScenarioEditorToolbarWindow(WindowDesc &desc) : Window(desc)
 	{

@@ -451,7 +451,7 @@ struct AboutWindow : public Window {
 	static const int num_visible_lines = 19; ///< The number of lines visible simultaneously
 
 	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FS_NORMAL) = 150ms
-	GUITimer timer;
+	GUITimer timer{};
 
 	AboutWindow() : Window(_about_desc)
 	{
