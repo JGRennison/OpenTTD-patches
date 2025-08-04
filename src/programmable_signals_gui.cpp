@@ -246,17 +246,28 @@ struct GuiInstruction {
 typedef std::vector<GuiInstruction> GuiInstructionList;
 
 class ProgramWindow : public Window {
-public:
-	ProgramWindow(WindowDesc &desc, SignalReference ref): Window(desc)
-	{
-		this->tile = ref.tile;
-		this->track = ref.track;
-		this->selected_instruction = -1;
+	const TileIndex tile;
+	const Track track;
+	SignalProgram *program = nullptr;
+	GuiInstructionList instructions{};
+	int selected_instruction = -1;
+	Scrollbar *vscroll = nullptr;
+	int current_aux_plane = SZSP_NONE;
 
+	enum QuerySubMode {
+		QSM_NONE,
+		QSM_SET_VALUE,
+		QSM_NEW_SLOT,
+		QSM_NEW_COUNTER,
+	};
+	QuerySubMode query_submode = QSM_NONE;
+
+public:
+	ProgramWindow(WindowDesc &desc, SignalReference ref) : Window(desc), tile(ref.tile), track(ref.track)
+	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(PROGRAM_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX)->SetDisplayedPlane(SZSP_NONE);
-		this->current_aux_plane = SZSP_NONE;
 		this->FinishInitNested((ref.tile.base() << 3) | ref.track);
 
 		program = GetSignalProgram(ref);
@@ -923,22 +934,6 @@ private:
 
 		this->SetDirty();
 	}
-
-	TileIndex tile;
-	Track track;
-	SignalProgram *program;
-	GuiInstructionList instructions;
-	int selected_instruction;
-	Scrollbar *vscroll;
-	int current_aux_plane;
-
-	enum QuerySubMode {
-		QSM_NONE,
-		QSM_SET_VALUE,
-		QSM_NEW_SLOT,
-		QSM_NEW_COUNTER,
-	};
-	QuerySubMode query_submode = QSM_NONE;
 };
 
 static constexpr NWidgetPart _nested_program_widgets[] = {
