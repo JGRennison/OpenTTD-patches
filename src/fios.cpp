@@ -408,8 +408,7 @@ static void FiosGetFileList(SaveLoadOperation fop, bool show_dirs, fios_getlist_
 		fios->type = FIOS_TYPE_PARENT;
 		fios->mtime = 0;
 		fios->name = "..";
-		SetDParamStr(0, "..");
-		fios->title = GetString(STR_SAVELOAD_PARENT_DIRECTORY);
+		fios->title = GetString(STR_SAVELOAD_PARENT_DIRECTORY, "..");
 		sort_start = file_list.size();
 	}
 

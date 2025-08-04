@@ -2397,8 +2397,7 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 
 	for (const Company *c : Company::Iterate()) {
 		/* Grab the company name */
-		SetDParam(0, c->index);
-		std::string company_name = GetString(STR_COMPANY_NAME);
+		std::string company_name = GetString(STR_COMPANY_NAME, c->index);
 
 		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Hash: '{}'",
 			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password.c_str());
@@ -2789,8 +2788,7 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 		if (!occupied) {
 			st->airport.blocks = {};
 			count++;
-			SetDParam(0, st->index);
-			IConsolePrint(CC_DEFAULT, "Unblocked: {}", GetString(STR_STATION_NAME));
+			IConsolePrint(CC_DEFAULT, "Unblocked: {}", GetString(STR_STATION_NAME, st->index));
 		}
 	}
 

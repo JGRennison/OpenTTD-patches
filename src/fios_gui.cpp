@@ -663,8 +663,7 @@ public:
 		if (tr.top > tr.bottom) return;
 
 		if (!_load_check_data.version_name.empty()) {
-			SetDParamStr(0, _load_check_data.version_name);
-			tr.top = DrawStringMultiLine(tr, STR_JUST_RAW_STRING, TC_GREEN);
+			tr.top = DrawStringMultiLine(tr, GetString(STR_JUST_RAW_STRING, _load_check_data.version_name), TC_GREEN);
 		}
 
 		if (!_load_check_data.checkable) {
