@@ -107,21 +107,21 @@ private:
 public:
 	static constexpr size_t MAX_SIZE = Tindex::End().base(); ///< Make template parameter accessible from outside
 
-	const char * const name; ///< Name of this pool
+	const char * const name = nullptr; ///< Name of this pool
 
-	size_t size;         ///< Current allocated size
-	size_t first_free;   ///< No item with index lower than this is free (doesn't say anything about this one!)
-	size_t first_unused; ///< This and all higher indexes are free (doesn't say anything about first_unused-1 !)
-	size_t items;        ///< Number of used indexes (non-nullptr)
+	size_t size = 0;         ///< Current allocated size
+	size_t first_free = 0;   ///< No item with index lower than this is free (doesn't say anything about this one!)
+	size_t first_unused = 0; ///< This and all higher indexes are free (doesn't say anything about first_unused-1 !)
+	size_t items = 0;        ///< Number of used indexes (non-nullptr)
 #ifdef WITH_ASSERT
-	size_t checked;      ///< Number of items we checked for
+	size_t checked = 0;      ///< Number of items we checked for
 #endif /* WITH_ASSERT */
-	bool cleaning;       ///< True if cleaning pool (deleting all items)
+	bool cleaning = false;   ///< True if cleaning pool (deleting all items)
 
-	PtrType *data;       ///< Pointer to array of Tops::Tptr (by default: pointers to Titem)
-	uint64_t *free_bitmap; ///< Pointer to free bitmap
+	PtrType *data = nullptr;         ///< Pointer to array of Tops::Tptr (by default: pointers to Titem)
+	uint64_t *free_bitmap = nullptr; ///< Pointer to free bitmap
 
-	Pool(const char *name);
+	Pool(const char *name) : PoolBase(Tpool_type), name(name) {}
 	void CleanPool() override;
 
 	inline PtrType &GetRawRef(size_t index)

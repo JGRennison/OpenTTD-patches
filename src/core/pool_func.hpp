@@ -26,26 +26,6 @@
 	type Pool<Titem, Tindex, Tgrowth_step, Tpool_type, Tcache, Tops>
 
 /**
- * Create a clean pool.
- * @param name The name for the pool.
- */
-DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
-		PoolBase(Tpool_type),
-		name(name),
-		size(0),
-		first_free(0),
-		first_unused(0),
-		items(0),
-#ifdef WITH_FULL_ASSERTS
-		checked(0),
-#endif /* WITH_FULL_ASSERTS */
-		cleaning(false),
-		data(nullptr),
-		free_bitmap(nullptr),
-		alloc_cache(nullptr)
-{ }
-
-/**
  * Resizes the pool so 'index' can be addressed
  * @param index index we will allocate later
  * @pre index >= this->size
