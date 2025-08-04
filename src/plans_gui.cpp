@@ -91,19 +91,19 @@ static WindowDesc _plans_desc(__FILE__, __LINE__,
 typedef GUIList<const Plan*, const bool &> GUIPlanList;
 
 struct PlansWindow : Window {
-	typedef struct {
+	struct ListItem {
 		bool is_plan;
 		PlanID plan_id;
 		int line_id;
-	} ListItem;
+	};
 
-	Scrollbar *vscroll;
-	NWidgetStacked *hide_all_sel;
-	NWidgetStacked *rename_sel;
-	std::vector<ListItem> list; ///< The translation table linking panel indices to their related PlanID.
-	int selected; ///< What item is currently selected in the panel.
-	uint vis_btn_left; ///< left offset of visibility button
-	Dimension company_icon_spr_dim; ///< dimensions of company icon
+	Scrollbar *vscroll = nullptr;
+	NWidgetStacked *hide_all_sel = nullptr;
+	NWidgetStacked *rename_sel = nullptr;
+	std::vector<ListItem> list{};                   ///< The translation table linking panel indices to their related PlanID.
+	int selected = INT_MAX;                         ///< What item is currently selected in the panel.
+	uint vis_btn_left = 0;                          ///< left offset of visibility button
+	Dimension company_icon_spr_dim{};               ///< dimensions of company icon
 	WindowToken current_dragging_viewport_window{0};
 
 private:
@@ -237,7 +237,6 @@ public:
 		this->rename_sel->SetDisplayedPlane(0);
 		this->FinishInitNested();
 
-		this->selected = INT_MAX;
 		this->plans.SetListing(this->last_sorting);
 		this->plans.SetSortFuncs(PlansWindow::sorter_funcs);
 		this->plans.ForceRebuild();
