@@ -180,11 +180,11 @@ void AddNewScheduledDispatchSchedule(VehicleID vindex)
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {
-	int schedule_index;
-	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
-	int click_subaction;    ///< Subaction for clicked_widget
-	Scrollbar *vscroll;     ///< Vertical scrollbar
-	uint num_columns;       ///< Number of columns.
+	int schedule_index = -1;
+	int clicked_widget = -1;      ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
+	int click_subaction = -1;     ///< Subaction for clicked_widget
+	Scrollbar *vscroll = nullptr; ///< Vertical scrollbar
+	uint num_columns = 0;         ///< Number of columns.
 
 	StateTicks next_departure_update = STATE_TICKS_INT_MAX; ///< Time after which the last departure value should be re-drawn
 	uint warning_count = 0;
@@ -250,7 +250,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->FinishInitNested(window_number);
 
 		this->owner = this->vehicle->owner;
-		this->schedule_index = -1;
 		this->AutoSelectSchedule();
 	}
 
