@@ -201,11 +201,11 @@ enum {
 class TemplateReplaceWindow : public Window {
 private:
 
-	GUIGroupList groups;                      ///< List of groups
+	GUIGroupList groups{};                    ///< List of groups
 
 	RailType sel_railtype = INVALID_RAILTYPE; ///< Type of rail tracks selected.
-	Scrollbar *vscroll[3];
-	GUITemplateList templates;
+	Scrollbar *vscroll[3]{};
+	GUITemplateList templates{};
 
 	int selected_template_index = -1;
 	GroupID selected_group = GroupID::Invalid();
