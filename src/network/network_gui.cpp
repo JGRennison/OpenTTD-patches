@@ -1835,9 +1835,8 @@ public:
 
 					case DD_COMPANY_ADMIN_UNLOCK:
 						_admin_company_id = this->dd_company_id;
-						text = GetEncodedString(STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK);
 						callback = AdminCompanyUnlockCallback;
-						SetDParam(0, _admin_company_id);
+						text = GetEncodedString(STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK, _admin_company_id);
 						break;
 
 					default:

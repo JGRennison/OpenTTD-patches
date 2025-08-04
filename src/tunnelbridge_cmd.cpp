@@ -828,25 +828,33 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 	return cost;
 }
 
+static constexpr int CHUNNEL_MIN_RAMP_LENGTH = 4;
+static constexpr int CHUNNEL_MAX_RAMP_LENGTH = 9;
+
 /**
  * Check if the amount of tiles of the chunnel ramp is between allowed limits.
  * @param tile the actual tile.
  * @param ramp ramp_start tile.
  * @param delta the tile offset.
- * @return an empty string if between limits or a formatted string for the error message.
+ * @return true if allowed.
  */
-static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile, TileIndexDiff delta)
+static inline bool IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile, TileIndexDiff delta)
 {
-	int min_length = 4;
-	int max_length = 9;
+	constexpr int min_length = CHUNNEL_MIN_RAMP_LENGTH;
+	constexpr int max_length = CHUNNEL_MAX_RAMP_LENGTH;
 	if (Delta(ramp_start, tile) < abs(delta) * min_length || abs(delta) * max_length < Delta(ramp_start, tile)) {
 		/* Add 1 in message to have consistency with cursor count in game. */
-		SetDParam(0, min_length - 1);
-		SetDParam(1, max_length - 1);
-		return STR_ERROR_CHUNNEL_RAMP;
+		return false;
 	}
 
-	return STR_NULL;
+	return true;
+}
+
+static CommandCost GetRampBetweenLimitsError()
+{
+	CommandCost err(STR_ERROR_CHUNNEL_RAMP);
+	err.SetEncodedMessage(GetEncodedString(STR_ERROR_CHUNNEL_RAMP, CHUNNEL_MIN_RAMP_LENGTH - 1, CHUNNEL_MAX_RAMP_LENGTH - 1));
+	return err;
 }
 
 /**
@@ -885,8 +893,9 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 					(IsValidTile(tile + delta * 2) && HasTileWaterGround(tile + delta * 2)))) {
 
 				/* A shore was found, check if start ramp was too short or too long. */
-				StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
-				if (err_msg > STR_NULL) return CommandCost(err_msg);
+				if (!IsRampBetweenLimits(ramp_start, tile, delta)) {
+					return GetRampBetweenLimitsError();
+				}
 
 				/* Pass the water and find a proper shore tile that potentially
 				 * could have a tunnel portal behind. */
@@ -915,9 +924,8 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 				ramp_start = tile;
 			} else {
 				/* Check if end ramp was too short or too long after crossing the sea. */
-				if (crossed_sea) {
-					StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
-					if (err_msg > STR_NULL) return CommandCost(err_msg);
+				if (crossed_sea && !IsRampBetweenLimits(ramp_start, tile, delta)) {
+					return GetRampBetweenLimitsError();
 				}
 
 				break;

@@ -405,14 +405,12 @@ void UpdateRouteStepSpriteSize()
 	const uint min_width = _vp_route_step_sprite_width > _vp_route_step_base_width ? _vp_route_step_sprite_width - _vp_route_step_base_width : 0;
 	uint extra = 0;
 	for (uint i = 0; i < 4; i++) {
-		SetDParamMaxDigits(0, i + 2, FS_SMALL);
-		SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
-		const uint base_width = GetStringBoundingBox(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, FS_SMALL).width;
+		uint64_t max_value = GetParamMaxDigits(i + 2, FS_SMALL);
+		const uint base_width = GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION), FS_SMALL).width;
 		if (i == 0) {
 			uint width = base_width;
 			auto process_string = [&](StringID str) {
-				SetDParam(1, str);
-				width = std::max(width, GetStringBoundingBox(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, FS_SMALL).width);
+				width = std::max(width, GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, str), FS_SMALL).width);
 			};
 			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
 			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);

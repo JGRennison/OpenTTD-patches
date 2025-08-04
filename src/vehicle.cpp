@@ -4466,7 +4466,7 @@ void Vehicle::SetNext(Vehicle *next)
 }
 
 /**
- * Gets the running cost of a vehicle  that can be sent into SetDParam for string processing.
+ * Gets the running cost of a vehicle that can be used in string processing.
  * @return the vehicle's running cost
  */
 Money Vehicle::GetDisplayRunningCost() const
@@ -4965,8 +4965,7 @@ void DumpVehicleStats(struct format_target &buffer)
 	cstats totals{};
 	for (auto &it : cstatmap) {
 		buffer.format("{}: ", it.first);
-		SetDParam(0, it.first);
-		buffer.append(GetString(STR_COMPANY_NAME));
+		AppendStringInPlace(buffer, STR_COMPANY_NAME, it.first);
 		buffer.push_back('\n');
 		print_stats(it.second, false);
 

@@ -332,8 +332,7 @@ struct NetworkChatWindow : public Window {
 		if (*item < MAX_CLIENT_SLOTS + Town::GetPoolSize()) {
 			for (const Town *t : Town::Iterate(*item - MAX_CLIENT_SLOTS)) {
 				/* Get the town-name via the string-system */
-				SetDParam(0, t->index);
-				return GetString(STR_TOWN_NAME);
+				return GetString(STR_TOWN_NAME, t->index);
 			}
 		}
 

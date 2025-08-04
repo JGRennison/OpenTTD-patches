@@ -117,8 +117,8 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 		Rect highlight_ir = draw_ir.Indent(WidgetDimensions::scaled.hsep_normal / 2, rtl).WithWidth(WidgetDimensions::scaled.hsep_normal, rtl);
 		Rect ir = draw_ir.Indent(WidgetDimensions::scaled.hsep_normal * 2, rtl);
 
-		SetDParamMaxValue(0, this->vehicle->GetNumOrders(), 2);
-		int index_column_width = GetStringBoundingBox(STR_ORDER_INDEX).width + 2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width + WidgetDimensions::scaled.hsep_normal;
+		int index_column_width = GetStringBoundingBox(GetString(STR_ORDER_INDEX, GetParamMaxValue(this->vehicle->GetNumOrders(), 2))).width +
+				(2 * GetSpriteSize(rtl ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT).width) + WidgetDimensions::scaled.hsep_normal;
 		int middle = rtl ? ir.right - index_column_width : ir.left + index_column_width;
 
 		int y = ir.top;

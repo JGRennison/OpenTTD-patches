@@ -530,7 +530,6 @@ void ErrorUnknownCallbackResult(uint32_t grfid, uint16_t cbid, uint16_t cb_res)
 			WL_CRITICAL);
 	}
 
-	SetDParamStr(0, grfconfig->GetName());
 	std::string buffer = GetString(STR_NEWGRF_BUGGY, grfconfig->GetName());
 	Debug(grf, 0, "{}", strip_leading_colours(buffer));
 

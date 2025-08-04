@@ -4250,8 +4250,7 @@ void DumpTraceRestrictSlotsStats(format_target &buffer)
 	cstats totals{};
 	for (auto &it : cstatmap) {
 		buffer.format("{}: ", it.first);
-		SetDParam(0, it.first);
-		buffer.append(GetString(STR_COMPANY_NAME));
+		AppendStringInPlace(buffer, STR_COMPANY_NAME, it.first);
 		buffer.push_back('\n');
 		print_stats(it.second);
 

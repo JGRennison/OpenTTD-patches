@@ -662,13 +662,11 @@ struct GenerateLandscapeWindow : public Window {
 				break;
 
 			case WID_GL_SNOW_LEVEL_TEXT:
-				SetDParamMaxValue(0, MAX_TILE_HEIGHT);
-				size = maxdim(size, GetStringBoundingBox(STR_JUST_INT));
+				size = maxdim(size, GetStringBoundingBox(GetString(STR_JUST_INT, MAX_TILE_HEIGHT)));
 				break;
 
 			case WID_GL_RAINFOREST_LEVEL_TEXT:
-				SetDParamMaxValue(0, MAX_RAINFOREST_HEIGHT);
-				size = maxdim(size, GetStringBoundingBox(STR_JUST_INT));
+				size = maxdim(size, GetStringBoundingBox(GetString(STR_JUST_INT, MAX_RAINFOREST_HEIGHT)));
 				break;
 
 			case WID_GL_HEIGHTMAP_SIZE_TEXT:

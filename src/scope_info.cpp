@@ -45,8 +45,7 @@ void WriteScopeLog(struct format_target &buffer)
 void CompanyInfoDumper::fmt_format_value(format_target &buf) const
 {
 	buf.format("{} (", this->value);
-	SetDParam(0, this->value);
-	buf.append(GetString(STR_COMPANY_NAME));
+	AppendStringInPlace(buf, STR_COMPANY_NAME, this->value);
 	buf.push_back(')');
 }
 
@@ -114,8 +113,7 @@ void GeneralFmtDumper<BaseStation, const BaseStation *>::fmt_format_value(format
 	if (st != nullptr) {
 		const bool waypoint = Waypoint::IsExpected(st);
 		buf.format("{}: {}: (", waypoint ? "waypoint" : "station", st->index);
-		SetDParam(0, st->index);
-		buf.append(GetString(waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME));
+		AppendStringInPlace(buf, waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME, st->index);
 		buf.format(", c:{}, facil: ", st->owner);
 		auto dump_facil = [&](char c, StationFacility flag) {
 			if (st->facilities.Test(flag)) buf.push_back(c);

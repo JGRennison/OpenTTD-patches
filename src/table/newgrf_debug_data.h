@@ -459,8 +459,7 @@ class NIHVehicle : public NIHelper {
 			for (const auto &info : progress_array) {
 				output.buffer.format("    {} [{}, {}, {}], {}, ",
 						info.id == v->index ? '*' : ' ', info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
-				SetDParam(0, info.id);
-				output.buffer.append(GetString(STR_VEHICLE_NAME));
+				AppendStringInPlace(output.buffer, STR_VEHICLE_NAME, info.id);
 				output.buffer.format(", lateness: {}", Vehicle::Get(info.id)->lateness_counter);
 				output.FinishPrint();
 			}
