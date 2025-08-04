@@ -62,7 +62,7 @@ static WindowDesc _order_list_import_errors_desc(__FILE__, __LINE__,
 struct OrderListImportErrorsWindow : GeneralVehicleWindow
 {
 	const OrderImportErrors errs;
-	Scrollbar *vscroll;
+	Scrollbar *vscroll = nullptr;
 	bool show_non_error_order = false;
 	OrderList saved_orders{};
 	uint32_t saved_vehicle_flags{};
