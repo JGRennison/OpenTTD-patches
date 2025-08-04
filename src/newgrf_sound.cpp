@@ -19,6 +19,7 @@
 #include "random_access_file_type.h"
 #include "debug.h"
 #include "settings_type.h"
+#include "core/alloc_func.hpp"
 
 #include "safeguards.h"
 

@@ -1909,16 +1909,18 @@ void Window::InitNested(WindowNumber window_number)
 	this->FinishInitNested(window_number);
 }
 
+static inline WindowToken NextWindowToken()
+{
+	static uint64_t last_window_token = 0;
+	last_window_token++;
+	return WindowToken(last_window_token);
+}
+
 /**
  * Empty constructor, initialization has been moved to #InitNested() called from the constructor of the derived class.
  * @param desc The description of the window.
  */
-Window::Window(WindowDesc &desc) : window_desc(desc), scale(_gui_scale), mouse_capture_widget(-1)
-{
-	static uint64_t last_window_token = 0;
-	last_window_token++;
-	this->window_token = WindowToken(last_window_token);
-}
+Window::Window(WindowDesc &desc) : window_token(NextWindowToken()), window_desc(desc), scale(_gui_scale), mouse_capture_widget(-1) {}
 
 /**
  * Do a search for a window at specific coordinates. For this we start

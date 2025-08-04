@@ -743,7 +743,7 @@ public:
 };
 
 struct OrderPoolItem : OrderPool::PoolItem<&_order_pool> {
-	Order order;
+	Order order{};
 	OrderPoolItem *next = nullptr; ///< Pointer to next order. If nullptr, end of list
 	uint32_t next_ref = 0;
 

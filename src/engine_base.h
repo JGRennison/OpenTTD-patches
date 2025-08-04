@@ -12,6 +12,7 @@
 
 #include "engine_type.h"
 #include "vehicle_type.h"
+#include "core/alloc_type.hpp"
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
 #include "core/tinystring_type.hpp"
@@ -97,7 +98,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint64_t cb36_properties_used = UINT64_MAX;
 	btree::btree_map<const SpriteGroup *, uint64_t> sprite_group_cb36_properties_used;
 
-	std::unique_ptr<EngineRefitCapacityValue, FreeDeleter> refit_capacity_values;
+	std::unique_ptr<EngineRefitCapacityValue[], FreeDeleter> refit_capacity_values;
 
 	Engine() {}
 	Engine(VehicleType type, uint16_t local_id);

@@ -29,6 +29,7 @@
 #include "error.h"
 #include "strings_func.h"
 #include "newgrf_roadstop.h"
+#include "core/alloc_func.hpp"
 
 #include "table/strings.h"
 

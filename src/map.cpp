@@ -15,6 +15,7 @@
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
 #include "pathfinder/water_regions.h"
+#include "core/alloc_func.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"

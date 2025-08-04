@@ -12,6 +12,7 @@
 
 #include "stdafx.h"
 
+#include "core/alloc_func.hpp"
 #include "core/arena_alloc.hpp"
 #include "core/math_func.hpp"
 #include "gfx_type.h"

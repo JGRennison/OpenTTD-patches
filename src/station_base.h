@@ -21,7 +21,7 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
 #include "core/alignment.hpp"
-#include "core/alloc_type.hpp"
+#include "core/alloc_func.hpp"
 #include "strings_type.h"
 #include <map>
 #include <vector>
@@ -517,9 +517,9 @@ public:
 	}
 };
 
-struct GoodsEntryData : ZeroedMemoryAllocator {
-	StationCargoList cargo; ///< The cargo packets of cargo waiting in this station
-	FlowStatMap flows;      ///< Planned flows through this station.
+struct GoodsEntryData {
+	StationCargoList cargo{}; ///< The cargo packets of cargo waiting in this station
+	FlowStatMap flows{};      ///< Planned flows through this station.
 
 	bool MayBeRemoved() const
 	{

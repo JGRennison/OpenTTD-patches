@@ -253,7 +253,7 @@ struct VehiclePoolOps {
 	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { AssignBit(ptr, 63, non_front); }
 };
 
-typedef Pool<Vehicle, VehicleID, 512, PoolType::Normal, false, true, VehiclePoolOps> VehiclePool;
+typedef Pool<Vehicle, VehicleID, 512, PoolType::Normal, false, VehiclePoolOps> VehiclePool;
 #else
 typedef Pool<Vehicle, VehicleID, 512> VehiclePool;
 #endif
