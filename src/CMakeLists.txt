@@ -450,6 +450,8 @@ add_files(
     scope_info.h
     screenshot_type.h
     screenshot_pcx.cpp
+    settingentry_gui.cpp
+    settingentry_gui.h
     settings.cpp
     settings_cmd.h
     settings_func.h

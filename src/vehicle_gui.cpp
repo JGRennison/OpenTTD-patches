@@ -819,21 +819,21 @@ static void DrawVehicleRefitWindow(const RefitOptions &refits, const RefitOption
 
 /** Refit cargo window. */
 struct RefitWindow : public Window {
-	const RefitOption *selected_refit; ///< Selected refit option.
-	RefitOptions refit_list; ///< List of refit subtypes available for each sorted cargo.
-	VehicleOrderID order;        ///< If not #INVALID_VEH_ORDER_ID, selection is part of a refit order (rather than execute directly).
-	uint information_width;      ///< Width required for correctly displaying all cargoes in the information panel.
-	Scrollbar *vscroll;          ///< The main scrollbar.
-	Scrollbar *hscroll;          ///< Only used for long vehicles.
-	int vehicle_width;           ///< Width of the vehicle being drawn.
-	int sprite_left;             ///< Left position of the vehicle sprite.
-	int sprite_right;            ///< Right position of the vehicle sprite.
-	uint vehicle_margin;         ///< Margin to use while selecting vehicles when the vehicle image is centered.
-	int click_x;                 ///< Position of the first click while dragging.
-	VehicleID selected_vehicle;  ///< First vehicle in the current selection.
-	uint8_t num_vehicles;        ///< Number of selected vehicles.
-	bool auto_refit;             ///< Select cargo for auto-refitting.
-	bool is_virtual_train;       ///< Template replacement, whether the selected vehicle is virtual
+	const RefitOption *selected_refit = nullptr; ///< Selected refit option.
+	RefitOptions refit_list{};                   ///< List of refit subtypes available for each sorted cargo.
+	VehicleOrderID order = INVALID_VEH_ORDER_ID; ///< If not #INVALID_VEH_ORDER_ID, selection is part of a refit order (rather than execute directly).
+	uint information_width = 0;                  ///< Width required for correctly displaying all cargoes in the information panel.
+	Scrollbar *vscroll = nullptr;                ///< The main scrollbar.
+	Scrollbar *hscroll = nullptr;                ///< Only used for long vehicles.
+	int vehicle_width = 0;                       ///< Width of the vehicle being drawn.
+	int sprite_left = 0;                         ///< Left position of the vehicle sprite.
+	int sprite_right = 0;                        ///< Right position of the vehicle sprite.
+	uint vehicle_margin = 0;                     ///< Margin to use while selecting vehicles when the vehicle image is centered.
+	int click_x = 0;                             ///< Position of the first click while dragging.
+	VehicleID selected_vehicle{};                ///< First vehicle in the current selection.
+	uint8_t num_vehicles = 0;                    ///< Number of selected vehicles.
+	bool auto_refit = false;                     ///< Select cargo for auto-refitting.
+	bool is_virtual_train = false;               ///< Template replacement, whether the selected vehicle is virtual
 	mutable std::map<VehicleID, std::string> ship_part_names; ///< Ship part name strings
 
 	/**
@@ -1438,7 +1438,7 @@ struct RefitWindow : public Window {
 				int offset = 1;
 				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 					if (u->index == this->selected_vehicle && this->num_vehicles == 1) selected = offset;
-					dlist.push_back(MakeDropDownListStringItem(this->GetShipPartName(u), offset, false));
+					dlist.push_back(MakeDropDownListStringItem(std::string{this->GetShipPartName(u)}, offset, false));
 					offset++;
 				}
 
@@ -2565,7 +2565,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	bool last_overlay_state;
+	bool last_overlay_state = false;
 	void OnMouseLoop() override
 	{
 		if (last_overlay_state != ShowCargoIconOverlay()) {
@@ -3033,13 +3033,13 @@ std::span<const StringID> GetServiceIntervalDropDownTexts()
 
 /** Class for managing the vehicle details window. */
 struct VehicleDetailsWindow : Window {
-	TrainDetailsWindowTabs tab; ///< For train vehicles: which tab is displayed.
-	Scrollbar *vscroll;
-	bool vehicle_group_line_shown;
-	bool vehicle_weight_ratio_line_shown;
-	bool vehicle_slots_line_shown;
-	bool vehicle_speed_restriction_line_shown;
-	bool vehicle_speed_adaptation_line_shown;
+	TrainDetailsWindowTabs tab = TDW_TAB_CARGO; ///< For train vehicles: which tab is displayed.
+	Scrollbar *vscroll = nullptr;
+	bool vehicle_group_line_shown = false;
+	bool vehicle_weight_ratio_line_shown = false;
+	bool vehicle_slots_line_shown = false;
+	bool vehicle_speed_restriction_line_shown = false;
+	bool vehicle_speed_adaptation_line_shown = false;
 
 	enum DropDownAction {
 		VDWDDA_CLEAR_SPEED_RESTRICTION,
@@ -3603,12 +3603,11 @@ struct VehicleDetailsWindow : Window {
 				}
 				if (HasBit(v->vehicle_flags, VF_HAVE_SLOT)) {
 					if (!list.empty()) list.push_back(MakeDropDownListDividerItem());
-					list.push_back(std::make_unique<DropDownUnselectable<DropDownListStringItem>>(STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT, -1));
+					list.push_back(std::make_unique<DropDownUnselectable<DropDownListStringItem>>(GetString(STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT), -1));
 
 					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
 					for (TraceRestrictSlotID slot_id : slots) {
-						SetDParam(0, slot_id);
-						list.push_back(MakeDropDownListCheckedItem(false, STR_TRACE_RESTRICT_SLOT_NAME, VDWDDA_REMOVE_FROM_SLOT | (slot_id.base() << 8), TraceRestrictSlot::Get(slot_id)->owner != _local_company));
+						list.push_back(MakeDropDownListCheckedItem(false, GetString(STR_TRACE_RESTRICT_SLOT_NAME, slot_id), VDWDDA_REMOVE_FROM_SLOT | (slot_id.base() << 8), TraceRestrictSlot::Get(slot_id)->owner != _local_company));
 					}
 				}
 				ShowDropDownList(this, std::move(list), -1, WID_VD_EXTRA_ACTIONS, 140);

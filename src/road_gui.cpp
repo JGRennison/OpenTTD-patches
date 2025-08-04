@@ -351,12 +351,11 @@ static bool RoadToolbar_CtrlChanged(Window *w)
 
 /** Road toolbar window handler. */
 struct BuildRoadToolbarWindow : Window {
-	RoadType roadtype;          ///< Road type to build.
-	int last_started_action;    ///< Last started user action.
+	RoadType roadtype = INVALID_ROADTYPE; ///< Road type to build.
+	int last_started_action = INVALID_WID_ROT; ///< Last started user action.
 
-	BuildRoadToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
+	BuildRoadToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc), roadtype(_cur_roadtype)
 	{
-		this->roadtype = _cur_roadtype;
 		this->CreateNestedTree();
 		this->FinishInitNested(window_number);
 		this->SetWidgetDisabledState(WID_ROT_REMOVE, true);
@@ -366,7 +365,6 @@ struct BuildRoadToolbarWindow : Window {
 		}
 
 		this->OnInvalidateData();
-		this->last_started_action = INVALID_WID_ROT;
 
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
 	}
@@ -1318,7 +1316,7 @@ static PickerCallbacks &GetRoadStopPickerCallbacks(RoadStopType rs)
 
 struct BuildRoadStationWindow : public PickerWindow {
 private:
-	uint coverage_height; ///< Height of the coverage texts.
+	uint coverage_height = 0; ///< Height of the coverage texts.
 
 	void CheckOrientationValid()
 	{
@@ -1904,13 +1902,13 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 
-		SetDParam(0, rti->strings.menu_text);
-		SetDParam(1, rti->max_speed / 2);
 		if (for_replacement) {
-			list.push_back(MakeDropDownListBadgeItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, rti->strings.replace_text, rt, !HasBit(avail_roadtypes, rt)));
+			list.push_back(MakeDropDownListBadgeItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, GetString(rti->strings.replace_text), rt, !HasBit(avail_roadtypes, rt)));
 		} else {
-			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
+			std::string str = rti->max_speed > 0
+				? GetString(STR_TOOLBAR_RAILTYPE_VELOCITY, rti->strings.menu_text, rti->max_speed / 2)
+				: GetString(rti->strings.menu_text);
+			list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_road, PAL_NONE, std::move(str), rt, !HasBit(avail_roadtypes, rt)));
 		}
 	}
 
@@ -1950,10 +1948,11 @@ DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts, bool use_name)
 
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 
-		SetDParam(0, use_name ? rti->strings.name : rti->strings.menu_text);
-		SetDParam(1, rti->max_speed / 2);
-		StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-		list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
+		StringID name = use_name ? rti->strings.name : rti->strings.menu_text;
+		std::string str = rti->max_speed > 0
+			? GetString(STR_TOOLBAR_RAILTYPE_VELOCITY, name, rti->max_speed / 2)
+			: GetString(name);
+		list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_ROADTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_road, PAL_NONE, std::move(str), rt, !HasBit(avail_roadtypes, rt)));
 	}
 
 	if (list.empty()) {

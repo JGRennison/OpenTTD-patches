@@ -28,8 +28,8 @@
 #include "safeguards.h"
 
 struct EndGameHighScoreBaseWindow : Window {
-	uint32_t background_img;
-	int8_t rank;
+	SpriteID background_img{};
+	int8_t rank = 0;
 
 	EndGameHighScoreBaseWindow(WindowDesc &desc) : Window(desc)
 	{
@@ -154,7 +154,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 };
 
 struct HighScoreWindow : EndGameHighScoreBaseWindow {
-	bool game_paused_by_player; ///< True if the game was paused by the player when the highscore window was opened.
+	bool game_paused_by_player = false; ///< True if the game was paused by the player when the highscore window was opened.
 
 	HighScoreWindow(WindowDesc &desc, int difficulty, int8_t ranking) : EndGameHighScoreBaseWindow(desc)
 	{

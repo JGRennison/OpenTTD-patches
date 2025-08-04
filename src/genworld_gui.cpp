@@ -390,8 +390,8 @@ static DropDownList BuildMapsizeDropDown(int other_dimension)
 	DropDownList list;
 
 	for (uint i = MIN_MAP_SIZE_BITS; i <= MAX_MAP_SIZE_BITS; i++) {
-		SetDParam(0, 1LL << i);
-		list.push_back(MakeDropDownListStringItem((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false));
+		std::string str = GetString((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, 1ULL << i);
+		list.push_back(MakeDropDownListStringItem(std::move(str), i, false));
 	}
 
 	return list;
@@ -437,11 +437,11 @@ static const StringID _variety[]     = {STR_VARIETY_NONE, STR_VARIETY_VERY_LOW, 
 static_assert(std::size(_num_inds) == ID_END);
 
 struct GenerateLandscapeWindow : public Window {
-	WidgetID widget_id;
-	uint x;
-	uint y;
-	std::string name;
-	GenerateLandscapeWindowMode mode;
+	WidgetID widget_id{};
+	uint x = 0;
+	uint y = 0;
+	std::string name{};
+	GenerateLandscapeWindowMode mode{};
 
 	void SetDropDownColor()
 	{
@@ -1202,7 +1202,7 @@ void StartNewGameWithoutGUI(uint32_t seed)
 
 struct CreateScenarioWindow : public Window
 {
-	WidgetID widget_id;
+	WidgetID widget_id{};
 
 	void SetDropDownColor()
 	{

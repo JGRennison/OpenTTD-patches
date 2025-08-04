@@ -25,6 +25,7 @@
 #include "../settings_type.h"
 #include "../command_func.h"
 #include "../misc_cmd.h"
+#include "../strings_func.h"
 #include "../core/backup_type.hpp"
 
 #include "script_gui.h"
@@ -56,12 +57,12 @@ static ScriptConfig *GetConfig(CompanyID slot)
  * Window that let you choose an available Script.
  */
 struct ScriptListWindow : public Window {
-	const ScriptInfoList *info_list;    ///< The list of Scripts.
-	int selected;                       ///< The currently selected Script.
-	CompanyID slot;                     ///< The company we're selecting a new Script for.
-	int line_height;                    ///< Height of a row in the matrix widget.
-	Scrollbar *vscroll;                 ///< Cache of the vertical scrollbar.
-	bool show_all;                      ///< Whether to show all available versions.
+	const ScriptInfoList *info_list = nullptr; ///< The list of Scripts.
+	int selected = -1; ///< The currently selected Script.
+	CompanyID slot{}; ///< The company we're selecting a new Script for.
+	int line_height = 0; ///< Height of a row in the matrix widget.
+	Scrollbar *vscroll = nullptr; ///< Cache of the vertical scrollbar.
+	bool show_all = false; ///< Whether to show all available versions.
 
 	/**
 	 * Constructor for the window.
@@ -85,7 +86,6 @@ struct ScriptListWindow : public Window {
 		this->vscroll->SetCount(this->info_list->size() + 1);
 
 		/* Try if we can find the currently selected AI */
-		this->selected = -1;
 		if (GetConfig(slot)->HasScript()) {
 			ScriptInfo *info = GetConfig(slot)->GetInfo();
 			int i = 0;
@@ -129,14 +129,11 @@ struct ScriptListWindow : public Window {
 					DrawString(tr, this->slot == OWNER_DEITY ? STR_AI_CONFIG_NONE : STR_AI_CONFIG_RANDOM_AI, this->selected == -1 ? TC_WHITE : TC_ORANGE);
 					tr.top += this->line_height;
 				}
-				StringID str = this->show_all ? STR_AI_CONFIG_NAME_VERSION : STR_JUST_RAW_STRING;
 				int i = 0;
 				for (const auto &item : *this->info_list) {
 					i++;
 					if (this->vscroll->IsVisible(i)) {
-						SetDParamStr(0, item.second->GetName());
-						SetDParam(1, item.second->GetVersion());
-						DrawString(tr, str, (this->selected == i - 1) ? TC_WHITE : TC_ORANGE);
+						DrawString(tr, this->show_all ? GetString(STR_AI_CONFIG_NAME_VERSION, item.second->GetName(), item.second->GetVersion()) : item.second->GetName(), (this->selected == i - 1) ? TC_WHITE : TC_ORANGE);
 						tr.top += this->line_height;
 					}
 				}
@@ -152,19 +149,15 @@ struct ScriptListWindow : public Window {
 				/* Some info about the currently selected Script. */
 				if (selected_info != nullptr) {
 					Rect tr = r.Shrink(WidgetDimensions::scaled.frametext, WidgetDimensions::scaled.framerect);
-					SetDParamStr(0, selected_info->GetAuthor());
-					DrawString(tr, STR_AI_LIST_AUTHOR);
+					DrawString(tr, GetString(STR_AI_LIST_AUTHOR, selected_info->GetAuthor()));
 					tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
-					SetDParam(0, selected_info->GetVersion());
-					DrawString(tr, STR_AI_LIST_VERSION);
+					DrawString(tr, GetString(STR_AI_LIST_VERSION, selected_info->GetVersion()));
 					tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 					if (!selected_info->GetURL().empty()) {
-						SetDParamStr(0, selected_info->GetURL());
-						DrawString(tr, STR_AI_LIST_URL);
+						DrawString(tr, GetString(STR_AI_LIST_URL, selected_info->GetURL()));
 						tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 					}
-					SetDParamStr(0, selected_info->GetDescription());
-					DrawStringMultiLine(tr, STR_JUST_RAW_STRING, TC_WHITE);
+					DrawStringMultiLine(tr, selected_info->GetDescription(), TC_WHITE);
 				}
 				break;
 			}
@@ -295,30 +288,25 @@ void ShowScriptListWindow(CompanyID slot, bool show_all)
  * Window for settings the parameters of an AI.
  */
 struct ScriptSettingsWindow : public Window {
-	CompanyID slot;                       ///< The currently show company's setting.
-	ScriptConfig *script_config;          ///< The configuration we're modifying.
-	int clicked_button;                   ///< The button we clicked.
-	bool clicked_increase;                ///< Whether we clicked the increase or decrease button.
-	bool clicked_dropdown;                ///< Whether the dropdown is open.
-	bool closing_dropdown;                ///< True, if the dropdown list is currently closing.
-	GUITimer timeout;                     ///< Timeout for unclicking the button.
-	int clicked_row;                      ///< The clicked row of settings.
-	int line_height;                      ///< Height of a row in the matrix widget.
-	Scrollbar *vscroll;                   ///< Cache of the vertical scrollbar.
+	CompanyID slot{};                       ///< The currently show company's setting.
+	ScriptConfig *script_config = nullptr;  ///< The configuration we're modifying.
+	int clicked_button = -1;                ///< The button we clicked.
+	bool clicked_increase = false;          ///< Whether we clicked the increase or decrease button.
+	bool clicked_dropdown = false;          ///< Whether the dropdown is open.
+	bool closing_dropdown = false;          ///< True, if the dropdown list is currently closing.
+	GUITimer timeout{};                     ///< Timeout for unclicking the button.
+	int clicked_row = 0;                    ///< The clicked row of settings.
+	int line_height = 0;                    ///< Height of a row in the matrix widget.
+	Scrollbar *vscroll = nullptr;           ///< Cache of the vertical scrollbar.
 	typedef std::vector<const ScriptConfigItem *> VisibleSettingsList; ///< typdef for a vector of script settings
-	VisibleSettingsList visible_settings; ///< List of visible AI settings
+	VisibleSettingsList visible_settings{}; ///< List of visible AI settings
 
 	/**
 	 * Constructor for the window.
 	 * @param desc The description of the window.
 	 * @param slot The company we're changing the settings for.
 	 */
-	ScriptSettingsWindow(WindowDesc &desc, CompanyID slot) : Window(desc),
-		slot(slot),
-		clicked_button(-1),
-		clicked_dropdown(false),
-		closing_dropdown(false),
-		timeout(0)
+	ScriptSettingsWindow(WindowDesc &desc, CompanyID slot) : Window(desc), slot(slot)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SCRS_SCROLLBAR);
@@ -343,7 +331,7 @@ struct ScriptSettingsWindow : public Window {
 		visible_settings.clear();
 
 		for (const auto &item : *this->script_config->GetConfigList()) {
-			bool no_hide = (item.flags & SCRIPTCONFIG_DEVELOPER) == 0;
+			bool no_hide = !item.flags.Test(ScriptConfigFlag::Developer);
 			if (no_hide || _settings_client.gui.ai_developer_tools) {
 				visible_settings.push_back(&item);
 			}
@@ -389,21 +377,8 @@ struct ScriptSettingsWindow : public Window {
 			int current_value = this->script_config->GetSetting(config_item.name);
 			bool editable = this->IsEditableItem(config_item);
 
-			StringID str;
-			TextColour colour;
-			uint idx = 0;
-			if (config_item.description.empty()) {
-				str = STR_JUST_STRING1;
-				colour = TC_ORANGE;
-			} else {
-				str = STR_AI_SETTINGS_SETTING;
-				colour = TC_LIGHT_BLUE;
-				SetDParamStr(idx++, config_item.description);
-			}
-
-			if ((config_item.flags & SCRIPTCONFIG_BOOLEAN) != 0) {
+			if (config_item.flags.Test(ScriptConfigFlag::Boolean)) {
 				DrawBoolButton(br.left, y + button_y_offset, current_value != 0, editable);
-				SetDParam(idx++, current_value == 0 ? STR_CONFIG_SETTING_OFF : STR_CONFIG_SETTING_ON);
 			} else {
 				int i = static_cast<int>(std::distance(std::begin(this->visible_settings), it));
 				if (config_item.complete_labels) {
@@ -411,18 +386,9 @@ struct ScriptSettingsWindow : public Window {
 				} else {
 					DrawArrowButtons(br.left, y + button_y_offset, COLOUR_YELLOW, (this->clicked_button == i) ? 1 + (this->clicked_increase != rtl) : 0, editable && current_value > config_item.min_value, editable && current_value < config_item.max_value);
 				}
-
-				auto config_iterator = config_item.labels.find(current_value);
-				if (config_iterator != config_item.labels.end()) {
-					SetDParam(idx++, STR_JUST_RAW_STRING);
-					SetDParamStr(idx++, config_iterator->second);
-				} else {
-					SetDParam(idx++, STR_JUST_INT);
-					SetDParam(idx++, current_value);
-				}
 			}
 
-			DrawString(tr.left, tr.right, y + text_y_offset, str, colour);
+			DrawString(tr.left, tr.right, y + text_y_offset, config_item.GetString(current_value), config_item.GetColour());
 			y += this->line_height;
 		}
 	}
@@ -454,7 +420,7 @@ struct ScriptSettingsWindow : public Window {
 					this->clicked_dropdown = false;
 				}
 
-				bool bool_item = (config_item.flags & SCRIPTCONFIG_BOOLEAN) != 0;
+				bool bool_item = config_item.flags.Test(ScriptConfigFlag::Boolean);
 
 				Rect r = this->GetWidget<NWidgetBase>(widget)->GetCurrentRect().Shrink(WidgetDimensions::scaled.matrix, RectPadding::zero);
 				int x = pt.x - r.left;
@@ -484,7 +450,7 @@ struct ScriptSettingsWindow : public Window {
 
 							DropDownList list;
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								list.push_back(MakeDropDownListStringItem(config_item.labels.find(i)->second, i));
+								list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_RAW_STRING, config_item.labels.find(i)->second), i));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, WID_SCRS_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);
@@ -590,14 +556,14 @@ private:
 		return _game_mode == GM_MENU
 			|| _game_mode == GM_EDITOR
 			|| ((this->slot != OWNER_DEITY) && !Company::IsValidID(this->slot))
-			|| (config_item.flags & SCRIPTCONFIG_INGAME) != 0
+			|| config_item.flags.Test(ScriptConfigFlag::InGame)
 			|| _settings_client.gui.ai_developer_tools;
 	}
 
 	void SetValue(int value)
 	{
 		const ScriptConfigItem &config_item = *this->visible_settings[this->clicked_row];
-		if (_game_mode == GM_NORMAL && ((this->slot == OWNER_DEITY) || Company::IsValidID(this->slot)) && (config_item.flags & SCRIPTCONFIG_INGAME) == 0) return;
+		if (_game_mode == GM_NORMAL && ((this->slot == OWNER_DEITY) || Company::IsValidID(this->slot)) && !config_item.flags.Test(ScriptConfigFlag::InGame)) return;
 		this->script_config->SetSetting(config_item.name, value);
 		this->SetDirty();
 	}
@@ -645,7 +611,7 @@ void ShowScriptSettingsWindow(CompanyID slot)
 
 /** Window for displaying the textfile of a AI. */
 struct ScriptTextfileWindow : public TextfileWindow {
-	CompanyID slot; ///< View the textfile of this CompanyID slot.
+	CompanyID slot{}; ///< View the textfile of this CompanyID slot.
 
 	ScriptTextfileWindow(TextfileType file_type, CompanyID slot) : TextfileWindow(file_type), slot(slot)
 	{
@@ -725,16 +691,15 @@ struct ScriptDebugWindow : public Window {
 		false,
 	};
 
-	int redraw_timer;                                      ///< Timer for redrawing the window, otherwise it'll happen every tick.
-	int last_vscroll_pos;                                  ///< Last position of the scrolling.
-	bool autoscroll;                                       ///< Whether automatically scrolling should be enabled or not.
-	bool show_break_box;                                   ///< Whether the break/debug box is visible.
-	QueryString break_editbox;                             ///< Break editbox
-	StringFilter break_string_filter;                      ///< Log filter for break.
-	int highlight_row;                                     ///< The output row that matches the given string, or -1
-	Scrollbar *vscroll;                                    ///< Cache of the vertical scrollbar.
-	Scrollbar *hscroll;                                    ///< Cache of the horizontal scrollbar.
-	FilterState filter;
+	int last_vscroll_pos = 0; ///< Last position of the scrolling.
+	bool autoscroll = true; ///< Whether automatically scrolling should be enabled or not.
+	bool show_break_box = false; ///< Whether the break/debug box is visible.
+	QueryString break_editbox; ///< Break editbox
+	StringFilter break_string_filter{}; ///< Log filter for break.
+	int highlight_row = -1; ///< The output row that matches the given string, or -1
+	Scrollbar *vscroll = nullptr; ///< Cache of the vertical scrollbar.
+	Scrollbar *hscroll = nullptr; ///< Cache of the horizontal scrollbar.
+	FilterState filter{};
 
 	ScriptLogTypes::LogData &GetLogData() const
 	{
@@ -805,10 +770,6 @@ struct ScriptDebugWindow : public Window {
 		this->vscroll = this->GetScrollbar(WID_SCRD_VSCROLLBAR);
 		this->hscroll = this->GetScrollbar(WID_SCRD_HSCROLLBAR);
 		this->FinishInitNested(number);
-
-		this->last_vscroll_pos = 0;
-		this->autoscroll = true;
-		this->highlight_row = -1;
 
 		this->querystrings[WID_SCRD_BREAK_STR_EDIT_BOX] = &this->break_editbox;
 

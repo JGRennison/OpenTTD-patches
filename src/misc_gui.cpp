@@ -67,11 +67,11 @@ static WindowDesc _land_info_desc(__FILE__, __LINE__,
 );
 
 class LandInfoWindow : public Window {
-	StringList  landinfo_data;    ///< Info lines to show.
-	std::string cargo_acceptance; ///< Centered multi-line string for cargo acceptance.
+	StringList landinfo_data{}; ///< Info lines to show.
+	std::string cargo_acceptance{}; ///< Centered multi-line string for cargo acceptance.
 
 public:
-	TileIndex tile;
+	TileIndex tile = INVALID_TILE;
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
@@ -446,8 +446,8 @@ static const std::initializer_list<const std::string_view> _credits = {
 };
 
 struct AboutWindow : public Window {
-	int text_position;                       ///< The top of the scrolling text
-	int line_height;                         ///< The height of a single line
+	int text_position = 0; ///< The top of the scrolling text
+	int line_height = 0; ///< The height of a single line
 	static const int num_visible_lines = 19; ///< The number of lines visible simultaneously
 
 	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FS_NORMAL) = 150ms
@@ -643,11 +643,11 @@ static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 /** Window for displaying a tooltip. */
 struct TooltipsWindow : public Window
 {
-	EncodedString text; ///< String to display as tooltip.
-	TooltipCloseCondition close_cond; ///< Condition for closing the window.
-	int viewport_virtual_left;        ///< Owner viewport state: left
-	int viewport_virtual_top;         ///< Owner viewport state: top
-	bool delete_next_mouse_loop;      ///< Delete window on the next mouse loop
+	EncodedString text{};               ///< String to display as tooltip.
+	TooltipCloseCondition close_cond{}; ///< Condition for closing the window.
+	int viewport_virtual_left{};        ///< Owner viewport state: left
+	int viewport_virtual_top{};         ///< Owner viewport state: top
+	bool delete_next_mouse_loop{};      ///< Delete window on the next mouse loop
 
 	TooltipsWindow(Window *parent, EncodedString &&text, TooltipCloseCondition close_tooltip) : Window(_tool_tips_desc), text(std::move(text))
 	{
@@ -966,11 +966,11 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 template <int N = 1>
 struct QueryStringWindow : public Window {
 	static_assert(N == 1 || N == 2);
-	QueryString editboxes[N]; ///< Editboxes.
-	StringID window_caption;  ///< Title for the whole query window
-	std::string caption_str;  ///< Pre-composed caption string.
-	QueryStringFlags flags;   ///< Flags controlling behaviour of the window.
-	Dimension warning_size;   ///< How much space to use for the warning text
+	QueryString editboxes[N];   ///< Editboxes.
+	StringID window_caption{};  ///< Title for the whole query window
+	std::string caption_str{};  ///< Pre-composed caption string.
+	QueryStringFlags flags{};   ///< Flags controlling behaviour of the window.
+	Dimension warning_size{};   ///< How much space to use for the warning text
 
 	/**
 	 * Compute the maximum size in bytes of the described editbox.
@@ -1273,9 +1273,9 @@ void ShowQueryString(std::string_view str, std::string caption_str, uint maxsize
  * Window used for asking the user a YES/NO question.
  */
 struct QueryWindow : public Window {
-	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	EncodedString caption; ///< caption for query window.
-	EncodedString message; ///< message for query window.
+	QueryCallbackProc *proc = nullptr; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
+	EncodedString caption{}; ///< caption for query window.
+	EncodedString message{}; ///< message for query window.
 
 	QueryWindow(WindowDesc &desc, EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback)
 		: Window(desc), proc(callback), caption(std::move(caption)), message(std::move(message))

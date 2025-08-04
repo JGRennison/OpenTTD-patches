@@ -311,13 +311,13 @@ protected:
 
 	static robin_hood::unordered_flat_map<StationID, uint> station_vehicle_calling_counts;
 
-	FilterState filter;
+	FilterState filter{};
 	GUIStationList stations{filter.cargoes};
-	Scrollbar *vscroll;
-	uint rating_width;
-	bool filter_expanded;
-	std::array<uint16_t, NUM_CARGO> stations_per_cargo_type; ///< Number of stations with a rating for each cargo type.
-	uint16_t stations_per_cargo_type_no_rating; ///< Number of stations without a rating.
+	Scrollbar *vscroll = nullptr;
+	uint rating_width = 0;
+	bool filter_expanded = false;
+	std::array<uint16_t, NUM_CARGO> stations_per_cargo_type{}; ///< Number of stations with a rating for each cargo type.
+	uint16_t stations_per_cargo_type_no_rating = 0; ///< Number of stations without a rating.
 
 	/**
 	 * (Re)Build station list
@@ -672,7 +672,7 @@ public:
 		if (count == 0 && !expanded) {
 			any_hidden = true;
 		} else {
-			list.push_back(std::make_unique<DropDownString<DropDownListCheckedItem, FS_SMALL, true>>(fmt::format("{}", count), 0, this->filter.include_no_rating, STR_STATION_LIST_CARGO_FILTER_NO_RATING, CargoFilterCriteria::CF_NO_RATING, false, count == 0));
+			list.push_back(std::make_unique<DropDownString<DropDownListCheckedItem, FS_SMALL, true>>(fmt::format("{}", count), 0, this->filter.include_no_rating, GetString(STR_STATION_LIST_CARGO_FILTER_NO_RATING), CargoFilterCriteria::CF_NO_RATING, false, count == 0));
 		}
 
 		Dimension d = GetLargestCargoIconSize();
@@ -681,7 +681,7 @@ public:
 			if (count == 0 && !expanded) {
 				any_hidden = true;
 			} else {
-				list.push_back(std::make_unique<DropDownListCargoItem>(HasBit(this->filter.cargoes, cs->Index()), fmt::format("{}", count), d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false, count == 0));
+				list.push_back(std::make_unique<DropDownListCargoItem>(HasBit(this->filter.cargoes, cs->Index()), fmt::format("{}", count), d, cs->GetCargoIcon(), PAL_NONE, GetString(cs->name), cs->Index(), false, count == 0));
 			}
 		}
 
@@ -1398,10 +1398,10 @@ struct StationViewWindow : public Window {
 		MODE_PLANNED  ///< Show cargo planned to pass through the station.
 	};
 
-	uint expand_shrink_width;     ///< The width allocated to the expand/shrink 'button'
-	int rating_lines;             ///< Number of lines in the cargo ratings view.
-	int accepts_lines;            ///< Number of lines in the accepted cargo view.
-	Scrollbar *vscroll;
+	uint expand_shrink_width = 0; ///< The width allocated to the expand/shrink 'button'
+	int rating_lines = RATING_LINES; ///< Number of lines in the cargo ratings view.
+	int accepts_lines = ACCEPTS_LINES; ///< Number of lines in the accepted cargo view.
+	Scrollbar *vscroll = nullptr;
 
 	/* Height of the #WID_SV_ACCEPT_RATING_LIST widget for different views. */
 	static constexpr uint RATING_LINES = 13; ///< Height in lines of the cargo ratings view.
@@ -1430,29 +1430,25 @@ struct StationViewWindow : public Window {
 	 * sort all the columns in the same way. The other options haven't been
 	 * included in the GUI due to lack of space.
 	 */
-	CargoSortType sortings[NUM_COLUMNS];
+	std::array<CargoSortType, NUM_COLUMNS> sortings{};
 
 	/** Sort order (ascending/descending) for the 'columns'. */
-	SortOrder sort_orders[NUM_COLUMNS];
+	std::array<SortOrder, NUM_COLUMNS> sort_orders{};
 
-	int scroll_to_row;                  ///< If set, scroll the main viewport to the station pointed to by this row.
-	int grouping_index;                 ///< Currently selected entry in the grouping drop down.
-	int ratings_list_y = 0;             ///< Y coordinate of first line in station ratings panel.
-	Mode current_mode;                  ///< Currently selected display mode of cargo view.
-	Grouping groupings[NUM_COLUMNS];    ///< Grouping modes for the different columns.
+	int scroll_to_row = INT_MAX;                 ///< If set, scroll the main viewport to the station pointed to by this row.
+	int grouping_index = 0;                      ///< Currently selected entry in the grouping drop down.
+	int ratings_list_y = 0;                      ///< Y coordinate of first line in station ratings panel.
+	Mode current_mode{};                         ///< Currently selected display mode of cargo view.
+	std::array<Grouping, NUM_COLUMNS> groupings; ///< Grouping modes for the different columns.
 
-	CargoDataEntry expanded_rows;       ///< Parent entry of currently expanded rows.
-	CargoDataEntry cached_destinations; ///< Cache for the flows passing through this station.
-	CargoDataVector displayed_rows;     ///< Parent entry of currently displayed rows (including collapsed ones).
+	CargoDataEntry expanded_rows{}; ///< Parent entry of currently expanded rows.
+	CargoDataEntry cached_destinations{}; ///< Cache for the flows passing through this station.
+	CargoDataVector displayed_rows{}; ///< Parent entry of currently displayed rows (including collapsed ones).
 
 	bool place_object_active = false;
 
-	StationViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc),
-		scroll_to_row(INT_MAX), grouping_index(0)
+	StationViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
-		this->rating_lines  = RATING_LINES;
-		this->accepts_lines = ACCEPTS_LINES;
-
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SV_SCROLLBAR);
 		/* Nested widget tree creation is done in two steps to ensure that this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS) exists in UpdateWidgetSize(). */
@@ -2550,9 +2546,9 @@ static constexpr NWidgetPart _nested_select_station_widgets[] = {
  */
 template <class T>
 struct SelectStationWindow : Window {
-	StationPickerCmdProc select_station_proc;
-	TileArea area; ///< Location of new station
-	Scrollbar *vscroll;
+	StationPickerCmdProc select_station_proc{};
+	TileArea area{}; ///< Location of new station
+	Scrollbar *vscroll = nullptr;
 
 	SelectStationWindow(WindowDesc &desc, TileArea ta, StationPickerCmdProc&& proc) :
 		Window(desc),

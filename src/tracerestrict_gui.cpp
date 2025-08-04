@@ -867,27 +867,20 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 	auto add_slot = [&](const TraceRestrictSlot *slot, TraceRestrictSlotID id, uint indent) {
 		if (selected_id == id.base()) selected = selected_id;
 		if (indent == 0 || slot->vehicle_type == vehtype) {
-			SetDParam(0, id);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_NAME, id.base(), false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_NAME, id), id.base(), false));
 		} else {
-			SetDParam(0, STR_REPLACE_VEHICLE_TRAIN + slot->vehicle_type);
-			SetDParam(1, id);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, id.base(), false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + slot->vehicle_type, id), id.base(), false));
 		}
 	};
 
 	auto add_group = [&](const TraceRestrictSlotGroup *sg, TraceRestrictSlotGroupID id, uint indent) {
 		if (group_only_mode) {
 			if (selected_id == id.base()) selected = selected_id;
-			SetDParam(0, id);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME, id.base(), false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, id), id.base(), false));
 		} else if (indent == 0 || sg->vehicle_type == vehtype) {
-			SetDParam(0, id);
-			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id.base(), false));
+			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id), id.base(), false));
 		} else {
-			SetDParam(0, STR_REPLACE_VEHICLE_TRAIN + sg->vehicle_type);
-			SetDParam(1, id);
-			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, id.base(), false));
+			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + sg->vehicle_type, id), id.base(), false));
 		}
 	};
 
@@ -1005,7 +998,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
 		}
 	} else {
-		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, NEW_TRACE_RESTRICT_SLOT_ID.base(), false);
+		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(GetString(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION), NEW_TRACE_RESTRICT_SLOT_ID.base(), false);
 		new_item->SetColourFlags(TC_FORCED);
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());
@@ -1079,8 +1072,7 @@ static void GetCounterDropDownListIntl(DropDownList &dlist, Owner owner, TraceRe
 
 	for (const TraceRestrictCounter *s : list) {
 		if (ctr_id == s->index) selected = ctr_id.base();
-		SetDParam(0, s->index);
-		dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index.base(), false));
+		dlist.push_back(MakeDropDownListStringItem(GetString(STR_TRACE_RESTRICT_COUNTER_NAME, s->index), s->index.base(), false));
 	}
 }
 
@@ -1107,7 +1099,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 			dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
 		}
 	} else {
-		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID.base(), false);
+		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(GetString(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION), NEW_TRACE_RESTRICT_COUNTER_ID.base(), false);
 		new_item->SetColourFlags(TC_FORCED);
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());

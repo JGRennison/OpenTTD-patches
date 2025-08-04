@@ -145,8 +145,8 @@ public:
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override;
 
 private:
-	LinkGraphOverlay *overlay;
-	size_t num_cargo;
+	LinkGraphOverlay *overlay = nullptr;
+	size_t num_cargo = 0;
 
 	void UpdateOverlayCompanies();
 	void UpdateOverlayCargoes();

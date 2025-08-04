@@ -1121,10 +1121,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (!this->IsScheduleSelected()) break;
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 				DropDownList list;
-				auto add_item = [&](StringID string, int result) {
-					std::unique_ptr<DropDownListStringItem> item = std::make_unique<DropDownListStringItem>(string, result, false);
+				auto add_str_item = [&](std::string &&str, int result) {
+					std::unique_ptr<DropDownListStringItem> item = std::make_unique<DropDownListStringItem>(std::move(str), result, false);
 					item->SetColourFlags(TC_FORCED);
 					list.emplace_back(std::move(item));
+				};
+				auto add_item = [&](StringID str, int result) {
+					add_str_item(GetString(str), result);
 				};
 				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
 				list.push_back(MakeDropDownListDividerItem());
@@ -1136,10 +1139,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
-					SetDParam(0, tag + 1);
 					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag);
-					SetDParamStr(1, name);
-					add_item(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, SCH_MD_RENAME_TAG | (tag << 16));
+					std::string str = GetString(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, tag + 1, name);
+					add_str_item(std::move(str), SCH_MD_RENAME_TAG | (tag << 16));
 				}
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT, 0, DDMF_NONE, DDSF_SHARED);
 				break;

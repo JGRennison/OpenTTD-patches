@@ -35,9 +35,9 @@
 /** GUI for accessing waypoints and buoys. */
 struct WaypointWindow : Window {
 private:
-	VehicleType vt; ///< Vehicle type using the waypoint.
-	Waypoint *wp;   ///< Waypoint displayed by the window.
-	bool show_hide_label; ///< Show hide label button
+	VehicleType vt = VEH_INVALID; ///< Vehicle type using the waypoint.
+	Waypoint *wp = nullptr; ///< Waypoint displayed by the window.
+	bool show_hide_label = false; ///< Show hide label button
 	bool place_object_active = false;
 
 	/**

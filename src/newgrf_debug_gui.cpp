@@ -373,15 +373,15 @@ struct NewGRFInspectWindow final : Window {
 	InspectTargetId target_id;
 
 	/** GRFID of the caller of this window, 0 if it has no caller. */
-	uint32_t caller_grfid;
+	uint32_t caller_grfid = 0;
 
 	/** For ground vehicles: Index in vehicle chain. */
-	uint chain_index;
+	uint chain_index = 0;
 
 	/** The currently edited parameter, to update the right one. */
-	uint16_t current_edit_param;
+	uint16_t current_edit_param = 0;
 
-	Scrollbar *vscroll;
+	Scrollbar *vscroll = nullptr;
 
 	int32_t first_variable_line_index = 0;
 	bool redraw_panel = false;
@@ -1513,11 +1513,11 @@ GrfSpecFeature GetGrfSpecFeature(VehicleType type)
 
 /** Window used for aligning sprites. */
 struct SpriteAlignerWindow : Window {
-	typedef std::pair<int16_t, int16_t> XyOffs;///< Pair for x and y offsets of the sprite before alignment. First value contains the x offset, second value y offset.
+	typedef std::pair<int16_t, int16_t> XyOffs; ///< Pair for x and y offsets of the sprite before alignment. First value contains the x offset, second value y offset.
 
-	SpriteID current_sprite;                   ///< The currently shown sprite.
-	Scrollbar *vscroll;
-	std::map<SpriteID, XyOffs> offs_start_map; ///< Mapping of starting offsets for the sprites which have been aligned in the sprite aligner window.
+	SpriteID current_sprite{}; ///< The currently shown sprite.
+	Scrollbar *vscroll = nullptr;
+	std::map<SpriteID, XyOffs> offs_start_map{}; ///< Mapping of starting offsets for the sprites which have been aligned in the sprite aligner window.
 
 	static inline ZoomLevel zoom = ZOOM_LVL_END;
 	static bool centre;

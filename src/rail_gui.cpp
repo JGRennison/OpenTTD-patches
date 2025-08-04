@@ -529,12 +529,11 @@ static void HandleAutoSignalPlacement()
 
 /** Rail toolbar management class. */
 struct BuildRailToolbarWindow : Window {
-	RailType railtype;    ///< Rail type to build.
-	int last_user_action; ///< Last started user action.
+	RailType railtype = INVALID_RAILTYPE; ///< Rail type to build.
+	int last_user_action = INVALID_WID_RAT; ///< Last started user action.
 
-	BuildRailToolbarWindow(WindowDesc &desc, RailType railtype) : Window(desc)
+	BuildRailToolbarWindow(WindowDesc &desc, RailType railtype) : Window(desc), railtype(railtype)
 	{
-		this->railtype = railtype;
 		this->CreateNestedTree();
 		if (!_settings_client.gui.show_rail_polyline_tool) {
 			this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(SZSP_NONE);
@@ -542,7 +541,6 @@ struct BuildRailToolbarWindow : Window {
 		this->FinishInitNested(TRANSPORT_RAIL);
 		this->DisableWidget(WID_RAT_REMOVE);
 		this->OnInvalidateData();
-		this->last_user_action = INVALID_WID_RAT;
 
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
 	}
@@ -1264,7 +1262,7 @@ public:
 
 struct BuildRailStationWindow : public PickerWindow {
 private:
-	uint coverage_height; ///< Height of the coverage texts.
+	uint coverage_height = 0; ///< Height of the coverage texts.
 
 	/**
 	 * Verify whether the currently selected station size is allowed after selecting a new station class/type.
@@ -1667,13 +1665,13 @@ static Window *ShowStationBuilder(Window *parent)
 
 struct BuildSignalWindow : public PickerWindowBase {
 private:
-	Dimension sig_sprite_size;     ///< Maximum size of signal GUI sprites.
-	int sig_sprite_bottom_offset;  ///< Maximum extent of signal GUI sprite from reference point towards bottom.
-	bool all_signal_mode;          ///< Whether all signal mode is shown
-	bool progsig_ui_shown;         ///< Whether programmable pre-signal UI is shown
-	bool realistic_braking_mode;   ///< Whether realistic braking mode UI is shown
-	bool noentry_ui_shown;         ///< Whether no-entry signal UI is shown
-	bool style_selector_shown;     ///< Whether the style selector is shown
+	Dimension sig_sprite_size{};         ///< Maximum size of signal GUI sprites.
+	int sig_sprite_bottom_offset = 0;    ///< Maximum extent of signal GUI sprite from reference point towards bottom.
+	bool all_signal_mode = false;        ///< Whether all signal mode is shown
+	bool progsig_ui_shown = false;       ///< Whether programmable pre-signal UI is shown
+	bool realistic_braking_mode = false; ///< Whether realistic braking mode UI is shown
+	bool noentry_ui_shown = false;       ///< Whether no-entry signal UI is shown
+	bool style_selector_shown = false;   ///< Whether the style selector is shown
 
 	/**
 	 * Draw dynamic a signal-sprite in a button in the signal GUI
@@ -2513,13 +2511,13 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 
-		SetDParam(0, rti->strings.menu_text);
-		SetDParam(1, rti->max_speed);
 		if (for_replacement) {
-			list.push_back(MakeDropDownListBadgeItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListBadgeItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, GetString(rti->strings.replace_text), rt, !HasBit(avail_railtypes, rt)));
 		} else {
-			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
+			std::string str = rti->max_speed > 0
+				? GetString(STR_TOOLBAR_RAILTYPE_VELOCITY, rti->strings.menu_text, rti->max_speed)
+				: GetString(rti->strings.menu_text);
+			list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_rail, PAL_NONE, std::move(str), rt, !HasBit(avail_railtypes, rt)));
 		}
 	}
 

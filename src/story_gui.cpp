@@ -56,15 +56,15 @@ protected:
 		Right,
 	};
 
-	Scrollbar *vscroll;                ///< Scrollbar of the page text.
-	mutable LayoutCache layout_cache;  ///< Cached element layout.
+	Scrollbar *vscroll = nullptr; ///< Scrollbar of the page text.
+	mutable LayoutCache layout_cache{}; ///< Cached element layout.
 
-	GUIStoryPageList story_pages;      ///< Sorted list of pages.
-	GUIStoryPageElementList story_page_elements; ///< Sorted list of page elements that belong to the current page.
-	StoryPageID selected_page_id;      ///< Pool index of selected page.
-	std::string selected_generic_title;  ///< If the selected page doesn't have a custom title, this buffer is used to store a generic page title.
+	GUIStoryPageList story_pages{}; ///< Sorted list of pages.
+	GUIStoryPageElementList story_page_elements{}; ///< Sorted list of page elements that belong to the current page.
+	StoryPageID selected_page_id{}; ///< Pool index of selected page.
+	std::string selected_generic_title{}; ///< If the selected page doesn't have a custom title, this buffer is used to store a generic page title.
 
-	StoryPageElementID active_button_id; ///< Which button element the player is currently using
+	StoryPageElementID active_button_id{}; ///< Which button element the player is currently using
 
 	static const std::initializer_list<GUIStoryPageList::SortFunction * const> page_sorter_funcs;
 	static const std::initializer_list<GUIStoryPageElementList::SortFunction * const> page_element_sorter_funcs;
@@ -254,11 +254,10 @@ protected:
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			if (!p->title.empty()) {
-				list.push_back(MakeDropDownListStringItem(p->title, p->index.base(), current_page));
+				list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_RAW_STRING, p->title), p->index.base(), current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
-				SetDParam(0, page_num);
-				list.push_back(MakeDropDownListStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index.base(), current_page));
+				list.push_back(MakeDropDownListStringItem(GetString(STR_STORY_BOOK_GENERIC_PAGE_ITEM, page_num), p->index.base(), current_page));
 			}
 			page_num++;
 		}

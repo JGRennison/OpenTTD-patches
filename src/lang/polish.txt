@@ -1390,7 +1390,7 @@ STR_GAME_OPTIONS_CURRENCY_BRL                                   :Real brazylijsk
 STR_GAME_OPTIONS_CURRENCY_EEK                                   :Korony estońskie
 STR_GAME_OPTIONS_CURRENCY_LTL                                   :Lit litewski
 STR_GAME_OPTIONS_CURRENCY_KRW                                   :Won południowokoreański
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand Południowej Afryki
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand południowoafrykański
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Własna...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari gruzińskie
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial irański
@@ -1399,8 +1399,8 @@ STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso meksykańs
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nowy dolar tajwański
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Juan chiński
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dolar hongkoński
-STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia Indyjska
-STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia Indonezyjska
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia indyjska
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia indonezyjska
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malezyjski
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Łat łotewski
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portugalskie

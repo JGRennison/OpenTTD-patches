@@ -53,10 +53,10 @@ static bool DrawScrollingStatusText(const NewsItem *ni, int scroll_pos, int left
 }
 
 struct StatusBarWindow : Window {
-	bool saving;
-	int ticker_scroll;
-	GUITimer ticker_timer;
-	GUITimer reminder_timeout;
+	bool saving = false;
+	int ticker_scroll = TICKER_STOP;
+	GUITimer ticker_timer{};
+	GUITimer reminder_timeout{};
 	TickMinutes last_minute{0};
 
 	static const int TICKER_STOP    = 1640; ///< scrolling is finished when counter reaches this value
@@ -66,7 +66,6 @@ struct StatusBarWindow : Window {
 
 	StatusBarWindow(WindowDesc &desc) : Window(desc)
 	{
-		this->ticker_scroll = TICKER_STOP;
 		this->ticker_timer.SetInterval(15);
 		this->reminder_timeout.SetInterval(REMINDER_STOP);
 

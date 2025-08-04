@@ -1591,16 +1591,16 @@ private:
 		DP_MGMT_LIST_BTN     = 1, ///< Display order list management button
 	};
 
-	int selected_order;
-	VehicleOrderID order_over;         ///< Order over which another order is dragged, \c INVALID_VEH_ORDER_ID if none.
-	OrderPlaceObjectState goto_type;
-	Scrollbar *vscroll;
-	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
-	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
-	int query_text_widget; ///< widget which most recently called ShowQueryString
-	std::array<int, 4> current_aux_planes;
-	int current_value_plane;
-	int current_mgmt_plane;
+	int selected_order = -1;
+	VehicleOrderID order_over = INVALID_VEH_ORDER_ID; ///< Order over which another order is dragged, \c INVALID_VEH_ORDER_ID if none.
+	OrderPlaceObjectState goto_type = OPOS_NONE;
+	Scrollbar *vscroll = nullptr;
+	bool can_do_refit = false;     ///< Vehicle chain can be refitted in depot.
+	bool can_do_autorefit = false; ///< Vehicle chain can be auto-refitted.
+	int query_text_widget = -1;    ///< widget which most recently called ShowQueryString
+	std::array<int, 4> current_aux_planes{};
+	int current_value_plane = 0;
+	int current_mgmt_plane = 0;
 
 	/**
 	 * Return the memorised selected order.
@@ -2016,9 +2016,6 @@ public:
 		}
 		this->FinishInitNested(v->index);
 
-		this->selected_order = -1;
-		this->order_over = INVALID_VEH_ORDER_ID;
-		this->goto_type = OPOS_NONE;
 		this->owner = v->owner;
 
 		this->UpdateAutoRefitState();
@@ -3186,7 +3183,7 @@ public:
 					if (ds.ScheduleName().empty()) {
 						list.push_back(MakeDropDownListStringItem(GetString(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i + 1), i, false));
 					} else {
-						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
+						list.push_back(MakeDropDownListStringItem(std::string{ds.ScheduleName()}, i, false));
 					}
 				}
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0, DDMF_NONE, DDSF_SHARED);

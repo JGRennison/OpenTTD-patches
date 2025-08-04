@@ -403,25 +403,23 @@ bool HaveTimetableWarnings(const Vehicle *v)
 }
 
 struct TimetableWindow : GeneralVehicleWindow {
-	int sel_index;
-	bool show_expected;     ///< Whether we show expected arrival or scheduled
-	uint deparr_time_width; ///< The width of the departure/arrival time
-	uint deparr_abbr_width; ///< The width of the departure/arrival abbreviation
-	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
-	Scrollbar *vscroll;
-	bool query_is_speed_query; ///< The currently open query window is a speed query and not a time query.
-	bool set_start_date_all;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
-	bool change_timetable_all; ///< Set wait time or speed for all timetable entries (ctrl-click) action
-	int summary_warnings = 0;  ///< NUmber of summary warnings shown
+	int sel_index = -1;
+	bool show_expected = true;         ///< Whether we show expected arrival or scheduled
+	uint deparr_time_width = 0;        ///< The width of the departure/arrival time
+	uint deparr_abbr_width = 0;        ///< The width of the departure/arrival abbreviation
+	int clicked_widget = -1;           ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
+	Scrollbar *vscroll = nullptr;
+	bool query_is_speed_query = false; ///< The currently open query window is a speed query and not a time query.
+	bool set_start_date_all = false;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
+	bool change_timetable_all = false; ///< Set wait time or speed for all timetable entries (ctrl-click) action
+	int summary_warnings = 0;          ///< Number of summary warnings shown
 
 	enum {
 		MAX_SUMMARY_WARNINGS = 10,
 	};
 
 	TimetableWindow(WindowDesc &desc, WindowNumber window_number) :
-			GeneralVehicleWindow(desc, Vehicle::Get(window_number)),
-			sel_index(-1),
-			show_expected(true)
+			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_VT_SCROLLBAR);
@@ -1169,7 +1167,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					if (ds.ScheduleName().empty()) {
 						list.push_back(MakeDropDownListStringItem(GetString(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i + 1), i, false));
 					} else {
-						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
+						list.push_back(MakeDropDownListStringItem(std::string{ds.ScheduleName()}, i, false));
 					}
 				}
 				ShowDropDownList(this, std::move(list), order->GetDispatchScheduleIndex(), WID_VT_ASSIGN_SCHEDULE, 0, DDMF_NONE, DDSF_SHARED);
