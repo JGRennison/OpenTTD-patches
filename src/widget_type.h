@@ -870,7 +870,7 @@ private:
 	size_type count = 0;            ///< Number of elements in the list.
 	size_type cap = 0;              ///< Number of visible elements of the scroll bar.
 	size_type pos = 0;              ///< Index of first visible item of the list.
-	size_type stepsize = 0;         ///< Distance to scroll, when pressing the buttons or using the wheel.
+	size_type stepsize = 1;         ///< Distance to scroll, when pressing the buttons or using the wheel.
 
 public:
 	/** Stepping sizes when scrolling */
