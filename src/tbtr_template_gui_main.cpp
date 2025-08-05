@@ -104,7 +104,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, TRW_CAPTION), SetStringTip(STR_TMPL_RPL_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, TRW_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -269,8 +269,7 @@ public:
 
 				int gap = ScaleGUITrad(TRW_GAP);
 
-				SetDParamMaxDigits(0, 8);
-				this->buy_cost_width = GetStringBoundingBox(STR_TMPL_TEMPLATE_OVR_VALUE).width + gap;
+				this->buy_cost_width = GetStringBoundingBox(GetString(STR_TMPL_TEMPLATE_OVR_VALUE, GetParamMaxDigits(8))).width + gap;
 
 				this->refit_text_width = maxdim(GetStringBoundingBox(STR_TMPL_CONFIG_REFIT_AS_TEMPLATE), GetStringBoundingBox(STR_TMPL_CONFIG_REFIT_AS_INCOMING)).width;
 				this->depot_text_width = GetStringBoundingBox(STR_TMPL_CONFIG_USEDEPOT).width + gap;
@@ -308,12 +307,14 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case TRW_CAPTION:
-				SetDParam(0, STR_TMPL_RPL_TITLE);
-				break;
+				return GetString(STR_TMPL_RPL_TITLE);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -736,20 +737,22 @@ public:
 			}
 
 			const int text_y = y + (this->top_matrix_step_height - GetCharacterHeight(FS_NORMAL)) / 2;
-			auto draw_text = [&](int left, int right, StringID str, TextColour colour, StringAlignment align) {
+			auto draw_text_str = [&](int left, int right, std::string_view str, TextColour colour, StringAlignment align) {
 				if (rtl) {
 					DrawString(r.left + (r.right - right), r.right - (left - r.left), text_y, str, colour, align);
 				} else {
 					DrawString(left, right, text_y, str, colour, align);
 				}
 			};
+			auto draw_text = [&](int left, int right, StringID str, TextColour colour, StringAlignment align) {
+				draw_text_str(left, right, GetString(str), colour, align);
+			};
 
 			const int col1 = left + (2 * left + right) / 3;
 			const int col2 = left + (left + 2 * right) / 3;
 
-			SetDParam(0, g_id);
-			draw_text(left + WidgetDimensions::scaled.hsep_normal + this->fold_sprite_dim.width + (it->indent * WidgetDimensions::scaled.hsep_indent),
-					col1 - WidgetDimensions::scaled.hsep_normal, STR_GROUP_NAME, g_id == this->selected_group ? TC_WHITE : TC_BLACK, SA_LEFT);
+			draw_text_str(left + WidgetDimensions::scaled.hsep_normal + this->fold_sprite_dim.width + (it->indent * WidgetDimensions::scaled.hsep_indent),
+					col1 - WidgetDimensions::scaled.hsep_normal, GetString(STR_GROUP_NAME, g_id), g_id == this->selected_group ? TC_WHITE : TC_BLACK, SA_LEFT);
 
 			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
@@ -760,14 +763,13 @@ public:
 				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
 			} else if (template_in_use >= 0) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
-				SetDParam(1, template_in_use);
+				std::string str;
 				if (tv->name.empty()) {
-					SetDParam(0, STR_JUST_INT);
+					str = GetString(STR_TMPL_GROUP_USES_TEMPLATE, STR_JUST_INT, template_in_use, std::monostate{});
 				} else {
-					SetDParam(0, STR_TMPL_NAME);
-					SetDParamStr(2, tv->name);
+					str = GetString(STR_TMPL_GROUP_USES_TEMPLATE, STR_TMPL_NAME, template_in_use, tv->name);
 				}
-				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+				draw_text_str(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, str, TC_BLACK, SA_HOR_CENTER);
 			} else if (tid != INVALID_TEMPLATE) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
 				draw_text(col1 + WidgetDimensions::scaled.hsep_normal, col2 - WidgetDimensions::scaled.hsep_normal, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
@@ -776,9 +778,9 @@ public:
 			if (tid != INVALID_TEMPLATE) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tid);
 				const uint num_trains = CountTrainsNeedingTemplateReplacement(g_id, tv);
-				SetDParam(0, num_trains > 0 ? TC_ORANGE : TC_GREY);
-				SetDParam(1, num_trains);
-				draw_text(col2 + WidgetDimensions::scaled.hsep_normal, right - WidgetDimensions::scaled.hsep_normal, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
+				draw_text_str(col2 + WidgetDimensions::scaled.hsep_normal, right - WidgetDimensions::scaled.hsep_normal,
+						GetString(STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains > 0 ? TC_ORANGE : TC_GREY, num_trains),
+						num_trains > 0 ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
 			y += this->top_matrix_step_height;
@@ -810,23 +812,23 @@ public:
 			/* Draw the template */
 			DrawTemplate(v, r.left + ScaleGUITrad(rtl ? TRW_RIGHT_OFFSET : TRW_LEFT_OFFSET), r.right - ScaleGUITrad(rtl ? TRW_LEFT_OFFSET : TRW_RIGHT_OFFSET), y, ScaleGUITrad(15));
 
-			auto draw_text_across = [&](int left_offset, int right_offset, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_across = [&](int left_offset, int right_offset, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
 				DrawString(r.left + (rtl ? right_offset : left_offset), r.right - (rtl ? left_offset : right_offset), y + y_offset, str, colour, align, false, fontsize);
 			};
 
-			auto draw_text_left = [&](int left_offset, int left_offset_end, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_left = [&](int left_offset, int left_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
 				int left = (rtl ? (r.right - left_offset_end) : (r.left + left_offset));
 				DrawString(left, left + (left_offset_end - left_offset), y + y_offset, str, colour, align, false, fontsize);
 			};
 
-			auto draw_text_right = [&](int right_offset, int right_offset_end, int y_offset, StringID str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_right = [&](int right_offset, int right_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
 				int left = (rtl ? (r.left + right_offset_end) : (r.right - right_offset));
 				DrawString(left, left + (right_offset - right_offset_end), y + y_offset, str, colour, align, false, fontsize);
 			};
 
 			/* Draw a notification string for chains that are not runnable */
 			if (v->IsFreeWagonChain()) {
-				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), GetString(STR_TMPL_WARNING_FREE_WAGON), TC_RED, SA_RIGHT);
 			}
 
 			bool buildable = true;
@@ -841,29 +843,27 @@ public:
 			}
 			/* Draw a notification string for chains that are not buildable */
 			if (!buildable) {
-				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_VEH_UNAVAILABLE, TC_RED, SA_CENTER);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), GetString(STR_TMPL_WARNING_VEH_UNAVAILABLE), TC_RED, SA_CENTER);
 			} else if (types == RAILTYPES_NONE) {
-				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE, TC_RED, SA_CENTER);
+				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), GetString(STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE), TC_RED, SA_CENTER);
 			}
 
 			/* Draw the template's length in tile-units */
-			SetDParam(0, v->GetRealLength());
-			SetDParam(1, 1);
-			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, FS_SMALL);
+			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), GetString(STR_JUST_DECIMAL, v->GetRealLength(), 1), TC_BLACK, SA_RIGHT, FS_SMALL);
 
 			int bottom_edge = this->bottom_matrix_item_size - GetCharacterHeight(FS_NORMAL) - WidgetDimensions::scaled.framerect.bottom;
 
 			/* Buying cost */
-			SetDParam(0, CalculateOverallTemplateCost(v));
-			draw_text_left(ScaleGUITrad(TRW_LEFT_OFFSET), ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE, TC_BLUE, SA_LEFT);
+			draw_text_left(ScaleGUITrad(TRW_LEFT_OFFSET), ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, bottom_edge,
+					GetString(STR_TMPL_TEMPLATE_OVR_VALUE, CalculateOverallTemplateCost(v)),
+					TC_BLUE, SA_LEFT);
 
 			/* Index of current template vehicle in the list of all templates for its company */
-			SetDParam(0, i);
-			draw_text_left(ScaleGUITrad(5), ScaleGUITrad(25), ScaleGUITrad(2), STR_JUST_INT, TC_BLACK, SA_RIGHT);
+			draw_text_left(ScaleGUITrad(5), ScaleGUITrad(25), ScaleGUITrad(2), GetString(STR_JUST_INT, i), TC_BLACK, SA_RIGHT);
 
 			/* Draw whether the current template is in use by any group */
 			if (v->NumGroupsUsingTemplate() > 0) {
-				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET), 0, ScaleGUITrad(2), STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
+				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET), 0, ScaleGUITrad(2), GetString(STR_TMP_TEMPLATE_IN_USE), TC_GREEN, SA_LEFT);
 			}
 
 			/* Draw information about template configuration settings */
@@ -872,23 +872,22 @@ public:
 
 			TextColour color;
 			color = v->IsReplaceOldOnly() ? TC_LIGHT_BLUE : TC_GREY;
-			draw_text_right(r_offset + this->old_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_RIGHT);
+			draw_text_right(r_offset + this->old_text_width, r_offset, bottom_edge, GetString(STR_TMPL_CONFIG_OLD_ONLY), color, SA_RIGHT);
 			r_offset += this->old_text_width;
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			draw_text_right(r_offset + this->remainder_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_RIGHT);
+			draw_text_right(r_offset + this->remainder_text_width, r_offset, bottom_edge, GetString(STR_TMPL_CONFIG_KEEPREMAINDERS), color, SA_RIGHT);
 			r_offset += this->remainder_text_width;
 
 			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			draw_text_right(r_offset + this->depot_text_width, r_offset, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_RIGHT);
+			draw_text_right(r_offset + this->depot_text_width, r_offset, bottom_edge, GetString(STR_TMPL_CONFIG_USEDEPOT), color, SA_RIGHT);
 			r_offset += this->depot_text_width;
 
-			draw_text_right(r_offset + this->refit_text_width, r_offset, bottom_edge, v->IsSetRefitAsTemplate() ? STR_TMPL_CONFIG_REFIT_AS_TEMPLATE : STR_TMPL_CONFIG_REFIT_AS_INCOMING, TC_FROMSTRING, SA_LEFT);
+			draw_text_right(r_offset + this->refit_text_width, r_offset, bottom_edge, GetString(v->IsSetRefitAsTemplate() ? STR_TMPL_CONFIG_REFIT_AS_TEMPLATE : STR_TMPL_CONFIG_REFIT_AS_INCOMING), TC_FROMSTRING, SA_LEFT);
 			r_offset += this->refit_text_width;
 
 			if (!v->name.empty()) {
-				SetDParamStr(0, v->name);
-				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, r_offset + ScaleGUITrad(TRW_GAP), bottom_edge, STR_JUST_RAW_STRING, TC_BLACK, SA_LEFT);
+				draw_text_across(ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, r_offset + ScaleGUITrad(TRW_GAP), bottom_edge, v->name, TC_BLACK, SA_LEFT);
 			}
 
 			y += this->bottom_matrix_item_size;
@@ -915,37 +914,41 @@ public:
 		int left = ScaleGUITrad(8);
 		int right = (r.right - r.left) - left;
 
-		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
-		DrawString(left, right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+		DrawString(left, right, top, GetString(STR_TMPL_TEMPLATE_OVR_RUNNING_COST, CalculateOverallTemplateDisplayRunningCost(tmp)));
 		top += GetCharacterHeight(FS_NORMAL);
 
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 				GetRailTypeInfo(tmp->railtype)->acceleration_type == 2);
-		SetDParam(2, tmp->max_speed);
-		SetDParam(1, tmp->power);
-		SetDParam(0, tmp->empty_weight);
-		SetDParam(3, tmp->max_te);
-		DrawString(left, right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+		DrawString(left, right, top, GetString(original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
+				tmp->empty_weight, tmp->power, tmp->max_speed, tmp->max_te));
 
 		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
 			top += GetCharacterHeight(FS_NORMAL);
-			SetDParam(0, tmp->full_weight);
+			std::string str;
 			if (_settings_client.gui.show_train_weight_ratios_in_details) {
-				SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-				SetDParam(2, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
-				SetDParam(3, (100 * tmp->power) / std::max<uint>(1, tmp->full_weight));
-				SetDParam(4, GetRailTypeInfo(tmp->railtype)->acceleration_type == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
-				SetDParam(5, (100 * tmp->max_te) / std::max<uint>(1, tmp->full_weight));
+				str = GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,
+						tmp->full_weight,
+						STR_VEHICLE_INFO_WEIGHT_RATIOS,
+						STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
+						(100 * tmp->power) / std::max<uint>(1, tmp->full_weight),
+						GetRailTypeInfo(tmp->railtype)->acceleration_type == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+						(100 * tmp->max_te) / std::max<uint>(1, tmp->full_weight));
 			} else {
-				SetDParam(1, STR_EMPTY);
+				str = GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,
+						tmp->full_weight,
+						STR_EMPTY,
+						std::monostate{},
+						std::monostate{},
+						std::monostate{},
+						std::monostate{});
 			}
-			DrawString(8, right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
+			DrawString(8, right, top, str);
 		}
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 			top += GetCharacterHeight(FS_NORMAL);
-			SetDParam(0, GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed));
-			DrawString(8, right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+			DrawString(8, right, top, GetString(STR_VEHICLE_INFO_MAX_SPEED_LOADED,
+					GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed)));
 		}
 
 		/* Draw cargo summary */
@@ -963,11 +966,12 @@ public:
 		for (CargoType i = 0; i < NUM_CARGO; ++i) {
 			if (cargo_caps[i] > 0) {
 				count_columns++;
-				SetDParam(0, i);
-				SetDParam(1, cargo_caps[i]);
-				SetDParam(2, _settings_game.vehicle.freight_trains);
+				std::string str = GetString(FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY,
+						i,
+						cargo_caps[i],
+						_settings_game.vehicle.freight_trains);
 				int pos = rtl ? right - step - x : left + x;
-				DrawString(pos, pos + step, top, FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
+				DrawString(pos, pos + step, top, str, TC_LIGHT_BLUE, SA_LEFT);
 				x += step;
 				if (count_columns % max_columns == 0) {
 					x = 0;
