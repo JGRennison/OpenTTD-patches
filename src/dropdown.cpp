@@ -47,6 +47,11 @@ std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim,
 	return std::make_unique<DropDownListIconItem>(dim, sprite, palette, GetString(str), value, masked, shaded);
 }
 
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim, SpriteID sprite, PaletteID palette, std::string &&str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListIconItem>(dim, sprite, palette, std::move(str), value, masked, shaded);
+}
+
 std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked, bool shaded, uint indent)
 {
 	return std::make_unique<DropDownListCheckedItem>(indent, checked, GetString(str), value, masked, shaded);

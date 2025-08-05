@@ -556,7 +556,7 @@ struct PublicRoadsWindow : Window {
 				auto road_types = GetScenRoadTypeDropDownList(RTTB_ROAD, true);
 				auto road_types_list = DropDownList{};
 				auto town_road = GetTownRoadType();
-				// check if the town road is an available road type
+				/* Check if the town road is an available road type. */
 				bool has_town_road = false;
 				for (auto rt_iter = road_types.begin(); rt_iter < road_types.end(); rt_iter++) {
 					if ((RoadType)rt_iter->get()->result == town_road) {
@@ -565,12 +565,14 @@ struct PublicRoadsWindow : Window {
 					}
 				}
 				if (!has_town_road) {
-					// taken from GetScenRoadTypeDropDownList()
 					const RoadTypeInfo *rti = GetRoadTypeInfo(town_road);
-					SetDParam(0, rti->strings.name);
-					SetDParam(1, rti->max_speed / 2);
-					StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-					road_types.push_back(MakeDropDownListIconItem(GetSpriteSize(rti->gui_sprites.build_x_road), rti->gui_sprites.build_x_road, PAL_NONE, str, town_road, false));
+					std::string str;
+					if (rti->max_speed > 0) {
+						str = GetString(STR_TOOLBAR_RAILTYPE_VELOCITY, rti->strings.name, rti->max_speed / 2);
+					} else {
+						str = GetString(rti->strings.name);
+					}
+					road_types.push_back(MakeDropDownListIconItem(GetSpriteSize(rti->gui_sprites.build_x_road), rti->gui_sprites.build_x_road, PAL_NONE, std::move(str), town_road, false));
 				}
 
 				ShowDropDownList(this, std::move(road_types), _selected_public_road_type, widget);
@@ -606,11 +608,13 @@ struct PublicRoadsWindow : Window {
 
 				Dimension d = { 0, 0 };
 				d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_road));
-				SetDParam(0, rti->strings.name);
-				SetDParam(1, rti->max_speed / 2);
-				StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-
-				auto item = MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, _selected_public_road_type);
+				std::string str;
+				if (rti->max_speed > 0) {
+					str = GetString(STR_TOOLBAR_RAILTYPE_VELOCITY, rti->strings.name, rti->max_speed / 2);
+				} else {
+					str = GetString(rti->strings.name);
+				}
+				auto item = MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, std::move(str), _selected_public_road_type);
 				auto item_height = item->Height();
 
 				Rect ir = r.Shrink(WidgetDimensions::scaled.dropdownlist);
