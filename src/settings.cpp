@@ -2258,8 +2258,8 @@ static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA;
+			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA, data.text);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
@@ -2271,8 +2271,8 @@ static bool AllowRoadStopsUnderBridgesSettingGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA;
+			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA, data.text);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
@@ -2302,8 +2302,8 @@ static bool TreePlacerSettingGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA;
+			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA, data.text);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
@@ -2315,8 +2315,8 @@ static bool DefaultSignalsSettingGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA;
+			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA, data.text);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
@@ -2328,8 +2328,8 @@ static bool ChunnelSettingGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, 3);
-			SetDParam(1, 8);
+			_temp_special_strings[0] = GetString(data.text, 3, 8);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
@@ -2359,8 +2359,8 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA;
+			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA, data.text);
+			data.text = SPECSTR_TEMP_START;
 			return true;
 
 		default:
