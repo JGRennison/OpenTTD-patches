@@ -2828,37 +2828,34 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	const int x_str = x_centre - (str_width / 2);
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
-		SetDParam(0, list.size());
 		DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-				STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
-			bool ok = true;
+			StringID str = INVALID_STRING_ID;
 			switch (cit->second) {
 				case RSOT_GOTO_STATION:
-					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
+					str = STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION;
 					break;
 				case RSOT_VIA_STATION:
-					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION);
+					str = STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION;
 					break;
 				case RSOT_DEPOT:
-					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
+					str = STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT;
 					break;
 				case RSOT_WAYPOINT:
-					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
+					str = STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT;
 					break;
 				case RSOT_IMPLICIT:
-					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
+					str = STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT;
 					break;
 				default:
-					ok = false;
 					break;
 			}
-			if (ok) {
+			if (str != INVALID_STRING_ID) {
 				/* Write order info */
-				SetDParam(0, cit->first);
 				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-						STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
 			}
 		}
 	}
