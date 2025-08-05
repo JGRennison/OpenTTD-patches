@@ -2037,8 +2037,7 @@ struct CompanyInfrastructureWindow : Window
 				/* Draw name of each valid roadtype. */
 				for (const auto &rt : _sorted_roadtypes) {
 					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
-						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
-						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), STR_JUST_STRING, TC_WHITE);
+						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), GetRoadTypeInfo(rt)->strings.name, TC_WHITE);
 					}
 				}
 
@@ -2049,8 +2048,7 @@ struct CompanyInfrastructureWindow : Window
 				/* Draw name of each valid roadtype. */
 				for (const auto &rt : _sorted_roadtypes) {
 					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
-						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
-						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), STR_JUST_STRING, TC_WHITE);
+						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), GetRoadTypeInfo(rt)->strings.name, TC_WHITE);
 					}
 				}
 
@@ -2112,7 +2110,6 @@ struct CompanyInfrastructureWindow : Window
 					int left = _current_text_dir == TD_RTL ? width - this->total_width : 0;
 					GfxFillRect(left, y, left + this->total_width, y + WidgetDimensions::scaled.bevel.top - 1, PC_WHITE);
 					y += WidgetDimensions::scaled.vsep_normal;
-					SetDParam(0, this->GetTotalMaintenanceCost() * 12); // Convert to per year
 					DrawString(left, left + this->total_width, y, GetString(EconTime::UsingWallclockUnits() ? STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD : STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR, this->GetTotalMaintenanceCost() * 12), TC_FROMSTRING, SA_RIGHT);
 				}
 				break;
@@ -2394,11 +2391,9 @@ struct CompanyWindow : Window
 			}
 
 			case WID_C_DESC_OWNERS: {
+				int64_t max_value = GetParamMaxValue(75);
 				for (const Company *c2 : Company::Iterate()) {
-					SetDParamMaxValue(0, 75);
-					SetDParam(1, c2->index);
-
-					size.width = std::max(size.width, GetStringBoundingBox(STR_COMPANY_VIEW_SHARES_OWNED_BY).width);
+					size.width = std::max(size.width, GetStringBoundingBox(GetString(STR_COMPANY_VIEW_SHARES_OWNED_BY, max_value, c2->index)).width);
 				}
 				break;
 			}
@@ -2520,10 +2515,7 @@ struct CompanyWindow : Window
 				for (const Company *c2 : Company::Iterate()) {
 					uint amt = GetAmountOwnedBy(c, c2->index);
 					if (amt != 0) {
-						SetDParam(0, amt * 25);
-						SetDParam(1, c2->index);
-
-						DrawString(r.left, r.right, y, STR_COMPANY_VIEW_SHARES_OWNED_BY);
+						DrawString(r.left, r.right, y, GetString(STR_COMPANY_VIEW_SHARES_OWNED_BY, amt * 25, c2->index));
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 				}
