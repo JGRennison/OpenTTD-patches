@@ -93,8 +93,7 @@ struct ZoningWindow : public Window {
 		DropDownList list;
 		for (const ZoningModeInfo &info : _zone_modes) {
 			if (info.debug && !IsDebugEnabled()) continue;
-			SetDParamStr(0, info.param);
-			list.push_back(MakeDropDownListStringItem(info.str, info.mode, false));
+			list.push_back(MakeDropDownListStringItem(GetString(info.str, info.param), info.mode, false));
 		}
 		ShowDropDownList(this, std::move(list), current, widget);
 	}
@@ -126,16 +125,17 @@ struct ZoningWindow : public Window {
 		this->InvalidateData();
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN: {
 				const ZoningModeInfo &info = ZoningEvaluationModeToInfo(widget == ZTW_OUTER_DROPDOWN ? _zoning.outer : _zoning.inner);
-				SetDParam(0, info.str);
-				SetDParamStr(1, info.param);
-				break;
+				return GetString(info.str, info.param);
 			}
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -145,8 +145,7 @@ struct ZoningWindow : public Window {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN:
 				for (const ZoningModeInfo &info : _zone_modes) {
-					SetDParamStr(0, info.param);
-					size = maxdim(size, GetStringBoundingBox(info.str));
+					size = maxdim(size, GetStringBoundingBox(GetString(info.str, info.param)));
 				}
 				break;
 
@@ -173,8 +172,8 @@ static constexpr NWidgetPart _nested_zoning_widgets[] = {
 				NWidget(WWT_TEXT, INVALID_COLOUR), SetStringTip(STR_ZONING_INNER, STR_ZONING_INNER_INFO), SetResize(1, 0), SetPadding(1, 6, 1, 6),
 			EndContainer(),
 			NWidget(NWID_VERTICAL), SetPadding(5, 0, 5, 0), SetPIP(0, 5, 0),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_OUTER_DROPDOWN), SetStringTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_INNER_DROPDOWN), SetStringTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_OUTER_DROPDOWN), SetFill(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, ZTW_INNER_DROPDOWN), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),
 	EndContainer()
