@@ -248,17 +248,18 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	TownID town_id = GetTownIndex(tile);
 	const Town *town = Town::Get(town_id);
 
-	std::array<StringParameter, 4> params;
+	StringID tooltip_prefix;
+	std::array<StringParameter, 2> params;
 	if (_settings_client.gui.population_in_label) {
-		params[0] = STR_TOWN_NAME_POP_TOOLTIP;
-		params[1] = town_id;
-		params[2] = town->cache.population;
+		tooltip_prefix = STR_TOWN_NAME_POP_TOOLTIP;
+		params[0] = town_id;
+		params[1] = town->cache.population;
 	} else {
-		params[0] = STR_TOWN_NAME_TOOLTIP;
-		params[1] = town_id;
+		tooltip_prefix = STR_TOWN_NAME_TOOLTIP;
+		params[0] = town_id;
 	}
 
-	StringID tooltip_string;
+	EncodedString tooltip_string;
 	if (_game_mode == GM_NORMAL && _local_company < MAX_COMPANIES && town->have_ratings.Test(_local_company)) {
 		const int local_authority_rating_thresholds[] = { RATING_APPALLING, RATING_VERYPOOR, RATING_POOR, RATING_MEDIOCRE, RATING_GOOD, RATING_VERYGOOD,
 													RATING_EXCELLENT, RATING_OUTSTANDING };
@@ -267,12 +268,12 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 		int local_rating = town->ratings[_local_company];
 		StringID rating_string = STR_CARGO_RATING_APPALLING;
 		for (size_t i = 0; i < threshold_count && local_rating > local_authority_rating_thresholds[i]; ++i) ++rating_string;
-		params[3] = rating_string;
-		tooltip_string = STR_TOWN_NAME_RATING_TOOLTIP;
+
+		tooltip_string = GetEncodedString(STR_TOWN_NAME_RATING_TOOLTIP, tooltip_prefix, params[0], params[1], rating_string);
 	} else {
-		tooltip_string = STR_JUST_STRING2;
+		tooltip_string = GetEncodedString(tooltip_prefix, params[0], params[1]);
 	}
-	GuiShowTooltips(w, GetEncodedStringWithArgs(tooltip_string, params), TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, std::move(tooltip_string), TCC_HOVER_VIEWPORT);
 }
 
 void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
