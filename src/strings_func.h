@@ -70,9 +70,9 @@ static inline void PrepareArgsForNextRun(std::span<StringParameter> args)
 	for (auto &param : args) param.type = 0;
 }
 
-std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
-std::string GetString(StringID string);
-const char *GetStringPtr(StringID string);
+[[nodiscard]] std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
+[[nodiscard]] std::string GetString(StringID string);
+[[nodiscard]] const char *GetStringPtr(StringID string);
 void AppendStringInPlaceGlobalParams(struct format_buffer &result, StringID string);
 void AppendStringWithArgsInPlace(struct format_target &result, StringID string, std::span<StringParameter> args);
 void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
@@ -164,7 +164,7 @@ std::string_view GetListSeparator();
  * @return The constructed StringParameters.
  */
 template <typename... Args>
-auto MakeParameters(Args &&... args)
+[[nodiscard]] auto MakeParameters(Args &&... args)
 {
 	return std::array<StringParameter, sizeof...(args)>({StringParameter{std::forward<Args>(args)}...});
 }
@@ -176,14 +176,14 @@ auto MakeParameters(Args &&... args)
  * @return The parsed string.
  */
 template <typename... Args>
-std::string GetString(StringID string, Args &&... args)
+[[nodiscard]] std::string GetString(StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
 	return GetStringWithArgs(string, params);
 }
 
-EncodedString GetEncodedString(StringID str);
-EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
+[[nodiscard]] EncodedString GetEncodedString(StringID str);
+[[nodiscard]] EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
 
 /**
  * Encode a string with no parameters into an encoded string, if the string id is valid.
@@ -204,7 +204,7 @@ static inline EncodedString GetEncodedStringIfValid(StringID str)
  * @return The encoded string.
  */
 template <typename... Args>
-EncodedString GetEncodedString(StringID string, Args &&... args)
+[[nodiscard]] EncodedString GetEncodedString(StringID string, Args &&... args)
 {
 	auto params = MakeParameters(std::forward<Args>(args)...);
 	return GetEncodedStringWithArgs(string, params);
