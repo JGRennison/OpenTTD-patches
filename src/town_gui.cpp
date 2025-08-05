@@ -337,40 +337,45 @@ public:
 						const bool selected = (this->sel_index == (0x100 + i));
 						const TextColour tc = disabled ? (TC_NO_SHADE | (selected ? TC_SILVER : TC_GREY)) : (selected ? TC_WHITE : TC_ORANGE);
 						const bool overridden = HasBit(this->town->override_flags, i);
-						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + i);
-						SetDParam(1, overridden ? STR_JUST_STRING1 : STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT);
+
+						format_buffer buf;
+						auto set_text = [&](StringID str, StringParameter param = {}) {
+							AppendStringInPlace(buf, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR,
+									STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + i,
+									overridden ? STR_JUST_STRING1 : STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_DEFAULT,
+									str, std::move(param));
+						};
+
 						switch (i) {
 							case TSOF_OVERRIDE_BUILD_ROADS:
-								SetDParam(2, this->town->GetAllowBuildRoads() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+								set_text(this->town->GetAllowBuildRoads() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 								break;
 
 							case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
-								SetDParam(2, this->town->GetAllowBuildLevelCrossings() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+								set_text(this->town->GetAllowBuildLevelCrossings() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 								break;
 
 							case TSOF_OVERRIDE_BUILD_TUNNELS: {
 								TownTunnelMode tunnel_mode = this->town->GetBuildTunnelMode();
-								SetDParam(2, STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + tunnel_mode);
+								set_text(STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN + tunnel_mode);
 								break;
 							}
 
 							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS: {
 								uint8_t max_slope = this->town->GetBuildMaxRoadSlope();
-								SetDParam(2, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((max_slope == 0) ? 1 : 0));
-								SetDParam(3, max_slope);
+								set_text(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((max_slope == 0) ? 1 : 0), max_slope);
 								break;
 							}
 
 							case TSOF_OVERRIDE_GROWTH:
-								SetDParam(2, this->town->IsTownGrowthDisabledByOverride() ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED);
+								set_text(this->town->IsTownGrowthDisabledByOverride() ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED);
 								break;
 
 							case TSOF_OVERRIDE_BUILD_BRIDGES:
-								SetDParam(2, this->town->GetAllowBuildBridges() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+								set_text(this->town->GetAllowBuildBridges() ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 								break;
 						}
-						DrawString(ir.left, ir.right, y,
-								STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR, tc);
+						DrawString(ir.left, ir.right, y, buf, tc);
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 				}
@@ -485,8 +490,7 @@ public:
 						dlist.push_back(MakeDropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
 						dlist.push_back(MakeDropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
 						for (int i = 1; i <= 8; i++) {
-							SetDParam(0, i);
-							dlist.push_back(MakeDropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false));
+							dlist.push_back(MakeDropDownListStringItem(GetString(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i), i + 1, false));
 						}
 						ShowDropDownList(this, std::move(dlist), HasBit(this->town->override_flags, idx) ? this->town->max_road_slope + 1 : 0, WID_TA_SETTING);
 						break;
@@ -1704,8 +1708,7 @@ struct SelectTownWindow : Window {
 		/* Determine the widest string */
 		Dimension d = { 0, 0 };
 		for (uint i = 0; i < this->towns.size(); i++) {
-			SetDParam(0, this->towns[i]);
-			d = maxdim(d, GetStringBoundingBox(STR_SELECT_TOWN_LIST_ITEM));
+			d = maxdim(d, GetStringBoundingBox(GetString(STR_SELECT_TOWN_LIST_ITEM, this->towns[i])));
 		}
 
 		resize.height = d.height;
@@ -1723,8 +1726,7 @@ struct SelectTownWindow : Window {
 		uint y = ir.top;
 		uint end = std::min<uint>(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
 		for (uint i = this->vscroll->GetPosition(); i < end; i++) {
-			SetDParam(0, this->towns[i]);
-			DrawString(ir.left, ir.right, y, STR_SELECT_TOWN_LIST_ITEM);
+			DrawString(ir.left, ir.right, y, GetString(STR_SELECT_TOWN_LIST_ITEM, this->towns[i]));
 			y += this->resize.step_height;
 		}
 	}
