@@ -288,13 +288,11 @@ public:
 
 	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch(widget) {
+		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
 				if (this->virtual_train) {
 					DrawTrainImage(this->virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
-					SetDParam(0, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE));
-					SetDParam(1, 1);
-					DrawString(r.left, r.right, r.top, STR_JUST_DECIMAL, TC_BLACK, SA_RIGHT, false, FS_SMALL);
+					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TC_BLACK, SA_RIGHT, false, FS_SMALL);
 				}
 				break;
 			}
@@ -312,7 +310,7 @@ public:
 					bool buildable = true;
 					Money buy_cost = 0;
 					RailTypes types = static_cast<RailTypes>(UINT64_MAX);
-					for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
+					for (const Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 						const Engine *e = Engine::Get(train->engine_type);
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) {
 							buildable = false;
@@ -329,57 +327,65 @@ public:
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 
-					SetDParam(0, STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE);
-					SetDParam(1, buy_cost);
-					SetDParam(2, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
-					SetDParam(3, this->virtual_train->GetDisplayRunningCost());
-					DrawString(left, right, y, STR_TMPL_TEMPLATE_OVR_MULTIPLE);
+					DrawString(left, right, y, GetString(STR_TMPL_TEMPLATE_OVR_MULTIPLE,
+							STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE,
+							buy_cost,
+							STR_TMPL_TEMPLATE_OVR_RUNNING_COST,
+							this->virtual_train->GetDisplayRunningCost()));
 					y += GetCharacterHeight(FS_NORMAL);
 
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 							GetRailTypeInfo(this->virtual_train->railtype)->acceleration_type == 2);
 					const GroundVehicleCache *gcache = this->virtual_train->GetGroundVehicleCache();
-					SetDParam(2, this->virtual_train->GetDisplayMaxSpeed());
-					SetDParam(1, gcache->cached_power);
-					SetDParam(0, gcache->cached_weight);
-					SetDParam(3, gcache->cached_max_te);
-					DrawString(left, right, y, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+					DrawString(left, right, y, GetString(original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
+							gcache->cached_weight,
+							gcache->cached_power,
+							this->virtual_train->GetDisplayMaxSpeed(),
+							gcache->cached_max_te));
+					y += GetCharacterHeight(FS_NORMAL);
+
 					uint32_t full_cargo_weight = 0;
-					for (Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
+					for (const Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
 						full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 					}
 					if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) {
-						y += GetCharacterHeight(FS_NORMAL);
 						uint full_weight = gcache->cached_weight + full_cargo_weight;
-						SetDParam(0, full_weight);
 						if (_settings_client.gui.show_train_weight_ratios_in_details) {
-							SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-							SetDParam(2, STR_VEHICLE_INFO_POWER_WEIGHT_RATIO);
-							SetDParam(3, (100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight));
-							SetDParam(4, this->virtual_train->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO);
-							SetDParam(5, (100 * this->virtual_train->gcache.cached_max_te) / std::max<uint>(1, full_weight));
+							DrawString(left, right, y, GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,
+									full_weight,
+									STR_VEHICLE_INFO_WEIGHT_RATIOS,
+									STR_VEHICLE_INFO_POWER_WEIGHT_RATIO,
+									(100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight),
+									this->virtual_train->GetAccelerationType() == 2 ? STR_EMPTY : STR_VEHICLE_INFO_TE_WEIGHT_RATIO,
+									(100 * this->virtual_train->gcache.cached_max_te) / std::max<uint>(1, full_weight)));
 						} else {
-							SetDParam(1, STR_EMPTY);
+							DrawString(left, right, y, GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,
+									full_weight,
+									STR_EMPTY,
+									std::monostate{},
+									std::monostate{},
+									std::monostate{},
+									std::monostate{}));
 						}
-						DrawString(left, right, y, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
-					}
-					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 						y += GetCharacterHeight(FS_NORMAL);
-						SetDParam(0, GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed()));
-						DrawString(left, right, y, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
 					}
+
+					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+						DrawString(left, right, y, GetString(STR_VEHICLE_INFO_MAX_SPEED_LOADED,
+								GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed())));
+						y += GetCharacterHeight(FS_NORMAL);
+					}
+
 					/* Draw cargo summary */
 					CargoArray cargo_caps{};
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
-					y += GetCharacterHeight(FS_NORMAL) * 2;
+					y += GetCharacterHeight(FS_NORMAL);
 					for (CargoType i = 0; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
-							SetDParam(0, i);
-							SetDParam(1, cargo_caps[i]);
-							DrawString(left, right, y, STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
+							DrawString(left, right, y, GetString(STR_TMPL_CARGO_SUMMARY, i, cargo_caps[i]), TC_LIGHT_BLUE, SA_LEFT);
 							y += GetCharacterHeight(FS_NORMAL);
 						}
 					}
