@@ -1595,7 +1595,7 @@ static constexpr NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_GRAPH_BACKGROUND), SetMinimalSize(568, 128),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_HEADER), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetStringTip(STR_JUST_STRING1), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_HEADER), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GRAPH_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),

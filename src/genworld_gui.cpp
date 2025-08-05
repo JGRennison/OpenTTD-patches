@@ -301,13 +301,13 @@ static constexpr NWidgetPart _nested_heightmap_load_widgets[] = {
 								/* Snow line. */
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_IMGBTN, COLOUR_ORANGE, WID_GL_SNOW_LEVEL_DOWN), SetSpriteTip(SPR_ARROW_DOWN, STR_MAPGEN_SNOW_LINE_DOWN), SetFill(0, 1),
-									NWidget(WWT_TEXTBTN, COLOUR_ORANGE, WID_GL_SNOW_LEVEL_TEXT), SetStringTip(STR_JUST_INT, STR_NULL), SetFill(1, 1),
+									NWidget(WWT_TEXTBTN, COLOUR_ORANGE, WID_GL_SNOW_LEVEL_TEXT), SetFill(1, 1),
 									NWidget(WWT_IMGBTN, COLOUR_ORANGE, WID_GL_SNOW_LEVEL_UP), SetSpriteTip(SPR_ARROW_UP, STR_MAPGEN_SNOW_LINE_UP), SetFill(0, 1),
 								EndContainer(),
 								/* Rainforest line. */
 								NWidget(NWID_HORIZONTAL),
 									NWidget(WWT_IMGBTN, COLOUR_ORANGE, WID_GL_RAINFOREST_LEVEL_DOWN), SetSpriteTip(SPR_ARROW_DOWN, STR_MAPGEN_RAINFOREST_LINE_DOWN), SetFill(0, 1),
-									NWidget(WWT_TEXTBTN, COLOUR_ORANGE, WID_GL_RAINFOREST_LEVEL_TEXT), SetStringTip(STR_JUST_INT, STR_NULL), SetFill(1, 1),
+									NWidget(WWT_TEXTBTN, COLOUR_ORANGE, WID_GL_RAINFOREST_LEVEL_TEXT), SetFill(1, 1),
 									NWidget(WWT_IMGBTN, COLOUR_ORANGE, WID_GL_RAINFOREST_LEVEL_UP), SetSpriteTip(SPR_ARROW_UP, STR_MAPGEN_RAINFOREST_LINE_UP), SetFill(0, 1),
 								EndContainer(),
 							/* Temperate/Toyland spacer. */
