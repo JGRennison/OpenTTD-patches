@@ -880,8 +880,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		}
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			SetDParam(0, cs->name);
-			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
+			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
 			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
 			d.width += WidgetDimensions::scaled.framerect.Horizontal();
 			d.height += WidgetDimensions::scaled.framerect.Vertical();
@@ -924,8 +923,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
 
 			/* Cargo name */
-			SetDParam(0, cs->name);
-			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), STR_GRAPH_CARGO_PAYMENT_CARGO);
+			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
 
 			line = line.Translate(0, this->line_height);
 		}
@@ -1555,37 +1553,34 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_GRAPH_FOOTER_CUSTOM:
 				if (_cargo_payment_x_mode) {
-					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED);
-					SetDParam(1, GetVelocityUnitName(VEH_TRAIN));
+					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED, GetVelocityUnitName(VEH_TRAIN));
+				} else if (_settings_time.time_in_minutes) {
+					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
 				} else {
-					if (_settings_time.time_in_minutes) {
-						SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
-					} else {
-						SetDParam(0, EconTime::UsingWallclockUnits() ? STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS: STR_GRAPH_CARGO_PAYMENT_RATES_DAYS);
-					}
+					return GetString(EconTime::UsingWallclockUnits() ? STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS: STR_GRAPH_CARGO_PAYMENT_RATES_DAYS);
 				}
-				break;
 
 			case WID_GRAPH_HEADER:
 				if (_cargo_payment_x_mode) {
-					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED);
+					return GetString(STR_GRAPH_STATION_CARGO_TITLE, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED);
 				} else {
-					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE);
+					return GetString(STR_GRAPH_STATION_CARGO_TITLE, STR_GRAPH_CARGO_PAYMENT_RATES_TITLE);
 				}
-				break;
 
 			case WID_CPR_DAYS:
 				if (_settings_time.time_in_minutes) {
-					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
+					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
 				} else {
-					SetDParam(0, EconTime::UsingWallclockUnits() ? STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS : STR_GRAPH_CARGO_PAYMENT_RATES_DAYS);
+					return GetString(EconTime::UsingWallclockUnits() ? STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS : STR_GRAPH_CARGO_PAYMENT_RATES_DAYS);
 				}
-				break;
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 };
@@ -1606,7 +1601,7 @@ static constexpr NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GRAPH_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
-				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_DAYS), SetStringTip(STR_JUST_STRING, STR_GRAPH_CARGO_TOOLTIP_TIME_MODE), SetFill(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_DAYS), SetToolTip(STR_GRAPH_CARGO_TOOLTIP_TIME_MODE), SetFill(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_SPEED), SetStringTip(STR_GRAPH_CARGO_SPEED_MODE, STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 16), SetFill(0, 1),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_GRAPH_ENABLE_CARGOES), SetStringTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
@@ -1622,7 +1617,7 @@ static constexpr NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(12, 0), SetFill(0, 0), SetResize(0, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_FOOTER_CUSTOM), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetStringTip(STR_JUST_STRING2, STR_NULL), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_FOOTER_CUSTOM), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_GRAPH_RESIZE), SetStringTip(RWV_HIDE_BEVEL, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -2037,7 +2032,7 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_GRAPH_CAPTION) GetString(STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION, this->window_number);
+		if (widget == WID_GRAPH_CAPTION) return GetString(STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION, this->window_number);
 
 		return this->Window::GetWidgetString(widget, stringid);
 	}
@@ -2253,16 +2248,17 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		this->legend_excluded_cargo = 0;
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		if (widget == WID_GRAPH_CAPTION) {
-			SetDParam(0, this->station_id);
-		}
+		if (widget == WID_GRAPH_CAPTION) return GetString(STR_GRAPH_STATION_CARGO_CAPTION, this->station_id);
+
 		if (widget == WID_GRAPH_FOOTER_CUSTOM) {
-			SetDParam(0, STR_GRAPH_X_LABEL_LAST_UNITS);
-			SetDParam(1, EconTime::UsingWallclockUnits() ? STR_UNITS_SECONDS : STR_UNITS_DAYS);
-			SetDParam(2, EconTime::UsingWallclockUnits() ? 96 * DayLengthFactor() : 48);
+			return GetString(STR_GRAPH_X_LABEL_LAST_UNITS,
+					EconTime::UsingWallclockUnits() ? STR_UNITS_SECONDS : STR_UNITS_DAYS,
+					EconTime::UsingWallclockUnits() ? 96 * DayLengthFactor() : 48);
 		}
+
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	void UpdateExcludedData()
@@ -2278,8 +2274,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		}
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			SetDParam(0, cs->name);
-			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
+			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
 			d.width += this->legend_width + 4; // color field
 			d.width += WidgetDimensions::scaled.framerect.Horizontal();
 			d.height += WidgetDimensions::scaled.framerect.Vertical();
@@ -2326,8 +2321,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 			GfxFillRect(rect_x, y + padding + clk_dif, rect_x + this->legend_width, y + row_height - 1 + clk_dif, PC_BLACK);
 			GfxFillRect(rect_x + 1, y + padding + 1 + clk_dif, rect_x + this->legend_width - 1, y + row_height - 2 + clk_dif, cs->legend_colour);
-			SetDParam(0, cs->name);
-			DrawString(rtl ? ir.left : x + this->legend_width + 4 + clk_dif, (rtl ? ir.right - this->legend_width - 4 + clk_dif : ir.right), y + clk_dif, STR_GRAPH_CARGO_PAYMENT_CARGO);
+			DrawString(rtl ? ir.left : x + this->legend_width + 4 + clk_dif, (rtl ? ir.right - this->legend_width - 4 + clk_dif : ir.right), y + clk_dif, GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
 
 			y += this->line_height;
 		}
@@ -2428,7 +2422,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 static constexpr NWidgetPart _nested_station_cargo_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_GRAPH_CAPTION), SetStringTip(STR_GRAPH_STATION_CARGO_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_GRAPH_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -2436,7 +2430,7 @@ static constexpr NWidgetPart _nested_station_cargo_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_BROWN, WID_GRAPH_BACKGROUND), SetMinimalSize(568, 128),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetStringTip(STR_GRAPH_STATION_CARGO_TITLE, STR_NULL),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
@@ -2456,7 +2450,7 @@ static constexpr NWidgetPart _nested_station_cargo_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(WidgetDimensions::unscaled.resizebox.Horizontal(), 0), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_FOOTER_CUSTOM), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetStringTip(STR_JUST_STRING2, STR_NULL),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_GRAPH_FOOTER_CUSTOM), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_GRAPH_RESIZE),
 		EndContainer(),
