@@ -208,16 +208,14 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 60; i++) {
-					SetDParam(0, i);
-					list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
+					list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_INT, i), i, false));
 				}
 				selected = this->minutes.ClockMinute();
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 24; i++) {
-					SetDParam(0, i);
-					list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
+					list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_INT, i), i, false));
 				}
 				selected = this->minutes.ClockHour();
 
@@ -235,15 +233,13 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 60; i++) {
-					SetDParam(0, i);
-					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
 				}
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 24; i++) {
-					SetDParam(0, i);
-					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
 				}
 				break;
 		}
@@ -253,11 +249,12 @@ struct SetMinutesWindow : SetDateWindow
 		size = d;
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
-			case WID_SD_DAY:   SetDParam(0, this->minutes.ClockMinute()); break;
-			case WID_SD_MONTH: SetDParam(0, this->minutes.ClockHour()); break;
+			case WID_SD_DAY:   return GetString(STR_JUST_INT, this->minutes.ClockMinute());
+			case WID_SD_MONTH: return GetString(STR_JUST_INT, this->minutes.ClockHour());
+			default: return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -333,8 +330,8 @@ static constexpr NWidgetPart _nested_set_minutes_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_MONTH), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_DAY), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_MONTH), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_DAY), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_SPACER), SetFill(1, 0),
