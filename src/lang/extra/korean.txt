@@ -1913,7 +1913,7 @@ STR_PLANS_DELETE                                                :{BLACK}삭제
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}목록에서 선택된 계획을 삭제합니다
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}소유권 취득
 STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}소유권이 없는 이 선택한 계획의 소유권을 가져옵니다
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[개인]: {STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[개인]:{SPACE}
 STR_PLANS_LIST_ITEM_PLAN                                        :계획 #{NUM}: 선 {NUM}개 ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: 선 {NUM}개 ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- 선 #{NUM}: {NUM} 선분

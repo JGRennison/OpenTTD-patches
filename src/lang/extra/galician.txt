@@ -1916,7 +1916,7 @@ STR_PLANS_DELETE                                                :{BLACK}Eliminar
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Eliminar o ítem seleccionado na lista
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}Tomar posesión
 STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Tomar posesión do plan sen dono seleccionado
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privado]: {STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privado]:{SPACE}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} liña{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} liña{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Liña #{NUM}: {NUM} segmento{P "" s}

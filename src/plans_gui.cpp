@@ -28,6 +28,7 @@
 #include "stringfilter_type.h"
 #include "querystring_gui.h"
 #include "core/pool_func.hpp"
+#include "core/format.hpp"
 #include "core/geometry_func.hpp"
 #include "widgets/plans_widget.h"
 #include "table/strings.h"
@@ -44,7 +45,7 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_SORT_ORDER), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetStringTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_OWN_ONLY), SetStringTip(STR_PLANS_OWN_ONLY, STR_PLANS_OWN_ONLY_TOOLTIP),
 		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_PLN_FILTER), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 	EndContainer(),
@@ -65,7 +66,7 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_NEW), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_NEW_PLAN, STR_PLANS_NEW_PLAN_TOOLTIP),
 				NWidget(WWT_TEXTBTN_2, COLOUR_GREY, WID_PLN_ADD_LINES), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_ADD_LINES, STR_PLANS_ADD_LINES_TOOLTIP),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_VISIBILITY), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_VISIBILITY_PUBLIC, STR_PLANS_VISIBILITY_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_COLOUR), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_JUST_STRING, STR_PLANS_COLOUR_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_COLOUR), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_PLANS_COLOUR_TOOLTIP),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_HIDE_ALL_SEL),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_HIDE_ALL, STR_PLANS_HIDE_ALL_TOOLTIP),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
@@ -479,26 +480,20 @@ public:
 					if (list[i].is_plan) {
 						if (Company::IsValidID(p->owner)) DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
-						uint dparam_offset = 0;
-						StringID str = p->HasName() ? STR_PLANS_LIST_ITEM_NAMED_PLAN : STR_PLANS_LIST_ITEM_PLAN;
-						if (!p->visible_by_all) {
-							SetDParam(dparam_offset++, str);
-							str = STR_PLANS_LIST_ITEM_PLAN_PRIVATE;
-						}
+
+						format_buffer buf;
+						if (!p->visible_by_all) AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN_PRIVATE);
 						if (p->HasName()) {
-							SetDParamStr(dparam_offset++, p->GetName().c_str());
+							AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_NAMED_PLAN, p->GetName(), p->lines.size(), p->creation_date);
 						} else {
-							SetDParam(dparam_offset++, list[i].plan_id + 1);
+							AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN, list[i].plan_id + 1, p->lines.size(), p->creation_date);
 						}
-						SetDParam(dparam_offset++, p->lines.size());
-						SetDParam(dparam_offset++, p->creation_date);
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, buf, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
 					} else {
 						PlanLine &pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl.visible, true);
-						SetDParam(0, list[i].line_id + 1);
-						SetDParam(1, pl.tiles.size() - 1);
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
+						std::string str = GetString(STR_PLANS_LIST_ITEM_LINE, list[i].line_id + 1, pl.tiles.size() - 1);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_WHITE);
 					}
 					y += this->resize.step_height;
 				}
@@ -507,16 +502,17 @@ public:
 		}
 	}
 
-	void SetStringParameters(WidgetID widget) const override
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_PLN_COLOUR:
-				SetDParam(0, _current_plan ? STR_COLOUR_DARK_BLUE + _current_plan->colour : STR_PLANS_COLOUR);
-				break;
+				return GetString(_current_plan ? STR_COLOUR_DARK_BLUE + _current_plan->colour : STR_PLANS_COLOUR);
 
 			case WID_PLN_SORT_CRITERIA:
-				SetDParam(0, PlansWindow::sorter_names[this->plans.SortType()]);
-				break;
+				return GetString(PlansWindow::sorter_names[this->plans.SortType()]);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 

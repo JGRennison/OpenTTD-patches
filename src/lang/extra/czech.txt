@@ -1637,7 +1637,7 @@ STR_PLANS_COLOUR                                                :{BLACK}Barva
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Nastaví barvu plánu
 STR_PLANS_DELETE                                                :{BLACK}Smazat
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Vymaže vybranou položku ze seznamu
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Soukromý]: {STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Soukromý]:{SPACE}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plán č. {NUM}: {NUM} křiv{P ka ky ek} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} křiv{P ka ky ek} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Křivka #{NUM}: {NUM} segment{P "" y ů}

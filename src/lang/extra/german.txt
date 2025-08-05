@@ -1462,7 +1462,7 @@ STR_PLANS_COLOUR                                                :{BLACK}Farbe
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Setzt die Farbe des Plans.
 STR_PLANS_DELETE                                                :{BLACK}Entfernen
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Entferne den ausgewählten Eintrag aus der Liste
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privat]: {STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privat]:{SPACE}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} Strecke{P "" n} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} Strecke{P "" n} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Strecke #{NUM}: {NUM} Segment{P "" e}

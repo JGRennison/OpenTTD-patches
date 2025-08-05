@@ -1898,7 +1898,7 @@ STR_PLANS_DELETE                                                :{BLACK}删除
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}删除列表中的所选项
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}认领
 STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}认领选择的无主计划
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：{STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：
 STR_PLANS_LIST_ITEM_PLAN                                        :计划 #{NUM}：{NUM} 条线（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} 条线（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}：{NUM} 条线段

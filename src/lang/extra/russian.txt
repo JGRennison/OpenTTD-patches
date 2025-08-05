@@ -1843,7 +1843,7 @@ STR_PLANS_DELETE                                                :{BLACK}Удал
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Удалить выбранный план
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}Принять в собственность
 STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Принять в собственность выбранный бесхозный план
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Закрытый]: {STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Закрытый]:{SPACE}
 STR_PLANS_LIST_ITEM_PLAN                                        :План #{NUM}: {NUM} лин{P ия ии ий} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} лин{P ия ии ий} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Линия #{NUM}: {NUM} сегмент{P "" а ов}

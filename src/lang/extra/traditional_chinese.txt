@@ -1902,7 +1902,7 @@ STR_PLANS_DELETE                                                :{BLACK}刪除
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}刪除清單中的所選項
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}認領
 STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}認領選擇的無主計劃
-STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :［私有］：{STRING}
+STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :［私有］：
 STR_PLANS_LIST_ITEM_PLAN                                        :計劃 #{NUM}：{NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}：{NUM} 條線段
