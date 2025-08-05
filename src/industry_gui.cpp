@@ -3353,8 +3353,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 	if (_settings_client.gui.industry_tooltip_show_name) {
 		// Print out the name of the industry.
-		SetDParam(0, industry_spec->name);
-		msg = GetString(STR_INDUSTRY_VIEW_NAME_TOOLTIP);
+		msg = GetString(STR_INDUSTRY_VIEW_NAME_TOOLTIP, industry_spec->name);
 	}
 
 	if (_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled) {
@@ -3388,9 +3387,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 					first = false;
 				}
 
-				SetDParam(0, CargoSpec::Get(a.cargo)->name);
-				SetDParamStr(1, suffix.text);
-				required_cargo_list += GetString(format);
+				required_cargo_list += GetString(format, CargoSpec::Get(a.cargo)->name, suffix.text);
 			}
 
 			if (!required_cargo_list.empty()) {
@@ -3414,10 +3411,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 				if (!msg.empty()) msg += '\n';
 
-				SetDParam(0, a.cargo);
-				SetDParam(1, a.waiting);
-				SetDParamStr(2, suffix.text);
-				msg += GetString(STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP);
+				msg += GetString(STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP, a.cargo, a.waiting, suffix.text);
 			}
 		}
 	}
@@ -3433,11 +3427,8 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 			CargoSuffix suffix;
 			GetCargoSuffix(CARGOSUFFIX_OUT, CST_VIEW, industry, industry->type, industry_spec, p.cargo, &p - industry->produced.get(), suffix);
 
-			SetDParam(0, p.cargo);
-			SetDParam(1, p.history[LAST_MONTH].production);
-			SetDParamStr(2, suffix.text);
-			SetDParam(3, ToPercent8(p.history[LAST_MONTH].PctTransported()));
-			msg += GetString(STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION);
+			msg += GetString(STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION,
+					p.cargo, p.history[LAST_MONTH].production, suffix.text, ToPercent8(p.history[LAST_MONTH].PctTransported()));
 		}
 	}
 
