@@ -54,18 +54,6 @@ struct TimetableArrivalDeparture {
 };
 
 /**
- * Set the timetable parameters in the format as described by the setting.
- * @param param the first DParam to fill
- * @param ticks  the number of ticks to 'draw'
- * @param long_mode long output format
- */
-void SetTimetableParams(int first_param, Ticks ticks, bool long_mode)
-{
-	SetDParam(first_param, long_mode ? STR_JUST_TT_TICKS_LONG : STR_JUST_TT_TICKS);
-	SetDParam(first_param + 1, ticks);
-}
-
-/**
  * Create the timetable parameters in the format as described by the setting.
  * @param ticks  the number of ticks to 'draw'
  * @param long_mode long output format

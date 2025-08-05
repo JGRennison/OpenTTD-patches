@@ -307,8 +307,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MATRIX: {
 				uint min_height = 0;
 
-				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
-				Dimension unumber = GetStringBoundingBox(STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED);
+				int64_t max_value = GetParamMaxValue(_settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
+				Dimension unumber = GetStringBoundingBox(GetString(STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED, max_value));
 
 				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
 				this->delete_flag_width = UnScaleGUI(spr->width);
@@ -420,30 +420,31 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->DrawWidgets();
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_CAPTION:
-				SetDParam(0, this->vehicle->index);
-				break;
+				return GetString(STR_SCHDISPATCH_CAPTION, this->vehicle->index);
 
 			case WID_SCHDISPATCH_HEADER:
 				if (this->IsScheduleSelected()) {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 					if (ds.ScheduleName().empty()) {
-						SetDParam(0, STR_SCHDISPATCH_SCHEDULE_ID);
-						SetDParam(1, this->schedule_index + 1);
-						SetDParam(2, this->vehicle->orders->GetScheduledDispatchScheduleCount());
+						return GetString(STR_SCHDISPATCH_SCHEDULE_ID,
+								this->schedule_index + 1,
+								this->vehicle->orders->GetScheduledDispatchScheduleCount());
 					} else {
-						SetDParam(0, STR_SCHDISPATCH_NAMED_SCHEDULE_ID);
-						SetDParamStr(1, ds.ScheduleName().c_str());
-						SetDParam(2, this->schedule_index + 1);
-						SetDParam(3, this->vehicle->orders->GetScheduledDispatchScheduleCount());
+						return GetString(STR_SCHDISPATCH_NAMED_SCHEDULE_ID,
+								ds.ScheduleName(),
+								this->schedule_index + 1,
+								this->vehicle->orders->GetScheduledDispatchScheduleCount());
 					}
 				} else {
-					SetDParam(0, STR_SCHDISPATCH_NO_SCHEDULES);
+					return GetString(STR_SCHDISPATCH_NO_SCHEDULES);
 				}
-				break;
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -625,9 +626,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 		}
 
-		SetDParam(0, time);
 		DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2,
-				flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, colour, SA_HOR_CENTER);
+				GetString(flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, time), colour, SA_HOR_CENTER);
 	}
 
 	virtual void OnGameTick() override
@@ -730,7 +730,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					if (time < this->next_departure_update) const_cast<SchdispatchWindow*>(this)->next_departure_update = time;
 				};
 
-				auto draw_warning_generic = [&](StringID text, TextColour colour) {
+				auto draw_warning_generic = [&](std::string_view text, TextColour colour) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 					int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
 					int left = ir.left;
@@ -752,9 +752,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					y += GetCharacterHeight(FS_NORMAL) * 2;
 
 					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-						draw_warning_generic(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION, TC_BLACK);
+						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), TC_BLACK);
 					} else if (v->HasUnbunchingOrder()) {
-						draw_warning_generic(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING, TC_BLACK);
+						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), TC_BLACK);
 					}
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
@@ -762,8 +762,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					uint warnings = 0;
 					uint extra_lines = 0;
 
-					auto draw_warning = [&](StringID text) {
-						draw_warning_generic(text, TC_FROMSTRING);
+					auto draw_warning = [&]<typename... T>(StringID text, T&&... params) {
+						draw_warning_generic(GetString(text, std::forward<T>(params)...), TC_FROMSTRING);
 						warnings++;
 					};
 
@@ -775,8 +775,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							const TickMinutes delta = target - now;
 							if (delta >= (23 * 60)) {
 								const uint hours = delta.base() / 60;
-								SetDParam(0, hours);
-								draw_warning(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE);
+								draw_warning(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE, hours);
 
 								set_next_departure_update(_settings_time.FromTickMinutes(target - (hours * 60) + 1));
 							}
@@ -798,39 +797,38 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						draw_warning(STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER);
 					} else {
 						const Order *order = v->GetOrder(schedule_order_index);
-						SetDParam(0, schedule_order_index + 1);
 
+						format_buffer buf;
+						auto set_text = [&](StringParameter p1, StringParameter p2 = {}, StringParameter p3 = {}) {
+							AppendStringInPlace(buf, STR_SCHDISPATCH_ASSIGNED_TO_ORDER, schedule_order_index + 1, std::move(p1), std::move(p2), std::move(p3));
+						};
 						switch (order->GetType()) {
 							case OT_GOTO_STATION:
-								SetDParam(1, STR_STATION_NAME);
-								SetDParam(2, order->GetDestination().ToStationID());
+								set_text(STR_STATION_NAME, order->GetDestination().ToStationID());
 								break;
 
 							case OT_GOTO_WAYPOINT:
-								SetDParam(1, STR_WAYPOINT_NAME);
-								SetDParam(2, order->GetDestination().ToStationID());
+								set_text(STR_WAYPOINT_NAME, order->GetDestination().ToStationID());
 								break;
 
 							case OT_GOTO_DEPOT:
 								if (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
 									if (v->type == VEH_AIRCRAFT) {
-										SetDParam(1, STR_ORDER_GO_TO_NEAREST_HANGAR);
+										set_text(STR_ORDER_GO_TO_NEAREST_HANGAR);
 									} else {
-										SetDParam(1, STR_ORDER_GO_TO_NEAREST_DEPOT);
+										set_text(STR_ORDER_GO_TO_NEAREST_DEPOT);
 									}
 								} else {
-									SetDParam(1, STR_DEPOT_NAME);
-									SetDParam(2, v->type);
-									SetDParam(3, order->GetDestination().ToDepotID());
+									set_text(STR_DEPOT_NAME, v->type, order->GetDestination().ToDepotID());
 								}
 								break;
 
 							default:
-								SetDParam(1, STR_INVALID_ORDER);
+								set_text(STR_INVALID_ORDER);
 								break;
 						}
 
-						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
+						DrawString(ir.left, ir.right, y, buf);
 						y += GetCharacterHeight(FS_NORMAL);
 						extra_lines++;
 					}
@@ -847,15 +845,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 						if (vehicle_mode) str += (STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST - STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
 
-						SetDParam(0, last_departure);
 						if (details.empty()) {
-							SetDParam(1, STR_EMPTY);
+							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_EMPTY, std::monostate{}));
 						} else {
-							SetDParam(1, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS);
-							SetDParamStr(2, std::move(details));
+							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS, std::move(details)));
 						}
-
-						DrawString(ir.left, ir.right, y, str);
 						y += GetCharacterHeight(FS_NORMAL);
 
 						departure_time_warnings(last_departure);
@@ -867,8 +861,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							const TickMinutes delta = now - target;
 							if (delta >= (23 * 60)) {
 								const uint hours = delta.base() / 60;
-								SetDParam(0, hours);
-								DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST);
+								DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST, hours));
 								extra_lines++;
 								y += GetCharacterHeight(FS_NORMAL);
 
@@ -912,8 +905,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					const StateTicks next_departure = GetScheduledDispatchTime(ds, _state_ticks).first;
 					if (next_departure != INVALID_STATE_TICKS) {
 						set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());
-						SetDParam(0, next_departure);
-						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE);
+						DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE, next_departure));
 					}
 					y += GetCharacterHeight(FS_NORMAL);
 
@@ -927,24 +919,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 
-					SetTimetableParams(0, ds.GetScheduledDispatchDuration(), true);
-					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L2);
+					auto tt_params = GetTimetableParameters(ds.GetScheduledDispatchDuration(), true);
+					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L2, std::move(tt_params.first), std::move(tt_params.second)));
 					y += GetCharacterHeight(FS_NORMAL);
 
-					SetDParam(0, ds.GetScheduledDispatchStartTick());
-					SetDParam(1, ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration());
-					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L3);
+					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L3, ds.GetScheduledDispatchStartTick(), ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()));
 					y += GetCharacterHeight(FS_NORMAL);
 
-					SetTimetableParams(0, ds.GetScheduledDispatchDelay());
-					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L4);
+					tt_params = GetTimetableParameters(ds.GetScheduledDispatchDelay());
+					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L4, std::move(tt_params.first), std::move(tt_params.second)));
 					y += GetCharacterHeight(FS_NORMAL);
 
 					if (!ds.GetScheduledDispatchReuseSlots() && !have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
-							SetDParam(0, required_vehicle);
-							DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L1);
+							DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L1, required_vehicle));
 							extra_lines++;
 							y += GetCharacterHeight(FS_NORMAL);
 						}
@@ -1209,16 +1198,20 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 
 				DropDownList list;
-				auto add_item = [&](StringID str, uint bit, bool disabled) {
-					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), str, bit, disabled));
+				auto add_item = [&](std::string &&str, uint bit, bool disabled) {
+					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), std::move(str), bit, disabled));
 				};
-				add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
+				add_item(GetString(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT), DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
-					SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-					SetDParamStr(1, name);
-					add_item(name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, flag_bit, false);
+					std::string str;
+					if (name.empty()) {
+						str = GetString(STR_SCHDISPATCH_TAG_DEPARTURE, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+					} else {
+						str = GetString(STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
+					}
+					add_item(std::move(str), flag_bit, false);
 				}
 
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DDMF_NONE, DDSF_SHARED);
@@ -1502,7 +1495,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_MOVE_LEFT), SetMinimalSize(12, 14), SetSpriteTip(SPR_ARROW_LEFT, STR_SCHDISPATCH_MOVE_SCHEDULE),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_MOVE_RIGHT), SetMinimalSize(12, 14), SetSpriteTip(SPR_ARROW_RIGHT, STR_SCHDISPATCH_MOVE_SCHEDULE),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCHDISPATCH_CAPTION), SetStringTip(STR_SCHDISPATCH_CAPTION, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCHDISPATCH_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -1510,7 +1503,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ENABLED), SetStringTip(STR_SCHDISPATCH_ENABLED, STR_NULL), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetStringTip(STR_JUST_STRING3, STR_NULL), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_PREV), SetStringTip(STR_SCHDISPATCH_PREV_SCHEDULE, STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_NEXT), SetStringTip(STR_SCHDISPATCH_NEXT_SCHEDULE, STR_SCHDISPATCH_NEXT_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
@@ -1609,8 +1602,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR:
 			case WID_SCHDISPATCH_ADD_SLOT_END_HOUR:
 				for (uint i = 0; i < 24; i++) {
-					SetDParam(0, i);
-					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
 				}
 				break;
 
@@ -1618,8 +1610,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE:
 			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:
 				for (uint i = 0; i < 60; i++) {
-					SetDParam(0, i);
-					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
 				}
 				break;
 		}
@@ -1629,15 +1620,16 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		size = d;
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
-			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:   SetDParam(0, start.ClockHour()); break;
-			case WID_SCHDISPATCH_ADD_SLOT_START_MINUTE: SetDParam(0, start.ClockMinute()); break;
-			case WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR:    SetDParam(0, step.ClockHour()); break;
-			case WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE:  SetDParam(0, step.ClockMinute()); break;
-			case WID_SCHDISPATCH_ADD_SLOT_END_HOUR:     SetDParam(0, end.ClockHour()); break;
-			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:   SetDParam(0, end.ClockMinute()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:   return GetString(STR_JUST_INT, start.ClockHour()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_START_MINUTE: return GetString(STR_JUST_INT, start.ClockMinute()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR:    return GetString(STR_JUST_INT, step.ClockHour()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE:  return GetString(STR_JUST_INT, step.ClockMinute()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_END_HOUR:     return GetString(STR_JUST_INT, end.ClockHour()); break;
+			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:   return GetString(STR_JUST_INT, end.ClockMinute()); break;
+			default: return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -1646,8 +1638,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		auto handle_hours_dropdown = [&](ClockFaceMinutes current) {
 			DropDownList list;
 			for (uint i = 0; i < 24; i++) {
-				SetDParam(0, i);
-				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_INT, i), i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockHour(), widget);
 		};
@@ -1655,8 +1646,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		auto handle_minutes_dropdown = [&](ClockFaceMinutes current) {
 			DropDownList list;
 			for (uint i = 0; i < 60; i++) {
-				SetDParam(0, i);
-				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_INT, i), i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockMinute(), widget);
 		};
@@ -1725,18 +1715,18 @@ static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_START_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START, STR_NULL),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_HOUR), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_MINUTE), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP, STR_NULL),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetStringTip(STR_JUST_INT, STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_SPACER), SetFill(1, 0),
