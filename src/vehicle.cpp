@@ -1952,7 +1952,7 @@ static void DoDrawVehicle(const Vehicle *v)
 		}
 	}
 
-	ViewportSortableSpriteSpecialFlags special_flags = IsDiagonalDirection(v->direction) ? VSSF_NONE : VSSSF_SORT_SPECIAL | VSSSF_SORT_DIAG_VEH;
+	ViewportSortableSpriteSpecialFlags special_flags = (!IsValidDirection(v->direction) || IsDiagonalDirection(v->direction)) ? VSSF_NONE : VSSSF_SORT_SPECIAL | VSSSF_SORT_DIAG_VEH;
 
 	StartSpriteCombine();
 	for (uint i = 0; i < v->sprite_seq.count; ++i) {
