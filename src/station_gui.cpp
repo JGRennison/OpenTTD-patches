@@ -2058,7 +2058,6 @@ struct StationViewWindow : public Window {
 			if (!ge->HasRating()) {
 				if (!ge->IsSupplyAllowed()) {
 					Rect rating_rect = tr.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
-					SetDParam(0, cs->name);
 					int x = DrawString(rating_rect, cs->name, TC_WHITE);
 					if (x != 0) {
 						int line_y = rating_rect.top + (GetCharacterHeight(FS_NORMAL) / 2) - 1;
@@ -2800,17 +2799,16 @@ public:
 	{
 		const GoodsEntry *ge = &this->st->goods[this->cs->Index()];
 
-		SetDParam(0, this->cs->name);
-		this->data[0] = GetString(STR_STATION_RATING_TOOLTIP_RATING_DETAILS);
+		this->data[0] = GetString(STR_STATION_RATING_TOOLTIP_RATING_DETAILS, this->cs->name);
 
 		if (!ge->HasRating()) {
-			this->data[1][0] = '\0';
+			this->data[1] = {};
 			return;
 		}
 
 		uint line_nr = 1;
 
-		// Calculate target rating.
+		/* Calculate target rating. */
 		bool skip = false;
 		int total_rating = 0;
 
@@ -2830,6 +2828,21 @@ public:
 			}
 		};
 
+		auto get_vtype_rating_str = [&](uint8_t vt) -> StringID {
+			switch (ge->last_vehicle_type) {
+				case VEH_TRAIN:
+					return STR_STATION_RATING_TOOLTIP_TRAIN;
+				case VEH_ROAD:
+					return STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE;
+				case VEH_SHIP:
+					return STR_STATION_RATING_TOOLTIP_SHIP;
+				case VEH_AIRCRAFT:
+					return STR_STATION_RATING_TOOLTIP_AIRCRAFT;
+				default:
+					return STR_STATION_RATING_TOOLTIP_INVALID;
+			}
+		};
+
 		if (_cheats.station_rating.value) {
 			total_rating = 255;
 			skip = true;
@@ -2844,90 +2857,50 @@ public:
 				total_rating += new_grf_rating;
 				new_grf_rating = RoundRating(new_grf_rating);
 
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (new_grf_rating <= 0 ? 0 : 1));
-				SetDParam(1, new_grf_rating);
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_RATING);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_RATING, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (new_grf_rating <= 0 ? 0 : 1), new_grf_rating);
 				line_nr++;
 
 				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
-				SetDParam(0, last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY);
-				SetDParam(1, to_display_speed(last_speed));
-				switch (ge->last_vehicle_type) {
-					case VEH_TRAIN:
-						SetDParam(2, STR_STATION_RATING_TOOLTIP_TRAIN);
-						break;
-					case VEH_ROAD:
-						SetDParam(2, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
-						break;
-					case VEH_SHIP:
-						SetDParam(2, STR_STATION_RATING_TOOLTIP_SHIP);
-						break;
-					case VEH_AIRCRAFT:
-						SetDParam(2, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
-						break;
-					default:
-						SetDParam(2, STR_STATION_RATING_TOOLTIP_INVALID);
-						break;
-				}
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED, last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY, to_display_speed(last_speed), get_vtype_rating_str(ge->last_vehicle_type));
 				line_nr++;
 
-				SetDParam(0, std::min(ge->max_waiting_cargo, 0xFFFFu));
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS, std::min(ge->max_waiting_cargo, 0xFFFFu));
 				line_nr++;
 
-				SetDParam(0, (ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS);
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME, (ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS);
 				line_nr++;
 			}
 		}
 
 		if (!skip) {
-			// Speed
+			/* Speed */
 			{
 				const auto speed_rating = GetSpeedRating(ge);
 				const auto rounded_speed_rating = RoundRating(speed_rating);
 
-				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
-				SetDParam(1, 17);
-
+				TextColour colour;
 				if (ge->last_speed == 255) {
-					SetDParam(2, TC_GREEN);
+					colour = TC_GREEN;
 				} else if (rounded_speed_rating == 0) {
-					SetDParam(2, TC_RED);
+					colour = TC_RED;
 				} else {
-					SetDParam(2, _rate_colours[std::min(3, speed_rating / 42)]);
+					colour = _rate_colours[std::min(3, speed_rating / 42)];
 				}
-
-				SetDParam(3, ge->last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY);
-				SetDParam(4, to_display_speed(ge->last_speed));
-				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(6, rounded_speed_rating);
-
-				switch (ge->last_vehicle_type) {
-					case VEH_TRAIN:
-						SetDParam(7, STR_STATION_RATING_TOOLTIP_TRAIN);
-						break;
-					case VEH_ROAD:
-						SetDParam(7, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
-						break;
-					case VEH_SHIP:
-						SetDParam(7, STR_STATION_RATING_TOOLTIP_SHIP);
-						break;
-					case VEH_AIRCRAFT:
-						SetDParam(7, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
-						break;
-					default:
-						SetDParam(7, STR_STATION_RATING_TOOLTIP_INVALID);
-						break;
-				}
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_SPEED);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_SPEED,
+						detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY,
+						17,
+						colour,
+						ge->last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY,
+						to_display_speed(ge->last_speed),
+						detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY,
+						rounded_speed_rating,
+						get_vtype_rating_str(ge->last_vehicle_type));
 				line_nr++;
 
 				total_rating += speed_rating;
 			}
 
-			// Wait time
+			/* Wait time */
 			{
 				const auto wait_time_rating = GetWaitTimeRating(cs, ge);
 
@@ -2943,20 +2916,20 @@ public:
 					wait_time_stage = TC_ORANGE;
 				}
 
-				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
-				SetDParam(1, 51);
-				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE);
-				SetDParam(3, wait_time_stage);
-				SetDParam(4, (ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS);
-				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(6, RoundRating(wait_time_rating));
-				this->data[line_nr] = GetString((ge->last_vehicle_type == VEH_SHIP) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME);
+				this->data[line_nr] = GetString((ge->last_vehicle_type == VEH_SHIP) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME,
+						detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY,
+						51,
+						STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE,
+						wait_time_stage,
+						(ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS,
+						detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY,
+						RoundRating(wait_time_rating));
 				line_nr++;
 
 				total_rating += wait_time_rating;
 			}
 
-			// Waiting cargo
+			/* Waiting cargo */
 			{
 				const auto cargo_rating = GetWaitingCargoRating(st, ge);
 
@@ -2972,13 +2945,13 @@ public:
 					wait_units_stage = TC_ORANGE;
 				}
 
-				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(1, 16);
-				SetDParam(2, wait_units_stage);
-				SetDParam(3, ge->max_waiting_cargo);
-				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(5, RoundRating(cargo_rating));
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_WAITUNITS);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_WAITUNITS,
+						detailed ? STR_STATION_RATING_MAX_PERCENTAGE_COMMA : STR_EMPTY,
+						16,
+						wait_units_stage,
+						ge->max_waiting_cargo,
+						detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY,
+						RoundRating(cargo_rating));
 				line_nr++;
 
 				total_rating += cargo_rating;
@@ -2986,21 +2959,21 @@ public:
 		}
 
 		if (!_cheats.station_rating.value) {
-			// Statue
+			/* Statue */
 			const auto statue_rating = GetStatueRating(st);
 			if (statue_rating > 0 || detailed) {
-				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
-				SetDParam(1, 10);
-				SetDParam(2, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
-				SetDParam(3, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(4, (statue_rating > 0) ? 10 : 0);
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_STATUE);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_STATUE,
+						detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY,
+						10,
+						(statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO,
+						detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY,
+						(statue_rating > 0) ? 10 : 0);
 				line_nr++;
 
 				total_rating += statue_rating;
 			}
 
-			// Vehicle age
+			/* Vehicle age */
 			{
 				const auto age_rating = GetVehicleAgeRating(ge);
 
@@ -3014,13 +2987,13 @@ public:
 					age_stage = TC_GOLD;
 				}
 
-				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
-				SetDParam(1, 13);
-				SetDParam(2, age_stage);
-				SetDParam(3, ge->last_age);
-				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(5, RoundRating(age_rating));
-				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_AGE);
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_AGE,
+						detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY,
+						13,
+						age_stage,
+						ge->last_age,
+						detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY,
+						RoundRating(age_rating));
 				line_nr++;
 
 				total_rating += age_rating;
@@ -3030,12 +3003,11 @@ public:
 		total_rating = Clamp(total_rating, 0, 255);
 
 		if (detailed) {
-			SetDParam(0, ToPercent8(total_rating));
-			this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_TOTAL_RATING);
+			this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_TOTAL_RATING, ToPercent8(total_rating));
 			line_nr++;
 		}
 
-		this->data[line_nr][0] = '\0';
+		this->data[line_nr] = {};
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
