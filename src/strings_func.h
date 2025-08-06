@@ -253,6 +253,21 @@ std::string_view GetStringInPlace(T &buffer, StringID string, Args &&... args)
 }
 
 /**
+ * Resolve the given StringID into an existing format_buffer or std::string (replacing the existing contents), with most special stringcodes replaced by the string parameters.
+ * @param buffer The format_buffer or std::string to write to.
+ * @param string String ID to format.
+ * @param args Span of arguments for the string.
+ * @return string_view of the output buffer
+ */
+template <typename T, typename... Args>
+std::string_view GetStringWithArgsInPlace(T &buffer, StringID string, std::span<StringParameter> args)
+{
+	buffer.clear();
+	AppendStringWithArgsInPlace(buffer, string, args);
+	return buffer;
+}
+
+/**
  * A searcher for missing glyphs.
  */
 class MissingGlyphSearcher {
