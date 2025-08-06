@@ -1439,10 +1439,10 @@ STR_DEPARTURES_TOC                                              :{ORANGE}{COMPAN
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Calling at:
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING4}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING4}
-STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING4}.
+STR_DEPARTURES_CALLING_AT_STATION                               :, {STRING4}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          : and {STRING4}
+STR_DEPARTURES_CALLING_AT_LIST_SUFFIX                           :.
+STR_DEPARTURES_CALLING_AT_LIST_SUFFIX_SMART_TERMINUS            :. This service continues to {STRING4}.
 STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING2} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}

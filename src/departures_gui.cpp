@@ -44,7 +44,7 @@
 static constexpr NWidgetPart _nested_departures_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION), SetStringTip(STR_JUST_STRING6, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_DB_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_STATION_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_DUPLICATE), SetStringTip(STR_DEPARTURES_DUPLICATE, STR_DEPARTURES_DUPLICATE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -57,9 +57,9 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_CARGO_MODE), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_JUST_STRING, STR_DEPARTURES_CARGO_MODE_TOOLTIP),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_SOURCE_MODE), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_JUST_STRING, STR_DEPARTURES_SOURCE_MODE_TOOLTIP),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_DEPARTURE_MODE), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_JUST_STRING, STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_CARGO_MODE), SetFill(1, 1), SetResize(1, 0), SetToolTip(STR_DEPARTURES_CARGO_MODE_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_SOURCE_MODE), SetFill(1, 1), SetResize(1, 0), SetToolTip(STR_DEPARTURES_SOURCE_MODE_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_DEPARTURE_MODE), SetFill(1, 1), SetResize(1, 0), SetToolTip(STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TIMES), SetMinimalSize(11, 12), SetFill(0, 1), SetStringTip(STR_DEPARTURES_TIMES_BUTTON, STR_DEPARTURES_TIMES_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_EMPTY), SetMinimalSize(11, 12), SetFill(0, 1), SetStringTip(STR_DEPARTURES_EMPTY_BUTTON, STR_DEPARTURES_EMPTY_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetStringTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
@@ -207,8 +207,8 @@ protected:
 							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
 								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 							} else {
-								SetDParam(0, v->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
-								int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
+								std::string str = GetString(STR_DEPARTURES_VEH, v->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
+								int width = GetStringBoundingBox(str).width + 4;
 								if (width > this->veh_width) this->veh_width = width;
 							}
 						}
@@ -249,21 +249,19 @@ protected:
 				} else if (unitnumber_max[i] >= 100) {
 					unitnumber_digits = 3;
 				}
-				SetDParamMaxDigits(0, unitnumber_digits);
-				int width = (GetStringBoundingBox(((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + i)).width + 4;
+				StringID str = ((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + i;
+				int width = GetStringBoundingBox(GetString(str, GetParamMaxDigits(unitnumber_digits))).width + 4;
 				if (width > this->veh_width) this->veh_width = width;
 			}
 		}
 
 		for (GroupID gid : groups) {
-			SetDParam(0, (uint64_t)(gid.base() | GROUP_NAME_HIERARCHY));
-			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width + 4;
+			int width = (GetStringBoundingBox(GetString(STR_DEPARTURES_GROUP, gid.base() | GROUP_NAME_HIERARCHY))).width + 4;
 			if (width > this->group_width) this->group_width = width;
 		}
 
 		for (CompanyID owner : companies.IterateSetBits()) {
-			SetDParam(0, owner);
-			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width + 4;
+			int width = (GetStringBoundingBox(GetString(STR_DEPARTURES_TOC, owner))).width + 4;
 			if (width > this->toc_width) this->toc_width = width;
 		}
 
@@ -437,51 +435,56 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_DB_CAPTION: {
-				uint title_offset;
+				StringID str;
+				std::vector<StringParameter> params;
+				params.reserve(6);
+				auto append_title_params = [&]() {
+					params.emplace_back(this->title_params[0]);
+					params.emplace_back(this->title_params[1]);
+					params.emplace_back(this->title_params[2]);
+				};
+
 				if (this->order_list_filter != nullptr) {
-					SetDParam(0, STR_DEPARTURES_CAPTION_VEHICLE_FILTER);
-					SetDParam(1, STR_DEPARTURES_CAPTION);
-					title_offset = 2;
-					SetDParam(5, this->order_list_filter->GetFirstSharedVehicle()->index);
+					str = STR_DEPARTURES_CAPTION_VEHICLE_FILTER;
+					params.emplace_back(STR_DEPARTURES_CAPTION);
+					append_title_params();
+					params.emplace_back(this->order_list_filter->GetFirstSharedVehicle()->index);
 				} else if (this->filter_target.IsValid()) {
-					SetDParam(0, STR_DEPARTURES_CAPTION_FILTER);
-					SetDParam(1, STR_DEPARTURES_CAPTION);
-					title_offset = 2;
+					str = STR_DEPARTURES_CAPTION_FILTER;
+					params.emplace_back(STR_DEPARTURES_CAPTION);
+					append_title_params();
 					if (Waypoint::IsValidID(this->filter_target.GetStationID())) {
-						SetDParam(5, STR_WAYPOINT_NAME);
+						params.emplace_back(STR_WAYPOINT_NAME);
 					} else {
-						SetDParam(5, STR_STATION_NAME);
+						params.emplace_back(STR_STATION_NAME);
 					}
-					SetDParam(6, this->filter_target.GetStationID());
+					params.emplace_back(this->filter_target.GetStationID());
 				} else {
-					SetDParam(0, STR_DEPARTURES_CAPTION);
-					title_offset = 1;
+					str = STR_DEPARTURES_CAPTION;
+					append_title_params();
 				}
 
-				SetDParam(title_offset + 0, this->title_params[0]);
-				SetDParam(title_offset + 1, this->title_params[1]);
-				SetDParam(title_offset + 2, this->title_params[2]);
-				break;
+				return GetStringWithArgs(str, params);
 			}
 
 			case WID_DB_CARGO_MODE: {
-				SetDParam(0, _departure_cargo_mode_strings[this->cargo_mode]);
-				break;
+				return GetString(_departure_cargo_mode_strings[this->cargo_mode]);
 			}
 
 			case WID_DB_DEPARTURE_MODE: {
-				SetDParam(0, _departure_mode_strings[this->mode]);
-				break;
+				return GetString(_departure_mode_strings[this->mode]);
 			}
 
 			case WID_DB_SOURCE_MODE: {
-				SetDParam(0, _departure_source_mode_strings[this->source_mode]);
-				break;
+				return GetString(_departure_source_mode_strings[this->source_mode]);
 			}
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -1000,18 +1003,19 @@ void DeparturesWindow::RecomputeDateWidth()
 	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_SCHEDULED)).width, cached_status_width);
 
 	auto eval_tick = [&](StateTicks tick) {
-		SetDParam(0, TC_ORANGE);
-		SetDParam(1, STR_JUST_TT_TIME_ABS);
-		SetDParam(2, tick);
-		SetDParam(3, TC_ORANGE);
-		SetDParam(4, STR_JUST_TT_TIME_ABS);
-		SetDParam(5, tick);
-		cached_date_width = std::max(GetStringBoundingBox(STR_DEPARTURES_TIME).width, cached_date_width);
-		cached_date_combined_width = std::max(GetStringBoundingBox(STR_DEPARTURES_TIME_BOTH).width, cached_date_combined_width);
+		auto params = MakeParameters(
+				TC_ORANGE,
+				STR_JUST_TT_TIME_ABS,
+				tick,
+				TC_ORANGE,
+				STR_JUST_TT_TIME_ABS,
+				tick);
 
-		SetDParam(0, STR_JUST_TT_TIME_ABS);
-		SetDParam(1, tick);
-		cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_EXPECTED)).width, cached_status_width);
+		cached_date_width = std::max(GetStringBoundingBox(GetStringWithArgs(STR_DEPARTURES_TIME, params)).width, cached_date_width);
+		PrepareArgsForNextRun(params);
+		cached_date_combined_width = std::max(GetStringBoundingBox(GetStringWithArgs(STR_DEPARTURES_TIME_BOTH, params)).width, cached_date_combined_width);
+
+		cached_status_width = std::max(GetStringBoundingBox(GetString(STR_DEPARTURES_EXPECTED, STR_JUST_TT_TIME_ABS, tick)).width, cached_status_width);
 	};
 
 	if (_settings_time.time_in_minutes) {
@@ -1024,9 +1028,10 @@ void DeparturesWindow::RecomputeDateWidth()
 		}
 	}
 
-	SetDParam(0, STR_JUST_TT_TIME_ABS);
-	SetDParam(1, 0);
-	cached_date_arrow_width = GetStringBoundingBox(STR_DEPARTURES_TIME_DEP).width - GetStringBoundingBox(STR_DEPARTURES_TIME).width;
+	auto get_tick_zero_width = [&](StringID str) {
+		return GetStringBoundingBox(GetString(str, STR_JUST_TT_TIME_ABS, 0)).width;
+	};
+	cached_date_arrow_width = get_tick_zero_width(STR_DEPARTURES_TIME_DEP) - get_tick_zero_width(STR_DEPARTURES_TIME);
 }
 
 uint DeparturesWindow::GetScrollbarCapacity() const
@@ -1062,20 +1067,19 @@ uint DeparturesWindow::GetMinWidth() const
 	return result + ScaleGUITrad(140);
 }
 
-/* Uses 3 parameters */
-static void FillCallingAtTargetDParam(size_t n, const Departure *d, CallAtTargetID target)
+/* Returns string ID and 2 associated parameters */
+static std::tuple<StringID, StringParameter, StringParameter> GetCallingAtTargetParams(const Departure *d, CallAtTargetID target)
 {
 	if (target.IsStationID()) {
+		StringID str;
 		if (Waypoint::IsValidID(target.GetStationID())) {
-			SetDParam(n, STR_WAYPOINT_NAME);
+			str = STR_WAYPOINT_NAME;
 		} else {
-			SetDParam(n, STR_STATION_NAME);
+			str = STR_STATION_NAME;
 		}
-		SetDParam(n + 1, target.GetStationID());
+		return { str, target.GetStationID(), std::monostate{} };
 	} else {
-		SetDParam(n, STR_DEPOT_NAME);
-		SetDParam(n + 1, d->vehicle->type);
-		SetDParam(n + 2, target.GetDepotDestinationID().base());
+		return { STR_DEPOT_NAME, d->vehicle->type, target.GetDepotDestinationID() };
 	}
 }
 
@@ -1186,7 +1190,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (!d->terminus.IsValid()) continue;
 
 		if (time_width > 0) {
-			StringID time_str;
+			format_buffer time_text;
 			TextColour time_colour;
 			int offset = 0;
 			switch (d->show_as) {
@@ -1203,14 +1207,15 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					break;
 			}
 			if (this->mode == DM_COMBINED && d->EffectiveWaitingTime() != Departure::MISSING_WAIT_TICKS) {
-				time_str = STR_DEPARTURES_TIME_BOTH;
-				SetDParam(0, time_colour);
-				SetDParam(1, STR_JUST_TT_TIME_ABS);
-				SetDParam(2, d->scheduled_tick - d->EffectiveWaitingTime());
-				SetDParam(3, time_colour);
-				SetDParam(4, STR_JUST_TT_TIME_ABS);
-				SetDParam(5, d->scheduled_tick);
+				AppendStringInPlace(time_text, STR_DEPARTURES_TIME_BOTH,
+						time_colour,
+						STR_JUST_TT_TIME_ABS,
+						d->scheduled_tick - d->EffectiveWaitingTime(),
+						time_colour,
+						STR_JUST_TT_TIME_ABS,
+						d->scheduled_tick);
 			} else {
+				StringID time_str;
 				if (this->mode == DM_COMBINED) {
 					time_str = STR_DEPARTURES_TIME_DEP;
 					offset = time_width - (cached_date_width + cached_date_arrow_width);
@@ -1219,14 +1224,15 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				} else {
 					time_str = STR_DEPARTURES_TIME;
 				}
-				SetDParam(0, time_colour);
-				SetDParam(1, STR_JUST_TT_TIME_ABS);
-				SetDParam(2, d->scheduled_tick);
+				AppendStringInPlace(time_text, time_str,
+						time_colour,
+						STR_JUST_TT_TIME_ABS,
+						d->scheduled_tick);
 			}
 			if (ltr) {
-				DrawString(     text_left + offset, text_left + time_width, y + 1, time_str);
+				DrawString(     text_left + offset, text_left + time_width, y + 1, time_text);
 			} else {
-				DrawString(text_right - time_width,             text_right, y + 1, time_str);
+				DrawString(text_right - time_width,             text_right, y + 1, time_text);
 			}
 		}
 
@@ -1287,15 +1293,13 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Arrival time */
 		if (arrival_time_width != 0 && d->terminus.scheduled_tick != 0) {
-			SetDParam(0, TC_ORANGE);
-			SetDParam(1, STR_JUST_TT_TIME_ABS);
-			SetDParam(2, d->terminus.scheduled_tick);
+			std::string str = GetString(STR_DEPARTURES_TIME, TC_ORANGE, STR_JUST_TT_TIME_ABS, d->terminus.scheduled_tick);
 			if (ltr) {
 				const int left = text_left + time_width + type_width + ScaleGUITrad(6);
-				DrawString(left, left + arrival_time_width, y + 1, STR_DEPARTURES_TIME);
+				DrawString(left, left + arrival_time_width, y + 1, str);
 			} else {
 				const int right = text_right - time_width - type_width - ScaleGUITrad(6);
-				DrawString(right - arrival_time_width, right, y + 1, STR_DEPARTURES_TIME);
+				DrawString(right - arrival_time_width, right, y + 1, str);
 			}
 		}
 
@@ -1304,13 +1308,18 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int dest_left = ltr ? text_left + time_width + type_width + PadWidth(arrival_time_width) + ScaleGUITrad(6) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + PadWidth(status_width);
 			const int dest_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - PadWidth(status_width) : text_right - time_width - type_width - PadWidth(arrival_time_width) - ScaleGUITrad(6);
 
+			format_buffer calling_at_str;
+			auto fill_calling_at = [&]<typename... T>(CallAtTargetID target, StringID str, T&&... params) {
+				auto [calling_str, calling_p1, calling_p2] = GetCallingAtTargetParams(d, target);
+				GetStringInPlace(calling_at_str, str, calling_str, calling_p1, calling_p2, icon, std::forward<T>(params)...);
+			};
+
 			if (via == StationID::Invalid()) {
 				/* Only show the terminus. */
-				FillCallingAtTargetDParam(0, d, d->terminus.target);
-				SetDParam(3, icon);
-				DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS);
+				fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS);
+				DrawString(dest_left, dest_right, y + 1, calling_at_str);
 			} else {
-				auto set_via_dparams = [&](uint offset) {
+				auto prepare_via_string_id = [&]() -> StringID {
 					auto get_single_via_string = [&](uint temp_str, StationID id) {
 						StringID icon_via = STR_DEPARTURES_STATION_NONE;
 						if (_settings_client.gui.departure_destination_type && Station::IsValidID(id)) {
@@ -1338,33 +1347,26 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					if (via2 != StationID::Invalid()) {
 						get_single_via_string(1, via2);
 
-						auto tmp_params = MakeParameters(SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1);
-						_temp_special_strings[0] = GetStringWithArgs(STR_DEPARTURES_VIA_AND, tmp_params);
+						_temp_special_strings[0] = GetString(STR_DEPARTURES_VIA_AND, SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1);
 					}
 
-					SetDParam(offset, SPECSTR_TEMP_START);
+					return SPECSTR_TEMP_START;
 				};
+
 				/* Show the terminus and the via station. */
-				FillCallingAtTargetDParam(0, d, d->terminus.target);
-				SetDParam(3, icon);
-				set_via_dparams(4);
-				int text_width = (GetStringBoundingBox(STR_DEPARTURES_TERMINUS_VIA_STATION)).width;
+				fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS_VIA_STATION, prepare_via_string_id());
+				int text_width = (GetStringBoundingBox(calling_at_str)).width;
 
 				if (dest_left + text_width < dest_right) {
 					/* They will both fit, so show them both. */
-					FillCallingAtTargetDParam(0, d, d->terminus.target);
-					SetDParam(3, icon);
-					set_via_dparams(4);
-					DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
+					DrawString(dest_left, dest_right, y + 1, calling_at_str);
 				} else {
 					/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
 					if ((this->elapsed_ms >> 12) & 1) {
-						set_via_dparams(0);
-						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_VIA);
+						DrawString(dest_left, dest_right, y + 1, GetString(STR_DEPARTURES_VIA, prepare_via_string_id()));
 					} else {
-						FillCallingAtTargetDParam(0, d, d->terminus.target);
-						SetDParam(3, icon);
-						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA);
+						fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS_VIA);
+						DrawString(dest_left, dest_right, y + 1, calling_at_str);
 					}
 					this->scroll_refresh = true;
 				}
@@ -1400,9 +1402,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);
 					} else {
 						/* The vehicle is expected to be late and is not yet due to arrive. */
-						SetDParam(0, STR_JUST_TT_TIME_ABS);
-						SetDParam(1, expected_arrival);
-						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_EXPECTED);
+						DrawString(status_left, status_right, y + 1, GetString(STR_DEPARTURES_EXPECTED, STR_JUST_TT_TIME_ABS, expected_arrival));
 					}
 				}
 			}
@@ -1413,8 +1413,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int veh_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - veh_width : text_left + PadWidth(toc_width) + PadWidth(group_width);
 			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
 
-			SetDParam(0, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
-			DrawString(veh_left, veh_right, y + 1, STR_DEPARTURES_VEH);
+			DrawString(veh_left, veh_right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
 		}
 
 		/* Group name */
@@ -1422,8 +1421,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
 			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
 
-			SetDParam(0, (uint64_t)(d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
-			DrawString(group_left, group_right, y + 1, STR_DEPARTURES_GROUP);
+			DrawString(group_left, group_right, y + 1, GetString(STR_DEPARTURES_GROUP, d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
 		}
 
 		/* Operating company */
@@ -1431,8 +1429,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int toc_left = ltr ? text_right - toc_width : text_left;
 			const int toc_right = ltr ? text_right : text_left + toc_width;
 
-			SetDParam(0, d->vehicle->owner);
-			DrawString(toc_left, toc_right, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_RIGHT);
+			DrawString(toc_left, toc_right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TC_FROMSTRING, SA_RIGHT);
 		}
 
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
@@ -1444,25 +1441,35 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			DrawString(text_right - calling_at_width,                    text_right, bottom_y, STR_DEPARTURES_CALLING_AT, TC_FROMSTRING, SA_LEFT, false, calling_font_size);
 		}
 
-		/* List of stations */
-		/* RTL languages can be handled in the language file, e.g. by having the following: */
-		/* STR_DEPARTURES_CALLING_AT_STATION      :{STATION}, {RAW_STRING} */
-		/* STR_DEPARTURES_CALLING_AT_LAST_STATION :{STATION} & {RAW_STRING}*/
-		std::string buffer;
+		format_buffer buffer;
 
-		/* Uses 4 or 5 parameters */
-		auto fill_calling_at_dparam = [&](size_t n, const CallAt &c) {
+		auto append_calling_at = [&](const CallAt &c, StringID top_level = STR_NULL) {
+			std::array<StringParameter, 5> params{};
+			size_t n = 0;
+			auto add_string = [&](StringID next) {
+				if (top_level == STR_NULL) {
+					top_level = next;
+				} else {
+					params[n++] = next;
+				}
+			};
+
 			if (c.scheduled_tick != 0 && arrival_time_width > 0) {
-				SetDParam(n, STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME);
-				n++;
+				add_string(STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME);
 			}
-			FillCallingAtTargetDParam(n, d, c.target);
-			SetDParam(n + 3, c.scheduled_tick);
+
+			auto [calling_at_str, calling_param1, calling_param2] = GetCallingAtTargetParams(d, c.target);
+			add_string(calling_at_str);
+			params[n++] = calling_param1;
+			params[n++] = calling_param2;
+
+			params[n++] = c.scheduled_tick;
+
+			AppendStringWithArgsInPlace(buffer, top_level, params);
 		};
 
 		if (d->calling_at.size() != 0) {
-			fill_calling_at_dparam(0, d->calling_at[0]);
-			std::string calling_at_buffer = GetString(STR_JUST_STRING4);
+			append_calling_at(d->calling_at[0]);
 
 			const CallAt *continues_to = nullptr;
 
@@ -1479,23 +1486,17 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						continues_to = &(d->calling_at[d->calling_at.size() - 1]);
 						break;
 					}
-					SetDParamStr(0, std::move(calling_at_buffer));
-					fill_calling_at_dparam(1, d->calling_at[i]);
-					calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_STATION);
+					append_calling_at(d->calling_at[i], STR_DEPARTURES_CALLING_AT_STATION);
 				}
 
 				/* Finally, finish off with " and <station>". */
-				SetDParamStr(0, std::move(calling_at_buffer));
-				fill_calling_at_dparam(1, d->calling_at[i]);
-				calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_LAST_STATION);
+				append_calling_at(d->calling_at[i], STR_DEPARTURES_CALLING_AT_LAST_STATION);
 			}
 
-			SetDParamStr(0, std::move(calling_at_buffer));
 			if (continues_to == nullptr) {
-				buffer = GetString(STR_DEPARTURES_CALLING_AT_LIST);
+				AppendStringInPlace(buffer, STR_DEPARTURES_CALLING_AT_LIST_SUFFIX);
 			} else {
-				fill_calling_at_dparam(1, *continues_to);
-				buffer = GetString(STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS);
+				append_calling_at(*continues_to, STR_DEPARTURES_CALLING_AT_LIST_SUFFIX_SMART_TERMINUS);
 			}
 
 		}
@@ -1504,8 +1505,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Draw the whole list if it will fit. Otherwise scroll it. */
 		if (list_width < text_right - (text_left + calling_at_width + 2)) {
-			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TC_FROMSTRING, SA_LEFT, false, calling_font_size)
-				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TC_FROMSTRING, SA_LEFT, false, calling_font_size);
+			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TC_ORANGE, SA_LEFT, false, calling_font_size)
+				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TC_ORANGE, SA_LEFT, false, calling_font_size);
 		} else {
 			this->scroll_refresh = true;
 
@@ -1524,8 +1525,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				? text_right - (elapsed_scroll_px % (list_width + text_right - text_left))
 				:  text_left + (elapsed_scroll_px % (list_width + text_right - text_left));
 
-			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TC_FROMSTRING,  SA_LEFT | SA_FORCE, false, calling_font_size)
-				: DrawString(-INT16_MAX,       pos, 0, buffer, TC_FROMSTRING, SA_RIGHT | SA_FORCE, false, calling_font_size);
+			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TC_ORANGE,  SA_LEFT | SA_FORCE, false, calling_font_size)
+				: DrawString(-INT16_MAX,       pos, 0, buffer, TC_ORANGE, SA_RIGHT | SA_FORCE, false, calling_font_size);
 		}
 
 		y += this->entry_height;
