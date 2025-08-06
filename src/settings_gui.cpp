@@ -1702,7 +1702,7 @@ struct GameSettingsWindow : Window {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
-					ShowQueryString(GetString(STR_JUST_DECIMAL1, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
+					ShowQueryString(GetString(STR_JUST_DECIMAL, value64, 1), STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
 				} else {
 					CharSetFilter charset_filter = CS_NUMERAL; //default, only numeric input allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
