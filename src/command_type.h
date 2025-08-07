@@ -893,9 +893,12 @@ void SetCommandPayloadClientID(T &payload, ClientID client_id)
 	}
 }
 
+template <typename T>
+concept CommandPayloadStringType = std::is_same_v<T, std::string> || std::is_same_v<T, EncodedString>;
+
 struct CommandProcTupleAdapter {
 	template <typename T>
-	using replace_string_t = std::conditional_t<std::is_same_v<std::string, T>, const std::string &, T>;
+	using replace_string_t = std::conditional_t<CommandPayloadStringType<T>, const T &, T>;
 };
 
 struct BaseTupleCmdDataTag{};

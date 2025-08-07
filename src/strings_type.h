@@ -156,6 +156,8 @@ public:
 	template <typename T>
 	bool Deserialise(T &buffer, StringValidationSettings default_string_validation);
 
+	inline void Sanitise(StringValidationSettings default_string_validation);
+
 private:
 	std::string string; ///< The encoded string.
 
