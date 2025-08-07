@@ -437,7 +437,7 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 
 		case SL_STDSTR:
 			/* These should be all pointers to std::string. */
-			return std::is_same_v<typename std::remove_reference<T>::type, std::string>;
+			return std::is_same_v<typename std::remove_reference<T>::type, std::string> || std::is_same_v<typename std::remove_reference<T>::type, class EncodedString>;
 
 		case SL_ARR:
 			/* Partial load of array is permitted. */

@@ -166,5 +166,6 @@ private:
 
 	friend EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
 };
+static_assert(sizeof(EncodedString) == sizeof(std::string)); // EncodedString is saved/loaded directly, std::string must be at offset 0.
 
 #endif /* STRINGS_TYPE_H */
