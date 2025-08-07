@@ -2914,7 +2914,6 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 		case NWID_PUSHBUTTON_DROPDOWN: {
 			const Dimension &dropdown_dim = NWidgetLeaf::GetDropdownBoxDimension();
 			padding = {WidgetDimensions::scaled.dropdowntext.Horizontal() + dropdown_dim.width + WidgetDimensions::scaled.fullbevel.Horizontal(), WidgetDimensions::scaled.dropdowntext.Vertical()};
-			if (this->index >= 0) w->SetStringParameters(this->index);
 			Dimension d2 = GetStringBoundingBox(GetStringForWidget(w, this), this->text_size);
 			d2.width += padding.width;
 			d2.height = std::max(d2.height + padding.height, dropdown_dim.height);

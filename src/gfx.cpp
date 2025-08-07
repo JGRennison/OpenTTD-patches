@@ -728,7 +728,7 @@ int DrawString(int left, int right, int top, std::string_view str, TextColour co
 int DrawString(int left, int right, int top, StringID str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
-	AppendStringInPlaceGlobalParams(buf, str);
+	AppendStringWithArgsInPlace(buf, str, {});
 	return DrawString(left, right, top, buf, colour, align, underline, fontsize);
 }
 
@@ -754,7 +754,7 @@ int GetStringHeight(std::string_view str, int maxw, FontSize fontsize)
 int GetStringHeight(StringID str, int maxw)
 {
 	format_buffer buf;
-	AppendStringInPlaceGlobalParams(buf, str);
+	AppendStringWithArgsInPlace(buf, str, {});
 	return GetStringHeight(buf, maxw);
 }
 
@@ -875,7 +875,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
 int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
-	AppendStringInPlaceGlobalParams(buf, str);
+	AppendStringWithArgsInPlace(buf, str, {});
 	return DrawStringMultiLine(left, right, top, bottom, buf, colour, align, underline, fontsize);
 }
 
@@ -896,7 +896,7 @@ Dimension GetStringBoundingBox(std::string_view str, FontSize start_fontsize)
 }
 
 /**
- * Get bounding box of a string. Uses parameters set by #SetDParam if needed.
+ * Get bounding box of a string.
  * Has the same restrictions as #GetStringBoundingBox(std::string_view str, FontSize start_fontsize).
  * @param strid String to examine.
  * @return Width and height of the bounding box for the string in pixels.
@@ -904,7 +904,7 @@ Dimension GetStringBoundingBox(std::string_view str, FontSize start_fontsize)
 Dimension GetStringBoundingBox(StringID strid, FontSize start_fontsize)
 {
 	format_buffer buf;
-	AppendStringInPlaceGlobalParams(buf, strid);
+	AppendStringWithArgsInPlace(buf, strid, {});
 	return GetStringBoundingBox(buf, start_fontsize);
 }
 

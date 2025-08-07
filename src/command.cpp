@@ -1124,11 +1124,11 @@ std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 		buf.format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
 			buf.push_back(' ');
-			AppendStringInPlaceGlobalParams(buf, cmd_msg);
+			AppendStringInPlace(buf, cmd_msg);
 		}
 		if (this->message != INVALID_STRING_ID) {
 			buf.push_back(' ');
-			AppendStringInPlaceGlobalParams(buf, this->message);
+			AppendStringInPlace(buf, this->message);
 		}
 
 		return buf.to_string();

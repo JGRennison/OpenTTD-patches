@@ -66,22 +66,7 @@ TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently s
 std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
 #endif /* WITH_ICU_I18N */
 
-std::array<StringParameter, 20> _global_string_params_data;
-
-static StringParameters _global_string_params(std::span<StringParameter>{ _global_string_params_data.data(), _global_string_params_data.size() });
-
 std::string _temp_special_strings[16];
-
-/**
- * Prepare the string parameters for the next formatting run. This means
- * resetting the type information and resetting the offset to the begin.
- */
-void StringParameters::PrepareForNextRun()
-{
-	for (auto &param : this->parameters) param.type = 0;
-	this->offset = 0;
-}
-
 
 /**
  * Get the next parameter from our parameters.
@@ -261,17 +246,6 @@ uint64_t GetParamMaxDigits(uint count, FontSize size)
 }
 
 /**
- * Set DParam n to some number that is suitable for string size computations.
- * @param n Index of the string parameter.
- * @param count Number of digits which shall be displayable.
- * @param size  Font of the number
- */
-void SetDParamMaxDigits(size_t n, uint count, FontSize size)
-{
-	SetDParam(n, GetParamMaxDigits(count, size));
-}
-
-/**
  * Get some number that is suitable for string size computations.
  * @param max_value The biggest value which shall be displayed.
  *                  For the result only the number of digits of \a max_value matter.
@@ -283,43 +257,6 @@ uint64_t GetParamMaxValue(uint64_t max_value, uint min_count, FontSize size)
 {
 	uint num_digits = GetBase10DigitsRequired(max_value);
 	return GetParamMaxDigits(std::max(min_count, num_digits), size);
-}
-
-/**
- * Set DParam n to some number that is suitable for string size computations.
- * @param n Index of the string parameter.
- * @param max_value The biggest value which shall be displayed.
- *                  For the result only the number of digits of \a max_value matter.
- * @param min_count Minimum number of digits independent of \a max.
- * @param size  Font of the number
- */
-void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count, FontSize size)
-{
-	SetDParam(n, GetParamMaxValue(max_value, min_count, size));
-}
-
-/**
- * Copy the parameters from the backup into the global string parameter array.
- * @param backup The backup to copy from.
- */
-void CopyInDParam(const std::span<const StringParameterData> backup, uint offset)
-{
-	for (size_t i = 0; i < backup.size(); i++) {
-		_global_string_params.SetParam(i, backup[i]);
-	}
-}
-
-/**
- * Copy \a num string parameters from the global string parameter array to the \a backup.
- * @param backup The backup to write to.
- * @param num Number of string parameters to copy.
- */
-void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num)
-{
-	backup.resize(num);
-	for (size_t i = 0; i < backup.size(); i++) {
-		backup[i] = _global_string_params.GetParam(i);
-	}
 }
 
 static void StationGetSpecialString(StringBuilder builder, StationFacilities x);
@@ -481,29 +418,15 @@ void GetStringWithArgs(StringBuilder builder, StringID string, std::span<StringP
 }
 
 /**
- * Resolve the given StringID into a std::string with all the associated
- * DParam lookups and formatting.
+ * Resolve the given StringID into a std::string with formatting but no parameters.
  * @param string The unique identifier of the translatable string.
  * @return The std::string of the translated string.
  */
 std::string GetString(StringID string)
 {
-	_global_string_params.PrepareForNextRun();
 	format_buffer buffer;
-	GetStringWithArgs(StringBuilder(buffer), string, _global_string_params);
+	GetStringWithArgs(StringBuilder(buffer), string, {});
 	return buffer.to_string();
-}
-
-/**
- * Resolve the given StringID and append in place into an existing format_buffer with all the associated
- * DParam lookups and formatting.
- * @param result The format_buffer to place the translated string.
- * @param string The unique identifier of the translatable string.
- */
-void AppendStringInPlaceGlobalParams(format_buffer &result, StringID string)
-{
-	_global_string_params.PrepareForNextRun();
-	GetStringWithArgs(StringBuilder(result), string, _global_string_params);
 }
 
 static void AppendStringWithArgsInPlaceFixed(format_target &result, StringID string, StringParameters &params)
@@ -544,18 +467,6 @@ void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span
 }
 
 /**
- * Resolve the given StringID into a std::string with all the associated
- * DParam lookups and formatting.
- * @param builder   the string builder to write to
- * @param string The unique identifier of the translatable string.
- */
-void GetString(StringBuilder builder, StringID string)
-{
-	_global_string_params.PrepareForNextRun();
-	GetStringWithArgs(builder, string, _global_string_params);
-}
-
-/**
  * Get a parsed string with most special stringcodes replaced by the string parameters.
  * @param string The ID of the string to parse.
  * @param args   Arguments for the string.
@@ -567,28 +478,6 @@ std::string GetStringWithArgs(StringID string, std::span<StringParameter> args)
 	StringBuilder builder(result);
 	GetStringWithArgs(builder, string, args);
 	return result.to_string();
-}
-
-/**
- * This function is used to "bind" a C string to a OpenTTD dparam slot.
- * @param n slot of the string
- * @param str string to bind
- */
-void SetDParamStr(size_t n, const char *str)
-{
-	_global_string_params.SetParam(n, str);
-}
-
-/**
- * This function is used to "bind" the std::string to a OpenTTD dparam slot.
- * Contrary to the other \c SetDParamStr function, this moves the string into
- * the parameter slot.
- * @param n slot of the string
- * @param str string to bind
- */
-void SetDParamStr(size_t n, std::string str)
-{
-	_global_string_params.SetParam(n, std::move(str));
 }
 
 /**

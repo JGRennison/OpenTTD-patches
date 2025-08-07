@@ -38,7 +38,6 @@ public:
 
 	StringParameters(std::span<StringParameter> parameters = {}) : parameters(parameters) {}
 
-	void PrepareForNextRun();
 	void SetTypeOfNextParameter(char32_t type) { this->next_type = type; }
 
 	/**
@@ -129,7 +128,7 @@ public:
 	/**
 	 * Get a new instance of StringParameters that is a "range" into the
 	 * remaining existing parameters. Upon destruction the offset in the parent
-	 * is not updated. However, calls to SetDParam do update the parameters.
+	 * is not updated. However, calls to SetParam do update the parameters.
 	 *
 	 * The returned StringParameters must not outlive this StringParameters.
 	 * @return A "range" of the string parameters.
@@ -139,7 +138,7 @@ public:
 	/**
 	 * Get a new instance of StringParameters that is a "range" into the
 	 * remaining existing parameters from the given offset. Upon destruction the
-	 * offset in the parent is not updated. However, calls to SetDParam do
+	 * offset in the parent is not updated. However, calls to SetParam do
 	 * update the parameters.
 	 *
 	 * The returned StringParameters must not outlive this StringParameters.
@@ -177,44 +176,10 @@ public:
 	}
 };
 
-/**
- * Extension of StringParameters with its own statically sized buffer for
- * the parameters.
- */
-template <size_t N>
-class ArrayStringParameters : public StringParameters {
-	std::array<StringParameter, N> params{}; ///< The actual parameters
-
-public:
-	ArrayStringParameters()
-	{
-		this->parameters = std::span(params.data(), params.size());
-	}
-
-	ArrayStringParameters(ArrayStringParameters&& other) noexcept
-	{
-		*this = std::move(other);
-	}
-
-	ArrayStringParameters& operator=(ArrayStringParameters &&other) noexcept
-	{
-		this->offset = other.offset;
-		this->next_type = other.next_type;
-		this->params = std::move(other.params);
-		this->parameters = std::span(params.data(), params.size());
-		return *this;
-	}
-
-	ArrayStringParameters(const ArrayStringParameters &other) = delete;
-	ArrayStringParameters& operator=(const ArrayStringParameters &other) = delete;
-};
-
 class StringBuilder;
 
 void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters &args, uint case_index = 0, bool game_script = false);
 void GetStringWithArgs(StringBuilder builder, StringID string, std::span<StringParameter> params, uint case_index = 0, bool game_script = false);
-
-void GetString(StringBuilder builder, StringID string);
 
 /* Do not leak the StringBuilder to everywhere. */
 void GenerateTownNameString(StringBuilder builder, size_t lang, uint32_t seed);

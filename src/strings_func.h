@@ -73,7 +73,6 @@ static inline void PrepareArgsForNextRun(std::span<StringParameter> args)
 [[nodiscard]] std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 [[nodiscard]] std::string GetString(StringID string);
 [[nodiscard]] const char *GetStringPtr(StringID string);
-void AppendStringInPlaceGlobalParams(struct format_buffer &result, StringID string);
 void AppendStringWithArgsInPlace(struct format_target &result, StringID string, std::span<StringParameter> args);
 void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
 uint32_t GetStringGRFID(StringID string);
@@ -87,7 +86,7 @@ StringID GetVelocityUnitName(VehicleType type);
  * Pack velocity and vehicle type for use with SCC_VELOCITY string parameter.
  * @param speed Display speed for parameter.
  * @param type Type of vehicle for parameter.
- * @return Bit-packed velocity and vehicle type, for use with SetDParam().
+ * @return Bit-packed velocity and vehicle type, for use with string parameters.
  */
 inline int64_t PackVelocity(uint speed, VehicleType type)
 {
@@ -98,18 +97,6 @@ inline int64_t PackVelocity(uint speed, VehicleType type)
 
 char32_t GetDecimalSeparatorChar();
 
-/**
- * Set a string parameter \a v at index \a n in the global string parameter array.
- * @param n Index of the string parameter.
- * @param v Value of the string parameter.
- */
-template <typename T>
-inline void SetDParam(size_t n, T &&v) {
-	extern std::array<StringParameter, 20> _global_string_params_data;
-	assert(n < _global_string_params_data.size());
-	_global_string_params_data[n] = StringParameter{std::forward<T>(v)};
-}
-
 uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 uint64_t GetParamMaxDigits(uint count, FontSize size = FS_NORMAL);
 
@@ -117,38 +104,6 @@ template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
 uint64_t GetParamMaxValue(T max_value, uint min_count = 0, FontSize size = FS_NORMAL)
 {
 	return GetParamMaxValue(max_value.base(), min_count, size);
-}
-
-void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
-void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
-
-template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
-void SetDParamMaxValue(size_t n, T max_value, uint min_count = 0, FontSize size = FS_NORMAL)
-{
-	SetDParamMaxValue(n, max_value.base(), min_count, size);
-}
-
-void SetDParamStr(size_t n, const char *str);
-void SetDParamStr(size_t n, std::string str);
-
-inline void SetDParamStr(size_t n, std::string_view str)
-{
-	SetDParamStr(n, std::string{str});
-}
-
-void CopyInDParam(const std::span<const StringParameterData> backup, uint offset = 0);
-void CopyOutDParam(std::vector<StringParameterData> &backup, size_t num);
-
-/**
- * Get the current string parameter at index \a n from the global string parameter array.
- * @param n Index of the string parameter.
- * @return Value of the requested string parameter.
- */
-inline uint64_t GetDParam(size_t n)
-{
-	extern std::array<StringParameter, 20> _global_string_params_data;
-	assert(n < _global_string_params_data.size());
-	return std::get<uint64_t>(_global_string_params_data[n].data);
 }
 
 extern TextDirection _current_text_dir; ///< Text direction of the currently selected language
