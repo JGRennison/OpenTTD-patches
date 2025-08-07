@@ -132,6 +132,8 @@ public:
 	}
 };
 
+enum StringValidationSettings : uint8_t;
+
 /**
  * Container for an encoded string, created by GetEncodedString.
  */
@@ -147,6 +149,12 @@ public:
 
 	inline void clear() { this->string.clear(); }
 	inline bool empty() const { return this->string.empty(); }
+
+	template <typename T>
+	void Serialise(T &&buffer) const { buffer.Send_string(this->string); }
+
+	template <typename T>
+	bool Deserialise(T &buffer, StringValidationSettings default_string_validation);
 
 private:
 	std::string string; ///< The encoded string.

@@ -17,6 +17,13 @@
 #include "core/format.hpp"
 #include "3rdparty/fmt/ranges.h"
 
+template <typename T>
+inline bool EncodedString::Deserialise(T &buffer, StringValidationSettings default_string_validation)
+{
+	buffer.Recv_string(this->string, default_string_validation | SVS_ALLOW_CONTROL_CODE);
+	return true;
+}
+
 namespace TupleCmdDataDetail {
 	template <typename U>
 	void SanitiseGeneric(U &value, StringValidationSettings settings)
