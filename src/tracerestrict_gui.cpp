@@ -742,8 +742,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 		for (auto it = start; it != list.end() && (*it)->parent == parent_filter; ++it) {
 			const Group *g = *it;
 			if (group_id == g->index) selected = group_id.base();
-			SetDParam(0, g->index);
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, STR_GROUP_NAME, g->index.base(), false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_GROUP_NAME, g->index), g->index.base(), false));
 			if (seen_parents.count(g->index)) {
 				/* Output child groups */
 				output_groups(indent + 1, g->index);
@@ -1495,29 +1494,6 @@ void IterateActionsInsideConditional(const TraceRestrictProgram *prog, int index
 	}
 }
 
-/** Common function for drawing an ordinary conditional instruction */
-static void DrawInstructionStringConditionalCommon(TraceRestrictInstructionItem item, const TraceRestrictTypePropertySet &properties)
-{
-	assert(item.GetCondFlags() <= TRCF_OR);
-	SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-	SetDParam(1, GetTypeString(item));
-	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-}
-
-/** Common function for drawing an integer conditional instruction */
-static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictInstructionItem item, const TraceRestrictTypePropertySet &properties)
-{
-	DrawInstructionStringConditionalCommon(item, properties);
-	SetDParam(3, item.GetValue());
-}
-
-/** Common function for drawing an integer conditional instruction with an invalid value */
-static void DrawInstructionStringConditionalInvalidValue(TraceRestrictInstructionItem item, const TraceRestrictTypePropertySet &properties, StringID &instruction_string, bool selected)
-{
-	instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED;
-	DrawInstructionStringConditionalCommon(item, properties);
-}
-
 StringID GetSlotGroupWarning(TraceRestrictSlotGroupID slot_group, Owner owner)
 {
 	const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(slot_group);
@@ -1543,80 +1519,83 @@ enum class DrawInstructionStringFlag : uint8_t {
 using DrawInstructionStringFlags = EnumBitSet<DrawInstructionStringFlag, uint8_t>;
 
 /**
- * Draws an instruction in the programming GUI
+ * Fill a format_buffer with an instruction string
  * @param prog The program (may be nullptr)
- * @param item The instruction to draw
+ * @param instruction_record The instruction to draw
  * @param index The instruction index
- * @param y Y position for drawing
- * @param selected True, if the order is selected
- * @param indent How many levels the instruction is indented
- * @param left Left border for text drawing
- * @param right Right border for text drawing
  * @param owner Owning company ID
  * @param flags Flags
  */
-static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictInstructionRecord instruction_record,
-		int index, int y, bool selected, int indent, int left, int right, Owner owner, DrawInstructionStringFlags flags)
+static void FillInstructionString(format_buffer &instruction_string, const TraceRestrictProgram *prog,
+		TraceRestrictInstructionRecord instruction_record, int index, Owner owner, DrawInstructionStringFlags flags)
 {
-	StringID instruction_string = INVALID_STRING_ID;
-
 	TraceRestrictInstructionItem item = instruction_record.instruction;
 	TraceRestrictTypePropertySet properties = GetTraceRestrictTypeProperties(item);
+
+	auto set_instruction = [&]<typename... T>(StringID str, T&&... params) {
+		AppendStringInPlace(instruction_string, str, std::forward<T>(params)...);
+	};
+
+	auto make_conditional_common_params = [&]<typename... T>(T&&... params) -> auto {
+		return MakeParameters(
+				_program_cond_type[item.GetCondFlags()],
+				GetTypeString(item),
+				GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+				std::forward<T>(params)...);
+	};
+
+	auto set_conditional_common = [&]<typename... T>(StringID str, T&&... params) -> auto {
+		auto args = make_conditional_common_params(std::forward<T>(params)...);
+		AppendStringWithArgsInPlace(instruction_string, str, args);
+	};
 
 	if (item.IsConditional()) {
 		if (item.GetType() == TRIT_COND_ENDIF) {
 			if (item.GetCondFlags() & TRCF_ELSE) {
-				instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ELSE;
+				set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_ELSE);
 			} else {
-				instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENDIF;
+				set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_ENDIF);
 			}
 		} else if (item.GetType() == TRIT_COND_UNDEFINED) {
-			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED;
-			SetDParam(0, _program_cond_type[item.GetCondFlags()]);
+			set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED, _program_cond_type[item.GetCondFlags()]);
 		} else {
-			auto insert_warning = [&](uint dparam_index, StringID warning) {
-				auto tmp_params = MakeParameters(GetDParam(dparam_index));
-				_temp_special_strings[0] = GetStringWithArgs(warning, tmp_params);
-				SetDParam(dparam_index, SPECSTR_TEMP_START);
+			auto insert_warning = [&](StringParameter &param, StringID warning) {
+				_temp_special_strings[0] = GetStringWithArgs(warning, std::span(&param, 1));
+				param = SPECSTR_TEMP_START;
 			};
 
 			switch (properties.value_type) {
 				case TRVT_INT:
-				case TRVT_PERCENT:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+				case TRVT_PERCENT: {
+					auto params = make_conditional_common_params(item.GetValue());
 					if (item.GetType() == TRIT_COND_RESERVED_TILES && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
-						insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+						insert_warning(params[1], STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
 					}
+					AppendStringWithArgsInPlace(instruction_string, STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER, params);
 					break;
+				}
 
 				case TRVT_SPEED:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED, item.GetValue());
 					break;
 
 				case TRVT_ORDER: {
 					switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {
 						case TROCAF_STATION:
 							if (item.GetValue() != StationID::Invalid()) {
-								instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION;
-								DrawInstructionStringConditionalIntegerCommon(item, properties);
+								set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION, item.GetValue());
 							} else {
 								/* This is an invalid station, use a separate string */
-								DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
+								set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED);
 							}
 							break;
 
 						case TROCAF_WAYPOINT:
-							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT;
-							DrawInstructionStringConditionalIntegerCommon(item, properties);
+							set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT, item.GetValue());
 							break;
 
 						case TROCAF_DEPOT:
-							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT;
-							DrawInstructionStringConditionalCommon(item, properties);
-							SetDParam(3, VEH_TRAIN);
-							SetDParam(4, item.GetValue());
+							set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT, VEH_TRAIN, item.GetValue());
 							break;
 
 						default:
@@ -1627,68 +1606,70 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 
 				case TRVT_CARGO_ID:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_CARGO;
 					assert(item.GetCondFlags() <= TRCF_OR);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(&_cargo_cond_ops, item.GetCondOp()));
-					SetDParam(2, GetCargoStringByID(item.GetValue()));
+					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_CARGO,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(&_cargo_cond_ops, item.GetCondOp()),
+							GetCargoStringByID(item.GetValue()));
 					break;
 
-				case TRVT_DIRECTION:
+				case TRVT_DIRECTION: {
+					StringID subtype;
 					if (item.GetValue() >= TRDTSV_TUNBRIDGE_ENTER) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE;
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE;
 					} else if (item.GetValue() >= TRDTSV_FRONT) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE;
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE;
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION;
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION;
 					}
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					SetDParam(2, GetDropDownStringByValue(&_direction_value, item.GetValue()));
+					set_instruction(subtype,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							GetDropDownStringByValue(&_direction_value, item.GetValue()));
 					break;
+				}
 
 				case TRVT_TILE_INDEX: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_PBS_ENTRY_SIGNAL);
 					TileIndex tile{instruction_record.secondary};
-					if (tile == INVALID_TILE) {
-						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
-					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX;
-						SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-						SetDParam(3, TileX(tile));
-						SetDParam(4, TileY(tile));
-					}
+					auto params = make_conditional_common_params(TileX(tile), TileY(tile));
 					auto check_signal_mode_control = [&](bool allowed) {
 						bool warn = false;
 						IterateActionsInsideConditional(prog, index, [&](const TraceRestrictInstructionItem &item) {
 							if ((item.GetType() == TRIT_SIGNAL_MODE_CONTROL) != allowed) warn = true;
 						});
-						if (warn) insert_warning(1, allowed ? STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY : STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL);
+						if (warn) {
+							insert_warning(params[1], allowed ? STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY : STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL);
+						}
 					};
 					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(item.GetAuxField())) {
 						case TRPESAF_VEH_POS:
-							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
+							params[1] = STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG;
 							check_signal_mode_control(false);
 							break;
 
 						case TRPESAF_RES_END:
-							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG);
+							params[1] = STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG;
 							check_signal_mode_control(false);
-							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
+								insert_warning(params[1], STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							}
 							break;
 
 						case TRPESAF_RES_END_TILE:
-							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG);
+							params[1] = STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG;
 							check_signal_mode_control(true);
-							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) insert_warning(1, STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
+								insert_warning(params[1], STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING);
+							}
 							break;
 
 						default:
 							NOT_REACHED();
 					}
-
+					AppendStringWithArgsInPlace(instruction_string,
+							tile == INVALID_TILE ? STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED : STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX, params);
 					break;
 				}
 
@@ -1696,39 +1677,32 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_RESERVATION_THROUGH);
 					TileIndex tile{instruction_record.secondary};
-					if (tile == INVALID_TILE) {
-						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
-					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX;
-						SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-						SetDParam(3, TileX(tile));
-						SetDParam(4, TileY(tile));
-					}
-					SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT);
+					auto params = make_conditional_common_params(TileX(tile), TileY(tile));
+					params[1] = STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT;
+					AppendStringWithArgsInPlace(instruction_string,
+							tile == INVALID_TILE ? STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED : STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX, params);
 					break;
 				}
 
 				case TRVT_GROUP_INDEX: {
 					assert(item.GetCondFlags() <= TRCF_OR);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
+					auto group_index_instruction = [&](StringID str, StringParameter param) {
+						set_instruction(str,
+								_program_cond_type[item.GetCondFlags()],
+								GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+								param);
+					};
 					if (item.GetValue() == GroupID::Invalid()) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
-						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						group_index_instruction(STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 					} else if (item.GetValue() == DEFAULT_GROUP) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
-						SetDParam(2, STR_GROUP_DEFAULT_TRAINS);
+						group_index_instruction(STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR, STR_GROUP_DEFAULT_TRAINS);
 					} else {
 						const Group *g = Group::GetIfValid(item.GetValue());
 						if (g != nullptr && g->owner != owner) {
-							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
-							auto tmp_params = MakeParameters(item.GetValue() | GROUP_NAME_HIERARCHY, g->owner);
-							_temp_special_strings[0] = GetStringWithArgs(STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP, tmp_params);
-							SetDParam(2, SPECSTR_TEMP_START);
+							_temp_special_strings[0] = GetString(STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP, item.GetValue() | GROUP_NAME_HIERARCHY, g->owner);
+							group_index_instruction(STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR, SPECSTR_TEMP_START);
 						} else {
-							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
-							SetDParam(2, item.GetValue() | GROUP_NAME_HIERARCHY);
+							group_index_instruction(STR_TRACE_RESTRICT_CONDITIONAL_GROUP, item.GetValue() | GROUP_NAME_HIERARCHY);
 						}
 					}
 					break;
@@ -1738,141 +1712,141 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					assert(item.GetCondFlags() <= TRCF_OR);
 					CompanyID cid = static_cast<CompanyID>(item.GetValue());
 					if (cid == CompanyID::Invalid()) {
-						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
+						set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED);
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_OWNER;
-						SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-						SetDParam(1, GetTypeString(item));
-						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-						SetDParam(3, cid);
-						SetDParam(4, cid);
+						set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_OWNER, cid, cid);
 					}
 					break;
 				}
 
 				case TRVT_WEIGHT:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT, item.GetValue());
 					break;
 
 				case TRVT_POWER:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER, item.GetValue());
 					break;
 
 				case TRVT_FORCE:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE;
-					DrawInstructionStringConditionalCommon(item, properties);
-					SetDParam(3, item.GetValue() * 1000);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE, item.GetValue() * 1000);
 					break;
 
 				case TRVT_POWER_WEIGHT_RATIO:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO;
-					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO, item.GetValue());
 					break;
 
 				case TRVT_FORCE_WEIGHT_RATIO:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO;
-					DrawInstructionStringConditionalCommon(item, properties);
-					SetDParam(3, item.GetValue() * 1000);
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO, item.GetValue() * 1000);
 					break;
 
-				case TRVT_SLOT_INDEX:
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
+				case TRVT_SLOT_INDEX: {
+					auto p0 = _program_cond_type[item.GetCondFlags()];
+					auto p1 = GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp());
 					if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_ID) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR;
-						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR, p0, p1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT;
-						SetDParam(2, item.GetValue());
+						set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_SLOT, p0, p1, item.GetValue());
 					}
 					break;
+				}
 
 				case TRVT_SLOT_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_SLOT_OCCUPANCY);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, item.GetAuxField() ? STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT : STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT);
+					StringID subtype;
+					StringParameter param;
 					if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_ID) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR;
-						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR;
+						param = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED;
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY;
-						SetDParam(2, item.GetValue());
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY;
+						param = item.GetValue();
 					}
-					SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					SetDParam(4, instruction_record.secondary);
+					set_instruction(subtype,
+							_program_cond_type[item.GetCondFlags()],
+							item.GetAuxField() ? STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT : STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT,
+							param,
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							instruction_record.secondary);
 					break;
 				}
 
-				case TRVT_SLOT_GROUP_INDEX:
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP;
+				case TRVT_SLOT_GROUP_INDEX: {
+					std::array<StringParameter, 4> params{
+						_program_cond_type[item.GetCondFlags()],
+						GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+						std::monostate{},
+						std::monostate{}
+					};
 					if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
-						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						params[2] = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED;
 					} else {
 						StringID warning = GetSlotGroupWarning(item.GetValueAsSlotGroup(), owner);
 						if (warning != STR_NULL) {
-							SetDParam(2, warning);
+							params[2] = warning;
 						} else {
-							SetDParam(2, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
+							params[2] = STR_TRACE_RESTRICT_SLOT_GROUP_NAME;
 						}
-						SetDParam(3, item.GetValue());
+						params[3] = item.GetValue();
 					}
+					AppendStringWithArgsInPlace(instruction_string, STR_TRACE_RESTRICT_CONDITIONAL_SLOT_GROUP, params);
 					break;
+				}
 
 				case TRVT_TRAIN_STATUS:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS;
 					assert(item.GetCondFlags() <= TRCF_OR);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(&_train_status_cond_ops, item.GetCondOp()));
-					SetDParam(2, GetDropDownStringByValue(&_train_status_value, item.GetValue()));
+					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(&_train_status_cond_ops, item.GetCondOp()),
+							GetDropDownStringByValue(&_train_status_value, item.GetValue()));
 					break;
 
 				case TRVT_COUNTER_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_COUNTER_VALUE);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
+					StringID subtype;
+					StringParameter param;
 					if (item.GetValue() == INVALID_TRACE_RESTRICT_COUNTER_ID) {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
-						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
+						param = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED;
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER;
-						SetDParam(1, item.GetValue());
+						subtype = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER;
+						param = item.GetValue();
 					}
-					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					SetDParam(3, instruction_record.secondary);
+					set_instruction(subtype,
+							_program_cond_type[item.GetCondFlags()],
+							param,
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							instruction_record.secondary);
 					break;
 				}
 
 				case TRVT_TIME_DATE_INT: {
 					assert(prog != nullptr);
 					assert(item.GetType() == TRIT_COND_TIME_DATE_VALUE);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					instruction_string = item.GetValue() == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
-					SetDParam(1, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + item.GetValue());
-					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					SetDParam(3, instruction_record.secondary);
+					set_instruction(item.GetValue() == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER,
+							_program_cond_type[item.GetCondFlags()],
+							STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + item.GetValue(),
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							instruction_record.secondary);
 					break;
 				}
 
 				case TRVT_ENGINE_CLASS:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES;
 					assert(item.GetCondFlags() <= TRCF_OR);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(&_train_status_cond_ops, item.GetCondOp()));
-					SetDParam(2, GetDropDownStringByValue(&_engine_class_value, item.GetValue()));
+					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(&_train_status_cond_ops, item.GetCondOp()),
+							GetDropDownStringByValue(&_engine_class_value, item.GetValue()));
 					break;
 
 				case TRVT_ORDER_TARGET_DIAGDIR:
-					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION;
 					assert(item.GetCondFlags() <= TRCF_OR);
-					SetDParam(0, _program_cond_type[item.GetCondFlags()]);
-					SetDParam(1, GetDropDownStringByValue(&_target_direction_aux_value, item.GetAuxField()));
-					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()));
-					SetDParam(3, GetDropDownStringByValue(&_diagdir_value, item.GetValue()));
+					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(&_target_direction_aux_value, item.GetAuxField()),
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							GetDropDownStringByValue(&_diagdir_value, item.GetValue()));
 					break;
 
 				default:
@@ -1885,11 +1859,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 			case TRIT_NULL:
 				switch (item.GetValue()) {
 					case TRNTSV_START:
-						instruction_string = STR_TRACE_RESTRICT_START;
+						set_instruction(STR_TRACE_RESTRICT_START);
 						break;
 
 					case TRNTSV_END:
-						instruction_string = STR_TRACE_RESTRICT_END;
+						set_instruction(STR_TRACE_RESTRICT_END);
 						break;
 
 					default:
@@ -1899,21 +1873,19 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_PF_DENY:
-				instruction_string = item.GetValue() ? STR_TRACE_RESTRICT_PF_ALLOW_LONG : STR_TRACE_RESTRICT_PF_DENY;
+				set_instruction(item.GetValue() ? STR_TRACE_RESTRICT_PF_ALLOW_LONG : STR_TRACE_RESTRICT_PF_DENY);
 				break;
 
 			case TRIT_PF_PENALTY:
 				switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(item.GetAuxField())) {
 					case TRPPAF_VALUE:
-						instruction_string = STR_TRACE_RESTRICT_PF_PENALTY_ITEM;
-						SetDParam(0, item.GetValue());
+						set_instruction(STR_TRACE_RESTRICT_PF_PENALTY_ITEM, item.GetValue());
 						break;
 
 					case TRPPAF_PRESET: {
-						instruction_string = STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET;
 						uint16_t idx = item.GetValue();
 						assert(idx < TRPPPI_END);
-						SetDParam(0, _pf_penalty_dropdown_str[idx]);
+						set_instruction(STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET, _pf_penalty_dropdown_str[idx]);
 						break;
 					}
 
@@ -1922,27 +1894,29 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
-			case TRIT_RESERVE_THROUGH:
-				instruction_string = (item.GetValue() != 0) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+			case TRIT_RESERVE_THROUGH: {
+				StringID subtype = (item.GetValue() != 0) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
 
 				if (flags.Any({ DrawInstructionStringFlag::TunnelBridgeEntrance, DrawInstructionStringFlag::TunnelBridgeExit })) {
-					SetDParam(0, instruction_string);
-					instruction_string = STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE;
+					set_instruction(STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE, subtype);
+				} else {
+					set_instruction(subtype);
 				}
 				break;
+			}
 
 			case TRIT_LONG_RESERVE:
 				switch (static_cast<TraceRestrictLongReserveValueField>(item.GetValue())) {
 					case TRLRVF_LONG_RESERVE:
-						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE;
+						set_instruction(STR_TRACE_RESTRICT_LONG_RESERVE);
 						break;
 
 					case TRLRVF_CANCEL_LONG_RESERVE:
-						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL);
 						break;
 
 					case TRLRVF_LONG_RESERVE_UNLESS_STOPPING:
-						instruction_string = STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING;
+						set_instruction(STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING);
 						break;
 
 					default:
@@ -1950,27 +1924,26 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						break;
 				}
 				if (flags.Test(DrawInstructionStringFlag::TunnelBridgeEntrance)) {
-					SetDParam(0, instruction_string);
-					instruction_string = STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE_ENTRANCES;
+					set_instruction(STR_TRACE_RESTRICT_WARNING_NOT_FOR_TUNNEL_BRIDGE_ENTRANCES, instruction_string);
 				}
 				break;
 
 			case TRIT_WAIT_AT_PBS:
 				switch (static_cast<TraceRestrictWaitAtPbsValueField>(item.GetValue())) {
 					case TRWAPVF_WAIT_AT_PBS:
-						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS;
+						set_instruction(STR_TRACE_RESTRICT_WAIT_AT_PBS);
 						break;
 
 					case TRWAPVF_CANCEL_WAIT_AT_PBS:
-						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL);
 						break;
 
 					case TRWAPVF_PBS_RES_END_WAIT:
-						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT;
+						set_instruction(STR_TRACE_RESTRICT_PBS_RES_END_WAIT);
 						break;
 
 					case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
-						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL);
 						break;
 
 					default:
@@ -1979,38 +1952,39 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
-			case TRIT_SLOT:
+			case TRIT_SLOT: {
+				StringID subtype;
 				switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
 					case TRSCOF_ACQUIRE_WAIT:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM;
 						break;
 
 					case TRSCOF_ACQUIRE_TRY:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM;
 						break;
 
 					case TRSCOF_RELEASE_BACK:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM;
 						break;
 
 					case TRSCOF_RELEASE_FRONT:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM;
 						break;
 
 					case TRSCOF_RELEASE_ON_RESERVE:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM;
 						break;
 
 					case TRSCOF_PBS_RES_END_ACQ_WAIT:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM;
 						break;
 
 					case TRSCOF_PBS_RES_END_ACQ_TRY:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM;
 						break;
 
 					case TRSCOF_PBS_RES_END_RELEASE:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM;
 						break;
 
 					default:
@@ -2018,29 +1992,30 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						break;
 				}
 				if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_ID) {
-					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+					set_instruction(subtype, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED, std::monostate{});
 				} else {
-					SetDParam(0, STR_TRACE_RESTRICT_SLOT_NAME);
-					SetDParam(1, item.GetValue());
+					set_instruction(subtype, STR_TRACE_RESTRICT_SLOT_NAME, item.GetValue());
 				}
 				break;
+			}
 
-			case TRIT_SLOT_GROUP:
+			case TRIT_SLOT_GROUP: {
+				StringID subtype;
 				switch (static_cast<TraceRestrictSlotSubtypeField>(item.GetCombinedAuxCondOpField())) {
 					case TRSCOF_RELEASE_BACK:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_BACK_ITEM;
 						break;
 
 					case TRSCOF_RELEASE_FRONT:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_FRONT_ITEM;
 						break;
 
 					case TRSCOF_RELEASE_ON_RESERVE:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_GROUP_RELEASE_ON_RESERVE_ITEM;
 						break;
 
 					case TRSCOF_PBS_RES_END_RELEASE:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM;
+						subtype = STR_TRACE_RESTRICT_SLOT_GROUP_PBS_RES_END_RELEASE_ITEM;
 						break;
 
 					default:
@@ -2048,39 +2023,34 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						break;
 				}
 				if (item.GetValue() == INVALID_TRACE_RESTRICT_SLOT_GROUP) {
-					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+					set_instruction(subtype, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED, std::monostate{});
 				} else {
 					StringID warning = GetSlotGroupWarning(item.GetValueAsSlotGroup(), owner);
-					if (warning != STR_NULL) {
-						SetDParam(0, warning);
-					} else {
-						SetDParam(0, STR_TRACE_RESTRICT_SLOT_GROUP_NAME);
-					}
-					SetDParam(1, item.GetValue());
+					set_instruction(subtype, warning != STR_NULL ? warning : STR_TRACE_RESTRICT_SLOT_GROUP_NAME, item.GetValue());
 				}
 				break;
+			}
 
 			case TRIT_GUI_LABEL:
-				instruction_string = STR_TRACE_RESTRICT_GUI_LABEL_ITEM;
-				SetDParamStr(0, prog->GetLabel(item.GetValue()));
+				set_instruction(STR_TRACE_RESTRICT_GUI_LABEL_ITEM, prog->GetLabel(item.GetValue()));
 				break;
 
 			case TRIT_REVERSE:
 				switch (static_cast<TraceRestrictReverseValueField>(item.GetValue())) {
 					case TRRVF_REVERSE_BEHIND:
-						instruction_string = STR_TRACE_RESTRICT_REVERSE_SIG;
+						set_instruction(STR_TRACE_RESTRICT_REVERSE_SIG);
 						break;
 
 					case TRRVF_CANCEL_REVERSE_BEHIND:
-						instruction_string = STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL);
 						break;
 
 					case TRRVF_REVERSE_AT:
-						instruction_string = STR_TRACE_RESTRICT_REVERSE_AT_SIG;
+						set_instruction(STR_TRACE_RESTRICT_REVERSE_AT_SIG);
 						break;
 
 					case TRRVF_CANCEL_REVERSE_AT:
-						instruction_string = STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL);
 						break;
 
 					default:
@@ -2091,21 +2061,20 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 			case TRIT_SPEED_RESTRICTION:
 				if (item.GetValue() != 0) {
-					SetDParam(0, item.GetValue());
-					instruction_string = STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION;
+					set_instruction(STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION, item.GetValue());
 				} else {
-					instruction_string = STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION;
+					set_instruction(STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION);
 				}
 				break;
 
 			case TRIT_NEWS_CONTROL:
 				switch (static_cast<TraceRestrictNewsControlField>(item.GetValue())) {
 					case TRNCF_TRAIN_NOT_STUCK:
-						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK;
+						set_instruction(STR_TRACE_RESTRICT_TRAIN_NOT_STUCK);
 						break;
 
 					case TRNCF_CANCEL_TRAIN_NOT_STUCK:
-						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL);
 						break;
 
 					default:
@@ -2115,17 +2084,18 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_COUNTER: {
+				StringID subtype;
 				switch (static_cast<TraceRestrictCounterCondOpField>(item.GetCondOp())) {
 					case TRCCOF_INCREASE:
-						instruction_string = STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM;
+						subtype = STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM;
 						break;
 
 					case TRCCOF_DECREASE:
-						instruction_string = STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM;
+						subtype = STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM;
 						break;
 
 					case TRCCOF_SET:
-						instruction_string = STR_TRACE_RESTRICT_COUNTER_SET_ITEM;
+						subtype = STR_TRACE_RESTRICT_COUNTER_SET_ITEM;
 						break;
 
 					default:
@@ -2133,23 +2103,21 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						break;
 				}
 				if (item.GetValue() == INVALID_TRACE_RESTRICT_COUNTER_ID) {
-					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+					set_instruction(subtype, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED, std::monostate{}, instruction_record.secondary);
 				} else {
-					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_NAME);
-					SetDParam(1, item.GetValue());
+					set_instruction(subtype, STR_TRACE_RESTRICT_COUNTER_NAME, item.GetValue(), instruction_record.secondary);
 				}
-				SetDParam(2, instruction_record.secondary);
 				break;
 			}
 
 			case TRIT_PF_PENALTY_CONTROL:
 				switch (static_cast<TraceRestrictPfPenaltyControlField>(item.GetValue())) {
 					case TRPPCF_NO_PBS_BACK_PENALTY:
-						instruction_string = STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY;
+						set_instruction(STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY);
 						break;
 
 					case TRPPCF_CANCEL_NO_PBS_BACK_PENALTY:
-						instruction_string = STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL;
+						set_instruction(STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL);
 						break;
 
 					default:
@@ -2161,11 +2129,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 			case TRIT_SPEED_ADAPTATION_CONTROL:
 				switch (static_cast<TraceRestrictSpeedAdaptationControlField>(item.GetValue())) {
 					case TRSACF_SPEED_ADAPT_EXEMPT:
-						instruction_string = STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT;
+						set_instruction(STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT);
 						break;
 
 					case TRSACF_REMOVE_SPEED_ADAPT_EXEMPT:
-						instruction_string = STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT;
+						set_instruction(STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT);
 						break;
 
 					default:
@@ -2177,11 +2145,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 			case TRIT_SIGNAL_MODE_CONTROL:
 				switch (static_cast<TraceRestrictSignalModeControlField>(item.GetValue())) {
 					case TRSMCF_NORMAL_ASPECT:
-						instruction_string = STR_TRACE_RESTRICT_USE_NORMAL_ASPECT_MODE;
+						set_instruction(STR_TRACE_RESTRICT_USE_NORMAL_ASPECT_MODE);
 						break;
 
 					case TRSMCF_SHUNT_ASPECT:
-						instruction_string = STR_TRACE_RESTRICT_USE_SHUNT_ASPECT_MODE;
+						set_instruction(STR_TRACE_RESTRICT_USE_SHUNT_ASPECT_MODE);
 						break;
 
 					default:
@@ -2195,10 +2163,30 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 		}
 	}
+}
+
+/**
+ * Draws an instruction in the programming GUI
+ * @param prog The program (may be nullptr)
+ * @param instruction_record The instruction to draw
+ * @param index The instruction index
+ * @param y Y position for drawing
+ * @param selected True, if the order is selected
+ * @param indent How many levels the instruction is indented
+ * @param left Left border for text drawing
+ * @param right Right border for text drawing
+ * @param owner Owning company ID
+ * @param flags Flags
+ */
+static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictInstructionRecord instruction_record,
+		int index, int y, bool selected, int indent, int left, int right, Owner owner, DrawInstructionStringFlags flags)
+{
+	format_buffer instruction_string;
+	FillInstructionString(instruction_string, prog, instruction_record, index, owner, flags);
 
 	bool rtl = _current_text_dir == TD_RTL;
 	TextColour colour = selected ? TC_WHITE : TC_BLACK;
-	if (selected && item.GetType() == TRIT_GUI_LABEL) colour |= TC_FORCED;
+	if (selected && instruction_record.instruction.GetType() == TRIT_GUI_LABEL) colour |= TC_FORCED;
 	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, colour);
 }
 
@@ -3216,46 +3204,43 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
-				SetDParam(0, STR_JUST_COMMA);
+				StringID str = STR_JUST_COMMA;
 				TraceRestrictInstructionRecord record = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(record.instruction).value_type;
 				if (type == TRVT_TIME_DATE_INT && record.instruction.GetValue() == TRTDVF_HOUR_MINUTE) {
-					SetDParam(0, STR_JUST_TIME_HHMM);
+					str = STR_JUST_TIME_HHMM;
 				}
-				SetDParam(1, 0);
+				int64_t value = 0;
 				if (IsIntegerValueType(type)) {
-					SetDParam(1, ConvertIntegerValue(type, record.instruction.GetValue(), true));
+					value = ConvertIntegerValue(type, record.instruction.GetValue(), true);
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-					SetDParam(1, record.secondary);
+					value = record.secondary;
 				}
-				break;
+				return GetString(str, value);
 			}
 
 			case TR_WIDGET_VALUE_DECIMAL: {
-				SetDParam(0, 0);
-				SetDParam(1, 0);
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
 					DecimalValue dv = ConvertValueToDecimal(type, item.GetValue());
-					SetDParam(0, dv.value);
-					SetDParam(1, dv.decimals);
+					return GetString(STR_JUST_DECIMAL, dv.value, dv.decimals);
+				} else {
+					return GetString(STR_JUST_DECIMAL, 0, 0);
 				}
-				break;
 			}
 
 			case TR_WIDGET_CAPTION: {
 				const TraceRestrictProgram *prog = this->GetProgram();
-				if (prog != nullptr) {
-					SetDParam(0, prog->GetReferenceCount());
+				if (prog != nullptr && prog->GetReferenceCount() > 1) {
+					return GetString(STR_TRACE_RESTRICT_CAPTION_SHARED, prog->GetReferenceCount());
 				} else {
-					SetDParam(0, 1);
+					return GetString(STR_TRACE_RESTRICT_CAPTION, 1);
 				}
-				break;
 			}
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
@@ -3266,19 +3251,22 @@ public:
 						|| type.value_type == TRVT_GROUP_INDEX
 						|| type.value_type == TRVT_SLOT_INDEX
 						|| type.value_type == TRVT_SLOT_GROUP_INDEX) {
-					SetDParam(0, item.GetValue());
+					return GetString(stringid, item.GetValue());
 				}
-				break;
+				return GetString(stringid);
 			}
 
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
-					SetDParam(0, item.GetValue());
+					return GetString(stringid, item.GetValue());
 				}
-				break;
+				return GetString(stringid);
 			}
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -3599,8 +3587,6 @@ private:
 		right_sel->SetDisplayedPlane(DPR_BLANK);
 
 		const TraceRestrictProgram *prog = this->GetProgram();
-
-		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->SetString((prog != nullptr && prog->GetReferenceCount() > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION);
 
 		this->SetWidgetDisabledState(TR_WIDGET_HIGHLIGHT, prog == nullptr);
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
@@ -4092,7 +4078,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 	/* Title bar */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION), SetStringTip(STR_TRACE_RESTRICT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_HIGHLIGHT), SetAspect(1), SetSpriteTip(SPR_SHARED_ORDERS_ICON, STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -4141,9 +4127,9 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetToolTip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),
@@ -4236,7 +4222,7 @@ enum TraceRestrictSlotWindowWidgets : WidgetID {
 static constexpr NWidgetPart _nested_slot_widgets[] = {
 	NWidget(NWID_HORIZONTAL), // Window header
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRSL_CAPTION), SetStringTip(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_NULL),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRSL_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -4277,7 +4263,7 @@ static constexpr NWidgetPart _nested_slot_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TRSL_FILTER_BY_CARGO_SEL),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetStringTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
 				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
@@ -4442,9 +4428,8 @@ private:
 		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FS_NORMAL)) / 10u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NAME].height);
 
-		SetDParamMaxValue(0, 9999, 3, FS_SMALL);
-		SetDParamMaxValue(1, 9999, 3, FS_SMALL);
-		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY);
+		int64_t max_value = GetParamMaxValue(9999, 3, FS_SMALL);
+		this->column_size[VGC_NUMBER] = GetStringBoundingBox(GetString(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, max_value, max_value));
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
 		this->column_size[VGC_PUBLIC] = GetScaledSpriteSize(SPR_BLOT);
@@ -4485,9 +4470,8 @@ private:
 				if (slot == nullptr) break;
 
 				Rect sub = info_area.WithWidth(this->column_size[VGC_NUMBER].width, !rtl);
-				SetDParam(0, slot->occupants.size());
-				SetDParam(1, slot->max_occupancy);
-				DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, colour, SA_RIGHT | SA_FORCE);
+				std::string str = GetString(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, slot->occupants.size(), slot->max_occupancy);
+				DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, str, colour, SA_RIGHT | SA_FORCE);
 
 				if (slot->flags.Test(TraceRestrictSlot::Flag::Public)) {
 					DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r.WithWidth(this->column_size[VGC_PUBLIC].width, !rtl), SA_CENTER);
@@ -4514,20 +4498,18 @@ private:
 		r = r.Indent(WidgetDimensions::scaled.vsep_wide + this->column_size[VGC_PUBLIC].width, !rtl).Indent(WidgetDimensions::scaled.hsep_indent * item.indent, rtl);
 
 		/* draw slot name */
-		StringID str = STR_NULL;
+		std::string str;
 		switch (item.item.type) {
 			case SlotItemType::Slot:
-				SetDParam(0, item.item.id);
-				str = STR_TRACE_RESTRICT_SLOT_NAME;
+				str = GetString(STR_TRACE_RESTRICT_SLOT_NAME, item.item.id);
 				break;
 
 			case SlotItemType::Group:
-				SetDParam(0, item.item.id);
-				str = STR_TRACE_RESTRICT_SLOT_GROUP_NAME;
+				str = GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, item.item.id);
 				break;
 
 			case SlotItemType::Special:
-				str = STR_GROUP_ALL_TRAINS + this->vli.vtype;
+				str = GetString(STR_GROUP_ALL_TRAINS + this->vli.vtype);
 				break;
 
 			default:
@@ -4672,16 +4654,17 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void SetStringParameters(WidgetID widget) const override
+	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
 			case WID_TRSL_FILTER_BY_CARGO:
-				SetDParam(0, this->GetCargoFilterLabel(this->cargo_filter_criteria));
-				break;
+				return GetString(this->GetCargoFilterLabel(this->cargo_filter_criteria));
 
 			case WID_TRSL_CAPTION:
-				SetDParam(0, STR_VEHICLE_TYPE_TRAINS + this->vli.vtype);
-				break;
+				return GetString(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_VEHICLE_TYPE_TRAINS + this->vli.vtype);
+
+			default:
+				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
 
@@ -5308,8 +5291,7 @@ private:
 	 */
 	uint ComputeInfoSize()
 	{
-		SetDParamMaxValue(0, 9999, 3);
-		Dimension dim = GetStringBoundingBox(STR_JUST_COMMA);
+		Dimension dim = GetStringBoundingBox(GetString(STR_JUST_COMMA, GetParamMaxValue(9999, 3)));
 		this->tiny_step_height = dim.height;
 		this->value_col_width = dim.width;
 
@@ -5341,8 +5323,7 @@ private:
 		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
 
 		Rect r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide + this->public_col_width, !rtl);
-		SetDParam(0, ctr_id);
-		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), colour);
 
 		if (ctr->flags.Test(TraceRestrictCounter::Flag::Public)) {
 			r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide, !rtl).WithWidth(this->public_col_width, !rtl);
@@ -5350,8 +5331,7 @@ private:
 		}
 
 		r = info_area.WithWidth(this->value_col_width, !rtl);
-		SetDParam(0, ctr->value);
-		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_JUST_COMMA, colour, SA_RIGHT | SA_FORCE);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetString(STR_JUST_COMMA, ctr->value), colour, SA_RIGHT | SA_FORCE);
 	}
 
 public:
