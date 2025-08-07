@@ -580,7 +580,7 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 	/* Perform start/stop check whether the new vehicle suits newgrf restrictions etc. */
 	if (start_stop_check && cost.Succeeded()) {
 		/* Start the vehicle, might be denied by certain things */
-		assert((new_head->vehstatus & VS_STOPPED) != 0);
+		assert(new_head->vehstatus.Test(VehState::Stopped));
 		cost.AddCost(CmdStartStopVehicle(new_head, true));
 
 		/* Stop the vehicle again, but do not care about evil newgrfs allowing starting but not stopping :p */
@@ -913,7 +913,7 @@ CommandCost CmdAutoreplaceVehicle(DoCommandFlags flags, VehicleID veh_id, bool s
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->vehstatus & VS_CRASHED) return CMD_ERROR;
+	if (v->vehstatus.Test(VehState::Crashed)) return CMD_ERROR;
 
 	bool free_wagon = false;
 	if (v->type == VEH_TRAIN) {
@@ -947,7 +947,7 @@ CommandCost CmdAutoreplaceVehicle(DoCommandFlags flags, VehicleID veh_id, bool s
 	bool nothing_to_do = true;
 
 	if (any_replacements) {
-		bool was_stopped = free_wagon || ((v->vehstatus & VS_STOPPED) != 0);
+		bool was_stopped = free_wagon || v->vehstatus.Test(VehState::Stopped);
 
 		/* Stop the vehicle */
 		if (!was_stopped) cost.AddCost(CmdStartStopVehicle(v, true));

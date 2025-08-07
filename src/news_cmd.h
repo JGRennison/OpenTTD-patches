@@ -14,6 +14,6 @@
 #include "company_type.h"
 #include "news_func.h"
 
-DEF_CMD_TUPLE_NT(CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem, CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<NewsType, CompanyID, NewsReference, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CUSTOM_NEWS_ITEM, CmdCustomNewsItem, CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<NewsType, CompanyID, NewsReference, EncodedString>)
 
 #endif /* NEWS_CMD_H */

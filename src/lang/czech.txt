@@ -923,7 +923,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Seznam p
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Zpráva
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Obyvatelé oslavují...{}První vlak dorazil do {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Obyvatelé oslavují...{}První autobus přijel do {STATION}!
@@ -1626,7 +1625,7 @@ STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Doba zobrazení
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Zobrazení kontextové nápovědy: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Prodleva před zobrazením nápovědy, pokud kurzor leží nad nějakým ovládacím prvkem. Nápověda může být rovněž vyvolána pravým tlačítkem myši.
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Podržet kurzor po dobu {COMMA} sekund{P y "" ""}
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Podržet kurzor po dobu {COMMA}  milisekund{P y "" ""}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Pravým klikem
 
@@ -4842,7 +4841,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Tento j�
 
 STR_TIMETABLE_START                                             :{BLACK}Začátek JŘ
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Zvol, kdy jízdní řád začne. Ctrl+kliknutí rovnoměrně rozprostře začátky jízdního řádu mezi všechna vozidla sdílející tyto příkazy podle jejich relativního pořadí, pokud jsou všechny příkazy součástí jízdního řádu
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Sekundy do začátku jízdního řádu
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Změnit čas

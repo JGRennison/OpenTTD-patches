@@ -1070,7 +1070,7 @@ static void FloodVehicle(Vehicle *v)
  */
 static Vehicle *FloodAircraftProc(Vehicle *v, void *data)
 {
-	if ((v->vehstatus & VS_CRASHED) != 0) return nullptr;
+	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
 
 	if (!IsAirportTile(v->tile) || GetTileMaxZ(v->tile) != 0) return nullptr;
 	if (v->subtype == AIR_SHADOW) return nullptr;
@@ -1094,7 +1094,7 @@ static Vehicle *FloodAircraftProc(Vehicle *v, void *data)
  */
 static Vehicle *FloodVehicleProc(Vehicle *v, void *data)
 {
-	if ((v->vehstatus & VS_CRASHED) != 0) return nullptr;
+	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
 
 	int z = static_cast<int>(reinterpret_cast<intptr_t>(data));
 	if (v->z_pos > z) return nullptr;

@@ -511,7 +511,7 @@ void AddArticulatedParts(Vehicle *first)
 				s->x_pos = 0;
 				s->y_pos = 0;
 				s->z_pos = 0;
-				s->vehstatus = VS_HIDDEN | VS_UNCLICKABLE;
+				s->vehstatus = {VehState::Hidden, VehState::Unclickable};
 				s->subtype = (1 << GVSF_VIRTUAL);
 
 				if (e_artic->CanCarryCargo()) {
@@ -544,7 +544,8 @@ void AddArticulatedParts(Vehicle *first)
 		v->x_pos = first->x_pos;
 		v->y_pos = first->y_pos;
 		v->z_pos = first->z_pos;
-		v->vehstatus = first->vehstatus & ~VS_STOPPED;
+		v->vehstatus = first->vehstatus;
+		v->vehstatus.Reset(VehState::Stopped);
 
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 

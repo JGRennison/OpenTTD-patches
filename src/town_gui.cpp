@@ -680,7 +680,7 @@ public:
 		}
 
 		if (!this->town->text.empty()) {
-			tr.top = DrawStringMultiLine(tr, GetString(STR_JUST_RAW_STRING, this->town->text), TC_BLACK);
+			tr.top = DrawStringMultiLine(tr, this->town->text.GetDecodedString(), TC_BLACK);
 		}
 	}
 
@@ -759,7 +759,7 @@ public:
 		if (_settings_game.economy.station_noise_level) aimed_height += GetCharacterHeight(FS_NORMAL);
 
 		if (!this->town->text.empty()) {
-			aimed_height += GetStringHeight(GetString(STR_JUST_RAW_STRING, this->town->text), width - WidgetDimensions::scaled.framerect.Horizontal());
+			aimed_height += GetStringHeight(this->town->text.GetDecodedString(), width - WidgetDimensions::scaled.framerect.Horizontal());
 		}
 
 		return aimed_height;
@@ -2048,7 +2048,7 @@ public:
 	{
 		if (src.empty()) return src;
 
-		const auto specs = HouseSpec::Specs();
+		const auto &specs = HouseSpec::Specs();
 		btree::btree_set<PickerItem> dst;
 		for (const auto &item : src) {
 			if (item.grfid == 0) {

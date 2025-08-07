@@ -8,7 +8,7 @@
 ##decimalsep ,
 ##winlangid 0x0c0a
 ##grflangid 0x04
-##gender m f
+##gender m f mp fp
 
 
 # This file is part of OpenTTD.
@@ -26,37 +26,37 @@ STR_JUST_NOTHING                                                :Nada
 # Cargo related strings
 # Plural cargo name
 STR_CARGO_PLURAL_NOTHING                                        :
-STR_CARGO_PLURAL_PASSENGERS                                     :{G=m}Pasajeros
-STR_CARGO_PLURAL_COAL                                           :{G=m}Carbón
-STR_CARGO_PLURAL_MAIL                                           :{G=m}Correo
-STR_CARGO_PLURAL_OIL                                            :{G=m}Petróleo
-STR_CARGO_PLURAL_LIVESTOCK                                      :{G=m}Ganado
-STR_CARGO_PLURAL_GOODS                                          :{G=f}Mercancías
-STR_CARGO_PLURAL_GRAIN                                          :{G=m}Cereal
-STR_CARGO_PLURAL_WOOD                                           :{G=f}Madera
-STR_CARGO_PLURAL_IRON_ORE                                       :{G=m}Mineral de Hierro
-STR_CARGO_PLURAL_STEEL                                          :{G=m}Acero
-STR_CARGO_PLURAL_VALUABLES                                      :{G=m}Objetos de Valor
-STR_CARGO_PLURAL_COPPER_ORE                                     :{G=m}Mineral de Cobre
-STR_CARGO_PLURAL_MAIZE                                          :{G=m}Maíz
-STR_CARGO_PLURAL_FRUIT                                          :{G=f}Frutas
-STR_CARGO_PLURAL_DIAMONDS                                       :{G=m}Diamantes
-STR_CARGO_PLURAL_FOOD                                           :{G=m}Alimentos
-STR_CARGO_PLURAL_PAPER                                          :{G=m}Papel
-STR_CARGO_PLURAL_GOLD                                           :{G=m}Oro
+STR_CARGO_PLURAL_PASSENGERS                                     :{G=mp}Pasajeros
+STR_CARGO_PLURAL_COAL                                           :{G=mp}Carbón
+STR_CARGO_PLURAL_MAIL                                           :{G=mp}Correo
+STR_CARGO_PLURAL_OIL                                            :{G=mp}Petróleo
+STR_CARGO_PLURAL_LIVESTOCK                                      :{G=mp}Ganado
+STR_CARGO_PLURAL_GOODS                                          :{G=fp}Mercancías
+STR_CARGO_PLURAL_GRAIN                                          :{G=mp}Cereal
+STR_CARGO_PLURAL_WOOD                                           :{G=fp}Madera
+STR_CARGO_PLURAL_IRON_ORE                                       :{G=mp}Mineral de Hierro
+STR_CARGO_PLURAL_STEEL                                          :{G=mp}Acero
+STR_CARGO_PLURAL_VALUABLES                                      :{G=mp}Objetos de Valor
+STR_CARGO_PLURAL_COPPER_ORE                                     :{G=mp}Mineral de Cobre
+STR_CARGO_PLURAL_MAIZE                                          :{G=mp}Maíz
+STR_CARGO_PLURAL_FRUIT                                          :{G=fp}Frutas
+STR_CARGO_PLURAL_DIAMONDS                                       :{G=mp}Diamantes
+STR_CARGO_PLURAL_FOOD                                           :{G=mp}Alimentos
+STR_CARGO_PLURAL_PAPER                                          :{G=mp}Papel
+STR_CARGO_PLURAL_GOLD                                           :{G=mp}Oro
 STR_CARGO_PLURAL_WATER                                          :{G=m}Agua
-STR_CARGO_PLURAL_WHEAT                                          :{G=m}Trigo
-STR_CARGO_PLURAL_RUBBER                                         :{G=m}Caucho
-STR_CARGO_PLURAL_SUGAR                                          :{G=m}Azúcar
-STR_CARGO_PLURAL_TOYS                                           :{G=m}Juguetes
-STR_CARGO_PLURAL_SWEETS                                         :{G=m}Caramelos
-STR_CARGO_PLURAL_COLA                                           :{G=f}Cola
-STR_CARGO_PLURAL_CANDYFLOSS                                     :{G=m}Algodón de Azúcar
-STR_CARGO_PLURAL_BUBBLES                                        :{G=f}Burbujas
-STR_CARGO_PLURAL_TOFFEE                                         :{G=m}Tofes
-STR_CARGO_PLURAL_BATTERIES                                      :{G=f}Pilas
-STR_CARGO_PLURAL_PLASTIC                                        :{G=m}Plástico
-STR_CARGO_PLURAL_FIZZY_DRINKS                                   :{G=m}Refrescos
+STR_CARGO_PLURAL_WHEAT                                          :{G=mp}Trigo
+STR_CARGO_PLURAL_RUBBER                                         :{G=mp}Caucho
+STR_CARGO_PLURAL_SUGAR                                          :{G=mp}Azúcar
+STR_CARGO_PLURAL_TOYS                                           :{G=mp}Juguetes
+STR_CARGO_PLURAL_SWEETS                                         :{G=mp}Caramelos
+STR_CARGO_PLURAL_COLA                                           :{G=fp}Cola
+STR_CARGO_PLURAL_CANDYFLOSS                                     :{G=mp}Algodón de Azúcar
+STR_CARGO_PLURAL_BUBBLES                                        :{G=fp}Burbujas
+STR_CARGO_PLURAL_TOFFEE                                         :{G=mp}Tofes
+STR_CARGO_PLURAL_BATTERIES                                      :{G=fp}Pilas
+STR_CARGO_PLURAL_PLASTIC                                        :{G=mp}Plástico
+STR_CARGO_PLURAL_FIZZY_DRINKS                                   :{G=mp}Refrescos
 
 # Singular cargo name
 STR_CARGO_SINGULAR_NOTHING                                      :
@@ -836,7 +836,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Muestra 
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Mensaje
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Los ciudadanos celebran . . .{}¡El primer tren llega a {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Los ciudadanos celebran . . .{}¡El primer autobús llega a {STATION}!
@@ -874,8 +873,8 @@ STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDE
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}¡{STRING} patrocina la construcción del nuevo municipio {TOWN}!
 STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}¡Un nuevo municipio, llamado: {TOWN}, ha sido fundado!
 
-STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}¡Nuev{G o a} {STRING} en construcción cerca de {TOWN}!
-STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}¡Nuev{G o a} {STRING} está siendo plantad{G o a} cerca de {TOWN}!
+STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}¡Nuev{G o a o a} {STRING} en construcción cerca de {TOWN}!
+STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}¡Nuev{G o a o a} {STRING} está siendo plantad{G o a o a} cerca de {TOWN}!
 
 STR_NEWS_INDUSTRY_CLOSURE_GENERAL                               :{BIG_FONT}{BLACK}¡La industria {STRING} anuncia su cierre inminente!
 STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS                       :{BIG_FONT}{BLACK}¡Los problemas de suministro hacen que {STRING} anuncie su cierre inminente!
@@ -920,9 +919,9 @@ STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}{VEHICLE} se ha detenido debido a un fallo en una orden de reforma
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Renovación automática fallida para {VEHICLE}{}{STRING}
 
-STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}¡Nuev{G o a} {STRING} ahora disponible!
+STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}¡Nuev{G o a o a} {STRING} ahora disponible!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
-STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}¡Nuev{G o a} {STRING} ahora disponible!  -  {ENGINE}
+STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}¡Nuev{G o a o a} {STRING} ahora disponible!  -  {ENGINE}
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Abre la lista de vehículos centrada en el grupo del vehículo
 
@@ -2678,7 +2677,7 @@ STR_CONTENT_DETAIL_SUBTITLE_AUTOSELECTED                        :{SILVER}Esta de
 STR_CONTENT_DETAIL_SUBTITLE_ALREADY_HERE                        :{SILVER}Ya tienes esto
 STR_CONTENT_DETAIL_SUBTITLE_DOES_NOT_EXIST                      :{SILVER}Este contenido es desconocido y no puede ser descargado en OpenTTD
 
-STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Este es un sustituto de un{G "" a} {STRING} existente
+STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Este es un sustituto de un{G "" a "" a} {STRING} existente
 STR_CONTENT_DETAIL_NAME                                         :{SILVER}Nombre: {WHITE}{STRING}
 STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Versión: {WHITE}{STRING}
 STR_CONTENT_DETAIL_DESCRIPTION                                  :{SILVER}Descripción: {WHITE}{STRING}
@@ -2751,9 +2750,9 @@ STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLA
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}sobrecargado
 
 # Linkgraph tooltip
-STR_LINKGRAPH_STATS_TOOLTIP_MONTH                               :{BLACK}{CARGO_LONG} serán transportad{G 0 o a}s cada mes desde {STATION} a {STATION} ({COMMA}% de capacidad){STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_MINUTE                              :{BLACK}{CARGO_LONG} serán transportad{G 0 o a}s cada minuto desde {STATION} a {STATION} ({COMMA}% de capacidad){STRING}
-STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} para ser transportad{G 0 o a}{P 0 "" s} de vuelta ({COMMA}% de la capacidad)
+STR_LINKGRAPH_STATS_TOOLTIP_MONTH                               :{BLACK}{CARGO_LONG} serán transportad{G 0 o a o a}s cada mes desde {STATION} a {STATION} ({COMMA}% de capacidad){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_MINUTE                              :{BLACK}{CARGO_LONG} serán transportad{G 0 o a o a}s cada minuto desde {STATION} a {STATION} ({COMMA}% de capacidad){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} para ser transportad{G 0 o a o a}{P 0 "" s} de vuelta ({COMMA}% de la capacidad)
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Tiempo de viaje promedio: {UNITS_DAYS_OR_SECONDS}
 
 # Base for station construction window(s)
@@ -3667,9 +3666,9 @@ STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Habitant
 STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} último mes: {ORANGE}{COMMA}{BLACK} máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX                             :{BLACK}{CARGO_LIST} útlimo minuto: {ORANGE}{COMMA}{BLACK} máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carga necesaria para crecimiento del municipio:
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} requeridos
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} requerido en invierno
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} entregado
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} requerid{G 0 o a os as}
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} requerid{G 0 o a os as} en invierno
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} entregad{G 0 o a os as}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (todavía requerido)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (entregado)
 STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}El municipio crece cada {ORANGE}{UNITS_DAYS_OR_SECONDS}
@@ -4303,7 +4302,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Estás 
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Mensaje del fabricante de vehículos
-STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Hemos diseñado un{G "" a} nuev{G o a} {STRING} - ¿estaría interesado en el uso exclusivo de este vehículo durante un año, para que podamos ver cómo funciona antes de ponerlo a disposición del público?
+STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Hemos diseñado un{G "" a "" a} nuev{G o a o a} {STRING} - ¿estaría interesado en el uso exclusivo de este vehículo durante un año, para que podamos ver cómo funciona antes de ponerlo a disposición del público?
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}locomotora
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Locomotora de ferrocarril eléctrico
@@ -4765,7 +4764,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Este hor
 
 STR_TIMETABLE_START                                             :{BLACK}Comenzar horario
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Selecciona cuándo comenzará este horario. Ctrl+clic para distribuir uniformemente el inicio de todos los vehículos que comparten este horario según su orden relativo, si el horario está completamente rellenado
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Segundos hasta el comienzo del horario
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Modificar duración

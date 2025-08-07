@@ -404,6 +404,9 @@ public:
 	inline void SetDisabled(bool disabled);
 	inline bool IsDisabled() const;
 
+	inline TextColour GetTextColour() const { return this->text_colour; }
+	inline FontSize GetFontSize() const { return this->text_size; }
+
 	bool IsActiveInLayout() const;
 
 	void FillWidgetLookup(WidgetLookup &widget_lookup) override;

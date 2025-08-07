@@ -18,7 +18,7 @@
 DEF_CMD_TUPLE   (CMD_BUILD_INDUSTRY,           CmdBuildIndustry,                          CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<IndustryType, uint32_t, bool, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_FLAGS,       CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, IndustryControlFlags>)
 DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, Owner, bool>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_TEXT,        CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_PRODUCTION,  CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, uint8_t, bool, std::string>)
+DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_TEXT,        CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_PRODUCTION,  CmdIndustrySetProduction,                  CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<IndustryID, uint8_t, bool, EncodedString>)
 
 #endif /* INDUSTRY_CMD_H */

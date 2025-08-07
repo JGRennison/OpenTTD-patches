@@ -299,7 +299,7 @@ CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->z_pos = GetSlopePixelZ(x, y, true);
 
 		v->state = RVSB_IN_DEPOT;
-		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
+		v->vehstatus = {VehState::Hidden, VehState::Stopped, VehState::DefaultPalette};
 
 		v->spritenum = rvi->image_index;
 		v->cargo_type = e->GetDefaultCargoType();
@@ -407,8 +407,7 @@ CommandCost CmdTurnRoadVeh(DoCommandFlags flags, VehicleID veh_id)
 	CommandCost ret = CheckVehicleControlAllowed(v);
 	if (ret.Failed()) return ret;
 
-	if ((v->vehstatus & VS_STOPPED) ||
-			(v->vehstatus & VS_CRASHED) ||
+	if (v->vehstatus.Any({VehState::Stopped, VehState::Crashed}) ||
 			v->overtaking != 0 ||
 			v->state == RVSB_WORMHOLE ||
 			v->IsInDepot() ||
@@ -508,7 +507,7 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 		}
 
 		/* Vehicle is on the middle part of a bridge. */
-		if (u->state == RVSB_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
+		if (u->state == RVSB_WORMHOLE && !u->vehstatus.Test(VehState::Hidden)) {
 			max_speed = std::min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed * 2);
 		}
 	}
@@ -1050,7 +1049,7 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	 * Original acceleration always accelerates, so always use the maximum speed. */
 	int u_speed = (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || u->GetAcceleration().acceleration > 0) ? u->GetCurrentMaxSpeed() : u->cur_speed;
 	if (u_speed >= v->GetCurrentMaxSpeed() &&
-			!(u->vehstatus & VS_STOPPED) &&
+			!u->vehstatus.Test(VehState::Stopped) &&
 			u->cur_speed != 0) {
 		return;
 	}
@@ -1332,7 +1331,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 		v->cur_speed = 0;
 	}
 
-	v->vehstatus &= ~VS_HIDDEN;
+	v->vehstatus.Reset(VehState::Hidden);
 	v->InvalidateImageCache();
 	v->state = tdir;
 	v->frame = RVC_DEPOT_START_FRAME;
@@ -2125,7 +2124,7 @@ static bool RoadVehController(RoadVehicle *v)
 	if (v->reverse_ctr != 0) v->reverse_ctr--;
 
 	/* handle crashed */
-	if (v->vehstatus & VS_CRASHED || RoadVehCheckTrainCrash(v)) {
+	if (v->vehstatus.Test(VehState::Crashed) || RoadVehCheckTrainCrash(v)) {
 		return RoadVehIsCrashed(v);
 	}
 
@@ -2325,7 +2324,7 @@ void RoadVehicle::OnPeriodic()
 
 Trackdir RoadVehicle::GetVehicleTrackdir() const
 {
-	if (this->vehstatus & VS_CRASHED) return INVALID_TRACKDIR;
+	if (this->vehstatus.Test(VehState::Crashed)) return INVALID_TRACKDIR;
 
 	if (this->IsInDepot()) {
 		/* We'll assume the road vehicle is facing outwards */

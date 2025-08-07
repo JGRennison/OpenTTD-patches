@@ -209,7 +209,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	} else if (v->type == VEH_SHIP) {
 		Ship::From(v)->critical_breakdown_count = 0;
 	}
-	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
+	v->vehstatus.Reset(VehState::AircraftBroken);
 	ClrBit(v->vehicle_flags, VF_REPLACEMENT_PENDING);
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
@@ -239,7 +239,7 @@ bool Vehicle::NeedsServicing() const
 {
 	/* Stopped or crashed vehicles will not move, as such making unmovable
 	 * vehicles to go for service is lame. */
-	if (this->vehstatus & (VS_STOPPED | VS_CRASHED)) return false;
+	if (this->vehstatus.Any({VehState::Stopped, VehState::Crashed})) return false;
 
 	bool service_not_due;
 	/* Service intervals can be measured in different units, which we handle individually. */
@@ -368,17 +368,17 @@ bool Vehicle::NeedsAutomaticServicing() const
 
 uint Vehicle::Crash(bool)
 {
-	assert((this->vehstatus & VS_CRASHED) == 0);
+	assert(!this->vehstatus.Test(VehState::Crashed));
 	assert(this->Previous() == nullptr); // IsPrimaryVehicle fails for free-wagon-chains
 
 	uint pass = 0;
 	/* Stop the vehicle. */
-	if (this->IsPrimaryVehicle()) this->vehstatus |= VS_STOPPED;
+	if (this->IsPrimaryVehicle()) this->vehstatus.Set(VehState::Stopped);
 	/* crash all wagons, and count passengers */
 	for (Vehicle *v = this; v != nullptr; v = v->Next()) {
 		/* We do not transfer reserver cargo back, so TotalCount() instead of StoredCount() */
 		if (IsCargoInClass(v->cargo_type, CargoClass::Passengers)) pass += v->cargo.TotalCount();
-		v->vehstatus |= VS_CRASHED;
+		v->vehstatus.Set(VehState::Crashed);
 		v->MarkAllViewportsDirty();
 		v->InvalidateImageCache();
 	}
@@ -405,7 +405,7 @@ uint Vehicle::Crash(bool)
  */
 void Vehicle::UpdateIsDrawn()
 {
-	bool drawn = !(HasBit(this->subtype, GVSF_VIRTUAL)) && (!(this->vehstatus & VS_HIDDEN) ||
+	bool drawn = !(HasBit(this->subtype, GVSF_VIRTUAL)) && (!this->vehstatus.Test(VehState::Hidden) ||
 			(IsTransparencySet(TO_TUNNELS) &&
 				((this->type == VEH_TRAIN && Train::From(this)->track == TRACK_BIT_WORMHOLE) ||
 				(this->type == VEH_ROAD && RoadVehicle::From(this)->state == RVSB_WORMHOLE))));
@@ -750,7 +750,7 @@ static Vehicle *FindClosestTrainToTunnelBridgeEndEnum(Vehicle *v, void *data)
 	/* Only look for train heads and tails. */
 	if (v->Previous() != nullptr && v->Next() != nullptr) return nullptr;
 
-	if ((v->vehstatus & VS_CRASHED)) return nullptr;
+	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
 
 	Train *t = Train::From(v);
 
@@ -960,7 +960,7 @@ bool ValidateVehicleTileHash(const Vehicle *v)
 	return false;
 }
 
-static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
+static std::array<Vehicle *, 1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)> _vehicle_viewport_hash{};
 
 static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 {
@@ -1038,7 +1038,7 @@ void ResetVehicleHash()
 		v->hash_tile_prev = nullptr;
 		v->hash_tile_current = INVALID_TILE;
 	}
-	memset(_vehicle_viewport_hash, 0, sizeof(_vehicle_viewport_hash));
+	_vehicle_viewport_hash = {};
 	for (VehicleTypeTileHash &vhash : _vehicle_tile_hashes) {
 		vhash.clear();
 	}
@@ -1237,7 +1237,7 @@ void Vehicle::PreDestructor()
 
 	if (this->type == VEH_ROAD && this->IsPrimaryVehicle()) {
 		RoadVehicle *v = RoadVehicle::From(this);
-		if ((!(v->vehstatus & VS_CRASHED) && IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) || IsInsideMM(v->state, RVSB_IN_ROAD_STOP, RVSB_IN_ROAD_STOP_END)) {
+		if ((!v->vehstatus.Test(VehState::Crashed) && IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) || IsInsideMM(v->state, RVSB_IN_ROAD_STOP, RVSB_IN_ROAD_STOP_END)) {
 			/* Leave the roadstop (bay or drive-through), when you have not already left it. */
 			RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile))->Leave(v);
 		}
@@ -1339,14 +1339,14 @@ void VehicleEnteredDepotThisTick(Vehicle *v)
 	}
 
 	/* Vehicle should stop in the depot if it was in 'stopping' state */
-	_vehicles_to_autoreplace[v->index] = !(v->vehstatus & VS_STOPPED);
+	_vehicles_to_autoreplace[v->index] = !v->vehstatus.Test(VehState::Stopped);
 
 	/* We ALWAYS set the stopped state. Even when the vehicle does not plan on
 	 * stopping in the depot, so we stop it to ensure that it will not reserve
 	 * the path out of the depot before we might autoreplace it to a different
 	 * engine. The new engine would not own the reserved path we store that we
 	 * stopped the vehicle, so autoreplace can start it again */
-	v->vehstatus |= VS_STOPPED;
+	v->vehstatus.Set(VehState::Stopped);
 }
 
 template <typename T>
@@ -1586,10 +1586,10 @@ void VehicleTickCargoAging(Vehicle *v)
 void VehicleTickMotion(Vehicle *v, Vehicle *front)
 {
 	/* Do not play any sound when crashed */
-	if (front->vehstatus & VS_CRASHED) return;
+	if (front->vehstatus.Test(VehState::Crashed)) return;
 
 	/* Do not play any sound when in depot or tunnel */
-	if (v->vehstatus & VS_HIDDEN) return;
+	if (v->vehstatus.Test(VehState::Hidden)) return;
 
 	v->motion_counter += front->cur_speed;
 	if (_settings_client.sound.vehicle && _settings_client.music.effect_vol != 0) {
@@ -1599,7 +1599,7 @@ void VehicleTickMotion(Vehicle *v, Vehicle *front)
 		/* Play an alternating running sound every 16 ticks */
 		if (GB(v->tick_counter, 0, 4) == 0) {
 			/* Play running sound when speed > 0 and not braking */
-			bool running = (front->cur_speed > 0) && !(front->vehstatus & (VS_STOPPED | VS_TRAIN_SLOWING));
+			bool running = (front->cur_speed > 0) && !front->vehstatus.Any({VehState::Stopped, VehState::TrainSlowing});
 			PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
 		}
 	}
@@ -1697,7 +1697,7 @@ void CallVehicleTicks()
 			for (Train *u = front; u != nullptr; u = u->Next()) {
 				u->tick_counter++;
 				VehicleTickCargoAging(u);
-				if (u->IsEngine() && !((front->vehstatus & VS_STOPPED) && front->cur_speed == 0)) VehicleTickMotion(u, front);
+				if (u->IsEngine() && !(front->vehstatus.Test(VehState::Stopped) && front->cur_speed == 0)) VehicleTickMotion(u, front);
 			}
 		}
 	}
@@ -1711,7 +1711,7 @@ void CallVehicleTicks()
 				u->tick_counter++;
 				VehicleTickCargoAging(u);
 			}
-			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
+			if (!front->vehstatus.Test(VehState::Stopped)) VehicleTickMotion(front, front);
 		}
 	}
 	if (!_tick_road_veh_front_cache.empty()) RecordSyncEvent(NSRE_VEH_ROAD);
@@ -1723,7 +1723,7 @@ void CallVehicleTicks()
 			for (Aircraft *u = front; u != nullptr; u = u->Next()) {
 				VehicleTickCargoAging(u);
 			}
-			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
+			if (!front->vehstatus.Test(VehState::Stopped)) VehicleTickMotion(front, front);
 		}
 	}
 	if (!_tick_aircraft_front_cache.empty()) RecordSyncEvent(NSRE_VEH_AIR);
@@ -1735,7 +1735,7 @@ void CallVehicleTicks()
 			for (Ship *u = s; u != nullptr; u = u->Next()) {
 				VehicleTickCargoAging(u);
 			}
-			if (!(s->vehstatus & VS_STOPPED)) VehicleTickMotion(s, s);
+			if (!s->vehstatus.Test(VehState::Stopped)) VehicleTickMotion(s, s);
 		}
 	}
 	if (!_tick_ship_cache.empty()) RecordSyncEvent(NSRE_VEH_SHIP);
@@ -1787,7 +1787,7 @@ void CallVehicleTicks()
 
 		auto it = _vehicles_to_autoreplace.find(index);
 		assert(it != _vehicles_to_autoreplace.end());
-		if (it->second) t->vehstatus &= ~VS_STOPPED;
+		if (it->second) t->vehstatus.Reset(VehState::Stopped);
 		_vehicles_to_autoreplace.erase(it);
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
@@ -1838,7 +1838,7 @@ void CallVehicleTicks()
 		/* Start vehicle if we stopped them in VehicleEnteredDepotThisTick()
 		 * We need to stop them between VehicleEnteredDepotThisTick() and here or we risk that
 		 * they are already leaving the depot again before being replaced. */
-		if (it.second) v->vehstatus &= ~VS_STOPPED;
+		if (it.second) v->vehstatus.Reset(VehState::Stopped);
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = v->x_pos;
@@ -1929,10 +1929,10 @@ static void DoDrawVehicle(const Vehicle *v)
 {
 	PaletteID pal = PAL_NONE;
 
-	if (v->vehstatus & VS_DEFPAL) pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+	if (v->vehstatus.Test(VehState::DefaultPalette)) pal = v->vehstatus.Test(VehState::Crashed) ? PALETTE_CRASH : GetVehiclePalette(v);
 
 	/* Check whether the vehicle shall be transparent due to the game state */
-	bool shadowed = (v->vehstatus & (VS_SHADOW | VS_HIDDEN)) != 0;
+	bool shadowed = v->vehstatus.Any({VehState::Shadow, VehState::Hidden});
 
 	if (v->type == VEH_EFFECT) {
 		/* Check whether the vehicle shall be transparent/invisible due to GUI settings.
@@ -1957,7 +1957,7 @@ static void DoDrawVehicle(const Vehicle *v)
 	StartSpriteCombine();
 	for (uint i = 0; i < v->sprite_seq.count; ++i) {
 		PaletteID pal2 = v->sprite_seq.seq[i].pal;
-		if (!pal2 || (v->vehstatus & VS_CRASHED)) pal2 = pal;
+		if (!pal2 || v->vehstatus.Test(VehState::Crashed)) pal2 = pal;
 		AddSortableSpriteToDraw(v->sprite_seq.seq[i].sprite, pal2, v->x_pos + v->x_offs, v->y_pos + v->y_offs,
 			v->x_extent, v->y_extent, v->z_extent, v->z_pos, shadowed, v->x_bb_offs, v->y_bb_offs, 0, nullptr, special_flags);
 	}
@@ -2092,7 +2092,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 					const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 					while (v != nullptr) {
-						if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
+						if (!v->vehstatus.Any({VehState::Hidden, VehState::Unclickable}) && (v->type != VEH_EFFECT)) {
 							Point pt = { v->coord.left, v->coord.top };
 							if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
 								const int pixel_x = UnScaleByZoomLower(pt.x - l, dpi->zoom);
@@ -2161,7 +2161,7 @@ Vehicle *CheckClickOnVehicle(const Viewport *vp, int x, int y)
 			Vehicle *v = _vehicle_viewport_hash[hx + hy]; // already masked & 0xFFF
 
 			while (v != nullptr) {
-				if (((v->vehstatus & VS_UNCLICKABLE) == 0) && v->IsDrawn() &&
+				if (!v->vehstatus.Test(VehState::Unclickable) && v->IsDrawn() &&
 					x >= v->coord.left && x <= v->coord.right &&
 					y >= v->coord.top && y <= v->coord.bottom) {
 
@@ -2315,7 +2315,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 		if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
 	}
 
-	if (v->breakdown_ctr != 0 || (v->First()->vehstatus & VS_STOPPED) ||
+	if (v->breakdown_ctr != 0 || v->First()->vehstatus.Test(VehState::Stopped) ||
 			_settings_game.difficulty.vehicle_breakdowns < 1 ||
 			v->First()->cur_speed < 5 || _game_mode == GM_MENU ||
 			(v->type == VEH_AIRCRAFT && ((Aircraft*)v)->state != FLYING) ||
@@ -2390,7 +2390,7 @@ bool Vehicle::HandleBreakdown()
 				this->MarkDirty();
 				assert(this->breakdown_type <= BREAKDOWN_AIRCRAFT_EM_LANDING);
 				/* Aircraft just need this flag, the rest is handled elsewhere */
-				this->vehstatus |= VS_AIRCRAFT_BROKEN;
+				this->vehstatus.Set(VehState::AircraftBroken);
 				if(this->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED ||
 						(this->current_order.IsType(OT_GOTO_DEPOT) &&
 						(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) &&
@@ -2407,7 +2407,7 @@ bool Vehicle::HandleBreakdown()
 							if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
 								SndPlayVehicleFx((_settings_game.game_creation.landscape != LandscapeType::Toyland) ? SND_10_BREAKDOWN_TRAIN_SHIP : SND_3A_BREAKDOWN_TRAIN_SHIP_TOYLAND, this);
 							}
-							if (!(this->vehstatus & VS_HIDDEN) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke) && this->breakdown_delay > 0) {
+							if (!this->vehstatus.Test(VehState::Hidden) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke) && this->breakdown_delay > 0) {
 								EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 								if (u != nullptr) u->animation_state = this->breakdown_delay * 2;
 							}
@@ -2448,7 +2448,7 @@ bool Vehicle::HandleBreakdown()
 					SetBit(Train::From(this)->flags, VRF_BREAKDOWN_BRAKING);
 					return false;
 				}
-				if ((!(this->vehstatus & VS_HIDDEN)) && (this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)
+				if (!this->vehstatus.Test(VehState::Hidden) && (this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)
 						&& !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke)) {
 					EffectVehicle *u = CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE); //some grey clouds to indicate a broken engine
 					if (u != nullptr) u->animation_state = 25;
@@ -2462,7 +2462,7 @@ bool Vehicle::HandleBreakdown()
 								(train_or_ship ? SND_10_BREAKDOWN_TRAIN_SHIP : SND_0F_BREAKDOWN_ROADVEHICLE) :
 								(train_or_ship ? SND_3A_BREAKDOWN_TRAIN_SHIP_TOYLAND : SND_35_BREAKDOWN_ROADVEHICLE_TOYLAND), this);
 						}
-						if (!(this->vehstatus & VS_HIDDEN) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke) && this->breakdown_delay > 0) {
+						if (!this->vehstatus.Test(VehState::Hidden) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke) && this->breakdown_delay > 0) {
 							EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 							if (u != nullptr) u->animation_state = this->breakdown_delay * 2;
 						}
@@ -2487,7 +2487,7 @@ bool Vehicle::HandleBreakdown()
 						break;
 					default: NOT_REACHED();
 				}
-				if ((!(this->vehstatus & VS_HIDDEN)) &&
+				if (!this->vehstatus.Test(VehState::Hidden) &&
 						(this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER) &&
 						!EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke)) {
 					/* Some gray clouds to indicate a broken RV */
@@ -2570,7 +2570,7 @@ void AgeVehicle(Vehicle *v)
 	if (!_settings_client.gui.old_vehicle_warn) return;
 
 	/* Don't warn about vehicles which are non-primary (e.g., part of an articulated vehicle), don't belong to us, are crashed, or are stopped */
-	if (v->Previous() != nullptr || v->owner != _local_company || (v->vehstatus & VS_CRASHED) != 0 || (v->vehstatus & VS_STOPPED) != 0) return;
+	if (v->Previous() != nullptr || v->owner != _local_company || v->vehstatus.Any({VehState::Crashed, VehState::Stopped})) return;
 
 	const Company *c = Company::Get(v->owner);
 	/* Don't warn if a renew is active */
@@ -2705,7 +2705,7 @@ void VehicleEnterDepot(Vehicle *v)
 			t->reverse_distance = 0;
 			t->UpdateTrainSpeedAdaptationLimit(0);
 			t->lookahead.reset();
-			if (!(t->vehstatus & VS_CRASHED)) {
+			if (!t->vehstatus.Test(VehState::Crashed)) {
 				t->crash_anim_pos = 0;
 			}
 			break;
@@ -2738,7 +2738,7 @@ void VehicleEnterDepot(Vehicle *v)
 	}
 	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
 
-	v->vehstatus |= VS_HIDDEN;
+	v->vehstatus.Set(VehState::Hidden);
 	v->UpdateIsDrawn();
 	v->cur_speed = 0;
 
@@ -3651,7 +3651,7 @@ void Vehicle::LeaveStation()
 	HideFillingPercent(&this->fill_percent_te_id);
 	trip_occupancy = CalcPercentVehicleFilled(this, nullptr);
 
-	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
+	if (this->type == VEH_TRAIN && !this->vehstatus.Test(VehState::Crashed)) {
 		/* Trigger station animation (trains only) */
 		if (IsRailStationTile(station_tile)) {
 			TriggerStationRandomisation(st, station_tile, SRT_TRAIN_DEPARTS);
@@ -3661,7 +3661,7 @@ void Vehicle::LeaveStation()
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
 		if (Train::From(this)->lookahead != nullptr) Train::From(this)->lookahead->zpos_refresh_remaining = 0;
 	}
-	if (this->type == VEH_ROAD && !(this->vehstatus & VS_CRASHED)) {
+	if (this->type == VEH_ROAD && !this->vehstatus.Test(VehState::Crashed)) {
 		/* Trigger road stop animation */
 		if (IsAnyRoadStopTile(this->tile)) {
 			TriggerRoadStopRandomisation(st, this->tile, RSRT_VEH_DEPARTS);
@@ -3939,7 +3939,7 @@ void Vehicle::LeaveUnbunchingDepot()
 	Vehicle *u = this->FirstShared();
 	for (; u != nullptr; u = u->NextShared()) {
 		/* Ignore vehicles that are manually stopped or crashed. */
-		if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) continue;
+		if (u->vehstatus.Any({VehState::Stopped, VehState::Crashed})) continue;
 
 		num_vehicles++;
 		if (u->unbunch_state != nullptr) total_travel_time += u->unbunch_state->round_trip_time;
@@ -3956,7 +3956,7 @@ void Vehicle::LeaveUnbunchingDepot()
 	u = this->FirstShared();
 	for (; u != nullptr; u = u->NextShared()) {
 		/* Ignore vehicles that are manually stopped or crashed. */
-		if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) continue;
+		if (u->vehstatus.Any({VehState::Stopped, VehState::Crashed})) continue;
 
 		if (u->unbunch_state == nullptr) u->unbunch_state.reset(new VehicleUnbunchState());
 		u->unbunch_state->depot_unbunching_next_departure = next_departure;
@@ -3996,7 +3996,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 	CommandCost ret = CheckOwnership(this->owner);
 	if (ret.Failed()) return ret;
 
-	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
+	if (this->vehstatus.Test(VehState::Crashed)) return CMD_ERROR;
 	if (this->IsStoppedInDepot()) {
 		if (command.Test(DepotCommandFlag::Sell) && !command.Test(DepotCommandFlag::Cancel) && (!command.Test(DepotCommandFlag::Specific) || specific_depot == this->tile)) {
 			/* Sell vehicle immediately */
@@ -4290,7 +4290,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 	 * - the vehicle is moving very slowly
 	 */
 	if (_settings_game.vehicle.smoke_amount == 0 ||
-			this->vehstatus & (VS_TRAIN_SLOWING | VS_STOPPED) ||
+			this->vehstatus.Any({VehState::TrainSlowing, VehState::Stopped}) ||
 			this->cur_speed < 2) {
 		return;
 	}
@@ -4340,7 +4340,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 		 * - The vehicle is on a tunnel tile
 		 * - The vehicle is a train engine that is currently unpowered */
 		if (effect_model == VESM_NONE ||
-				v->vehstatus & VS_HIDDEN ||
+				v->vehstatus.Test(VehState::Hidden) ||
 				IsBridgeAbove(v->tile) ||
 				IsDepotTile(v->tile) ||
 				IsTunnelTile(v->tile) ||
@@ -4553,14 +4553,14 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 		dump('V', "GVSF_VIRTUAL",          HasBit(v->subtype, GVSF_VIRTUAL));
 	}
 	dump_header("vs:", "vehstatus:");
-	dump('H', "VS_HIDDEN",          v->vehstatus & VS_HIDDEN);
-	dump('S', "VS_STOPPED",         v->vehstatus & VS_STOPPED);
-	dump('U', "VS_UNCLICKABLE",     v->vehstatus & VS_UNCLICKABLE);
-	dump('D', "VS_DEFPAL",          v->vehstatus & VS_DEFPAL);
-	dump('s', "VS_TRAIN_SLOWING",   v->vehstatus & VS_TRAIN_SLOWING);
-	dump('X', "VS_SHADOW",          v->vehstatus & VS_SHADOW);
-	dump('B', "VS_AIRCRAFT_BROKEN", v->vehstatus & VS_AIRCRAFT_BROKEN);
-	dump('C', "VS_CRASHED",         v->vehstatus & VS_CRASHED);
+	dump('H', "Hidden",                     v->vehstatus.Test(VehState::Hidden));
+	dump('S', "Stopped",                    v->vehstatus.Test(VehState::Stopped));
+	dump('U', "Unclickable",                v->vehstatus.Test(VehState::Unclickable));
+	dump('D', "DefaultPalette",             v->vehstatus.Test(VehState::DefaultPalette));
+	dump('s', "TrainSlowing",               v->vehstatus.Test(VehState::TrainSlowing));
+	dump('X', "Shadow",                     v->vehstatus.Test(VehState::Shadow));
+	dump('B', "AircraftBroken",             v->vehstatus.Test(VehState::AircraftBroken));
+	dump('C', "Crashed",                    v->vehstatus.Test(VehState::Crashed));
 	dump_header("vf:", "vehicle_flags:");
 	dump('F', "VF_LOADING_FINISHED",        HasBit(v->vehicle_flags, VF_LOADING_FINISHED));
 	dump('U', "VF_CARGO_UNLOADING",         HasBit(v->vehicle_flags, VF_CARGO_UNLOADING));

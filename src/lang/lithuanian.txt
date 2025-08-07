@@ -1017,7 +1017,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Paskutin
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Pranešimas
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Gyventojai džiūgauja. . .{}Pirmas traukinys atvažiavo į {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Gyventojai džiūgauja. . .{}Pirmas autobusas atvyko į {STATION}!
@@ -4869,7 +4868,6 @@ STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Transpor
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Tvarkaraštis dar nėra aktyvintas
 
 STR_TIMETABLE_START                                             :{BLACK}Pradėti tvarkaraštį
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Sekundės iki tvarkaraščio pradžios
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Keisti trukmę

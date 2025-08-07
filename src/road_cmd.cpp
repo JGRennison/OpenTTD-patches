@@ -2924,7 +2924,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int,
 					_roadveh_enter_depot_dir[GetRoadDepotDirection(tile)] == rv->state) {
 				rv->InvalidateImageCache();
 				rv->state = RVSB_IN_DEPOT;
-				rv->vehstatus |= VS_HIDDEN;
+				rv->vehstatus.Set(VehState::Hidden);
 				rv->direction = ReverseDir(rv->direction);
 				if (rv->Next() == nullptr) VehicleEnterDepot(rv->First());
 				rv->tile = tile;

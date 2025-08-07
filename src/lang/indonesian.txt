@@ -813,7 +813,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Daftar p
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Pesan
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Masyarakat bergembira . . .{}Kereta pertama tiba di {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Masyarakat bergembira . . .{}Bus pertama tiba di {STATION}!
@@ -4578,7 +4577,6 @@ STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}Kendaraa
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Kendaraaan ini berjalan terlambat {STRING}
 STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Kendaraaan ini berjalan lebih awal {STRING}
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Jadwal masih belum dimulai
-
 
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Ubah Durasi

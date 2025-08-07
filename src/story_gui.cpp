@@ -254,7 +254,7 @@ protected:
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			if (!p->title.empty()) {
-				list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_RAW_STRING, p->title), p->index.base(), current_page));
+				list.push_back(MakeDropDownListStringItem(p->title.GetDecodedString(), p->index.base(), current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
 				list.push_back(MakeDropDownListStringItem(GetString(STR_STORY_BOOK_GENERIC_PAGE_ITEM, page_num), p->index.base(), current_page));
@@ -288,7 +288,7 @@ protected:
 
 		/* Title lines */
 		height += GetCharacterHeight(FS_NORMAL); // Date always use exactly one line.
-		height += GetStringHeight(GetString(STR_STORY_BOOK_TITLE, !page->title.empty() ? page->title : this->selected_generic_title), max_width);
+		height += GetStringHeight(GetString(STR_STORY_BOOK_TITLE, !page->title.empty() ? page->title.GetDecodedString() : this->selected_generic_title), max_width);
 
 		return height;
 	}
@@ -324,7 +324,7 @@ protected:
 	{
 		switch (pe.type) {
 			case SPET_TEXT:
-				return GetStringHeight(GetString(STR_JUST_RAW_STRING, pe.text), max_width);
+				return GetStringHeight(pe.text.GetDecodedString(), max_width);
 
 			case SPET_GOAL:
 			case SPET_LOCATION: {
@@ -335,7 +335,7 @@ protected:
 			case SPET_BUTTON_PUSH:
 			case SPET_BUTTON_TILE:
 			case SPET_BUTTON_VEHICLE: {
-				Dimension dim = GetStringBoundingBox(pe.text, FS_NORMAL);
+				Dimension dim = GetStringBoundingBox(pe.text.GetDecodedString(), FS_NORMAL);
 				return dim.height + WidgetDimensions::scaled.framerect.Vertical() + WidgetDimensions::scaled.frametext.Vertical();
 			}
 
@@ -378,7 +378,7 @@ protected:
 			case SPET_BUTTON_PUSH:
 			case SPET_BUTTON_TILE:
 			case SPET_BUTTON_VEHICLE: {
-				Dimension dim = GetStringBoundingBox(pe.text, FS_NORMAL);
+				Dimension dim = GetStringBoundingBox(pe.text.GetDecodedString(), FS_NORMAL);
 				return dim.width + WidgetDimensions::scaled.framerect.Vertical() + WidgetDimensions::scaled.frametext.Vertical();
 			}
 
@@ -646,8 +646,7 @@ public:
 		switch (widget) {
 			case WID_SB_SEL_PAGE: {
 				const StoryPage *page = this->GetSelPage();
-				/* Encoded string from game script needs to be formatted. */
-				return GetString(STR_JUST_RAW_STRING, page != nullptr && !page->title.empty() ? page->title : this->selected_generic_title);
+				return page != nullptr && !page->title.empty() ? page->title.GetDecodedString() : this->selected_generic_title;
 			}
 
 			case WID_SB_CAPTION:
@@ -705,28 +704,32 @@ public:
 
 		/* Title */
 		y_offset = DrawStringMultiLine(0, fr.right, y_offset, fr.bottom,
-			GetString(STR_STORY_BOOK_TITLE, !page->title.empty() ? page->title : this->selected_generic_title), TC_BLACK, SA_TOP | SA_HOR_CENTER);
+			GetString(STR_STORY_BOOK_TITLE, !page->title.empty() ? page->title.GetDecodedString() : this->selected_generic_title), TC_BLACK, SA_TOP | SA_HOR_CENTER);
 
 		/* Page elements */
 		this->EnsureStoryPageElementLayout();
 		for (const LayoutCacheElement &ce : this->layout_cache) {
+			if (ce.bounds.bottom - scrollpos < fr.top) continue;
+
 			y_offset = ce.bounds.top - scrollpos;
+			if (y_offset > fr.bottom) return;
+
 			switch (ce.pe->type) {
 				case SPET_TEXT:
 					y_offset = DrawStringMultiLine(ce.bounds.left, ce.bounds.right, ce.bounds.top - scrollpos, ce.bounds.bottom - scrollpos,
-						GetString(STR_JUST_RAW_STRING, ce.pe->text), TC_BLACK, SA_TOP | SA_LEFT);
+						ce.pe->text.GetDecodedString(), TC_BLACK, SA_TOP | SA_LEFT);
 					break;
 
 				case SPET_GOAL: {
 					Goal *g = Goal::Get((GoalID) ce.pe->referenced_id);
 					DrawActionElement(y_offset, ce.bounds.right - ce.bounds.left, line_height, GetPageElementSprite(*ce.pe),
-						g == nullptr ? GetString(STR_STORY_BOOK_INVALID_GOAL_REF) : GetString(STR_JUST_RAW_STRING, g->text));
+						g == nullptr ? GetString(STR_STORY_BOOK_INVALID_GOAL_REF) : g->text.GetDecodedString());
 					break;
 				}
 
 				case SPET_LOCATION:
 					DrawActionElement(y_offset, ce.bounds.right - ce.bounds.left, line_height, GetPageElementSprite(*ce.pe),
-						GetString(STR_JUST_RAW_STRING, ce.pe->text));
+						ce.pe->text.GetDecodedString());
 					break;
 
 				case SPET_BUTTON_PUSH:
@@ -739,7 +742,7 @@ public:
 					DrawFrameRect(ce.bounds.left, ce.bounds.top - scrollpos, ce.bounds.right, ce.bounds.bottom - scrollpos - 1, bgcolour, frame);
 
 					DrawString(ce.bounds.left + WidgetDimensions::scaled.bevel.left, ce.bounds.right - WidgetDimensions::scaled.bevel.right, ce.bounds.top + tmargin - scrollpos,
-						GetString(STR_JUST_RAW_STRING, ce.pe->text), TC_WHITE, SA_CENTER);
+						ce.pe->text.GetDecodedString(), TC_WHITE, SA_CENTER);
 					break;
 				}
 
@@ -762,7 +765,7 @@ public:
 				/* Get max title width. */
 				for (size_t i = 0; i < this->story_pages.size(); i++) {
 					const StoryPage *s = this->story_pages[i];
-					Dimension title_d = GetStringBoundingBox(GetString(STR_JUST_RAW_STRING, s->title.empty() ? this->selected_generic_title : s->title));
+					Dimension title_d = GetStringBoundingBox(s->title.empty() ? this->selected_generic_title : s->title.GetDecodedString());
 
 					if (title_d.width > d.width) {
 						d.width = title_d.width;

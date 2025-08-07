@@ -314,8 +314,8 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlags flags, const Engine 
 		u->z_pos = GetSlopePixelZ(x, y);
 		v->z_pos = u->z_pos + 1;
 
-		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
-		u->vehstatus = VS_HIDDEN | VS_UNCLICKABLE | VS_SHADOW;
+		v->vehstatus = {VehState::Hidden, VehState::Stopped, VehState::DefaultPalette};
+		u->vehstatus = {VehState::Hidden, VehState::Unclickable, VehState::Shadow};
 
 		v->spritenum = avi->image_index;
 
@@ -398,7 +398,7 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlags flags, const Engine 
 			w->x_pos = v->x_pos;
 			w->y_pos = v->y_pos;
 			w->z_pos = v->z_pos + ROTOR_Z_OFFSET;
-			w->vehstatus = VS_HIDDEN | VS_UNCLICKABLE;
+			w->vehstatus = {VehState::Hidden, VehState::Unclickable};
 			w->spritenum = 0xFF;
 			w->subtype = AIR_ROTOR;
 			w->sprite_seq.Set(SPR_ROTOR_STOPPED);
@@ -515,11 +515,11 @@ static void HelicopterTickHandler(Aircraft *v)
 {
 	Aircraft *u = v->Next()->Next();
 
-	if (u->vehstatus & VS_HIDDEN) return;
+	if (u->vehstatus.Test(VehState::Hidden)) return;
 
 	/* if true, helicopter rotors do not rotate. This should only be the case if a helicopter is
 	 * loading/unloading at a terminal or stopped */
-	if (v->current_order.IsType(OT_LOADING) || (v->vehstatus & VS_STOPPED)) {
+	if (v->current_order.IsType(OT_LOADING) || v->vehstatus.Test(VehState::Stopped)) {
 		if (u->cur_speed != 0) {
 			u->cur_speed++;
 			if (u->cur_speed >= 0x80 && u->state == HRS_ROTOR_MOVING_3) {
@@ -611,11 +611,11 @@ void HandleAircraftEnterHangar(Aircraft *v)
 	v->progress = 0;
 
 	Aircraft *u = v->Next();
-	u->vehstatus |= VS_HIDDEN;
+	u->vehstatus.Set(VehState::Hidden);
 	u->UpdateIsDrawn();
 	u = u->Next();
 	if (u != nullptr) {
-		u->vehstatus |= VS_HIDDEN;
+		u->vehstatus.Set(VehState::Hidden);
 		u->UpdateIsDrawn();
 		u->cur_speed = 0;
 	}
@@ -944,7 +944,7 @@ static bool AircraftController(Aircraft *v)
 	int y = TileY(tile) * TILE_SIZE;
 
 	/* Helicopter raise */
-	if (amd.flag & AMED_HELI_RAISE) {
+	if (amd.flags.Test(AirportMovingDataFlag::HeliRaise)) {
 		Aircraft *u = v->Next()->Next();
 
 		/* Make sure the rotors don't rotate too fast */
@@ -980,7 +980,7 @@ static bool AircraftController(Aircraft *v)
 	}
 
 	/* Helicopter landing. */
-	if (amd.flag & AMED_HELI_LOWER) {
+	if (amd.flags.Test(AirportMovingDataFlag::HeliLower)) {
 		SetBit(v->flags, VAF_HELI_DIRECT_DESCENT);
 
 		if (st == nullptr) {
@@ -1037,7 +1037,7 @@ static bool AircraftController(Aircraft *v)
 	uint dist = abs(x + amd.x - v->x_pos) +  abs(y + amd.y - v->y_pos);
 
 	/* Need exact position? */
-	if (!(amd.flag & AMED_EXACTPOS) && dist <= (amd.flag & AMED_SLOWTURN ? 8U : 4U)) return true;
+	if (!amd.flags.Test(AirportMovingDataFlag::ExactPosition) && dist <= (amd.flags.Test(AirportMovingDataFlag::SlowTurn) ? 8U : 4U)) return true;
 
 	/* At final pos? */
 	if (dist == 0) {
@@ -1059,18 +1059,18 @@ static bool AircraftController(Aircraft *v)
 		return false;
 	}
 
-	if (amd.flag & AMED_BRAKE && v->cur_speed > SPEED_LIMIT_TAXI * _settings_game.vehicle.plane_speed) {
+	if (amd.flags.Test(AirportMovingDataFlag::Brake) && v->cur_speed > SPEED_LIMIT_TAXI * _settings_game.vehicle.plane_speed) {
 		MaybeCrashAirplane(v);
-		if ((v->vehstatus & VS_CRASHED) != 0) return false;
+		if (v->vehstatus.Test(VehState::Crashed)) return false;
 	}
 
 	uint speed_limit = SPEED_LIMIT_TAXI;
 	bool hard_limit = true;
 
-	if (amd.flag & AMED_NOSPDCLAMP)   speed_limit = SPEED_LIMIT_NONE;
-	if (amd.flag & AMED_HOLD)       { speed_limit = SPEED_LIMIT_HOLD;     hard_limit = false; }
-	if (amd.flag & AMED_LAND)       { speed_limit = SPEED_LIMIT_APPROACH; hard_limit = false; }
-	if (amd.flag & AMED_BRAKE)      { speed_limit = SPEED_LIMIT_TAXI;     hard_limit = false; }
+	if (amd.flags.Test(AirportMovingDataFlag::NoSpeedClamp)) speed_limit = SPEED_LIMIT_NONE;
+	if (amd.flags.Test(AirportMovingDataFlag::Hold)) { speed_limit = SPEED_LIMIT_HOLD;     hard_limit = false; }
+	if (amd.flags.Test(AirportMovingDataFlag::Land)) { speed_limit = SPEED_LIMIT_APPROACH; hard_limit = false; }
+	if (amd.flags.Test(AirportMovingDataFlag::Brake)) { speed_limit = SPEED_LIMIT_TAXI;     hard_limit = false; }
 
 	int count = UpdateAircraftSpeed(v, speed_limit, hard_limit);
 	if (count == 0) return false;
@@ -1088,7 +1088,7 @@ static bool AircraftController(Aircraft *v)
 
 		GetNewVehiclePosResult gp;
 
-		if (nudge_towards_target || (amd.flag & AMED_LAND)) {
+		if (nudge_towards_target || amd.flags.Test(AirportMovingDataFlag::Land)) {
 			/* move vehicle one pixel towards target */
 			gp.x = (v->x_pos != (x + amd.x)) ?
 					v->x_pos + ((x + amd.x > v->x_pos) ? 1 : -1) :
@@ -1105,7 +1105,7 @@ static bool AircraftController(Aircraft *v)
 			/* Turn. Do it slowly if in the air. */
 			Direction newdir = GetDirectionTowards(v, x + amd.x, y + amd.y);
 			if (newdir != v->direction) {
-				if (amd.flag & AMED_SLOWTURN && v->number_consecutive_turns < 8 && v->subtype == AIR_AIRCRAFT) {
+				if (amd.flags.Test(AirportMovingDataFlag::SlowTurn) && v->number_consecutive_turns < 8 && v->subtype == AIR_AIRCRAFT) {
 					if (v->turn_counter == 0 || newdir == v->last_direction) {
 						if (newdir == v->last_direction) {
 							v->number_consecutive_turns = 0;
@@ -1141,17 +1141,17 @@ static bool AircraftController(Aircraft *v)
 
 		v->tile = gp.new_tile;
 		/* If vehicle is in the air, use tile coordinate 0. */
-		if (amd.flag & (AMED_TAKEOFF | AMED_SLOWTURN | AMED_LAND)) v->tile = TileIndex{};
+		if (amd.flags.Any({AirportMovingDataFlag::Takeoff, AirportMovingDataFlag::SlowTurn, AirportMovingDataFlag::Land})) v->tile = TileIndex{};
 
 		/* Adjust Z for land or takeoff? */
 		int z = v->z_pos;
 
-		if (amd.flag & AMED_TAKEOFF) {
+		if (amd.flags.Test(AirportMovingDataFlag::Takeoff)) {
 			z = GetAircraftFlightLevel(v, true);
-		} else if (amd.flag & AMED_HOLD) {
+		} else if (amd.flags.Test(AirportMovingDataFlag::Hold)) {
 			/* Let the plane drop from normal flight altitude to holding pattern altitude */
 			if (z > GetAircraftHoldMaxAltitude(v)) z--;
-		} else if ((amd.flag & AMED_SLOWTURN) && (amd.flag & AMED_NOSPDCLAMP)) {
+		} else if (amd.flags.All({AirportMovingDataFlag::SlowTurn, AirportMovingDataFlag::NoSpeedClamp})) {
 			z = GetAircraftFlightLevel(v);
 		}
 
@@ -1162,13 +1162,13 @@ static bool AircraftController(Aircraft *v)
 		 * We also know that the airport itself has to be completely flat (otherwise it is not a valid airport).
 		 * Therefore, use the height of this hangar to calculate our z-value. */
 		int airport_z = v->z_pos;
-		if ((amd.flag & (AMED_LAND | AMED_BRAKE)) && st != nullptr) {
+		if (amd.flags.Any({AirportMovingDataFlag::Land, AirportMovingDataFlag::Brake}) && st != nullptr) {
 			assert(st->airport.HasHangar());
 			TileIndex hangar_tile = st->airport.GetHangarTile(0);
 			airport_z = GetTileMaxPixelZ(hangar_tile) + 1; // To avoid clashing with the shadow
 		}
 
-		if (amd.flag & AMED_LAND) {
+		if (amd.flags.Test(AirportMovingDataFlag::Land)) {
 			if (st->airport.tile == INVALID_TILE) {
 				/* Airport has been removed, abort the landing procedure */
 				v->state = FLYING;
@@ -1192,7 +1192,7 @@ static bool AircraftController(Aircraft *v)
 		}
 
 		/* We've landed. Decrease speed when we're reaching end of runway. */
-		if (amd.flag & AMED_BRAKE) {
+		if (amd.flags.Test(AirportMovingDataFlag::Brake)) {
 
 			if (z > airport_z) {
 				z--;
@@ -1334,12 +1334,12 @@ static void HandleAircraftSmoke(Aircraft *v, bool mode)
 		{  0,  6 }
 	};
 
-	if (!(v->vehstatus & VS_AIRCRAFT_BROKEN)) return;
+	if (!v->vehstatus.Test(VehState::AircraftBroken)) return;
 
 	/* breakdown-related speed limits are lifted when we are on the ground */
 	/* Stop smoking when landed */
 	if (v->state != FLYING && v->state != LANDING && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
-		v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
+		v->vehstatus.Reset(VehState::AircraftBroken);
 		v->breakdown_ctr = 0;
 		v->InvalidateImageCacheOfChain();
 		return;
@@ -1564,17 +1564,17 @@ void AircraftLeaveHangar(Aircraft *v, Direction exit_dir)
 	v->subspeed = 0;
 	v->progress = 0;
 	v->direction = exit_dir;
-	v->vehstatus &= ~VS_HIDDEN;
+	v->vehstatus.Reset(VehState::Hidden);
 	v->UpdateIsDrawn();
 	{
 		Vehicle *u = v->Next();
-		u->vehstatus &= ~VS_HIDDEN;
+		u->vehstatus.Reset(VehState::Hidden);
 		u->UpdateIsDrawn();
 
 		/* Rotor blades */
 		u = u->Next();
 		if (u != nullptr) {
-			u->vehstatus &= ~VS_HIDDEN;
+			u->vehstatus.Reset(VehState::Hidden);
 			u->UpdateIsDrawn();
 			u->cur_speed = 80;
 		}
@@ -1628,7 +1628,7 @@ static void AircraftEventHandler_InHangar(Aircraft *v, const AirportFTAClass *ap
 	}
 
 	/* if we were sent to the depot, stay there */
-	if (v->current_order.IsType(OT_GOTO_DEPOT) && (v->vehstatus & VS_STOPPED)) {
+	if (v->current_order.IsType(OT_GOTO_DEPOT) && v->vehstatus.Test(VehState::Stopped)) {
 		v->current_order.Free();
 		return;
 	}
@@ -2183,11 +2183,11 @@ static void AircraftHandleDestTooFar(Aircraft *v, bool too_far)
 
 static bool AircraftEventHandler(Aircraft *v, int loop)
 {
-	if (v->vehstatus & VS_CRASHED) {
+	if (v->vehstatus.Test(VehState::Crashed)) {
 		return HandleCrashedAircraft(v);
 	}
 
-	if (v->vehstatus & VS_STOPPED) return true;
+	if (v->vehstatus.Test(VehState::Stopped)) return true;
 
 	v->HandleBreakdown();
 
@@ -2242,7 +2242,7 @@ bool Aircraft::Tick()
 
 	this->tick_counter++;
 
-	if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot())) this->running_ticks++;
+	if (!(this->vehstatus.Test(VehState::Stopped) || this->IsWaitingInDepot())) this->running_ticks++;
 
 	if (this->subtype == AIR_HELICOPTER) HelicopterTickHandler(this);
 

@@ -327,7 +327,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			}
 
 			extern void FillNewGRFVehicleCache(const Vehicle *v);
-			if (v != v->First() || v->vehstatus & VS_CRASHED || !v->IsPrimaryVehicle()) continue;
+			if (v != v->First() || v->vehstatus.Test(VehState::Crashed) || !v->IsPrimaryVehicle()) continue;
 
 			uint length = 0;
 			for (const Vehicle *u = v; u != nullptr; u = u->Next(), length++) {
@@ -337,7 +337,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !HasBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
 					CCLOGV("VRF_CONSIST_BREAKDOWN incorrectly not set");
 				}
-				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !(Train::From(u)->vehstatus & VS_HIDDEN)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
+				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !Train::From(u)->vehstatus.Test(VehState::Hidden)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
 					CCLOGV("VRF_CONSIST_SPEED_REDUCTION incorrectly not set");
 				}
 			}

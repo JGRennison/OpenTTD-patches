@@ -257,7 +257,7 @@ class NIHVehicle : public NIHelper {
 				DumpRailTypeList(output, "    ", t->compatible_railtypes);
 			}
 
-			if (t->vehstatus & VS_CRASHED) {
+			if (t->vehstatus.Test(VehState::Crashed)) {
 				output.Print("  CRASHED: anim pos: {}", t->crash_anim_pos);
 			} else if (t->crash_anim_pos > 0) {
 				output.Print("  Brake heating: {}", t->crash_anim_pos);
@@ -473,7 +473,7 @@ class NIHVehicle : public NIHelper {
 				if (u->unbunch_state == nullptr) {
 					output.buffer.append(" [NO DATA]");
 				}
-				if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) {
+				if (u->vehstatus.Any({VehState::Stopped, VehState::Crashed})) {
 					output.buffer.append(" [STOPPED]");
 				}
 				output.FinishPrint();

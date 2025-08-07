@@ -269,10 +269,10 @@ static TypedIndexContainer<std::vector<GRFTempEngineData>, EngineID> _gted;  ///
  * Contains the GRF ID of the owner of a vehicle if it has been reserved.
  * GRM for vehicles is only used if dynamic engine allocation is disabled,
  * so 256 is the number of original engines. */
-static uint32_t _grm_engines[256];
+static std::array<uint32_t, 256> _grm_engines{};
 
 /** Contains the GRF ID of the owner of a cargo if it has been reserved */
-static uint32_t _grm_cargoes[NUM_CARGO * 2];
+static std::array<uint32_t, NUM_CARGO * 2> _grm_cargoes{};
 
 struct GRFLocation {
 	uint32_t grfid;
@@ -8682,7 +8682,7 @@ static uint32_t GetPatchVariable(uint8_t param)
 }
 
 
-static uint32_t PerformGRM(uint32_t *grm, uint16_t num_ids, uint16_t count, uint8_t op, uint8_t target, const char *type)
+static uint32_t PerformGRM(std::span<uint32_t> grm, uint16_t count, uint8_t op, uint8_t target, const char *type)
 {
 	uint start = 0;
 	uint size  = 0;
@@ -8695,7 +8695,7 @@ static uint32_t PerformGRM(uint32_t *grm, uint16_t num_ids, uint16_t count, uint
 	/* With an operation of 2 or 3, we want to reserve a specific block of IDs */
 	if (op == 2 || op == 3) start = _cur.grffile->GetParam(target);
 
-	for (uint i = start; i < num_ids; i++) {
+	for (uint i = start; i < std::size(grm); i++) {
 		if (grm[i] == 0) {
 			size++;
 		} else {
@@ -8815,7 +8815,7 @@ static void ParamSet(ByteReader &buf)
 						case 0x02: // Ships
 						case 0x03: // Aircraft
 							if (!_settings_game.vehicle.dynamic_engines) {
-								src1 = PerformGRM(&_grm_engines[_engine_offsets[feature]], _engine_counts[feature], count, op, target, "vehicles");
+								src1 = PerformGRM({std::begin(_grm_engines) + _engine_offsets[feature], _engine_counts[feature]}, count, op, target, "vehicles");
 								if (_cur.skip_sprites == -1) return;
 							} else {
 								/* GRM does not apply for dynamic engine allocation. */
@@ -8854,7 +8854,7 @@ static void ParamSet(ByteReader &buf)
 
 						case 0x0B: // Cargo
 							/* There are two ranges: one for cargo IDs and one for cargo bitmasks */
-							src1 = PerformGRM(_grm_cargoes, NUM_CARGO * 2, count, op, target, "cargoes");
+							src1 = PerformGRM(_grm_cargoes, count, op, target, "cargoes");
 							if (_cur.skip_sprites == -1) return;
 							break;
 
@@ -10804,8 +10804,8 @@ void ResetNewGRFData()
 	}
 
 	/* Reset GRM reservations */
-	memset(&_grm_engines, 0, sizeof(_grm_engines));
-	memset(&_grm_cargoes, 0, sizeof(_grm_cargoes));
+	_grm_engines = {};
+	_grm_cargoes = {};
 
 	/* Reset generic feature callback lists */
 	ResetGenericCallbacks();

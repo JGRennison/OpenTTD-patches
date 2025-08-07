@@ -692,7 +692,7 @@ static void AddDropDownLeagueTableOptions(DropDownList &list)
 {
 	if (LeagueTable::GetNumItems() > 0) {
 		for (LeagueTable *lt : LeagueTable::Iterate()) {
-			list.push_back(MakeDropDownListStringItem(GetString(STR_JUST_RAW_STRING, lt->title), lt->index.base()));
+			list.push_back(MakeDropDownListStringItem(lt->title.GetDecodedString(), lt->index.base()));
 		}
 	} else {
 		list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE, LTMN_PERFORMANCE_LEAGUE));
@@ -1618,7 +1618,9 @@ public:
 			NWidgetBase *nwid = it->get();
 			nwid->current_x = 0; /* Hide widget, it will be revealed in the next step. */
 			if (nwid->type == NWID_SPACER) continue;
-			lookup[dynamic_cast<NWidgetCore *>(nwid)->GetIndex()] = std::distance(this->children.begin(), it);
+			NWidgetCore *nwc = dynamic_cast<NWidgetCore *>(nwid);
+			assert(nwc != nullptr);
+			lookup[nwc->GetIndex()] = std::distance(this->children.begin(), it);
 		}
 
 		/* Now assign the widgets to their rightful place */

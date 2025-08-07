@@ -192,7 +192,7 @@ static void FixAllReservations()
 	/* if this function is called, we can safely assume that sharing of rails is being switched off */
 	assert(!_settings_game.economy.infrastructure_sharing[VEH_TRAIN]);
 	for (Train *v : Train::IterateFrontOnly()) {
-		if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
+		if (!v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed) || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		/* It might happen that the train reserved additional tracks,
 		 * but FollowTrainReservation can't detect those because they are no longer reachable.
 		 * detect this by first finding the end of the reservation,
@@ -265,7 +265,7 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 
 	if (type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		for (Train *v : Train::IterateFrontOnly()) {
-			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
+			if (!v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed) || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 			/* It might happen that the train reserved additional tracks,
 			 * but FollowTrainReservation can't detect those because they are no longer reachable.
 			 * detect this by first finding the end of the reservation,

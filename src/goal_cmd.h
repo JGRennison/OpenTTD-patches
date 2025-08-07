@@ -14,13 +14,13 @@
 #include "company_type.h"
 #include "goal_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_CREATE_GOAL,          CmdCreateGoal,              CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<CompanyID, GoalType, GoalTypeID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_GOAL,          CmdCreateGoal,              CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<CompanyID, GoalType, GoalTypeID, EncodedString>)
 DEF_CMD_TUPLE_NT(CMD_REMOVE_GOAL,          CmdRemoveGoal,                             CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID>)
 DEF_CMD_TUPLE_NT(CMD_SET_GOAL_DESTINATION, CmdSetGoalDestination,                     CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, GoalType, GoalTypeID>)
-DEF_CMD_TUPLE_NT(CMD_SET_GOAL_TEXT,        CmdSetGoalText,             CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_SET_GOAL_PROGRESS,    CmdSetGoalProgress,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_SET_GOAL_TEXT,        CmdSetGoalText,             CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_SET_GOAL_PROGRESS,    CmdSetGoalProgress,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, EncodedString>)
 DEF_CMD_TUPLE_NT(CMD_SET_GOAL_COMPLETED,   CmdSetGoalCompleted,        CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<GoalID, bool>)
-DEF_CMD_TUPLE_NT(CMD_GOAL_QUESTION,        CmdGoalQuestion,            CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<uint16_t, uint32_t, bool, uint32_t, GoalQuestionType, std::string>)
+DEF_CMD_TUPLE_NT(CMD_GOAL_QUESTION,        CmdGoalQuestion,            CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<uint16_t, uint32_t, bool, uint32_t, GoalQuestionType, EncodedString>)
 DEF_CMD_TUPLE_NT(CMD_GOAL_QUESTION_ANSWER, CmdGoalQuestionAnswer,                     CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<uint16_t, uint8_t>)
 
 #endif /* GOAL_CMD_H */

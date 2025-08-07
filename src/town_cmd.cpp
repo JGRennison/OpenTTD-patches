@@ -922,7 +922,7 @@ static void AddAcceptedCargo_Town(TileIndex tile, CargoArray &acceptance, CargoT
  */
 CargoArray GetAcceptedCargoOfHouse(const HouseSpec *hs)
 {
-	CargoTypes always_accepted;
+	CargoTypes always_accepted{};
 	CargoArray acceptance{};
 	AddAcceptedCargoOfHouse(INVALID_TILE, hs->Index(), hs, nullptr, acceptance, always_accepted);
 	return acceptance;
@@ -3400,7 +3400,7 @@ CommandCost CmdTownCargoGoal(DoCommandFlags flags, TownID town_id, TownAcceptanc
  * @param text The new text (empty to remove the text).
  * @return Empty cost or an error.
  */
-CommandCost CmdTownSetText(DoCommandFlags flags, TownID town_id, const std::string &text)
+CommandCost CmdTownSetText(DoCommandFlags flags, TownID town_id, const EncodedString &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	Town *t = Town::GetIfValid(town_id);

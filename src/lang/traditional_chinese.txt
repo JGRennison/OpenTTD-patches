@@ -841,7 +841,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}列出�
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING} - {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}訊息
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}市民慶賀 . . .{}首輛列車抵達 {STATION}！
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}市民慶賀 . . .{}首輛公車抵達 {STATION}！
@@ -1218,7 +1217,7 @@ STR_CITY_APPROVAL_TOLERANT                                      :能忍受
 STR_CITY_APPROVAL_HOSTILE                                       :抱敵意
 STR_CITY_APPROVAL_PERMISSIVE                                    :放任（所有行為均不受影響）
 
-STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}無適合的 AI 可供使用……{}您可以從「線上擴充內容」功能中下載各種的 AI
+STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}無適合的 AI 可供使用……{}{}您可以使用「線上擴充內容」功能下載更多的 AI
 
 # Settings tree window
 STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}顯示設定
@@ -2233,7 +2232,7 @@ STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}開啟 A
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}開啟遊戲腳本設定
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}離開「OpenTTD」
 
-STR_INTRO_BASESET                                               :{BLACK}目前圖形設定缺少 {NUM}個貼圖。 請確認基礎貼圖組是否有更新。
+STR_INTRO_BASESET                                               :{BLACK}目前所選的基本圖形集缺少了 {NUM} 張貼圖。請確認基本圖形集是否有更新。
 STR_INTRO_TRANSLATION                                           :{BLACK}繁體中文翻譯欠缺了 {NUM} 行字串。請申請成為 OpenTTD 的翻譯員以讓本遊戲更完善。詳情請參閱 readme.txt。
 
 # Quit window
@@ -2273,7 +2272,7 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}修改�
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}修改日期：{ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}變更目前年份
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}允許修改產量：{ORANGE}{STRING}
-STR_CHEAT_STATION_RATING                                        :{LTBLUE}車站評價固定為 100％：{ORANGE}{STRING}
+STR_CHEAT_STATION_RATING                                        :{LTBLUE}車站評價固定為 100%：{ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} 的配色
@@ -2651,7 +2650,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} �
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 已修改其名稱為 {STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {0:STRING} 付給{2:STRING} {1:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}伺服器關閉連線
-STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}伺服器重新啟動中……{}請稍候……
+STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}伺服器重新啟動中……{}{}請稍候……
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} 已被踢出。原因：({STRING})
 
 STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}伺服器註冊失敗
@@ -4792,17 +4791,18 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}本時�
 
 STR_TIMETABLE_START                                             :{BLACK}開始時刻表
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}選擇此時刻表的開始時間。如果已完成排定時刻表的調度指令，則按住 <Ctrl> 點選會根據這些相應的次序均勻分配共享此調度指令的所有車輛的出發時間
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :距離時刻表開始還有的秒數
 
-STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}修改時刻
+STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}修改時間
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}修改選取指令所需的時間。按住 <Ctrl> 點選可設定所有指令的時間
+STR_TIMETABLE_CHANGE_TIME_QUERY                                 :修改時間
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}清除時刻表
 STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}移除目前選定指令所設定的時間。按住 <Ctrl> 點選可移除所有指令的時間
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}修改速度限制
 STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}修改選取指令所設定的最高速度。按住 <Ctrl> 點選可設定所有指令的速度
+STR_TIMETABLE_CHANGE_SPEED_QUERY                                :修改速度限制
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}清除速度限制
 STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}移除選取指令所設定的最高速度。按住 <Ctrl> 點選可移除所有指令的速度
@@ -4852,7 +4852,7 @@ STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}檢視�
 STR_AI_GAME_SCRIPT                                              :{BLACK}遊戲腳本
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}檢查遊戲腳本日誌。按住 <Ctrl> 點選以開啟新視窗
 
-STR_ERROR_AI_NO_AI_FOUND                                        :找不到適合的 AI 可供使用。{}此 AI 是虛擬 AI 並且沒有任何功能。{}您可以透過使用「線上擴充內容」功能中下載各種的 AI
+STR_ERROR_AI_NO_AI_FOUND                                        :找不到適合的 AI 可供使用。{}此 AI 是虛擬 AI 並且沒有任何功能。{}您可以使用「線上擴充內容」功能下載更多的 AI
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}正在執行中的一個 AI 或遊戲腳本發生錯誤。請開啟「AI／遊戲腳本除錯」視窗後擷取螢幕畫面後，將此問題連同該圖片附件回報給腳本作者
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}只可於伺服器開啟AI／遊戲腳本除錯視窗
 
@@ -4907,8 +4907,8 @@ STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}高度�
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地圖截圖
 
 # Script Parameters
-STR_AI_SETTINGS_CAPTION_AI                                      :AI 參數
-STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :遊戲腳本
+STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI 參數
+STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}遊戲腳本參數
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}關閉
 STR_AI_SETTINGS_RESET                                           :{BLACK}重設
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}
@@ -4969,7 +4969,7 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<無法使用>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}此存檔版本不支援路面電車，已移除所有路面電車
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}地圖產生失敗……{}……無適當地點可興建市鎮
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}地圖產生失敗……{}{}……無適當地點可興建市鎮
 STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... 這個地圖沒有市鎮
 
 STR_ERROR_PNGMAP                                                :{WHITE}無法從 PNG 檔載入地形...
@@ -5011,7 +5011,7 @@ STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}必須�
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}不能清除這個地段...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... 地點不適合
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}……經已建成
-STR_ERROR_OWNED_BY                                              :{WHITE}... 所有者是 {STRING}
+STR_ERROR_OWNED_BY                                              :{WHITE}……由 {STRING} 所擁有
 STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}……此區域屬於其他公司所有
 STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}……已達地形的限制
 STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}……已達區塊清除的上限
@@ -5060,7 +5060,7 @@ STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}……�
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... 已有太多市鎮
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... 地圖沒有足夠空間
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}道路施工中
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}無法刪除該市鎮……{}市鎮範圍內還有車站或機廠或無法移除的區塊
+STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}無法刪除該市鎮……{}{}市鎮範圍內還有車站或機廠或無法移除的區塊
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... 市中心沒有適合的空間建造雕像
 STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}無法興建房屋…
 

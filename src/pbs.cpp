@@ -834,7 +834,7 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 {
 	FindTrainOnTrackInfo *info = (FindTrainOnTrackInfo *)data;
 
-	if ((v->vehstatus & VS_CRASHED)) return nullptr;
+	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
 
 	Train *t = Train::From(v);
 	if (t->track & TRACK_BIT_WORMHOLE) {
@@ -1380,7 +1380,7 @@ CommandCost CheckTrainReservationPreventsTrackModification(TileIndex tile, Track
 CommandCost CheckTrainReservationPreventsTrackModification(const Train *v)
 {
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !_settings_game.vehicle.track_edit_ignores_realistic_braking &&
-			v != nullptr && v->UsingRealisticBraking() && (v->cur_speed > 0 || !(v->vehstatus & (VS_STOPPED | VS_CRASHED)))) {
+			v != nullptr && v->UsingRealisticBraking() && (v->cur_speed > 0 || !v->vehstatus.Any({VehState::Stopped, VehState::Crashed}))) {
 		return CommandCost(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();

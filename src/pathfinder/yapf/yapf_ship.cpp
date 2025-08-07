@@ -356,7 +356,7 @@ public:
 	{
 		uint *count = (uint*)data;
 		/* Ignore other vehicles (aircraft) and ships inside depot. */
-		if ((v->vehstatus & VS_HIDDEN) == 0) (*count)++;
+		if (!v->vehstatus.Test(VehState::Hidden)) (*count)++;
 
 		return nullptr;
 	}

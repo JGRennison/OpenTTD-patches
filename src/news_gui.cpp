@@ -119,6 +119,7 @@ static constexpr NWidgetPart _nested_normal_news_widgets[] = {
 						SetMinimalTextLines(8, 0, FS_LARGE),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
+						SetTextStyle(TC_BLACK, FS_LARGE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -149,6 +150,7 @@ static constexpr NWidgetPart _nested_vehicle_news_widgets[] = {
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 						SetStringTip(STR_EMPTY),
+						SetTextStyle(TC_BLACK, FS_LARGE),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_VEH_BKGND), SetPadding(WidgetDimensions::unscaled.fullbevel),
 				NWidget(NWID_VERTICAL),
@@ -195,6 +197,7 @@ static constexpr NWidgetPart _nested_company_news_widgets[] = {
 						SetMinimalTextLines(1, 0, FS_LARGE),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_normal),
+						SetTextStyle(TC_BLACK, FS_LARGE),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(2),
@@ -209,6 +212,7 @@ static constexpr NWidgetPart _nested_company_news_widgets[] = {
 						SetFill(1, 1),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 						SetMinimalSize(300, 0),
+						SetTextStyle(TC_BLACK, FS_LARGE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -240,6 +244,7 @@ static constexpr NWidgetPart _nested_thin_news_widgets[] = {
 						SetMinimalTextLines(3, 0, FS_LARGE),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_normal),
+						SetTextStyle(TC_BLACK, FS_LARGE),
 			EndContainer(),
 			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_N_VIEWPORT), SetMinimalSize(426, 70),
 					SetPadding(WidgetDimensions::unscaled.fullbevel),
@@ -278,6 +283,7 @@ static constexpr NWidgetPart _nested_small_news_widgets[] = {
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_MESSAGE),
 					SetMinimalTextLines(2, 0),
 					SetMinimalSize(275, 0),
+					SetTextStyle(TC_WHITE, FS_NORMAL),
 		EndContainer(),
 	EndContainer(),
 };
@@ -431,6 +437,7 @@ struct NewsWindow : Window {
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
+		FontSize fontsize = FS_NORMAL;
 		std::string str;
 		switch (widget) {
 			case WID_N_CAPTION: {
@@ -448,6 +455,7 @@ struct NewsWindow : Window {
 
 			case WID_N_MESSAGE:
 			case WID_N_COMPANY_MSG:
+				fontsize = this->GetWidget<NWidgetLeaf>(widget)->GetFontSize();
 				str = this->ni->headline.GetDecodedString();
 				break;
 
@@ -488,7 +496,7 @@ struct NewsWindow : Window {
 		Dimension d = size;
 		d.width = (d.width >= padding.width) ? d.width - padding.width : 0;
 		d.height = (d.height >= padding.height) ? d.height - padding.height : 0;
-		d = GetStringMultiLineBoundingBox(str, d);
+		d = GetStringMultiLineBoundingBox(str, d, fontsize);
 		d.width += padding.width;
 		d.height += padding.height;
 		size = maxdim(size, d);
@@ -519,9 +527,11 @@ struct NewsWindow : Window {
 				break;
 
 			case WID_N_MESSAGE:
-			case WID_N_COMPANY_MSG:
-				DrawStringMultiLine(r, this->ni->headline.GetDecodedString(), TC_FROMSTRING, SA_CENTER);
+			case WID_N_COMPANY_MSG: {
+				const NWidgetLeaf &nwid = *this->GetWidget<NWidgetLeaf>(widget);
+				DrawStringMultiLine(r, this->ni->headline.GetDecodedString(), nwid.GetTextColour(), SA_CENTER, false, nwid.GetFontSize());
 				break;
+			}
 
 			case WID_N_MGR_FACE: {
 				const CompanyNewsInformation *cni = static_cast<const CompanyNewsInformation*>(this->ni->data.get());
@@ -941,7 +951,7 @@ uint32_t SerialiseNewsReference(const NewsReference &reference)
  * @param text The text of the news message.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCustomNewsItem(DoCommandFlags flags, NewsType type, CompanyID company, NewsReference reference, const std::string &text)
+CommandCost CmdCustomNewsItem(DoCommandFlags flags, NewsType type, CompanyID company, NewsReference reference, const EncodedString &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
@@ -964,7 +974,7 @@ CommandCost CmdCustomNewsItem(DoCommandFlags flags, NewsType type, CompanyID com
 	if (company != INVALID_OWNER && company != _local_company) return CommandCost();
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		AddNewsItem(GetEncodedString(STR_NEWS_CUSTOM_ITEM, text), type, NewsStyle::Normal, {}, reference, {});
+		AddNewsItem(EncodedString{text}, type, NewsStyle::Normal, {}, reference, {});
 	}
 
 	return CommandCost();

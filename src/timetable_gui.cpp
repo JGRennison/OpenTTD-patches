@@ -1040,7 +1040,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				this->query_is_speed_query = false;
 				this->change_timetable_all = (order != nullptr) && (selected % 2 == 0) && _ctrl_pressed;
 				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL : CS_NUMERAL_DECIMAL;
-				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, charset_filter, QSF_ACCEPT_UNCHANGED);
+				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME_QUERY, 31, this, charset_filter, QSF_ACCEPT_UNCHANGED);
 				break;
 			}
 
@@ -1060,7 +1060,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				this->query_is_speed_query = true;
 				this->change_timetable_all = (order != nullptr) && _ctrl_pressed;
-				ShowQueryString(current, STR_TIMETABLE_CHANGE_SPEED, 31, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(current, STR_TIMETABLE_CHANGE_SPEED_QUERY, 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 

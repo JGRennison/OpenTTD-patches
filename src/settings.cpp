@@ -251,7 +251,7 @@ size_t OneOfManySettingDesc::ParseSingleValue(const char *str, size_t len, const
 	if (isdigit(*str)) return std::strtoul(str, nullptr, 0);
 
 	size_t idx = 0;
-	for (auto one : many) {
+	for (const auto &one : many) {
 		if (one.size() == len && strncmp(one.c_str(), str, len) == 0) return idx;
 		idx++;
 	}
@@ -1471,7 +1471,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 static void TrainBrakingModelChanged(int32_t new_value)
 {
 	for (Train *t : Train::Iterate()) {
-		if (!(t->vehstatus & VS_CRASHED)) {
+		if (!t->vehstatus.Test(VehState::Crashed)) {
 			t->crash_anim_pos = 0;
 		}
 		if (t->IsFrontEngine()) {
@@ -1498,13 +1498,13 @@ static void TrainBrakingModelChanged(int32_t new_value)
 		_long_reserve_disabled = true;
 		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
-			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
+			if (!v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed) || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
 			TryPathReserve(v, true, HasStationTileRail(v->tile));
 		}
 		_long_reserve_disabled = false;
 		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
-			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
+			if (!v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed) || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
 			TryPathReserve(v, true, HasStationTileRail(v->tile));
 			if (v->lookahead != nullptr) v->lookahead->flags.Set(TrainReservationLookAheadFlag::ApplyAdvisory);
 		}
@@ -1513,7 +1513,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: {}", VehicleInfoDumper(v_cur));
 		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
-			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) {
+			if (!v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed) || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) {
 				v->lookahead.reset();
 				continue;
 			}

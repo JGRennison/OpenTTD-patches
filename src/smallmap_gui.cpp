@@ -880,7 +880,7 @@ void SmallMapWindow::DrawVehicles(const DrawPixelInfo *dpi, Blitter *blitter) co
 {
 	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->type == VEH_EFFECT) continue;
-		if (v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) continue;
+		if (v->vehstatus.Any({VehState::Hidden, VehState::Unclickable})) continue;
 
 		/* Remap into flat coordinates. */
 		Point pt = this->TileToPixel(v->x_pos & ~TILE_UNIT_MASK, v->y_pos & ~TILE_UNIT_MASK);

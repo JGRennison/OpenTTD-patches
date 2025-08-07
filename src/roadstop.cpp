@@ -442,7 +442,7 @@ Vehicle *FindVehiclesInRoadStop(Vehicle *v, void *data)
 	/* Not a RV or not in the right direction or crashed :( */
 	DiagDirection diag_dir = DirToDiagDir(v->direction);
 	if (RoadVehicle::From(v)->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);
-	if (diag_dir != rserh->dir || !v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0) return nullptr;
+	if (diag_dir != rserh->dir || !v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed)) return nullptr;
 
 	RoadVehicle *rv = RoadVehicle::From(v);
 	/* Don't add ones not in a road stop */

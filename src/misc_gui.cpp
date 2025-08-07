@@ -1387,7 +1387,8 @@ static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callbac
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
 
-		QueryWindow *qw = (QueryWindow *)w;
+		QueryWindow *qw = dynamic_cast<QueryWindow *>(w);
+		assert(qw != nullptr);
 		if (qw->parent != parent || qw->proc != callback) continue;
 
 		qw->Close();

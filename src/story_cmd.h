@@ -15,10 +15,10 @@
 #include "story_type.h"
 #include "vehicle_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_CREATE_STORY_PAGE,         CmdCreateStoryPage,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<CompanyID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_CREATE_STORY_PAGE_ELEMENT, CmdCreateStoryPageElement,  CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<TileIndex, StoryPageID, StoryPageElementType, uint32_t, std::string>)
-DEF_CMD_TUPLE_NT(CMD_UPDATE_STORY_PAGE_ELEMENT, CmdUpdateStoryPageElement,  CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<TileIndex, StoryPageElementID, uint32_t, std::string>)
-DEF_CMD_TUPLE_NT(CMD_SET_STORY_PAGE_TITLE,      CmdSetStoryPageTitle,       CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<StoryPageID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_STORY_PAGE,         CmdCreateStoryPage,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<CompanyID, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_STORY_PAGE_ELEMENT, CmdCreateStoryPageElement,  CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<TileIndex, StoryPageID, StoryPageElementType, uint32_t, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_UPDATE_STORY_PAGE_ELEMENT, CmdUpdateStoryPageElement,  CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<TileIndex, StoryPageElementID, uint32_t, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_SET_STORY_PAGE_TITLE,      CmdSetStoryPageTitle,       CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<StoryPageID, EncodedString>)
 DEF_CMD_TUPLE_NT(CMD_SET_STORY_PAGE_DATE,       CmdSetStoryPageDate,                       CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<StoryPageID, CalTime::Date>)
 DEF_CMD_TUPLE_NT(CMD_SHOW_STORY_PAGE,           CmdShowStoryPage,                          CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<StoryPageID>)
 DEF_CMD_TUPLE_NT(CMD_REMOVE_STORY_PAGE,         CmdRemoveStoryPage,                        CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<StoryPageID>)

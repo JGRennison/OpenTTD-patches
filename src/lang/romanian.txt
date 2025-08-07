@@ -830,7 +830,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}O listă
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Mesaj
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Cetățenii sărbătoresc . . .{}Sosește primul tren la {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Cetățenii sărbătoresc . . .{}Sosește primul autobuz la {STATION}!
@@ -4732,7 +4731,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Acest or
 
 STR_TIMETABLE_START                                             :{BLACK}Începe orarul
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Selectați când începe acest orar. Ctrl+Click pentru a distribui uniform începutul tuturor vehiculelor care partajează această comandă pe baza ordinii lor relative, dacă comanda este complet programată
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Secunde până la începerea orarului
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Modifică timpul

@@ -4037,7 +4037,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 					/* Travelling too fast, take no action */
 					return VETSB_CONTINUE;
 				}
-				front->vehstatus |= VS_TRAIN_SLOWING;
+				front->vehstatus.Set(VehState::TrainSlowing);
 				uint16_t spd = std::max(0, (stop - x) * 20 - 15);
 				if (spd < front->cur_speed) front->cur_speed = spd;
 			}

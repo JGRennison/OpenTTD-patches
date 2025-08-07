@@ -57,7 +57,7 @@ StoryPage::~StoryPage()
  * @param text The text parameter of the DoCommand proc
  * @return true, if and only if the given parameters are valid for the given page element type and page id.
  */
-static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElementType type, TileIndex tile, uint32_t reference, const std::string &text)
+static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElementType type, TileIndex tile, uint32_t reference, const EncodedString &text)
 {
 	StoryPageButtonData button_data{ reference };
 
@@ -104,7 +104,7 @@ static bool VerifyElementContentParameters(StoryPageID page_id, StoryPageElement
  * @param reference The reference parameter of the DoCommand proc (p2)
  * @param text The text parameter of the DoCommand proc
  */
-static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32_t reference, const std::string &text)
+static void UpdateElement(StoryPageElement &pe, TileIndex tile, uint32_t reference, const EncodedString &text)
 {
 	switch (pe.type) {
 		case SPET_TEXT:
@@ -216,7 +216,7 @@ bool StoryPageButtonData::ValidateVehicleType() const
  * @param text Title of the story page. Null is allowed in which case a generic page title is provided by OpenTTD.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateStoryPage(DoCommandFlags flags, CompanyID company, const std::string &text)
+CommandCost CmdCreateStoryPage(DoCommandFlags flags, CompanyID company, const EncodedString &text)
 {
 	if (!StoryPage::CanAllocateItem()) return CMD_ERROR;
 
@@ -254,7 +254,7 @@ CommandCost CmdCreateStoryPage(DoCommandFlags flags, CompanyID company, const st
  * @param text Text content in case it is a text or location page element
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateStoryPageElement(DoCommandFlags flags, TileIndex tile, StoryPageID page_id, StoryPageElementType type, uint32_t reference, const std::string &text)
+CommandCost CmdCreateStoryPageElement(DoCommandFlags flags, TileIndex tile, StoryPageID page_id, StoryPageElementType type, uint32_t reference, const EncodedString &text)
 {
 	if (!StoryPageElement::CanAllocateItem()) return CMD_ERROR;
 
@@ -300,7 +300,7 @@ CommandCost CmdCreateStoryPageElement(DoCommandFlags flags, TileIndex tile, Stor
  * @param text Text content in case it is a text or location page element
  * @return the cost of this operation or an error
  */
-CommandCost CmdUpdateStoryPageElement(DoCommandFlags flags, TileIndex tile, StoryPageElementID page_element_id, uint32_t reference, const std::string &text)
+CommandCost CmdUpdateStoryPageElement(DoCommandFlags flags, TileIndex tile, StoryPageElementID page_element_id, uint32_t reference, const EncodedString &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	if (!StoryPageElement::IsValidID(page_element_id)) return CMD_ERROR;
@@ -326,7 +326,7 @@ CommandCost CmdUpdateStoryPageElement(DoCommandFlags flags, TileIndex tile, Stor
  * @param text title text of the story page.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetStoryPageTitle(DoCommandFlags flags, StoryPageID page_id, const std::string &text)
+CommandCost CmdSetStoryPageTitle(DoCommandFlags flags, StoryPageID page_id, const EncodedString &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	if (!StoryPage::IsValidID(page_id)) return CMD_ERROR;

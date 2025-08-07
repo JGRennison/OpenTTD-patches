@@ -27,7 +27,7 @@ public:
 	 * @return A string.
 	 * @api -all
 	 */
-	virtual std::string GetEncodedText() = 0;
+	virtual EncodedString GetEncodedText() = 0;
 
 	/**
 	 * Convert a #ScriptText into a decoded normal string.
@@ -45,7 +45,7 @@ class RawText : public Text {
 public:
 	RawText(const std::string &text) : text(text) {}
 
-	std::string GetEncodedText() override { return this->text; }
+	EncodedString GetEncodedText() override;
 private:
 	const std::string text;
 };
@@ -126,7 +126,7 @@ public:
 	/**
 	 * @api -all
 	 */
-	std::string GetEncodedText() override;
+	EncodedString GetEncodedText() override;
 
 private:
 	using ScriptTextRef = ScriptObjectRef<ScriptText>;

@@ -198,7 +198,7 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 
 	inline bool IsRoadVehicleStopped() const
 	{
-		if (!(this->vehstatus & VS_STOPPED)) return false;
+		if (!this->vehstatus.Test(VehState::Stopped)) return false;
 		return !this->IsRoadVehicleOnLevelCrossing();
 	}
 

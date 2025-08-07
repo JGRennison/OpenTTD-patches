@@ -832,7 +832,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Elenco d
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Messaggio
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}I cittadini festeggiano . . .{}Il primo treno arriva {G "a " all' "alla "}{STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}I cittadini festeggiano . . .{}Il primo autobus arriva {G "a " all' "alla "}{STATION}!
@@ -4018,6 +4017,7 @@ STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produce:
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Richiede:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_NOSUFFIX                  :{YELLOW}{0:STRING}{BLACK}: {1:CARGO_SHORT} In attesa...
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Cambia produzione (multiplo di 8, fino a 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Cambia livello di produzione (percentuale, fino a 800%)
@@ -4764,7 +4764,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Questo o
 
 STR_TIMETABLE_START                                             :{BLACK}Orario di partenza
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Selezionare quando inizia questo orario. Ctrl+Clic per distribuire uniformemente la partenza di tutti i veicoli che condividono questo ordine in base al loro ordine relativo, se l'ordine è completamente programmato.
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Secondi prima dell'inizio dell'orario
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Cambia tempo

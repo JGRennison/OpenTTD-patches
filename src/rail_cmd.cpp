@@ -650,7 +650,7 @@ static inline bool ValParamTrackOrientation(Track track)
 
 static void ReReserveTrainPath(Train *v)
 {
-	const bool consider_stopped = (((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsAnyLoadingType());
+	const bool consider_stopped = (v->vehstatus.Test(VehState::Stopped) && v->cur_speed == 0) || v->current_order.IsAnyLoadingType();
 	const bool at_safe_waiting_position = IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg);
 
 	/* Don't extend the train's path if it's stopped or loading, and at a safe position. */
@@ -4747,7 +4747,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			}
 
 			v->track = TRACK_BIT_DEPOT,
-			v->vehstatus |= VS_HIDDEN; // hide it
+			v->vehstatus.Set(VehState::Hidden); // hide it
 			v->UpdateIsDrawn();
 			v->direction = ReverseDir(v->direction);
 			if (v->Next() == nullptr) VehicleEnterDepot(v->First());
@@ -4760,7 +4760,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 		if (DiagDirToDir(dir) == v->direction) {
 			/* leave the depot? */
 			if ((v = v->Next()) != nullptr) {
-				v->vehstatus &= ~VS_HIDDEN;
+				v->vehstatus.Reset(VehState::Hidden);
 				v->track = (DiagDirToAxis(dir) == AXIS_X ? TRACK_BIT_X : TRACK_BIT_Y);
 				v->UpdateIsDrawn();
 			}

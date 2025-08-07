@@ -165,6 +165,8 @@ private:
 	explicit EncodedString(std::string &&string) : string(std::move(string)) {}
 
 	friend EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
+
+	friend class ScriptText;
 };
 static_assert(sizeof(EncodedString) == sizeof(std::string)); // EncodedString is saved/loaded directly, std::string must be at offset 0.
 

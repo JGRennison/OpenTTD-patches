@@ -562,11 +562,13 @@ void Window::RaiseButtons(bool autoraise)
 {
 	for (auto &pair : this->widget_lookup) {
 		WidgetType type = pair.second->type;
-		NWidgetCore *wid = dynamic_cast<NWidgetCore *>(pair.second);
 		if (((type & ~WWB_PUSHBUTTON) < WWT_LAST || type == NWID_PUSHBUTTON_DROPDOWN) &&
-				(!autoraise || (type & WWB_PUSHBUTTON) || type == WWT_EDITBOX) && wid->IsLowered()) {
-			wid->SetLowered(false);
-			wid->SetDirty(this);
+				(!autoraise || (type & WWB_PUSHBUTTON) || type == WWT_EDITBOX)) {
+			NWidgetCore *wid = dynamic_cast<NWidgetCore *>(pair.second);
+			if (wid != nullptr && wid->IsLowered()) {
+				wid->SetLowered(false);
+				wid->SetDirty(this);
+			}
 		}
 	}
 

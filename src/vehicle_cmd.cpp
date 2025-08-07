@@ -257,7 +257,7 @@ CommandCost CmdSellVehicle(DoCommandFlags flags, VehicleID v_id, SellVehicleFlag
 
 	if (HasFlag(sell_flags, SellVehicleFlags::VirtualOnly) != HasBit(front->subtype, GVSF_VIRTUAL)) return CMD_ERROR;
 
-	if (front->vehstatus & VS_CRASHED) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
+	if (front->vehstatus.Test(VehState::Crashed)) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
 
 	/* Do this check only if the vehicle to be moved is non-virtual */
 	if (!HasFlag(sell_flags, SellVehicleFlags::VirtualOnly) && !front->IsStoppedInDepot()) return CommandCost(STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT + front->type);
@@ -550,7 +550,7 @@ CommandCost CmdRefitVehicle(DoCommandFlags flags, VehicleID veh_id, CargoType ne
 		}
 	}
 
-	if (front->vehstatus & VS_CRASHED) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
+	if (front->vehstatus.Test(VehState::Crashed)) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
 
 	/* Check cargo */
 	if (new_cid >= NUM_CARGO) return CMD_ERROR;
@@ -623,11 +623,11 @@ CommandCost CmdStartStopVehicle(DoCommandFlags flags, VehicleID veh_id, bool eva
 	CommandCost ret = CheckVehicleControlAllowed(v);
 	if (ret.Failed()) return ret;
 
-	if (v->vehstatus & VS_CRASHED) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
+	if (v->vehstatus.Test(VehState::Crashed)) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
 
 	switch (v->type) {
 		case VEH_TRAIN:
-			if ((v->vehstatus & VS_STOPPED) && Train::From(v)->gcache.cached_power == 0) return CommandCost(STR_ERROR_TRAIN_START_NO_POWER);
+			if (v->vehstatus.Test(VehState::Stopped) && Train::From(v)->gcache.cached_power == 0) return CommandCost(STR_ERROR_TRAIN_START_NO_POWER);
 			break;
 
 		case VEH_SHIP:
@@ -677,13 +677,13 @@ CommandCost CmdStartStopVehicle(DoCommandFlags flags, VehicleID veh_id, bool eva
 		v->ClearSeparation();
 		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
-		v->vehstatus ^= VS_STOPPED;
+		v->vehstatus.Flip(VehState::Stopped);
 		if (v->type == VEH_ROAD) {
 			if (!RoadVehicle::From(v)->IsRoadVehicleOnLevelCrossing()) v->cur_speed = 0;
 		} else if (v->type != VEH_TRAIN) {
 			v->cur_speed = 0; // trains can stop 'slowly'
 		}
-		if (v->type == VEH_TRAIN && !(v->vehstatus & VS_STOPPED) && v->cur_speed == 0 && Train::From(v)->lookahead != nullptr) {
+		if (v->type == VEH_TRAIN && !v->vehstatus.Test(VehState::Stopped) && v->cur_speed == 0 && Train::From(v)->lookahead != nullptr) {
 			/* Starting train from stationary with a lookahead, refresh it */
 			Train::From(v)->lookahead.reset();
 			FillTrainReservationLookAhead(Train::From(v));
@@ -731,7 +731,7 @@ CommandCost CmdMassStartStopVehicle(DoCommandFlags flags, TileIndex tile, bool d
 	}
 
 	for (const Vehicle *v : list) {
-		if (!!(v->vehstatus & VS_STOPPED) != do_start) continue;
+		if (v->vehstatus.Test(VehState::Stopped) != do_start) continue;
 
 		if (!vehicle_list_window && !v->IsChainInDepot()) continue;
 

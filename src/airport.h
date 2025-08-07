@@ -46,17 +46,19 @@ enum AirportTypes : uint8_t {
 };
 
 /** Flags for airport movement data. */
-enum AirportMovingDataFlags : uint16_t {
-	AMED_NOSPDCLAMP = 1 << 0, ///< No speed restrictions.
-	AMED_TAKEOFF    = 1 << 1, ///< Takeoff movement.
-	AMED_SLOWTURN   = 1 << 2, ///< Turn slowly (mostly used in the air).
-	AMED_LAND       = 1 << 3, ///< Landing onto landing strip.
-	AMED_EXACTPOS   = 1 << 4, ///< Go exactly to the destination coordinates.
-	AMED_BRAKE      = 1 << 5, ///< Taxiing at the airport.
-	AMED_HELI_RAISE = 1 << 6, ///< Helicopter take-off.
-	AMED_HELI_LOWER = 1 << 7, ///< Helicopter landing.
-	AMED_HOLD       = 1 << 8, ///< Holding pattern movement (above the airport).
+enum AirportMovingDataFlag : uint8_t {
+	NoSpeedClamp, ///< No speed restrictions.
+	Takeoff, ///< Takeoff movement.
+	SlowTurn, ///< Turn slowly (mostly used in the air).
+	Land, ///< Landing onto landing strip.
+	ExactPosition, ///< Go exactly to the destination coordinates.
+	Brake, ///< Taxiing at the airport.
+	HeliRaise, ///< Helicopter take-off.
+	HeliLower, ///< Helicopter landing.
+	Hold, ///< Holding pattern movement (above the airport).
 };
+
+using AirportMovingDataFlags = EnumBitSet<AirportMovingDataFlag, uint16_t>;
 
 /** Movement States on Airports (headings target) */
 enum AirportMovementStates : uint8_t {
@@ -133,10 +135,10 @@ using AirportBlocks = EnumBitSet<AirportBlock, uint64_t>;
 
 /** A single location on an airport where aircraft can move to. */
 struct AirportMovingData {
-	int16_t x;           ///< x-coordinate of the destination.
-	int16_t y;           ///< y-coordinate of the destination.
-	uint16_t flag;       ///< special flags when moving towards the destination.
-	Direction direction; ///< Direction to turn the aircraft after reaching the destination.
+	int16_t x;                    ///< x-coordinate of the destination.
+	int16_t y;                    ///< y-coordinate of the destination.
+	AirportMovingDataFlags flags; ///< special flags when moving towards the destination.
+	Direction direction;          ///< Direction to turn the aircraft after reaching the destination.
 };
 
 AirportMovingData RotateAirportMovingData(const AirportMovingData *orig, Direction rotation, uint num_tiles_x, uint num_tiles_y);

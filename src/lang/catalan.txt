@@ -842,7 +842,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Llista d
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Missatge
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Celebració popular{}El primer tren arriba a {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Celebració popular{}El primer autobús arriba a {STATION}!
@@ -4793,7 +4792,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Aquest h
 
 STR_TIMETABLE_START                                             :{BLACK}Comença l'horari
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Trieu quan ha de començar l'horari. Amb Ctrl+clic i si s'ha establert completament l'horari, es distribuirà l'inici de l'horari de tots els vehicles que comparteixen les ordres segons el seu ordre relatiu.
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Segons fins que comenci l'horari
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Canvia Temps

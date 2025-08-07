@@ -59,7 +59,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 
 	if (this->gcache.cached_power != total_power || this->gcache.cached_max_te != max_te) {
 		/* Stop the vehicle if it has no power. */
-		if (total_power == 0) this->vehstatus |= VS_STOPPED;
+		if (total_power == 0) this->vehstatus.Set(VehState::Stopped);
 
 		this->gcache.cached_power = total_power;
 		this->gcache.cached_max_te = max_te;

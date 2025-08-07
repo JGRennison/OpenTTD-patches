@@ -833,7 +833,6 @@ STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Eine Lis
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING} – {STRING}
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Mitteilung
-STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
 
 STR_NEWS_FIRST_TRAIN_ARRIVAL                                    :{BIG_FONT}{BLACK}Die Einwohner feiern . . .{}Der erste Zug erreicht {STATION}!
 STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLACK}Die Einwohner feiern . . .{}Der erste Bus erreicht {STATION}!
@@ -4749,7 +4748,6 @@ STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Dieser F
 
 STR_TIMETABLE_START                                             :{BLACK}Starte den Fahrplan
 STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Auswählen, wann dieser Zeitplan beginnt. Strg+Klick, um den Start aller Fahrzeuge, die diesen Auftrag teilen, basierend auf ihrem relativen Auftrag gleichmäßig zu verteilen, falls der Auftrag vollständig per Zeitplan festgelegt ist
-
 STR_TIMETABLE_START_SECONDS_QUERY                               :Sekunden bis der Fahrplan beginnt
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Zeit ändern

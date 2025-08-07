@@ -2254,7 +2254,7 @@ CommandCost CmdIndustrySetFlags(DoCommandFlags flags, IndustryID ind_id, Industr
  * @param custom_news Custom news message text.
  * @return Empty cost or an error.
  */
-CommandCost CmdIndustrySetProduction(DoCommandFlags flags, IndustryID ind_id, uint8_t prod_level, bool show_news, const std::string &custom_news)
+CommandCost CmdIndustrySetProduction(DoCommandFlags flags, IndustryID ind_id, uint8_t prod_level, bool show_news, const EncodedString &custom_news)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	if (prod_level < PRODLEVEL_MINIMUM || prod_level > PRODLEVEL_MAXIMUM) return CMD_ERROR;
@@ -2263,20 +2263,12 @@ CommandCost CmdIndustrySetProduction(DoCommandFlags flags, IndustryID ind_id, ui
 	if (ind == nullptr) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		StringID str = STR_NULL;
-		if (prod_level > ind->prod_level) {
-			str = GetIndustrySpec(ind->type)->production_up_text;
-		} else if (prod_level < ind->prod_level) {
-			str = GetIndustrySpec(ind->type)->production_down_text;
-		}
-		if (prod_level != ind->prod_level && !custom_news.empty()) str = STR_NEWS_CUSTOM_ITEM;
-
 		ind->ctlflags.Set(IndustryControlFlag::ExternalProdLevel);
 		ind->prod_level = prod_level;
 		ind->RecomputeProductionMultipliers();
 
 		/* Show news message if requested. */
-		if (show_news && str != STR_NULL) {
+		if (show_news && prod_level != ind->prod_level) {
 			NewsType nt;
 			switch (WhoCanServiceIndustry(ind)) {
 				case 0: nt = NewsType::IndustryNobody;  break;
@@ -2287,13 +2279,20 @@ CommandCost CmdIndustrySetProduction(DoCommandFlags flags, IndustryID ind_id, ui
 
 			/* Set parameters of news string */
 			EncodedString headline;
-			if (str == STR_NEWS_CUSTOM_ITEM) {
-				headline = GetEncodedString(str, custom_news);
-			} else if (str > STR_LAST_STRINGID) {
-				headline = GetEncodedString(str, STR_TOWN_NAME, ind->town->index, GetIndustrySpec(ind->type)->name);
+			if (!custom_news.empty()) {
+				headline = custom_news;
 			} else {
-				headline = GetEncodedString(str, ind->index);
+				StringID str = (prod_level > ind->prod_level)
+					? GetIndustrySpec(ind->type)->production_up_text
+					: GetIndustrySpec(ind->type)->production_down_text;
+
+				if (str > STR_LAST_STRINGID) {
+					headline = GetEncodedString(str, STR_TOWN_NAME, ind->town->index, GetIndustrySpec(ind->type)->name);
+				} else {
+					headline = GetEncodedString(str, ind->index);
+				}
 			}
+
 			AddIndustryNewsItem(std::move(headline), nt, ind->index);
 		}
 	}
@@ -2339,7 +2338,7 @@ CommandCost CmdIndustrySetExclusivity(DoCommandFlags flags, IndustryID ind_id, O
  * @param text - Additional industry text.
  * @return Empty cost or an error.
  */
-CommandCost CmdIndustrySetText(DoCommandFlags flags, IndustryID ind_id, const std::string &text)
+CommandCost CmdIndustrySetText(DoCommandFlags flags, IndustryID ind_id, const EncodedString &text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
