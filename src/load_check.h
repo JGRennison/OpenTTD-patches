@@ -26,22 +26,23 @@ using CompanyPropertiesMap = btree::btree_map<uint, std::unique_ptr<CompanyPrope
  * Container for loading in mode SL_LOAD_CHECK.
  */
 struct LoadCheckData {
-	bool checkable;     ///< True if the savegame could be checked by SL_LOAD_CHECK. (Old savegames are not checkable.)
-	StringID error;     ///< Error message from loading. INVALID_STRING_ID if no error.
-	std::string error_msg; ///< Data to show when displaying #error.
+	bool checkable = false; ///< True if the savegame could be checked by SL_LOAD_CHECK. (Old savegames are not checkable.)
+	StringID error{};       ///< Error message from loading. INVALID_STRING_ID if no error.
+	std::string error_msg;  ///< Data to show when displaying #error.
 
-	uint32_t map_size_x, map_size_y;
-	CalTime::Date current_date;
+	uint32_t map_size_x{};
+	uint32_t map_size_y{};
+	CalTime::Date current_date{};
 
-	GameSettings settings;
+	GameSettings settings{};
 
-	CompanyPropertiesMap companies;               ///< Company information.
+	CompanyPropertiesMap companies{};                       ///< Company information.
 
-	GRFConfigList grfconfig;                      ///< NewGrf configuration from save.
+	GRFConfigList grfconfig{};                              ///< NewGrf configuration from save.
 	bool want_grf_compatibility = true;
-	GRFListCompatibility grf_compatibility;       ///< Summary state of NewGrfs, whether missing files or only compatible found.
+	GRFListCompatibility grf_compatibility = GLC_NOT_FOUND; ///< Summary state of NewGrfs, whether missing files or only compatible found.
 
-	std::vector<LoggedAction> gamelog_actions;    ///< Gamelog actions
+	std::vector<LoggedAction> gamelog_actions;              ///< Gamelog actions
 
 	bool want_debug_data = false;
 	std::string debug_log_data;
@@ -50,7 +51,7 @@ struct LoadCheckData {
 	bool sl_is_ext_version = false;
 	std::string version_name;
 
-	LoadCheckData() : grf_compatibility(GLC_NOT_FOUND)
+	LoadCheckData() : grf_compatibility()
 	{
 		this->Clear();
 	}

@@ -18,10 +18,10 @@
 #include <vector>
 
 struct EngineIDMapping {
-	uint32_t grfid;          ///< The GRF ID of the file the entity belongs to
-	uint16_t internal_id;    ///< The internal ID within the GRF file
-	VehicleType type;        ///< The engine type
-	uint8_t  substitute_id;  ///< The (original) entity ID to use if this GRF is not available (currently not used)
+	uint32_t grfid = 0;        ///< The GRF ID of the file the entity belongs to
+	uint16_t internal_id = 0;  ///< The internal ID within the GRF file
+	VehicleType type{};        ///< The engine type
+	uint8_t substitute_id{};   ///< The (original) entity ID to use if this GRF is not available (currently not used)
 };
 
 /**

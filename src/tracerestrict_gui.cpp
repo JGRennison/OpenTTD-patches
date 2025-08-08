@@ -2471,9 +2471,9 @@ public:
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(record.instruction).value_type;
 				if (IsIntegerValueType(type)) {
 					std::string str = GetString(STR_JUST_INT, ConvertIntegerValue(type, record.instruction.GetValue(), true));
-					this->TraceRestrictShowQueryString(str, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(str, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, {});
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-					this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, record.secondary), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, record.secondary), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, {});
 				}
 				break;
 			}
@@ -2485,7 +2485,7 @@ public:
 					DecimalValue dv = ConvertValueToDecimal(type, item.GetValue());
 					std::string saved = std::move(_settings_game.locale.digit_group_separator);
 					_settings_game.locale.digit_group_separator.clear();
-					this->TraceRestrictShowQueryString(GetString(STR_JUST_DECIMAL, dv.value, dv.decimals), STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(GetString(STR_JUST_DECIMAL, dv.value, dv.decimals), STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, {});
 					_settings_game.locale.digit_group_separator = std::move(saved);
 				}
 				break;
@@ -2714,7 +2714,7 @@ public:
 				const TraceRestrictProgram *prog = this->GetProgram();
 				if (prog != nullptr) {
 					TraceRestrictInstructionItem item = this->GetSelected().instruction;
-					this->TraceRestrictShowQueryString(prog->GetLabel(item.GetValue()), STR_ORDER_LABEL_TEXT_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_SET_TEXT);
+					this->TraceRestrictShowQueryString(prog->GetLabel(item.GetValue()), STR_ORDER_LABEL_TEXT_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars, QSM_SET_TEXT);
 				}
 				break;
 			}
@@ -2814,7 +2814,7 @@ public:
 				return;
 			}
 			if (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_COUNTER_INDEX_INT && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
-				this->TraceRestrictShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS, QSM_NEW_COUNTER);
+				this->TraceRestrictShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars, QSM_NEW_COUNTER);
 				return;
 			}
 			if ((widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) || type.value_type == TRVT_GROUP_INDEX ||
@@ -2909,7 +2909,7 @@ public:
 						} else {
 							penalty_value = item.GetValue();
 						}
-						this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, penalty_value), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
+						this->TraceRestrictShowQueryString(GetString(STR_JUST_INT, penalty_value), STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, {});
 						return;
 					} else {
 						item.SetValue(value);
@@ -5115,9 +5115,9 @@ public:
 		this->qsm_mode = QuerySelectorMode::Rename;
 		this->slot_query = this->slot_sel;
 		if (this->slot_sel.type == SlotItemType::Slot) {
-			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 		} else if (this->slot_sel.type == SlotItemType::Group) {
-			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+			ShowQueryString(GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME, this->slot_sel.id), STR_TRACE_RESTRICT_SLOT_GROUP_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 		}
 	}
 
@@ -5126,7 +5126,7 @@ public:
 		if (this->slot_sel.type != SlotItemType::Slot) return;
 		this->qsm_mode = QuerySelectorMode::SetMaxOccupancy;
 		this->slot_query = this->slot_sel;
-		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictSlot::Get(this->slot_sel.id)->max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictSlot::Get(this->slot_sel.id)->max_occupancy), STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, 5, this, CS_NUMERAL, QueryStringFlag::EnableDefault);
 	}
 
 	void ShowCreateSlotWindow()
@@ -5140,7 +5140,7 @@ public:
 	{
 		this->qsm_mode = QuerySelectorMode::Rename;
 		this->slot_query = SlotItem::Make<SlotItemType::Group>(NEW_TRACE_RESTRICT_SLOT_GROUP);
-		ShowQueryString({}, STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString({}, STR_TRACE_RESTRICT_SLOT_GROUP_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 	}
 
 	/**
@@ -5529,7 +5529,7 @@ public:
 		assert(TraceRestrictCounter::IsValidID(ctr_id));
 		this->qto = QTO_RENAME;
 		this->ctr_qt_op = ctr_id;
-		ShowQueryString(GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString(GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 	}
 
 	void ShowSetCounterValueWindow(TraceRestrictCounterID ctr_id)
@@ -5537,14 +5537,14 @@ public:
 		assert(TraceRestrictCounter::IsValidID(ctr_id));
 		this->qto = QTO_SET_VALUE;
 		this->ctr_qt_op = ctr_id;
-		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictCounter::Get(ctr_id)->value), STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+		ShowQueryString(GetString(STR_JUST_INT, TraceRestrictCounter::Get(ctr_id)->value), STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION, 5, this, CS_NUMERAL, QueryStringFlag::EnableDefault);
 	}
 
 	void ShowCreateCounterWindow()
 	{
 		this->qto = QTO_RENAME;
 		this->ctr_qt_op = NEW_TRACE_RESTRICT_COUNTER_ID;
-		ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+		ShowQueryString({}, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 	}
 };
 
@@ -5585,5 +5585,5 @@ void ShowSlotCreationQueryString(Window &parent)
 		{{}, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_NAME, CS_ALPHANUMERAL, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS},
 		{occupancy, STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION, STR_TRACE_RESTRICT_SLOT_CREATE_SLOT_MAX_OCCUPANCY, CS_NUMERAL, 5},
 	}};
-	ShowQueryString(std::span(ed), STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, &parent, QSF_LEN_IN_CHARS);
+	ShowQueryString(std::span(ed), STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, &parent, QueryStringFlag::LengthIsInChars);
 }

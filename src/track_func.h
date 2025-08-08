@@ -605,7 +605,7 @@ inline TrackdirBits TrackdirReachesTrackdirs(Trackdir trackdir)
  */
 inline TrackdirBits TrackdirCrossesTrackdirs(Trackdir trackdir)
 {
-	dbg_assert(IsValidTrackdirForRoadVehicle(trackdir));
+	dbg_assert(IsValidTrackdir(trackdir));
 	extern const TrackdirBits _track_crosses_trackdirs[TRACK_END];
 	return _track_crosses_trackdirs[TrackdirToTrack(trackdir)];
 }

@@ -14,9 +14,9 @@
 
 class MusicDriver_ExtMidi : public MusicDriver {
 private:
-	std::vector<std::string> command_tokens;
-	std::string song;
-	pid_t pid;
+	std::vector<std::string> command_tokens{};
+	std::string song{};
+	pid_t pid = 0;
 	bool failed = false;
 
 	void DoPlay();

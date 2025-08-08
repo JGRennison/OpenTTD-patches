@@ -977,7 +977,7 @@ struct QueryStringWindow : public Window {
 	 */
 	static uint max_bytes(const QueryEditboxDescription &ed, QueryStringFlags flags)
 	{
-		return ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * ed.max_size;
+		return (flags.Test(QueryStringFlag::LengthIsInChars) ? MAX_CHAR_LENGTH : 1) * ed.max_size;
 	}
 
 	/**
@@ -1017,7 +1017,7 @@ private:
 			this->Window::flags.Set(WindowFlag::NoTabFastForward);
 		}
 
-		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) {
+		if (!flags.Test(QueryStringFlag::AcceptUnchanged)) {
 			for (QueryString &editbox : this->editboxes) {
 				editbox.orig = editbox.text.GetText();
 			}
@@ -1051,7 +1051,7 @@ private:
 public:
 	void UpdateWarningStringSize()
 	{
-		if (this->flags & QSF_PASSWORD) {
+		if (this->flags.Test(QueryStringFlag::Password)) {
 			assert(this->nested_root->smallest_x > 0);
 			this->warning_size.width = this->nested_root->current_x - WidgetDimensions::scaled.frametext.Horizontal() - WidgetDimensions::scaled.framerect.Horizontal();
 			this->warning_size.height = GetStringHeight(STR_WARNING_PASSWORD_SECURITY, this->warning_size.width);
@@ -1065,7 +1065,7 @@ public:
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		if (widget == WID_QS_DEFAULT && (this->flags & QSF_ENABLE_DEFAULT) == 0) {
+		if (widget == WID_QS_DEFAULT && !this->flags.Test(QueryStringFlag::EnableDefault)) {
 			/* We don't want this widget to show! */
 			fill.width = 0;
 			resize.width = 0;
@@ -1117,7 +1117,7 @@ public:
 	{
 		if (widget != WID_QS_WARNING) return;
 
-		if (this->flags & QSF_PASSWORD) {
+		if (this->flags.Test(QueryStringFlag::Password)) {
 			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.frametext),
 				STR_WARNING_PASSWORD_SECURITY, TC_FROMSTRING, SA_CENTER);
 		}

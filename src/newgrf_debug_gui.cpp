@@ -1033,7 +1033,7 @@ struct NewGRFInspectWindow final : Window {
 					if (!HasVariableParameter(niv)) break;
 
 					this->current_edit_param = niv.var;
-					ShowQueryString({}, STR_NEWGRF_INSPECT_QUERY_CAPTION, 9, this, CS_HEXADECIMAL, QSF_NONE);
+					ShowQueryString({}, STR_NEWGRF_INSPECT_QUERY_CAPTION, 9, this, CS_HEXADECIMAL, {});
 				}
 				break;
 			}
@@ -1132,7 +1132,7 @@ struct NewGRFInspectWindow final : Window {
 		switch (index) {
 			case NGIWDDO_GOTO_SPRITE:
 				this->current_edit_param = 0;
-				ShowQueryString({}, STR_SPRITE_ALIGNER_GOTO_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString({}, STR_SPRITE_ALIGNER_GOTO_CAPTION, 10, this, CS_NUMERAL, {});
 				break;
 			case NGIWDDO_CLEAR:
 				this->selected_highlight_tags.fill(0);
@@ -1650,7 +1650,7 @@ struct SpriteAlignerWindow : Window {
 				break;
 
 			case WID_SA_GOTO:
-				ShowQueryString({}, STR_SPRITE_ALIGNER_GOTO_CAPTION, 7, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString({}, STR_SPRITE_ALIGNER_GOTO_CAPTION, 7, this, CS_NUMERAL, {});
 				break;
 
 			case WID_SA_NEXT:

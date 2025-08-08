@@ -479,7 +479,7 @@ struct ScriptSettingsWindow : public Window {
 					}
 				} else if (!bool_item && !config_item.complete_labels) {
 					/* Display a query box so users can enter a custom value. */
-					ShowQueryString(GetString(STR_JUST_INT, old_val), STR_CONFIG_SETTING_QUERY_CAPTION, INT32_DIGITS_WITH_SIGN_AND_TERMINATION, this, CS_NUMERAL_SIGNED, QSF_NONE);
+					ShowQueryString(GetString(STR_JUST_INT, old_val), STR_CONFIG_SETTING_QUERY_CAPTION, INT32_DIGITS_WITH_SIGN_AND_TERMINATION, this, CS_NUMERAL_SIGNED, {});
 				}
 				this->SetDirty();
 				break;
@@ -832,8 +832,7 @@ struct ScriptDebugWindow : public Window {
 			return {};
 		}
 
-		const AIInfo *info = Company::GetIfValid(this->filter.script_debug_company)->ai_info;
-		assert(info != nullptr);
+		const AIInfo *info = Company::Get(this->filter.script_debug_company)->ai_info;
 		return GetString(STR_AI_DEBUG_NAME_AND_VERSION, info->GetName(), info->GetVersion());
 	}
 

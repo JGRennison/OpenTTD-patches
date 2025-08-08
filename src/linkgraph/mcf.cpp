@@ -82,7 +82,7 @@ static_assert(std::is_trivially_destructible_v<DistanceAnnotation>);
  * can only decrease or stay the same if you add more edges.
  */
 class CapacityAnnotation final : public Path {
-	int cached_annotation;
+	int cached_annotation = 0;
 
 public:
 	typedef int AnnotationValueType;

@@ -155,7 +155,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	int64_t speed = v->GetCurrentSpeed(); // [km/h-ish]
 
 	/* Weight is stored in tonnes. */
-	int32_t mass = this->gcache.cached_weight;
+	int64_t mass = this->gcache.cached_weight;
 
 	/* Power is stored in HP, we need it in watts.
 	 * Each vehicle can have U16 power, 128 vehicles, HP -> watt

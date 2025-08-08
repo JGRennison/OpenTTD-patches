@@ -915,7 +915,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_AUTOSAVE_DROPDOWN: // Autosave options
 				if (index == 5) {
 					this->current_query_text_item = QueryTextItem::AutosaveCustomRealTimeMinutes;
-					ShowQueryString(GetString(STR_JUST_INT, _settings_client.gui.autosave_interval), STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+					ShowQueryString(GetString(STR_JUST_INT, _settings_client.gui.autosave_interval), STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT, 4, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
 				} else {
 					_settings_client.gui.autosave_interval = _autosave_dropdown_to_minutes[index];
 					ChangeAutosaveFrequency(false);
@@ -1702,13 +1702,13 @@ struct GameSettingsWindow : Window {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
-					ShowQueryString(GetString(STR_JUST_DECIMAL, value64, 1), STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QSF_ENABLE_DEFAULT);
+					ShowQueryString(GetString(STR_JUST_DECIMAL, value64, 1), STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, charset_filter, QueryStringFlag::EnableDefault);
 				} else {
 					CharSetFilter charset_filter = CS_NUMERAL; //default, only numeric input allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_SIGNED; // special case, also allow '-' sign for negative input
 
 					/* Limit string length to 14 so that MAX_INT32 * max currency rate doesn't exceed MAX_INT64. */
-					ShowQueryString(GetString(STR_JUST_INT, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QSF_ENABLE_DEFAULT);
+					ShowQueryString(GetString(STR_JUST_INT, value64), STR_CONFIG_SETTING_QUERY_CAPTION, 15, this, charset_filter, QueryStringFlag::EnableDefault);
 				}
 			}
 			this->SetDisplayedHelpText(pe);
@@ -2118,7 +2118,7 @@ struct CustomCurrencyWindow : Window {
 
 		if (len != 0) {
 			this->query_widget = line;
-			ShowQueryString(str, STR_CURRENCY_CHANGE_PARAMETER, len + 1, this, afilter, QSF_NONE);
+			ShowQueryString(str, STR_CURRENCY_CHANGE_PARAMETER, len + 1, this, afilter, {});
 		}
 
 		this->SetTimeout();

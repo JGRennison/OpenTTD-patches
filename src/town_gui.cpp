@@ -700,7 +700,7 @@ public:
 				break;
 
 			case WID_TV_CHANGE_NAME: // rename
-				ShowQueryString(GetString(STR_TOWN_NAME, this->window_number), STR_TOWN_VIEW_RENAME_TOWN_BUTTON, MAX_LENGTH_TOWN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				ShowQueryString(GetString(STR_TOWN_NAME, this->window_number), STR_TOWN_VIEW_RENAME_TOWN_BUTTON, MAX_LENGTH_TOWN_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 				break;
 
 			case WID_TV_CATCHMENT:
@@ -1561,7 +1561,7 @@ public:
 
 			case WID_TF_MANY_RANDOM_TOWNS: {
 				std::string default_town_number = fmt::format("{}", GetDefaultTownsForMapSize());
-				ShowQueryString(default_town_number, STR_MAPGEN_NUMBER_OF_TOWNS, 5, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+				ShowQueryString(default_town_number, STR_MAPGEN_NUMBER_OF_TOWNS, 5, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
 				break;
 			}
 			case WID_TF_LOAD_FROM_FILE:
@@ -1937,8 +1937,8 @@ public:
 		}
 	}
 
-	HouseZones climate_mask;
-	uint8_t class_mask; ///< Mask of available 'classes'.
+	HouseZones climate_mask{};
+	uint8_t class_mask = 0; ///< Mask of available 'classes'.
 
 	static inline int sel_class; ///< Currently selected 'class'.
 	static inline int sel_type; ///< Currently selected HouseID.

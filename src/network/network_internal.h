@@ -110,17 +110,14 @@ struct NetworkSharedSecrets {
  */
 template <typename T>
 struct GeneralCommandPacket {
-	/** Make sure the pointer is nullptr. */
-	GeneralCommandPacket() : frame(0), client_id(INVALID_CLIENT_ID), company(CompanyID::Invalid()), my_cmd(false) {}
+	uint32_t frame = 0;                       ///< the frame in which this packet is executed
+	ClientID client_id = INVALID_CLIENT_ID;   ///< originating client ID (or INVALID_CLIENT_ID if not specified)
+	CompanyID company = CompanyID::Invalid(); ///< company that is executing the command
+	bool my_cmd = false;                      ///< did the command originate from "me"
 
-	uint32_t frame;      ///< the frame in which this packet is executed
-	ClientID client_id;  ///< originating client ID (or INVALID_CLIENT_ID if not specified)
-	CompanyID company;   ///< company that is executing the command
-	bool my_cmd;         ///< did the command originate from "me"
-
-	T command_container;              ///< command being executed.
-	CommandCallback callback;         ///< any callback function executed upon successful completion of the command.
-	CallbackParameter callback_param; ///< arbitrary data associated with callback.
+	T command_container{};              ///< command being executed.
+	CommandCallback callback{};         ///< any callback function executed upon successful completion of the command.
+	CallbackParameter callback_param{}; ///< arbitrary data associated with callback.
 };
 
 struct CommandPacket : public GeneralCommandPacket<DynBaseCommandContainer> {};

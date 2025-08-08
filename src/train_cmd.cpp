@@ -361,7 +361,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		}
 
 		uint16_t new_cap = e_u->DetermineCapacity(u);
-		if (allowed_changes & CCF_CAPACITY) {
+		if (allowed_changes.Test(ConsistChangeFlag::Capacity)) {
 			/* Update vehicle capacity. */
 			if (u->cargo_cap > new_cap) u->cargo.Truncate(new_cap);
 			u->refit_cap = std::min(new_cap, u->refit_cap);
@@ -388,7 +388,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		if (veh_len == CALLBACK_FAILED) veh_len = rvi_u->shorten_factor;
 		veh_len = VEHICLE_LENGTH - Clamp(veh_len, 0, VEHICLE_LENGTH - 1);
 
-		if (allowed_changes & CCF_LENGTH) {
+		if (allowed_changes.Test(ConsistChangeFlag::Length)) {
 			/* Update vehicle length. */
 			u->gcache.cached_veh_length = veh_len;
 		} else {
@@ -418,7 +418,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index.base());
 	}
-	if (allowed_changes & CCF_LENGTH) {
+	if (allowed_changes.Test(ConsistChangeFlag::Length)) {
 		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
 			u->vcache.cached_max_speed = 0;
 			u->gcache.cached_weight = 0;

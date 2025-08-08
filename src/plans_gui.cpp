@@ -286,7 +286,7 @@ public:
 			case WID_PLN_RENAME: {
 				if (_current_plan != nullptr) {
 					ShowQueryString(_current_plan->GetName(), STR_PLANS_QUERY_RENAME_PLAN,
-						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
 				}
 				break;
 			}
