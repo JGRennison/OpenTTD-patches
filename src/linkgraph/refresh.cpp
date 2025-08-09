@@ -319,8 +319,8 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 			}
 
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
-			EdgeUpdateMode restricted_mode = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
-						EUM_UNRESTRICTED : EUM_RESTRICTED;
+			EdgeUpdateModes restricted_modes = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
+						EdgeUpdateMode::Unrestricted : EdgeUpdateMode::Restricted;
 			/* This estimates the travel time of the link as the time needed
 			 * to travel between the stations at half the max speed of the consist.
 			 * The result is in tiles/tick (= 2048 km-ish/h). */
@@ -333,7 +333,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 				time_estimate = Clamp<uint32_t>(travel_estimate, time_estimate / 3, time_estimate * 2);
 			}
 
-			if (HasBit(flags, AIRCRAFT)) restricted_mode |= EUM_AIRCRAFT;
+			if (HasBit(flags, AIRCRAFT)) restricted_modes.Set(EdgeUpdateMode::Aircraft);
 
 			/* If the vehicle is currently full loading, increase the capacities at the station
 			 * where it is loading by an estimate of what it would have transported if it wasn't
@@ -348,14 +348,14 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 				if (effective_capacity > (uint)this->vehicle->orders->GetTotalDuration()) {
 					IncreaseStats(st, c, next_station, effective_capacity /
 							this->vehicle->orders->GetTotalDuration(), 0, 0,
-							EUM_INCREASE | restricted_mode);
+							EdgeUpdateModes{EdgeUpdateMode::Increase} | restricted_modes);
 				} else if (RandomRange(this->vehicle->orders->GetTotalDuration()) < effective_capacity) {
-					IncreaseStats(st, c, next_station, 1, 0, 0, EUM_INCREASE | restricted_mode);
+					IncreaseStats(st, c, next_station, 1, 0, 0, EdgeUpdateModes{EdgeUpdateMode::Increase} | restricted_modes);
 				} else {
-					IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EUM_REFRESH | restricted_mode);
+					IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
 				}
 			} else {
-				IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EUM_REFRESH | restricted_mode);
+				IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
 			}
 		}
 	}

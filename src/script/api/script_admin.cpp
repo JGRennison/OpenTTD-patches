@@ -92,7 +92,7 @@ bool ScriptAdminMakeJSON(nlohmann::json &json, HSQUIRRELVM vm, SQInteger index, 
 					return false;
 				}
 
-				json[key] = value;
+				json[std::move(key)] = std::move(value);
 			}
 			sq_pop(vm, 1);
 			return true;

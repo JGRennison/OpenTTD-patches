@@ -426,7 +426,7 @@ static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
  * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @return true iff the screenshot was made successfully
  */
-static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32_t width, uint32_t height)
+static bool RealMakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width, uint32_t height)
 {
 	if (t == SC_VIEWPORT) {
 		/* First draw the dirty parts of the screen and only then change the name
@@ -502,7 +502,7 @@ static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32_t widt
  * @return true iff the screenshot was successfully made.
  * @see MakeScreenshotWithConfirm
  */
-bool MakeScreenshot(ScreenshotType t, std::string name, uint32_t width, uint32_t height)
+bool MakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width, uint32_t height)
 {
 	if (t == SC_CRASHLOG) {
 		/* Video buffer might or might not be locked. */

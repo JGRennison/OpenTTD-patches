@@ -22,6 +22,11 @@
  * \li AIEventVehicleCrashed::GetVehicleOwner
  * \li AIEventCompanyRenamed
  * \li AIEventPresidentRenamed
+ * \li AICargo::CC_OVERSIZED
+ * \li AICargo::CC_POWDERIZED
+ * \li AICargo::CC_NON_POURABLE
+ * \li AICargo::CC_POTABLE
+ * \li AICargo::CC_NON_POTABLE
  *
  * Other changes:
  * \li AIBridge::GetBridgeID renamed to AIBridge::GetBridgeType

@@ -1512,7 +1512,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 							break;
 						}
 						/* Otherwise skip to the next case */
-						str += 3 + (str[1] << 8) + str[2];
+						str += 3 + (static_cast<uint8_t>(str[1]) << 8) + static_cast<uint8_t>(str[2]);
 						num--;
 					}
 					break;
@@ -2620,7 +2620,7 @@ static void GetLanguageList(const char *path)
 			} else if (GetLanguage(lmd.newgrflangid) != nullptr) {
 				Debug(misc, 3, "{}'s language ID is already known", lmd.file);
 			} else {
-				_languages.push_back(lmd);
+				_languages.push_back(std::move(lmd));
 			}
 		}
 		closedir(dir);
@@ -2805,7 +2805,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 
 		bad_font = !SetFallbackFont(&_fcsettings, _langpack.langpack->isocode, searcher);
 
-		_fcsettings = backup;
+		_fcsettings = std::move(backup);
 
 		if (!bad_font && any_font_configured) {
 			/* If the user configured a bad font, and we found a better one,

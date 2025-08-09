@@ -197,7 +197,7 @@ void ReindexTemplateReplacements();
 
 /**
  * Guard to inhibit re-indexing of the recursive group to template replacement cache,
- * and to disable group-based VF_REPLACEMENT_PENDING changes.
+ * and to disable group-based VehicleFlag::ReplacementPending changes.
  * May be used recursively.
  */
 struct ReindexTemplateReplacementsRecursiveGuard {

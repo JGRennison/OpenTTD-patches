@@ -343,7 +343,7 @@ template <typename F>
 void IterateSlotGroupSlotsWithFilters(const TraceRestrictSlotGroup *sg, Owner owner, const Vehicle *v, std::span<const TraceRestrictSlotTemporaryState * const> temp_changes, F func)
 {
 	if (sg->contained_slots.empty()) return;
-	if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT) && temp_changes.empty()) return;
+	if (!v->vehicle_flags.Test(VehicleFlag::HaveSlot) && temp_changes.empty()) return;
 
 	ankerl::svector<TraceRestrictSlotID, 8> filter_slots;
 	const VehicleID veh_id = v->index;
@@ -653,7 +653,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRTSVF_LOST:
-								has_status = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST);
+								has_status = v->vehicle_flags.Test(VehicleFlag::PathfinderLost);
 								break;
 
 							case TRTSVF_REQUIRES_SERVICE:
@@ -3000,7 +3000,7 @@ void TraceRestrictSlot::RemoveFromParentGroups()
 void TraceRestrictSlot::AddIndex(const Vehicle *v)
 {
 	_slot_vehicle_index.insert({ v->index, this->index });
-	SetBit(const_cast<Vehicle *>(v)->vehicle_flags, VF_HAVE_SLOT);
+	const_cast<Vehicle *>(v)->vehicle_flags.Set(VehicleFlag::HaveSlot);
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 
@@ -3023,7 +3023,7 @@ void TraceRestrictSlot::DeIndex(VehicleID id, const Vehicle *v)
 			if (is_first_in_range && (next == _slot_vehicle_index.end() || next->first != id)) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
 				if (v == nullptr) v = Vehicle::Get(id);
-				ClrBit(const_cast<Vehicle *>(v)->vehicle_flags, VF_HAVE_SLOT);
+				const_cast<Vehicle *>(v)->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 			}
 			break;
 		}
@@ -3068,7 +3068,7 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(std::string_vie
 			if (v != nullptr) {
 				if (v->type != slot->vehicle_type) cclog("Slot {} ({}) has wrong vehicle type ({}, {}): {}", slot->index, slot->name, v->type, slot->vehicle_type, VehicleInfoDumper(v));
 				if (!v->IsPrimaryVehicle()) cclog("Slot {} ({}) has non-primary vehicle: {}", slot->index, slot->name, VehicleInfoDumper(v));
-				if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT)) cclog("Slot {} ({}) has vehicle without VF_HAVE_SLOT: {}", slot->index, slot->name, VehicleInfoDumper(v));
+				if (!v->vehicle_flags.Test(VehicleFlag::HaveSlot)) cclog("Slot {} ({}) has vehicle without HasSlot: {}", slot->index, slot->name, VehicleInfoDumper(v));
 			} else {
 				cclog("Slot {} ({}) has non-existent vehicle ID: {}", slot->index, slot->name, id);
 			}

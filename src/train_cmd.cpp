@@ -1667,10 +1667,10 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 
-		if (e->flags.Test(EngineFlag::ExclusivePreview)) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
+		if (e->flags.Test(EngineFlag::ExclusivePreview)) v->vehicle_flags.Set(VehicleFlag::BuiltAsPrototype);
 		v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
-		AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
-		AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
+		v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
+		v->vehicle_flags.Set(VehicleFlag::TimetableSeparation, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
 		v->group_id = DEFAULT_GROUP;
 
@@ -2259,11 +2259,11 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 			if (!_settings_game.vehicle.non_leading_engines_keep_name) {
 				src->name.clear();
 			}
-			if (HasBit(src->vehicle_flags, VF_HAVE_SLOT)) {
+			if (src->vehicle_flags.Test(VehicleFlag::HaveSlot)) {
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);
-				ClrBit(src->vehicle_flags, VF_HAVE_SLOT);
+				src->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 			}
-			ClrBit(src->vehicle_flags, VF_REPLACEMENT_PENDING);
+			src->vehicle_flags.Reset(VehicleFlag::ReplacementPending);
 			OrderBackup::ClearVehicle(src);
 		}
 
@@ -2290,11 +2290,11 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 
 		if (src_head != nullptr) {
 			src_head->last_loading_station = StationID::Invalid();
-			ClrBit(src_head->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			src_head->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
 		}
 		if (dst_head != nullptr) {
 			dst_head->last_loading_station = StationID::Invalid();
-			ClrBit(dst_head->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			dst_head->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
 		}
 
 		if (src_head != nullptr) src_head->First()->MarkDirty();
@@ -7177,8 +7177,8 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 
 	v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 	v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
-	AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
-	AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
+	v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
+	v->vehicle_flags.Set(VehicleFlag::TimetableSeparation, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
 	v->railtype = rvi->railtype;
 

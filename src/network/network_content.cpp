@@ -348,7 +348,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentHTTP(const Conten
 
 	this->http_response_index = -1;
 
-	NetworkHTTPSocketHandler::Connect(NetworkContentMirrorUriString(), this, content_request);
+	NetworkHTTPSocketHandler::Connect(NetworkContentMirrorUriString(), this, std::move(content_request));
 }
 
 /**

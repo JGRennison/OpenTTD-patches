@@ -26,8 +26,9 @@ typedef GUIList<const Vehicle*, std::nullptr_t, CargoType> GUIVehicleList;
 
 inline uint32_t GetVehicleTimetableTypeSortKey(const Vehicle *v)
 {
-	uint32_t result = v->vehicle_flags & GetBitMaskBN<uint32_t>(VF_TIMETABLE_SEPARATION, VF_AUTOMATE_TIMETABLE, VF_AUTOFILL_TIMETABLE, VF_SCHEDULED_DISPATCH);
-	return std::rotr(result, VF_AUTOMATE_TIMETABLE); // Move automate bit to LSB (least important for sorting)
+	constexpr VehicleFlags mask{VehicleFlag::TimetableSeparation, VehicleFlag::AutomateTimetable, VehicleFlag::AutofillTimetable, VehicleFlag::ScheduledDispatch};
+	uint32_t result = v->vehicle_flags.base() & mask.base();
+	return std::rotr(result, to_underlying(VehicleFlag::AutomateTimetable)); // Move automate bit to LSB (least important for sorting)
 }
 
 struct GUIVehicleGroup {

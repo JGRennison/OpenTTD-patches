@@ -43,11 +43,11 @@ CommandCost CmdSchDispatch(DoCommandFlags flags, VehicleID veh, bool enable)
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (enable && (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
+	if (enable && (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-			AssignBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH, enable);
+			v2->vehicle_flags.Set(VehicleFlag::ScheduledDispatch, enable);
 		}
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}

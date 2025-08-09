@@ -1117,7 +1117,7 @@ struct NetworkStartServerWindow : public Window {
 		std::string str{this->name_editbox.text.GetText()};
 		if (!NetworkValidateServerName(str)) return false;
 
-		SetSettingValue(GetSettingFromName("network.server_name")->AsStringSetting(), str);
+		SetSettingValue(GetSettingFromName("network.server_name")->AsStringSetting(), std::move(str));
 		return true;
 	}
 
@@ -2204,7 +2204,7 @@ void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAut
 {
 	NetworkJoinStatusWindow *w = dynamic_cast<NetworkJoinStatusWindow *>(FindWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN));
 	if (w == nullptr) return;
-	w->request = request;
+	w->request = std::move(request);
 
 	StringID caption;
 	switch (npt) {

@@ -1994,16 +1994,16 @@ static int GetUnitNumberWidth(int digits)
 static std::string GetVehicleTimetableGroupString(const Vehicle *v)
 {
 	format_buffer buffer;
-	auto add_flag = [&](uint8_t flag, StringID str) {
-		if (HasBit(v->vehicle_flags, flag)) {
+	auto add_flag = [&](VehicleFlag flag, StringID str) {
+		if (v->vehicle_flags.Test(flag)) {
 			auto tmp_params = MakeParameters(str);
 			GetStringWithArgs(StringBuilder(buffer), buffer.empty() ? STR_JUST_STRING : STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM, tmp_params);
 		}
 	};
-	add_flag(VF_SCHEDULED_DISPATCH, STR_TIMETABLE_SCHEDULED_DISPATCH);
-	add_flag(VF_TIMETABLE_SEPARATION, STR_TIMETABLE_AUTO_SEPARATION);
-	add_flag(VF_AUTOFILL_TIMETABLE, STR_TIMETABLE_AUTOFILL);
-	add_flag(VF_AUTOMATE_TIMETABLE, STR_TIMETABLE_AUTOMATE);
+	add_flag(VehicleFlag::ScheduledDispatch, STR_TIMETABLE_SCHEDULED_DISPATCH);
+	add_flag(VehicleFlag::TimetableSeparation, STR_TIMETABLE_AUTO_SEPARATION);
+	add_flag(VehicleFlag::AutofillTimetable, STR_TIMETABLE_AUTOFILL);
+	add_flag(VehicleFlag::AutomateTimetable, STR_TIMETABLE_AUTOMATE);
 	return buffer.to_string();
 }
 
@@ -2199,7 +2199,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			case GB_NONE: {
 				const Vehicle *v = vehgroup.GetSingleVehicle();
 
-				if (HasBit(v->vehicle_flags, VF_PATHFINDER_LOST)) {
+				if (v->vehicle_flags.Test(VehicleFlag::PathfinderLost)) {
 					DrawSprite(SPR_WARNING_SIGN, PAL_NONE, vehicle_button_x, ir.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal + profit.height);
 				}
 
@@ -3133,7 +3133,7 @@ struct VehicleDetailsWindow : Window {
 
 	bool ShouldShowSlotsLine(const Vehicle *v) const
 	{
-		return HasBit(v->vehicle_flags, VF_HAVE_SLOT);
+		return v->vehicle_flags.Test(VehicleFlag::HaveSlot);
 	}
 
 	bool ShouldShowSpeedRestrictionLine(const Vehicle *v) const
@@ -3543,7 +3543,7 @@ struct VehicleDetailsWindow : Window {
 			WID_VD_INCREASE_SERVICING_INTERVAL,
 			WID_VD_DECREASE_SERVICING_INTERVAL);
 
-		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN && !HasBit(v->vehicle_flags, VF_HAVE_SLOT));
+		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN && !v->vehicle_flags.Test(VehicleFlag::HaveSlot));
 
 		std::span<const StringID> texts = GetServiceIntervalDropDownTexts();
 		StringID str = !v->ServiceIntervalIsCustom() ? texts[0] : (v->ServiceIntervalIsPercent() ? texts[2] : texts[1]);
@@ -3604,7 +3604,7 @@ struct VehicleDetailsWindow : Window {
 					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION, VDWDDA_CLEAR_SPEED_RESTRICTION, !change_allowed || Train::From(v)->speed_restriction == 0));
 					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION, VDWDDA_SET_SPEED_RESTRICTION, !change_allowed));
 				}
-				if (HasBit(v->vehicle_flags, VF_HAVE_SLOT)) {
+				if (v->vehicle_flags.Test(VehicleFlag::HaveSlot)) {
 					if (!list.empty()) list.push_back(MakeDropDownListDividerItem());
 					list.push_back(std::make_unique<DropDownUnselectable<DropDownListStringItem>>(GetString(STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT), -1));
 
@@ -4154,7 +4154,7 @@ public:
 				case OT_GOTO_STATION: {
 					show_order_number();
 					text_colour = TC_LIGHT_BLUE;
-					append(HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL,
+					append(v->vehicle_flags.Test(VehicleFlag::PathfinderLost) ? STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL,
 							v->current_order.GetDestination().ToStationID(), PackVelocity(v->GetDisplaySpeed(), v->type));
 					break;
 				}
@@ -4174,11 +4174,11 @@ public:
 					} else if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
 						append_args(STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL, params);
 					} else if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
-						append_args(HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL, params);
+						append_args(v->vehicle_flags.Test(VehicleFlag::PathfinderLost) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL, params);
 					} else if (v->current_order.GetDepotActionType() & ODATFB_UNBUNCH) {
-						append_args(HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL, params);
+						append_args(v->vehicle_flags.Test(VehicleFlag::PathfinderLost) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL, params);
 					} else {
-						append_args(HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL, params);
+						append_args(v->vehicle_flags.Test(VehicleFlag::PathfinderLost) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL, params);
 					}
 					break;
 				}
@@ -4195,7 +4195,7 @@ public:
 					show_order_number();
 					text_colour = TC_LIGHT_BLUE;
 					assert(v->type == VEH_TRAIN || v->type == VEH_ROAD || v->type == VEH_SHIP);
-					append(HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL,
+					append(v->vehicle_flags.Test(VehicleFlag::PathfinderLost) ? STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL,
 							v->current_order.GetDestination().ToStationID(), PackVelocity(v->GetDisplaySpeed(), v->type));
 					break;
 				}
@@ -4242,7 +4242,7 @@ public:
 		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 		const Vehicle *v = Vehicle::Get(this->window_number);
-		SpriteID image = v->vehstatus.Test(VehState::Stopped) ? SPR_FLAG_VEH_STOPPED : (HasBit(v->vehicle_flags, VF_PATHFINDER_LOST)) ? SPR_WARNING_SIGN : SPR_FLAG_VEH_RUNNING;
+		SpriteID image = v->vehstatus.Test(VehState::Stopped) ? SPR_FLAG_VEH_STOPPED : (v->vehicle_flags.Test(VehicleFlag::PathfinderLost)) ? SPR_WARNING_SIGN : SPR_FLAG_VEH_RUNNING;
 		DrawSpriteIgnorePadding(image, PAL_NONE, tr.WithWidth(icon_width, rtl), SA_CENTER);
 
 		tr = tr.Indent(icon_width + WidgetDimensions::scaled.imgbtn.Horizontal(), rtl);

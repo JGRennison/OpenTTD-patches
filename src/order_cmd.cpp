@@ -1409,8 +1409,8 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
 {
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Clear scheduled dispatch flag if any */
-		if (HasBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-			ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+		if (dst->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
+			dst->vehicle_flags.Reset(VehicleFlag::ScheduledDispatch);
 		}
 
 		DeleteVehicleOrders(dst);
@@ -1467,7 +1467,7 @@ CommandCost CmdDeleteOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderI
 static void CancelLoadingDueToDeletedOrder(Vehicle *v)
 {
 	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
-		SetBit(v->vehicle_flags, VF_LOADING_FINISHED);
+		v->vehicle_flags.Set(VehicleFlag::LoadingFinished);
 		return;
 	}
 
@@ -1587,7 +1587,7 @@ CommandCost CmdSkipToOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderI
 		InvalidateVehicleOrder(v, VIWD_MODIFY_ORDERS);
 
 		v->ClearSeparation();
-		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
+		if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) v->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 		/* We have an aircraft/ship, they have a mini-schedule, so update them all */
 		if (v->type == VEH_AIRCRAFT || v->type == VEH_SHIP) DirtyVehicleListWindowForVehicle(v);
@@ -1881,8 +1881,8 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				/* Only one unbunching order is allowed in a vehicle's orders. If this order already has an unbunching action, no error is needed. */
 				if (v->HasUnbunchingOrder() && !(order->GetDepotActionType() & ODATFB_UNBUNCH)) return CommandCost(STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
 
-				if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH);
-				if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION);
+				if (v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH);
+				if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION);
 
 				/* We don't allow unbunching if the vehicle has a conditional order. */
 				if (v->HasConditionalOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
@@ -2639,32 +2639,31 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 
 
 				/* Set automation bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
-					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+				if (src->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
+					dst->vehicle_flags.Set(VehicleFlag::AutomateTimetable);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+					dst->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
 				}
 				/* Set auto separation bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-					SetBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				if (src->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+					dst->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+					dst->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 				}
 				/* Set manual dispatch bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-					SetBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				if (src->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
+					dst->vehicle_flags.Set(VehicleFlag::ScheduledDispatch);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+					dst->vehicle_flags.Reset(VehicleFlag::ScheduledDispatch);
 				}
-				ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-				ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+				dst->vehicle_flags.Reset(VehicleFlag::AutofillTimetable);
+				dst->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
 
 				dst->ClearSeparation();
-				if (HasBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
+				if (dst->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) dst->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 				InvalidateVehicleOrder(src, VIWD_MODIFY_ORDERS);
-
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
@@ -2740,24 +2739,24 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 				}
 
 				/* Set automation bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
-					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
-					ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-					ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+				if (src->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
+					dst->vehicle_flags.Set(VehicleFlag::AutomateTimetable);
+					dst->vehicle_flags.Reset(VehicleFlag::AutofillTimetable);
+					dst->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+					dst->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
 				}
 				/* Set auto separation bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-					SetBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				if (src->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+					dst->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+					dst->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 				}
 				/* Set manual dispatch bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-					SetBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				if (src->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
+					dst->vehicle_flags.Set(VehicleFlag::ScheduledDispatch);
 				} else {
-					ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+					dst->vehicle_flags.Reset(VehicleFlag::ScheduledDispatch);
 				}
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
@@ -3870,7 +3869,7 @@ bool ProcessOrders(Vehicle *v)
 	 */
 	bool may_reverse = v->current_order.IsType(OT_NOTHING);
 
-	ClrBit(v->vehicle_flags, VF_COND_ORDER_WAIT);
+	v->vehicle_flags.Reset(VehicleFlag::ConditionalOrderWait);
 
 	/* Check if we've reached a 'via' destination. */
 	if (((v->current_order.IsType(OT_GOTO_STATION) && (v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||

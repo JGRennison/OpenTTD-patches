@@ -210,7 +210,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		Ship::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus.Reset(VehState::AircraftBroken);
-	ClrBit(v->vehicle_flags, VF_REPLACEMENT_PENDING);
+	v->vehicle_flags.Test(VehicleFlag::ReplacementPending);
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
 	do {
@@ -264,7 +264,7 @@ bool Vehicle::NeedsServicing() const
 		needs_service = false;
 	}
 
-	if (!needs_service && !HasBit(this->vehicle_flags, VF_REPLACEMENT_PENDING)) {
+	if (!needs_service && !this->vehicle_flags.Test(VehicleFlag::ReplacementPending)) {
 		return false;
 	}
 
@@ -384,7 +384,7 @@ uint Vehicle::Crash(bool)
 	}
 
 	this->ClearSeparation();
-	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+	this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 
 	/* Dirty some windows */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
@@ -1148,10 +1148,10 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 {
 	if (path_found) {
 		/* Route found, is the vehicle marked with "lost" flag? */
-		if (!HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
+		if (!this->vehicle_flags.Test(VehicleFlag::PathfinderLost)) return;
 
 		/* Clear the flag as the PF's problem was solved. */
-		ClrBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		this->vehicle_flags.Reset(VehicleFlag::PathfinderLost);
 		if (this->type == VEH_SHIP) {
 			Ship::From(this)->lost_count = 0;
 		}
@@ -1164,7 +1164,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 		return;
 	}
 
-	if (!HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) {
+	if (!this->vehicle_flags.Test(VehicleFlag::PathfinderLost)) {
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 		DirtyVehicleListWindowForVehicle(this);
 	}
@@ -1173,16 +1173,16 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 	this->ResetDepotUnbunching();
 
 	if (this->type == VEH_SHIP) {
-		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		this->vehicle_flags.Set(VehicleFlag::PathfinderLost);
 		if (Ship::From(this)->lost_count == 255) return;
 		Ship::From(this)->lost_count++;
 		if (Ship::From(this)->lost_count != 16) return;
 	} else {
 		/* Were we already lost? */
-		if (HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
+		if (this->vehicle_flags.Test(VehicleFlag::PathfinderLost)) return;
 
 		/* It is first time the problem occurred, set the "lost" flag. */
-		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		this->vehicle_flags.Set(VehicleFlag::PathfinderLost);
 	}
 
 	/* Notify user about the event. */
@@ -1245,9 +1245,9 @@ void Vehicle::PreDestructor()
 		ReleaseDisasterVehicleTargetingVehicle(this->index);
 	}
 
-	if (HasBit(this->vehicle_flags, VF_HAVE_SLOT)) {
+	if (this->vehicle_flags.Test(VehicleFlag::HaveSlot)) {
 		TraceRestrictRemoveVehicleFromAllSlots(this->index);
-		ClrBit(this->vehicle_flags, VF_HAVE_SLOT);
+		this->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 	}
 	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
 		_pending_speed_restriction_change_map.erase(this->index);
@@ -2623,10 +2623,10 @@ uint8_t CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 		count += v->cargo.StoredCount();
 		max += v->cargo_cap;
 		if (v->cargo_cap != 0 && colour != nullptr) {
-			unloading += HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) ? 1 : 0;
+			unloading += v->vehicle_flags.Test(VehicleFlag::CargoUnloading) ? 1 : 0;
 			loading |= !order_no_load &&
 					(order_full_load || st->goods[v->cargo_type].HasRating()) &&
-					!HasBit(front->vehicle_flags, VF_LOADING_FINISHED) && !HasBit(front->vehicle_flags, VF_STOP_LOADING);
+					!front->vehicle_flags.Test(VehicleFlag::LoadingFinished) && !front->vehicle_flags.Test(VehicleFlag::StopLoading);
 			cars++;
 		}
 	}
@@ -2817,7 +2817,7 @@ void VehicleEnterDepot(Vehicle *v)
 			 * before the stop to the station after the stop can't be predicted
 			 * we shouldn't construct it when the vehicle visits the next stop. */
 			v->last_loading_station = StationID::Invalid();
-			ClrBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			v->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
 
 			/* Clear unbunching data. */
 			v->ResetDepotUnbunching();
@@ -3375,8 +3375,8 @@ void Vehicle::DeleteUnreachedImplicitOrders()
 static void VehicleIncreaseStats(const Vehicle *front)
 {
 	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
-		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
-		StateTicks loading_tick = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_tick : front->last_loading_tick;
+		StationID last_loading_station = front->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? v->last_loading_station : front->last_loading_station;
+		StateTicks loading_tick = front->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? v->last_loading_tick : front->last_loading_tick;
 		if (v->refit_cap > 0 &&
 				last_loading_station != StationID::Invalid() &&
 				last_loading_station != front->last_station_visited &&
@@ -3388,10 +3388,10 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			 * among the wagons in that case.
 			 * As usage is not such an important figure anyway we just
 			 * ignore the additional cargo then.*/
-			EdgeUpdateMode restricted_mode = EUM_INCREASE;
-			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
+			EdgeUpdateModes restricted_modes{EdgeUpdateMode::Increase};
+			if (v->type == VEH_AIRCRAFT) restricted_modes.Set(EdgeUpdateMode::Aircraft);
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), (_state_ticks - loading_tick).AsTicksT<uint32_t>(), restricted_mode);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), (_state_ticks - loading_tick).AsTicksT<uint32_t>(), restricted_modes);
 		}
 	}
 }
@@ -3546,7 +3546,7 @@ void Vehicle::CancelReservation(StationID next, Station *st)
 
 CargoTypes Vehicle::GetLastLoadingStationValidCargoMask() const
 {
-	if (!HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP)) {
+	if (!this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate)) {
 		return (this->last_loading_station != StationID::Invalid()) ? ALL_CARGOTYPES : 0;
 	} else {
 		CargoTypes cargo_mask = 0;
@@ -3570,8 +3570,8 @@ void Vehicle::LeaveStation()
 	delete this->cargo_payment;
 	dbg_assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
 
-	ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
-	ClrBit(this->vehicle_flags, VF_STOP_LOADING);
+	this->vehicle_flags.Reset(VehicleFlag::ConditionalOrderWait);
+	this->vehicle_flags.Reset(VehicleFlag::StopLoading);
 
 	TileIndex station_tile = INVALID_TILE;
 
@@ -3580,7 +3580,7 @@ void Vehicle::LeaveStation()
 		for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
 			ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
 			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
-			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
+			v->vehicle_flags.Reset(VehicleFlag::CargoUnloading);
 		}
 	}
 
@@ -3610,14 +3610,14 @@ void Vehicle::LeaveStation()
 			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
 			this->last_loading_station = this->last_station_visited;
 			this->last_loading_tick = _state_ticks;
-			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			this->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
 		} else if (cargoes_can_leave_with_cargo == 0) {
 			/* can leave with no cargoes */
 
 			/* if the vehicle couldn't load and had to unload or transfer everything
 			 * set the last loading station to invalid as it will leave empty. */
 			this->last_loading_station = StationID::Invalid();
-			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			this->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
 		} else {
 			/* mix of cargoes loadable or could not leave with all cargoes */
 
@@ -3625,8 +3625,8 @@ void Vehicle::LeaveStation()
 			StationID head_last_loading_station = this->last_loading_station;
 			StateTicks head_last_loading_tick = this->last_loading_tick;
 			for (Vehicle *u = this; u != nullptr; u = u->Next()) {
-				StationID last_loading_station = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_station : head_last_loading_station;
-				StateTicks last_loading_tick = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_tick : head_last_loading_tick;
+				StationID last_loading_station = this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? u->last_loading_station : head_last_loading_station;
+				StateTicks last_loading_tick = this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? u->last_loading_tick : head_last_loading_tick;
 				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
 					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
@@ -3639,7 +3639,7 @@ void Vehicle::LeaveStation()
 					u->last_loading_tick = last_loading_tick;
 				}
 			}
-			SetBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			this->vehicle_flags.Set(VehicleFlag::LastLoadStationSeparate);
 		}
 	}
 
@@ -3769,7 +3769,7 @@ static bool ShouldVehicleContinueWaiting(Vehicle *v)
 	if (v->GetNumOrders() < 1) return false;
 
 	/* Rate-limit re-checking of conditional order loop */
-	if (HasBit(v->vehicle_flags, VF_COND_ORDER_WAIT) && v->tick_counter % 32 != 0) return true;
+	if (v->vehicle_flags.Test(VehicleFlag::ConditionalOrderWait) && v->tick_counter % 32 != 0) return true;
 
 	/* Don't use implicit orders for waiting loops */
 	if (v->cur_implicit_order_index < v->GetNumOrders() && v->GetOrder(v->cur_implicit_order_index)->IsType(OT_IMPLICIT)) return false;
@@ -3777,7 +3777,7 @@ static bool ShouldVehicleContinueWaiting(Vehicle *v)
 	/* If conditional orders lead back to this order, just keep waiting without leaving the order */
 	bool loop = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index + 1) == v->cur_implicit_order_index;
 	FlushAdvanceOrderIndexDeferred(v, loop);
-	if (loop) SetBit(v->vehicle_flags, VF_COND_ORDER_WAIT);
+	if (loop) v->vehicle_flags.Set(VehicleFlag::ConditionalOrderWait);
 	return loop;
 }
 
@@ -3793,7 +3793,7 @@ void Vehicle::HandleLoading(bool mode)
 			TimetableTicks wait_time = std::max<int>(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 
 			/* Save time just loading took since that is what goes into the timetable */
-			if (!HasBit(this->vehicle_flags, VF_LOADING_FINISHED)) {
+			if (!this->vehicle_flags.Test(VehicleFlag::LoadingFinished)) {
 				this->current_loading_time = this->current_order_time;
 			}
 
@@ -3801,7 +3801,7 @@ void Vehicle::HandleLoading(bool mode)
 			if (!mode && this->type != VEH_TRAIN) PayStationSharingFee(this, Station::Get(this->last_station_visited));
 
 			/* Not the first call for this tick, or still loading */
-			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) || ShouldVehicleContinueWaiting(this)) {
+			if (mode || !this->vehicle_flags.Test(VehicleFlag::LoadingFinished) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) || ShouldVehicleContinueWaiting(this)) {
 				if (!mode && this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM)) this->AdvanceLoadingInStation();
 				return;
 			}
@@ -3846,7 +3846,7 @@ void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 			}
 
 			/* When wait_time is expired, we move on. */
-			ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
+			this->vehicle_flags.Reset(VehicleFlag::ConditionalOrderWait);
 			UpdateVehicleTimetable(this, false);
 			this->IncrementImplicitOrderIndex();
 			this->current_order.MakeDummy();
@@ -4040,7 +4040,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				this->current_order.SetDepotActionType(this->current_order.GetDepotActionType() == ODATFB_HALT ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 			} else {
 				this->ClearSeparation();
-				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 
 				this->current_order.MakeDummy();
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4071,7 +4071,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
-				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
 			return CommandCost();
@@ -4536,7 +4536,7 @@ void Vehicle::RemoveFromShared()
 	this->previous_shared = nullptr;
 
 	this->ClearSeparation();
-	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+	this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 }
 
 template <typename T, typename U>
@@ -4562,24 +4562,24 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	dump('B', "AircraftBroken",             v->vehstatus.Test(VehState::AircraftBroken));
 	dump('C', "Crashed",                    v->vehstatus.Test(VehState::Crashed));
 	dump_header("vf:", "vehicle_flags:");
-	dump('F', "VF_LOADING_FINISHED",        HasBit(v->vehicle_flags, VF_LOADING_FINISHED));
-	dump('U', "VF_CARGO_UNLOADING",         HasBit(v->vehicle_flags, VF_CARGO_UNLOADING));
-	dump('P', "VF_BUILT_AS_PROTOTYPE",      HasBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
-	dump('T', "VF_TIMETABLE_STARTED",       HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
-	dump('A', "VF_AUTOFILL_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
-	dump('w', "VF_AUTOFILL_PRES_WAIT_TIME", HasBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
-	dump('S', "VF_STOP_LOADING",            HasBit(v->vehicle_flags, VF_STOP_LOADING));
-	dump('L', "VF_PATHFINDER_LOST",         HasBit(v->vehicle_flags, VF_PATHFINDER_LOST));
-	dump('c', "VF_SERVINT_IS_CUSTOM",       HasBit(v->vehicle_flags, VF_SERVINT_IS_CUSTOM));
-	dump('p', "VF_SERVINT_IS_PERCENT",      HasBit(v->vehicle_flags, VF_SERVINT_IS_PERCENT));
-	dump('z', "VF_SEPARATION_ACTIVE",       HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE));
-	dump('D', "VF_SCHEDULED_DISPATCH",      HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
-	dump('x', "VF_LAST_LOAD_ST_SEP",        HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP));
-	dump('s', "VF_TIMETABLE_SEPARATION",    HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
-	dump('a', "VF_AUTOMATE_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-	dump('Q', "VF_HAVE_SLOT",               HasBit(v->vehicle_flags, VF_HAVE_SLOT));
-	dump('W', "VF_COND_ORDER_WAIT",         HasBit(v->vehicle_flags, VF_COND_ORDER_WAIT));
-	dump('r', "VF_REPLACEMENT_PENDING",     HasBit(v->vehicle_flags, VF_REPLACEMENT_PENDING));
+	dump('F', "LoadingFinished",            v->vehicle_flags.Test(VehicleFlag::LoadingFinished));
+	dump('U', "CargoUnloading",             v->vehicle_flags.Test(VehicleFlag::CargoUnloading));
+	dump('P', "BuiltAsPrototype",           v->vehicle_flags.Test(VehicleFlag::BuiltAsPrototype));
+	dump('T', "TimetableStarted",           v->vehicle_flags.Test(VehicleFlag::TimetableStarted));
+	dump('A', "AutofillTimetable",          v->vehicle_flags.Test(VehicleFlag::AutofillTimetable));
+	dump('w', "AutofillPreserveWaitTime",   v->vehicle_flags.Test(VehicleFlag::AutofillPreserveWaitTime));
+	dump('S', "StopLoading",                v->vehicle_flags.Test(VehicleFlag::StopLoading));
+	dump('L', "PathfinderLost",             v->vehicle_flags.Test(VehicleFlag::PathfinderLost));
+	dump('c', "ServiceIntervalIsCustom",    v->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsCustom));
+	dump('p', "ServiceIntervalIsPercent",   v->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsPercent));
+	dump('z', "SeparationActive",           v->vehicle_flags.Test(VehicleFlag::SeparationActive));
+	dump('D', "ScheduledDispatch",          v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
+	dump('x', "LastLoadStationSeparate",    v->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate));
+	dump('s', "TimetableSeparation",        v->vehicle_flags.Test(VehicleFlag::TimetableSeparation));
+	dump('a', "AutomateTimetable",          v->vehicle_flags.Test(VehicleFlag::AutomateTimetable));
+	dump('Q', "HaveSlot",                   v->vehicle_flags.Test(VehicleFlag::HaveSlot));
+	dump('W', "ConditionalOrderWait",       v->vehicle_flags.Test(VehicleFlag::ConditionalOrderWait));
+	dump('r', "ReplacementPending",         v->vehicle_flags.Test(VehicleFlag::ReplacementPending));
 	dump_header("vcf:", "cached_veh_flags:");
 	dump('l', "VCF_LAST_VISUAL_EFFECT",     HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', "VCF_GV_ZERO_SLOPE_RESIST",   HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));

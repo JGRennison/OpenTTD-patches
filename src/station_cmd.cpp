@@ -4558,7 +4558,7 @@ void DeleteStaleLinks(Station *from)
  * @param usage Usage to add to link stat.
  * @param mode Update mode to be applied.
  */
-void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode)
+void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint capacity, uint usage, uint32_t time, EdgeUpdateModes modes)
 {
 	GoodsEntry &ge1 = st->goods[cargo];
 	Station *st2 = Station::Get(next_station_id);
@@ -4600,7 +4600,7 @@ void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint
 		}
 	}
 	if (lg != nullptr) {
-		lg->UpdateEdge(ge1.node, ge2.node, capacity, usage, time, mode);
+		lg->UpdateEdge(ge1.node, ge2.node, capacity, usage, time, modes);
 	}
 }
 

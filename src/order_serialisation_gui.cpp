@@ -65,7 +65,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	Scrollbar *vscroll = nullptr;
 	bool show_non_error_order = false;
 	OrderList saved_orders{};
-	uint32_t saved_vehicle_flags{};
+	VehicleFlags saved_vehicle_flags{};
 
 	OrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors errs) : GeneralVehicleWindow(_order_list_import_errors_desc, v), errs(std::move(errs))
 	{

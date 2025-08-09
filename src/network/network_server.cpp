@@ -1034,7 +1034,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet
 	ci->join_date_fract = EconTime::CurDateFract();
 	ci->join_tick_skip_counter = TickSkipCounter();
 	ci->join_frame = _frame_counter;
-	ci->client_name = client_name;
+	ci->client_name = std::move(client_name);
 	ci->client_playas = playas;
 	//ci->public_key = this->peer_public_key;
 	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), ci->index, ci->client_playas);
@@ -1709,7 +1709,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet
 		/* Display change */
 		if (NetworkMakeClientNameUnique(client_name)) {
 			NetworkTextMessage(NETWORK_ACTION_NAME_CHANGE, CC_DEFAULT, false, ci->client_name, client_name);
-			ci->client_name = client_name;
+			ci->client_name = std::move(client_name);
 			NetworkUpdateClientInfo(ci->client_id);
 		}
 	}

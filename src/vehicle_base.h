@@ -44,29 +44,6 @@ enum class VehState : uint8_t {
 };
 using VehStates = EnumBitSet<VehState, uint8_t>;
 
-/** Bit numbers in #Vehicle::vehicle_flags. */
-enum VehicleFlags : uint8_t {
-	VF_LOADING_FINISHED         =  0, ///< Vehicle has finished loading.
-	VF_CARGO_UNLOADING          =  1, ///< Vehicle is unloading cargo.
-	VF_BUILT_AS_PROTOTYPE       =  2, ///< Vehicle is a prototype (accepted as exclusive preview).
-	VF_TIMETABLE_STARTED        =  3, ///< Whether the vehicle has started running on the timetable yet.
-	VF_AUTOFILL_TIMETABLE       =  4, ///< Whether the vehicle should fill in the timetable automatically.
-	VF_AUTOFILL_PRES_WAIT_TIME  =  5, ///< Whether non-destructive auto-fill should preserve waiting times
-	VF_STOP_LOADING             =  6, ///< Don't load anymore during the next load cycle.
-	VF_PATHFINDER_LOST          =  7, ///< Vehicle's pathfinder is lost.
-	VF_SERVINT_IS_CUSTOM        =  8, ///< Service interval is custom.
-	VF_SERVINT_IS_PERCENT       =  9, ///< Service interval is percent.
-	/* gap, above are common with upstream */
-	VF_SEPARATION_ACTIVE        = 11, ///< Whether timetable auto-separation is currently active
-	VF_SCHEDULED_DISPATCH       = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
-	VF_LAST_LOAD_ST_SEP         = 13, ///< Each vehicle of this chain has its last_loading_station and last_loading_tick fields set separately
-	VF_TIMETABLE_SEPARATION     = 14, ///< Whether timetable auto-separation is enabled
-	VF_AUTOMATE_TIMETABLE       = 15, ///< Whether the vehicle should manage the timetable automatically.
-	VF_HAVE_SLOT                = 16, ///< Vehicle has 1 or more slots
-	VF_COND_ORDER_WAIT          = 17, ///< Vehicle is waiting due to conditional order loop
-	VF_REPLACEMENT_PENDING      = 18, ///< Autoreplace or template replacement is pending, vehicle should visit the depot
-};
-
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
 enum NewGRFCacheValidValues : uint8_t {
 	NCVV_POSITION_CONSIST_LENGTH   = 0, ///< This bit will be set if the NewGRF var 40 currently stored is valid.
@@ -409,8 +386,8 @@ public:
 	uint8_t cargo_subtype = 0;                   ///< Used for livery refits (NewGRF variations)
 
 	StationID last_station_visited = StationID::Invalid(); ///< The last station we stopped at.
-	StationID last_loading_station = StationID::Invalid(); ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
-	StateTicks last_loading_tick{};              ///< Last tick (_state_ticks) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
+	StationID last_loading_station = StationID::Invalid(); ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VehicleFlag::LastLoadStationSeparate).
+	StateTicks last_loading_tick{};              ///< Last tick (_state_ticks) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VehicleFlag::LastLoadStationSeparate).
 
 	VehicleCargoList cargo{};                    ///< The cargo this vehicle is carrying
 	uint16_t cargo_cap = 0;                      ///< total capacity
@@ -830,7 +807,7 @@ public:
 	/**
 	 * Clears this vehicle's separation status
 	 */
-	inline void ClearSeparation() { ClrBit(this->vehicle_flags, VF_SEPARATION_ACTIVE); }
+	inline void ClearSeparation() { this->vehicle_flags.Reset(VehicleFlag::SeparationActive); }
 
 	void AddToShared(Vehicle *shared_chain);
 	void RemoveFromShared();
@@ -927,9 +904,9 @@ public:
 
 		this->current_loading_time = src->current_loading_time;
 
-		if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
-		if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-		if (HasBit(src->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) SetBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+		if (src->vehicle_flags.Test(VehicleFlag::TimetableStarted)) this->vehicle_flags.Set(VehicleFlag::TimetableStarted);
+		if (src->vehicle_flags.Test(VehicleFlag::AutofillTimetable)) this->vehicle_flags.Set(VehicleFlag::AutofillTimetable);
+		if (src->vehicle_flags.Test(VehicleFlag::AutofillPreserveWaitTime)) this->vehicle_flags.Set(VehicleFlag::AutofillPreserveWaitTime);
 
 		this->service_interval = src->service_interval;
 
@@ -988,13 +965,13 @@ public:
 
 	inline void SetServiceInterval(uint16_t interval) { this->service_interval = interval; }
 
-	inline bool ServiceIntervalIsCustom() const { return HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM); }
+	inline bool ServiceIntervalIsCustom() const { return this->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsCustom); }
 
-	inline bool ServiceIntervalIsPercent() const { return HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT); }
+	inline bool ServiceIntervalIsPercent() const { return this->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsPercent); }
 
-	inline void SetServiceIntervalIsCustom(bool on) { AssignBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM, on); }
+	inline void SetServiceIntervalIsCustom(bool on) { this->vehicle_flags.Set(VehicleFlag::ServiceIntervalIsCustom, on); }
 
-	inline void SetServiceIntervalIsPercent(bool on) { AssignBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT, on); }
+	inline void SetServiceIntervalIsPercent(bool on) { this->vehicle_flags.Set(VehicleFlag::ServiceIntervalIsPercent, on); }
 
 	inline void ResetDepotUnbunching() { this->unbunch_state.reset(); }
 

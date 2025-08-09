@@ -809,8 +809,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Pac
 		if (client_id == _network_own_client_id) SetLocalCompany(!Company::IsValidID(playas) ? COMPANY_SPECTATOR : playas);
 
 		ci->client_playas = playas;
-		ci->client_name = name;
-		//ci->public_key = public_key;
+		ci->client_name = std::move(name);
+		//ci->public_key = std::move(public_key);
 
 		InvalidateWindowData(WC_CLIENT_LIST, 0);
 
@@ -829,8 +829,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Pac
 	ci->client_playas = playas;
 	if (client_id == _network_own_client_id) this->SetInfo(ci);
 
-	ci->client_name = name;
-	//ci->public_key = public_key;
+	ci->client_name = std::move(name);
+	//ci->public_key = std::move(public_key);
 
 	InvalidateWindowData(WC_CLIENT_LIST, 0);
 
@@ -924,7 +924,7 @@ class ClientGamePasswordRequestHandler : public NetworkAuthenticationPasswordReq
 		if (!_network_join.server_password.empty()) {
 			request->Reply(_network_join.server_password);
 		} else {
-			ShowNetworkNeedPassword(NETWORK_GAME_PASSWORD, request);
+			ShowNetworkNeedPassword(NETWORK_GAME_PASSWORD, std::move(request));
 		}
 	}
 };
@@ -1644,7 +1644,7 @@ void NetworkUpdateClientName(const std::string &client_name)
 			std::string temporary_name = client_name;
 			if (NetworkMakeClientNameUnique(temporary_name)) {
 				NetworkTextMessage(NETWORK_ACTION_NAME_CHANGE, CC_DEFAULT, false, ci->client_name, temporary_name);
-				ci->client_name = temporary_name;
+				ci->client_name = std::move(temporary_name);
 				NetworkUpdateClientInfo(CLIENT_ID_SERVER);
 			}
 		}

@@ -176,7 +176,7 @@ namespace SQConvert {
 				Tretval ret = (*func)(
 					Param<Targs>::Get(vm, 2 + i)...
 				);
-				return Return<Tretval>::Set(vm, ret);
+				return Return<Tretval>::Set(vm, std::move(ret));
 			}
 		}
 	};

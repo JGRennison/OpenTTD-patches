@@ -219,7 +219,7 @@ public:
 		 * @param edge Edge to be wrapped.
 		 */
 		Edge(BaseEdge &edge) : EdgeWrapper<BaseEdge>(edge) {}
-		void Update(uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode);
+		void Update(uint capacity, uint usage, uint32_t time, EdgeUpdateModes modes);
 		void Restrict() { this->edge->last_unrestricted_update = EconTime::INVALID_DATE; }
 		void Release() { this->edge->last_restricted_update = EconTime::INVALID_DATE; }
 		void ClearAircraft() { this->edge->last_aircraft_update = EconTime::INVALID_DATE; }
@@ -372,7 +372,7 @@ public:
 	NodeID AddNode(const Station *st);
 	void RemoveNode(NodeID id);
 
-	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode);
+	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t time, EdgeUpdateModes modes);
 	void RemoveEdge(NodeID from, NodeID to);
 
 	inline uint32_t CalculateCostEstimate() const {

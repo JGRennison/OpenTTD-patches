@@ -191,7 +191,7 @@ protected:
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
 		auto process_vehicle = [&](const Vehicle *veh) {
-			if (this->source_mode != DSM_LIVE && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) return;
+			if (this->source_mode != DSM_LIVE && !veh->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) return;
 			for (const Order *order : veh->Orders()) {
 				if (this->source.OrderMatches(order)) {
 					/* Found a vehicle with an order for this source. */

@@ -24,14 +24,16 @@ void format_target::restore_size(size_t size)
 	}
 }
 
-void format_to_fixed_base::inner_wrapper::grow(size_t capacity)
+void format_to_fixed_base::inner_wrapper::grow(fmt::detail::buffer<char> &buf, size_t capacity)
 {
-	if (this->size() == this->capacity()) {
-		/* Buffer is full, use the discard area for the overflow */
-		this->clear();
-		this->set(this->discard, sizeof(this->discard));
+	inner_wrapper &self = static_cast<inner_wrapper &>(buf);
 
-		char *target = reinterpret_cast<char *>(this);
+	if (self.size() == self.capacity()) {
+		/* Buffer is full, use the discard area for the overflow */
+		self.clear();
+		self.set(self.discard, sizeof(self.discard));
+
+		char *target = reinterpret_cast<char *>(&self);
 		target -= cpp_offsetof(format_to_fixed_base, inner);
 		format_to_fixed_base *fixed = reinterpret_cast<format_to_fixed_base *>(target);
 		fixed->flags |= FL_OVERFLOW;
@@ -50,20 +52,22 @@ void format_detail::FmtResizeForCStr(fmt::detail::buffer<char> &buffer)
 	assert(buffer.size() < buffer.capacity());
 }
 
-void format_to_fixed_base::growable_back_buffer::grow(size_t requested)
+void format_to_fixed_base::growable_back_buffer::grow(fmt::detail::buffer<char> &buf, size_t requested)
 {
-	char *old_data = this->data();
-	size_t old_capacity = this->capacity();
+	growable_back_buffer &self = static_cast<growable_back_buffer &>(buf);
+
+	char *old_data = self.data();
+	size_t old_capacity = self.capacity();
 	size_t new_capacity = old_capacity + old_capacity / 2;
 	if (requested > new_capacity) {
 		new_capacity = requested;
 	}
 
 	char *new_data = MallocT<char>(new_capacity);
-	MemCpyT(new_data, old_data, this->size());
-	this->set(new_data, new_capacity);
+	MemCpyT(new_data, old_data, self.size());
+	self.set(new_data, new_capacity);
 
-	if (old_data != this->parent.inner.buffer_ptr + this->parent.inner.size()) {
+	if (old_data != self.parent.inner.buffer_ptr + self.parent.inner.size()) {
 		free(old_data);
 	}
 }

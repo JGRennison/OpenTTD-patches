@@ -605,10 +605,10 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 		}
 
 		/* Transfer any acquired trace restrict slots to the new vehicle */
-		if (HasBit(old_head->vehicle_flags, VF_HAVE_SLOT)) {
+		if (old_head->vehicle_flags.Test(VehicleFlag::HaveSlot)) {
 			TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
-			ClrBit(old_head->vehicle_flags, VF_HAVE_SLOT);
-			SetBit(new_head->vehicle_flags, VF_HAVE_SLOT);
+			old_head->vehicle_flags.Reset(VehicleFlag::HaveSlot);
+			new_head->vehicle_flags.Set(VehicleFlag::HaveSlot);
 		}
 	}
 

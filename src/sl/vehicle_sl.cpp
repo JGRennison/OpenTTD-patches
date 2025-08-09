@@ -1486,7 +1486,7 @@ void Load_VEHS()
 		}
 
 		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 4)) {
-			AssignBit(v->vehicle_flags, VF_SEPARATION_ACTIVE, _old_ahead_separation);
+			v->vehicle_flags.Set(VehicleFlag::SeparationActive, _old_ahead_separation);
 		}
 
 		if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2) && v->timetable_start != 0 && _old_timetable_start_subticks != 0) {

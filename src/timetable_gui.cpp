@@ -224,7 +224,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				if (no_offset) SetBit(table[i].flags, TADF_ARRIVAL_NO_OFFSET);
 			}
 
-			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
+			if (v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) && order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
 				if (!no_offset) sum -= v->lateness_counter;
 				DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 				ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
@@ -297,7 +297,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 	bool have_non_timetabled_conditional_branch = false;
 	bool have_autoseparate_bad_non_stop_type = false;
 
-	const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+	const bool assume_timetabled = v->vehicle_flags.Test(VehicleFlag::AutofillTimetable) || v->vehicle_flags.Test(VehicleFlag::AutomateTimetable);
 	for (int n = 0; n < v->GetNumOrders(); n++) {
 		const Order *order = v->GetOrder(n);
 		if (order->IsType(OT_CONDITIONAL)) {
@@ -324,7 +324,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			}
 		}
 
-		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && !have_autoseparate_bad_non_stop_type && v->IsGroundVehicle()) {
+		if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) && !have_autoseparate_bad_non_stop_type && v->IsGroundVehicle()) {
 			if (order->IsType(OT_IMPLICIT)) {
 				have_autoseparate_bad_non_stop_type = true;
 			} else if (order->IsGotoOrder() && (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) == 0) {
@@ -333,7 +333,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 		}
 	}
 
-	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+	if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 		if (have_conditional) handler(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
 		if (have_autoseparate_bad_non_stop_type) handler(STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE, true);
 		if (have_missing_wait || have_missing_travel) {
@@ -351,9 +351,9 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 		}
 	}
 	if (have_bad_full_load) handler(STR_TIMETABLE_WARNING_FULL_LOAD, true);
-	if (have_conditional && HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) handler(STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL, true);
+	if (have_conditional && v->vehicle_flags.Test(VehicleFlag::AutofillTimetable)) handler(STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL, true);
 	if (total_time && have_non_timetabled_conditional_branch) handler(STR_TIMETABLE_NON_TIMETABLED_BRANCH, false);
-	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders != nullptr) {
+	if (v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) && v->orders != nullptr) {
 		auto sd_warning = [&](int schedule_index, StringID str) {
 			if (no_text) {
 				handler_func({}, true);
@@ -431,7 +431,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	 */
 	static bool BuildArrivalDepartureList(const Vehicle *v, TimetableArrivalDeparture *table)
 	{
-		assert(HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
+		assert(v->vehicle_flags.Test(VehicleFlag::TimetableStarted));
 
 		bool travelling = (!(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
 		Ticks start_time = -(Ticks)v->current_order_time;
@@ -624,21 +624,21 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 			bool disable_speed = disable || selected % 2 == 0 || v->type == VEH_AIRCRAFT;
 
-			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
-			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
+			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable_time || (v->vehicle_flags.Test(VehicleFlag::AutomateTimetable) && !wait_locked));
+			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (v->vehicle_flags.Test(VehicleFlag::AutomateTimetable) && !(wait_locked && clearable_when_wait_locked)));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
 
-			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders == nullptr || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders == nullptr || v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) || v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders == nullptr);
-			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders == nullptr || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || v->HasUnbunchingOrder());
+			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders == nullptr || v->vehicle_flags.Test(VehicleFlag::AutomateTimetable));
+			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) || v->HasUnbunchingOrder());
 			this->EnableWidget(WID_VT_AUTOMATE);
 			this->EnableWidget(WID_VT_ADD_VEH_GROUP);
 			this->SetWidgetDisabledState(WID_VT_LOCK_ORDER_TIME, !wait_lockable);
 			this->SetWidgetLoweredState(WID_VT_LOCK_ORDER_TIME, wait_locked);
 			this->SetWidgetDisabledState(WID_VT_EXTRA, disable || (selected % 2 != 0));
-			this->SetWidgetDisabledState(WID_VT_ASSIGN_SCHEDULE, disable || (selected % 2 != 0) || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+			this->SetWidgetDisabledState(WID_VT_ASSIGN_SCHEDULE, disable || (selected % 2 != 0) || !v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -657,14 +657,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 		this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));
 
-		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
-		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-		this->SetWidgetLoweredState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
-		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
-		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+		this->SetWidgetLoweredState(WID_VT_AUTOFILL, v->vehicle_flags.Test(VehicleFlag::AutofillTimetable));
+		this->SetWidgetLoweredState(WID_VT_AUTOMATE, v->vehicle_flags.Test(VehicleFlag::AutomateTimetable));
+		this->SetWidgetLoweredState(WID_VT_AUTO_SEPARATION, v->vehicle_flags.Test(VehicleFlag::TimetableSeparation));
+		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
+		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
 
 		this->SetWidgetDisabledState(WID_VT_SCHEDULED_DISPATCH, v->orders == nullptr);
-		this->GetWidget<NWidgetStacked>(WID_VT_START_DATE_SELECTION)->SetDisplayedPlane(HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) ? 1 : 0);
+		this->GetWidget<NWidgetStacked>(WID_VT_START_DATE_SELECTION)->SetDisplayedPlane(v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) ? 1 : 0);
 	}
 
 	void OnPaint() override
@@ -709,7 +709,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				return false;
 			}
 			case WID_VT_AUTO_SEPARATION: {
-				if (HasBit(this->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+				if (this->vehicle->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
 					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH), close_cond);
 				} else if (this->vehicle->HasUnbunchingOrder()) {
 					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), close_cond);
@@ -818,7 +818,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				 * Excluding order lists with only one order makes some things easier.
 				 */
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
-				if (total_time <= 0 || v->GetNumOrders() <= 1 || !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) break;
+				if (total_time <= 0 || v->GetNumOrders() <= 1 || !v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) break;
 
 				std::unique_ptr<TimetableArrivalDeparture[]> arr_dep = std::make_unique<TimetableArrivalDeparture[]>(v->GetNumOrders());
 				const VehicleOrderID cur_order = v->cur_real_order_index % v->GetNumOrders();
@@ -904,7 +904,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						draw(STR_TIMETABLE_STATUS_START_AT_DATE, STR_JUST_TT_TIME, v->timetable_start);
 					}
-				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+				} else if (!v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
 					draw(STR_TIMETABLE_STATUS_NOT_STARTED);
@@ -1095,7 +1095,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				break;
 
 			case WID_VT_AUTOFILL: { // Autofill the timetable.
-				Command<CMD_AUTOFILL_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE), _ctrl_pressed);
+				Command<CMD_AUTOFILL_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !v->vehicle_flags.Test(VehicleFlag::AutofillTimetable), _ctrl_pressed);
 				break;
 			}
 
@@ -1105,12 +1105,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_AUTOMATE: {
-				Command<CMD_AUTOMATE_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+				Command<CMD_AUTOMATE_TIMETABLE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !v->vehicle_flags.Test(VehicleFlag::AutomateTimetable));
 				break;
 			}
 
 			case WID_VT_AUTO_SEPARATION: {
-				Command<CMD_TIMETABLE_SEPARATION>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+				Command<CMD_TIMETABLE_SEPARATION>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, !v->vehicle_flags.Test(VehicleFlag::TimetableSeparation));
 				break;
 			}
 

@@ -225,7 +225,7 @@ static void HandleLatenessPostAdjustment(OrderDate &od)
 
 static bool VehicleOrderRequiresScheduledDispatch(const Vehicle *v, const Order *order, bool arrived_at_timing_point)
 {
-	if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !order->IsScheduledDispatchOrder(true)) return false;
+	if (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) || !order->IsScheduledDispatchOrder(true)) return false;
 
 	auto is_current_implicit_order = [&v](const Order *o) -> bool {
 		if (v->cur_implicit_order_index >= v->orders->GetNumOrders()) return false;
@@ -238,7 +238,7 @@ static bool VehicleOrderRequiresScheduledDispatch(const Vehicle *v, const Order 
 static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waiting_time, const StateTicks state_ticks_base,
 		const Vehicle *v, const Order *order, bool arrived_at_timing_point, ScheduledDispatchCache &dept_schedule_last, ScheduledDispatchVehicleRecords &records)
 {
-	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+	if (v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
 		/* This condition means that we want departure time for the dispatch order */
 		/* but not if the vehicle has arrived at the dispatch order because the timetable is already shifted */
 		if (VehicleOrderRequiresScheduledDispatch(v, order, arrived_at_timing_point)) {
@@ -561,7 +561,7 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 
 		Ticks lateness_post_adjust = 0; // Lateness change to apply after this order
 		Ticks waiting_time = 0;
-		if (status == D_ARRIVED && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->cur_implicit_order_index < v->orders->GetNumOrders() && v->orders->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
+		if (status == D_ARRIVED && v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) && v->cur_implicit_order_index < v->orders->GetNumOrders() && v->orders->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
 			/* This is a special case for proper calculation of dispatch order arrival time. */
 			start_ticks += order->GetTravelTime() + order->GetWaitTime();
 			waiting_time = -current_lateness + order->GetWaitTime();
@@ -1728,7 +1728,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	std::vector<ArrivalHistoryEntry> arrival_history;
 
 	for (const Vehicle *veh : vehicles) {
-		if (!HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) continue;
+		if (!veh->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) continue;
 
 		const Vehicle *v = nullptr;
 		for (const Vehicle *u = veh->FirstShared(); u != nullptr; u = u->NextShared()) {

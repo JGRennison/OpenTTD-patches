@@ -1134,7 +1134,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 				}
 			}
 
-			if (have_schedule && HasBit(veh->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+			if (have_schedule && veh->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 				Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
 			}
 
@@ -1146,7 +1146,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 			}
 			cmd_buffer.DispatchSchedulesDone();
 
-			if (have_schedule && !HasBit(veh->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			if (have_schedule && !veh->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
 				cmd_buffer.op_serialiser.SetDispatchEnabled(true);
 			}
 		}

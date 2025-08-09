@@ -2020,7 +2020,7 @@ bool AfterLoadGame()
 		 * loading again, even if it didn't actually load anything, so now the
 		 * amount that has been paid is stored. */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			ClrBit(v->vehicle_flags, 2);
+			v->vehicle_flags.Reset(VehicleFlag{2});
 		}
 	}
 
@@ -2075,7 +2075,7 @@ bool AfterLoadGame()
 
 				/* The loading finished flag is *only* set when actually completely
 				 * finished. Because the vehicle is loading, it is not finished. */
-				ClrBit(v->vehicle_flags, VF_LOADING_FINISHED);
+				v->vehicle_flags.Reset(VehicleFlag::LoadingFinished);
 			}
 		}
 	} else if (IsSavegameVersionBefore(SLV_59)) {
@@ -3137,7 +3137,7 @@ bool AfterLoadGame()
 			if (!HasBit(t->flags, 5)) continue;
 
 			ClrBit(t->flags, 5);
-			SetBit(t->vehicle_flags, VF_PATHFINDER_LOST);
+			t->vehicle_flags.Set(VehicleFlag::PathfinderLost);
 		}
 
 		/* Introduced terraform/clear limits. */
@@ -3532,23 +3532,23 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 6));
-			SB(v->vehicle_flags, VF_STOP_LOADING, 4, GB(v->vehicle_flags, 7, 4));
+			v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, HasBit(v->vehicle_flags.base(), 6));
+			SB(v->vehicle_flags.edit_base(), to_underlying(VehicleFlag::StopLoading), 4, GB(v->vehicle_flags.base(), 7, 4));
 		}
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP, SL_CHILLPP_232)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 7));
-			AssignBit(v->vehicle_flags, VF_PATHFINDER_LOST, HasBit(v->vehicle_flags, 8));
-			SB(v->vehicle_flags, VF_SERVINT_IS_CUSTOM, 7, 0);
+			v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, HasBit(v->vehicle_flags.base(), 7));
+			v->vehicle_flags.Set(VehicleFlag::PathfinderLost, HasBit(v->vehicle_flags.base(), 8));
+			SB(v->vehicle_flags.edit_base(), to_underlying(VehicleFlag::ServiceIntervalIsCustom), 7, 0);
 		}
 	} else if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 6));
-			SB(v->vehicle_flags, VF_STOP_LOADING, 9, 0);
+			v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, HasBit(v->vehicle_flags.base(), 6));
+			SB(v->vehicle_flags.edit_base(), to_underlying(VehicleFlag::StopLoading), 9, 0);
 		}
 	}
 
@@ -3650,19 +3650,19 @@ bool AfterLoadGame()
 			}
 		}
 		for (Vehicle *v : Vehicle::Iterate()) {
-			SB(v->vehicle_flags, 10, 2, 0);
+			SB(v->vehicle_flags.edit_base(), 10, 2, 0);
 		}
 		extern std::vector<OrderList *> _jokerpp_auto_separation;
 		extern std::vector<OrderList *> _jokerpp_non_auto_separation;
 		for (OrderList *list : _jokerpp_auto_separation) {
 			for (Vehicle *w = list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
-				SetBit(w->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				w->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
 				w->ClearSeparation();
 			}
 		}
 		for (OrderList *list : _jokerpp_non_auto_separation) {
 			for (Vehicle *w = list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
-				ClrBit(w->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				w->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 				w->ClearSeparation();
 			}
 		}
@@ -4085,7 +4085,7 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 3)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, _settings_game.order.old_timetable_separation);
+			v->vehicle_flags.Set(VehicleFlag::TimetableSeparation, _settings_game.order.old_timetable_separation);
 		}
 	}
 
@@ -4150,9 +4150,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_TRAIN_THROUGH_LOAD, 0, 1)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->cargo_payment == nullptr) {
-				for (Vehicle *u = v; u != nullptr; u = u->Next()) {
-					if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING)) ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
-				}
+				v->vehicle_flags.Reset(VehicleFlag::CargoUnloading);
 			}
 		}
 	}
@@ -4371,15 +4369,15 @@ bool AfterLoadGame()
 		/* Move vehicle in slot flag */
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, 2)) { /* was VRF_HAVE_SLOT */
-				SetBit(v->vehicle_flags, VF_HAVE_SLOT);
+				v->vehicle_flags.Set(VehicleFlag::HaveSlot);
 				ClrBit(Train::From(v)->flags, 2);
 			} else {
-				ClrBit(v->vehicle_flags, VF_HAVE_SLOT);
+				v->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 			}
 		}
 	} else if (SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			ClrBit(v->vehicle_flags, VF_HAVE_SLOT);
+			v->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 		}
 	}
 

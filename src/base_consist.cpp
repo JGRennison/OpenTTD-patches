@@ -35,30 +35,30 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 	this->cur_implicit_order_index = src->cur_implicit_order_index;
 	this->cur_timetable_order_index = src->cur_timetable_order_index;
 
-	if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
-	if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-	if (HasBit(src->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) SetBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
-	if (HasBit(src->vehicle_flags, VF_SERVINT_IS_PERCENT) != HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT)) {
-		ToggleBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT);
+	if (src->vehicle_flags.Test(VehicleFlag::TimetableStarted)) this->vehicle_flags.Set(VehicleFlag::TimetableStarted);
+	if (src->vehicle_flags.Test(VehicleFlag::AutofillTimetable)) this->vehicle_flags.Set(VehicleFlag::AutofillTimetable);
+	if (src->vehicle_flags.Test(VehicleFlag::AutofillPreserveWaitTime)) this->vehicle_flags.Set(VehicleFlag::AutofillPreserveWaitTime);
+	if (src->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsPercent) != this->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsPercent)) {
+		this->vehicle_flags.Flip(VehicleFlag::ServiceIntervalIsPercent);
 	}
-	if (HasBit(src->vehicle_flags, VF_SERVINT_IS_CUSTOM)) SetBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM);
+	if (src->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsCustom)) this->vehicle_flags.Set(VehicleFlag::ServiceIntervalIsCustom);
 
-	if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
-		SetBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE);
-		ClrBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-		ClrBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+	if (src->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
+		this->vehicle_flags.Set(VehicleFlag::AutomateTimetable);
+		this->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
+		this->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
 	} else {
-		ClrBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+		this->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
 	}
-	if (HasBit(src->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-		SetBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION);
+	if (src->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+		this->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
 	} else {
-		ClrBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION);
+		this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
 	}
-	if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-		SetBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+	if (src->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
+		this->vehicle_flags.Set(VehicleFlag::ScheduledDispatch);
 	} else {
-		ClrBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+		this->vehicle_flags.Reset(VehicleFlag::ScheduledDispatch);
 	}
 
 	this->dispatch_records = src->dispatch_records;

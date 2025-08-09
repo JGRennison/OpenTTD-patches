@@ -18,6 +18,7 @@
 #include "../tunnelbridge_map.h"
 #include "follow_track.hpp"
 #include "../ship.h"
+#include "../3rdparty/fmt/ranges.h"
 
 #include <array>
 #include <limits>

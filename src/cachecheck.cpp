@@ -298,7 +298,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			uint8_t breakdown_chance;
 			uint8_t breakdown_severity;
 			uint8_t breakdown_type;
-			uint32_t vehicle_flags;
+			VehicleFlags vehicle_flags;
 
 			SavedVehicleInfo(const Vehicle *v) :
 					grf_cache(v->grf_cache), vcache(v->vcache), acceleration(v->acceleration), breakdown_ctr(v->breakdown_ctr),

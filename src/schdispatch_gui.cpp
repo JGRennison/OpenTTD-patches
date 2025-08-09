@@ -368,7 +368,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		const bool uneditable = (v->orders == nullptr) || (v->owner != _local_company);
 		const bool unusable = unviewable || uneditable;
 
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, uneditable || (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && (unviewable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())));
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, uneditable || (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) && (unviewable || v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) || v->HasUnbunchingOrder())));
 
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_RENAME, unusable || v->orders->GetScheduledDispatchScheduleCount() == 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, unviewable || this->schedule_index <= 0);
@@ -377,7 +377,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_RIGHT, unviewable || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD_SCHEDULE, unusable || v->orders->GetScheduledDispatchScheduleCount() >= 4096);
 
-		const bool disabled = unusable || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)  || !this->IsScheduleSelected();
+		const bool disabled = unusable || !v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)  || !this->IsScheduleSelected();
 		const bool no_editable_slots = disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty();
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, disabled);
@@ -416,7 +416,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			this->vscroll->SetCount(0);
 		}
 
-		this->SetWidgetLoweredState(WID_SCHDISPATCH_ENABLED, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+		this->SetWidgetLoweredState(WID_SCHDISPATCH_ENABLED, v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
 		this->DrawWidgets();
 	}
 
@@ -454,7 +454,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ENABLED: {
 				if (!this->TimeUnitsUsable()) {
 					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE), close_cond);
-				} else if (HasBit(this->vehicle->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+				} else if (this->vehicle->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), close_cond);
 				} else if (this->vehicle->HasUnbunchingOrder()) {
 					GuiShowTooltips(this, GetEncodedString(STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, STR_SCHDISPATCH_ENABLED_TOOLTIP, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), close_cond);
@@ -746,12 +746,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					y += step_height;
 				};
 
-				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !this->IsScheduleSelected()) {
+				if (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) || !this->IsScheduleSelected()) {
 					y += GetCharacterHeight(FS_NORMAL);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 					y += GetCharacterHeight(FS_NORMAL) * 2;
 
-					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+					if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), TC_BLACK);
 					} else if (v->HasUnbunchingOrder()) {
 						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), TC_BLACK);
@@ -1055,7 +1055,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_ENABLED: {
-				bool enable = !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				bool enable = !v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch);
 
 				Command<CMD_SCH_DISPATCH>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, enable);
 				if (enable && this->vehicle->orders != nullptr && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {

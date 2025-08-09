@@ -349,10 +349,10 @@ private:
 		const size_t buffer_size;
 		char discard[32];
 
-		void grow(size_t) override;
+		static void grow(fmt::detail::buffer<char> &, size_t);
 		void restore_size_impl(size_t size);
 
-		inner_wrapper(char *dst, size_t size) : buffer(dst, 0, size), buffer_ptr(dst), buffer_size(size) {}
+		inner_wrapper(char *dst, size_t size) : buffer(grow, dst, 0, size), buffer_ptr(dst), buffer_size(size) {}
 	};
 	inner_wrapper inner;
 
@@ -385,10 +385,10 @@ public:
 
 		format_to_fixed_base &parent;
 
-		void grow(size_t) override;
+		static void grow(fmt::detail::buffer<char> &, size_t);
 
 		growable_back_buffer(format_to_fixed_base &parent) :
-				buffer(parent.inner.buffer_ptr + parent.inner.size(), 0, parent.inner.buffer_size - parent.inner.size()), parent(parent) {}
+				buffer(grow, parent.inner.buffer_ptr + parent.inner.size(), 0, parent.inner.buffer_size - parent.inner.size()), parent(parent) {}
 
 	public:
 		~growable_back_buffer();

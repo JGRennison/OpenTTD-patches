@@ -451,7 +451,7 @@ class NIHVehicle : public NIHelper {
 		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
 
-		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
+		if (v->vehicle_flags.Test(VehicleFlag::SeparationActive)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
 			if (!progress_array.empty()) {
 				output.Print("  Separation state:");
