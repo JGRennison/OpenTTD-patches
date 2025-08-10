@@ -3870,7 +3870,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 
 				for (uint8_t j = 0; j < new_num_layouts; j++) {
 					layout.clear();
-					layout.reserve(new_num_layouts);
 
 					for (uint k = 0;; k++) {
 						if (bytes_read >= definition_size) {
@@ -3948,8 +3947,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					if (!ValidateIndustryLayout(layout)) {
 						/* The industry layout was not valid, so skip this one. */
 						GrfMsg(1, "IndustriesChangeInfo: Invalid industry layout for industry id {}. Ignoring", id);
-						new_num_layouts--;
-						j--;
 					} else {
 						new_layouts.push_back(layout);
 					}
@@ -11647,8 +11644,8 @@ static void DecodeSpecialSprite(uint8_t *buf, uint num, GrfLoadingStage stage)
  */
 static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, SpriteFile &file)
 {
-	_cur.file = &file;
-	_cur.grfconfig = &config;
+	AutoRestoreBackup cur_file(_cur.file, &file);
+	AutoRestoreBackup cur_config(_cur.grfconfig, &config);
 
 	Debug(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '{}'", config.GetDisplayPath());
 
@@ -11697,6 +11694,13 @@ static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, Spr
 
 		if (type == 0xFF) {
 			if (_cur.skip_sprites == 0) {
+				/* Limit the special sprites to 1 MiB. */
+				if (num > 1024 * 1024) {
+					GrfMsg(0, "LoadNewGRFFile: Unexpectedly large sprite, disabling");
+					DisableGrf(STR_NEWGRF_ERROR_UNEXPECTED_SPRITE);
+					break;
+				}
+
 				DecodeSpecialSprite(buf.Allocate(num), num, stage);
 
 				/* Stop all processing if we are to skip the remaining sprites */

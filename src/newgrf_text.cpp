@@ -128,7 +128,7 @@ struct UnmappedChoiceList {
 	int offset;             ///< The offset for the plural/gender form.
 
 	/** Mapping of NewGRF supplied ID to the different strings in the choice list. */
-	std::map<uint8_t, std::stringstream> strings;
+	std::map<int, std::stringstream> strings;
 
 	/**
 	 * Flush this choice list into the destination string.
@@ -499,7 +499,7 @@ static void AddGRFTextToList(GRFTextList &list, uint8_t langid, std::string_view
 	}
 
 	/* If a string wasn't replaced, then we must append the new string */
-	list.push_back(GRFText{ langid, std::string(text_to_add) });
+	list.emplace_back(langid, std::string{text_to_add});
 }
 
 /**
@@ -841,12 +841,46 @@ static void HandleNewGRFStringControlCodes(const char *str, TextRefStack &stack,
  * @param stack The TextRefStack.
  * @param[out] params Output parameters
  */
-static void RemapNewGRFStringControlCode(char32_t scc, const char **str, TextRefStack &stack, std::vector<StringParameter> &params)
+static void ProcessNewGRFStringControlCode(char32_t scc, const char *&str, TextRefStack &stack, std::vector<StringParameter> &params)
 {
 	/* There is data on the NewGRF text stack, and we want to move them to OpenTTD's string stack.
 	 * After this call, a new call is made with `modify_parameters` set to false when the string is finally formatted. */
 	switch (scc) {
 		default: return;
+
+		case SCC_PLURAL_LIST:
+			++str; // plural form
+			[[fallthrough]];
+		case SCC_GENDER_LIST: {
+			++str; // offset
+			/* plural and gender choices cannot contain any string commands, so just skip the whole thing */
+			uint num = static_cast<uint8_t>(*str++);
+			uint total_len = 0;
+			for (uint i = 0; i != num; i++) {
+				total_len += static_cast<uint8_t>(*str++);
+			}
+			str += total_len;
+			break;
+		}
+
+		case SCC_SWITCH_CASE: {
+			/* skip all cases and continue with default case */
+			uint num = static_cast<uint8_t>(*str++);
+			for (uint i = 0; i != num; i++) {
+				str += 3 + (static_cast<uint8_t>(str[1]) << 8) + static_cast<uint8_t>(str[2]);
+			}
+			break;
+		}
+
+		case SCC_GENDER_INDEX:
+		case SCC_SET_CASE:
+			++str;
+			break;
+
+		case SCC_ARG_INDEX:
+			NOT_REACHED();
+			break;
+
 		case SCC_NEWGRF_PRINT_BYTE_SIGNED:      params.emplace_back(stack.PopSignedByte());    break;
 		case SCC_NEWGRF_PRINT_QWORD_CURRENCY:   params.emplace_back(stack.PopSignedQWord());   break;
 
@@ -880,7 +914,7 @@ static void RemapNewGRFStringControlCode(char32_t scc, const char **str, TextRef
 		case SCC_NEWGRF_DISCARD_WORD:           stack.PopUnsignedWord(); break;
 
 		case SCC_NEWGRF_ROTATE_TOP_4_WORDS:     stack.RotateTop4Words(); break;
-		case SCC_NEWGRF_PUSH_WORD:              stack.PushWord(Utf8Consume(str)); break;
+		case SCC_NEWGRF_PUSH_WORD:              stack.PushWord(Utf8Consume(&str)); break;
 
 		case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
@@ -1014,7 +1048,7 @@ static void HandleNewGRFStringControlCodes(const char *str, TextRefStack &stack,
 	for (const char *p = str; *p != '\0'; /* nothing */) {
 		char32_t scc;
 		p += Utf8Decode(&scc, p);
-		RemapNewGRFStringControlCode(scc, &p, stack, params);
+		ProcessNewGRFStringControlCode(scc, p, stack, params);
 	}
 }
 

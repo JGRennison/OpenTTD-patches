@@ -808,7 +808,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 			TrackBits bits = GetTileShipTrackStatus(tile_check) & DiagdirReachesTracks(_ship_search_directions[track][diagdir]);
 			if (!IsDiagonalTrack(track)) bits &= TRACK_BIT_CROSS;  // No 90 degree turns.
 
-			if (bits != INVALID_TRACK_BIT && bits != TRACK_BIT_NONE) {
+			if (bits != TRACK_BIT_NONE) {
 				*track_old = track;
 				v->cached_path.clear();
 				break;

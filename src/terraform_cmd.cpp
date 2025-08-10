@@ -156,7 +156,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 			height_diff += (height_diff < 0 ? 1 : -1);
 			CommandCost cost = TerraformTileHeight(ts, neighbour_tile, r + height_diff);
 			if (cost.Failed()) return cost;
-			total_cost.AddCost(cost);
+			total_cost.AddCost(cost.GetCost());
 		}
 	}
 
@@ -182,28 +182,28 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
 		TileIndex t = tile + TileDiffXY(1, 0);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
-		total_cost.AddCost(cost);
+		total_cost.AddCost(cost.GetCost());
 	}
 
 	if ((slope & SLOPE_S) != 0 && tile + TileDiffXY(1, 1) < Map::Size()) {
 		TileIndex t = tile + TileDiffXY(1, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
-		total_cost.AddCost(cost);
+		total_cost.AddCost(cost.GetCost());
 	}
 
 	if ((slope & SLOPE_E) != 0 && tile + TileDiffXY(0, 1) < Map::Size()) {
 		TileIndex t = tile + TileDiffXY(0, 1);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
-		total_cost.AddCost(cost);
+		total_cost.AddCost(cost.GetCost());
 	}
 
 	if ((slope & SLOPE_N) != 0) {
 		TileIndex t = tile + TileDiffXY(0, 0);
 		CommandCost cost = TerraformTileHeight(&ts, t, TileHeight(t) + direction);
 		if (cost.Failed()) return cost;
-		total_cost.AddCost(cost);
+		total_cost.AddCost(cost.GetCost());
 	}
 
 	/* Check if the terraforming is valid wrt. tunnels, bridges and objects on the surface
@@ -291,7 +291,7 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
 				cost.SetTile(t);
 				return cost;
 			}
-			if (pass == 1) total_cost.AddCost(cost);
+			if (pass == 1) total_cost.AddCost(cost.GetCost());
 		}
 	}
 
@@ -367,10 +367,10 @@ CommandCost CmdLevelLand(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 		while (curh != h) {
 			CommandCost ret = Command<CMD_TERRAFORM_LAND>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, SLOPE_N, curh <= h);
 			if (ret.Failed()) {
-				last_error = ret;
+				last_error = std::move(ret);
 
 				/* Did we reach the limit? */
-				if (ret.GetErrorMessage() == STR_ERROR_TERRAFORM_LIMIT_REACHED) limit = 0;
+				if (last_error.GetErrorMessage() == STR_ERROR_TERRAFORM_LIMIT_REACHED) limit = 0;
 				break;
 			}
 
@@ -393,7 +393,7 @@ CommandCost CmdLevelLand(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 				}
 			}
 
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 			curh += (curh > h) ? -1 : 1;
 			had_success = true;
 		}

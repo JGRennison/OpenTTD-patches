@@ -1052,7 +1052,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
 		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
 		const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(nullptr);
-		if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &adjust) == 0) {
+		if (prev_load != nullptr && IsIdenticalValueLoad(prev_load, &adjust)) {
 			group->adjusts.pop_back();
 			state.inference = prev_inference;
 			return;
@@ -3086,7 +3086,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 									if (next.operation == DSGA_OP_RST) {
 										/* See if this is a repeated load of a variable (not procedure call) */
 										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i, nullptr);
-										if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &next) == 0) {
+										if (prev_load != nullptr && IsIdenticalValueLoad(prev_load, &next)) {
 											if (next.variable == 0x7D) pending_restart = true;
 											erase_adjust(i + 1);
 											break;

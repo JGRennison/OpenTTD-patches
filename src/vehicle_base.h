@@ -24,7 +24,6 @@
 #include "newgrf_cache_check.h"
 #include "landscape.h"
 #include "network/network.h"
-#include "core/mem_func.hpp"
 #include "core/alignment.hpp"
 #include "sl/saveload_common.h"
 #include <list>
@@ -141,15 +140,15 @@ struct VehicleCache {
 struct VehicleSpriteSeq {
 /* Reduce the size of struct Vehicle in dedicated builds */
 #if defined(DEDICATED)
-	PalSpriteID seq[1];
+	std::array<PalSpriteID, 1> seq;
 #else
-	PalSpriteID seq[8];
+	std::array<PalSpriteID, 8> seq;
 #endif
 	uint count;
 
 	bool operator==(const VehicleSpriteSeq &other) const
 	{
-		return this->count == other.count && MemCmpT<PalSpriteID>(this->seq, other.seq, this->count) == 0;
+		return std::ranges::equal(std::span(this->seq.data(), this->count), std::span(other.seq.data(), other.count));
 	}
 
 	/**

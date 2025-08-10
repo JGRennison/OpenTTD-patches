@@ -5582,7 +5582,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 	bool direction_changed = false; // has direction of any part changed?
 	bool update_signal_tunbridge_exit = false;
 	Direction old_direction = INVALID_DIR;
-	TrackBits old_trackbits = INVALID_TRACK_BIT;
+	TrackBits old_trackbits = TrackBits{0xFF};
 	uint16_t old_gv_flags = 0;
 
 	auto notify_direction_changed = [&](Direction old_direction, Direction new_direction) {
@@ -6236,7 +6236,7 @@ invalid_rail:
 	if (prev != nullptr) return true; //FatalError("Disconnecting train");
 
 reverse_train_direction:
-	if (old_trackbits != INVALID_TRACK_BIT && (v->track ^ old_trackbits) & TRACK_BIT_WORMHOLE) {
+	if (old_trackbits != TrackBits{0xFF} && (v->track ^ old_trackbits) & TRACK_BIT_WORMHOLE) {
 		/* Entering/exiting wormhole failed/aborted, back out changes to vehicle direction and track */
 		v->track = old_trackbits;
 		v->direction = old_direction;
@@ -7370,7 +7370,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 
 	auto refit_unit = [&](const Train *unit, CargoType cid, uint16_t csubt) {
 		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(flags, unit->index, cid, csubt, false, false, 1);
-		if (refit_cost.Succeeded()) buy.AddCost(refit_cost);
+		if (refit_cost.Succeeded()) buy.AddCost(refit_cost.GetCost());
 	};
 
 	if (!flags.Test(DoCommandFlag::Execute)) {
@@ -7485,7 +7485,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			if (buy_cost.Failed() || !buy_cost.HasResultData()) {
 				return buy_cost;
 			}
-			buy.AddCost(buy_cost);
+			buy.AddCost(buy_cost.GetCost());
 			new_chain = Train::Get(buy_cost.GetResultData());
 			/* prepare the remainder chain */
 			remainder_chain = incoming;
@@ -7550,7 +7550,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				new_part = Train::Get(buy_cost.GetResultData());
 				CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
-					buy.AddCost(buy_cost);
+					buy.AddCost(buy_cost.GetCost());
 				} else {
 					Command<CMD_SELL_VEHICLE>::Do(flags, new_part->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					new_part = nullptr;

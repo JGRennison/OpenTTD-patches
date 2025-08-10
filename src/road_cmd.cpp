@@ -1427,7 +1427,7 @@ do_clear:;
 	if (need_to_clear) {
 		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 	}
 
 	if (other_bits != pieces) {
@@ -1438,7 +1438,7 @@ do_clear:;
 		if (ret.Failed() || (ret.GetCost() != 0 && !_settings_game.construction.build_on_slopes)) {
 			return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 		}
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 	}
 
 	if (!need_to_clear) {
@@ -1473,7 +1473,7 @@ do_clear:;
 				} else if (HasPowerOnRoad(existing_rt, rt)) {
 					CommandCost ret = Command<CMD_CONVERT_ROAD>::Do(flags, tile, tile, rt);
 					if (ret.Failed()) return ret;
-					cost.AddCost(ret);
+					cost.AddCost(ret.GetCost());
 				} else {
 					return CMD_ERROR;
 				}
@@ -1648,14 +1648,14 @@ CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex
 
 		CommandCost ret = Command<CMD_BUILD_ROAD>::Do(flags, tile, bits, rt, drd, TownID::Invalid(), is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
 		if (ret.Failed()) {
-			last_error = ret;
+			last_error = std::move(ret);
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
 				if (is_ai) return last_error;
 				if (had_success) break; // Keep going if we haven't constructed any road yet, skipping the start of the drag
 			}
 		} else {
 			had_success = true;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 		}
 		/* Do not run into or across bridges/tunnels */
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -1733,7 +1733,7 @@ CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileInde
 					}
 					RemoveRoad(tile, flags, bits, rtt, false);
 				}
-				cost.AddCost(ret);
+				cost.AddCost(ret.GetCost());
 				had_success = true;
 			} else {
 				/* Some errors are more equal than others. */
@@ -1742,7 +1742,7 @@ CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileInde
 					case STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS:
 						break;
 					default:
-						last_error = ret;
+						last_error = std::move(ret);
 				}
 			}
 		}
@@ -1847,7 +1847,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 
 					CommandCost tmp_ret = RemoveRoad(tile, flags, GetRoadBits(tile, rtt), rtt, true);
 					if (tmp_ret.Failed()) return tmp_ret;
-					ret.AddCost(tmp_ret);
+					ret.AddCost(tmp_ret.GetCost());
 				}
 				return ret;
 			}
@@ -1866,7 +1866,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 
 				CommandCost tmp_ret = RemoveRoad(tile, flags, GetCrossingRoadBits(tile), rtt, true);
 				if (tmp_ret.Failed()) return tmp_ret;
-				ret.AddCost(tmp_ret);
+				ret.AddCost(tmp_ret.GetCost());
 			}
 
 			if (flags.Test(DoCommandFlag::Execute)) {
@@ -3146,7 +3146,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 		if (!CanConvertUnownedRoadType(owner, rtt)) {
 			CommandCost ret = CheckOwnership(owner, tile);
 			if (ret.Failed()) {
-				error = ret;
+				error = std::move(ret);
 				continue;
 			}
 		}
@@ -3157,7 +3157,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 			Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
 			CommandCost ret = CheckforTownRating({}, t, tt == MP_TUNNELBRIDGE ? TUNNELBRIDGE_REMOVE : ROAD_REMOVE);
 			if (ret.Failed()) {
-				error = ret;
+				error = std::move(ret);
 				continue;
 			}
 		}
@@ -3180,7 +3180,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 			if (!HasPowerOnRoad(from_type, to_type)) {
 				CommandCost ret = EnsureNoVehicleOnGround(tile);
 				if (ret.Failed()) {
-					error = ret;
+					error = std::move(ret);
 					continue;
 				}
 
@@ -3253,7 +3253,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 			if (!HasPowerOnRoad(from_type, to_type)) {
 				CommandCost ret = TunnelBridgeIsFree(tile, endtile);
 				if (ret.Failed()) {
-					error = ret;
+					error = std::move(ret);
 					continue;
 				}
 

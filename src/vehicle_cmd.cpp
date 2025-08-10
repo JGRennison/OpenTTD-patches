@@ -464,7 +464,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 			}
 			continue;
 		}
-		cost.AddCost(refit_cost);
+		cost.AddCost(std::move(refit_cost));
 
 		/* Record the refitting.
 		 * Do not execute the refitting immediately, so DetermineCapacity and GetRefitCost do the same in test and exec run.
@@ -475,7 +475,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 		 *  - We have to call the refit cost callback with the pre-refit configuration of the chain because we want refit and
 		 *    autorefit to behave the same, and we need its result for auto_refit_allowed.
 		 */
-		refit_result.push_back({v, amount, mail_capacity, actual_subtype});
+		refit_result.emplace_back(v, amount, mail_capacity, actual_subtype);
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
@@ -767,10 +767,10 @@ CommandCost CmdDepotSellAllVehicles(DoCommandFlags flags, TileIndex tile, Vehicl
 		if (v->owner != _current_company) continue;
 		CommandCost ret = Command<CMD_SELL_VEHICLE>::Do(flags, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 		if (ret.Succeeded()) {
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 			had_success = true;
 		} else {
-			last_error = ret;
+			last_error = std::move(ret);
 		}
 	}
 
@@ -801,7 +801,7 @@ CommandCost CmdDepotMassAutoReplace(DoCommandFlags flags, TileIndex tile, Vehicl
 
 		if (v->type == VEH_TRAIN) {
 			CommandCost ret = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(flags, v->index);
-			if (ret.Succeeded()) cost.AddCost(ret);
+			if (ret.Succeeded()) cost.AddCost(ret.GetCost());
 			if (ret.HasResultData()) {
 				v = Vehicle::Get(ret.GetResultData());
 			}
@@ -809,7 +809,7 @@ CommandCost CmdDepotMassAutoReplace(DoCommandFlags flags, TileIndex tile, Vehicl
 
 		CommandCost ret = Command<CMD_AUTOREPLACE_VEHICLE>::Do(flags, v->index, false);
 
-		if (ret.Succeeded()) cost.AddCost(ret);
+		if (ret.Succeeded()) cost.AddCost(ret.GetCost());
 	}
 	return cost;
 }
@@ -1407,7 +1407,7 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 			return cost;
 		}
 
-		total_cost.AddCost(cost);
+		total_cost.AddCost(cost.GetCost());
 
 		if (flags.Test(DoCommandFlag::Execute)) {
 			w = Vehicle::Get(cost.GetResultData());
@@ -1469,7 +1469,7 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 				uint8_t subtype = GetBestFittingSubType(v, w, v->cargo_type);
 				if (w->cargo_type != v->cargo_type || w->cargo_subtype != subtype) {
 					CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(flags, w->index, v->cargo_type, subtype, false, true, 0);
-					if (cost.Succeeded()) total_cost.AddCost(cost);
+					if (cost.Succeeded()) total_cost.AddCost(cost.GetCost());
 				}
 
 				if (w->IsGroundVehicle() && w->HasArticulatedPart()) {

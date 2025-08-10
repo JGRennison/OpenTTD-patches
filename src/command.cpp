@@ -1103,14 +1103,14 @@ EncodedString &CommandCost::GetEncodedMessage()
  * Also takes a possible error message when it is set.
  * @param ret The command to add the cost of.
  */
-void CommandCost::AddCost(const CommandCost &ret)
+void CommandCost::AddCost(CommandCost &&ret)
 {
 	this->AddCost(ret.cost);
 	if (this->Succeeded() && !ret.Succeeded()) {
 		this->message = ret.message;
 		this->flags &= ~CCIF_SUCCESS;
 		if (ret.GetInlineType() == CommandCostInlineType::AuxiliaryData && !ret.inl.aux_data->encoded_message.empty()) {
-			this->SetEncodedMessage(EncodedString{ret.inl.aux_data->encoded_message});
+			this->SetEncodedMessage(std::move(ret.inl.aux_data->encoded_message));
 		}
 	}
 }

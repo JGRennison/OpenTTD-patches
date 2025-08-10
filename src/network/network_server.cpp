@@ -2239,22 +2239,22 @@ void NetworkServerCalendarYearlyLoop()
 /** Yearly "callback". Called whenever the year changes. */
 void NetworkServerEconomyYearlyLoop()
 {
-	NetworkAdminUpdate(ADMIN_FREQUENCY_ANUALLY);
+	NetworkAdminUpdate(AdminUpdateFrequency::Annually);
 }
 
 /** Monthly "callback". Called whenever the month changes. */
 void NetworkServerEconomyMonthlyLoop()
 {
 	NetworkAutoCleanCompanies();
-	NetworkAdminUpdate(ADMIN_FREQUENCY_MONTHLY);
-	if ((CalTime::CurMonth() % 3) == 0) NetworkAdminUpdate(ADMIN_FREQUENCY_QUARTERLY);
+	NetworkAdminUpdate(AdminUpdateFrequency::Monthly);
+	if ((CalTime::CurMonth() % 3) == 0) NetworkAdminUpdate(AdminUpdateFrequency::Quarterly);
 }
 
 /** Daily "callback". Called whenever the date changes. */
 void NetworkServerEconomyDailyLoop()
 {
-	NetworkAdminUpdate(ADMIN_FREQUENCY_DAILY);
-	if ((CalTime::CurDate().base() % 7) == 3) NetworkAdminUpdate(ADMIN_FREQUENCY_WEEKLY);
+	NetworkAdminUpdate(AdminUpdateFrequency::Daily);
+	if ((CalTime::CurDate().base() % 7) == 3) NetworkAdminUpdate(AdminUpdateFrequency::Weekly);
 }
 
 /**

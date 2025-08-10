@@ -657,7 +657,7 @@ CommandCost CmdClearArea(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 		TileIndex t = *iter;
 		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t);
 		if (ret.Failed()) {
-			last_error = ret;
+			last_error = std::move(ret);
 
 			/* We may not clear more tiles. */
 			if (c != nullptr && GB(c->clear_limit, 16, 16) < 1) break;
@@ -685,7 +685,7 @@ CommandCost CmdClearArea(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 			/* When we're at the clearing limit we better bail (unneed) testing as well. */
 			if (ret.GetCost() != 0 && --limit <= 0) break;
 		}
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 	}
 
 	return had_success ? cost : last_error;

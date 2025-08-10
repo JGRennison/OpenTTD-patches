@@ -23,6 +23,10 @@
 
 #include "../../safeguards.h"
 
+EncodedString RawText::GetEncodedText()
+{
+	return ::GetEncodedString(STR_JUST_RAW_STRING, this->text);
+}
 
 ScriptText::ScriptText(HSQUIRRELVM vm)
 {
@@ -410,9 +414,4 @@ void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output,
 const std::string Text::GetDecodedText()
 {
 	return this->GetEncodedText().GetDecodedString();
-}
-
-EncodedString RawText::GetEncodedText()
-{
-	return ::GetEncodedString(STR_JUST_RAW_STRING, this->text);
 }

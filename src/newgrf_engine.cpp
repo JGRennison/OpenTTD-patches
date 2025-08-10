@@ -1178,7 +1178,9 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 		return nullptr;
 	}
 
-	bool in_motion = !v->First()->current_order.IsType(OT_LOADING);
+	const Order &order = v->First()->current_order;
+	bool not_loading = (order.GetUnloadType() & OUFB_NO_UNLOAD) && (order.GetLoadType() & OLFB_NO_LOAD);
+	bool in_motion = !order.IsType(OT_LOADING) || not_loading;
 
 	uint totalsets = in_motion ? (uint)group->loaded.size() : (uint)group->loading.size();
 
@@ -1278,7 +1280,7 @@ void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction directio
 	result->Clear();
 
 	bool sprite_stack = EngInfo(engine)->misc_flags.Test(EngineMiscFlag::SpriteStack);
-	uint max_stack = sprite_stack ? lengthof(result->seq) : 1;
+	uint max_stack = sprite_stack ? static_cast<uint>(std::size(result->seq)) : 1;
 	for (uint stack = 0; stack < max_stack; ++stack) {
 		object.ResetState();
 		object.callback_param1 = image_type | (stack << 8);
@@ -1312,7 +1314,7 @@ void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineIma
 	uint rotor_pos = v == nullptr || rotor_in_gui ? 0 : v->Next()->Next()->state;
 
 	bool sprite_stack = e->info.misc_flags.Test(EngineMiscFlag::SpriteStack);
-	uint max_stack = sprite_stack ? lengthof(result->seq) : 1;
+	uint max_stack = sprite_stack ? static_cast<uint>(std::size(result->seq)) : 1;
 	for (uint stack = 0; stack < max_stack; ++stack) {
 		object.ResetState();
 		object.callback_param1 = image_type | (stack << 8);

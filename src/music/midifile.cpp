@@ -12,7 +12,6 @@
 #include "../fileio_type.h"
 #include "../string_func.h"
 #include "../core/endian_func.hpp"
-#include "../core/mem_func.hpp"
 #include "../base_media_base.h"
 #include "midi.h"
 
@@ -202,6 +201,9 @@ static bool ReadTrackChunk(FileHandle &file, MidiFile &target)
 		return false;
 	}
 	chunk_length = FROM_BE32(chunk_length);
+
+	/* Limit chunk size to 1 MiB. */
+	if (chunk_length > 1024 * 1024) return false;
 
 	ByteBuffer chunk(file, chunk_length);
 	if (!chunk.IsValid()) {
@@ -424,7 +426,7 @@ bool MidiFile::ReadSMFHeader(FileHandle &file, SMFHeader &header)
 
 	/* Check magic, 'MThd' followed by 4 byte length indicator (always = 6 in SMF) */
 	const uint8_t magic[] = { 'M', 'T', 'h', 'd', 0x00, 0x00, 0x00, 0x06 };
-	if (MemCmpT(buffer, magic, sizeof(magic)) != 0) {
+	if (std::ranges::equal(std::span(buffer, std::size(magic)), magic)) {
 		return false;
 	}
 
@@ -458,6 +460,8 @@ bool MidiFile::LoadFile(const char *filename)
 	if (header.format != 0 && header.format != 1) return false;
 	/* Doesn't support SMPTE timecode files */
 	if ((header.tickdiv & 0x8000) != 0) return false;
+	/* Ticks per beat / parts per quarter note should not be zero. */
+	if (header.tickdiv == 0) return false;
 
 	this->tickdiv = header.tickdiv;
 

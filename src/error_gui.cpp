@@ -87,7 +87,7 @@ ErrorMessageData::ErrorMessageData(EncodedString &&summary_msg, EncodedString &&
 {
 	assert(!this->summary_msg.empty());
 
-	this->display_timer.SetInterval(duration * 3000);
+	this->display_timer.SetInterval(duration * 1000);
 }
 
 /** The actual queue with errors. */

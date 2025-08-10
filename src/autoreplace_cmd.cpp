@@ -355,7 +355,7 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
 
 		uint8_t subtype = GetBestFittingSubType(old, v, old->cargo_type);
 		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, old->cargo_type, subtype, false, false, 1);
-		if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+		if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 	}
 
 	return cost;
@@ -408,7 +408,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 				uint8_t subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
 				CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
-				if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+				if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 			}
 		}
 		return cost;
@@ -463,7 +463,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 		assert(old_cargo_vehs[c] != nullptr);
 		uint8_t subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
 		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
-		if (refit_cost.Succeeded()) cost.AddCost(refit_cost);
+		if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 	}
 	return cost;
 }
@@ -710,10 +710,9 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 			ReplaceChainItem &replacement = replacements.emplace_back(w, nullptr, 0);
 
 			CommandCost ret = BuildReplacementVehicle(replacement.old_veh, &replacement.new_veh, true, flags, same_type_only);
-			cost.AddCost(ret);
+			cost.AddCost(std::move(ret));
 			if (cost.Failed()) break;
 
-			replacement.cost = ret.GetCost();
 			if (replacement.new_veh != nullptr) *nothing_to_do = false;
 		}
 		Vehicle *new_head = replacements.front().GetVehicle();
@@ -774,7 +773,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 							break;
 						}
 
-						cost.AddCost(res);
+						cost.AddCost(std::move(res));
 						if (cost.Failed()) break;
 					} else {
 						/* We have reached 'last_engine', continue with the next engine towards the front */

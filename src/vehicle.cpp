@@ -1809,7 +1809,7 @@ void CallVehicleTicks()
 			t = Train::Get(res2.GetResultData());
 		}
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
-		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2);
+		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2.GetCost());
 
 		if (!IsLocalCompany()) continue;
 

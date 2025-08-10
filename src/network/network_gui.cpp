@@ -707,7 +707,6 @@ public:
 				this->list_pos = (server == nullptr) ? SLP_INVALID : it - this->servers.begin();
 				this->SetDirty();
 
-				/* FIXME the disabling should go into some InvalidateData, which is called instead of the SetDirty */
 				if (click_count > 1 && !this->IsWidgetDisabled(WID_NG_JOIN)) this->OnClick(pt, WID_NG_JOIN, 1);
 				break;
 			}
@@ -721,7 +720,6 @@ public:
 					this->ScrollToSelectedServer();
 					this->SetDirty();
 
-					/* FIXME the disabling should go into some InvalidateData, which is called instead of the SetDirty */
 					if (click_count > 1 && !this->IsWidgetDisabled(WID_NG_JOIN)) this->OnClick(pt, WID_NG_JOIN, 1);
 				}
 				break;

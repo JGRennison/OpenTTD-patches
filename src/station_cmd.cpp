@@ -1035,7 +1035,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 	for (TileIndex tile_cur : tile_area) {
 		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, false);
 		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 
 		if (slope_cb) {
 			/* Do slope check if requested. */
@@ -1086,7 +1086,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 						}
 						CommandCost ret = Command<CMD_REMOVE_SINGLE_RAIL>::Do(flags, tile_cur, track);
 						if (ret.Failed()) return ret;
-						cost.AddCost(ret);
+						cost.AddCost(ret.GetCost());
 						/* With DoCommandFlags{flags}.Reset(DoCommandFlag::Execute) CmdLandscapeClear would fail since the rail still exists */
 						continue;
 					}
@@ -1094,7 +1094,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 			}
 			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_cur);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 		}
 	}
 
@@ -1124,7 +1124,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet));
 		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !allow_under_bridge);
 		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 
 		if (allow_under_bridge && IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
@@ -1221,7 +1221,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 			} else {
 				ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, cur_tile);
 				if (ret.Failed()) return ret;
-				cost.AddCost(ret);
+				cost.AddCost(ret.GetCost());
 				cost.AddCost(RoadBuildCost(rt) * 2);
 			}
 		}
@@ -1246,7 +1246,7 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 		const TileIndex tile_cur = tile_iter;
 		CommandCost ret = CheckBuildableTile(tile_cur, 0, allowed_z, true, true);
 		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 
 		/* if station is set, then allow building on top of an already
 		 * existing airport, either the one in *station if it is not
@@ -1266,7 +1266,7 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 		} else {
 			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_cur);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 		}
 	}
 
@@ -1840,8 +1840,8 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 
 		/* If there is a vehicle on ground, do not allow to remove (flood) the tile */
 		CommandCost ret = EnsureNoVehicleOnGround(tile);
-		error.AddCost(ret);
-		if (ret.Failed()) continue;
+		error.AddCost(std::move(ret));
+		if (error.Failed()) continue;
 
 		/* Check ownership of station */
 		T *st = T::GetByTile(tile);
@@ -1849,8 +1849,8 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 
 		if (_current_company != OWNER_WATER) {
 			ret = CheckOwnership(st->owner);
-			error.AddCost(ret);
-			if (ret.Failed()) continue;
+			error.AddCost(std::move(ret));
+			if (error.Failed()) continue;
 		}
 
 		Train *v = nullptr;
@@ -1859,7 +1859,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 			v = GetTrainForReservation(tile, track);
 			if (v != nullptr) {
 				CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
-				error.AddCost(ret);
+				error.AddCost(ret.GetCost());
 				if (ret.Failed()) continue;
 				if (flags.Test(DoCommandFlag::Execute)) FreeTrainReservation(v);
 			}
@@ -2009,7 +2009,7 @@ CommandCost RemoveRailStation(T *st, DoCommandFlags flags, Money removal_cost)
 			std::vector<T*> affected_stations; // dummy
 			CommandCost ret = RemoveFromRailBaseStation(TileArea(tile, 1, 1), affected_stations, flags, removal_cost, false);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 		}
 	}
 
@@ -2163,7 +2163,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 	StationID est = StationID::Invalid();
 	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, station_type, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
-	cost.AddCost(ret);
+	cost.AddCost(ret.GetCost());
 
 	Station *st = nullptr;
 	ret = FindJoiningRoadStop(est, station_to_join, adjacent, roadstop_area, &st);
@@ -2504,10 +2504,10 @@ static CommandCost RemoveGenericRoadStop(DoCommandFlags flags, const TileArea &r
 
 		CommandCost ret = RemoveRoadStop(cur_tile, flags);
 		if (ret.Failed()) {
-			last_error = ret;
+			last_error = std::move(ret);
 			continue;
 		}
-		cost.AddCost(ret);
+		cost.AddCost(ret.GetCost());
 		had_success = true;
 
 		/* Restore roads. */
@@ -2820,7 +2820,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		/* check that the old airport can be removed */
 		CommandCost r = CanRemoveAirport(st, flags);
 		if (r.Failed()) return r;
-		cost.AddCost(r);
+		cost.AddCost(r.GetCost());
 	}
 
 	for (AirportTileTableIterator iter(as->layouts[layout].tiles.data(), tile); iter != INVALID_TILE; ++iter) {
@@ -3053,7 +3053,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	CommandCost cost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_STATION_DOCK]);
 	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 	if (ret.Failed()) return ret;
-	cost.AddCost(ret);
+	cost.AddCost(ret.GetCost());
 
 	TileIndex flat_tile = tile + TileOffsByDiagDir(direction);
 
@@ -3069,7 +3069,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	bool add_cost = !IsWaterTile(flat_tile);
 	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::AllowRemoveWater, flat_tile);
 	if (ret.Failed()) return ret;
-	if (add_cost) cost.AddCost(ret);
+	if (add_cost) cost.AddCost(ret.GetCost());
 
 	TileIndex adjacent_tile = flat_tile + TileOffsByDiagDir(direction);
 	if (!IsTileType(adjacent_tile, MP_WATER) || !IsTileFlat(adjacent_tile)) {
@@ -3862,8 +3862,6 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 
 static void TileLoop_Station(TileIndex tile)
 {
-	/* FIXME -- GetTileTrackStatus_Station -> animated stationtiles
-	 * hardcoded.....not good */
 	switch (GetStationType(tile)) {
 		case StationType::Airport:
 			AirportTileAnimationTrigger(Station::GetByTile(tile), tile, AAT_TILELOOP);
@@ -4317,7 +4315,7 @@ static void UpdateStationRating(Station *st)
 				const int old_rating = ge->rating; // old rating
 
 				/* only modify rating in steps of -2, -1, 0, 1 or 2 */
-				ge->rating = rating = old_rating + Clamp(rating - old_rating, -2, 2);
+				ge->rating = rating = ClampTo<uint8_t>(old_rating + Clamp(rating - old_rating, -2, 2));
 
 				/* if rating is <= 64 and more than 100 items waiting on average per destination,
 				 * remove some random amount of goods from the station */

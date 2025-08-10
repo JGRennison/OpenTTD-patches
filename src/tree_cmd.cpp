@@ -746,7 +746,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 						case CLEAR_ROCKS: {
 							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 							if (ret.Failed()) return ret;
-							cost.AddCost(ret);
+							cost.AddCost(ret.GetCost());
 							break;
 						}
 

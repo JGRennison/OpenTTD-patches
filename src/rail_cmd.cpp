@@ -691,7 +691,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 			CheckTrackCombinationRailTypeChanges changes;
 			ret = CheckTrackCombination(tile, trackbit, railtype, HasFlag(build_flags, BuildRailTrackFlags::NoDualRailType), flags, HasFlag(build_flags, BuildRailTrackFlags::AutoRemoveSignals), changes);
 			if (ret.Succeeded()) {
-				cost.AddCost(ret);
+				cost.AddCost(ret.GetCost());
 				ret = EnsureNoTrainOnTrack(tile, track);
 			}
 			if (ret.Failed()) {
@@ -701,7 +701,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 
 			ret = CheckRailSlope(tileh, trackbit, GetTrackBits(tile), tile);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 
 			if (HasSignals(tile) && TracksOverlap(GetTrackBits(tile) | TrackToTrackBits(track))) {
 				/* If adding the new track causes any overlap, all signals must be removed first */
@@ -711,7 +711,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 					if (HasTrack(tile, track_it) && HasSignalOnTrack(tile, track_it)) {
 						CommandCost ret_remove_signals = Command<CMD_REMOVE_SINGLE_SIGNAL>::Do(flags, tile, track_it, RemoveSignalFlags::None);
 						if (ret_remove_signals.Failed()) return ret_remove_signals;
-						cost.AddCost(ret_remove_signals);
+						cost.AddCost(ret_remove_signals.GetCost());
 					}
 				}
 			}
@@ -892,11 +892,11 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 
 			CommandCost ret = CheckRailSlope(tileh, trackbit, TRACK_BIT_NONE, tile);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 
 			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::AllowRemoveWater, tile);
 			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
+			cost.AddCost(ret.GetCost());
 
 			if (water_ground) {
 				cost.AddCost(-_price[PR_CLEAR_WATER]);
@@ -1021,7 +1021,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 			if (HasSignalOnTrack(tile, track)) {
 				CommandCost ret_remove_signals = Command<CMD_REMOVE_SINGLE_SIGNAL>::Do(flags, tile, track, RemoveSignalFlags::None);
 				if (ret_remove_signals.Failed()) return ret_remove_signals;
-				cost.AddCost(ret_remove_signals);
+				cost.AddCost(ret_remove_signals.GetCost());
 			}
 
 			if (flags.Test(DoCommandFlag::Execute)) {
@@ -1299,7 +1299,7 @@ static CommandCost CmdRailTrackHelper(DoCommandFlags flags, TileIndex tile, Tile
 		}
 
 		if (ret.Failed()) {
-			last_error = ret;
+			last_error = std::move(ret);
 			if (_rail_track_endtile == INVALID_TILE) _rail_track_endtile = last_endtile;
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT && !remove) {
 				if (fail_on_obstacle) return last_error;
@@ -1310,7 +1310,7 @@ static CommandCost CmdRailTrackHelper(DoCommandFlags flags, TileIndex tile, Tile
 			if (last_error.GetErrorMessage() == STR_ERROR_OWNED_BY && remove) break;
 		} else {
 			had_success = true;
-			total_cost.AddCost(ret);
+			total_cost.AddCost(ret.GetCost());
 		}
 
 		if (tile == end_tile) break;
@@ -1654,12 +1654,12 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 
 			CommandCost subcost = check_tile(tile);
 			if (subcost.Failed()) return subcost;
-			cost.AddCost(subcost);
+			cost.AddCost(subcost.GetCost());
 
 			if (change_both_ends) {
 				subcost = check_tile(tile_exit);
 				if (subcost.Failed()) return subcost;
-				cost.AddCost(subcost);
+				cost.AddCost(subcost.GetCost());
 			}
 		}
 
@@ -2222,7 +2222,7 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlags flags, TileIndex tile, Ti
 				/* Be user-friendly and try placing signals as much as possible */
 				if (ret.Succeeded()) {
 					had_success = true;
-					total_cost.AddCost(ret);
+					total_cost.AddCost(ret.GetCost());
 					last_used_ctr = last_suitable_ctr;
 					last_suitable_tile = INVALID_TILE;
 				} else {
@@ -2577,7 +2577,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 		/* Trying to convert other's rail */
 		CommandCost ret = CheckTileOwnership(tile);
 		if (ret.Failed()) {
-			error = ret;
+			error = std::move(ret);
 			continue;
 		}
 
@@ -2626,7 +2626,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 			if (!IsCompatibleRail(type, totype) || !IsCompatibleRail(secondary_type, totype)) {
 				CommandCost ret = IsPlainRailTile(tile) ? EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, GetTrackBits(tile), totype) : EnsureNoIncompatibleRailtypeTrainOnGround(tile, totype);
 				if (ret.Failed()) {
-					error = ret;
+					error = std::move(ret);
 					continue;
 				}
 			}
@@ -2713,7 +2713,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 						ret = EnsureNoIncompatibleRailtypeTrainOnTrackBits(endtile, TRACK_BIT_MASK | TRACK_BIT_WORMHOLE, totype);
 					}
 					if (ret.Failed()) {
-						error = ret;
+						error = std::move(ret);
 						continue;
 					}
 				}
@@ -3163,7 +3163,7 @@ static CommandCost ClearTile_Track(TileIndex tile, DoCommandFlags flags)
 				Track track = RemoveFirstTrack(&tracks);
 				CommandCost ret = Command<CMD_REMOVE_SINGLE_RAIL>::Do(flags, tile, track);
 				if (ret.Failed()) return ret;
-				cost.AddCost(ret);
+				cost.AddCost(ret.GetCost());
 			}
 
 			/* When bankrupting, don't make water dirty, there could be a ship on lower halftile.
