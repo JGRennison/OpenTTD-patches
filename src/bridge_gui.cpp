@@ -387,15 +387,11 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	/* only query bridge building possibility once, result is the same for all bridges,
 	 * unless the result is bridge too low for station or pillars obstruct station, in which case it is bridge-type dependent.
 	 * returns CMD_ERROR on failure, and price on success */
-	StringID errmsg = INVALID_STRING_ID;
 	CommandCost ret = Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
 
 	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
 
 	GUIBridgeList bl;
-	if (ret.Failed()) {
-		errmsg = ret.GetErrorMessage();
-	}
 	if (ret.Succeeded() || query_per_bridge_type) {
 		/* check which bridges can be built */
 		const uint tot_bridgedata_len = CalcBridgeLenCostFactor(bridge_len + 2);
@@ -425,8 +421,6 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 			default: break;
 		}
 
-		bool any_available = false;
-		StringID type_errmsg = INVALID_STRING_ID;
 		/* loop for all bridgetypes */
 		for (BridgeType brd_type = 0; brd_type != MAX_BRIDGES; brd_type++) {
 			CommandCost type_check = CheckBridgeAvailability(brd_type, bridge_len);
@@ -440,19 +434,15 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				/* Add to terraforming & bulldozing costs the cost of the
 				 * bridge itself (not computed with DoCommandFlag::QueryCost) */
 				item.cost = ret.GetCost() + (((int64_t)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
-				any_available = true;
-			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID && !query_per_bridge_type) {
-				type_errmsg = type_check.GetErrorMessage();
+			} else if (!query_per_bridge_type) {
+				ret = std::move(type_check);
 			}
 		}
-		/* give error cause if no bridges available here*/
-		if (!any_available && type_errmsg != INVALID_STRING_ID) errmsg = type_errmsg;
 	}
 
 	if (!bl.empty()) {
 		new BuildBridgeWindow(_build_bridge_desc, start, end, transport_type, road_rail_type, std::move(bl));
 	} else {
-		ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE), GetEncodedString(errmsg),
-			WL_INFO, TileX(end) * TILE_SIZE, TileY(end) * TILE_SIZE);
+		ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE), TileX(end) * TILE_SIZE, TileY(end) * TILE_SIZE, ret);
 	}
 }
