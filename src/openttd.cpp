@@ -106,6 +106,8 @@
 
 #include <system_error>
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 #ifdef __EMSCRIPTEN__

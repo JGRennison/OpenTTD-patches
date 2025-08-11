@@ -169,11 +169,11 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	void UpdateVirtCoord(bool only_if_label_changed = false);
 
-	inline const char *GetCachedName() const
+	inline std::string_view GetCachedName() const
 	{
-		if (!this->name.empty()) return this->name.c_str();
+		if (!this->name.empty()) return this->name;
 		if (this->cached_name.empty()) this->FillCachedName();
-		return this->cached_name.c_str();
+		return this->cached_name;
 	}
 
 	inline bool IsTownGrowthDisabledByOverride() const

@@ -16,10 +16,11 @@
 #include "strings_func.h"
 #include "video/video_driver.hpp"
 #include "string_func.h"
-#include "table/strings.h"
 #include "fileio_func.h"
 #include <string>
 #include <sstream>
+
+#include "table/strings.h"
 
 #include "safeguards.h"
 

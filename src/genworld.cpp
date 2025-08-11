@@ -46,6 +46,8 @@
 #include "town_cmd.h"
 #include "signs_cmd.h"
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 

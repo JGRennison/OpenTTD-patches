@@ -19,6 +19,7 @@
 #include "../../strings_func.h"
 #include "../../station_base.h"
 #include "../../landscape.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

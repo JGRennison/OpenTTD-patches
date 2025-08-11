@@ -178,4 +178,6 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 
 bool IsViewportMouseHoverActive();
 
+void UpdateRouteStepSpriteSize();
+
 #endif /* VIEWPORT_FUNC_H */

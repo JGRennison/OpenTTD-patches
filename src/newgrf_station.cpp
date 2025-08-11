@@ -23,10 +23,13 @@
 #include "company_func.h"
 #include "tunnelbridge_map.h"
 #include "newgrf_animation_base.h"
-#include "newgrf_class_func.h"
 #include "newgrf_extension.h"
 #include "newgrf_dump.h"
 #include "core/checksum_func.hpp"
+
+#include "table/strings.h"
+
+#include "newgrf_class_func.h"
 
 #include "safeguards.h"
 

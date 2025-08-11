@@ -50,6 +50,10 @@
 #endif
 #include <tuple>
 
+#include "table/strings.h"
+
+#include "../safeguards.h"
+
 #ifdef DEBUG_DUMP_COMMANDS
 /** Helper variable to make the dedicated server go fast until the (first) join.
  * Used to load the desync debug logs, i.e. for reproducing a desync.

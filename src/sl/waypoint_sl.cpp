@@ -14,10 +14,9 @@
 #include "../vehicle_base.h"
 #include "../town.h"
 #include "../newgrf.h"
+#include "saveload_internal.h"
 
 #include "table/strings.h"
-
-#include "saveload_internal.h"
 
 #include "../safeguards.h"
 

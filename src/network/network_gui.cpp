@@ -42,13 +42,12 @@
 #include "../settings_internal.h"
 #include "../textfile_gui.h"
 #include "../timer/timer_game_tick.h"
+#include "../stringfilter_type.h"
 
 #include "../widgets/network_widget.h"
 
 #include "table/strings.h"
 #include "../table/sprites.h"
-
-#include "../stringfilter_type.h"
 
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>

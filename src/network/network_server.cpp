@@ -40,6 +40,8 @@
 #include <condition_variable>
 #include <tuple>
 
+#include "table/strings.h"
+
 #include "../safeguards.h"
 
 

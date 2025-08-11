@@ -33,6 +33,8 @@
 #include "saveload.h"
 #include "vehicle_sl.h"
 
+#include "table/strings.h"
+
 #include <map>
 
 #include "../safeguards.h"

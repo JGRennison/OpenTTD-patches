@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "highscore.h"
-#include "table/strings.h"
 #include "gfx_func.h"
 #include "table/sprites.h"
 #include "window_gui.h"
@@ -24,6 +23,8 @@
 #include "misc_cmd.h"
 
 #include "widgets/highscore_widget.h"
+
+#include "table/strings.h"
 
 #include "safeguards.h"
 

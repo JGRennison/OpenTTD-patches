@@ -17,8 +17,8 @@
 #include "../../autoreplace_func.h"
 #include "../../group_cmd.h"
 #include "../../settings_cmd.h"
-#include "../../settings_func.h"
 #include "../../vehicle_base.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

@@ -35,6 +35,8 @@
 #include "programmable_signals_cmd.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
+#include "table/strings.h"
+
 #include <vector>
 #include <algorithm>
 

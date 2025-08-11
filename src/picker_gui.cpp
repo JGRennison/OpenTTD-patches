@@ -33,6 +33,7 @@
 #include "widgets/picker_widget.h"
 
 #include "table/sprites.h"
+#include "table/strings.h"
 
 #include <charconv>
 

@@ -37,6 +37,7 @@
 #include "widgets/group_widget.h"
 
 #include "table/sprites.h"
+#include "table/strings.h"
 
 #include "safeguards.h"
 

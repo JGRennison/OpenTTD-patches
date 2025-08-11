@@ -47,7 +47,6 @@
 #include "road.h"
 #include "rail.h"
 #include "game/game.hpp"
-#include "table/strings.h"
 #include "aircraft.h"
 #include "airport.h"
 #include "station_base.h"
@@ -79,6 +78,8 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 
 #include <sstream>
+
+#include "table/strings.h"
 
 #include "safeguards.h"
 

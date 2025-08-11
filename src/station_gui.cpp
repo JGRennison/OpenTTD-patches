@@ -21,7 +21,6 @@
 #include "window_func.h"
 #include "viewport_func.h"
 #include "dropdown_type.h"
-#include "dropdown_common_type.h"
 #include "dropdown_func.h"
 #include "station_base.h"
 #include "station_cmd.h"
@@ -39,21 +38,24 @@
 #include "zoning.h"
 #include "newgrf_debug.h"
 #include "roadveh.h"
+#include "cheat_func.h"
+#include "newgrf_callbacks.h"
+#include "newgrf_cargo.h"
 #include "core/format.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include "widgets/misc_widget.h"
 #include "widgets/station_widget.h"
 
 #include "table/strings.h"
 
+#include "dropdown_common_type.h"
+
 #include <set>
 #include <vector>
 
-#include "cheat_func.h"
-#include "newgrf_callbacks.h"
-#include "newgrf_cargo.h"
 #include "safeguards.h"
-#include "widgets/misc_widget.h"
+
 
 enum StationRatingTooltipMode {
 	SRTM_OFF,

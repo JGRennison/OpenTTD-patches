@@ -20,6 +20,8 @@
 
 #include "widgets/date_widget.h"
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 

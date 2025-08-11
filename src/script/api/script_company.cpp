@@ -24,6 +24,7 @@
 #include "../../settings_cmd.h"
 #include "../../settings_func.h"
 #include "../../misc_cmd.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

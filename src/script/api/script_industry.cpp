@@ -20,6 +20,7 @@
 #include "../../strings_func.h"
 #include "../../station_base.h"
 #include "../../newgrf_industries.h"
+
 #include "table/strings.h"
 #include <numeric>
 

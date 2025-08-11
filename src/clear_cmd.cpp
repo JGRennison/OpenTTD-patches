@@ -79,12 +79,12 @@ void DrawHillyLandTile(const TileInfo *ti)
 
 SpriteID GetSpriteIDForRocks(const Slope slope, const uint tile_hash)
 {
-	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (tile_hash & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(slope);
+	return ((HasGrfMiscBit(GrfMiscBit::SecondRockyTileSet) && (tile_hash & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(slope);
 }
 
 inline SpriteID GetSpriteIDForRocksUsingOffset(const uint slope_to_sprite_offset, const uint x, const uint y)
 {
-	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(x, y) & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + slope_to_sprite_offset;
+	return ((HasGrfMiscBit(GrfMiscBit::SecondRockyTileSet) && (TileHash(x, y) & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + slope_to_sprite_offset;
 }
 
 bool DrawCustomSpriteIDForRocks(const TileInfo *ti, uint8_t slope_to_sprite_offset, bool require_snow_flag)

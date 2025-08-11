@@ -18,7 +18,9 @@
 #include "core/backup_type.hpp"
 #include "core/format.hpp"
 #include "core/geometry_func.hpp"
+
 #include "table/sprites.h"
+#include "table/strings.h"
 
 #include "safeguards.h"
 

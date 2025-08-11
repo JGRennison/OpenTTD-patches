@@ -24,7 +24,6 @@
 #include "strings_func.h"
 #include "date_func.h"
 #include "dropdown_type.h"
-#include "dropdown_common_type.h"
 #include "tilehighlight_func.h"
 #include "company_base.h"
 #include "company_cmd.h"
@@ -46,6 +45,10 @@
 #include "core/backup_type.hpp"
 
 #include "widgets/company_widget.h"
+
+#include "table/strings.h"
+
+#include "dropdown_common_type.h"
 
 #include "safeguards.h"
 

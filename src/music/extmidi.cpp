@@ -25,6 +25,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "table/strings.h"
+
 #include "../safeguards.h"
 
 #ifndef EXTERNAL_PLAYER

@@ -541,6 +541,20 @@ char *str_replace_wchar(char *str, const char *last, char32_t find, char32_t rep
 }
 
 /**
+ * Checks if a string is contained in another string, while ignoring the case of the characters.
+ *
+ * @param str The string to search in.
+ * @param value The string to search for.
+ * @return True if a match was found.
+ */
+bool StrContainsIgnoreCase(const std::string_view str, const std::string_view value)
+{
+	CaseInsensitiveStringView ci_str{ str.data(), str.size() };
+	CaseInsensitiveStringView ci_value{ value.data(), value.size() };
+	return ci_str.find(ci_value) != ci_str.npos;
+}
+
+/**
  * Get the length of an UTF-8 encoded string in number of characters
  * and thus not the number of bytes that the encoded string contains.
  * @param s The string to get the length for.

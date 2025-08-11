@@ -55,7 +55,7 @@ uint16_t GetTownZonesCallback(Town *t);
 inline void AmbientSoundEffect(TileIndex tile)
 {
 	/* Only run callback if enabled. */
-	if (!HasGrfMiscBit(GMB_AMBIENT_SOUND_CALLBACK)) return;
+	if (!HasGrfMiscBit(GrfMiscBit::AmbientSoundCallback)) return;
 
 	AmbientSoundEffectCallback(tile);
 }

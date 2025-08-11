@@ -23,6 +23,7 @@
 #include "../../vehicle_cmd.h"
 #include "../../vehicle_func.h"
 #include "../../aircraft.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "dropdown_type.h"
 #include "dropdown_func.h"
-#include "dropdown_common_type.h"
 #include "string_func.h"
 #include "strings_func.h"
 #include "window_gui.h"
@@ -19,6 +18,10 @@
 #include "zoom_func.h"
 
 #include "widgets/dropdown_widget.h"
+
+#include "table/strings.h"
+
+#include "dropdown_common_type.h"
 
 #include "safeguards.h"
 

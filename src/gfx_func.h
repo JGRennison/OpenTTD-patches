@@ -203,7 +203,6 @@ void SetMouseCursor(CursorID cursor, PaletteID pal);
 void SetAnimatedMouseCursor(const AnimCursor *table);
 void CursorTick();
 void UpdateCursorSize();
-void UpdateRouteStepSpriteSize();
 bool ChangeResInGame(int w, int h);
 void SortResolutions();
 bool ToggleFullScreen(bool fs);

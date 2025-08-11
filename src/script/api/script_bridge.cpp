@@ -17,6 +17,7 @@
 #include "../../date_func.h"
 #include "../../tunnelbridge_cmd.h"
 #include "../../road_cmd.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

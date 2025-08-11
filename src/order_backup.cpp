@@ -20,6 +20,8 @@
 #include "vehicle_func.h"
 #include "group_cmd.h"
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 OrderBackupPool _order_backup_pool("BackupOrder");

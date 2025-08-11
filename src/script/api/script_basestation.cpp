@@ -15,6 +15,7 @@
 #include "../../string_func.h"
 #include "../../strings_func.h"
 #include "../../waypoint_cmd.h"
+
 #include "table/strings.h"
 
 #include "../../safeguards.h"

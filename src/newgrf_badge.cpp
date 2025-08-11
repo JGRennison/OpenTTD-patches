@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "dropdown_type.h"
-#include "dropdown_common_type.h"
 #include "newgrf.h"
 #include "newgrf_badge.h"
 #include "newgrf_badge_type.h"
@@ -22,6 +21,8 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 
 #include "table/strings.h"
+
+#include "dropdown_common_type.h"
 
 #include <numeric>
 

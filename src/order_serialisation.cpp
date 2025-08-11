@@ -30,6 +30,8 @@
 #include "3rdparty/nlohmann/json.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include "table/strings.h"
+
 #include <type_traits>
 
 #include "safeguards.h"

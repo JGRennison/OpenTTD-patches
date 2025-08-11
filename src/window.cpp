@@ -42,6 +42,8 @@
 #include "timer/timer.h"
 #include "timer/timer_window.h"
 
+#include "table/strings.h"
+
 #include <bitset>
 
 #include "safeguards.h"

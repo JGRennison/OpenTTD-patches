@@ -85,6 +85,8 @@
 #include <signal.h>
 #include <algorithm>
 
+#include "table/strings.h"
+
 #include "../safeguards.h"
 
 extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev);

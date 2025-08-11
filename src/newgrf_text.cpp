@@ -135,7 +135,7 @@ struct UnmappedChoiceList {
 	 * @param lm The current language mapping.
 	 * @param dest Target to write to.
 	 */
-	void Flush(const LanguageMap *lm, std::ostringstream &dest)
+	void Flush(const LanguageMap *lm, std::stringstream &dest)
 	{
 		if (this->strings.find(0) == this->strings.end()) {
 			/* In case of a (broken) NewGRF without a default,
@@ -258,10 +258,11 @@ std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool all
 		src += len;
 	}
 
-	/* Helper variable for a possible (string) mapping. */
-	std::optional<UnmappedChoiceList> mapping;
+	/* Helper variable for a possible (string) mapping of plural/gender and cases. */
+	std::optional<UnmappedChoiceList> mapping_pg, mapping_c;
+	std::optional<std::reference_wrapper<std::stringstream>> dest_c;
 
-	std::ostringstream dest;
+	std::stringstream dest;
 	std::ostreambuf_iterator<char> d(dest);
 	while (src != str.cend()) {
 		char32_t c;
@@ -388,37 +389,44 @@ std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool all
 					case 0x10:
 					case 0x11:
 						if (str[0] == '\0') goto string_end;
-						if (!mapping.has_value()) {
+						if (!mapping_pg.has_value() && !mapping_c.has_value()) {
 							if (code == 0x10) src++; // Skip the index
 							GrfMsg(1, "choice list {} marker found when not expected", code == 0x10 ? "next" : "default");
 							break;
 						} else {
+							auto &mapping = mapping_pg ? mapping_pg : mapping_c;
 							int index = (code == 0x10 ? *src++ : 0);
 							if (mapping->strings.find(index) != mapping->strings.end()) {
 								GrfMsg(1, "duplicate choice list string, ignoring");
 							} else {
 								d = std::ostreambuf_iterator<char>(mapping->strings[index]);
+								if (!mapping_pg) dest_c = mapping->strings[index];
 							}
 						}
 						break;
 
 					case 0x12:
-						if (!mapping.has_value()) {
+						if (!mapping_pg.has_value() && !mapping_c.has_value()) {
 							GrfMsg(1, "choice list end marker found when not expected");
 						} else {
+							auto &mapping = mapping_pg ? mapping_pg : mapping_c;
+							auto &new_dest = mapping_pg && dest_c ? dest_c->get() : dest;
 							/* Now we can start flushing everything and clean everything up. */
-							mapping->Flush(LanguageMap::GetLanguageMap(grfid, language_id), dest);
+							mapping->Flush(LanguageMap::GetLanguageMap(grfid, language_id), new_dest);
+							if (!mapping_pg) dest_c.reset();
 							mapping.reset();
 
-							d = std::ostreambuf_iterator<char>(dest);
+							d = std::ostreambuf_iterator<char>(new_dest);
 						}
 						break;
 
 					case 0x13:
 					case 0x14:
-					case 0x15:
+					case 0x15: {
+						auto &mapping = code == 0x14 ? mapping_c : mapping_pg;
 						if (src[0] == '\0') goto string_end;
-						if (mapping.has_value()) {
+						/* Case mapping can have nested plural/gender mapping. Otherwise nesting is invalid. */
+						if (mapping.has_value() || mapping_pg.has_value()) {
 							GrfMsg(1, "choice lists can't be stacked, it's going to get messy now...");
 							if (code != 0x14) src++;
 						} else {
@@ -426,6 +434,7 @@ std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool all
 							mapping.emplace(mp[code - 0x13], code == 0x14 ? 0 : *src++);
 						}
 						break;
+					}
 
 					case 0x16:
 					case 0x17:
@@ -475,7 +484,7 @@ std::string TranslateTTDPatchCodes(uint32_t grfid, uint8_t language_id, bool all
 	}
 
 string_end:
-	if (mapping.has_value()) {
+	if (mapping_pg.has_value() || mapping_c.has_value()) {
 		GrfMsg(1, "choice list was incomplete, the whole list is ignored");
 	}
 
@@ -923,6 +932,13 @@ static void ProcessNewGRFStringControlCode(char32_t scc, const char *&str, TextR
 			params.emplace_back(stack.PopUnsignedWord());
 			break;
 
+		case SCC_NEWGRF_STRINL: {
+			StringID stringid = Utf8Consume(str);
+			/* We also need to handle the substring's stack usage. */
+			HandleNewGRFStringControlCodes(GetStringPtr(stringid), stack, params);
+			break;
+		}
+
 		case SCC_NEWGRF_PRINT_WORD_STRING_ID: {
 			StringID stringid = MapGRFStringID(stack.grffile->grfid, GRFStringID{stack.PopUnsignedWord()});
 			params.emplace_back(stringid);
@@ -966,9 +982,6 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, const char **str)
 		case SCC_NEWGRF_PRINT_DWORD_CURRENCY:
 		case SCC_NEWGRF_PRINT_QWORD_CURRENCY:
 			return SCC_CURRENCY_LONG;
-
-		case SCC_NEWGRF_PRINT_WORD_STRING_ID:
-			return SCC_NEWGRF_PRINT_WORD_STRING_ID;
 
 		case SCC_NEWGRF_PRINT_WORD_DATE_LONG:
 		case SCC_NEWGRF_PRINT_DWORD_DATE_LONG:

@@ -38,6 +38,8 @@
 #include "../core/string_consumer.hpp"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
+#include "table/strings.h"
+
 #include <atomic>
 #include <vector>
 #include <string>

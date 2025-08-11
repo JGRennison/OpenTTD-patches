@@ -60,7 +60,7 @@ struct TileDesc {
 	StringID airport_class{};                         ///< Name of the airport class
 	StringID airport_name{};                          ///< Name of the airport
 	StringID airport_tile_name{};                     ///< Name of the airport tile
-	const char *grf = nullptr;                        ///< newGRF used for the tile contents
+	std::optional<std::string> grf = std::nullopt;    ///< NewGRF used for the tile contents
 	StringID railtype{};                              ///< Type of rail on the tile.
 	StringID railtype2{};                             ///< Type of second rail on the tile.
 	uint16_t rail_speed = 0;                          ///< Speed limit of rail (bridges and track)

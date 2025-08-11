@@ -57,6 +57,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 

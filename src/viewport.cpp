@@ -2860,6 +2860,36 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	}
 }
 
+void UpdateRouteStepSpriteSize()
+{
+	Dimension d0 = GetSpriteSize(SPR_ROUTE_STEP_TOP);
+	_vp_route_step_sprite_width = d0.width;
+	_vp_route_step_height_top = d0.height;
+
+	_vp_route_step_base_width = (_vp_route_step_height_top + 1) * 2;
+
+	Dimension d2 = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
+	_vp_route_step_height_bottom = d2.height;
+
+	const uint min_width = _vp_route_step_sprite_width > _vp_route_step_base_width ? _vp_route_step_sprite_width - _vp_route_step_base_width : 0;
+	uint extra = 0;
+	for (uint i = 0; i < 4; i++) {
+		uint64_t max_value = GetParamMaxDigits(i + 2, FS_SMALL);
+		const uint base_width = GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION), FS_SMALL).width;
+		if (i == 0) {
+			uint width = base_width;
+			auto process_string = [&](StringID str) {
+				width = std::max(width, GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, str), FS_SMALL).width);
+			};
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
+			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
+			extra = width - base_width;
+		}
+		_vp_route_step_string_width[i] = std::max(min_width, base_width + extra);
+	}
+}
+
 void ViewportRouteOverlay::PrepareRouteSteps(const Vehicle *veh)
 {
 	this->route_steps.clear();

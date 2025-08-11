@@ -2680,7 +2680,7 @@ bool GenerateTowns(TownLayout layout, std::optional<uint> number)
 
 	/* Pre-populate the town names list with the names of any towns already on the map */
 	for (const Town *town : Town::Iterate()) {
-		town_names.insert(town->GetCachedName());
+		town_names.insert(std::string{town->GetCachedName()});
 	}
 
 	/* Randomised offset for city status. This means with e.g. 1-in-4 towns being cities, a map with 10 towns

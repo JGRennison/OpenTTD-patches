@@ -27,6 +27,8 @@
 #include "../network_internal.h"
 #include "packet.h"
 
+#include "table/strings.h"
+
 #include "../../safeguards.h"
 
 extern const uint8_t _out_of_band_grf_md5[16];

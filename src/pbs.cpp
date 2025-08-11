@@ -18,6 +18,8 @@
 #include "train_speed_adaptation.h"
 #include "bridge_signal_map.h"
 
+#include "table/strings.h"
+
 #include "safeguards.h"
 
 /**

@@ -43,7 +43,6 @@
 #include "vehicle_gui.h"
 #include "vehicle_gui_base.h"
 #include "scope.h"
-#include "table/sprites.h"
 #include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
 #include "infrastructure_func.h"
@@ -52,6 +51,9 @@
 #include "core/y_combinator.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
+
+#include "table/sprites.h"
+#include "table/strings.h"
 
 #include "safeguards.h"
 

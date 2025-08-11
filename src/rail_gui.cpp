@@ -51,6 +51,8 @@
 
 #include "widgets/rail_widget.h"
 
+#include "table/strings.h"
+
 #include <variant>
 
 #include "safeguards.h"
