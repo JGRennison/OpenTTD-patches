@@ -342,6 +342,12 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 
 	void WriteStringID(const char *name, int stringid) override
 	{
+		if (stringid == 0) {
+			if (std::string_view(name) != "STR_NULL") StrgenFatal("String ID 0 is not STR_NULL");
+			total_strings++;
+			return;
+		}
+
 		if (prev + 1 != stringid) fprintf(*this->fh, "\n");
 		fprintf(*this->fh, "static const StringID %s = 0x%X;\n", name, stringid);
 		prev = stringid;
