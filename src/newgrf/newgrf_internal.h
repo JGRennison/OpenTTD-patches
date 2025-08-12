@@ -13,10 +13,43 @@
 #define NEWGRF_INTERNAL_H
 
 #include "../newgrf.h"
-#include "../spriteloader/spriteloader.hpp"
+#include "../newgrf_commons.h"
+#include "../newgrf_config.h"
+#include "../spriteloader/sprite_file_type.hpp"
+#include "newgrf_bytereader.h"
 
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include <vector>
+
+/** Possible return values for the GrfChangeInfoHandler functions */
+enum ChangeInfoResult : uint8_t {
+	CIR_SUCCESS,    ///< Variable was parsed and read
+	CIR_DISABLED,   ///< GRF was disabled due to error
+	CIR_UNHANDLED,  ///< Variable was parsed but unread
+	CIR_UNKNOWN,    ///< Variable is unknown
+	CIR_INVALID_ID, ///< Attempt to modify an invalid ID
+};
+
+ChangeInfoResult HandleAction0PropertyDefault(ByteReader &buf, int prop);
+bool MappedPropertyLengthMismatch(ByteReader &buf, uint expected_size, const GRFFilePropertyRemapEntry *mapping_entry);
+
+/** GRF feature handler */
+template <GrfSpecFeature TFeature>
+struct GrfChangeInfoHandler {
+	static ChangeInfoResult Reserve(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf);
+	static ChangeInfoResult Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf);
+};
+
+/** GRF action handler */
+template <uint8_t TAction>
+struct GrfActionHandler {
+	static void FileScan(ByteReader &buf);
+	static void SafetyScan(ByteReader &buf);
+	static void LabelScan(ByteReader &buf);
+	static void Init(ByteReader &buf);
+	static void Reserve(ByteReader &buf);
+	static void Activation(ByteReader &buf);
+};
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32_t OPENTTD_GRAPHICS_BASE_GRF_ID = std::byteswap<uint32_t>(0xFF4F5400);
@@ -137,5 +170,55 @@ public:
 using SpriteSetInfo = GrfProcessingState::SpriteSetInfo;
 
 extern GrfProcessingState _cur;
+
+struct GRFLocation {
+	uint32_t grfid;
+	uint32_t nfoline;
+
+	GRFLocation(uint32_t grfid, uint32_t nfoline) : grfid(grfid), nfoline(nfoline) { }
+
+	bool operator <(const GRFLocation &other) const
+	{
+		return this->grfid < other.grfid || (this->grfid == other.grfid && this->nfoline < other.nfoline);
+	}
+
+	bool operator ==(const GRFLocation &other) const
+	{
+		return this->grfid == other.grfid && this->nfoline == other.nfoline;
+	}
+};
+
+using GRFLineToSpriteOverride = btree::btree_map<GRFLocation, std::unique_ptr<uint8_t[]>>;
+
+extern btree::btree_map<GRFLocation, std::pair<SpriteID, uint16_t>> _grm_sprites;
+extern GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
+extern bool _action6_override_active;
+
+extern GrfMiscBits _misc_grf_features;
+
+void SetNewGRFOverride(uint32_t source_grfid, uint32_t target_grfid);
+GRFFile *GetCurrentGRFOverride();
+
+std::span<const CargoLabel> GetCargoTranslationTable(const GRFFile &grffile);
+CargoTypes TranslateRefitMask(uint32_t refit_mask);
+
+void SkipBadgeList(ByteReader &buf);
+
+std::vector<BadgeID> ReadBadgeList(ByteReader &buf, GrfSpecFeature feature);
+
+void MapSpriteMappingRecolour(PalSpriteID *grf_sprite);
+TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, bool invert_action1_flag, bool use_cur_spritesets, int feature, PalSpriteID *grf_sprite, uint16_t *max_sprite_offset = nullptr, uint16_t *max_palette_offset = nullptr);
+bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool use_cur_spritesets, uint8_t feature, bool allow_var10, bool no_z_position, NewGRFSpriteLayout *dts);
+
+GRFFile *GetFileByGRFID(uint32_t grfid);
+GRFError *DisableGrf(StringID message = {}, GRFConfig *config = nullptr);
+void DisableStaticNewGRFInfluencingNonStaticNewGRFs(GRFConfig &c);
+bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property);
+uint32_t GetParamVal(uint8_t param, uint32_t *cond_val);
+void GRFUnsafe(ByteReader &);
+
+void InitializePatchFlags();
+
+GrfSpecFeatureRef ReadFeature(uint8_t raw_byte, bool allow_48 = false);
 
 #endif /* NEWGRF_INTERNAL_H */
