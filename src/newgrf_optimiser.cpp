@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 
-#include "newgrf_internal.h"
+#include "newgrf/newgrf_internal.h"
 #include "newgrf_extension.h"
 #include "debug_settings.h"
 #include "core/y_combinator.hpp"

@@ -12,13 +12,13 @@
 #ifndef NEWGRF_INTERNAL_H
 #define NEWGRF_INTERNAL_H
 
-#include "newgrf.h"
-#include "newgrf_spritegroup.h"
-#include "spriteloader/spriteloader.hpp"
-#include "core/arena_alloc.hpp"
+#include "../newgrf.h"
+#include "../newgrf_spritegroup.h"
+#include "../spriteloader/spriteloader.hpp"
+#include "../core/arena_alloc.hpp"
 
-#include "3rdparty/cpp-btree/btree_map.h"
-#include "3rdparty/robin_hood/robin_hood.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 #include <bitset>
 #include <vector>
 

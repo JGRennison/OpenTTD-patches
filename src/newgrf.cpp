@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 
-#include "newgrf_internal.h"
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
 #include "core/bit_cast.hpp"
@@ -59,6 +58,9 @@
 #include "road.h"
 #include "newgrf_roadstop.h"
 #include "debug_settings.h"
+#include "newgrf/newgrf_bytereader.h"
+#include "newgrf/newgrf_internal.h"
+#include "newgrf/newgrf_stringmapping.h"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
@@ -117,112 +119,6 @@ static inline bool IsValidNewGRFImageIndex(uint8_t image_index)
 {
 	return image_index == 0xFD || IsValidImageIndex<T>(image_index);
 }
-
-class OTTDByteReaderSignal { };
-
-/** Class to read from a NewGRF file */
-class ByteReader {
-protected:
-	uint8_t *data;
-	uint8_t *end;
-
-public:
-	ByteReader(uint8_t *data, uint8_t *end) : data(data), end(end) { }
-
-	inline uint8_t *ReadBytes(size_t size)
-	{
-		if (data + size >= end) {
-			/* Put data at the end, as would happen if every byte had been individually read. */
-			data = end;
-			throw OTTDByteReaderSignal();
-		}
-
-		uint8_t *ret = data;
-		data += size;
-		return ret;
-	}
-
-	inline uint8_t ReadByte()
-	{
-		if (data < end) return *(data)++;
-		throw OTTDByteReaderSignal();
-	}
-
-	uint16_t ReadWord()
-	{
-		uint16_t val = ReadByte();
-		return val | (ReadByte() << 8);
-	}
-
-	uint16_t ReadExtendedByte()
-	{
-		uint16_t val = ReadByte();
-		return val == 0xFF ? ReadWord() : val;
-	}
-
-	uint32_t ReadDWord()
-	{
-		uint32_t val = ReadWord();
-		return val | (ReadWord() << 16);
-	}
-
-	uint32_t PeekDWord()
-	{
-		AutoRestoreBackup backup(this->data, this->data);
-		return this->ReadDWord();
-	}
-
-	uint32_t ReadVarSize(uint8_t size)
-	{
-		switch (size) {
-			case 1: return ReadByte();
-			case 2: return ReadWord();
-			case 4: return ReadDWord();
-			default:
-				NOT_REACHED();
-				return 0;
-		}
-	}
-
-	std::string_view ReadString()
-	{
-		char *string = reinterpret_cast<char *>(data);
-		size_t string_length = ttd_strnlen(string, Remaining());
-
-		/* Skip past the terminating NUL byte if it is present, but not more than remaining. */
-		Skip(std::min(string_length + 1, Remaining()));
-
-		return std::string_view(string, string_length);
-	}
-
-	inline size_t Remaining() const
-	{
-		return end - data;
-	}
-
-	inline bool HasData(size_t count = 1) const
-	{
-		return data + count <= end;
-	}
-
-	inline uint8_t *Data()
-	{
-		return data;
-	}
-
-	inline void Skip(size_t len)
-	{
-		data += len;
-		/* It is valid to move the buffer to exactly the end of the data,
-		 * as there may not be any more data read. */
-		if (data > end) throw OTTDByteReaderSignal();
-	}
-
-	inline void ResetReadPosition(uint8_t *pos)
-	{
-		data = pos;
-	}
-};
 
 typedef void (*SpecialSpriteHandler)(ByteReader &buf);
 
@@ -383,163 +279,6 @@ static GRFError *DisableGrf(StringID message = STR_NULL, GRFConfig *config = nul
 	config->error = {STR_NEWGRF_ERROR_MSG_FATAL, message};
 	if (config == _cur.grfconfig) config->error->param_value[0] = _cur.nfo_line;
 	return &config->error.value();
-}
-
-using StringIDMappingHandler = void(*)(StringID, uintptr_t);
-
-/**
- * Information for mapping static StringIDs.
- */
-struct StringIDMapping {
-	const GRFFile *grf;          ///< Source NewGRF.
-	GRFStringID source;          ///< Source grf-local GRFStringID.
-	StringIDMappingHandler func; ///< Function for mapping result.
-	uintptr_t func_data;         ///< Data for func.
-
-	StringIDMapping(const GRFFile *grf, GRFStringID source, uintptr_t func_data, StringIDMappingHandler func) : grf(grf), source(source), func(func), func_data(func_data) { }
-};
-
-/** Strings to be mapped during load. */
-static std::vector<StringIDMapping> _string_to_grf_mapping;
-
-/**
- * Record a static StringID for getting translated later.
- * @param source Source grf-local GRFStringID.
- * @param target Destination for the mapping result.
- */
-static void AddStringForMapping(GRFStringID source, StringID *target)
-{
-	*target = STR_UNDEFINED;
-	_string_to_grf_mapping.emplace_back(_cur.grffile, source, reinterpret_cast<uintptr_t>(target), nullptr);
-}
-
-/**
- * Record a static StringID for getting translated later.
- * @param source Source grf-local GRFStringID.
- * @param data Arbitrary data (e.g pointer), must fit into a uintptr_t.
- * @param func Function to call to set the mapping result.
- */
-template <typename T, typename F>
-static void AddStringForMapping(GRFStringID source, T data, F func)
-{
-	static_assert(sizeof(T) <= sizeof(uintptr_t));
-
-	func(STR_UNDEFINED, data);
-
-	_string_to_grf_mapping.emplace_back(_cur.grffile, source, bit_cast_to_storage<uintptr_t>(data), [](StringID str, uintptr_t func_data) {
-		F handler;
-		handler(str, bit_cast_from_storage<T>(func_data));
-	});
-}
-
-/**
- * Perform a mapping from TTDPatch's string IDs to OpenTTD's
- * string IDs, but only for the ones we are aware off; the rest
- * like likely unused and will show a warning.
- * @param str Grf-local GRFStringID to convert.
- * @return the converted string ID
- */
-static StringID TTDPStringIDToOTTDStringIDMapping(GRFStringID str)
-{
-	/* StringID table for TextIDs 0x4E->0x6D */
-	static const StringID units_volume[] = {
-		STR_ITEMS,      STR_PASSENGERS, STR_TONS,       STR_BAGS,
-		STR_LITERS,     STR_ITEMS,      STR_CRATES,     STR_TONS,
-		STR_TONS,       STR_TONS,       STR_TONS,       STR_BAGS,
-		STR_TONS,       STR_TONS,       STR_TONS,       STR_BAGS,
-		STR_TONS,       STR_TONS,       STR_BAGS,       STR_LITERS,
-		STR_TONS,       STR_LITERS,     STR_TONS,       STR_ITEMS,
-		STR_BAGS,       STR_LITERS,     STR_TONS,       STR_ITEMS,
-		STR_TONS,       STR_ITEMS,      STR_LITERS,     STR_ITEMS
-	};
-
-	/* A string straight from a NewGRF; this was already translated by MapGRFStringID(). */
-	assert(!IsInsideMM(str.base(), 0xD000, 0xD7FF));
-
-#define TEXTID_TO_STRINGID(begin, end, stringid, stringend) \
-	static_assert(stringend - stringid == end - begin); \
-	if (str.base() >= begin && str.base() <= end) return StringID{str.base() + (stringid - begin)}
-
-	/* We have some changes in our cargo strings, resulting in some missing. */
-	TEXTID_TO_STRINGID(0x000E, 0x002D, STR_CARGO_PLURAL_NOTHING,                      STR_CARGO_PLURAL_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x002E, 0x004D, STR_CARGO_SINGULAR_NOTHING,                    STR_CARGO_SINGULAR_FIZZY_DRINK);
-	if (str.base() >= 0x004E && str.base() <= 0x006D) return units_volume[str.base() - 0x004E];
-	TEXTID_TO_STRINGID(0x006E, 0x008D, STR_QUANTITY_NOTHING,                          STR_QUANTITY_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x008E, 0x00AD, STR_ABBREV_NOTHING,                            STR_ABBREV_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x00D1, 0x00E0, STR_COLOUR_DARK_BLUE,                          STR_COLOUR_WHITE);
-
-	/* Map building names according to our lang file changes. There are several
-	 * ranges of house ids, all of which need to be remapped to allow newgrfs
-	 * to use original house names. */
-	TEXTID_TO_STRINGID(0x200F, 0x201F, STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1,    STR_TOWN_BUILDING_NAME_OLD_HOUSES_1);
-	TEXTID_TO_STRINGID(0x2036, 0x2041, STR_TOWN_BUILDING_NAME_COTTAGES_1,             STR_TOWN_BUILDING_NAME_SHOPPING_MALL_1);
-	TEXTID_TO_STRINGID(0x2059, 0x205C, STR_TOWN_BUILDING_NAME_IGLOO_1,                STR_TOWN_BUILDING_NAME_PIGGY_BANK_1);
-
-	/* Same thing for industries */
-	TEXTID_TO_STRINGID(0x4802, 0x4826, STR_INDUSTRY_NAME_COAL_MINE,                   STR_INDUSTRY_NAME_SUGAR_MINE);
-	TEXTID_TO_STRINGID(0x482D, 0x482E, STR_NEWS_INDUSTRY_CONSTRUCTION,                STR_NEWS_INDUSTRY_PLANTED);
-	TEXTID_TO_STRINGID(0x4832, 0x4834, STR_NEWS_INDUSTRY_CLOSURE_GENERAL,             STR_NEWS_INDUSTRY_CLOSURE_LACK_OF_TREES);
-	TEXTID_TO_STRINGID(0x4835, 0x4838, STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL, STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM);
-	TEXTID_TO_STRINGID(0x4839, 0x483A, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM);
-
-	switch (str.base()) {
-		case 0x4830: return STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY;
-		case 0x4831: return STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED;
-		case 0x483B: return STR_ERROR_CAN_ONLY_BE_POSITIONED;
-	}
-#undef TEXTID_TO_STRINGID
-
-	if (str.base() == 0) return STR_EMPTY;
-
-	Debug(grf, 0, "Unknown StringID 0x{:04X} remapped to STR_EMPTY. Please open a Feature Request if you need it", str);
-
-	return STR_EMPTY;
-}
-
-/**
- * Used when setting an object's property to map to the GRF's strings
- * while taking in consideration the "drift" between TTDPatch string system and OpenTTD's one
- * @param grfid Id of the grf file.
- * @param str GRF-local GRFStringID that we want to have the equivalent in OpenTTD.
- * @return The properly adjusted StringID.
- */
-template <typename T>
-StringID MapGRFStringIDCommon(T grfid, GRFStringID str)
-{
-	if (IsInsideMM(str.base(), 0xD800, 0x10000)) {
-		/* General text provided by NewGRF.
-		 * In the specs this is called the 0xDCxx range (misc persistent texts),
-		 * but we meanwhile extended the range to 0xD800-0xFFFF.
-		 * Note: We are not involved in the "persistent" business, since we do not store
-		 * any NewGRF strings in savegames. */
-		return GetGRFStringID(grfid, str);
-	} else if (IsInsideMM(str.base(), 0xD000, 0xD800)) {
-		/* Callback text provided by NewGRF.
-		 * In the specs this is called the 0xD0xx range (misc graphics texts).
-		 * These texts can be returned by various callbacks.
-		 *
-		 * Due to how TTDP implements the GRF-local- to global-textid translation
-		 * texts included via 0x80 or 0x81 control codes have to add 0x400 to the textid.
-		 * We do not care about that difference and just mask out the 0x400 bit.
-		 */
-		str = GRFStringID(str.base() & ~0x400);
-		return GetGRFStringID(grfid, str);
-	} else {
-		/* The NewGRF wants to include/reference an original TTD string.
-		 * Try our best to find an equivalent one. */
-		return TTDPStringIDToOTTDStringIDMapping(str);
-	}
-}
-
-StringID MapGRFStringID(uint32_t grfid, GRFStringID str)
-{
-	return MapGRFStringIDCommon(grfid, str);
-}
-
-/* This form should be preferred over the uint32_t grfid form, to avoid redundant GRFID to GRF lookups */
-StringID MapGRFStringID(const GRFFile *grf, GRFStringID str)
-{
-	return MapGRFStringIDCommon(grf, str);
 }
 
 static robin_hood::unordered_flat_map<uint32_t, uint32_t> _grf_id_overrides;
@@ -5747,10 +5486,10 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t 
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
 			GrfMsg(2, "Ignoring unimplemented mapped property: {}, feature: {}, mapped to: {:X}", def.name, GetFeatureString(def.feature), raw_prop);
 		} else if (prop == A0RPI_ID_EXTENSION) {
-			uint8_t *outer_data = buf.Data();
+			const uint8_t *outer_data = buf.Data();
 			size_t outer_length = buf.ReadExtendedByte();
 			uint16_t mapped_id = buf.ReadWord();
-			uint8_t *inner_data = buf.Data();
+			const uint8_t *inner_data = buf.Data();
 			size_t inner_length = buf.ReadExtendedByte();
 			if (inner_length + (inner_data - outer_data) != outer_length) {
 				GrfMsg(2, "Ignoring extended ID property with malformed lengths: {}, feature: {}, mapped to: {:X}", def.name, GetFeatureString(def.feature), raw_prop);
@@ -11993,15 +11732,7 @@ static void AfterLoadGRFs()
 {
 	ReleaseVarAction2OptimisationCaches();
 
-	for (StringIDMapping &it : _string_to_grf_mapping) {
-		StringID str = MapGRFStringID(it.grf, it.source);
-		if (it.func == nullptr) {
-			*reinterpret_cast<StringID *>(it.func_data) = str;
-		} else {
-			it.func(str, it.func_data);
-		}
-	}
-	_string_to_grf_mapping.clear();
+	FinaliseStringMapping();
 
 	/* Clear the action 6 override sprites. */
 	_grf_line_to_action6_sprite_override.clear();

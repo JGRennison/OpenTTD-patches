@@ -17,6 +17,7 @@ add_subdirectory(linkgraph)
 add_subdirectory(misc)
 add_subdirectory(music)
 add_subdirectory(network)
+add_subdirectory(newgrf)
 add_subdirectory(os)
 add_subdirectory(pathfinder)
 add_subdirectory(saveload)
@@ -325,7 +326,6 @@ add_files(
     newgrf_industrytiles.cpp
     newgrf_industrytiles.h
     newgrf_industrytiles_analysis.h
-    newgrf_internal.h
     newgrf_newlandscape.cpp
     newgrf_newlandscape.h
     newgrf_newsignals.cpp
