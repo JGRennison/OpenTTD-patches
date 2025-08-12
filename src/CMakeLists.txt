@@ -332,7 +332,6 @@ add_files(
     newgrf_newsignals.h
     newgrf_object.cpp
     newgrf_object.h
-    newgrf_optimiser.cpp
     newgrf_profiling.cpp
     newgrf_profiling.h
     newgrf_properties.h

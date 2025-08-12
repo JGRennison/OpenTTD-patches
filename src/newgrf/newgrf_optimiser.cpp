@@ -7,20 +7,20 @@
 
 /** @file newgrf_optimiser.cpp NewGRF optimiser. */
 
-#include "stdafx.h"
+#include "../stdafx.h"
 
-#include "newgrf/newgrf_internal.h"
-#include "newgrf/newgrf_optimiser_internal.h"
-#include "newgrf_extension.h"
-#include "debug_settings.h"
-#include "core/y_combinator.hpp"
-#include "scope.h"
-#include "newgrf_station.h"
-#include "3rdparty/robin_hood/robin_hood.h"
+#include "newgrf_internal.h"
+#include "newgrf_optimiser_internal.h"
+#include "../newgrf_extension.h"
+#include "../debug_settings.h"
+#include "../scope.h"
+#include "../newgrf_station.h"
+#include "../core/y_combinator.hpp"
+#include "../3rdparty/robin_hood/robin_hood.h"
 
 #include <tuple>
 
-#include "safeguards.h"
+#include "../safeguards.h"
 
 VarAction2OptimiseState::TempStoreState VarAction2OptimiseState::temp_store_cache;
 
