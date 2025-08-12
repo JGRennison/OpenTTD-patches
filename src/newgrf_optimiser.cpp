@@ -10,6 +10,7 @@
 #include "stdafx.h"
 
 #include "newgrf/newgrf_internal.h"
+#include "newgrf/newgrf_optimiser_internal.h"
 #include "newgrf_extension.h"
 #include "debug_settings.h"
 #include "core/y_combinator.hpp"
@@ -911,7 +912,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 		const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)subroutine;
 		if (!(dsg->dsg_flags & DSGF_INLINE_CANDIDATE) || dsg->var_scope != group->var_scope || dsg->size != group->size) return false;
 
-		std::vector<DeterministicSpriteGroupAdjust> *proc = _cur.GetInlinableGroupAdjusts(dsg, false);
+		std::vector<DeterministicSpriteGroupAdjust> *proc = _cur_grf_optimise_state.GetInlinableGroupAdjusts(dsg, false);
 		if (proc == nullptr) return false;
 
 		uint8_t shift_num = adjust.shift_num;
@@ -1184,7 +1185,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 						handle_group(group);
 					}
 				} else if (sg->type == SGT_DETERMINISTIC) {
-					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sg, false);
 					if (var_tracking != nullptr) {
 						std::bitset<256> bits = var_tracking->in;
 						for (auto &it : state.temp_stores) {
@@ -1870,7 +1871,7 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 
 			if (record.var_tracking == nullptr) {
 				/* New procedure group, add to the front of the queue (i.e. the end of the vector) */
-				record.var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
+				record.var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sub, true);
 				record_queue.emplace_back(sub, &record);
 
 				bool is_leaf_node = false;
@@ -2068,7 +2069,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 			if (adjust.variable == 0x7E) {
 				auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 					if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
-						VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+						VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sg, false);
 						if (var_tracking != nullptr) usable_vars &= ~var_tracking->in;
 					}
 					if (IsSimpleContainerSpriteGroup(sg)) {
@@ -2093,7 +2094,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(Determi
 
 static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(DeterministicSpriteGroup *group, const GrfSpecFeature scope_feature)
 {
-	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+	VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(group, false);
 	while (OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(group, scope_feature, var_tracking)) {}
 }
 
@@ -2266,7 +2267,7 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 {
 	VarAction2ProcedureAnnotation *anno;
 	bool is_new;
-	std::tie(anno, is_new) = _cur.GetVarAction2ProcedureAnnotation(group);
+	std::tie(anno, is_new) = _cur_grf_optimise_state.GetVarAction2ProcedureAnnotation(group);
 	if (is_new) {
 		auto handle_group_contents = y_combinator([&](auto handle_group_contents, const SpriteGroup *sg) -> void {
 			if (sg == nullptr || anno->unskippable) return;
@@ -2438,7 +2439,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 					anno.unskippable = true;
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
-					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
+					VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sub, false);
 					if (var_tracking != nullptr) {
 						bits |= var_tracking->in;
 						anno.last_reads |= (var_tracking->in & ~orig_bits);
@@ -2715,7 +2716,7 @@ static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *g
 	}
 
 	group->dsg_flags |= DSGF_INLINE_CANDIDATE;
-	*(_cur.GetInlinableGroupAdjusts(group, true)) = std::move(saved_adjusts);
+	*(_cur_grf_optimise_state.GetInlinableGroupAdjusts(group, true)) = std::move(saved_adjusts);
 }
 
 static void PopulateRegistersUsedByNewGRFSpriteLayout(const NewGRFSpriteLayout &dts, std::bitset<256> &bits)
@@ -2805,7 +2806,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		};
 		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg, HandleGroupState &state) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
-				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+				VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sg, false);
 				const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)sg;
 				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) {
 					seen_pending = true;
@@ -2938,7 +2939,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		dse_candidate = true;
 	}
 	if (dse_candidate) {
-		_cur.dead_store_elimination_candidates.push_back(group);
+		_cur_grf_optimise_state.dead_store_elimination_candidates.push_back(group);
 		group->dsg_flags |= DSGF_VAR_TRACKING_PENDING;
 	} else {
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
@@ -3245,7 +3246,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					}
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
-					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
+					VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sub, false);
 					if (var_tracking != nullptr) {
 						all_bits |= var_tracking->in;
 						propagate_bits |= var_tracking->in;
@@ -3309,15 +3310,15 @@ void HandleVarAction2OptimisationPasses()
 	PopulateRailStationAdvancedLayoutVariableUsage();
 	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler::HandleDeferredGroups();
 
-	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
-		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+	for (DeterministicSpriteGroup *group : _cur_grf_optimise_state.dead_store_elimination_candidates) {
+		VarAction2GroupVariableTracking *var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(group, false);
 		if (!group->IsCalculatedResult()) {
 			/* Add bits from any groups previously marked with DSGF_VAR_TRACKING_PENDING which should now be correctly updated after DSE */
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
-					VarAction2GroupVariableTracking *targ_var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					VarAction2GroupVariableTracking *targ_var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sg, false);
 					if (targ_var_tracking != nullptr) {
-						if (var_tracking == nullptr) var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+						if (var_tracking == nullptr) var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(group, true);
 						var_tracking->out |= targ_var_tracking->in;
 					}
 				}
@@ -3341,7 +3342,7 @@ void HandleVarAction2OptimisationPasses()
 		 * even if no stores are actually eliminated */
 		std::bitset<256> in_bits = HandleVarAction2DeadStoreElimination(group, scope_feature, var_tracking, group->dsg_flags & DSGF_NO_DSE);
 		if (var_tracking == nullptr && in_bits.any()) {
-			var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+			var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(group, true);
 			var_tracking->in = in_bits;
 		} else if (var_tracking != nullptr) {
 			var_tracking->in = in_bits;

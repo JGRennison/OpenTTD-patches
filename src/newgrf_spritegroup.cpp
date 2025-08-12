@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf/newgrf_internal.h"
+#include "newgrf/newgrf_optimiser_internal.h"
 #include "newgrf_profiling.h"
 #include "core/pool_func.hpp"
 #include "vehicle_type.h"

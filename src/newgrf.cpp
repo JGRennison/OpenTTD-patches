@@ -60,6 +60,7 @@
 #include "debug_settings.h"
 #include "newgrf/newgrf_bytereader.h"
 #include "newgrf/newgrf_internal.h"
+#include "newgrf/newgrf_optimiser_internal.h"
 #include "newgrf/newgrf_stringmapping.h"
 
 #include "table/strings.h"
@@ -106,7 +107,22 @@ static uint32_t _observed_ttdpatch_flags[8];
 GRFLoadedFeatures _loaded_newgrf_features;
 
 GrfProcessingState _cur;
+GrfProcessingOptimiserState _cur_grf_optimise_state;
 
+/** Clear temporary data before processing the next file in the current loading stage */
+void GrfProcessingState::ClearDataForNextFile()
+{
+	this->nfo_line = 0;
+	this->skip_sprites = 0;
+
+	for (uint i = 0; i < GSF_END; i++) {
+		this->spritesets[i].clear();
+	}
+
+	this->spritegroups.clear();
+
+	_cur_grf_optimise_state.ClearDataForNextFile();
+}
 
 /**
  * Helper to check whether an image index is valid for a particular NewGRF vehicle.
