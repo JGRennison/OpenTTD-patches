@@ -497,6 +497,7 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	const SpriteGroup *error_group = nullptr; // was first range, before sorting ranges
 
 	bool GroupMayBeBypassed() const;
+	const SpriteGroup *GetBypassGroupForValue(uint32_t value) const;
 
 	bool IsCalculatedResult() const { return this->dsg_flags & DSGF_CALCULATED_RESULT; }
 

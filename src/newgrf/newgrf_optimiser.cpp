@@ -3373,13 +3373,7 @@ const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 			if (sg->GroupMayBeBypassed()) {
 				/* Deterministic sprite group can be trivially resolved, skip it */
 				uint32_t value = (sg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
-				const SpriteGroup *candidate = sg->default_group;
-				for (const auto &range : sg->ranges) {
-					if (range.low <= value && value <= range.high) {
-						candidate = range.group;
-						break;
-					}
-				}
+				const SpriteGroup *candidate = sg->GetBypassGroupForValue(value);
 
 				auto need_var1C = y_combinator([&](auto need_var1C, const SpriteGroup *sg) -> bool {
 					if (sg == nullptr) return false;

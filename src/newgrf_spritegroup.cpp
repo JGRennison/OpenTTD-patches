@@ -355,10 +355,27 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 bool DeterministicSpriteGroup::GroupMayBeBypassed() const
 {
-	if (this->IsCalculatedResult()) return false;
 	if (this->adjusts.size() == 0) return true;
 	if ((this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST))) return true;
 	return false;
+}
+
+const SpriteGroup *DeterministicSpriteGroup::GetBypassGroupForValue(uint32_t value) const
+{
+	if (this->IsCalculatedResult()) {
+		extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16_t result);
+		return NewCallbackResultSpriteGroupNoTransform(GB(value, 0, 15));
+	}
+
+	const SpriteGroup *group = this->default_group;
+	for (const auto &range : this->ranges) {
+		if (range.low <= value && value <= range.high) {
+			group = range.group;
+			break;
+		}
+	}
+
+	return group;
 }
 
 const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const

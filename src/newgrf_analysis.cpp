@@ -14,6 +14,16 @@
 
 #include "safeguards.h"
 
+static const SpriteGroup *GetSwitchTargetForValue(const DeterministicSpriteGroup *dsg, uint32_t value)
+{
+	for (const auto &range : dsg->ranges) {
+		if (range.low <= value && value <= range.high) {
+			return range.group;
+		}
+	}
+	return dsg->default_group;
+};
+
 /* Returns true if group already seen before */
 bool BaseSpriteChainAnalyser::RegisterSeenDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
 {
@@ -25,22 +35,12 @@ bool BaseSpriteChainAnalyser::RegisterSeenDeterministicSpriteGroup(const Determi
 	return false;
 }
 
-const SpriteGroup *GetSwitchTargetForValue(const DeterministicSpriteGroup *dsg, uint32_t value)
-{
-	for (const auto &range : dsg->ranges) {
-		if (range.low <= value && value <= range.high) {
-			return range.group;
-		}
-	}
-	return dsg->default_group;
-}
-
 std::pair<bool, const SpriteGroup *> BaseSpriteChainAnalyser::HandleGroupBypassing(const DeterministicSpriteGroup *dsg)
 {
 	if (dsg->GroupMayBeBypassed()) {
 		/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
 		uint32_t value = (dsg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(dsg->size, dsg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
-		return { true, GetSwitchTargetForValue(dsg, value) };
+		return { true, dsg->GetBypassGroupForValue(value) };
 	}
 	return { false, nullptr };
 }
