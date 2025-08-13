@@ -89,6 +89,11 @@ void SpriteChainAnalyser<T>::AnalyseGroup(const SpriteGroup *sg)
 			break;
 		}
 
+		case SGT_CALCULATED_RESULT: {
+			self->AnalyseCalculatedResultSpriteGroup();
+			break;
+		}
+
 		default:
 			/* Not interested in other sprite group types */
 			break;

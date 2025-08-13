@@ -43,6 +43,7 @@ enum SpriteGroupType : uint8_t {
 	SGT_DETERMINISTIC,
 	SGT_RANDOMIZED,
 	SGT_CALLBACK,
+	SGT_CALCULATED_RESULT,
 	SGT_RESULT,
 	SGT_TILELAYOUT,
 	SGT_INDUSTRY_PRODUCTION,
@@ -503,6 +504,9 @@ struct DeterministicSpriteGroup : SpriteGroup {
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
+
+private:
+	const SpriteGroup *HandleResultGroup(const SpriteGroup *group, ResolverObject &object) const;
 };
 
 enum RandomizedSpriteGroupCompareMode : uint8_t {
@@ -560,6 +564,9 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 	uint16_t GetCallbackResult() const override { return this->result; }
 };
 
+struct CalculatedResultSpriteGroup : SpriteGroup {
+	CalculatedResultSpriteGroup() : SpriteGroup(SGT_CALCULATED_RESULT) {}
+};
 
 /* A result sprite group returns the first SpriteID and the number of
  * sprites in the set */

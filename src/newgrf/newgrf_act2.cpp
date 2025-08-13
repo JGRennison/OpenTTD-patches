@@ -27,6 +27,9 @@
 #include "../safeguards.h"
 
 constexpr uint16_t GROUPID_CALLBACK_FAILED = 0x7FFF; ///< Explicit "failure" result.
+constexpr uint16_t GROUPID_CALCULATED_RESULT = 0x7FFE; ///< Return calculated result from VarAction2.
+
+static CalculatedResultSpriteGroup _calculated_result_group;
 
 /**
  * Map the colour modifiers of TTDPatch to those that Open is using.
@@ -637,15 +640,23 @@ static void NewSpriteGroup(ByteReader &buf)
 				OptimiseVarAction2Adjust(va2_opt_state, info, group, group->adjusts.back());
 			}
 
+			auto get_result_group = [&](uint16_t group_id) -> const SpriteGroup * {
+				if (group_id == GROUPID_CALCULATED_RESULT) {
+					return &_calculated_result_group;
+				} else {
+					return GetGroupFromGroupID(setid, type, group_id);
+				}
+			};
+
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf.ReadByte());
 			for (auto &range : ranges) {
-				range.group = GetGroupFromGroupID(setid, type, buf.ReadWord());
+				range.group = get_result_group(buf.ReadWord());
 				range.low   = buf.ReadVarSize(varsize);
 				range.high  = buf.ReadVarSize(varsize);
 			}
 
-			group->default_group = GetGroupFromGroupID(setid, type, buf.ReadWord());
+			group->default_group = get_result_group(buf.ReadWord());
 
 			if (unlikely(shadow != nullptr)) {
 				shadow->calculated_result = ranges.size() == 0;

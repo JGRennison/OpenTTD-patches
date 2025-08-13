@@ -61,6 +61,7 @@ public:
 	void AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *);
 	void AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg) { this->DefaultAnalyseRandomisedSpriteGroup(rsg); }
 	void AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *);
+	void AnalyseCalculatedResultSpriteGroup() { this->found = true; }
 
 	static bool Execute(const SpriteGroup *sg, uint16_t callback, bool check_var_10, uint8_t var_10_value)
 	{
@@ -77,6 +78,7 @@ struct FindRandomTriggerAnalyser final : public SpriteChainAnalyser<FindRandomTr
 	void AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg);
 	void AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *);
 	void AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *) { /* Do nothing */ }
+	void AnalyseCalculatedResultSpriteGroup() { /* Do nothing */ }
 };
 
 struct IndustryTileDataAnalyser final : public SpriteChainAnalyser<IndustryTileDataAnalyser> {
@@ -90,6 +92,7 @@ struct IndustryTileDataAnalyser final : public SpriteChainAnalyser<IndustryTileD
 	void AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *);
 	void AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg) { this->DefaultAnalyseRandomisedSpriteGroup(rsg); }
 	void AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *) { /* Do nothing */ }
+	void AnalyseCalculatedResultSpriteGroup() { /* Do nothing */ }
 };
 
 struct CallbackOperationAnalyser final : public SpriteChainAnalyser<CallbackOperationAnalyser> {
@@ -104,6 +107,7 @@ struct CallbackOperationAnalyser final : public SpriteChainAnalyser<CallbackOper
 	void AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *);
 	void AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *);
 	void AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *) { /* Do nothing */ }
+	void AnalyseCalculatedResultSpriteGroup() { /* Do nothing */ }
 };
 
 #endif /* NEWGRF_ANALYSIS_H */

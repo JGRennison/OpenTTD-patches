@@ -256,6 +256,17 @@ static bool RangeHighComparator(const DeterministicSpriteGroupRange &range, uint
 	return range.high < value;
 }
 
+const SpriteGroup *DeterministicSpriteGroup::HandleResultGroup(const SpriteGroup *group, ResolverObject &object) const
+{
+	if (group->type == SGT_CALCULATED_RESULT) {
+		static CallbackResultSpriteGroup nvarzero(0);
+		nvarzero.result = GB(object.last_value, 0, 15);
+		return &nvarzero;
+	}
+
+	return SpriteGroup::Resolve(group, object, false);
+}
+
 const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) const
 {
 	if ((this->sg_flags & SGF_SKIP_CB) != 0 && object.callback > 1) {
@@ -339,17 +350,17 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		const auto &lower = std::lower_bound(this->ranges.begin(), this->ranges.end(), value, RangeHighComparator);
 		if (lower != this->ranges.end() && lower->low <= value) {
 			assert(lower->low <= value && value <= lower->high);
-			return SpriteGroup::Resolve(lower->group, object, false);
+			return this->HandleResultGroup(lower->group, object);
 		}
 	} else {
 		for (const auto &range : this->ranges) {
 			if (range.low <= value && value <= range.high) {
-				return SpriteGroup::Resolve(range.group, object, false);
+				return this->HandleResultGroup(range.group, object);
 			}
 		}
 	}
 
-	return SpriteGroup::Resolve(this->default_group, object, false);
+	return this->HandleResultGroup(this->default_group, object);
 }
 
 bool DeterministicSpriteGroup::GroupMayBeBypassed() const
@@ -361,8 +372,9 @@ bool DeterministicSpriteGroup::GroupMayBeBypassed() const
 
 const SpriteGroup *DeterministicSpriteGroup::GetBypassGroupForValue(uint32_t value) const
 {
+	extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16_t result);
+
 	if (this->IsCalculatedResult()) {
-		extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16_t result);
 		return NewCallbackResultSpriteGroupNoTransform(GB(value, 0, 15));
 	}
 
@@ -372,6 +384,10 @@ const SpriteGroup *DeterministicSpriteGroup::GetBypassGroupForValue(uint32_t val
 			group = range.group;
 			break;
 		}
+	}
+
+	if (group->type == SGT_CALCULATED_RESULT) {
+		return NewCallbackResultSpriteGroupNoTransform(GB(value, 0, 15));
 	}
 
 	return group;
@@ -862,6 +878,9 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 		}
 		case SGT_CALLBACK:
 			print("Callback Result: {:X}", ((const CallbackResultSpriteGroup *) sg)->result);
+			break;
+		case SGT_CALCULATED_RESULT:
+			print("Calculated Result");
 			break;
 		case SGT_RESULT:
 			print("Sprite Result: SpriteID: {}, num: {}",

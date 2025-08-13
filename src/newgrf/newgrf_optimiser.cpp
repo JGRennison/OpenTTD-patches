@@ -2853,6 +2853,13 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 					state.have_cb_handler = true;
 				}
 			}
+			if (sg != nullptr && sg->type == SGT_CALCULATED_RESULT) {
+				seen_req_var1C = true; // An SGT_CALCULATED_RESULT group is equivalent to a calculated result DSG with a single load of variable 1C
+				if (!state.ignore_cb_handler) {
+					group->dsg_flags |= DSGF_CB_RESULT;
+					state.have_cb_handler = true;
+				}
+			}
 		});
 
 		HandleGroupState default_group_state;
@@ -3384,6 +3391,8 @@ const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 					} else if (sg->type == SGT_DETERMINISTIC) {
 						const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 						if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) return true;
+					} else if (sg->type == SGT_CALCULATED_RESULT) {
+						return true; // This should not be reached, but in case it is in future, do not prune the parent when it points to a calculated result group.
 					}
 					return false;
 				});
