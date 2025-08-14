@@ -179,6 +179,12 @@ inline void MarkWholeScreenDirty()
 	_whole_screen_dirty = true;
 }
 
+inline bool IsWholeScreenMarkedDirty()
+{
+	extern bool _whole_screen_dirty;
+	return _whole_screen_dirty;
+}
+
 void CheckBlitter();
 
 bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int height);

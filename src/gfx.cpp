@@ -1398,6 +1398,12 @@ void UndrawMouseCursor()
 	if (_screen.dst_ptr == nullptr) return;
 
 	if (_cursor.visible) {
+		if (IsWholeScreenMarkedDirty()) {
+			/* Do not restore the screen if it is entirely dirty and/or invalid anyway. */
+			_cursor.visible = false;
+			return;
+		}
+
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_cursor.visible = false;
 		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), _cursor_backup.GetBuffer(), _cursor.draw_size.x, _cursor.draw_size.y);

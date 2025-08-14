@@ -155,13 +155,16 @@ void NetworkUndrawChatMessage()
 		if (x + width >= _screen.width) {
 			width = _screen.width - x;
 		}
-		if (width <= 0 || height <= 0) return;
 
 		_chatmessage_visible = false;
-		/* Put our 'shot' back to the screen */
-		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup.GetBuffer(), width, height);
-		/* And make sure it is updated next time */
-		VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
+
+		/* Do not restore the screen if it is entirely dirty and/or invalid anyway. */
+		if (!IsWholeScreenMarkedDirty() && width > 0 && height > 0) {
+			/* Put our 'shot' back to the screen */
+			blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup.GetBuffer(), width, height);
+			/* And make sure it is updated next time */
+			VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
+		}
 
 		_chatmessage_dirty_time = std::chrono::steady_clock::now();
 		_chatmessage_dirty = true;
