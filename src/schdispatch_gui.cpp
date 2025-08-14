@@ -883,7 +883,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(record.slot_flags, flag_bit)) {
 								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-								auto tmp_params = MakeParameters(1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, std::string{name});
+								auto tmp_params = MakeReferenceParameters(1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 								_temp_special_strings[1] = GetStringWithArgs(name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED, tmp_params);
 								add_detail(SPECSTR_TEMP_START + 1);
 							}

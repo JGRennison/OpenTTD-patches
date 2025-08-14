@@ -82,7 +82,14 @@ static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for 
 template <typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;
 
-using StringParameterData = std::variant<std::monostate, uint64_t, std::string>;
+/** This is a separate type instead of just string_view to ensure that it cannot be created by accident. */
+struct StringParameterDataStringView {
+	std::string_view view;
+
+	explicit StringParameterDataStringView(std::string_view view) : view(view) {}
+};
+
+using StringParameterData = std::variant<std::monostate, uint64_t, std::string, StringParameterDataStringView>;
 
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
@@ -90,47 +97,66 @@ struct StringParameter {
 	char32_t type = 0; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
 
 private:
-	inline void Init(const std::monostate &v)
-	{
-		this->data = v;
-	}
+	template <bool REF>
+	struct Helper {
+		static inline StringParameterData Init(const std::monostate &v)
+		{
+			return v;
+		}
 
-	inline void Init(uint64_t v)
-	{
-		this->data = v;
-	}
+		static inline StringParameterData Init(uint64_t v)
+		{
+			return v;
+		}
 
-	inline void Init(const char *str)
-	{
-		this->data = std::string{str};
-	}
+		static inline StringParameterData Init(const char *str)
+		{
+			if constexpr (REF) {
+				return StringParameterDataStringView(std::string_view{str});
+			} else {
+				return std::string{str};
+			}
+		}
 
-	inline void Init(std::string_view str)
-	{
-		this->data = std::string{str};
-	}
+		static inline StringParameterData Init(std::string_view str)
+		{
+			if constexpr (REF) {
+				return StringParameterDataStringView(str);
+			} else {
+				return std::string{str};
+			}
+		}
 
-	inline void Init(std::string &&str)
-	{
-		this->data = std::move(str);
-	}
+		static inline StringParameterData Init(std::string &&str)
+		{
+			return std::move(str);
+		}
 
-	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
-	inline void Init(const T &v)
-	{
-		this->Init(v.base());
-	}
+		template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
+		static inline StringParameterData Init(const T &v)
+		{
+			return Init(v.base());
+		}
+	};
 
 public:
+	struct ReferenceCaptureTag {};
+
 	StringParameter() = default;
 	inline StringParameter(StringParameterData &&data) : data(std::move(data)), type(0) {}
 	inline StringParameter(const StringParameterData &data) : data(data), type(0) {}
 
 	template <typename T, std::enable_if_t<!std::is_same_v<std::remove_cvref_t<T>, StringParameter>, int> = 0>
-	inline StringParameter(T &&v)
-	{
-		this->Init(v);
-	}
+	inline StringParameter(T &&v) : data(Helper<false>::Init(std::forward<T>(v))), type(0) {}
+
+	inline StringParameter(ReferenceCaptureTag, StringParameterData &&data) : data(std::move(data)), type(0) {}
+	inline StringParameter(ReferenceCaptureTag, const StringParameterData &data) : data(data), type(0) {}
+
+	template <typename T, std::enable_if_t<!std::is_same_v<std::remove_cvref_t<T>, StringParameter>, int> = 0>
+	inline StringParameter(ReferenceCaptureTag, T &&v) : data(Helper<true>::Init(std::forward<T>(v))), type(0) {}
+
+	inline StringParameter(ReferenceCaptureTag, const StringParameter &param) : data(param.data), type(param.type) {}
+	inline StringParameter(ReferenceCaptureTag, StringParameter &&param) : data(std::move(param.data)), type(param.type) {}
 };
 
 enum StringValidationSettings : uint8_t;

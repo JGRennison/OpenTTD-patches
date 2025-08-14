@@ -317,6 +317,12 @@ void ScriptText::ParamCheck::Encode(std::back_insert_iterator<std::string> &outp
 			fmt::format_to(this->output, "{}", value);
 		}
 
+		void operator()(const StringParameterDataStringView &value)
+		{
+			Utf8Encode(this->output, SCC_ENCODED_STRING);
+			fmt::format_to(this->output, "{}", value.view);
+		}
+
 		void operator()(const SQInteger &value)
 		{
 			Utf8Encode(this->output, SCC_ENCODED_NUMERIC);

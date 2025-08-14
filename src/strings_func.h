@@ -124,6 +124,30 @@ template <typename... Args>
 	return std::array<StringParameter, sizeof...(args)>({StringParameter{std::forward<Args>(args)}...});
 }
 
+template <size_t N>
+struct ReferenceStringParameters {
+	std::array<StringParameter, N> args;
+
+	/* Helper to allow creating a std::span even when the string parameters are an rvalue. */
+	inline operator std::span<StringParameter> () { return this->args; }
+	inline operator std::span<const StringParameter> () const { return this->args; }
+};
+
+/**
+ * Helper to create the StringParameters with its own buffer with the given
+ * parameter values.
+ * The arguments are captured by reference where suitable.
+ * @param args The parameters to set for the to be created StringParameters.
+ * @return The constructed StringParameters.
+ */
+template <typename... Args>
+[[nodiscard]] auto MakeReferenceParameters(Args &&... args)
+{
+	return ReferenceStringParameters<sizeof...(args)>{
+		std::array<StringParameter, sizeof...(args)>({StringParameter{StringParameter::ReferenceCaptureTag{}, std::forward<Args>(args)}...})
+	};
+}
+
 /**
  * Get a parsed string with most special stringcodes replaced by the string parameters.
  * @param string String ID to format.
@@ -133,8 +157,7 @@ template <typename... Args>
 template <typename... Args>
 [[nodiscard]] std::string GetString(StringID string, Args &&... args)
 {
-	auto params = MakeParameters(std::forward<Args>(args)...);
-	return GetStringWithArgs(string, params);
+	return GetStringWithArgs(string, MakeReferenceParameters(std::forward<Args>(args)...));
 }
 
 [[nodiscard]] EncodedString GetEncodedString(StringID str);
@@ -161,8 +184,7 @@ static inline EncodedString GetEncodedStringIfValid(StringID str)
 template <typename... Args>
 [[nodiscard]] EncodedString GetEncodedString(StringID string, Args &&... args)
 {
-	auto params = MakeParameters(std::forward<Args>(args)...);
-	return GetEncodedStringWithArgs(string, params);
+	return GetEncodedStringWithArgs(string, MakeReferenceParameters(std::forward<Args>(args)...));
 }
 
 /**
@@ -174,8 +196,7 @@ template <typename... Args>
 template <typename... Args>
 void AppendStringInPlace(struct format_target &result, StringID string, Args &&... args)
 {
-	auto params = MakeParameters(std::forward<Args>(args)...);
-	return AppendStringWithArgsInPlace(result, string, params);
+	return AppendStringWithArgsInPlace(result, string, MakeReferenceParameters(std::forward<Args>(args)...));
 }
 
 /**
@@ -187,8 +208,7 @@ void AppendStringInPlace(struct format_target &result, StringID string, Args &&.
 template <typename... Args>
 void AppendStringInPlace(std::string &result, StringID string, Args &&... args)
 {
-	auto params = MakeParameters(std::forward<Args>(args)...);
-	return AppendStringWithArgsInPlace(result, string, params);
+	return AppendStringWithArgsInPlace(result, string, MakeReferenceParameters(std::forward<Args>(args)...));
 }
 
 /**
@@ -202,8 +222,7 @@ template <typename T, typename... Args>
 std::string_view GetStringInPlace(T &buffer, StringID string, Args &&... args)
 {
 	buffer.clear();
-	auto params = MakeParameters(std::forward<Args>(args)...);
-	AppendStringWithArgsInPlace(buffer, string, params);
+	AppendStringWithArgsInPlace(buffer, string, MakeReferenceParameters(std::forward<Args>(args)...));
 	return buffer;
 }
 

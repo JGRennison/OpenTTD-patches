@@ -88,6 +88,7 @@ public:
 			uint64_t operator()(const std::monostate &) { throw std::out_of_range("Attempt to read uninitialised parameter as integer"); }
 			uint64_t operator()(const uint64_t &arg) { return arg; }
 			uint64_t operator()(const std::string &) { throw std::out_of_range("Attempt to read string parameter as integer"); }
+			uint64_t operator()(const StringParameterDataStringView &) { throw std::out_of_range("Attempt to read string parameter as integer"); }
 		};
 
 		const auto &param = this->GetNextParameterReference();
@@ -113,12 +114,13 @@ public:
 	 * will be read.
 	 * @return The next parameter's value.
 	 */
-	const char *GetNextParameterString()
+	std::string_view GetNextParameterString()
 	{
 		struct visitor {
-			const char *operator()(const std::monostate &) { throw std::out_of_range("Attempt to read uninitialised parameter as string"); }
-			const char *operator()(const uint64_t &) { throw std::out_of_range("Attempt to read integer parameter as string"); }
-			const char *operator()(const std::string &arg) { return arg.c_str(); }
+			std::string_view operator()(const std::monostate &) { throw std::out_of_range("Attempt to read uninitialised parameter as string"); }
+			std::string_view operator()(const uint64_t &) { throw std::out_of_range("Attempt to read integer parameter as string"); }
+			std::string_view operator()(const std::string &arg) { return arg; }
+			std::string_view operator()(const StringParameterDataStringView &arg) { return arg.view; }
 		};
 
 		const auto &param = this->GetNextParameterReference();
