@@ -3467,7 +3467,7 @@ public:
 					break;
 
 				case OCV_TIMETABLE: {
-					value = Clamp(ParseTimetableDuration(str->c_str()), 0, 0xFFFF);
+					value = Clamp(ParseTimetableDuration(*str), 0, 0xFFFF);
 					break;
 				}
 

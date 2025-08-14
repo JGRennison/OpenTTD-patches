@@ -18,7 +18,7 @@
 void ShowTimetableWindow(const Vehicle *v);
 void UpdateVehicleTimetable(Vehicle *v, bool travelling);
 std::pair<struct StringParameter, struct StringParameter> GetTimetableParameters(Ticks ticks, bool long_mode = false);
-Ticks ParseTimetableDuration(const char *str);
+Ticks ParseTimetableDuration(std::string_view str);
 
 enum SetTimetableWindowsDirtyFlags {
 	STWDF_NONE                       = 0,

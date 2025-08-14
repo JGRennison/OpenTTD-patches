@@ -16,6 +16,7 @@
 #include "strings_func.h"
 #include "vehicle_base.h"
 #include "string_func.h"
+#include "string_func_extra.h"
 #include "gfx_func.h"
 #include "company_func.h"
 #include "date_func.h"
@@ -63,12 +64,12 @@ std::pair<struct StringParameter, struct StringParameter> GetTimetableParameters
 	return { long_mode ? STR_JUST_TT_TICKS_LONG : STR_JUST_TT_TICKS, ticks };
 }
 
-Ticks ParseTimetableDuration(const char *str)
+Ticks ParseTimetableDuration(std::string_view str)
 {
-	if (StrEmpty(str)) return 0;
+	if (str.empty()) return 0;
 
 	if (_settings_client.gui.timetable_in_ticks) {
-		return std::strtoul(str, nullptr, 10);
+		return IntFromChars<int32_t>(str, true).value_or(0);
 	}
 
 	format_buffer_sized<64> tmp_buffer;
@@ -1199,7 +1200,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					uint64_t val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
-					p2 = ParseTimetableDuration(str->c_str());
+					p2 = ParseTimetableDuration(*str);
 				}
 
 				ExecuteTimetableCommand(v, this->change_timetable_all, this->sel_index, (this->sel_index % 2 == 1) ? (this->query_is_speed_query ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME, p2, false);
@@ -1208,9 +1209,9 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			case WID_VT_START_DATE: {
 				if (str->empty()) break;
-				char *end;
-				int32_t val = std::strtol(str->c_str(), &end, 10);
-				if (!(end != nullptr && *end == 0)) break;
+				auto result = IntFromChars<int32_t>(*str);
+				if (!result.has_value()) break;
+				int32_t val = *result;
 				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
 					Command<CMD_SET_TIMETABLE_START>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->set_start_date_all, _state_ticks + (val * TICKS_PER_SECOND));
 					break;

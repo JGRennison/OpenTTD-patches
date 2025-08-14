@@ -1369,7 +1369,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DURATION: {
 				if (!this->IsScheduleSelected()) break;
-				Ticks val = ParseTimetableDuration(str->c_str());
+				Ticks val = ParseTimetableDuration(*str);
 
 				if (val > 0) {
 					Command<CMD_SCH_DISPATCH_SET_DURATION>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
@@ -1382,7 +1382,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (str->empty()) break;
 
-				Command<CMD_SCH_DISPATCH_SET_DELAY>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, ParseTimetableDuration(str->c_str()));
+				Command<CMD_SCH_DISPATCH_SET_DELAY>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, ParseTimetableDuration(*str));
 				break;
 			}
 
@@ -1395,7 +1395,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_ADJUST: {
 				if (!this->IsScheduleSelected()) break;
-				Ticks val = ParseTimetableDuration(str->c_str());
+				Ticks val = ParseTimetableDuration(*str);
 
 				if (val != 0) {
 					if (this->adjust_slot_offset != UINT32_MAX) {
