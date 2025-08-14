@@ -11,8 +11,16 @@
 #include "format.hpp"
 #include "alloc_func.hpp"
 #include "mem_func.hpp"
+#include "utf8.hpp"
 
 #include "../safeguards.h"
+
+void format_target::append_utf8_impl(char32_t c)
+{
+	if (this->has_overflowed()) return;
+	auto [buf, len] = EncodeUtf8(c);
+	this->append(buf, buf + len);
+}
 
 void format_target::restore_size(size_t size)
 {

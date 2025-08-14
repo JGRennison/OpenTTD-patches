@@ -143,6 +143,8 @@ protected:
 
 	fmt::detail::buffer<char> &GetTargetFmtBuffer() const { return this->target; }
 
+	void append_utf8_impl(char32_t c);
+
 public:
 	format_target(const format_target &other) = delete;
 	format_target& operator=(const format_target &other) = delete;
@@ -216,6 +218,15 @@ public:
 		const auto orig_size = this->target.size();
 		this->target.try_resize(orig_size + to_append);
 		return std::span<char>(this->target.data() + orig_size, this->target.size() - orig_size);
+	}
+
+	void append_utf8(char32_t c)
+	{
+		if (c < 0x80) {
+			this->push_back((char)c);
+		} else {
+			this->append_utf8_impl(c);
+		}
 	}
 
 	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
