@@ -722,10 +722,9 @@ struct CheatWindow : Window {
 		const CheatEntry *ce = &_cheats_ui[clicked_cheat];
 
 		if (ce->type == SLF_ALLOW_CONTROL) {
-			char tmp_buffer[32];
-			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
-			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-			Command<CMD_CHEAT_SETTING>::Post(clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION));
+			format_buffer_sized<64> tmp_buffer;
+			str_replace_wchar(tmp_buffer, *str, GetDecimalSeparatorChar(), '.');
+			Command<CMD_CHEAT_SETTING>::Post(clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer.c_str()) * 65536.0, 1 << 16, MAX_INFLATION));
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {

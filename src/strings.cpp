@@ -22,6 +22,7 @@
 #include "error_func.h"
 #include "strings_func.h"
 #include "core/string_builder.hpp"
+#include "core/utf8.hpp"
 #include "rev.h"
 #include "core/endian_func.hpp"
 #include "date_func.h"
@@ -1186,11 +1187,19 @@ static void FormatUnitWeightRatio(StringBuilder builder, const Units &unit, int6
 	const char *unit_str = GetStringPtr(unit.s);
 	const char *weight_str = GetStringPtr(_units_weight[_settings_game.locale.units_weight].s);
 
-	char tmp_buffer[128];
-	char *insert_pt = strecpy(tmp_buffer, unit_str, lastof(tmp_buffer));
-	strecpy(insert_pt, weight_str, lastof(tmp_buffer));
-	str_replace_wchar(insert_pt, lastof(tmp_buffer), SCC_DECIMAL, '/');
-	str_replace_wchar(insert_pt, lastof(tmp_buffer), 0xA0 /* NBSP */, 0);
+	format_buffer_sized<128> tmp_buffer;
+	tmp_buffer.append(unit_str);
+
+	for (char32_t c : Utf8View(weight_str)) {
+		if (c == 0xA0) {
+			/* NBSP */
+			continue;
+		}
+		if (c == SCC_DECIMAL) {
+			c = '/';
+		}
+		tmp_buffer.append_utf8(c);
+	}
 
 	DecimalValue dv = ConvertWeightRatioToDisplay(unit, raw_value);
 

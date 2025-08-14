@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "core/alloc_func.hpp"
 #include "core/math_func.hpp"
+#include "core/utf8.hpp"
 #include "error_func.h"
 #include "string_func.h"
 #include "string_base.h"
@@ -493,51 +494,29 @@ std::string str_strip_all_scc(const char *str)
 }
 
 /** Scans the string for a wchar and replace it with another wchar
- * @param str The string buffer
- * @param last The pointer to the last element of the string buffer
+ * @param str The input string view
  * @param find The character to find
- * @param replace The character to replace, may be 0 to not insert any character
- * @return The pointer to the terminating null-character in the string buffer
+ * @param replace The character to replace
+ * @return A std::string of the replaced string
  */
-char *str_replace_wchar(char *str, const char *last, char32_t find, char32_t replace)
+void str_replace_wchar(struct format_target &buf, std::string_view str, char32_t find, char32_t replace)
 {
-	char *dst = str;
-
-	while (str <= last && *str != '\0') {
-		size_t len = Utf8EncodedCharLen(*str);
-		/* If the character is unknown, i.e. encoded length is 0
-		 * we assume worst case for the length check.
-		 * The length check is needed to prevent Utf8Decode to read
-		 * over the terminating '\0' if that happens to be placed
-		 * within the encoding of an UTF8 character. */
-		if ((len == 0 && str + 4 > last) || str + len > last) break;
-
-		char32_t c;
-		len = Utf8Decode(&c, str);
-		/* It's possible to encode the string termination character
-		 * into a multiple bytes. This prevents those termination
-		 * characters to be skipped */
-		if (c == '\0') break;
-
-		if (c != find) {
-			/* Copy the character back. Even if dst is current the same as str
-			 * (i.e. no characters have been changed) this is quicker than
-			 * moving the pointers ahead by len */
-			if (dst + len > last) break;
-			do {
-				*dst++ = *str++;
-			} while (--len != 0);
-		} else {
-			str += len;
-			if (replace) {
-				len = Utf8EncodedCharLen(replace);
-				if (dst + len > last) break;
-				dst += Utf8Encode(dst, replace);
-			}
-		}
+	for (char32_t c : Utf8View(str)) {
+		buf.append_utf8(c == find ? replace : c);
 	}
-	*dst = '\0';
-	return dst;
+}
+
+/** Scans the string for a wchar and replace it with another wchar
+ * @param str The input string view
+ * @param find The character to find
+ * @param replace The character to replace
+ * @return A std::string of the replaced string
+ */
+std::string str_replace_wchar(std::string_view str, char32_t find, char32_t replace)
+{
+	format_buffer buf;
+	str_replace_wchar(buf, str, find, replace);
+	return buf.to_string();
 }
 
 /**

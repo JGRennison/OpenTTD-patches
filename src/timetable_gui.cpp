@@ -71,10 +71,9 @@ Ticks ParseTimetableDuration(const char *str)
 		return std::strtoul(str, nullptr, 10);
 	}
 
-	char tmp_buffer[64];
-	strecpy(tmp_buffer, str, lastof(tmp_buffer));
-	str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-	return atof(tmp_buffer) * TimetableDisplayUnitSize();
+	format_buffer_sized<64> tmp_buffer;
+	str_replace_wchar(tmp_buffer, str, GetDecimalSeparatorChar(), '.');
+	return atof(tmp_buffer.c_str()) * TimetableDisplayUnitSize();
 }
 
 /**

@@ -2780,10 +2780,9 @@ public:
 				item.SetAuxField(TRPPAF_VALUE);
 			}
 		} else if (IsDecimalValueType(type)) {
-			char tmp_buffer[32];
-			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
-			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-			value = ConvertDecimalToValue(type, atof(tmp_buffer));
+			format_buffer_sized<64> tmp_buffer;
+			str_replace_wchar(tmp_buffer, *str, GetDecimalSeparatorChar(), '.');
+			value = ConvertDecimalToValue(type, atof(tmp_buffer.c_str()));
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
 				DecimalValue dv = ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1);
 				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, dv.value, dv.decimals), {}, WL_INFO);
