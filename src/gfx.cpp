@@ -99,7 +99,7 @@ int _gui_scale_cfg;                         ///< GUI scale in config.
  */
 
 extern std::atomic<uint> _dirty_block_colour;
-static bool _whole_screen_dirty = false;
+bool _whole_screen_dirty = false;
 bool _gfx_draw_active = false;
 
 static std::vector<Rect> _dirty_blocks;
@@ -1947,17 +1947,6 @@ void SetDirtyBlocks(int left, int top, int right, int bottom)
 void SetPendingDirtyBlocks(int left, int top, int right, int bottom)
 {
 	_pending_dirty_blocks.push_back({ left, top, right, bottom });
-}
-
-/**
- * This function mark the whole screen as dirty. This results in repainting
- * the whole screen. Use this with care as this function will break the
- * idea about marking only parts of the screen as 'dirty'.
- * @ingroup dirty
- */
-void MarkWholeScreenDirty()
-{
-	_whole_screen_dirty = true;
 }
 
 /**
