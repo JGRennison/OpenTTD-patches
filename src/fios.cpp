@@ -120,11 +120,8 @@ const FiosItem *FileList::FindItem(const std::string_view file)
 	}
 
 	/* If no name matches, try to parse it as number */
-	char *endptr;
-	int i = std::strtol(file.data(), &endptr, 10);
-	if (file.data() == endptr || *endptr != '\0') i = -1;
-
-	if (IsInsideMM(i, 0, this->size())) return &this->at(i);
+	auto i = IntFromChars<int>(file);
+	if (i.has_value() && IsInsideMM(*i, 0, this->size())) return &this->at(*i);
 
 	/* As a last effort assume it is an OpenTTD savegame and
 	 * that the ".sav" part was not given. */

@@ -853,7 +853,7 @@ Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
 			break;
 
 		case GM_EDITOR:
-			if ((GetRoadTypes(true) & ((rtt == RTT_ROAD) ? ~_roadtypes_type : _roadtypes_type)) == ROADTYPES_NONE) return nullptr;
+			if ((GetRoadTypes(true) & GetMaskForRoadTramType(rtt)) == ROADTYPES_NONE) return nullptr;
 			w = ShowBuildRoadScenToolbar(roadtype);
 			break;
 
@@ -1874,8 +1874,8 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 	}
 
 	/* Filter listed road types */
-	if (!HasBit(rtts, RTT_ROAD)) used_roadtypes &= _roadtypes_type;
-	if (!HasBit(rtts, RTT_TRAM)) used_roadtypes &= ~_roadtypes_type;
+	if (!HasBit(rtts, RTT_ROAD)) used_roadtypes &= ~GetMaskForRoadTramType(RTT_ROAD);
+	if (!HasBit(rtts, RTT_TRAM)) used_roadtypes &= ~GetMaskForRoadTramType(RTT_TRAM);
 
 	DropDownList list;
 
@@ -1886,6 +1886,7 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 	Dimension d = { 0, 0 };
 	/* Get largest icon size, to ensure text is aligned on each menu item. */
 	if (!for_replacement) {
+		used_roadtypes &= ~_roadtypes_hidden_mask;
 		for (const auto &rt : _sorted_roadtypes) {
 			if (!HasBit(used_roadtypes, rt)) continue;
 			const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
@@ -1927,8 +1928,9 @@ DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts, bool use_name)
 	RoadTypes used_roadtypes = GetRoadTypes(true);
 
 	/* Filter listed road types */
-	if (!HasBit(rtts, RTT_ROAD)) used_roadtypes &= _roadtypes_type;
-	if (!HasBit(rtts, RTT_TRAM)) used_roadtypes &= ~_roadtypes_type;
+	used_roadtypes &= ~_roadtypes_hidden_mask;
+	if (!HasBit(rtts, RTT_ROAD)) used_roadtypes &= ~GetMaskForRoadTramType(RTT_ROAD);
+	if (!HasBit(rtts, RTT_TRAM)) used_roadtypes &= ~GetMaskForRoadTramType(RTT_TRAM);
 
 	DropDownList list;
 

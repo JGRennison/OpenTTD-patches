@@ -1425,7 +1425,7 @@ void EndSpriteCombine()
  */
 static bool IsInRangeInclusive(int begin, int end, int check)
 {
-	if (begin > end) Swap(begin, end);
+	if (begin > end) std::swap(begin, end);
 	return begin <= check && check <= end;
 }
 
@@ -2358,7 +2358,7 @@ static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const Dr
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
-			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
+			const ChildScreenSpriteToDraw *cs = &(*csstdv)[child_idx];
 			child_idx = cs->next;
 			int x = cs->x;
 			int y = cs->y;
@@ -5560,8 +5560,8 @@ static inline void CalcNewPolylineOutersize()
 		int outer_y1 = _thd.selstart2.y & ~TILE_UNIT_MASK;
 		int outer_x2 = _thd.selend2.x & ~TILE_UNIT_MASK;
 		int outer_y2 = _thd.selend2.y & ~TILE_UNIT_MASK;
-		if (outer_x1 > outer_x2) Swap(outer_x1, outer_x2);
-		if (outer_y1 > outer_y2) Swap(outer_y1, outer_y2);
+		if (outer_x1 > outer_x2) std::swap(outer_x1, outer_x2);
+		if (outer_y1 > outer_y2) std::swap(outer_y1, outer_y2);
 		/* include the first part */
 		outer_x1 = std::min<int>(outer_x1, _thd.new_pos.x);
 		outer_y1 = std::min<int>(outer_y1, _thd.new_pos.y);
@@ -5609,8 +5609,8 @@ void UpdateTileSelection()
 			if (_thd.IsDraggingDiagonal()) {
 				new_diagonal = true;
 			} else {
-				if (x1 >= x2) Swap(x1, x2);
-				if (y1 >= y2) Swap(y1, y2);
+				if (x1 >= x2) std::swap(x1, x2);
+				if (y1 >= y2) std::swap(y1, y2);
 			}
 			_thd.new_pos.x = x1;
 			_thd.new_pos.y = y1;
@@ -5656,8 +5656,8 @@ void UpdateTileSelection()
 								y1 = _thd.selstart.y & ~TILE_UNIT_MASK;
 								int x2 = _thd.selend.x & ~TILE_UNIT_MASK;
 								int y2 = _thd.selend.y & ~TILE_UNIT_MASK;
-								if (x1 > x2) Swap(x1, x2);
-								if (y1 > y2) Swap(y1, y2);
+								if (x1 > x2) std::swap(x1, x2);
+								if (y1 > y2) std::swap(y1, y2);
 								_thd.new_pos.x = x1;
 								_thd.new_pos.y = y1;
 								_thd.new_size.x = x2 - x1 + TILE_SIZE;
@@ -5917,7 +5917,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 	uint h0, h1; // Start height and end height.
 
 	if (start_tile == end_tile) return 0;
-	if (swap) Swap(start_tile, end_tile);
+	if (swap) std::swap(start_tile, end_tile);
 
 	switch (style & HT_DRAG_MASK) {
 		case HT_RECT:
@@ -5988,7 +5988,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 		}
 	}
 
-	if (swap) Swap(h0, h1);
+	if (swap) std::swap(h0, h1);
 	return (int)(h1 - h0) * TILE_HEIGHT_STEP;
 }
 
@@ -6934,7 +6934,7 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 			/* determine proper direction (pointing outside of the track) */
 			uint distance = DistanceManhattan(start_tile, end_tile);
 			if (distance > DistanceManhattan(TileAddByDiagDir(start_tile, TrackdirToExitdir(exit_trackdir_at_start)), end_tile)) {
-				Swap(exit_trackdir_at_start, exit_trackdir_at_end);
+				std::swap(exit_trackdir_at_start, exit_trackdir_at_end);
 			}
 			/* determine proper track on the end tile - switch between upper/lower or left/right based on the length */
 			if (distance % 2 != 0) exit_trackdir_at_end = NextTrackdir(exit_trackdir_at_end);

@@ -135,14 +135,14 @@ struct TranslationWriter : LanguageWriter {
 		/* Nothing to do. */
 	}
 
-	void WriteLength(uint) override
+	void WriteLength(size_t) override
 	{
 		/* We don't write the length. */
 	}
 
-	void Write(const uint8_t *buffer, size_t length) override
+	void Write(const char *buffer, size_t length) override
 	{
-		this->strings.emplace_back((const char *)buffer, length);
+		this->strings.emplace_back(buffer, length);
 	}
 };
 
@@ -158,9 +158,9 @@ struct StringNameWriter : HeaderWriter {
 	{
 	}
 
-	void WriteStringID(const char *name, int stringid) override
+	void WriteStringID(const std::string &name, uint stringid) override
 	{
-		if (stringid == (int)this->strings.size()) this->strings.emplace_back(name);
+		if (stringid == this->strings.size()) this->strings.emplace_back(name);
 	}
 
 	void Finalise(const StringData &) override
@@ -276,7 +276,7 @@ static void ExtractStringParams(const StringData &data, StringParamsList &params
 				if (*it == nullptr) {
 					/* Skip empty param unless a non empty param exist after it. */
 					if (std::all_of(it, pcs.consuming_commands.end(), [](auto cs) { return cs == nullptr; })) break;
-					param.emplace_back(StringParam::UNUSED, 1, nullptr);
+					param.emplace_back(StringParam::UNUSED, 1);
 					continue;
 				}
 				const CmdStruct *cs = *it;
@@ -307,8 +307,8 @@ void GameStrings::Compile()
 		translation_reader.ParseFile();
 		if (_errors != 0) throw std::exception();
 
-		this->compiled_strings.emplace_back(p.language);
-		TranslationWriter writer(this->compiled_strings.back().lines);
+		auto &strings = this->compiled_strings.emplace_back(p.language);
+		TranslationWriter writer(strings.lines);
 		writer.WriteLang(data);
 	}
 }
@@ -321,10 +321,10 @@ GameStrings *_current_data = nullptr;
  * @param id The ID of the game string.
  * @return The encoded string.
  */
-const char *GetGameStringPtr(StringIndexInTab id)
+std::string_view GetGameStringPtr(StringIndexInTab id)
 {
 	if (_current_data == nullptr || _current_data->cur_language == nullptr || id.base() >= _current_data->cur_language->lines.size()) return GetStringPtr(STR_UNDEFINED);
-	return _current_data->cur_language->lines[id].c_str();
+	return _current_data->cur_language->lines[id];
 }
 
 /**

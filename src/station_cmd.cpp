@@ -712,17 +712,17 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Adjust in case our station only accepts fewer kinds of goods */
-	for (CargoType i = 0; i < NUM_CARGO; i++) {
-		uint amt = acceptance[i];
+	for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
+		uint amt = acceptance[cargo];
 
 		/* Make sure the station can accept the goods type. */
-		bool is_passengers = IsCargoInClass(i, CargoClass::Passengers);
+		bool is_passengers = IsCargoInClass(cargo, CargoClass::Passengers);
 		if ((!is_passengers && !st->facilities.Any({StationFacility::Train, StationFacility::TruckStop, StationFacility::Airport, StationFacility::Dock})) ||
 				(is_passengers && !st->facilities.Any({StationFacility::Train, StationFacility::BusStop, StationFacility::Airport, StationFacility::Dock}))) {
 			amt = 0;
 		}
 
-		GoodsEntry &ge = st->goods[i];
+		GoodsEntry &ge = st->goods[cargo];
 		SB(ge.status, GoodsEntry::GES_ACCEPTANCE, 1, amt >= 8);
 		if (LinkGraph::IsValidID(ge.link_graph)) {
 			(*LinkGraph::Get(ge.link_graph))[ge.node].SetDemand(amt / 8);
@@ -2737,7 +2737,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 	Direction rotation = as->layouts[layout].rotation;
 	int w = as->size_x;
 	int h = as->size_y;
-	if (rotation == DIR_E || rotation == DIR_W) Swap(w, h);
+	if (rotation == DIR_E || rotation == DIR_W) std::swap(w, h);
 	TileArea airport_area = TileArea(tile, w, h);
 
 	if (w > _settings_game.station.station_spread || h > _settings_game.station.station_spread) {
@@ -4009,7 +4009,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 		x &= 0xF;
 		y &= 0xF;
 
-		if (DiagDirToAxis(dir) != AXIS_X) Swap(x, y);
+		if (DiagDirToAxis(dir) != AXIS_X) std::swap(x, y);
 		if (y == TILE_SIZE / 2) {
 			if (dir != DIAGDIR_SE && dir != DIAGDIR_SW) x = TILE_SIZE - 1 - x;
 			stop &= TILE_SIZE - 1;
@@ -4386,13 +4386,13 @@ static void UpdateStationRating(Station *st)
  * Reroute cargo of type c at station st or in any vehicles unloading there.
  * Make sure the cargo's new next hop is neither "avoid" nor "avoid2".
  * @param st Station to be rerouted at.
- * @param c Type of cargo.
+ * @param cargo Type of cargo.
  * @param avoid Original next hop of cargo, avoid this.
  * @param avoid2 Another station to be avoided when rerouting.
  */
-void RerouteCargo(Station *st, CargoType c, StationID avoid, StationID avoid2)
+void RerouteCargo(Station *st, CargoType cargo, StationID avoid, StationID avoid2)
 {
-	GoodsEntry &ge = st->goods[c];
+	GoodsEntry &ge = st->goods[cargo];
 
 	/* Reroute cargo in station. */
 	if (ge.data != nullptr) ge.data->cargo.Reroute(UINT_MAX, &ge.data->cargo, avoid, avoid2, &ge);
@@ -4400,7 +4400,7 @@ void RerouteCargo(Station *st, CargoType c, StationID avoid, StationID avoid2)
 	/* Reroute cargo staged to be transferred. */
 	for (Vehicle *v : st->loading_vehicles) {
 		for (Vehicle *u = v; u != nullptr; u = u->Next()) {
-			if (u->cargo_type != c) continue;
+			if (u->cargo_type != cargo) continue;
 			u->cargo.Reroute(UINT_MAX, &u->cargo, avoid, avoid2, &ge);
 		}
 	}
@@ -4448,9 +4448,9 @@ void ClearDeleteStaleLinksVehicleCache()
  */
 void DeleteStaleLinks(Station *from)
 {
-	for (CargoType c = 0; c < NUM_CARGO; ++c) {
-		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(c) != DT_MANUAL);
-		GoodsEntry &ge = from->goods[c];
+	for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
+		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(cargo) != DT_MANUAL);
+		GoodsEntry &ge = from->goods[cargo];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == nullptr) continue;
 		lg->MutableIterateEdgesFromNode(ge.node, [&](LinkGraph::EdgeIterationHelper edge_helper) -> LinkGraph::EdgeIterationResult {
@@ -4460,7 +4460,7 @@ void DeleteStaleLinks(Station *from)
 			LinkGraph::EdgeIterationResult result = LinkGraph::EdgeIterationResult::None;
 
 			Station *to = Station::Get((*lg)[to_id].Station());
-			assert(to->goods[c].node == to_id);
+			assert(to->goods[cargo].node == to_id);
 			assert(EconTime::CurDate() >= edge.LastUpdate());
 			const EconTime::DateDelta timeout{std::max<int>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / DayLengthFactor(), 1)};
 			if (edge.LastAircraftUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastAircraftUpdate()) > timeout) {
@@ -4528,12 +4528,12 @@ void DeleteStaleLinks(Station *from)
 					/* If it's still considered dead remove it. */
 					result = LinkGraph::EdgeIterationResult::EraseEdge;
 					if (ge.data != nullptr) ge.data->flows.DeleteFlows(to->index);
-					RerouteCargo(from, c, to->index, from->index);
+					RerouteCargo(from, cargo, to->index, from->index);
 				}
 			} else if (edge.LastUnrestrictedUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastUnrestrictedUpdate()) > timeout) {
 				edge.Restrict();
 				if (ge.data != nullptr) ge.data->flows.RestrictFlows(to->index);
-				RerouteCargo(from, c, to->index, from->index);
+				RerouteCargo(from, cargo, to->index, from->index);
 			} else if (edge.LastRestrictedUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
 			}
@@ -4686,13 +4686,13 @@ void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint rad
 	});
 }
 
-static uint UpdateStationWaiting(Station *st, CargoType type, uint amount, Source source)
+static uint UpdateStationWaiting(Station *st, CargoType cargo, uint amount, Source source)
 {
 	/* We can't allocate a CargoPacket? Then don't do anything
 	 * at all; i.e. just discard the incoming cargo. */
 	if (!CargoPacket::CanAllocateItem()) return 0;
 
-	GoodsEntry &ge = st->goods[type];
+	GoodsEntry &ge = st->goods[cargo];
 	amount += ge.amount_fract;
 	ge.amount_fract = GB(amount, 0, 8);
 
@@ -4705,7 +4705,7 @@ static uint UpdateStationWaiting(Station *st, CargoType type, uint amount, Sourc
 	LinkGraph *lg = nullptr;
 	if (ge.link_graph == LinkGraphID::Invalid()) {
 		if (LinkGraph::CanAllocateItem()) {
-			lg = new LinkGraph(type);
+			lg = new LinkGraph(cargo);
 			LinkGraphSchedule::instance.Queue(lg);
 			ge.link_graph = lg->index;
 			ge.node = lg->AddNode(st);
@@ -4722,11 +4722,11 @@ static uint UpdateStationWaiting(Station *st, CargoType type, uint amount, Sourc
 		SetBit(ge.status, GoodsEntry::GES_RATING);
 	}
 
-	TriggerStationRandomisation(st, st->xy, SRT_NEW_CARGO, type);
-	TriggerStationAnimation(st, st->xy, SAT_NEW_CARGO, type);
-	AirportAnimationTrigger(st, AAT_STATION_NEW_CARGO, type);
-	TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, type);
-	TriggerRoadStopRandomisation(st, st->xy, RSRT_NEW_CARGO, type);
+	TriggerStationRandomisation(st, st->xy, SRT_NEW_CARGO, cargo);
+	TriggerStationAnimation(st, st->xy, SAT_NEW_CARGO, cargo);
+	AirportAnimationTrigger(st, AAT_STATION_NEW_CARGO, cargo);
+	TriggerRoadStopRandomisation(st, st->xy, RSRT_NEW_CARGO, cargo);
+	TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, cargo);
 
 	SetWindowDirty(WC_STATION_VIEW, st->index);
 	st->MarkTilesDirty(true);
@@ -4895,20 +4895,20 @@ const StationList &StationFinder::GetStations()
 }
 
 
-static bool CanMoveGoodsToStation(const Station *st, CargoType type)
+static bool CanMoveGoodsToStation(const Station *st, CargoType cargo)
 {
 	/* Is the station reserved exclusively for somebody else? */
 	if (st->owner != OWNER_NONE && st->town->exclusive_counter > 0 && st->town->exclusivity != st->owner) return false;
 
 	/* Lowest possible rating, better not to give cargo anymore. */
-	if (st->goods[type].rating == 0) return false;
+	if (st->goods[cargo].rating == 0) return false;
 
-	if (!st->goods[type].IsSupplyAllowed()) return false;
+	if (!st->goods[cargo].IsSupplyAllowed()) return false;
 
 	/* Selectively servicing stations, and not this one. */
-	if (_settings_game.order.selectgoods && !st->goods[type].HasVehicleEverTriedLoading()) return false;
+	if (_settings_game.order.selectgoods && !st->goods[cargo].HasVehicleEverTriedLoading()) return false;
 
-	if (IsCargoInClass(type, CargoClass::Passengers)) {
+	if (IsCargoInClass(cargo, CargoClass::Passengers)) {
 		/* Passengers are never served by just a truck stop. */
 		if (st->facilities == StationFacility::TruckStop) return false;
 	} else {
@@ -4918,7 +4918,7 @@ static bool CanMoveGoodsToStation(const Station *st, CargoType type)
 	return true;
 }
 
-uint MoveGoodsToStation(CargoType type, uint amount, Source source, const StationList &all_stations, Owner exclusivity)
+uint MoveGoodsToStation(CargoType cargo, uint amount, Source source, const StationList &all_stations, Owner exclusivity)
 {
 	/* Return if nothing to do. Also the rounding below fails for 0. */
 	if (all_stations.empty()) return 0;
@@ -4930,7 +4930,7 @@ uint MoveGoodsToStation(CargoType type, uint amount, Source source, const Statio
 
 	for (Station *st : all_stations) {
 		if (exclusivity != INVALID_OWNER && exclusivity != st->owner) continue;
-		if (!CanMoveGoodsToStation(st, type)) continue;
+		if (!CanMoveGoodsToStation(st, cargo)) continue;
 
 		/* Avoid allocating a vector if there is only one station to significantly
 		 * improve performance in this common case. */
@@ -4950,8 +4950,8 @@ uint MoveGoodsToStation(CargoType type, uint amount, Source source, const Statio
 
 	if (used_stations.empty()) {
 		/* only one station around */
-		amount *= first_station->goods[type].rating + 1;
-		return UpdateStationWaiting(first_station, type, amount, source);
+		amount *= first_station->goods[cargo].rating + 1;
+		return UpdateStationWaiting(first_station, cargo, amount, source);
 	}
 
 	TypedIndexContainer<std::array<uint32_t, OWNER_END.base()>, Owner> company_best = {};  // best rating for each company, including OWNER_NONE
@@ -4961,7 +4961,7 @@ uint MoveGoodsToStation(CargoType type, uint amount, Source source, const Statio
 
 	for (auto &p : used_stations) {
 		auto owner = p.first->owner;
-		auto rating = p.first->goods[type].rating;
+		auto rating = p.first->goods[cargo].rating;
 		if (rating > company_best[owner]) {
 			best_sum += rating - company_best[owner];  // it's usually faster than iterating companies later
 			company_best[owner] = rating;
@@ -4979,14 +4979,14 @@ uint MoveGoodsToStation(CargoType type, uint amount, Source source, const Statio
 		Owner owner = p.first->owner;
 		/* Multiply the amount by (company best / sum of best for each company) to get cargo allocated to a company
 		 * and by (station rating / sum of ratings in a company) to get the result for a single station. */
-		p.second = ((uint64_t) amount) * ((uint64_t) company_best[owner]) * ((uint64_t) p.first->goods[type].rating) / (best_sum * company_sum[owner]);
+		p.second = ((uint64_t) amount) * ((uint64_t) company_best[owner]) * ((uint64_t) p.first->goods[cargo].rating) / (best_sum * company_sum[owner]);
 		moving += p.second;
 	}
 
 	/* If there is some cargo left due to rounding issues distribute it among the best rated stations. */
 	if (amount > moving) {
-		std::stable_sort(used_stations.begin(), used_stations.end(), [type](const StationInfo &a, const StationInfo &b) {
-			return b.first->goods[type].rating < a.first->goods[type].rating;
+		std::stable_sort(used_stations.begin(), used_stations.end(), [cargo](const StationInfo &a, const StationInfo &b) {
+			return b.first->goods[cargo].rating < a.first->goods[cargo].rating;
 		});
 
 		uint to_deliver = amount - moving;
@@ -5000,7 +5000,7 @@ uint MoveGoodsToStation(CargoType type, uint amount, Source source, const Statio
 
 	uint moved = 0;
 	for (auto &p : used_stations) {
-		moved += UpdateStationWaiting(p.first, type, p.second, source);
+		moved += UpdateStationWaiting(p.first, cargo, p.second, source);
 	}
 
 	return moved;
@@ -5393,9 +5393,9 @@ StationID FlowStat::GetVia(StationID excluded, StationID excluded2) const
 	if (interval2 >= new_max) return StationID::Invalid(); // Only the two excluded stations in the map.
 	new_max -= interval2;
 	if (begin > begin2) {
-		Swap(begin, begin2);
-		Swap(end, end2);
-		Swap(interval, interval2);
+		std::swap(begin, begin2);
+		std::swap(end, end2);
+		std::swap(interval, interval2);
 	}
 	rand = RandomRange(new_max);
 	const_iterator it3 = this->upper_bound(this->unrestricted);

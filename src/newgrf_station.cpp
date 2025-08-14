@@ -113,8 +113,8 @@ uint32_t GetPlatformInfo(Axis axis, uint8_t tile, int platforms, int length, int
 	uint32_t retval = 0;
 
 	if (axis == AXIS_X) {
-		Swap(platforms, length);
-		Swap(x, y);
+		std::swap(platforms, length);
+		std::swap(x, y);
 	}
 
 	if (centred) {
@@ -458,16 +458,16 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 
 	/* Handle cargo variables with parameter, 0x60 to 0x65 and 0x69 */
 	if ((variable >= 0x60 && variable <= 0x65) || variable == 0x69) {
-		CargoType c = GetCargoTranslation(parameter, object.grffile);
+		CargoType cargo = GetCargoTranslation(parameter, object.grffile);
 
-		if (c == INVALID_CARGO) {
+		if (cargo == INVALID_CARGO) {
 			switch (variable) {
 				case 0x62: return 0xFFFFFFFF;
 				case 0x64: return 0xFF00;
 				default:   return 0;
 			}
 		}
-		const GoodsEntry *ge = &this->goods[c];
+		const GoodsEntry *ge = &this->goods[cargo];
 
 		switch (variable) {
 			case 0x60: return std::min<uint32_t>(ge->CargoTotalCount(), 4095);
@@ -943,13 +943,13 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
 		if (st->TileBelongsToRailStation(tile)) {
 			const StationSpec *ss = GetStationSpec(tile);
 			if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
-				CargoType cargo;
+				uint8_t local_cargo;
 				if (cargo_type == INVALID_CARGO) {
-					cargo = INVALID_CARGO;
+					local_cargo = UINT8_MAX;
 				} else {
-					cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
+					local_cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
 				}
-				StationAnimationBase::ChangeAnimationFrame(CBID_STATION_ANIM_START_STOP, ss, st, tile, (random_bits << 16) | GB(Random(), 0, 16), (uint8_t)trigger | (cargo << 8));
+				StationAnimationBase::ChangeAnimationFrame(CBID_STATION_ANIM_START_STOP, ss, st, tile, (random_bits << 16) | GB(Random(), 0, 16), (uint8_t)trigger | (local_cargo << 8));
 			}
 		}
 	}

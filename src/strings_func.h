@@ -72,7 +72,7 @@ static inline void PrepareArgsForNextRun(std::span<StringParameter> args)
 
 [[nodiscard]] std::string GetStringWithArgs(StringID string, std::span<StringParameter> args);
 [[nodiscard]] std::string GetString(StringID string);
-[[nodiscard]] const char *GetStringPtr(StringID string);
+[[nodiscard]] std::string_view GetStringPtr(StringID string);
 void AppendStringWithArgsInPlace(struct format_target &result, StringID string, std::span<StringParameter> args);
 void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
 uint32_t GetStringGRFID(StringID string);

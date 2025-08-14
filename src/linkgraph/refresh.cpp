@@ -302,24 +302,24 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 	Station *st = Station::GetIfValid(cur->GetDestination().ToStationID());
 	if (st != nullptr && next_station != StationID::Invalid() && next_station != st->index) {
 		Station *st_to = Station::Get(next_station);
-		for (CargoType c = 0; c < NUM_CARGO; c++) {
+		for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
 			/* Refresh the link and give it a minimum capacity. */
 
-			if (!HasBit(this->cargo_mask, c)) continue;
+			if (!HasBit(this->cargo_mask, cargo)) continue;
 
-			uint cargo_quantity = this->capacities[c];
+			uint cargo_quantity = this->capacities[cargo];
 			if (cargo_quantity == 0) continue;
 
 			if (this->vehicle->GetDisplayMaxSpeed() == 0) continue;
 
 			/* If not allowed to merge link graphs, make sure the stations are
 			 * already in the same link graph. */
-			if (!this->allow_merge && st->goods[c].link_graph != st_to->goods[c].link_graph) {
+			if (!this->allow_merge && st->goods[cargo].link_graph != st_to->goods[cargo].link_graph) {
 				continue;
 			}
 
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
-			EdgeUpdateModes restricted_modes = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
+			EdgeUpdateModes restricted_modes = (cur->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 ?
 						EdgeUpdateMode::Unrestricted : EdgeUpdateMode::Restricted;
 			/* This estimates the travel time of the link as the time needed
 			 * to travel between the stations at half the max speed of the consist.
@@ -346,16 +346,16 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 					(Ticks)this->vehicle->current_order_time) {
 				uint effective_capacity = cargo_quantity * this->vehicle->load_unload_ticks;
 				if (effective_capacity > (uint)this->vehicle->orders->GetTotalDuration()) {
-					IncreaseStats(st, c, next_station, effective_capacity /
+					IncreaseStats(st, cargo, next_station, effective_capacity /
 							this->vehicle->orders->GetTotalDuration(), 0, 0,
 							EdgeUpdateModes{EdgeUpdateMode::Increase} | restricted_modes);
 				} else if (RandomRange(this->vehicle->orders->GetTotalDuration()) < effective_capacity) {
-					IncreaseStats(st, c, next_station, 1, 0, 0, EdgeUpdateModes{EdgeUpdateMode::Increase} | restricted_modes);
+					IncreaseStats(st, cargo, next_station, 1, 0, 0, EdgeUpdateModes{EdgeUpdateMode::Increase} | restricted_modes);
 				} else {
-					IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
+					IncreaseStats(st, cargo, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
 				}
 			} else {
-				IncreaseStats(st, c, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
+				IncreaseStats(st, cargo, next_station, cargo_quantity, 0, time_estimate, EdgeUpdateModes{EdgeUpdateMode::Refresh} | restricted_modes);
 			}
 		}
 	}
@@ -384,10 +384,10 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 			} else if (!HasBit(flags, IN_AUTOREFIT)) {
 				SetBit(flags, IN_AUTOREFIT);
 				LinkRefresher backup(*this);
-				for (CargoType c = 0; c != NUM_CARGO; ++c) {
-					if (!CargoSpec::Get(c)->IsValid()) continue;
-					if (next->GetCargoLoadType(c) == OLFB_NO_LOAD) continue;
-					if (this->HandleRefit(c)) {
+				for (CargoType cargo = 0; cargo != NUM_CARGO; ++cargo) {
+					if (!CargoSpec::Get(cargo)->IsValid()) continue;
+					if (next->GetCargoLoadType(cargo) == OLFB_NO_LOAD) continue;
+					if (this->HandleRefit(cargo)) {
 						this->RefreshLinks(cur, next, travel, flags, num_hops);
 						*this = backup;
 					}

@@ -21,10 +21,10 @@
 
 /** Container for the different cases of a string. */
 struct Case {
-	int caseidx;        ///< The index of the case.
+	uint8_t caseidx;    ///< The index of the case.
 	std::string string; ///< The translation of the case.
 
-	Case(int caseidx, std::string string);
+	Case(uint8_t caseidx, std::string string);
 };
 
 /** Information about a single string. */
@@ -33,15 +33,15 @@ struct LangString {
 	std::string english;    ///< English text.
 	std::string translated; ///< Translated text.
 	int index;              ///< The index in the language file.
-	int line;               ///< Line of string in source-file.
+	uint line;              ///< Line of string in source-file.
 	std::vector<Case> translated_cases; ///< Cases of the translation.
 	std::unique_ptr<LangString> chain_before;
 	std::unique_ptr<LangString> chain_after;
 	bool no_translate_mode = false;
 	LangString *default_translation = nullptr;
 
-	LangString(std::string name, std::string english, int index, int line);
-	void ReplaceDefinition(std::string english, int line);
+	LangString(std::string name, std::string english, int index, uint line);
+	void ReplaceDefinition(std::string english, uint line);
 	void FreeTranslation();
 };
 
@@ -49,8 +49,8 @@ struct LangString {
 struct StringData {
 	std::vector<LangString *> strings; ///< List of all known strings.
 	std::unordered_map<std::string_view, LangString *> name_to_string; ///< Lookup table for the strings.
-	size_t tabs;          ///< The number of 'tabs' of strings.
-	size_t max_strings;   ///< The maximum number of strings.
+	uint tabs;            ///< The number of 'tabs' of strings.
+	uint max_strings;     ///< The maximum number of strings.
 	int next_string_id;   ///< The next string ID to allocate.
 
 	std::vector<std::unique_ptr<LangString>> string_store;
@@ -60,11 +60,10 @@ struct StringData {
 	bool no_translate_mode = false;
 	LangString *default_translation = nullptr;
 
-	StringData(size_t tabs);
+	StringData(uint tabs);
 	void FreeTranslation();
-	LangString *Find(const std::string_view s);
-	uint VersionHashStr(uint hash, const char *s) const;
-	uint Version() const;
+	LangString *Find(std::string_view s);
+	uint32_t Version() const;
 	uint CountInUse(uint tab) const;
 };
 
@@ -108,7 +107,7 @@ struct HeaderWriter {
 	 * @param name     The name of the string.
 	 * @param stringid The ID of the string.
 	 */
-	virtual void WriteStringID(const char *name, int stringid) = 0;
+	virtual void WriteStringID(const std::string &name, uint stringid) = 0;
 
 	/**
 	 * Finalise writing the file.
@@ -136,7 +135,7 @@ struct LanguageWriter {
 	 * @param buffer The buffer to write.
 	 * @param length The amount of byte to write.
 	 */
-	virtual void Write(const uint8_t *buffer, size_t length) = 0;
+	virtual void Write(const char *buffer, size_t length) = 0;
 
 	/**
 	 * Finalise writing the file.
@@ -146,7 +145,7 @@ struct LanguageWriter {
 	/** Especially destroy the subclasses. */
 	virtual ~LanguageWriter() = default;
 
-	virtual void WriteLength(uint length);
+	virtual void WriteLength(size_t length);
 	virtual void WriteLang(const StringData &data);
 };
 
@@ -171,11 +170,12 @@ void StrgenErrorI(const std::string &msg);
 #define StrgenWarning(format_string, ...) StrgenWarningI(fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__))
 #define StrgenError(format_string, ...) StrgenErrorI(fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__))
 #define StrgenFatal(format_string, ...) StrgenFatalI(fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__))
-char *ParseWord(char **buf);
+std::optional<std::string_view> ParseWord(const char **buf);
 
 extern const char *_file;
-extern int _cur_line;
-extern int _errors, _warnings, _show_todo;
+extern uint _cur_line;
+extern uint _errors, _warnings;
+extern bool _show_warnings, _annotate_todos, _translation;
 extern LanguagePackHeader _lang;
 
 #endif /* STRGEN_H */

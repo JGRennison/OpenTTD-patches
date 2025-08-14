@@ -110,20 +110,20 @@ Station::~Station()
 		if (a->targetairport == this->index) a->targetairport = StationID::Invalid();
 	}
 
-	for (CargoType c = 0; c < NUM_CARGO; ++c) {
-		LinkGraph *lg = LinkGraph::GetIfValid(this->goods[c].link_graph);
+	for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
+		LinkGraph *lg = LinkGraph::GetIfValid(this->goods[cargo].link_graph);
 		if (lg == nullptr) continue;
 
 		for (NodeID node = 0; node < lg->Size(); ++node) {
 			Station *st = Station::Get((*lg)[node].Station());
-			GoodsEntryData *ged = st->goods[c].data.get();
+			GoodsEntryData *ged = st->goods[cargo].data.get();
 			if (ged != nullptr) ged->flows.erase(this->index);
-			if (lg->GetConstEdge(node, this->goods[c].node).LastUpdate() != EconTime::INVALID_DATE) {
+			if (lg->GetConstEdge(node, this->goods[cargo].node).LastUpdate() != EconTime::INVALID_DATE) {
 				if (ged != nullptr) ged->flows.DeleteFlows(this->index);
-				RerouteCargo(st, c, this->index, st->index);
+				RerouteCargo(st, cargo, this->index, st->index);
 			}
 		}
-		lg->RemoveNode(this->goods[c].node);
+		lg->RemoveNode(this->goods[cargo].node);
 		if (lg->Size() == 0) {
 			LinkGraphSchedule::instance.Unqueue(lg);
 			delete lg;

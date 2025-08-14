@@ -159,7 +159,7 @@ struct UnmappedChoiceList {
 		if (this->type == SCC_SWITCH_CASE) {
 			/*
 			 * Format for case switch:
-			 * <NUM CASES> <CASE1> <LEN1> <STRING1> <CASE2> <LEN2> <STRING2> <CASE3> <LEN3> <STRING3> <STRINGDEFAULT>
+			 * <NUM CASES> <CASE1> <LEN1> <STRING1> <CASE2> <LEN2> <STRING2> <CASE3> <LEN3> <STRING3> <LENDEFAULT> <STRINGDEFAULT>
 			 * Each LEN is printed using 2 bytes in big endian order.
 			 */
 
@@ -171,6 +171,16 @@ struct UnmappedChoiceList {
 			}
 			*d++ = count;
 
+			auto add_case = [&](std::string_view str) {
+				/* "<LENn>" */
+				uint16_t len = ClampTo<uint16_t>(str.size());
+				*d++ = GB(len, 0, 8);
+				*d++ = GB(len, 8, 8);
+
+				/* "<STRINGn>" */
+				dest.write(str.data(), len);
+			};
+
 			for (uint8_t i = 0; i < _current_language->num_cases; i++) {
 				/* Resolve the string we're looking for. */
 				int idx = lm->GetReverseMapping(i, false);
@@ -180,18 +190,11 @@ struct UnmappedChoiceList {
 				/* "<CASEn>" */
 				*d++ = i + 1;
 
-				/* "<LENn>": Limit the length of the string to 0xFFFE to leave space for the '\0'. */
-				size_t len = std::min<size_t>(0xFFFE, str.size());
-				*d++ = GB(len + 1, 8, 8);
-				*d++ = GB(len + 1, 0, 8);
-
-				/* "<STRINGn>" */
-				dest.write(str.c_str(), len);
-				*d++ = '\0';
+				add_case(str);
 			}
 
 			/* "<STRINGDEFAULT>" */
-			dest << this->strings[0].rdbuf() << '\0';
+			add_case(this->strings[0].view());
 		} else {
 			if (this->type == SCC_PLURAL_LIST) {
 				*d++ = lm->plural_form;
@@ -213,20 +216,17 @@ struct UnmappedChoiceList {
 			for (int i = 0; i < count; i++) {
 				int idx = (this->type == SCC_GENDER_LIST ? lm->GetReverseMapping(i, true) : i + 1);
 				const auto &str = this->strings[this->strings.find(idx) != this->strings.end() ? idx : 0].str();
-				size_t len = str.size() + 1;
-				if (len > 0xFF) GrfMsg(1, "choice list string is too long");
-				*d++ = GB(len, 0, 8);
+				size_t len = str.size();
+				if (len > UINT8_MAX) GrfMsg(1, "choice list string is too long");
+				*d++ = ClampTo<uint8_t>(len);
 			}
 
 			/* "<STRINGs>" */
 			for (int i = 0; i < count; i++) {
 				int idx = (this->type == SCC_GENDER_LIST ? lm->GetReverseMapping(i, true) : i + 1);
 				const auto &str = this->strings[this->strings.find(idx) != this->strings.end() ? idx : 0].str();
-				/* Limit the length of the string we copy to 0xFE. The length is written above
-				 * as a byte and we need room for the final '\0'. */
-				size_t len = std::min<size_t>(0xFE, str.size());
+				uint8_t len = ClampTo<uint8_t>(str.size());
 				dest.write(str.c_str(), len);
-				*d++ = '\0';
 			}
 		}
 	}
@@ -652,18 +652,18 @@ StringID GetGRFStringID(uint32_t grfid, GRFStringID stringid)
  * current language nullptr is returned.
  * @param text_list The GRFTextList to get the string from.
  */
-const char *GetGRFStringFromGRFText(const GRFTextList &text_list)
+std::optional<std::string_view> GetGRFStringFromGRFText(const GRFTextList &text_list)
 {
-	const char *default_text = nullptr;
+	std::optional<std::string_view> default_text;
 
 	/* Search the list of lang-strings of this stringid for current lang */
 	for (const auto &text : text_list) {
-		if (text.langid == _currentLangID) return text.text.c_str();
+		if (text.langid == _currentLangID) return text.text;
 
 		/* If the current string is English or American, set it as the
 		 * fallback language if the specific language isn't available. */
-		if (text.langid == GRFLX_UNSPECIFIED || (default_text == nullptr && (text.langid == GRFLX_ENGLISH || text.langid == GRFLX_AMERICAN))) {
-			default_text = text.text.c_str();
+		if (text.langid == GRFLX_UNSPECIFIED || (!default_text.has_value() && (text.langid == GRFLX_ENGLISH || text.langid == GRFLX_AMERICAN))) {
+			default_text = text.text;
 		}
 	}
 
@@ -692,9 +692,9 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list)
  * current language nullptr is returned.
  * @param text The GRFTextList to get the string from.
  */
-const char *GetGRFStringFromGRFText(const GRFTextWrapper &text)
+std::optional<std::string_view> GetGRFStringFromGRFText(const GRFTextWrapper &text)
 {
-	return text ? GetGRFStringFromGRFText(*text) : nullptr;
+	return text ? GetGRFStringFromGRFText(*text) : std::nullopt;
 }
 
 const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
@@ -705,20 +705,18 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
 /**
  * Get a C-string from a stringid set by a newgrf.
  */
-const char *GetGRFStringPtr(StringIndexInTab stringid)
+std::string_view GetGRFStringPtr(StringIndexInTab stringid)
 {
 	if (stringid.base() >= _grf_text.size() || _grf_text[stringid].grfid == 0) {
 		Debug(misc, 0, "Invalid NewGRF string ID: {}", stringid);
 		return "(invalid StringID)";
 	}
 
-	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
-	if (str == nullptr) {
-		/* Use the default string ID if the fallback string isn't available */
-		str = GetStringPtr(_grf_text[stringid].def_string);
-	}
+	auto str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
+	if (str.has_value()) return *str;
 
-	return str;
+ 	/* Use the default string ID if the fallback string isn't available */
+ 	return GetStringPtr(_grf_text[stringid].def_string);
 }
 
 /**
@@ -841,7 +839,7 @@ struct TextRefStack {
 	}
 };
 
-static void HandleNewGRFStringControlCodes(const char *str, TextRefStack &stack, std::vector<StringParameter> &params);
+static void HandleNewGRFStringControlCodes(std::string_view str, TextRefStack &stack, std::vector<StringParameter> &params);
 
 /**
  * Process NewGRF string control code instructions.
@@ -876,8 +874,9 @@ static void ProcessNewGRFStringControlCode(char32_t scc, const char *&str, TextR
 			/* skip all cases and continue with default case */
 			uint num = static_cast<uint8_t>(*str++);
 			for (uint i = 0; i != num; i++) {
-				str += 3 + (static_cast<uint8_t>(str[1]) << 8) + static_cast<uint8_t>(str[2]);
+				str += 3 + static_cast<uint8_t>(str[1]) + (static_cast<uint8_t>(str[2]) << 8);
 			}
+			str += 2; // length of default
 			break;
 		}
 
@@ -1054,11 +1053,9 @@ uint32_t GetStringGRFID(StringID string)
  * @param[in,out] stack Stack to use.
  * @param[out] params Parameters to fill.
  */
-static void HandleNewGRFStringControlCodes(const char *str, TextRefStack &stack, std::vector<StringParameter> &params)
+static void HandleNewGRFStringControlCodes(std::string_view str, TextRefStack &stack, std::vector<StringParameter> &params)
 {
-	if (str == nullptr) return;
-
-	for (const char *p = str; *p != '\0'; /* nothing */) {
+	for (const char *p = str.data(), *end = str.data() + str.size(); p < end; /* nothing */) {
 		char32_t scc;
 		p += Utf8Decode(&scc, p);
 		ProcessNewGRFStringControlCode(scc, p, stack, params);
@@ -1076,8 +1073,7 @@ std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grff
 {
 	if (stringid == INVALID_STRING_ID) return {};
 
-	const char *str = GetStringPtr(stringid);
-	if (str == nullptr) return {};
+	auto str = GetStringPtr(stringid);
 
 	std::vector<StringParameter> params;
 	params.reserve(20);

@@ -225,12 +225,12 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		StationID from = sta->index;
 
 		uint supply = 0;
-		for (CargoType c : SetCargoBitIterator(this->cargo_mask)) {
-			if (!CargoSpec::Get(c)->IsValid()) continue;
-			if (!LinkGraph::IsValidID(sta->goods[c].link_graph)) continue;
-			const LinkGraph &lg = *LinkGraph::Get(sta->goods[c].link_graph);
+		for (CargoType cargo : SetCargoBitIterator(this->cargo_mask)) {
+			if (!CargoSpec::Get(cargo)->IsValid()) continue;
+			if (!LinkGraph::IsValidID(sta->goods[cargo].link_graph)) continue;
+			const LinkGraph &lg = *LinkGraph::Get(sta->goods[cargo].link_graph);
 
-			ConstNode from_node = lg[sta->goods[c].node];
+			ConstNode from_node = lg[sta->goods[cargo].node];
 			supply += lg.Monthly(from_node.Supply());
 			lg.IterateEdgesFromNode(from_node.GetNodeID(), [&](NodeID from_id, NodeID to_id, ConstEdge edge) {
 				StationID to = lg[to_id].Station();

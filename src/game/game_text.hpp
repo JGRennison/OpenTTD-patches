@@ -23,14 +23,14 @@ struct StringParam {
 
 	ParamType type;
 	uint8_t consumes;
-	const char *cmd;
+	std::string_view cmd;
 
-	StringParam(ParamType type, uint8_t consumes, const char *cmd) : type(type), consumes(consumes), cmd(cmd) {}
+	StringParam(ParamType type, uint8_t consumes, std::string_view cmd = {}) : type(type), consumes(consumes), cmd(cmd) {}
 };
 using StringParams = std::vector<StringParam>;
 using StringParamsList = std::vector<StringParams>;
 
-const char *GetGameStringPtr(StringIndexInTab id);
+std::string_view GetGameStringPtr(StringIndexInTab id);
 const StringParams &GetGameStringParams(StringIndexInTab id);
 const std::string &GetGameStringName(StringIndexInTab id);
 void RegisterGameTranslation(class Squirrel *engine);

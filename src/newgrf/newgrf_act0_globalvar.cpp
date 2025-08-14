@@ -303,19 +303,19 @@ static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, con
 					 * such as Cyrillic. Thus we will simply assume they're all UTF8. */
 					char32_t c;
 					size_t len = Utf8Decode(&c, name.data());
-					if (c == NFO_UTF8_IDENTIFIER) name = name.substr(len);
+					if (len <= name.size() && c == NFO_UTF8_IDENTIFIER) name = name.substr(len);
 
 					LanguageMap::Mapping map;
 					map.newgrf_id = newgrf_id;
 					if (prop == 0x13) {
-						map.openttd_id = lang->GetGenderIndex(name.data());
+						map.openttd_id = lang->GetGenderIndex(name);
 						if (map.openttd_id >= MAX_NUM_GENDERS) {
 							GrfMsg(1, "GlobalVarChangeInfo: Gender name {} is not known, ignoring", StrMakeValid(name));
 						} else {
 							_cur.grffile->language_map[curidx].gender_map.push_back(map);
 						}
 					} else {
-						map.openttd_id = lang->GetCaseIndex(name.data());
+						map.openttd_id = lang->GetCaseIndex(name);
 						if (map.openttd_id >= MAX_NUM_CASES) {
 							GrfMsg(1, "GlobalVarChangeInfo: Case name {} is not known, ignoring", StrMakeValid(name));
 						} else {

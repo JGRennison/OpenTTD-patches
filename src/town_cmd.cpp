@@ -589,15 +589,15 @@ static void AdvanceHouseConstruction(TileIndex tile)
  * The amount of cargo should be and will be greater than zero.
  *
  * @param t current town
- * @param ct type of cargo to generate, usually CT_PASSENGERS or CT_MAIL
+ * @param cargo type of cargo to generate, usually CT_PASSENGERS or CT_MAIL
  * @param amount how many units of cargo
  * @param stations available stations for this house
- * @param economy_adjust true if amount should be reduced during recession
+ * @param affected_by_recession true if amount should be reduced during recession
  */
-static void TownGenerateCargo(Town *t, CargoType ct, uint amount, StationFinder &stations, bool economy_adjust)
+static void TownGenerateCargo(Town *t, CargoType cargo, uint amount, StationFinder &stations, bool affected_by_recession)
 {
 	/* When the economy flunctuates, everyone wants to stay at home */
-	if (economy_adjust && EconomyIsInRecession()) {
+	if (affected_by_recession && EconomyIsInRecession()) {
 		amount = (amount + 1) >> 1;
 	}
 
@@ -605,8 +605,9 @@ static void TownGenerateCargo(Town *t, CargoType ct, uint amount, StationFinder 
 
 	if (amount == 0) return;
 
-	t->supplied[ct].new_max += amount;
-	t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, Source::Make<SourceType::Town>(t->index), stations.GetStations());
+	/* Actually generate cargo and update town statistics. */
+	t->supplied[cargo].new_max += amount;
+	t->supplied[cargo].new_act += MoveGoodsToStation(cargo, amount, Source::Make<SourceType::Town>(t->index), stations.GetStations());
 }
 
 /**

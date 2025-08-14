@@ -1307,7 +1307,7 @@ bool AfterLoadGame()
 				case MP_ROAD:
 					/* Swap m3 and m4, so the track type for rail crossings is the
 					 * same as for normal rail. */
-					Swap(_m[t].m3, _m[t].m4);
+					std::swap(_m[t].m3, _m[t].m4);
 					break;
 
 				default: break;

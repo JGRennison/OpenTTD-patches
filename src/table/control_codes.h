@@ -103,7 +103,6 @@ enum StringControlCode : uint16_t {
 	SCC_STRING5,
 	SCC_STRING6,
 	SCC_STRING7,
-	SCC_STRING8,
 
 
 	SCC_STRING,

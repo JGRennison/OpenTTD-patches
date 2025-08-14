@@ -43,10 +43,10 @@
 
 void StrgenWarningI(const std::string &msg)
 {
-	if (_show_todo > 0) {
-		fmt::print(stderr, LINE_NUM_FMT("warning"), _file, _cur_line, msg);
-	} else {
+	if (_translation) {
 		fmt::print(stderr, LINE_NUM_FMT("info"), _file, _cur_line, msg);
+	} else {
+		fmt::print(stderr, LINE_NUM_FMT("warning"), _file, _cur_line, msg);
 	}
 	_warnings++;
 }
@@ -173,39 +173,39 @@ void FileStringReader::HandlePragma(char *str)
 	} else if (!memcmp(str, "winlangid ", 10)) {
 		const char *buf = str + 10;
 		long langid = std::strtol(buf, nullptr, 16);
-		if (langid > (long)UINT16_MAX || langid < 0) {
+		if (langid > UINT16_MAX || langid < 0) {
 			FatalError("Invalid winlangid {}", buf);
 		}
-		_lang.winlangid = (uint16_t)langid;
+		_lang.winlangid = static_cast<uint16_t>(langid);
 	} else if (!memcmp(str, "grflangid ", 10)) {
 		const char *buf = str + 10;
 		long langid = std::strtol(buf, nullptr, 16);
 		if (langid >= 0x7F || langid < 0) {
 			FatalError("Invalid grflangid {}", buf);
 		}
-		_lang.newgrflangid = (uint8_t)langid;
+		_lang.newgrflangid = static_cast<uint8_t>(langid);
 	} else if (!memcmp(str, "gender ", 7)) {
 		if (this->master) FatalError("Genders are not allowed in the base translation.");
-		char *buf = str + 7;
+		const char *buf = str + 7;
 
 		for (;;) {
-			const char *s = ParseWord(&buf);
+			auto s = ParseWord(&buf);
 
-			if (s == nullptr) break;
+			if (!s.has_value()) break;
 			if (_lang.num_genders >= MAX_NUM_GENDERS) FatalError("Too many genders, max {}", MAX_NUM_GENDERS);
-			strecpy(_lang.genders[_lang.num_genders], s);
+			s->copy(_lang.genders[_lang.num_genders], CASE_GENDER_LEN - 1);
 			_lang.num_genders++;
 		}
 	} else if (!memcmp(str, "case ", 5)) {
 		if (this->master) FatalError("Cases are not allowed in the base translation.");
-		char *buf = str + 5;
+		const char *buf = str + 5;
 
 		for (;;) {
-			const char *s = ParseWord(&buf);
+			auto s = ParseWord(&buf);
 
-			if (s == nullptr) break;
+			if (!s.has_value()) break;
 			if (_lang.num_cases >= MAX_NUM_CASES) FatalError("Too many cases, max {}", MAX_NUM_CASES);
-			strecpy(_lang.cases[_lang.num_cases], s);
+			s->copy(_lang.cases[_lang.num_cases], CASE_GENDER_LEN - 1);
 			_lang.num_cases++;
 		}
 	} else if (!memcmp(str, "override ", 9)) {
@@ -325,7 +325,7 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 	/** The real file name we eventually want to write to. */
 	std::string real_filename;
 	/** The previous string ID that was printed. */
-	int prev;
+	uint prev;
 	uint total_strings;
 
 	/**
@@ -340,16 +340,16 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 		fprintf(*this->fh, "#define TABLE_STRINGS_H\n");
 	}
 
-	void WriteStringID(const char *name, int stringid) override
+	void WriteStringID(const std::string &name, uint stringid) override
 	{
 		if (stringid == 0) {
-			if (std::string_view(name) != "STR_NULL") StrgenFatal("String ID 0 is not STR_NULL");
+			if (name != "STR_NULL") StrgenFatal("String ID 0 is not STR_NULL");
 			total_strings++;
 			return;
 		}
 
 		if (prev + 1 != stringid) fprintf(*this->fh, "\n");
-		fprintf(*this->fh, "static const StringID %s = 0x%X;\n", name, stringid);
+		fprintf(*this->fh, "static const StringID %s = 0x%X;\n", name.c_str(), stringid);
 		prev = stringid;
 		total_strings++;
 	}
@@ -357,7 +357,7 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 	void Finalise(const StringData &data) override
 	{
 		/* Find the plural form with the most amount of cases. */
-		int max_plural_forms = 0;
+		size_t max_plural_forms = 0;
 		for (const auto &pf : _plural_forms) {
 			max_plural_forms = std::max(max_plural_forms, pf.plural_count);
 		}
@@ -366,10 +366,10 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 			"\n"
 			"static const uint LANGUAGE_PACK_VERSION     = 0x%X;\n"
 			"static const uint LANGUAGE_MAX_PLURAL       = %u;\n"
-			"static const uint LANGUAGE_MAX_PLURAL_FORMS = %d;\n"
+			"static const uint LANGUAGE_MAX_PLURAL_FORMS = %u;\n"
 			"static const uint LANGUAGE_TOTAL_STRINGS    = %u;\n"
 			"\n",
-			(uint)data.Version(), (uint)std::size(_plural_forms), max_plural_forms, total_strings
+			(uint)data.Version(), (uint)std::size(_plural_forms), (uint)max_plural_forms, total_strings
 		);
 
 		fprintf(*this->fh, "#endif /* TABLE_STRINGS_H */\n");
@@ -403,7 +403,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 
 	void WriteHeader(const LanguagePackHeader *header) override
 	{
-		this->Write((const uint8_t *)header, sizeof(*header));
+		this->Write(reinterpret_cast<const char *>(header), sizeof(*header));
 	}
 
 	void Finalise() override
@@ -414,7 +414,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 		this->FileWriter::Finalise();
 	}
 
-	void Write(const uint8_t *buffer, size_t length) override
+	void Write(const char *buffer, size_t length) override
 	{
 		if (length == 0) return;
 		if (fwrite(buffer, sizeof(*buffer), length, *this->fh) != length) {
@@ -525,14 +525,14 @@ int CDECL main(int argc, char *argv[])
 					} else {
 						flags = '0'; // Command needs no parameters
 					}
-					printf("%i\t%c\t\"%s\"\t\"%s\"\n", cs.consumes, flags, cs.cmd, strstr(cs.cmd, "STRING") ? "STRING" : cs.cmd);
+					fmt::print("{}\t{:c}\t\"{}\"\t\"{}\"\n", cs.consumes, flags, cs.cmd, cs.cmd.find("STRING") != std::string::npos ? "STRING" : cs.cmd);
 				}
 				return 0;
 
 			case 'L':
 				printf("count\tdescription\tnames\n");
 				for (const auto &pf : _plural_forms) {
-					printf("%i\t\"%s\"\t%s\n", pf.plural_count, pf.description, pf.names);
+					printf("%u\t\"%s\"\t%s\n", (uint)pf.plural_count, pf.description, pf.names);
 				}
 				return 0;
 
@@ -545,11 +545,11 @@ int CDECL main(int argc, char *argv[])
 				return 0;
 
 			case 't':
-				_show_todo |= 1;
+				_annotate_todos = true;
 				break;
 
 			case 'w':
-				_show_todo |= 2;
+				_show_warnings = true;
 				break;
 
 			case 'h':
@@ -644,8 +644,8 @@ int CDECL main(int argc, char *argv[])
 				writer.Finalise();
 
 				/* if showing warnings, print a summary of the language */
-				if ((_show_todo & 2) != 0) {
-					fprintf(stdout, "%d warnings and %d errors for %s\n", _warnings, _errors, pathbuf);
+				if (_show_warnings) {
+					fmt::print("{} warnings and {} errors for {}\n", _warnings, _errors, pathbuf);
 				}
 			}
 		}

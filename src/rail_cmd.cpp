@@ -55,7 +55,7 @@
 typedef std::vector<Train *> TrainList;
 
 RailTypeInfo _railtypes[RAILTYPE_END];
-std::vector<RailType> _sorted_railtypes;
+std::vector<RailType> _sorted_railtypes; ///< Sorted list of rail types.
 TileIndex _rail_track_endtile; ///< The end of a rail track; as hidden return from the rail build/remove command for GUI purposes.
 RailTypes _railtypes_hidden_mask;
 
@@ -231,7 +231,7 @@ void InitRailTypes()
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
 		if (hidden) SetBit(_railtypes_hidden_mask, rt);
-		if (_railtypes[rt].label != 0 && !hidden) {
+		if (_railtypes[rt].label != 0) {
 			_sorted_railtypes.push_back(rt);
 		}
 	}

@@ -106,7 +106,7 @@ namespace CargoFilterCriteria {
 };
 
 /** Test whether cargo type is not INVALID_CARGO */
-inline bool IsValidCargoType(CargoType t) { return t != INVALID_CARGO; }
+inline bool IsValidCargoType(CargoType cargo) { return cargo != INVALID_CARGO; }
 
 typedef uint64_t CargoTypes;
 

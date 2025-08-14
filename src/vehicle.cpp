@@ -1038,7 +1038,7 @@ void ResetVehicleHash()
 		v->hash_tile_prev = nullptr;
 		v->hash_tile_current = INVALID_TILE;
 	}
-	_vehicle_viewport_hash = {};
+	_vehicle_viewport_hash.fill(nullptr);
 	for (VehicleTypeTileHash &vhash : _vehicle_tile_hashes) {
 		vhash.clear();
 	}
