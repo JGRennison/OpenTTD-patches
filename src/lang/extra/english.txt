@@ -2511,9 +2511,11 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Path signals on
 
 STR_CONFIG_SETTING_RESTRICT_PATCH                               :Non-standard settings which are not in vanilla OpenTTD
 
-###length 4
+###length 6
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY_ICON                              :{1:COLOUR}{0:TOWN} {WHITE}{CITY_ICON}
+STR_VIEWPORT_TOWN_COLOUR_CITY_ICON_POP                          :{WHITE}{TOWN} {COLOUR}({COMMA}) {WHITE}{CITY_ICON}
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (City)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(City, {COMMA})
 
