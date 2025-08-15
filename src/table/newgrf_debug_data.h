@@ -57,10 +57,10 @@ struct label_dumper : public NewGRFLabelDumper {
 	}
 };
 
-static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = RAILTYPES_NONE)
+static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = {})
 {
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
-		if (!HasBit(rail_types, rt)) continue;
+		if (!rail_types.Test(rt)) continue;
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 
@@ -68,14 +68,14 @@ static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, Rail
 				prefix,
 				(uint)rt,
 				label_dumper().Label(rti->label),
-				HasBit(mark, rt) ? " !!!" : "");
+				mark.Test(rt) ? " !!!" : "");
 	}
 }
 
 static void DumpRoadTypeList(NIExtraInfoOutput &output, const char *prefix, RoadTypes road_types)
 {
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
-		if (!HasBit(road_types, rt)) continue;
+		if (!road_types.Test(rt)) continue;
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;
 
@@ -1693,9 +1693,9 @@ class NIHRailType : public NIHelper {
 
 				bit <<= 1;
 			};
-			dump_railtypes("Powered", info->powered_railtypes, RAILTYPES_NONE);
-			dump_railtypes("Compatible", info->compatible_railtypes, RAILTYPES_NONE);
-			dump_railtypes("All compatible", info->all_compatible_railtypes, ~info->compatible_railtypes);
+			dump_railtypes("Powered", info->powered_railtypes, {});
+			dump_railtypes("Compatible", info->compatible_railtypes, {});
+			dump_railtypes("All compatible", info->all_compatible_railtypes, RailTypes(~info->compatible_railtypes.base()));
 
 			PrintTypeLabels(output, "  ", info->label, (const uint32_t*) info->alternate_labels.data(), info->alternate_labels.size());
 			output.Print("  Cost multiplier: {}/8, Maintenance multiplier: {}/8", info->cost_multiplier, info->maintenance_multiplier);
@@ -2048,7 +2048,7 @@ class NIHStationStruct : public NIHelper {
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				const GoodsEntry *ge = &st->goods[cs->Index()];
 
-				if (ge->data == nullptr && ge->status == 0) {
+				if (ge->data == nullptr && ge->status.None()) {
 					/* Nothing of note to show */
 					continue;
 				}
@@ -2057,13 +2057,13 @@ class NIHStationStruct : public NIHelper {
 
 				output.Print("  Goods entry: {}: {}", cs->Index(), GetStringPtr(cs->name));
 				output.buffer.format("    Status: {}{}{}{}{}{}{}",
-						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE)       ? 'a' : '-',
-						HasBit(ge->status, GoodsEntry::GES_RATING)           ? 'r' : '-',
-						HasBit(ge->status, GoodsEntry::GES_EVER_ACCEPTED)    ? 'e' : '-',
-						HasBit(ge->status, GoodsEntry::GES_LAST_MONTH)       ? 'l' : '-',
-						HasBit(ge->status, GoodsEntry::GES_CURRENT_MONTH)    ? 'c' : '-',
-						HasBit(ge->status, GoodsEntry::GES_ACCEPTED_BIGTICK) ? 'b' : '-',
-						HasBit(ge->status, GoodsEntry::GES_NO_CARGO_SUPPLY)  ? 'n' : '-');
+						ge->status.Test(GoodsEntry::State::Acceptance)      ? 'a' : '-',
+						ge->status.Test(GoodsEntry::State::Rating)          ? 'r' : '-',
+						ge->status.Test(GoodsEntry::State::EverAccepted)    ? 'e' : '-',
+						ge->status.Test(GoodsEntry::State::LastMonth)       ? 'l' : '-',
+						ge->status.Test(GoodsEntry::State::CurrentMonth)    ? 'c' : '-',
+						ge->status.Test(GoodsEntry::State::AcceptedBigtick) ? 'b' : '-',
+						ge->status.Test(GoodsEntry::State::NoCargoSupply)   ? 'n' : '-');
 				if (ge->data != nullptr && ge->data->MayBeRemoved()) output.buffer.append(", (removable)");
 				if (ge->data == nullptr) output.buffer.append(", (no data)");
 				output.FinishPrint();

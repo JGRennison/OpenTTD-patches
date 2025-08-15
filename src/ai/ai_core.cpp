@@ -26,8 +26,8 @@
 #include "../safeguards.h"
 
 /* static */ uint AI::frame_counter = 0;
-/* static */ AIScannerInfo *AI::scanner_info = nullptr;
-/* static */ AIScannerLibrary *AI::scanner_library = nullptr;
+/* static */ std::unique_ptr<AIScannerInfo> AI::scanner_info = nullptr;
+/* static */ std::unique_ptr<AIScannerLibrary> AI::scanner_library = nullptr;
 
 /* static */ bool AI::CanStartNew()
 {
@@ -47,7 +47,7 @@
 
 	AIConfig *config = c->ai_config.get();
 	if (config == nullptr) {
-		c->ai_config = std::make_unique<AIConfig>(AIConfig::GetConfig(company, AIConfig::SSS_FORCE_GAME));
+		c->ai_config = std::make_unique<AIConfig>(*AIConfig::GetConfig(company, AIConfig::SSS_FORCE_GAME));
 		config = c->ai_config.get();
 	}
 
@@ -172,9 +172,9 @@
 	AI::frame_counter = 0;
 	if (AI::scanner_info == nullptr) {
 		TarScanner::DoScan(TarScanner::Mode::AI);
-		AI::scanner_info = new AIScannerInfo();
+		AI::scanner_info = std::make_unique<AIScannerInfo>();
 		AI::scanner_info->Initialize();
-		AI::scanner_library = new AIScannerLibrary();
+		AI::scanner_library = std::make_unique<AIScannerLibrary>();
 		AI::scanner_library->Initialize();
 	}
 }
@@ -189,14 +189,8 @@
 	} else {
 		/* Do not bother re-scanning AI files, just delete config */
 		for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
-			if (_settings_game.ai_config[c] != nullptr) {
-				delete _settings_game.ai_config[c];
-				_settings_game.ai_config[c] = nullptr;
-			}
-			if (_settings_newgame.ai_config[c] != nullptr) {
-				delete _settings_newgame.ai_config[c];
-				_settings_newgame.ai_config[c] = nullptr;
-			}
+			_settings_game.script_config.ai[c].reset();
+			_settings_newgame.script_config.ai[c].reset();
 		}
 	}
 }
@@ -207,17 +201,17 @@
 	 *  the AIConfig. If not, remove the AI from the list (which will assign
 	 *  a random new AI on reload). */
 	for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
-		if (_settings_game.ai_config[c] != nullptr && _settings_game.ai_config[c]->HasScript()) {
-			if (!_settings_game.ai_config[c]->ResetInfo(true)) {
-				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName());
-				_settings_game.ai_config[c]->Change(std::nullopt);
+		if (_settings_game.script_config.ai[c] != nullptr && _settings_game.script_config.ai[c]->HasScript()) {
+			if (!_settings_game.script_config.ai[c]->ResetInfo(true)) {
+				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_game.script_config.ai[c]->GetName());
+				_settings_game.script_config.ai[c]->Change(std::nullopt);
 			}
 		}
 
-		if (_settings_newgame.ai_config[c] != nullptr && _settings_newgame.ai_config[c]->HasScript()) {
-			if (!_settings_newgame.ai_config[c]->ResetInfo(false)) {
-				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_newgame.ai_config[c]->GetName());
-				_settings_newgame.ai_config[c]->Change(std::nullopt);
+		if (_settings_newgame.script_config.ai[c] != nullptr && _settings_newgame.script_config.ai[c]->HasScript()) {
+			if (!_settings_newgame.script_config.ai[c]->ResetInfo(false)) {
+				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_newgame.script_config.ai[c]->GetName());
+				_settings_newgame.script_config.ai[c]->Change(std::nullopt);
 			}
 		}
 
@@ -352,11 +346,11 @@
 
 /* static */ AIScannerInfo *AI::GetScannerInfo()
 {
-	return AI::scanner_info;
+	return AI::scanner_info.get();
 }
 
 /* static */ AIScannerLibrary *AI::GetScannerLibrary()
 {
-	return AI::scanner_library;
+	return AI::scanner_library.get();
 }
 

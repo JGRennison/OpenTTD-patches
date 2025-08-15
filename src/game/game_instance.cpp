@@ -89,8 +89,8 @@ void GameInstance::Died()
  */
 void CcGame(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
-	if (Game::GetGameInstance()->DoCommandCallback(result, cmd, tile, payload, param)) {
-		Game::GetGameInstance()->Continue();
+	if (Game::GetInstance()->DoCommandCallback(result, cmd, tile, payload, param)) {
+		Game::GetInstance()->Continue();
 	}
 }
 

@@ -322,7 +322,7 @@ public:
 					if (!buildable) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
 						y += GetCharacterHeight(FS_NORMAL);
-					} else if (types == RAILTYPES_NONE) {
+					} else if (types.None()) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE);
 						y += GetCharacterHeight(FS_NORMAL);
 					}

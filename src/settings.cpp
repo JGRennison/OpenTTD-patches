@@ -1678,7 +1678,7 @@ static void ScriptMaxOpsChange(int32_t new_value)
 {
 	if (_networking && !_network_server) return;
 
-	GameInstance *g = Game::GetGameInstance();
+	GameInstance *g = Game::GetInstance();
 	if (g != nullptr && !g->IsDead()) {
 		g->LimitOpsTillSuspend(new_value);
 	}
@@ -1696,7 +1696,7 @@ static bool CheckScriptMaxMemoryChange(int32_t &new_value)
 
 	size_t limit = static_cast<size_t>(new_value) << 20;
 
-	GameInstance *g = Game::GetGameInstance();
+	GameInstance *g = Game::GetInstance();
 	if (g != nullptr && !g->IsDead()) {
 		if (g->GetAllocatedMemory() > limit) return false;
 	}
@@ -1716,7 +1716,7 @@ static void ScriptMaxMemoryChange(int32_t new_value)
 
 	size_t limit = static_cast<size_t>(new_value) << 20;
 
-	GameInstance *g = Game::GetGameInstance();
+	GameInstance *g = Game::GetInstance();
 	if (g != nullptr && !g->IsDead()) {
 		g->SetMemoryAllocationLimit(limit);
 	}
@@ -3969,4 +3969,32 @@ void ResetSettingsToDefaultForLoad()
 
 		sd->ResetToDefault(&_settings_game);
 	}
+}
+
+ScriptConfigSettings::ScriptConfigSettings()
+{
+	/* Instantiate here, because unique_ptr needs a complete type. */
+}
+
+ScriptConfigSettings::~ScriptConfigSettings()
+{
+	/* Instantiate here, because unique_ptr needs a complete type. */
+}
+
+ScriptConfigSettings::ScriptConfigSettings(const ScriptConfigSettings &other)
+{
+	*this = other;
+}
+
+ScriptConfigSettings &ScriptConfigSettings::operator=(const ScriptConfigSettings &other)
+{
+	for (CompanyID c = CompanyID::Begin(); c < MAX_COMPANIES; ++c) {
+		if (other.ai[c] != nullptr) {
+			this->ai[c] = std::make_unique<AIConfig>(*other.ai[c]);
+		}
+	}
+	if (other.game != nullptr) {
+		this->game = std::make_unique<GameConfig>(*other.game);
+	}
+	return *this;
 }

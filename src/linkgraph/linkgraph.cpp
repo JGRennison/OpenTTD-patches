@@ -151,10 +151,8 @@ NodeID LinkGraph::AddNode(const Station *st)
 	const GoodsEntry &good = st->goods[this->cargo];
 
 	NodeID new_node = this->Size();
-	this->nodes.emplace_back();
-
-	this->nodes[new_node].Init(st->xy, st->index,
-			HasBit(good.status, GoodsEntry::GES_ACCEPTANCE));
+	auto &node  = this->nodes.emplace_back();
+	node.Init(st->xy, st->index, good.status.Test(GoodsEntry::State::Acceptance));
 
 	return new_node;
 }

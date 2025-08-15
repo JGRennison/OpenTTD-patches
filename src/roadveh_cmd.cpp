@@ -632,7 +632,7 @@ static void RoadVehCrash(RoadVehicle *v)
 static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 {
 	if (!HasBit(v->rvflags, RVF_ON_LEVEL_CROSSING)) return false;
-	if (HasBit(_roadtypes_non_train_colliding, v->roadtype)) return false;
+	if (_roadtypes_non_train_colliding.Test(v->roadtype)) return false;
 
 	bool still_on_level_crossing = false;
 
@@ -871,7 +871,7 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 	const OvertakeData *od = (OvertakeData*)data;
 
 	if (v->First() == od->u || v->First() == od->v) return nullptr;
-	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
+	if (!_collision_mode_roadtypes[od->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return nullptr;
 	if (RoadVehicle::From(v)->overtaking != 0 || v->direction != od->v->direction) return v;
 
 	/* Check if other vehicle is behind */
@@ -916,7 +916,7 @@ static Vehicle *EnumFindVehBlockingOvertakeBehind(Vehicle *v, void *data)
 	const OvertakeData *od = (OvertakeData*)data;
 
 	if (v->First() == od->u || v->First() == od->v) return nullptr;
-	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
+	if (!_collision_mode_roadtypes[od->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return nullptr;
 	if (RoadVehicle::From(v)->overtaking != 0 && TileVirtXY(v->x_pos, v->y_pos) == od->tile) return v;
 	return nullptr;
 }
@@ -1472,7 +1472,7 @@ static Vehicle *EnumFindVehBlockingFinishOvertake(Vehicle *v, void *data)
 	const FinishOvertakeData *od = (FinishOvertakeData*)data;
 
 	if (v->First() == od->v) return nullptr;
-	if (!HasBit(_collision_mode_roadtypes[od->collision_mode], RoadVehicle::From(v)->roadtype)) return nullptr;
+	if (!_collision_mode_roadtypes[od->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return nullptr;
 
 	/* Check if other vehicle is behind */
 	switch (DirToDiagDir(v->direction)) {

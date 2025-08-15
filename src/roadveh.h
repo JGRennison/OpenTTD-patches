@@ -189,7 +189,7 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 
 	inline bool IsRoadVehicleOnLevelCrossing() const
 	{
-		if (HasBit(_roadtypes_non_train_colliding, this->roadtype)) return false;
+		if (_roadtypes_non_train_colliding.Test(this->roadtype)) return false;
 		for (const RoadVehicle *u = this; u != nullptr; u = u->Next()) {
 			if (IsLevelCrossingTile(u->tile)) return true;
 		}

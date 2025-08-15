@@ -622,7 +622,7 @@ static Vehicle *EnsureNoVehicleProc(Vehicle *v, void *data)
  */
 static Vehicle *EnsureNoTrainCollidableRoadVehicleProc(Vehicle *v, void *data)
 {
-	if (HasBit(_roadtypes_non_train_colliding, RoadVehicle::From(v)->roadtype)) return nullptr;
+	if (_roadtypes_non_train_colliding.Test(RoadVehicle::From(v)->roadtype)) return nullptr;
 
 	return v;
 }
@@ -4089,8 +4089,8 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
 			return CommandCost(no_depot[this->type]);
 		}
-		if ((this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes) == 0) ||
-				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
+		if ((this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes).None()) ||
+				(this->type == VEH_TRAIN && !Train::From(this)->compatible_railtypes.Test(GetRailType(tile)))) {
 			return CommandCost(no_depot[this->type]);
 		}
 		closest_depot.location = specific_depot;

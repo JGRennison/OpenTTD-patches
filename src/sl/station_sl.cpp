@@ -499,7 +499,7 @@ static void Load_STNS()
 			if (_cargo_reserved_count) ge->CreateData().cargo.LoadSetReservedCount(_cargo_reserved_count);
 			SwapPackets(ge);
 			if (IsSavegameVersionBefore(SLV_68)) {
-				SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
+				ge->status.Set(GoodsEntry::State::Rating, HasBit(_waiting_acceptance, 15));
 				if (GB(_waiting_acceptance, 0, 12) != 0) {
 					/* In old versions, enroute_from used 0xFF as StationID::Invalid() */
 					StationID source = (IsSavegameVersionBefore(SLV_7) && _cargo_source == 0xFF) ? StationID::Invalid() : StationID(_cargo_source);
@@ -513,7 +513,7 @@ static void Load_STNS()
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
 					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_periods, source, TileIndex{_cargo_source_xy}, _cargo_feeder_share);
 					ge->CreateData().cargo.Append(cp, StationID::Invalid());
-					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
+					ge->status.Set(GoodsEntry::State::Rating);
 				}
 			}
 			if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) ge->last_vehicle_type = _old_last_vehicle_type;

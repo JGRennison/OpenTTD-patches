@@ -233,12 +233,12 @@ inline RoadTypes GetMaskForRoadTramType(RoadTramType rtt)
 
 inline bool RoadTypeIsRoad(RoadType roadtype)
 {
-	return HasBit(GetMaskForRoadTramType(RTT_ROAD), roadtype);
+	return GetMaskForRoadTramType(RTT_ROAD).Test(roadtype);
 }
 
 inline bool RoadTypeIsTram(RoadType roadtype)
 {
-	return HasBit(GetMaskForRoadTramType(RTT_TRAM), roadtype);
+	return GetMaskForRoadTramType(RTT_TRAM).Test(roadtype);
 }
 
 inline RoadTramType GetRoadTramType(RoadType roadtype)
@@ -286,7 +286,7 @@ inline RoadType GetRoadTypeInfoIndex(const RoadTypeInfo *rti)
  */
 inline bool HasPowerOnRoad(RoadType enginetype, RoadType tiletype)
 {
-	return HasBit(GetRoadTypeInfo(enginetype)->powered_roadtypes, tiletype);
+	return GetRoadTypeInfo(enginetype)->powered_roadtypes.Test(tiletype);
 }
 
 /**

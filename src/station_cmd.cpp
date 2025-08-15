@@ -582,7 +582,7 @@ CargoTypes GetAcceptanceMask(const Station *st)
 	CargoTypes mask = 0;
 
 	for (CargoType i = 0; i < NUM_CARGO; i++) {
-		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(mask, i);
+		if (st->goods[i].status.Test(GoodsEntry::State::Acceptance)) SetBit(mask, i);
 	}
 	return mask;
 }
@@ -723,7 +723,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 		}
 
 		GoodsEntry &ge = st->goods[cargo];
-		SB(ge.status, GoodsEntry::GES_ACCEPTANCE, 1, amt >= 8);
+		ge.status.Set(GoodsEntry::State::Acceptance, amt >= 8);
 		if (LinkGraph::IsValidID(ge.link_graph)) {
 			(*LinkGraph::Get(ge.link_graph))[ge.node].SetDemand(amt / 8);
 		}
@@ -4062,7 +4062,7 @@ void TriggerWatchedCargoCallbacks(Station *st)
 	/* Collect cargoes accepted since the last big tick. */
 	CargoTypes cargoes = 0;
 	for (CargoType cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
-		if (HasBit(st->goods[cargo_type].status, GoodsEntry::GES_ACCEPTED_BIGTICK)) SetBit(cargoes, cargo_type);
+		if (st->goods[cargo_type].status.Test(GoodsEntry::State::AcceptedBigtick)) SetBit(cargoes, cargo_type);
 	}
 
 	/* Anything to do? */
@@ -4094,7 +4094,7 @@ static bool StationHandleBigTick(BaseStation *st)
 		TriggerWatchedCargoCallbacks(Station::From(st));
 
 		for (GoodsEntry &ge : Station::From(st)->goods) {
-			ClrBit(ge.status, GoodsEntry::GES_ACCEPTED_BIGTICK);
+			ge.status.Reset(GoodsEntry::State::AcceptedBigtick);
 		}
 	}
 
@@ -4287,7 +4287,7 @@ static void UpdateStationRating(Station *st)
 			byte_inc_sat(&ge->time_since_pickup);
 
 			if (ge->time_since_pickup == 255 && _settings_game.order.selectgoods) {
-				ClrBit(ge->status, GoodsEntry::GES_RATING);
+				ge->status.Reset(GoodsEntry::State::Rating);
 				ge->last_speed = 0;
 				TruncateCargo(cs, ge);
 				waiting_changed = true;
@@ -4666,8 +4666,8 @@ void StationMonthlyLoop()
 {
 	for (Station *st : Station::Iterate()) {
 		for (GoodsEntry &ge : st->goods) {
-			SB(ge.status, GoodsEntry::GES_LAST_MONTH, 1, GB(ge.status, GoodsEntry::GES_CURRENT_MONTH, 1));
-			ClrBit(ge.status, GoodsEntry::GES_CURRENT_MONTH);
+			ge.status.Set(GoodsEntry::State::LastMonth, ge.status.Test(GoodsEntry::State::CurrentMonth));
+			ge.status.Reset(GoodsEntry::State::CurrentMonth);
 		}
 	}
 }
@@ -4678,7 +4678,7 @@ void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint rad
 	ForAllStationsRadius(tile, radius, [&](Station *st) {
 		if (st->owner == owner && DistanceManhattan(tile, st->xy) <= radius) {
 			for (GoodsEntry &ge : st->goods) {
-				if (ge.status != 0) {
+				if (ge.status.Any()) {
 					ge.rating = ClampTo<uint8_t>(ge.rating + amount);
 				}
 			}
@@ -4719,7 +4719,7 @@ static uint UpdateStationWaiting(Station *st, CargoType cargo, uint amount, Sour
 
 	if (!ge.HasRating()) {
 		InvalidateWindowData(WC_STATION_LIST, st->owner);
-		SetBit(ge.status, GoodsEntry::GES_RATING);
+		ge.status.Set(GoodsEntry::State::Rating);
 	}
 
 	TriggerStationRandomisation(st, st->xy, SRT_NEW_CARGO, cargo);
@@ -4858,7 +4858,7 @@ CommandCost CmdSetStationCargoAllowedSupply(DoCommandFlags flags, StationID stat
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		GoodsEntry &ge = st->goods[cargo];
-		AssignBit(ge.status, GoodsEntry::GES_NO_CARGO_SUPPLY, !allow);
+		ge.status.Set(GoodsEntry::State::NoCargoSupply, !allow);
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
 	}
 

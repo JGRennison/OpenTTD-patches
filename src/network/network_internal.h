@@ -86,7 +86,7 @@ extern CompanyMask _network_company_passworded;
 void NetworkQueryServer(const std::string &connection_string);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16_t port);
-struct NetworkGameList *NetworkAddServer(const std::string &connection_string, bool manually = true, bool never_expire = false);
+struct NetworkGame *NetworkAddServer(const std::string &connection_string, bool manually = true, bool never_expire = false);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
 

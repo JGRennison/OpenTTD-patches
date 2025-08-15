@@ -532,12 +532,12 @@ struct GoodsEntryData {
  */
 struct GoodsEntry {
 	/** Status of this cargo for the station. */
-	enum GoodsEntryStatus : uint8_t {
+	enum class State : uint8_t {
 		/**
 		 * Set when the station accepts the cargo currently for final deliveries.
 		 * It is updated every STATION_ACCEPTANCE_TICKS ticks by checking surrounding tiles for acceptance >= 8/8.
 		 */
-		GES_ACCEPTANCE,
+		Acceptance = 0,
 
 		/**
 		 * This indicates whether a cargo has a rating at the station.
@@ -547,37 +547,38 @@ struct GoodsEntry {
 		 *
 		 * This flag is cleared after 255 * STATION_RATING_TICKS of not having seen a pickup.
 		 */
-		GES_RATING,
+		Rating = 1,
 
 		/**
 		 * Set when a vehicle ever delivered cargo to the station for final delivery.
 		 * This flag is never cleared.
 		 */
-		GES_EVER_ACCEPTED,
+		EverAccepted = 2,
 
 		/**
 		 * Set when cargo was delivered for final delivery last month.
-		 * This flag is set to the value of GES_CURRENT_MONTH at the start of each month.
+		 * This flag is set to the value of State::CurrentMonth at the start of each month.
 		 */
-		GES_LAST_MONTH,
+		LastMonth = 3,
 
 		/**
 		 * Set when cargo was delivered for final delivery this month.
 		 * This flag is reset on the beginning of every month.
 		 */
-		GES_CURRENT_MONTH,
+		CurrentMonth = 4,
 
 		/**
 		 * Set when cargo was delivered for final delivery during the current STATION_ACCEPTANCE_TICKS interval.
 		 * This flag is reset every STATION_ACCEPTANCE_TICKS ticks.
 		 */
-		GES_ACCEPTED_BIGTICK,
+		AcceptedBigtick = 5,
 
 		/**
 		 * Set when cargo is not permitted to be supplied by nearby industries/houses.
 		 */
-		GES_NO_CARGO_SUPPLY = 7,
+		NoCargoSupply = 7,
 	};
+	using States = EnumBitSet<State, uint8_t>;
 
 	GoodsEntry() :
 		status(0),
@@ -592,7 +593,7 @@ struct GoodsEntry {
 		max_waiting_cargo(0)
 	{}
 
-	uint8_t status; ///< Status of this cargo, see #GoodsEntryStatus.
+	States status{}; ///< Status of this cargo, see #State.
 
 	/**
 	 * Number of rating-intervals (up to 255) since the last vehicle tried to load this cargo.
@@ -633,12 +634,12 @@ struct GoodsEntry {
 
 	bool IsSupplyAllowed() const
 	{
-		return !HasBit(this->status, GES_NO_CARGO_SUPPLY);
+		return !this->status.Test(GoodsEntry::State::NoCargoSupply);
 	}
 
 	/**
 	 * Reports whether a vehicle has ever tried to load the cargo at this station.
-	 * This does not imply that there was cargo available for loading. Refer to GES_RATING for that.
+	 * This does not imply that there was cargo available for loading. Refer to GoodsEntry::State::Rating for that.
 	 * @return true if vehicle tried to load.
 	 */
 	bool HasVehicleEverTriedLoading() const { return this->last_speed != 0; }
@@ -649,7 +650,7 @@ struct GoodsEntry {
 	 */
 	inline bool HasRating() const
 	{
-		return HasBit(this->status, GES_RATING);
+		return this->status.Test(GoodsEntry::State::Rating);
 	}
 
 	/**
@@ -727,6 +728,8 @@ struct GoodsEntry {
 	{
 		if (this->data != nullptr && this->data->MayBeRemoved()) this->data.reset();
 	}
+
+	uint8_t ConvertState() const;
 };
 
 /** All airport-related information. Only valid if tile != INVALID_TILE. */

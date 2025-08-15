@@ -844,7 +844,7 @@ public:
 			/* Draw a notification string for chains that are not buildable */
 			if (!buildable) {
 				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), GetString(STR_TMPL_WARNING_VEH_UNAVAILABLE), TC_RED, SA_CENTER);
-			} else if (types == RAILTYPES_NONE) {
+			} else if (types.None()) {
 				draw_text_across(0, ScaleGUITrad(TRW_RIGHT_OFFSET), ScaleGUITrad(2), GetString(STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE), TC_RED, SA_CENTER);
 			}
 

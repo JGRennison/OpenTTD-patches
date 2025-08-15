@@ -2588,8 +2588,8 @@ struct ScenarioEditorToolbarWindow : Window {
 
 		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= CalTime::MIN_YEAR);
 		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= CalTime::MAX_YEAR);
-		this->SetWidgetDisabledState(WID_TE_ROADS, (GetRoadTypes(true) & GetMaskForRoadTramType(RTT_ROAD)) == ROADTYPES_NONE);
-		this->SetWidgetDisabledState(WID_TE_TRAMS, (GetRoadTypes(true) & GetMaskForRoadTramType(RTT_TRAM)) == ROADTYPES_NONE);
+		this->SetWidgetDisabledState(WID_TE_ROADS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RTT_ROAD)));
+		this->SetWidgetDisabledState(WID_TE_TRAMS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RTT_TRAM)));
 
 		this->DrawWidgets();
 	}

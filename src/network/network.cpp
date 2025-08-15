@@ -776,7 +776,7 @@ public:
 
 	void OnFailure() override
 	{
-		NetworkGameList *item = NetworkGameListAddItem(connection_string);
+		NetworkGame *item = NetworkGameListAddItem(connection_string);
 		item->status = NGLS_OFFLINE;
 		item->refreshing = false;
 
@@ -798,7 +798,7 @@ void NetworkQueryServer(const std::string &connection_string)
 	if (!_network_available) return;
 
 	/* Mark the entry as refreshing, so the GUI can show the refresh is pending. */
-	NetworkGameList *item = NetworkGameListAddItem(connection_string);
+	NetworkGame *item = NetworkGameListAddItem(connection_string);
 	item->refreshing = true;
 
 	TCPConnecter::Create<TCPQueryConnecter>(connection_string);
@@ -813,12 +813,12 @@ void NetworkQueryServer(const std::string &connection_string)
  * @param never_expire Whether the entry can expire (removed when no longer found in the public listing).
  * @return The entry on the game list.
  */
-NetworkGameList *NetworkAddServer(const std::string &connection_string, bool manually, bool never_expire)
+NetworkGame *NetworkAddServer(const std::string &connection_string, bool manually, bool never_expire)
 {
 	if (connection_string.empty()) return nullptr;
 
 	/* Ensure the item already exists in the list */
-	NetworkGameList *item = NetworkGameListAddItem(connection_string);
+	NetworkGame *item = NetworkGameListAddItem(connection_string);
 	if (item->info.server_name.empty()) {
 		ClearGRFConfigList(item->info.grfconfig);
 		item->info.server_name = connection_string;
@@ -851,14 +851,14 @@ void GetBindAddresses(NetworkAddressList *addresses, uint16_t port)
 	}
 }
 
-/* Generates the list of manually added hosts from NetworkGameList and
+/* Generates the list of manually added hosts from NetworkGame and
  * dumps them into the array _network_host_list. This array is needed
  * by the function that generates the config file. */
 void NetworkRebuildHostList()
 {
 	_network_host_list.clear();
 
-	for (NetworkGameList *item = _network_game_list; item != nullptr; item = item->next) {
+	for (const auto &item : _network_game_list) {
 		if (item->manually) _network_host_list.emplace_back(item->connection_string);
 	}
 }

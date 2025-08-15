@@ -40,10 +40,10 @@ private:
 	 * Get the currently active blitter.
 	 * @return The currently active blitter.
 	 */
-	static Blitter **GetActiveBlitter()
+	static std::unique_ptr<Blitter> &GetActiveBlitter()
 	{
-		static Blitter *s_blitter = nullptr;
-		return &s_blitter;
+		static std::unique_ptr<Blitter> s_blitter = nullptr;
+		return s_blitter;
 	}
 
 protected:
@@ -99,12 +99,10 @@ public:
 		BlitterFactory *b = GetBlitterFactory(name);
 		if (b == nullptr) return nullptr;
 
-		Blitter *newb = b->CreateInstance();
-		delete *GetActiveBlitter();
-		*GetActiveBlitter() = newb;
+		GetActiveBlitter() = b->CreateInstance();
 
-		Debug(driver, 1, "Successfully {} blitter '{}'", name.empty() ? "probed" : "loaded", newb->GetName());
-		return newb;
+		Debug(driver, 1, "Successfully {} blitter '{}'", name.empty() ? "probed" : "loaded", GetCurrentBlitter()->GetName());
+		return GetCurrentBlitter();
 	}
 
 	/**
@@ -138,7 +136,7 @@ public:
 	 */
 	static Blitter *GetCurrentBlitter()
 	{
-		return *GetActiveBlitter();
+		return GetActiveBlitter().get();
 	}
 
 	/**
@@ -174,7 +172,7 @@ public:
 	/**
 	 * Create an instance of this Blitter-class.
 	 */
-	virtual Blitter *CreateInstance() = 0;
+	virtual std::unique_ptr<Blitter> CreateInstance() = 0;
 };
 
 extern std::string _ini_blitter;

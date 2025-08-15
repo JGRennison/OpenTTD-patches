@@ -342,7 +342,7 @@ protected:
 		/* rail transport is possible only on compatible rail types */
 		if (IsRailTT()) {
 			RailType rail_type = GetTileRailTypeByEntryDir(this->new_tile, this->exitdir);
-			if (!HasBit(this->railtypes, rail_type)) {
+			if (!this->railtypes.Test(rail_type)) {
 				/* incompatible rail type */
 				this->err = EC_RAIL_ROAD_TYPE;
 				return false;
@@ -353,7 +353,7 @@ protected:
 		if (IsRoadTT()) {
 			const RoadVehicle *v = RoadVehicle::From(this->veh);
 			RoadType roadtype = GetRoadType(this->new_tile, GetRoadTramType(v->roadtype));
-			if (!HasBit(v->compatible_roadtypes, roadtype)) {
+			if (!v->compatible_roadtypes.Test(roadtype)) {
 				/* incompatible road type */
 				this->err = EC_RAIL_ROAD_TYPE;
 				return false;

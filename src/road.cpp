@@ -155,7 +155,9 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 	} else {
 		const Company *c = Company::GetIfValid(company);
 		if (c == nullptr) return false;
-		return HasBit(c->avail_roadtypes & ~_roadtypes_hidden_mask, roadtype);
+		RoadTypes avail = c->avail_roadtypes;
+		avail.Reset(_roadtypes_hidden_mask);
+		return avail.Test(roadtype);
 	}
 }
 
@@ -166,7 +168,9 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
  */
 bool HasAnyRoadTypesAvail(CompanyID company, RoadTramType rtt)
 {
-	return (Company::Get(company)->avail_roadtypes & ~_roadtypes_hidden_mask & GetMaskForRoadTramType(rtt)) != ROADTYPES_NONE;
+	RoadTypes avail = Company::Get(company)->avail_roadtypes;
+	avail.Reset(_roadtypes_hidden_mask);
+	return avail.Any(GetMaskForRoadTramType(rtt));
 }
 
 /**
@@ -206,7 +210,7 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, CalTime::Date date)
 		RoadTypes required = rti->introduction_required_roadtypes;
 		if ((rts & required) != required) continue;
 
-		rts |= rti->introduces_roadtypes;
+		rts.Set(rti->introduces_roadtypes);
 	}
 
 	/* When we added roadtypes we need to run this method again; the added
@@ -222,7 +226,7 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, CalTime::Date date)
  */
 RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces)
 {
-	RoadTypes rts = ROADTYPES_NONE;
+	RoadTypes rts{};
 
 	for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
 		const EngineInfo *ei = &e->info;
@@ -232,9 +236,9 @@ RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces)
 			const RoadVehicleInfo *rvi = &e->u.road;
 			assert(rvi->roadtype < ROADTYPE_END);
 			if (introduces) {
-				rts |= GetRoadTypeInfo(rvi->roadtype)->introduces_roadtypes;
+				rts.Set(GetRoadTypeInfo(rvi->roadtype)->introduces_roadtypes);
 			} else {
-				SetBit(rts, rvi->roadtype);
+				rts.Set(rvi->roadtype);
 			}
 		}
 	}
@@ -250,7 +254,7 @@ RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces)
  */
 RoadTypes GetRoadTypes(bool introduces)
 {
-	RoadTypes rts = ROADTYPES_NONE;
+	RoadTypes rts{};
 
 	for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
 		const EngineInfo *ei = &e->info;
@@ -259,9 +263,9 @@ RoadTypes GetRoadTypes(bool introduces)
 		const RoadVehicleInfo *rvi = &e->u.road;
 		assert(rvi->roadtype < ROADTYPE_END);
 		if (introduces) {
-			rts |= GetRoadTypeInfo(rvi->roadtype)->introduces_roadtypes;
+			rts.Set(GetRoadTypeInfo(rvi->roadtype)->introduces_roadtypes);
 		} else {
-			SetBit(rts, rvi->roadtype);
+			rts.Set(rvi->roadtype);
 		}
 	}
 

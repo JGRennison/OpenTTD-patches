@@ -1816,30 +1816,30 @@ struct CompanyInfrastructureWindow : Window
 
 	void UpdateRailRoadTypes()
 	{
-		this->railtypes = RAILTYPES_NONE;
-		this->roadtypes = ROADTYPES_NONE;
+		this->railtypes = {};
+		this->roadtypes = {};
 
 		/* Find the used railtypes. */
 		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
 			if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
-			this->railtypes |= GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes;
+			this->railtypes.Set(GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes);
 		}
 
 		/* Get the date introduced railtypes as well. */
 		this->railtypes = AddDateIntroducedRailTypes(this->railtypes, CalTime::MAX_DATE);
-		this->railtypes &= ~_railtypes_hidden_mask;
+		this->railtypes.Reset(_railtypes_hidden_mask);
 
 		/* Find the used roadtypes. */
 		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
 			if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
-			this->roadtypes |= GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes;
+			this->roadtypes.Set(GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes);
 		}
 
 		/* Get the date introduced roadtypes as well. */
 		this->roadtypes = AddDateIntroducedRoadTypes(this->roadtypes, CalTime::MAX_DATE);
-		this->roadtypes &= ~_roadtypes_hidden_mask;
+		this->roadtypes.Reset(_roadtypes_hidden_mask);
 	}
 
 	/** Get total infrastructure maintenance cost. */
@@ -1850,14 +1850,14 @@ struct CompanyInfrastructureWindow : Window
 
 		uint32_t rail_total = c->infrastructure.GetRailTotal();
 		for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-			if (HasBit(this->railtypes, rt)) total += RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total);
+			if (this->railtypes.Test(rt)) total += RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total);
 		}
 		total += SignalMaintenanceCost(c->infrastructure.signal);
 
 		uint32_t road_total = c->infrastructure.GetRoadTotal();
 		uint32_t tram_total = c->infrastructure.GetTramTotal();
 		for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
-			if (HasBit(this->roadtypes, rt)) total += RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total);
+			if (this->roadtypes.Test(rt)) total += RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total);
 		}
 
 		total += CanalMaintenanceCost(c->infrastructure.water);
@@ -1889,12 +1889,12 @@ struct CompanyInfrastructureWindow : Window
 				size.width = std::max(size.width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT).width);
 
 				for (const auto &rt : _sorted_railtypes) {
-					if (HasBit(this->railtypes, rt)) {
+					if (this->railtypes.Test(rt)) {
 						rail_lines++;
 						size.width = std::max(size.width, GetStringBoundingBox(GetRailTypeInfo(rt)->strings.name).width + WidgetDimensions::scaled.hsep_indent);
 					}
 				}
-				if (this->railtypes != RAILTYPES_NONE) {
+				if (this->railtypes.Any()) {
 					rail_lines++;
 					size.width = std::max(size.width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS).width + WidgetDimensions::scaled.hsep_indent);
 				}
@@ -1906,7 +1906,7 @@ struct CompanyInfrastructureWindow : Window
 				size.width = std::max(size.width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT).width);
 
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt)) {
+					if (this->roadtypes.Test(rt)) {
 						if (RoadTypeIsRoad(rt)) {
 							road_lines++;
 						} else {
@@ -2021,10 +2021,10 @@ struct CompanyInfrastructureWindow : Window
 			case WID_CI_DESC: {
 				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT);
 
-				if (this->railtypes != RAILTYPES_NONE) {
+				if (this->railtypes.Any()) {
 					/* Draw name of each valid railtype. */
 					for (const auto &rt : _sorted_railtypes) {
-						if (HasBit(this->railtypes, rt)) {
+						if (this->railtypes.Test(rt)) {
 							DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), GetRailTypeInfo(rt)->strings.name, TC_WHITE);
 						}
 					}
@@ -2040,7 +2040,7 @@ struct CompanyInfrastructureWindow : Window
 
 				/* Draw name of each valid roadtype. */
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
+					if (this->roadtypes.Test(rt) && RoadTypeIsRoad(rt)) {
 						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), GetRoadTypeInfo(rt)->strings.name, TC_WHITE);
 					}
 				}
@@ -2051,7 +2051,7 @@ struct CompanyInfrastructureWindow : Window
 
 				/* Draw name of each valid roadtype. */
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
+					if (this->roadtypes.Test(rt) && RoadTypeIsTram(rt)) {
 						DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), GetRoadTypeInfo(rt)->strings.name, TC_WHITE);
 					}
 				}
@@ -2074,11 +2074,11 @@ struct CompanyInfrastructureWindow : Window
 				/* Draw infrastructure count for each valid railtype. */
 				uint32_t rail_total = c->infrastructure.GetRailTotal();
 				for (const auto &rt : _sorted_railtypes) {
-					if (HasBit(this->railtypes, rt)) {
+					if (this->railtypes.Test(rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 					}
 				}
-				if (this->railtypes != RAILTYPES_NONE) {
+				if (this->railtypes.Any()) {
 					this->DrawCountLine(width, y, c->infrastructure.signal, SignalMaintenanceCost(c->infrastructure.signal));
 				}
 
@@ -2086,7 +2086,7 @@ struct CompanyInfrastructureWindow : Window
 
 				uint32_t road_total = c->infrastructure.GetRoadTotal();
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
+					if (this->roadtypes.Test(rt) && RoadTypeIsRoad(rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], road_total));
 					}
 				}
@@ -2095,7 +2095,7 @@ struct CompanyInfrastructureWindow : Window
 
 				uint32_t tram_total = c->infrastructure.GetTramTotal();
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
+					if (this->roadtypes.Test(rt) && RoadTypeIsTram(rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], tram_total));
 					}
 				}

@@ -64,12 +64,12 @@ RailTypes _railtypes_hidden_mask;
  */
 void ResetRailTypes()
 {
-	static_assert(lengthof(_original_railtypes) <= lengthof(_railtypes));
+	static_assert(std::size(_original_railtypes) <= std::size(_railtypes));
 
 	auto insert = std::copy(std::begin(_original_railtypes), std::end(_original_railtypes), std::begin(_railtypes));
 	std::fill(insert, std::end(_railtypes), RailTypeInfo{});
 
-	_railtypes_hidden_mask = RAILTYPES_NONE;
+	_railtypes_hidden_mask = {};
 }
 
 void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSpriteID signals[SIGTYPE_END][2][2])
@@ -230,7 +230,7 @@ void InitRailTypes()
 	_sorted_railtypes.clear();
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
-		if (hidden) SetBit(_railtypes_hidden_mask, rt);
+		if (hidden) _railtypes_hidden_mask.Set(rt);
 		if (_railtypes[rt].label != 0) {
 			_sorted_railtypes.push_back(rt);
 		}
@@ -241,20 +241,20 @@ void InitRailTypes()
 		_railtypes[rt].all_compatible_railtypes = _railtypes[rt].compatible_railtypes;
 	}
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		RailTypes compatible = _railtypes[rt].all_compatible_railtypes;
-		RailTypes to_check = compatible;
-		while (to_check) {
+		RailTypes::BaseType compatible = _railtypes[rt].all_compatible_railtypes.base();
+		RailTypes::BaseType to_check = compatible;
+		while (to_check != 0) {
 			RailType i = (RailType)FindFirstBit(to_check);
 			to_check = KillFirstBit(to_check);
-			RailTypes new_types = _railtypes[i].compatible_railtypes & (~compatible);
+			RailTypes::BaseType new_types = _railtypes[i].compatible_railtypes.base() & (~compatible);
 			to_check |= new_types;
 			compatible |= new_types;
 		}
-		RailTypes to_update = compatible;
-		while (to_update) {
+		RailTypes::BaseType to_update = compatible;
+		while (to_update != 0) {
 			RailType i = (RailType)FindFirstBit(to_update);
 			to_update = KillFirstBit(to_update);
-			_railtypes[i].all_compatible_railtypes = compatible;
+			_railtypes[i].all_compatible_railtypes = RailTypes(compatible);
 		}
 	}
 }
@@ -274,11 +274,11 @@ RailType AllocateRailType(RailTypeLabel label)
 			rti->alternate_labels.clear();
 
 			/* Make us compatible with ourself. */
-			rti->powered_railtypes    = (RailTypes)(1LL << rt);
-			rti->compatible_railtypes = (RailTypes)(1LL << rt);
+			rti->powered_railtypes    = rt;
+			rti->compatible_railtypes = rt;
 
 			/* We also introduce ourself. */
-			rti->introduces_railtypes = (RailTypes)(1LL << rt);
+			rti->introduces_railtypes = rt;
 
 			/* Default sort order; order of allocation, but with some
 			 * offsets so it's easier for NewGRF to pick a spot without
@@ -2463,7 +2463,7 @@ static Vehicle *EnsureNoIncompatibleRailtypeTrainProc(Vehicle *v, void *data)
 	const EnsureNoIncompatibleRailtypeTrainOnGroundData *procdata = (EnsureNoIncompatibleRailtypeTrainOnGroundData *)data;
 
 	if (v->z_pos > procdata->z) return nullptr;
-	if (HasBit(Train::From(v)->First()->compatible_railtypes, procdata->type)) return nullptr;
+	if (Train::From(v)->First()->compatible_railtypes.Test(procdata->type)) return nullptr;
 
 	return v;
 }
@@ -2492,7 +2492,7 @@ static Vehicle *EnsureNoIncompatibleRailtypeTrainOnTrackProc(Vehicle *v, void *d
 	TrackBits rail_bits = procdata->track_bits;
 
 	Train *t = Train::From(v);
-	if (HasBit(t->First()->compatible_railtypes, procdata->type)) return nullptr;
+	if (t->First()->compatible_railtypes.Test(procdata->type)) return nullptr;
 	if (rail_bits & TRACK_BIT_WORMHOLE) {
 		if (t->track & TRACK_BIT_WORMHOLE) return v;
 		rail_bits &= ~TRACK_BIT_WORMHOLE;
