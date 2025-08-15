@@ -16,6 +16,8 @@
 #include "string_func.h"
 #include "newgrf_dump.h"
 
+#include <array>
+
 #include "safeguards.h"
 
 std::vector<const GRFFile *> _new_signals_grfs;

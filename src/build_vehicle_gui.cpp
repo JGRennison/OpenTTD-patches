@@ -46,6 +46,7 @@
 
 #include "table/strings.h"
 
+#include <array>
 #include <optional>
 
 #include "safeguards.h"

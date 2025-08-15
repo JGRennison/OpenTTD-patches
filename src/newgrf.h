@@ -24,6 +24,7 @@
 #include "core/mem_func.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
+#include <array>
 #include <bitset>
 #include <vector>
 

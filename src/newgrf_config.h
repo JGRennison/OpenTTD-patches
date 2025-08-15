@@ -15,6 +15,7 @@
 #include "textfile_type.h"
 #include "newgrf_text.h"
 #include "3rdparty/md5/md5.h"
+#include <array>
 #include <vector>
 #include <optional>
 

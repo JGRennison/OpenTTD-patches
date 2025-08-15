@@ -26,6 +26,7 @@
 #include "network/network.h"
 #include "core/alignment.hpp"
 #include "sl/saveload_common.h"
+#include <array>
 #include <list>
 #include <map>
 #include <vector>

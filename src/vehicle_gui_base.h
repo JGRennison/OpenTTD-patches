@@ -18,6 +18,7 @@
 #include "window_gui.h"
 #include "dropdown_type.h"
 #include "cargo_type.h"
+#include <array>
 #include <bit>
 #include <iterator>
 #include <numeric>

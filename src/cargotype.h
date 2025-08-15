@@ -17,6 +17,7 @@
 #include "strings_type.h"
 #include "landscape_type.h"
 #include "core/bitmath_func.hpp"
+#include <array>
 #include <vector>
 
 /** Town growth effect when delivering cargo. */

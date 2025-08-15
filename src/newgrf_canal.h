@@ -14,6 +14,8 @@
 #include "newgrf_callbacks.h"
 #include "tile_type.h"
 
+#include <array>
+
 /** Flags controlling the display of canals. */
 enum CanalFeatureFlag : uint8_t {
 	CFF_HAS_FLAT_SPRITE = 0, ///< Additional flat ground sprite in the beginning.
