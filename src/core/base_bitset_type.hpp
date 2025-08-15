@@ -197,6 +197,18 @@ public:
 		return Timpl{static_cast<Tstorage>(this->data & other.data)};
 	}
 
+	inline constexpr Timpl &operator |=(const Timpl &other)
+	{
+		this->data |= other.data;
+		return static_cast<Timpl&>(*this);
+	}
+
+	inline constexpr Timpl &operator &=(const Timpl &other)
+	{
+		this->data &= other.data;
+		return static_cast<Timpl&>(*this);
+	}
+
 	/**
 	 * Retrieve the raw value behind this bit set.
 	 * @returns the raw value.
