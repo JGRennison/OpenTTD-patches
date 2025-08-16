@@ -236,7 +236,7 @@ void InvalidateCompanyWindows(const Company *company)
 /**
  * Refresh all company finance windows previously marked dirty.
  */
-void InvalidateCompanyWindows()
+void ProcessInvalidatedCompanyWindows()
 {
 	for (CompanyID cid : _dirty_company_finances.IterateSetBits()) {
 		if (cid == _local_company) SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_RIGHT);

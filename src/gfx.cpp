@@ -1579,6 +1579,9 @@ void DrawDirtyBlocks()
 	extern void ViewportPrepareVehicleRoute();
 	ViewportPrepareVehicleRoute();
 
+	extern void ProcessInvalidatedCompanyWindows();
+	ProcessInvalidatedCompanyWindows();
+
 	_gfx_draw_active = true;
 
 	if (_whole_screen_dirty) {

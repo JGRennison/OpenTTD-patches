@@ -1532,7 +1532,6 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
-		InvalidateCompanyWindows();
 	} else {
 		if (GetDebugLevel(DebugLevelID::desync) > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
@@ -1593,7 +1592,6 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
-		InvalidateCompanyWindows();
 
 		if (_networking) {
 			RecordSyncEvent(NSRE_PRE_DATES);
