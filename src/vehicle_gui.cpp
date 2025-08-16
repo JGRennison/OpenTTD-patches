@@ -4342,7 +4342,7 @@ public:
 					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], DepotCommandFlags{DepotCommandFlag::DontCancel}.base(), flags == ODATFB_HALT));
 					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], DepotCommandFlags{DepotCommandFlag::Sell, DepotCommandFlag::DontCancel}.base(), flags == (ODATFB_HALT | ODATFB_SELL)));
 					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, DepotCommandFlags{DepotCommandFlag::Cancel}.base(), false));
-					ShowDropDownList(this, std::move(list), -1, widget);
+					ShowDropDownList(this, std::move(list), -1, widget, 0, DDMF_NONE, DDSF_SHARED);
 				} else {
 					this->HandleButtonClick(WID_VV_GOTO_DEPOT);
 					Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, _ctrl_pressed ? DepotCommandFlag::Service : DepotCommandFlags{}, {});
