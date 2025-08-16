@@ -2755,12 +2755,17 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 		const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
 		const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
+		uint8_t dash_level = _settings_client.gui.dash_level_of_route_lines;
+		bool black_background = (dash_level == 0);
+		if (iter.order_conditional && dash_level == 0) {
+			dash_level = 10;
+		}
 		int line_width = 3;
-		if (_settings_client.gui.dash_level_of_route_lines == 0) {
-			GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
+		if (black_background) {
+			GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, dash_level);
 			line_width = 1;
 		}
-		GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, iter.order_conditional ? PC_YELLOW : PC_WHITE, line_width, _settings_client.gui.dash_level_of_route_lines);
+		GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_WHITE, line_width, dash_level);
 	}
 }
 
