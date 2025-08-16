@@ -3931,6 +3931,12 @@ private:
 		}
 	}
 
+	bool ShouldShowRouteOverlayOptions() const
+	{
+		return this->fixed_route_overlay_active ||
+				(_settings_client.gui.show_vehicle_route_mode != 0 && (_settings_client.gui.show_vehicle_route || _settings_client.gui.show_vehicle_route_steps));
+	}
+
 public:
 	VehicleViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
@@ -4283,7 +4289,7 @@ public:
 				if (_ctrl_pressed) {
 					ShowExtraViewportWindow(TileVirtXY(v->x_pos, v->y_pos));
 					this->HandleButtonClick(widget);
-				} else if (_shift_pressed) {
+				} else if (_shift_pressed && this->ShouldShowRouteOverlayOptions()) {
 					this->fixed_route_overlay_active = !this->fixed_route_overlay_active;
 					this->SetWidgetLoweredState(widget, this->fixed_route_overlay_active);
 					this->SetWidgetDirty(widget);
@@ -4456,7 +4462,11 @@ public:
 		}
 		if (widget == WID_VV_LOCATION) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
+			if (this->ShouldShowRouteOverlayOptions()) {
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
+			} else {
+				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
+			}
 			return true;
 		}
 		if (widget == WID_VV_SHOW_ORDERS) {
