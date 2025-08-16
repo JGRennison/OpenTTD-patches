@@ -145,7 +145,7 @@ GRFFile *GetFileByGRFID(uint32_t grfid)
  */
 GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid)
 {
-	if (_cur.grffile->grfid == grfid) return _cur.grffile;
+	if (_cur.grffile != nullptr && _cur.grffile->grfid == grfid) return _cur.grffile;
 	return GetFileByGRFID(grfid);
 }
 
