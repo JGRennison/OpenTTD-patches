@@ -94,7 +94,7 @@ Company::~Company()
 {
 	if (CleaningPool()) return;
 
-	DeleteCompanyWindows(this->index);
+	CloseCompanyWindows(this->index);
 	_saved_PLYP_invalid_mask.Set(this->index);
 }
 

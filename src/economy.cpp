@@ -2520,7 +2520,7 @@ void PostAcquireCompany(Company *c)
 
 	c->bankrupt_asked = CompanyMask{};
 
-	DeleteCompanyWindows(c->index);
+	CloseCompanyWindows(c->index);
 	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);

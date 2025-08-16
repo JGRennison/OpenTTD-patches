@@ -4331,7 +4331,7 @@ void ShowOrdersWindow(const Vehicle *v)
 	if (BringWindowToFrontById(WC_VEHICLE_ORDERS, v->index) != nullptr) return;
 
 	/* Using a different WindowDescs for _local_company causes problems.
-	 * Due to this we have to close order windows in ChangeWindowOwner/DeleteCompanyWindows,
+	 * Due to this we have to close order windows in ChangeWindowOwner/CloseCompanyWindows,
 	 * because we cannot change switch the WindowDescs and keeping the old WindowDesc results
 	 * in crashed due to missing widges.
 	 * TODO Rewrite the order GUI to not use different WindowDescs.

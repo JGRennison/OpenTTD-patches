@@ -1242,12 +1242,12 @@ void CloseWindowByClass(WindowClass cls, int data)
 }
 
 /**
- * Delete all windows of a company. We identify windows of a company
+ * Close all windows of a company. We identify windows of a company
  * by looking at the caption colour. If it is equal to the company ID
- * then we say the window belongs to the company and should be deleted
+ * then we say the window belongs to the company and should be closed
  * @param id company identifier
  */
-void DeleteCompanyWindows(CompanyID id)
+void CloseCompanyWindows(CompanyID id)
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
