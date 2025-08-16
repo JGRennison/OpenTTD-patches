@@ -1074,6 +1074,23 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 }
 
 /**
+ * Draw a sprite, not in a viewport
+ * @param img  Image number to draw
+ * @param pal  Palette to use.
+ * @param x    Left coordinate of image in pixels
+ * @param y    Top coordinate of image in pixels
+ * @param sub  If available, draw only specified part of the sprite
+ * @param zoom Zoom level of sprite
+ */
+void DrawSpriteCustomRemap(SpriteID img, std::span<uint8_t, 256> pal, int x, int y, const SubSprite *sub, ZoomLevel zoom)
+{
+	GfxBlitterCtx ctx(_cur_dpi);
+	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
+	ctx.colour_remap_ptr = pal.data();
+	GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BlitterMode::ColourRemap, sub, real_sprite, zoom);
+}
+
+/**
  * The code for setting up the blitter mode and sprite information before finally drawing the sprite.
  * @param sprite The sprite to draw.
  * @param x The X location to draw.
