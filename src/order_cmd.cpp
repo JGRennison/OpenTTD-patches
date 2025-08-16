@@ -968,6 +968,29 @@ CommandCost CmdDuplicateOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrd
 	return CommandCost();
 }
 
+/**
+ * Edit the colour of the vehicle's route overlay.
+ * @param flags type of operation
+ * @param veh_id ID of the vehicle
+ * @param colour colour
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSetRouteOverlayColour(DoCommandFlags flags, VehicleID veh_id, Colours colour)
+{
+	if (colour >= COLOUR_END) return CMD_ERROR;
+
+	Vehicle *v = Vehicle::GetIfValid(veh_id);
+	if (v == nullptr || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		v->orders->SetRouteOverlayColour(colour);
+	}
+	return CommandCost();
+}
+
 static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags) {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 

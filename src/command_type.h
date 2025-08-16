@@ -431,6 +431,7 @@ enum Commands : uint8_t {
 	CMD_DELETE_ORDER,                 ///< delete an order
 	CMD_INSERT_ORDER,                 ///< insert a new order
 	CMD_DUPLICATE_ORDER,              ///< duplicate an order
+	CMD_SET_ROUTE_OVERLAY_COLOUR,     ///< set route overlay colour
 	CMD_MASS_CHANGE_ORDER,            ///< mass change the target of an order
 	CMD_BULK_ORDER,                   ///< bulk order operations
 

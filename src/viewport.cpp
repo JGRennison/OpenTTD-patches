@@ -417,6 +417,7 @@ private:
 	RouteStepsMap route_steps_last_mark_dirty;
 	std::vector<DrawnPathRouteTileLine> route_paths;
 	std::vector<DrawnPathRouteTileLine> route_paths_last_mark_dirty;
+	Colours line_colour{};
 
 	struct PrepareRouteStepState {
 		robin_hood::unordered_flat_set<const Order *> visited;
@@ -434,8 +435,8 @@ private:
 	void PrepareRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth);
 	void PrepareRouteSteps(const Vehicle *veh);
 	void PrepareRoutePaths(const Vehicle *veh);
-	void PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh);
-	void PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh);
+	void PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh, bool force_change);
+	void PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh, bool force_change);
 
 public:
 	void PrepareRouteAndMarkDirtyIfChanged(const Vehicle *veh);
@@ -2736,6 +2737,8 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 
 	DrawPixelInfo dpi_for_text = vdd->MakeDPIForText();
 
+	uint8_t colour = _colour_value[this->line_colour];
+
 	for (const auto &iter : this->route_paths) {
 		const int from_tile_x = TileX(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
 		const int from_tile_y = TileY(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
@@ -2765,7 +2768,7 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 			GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, dash_level);
 			line_width = 1;
 		}
-		GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_WHITE, line_width, dash_level);
+		GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, colour, line_width, dash_level);
 	}
 }
 
@@ -2777,7 +2780,7 @@ static void ViewportDrawVehicleRoutePath(const Viewport *vp, ViewportDrawerDynam
 	}
 }
 
-static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
+static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList &list, std::array<uint8_t, 256> *palette = nullptr)
 {
 	if (tile == INVALID_TILE) return;
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
@@ -2820,7 +2823,11 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	}
 
 	const int x_bottom_spr = x_centre - (_vp_route_step_sprite_width / 2);
-	DrawSprite(SPR_ROUTE_STEP_BOTTOM, PAL_NONE, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
+	if (palette != nullptr) {
+		DrawSpriteCustomRemap(SPR_ROUTE_STEP_BOTTOM, *palette, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
+	} else {
+		DrawSprite(SPR_ROUTE_STEP_BOTTOM, PAL_NONE, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
+	}
 	SpriteID s = SPR_ROUTE_STEP_BOTTOM_SHADOW;
 	DrawSprite(SetBit(s, PALETTE_MODIFIER_TRANSPARENT), PALETTE_TO_TRANSPARENT, _cur_dpi->left + x_bottom_spr, _cur_dpi->top + y2);
 
@@ -2899,7 +2906,9 @@ void ViewportRouteOverlay::PrepareRouteSteps(const Vehicle *veh)
 {
 	this->route_steps.clear();
 
-	if (veh == nullptr || !_settings_client.gui.show_vehicle_route_steps) return;
+	if (veh == nullptr || !_settings_client.gui.show_vehicle_route_steps || veh->GetNumOrders() == 0) return;
+
+	this->line_colour = veh->orders->GetRouteOverlayColour();
 
 	/* Prepare data. */
 	uint16_t order_rank = 0;
@@ -2951,8 +2960,20 @@ void ViewportPrepareVehicleRoute()
 
 void ViewportRouteOverlay::DrawVehicleRouteSteps(const Viewport *vp)
 {
-	for (RouteStepsMap::const_iterator cit = this->route_steps.begin(); cit != this->route_steps.end(); cit++) {
-		DrawRouteStep(vp, cit->first, cit->second);
+	if (this->route_steps.empty()) return;
+
+	std::array<uint8_t, 256> palette;
+	std::array<uint8_t, 256> *use_palette = nullptr;
+	if (this->line_colour != COLOUR_WHITE) {
+		for (uint i = 0; i < 256; i++) {
+			palette[i] = (uint8_t)i;
+		}
+		palette[15] = _colour_value[this->line_colour];
+		use_palette = &palette;
+	}
+
+	for (const auto &cit : this->route_steps) {
+		DrawRouteStep(vp, cit.first, cit.second, use_palette);
 	}
 }
 
@@ -4720,10 +4741,10 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	}
 }
 
-void ViewportRouteOverlay::PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh, bool force_change)
 {
 	this->PrepareRouteSteps(veh);
-	if (this->route_steps != this->route_steps_last_mark_dirty) {
+	if (force_change || this->route_steps != this->route_steps_last_mark_dirty) {
 		for (RouteStepsMap::const_iterator cit = this->route_steps_last_mark_dirty.begin(); cit != this->route_steps_last_mark_dirty.end(); cit++) {
 			MarkRouteStepDirty(cit);
 		}
@@ -4917,10 +4938,10 @@ static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines
 	}
 }
 
-void ViewportRouteOverlay::PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh, bool force_change)
 {
 	this->PrepareRoutePaths(veh);
-	if (this->route_paths_last_mark_dirty != this->route_paths) {
+	if (force_change || this->route_paths_last_mark_dirty != this->route_paths) {
 		MarkRoutePathsDirty(this->route_paths_last_mark_dirty);
 		MarkRoutePathsDirty(this->route_paths);
 		this->route_paths_last_mark_dirty = this->route_paths;
@@ -4929,8 +4950,14 @@ void ViewportRouteOverlay::PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle 
 
 void ViewportRouteOverlay::PrepareRouteAndMarkDirtyIfChanged(const Vehicle *veh)
 {
-	this->PrepareRoutePathsAndMarkDirtyIfChanged(veh);
-	this->PrepareRouteStepsAndMarkDirtyIfChanged(veh);
+	bool force_change = false;
+	if (veh != nullptr && veh->orders != nullptr) {
+		if (veh->orders->GetRouteOverlayColour() != this->line_colour) force_change = true;
+		this->line_colour = veh->orders->GetRouteOverlayColour();
+	}
+
+	this->PrepareRoutePathsAndMarkDirtyIfChanged(veh, force_change);
+	this->PrepareRouteStepsAndMarkDirtyIfChanged(veh, force_change);
 }
 
 void HandleViewportRoutePathFocusChange(const Window *old, const Window *focused)

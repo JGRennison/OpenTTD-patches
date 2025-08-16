@@ -4325,7 +4325,26 @@ public:
 			case WID_VV_ROUTE_SETTINGS: {
 				DropDownList list;
 				list.push_back(MakeDropDownListCheckedItem(this->fixed_route_overlay_active, STR_VEHICLE_VIEW_ALWAYS_SHOW_ROUTE_OVERLAY, LDDA_FIXED_ROUTE_OVERLAY));
-				ShowDropDownList(this, std::move(list), -1, widget);
+
+				if (v->GetNumOrders() != 0) {
+					list.push_back(MakeDropDownListDividerItem());
+					const Colours current_colour = v->orders->GetRouteOverlayColour();
+					auto add_colour = [&](Colours colour) {
+						list.push_back(MakeDropDownListCheckedItem(current_colour == colour, STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
+					};
+					add_colour(COLOUR_WHITE);
+					add_colour(COLOUR_YELLOW);
+					add_colour(COLOUR_LIGHT_BLUE);
+					add_colour(COLOUR_BLUE);
+					add_colour(COLOUR_GREEN);
+					add_colour(COLOUR_PURPLE);
+					add_colour(COLOUR_ORANGE);
+					add_colour(COLOUR_BROWN);
+					add_colour(COLOUR_PINK);
+					add_colour(COLOUR_RED);
+				}
+
+				ShowDropDownList(this, std::move(list), -1, widget, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -4422,6 +4441,12 @@ public:
 			}
 
 			case WID_VV_ROUTE_SETTINGS: {
+				if (index >= 0x100) {
+					const Vehicle *v = Vehicle::Get(window_number);
+					Command<CMD_SET_ROUTE_OVERLAY_COLOUR>::Post(STR_ERROR_CAN_T_MODIFY_THIS_ORDER, v->tile, v->index, static_cast<Colours>(index & 0xFF));
+					break;
+				}
+
 				switch (index) {
 					case LDDA_FIXED_ROUTE_OVERLAY:
 						this->fixed_route_overlay_active = !this->fixed_route_overlay_active;

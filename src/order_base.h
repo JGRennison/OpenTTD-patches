@@ -1027,6 +1027,8 @@ private:
 
 	std::vector<Order> orders;        ///< Order list.
 
+	Colours route_overlay_colour = COLOUR_WHITE;
+
 	VehicleOrderID num_manual_orders = 0; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles = 0;                ///< NOSAVE: Number of vehicles that share this order list.
 	Vehicle *first_shared = nullptr;      ///< NOSAVE: pointer to the first vehicle in the shared order chain.
@@ -1252,6 +1254,16 @@ public:
 
 	inline DispatchSchedule &GetDispatchScheduleByIndex(uint index) { return this->dispatch_schedules[index]; }
 	inline const DispatchSchedule &GetDispatchScheduleByIndex(uint index) const { return this->dispatch_schedules[index]; }
+
+	Colours GetRouteOverlayColour() const
+	{
+		return this->route_overlay_colour;
+	}
+
+	void SetRouteOverlayColour(Colours colour)
+	{
+		this->route_overlay_colour = colour;
+	}
 
 	/**
 	 * Returns an iterable ensemble of orders
