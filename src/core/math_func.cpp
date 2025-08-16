@@ -107,14 +107,7 @@ uint32_t IntCbrt(uint64_t num)
 
 	if (num == 0) return 0;
 
-#ifdef WITH_BITMATH_BUILTINS
-	int b = 64 - __builtin_clzll(num);
-#ifdef _DEBUG
-	assert(b == FindLastBit(num) + 1);
-#endif
-#else
 	int b = FindLastBit(num) + 1;
-#endif
 
 	r0 <<= (b + 2) / 3; /* ceil(b / 3) */
 
