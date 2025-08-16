@@ -1325,7 +1325,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			data.sin_fp = RandomRange(1 << 17) - (1 << 16);
 
 			/* sin^2 + cos^2 = 1 */
-			data.cos_fp = IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
+			data.cos_fp = (int)IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
 
 			CircularTileSearch(&lake_centre, range, MakeLake, &data);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */

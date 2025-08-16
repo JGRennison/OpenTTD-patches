@@ -34,20 +34,17 @@ int DivideApprox(int a, int b)
 	return ret;
 }
 
-/**
- * Compute the integer square root.
- * @param num Radicand.
- * @return Rounded integer square root.
- * @note Algorithm taken from http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
- */
-uint32_t IntSqrt(uint32_t num)
+template <typename T>
+T IntSqrtImplementation(T num)
 {
-	uint32_t res = 0;
-	uint32_t bit = 1UL << 30; // Second to top bit number.
+	if (num <= 1) return num;
 
 	/* 'bit' starts at the highest power of four <= the argument. */
-	while (bit > num) bit >>= 2;
+	uint8_t leading_zeroes = std::countl_zero<T>(num) | 1;
+	T bit = static_cast<T>(1) << (std::numeric_limits<T>::digits - leading_zeroes - 1);
 
+
+	T res = 0;
 	while (bit != 0) {
 		if (num >= res + bit) {
 			num -= res + bit;
@@ -70,28 +67,20 @@ uint32_t IntSqrt(uint32_t num)
  * @return Rounded integer square root.
  * @note Algorithm taken from http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
  */
-uint32_t IntSqrt64(uint64_t num)
+uint32_t IntSqrt(uint32_t num)
 {
-	uint64_t res = 0;
-	uint64_t bit = 1ULL << 62; // Second to top bit number.
+	return IntSqrtImplementation<uint32_t>(num);
+}
 
-	/* 'bit' starts at the highest power of four <= the argument. */
-	while (bit > num) bit >>= 2;
-
-	while (bit != 0) {
-		if (num >= res + bit) {
-			num -= res + bit;
-			res = (res >> 1) + bit;
-		} else {
-			res >>= 1;
-		}
-		bit >>= 2;
-	}
-
-	/* Arithmetic rounding to nearest integer. */
-	if (num > res) res++;
-
-	return (uint32_t)res;
+/**
+ * Compute the integer square root.
+ * @param num Radicand.
+ * @return Rounded integer square root.
+ * @note Algorithm taken from http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
+ */
+uint64_t IntSqrt64(uint64_t num)
+{
+	return IntSqrtImplementation<uint64_t>(num);
 }
 
 /**

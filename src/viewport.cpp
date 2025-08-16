@@ -6624,7 +6624,7 @@ calc_heightdiff_single_direction:;
 			if (dx != 1 || dy != 1) {
 				heightdiff = CalcHeightdiff(style, 0, t0, t1);
 				manhattan_distance = DistanceManhattan(t0, t1);
-				euclid_distance = IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
+				euclid_distance = (uint32_t)IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
 			}
 
 			/* Always show the measurement tooltip */

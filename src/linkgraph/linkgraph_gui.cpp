@@ -632,7 +632,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				buf.append("\n\n");
 				TileIndex t0 = Station::Get(i->from_id)->xy;
 				TileIndex t1 = Station::Get(i->to_id)->xy;
-				uint32_t euclid_distance = IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
+				uint32_t euclid_distance = (uint32_t)IntSqrt64(DistanceSquare64(t0, t1)); // Avoid overflow in DistanceSquare
 				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE, DistanceManhattan(t0, t1), euclid_distance);
 			}
 

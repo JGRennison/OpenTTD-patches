@@ -35,10 +35,29 @@ TEST_CASE("IntSqrtTest - Zero")
 
 TEST_CASE("IntSqrtTest - FindSqRt")
 {
+	CHECK(1 == IntSqrt(1));
+	CHECK(1 == IntSqrt(2));
+	CHECK(2 == IntSqrt(3));
+	CHECK(2 == IntSqrt(4));
 	CHECK(5 == IntSqrt(25));
 	CHECK(10 == IntSqrt(100));
 	CHECK(9 == IntSqrt(88));
 	CHECK(1696 == IntSqrt(2876278));
+	CHECK(0x10000 == IntSqrt(std::numeric_limits<uint32_t>::max()));
+}
+
+TEST_CASE("IntSqrt64Test - FindSqRt")
+{
+	CHECK(1 == IntSqrt64(1));
+	CHECK(1 == IntSqrt64(2));
+	CHECK(2 == IntSqrt64(3));
+	CHECK(2 == IntSqrt64(4));
+	CHECK(5 == IntSqrt64(25));
+	CHECK(10 == IntSqrt64(100));
+	CHECK(9 == IntSqrt64(88));
+	CHECK(1696 == IntSqrt64(2876278));
+	CHECK(0x10000 == IntSqrt64(std::numeric_limits<uint32_t>::max()));
+	CHECK(0x100000000ULL == IntSqrt64(std::numeric_limits<uint64_t>::max()));
 }
 
 

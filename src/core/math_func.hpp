@@ -437,7 +437,7 @@ constexpr inline uint GetBase10DigitsRequired(T x)
 
 
 uint32_t IntSqrt(uint32_t num);
-uint32_t IntSqrt64(uint64_t num);
+uint64_t IntSqrt64(uint64_t num);
 uint32_t IntCbrt(uint64_t num);
 
 uint16_t RXCompressUint(uint32_t num);
