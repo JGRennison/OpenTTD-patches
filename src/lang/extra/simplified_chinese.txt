@@ -1540,8 +1540,6 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}重命�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}。按住 <Shift> 键操作以选择
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}取消发送载具到车库/机库。按住 <Ctrl> 键操作以来选择目录。Shift+ 点击来选择车库/机库
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}按住 <Shift> 键点击以忽略窗口聚焦状态强制切换路径覆盖层
-
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}按住 <Shift> 键点击以显示时刻表计时调度窗口
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}

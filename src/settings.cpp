@@ -1763,6 +1763,13 @@ static void ViewportMapShowTunnelModeChanged(int32_t new_value)
 	MarkAllViewportMapLandscapesDirty();
 }
 
+static void ShowVehicleRouteModeChanged(int32_t new_value)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WC_VEHICLE_VIEW, VIWD_ROUTE_OVERLAY);
+	MarkWholeScreenDirty();
+}
+
 static void ViewportMapLandscapeModeChanged(int32_t new_value)
 {
 	extern void MarkAllViewportMapLandscapesDirty();

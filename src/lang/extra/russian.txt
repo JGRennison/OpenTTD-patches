@@ -1493,8 +1493,6 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Пере
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+клик чтобы выбрать, какой
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Отменить отправку транспортного средства в депо/ангар. Ctrl+клик - меню. Shift+клик - выбрать депо/ангар
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+клик - переключить показ наложения маршрута, даже если окно не выбрано
-
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+клик - показать окно расписания диспетчерской службы
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}

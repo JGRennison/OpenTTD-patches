@@ -1561,8 +1561,6 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Renomear
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Click para seleccionar cal
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancelar e envíar o vehículo ó depósito/hangar. Ctrl+Click para menu. Shift+Click para seleccionar depósito/hangar
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click para alternar amosar a sobreposición da ruta incluso cando a fiestra non está enfocada
-
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+Click para amosar a fiestra de saídas programadas
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}

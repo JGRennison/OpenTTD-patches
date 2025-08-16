@@ -36,6 +36,7 @@ enum VehicleInvalidateWindowData : int {
 	VIWD_MODIFY_ORDERS     = -2, ///< Other order modifications.
 	VIWD_CONSIST_CHANGED   = -3, ///< Vehicle composition was changed.
 	VIWD_AUTOREPLACE       = -4, ///< Autoreplace replaced the vehicle.
+	VIWD_ROUTE_OVERLAY     = -5, ///< Route overlay mode change.
 };
 
 /** Extra information about refitted cargo and capacity */

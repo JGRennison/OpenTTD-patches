@@ -1544,8 +1544,6 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}重新�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}。按住 <Shift> 鍵點擊以選擇
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}取消發送車輛到車廠/機廠。按住 <Ctrl> 鍵點擊以選擇目錄。按住 <Shift> 鍵點擊以選擇車廠/機廠
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}按住 <Shift> 鍵點擊以忽略視窗焦點狀態強制切換路徑重疊層
-
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}按住 <Shift> 鍵點擊以顯示時刻表排程調度視窗
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}

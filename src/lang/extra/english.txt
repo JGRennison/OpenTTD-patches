@@ -1615,7 +1615,8 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Rename w
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Click to select which
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancel send vehicle to depot/hangar. Ctrl+Click for menu. Shift+Click to select depot/hangar
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click to toggle showing route overlay even when window is not focused
+STR_VEHICLE_VIEW_ROUTE_OVERLAY_TOOLTIP                          :{BLACK}Change route overlay settings
+STR_VEHICLE_VIEW_ALWAYS_SHOW_ROUTE_OVERLAY                      :Always show route overlay
 
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+Click to show timetable scheduled dispatch window
 

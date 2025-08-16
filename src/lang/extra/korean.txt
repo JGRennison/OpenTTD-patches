@@ -1557,8 +1557,6 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING} SHIFT + 클릭해서 선택합니다
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지로 보내는 것을 취소합니다. CTRL + 클릭하면 메뉴를 엽니다. SHIFT + 클릭해서 선택합니다
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}SHIFT + 클릭하면 창에 포커스가 없어도 경로 오버레이를 보여줄지 여부를 전환할 수 있습니다
-
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}SHIFT + 클릭하면 시간표 배차 일정 창을 보여줍니다
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}

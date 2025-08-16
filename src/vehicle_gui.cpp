@@ -3726,7 +3726,10 @@ static constexpr NWidgetPart _nested_vehicle_view_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VV_CAPTION),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VV_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_ROUTE_SETTINGS),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VV_ROUTE_SETTINGS), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetSpriteTip(SPR_ARROW_DOWN, STR_VEHICLE_VIEW_ROUTE_OVERLAY_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -3907,6 +3910,11 @@ private:
 		SEL_DC_BASEPLANE = SEL_DC_GOTO_DEPOT, ///< First plane of the #WID_VV_SELECT_DEPOT_CLONE stacked widget.
 		SEL_RT_BASEPLANE = SEL_RT_REFIT,      ///< First plane of the #WID_VV_SELECT_REFIT_TURN stacked widget.
 	};
+
+	enum LocationDropDownActions : uint8_t {
+		LDDA_FIXED_ROUTE_OVERLAY,
+	};
+
 	bool mouse_over_start_stop = false;
 
 	/**
@@ -3933,8 +3941,12 @@ private:
 
 	bool ShouldShowRouteOverlayOptions() const
 	{
-		return this->fixed_route_overlay_active ||
-				(_settings_client.gui.show_vehicle_route_mode != 0 && (_settings_client.gui.show_vehicle_route || _settings_client.gui.show_vehicle_route_steps));
+		return _settings_client.gui.show_vehicle_route_mode != 0 && (_settings_client.gui.show_vehicle_route || _settings_client.gui.show_vehicle_route_steps);
+	}
+
+	int GetRouteSettingsPlane() const
+	{
+		return this->ShouldShowRouteOverlayOptions() ? 0 : SZSP_NONE;
 	}
 
 public:
@@ -4005,6 +4017,11 @@ public:
 		this->Window::Close();
 	}
 
+	void OnInit() override
+	{
+		this->GetWidget<NWidgetStacked>(WID_VV_SELECT_ROUTE_SETTINGS)->SetDisplayedPlane(this->GetRouteSettingsPlane());
+	}
+
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
@@ -4053,6 +4070,9 @@ public:
 		const Window *mainwindow = GetMainWindow();
 		if (mainwindow->viewport->follow_vehicle == v->index) {
 			this->LowerWidget(WID_VV_LOCATION);
+		}
+		if (this->fixed_route_overlay_active) {
+			this->LowerWidget(WID_VV_ROUTE_SETTINGS);
 		}
 
 		this->DrawWidgets();
@@ -4289,15 +4309,6 @@ public:
 				if (_ctrl_pressed) {
 					ShowExtraViewportWindow(TileVirtXY(v->x_pos, v->y_pos));
 					this->HandleButtonClick(widget);
-				} else if (_shift_pressed && this->ShouldShowRouteOverlayOptions()) {
-					this->fixed_route_overlay_active = !this->fixed_route_overlay_active;
-					this->SetWidgetLoweredState(widget, this->fixed_route_overlay_active);
-					this->SetWidgetDirty(widget);
-					if (this->fixed_route_overlay_active) {
-						AddFixedViewportRoutePath(this->window_number);
-					} else {
-						RemoveFixedViewportRoutePath(this->window_number);
-					}
 				} else {
 					const Window *mainwindow = GetMainWindow();
 					if (click_count > 1 && mainwindow->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
@@ -4310,6 +4321,13 @@ public:
 					this->HandleButtonClick(widget);
 				}
 				break;
+
+			case WID_VV_ROUTE_SETTINGS: {
+				DropDownList list;
+				list.push_back(MakeDropDownListCheckedItem(this->fixed_route_overlay_active, STR_VEHICLE_VIEW_ALWAYS_SHOW_ROUTE_OVERLAY, LDDA_FIXED_ROUTE_OVERLAY));
+				ShowDropDownList(this, std::move(list), -1, widget);
+				break;
+			}
 
 			case WID_VV_GOTO_DEPOT: // goto hangar
 				if (_shift_pressed) {
@@ -4402,6 +4420,24 @@ public:
 				Command<CMD_SEND_VEHICLE_TO_DEPOT>::Post(GetCmdSendToDepotMsg(v), v->index, DepotCommandFlags{static_cast<DepotCommandFlags::BaseType>(index)}, {});
 				break;
 			}
+
+			case WID_VV_ROUTE_SETTINGS: {
+				switch (index) {
+					case LDDA_FIXED_ROUTE_OVERLAY:
+						this->fixed_route_overlay_active = !this->fixed_route_overlay_active;
+						this->SetWidgetLoweredState(widget, this->fixed_route_overlay_active);
+						this->SetWidgetDirty(widget);
+						if (this->fixed_route_overlay_active) {
+							AddFixedViewportRoutePath(this->window_number);
+						} else {
+							RemoveFixedViewportRoutePath(this->window_number);
+						}
+						break;
+
+					default:
+						break;
+				}
+			}
 		}
 	}
 
@@ -4410,10 +4446,6 @@ public:
 		if (!this->depot_select_active) {
 			this->RaiseWidget(WID_VV_GOTO_DEPOT);
 			this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
-		}
-		if (!this->fixed_route_overlay_active) {
-			this->RaiseWidget(WID_VV_LOCATION);
-			this->SetWidgetDirty(WID_VV_LOCATION);
 		}
 	}
 
@@ -4462,11 +4494,7 @@ public:
 		}
 		if (widget == WID_VV_LOCATION) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
-			if (this->ShouldShowRouteOverlayOptions()) {
-				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
-			} else {
-				GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
-			}
+			GuiShowTooltips(this, GetEncodedString(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type), close_cond);
 			return true;
 		}
 		if (widget == WID_VV_SHOW_ORDERS) {
@@ -4541,6 +4569,13 @@ public:
 		if (data == VIWD_AUTOREPLACE) {
 			/* Autoreplace replaced the vehicle.
 			 * Nothing to do for this window. */
+			return;
+		}
+
+		if (data == VIWD_ROUTE_OVERLAY) {
+			if (this->GetWidget<NWidgetStacked>(WID_VV_SELECT_ROUTE_SETTINGS)->shown_plane != this->GetRouteSettingsPlane()) {
+				this->ReInit();
+			}
 			return;
 		}
 

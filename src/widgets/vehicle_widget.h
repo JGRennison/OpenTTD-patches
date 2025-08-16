@@ -17,6 +17,8 @@ enum VehicleViewWidgets : WidgetID {
 	WID_VV_START_STOP,         ///< Start or stop this vehicle, and show information about the current state.
 	WID_VV_RENAME,             ///< Rename vehicle
 	WID_VV_LOCATION,           ///< Center the main view on this vehicle.
+	WID_VV_ROUTE_SETTINGS,     ///< Route settings.
+	WID_VV_SELECT_ROUTE_SETTINGS, ///< Route settings select widget.
 	WID_VV_ORDER_LOCATION,     ///< Center the main view on the order's target location.
 	WID_VV_GOTO_DEPOT,         ///< Order this vehicle to go to the depot.
 	WID_VV_REFIT,              ///< Open the refit window.
