@@ -888,7 +888,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 			int64_t r = (7 * 9 * power_w * (int64_t)distance) / (160 * weight);
 			int64_t sqrt_factor = (r * r) - (l * l * l);
 			if (sqrt_factor >= 0) {
-				int64_t part = IntSqrt64(sqrt_factor);
+				int64_t part = (int64_t)IntSqrt64(sqrt_factor);
 				int32_t v_calc = IntCbrt(r + part);
 				int cb2 = r - part;
 				if (cb2 > 0) {
