@@ -2126,8 +2126,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_BUILD:
-				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type);
-				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type));
+				if (this->virtual_train_mode) {
+					size = GetStringBoundingBox(STR_TMPL_ADD_VEHICLE);
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_VEHICLE_REFIT));
+				} else {
+					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type);
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type));
+				}
 				size.width += padding.width;
 				size.height += padding.height;
 				break;
@@ -2480,6 +2485,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->loco.details_height = this->wagon.details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 
+		this->FinishInitNested(this->window_number);
+
 		this->querystrings[WID_BV_FILTER_LOCO] = &this->loco.vehicle_editbox;
 		this->querystrings[WID_BV_FILTER_WAGON] = &this->wagon.vehicle_editbox;
 		this->loco.vehicle_editbox.cancel_button = QueryString::ACTION_CLEAR;
@@ -2499,8 +2506,6 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->SetBuyLocomotiveText();
 		this->SetBuyWagonText();
 		this->SelectColumn(false);
-
-		this->FinishInitNested(this->window_number);
 	}
 
 	/** Set the filter type according to the depot type */
@@ -3002,6 +3007,19 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
+			case WID_BV_BUILD_LOCO: {
+				if (this->virtual_train_mode) {
+					size = GetStringBoundingBox(STR_TMPL_ADD_LOCOMOTIVE);
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_LOCOMOTIVE_REFIT));
+				} else {
+					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON);
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON));
+				}
+				size.width += padding.width;
+				size.height += padding.height;
+				break;
+			}
+
 			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->GetString());
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
@@ -3018,6 +3036,19 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			case WID_BV_PANEL_WAGON: {
 				size.height = this->wagon.details_height;
+				break;
+			}
+
+			case WID_BV_BUILD_WAGON: {
+				if (this->virtual_train_mode) {
+					size = GetStringBoundingBox(STR_TMPL_ADD_WAGON);
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_WAGON_REFIT));
+				} else {
+					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON);
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON));
+				}
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 			}
 
@@ -3038,6 +3069,22 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				size.height += padding.height;
 				break;
 			}
+
+			case WID_BV_COMB_BUILD:
+				if (this->virtual_train_mode) {
+					size = GetStringBoundingBox(STR_TMPL_ADD_LOCOMOTIVE);
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_LOCOMOTIVE_REFIT));
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_WAGON));
+					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_WAGON_REFIT));
+				} else {
+					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON);
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON));
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON));
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON));
+				}
+				size.width += padding.width;
+				size.height += padding.height;
+				break;
 
 			case WID_BV_RENAME_LOCO: {
 				size = maxdim(size, NWidgetLeaf::GetResizeBoxDimension());
