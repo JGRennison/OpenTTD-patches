@@ -585,10 +585,10 @@ CommandCost CmdAutomateTimetable(DoCommandFlags flags, VehicleID veh, bool autom
 			if (automate) {
 				/* Automated timetable. Set flags and clear current times if also auto-separating. */
 				v2->vehicle_flags.Set(VehicleFlag::AutomateTimetable);
-				v2->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
+				v2->vehicle_flags.Reset(VehicleFlag::AutofillTimetable);
 				v2->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
 				if (v2->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
-					v2->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+					v2->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 					v2->timetable_start = StateTicks{0};
 					v2->lateness_counter = 0;
 				}
@@ -731,9 +731,9 @@ void UpdateSeparationOrder(Vehicle *v_start)
 		const TimetableProgress &info_ahead = progress_array[ahead_index];
 		v_ahead = Vehicle::Get(info_ahead.id);
 
-		if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) &&
-				v_ahead->vehicle_flags.Test(VehicleFlag::TimetableSeparation) &&
-				v_behind->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+		if (v->vehicle_flags.Test(VehicleFlag::TimetableStarted) &&
+				v_ahead->vehicle_flags.Test(VehicleFlag::TimetableStarted) &&
+				v_behind->vehicle_flags.Test(VehicleFlag::TimetableStarted)) {
 			if (info_behind.IsValidForSeparation() && info.IsValidForSeparation() && info_ahead.IsValidForSeparation()) {
 				/*
 				 * The below is equivalent to:
@@ -884,8 +884,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			std::tie(slot, slot_index) = GetScheduledDispatchTime(ds, _state_ticks + wait_offset);
 
 			if (slot != INVALID_STATE_TICKS) {
-				just_started = !v->vehicle_flags.Test(VehicleFlag::TimetableSeparation);
-				v->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
+				just_started = !v->vehicle_flags.Test(VehicleFlag::TimetableStarted);
+				v->vehicle_flags.Set(VehicleFlag::TimetableStarted);
 				v->lateness_counter = (_state_ticks - slot + wait_offset).AsTicks();
 				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
@@ -896,9 +896,9 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	}
 
 	/* Start automated timetables at first opportunity */
-	if (!v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) && v->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
+	if (!v->vehicle_flags.Test(VehicleFlag::TimetableStarted) && v->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
 		v->ClearSeparation();
-		v->vehicle_flags.Set(VehicleFlag::TimetableSeparation);
+		v->vehicle_flags.Set(VehicleFlag::TimetableStarted);
 		/* If the lateness is set by scheduled dispatch above, do not reset */
 		if (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) v->lateness_counter = 0;
 		if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) UpdateSeparationOrder(v);
@@ -1007,8 +1007,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, false);
 				if (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) {
 					for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-						/* Clear VehicleFlag::TimetableSeparation but do not call ClearSeparation */
-						v2->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+						/* Clear VehicleFlag::TimetableStarted but do not call ClearSeparation */
+						v2->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 						v2->lateness_counter = 0;
 					}
 				}
@@ -1063,7 +1063,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 
 	if (set_scheduled_dispatch) {
 		// do nothing
-	} else if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) && v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+	} else if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation) && v->vehicle_flags.Test(VehicleFlag::TimetableStarted)) {
 		v->current_order_time = time_taken;
 		v->current_loading_time = time_loading;
 		UpdateSeparationOrder(v);

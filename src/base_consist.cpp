@@ -45,7 +45,7 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 
 	if (src->vehicle_flags.Test(VehicleFlag::AutomateTimetable)) {
 		this->vehicle_flags.Set(VehicleFlag::AutomateTimetable);
-		this->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);
+		this->vehicle_flags.Reset(VehicleFlag::AutofillTimetable);
 		this->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
 	} else {
 		this->vehicle_flags.Reset(VehicleFlag::AutomateTimetable);

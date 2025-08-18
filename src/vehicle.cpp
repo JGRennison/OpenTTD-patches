@@ -384,7 +384,7 @@ uint Vehicle::Crash(bool)
 	}
 
 	this->ClearSeparation();
-	this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+	if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 	/* Dirty some windows */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
@@ -4040,7 +4040,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				this->current_order.SetDepotActionType(this->current_order.GetDepotActionType() == ODATFB_HALT ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 			} else {
 				this->ClearSeparation();
-				this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 				this->current_order.MakeDummy();
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -4071,7 +4071,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
-				this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
 			return CommandCost();
@@ -4536,7 +4536,7 @@ void Vehicle::RemoveFromShared()
 	this->previous_shared = nullptr;
 
 	this->ClearSeparation();
-	this->vehicle_flags.Reset(VehicleFlag::TimetableSeparation);
+	if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 }
 
 template <typename T, typename U>

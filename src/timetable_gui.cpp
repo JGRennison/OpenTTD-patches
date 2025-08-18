@@ -818,7 +818,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				 * Excluding order lists with only one order makes some things easier.
 				 */
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
-				if (total_time <= 0 || v->GetNumOrders() <= 1 || !v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) break;
+				if (total_time <= 0 || v->GetNumOrders() <= 1 || !v->vehicle_flags.Test(VehicleFlag::TimetableStarted)) break;
 
 				std::unique_ptr<TimetableArrivalDeparture[]> arr_dep = std::make_unique<TimetableArrivalDeparture[]>(v->GetNumOrders());
 				const VehicleOrderID cur_order = v->cur_real_order_index % v->GetNumOrders();
@@ -904,7 +904,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						draw(STR_TIMETABLE_STATUS_START_AT_DATE, STR_JUST_TT_TIME, v->timetable_start);
 					}
-				} else if (!v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+				} else if (!v->vehicle_flags.Test(VehicleFlag::TimetableStarted)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
 					draw(STR_TIMETABLE_STATUS_NOT_STARTED);
