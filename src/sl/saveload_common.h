@@ -422,9 +422,15 @@ enum SaveLoadVersion : uint16_t {
 
 	SLV_FACE_STYLES,                        ///< 355  PR#14319 Addition of face styles, replacing gender and ethnicity.
 
+	/* NB: below version are supported for upstream load only (i.e. field discard), see SL_UPSTREAM_VERSION */
+
+	SLV_INDUSTRY_NUM_VALID_HISTORY,         ///< 356  PR#14416 Store number of valid history records for industries.
+	SLV_INDUSTRY_ACCEPTED_HISTORY,          ///< 357  PR#14321 Add per-industry history of cargo delivered and waiting.
+	SLV_TOWN_SUPPLY_HISTORY,                ///< 358  PR#14461 Town supply history.
+
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
-	SL_UPSTREAM_VERSION = SL_MAX_VERSION - 1, ///< Savegame version to save/load in XSLFI_UPSTREAM_VERSION sub-chunk
+	SL_UPSTREAM_VERSION = SLV_FACE_STYLES,  ///< Savegame version to save/load in XSLFI_UPSTREAM_VERSION sub-chunk
 
 	SL_SPRING_2013_v2_0_102 = 220,
 	SL_SPRING_2013_v2_1_108 = 221,
