@@ -46,7 +46,7 @@ public:
 
 		for (size_t j = 0; j < len; j++) {
 			Industry::AcceptedCargo &a = i->accepted[j];
-			SlObject(&a, this->GetDescription());
+			SlObject(&a, this->GetLoadDescription());
 		}
 	}
 };
@@ -70,7 +70,7 @@ public:
 
 		for (auto &h : p->history) {
 			if (--len > p->history.size()) break; // unsigned so wraps after hitting zero.
-			SlObject(&h, this->GetDescription());
+			SlObject(&h, this->GetLoadDescription());
 		}
 	}
 };
@@ -99,7 +99,7 @@ public:
 
 		for (size_t j = 0; j < len; j++) {
 			Industry::ProducedCargo &p = i->produced[j];
-			SlObject(&p, this->GetDescription());
+			SlObject(&p, this->GetLoadDescription());
 		}
 	}
 };
