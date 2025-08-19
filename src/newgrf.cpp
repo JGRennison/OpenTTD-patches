@@ -46,6 +46,7 @@
 #include "road.h"
 #include "newgrf_roadstop.h"
 #include "debug_settings.h"
+#include "scope_info.h"
 #include "newgrf/newgrf_bytereader.h"
 #include "newgrf/newgrf_internal_vehicle.h"
 #include "newgrf/newgrf_internal.h"
@@ -1599,6 +1600,8 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 		if (stage == GLS_RESERVE && config.status != GCS_INITIALISED) return;
 		if (stage == GLS_ACTIVATION && !config.flags.Test(GRFConfigFlag::Reserved)) return;
 	}
+
+	SCOPE_INFO_FMT([&], "LoadNewGRFFile: {}, {}", filename, stage);
 
 	bool needs_palette_remap = config.palette & GRFP_USE_MASK;
 	if (temporary) {
