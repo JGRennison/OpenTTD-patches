@@ -2324,12 +2324,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Bonde de Carga
 STR_FACE_CAPTION                                                :{WHITE}Seleção de Face
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Cancelar seleção da nova face
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Aceitar seleção da nova face
-STR_FACE_RANDOM                                                 :{BLACK}Seleção aleatória
 
-STR_FACE_MALE_BUTTON                                            :{BLACK}Masculino
-STR_FACE_MALE_TOOLTIP                                           :{BLACK}Selecionar faces masculinas
-STR_FACE_FEMALE_BUTTON                                          :{BLACK}Feminino
-STR_FACE_FEMALE_TOOLTIP                                         :{BLACK}Selecionar faces femininas
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Nova Face
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Gerar nova face aleatoriamente
 STR_FACE_ADVANCED                                               :{BLACK}Avançado
@@ -2347,36 +2342,20 @@ STR_FACE_FACECODE_ERR                                           :{WHITE}Não foi
 STR_FACE_SAVE                                                   :{BLACK}Salvar
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Salvar face favorita
 STR_FACE_SAVE_DONE                                              :{WHITE}Esta face será armazenada como sua favorita no arquivo de configuração do OpenTTD
-STR_FACE_EUROPEAN                                               :{BLACK}Europeu
-STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Selecionar faces Europeias
-STR_FACE_AFRICAN                                                :{BLACK}Africano
-STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Selecionar faces Africanas
 STR_FACE_YES                                                    :Sim
 STR_FACE_NO                                                     :Não
-STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Ativar bigode ou brinco
 STR_FACE_HAIR                                                   :Cabelo:
-STR_FACE_HAIR_TOOLTIP                                           :{BLACK}Alterar cabelo
 STR_FACE_EYEBROWS                                               :Sobrancelhas:
-STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}Alterar sobrancelhas
 STR_FACE_EYECOLOUR                                              :Cor do olho:
-STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}Alterar cor do olho
 STR_FACE_GLASSES                                                :Óculos:
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}Ativar óculos
-STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}Alterar óculos
 STR_FACE_NOSE                                                   :Nariz:
-STR_FACE_NOSE_TOOLTIP                                           :{BLACK}Alterar nariz
 STR_FACE_LIPS                                                   :Boca:
 STR_FACE_MOUSTACHE                                              :Bigode:
-STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}Alterar boca ou bigode
 STR_FACE_CHIN                                                   :Queixo:
-STR_FACE_CHIN_TOOLTIP                                           :{BLACK}Alterar queixo
 STR_FACE_JACKET                                                 :Casaco:
-STR_FACE_JACKET_TOOLTIP                                         :{BLACK}Alterar casaco
 STR_FACE_COLLAR                                                 :Colarinho:
-STR_FACE_COLLAR_TOOLTIP                                         :{BLACK}Alterar colarinho
 STR_FACE_TIE                                                    :Gravata:
 STR_FACE_EARRING                                                :Brinco:
-STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Alterar gravata ou brinco
 
 # Matches ServerGameType
 ###length 3

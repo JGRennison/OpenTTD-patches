@@ -2241,12 +2241,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Trem Barang
 STR_FACE_CAPTION                                                :{WHITE}Pilihan Wajah
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Batalkan pemilihan wajah baru
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Terima pilihan wajah baru
-STR_FACE_RANDOM                                                 :{BLACK}Acak angka
 
-STR_FACE_MALE_BUTTON                                            :{BLACK}Pria
-STR_FACE_MALE_TOOLTIP                                           :{BLACK}Pilih wajah pria
-STR_FACE_FEMALE_BUTTON                                          :{BLACK}Wanita
-STR_FACE_FEMALE_TOOLTIP                                         :{BLACK}Pilih wajah wanita
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Ganti Wajah
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Buat wajah baru secara acak
 STR_FACE_ADVANCED                                               :{BLACK}Lebih Lanjut
@@ -2264,36 +2259,20 @@ STR_FACE_FACECODE_ERR                                           :{WHITE}Tidak da
 STR_FACE_SAVE                                                   :{BLACK}Simpan
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Simpan wajah kesukaanmu
 STR_FACE_SAVE_DONE                                              :{WHITE}Wajah ini akan disimpan sebagai favorit dalam berkas config OpenTTD.
-STR_FACE_EUROPEAN                                               :{BLACK}Eropa
-STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Pilih wajah Eropa
-STR_FACE_AFRICAN                                                :{BLACK}Afrika
-STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Pilih wajah afrika
 STR_FACE_YES                                                    :Ya
 STR_FACE_NO                                                     :Tanpa
-STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Punya kumis atau anting-anting
 STR_FACE_HAIR                                                   :Rambut:
-STR_FACE_HAIR_TOOLTIP                                           :{BLACK}Ganti model rambut
 STR_FACE_EYEBROWS                                               :Alis:
-STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}Ubah Alis
 STR_FACE_EYECOLOUR                                              :Warna Mata:
-STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}Ubah Warna Mata
 STR_FACE_GLASSES                                                :Kacamata:
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}Pakai Kacamata
-STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}Ganti Kacamata
 STR_FACE_NOSE                                                   :Hidung:
-STR_FACE_NOSE_TOOLTIP                                           :{BLACK}Ubah Hidung
 STR_FACE_LIPS                                                   :Bibir:
 STR_FACE_MOUSTACHE                                              :Kumis:
-STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}Ubah Bibir atau Kumis
 STR_FACE_CHIN                                                   :Dagu:
-STR_FACE_CHIN_TOOLTIP                                           :{BLACK}Ubah Dagu
 STR_FACE_JACKET                                                 :Jaket:
-STR_FACE_JACKET_TOOLTIP                                         :{BLACK}Ubah Jaket
 STR_FACE_COLLAR                                                 :Kerah Baju:
-STR_FACE_COLLAR_TOOLTIP                                         :{BLACK}Ubah Kerah Baju
 STR_FACE_TIE                                                    :Dasi:
 STR_FACE_EARRING                                                :Anting-anting:
-STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Ubah dasi atau anting-anting
 
 # Matches ServerGameType
 ###length 3

@@ -2324,12 +2324,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Tramway pour fr
 STR_FACE_CAPTION                                                :{WHITE}Sélection du visage
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Annuler le choix du nouveau visage
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Valider le nouveau visage
-STR_FACE_RANDOM                                                 :{BLACK}Nouvelle amorce
 
-STR_FACE_MALE_BUTTON                                            :{BLACK}Homme
-STR_FACE_MALE_TOOLTIP                                           :{BLACK}Choisir un visage masculin
-STR_FACE_FEMALE_BUTTON                                          :{BLACK}Femme
-STR_FACE_FEMALE_TOOLTIP                                         :{BLACK}Choisir un visage féminin
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Nouveau visage
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Générer un visage au hasard
 STR_FACE_ADVANCED                                               :{BLACK}Avancé
@@ -2347,36 +2342,20 @@ STR_FACE_FACECODE_ERR                                           :{WHITE}Impossib
 STR_FACE_SAVE                                                   :{BLACK}Enregistrer
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Enregistrer le visage favori
 STR_FACE_SAVE_DONE                                              :{WHITE}Ce visage sera enregistré comme favori dans le fichier de configuration d'OpenTTD.
-STR_FACE_EUROPEAN                                               :{BLACK}Européen
-STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Choisir les visages européens
-STR_FACE_AFRICAN                                                :{BLACK}Africain
-STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Choisir les visages africains
 STR_FACE_YES                                                    :Oui
 STR_FACE_NO                                                     :Non
-STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Activer la moustache ou la boucle d'oreille
 STR_FACE_HAIR                                                   :Cheveux{NBSP}:
-STR_FACE_HAIR_TOOLTIP                                           :{BLACK}Modifier les cheveux
 STR_FACE_EYEBROWS                                               :Yeux{NBSP}:
-STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}Modifier les yeux et les sourcils
 STR_FACE_EYECOLOUR                                              :Couleur des yeux{NBSP}:
-STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}Modifier la couleur des yeux
 STR_FACE_GLASSES                                                :Lunettes{NBSP}:
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}Activer les lunettes
-STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}Modifier les lunettes
 STR_FACE_NOSE                                                   :Nez{NBSP}:
-STR_FACE_NOSE_TOOLTIP                                           :{BLACK}Modifier le nez
 STR_FACE_LIPS                                                   :Lèvres{NBSP}:
 STR_FACE_MOUSTACHE                                              :Moustache{NBSP}:
-STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}Modifier les lèvres ou la moustache
 STR_FACE_CHIN                                                   :Menton{NBSP}:
-STR_FACE_CHIN_TOOLTIP                                           :{BLACK}Modifier le menton
 STR_FACE_JACKET                                                 :Veste{NBSP}:
-STR_FACE_JACKET_TOOLTIP                                         :{BLACK}Modifier la veste
 STR_FACE_COLLAR                                                 :Col{NBSP}:
-STR_FACE_COLLAR_TOOLTIP                                         :{BLACK}Modifier le col
 STR_FACE_TIE                                                    :Cravate{NBSP}:
 STR_FACE_EARRING                                                :Boucle d'oreille{NBSP}:
-STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Modifier la cravate ou la boucle d'oreille
 
 # Matches ServerGameType
 ###length 3

@@ -2323,12 +2323,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Raitiotavaravau
 STR_FACE_CAPTION                                                :{WHITE}Kasvojen valinta
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Peruuta uusien kasvojen valinta
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Hyväksy uusien kasvojen valinta
-STR_FACE_RANDOM                                                 :{BLACK}Satunnainen
 
-STR_FACE_MALE_BUTTON                                            :{BLACK}Mies
-STR_FACE_MALE_TOOLTIP                                           :{BLACK}Valitse miehen kasvot
-STR_FACE_FEMALE_BUTTON                                          :{BLACK}Nainen
-STR_FACE_FEMALE_TOOLTIP                                         :{BLACK}Valitse naisen kasvot
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Uudet kasvot
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Luo satunnaiset kasvot
 STR_FACE_ADVANCED                                               :{BLACK}Monipuolinen
@@ -2346,36 +2341,20 @@ STR_FACE_FACECODE_ERR                                           :{WHITE}Johtajan
 STR_FACE_SAVE                                                   :{BLACK}Tallenna
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Tallenna suosikkikasvot
 STR_FACE_SAVE_DONE                                              :{WHITE}Nämä kasvot tallennetaan suosikkikasvoiksesi OpenTTD:n kokoonpanotiedostoon.
-STR_FACE_EUROPEAN                                               :{BLACK}Eurooppalainen
-STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Valitse eurooppalaisia kasvoja
-STR_FACE_AFRICAN                                                :{BLACK}Afrikkalainen
-STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Valitse afrikkalaisia kasvoja
 STR_FACE_YES                                                    :Kyllä
 STR_FACE_NO                                                     :Ei
-STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Käytä viiksiä tai korvakorua
 STR_FACE_HAIR                                                   :Hiukset:
-STR_FACE_HAIR_TOOLTIP                                           :{BLACK}Vaihda hiukset
 STR_FACE_EYEBROWS                                               :Kulmakarvat:
-STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}Vaihda kulmakarvat
 STR_FACE_EYECOLOUR                                              :Silmien väri:
-STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}Vaihda silmien väri
 STR_FACE_GLASSES                                                :Silmälasit:
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}Käytä silmälaseja
-STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}Vaihda silmälasit
 STR_FACE_NOSE                                                   :Nenä:
-STR_FACE_NOSE_TOOLTIP                                           :{BLACK}Vaihda nenä
 STR_FACE_LIPS                                                   :Huulet:
 STR_FACE_MOUSTACHE                                              :Viikset:
-STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}Vaihda huulet tai viikset
 STR_FACE_CHIN                                                   :Leuka:
-STR_FACE_CHIN_TOOLTIP                                           :{BLACK}Vaihda leuka
 STR_FACE_JACKET                                                 :Takki:
-STR_FACE_JACKET_TOOLTIP                                         :{BLACK}Vaihda takki
 STR_FACE_COLLAR                                                 :Kaulus:
-STR_FACE_COLLAR_TOOLTIP                                         :{BLACK}Vaihda kaulus
 STR_FACE_TIE                                                    :Solmio:
 STR_FACE_EARRING                                                :Korvakoru:
-STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Vaihda solmio tai korvakoru
 
 # Matches ServerGameType
 ###length 3

@@ -2474,12 +2474,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Грузово�
 STR_FACE_CAPTION                                                :{WHITE}Внешний вид
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Не менять внешность
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Применить новую внешность
-STR_FACE_RANDOM                                                 :{BLACK}Случайное
 
-STR_FACE_MALE_BUTTON                                            :{BLACK}Мужское
-STR_FACE_MALE_TOOLTIP                                           :{BLACK}Выбор мужских лиц
-STR_FACE_FEMALE_BUTTON                                          :{BLACK}Женское
-STR_FACE_FEMALE_TOOLTIP                                         :{BLACK}Выбор женских лиц
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Мне повезёт!
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Создание внешности случайным образом
 STR_FACE_ADVANCED                                               :{BLACK}Детально
@@ -2497,36 +2492,20 @@ STR_FACE_FACECODE_ERR                                           :{WHITE}Нево
 STR_FACE_SAVE                                                   :{BLACK}Сохранить
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Сохранить внешность
 STR_FACE_SAVE_DONE                                              :{WHITE}Внешность сохранена в файле конфигурации.
-STR_FACE_EUROPEAN                                               :{BLACK}Европ.
-STR_FACE_EUROPEAN_TOOLTIP                                       :{BLACK}Выбрать европеоидный тип лица
-STR_FACE_AFRICAN                                                :{BLACK}Африк.
-STR_FACE_AFRICAN_TOOLTIP                                        :{BLACK}Выбрать африканский тип лица
 STR_FACE_YES                                                    :Да
 STR_FACE_NO                                                     :Нет
-STR_FACE_MOUSTACHE_EARRING_TOOLTIP                              :{BLACK}Включить усы или серьги
 STR_FACE_HAIR                                                   :Волосы:
-STR_FACE_HAIR_TOOLTIP                                           :{BLACK}Изменить волосы
 STR_FACE_EYEBROWS                                               :Брови:
-STR_FACE_EYEBROWS_TOOLTIP                                       :{BLACK}Изменить брови
 STR_FACE_EYECOLOUR                                              :Цвет глаз:
-STR_FACE_EYECOLOUR_TOOLTIP                                      :{BLACK}Изменить цвет глаз
 STR_FACE_GLASSES                                                :Очки:
-STR_FACE_GLASSES_TOOLTIP                                        :{BLACK}Наличие очков
-STR_FACE_GLASSES_TOOLTIP_2                                      :{BLACK}Изменить очки
 STR_FACE_NOSE                                                   :Нос:
-STR_FACE_NOSE_TOOLTIP                                           :{BLACK}Изменить нос
 STR_FACE_LIPS                                                   :Губы:
 STR_FACE_MOUSTACHE                                              :Усы:
-STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}Изменить губы или усы
 STR_FACE_CHIN                                                   :Подбородок:
-STR_FACE_CHIN_TOOLTIP                                           :{BLACK}Изменить подбородок
 STR_FACE_JACKET                                                 :Пиджак:
-STR_FACE_JACKET_TOOLTIP                                         :{BLACK}Изменить пиджак
 STR_FACE_COLLAR                                                 :Воротник:
-STR_FACE_COLLAR_TOOLTIP                                         :{BLACK}Изменить воротник
 STR_FACE_TIE                                                    :Галстук:
 STR_FACE_EARRING                                                :Серьга:
-STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Изменить галстук или серьгу
 
 # Matches ServerGameType
 ###length 3
