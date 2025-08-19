@@ -424,6 +424,8 @@ enum SaveLoadVersion : uint16_t {
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
+	SL_UPSTREAM_VERSION = SL_MAX_VERSION - 1, ///< Savegame version to save/load in XSLFI_UPSTREAM_VERSION sub-chunk
+
 	SL_SPRING_2013_v2_0_102 = 220,
 	SL_SPRING_2013_v2_1_108 = 221,
 	SL_SPRING_2013_v2_1_147 = 222,

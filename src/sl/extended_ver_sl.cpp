@@ -753,8 +753,8 @@ static void loadUV(const SlxiSubChunkInfo &info, uint32_t length)
 {
 	if (length == 2) {
 		_sl_xv_upstream_version = (SaveLoadVersion)SlReadUint16();
-		if (_sl_xv_upstream_version >= SL_MAX_VERSION) {
-			auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, "upstream savegame version", _sl_xv_upstream_version, SL_MAX_VERSION - 1);
+		if (_sl_xv_upstream_version > SL_UPSTREAM_VERSION) {
+			auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, "upstream savegame version", _sl_xv_upstream_version, SL_UPSTREAM_VERSION);
 			SlError(STR_JUST_RAW_STRING, GetStringWithArgs(STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION, tmp_params));
 		}
 		Debug(sl, 2, "SLXI upstream version: {}", _sl_xv_upstream_version);
@@ -765,7 +765,7 @@ static void loadUV(const SlxiSubChunkInfo &info, uint32_t length)
 
 static uint32_t saveUV(const SlxiSubChunkInfo &info, bool dry_run)
 {
-	if (!dry_run) SlWriteUint16(SL_MAX_VERSION - 1);
+	if (!dry_run) SlWriteUint16(SL_UPSTREAM_VERSION);
 	return 2;
 }
 
