@@ -66,7 +66,18 @@ public:
 
 	void Load(Industry::ProducedCargo *p) const override
 	{
-		size_t len = SlGetStructListLength(p->history.size());
+		size_t len = SlGetStructListLength(UINT32_MAX);
+		if (len > p->history.size()) {
+			/* Truncate larger history */
+			for (auto &h : p->history) {
+				SlObject(&h, this->GetLoadDescription());
+			}
+			Industry::ProducedHistory tmp{};
+			for (size_t i = 0; i < len - p->history.size(); i++) {
+				SlObject(&tmp, this->GetDescription());
+			}
+			return;
+		}
 
 		for (auto &h : p->history) {
 			if (--len > p->history.size()) break; // unsigned so wraps after hitting zero.
