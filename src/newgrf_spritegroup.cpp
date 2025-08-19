@@ -258,7 +258,7 @@ static bool RangeHighComparator(const DeterministicSpriteGroupRange &range, uint
 
 const SpriteGroup *DeterministicSpriteGroup::HandleResultGroup(const SpriteGroup *group, ResolverObject &object) const
 {
-	if (group->type == SGT_CALCULATED_RESULT) {
+	if (group != nullptr && group->type == SGT_CALCULATED_RESULT) {
 		static CallbackResultSpriteGroup nvarzero(0);
 		nvarzero.result = GB(object.last_value, 0, 15);
 		return &nvarzero;
@@ -386,7 +386,7 @@ const SpriteGroup *DeterministicSpriteGroup::GetBypassGroupForValue(uint32_t val
 		}
 	}
 
-	if (group->type == SGT_CALCULATED_RESULT) {
+	if (group != nullptr && group->type == SGT_CALCULATED_RESULT) {
 		return NewCallbackResultSpriteGroupNoTransform(GB(value, 0, 15));
 	}
 
