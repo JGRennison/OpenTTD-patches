@@ -71,6 +71,18 @@ namespace SQConvert {
 		}
 	};
 
+	template <> struct Return<std::optional<std::string_view>> {
+		static inline int Set(HSQUIRRELVM vm, std::optional<std::string_view> res)
+		{
+			if (res.has_value()) {
+				sq_pushstring(vm, res->data(), res->size());
+			} else {
+				sq_pushnull(vm);
+			}
+			return 1;
+		}
+	};
+
 	/**
 	 * To get a param from squirrel, we use this helper class. It converts to the right format.
 	 * We use a class instead of a plain function to allow us to use partial template specializations.
