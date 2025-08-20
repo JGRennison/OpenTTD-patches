@@ -390,28 +390,6 @@ public:
 	const char *end() const noexcept { return this->data() + this->size(); }
 
 	operator std::string_view() const { return std::string_view(this->data(), this->size()); }
-
-	class growable_back_buffer final : public fmt::detail::buffer<char> {
-		friend format_to_fixed_base;
-
-		format_to_fixed_base &parent;
-
-		static void grow(fmt::detail::buffer<char> &, size_t);
-
-		growable_back_buffer(format_to_fixed_base &parent) :
-				buffer(grow, parent.inner.buffer_ptr + parent.inner.size(), 0, parent.inner.buffer_size - parent.inner.size()), parent(parent) {}
-
-	public:
-		~growable_back_buffer();
-
-		growable_back_buffer(const growable_back_buffer &) = delete;
-		growable_back_buffer(growable_back_buffer &&) = delete;
-		growable_back_buffer &operator=(const growable_back_buffer &) = delete;
-		growable_back_buffer &operator=(growable_back_buffer &&) = delete;
-	};
-
-	/** Only for specialised uses () */
-	growable_back_buffer get_growable_back_buffer() { return growable_back_buffer(*this); }
 };
 
 /**

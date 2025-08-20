@@ -446,14 +446,6 @@ std::string GetString(StringID string)
 	return buffer.to_string();
 }
 
-static void AppendStringWithArgsInPlaceFixed(format_target &result, StringID string, StringParameters &params)
-{
-	if (result.has_overflowed()) return;
-
-	format_to_fixed_base::growable_back_buffer temp = static_cast<format_to_fixed_base &>(result).get_growable_back_buffer();
-	GetStringWithArgs(StringBuilder(temp), string, params);
-}
-
 /**
  * Resolve the given StringID and append in place with most special stringcodes replaced by the string parameters.
  * @param result The format_target to append the translated string.
@@ -462,12 +454,10 @@ static void AppendStringWithArgsInPlaceFixed(format_target &result, StringID str
  */
 void AppendStringWithArgsInPlace(format_target &result, StringID string, std::span<StringParameter> args)
 {
+	if (unlikely(result.has_overflowed())) return;
+
 	StringParameters params{args};
-	if (unlikely(result.is_format_to_fixed_subtype())) {
-		AppendStringWithArgsInPlaceFixed(result, string, params);
-	} else {
-		GetStringWithArgs(StringBuilder(static_cast<format_to_buffer &>(result)), string, params);
-	}
+	GetStringWithArgs(result, string, params);
 }
 
 /**

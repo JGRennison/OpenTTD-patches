@@ -59,34 +59,3 @@ void format_detail::FmtResizeForCStr(fmt::detail::buffer<char> &buffer)
 	buffer.try_reserve(buffer.capacity() + 1);
 	assert(buffer.size() < buffer.capacity());
 }
-
-void format_to_fixed_base::growable_back_buffer::grow(fmt::detail::buffer<char> &buf, size_t requested)
-{
-	growable_back_buffer &self = static_cast<growable_back_buffer &>(buf);
-
-	char *old_data = self.data();
-	size_t old_capacity = self.capacity();
-	size_t new_capacity = old_capacity + old_capacity / 2;
-	if (requested > new_capacity) {
-		new_capacity = requested;
-	}
-
-	char *new_data = MallocT<char>(new_capacity);
-	MemCpyT(new_data, old_data, self.size());
-	self.set(new_data, new_capacity);
-
-	if (old_data != self.parent.inner.buffer_ptr + self.parent.inner.size()) {
-		free(old_data);
-	}
-}
-
-format_to_fixed_base::growable_back_buffer::~growable_back_buffer()
-{
-	if (this->data() == this->parent.inner.buffer_ptr + this->parent.inner.size()) {
-		/* Use buffer as is */
-		this->parent.inner.try_resize(this->parent.inner.size() + this->size());
-	} else {
-		this->parent.append(this->data(), this->data() + this->size());
-		free(this->data());
-	}
-}

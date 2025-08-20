@@ -44,11 +44,6 @@ public:
 	 */
 	StringBuilder(format_target &buffer) : string(&buffer.GetTargetFmtBuffer()) {}
 
-	/**
-	 * Only for internal use by AppendStringWithArgsInPlaceFixed.
-	 */
-	StringBuilder(format_to_fixed_base::growable_back_buffer &buffer) : string(&buffer) {}
-
 	/* Required operators for this to be an output_iterator; mimics std::back_insert_iterator, which has no-ops. */
 	StringBuilder &operator++() { return *this; }
 	StringBuilder operator++(int) { return *this; }
