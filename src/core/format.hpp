@@ -295,6 +295,8 @@ public:
 	size_t capacity() const noexcept { return this->buffer.capacity(); }
 	char *data() noexcept { return this->buffer.data(); }
 	const char *data() const noexcept { return this->buffer.data(); }
+	char &back() noexcept { return this->buffer[this->size() - 1]; }
+	const char &back() const noexcept { return this->buffer[this->size() - 1]; }
 
 	void clear() { this->buffer.clear(); }
 
