@@ -63,10 +63,6 @@ const LanguageMetadata *_current_language = nullptr; ///< The currently loaded l
 
 TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently selected language.
 
-#ifdef WITH_ICU_I18N
-std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
-#endif /* WITH_ICU_I18N */
-
 std::string _temp_special_strings[16];
 
 /**
@@ -2520,15 +2516,8 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 #endif
 
 #ifdef WITH_ICU_I18N
-	/* Create a collator instance for our current locale. */
-	UErrorCode status = U_ZERO_ERROR;
-	_current_collator.reset(icu::Collator::createInstance(icu::Locale(_current_language->isocode), status));
-	/* Sort number substrings by their numerical value. */
-	if (_current_collator) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
-	/* Avoid using the collator if it is not correctly set. */
-	if (U_FAILURE(status)) {
-		_current_collator.reset();
-	}
+	extern void ICUSetupCollators(const char *iso_code);
+	ICUSetupCollators(_current_language->isocode);
 #endif /* WITH_ICU_I18N */
 
 	Layouter::Initialize();

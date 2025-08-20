@@ -34,10 +34,11 @@
 #endif
 
 #ifdef WITH_ICU_I18N
-/* Required by StrNaturalCompare. */
+/* Required by ICUSetupCollators. */
+#	include <unicode/coll.h>
+#	include <unicode/stsearch.h>
 #	include <unicode/ustring.h>
 #	include "language.h"
-#	include "gfx_func.h"
 #endif /* WITH_ICU_I18N */
 
 #if defined(WITH_COCOA)
@@ -45,6 +46,12 @@
 #endif
 
 #include "safeguards.h"
+
+#ifdef WITH_ICU_I18N
+static std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
+static std::unique_ptr<icu::RuleBasedCollator> _current_collator_search; ///< Collator for the language currently in use.
+static std::unique_ptr<icu::RuleBasedCollator> _current_collator_search_case_insensitive; ///< Collator for the language currently in use.
+#endif /* WITH_ICU_I18N */
 
 /**
  * Copies characters from one buffer to another.
@@ -862,9 +869,6 @@ int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garb
 }
 
 #ifdef WITH_ICU_I18N
-
-#include <unicode/stsearch.h>
-
 /**
  * Search if a string is contained in another string using the current locale.
  *
@@ -875,24 +879,49 @@ int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garb
  */
 static int ICUStringContains(const std::string_view str, const std::string_view value, bool case_insensitive)
 {
-	if (_current_collator) {
-		std::unique_ptr<icu::RuleBasedCollator> coll(dynamic_cast<icu::RuleBasedCollator *>(_current_collator->clone()));
-		if (coll) {
-			UErrorCode status = U_ZERO_ERROR;
-			coll->setStrength(case_insensitive ? icu::Collator::SECONDARY : icu::Collator::TERTIARY);
-			coll->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_OFF, status);
-
-			auto u_str = icu::UnicodeString::fromUTF8(icu::StringPiece(str.data(), str.size()));
-			auto u_value = icu::UnicodeString::fromUTF8(icu::StringPiece(value.data(), value.size()));
-			icu::StringSearch u_searcher(u_value, u_str, coll.get(), nullptr, status);
-			if (U_SUCCESS(status)) {
-				auto pos = u_searcher.first(status);
-				if (U_SUCCESS(status)) return pos != USEARCH_DONE ? 1 : 0;
-			}
+	icu::RuleBasedCollator *coll = case_insensitive ? _current_collator_search_case_insensitive.get() : _current_collator_search.get();
+	if (coll != nullptr) {
+		UErrorCode status = U_ZERO_ERROR;
+		auto u_str = icu::UnicodeString::fromUTF8(icu::StringPiece(str.data(), str.size()));
+		auto u_value = icu::UnicodeString::fromUTF8(icu::StringPiece(value.data(), value.size()));
+		icu::StringSearch u_searcher(u_value, u_str, coll, nullptr, status);
+		if (U_SUCCESS(status)) {
+			auto pos = u_searcher.first(status);
+			if (U_SUCCESS(status)) return pos != USEARCH_DONE ? 1 : 0;
 		}
 	}
 
 	return -1;
+}
+
+static std::unique_ptr<icu::RuleBasedCollator> MakeICUSearchCollator(icu::Collator::ECollationStrength strength)
+{
+	UErrorCode status = U_ZERO_ERROR;
+	std::unique_ptr<icu::RuleBasedCollator> coll(dynamic_cast<icu::RuleBasedCollator *>(_current_collator->clone()));
+	if (coll) {
+		coll->setStrength(strength);
+		coll->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_OFF, status);
+		if (U_FAILURE(status)) coll.reset();
+	}
+	return coll;
+}
+
+void ICUSetupCollators(const char *iso_code)
+{
+	/* Create a collator instance for our current locale. */
+	UErrorCode status = U_ZERO_ERROR;
+	_current_collator.reset(icu::Collator::createInstance(icu::Locale(iso_code), status));
+	/* Sort number substrings by their numerical value. */
+	if (_current_collator) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
+	/* Avoid using the collator if it is not correctly set. */
+	if (U_FAILURE(status)) {
+		_current_collator.reset();
+	}
+
+	if (_current_collator) {
+		_current_collator_search = MakeICUSearchCollator(icu::Collator::TERTIARY);
+		_current_collator_search_case_insensitive = MakeICUSearchCollator(icu::Collator::SECONDARY);
+	}
 }
 #endif /* WITH_ICU_I18N */
 

@@ -10,9 +10,6 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
-#ifdef WITH_ICU_I18N
-#include <unicode/coll.h>
-#endif /* WITH_ICU_I18N */
 #include "strings_type.h"
 #include <vector>
 
@@ -102,10 +99,6 @@ extern LanguageList _languages;
 
 /** The currently loaded language. */
 extern const LanguageMetadata *_current_language;
-
-#ifdef WITH_ICU_I18N
-extern std::unique_ptr<icu::Collator> _current_collator;
-#endif /* WITH_ICU_I18N */
 
 bool ReadLanguagePack(const LanguageMetadata *lang);
 const LanguageMetadata *GetLanguage(uint8_t newgrflangid);
