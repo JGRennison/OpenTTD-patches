@@ -800,8 +800,13 @@ static std::string_view SkipGarbage(std::string_view str)
 	return {first, last};
 }
 
-static int _strnatcmpIntl(const char *s1, const char *s2) {
-	while (*s1 && *s2) {
+static int StrNaturalCompareIntl(std::string_view str1, std::string_view str2)
+{
+	const char *s1 = str1.data();
+	const char *s2 = str2.data();
+	const char *s1_end = s1 + str1.size();
+	const char *s2_end = s2 + str2.size();
+	while (s1 != s1_end && s2 != s2_end) {
 		if (IsInsideBS(*s1, '0', 10) && IsInsideBS(*s2, '0', 10)) {
 			uint n1 = 0;
 			uint n2 = 0;
@@ -822,9 +827,11 @@ static int _strnatcmpIntl(const char *s1, const char *s2) {
 			s2++;
 		}
 	}
-	if (*s1 && !*s2) {
+	const bool s1_remaining = (s1 != s1_end);
+	const bool s2_remaining = (s2 != s2_end);
+	if (s1_remaining && !s2_remaining) {
 		return 1;
-	} else if (*s2 && !*s1) {
+	} else if (s2_remaining && !s1_remaining) {
 		return -1;
 	} else {
 		return 0;
@@ -865,7 +872,7 @@ int StrNaturalCompare(std::string_view s1, std::string_view s2, bool ignore_garb
 #endif
 
 	/* Do a manual natural sort comparison if ICU is missing or if we cannot create a collator. */
-	return _strnatcmpIntl(s1.data(), s2.data());
+	return StrNaturalCompareIntl(s1, s2);
 }
 
 #ifdef WITH_ICU_I18N
