@@ -508,6 +508,7 @@ void AddArticulatedParts(Vehicle *first)
 				v = s;
 
 				s->direction = DIR_N;
+				s->rotation = s->direction;
 				s->x_pos = 0;
 				s->y_pos = 0;
 				s->z_pos = 0;
