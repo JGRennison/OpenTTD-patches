@@ -15,6 +15,7 @@
 #include "error_func.h"
 #include "string_func.h"
 #include "string_base.h"
+#include "stringfilter_type.h"
 
 #include "table/control_codes.h"
 
@@ -987,6 +988,101 @@ void ICUSetupCollators(const char *iso_code)
 	CaseInsensitiveStringView ci_value{ value.data(), value.size() };
 	return ci_str.find(ci_value) != CaseInsensitiveStringView::npos;
 }
+
+#ifdef WITH_LOCALE_STRING
+struct LocaleString {
+#ifdef WITH_ICU_I18N
+	icu::UnicodeString icu_str;
+#endif
+#ifdef _WIN32
+	UniqueBuffer<wchar_t> win32_str;
+#endif
+};
+
+LocaleStringList::LocaleStringList() = default;
+LocaleStringList::LocaleStringList(LocaleStringList &&) = default;
+LocaleStringList::~LocaleStringList() = default;
+LocaleStringList& LocaleStringList::operator = (LocaleStringList&&) = default;
+
+void StringFilterSetupLocale(StringFilter &sf)
+{
+	sf.locale_words.items.clear();
+	if (!sf.locale_aware) return;
+	sf.locale_words.items.reserve(sf.word_index.size());
+	for (const StringFilter::WordState &ws : sf.word_index) {
+#ifdef WITH_ICU_I18N
+		sf.locale_words.items.emplace_back(icu::UnicodeString::fromUTF8(icu::StringPiece(ws.word.data(), ws.word.size())));
+#endif
+#ifdef _WIN32
+		extern UniqueBuffer<wchar_t> Win32LocaleStringForStringContains(std::string_view str);
+		sf.locale_words.items.emplace_back(Win32LocaleStringForStringContains(ws.word));
+#endif
+	}
+}
+
+bool StringFilterAddLocaleLine(StringFilter &sf, std::string_view str)
+{
+	const bool match_case = sf.case_sensitive != nullptr && *sf.case_sensitive;
+
+	auto found_match = [&](StringFilter::WordState &ws) {
+		ws.match = true;
+		sf.word_matches++;
+	};
+
+	auto fallback_match = [&](StringFilter::WordState &ws) {
+		if (match_case) {
+			if (str.find(ws.word) != std::string_view::npos) found_match(ws);
+		} else {
+			if (StrContainsIgnoreCase(str, ws.word)) found_match(ws);
+		}
+	};
+
+#ifdef WITH_ICU_I18N
+	icu::RuleBasedCollator *coll = match_case ? _current_collator_search.get() : _current_collator_search_case_insensitive.get();
+	if (coll == nullptr) return false;
+
+	auto u_str = icu::UnicodeString::fromUTF8(icu::StringPiece(str.data(), str.size()));
+	for (size_t i = 0; i < sf.word_index.size(); i++) {
+		StringFilter::WordState &ws = sf.word_index[i];
+		if (ws.match) continue;
+		UErrorCode status = U_ZERO_ERROR;
+		icu::StringSearch u_searcher(sf.locale_words.items[i].icu_str, u_str, coll, nullptr, status);
+		if (U_SUCCESS(status)) {
+			auto pos = u_searcher.first(status);
+			if (U_SUCCESS(status)) {
+				if (pos != USEARCH_DONE) found_match(ws);
+				continue;
+			}
+		}
+		/* Fall back to standard search */
+		fallback_match(ws);
+	}
+	return true;
+#endif
+#ifdef _WIN32
+	extern UniqueBuffer<wchar_t> Win32LocaleStringForStringContains(std::string_view str);
+	extern int Win32StringContains(std::span<const wchar_t> str, std::span<const wchar_t> value, bool case_insensitive);
+	UniqueBuffer<wchar_t> u_str = Win32LocaleStringForStringContains(str);
+	if (u_str.size() == 0) return false;
+
+	for (size_t i = 0; i < sf.word_index.size(); i++) {
+		StringFilter::WordState &ws = sf.word_index[i];
+		if (ws.match) continue;
+		const UniqueBuffer<wchar_t> &word = sf.locale_words.items[i].win32_str;
+		int result = Win32StringContains(std::span<const wchar_t>{u_str.get(), u_str.size()}, std::span<const wchar_t>{word.get(), word.size()}, !match_case);
+		if (result >= 0) {
+			if (result > 0) found_match(ws);
+			continue;
+		}
+		/* Fall back to standard search */
+		fallback_match(ws);
+	}
+	return true;
+#endif
+
+	return false;
+}
+#endif /* WITH_LOCALE_STRING */
 
 /**
  * Convert a single hex-nibble to a byte.

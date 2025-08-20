@@ -63,4 +63,17 @@ DECLARE_ENUM_AS_BIT_SET(StringValidationSettings)
 /** Type for a list of strings. */
 typedef std::vector<std::string> StringList;
 
+#if defined(WITH_ICU_I18N) || (defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN))
+#define WITH_LOCALE_STRING
+
+struct LocaleStringList {
+	std::vector<struct LocaleString> items;
+
+	LocaleStringList();
+	LocaleStringList(LocaleStringList &&);
+	~LocaleStringList();
+	LocaleStringList& operator = (LocaleStringList&&);
+};
+#endif /* defined(WITH_ICU_I18N) || (defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN)) */
+
 #endif /* STRING_TYPE_H */

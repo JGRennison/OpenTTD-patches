@@ -10,6 +10,7 @@
 #ifndef STRINGFILTER_TYPE_H
 #define STRINGFILTER_TYPE_H
 
+#include "string_type.h"
 #include "strings_type.h"
 #include <vector>
 
@@ -41,6 +42,13 @@ private:
 
 	const bool *case_sensitive;                    ///< Match case-sensitively (usually a static variable).
 	bool locale_aware;                             ///< Match words using the current locale.
+
+#ifdef WITH_LOCALE_STRING
+	LocaleStringList locale_words;
+
+	friend void StringFilterSetupLocale(StringFilter &sf);
+	friend bool StringFilterAddLocaleLine(StringFilter &sf, std::string_view str);
+#endif
 
 public:
 	/**

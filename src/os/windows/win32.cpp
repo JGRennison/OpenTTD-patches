@@ -644,6 +644,21 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 	return CompareString(MAKELCID(_current_language->winlangid, SORT_DEFAULT), NORM_IGNORECASE, str_s1.get(), len_s1, str_s2.get(), len_s2);
 }
 
+typedef int (WINAPI *PFNFINDNLSSTRINGEX)(LPCWSTR, DWORD, LPCWSTR, int, LPCWSTR, int, LPINT, LPNLSVERSIONINFO, LPVOID, LPARAM);
+static PFNFINDNLSSTRINGEX GetFindNLSStringEx()
+{
+	static PFNFINDNLSSTRINGEX _FindNLSStringEx = nullptr;
+	static bool first_time = true;
+
+	if (first_time) {
+		static LibraryLoader _kernel32("Kernel32.dll");
+		_FindNLSStringEx = _kernel32.GetFunction("FindNLSStringEx");
+		first_time = false;
+	}
+
+	return _FindNLSStringEx;
+}
+
 /**
  * Search if a string is contained in another string using the current locale.
  *
@@ -654,15 +669,7 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
  */
 int Win32StringContains(const std::string_view str, const std::string_view value, bool case_insensitive)
 {
-	typedef int (WINAPI *PFNFINDNLSSTRINGEX)(LPCWSTR, DWORD, LPCWSTR, int, LPCWSTR, int, LPINT, LPNLSVERSIONINFO, LPVOID, LPARAM);
-	static PFNFINDNLSSTRINGEX _FindNLSStringEx = nullptr;
-	static bool first_time = true;
-
-	if (first_time) {
-		static LibraryLoader _kernel32("Kernel32.dll");
-		_FindNLSStringEx = _kernel32.GetFunction("FindNLSStringEx");
-		first_time = false;
-	}
+	PFNFINDNLSSTRINGEX _FindNLSStringEx = GetFindNLSStringEx();
 
 	if (_FindNLSStringEx != nullptr) {
 		int len_str = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), nullptr, 0);
@@ -680,6 +687,30 @@ int Win32StringContains(const std::string_view str, const std::string_view value
 	}
 
 	return -1; // Failure indication.
+}
+
+UniqueBuffer<wchar_t> Win32LocaleStringForStringContains(std::string_view str)
+{
+	PFNFINDNLSSTRINGEX _FindNLSStringEx = GetFindNLSStringEx();
+
+	if (_FindNLSStringEx == nullptr) return {};
+
+	int len_str = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), nullptr, 0);
+	if (len_str == 0) return {};
+
+	UniqueBuffer<wchar_t> buffer((size_t)len_str);
+	MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), buffer.get(), len_str);
+
+	return buffer;
+}
+
+int Win32StringContains(std::span<const wchar_t> str, std::span<const wchar_t> value, bool case_insensitive)
+{
+	PFNFINDNLSSTRINGEX _FindNLSStringEx = GetFindNLSStringEx();
+
+	if (_FindNLSStringEx == nullptr) return -1;
+
+	return _FindNLSStringEx(_cur_iso_locale, FIND_FROMSTART | (case_insensitive ? LINGUISTIC_IGNORECASE : 0), str.data(), str.size(), value.data(), value.size(), nullptr, nullptr, nullptr, 0) >= 0 ? 1 : 0;
 }
 
 static DWORD main_thread_id;

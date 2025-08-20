@@ -82,6 +82,10 @@ void StringFilter::SetFilterTerm(std::string_view str)
 
 	/* Add the last word of the string. */
 	add_word();
+
+#ifdef WITH_LOCALE_STRING
+	StringFilterSetupLocale(*this);
+#endif
 }
 
 /**
@@ -105,6 +109,13 @@ void StringFilter::ResetState()
  */
 void StringFilter::AddLine(std::string_view str)
 {
+	if (str.empty() || this->GetState()) return;
+#ifdef WITH_LOCALE_STRING
+	if (this->locale_aware) {
+		if (StringFilterAddLocaleLine(*this, str)) return;
+	}
+#endif
+
 	bool match_case = this->case_sensitive != nullptr && *this->case_sensitive;
 	for (WordState &ws : this->word_index) {
 		if (!ws.match) {
