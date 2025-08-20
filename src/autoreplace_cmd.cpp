@@ -710,6 +710,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 			ReplaceChainItem &replacement = replacements.emplace_back(w, nullptr, 0);
 
 			CommandCost ret = BuildReplacementVehicle(replacement.old_veh, &replacement.new_veh, true, flags, same_type_only);
+			replacement.cost = ret.GetCost();
 			cost.AddCost(std::move(ret));
 			if (cost.Failed()) break;
 
