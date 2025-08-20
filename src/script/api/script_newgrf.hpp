@@ -51,7 +51,7 @@ public:
 	 * @pre ScriptNewGRF::IsLoaded(grfid).
 	 * @return The name of the NewGRF or null if no name is defined.
 	 */
-	static std::optional<std::string> GetName(SQInteger grfid);
+	static std::optional<std::string_view> GetName(SQInteger grfid);
 };
 
 #endif /* SCRIPT_NEWGRF_HPP */

@@ -886,7 +886,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				int i = 0;
 				for (const auto &c : this->actives) {
 					if (this->vscroll->IsVisible(i)) {
-						std::string text = c->GetName();
+						std::string_view text = c->GetName();
 						bool h = (this->active_sel == c.get());
 						PaletteID pal = this->GetPalette(*c);
 
@@ -926,7 +926,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				for (auto it = first; it != last; ++it) {
 					const GRFConfig *c = *it;
 					bool h = (c == this->avail_sel);
-					std::string text = c->GetName();
+					std::string_view text = c->GetName();
 
 					if (h) GfxFillRect(br.left, tr.top, br.right, tr.top + step_height - 1, PC_DARK_BLUE);
 					DrawString(tr.left, tr.right, tr.top + offset_y, std::move(text), h ? TC_WHITE : TC_SILVER);
@@ -981,7 +981,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_OPEN_URL: {
 				const GRFConfig *c = (this->avail_sel == nullptr) ? this->active_sel : this->avail_sel;
 				auto url = c->GetURL();
-				if (url.has_value()) OpenBrowser(std::move(*url));
+				if (url.has_value()) OpenBrowser(std::string(*url));
 				break;
 			}
 

@@ -41,7 +41,7 @@ ScriptNewGRFList::ScriptNewGRFList()
 	return 0;
 }
 
-/* static */ std::optional<std::string> ScriptNewGRF::GetName(SQInteger grfid)
+/* static */ std::optional<std::string_view> ScriptNewGRF::GetName(SQInteger grfid)
 {
 	grfid = std::byteswap(GB(grfid, 0, 32)); // Match people's expectations.
 
