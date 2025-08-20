@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.66-rc1 (2025-08-21)
+* Fix crash when GS/AI script exceeds maximum memory allocation limit.
+* Fix crash when using picker tool on road stops in the scenario editor.
+* Fix placement of cacti on deserts in the tropic climate.
+* Template-based train replacement:
+  * Fix the engine renew money setting not being ignored when using infinite money.
+  * Fix replacement failures with train GRFs which use random vehicle flipping.
+* Fix not being able to set values for counter/slot programmable pre-signal conditionals.
+* Fix signals on tunnels/bridges not being counted for the purpose of special signal penalties on following signals.
+* Fix map height limit setting when loading ChillPP savegames.
+* Add order list JSON file export and import.
+* Add setting to change the vehicle maximum reliability floor.
+* Allow changing the vehicle route overlay colour per shared order group.
+* Allow removing disallowed supply status from station cargoes with no rating.
+* Bump trunk base from commit 95bfd68341e8f05dcba7827e89a7804f2714a2e6 to commit 9feaa6b7bc59f2a79be3a1d1893d424fef23692e.
+
 ### v0.65.4 (2025-06-25)
 * Fix crash when waypoint tooltips are enabled and the waypoint has been renamed to text with zero size.
 * Fix upgrade button in NewGRF window.
