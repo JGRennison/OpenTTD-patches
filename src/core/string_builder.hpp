@@ -39,10 +39,10 @@ public:
 	StringBuilder(fmt::basic_memory_buffer<char, SIZE, Allocator> &buffer) : string(&buffer) {}
 
 	/**
-	 * Create the builder of an external format_to_buffer or subtype.
+	 * Create the builder of an external format_target or subtype.
 	 * @param buffer The buffer to write to.
 	 */
-	StringBuilder(format_to_buffer &buffer) : string(&buffer.GetTargetBuffer()) {}
+	StringBuilder(format_target &buffer) : string(&buffer.GetTargetFmtBuffer()) {}
 
 	/**
 	 * Only for internal use by AppendStringWithArgsInPlaceFixed.

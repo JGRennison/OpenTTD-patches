@@ -141,8 +141,6 @@ protected:
 	format_target(fmt::detail::buffer<char> &buffer, uint8_t flags) : target(buffer), flags(flags) {}
 	~format_target() = default;
 
-	fmt::detail::buffer<char> &GetTargetFmtBuffer() const { return this->target; }
-
 	void append_utf8_impl(char32_t c);
 
 public:
@@ -233,6 +231,9 @@ public:
 
 	/** Only for specialised uses */
 	bool is_format_to_fixed_subtype() const { return (this->flags & FL_FIXED) != 0; }
+
+	/** Only for specialised uses */
+	fmt::detail::buffer<char> &GetTargetFmtBuffer() const { return this->target; }
 };
 
 /**
@@ -245,9 +246,6 @@ struct format_to_buffer : public format_target {
 	/** Only for internal use */
 	struct format_to_buffer_internal_tag{};
 	format_to_buffer(format_to_buffer_internal_tag tag, fmt::detail::buffer<char> &buffer, uint8_t flags) : format_target(buffer, 0) {}
-
-	/** Only for specialised uses */
-	fmt::detail::buffer<char> &GetTargetBuffer() const { return this->GetTargetFmtBuffer(); }
 };
 
 namespace format_detail {
