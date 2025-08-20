@@ -4291,6 +4291,9 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 				/* Scheduled dispatch opcodes follow */
 
 				case BulkOrderOp::ClearSchedules:
+					for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+						u->dispatch_records.clear();
+					}
 					if (v->GetNumOrders() == 0) {
 						/* No orders, fast path */
 						v->orders->GetScheduledDispatchScheduleSet().clear();
