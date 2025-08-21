@@ -1712,6 +1712,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet
 		/* Display change */
 		if (NetworkMakeClientNameUnique(client_name)) {
 			NetworkTextMessage(NETWORK_ACTION_NAME_CHANGE, CC_DEFAULT, false, ci->client_name, client_name);
+			Debug(net, 3, "[{}] Client #{} ({}) changed name from '{}' to '{}', pubkey: {}",
+					ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), ci->client_name, client_name, this->GetPeerPublicKey());
 			ci->client_name = std::move(client_name);
 			NetworkUpdateClientInfo(ci->client_id);
 		}
