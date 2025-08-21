@@ -38,56 +38,141 @@
 
 static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
+struct OrderSerialisationFieldNames {
+	static constexpr char VERSION[]            = "version";            ///< int
+	static constexpr char SOURCE[]             = "source";             ///< string      OTTD version that generated the list
+	static constexpr char VEHICLE_TYPE[]       = "vehicle-type";       ///< enum
+	static constexpr char VEHICLE_NAME[]       = "vehicle-name";       ///< string      Export-only, name of first vehicle in the orderlist
+	static constexpr char VEHICLE_GROUP_NAME[] = "vehicle-group-name"; ///< string      Export-only, name of group of first vehicle in the orderlist
+
+	struct GameProperties {
+		static constexpr char OBJKEY[]                = "game-properties";
+
+		static constexpr char DEFAULT_STOP_LOCATION[] = "default-stop-location"; ///< enum
+		static constexpr char NEW_NONSTOP[]           = "new-nonstop";           ///< bool
+		static constexpr char TICKS_PER_MINUTE[]      = "ticks-per-minute";      ///< int     Incompatible with 'ticks_per_day'
+		static constexpr char TICKS_PER_DAY[]         = "ticks-per-day";         ///< int     Incompatible with 'ticks_per_minute'
+	};
+
+	struct Schedules {
+		static constexpr char OBJKEY[] = "schedules";
+
+		/** <array<int|object>, when item is an int the value rapresents the offset, when it's an object the offset can be found in the apropriate field */
+		struct Slots {
+			static constexpr char OBJKEY[]      = "slots";
+
+			static constexpr char OFFSET[]      = "offset";      ///< int     Required
+			static constexpr char TAGS[]        = "tags";        ///< array<int>
+			static constexpr char RE_USE_SLOT[] = "re-use-slot"; ///< bool
+		};
+
+		static constexpr char DURATION[]         = "duration";         ///< int     Required
+		static constexpr char NAME[]             = "name";             ///< string
+		static constexpr char MAX_DELAY[]        = "max-delay";        ///< int
+		static constexpr char RE_USE_ALL_SLOTS[] = "re-use-all-slots"; ///< bool
+		static constexpr char RENAMED_TAGS[]     = "renamed-tags";     ///< string
+	};
+
+	struct Orders {
+		static constexpr char OBJKEY[]                      = "orders";
+
+		static constexpr char TYPE[]                        = "type";                        ///< enum    Required
+		static constexpr char DESTINATION_ID[]              = "destination-id";              ///< int     Unique in-game destination-id
+		static constexpr char DESTINATION_NAME[]            = "destination-name";            ///< string  Export-only
+		static constexpr char DESTINATION_LOCATION[]        = "destination-location";        ///< object  XY tile coordinate
+		static constexpr char DEPOT_ID[]                    = "depot-id";                    ///< int|string  Unique in-game destination-id or "nearest"
+		static constexpr char DEPOT_ACTION[]                = "depot-action";                ///< enum
+		static constexpr char WAYPOINT_REVERSE[]            = "waypoint-reverse";            ///< bool
+		static constexpr char COLOUR[]                      = "colour";                      ///< enum
+		static constexpr char TRAVEL_TIME[]                 = "travel-time";                 ///< int
+		static constexpr char MAX_SPEED[]                   = "max-speed";                   ///< int
+		static constexpr char WAIT_TIME[]                   = "wait-time";                   ///< int
+		static constexpr char STOPPING_PATTERN[]            = "stopping-pattern";            ///< enum
+		static constexpr char STOP_LOCATION[]               = "stop-location";               ///< enum
+		static constexpr char STOP_DIRECTION[]              = "stop-direction";              ///< enum
+		static constexpr char WAYPOINT_ACTION[]             = "waypoint-action";
+		static constexpr char LOAD[]                        = "load";                        ///< enum
+		static constexpr char UNLOAD[]                      = "unload";                      ///< enum
+		static constexpr char LOAD_BY_CARGO_TYPE[]          = "load-by-cargo-type";          ///< object  Contains "load" and "unload" settings for specific cargo-ids
+		static constexpr char COUNTER_ID[]                  = "counter-id";                  ///< int
+		static constexpr char SLOT_ID[]                     = "slot-id";                     ///< int
+		static constexpr char SLOT_GROUP_ID[]               = "slot-group-id";               ///< int
+		static constexpr char LABEL_TEXT[]                  = "label-text";                  ///< string
+		static constexpr char LABEL_SUBTYPE[]               = "label-subtype";               ///< enum
+		static constexpr char COUNTER_OPERATION[]           = "counter-operation";           ///< int
+		static constexpr char COUNTER_VALUE[]               = "counter-value";               ///< int     Value to be applied to "counter-operation"
+		static constexpr char SLOT_ACTION[]                 = "slot-action";                 ///< int
+		static constexpr char JUMP_TAKEN_TRAVEL_TIME[]      = "jump-taken-travel-time";      ///< int
+		static constexpr char CONDITION_VARIABLE[]          = "condition-variable";          ///< enum    Required when "order-type" is OT_CONDITIONAL
+		static constexpr char CONDITION_COMPARATOR[]        = "condition-comparator";        ///< enum
+		static constexpr char JUMP_TO[]                     = "jump-to";                     ///< string  Jump-label to jump to
+		static constexpr char JUMP_FROM[]                   = "jump-from";                   ///< string  Jump-label to jump from
+		static constexpr char CONDITION_STATION[]           = "condition-station";           ///< int     Destination-id for a station used as a data source for a conditional order
+		static constexpr char CONDITION_DISPATCH_SCHEDULE[] = "condition-dispatch-schedule"; ///< int
+		static constexpr char CONDITION_SLOT_SOURCE[]       = "condition-slot-source";       ///< enum    Source of the slot that needs to be checked
+		static constexpr char CONDITION_CHECK_SLOT[]        = "condition-check-slot";        ///< string  Incompatible with "condition-check-tag"     "first" or "last"
+		static constexpr char CONDITION_CHECK_TAG[]         = "condition-check-tag";         ///< int     Incompatible with "condition-check-slot"    scheduled dispatch tag number [1-4]
+		static constexpr char CONDITION_VALUE1[]            = "condition-value1";            ///< int     Raw data
+		static constexpr char CONDITION_VALUE2[]            = "condition-value2";            ///< int     Raw data
+		static constexpr char CONDITION_VALUE3[]            = "condition-value3";            ///< int     Raw data
+		static constexpr char CONDITION_VALUE4[]            = "condition-value4";            ///< int     Raw data
+		static constexpr char REFIT_CARGO[]                 = "refit-cargo";                 ///< int
+		static constexpr char SCHEDULE_INDEX[]              = "schedule-index";              ///< int
+	};
+};
+
 static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 {
+	using OFName = OrderSerialisationFieldNames::Orders;
+
 	nlohmann::ordered_json json;
 
-	json["type"] = o.GetType();
+	json[OFName::TYPE] = o.GetType();
 
 	if (o.IsType(OT_GOTO_WAYPOINT) || o.IsType(OT_GOTO_STATION) || (o.IsType(OT_LABEL) && IsDestinationOrderLabelSubType(o.GetLabelSubType()))) {
-		json["destination-id"] = o.GetDestination().ToStationID().base();
+		json[OFName::DESTINATION_ID] = o.GetDestination().ToStationID().base();
 
 		const BaseStation *station = BaseStation::GetIfValid(o.GetDestination().ToStationID());
 		if (station != nullptr) {
-			json["destination-name"] = station->GetCachedName();
-			json["destination-location"]["X"] = TileX(station->xy);
-			json["destination-location"]["Y"] = TileY(station->xy);
+			json[OFName::DESTINATION_NAME] = station->GetCachedName();
+			json[OFName::DESTINATION_LOCATION]["X"] = TileX(station->xy);
+			json[OFName::DESTINATION_LOCATION]["Y"] = TileY(station->xy);
 		}
 	} else if (o.IsType(OT_GOTO_DEPOT)) {
 		if (o.GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
-			json["depot-id"] = "nearest";
+			json[OFName::DEPOT_ID] = "nearest";
 		} else {
-			json["depot-id"] = o.GetDestination().ToDepotID().base();
+			json[OFName::DEPOT_ID] = o.GetDestination().ToDepotID().base();
 		}
 
 		if (o.GetDepotActionType() & ODATFB_SELL) {
-			json["depot-action"] = DA_SELL;
+			json[OFName::DEPOT_ACTION] = DA_SELL;
 		} else if (o.GetDepotActionType() & ODATFB_UNBUNCH) {
-			json["depot-action"] = DA_UNBUNCH;
+			json[OFName::DEPOT_ACTION] = DA_UNBUNCH;
 		} else if (o.GetDepotActionType() & ODATFB_HALT) {
-			json["depot-action"] = DA_STOP;
+			json[OFName::DEPOT_ACTION] = DA_STOP;
 		} else if (o.GetDepotActionType() & ODATF_SERVICE_ONLY) {
-			json["depot-action"] = DA_SERVICE;
+			json[OFName::DEPOT_ACTION] = DA_SERVICE;
 		}
 	}
 
 	if (o.GetColour() != INVALID_COLOUR) {
-		json["colour"] = o.GetColour();
+		json[OFName::COLOUR] = o.GetColour();
 	}
 
 	if (o.IsGotoOrder() || o.GetType() == OT_CONDITIONAL) {
 		if (o.IsTravelTimetabled()) {
-			json["travel-time"] = o.GetTravelTime();
+			json[OFName::TRAVEL_TIME] = o.GetTravelTime();
 		}
 
 		if (o.GetMaxSpeed() != UINT16_MAX) {
-			json["max-speed"] = o.GetMaxSpeed();
+			json[OFName::MAX_SPEED] = o.GetMaxSpeed();
 		}
 	}
 
 	if (o.IsGotoOrder()) {
 		if (o.IsWaitTimetabled()) {
-			json["wait-time"] = o.GetWaitTime();
+			json[OFName::WAIT_TIME] = o.GetWaitTime();
 		}
 
 		if (vt == VEH_ROAD || vt == VEH_TRAIN) {
@@ -100,34 +185,34 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			}
 
 			if (o.GetNonStopType() != default_non_stop_flags) {
-				json["stopping-pattern"] = o.GetNonStopType();
+				json[OFName::STOPPING_PATTERN] = o.GetNonStopType();
 			}
 		}
 	}
 
 	if (o.IsType(OT_GOTO_STATION)) {
 		if (o.GetLoadType() != OLFB_CARGO_TYPE_LOAD && o.GetLoadType() != OLF_LOAD_IF_POSSIBLE) {
-			json["load"] = o.GetLoadType();
+			json[OFName::LOAD] = o.GetLoadType();
 		}
 
 		if (o.GetUnloadType() != OUFB_CARGO_TYPE_UNLOAD && o.GetUnloadType() != OUF_UNLOAD_IF_POSSIBLE) {
-			json["unload"] = o.GetUnloadType();
+			json[OFName::UNLOAD] = o.GetUnloadType();
 		}
 
 		for (CargoType i = 0; i < NUM_CARGO; i++) {
 			if (o.GetLoadType() == OLFB_CARGO_TYPE_LOAD && o.GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
-				json["load-by-cargo-type"][std::to_string(i)]["load"] = o.GetCargoLoadType(i);
+				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::LOAD] = o.GetCargoLoadType(i);
 			}
 
 			if (o.GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD && o.GetCargoUnloadType(i) != OUF_UNLOAD_IF_POSSIBLE) {
-				json["load-by-cargo-type"][std::to_string(i)]["unload"] = o.GetCargoUnloadType(i);
+				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::UNLOAD] = o.GetCargoUnloadType(i);
 			}
 		}
 
 		if (vt == VEH_TRAIN && o.GetStopLocation() != _settings_client.gui.stop_location) {
-			json["stop-location"] = o.GetStopLocation();
+			json[OFName::STOP_LOCATION] = o.GetStopLocation();
 		} else if (vt == VEH_ROAD && o.GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
-			json["stop-direction"] = o.GetRoadVehTravelDirection();
+			json[OFName::STOP_DIRECTION] = o.GetRoadVehTravelDirection();
 		}
 	}
 
@@ -138,44 +223,44 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	if (o.IsSlotCounterOrder()) {
 		DestinationID::BaseType id = o.GetDestination().ToSlotID().base();
 		switch (o.GetType()) {
-			case OT_COUNTER: json["counter-id"] = id; break;
-			case OT_SLOT: json["slot-id"] = id; break;
-			case OT_SLOT_GROUP: json["slot-group-id"] = id; break;
+			case OT_COUNTER: json[OFName::COUNTER_ID] = id; break;
+			case OT_SLOT: json[OFName::SLOT_ID] = id; break;
+			case OT_SLOT_GROUP: json[OFName::SLOT_GROUP_ID] = id; break;
 			default: break;
 		}
 	}
 
 	if (o.IsType(OT_LABEL)) {
 		if (o.GetLabelSubType() == OLST_TEXT) {
-			json["label-text"] = o.GetLabelText();
+			json[OFName::LABEL_TEXT] = o.GetLabelText();
 		} else {
-			json["label-subtype"] = o.GetLabelSubType();
+			json[OFName::LABEL_SUBTYPE] = o.GetLabelSubType();
 		}
 	}
 	if (o.IsType(OT_COUNTER)) {
-		json["counter-operation"] = o.GetCounterOperation();
-		json["counter-value"] = o.GetXData();
+		json[OFName::COUNTER_OPERATION] = o.GetCounterOperation();
+		json[OFName::COUNTER_VALUE] = o.GetXData();
 	}
 
 	if (o.IsType(OT_SLOT)) {
-		json["slot-action"] = o.GetSlotSubType();
+		json[OFName::SLOT_ACTION] = o.GetSlotSubType();
 	}
 
 	if (o.IsType(OT_CONDITIONAL)) {
 		if (o.IsWaitTimetabled()) {
-			json["jump-taken-travel-time"] = o.GetWaitTime();
+			json[OFName::JUMP_TAKEN_TRAVEL_TIME] = o.GetWaitTime();
 		}
 
-		json["condition-variable"] = o.GetConditionVariable();
+		json[OFName::CONDITION_VARIABLE] = o.GetConditionVariable();
 
 		if (o.GetConditionVariable() != OCV_UNCONDITIONALLY) {
-			json["condition-comparator"] = o.GetConditionComparator();
+			json[OFName::CONDITION_COMPARATOR] = o.GetConditionComparator();
 		}
 
-		json["jump-to"] = o.GetConditionSkipToOrder(); // NB: this gets overwritten later by the labeling system.
+		json[OFName::JUMP_TO] = o.GetConditionSkipToOrder(); // NB: this gets overwritten later by the labeling system.
 
 		if (ConditionVariableHasStationID(o.GetConditionVariable())) {
-			json["condition-station"] = o.GetConditionStationID().base();
+			json[OFName::CONDITION_STATION] = o.GetConditionStationID().base();
 		}
 
 		switch (o.GetConditionVariable()) {
@@ -183,19 +268,19 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 				break;
 
 			case OCV_DISPATCH_SLOT: {
-				json["condition-dispatch-schedule"] = o.GetConditionDispatchScheduleID();
+				json[OFName::CONDITION_DISPATCH_SCHEDULE] = o.GetConditionDispatchScheduleID();
 
 				const uint16_t value = o.GetConditionValue();
 
-				json["condition-slot-source"] = (OrderDispatchConditionSources)GB(o.GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
+				json[OFName::CONDITION_SLOT_SOURCE] = (OrderDispatchConditionSources)GB(o.GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
 
 				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 					case ODCM_FIRST_LAST:
-						json["condition-check-slot"] = HasBit(value, ODFLCB_LAST_SLOT) ? "first" : "last";
+						json[OFName::CONDITION_CHECK_SLOT] = HasBit(value, ODFLCB_LAST_SLOT) ? "first" : "last";
 						break;
 
 					case OCDM_TAG:
-						json["condition-check-tag"] = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1;
+						json[OFName::CONDITION_CHECK_TAG] = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1;
 						break;
 				}
 
@@ -208,23 +293,23 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			case OCV_TIMETABLE:
 			case OCV_VEH_IN_SLOT_GROUP:
 			case OCV_VEH_IN_SLOT:
-				json["condition-value1"] = o.GetXData();
+				json[OFName::CONDITION_VALUE1] = o.GetXData();
 				break;
 
 			case OCV_COUNTER_VALUE:
 			case OCV_CARGO_WAITING_AMOUNT:
 			case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
-				json["condition-value1"] = o.GetXDataLow();
+				json[OFName::CONDITION_VALUE1] = o.GetXDataLow();
 				break;
 
 			default:
-				json["condition-value1"] = o.GetConditionValue();
+				json[OFName::CONDITION_VALUE1] = o.GetConditionValue();
 				break;
 		}
 
 		switch (o.GetConditionVariable()) {
 			case OCV_COUNTER_VALUE:
-				json["condition-value2"] = o.GetXDataHigh();
+				json[OFName::CONDITION_VALUE2] = o.GetXDataHigh();
 				break;
 
 			case OCV_CARGO_LOAD_PERCENTAGE:
@@ -232,7 +317,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 			case OCV_TIME_DATE:
 			case OCV_TIMETABLE:
-				json["condition-value2"] = o.GetConditionValue();
+				json[OFName::CONDITION_VALUE2] = o.GetConditionValue();
 				break;
 
 			default:
@@ -240,20 +325,20 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 
 		if (ConditionVariableTestsCargoWaitingAmount(o.GetConditionVariable()) && o.HasConditionViaStation()) {
-			json["condition-value3"] = o.GetConditionViaStationID().base();
+			json[OFName::CONDITION_VALUE3] = o.GetConditionViaStationID().base();
 		}
 
 		if (o.GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
-			json["condition-value4"] = GB(o.GetXData2(), 16, 1);
+			json[OFName::CONDITION_VALUE4] = GB(o.GetXData2(), 16, 1);
 		}
 	}
 
 	if (o.IsRefit()) {
-		json["refit-cargo"] = o.GetRefitCargo();
+		json[OFName::REFIT_CARGO] = o.GetRefitCargo();
 	}
 
 	if (o.IsScheduledDispatchOrder(false)) {
-		json["schedule-index"] = o.GetDispatchScheduleIndex();
+		json[OFName::SCHEDULE_INDEX] = o.GetDispatchScheduleIndex();
 	}
 
 	return json;
@@ -261,30 +346,32 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 
 static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 {
+	using SFName = OrderSerialisationFieldNames::Schedules;
+
 	nlohmann::ordered_json json;
 
 	for (uint i = 0; i < DispatchSchedule::DEPARTURE_TAG_COUNT; i++) {
 		std::string_view rename = sd.GetSupplementaryName(SDSNT_DEPARTURE_TAG, i);
 		if (!rename.empty()) {
-			json["renamed-tags"][std::to_string(i + 1)] = rename;
+			json[SFName::RENAMED_TAGS][std::to_string(i + 1)] = rename;
 		}
 	}
 
-	nlohmann::ordered_json &slots_array = json["slots"];
+	nlohmann::ordered_json &slots_array = json[SFName::Slots::OBJKEY];
 	nlohmann::ordered_json slot_object{};
 	for (const auto &sd_slot : sd.GetScheduledDispatch()) {
 		if (HasBit(sd_slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) {
-			slot_object["re-use-slot"] = true;
+			slot_object[SFName::Slots::RE_USE_SLOT] = true;
 		}
 
 		for (uint i = 0; i <= (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); i++) {
 			if (HasBit(sd_slot.flags, DispatchSlot::SDSF_FIRST_TAG + i)) {
-				slot_object["tags"].push_back(std::to_string(i + 1));
+				slot_object[SFName::Slots::TAGS].push_back(i + 1);
 			}
 		}
 
 		if (slot_object.is_object()) {
-			slot_object["offset"] = sd_slot.offset;
+			slot_object[SFName::Slots::OFFSET] = sd_slot.offset;
 			slots_array.push_back(std::move(slot_object));
 			slot_object = {};
 		} else {
@@ -293,17 +380,17 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 	}
 
 	if (!sd.ScheduleName().empty()) {
-		json["name"] = sd.ScheduleName();
+		json[SFName::NAME] = sd.ScheduleName();
 	}
 
-	json["duration"] = sd.GetScheduledDispatchDuration();
+	json[SFName::DURATION] = sd.GetScheduledDispatchDuration();
 
 	if (sd.GetScheduledDispatchDelay() != 0) {
-		json["max-delay"] = sd.GetScheduledDispatchDelay();
+		json[SFName::MAX_DELAY] = sd.GetScheduledDispatchDelay();
 	}
 
 	if (sd.GetScheduledDispatchReuseSlots()) {
-		json["re-use-all-slots"] = true;
+		json[SFName::RE_USE_ALL_SLOTS] = true;
 	}
 
 	return json;
@@ -311,10 +398,12 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 
 std::string OrderListToJSONString(const OrderList *ol)
 {
+	using FName = OrderSerialisationFieldNames;
+
 	nlohmann::ordered_json json;
 
-	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
-	json["source"] = std::string(_openttd_revision);
+	json[FName::VERSION] = ORDERLIST_JSON_OUTPUT_VERSION;
+	json[FName::SOURCE] = std::string(_openttd_revision);
 
 	if (ol == nullptr) { // order list not initialised, return an empty result
 		json["error"] = "Orderlist was not initialised";
@@ -325,23 +414,23 @@ std::string OrderListToJSONString(const OrderList *ol)
 	VehicleType vt = veh->type;
 	const Group *group = Group::GetIfValid(veh->group_id);
 
-	json["vehicle-type"] = vt;
+	json[FName::VEHICLE_TYPE] = vt;
 	if (!veh->name.empty()) {
-		json["vehicle-name"] = veh->name;
+		json[FName::VEHICLE_NAME] = veh->name;
 	}
 	if (group != nullptr && !group->name.empty()) {
-		json["vehicle-group-name"] = group->name;
+		json[FName::VEHICLE_GROUP_NAME] = group->name;
 	}
 
-	auto &game_properties = json["game-properties"];
+	auto &game_properties = json[FName::GameProperties::OBJKEY];
 
-	game_properties["default-stop-location"] = (OrderStopLocation)_settings_client.gui.stop_location;
-	game_properties["new-nonstop"] = _settings_client.gui.new_nonstop;
+	game_properties[FName::GameProperties::DEFAULT_STOP_LOCATION] = (OrderStopLocation)_settings_client.gui.stop_location;
+	game_properties[FName::GameProperties::NEW_NONSTOP] = _settings_client.gui.new_nonstop;
 
 	if (_settings_time.time_in_minutes) {
-		game_properties["ticks-per-minute"] = _settings_time.ticks_per_minute;
+		game_properties[FName::GameProperties::TICKS_PER_MINUTE] = _settings_time.ticks_per_minute;
 	} else {
-		game_properties["ticks-per-day"] = TicksPerCalendarDay();
+		game_properties[FName::GameProperties::TICKS_PER_DAY] = TicksPerCalendarDay();
 	}
 
 	const auto &sd_data = ol->GetScheduledDispatchScheduleSet();
@@ -351,7 +440,7 @@ std::string OrderListToJSONString(const OrderList *ol)
 		for (const auto &sd : sd_data) {
 			schedules.push_back(DispatchScheduleToJSON(sd));
 		}
-		json["schedules"] = std::move(schedules);
+		json[FName::Schedules::OBJKEY] = std::move(schedules);
 	}
 
 	auto orders = nlohmann::ordered_json::array();
@@ -363,21 +452,21 @@ std::string OrderListToJSONString(const OrderList *ol)
 	std::string tag = fmt::format("{:04X}-", InteractiveRandomRange(0xFFFF));
 
 	for (auto &val : orders) {
-		if (auto jt = val.find("jump-to"); jt != val.end()) {
+		if (auto jt = val.find(FName::Orders::JUMP_TO); jt != val.end()) {
 			auto &target = orders[(VehicleOrderID)*jt];
 			std::string label;
-			if (auto jf = target.find("jump-from"); jf != target.end()) {
+			if (auto jf = target.find(FName::Orders::JUMP_FROM); jf != target.end()) {
 				label = (std::string)*jf;
 			} else {
 				label = (std::string)tag + std::to_string((VehicleOrderID)*jt);
-				target["jump-from"] = label;
+				target[FName::Orders::JUMP_FROM] = label;
 			}
 
 			*jt = std::move(label);
 		}
 	}
 
-	json["orders"] = std::move(orders);
+	json[FName::Orders::OBJKEY] = std::move(orders);
 
 	return json.dump(4);
 }
@@ -682,12 +771,14 @@ public:
 
 static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order> json_importer)
 {
+	using OFName = OrderSerialisationFieldNames::Orders;
+
 	const Vehicle *veh = json_importer.GetVehicle();
 	const nlohmann::json &json = json_importer.GetJson();
 
 	OrderType type;
 
-	if (!json_importer.TryGetField("type", type, JOIET_CRITICAL)) {
+	if (!json_importer.TryGetField(OFName::TYPE, type, JOIET_CRITICAL)) {
 		json_importer.cmd_buffer.op_serialiser.InsertFail();
 		return;
 	}
@@ -698,9 +789,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	/* Get basic order data required to build order. */
 	switch (type) {
 		case OT_LABEL:
-			json_importer.TryGetField("label-subtype", labelSubtype, JOIET_MAJOR);
+			json_importer.TryGetField(OFName::LABEL_SUBTYPE, labelSubtype, JOIET_MAJOR);
 			if (labelSubtype == OLST_DEPARTURES_REMOVE_VIA || labelSubtype == OLST_DEPARTURES_VIA) {
-				if (json_importer.TryGetField("destination-id", destination.edit_base(), JOIET_MAJOR)) {
+				if (json_importer.TryGetField(OFName::DESTINATION_ID, destination.edit_base(), JOIET_MAJOR)) {
 					destination = StationID(destination.edit_base());
 				}
 			}
@@ -709,19 +800,19 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 		case OT_GOTO_STATION:
 		case OT_GOTO_WAYPOINT:
 		case OT_IMPLICIT:
-			if (json_importer.TryGetField("destination-id", destination.edit_base(), JOIET_MAJOR)) {
+			if (json_importer.TryGetField(OFName::DESTINATION_ID, destination.edit_base(), JOIET_MAJOR)) {
 				destination = StationID(destination.edit_base());
 			}
 			break;
 
 		case OT_GOTO_DEPOT:
-			if (json_importer.TryGetField("depot-id", destination.edit_base(), JOIET_OK)) {
+			if (json_importer.TryGetField(OFName::DEPOT_ID, destination.edit_base(), JOIET_OK)) {
 				destination = DepotID(destination.edit_base());
 			} else {
 				destination = DepotID::Invalid();
-				if (auto it = json.find("depot-id"); it != json.end()) {
+				if (auto it = json.find(OFName::DEPOT_ID); it != json.end()) {
 					if (!it->is_string() || !(*it == "nearest")) {
-						json_importer.LogError("Value of 'depot-id' is invalid", JOIET_MAJOR);
+						json_importer.LogError(fmt::format("Value of '{}' is invalid", OFName::DEPOT_ID) , JOIET_MAJOR);
 					}
 				}
 			}
@@ -769,7 +860,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 		case OT_SLOT:
 			OrderSlotSubType osst;
-			if (!json_importer.TryGetField("slot-action", osst, JOIET_CRITICAL)) {
+			if (!json_importer.TryGetField(OFName::SLOT_ACTION, osst, JOIET_CRITICAL)) {
 				return;
 			}
 			switch (osst) {
@@ -801,25 +892,25 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.cmd_buffer.op_serialiser.Insert(new_order);
 	json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
 
-	json_importer.TryApplyModifyOrder<Colours>("colour", MOF_COLOUR, JOIET_MINOR);
+	json_importer.TryApplyModifyOrder<Colours>(OFName::COLOUR, MOF_COLOUR, JOIET_MINOR);
 
-	json_importer.TryApplyTimetableCommand("max-speed", MTF_TRAVEL_SPEED, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand("wait-time", MTF_WAIT_TIME, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand("travel-time", MTF_TRAVEL_TIME, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand("jump-taken-travel-time", MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand(OFName::MAX_SPEED, MTF_TRAVEL_SPEED, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand(OFName::WAIT_TIME, MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand(OFName::TRAVEL_TIME, MTF_TRAVEL_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand(OFName::JUMP_TAKEN_TRAVEL_TIME, MTF_WAIT_TIME, JOIET_MINOR);
 
-	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
-	json_importer.TryApplyModifyOrder<DiagDirection>("stop-direction", MOF_RV_TRAVEL_DIR, JOIET_MINOR);
+	json_importer.TryApplyModifyOrder<OrderStopLocation>(OFName::STOP_LOCATION, MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
+	json_importer.TryApplyModifyOrder<DiagDirection>(OFName::STOP_DIRECTION, MOF_RV_TRAVEL_DIR, JOIET_MINOR);
 
 	OrderWaypointFlags waypoint_flags{};
-	if (json_importer.TryGetField<bool>("waypoint-reverse", JOIET_MAJOR).value_or(false)) waypoint_flags.Set(OrderWaypointFlag::Reverse);
+	if (json_importer.TryGetField<bool>(OFName::WAYPOINT_REVERSE, JOIET_MAJOR).value_or(false)) waypoint_flags.Set(OrderWaypointFlag::Reverse);
 	if (waypoint_flags.Any()) json_importer.ModifyOrder(MOF_WAYPOINT_FLAGS, waypoint_flags.base());
 
 	if (type == OT_GOTO_DEPOT) {
-		json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
+		json_importer.TryApplyModifyOrder<OrderDepotAction>(OFName::DEPOT_ACTION, MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
 	}
 
-	json_importer.TryApplyModifyOrder<std::string>("label-text", MOF_LABEL_TEXT, JOIET_MINOR);
+	json_importer.TryApplyModifyOrder<std::string>(OFName::LABEL_TEXT, MOF_LABEL_TEXT, JOIET_MINOR);
 
 	bool is_default_non_stop = json_importer.import_settings.new_nonstop || _settings_game.order.nonstop_only;
 	OrderNonStopFlags default_non_stop;
@@ -828,11 +919,11 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	} else {
 		default_non_stop = is_default_non_stop ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE;
 	}
-	json_importer.TryApplyModifyOrder<OrderNonStopFlags>("stopping-pattern", MOF_NON_STOP, JOIET_MAJOR, default_non_stop);
+	json_importer.TryApplyModifyOrder<OrderNonStopFlags>(OFName::STOPPING_PATTERN, MOF_NON_STOP, JOIET_MAJOR, default_non_stop);
 
 	if (type == OT_CONDITIONAL) {
 		/* If we are parsing a conditional order, "condition-variable" is required. */
-		auto cvresult = json_importer.TryGetField<OrderConditionVariable>("condition-variable", JOIET_CRITICAL);
+		auto cvresult = json_importer.TryGetField<OrderConditionVariable>(OFName::CONDITION_VARIABLE, JOIET_CRITICAL);
 		if (!cvresult.has_value()) {
 			json_importer.cmd_buffer.op_serialiser.ReplaceWithFail();
 			return;
@@ -842,99 +933,97 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 		json_importer.ModifyOrder(MOF_COND_VARIABLE, condvar);
 		json_importer.cmd_buffer.op_serialiser.ReplaceOnFail();
 
-		json_importer.TryApplyModifyOrder<OrderConditionComparator>("condition-comparator", MOF_COND_COMPARATOR, JOIET_MAJOR);
-		json_importer.TryApplyModifyOrder<StationID>("condition-station", MOF_COND_STATION_ID, JOIET_MAJOR);
-		json_importer.TryApplyModifyOrder<uint16_t>("condition-value1", MOF_COND_VALUE, JOIET_MAJOR);
-		json_importer.TryApplyModifyOrder<uint16_t>("condition-value2", MOF_COND_VALUE_2, JOIET_MAJOR);
-		json_importer.TryApplyModifyOrder<uint16_t>("condition-value3", MOF_COND_VALUE_3, JOIET_MAJOR);
-		json_importer.TryApplyModifyOrder<uint16_t>("condition-value4", MOF_COND_VALUE_4, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<OrderConditionComparator>(OFName::CONDITION_COMPARATOR, MOF_COND_COMPARATOR, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<StationID>(OFName::CONDITION_STATION, MOF_COND_STATION_ID, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_VALUE1, MOF_COND_VALUE, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_VALUE2, MOF_COND_VALUE_2, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_VALUE3, MOF_COND_VALUE_3, JOIET_MAJOR);
+		json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_VALUE4, MOF_COND_VALUE_4, JOIET_MAJOR);
 
 		/* Non trivial cases for conditionals. */
 		if (condvar == OCV_DISPATCH_SLOT) {
 			uint16_t val = 0;
 
-			auto odscs = json_importer.TryGetField<OrderDispatchConditionSources>("condition-slot-source", JOIET_MAJOR);
+			auto odscs = json_importer.TryGetField<OrderDispatchConditionSources>(OFName::CONDITION_SLOT_SOURCE, JOIET_MAJOR);
 			if (odscs.has_value()) {
 				SB(val, ODCB_SRC_START, ODCB_SRC_COUNT, *odscs);
 			}
 
-			auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>("condition-check-slot", JOIET_MAJOR);
-			auto cond_dispatch_tag = json_importer.TryGetField<uint>("condition-check-tag", JOIET_MAJOR);
-
-			if (cond_dispatch_slot.has_value() && cond_dispatch_tag.has_value()) {
-				json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
+			auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>(OFName::CONDITION_CHECK_SLOT, JOIET_MAJOR);
+			auto cond_dispatch_tag = json_importer.TryGetField<uint>(OFName::CONDITION_CHECK_TAG, JOIET_MAJOR);
+			if (cond_dispatch_slot.has_value() == cond_dispatch_tag.has_value()) {
+				json_importer.LogError(fmt::format("Either '{}' or '{}' must be defined", OFName::CONDITION_CHECK_SLOT, OFName::CONDITION_CHECK_TAG), JOIET_MAJOR);
 			} else if (cond_dispatch_slot.has_value()) {
 				if (cond_dispatch_slot.value() == "last") {
 					SetBit(val, ODFLCB_LAST_SLOT);
 				} else if (cond_dispatch_slot.value() == "first") {
 					/* No bit needs to be set. */
 				} else {
-					json_importer.LogError("Invalid value in 'condition-check-slot'", JOIET_MAJOR);
+					json_importer.LogError(fmt::format("Invalid value in '{}'", OFName::CONDITION_CHECK_SLOT), JOIET_MAJOR);
 				}
 			} else if (cond_dispatch_tag.has_value()) {
 				SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
 				SB(val, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, cond_dispatch_tag.value() - 1);
-			} else {
-				json_importer.LogError("Either 'condition-check-slot' or 'condition-check-tag' must be defined", JOIET_MAJOR);
 			}
+
 			json_importer.ModifyOrder(MOF_COND_VALUE, val);
 
-			json_importer.TryApplyModifyOrder<uint16_t>("condition-dispatch-schedule", MOF_COND_VALUE_2, JOIET_MAJOR);
+			json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_DISPATCH_SCHEDULE, MOF_COND_VALUE_2, JOIET_MAJOR);
 		}
 	}
 
-	json_importer.TryApplyModifyOrder<uint16_t>("counter-id", MOF_COUNTER_ID, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("slot-id", MOF_SLOT, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("slot-group-id", MOF_SLOT_GROUP, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>(OFName::COUNTER_ID, MOF_COUNTER_ID, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>(OFName::SLOT_ID, MOF_SLOT, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>(OFName::SLOT_GROUP_ID, MOF_SLOT_GROUP, JOIET_MAJOR);
 
-	json_importer.TryApplyModifyOrder<uint8_t>("counter-operation", MOF_COUNTER_OP, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<uint16_t>("counter-value", MOF_COUNTER_VALUE, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint8_t>(OFName::COUNTER_OPERATION, MOF_COUNTER_OP, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<uint16_t>(OFName::COUNTER_VALUE, MOF_COUNTER_VALUE, JOIET_MAJOR);
 
-	json_importer.TryApplyModifyOrder<OrderLoadFlags>("load", MOF_LOAD, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<OrderUnloadFlags>("unload", MOF_UNLOAD, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<OrderLoadFlags>(OFName::LOAD, MOF_LOAD, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<OrderUnloadFlags>(OFName::UNLOAD, MOF_UNLOAD, JOIET_MAJOR);
 
-	if (auto it = json.find("load-by-cargo-type"); it != json.end()) {
+	if (auto it = json.find(OFName::LOAD_BY_CARGO_TYPE); it != json.end()) {
 		if (it->is_object()) {
 			for (const auto &[key, val] : it->items()) {
 				auto cargo_res = IntFromChars<CargoType>((std::string_view)key);
 				if (!cargo_res.has_value() || *cargo_res >= NUM_CARGO) {
-					json_importer.LogError(fmt::format("in 'load-by-cargo-type','{}' is not a valid cargo_id", key), JOIET_MAJOR);
+					json_importer.LogError(fmt::format("in '{}','{}' is not a valid cargo_id", OFName::LOAD_BY_CARGO_TYPE, key), JOIET_MAJOR);
 					continue;
 				}
 				CargoType cargo_id = *cargo_res;
 
 				if (!val.is_object()) {
-					json_importer.LogError(fmt::format("loading options in 'load-by-cargo-type'[{}] are not valid",key), JOIET_MAJOR);
+					json_importer.LogError(fmt::format("loading options in '{}'[{}] are not valid", OFName::LOAD_BY_CARGO_TYPE, key), JOIET_MAJOR);
 					continue;
 				};
 
-				if (val.contains("load")) {
-					json_importer["load-by-cargo-type"][key].TryApplyModifyOrder<OrderLoadFlags>("load", MOF_CARGO_TYPE_LOAD, JOIET_MAJOR, std::nullopt, cargo_id);
+				if (val.contains(OFName::LOAD)) {
+					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderLoadFlags>(OFName::LOAD, MOF_CARGO_TYPE_LOAD, JOIET_MAJOR, std::nullopt, cargo_id);
 				}
 
-				if (val.contains("unload")) {
-					json_importer["load-by-cargo-type"][key].TryApplyModifyOrder<OrderUnloadFlags>("unload", MOF_CARGO_TYPE_UNLOAD, JOIET_MAJOR, std::nullopt, cargo_id);
+				if (val.contains(OFName::UNLOAD)) {
+					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderUnloadFlags>(OFName::UNLOAD, MOF_CARGO_TYPE_UNLOAD, JOIET_MAJOR, std::nullopt, cargo_id);
 				}
 			}
 		} else {
-			json_importer.LogError("'load-by-cargo-type' must be an object", JOIET_MAJOR);
+			json_importer.LogError(fmt::format("'{}' must be an object", OFName::LOAD_BY_CARGO_TYPE), JOIET_MAJOR);
 		}
 	}
 
 	/* Refit works in a weird way, so it gets treated weirdly. */
-	if (auto it = json.find("refit-cargo"); it != json.end()) {
+	if (auto it = json.find(OFName::REFIT_CARGO); it != json.end()) {
 		if (it->is_string()) {
 			if (*it == "auto") {
 				json_importer.cmd_buffer.op_serialiser.Refit(CARGO_AUTO_REFIT);
 			} else {
-				json_importer.LogError("Value of 'refit-cargo' is invalid", JOIET_MAJOR);
+				json_importer.LogError(fmt::format("Value of '{}' is invalid", OFName::REFIT_CARGO), JOIET_MAJOR);
 			}
 		} else {
 			CargoType cargo_id;
-			if (json_importer.TryGetField("refit-cargo", cargo_id, JOIET_MAJOR)) {
+			if (json_importer.TryGetField(OFName::REFIT_CARGO, cargo_id, JOIET_MAJOR)) {
 				json_importer.cmd_buffer.op_serialiser.Refit(cargo_id);
 			} else {
-				json_importer.LogError("Value of 'refit-cargo' is invalid", JOIET_MAJOR);
+				json_importer.LogError(fmt::format("Value of '{}' is invalid", OFName::REFIT_CARGO), JOIET_MAJOR);
 			}
 		}
 	}
@@ -953,6 +1042,8 @@ static int TagStringToIndex(std::string_view tag)
 
 static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleMode::Dispatch> json_importer)
 {
+	using SFName = OrderSerialisationFieldNames::Schedules;
+
 	const nlohmann::json &json = json_importer.GetJson();
 
 	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
@@ -969,32 +1060,32 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 
 	uint32_t duration = 0;
-	if (!json_importer.TryGetField("duration", duration, JOIET_CRITICAL) || duration == 0) {
+	if (!json_importer.TryGetField(SFName::DURATION, duration, JOIET_CRITICAL) || duration == 0) {
 		create_error_schedule();
 		return;
 	}
 
 	json_importer.cmd_buffer.op_serialiser.AppendSchedule(start_tick, duration);
 
-	if (auto result = json_importer.TryGetField<std::string_view>("name", JOIET_MINOR)) {
+	if (auto result = json_importer.TryGetField<std::string_view>(SFName::NAME, JOIET_MINOR)) {
 		json_importer.cmd_buffer.op_serialiser.RenameSchedule(*result);
 	}
-	if (auto result = json_importer.TryGetField<uint>("max-delay", JOIET_MINOR)) {
+	if (auto result = json_importer.TryGetField<uint>(SFName::MAX_DELAY, JOIET_MINOR)) {
 		json_importer.cmd_buffer.op_serialiser.SetScheduleMaxDelay(*result);
 	}
-	if (auto result = json_importer.TryGetField<bool>("re-use-all-slots", JOIET_MINOR)) {
+	if (auto result = json_importer.TryGetField<bool>(SFName::RE_USE_ALL_SLOTS, JOIET_MINOR)) {
 		json_importer.cmd_buffer.op_serialiser.SetScheduleReuseSlots(*result);
 	}
 	json_importer.cmd_buffer.PostDispatchCmd();
 
-	if (auto it = json.find("renamed-tags"); it != json.end() && it->is_object()) {
+	if (auto it = json.find(SFName::RENAMED_TAGS); it != json.end() && it->is_object()) {
 		for (const auto &names : it->items()) {
 			int index = TagStringToIndex(names.key());
 
 			if (index == -1 || !names.value().is_string()) {
 				json_importer.LogError(fmt::format("'{}' is not a valid tag index.", names.key()), JOIET_MINOR);
 			} else {
-				if (auto result = json_importer.TryGetField<std::string_view>(names.key(), JOIET_MINOR)) {
+				if (auto result = json_importer[SFName::RENAMED_TAGS].TryGetField<std::string_view>(names.key(), JOIET_MINOR)) {
 					json_importer.cmd_buffer.op_serialiser.RenameScheduleTag((uint16_t)index, *result);
 					json_importer.cmd_buffer.PostDispatchCmd();
 				}
@@ -1002,7 +1093,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 		}
 	}
 
-	if (auto it = json.find("slots"); it != json.end()) {
+	if (auto it = json.find(SFName::Slots::OBJKEY); it != json.end()) {
 		const auto &slots_json = *it;
 		if (slots_json.is_array()) {
 			for (const auto &slot_data : slots_json) {
@@ -1010,19 +1101,19 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 					auto local_importer = json_importer.WithNewJson(slot_data);
 
 					uint32_t offset;
-					if (!local_importer.TryGetField("offset", offset, JOIET_MAJOR)) {
+					if (!local_importer.TryGetField(SFName::Slots::OFFSET, offset, JOIET_MAJOR)) {
 						continue;
 					}
 
 					bool re_use_slot = false;
-					local_importer.TryGetField("re-use-slot", re_use_slot, JOIET_MAJOR);
+					local_importer.TryGetField(SFName::Slots::RE_USE_SLOT, re_use_slot, JOIET_MAJOR);
 
 					uint16_t flags = 0;
 					if (re_use_slot) {
 						SetBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					}
 
-					if (auto it = slot_data.find("tags"); it != slot_data.end() && it->is_array()) {
+					if (auto it = slot_data.find(SFName::Slots::TAGS); it != slot_data.end() && it->is_array()) {
 						for (nlohmann::json::const_reference tag : *it) {
 							if (tag.is_string()) {
 								std::string tagString = std::string(tag);
@@ -1058,6 +1149,8 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 
 OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
 {
+	using FName = OrderSerialisationFieldNames;
+
 	assert(veh != nullptr);
 
 	nlohmann::json json;
@@ -1070,20 +1163,20 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		return errors;
 	}
 
-	if (json.contains("orders") && !json["orders"].is_array()) {
+	if (json.contains(FName::Orders::OBJKEY) && !json[FName::Orders::OBJKEY].is_array()) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS), WL_ERROR);
 		return errors;
 	}
 
 	/* Checking if the vehicle type matches */
-	if (!json.contains("vehicle-type")) {
+	if (!json.contains(FName::VEHICLE_TYPE)) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_MISSING), WL_ERROR);
 		return errors;
 	}
 
 	VehicleType vt;
 	try {
-		vt = json["vehicle-type"];
+		vt = json[FName::VEHICLE_TYPE];
 	} catch (...) {
 		vt = VEH_END;
 	}
@@ -1096,27 +1189,44 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	JSONImportSettings import_settings_client{};
 
 	/* If the json contains game-properties, we will try to parse them and apply them */
-	if (auto it = json.find("game-properties"); it != json.end() && it->is_object()) {
+	if (auto it = json.find(FName::GameProperties::OBJKEY); it != json.end() && it->is_object()) {
 		const auto &game_properties = *it;
 
-		OrderStopLocation osl = game_properties.value<OrderStopLocation>("default-stop-location", OSL_END);
+		const auto makeMissingErrString = [](std::string field) -> std::string {
+			return fmt::format("'{}' missing or invalid in '{}', this may cause discrepancies when loading the orderlist", field, FName::GameProperties::OBJKEY);
+		};
+
+		OrderStopLocation osl = game_properties.value<OrderStopLocation>(FName::GameProperties::DEFAULT_STOP_LOCATION, OSL_END);
 		if (osl == OSL_END) {
-			errors.global.push_back({ "'default-stop-location' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+			errors.global.push_back({
+				makeMissingErrString(FName::GameProperties::DEFAULT_STOP_LOCATION),
+				JOIET_MAJOR
+			});
 		} else {
 			import_settings_client.stop_location = osl;
 		}
 
-		if (auto nnit = game_properties.find("new-nonstop"); nnit != game_properties.end() && nnit->is_boolean()) {
+		if (auto nnit = game_properties.find(FName::GameProperties::NEW_NONSTOP); nnit != game_properties.end() && nnit->is_boolean()) {
 			bool new_nonstop = *nnit;
 			if (!new_nonstop && _settings_game.order.nonstop_only) {
-				errors.global.push_back({ "'new-nonstop' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+				errors.global.push_back({
+					fmt::format("'{}' is not compatible with the current game setting, this may cause discrepancies when loading the orderlist",
+							FName::GameProperties::NEW_NONSTOP),
+					JOIET_MAJOR
+				});
 			}
 			import_settings_client.new_nonstop = new_nonstop;
 		} else {
-			errors.global.push_back({ "'new-nonstop' missing or invalid in 'game-properties', this may cause discrepancies when loading the orderlist", JOIET_MAJOR });
+			errors.global.push_back({
+				makeMissingErrString(FName::GameProperties::NEW_NONSTOP),
+				JOIET_MAJOR
+			});
 		}
 	} else {
-		errors.global.push_back({ "no valid 'game-properties' found, current setings will be assumed to be correct", JOIET_MAJOR });
+		errors.global.push_back({
+			fmt::format("no valid '{}' found, current setings will be assumed to be correct", FName::GameProperties::OBJKEY),
+			JOIET_MAJOR
+		});
 	}
 
 	JSONBulkOrderCommandBuffer cmd_buffer(veh);
@@ -1126,19 +1236,19 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	cmd_buffer.op_serialiser.ClearOrders();
 	cmd_buffer.op_serialiser.ClearSchedules();
 
-	const auto &orders_json = json["orders"];
+	const auto &orders_json = json[FName::Orders::OBJKEY];
 
 	robin_hood::unordered_map<std::string, VehicleOrderID> jump_map; // Associates jump labels to actual order-ids until all orders are added
 
-	if (auto it = json.find("schedules"); it != json.end()) {
+	if (auto it = json.find(FName::Schedules::OBJKEY); it != json.end()) {
 		const auto &schedules = *it;
 
 		if (!schedules.is_array()) {
-			json_importer.LogGlobalError("'schedules' must be an array", JOIET_CRITICAL);
+			json_importer.LogGlobalError(fmt::format("'{}' must be an array", FName::Schedules::NAME), JOIET_CRITICAL);
 		} else if (schedules.size() > 0) {
 			bool have_schedule = false;
 			for (const auto &value : orders_json) {
-				if (value.contains("schedule-index")) {
+				if (value.contains(FName::Orders::SCHEDULE_INDEX)) {
 					have_schedule = true;
 					break;
 				}
@@ -1170,7 +1280,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		ImportJsonOrder(order_importer);
 
 		std::string jump_label;
-		if (order_importer.TryGetField("jump-from", jump_label, JOIET_MAJOR)) {
+		if (order_importer.TryGetField(FName::Orders::JUMP_FROM, jump_label, JOIET_MAJOR)) {
 			jump_map[jump_label] = order_id;
 		}
 
@@ -1183,10 +1293,10 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		auto local_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
-		local_importer.TryApplyTimetableCommand("schedule-index", MTF_ASSIGN_SCHEDULE, JOIET_MAJOR, order_id);
+		local_importer.TryApplyTimetableCommand(FName::Orders::SCHEDULE_INDEX, MTF_ASSIGN_SCHEDULE, JOIET_MAJOR, order_id);
 
 		std::string jump_label;
-		if (local_importer.TryGetField("jump-to", jump_label, JOIET_MAJOR)) {
+		if (local_importer.TryGetField(FName::Orders::JUMP_TO, jump_label, JOIET_MAJOR)) {
 			auto jm_iter = jump_map.find(jump_label);
 			if (jm_iter != jump_map.end()) {
 				local_importer.ModifyOrder(MOF_COND_DESTINATION, jm_iter->second, INVALID_CARGO, {}, order_id);
