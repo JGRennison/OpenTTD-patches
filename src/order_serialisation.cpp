@@ -42,7 +42,6 @@ struct OrderSerialisationFieldNames {
 	static constexpr char VERSION[]            = "version";            ///< int
 	static constexpr char SOURCE[]             = "source";             ///< string      OTTD version that generated the list
 	static constexpr char VEHICLE_TYPE[]       = "vehicle-type";       ///< enum
-	static constexpr char VEHICLE_NAME[]       = "vehicle-name";       ///< string      Export-only, name of first vehicle in the orderlist
 	static constexpr char VEHICLE_GROUP_NAME[] = "vehicle-group-name"; ///< string      Export-only, name of group of first vehicle in the orderlist
 
 	struct GameProperties {
@@ -415,9 +414,6 @@ std::string OrderListToJSONString(const OrderList *ol)
 	const Group *group = Group::GetIfValid(veh->group_id);
 
 	json[FName::VEHICLE_TYPE] = vt;
-	if (!veh->name.empty()) {
-		json[FName::VEHICLE_NAME] = veh->name;
-	}
 	if (group != nullptr && !group->name.empty()) {
 		json[FName::VEHICLE_GROUP_NAME] = group->name;
 	}
