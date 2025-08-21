@@ -1868,6 +1868,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 		case MOF_NON_STOP:
 			if (!v->IsGroundVehicle()) return CMD_ERROR;
 			if (data >= ONSF_END) return CMD_ERROR;
+			if ((data & ONSF_NO_STOP_AT_DESTINATION_STATION) && order->IsType(OT_GOTO_DEPOT)) return CMD_ERROR;
 			if (data == order->GetNonStopType()) return CommandCost();
 			if (_settings_game.order.nonstop_only && !(data & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) && v->IsGroundVehicle()) return CMD_ERROR;
 			break;
@@ -2163,7 +2164,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 		switch (mof) {
 			case MOF_NON_STOP:
 				order->SetNonStopType((OrderNonStopFlags)data);
-				if (data & ONSF_NO_STOP_AT_DESTINATION_STATION) {
+				if ((data & ONSF_NO_STOP_AT_DESTINATION_STATION) && order->IsType(OT_GOTO_STATION)) {
 					order->SetRefit(CARGO_NO_REFIT);
 					order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
