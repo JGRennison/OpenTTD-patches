@@ -947,7 +947,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 		case OT_GOTO_WAYPOINT: {
 			StringID str = (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) ? STR_ORDER_GO_NON_STOP_TO_WAYPOINT : STR_ORDER_GO_TO_WAYPOINT;
-			if (order->GetWaypointFlags() & OWF_REVERSE) str += STR_ORDER_GO_TO_WAYPOINT_REVERSE - STR_ORDER_GO_TO_WAYPOINT;
+			if (order->GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) str += STR_ORDER_GO_TO_WAYPOINT_REVERSE - STR_ORDER_GO_TO_WAYPOINT;
 			AppendStringInPlace(line, str, order->GetDestination().ToStationID());
 			if (timetable && order->IsWaitTimetabled()) {
 				auto [str, value] = GetTimetableParameters(order->GetWaitTime());
@@ -2322,7 +2322,7 @@ public:
 						this->EnableWidget(WID_O_NON_STOP);
 						this->SetWidgetLoweredState(WID_O_NON_STOP, order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 						this->EnableWidget(WID_O_REVERSE);
-						this->SetWidgetLoweredState(WID_O_REVERSE, order->GetWaypointFlags() & OWF_REVERSE);
+						this->SetWidgetLoweredState(WID_O_REVERSE, order->GetWaypointFlags().Test(OrderWaypointFlag::Reverse));
 					}
 					this->DisableWidget(WID_O_UNLOAD);
 					this->DisableWidget(WID_O_REFIT_DROPDOWN);
@@ -3184,7 +3184,7 @@ public:
 
 				if (order == nullptr) break;
 
-				this->ModifyOrder(sel_ord, MOF_WAYPOINT_FLAGS, order->GetWaypointFlags() ^ OWF_REVERSE);
+				this->ModifyOrder(sel_ord, MOF_WAYPOINT_FLAGS, order->GetWaypointFlags().Flip(OrderWaypointFlag::Reverse).base());
 				break;
 			}
 

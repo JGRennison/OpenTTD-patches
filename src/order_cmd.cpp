@@ -2102,7 +2102,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 			break;
 
 		case MOF_WAYPOINT_FLAGS:
-			if (data != (data & OWF_REVERSE)) return CMD_ERROR;
+			if (data != (data & OrderWaypointFlags(OrderWaypointFlag::Reverse).base())) return CMD_ERROR;
 			break;
 
 		case MOF_SLOT:
@@ -2428,7 +2428,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_WAYPOINT_FLAGS:
-				order->SetWaypointFlags((OrderWaypointFlags)data);
+				order->SetWaypointFlags(static_cast<OrderWaypointFlags>(data));
 				break;
 
 			case MOF_SLOT:

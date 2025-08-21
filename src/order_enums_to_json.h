@@ -32,13 +32,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderStopLocation, {
 	{OSL_PLATFORM_THROUGH, "through"}
 })
 
-
-NLOHMANN_JSON_SERIALIZE_ENUM(OrderWaypointFlags, {
-	{static_cast<OrderWaypointFlags>(-1), nullptr},
-	{OWF_DEFAULT, "default"},
-	{OWF_REVERSE, "reverse"}
-})
-
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLabelSubType, {
 	{static_cast<OrderLabelSubType>(-1), nullptr},
 	{OLST_TEXT, "text"},

@@ -197,11 +197,10 @@ DECLARE_ENUM_AS_BIT_SET(OrderDepotExtraFlags)
 /**
  * Flags for go to waypoint orders
  */
-enum OrderWaypointFlags {
-	OWF_DEFAULT          = 0,      ///< Default waypoint behaviour
-	OWF_REVERSE          = 1 << 0, ///< Reverse train at the waypoint
+enum class OrderWaypointFlag : uint8_t {
+	Reverse             = 0, ///< Reverse train at the waypoint
 };
-DECLARE_ENUM_AS_BIT_SET(OrderWaypointFlags)
+using OrderWaypointFlags = EnumBitSet<OrderWaypointFlag, uint8_t>;
 
 /**
  * Variables (of a vehicle) to 'cause' skipping on.

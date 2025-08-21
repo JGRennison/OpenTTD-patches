@@ -690,7 +690,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 						extra_cost += Yapf().PfGetSettings().rail_lastred_penalty;
 					}
 
-					if (v->current_order.GetWaypointFlags() & OWF_REVERSE && HasStationReservation(cur.tile)) {
+					if (v->current_order.GetWaypointFlags().Test(OrderWaypointFlag::Reverse) && HasStationReservation(cur.tile)) {
 						extra_cost += Yapf().PfGetSettings().rail_pbs_station_penalty * 4;
 					}
 				}

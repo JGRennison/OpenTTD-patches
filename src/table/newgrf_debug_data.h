@@ -320,7 +320,7 @@ class NIHVehicle : public NIHelper {
 								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, st);
 								output.buffer.format(", stop_position: {}", item.start + stop_position);
 								print_braking_speed(item.start + stop_position, 0, item.z_pos);
-							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == st && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
+							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == st && t->current_order.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) {
 								print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
 							}
 							break;

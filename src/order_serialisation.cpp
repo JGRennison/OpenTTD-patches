@@ -131,6 +131,10 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 	}
 
+	if (o.IsType(OT_GOTO_WAYPOINT)) {
+		if (o.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) json["waypoint-reverse"] = true;
+	}
+
 	if (o.IsSlotCounterOrder()) {
 		DestinationID::BaseType id = o.GetDestination().ToSlotID().base();
 		switch (o.GetType()) {
@@ -807,7 +811,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyModifyOrder<OrderStopLocation>("stop-location", MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
 	json_importer.TryApplyModifyOrder<DiagDirection>("stop-direction", MOF_RV_TRAVEL_DIR, JOIET_MINOR);
 
-	json_importer.TryApplyModifyOrder<OrderWaypointFlags>("waypoint-action", MOF_WAYPOINT_FLAGS, JOIET_MAJOR);
+	OrderWaypointFlags waypoint_flags{};
+	if (json_importer.TryGetField<bool>("waypoint-reverse", JOIET_MAJOR).value_or(false)) waypoint_flags.Set(OrderWaypointFlag::Reverse);
+	if (waypoint_flags.Any()) json_importer.ModifyOrder(MOF_WAYPOINT_FLAGS, waypoint_flags.base());
 
 	json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
 
