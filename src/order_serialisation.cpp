@@ -65,11 +65,13 @@ struct OrderSerialisationFieldNames {
 			static constexpr char RE_USE_SLOT[] = "re-use-slot"; ///< bool
 		};
 
-		static constexpr char DURATION[]         = "duration";         ///< int     Required
-		static constexpr char NAME[]             = "name";             ///< string
-		static constexpr char MAX_DELAY[]        = "max-delay";        ///< int
-		static constexpr char RE_USE_ALL_SLOTS[] = "re-use-all-slots"; ///< bool
-		static constexpr char RENAMED_TAGS[]     = "renamed-tags";     ///< string
+		static constexpr char DURATION[]            = "duration";            ///< int     Required
+		static constexpr char NAME[]                = "name";                ///< string
+		static constexpr char MAX_DELAY[]           = "max-delay";           ///< int
+		static constexpr char RE_USE_ALL_SLOTS[]    = "re-use-all-slots";    ///< bool
+		static constexpr char RENAMED_TAGS[]        = "renamed-tags";        ///< string
+		static constexpr char RELATIVE_START_TIME[] = "relative-start-time"; ///< int Incompatible with "absolute-start-time"
+		static constexpr char ABSOLUTE_START_TIME[] = "absolute-start-time"; ///< int Incompatible with "relative-start-time"
 	};
 
 	struct Orders {
@@ -354,6 +356,32 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 		if (!rename.empty()) {
 			json[SFName::RENAMED_TAGS][std::to_string(i + 1)] = rename;
 		}
+	}
+
+	/* Normalise the start tick where possible */
+	const StateTicks start_tick = sd.GetScheduledDispatchStartTick();
+	if (_settings_time.time_in_minutes) {
+		const uint32_t ticks_per_day = _settings_time.ticks_per_minute * 60 * 24;
+		const uint32_t duration = sd.GetScheduledDispatchDuration();
+
+		uint32_t start_offset = 0;
+		if (duration <= ticks_per_day && (ticks_per_day % duration) == 0) {
+			/* Schedule fits an integer number of times into a timetable day */
+			const StateTicks base = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
+			start_offset = WrapTickToScheduledDispatchRange(base, duration, start_tick);
+		} else if (duration > ticks_per_day && (duration % ticks_per_day) == 0) {
+			/* Schedule is an integer number of timetable days */
+			start_offset = WrapTickToScheduledDispatchRange(StateTicks{0}, duration, start_tick);
+		} else {
+			/* Cannot normalize, use absolute start time */
+			json[SFName::ABSOLUTE_START_TIME] = start_tick.base();
+		}
+
+		if (start_offset != 0) {
+			json[SFName::RELATIVE_START_TIME] = start_offset;
+		}
+	} else {
+		json[SFName::ABSOLUTE_START_TIME] = start_tick.base();
 	}
 
 	nlohmann::ordered_json &slots_array = json[SFName::Slots::OBJKEY];
@@ -1042,11 +1070,11 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 
 	const nlohmann::json &json = json_importer.GetJson();
 
-	StateTicks start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
+	const StateTicks day_start = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));
 
 	auto create_error_schedule = [&]() {
 		/* Create an empty error schedule to avoid disrupting schedule indices. */
-		json_importer.cmd_buffer.op_serialiser.AppendSchedule(start_tick, 24 * 60 * _settings_time.ticks_per_minute);
+		json_importer.cmd_buffer.op_serialiser.AppendSchedule(day_start, 24 * 60 * _settings_time.ticks_per_minute);
 		json_importer.cmd_buffer.op_serialiser.RenameSchedule("[Parse Error]");
 	};
 
@@ -1061,6 +1089,26 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 		return;
 	}
 
+	auto relative_start_time = json_importer.TryGetField<int64_t>(SFName::RELATIVE_START_TIME, JOIET_MAJOR);
+	auto absolute_start_time = json_importer.TryGetField<int64_t>(SFName::ABSOLUTE_START_TIME, JOIET_MAJOR);
+
+	StateTicks start_tick = day_start;
+	if (relative_start_time.has_value() && absolute_start_time.has_value()) {
+		json_importer.LogError(
+			fmt::format(
+				"'{}' and '{}' are incompatible",
+				SFName::RELATIVE_START_TIME,
+				SFName::ABSOLUTE_START_TIME),
+			JOIET_MAJOR);
+	} else if (relative_start_time.has_value()) {
+		if (duration <= static_cast<uint32_t>(_settings_time.ticks_per_minute) * 60 * 24) {
+			start_tick = day_start + relative_start_time.value();
+		} else {
+			start_tick = StateTicks{relative_start_time.value()};
+		}
+	} else if (absolute_start_time.has_value()) {
+		start_tick = StateTicks{absolute_start_time.value()};
+	}
 	json_importer.cmd_buffer.op_serialiser.AppendSchedule(start_tick, duration);
 
 	if (auto result = json_importer.TryGetField<std::string_view>(SFName::NAME, JOIET_MINOR)) {
