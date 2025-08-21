@@ -710,7 +710,7 @@ int Win32StringContains(std::span<const wchar_t> str, std::span<const wchar_t> v
 
 	if (_FindNLSStringEx == nullptr) return -1;
 
-	return _FindNLSStringEx(_cur_iso_locale, FIND_FROMSTART | (case_insensitive ? LINGUISTIC_IGNORECASE : 0), str.data(), str.size(), value.data(), value.size(), nullptr, nullptr, nullptr, 0) >= 0 ? 1 : 0;
+	return _FindNLSStringEx(_cur_iso_locale, FIND_FROMSTART | (case_insensitive ? LINGUISTIC_IGNORECASE : 0), str.data(), (int)str.size(), value.data(), (int)value.size(), nullptr, nullptr, nullptr, 0) >= 0 ? 1 : 0;
 }
 
 static DWORD main_thread_id;
