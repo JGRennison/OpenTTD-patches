@@ -179,6 +179,9 @@ STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :이 설정을 �
 
 STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :개선된 고장 활성화: {STRING}
 
+STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :최대 신뢰도의 최솟값: {STRING}
+STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :차량이 도입될 때, 최대 신뢰도가 이 값과 100% 사이에서 무작위로 선택됩니다.{}{}모든 차량이 높은 최대 신뢰도를 갖길 원할 경우 이 값을 높게 설정하세요.{}무작위 효과를 더 받으려면 이 값을 낮게 설정하세요. (이 작업은 사용자의 책임이 따릅니다){}{}최대 신뢰도는 도입 직후에만 최대치로 적용되며 차량의 수명이 다 되어가면서 (항상 그래왔듯이) 감소합니다.{}{}이미 플레이하던 게임에서는 변경 사항을 적용하려면 resetengines 명령어를 콘솔에 입력해야 할 수도 있습니다.{}{}기존 설정: 이 값은 75% ~ 100% 사이에서 선택됩니다.
+
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다
 
@@ -1276,6 +1279,9 @@ STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}이미 
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}다른 버전({STRING})에서 저장한 파일입니다.{}덮어씌울 경우 원래 버전에서 다시 불러올 수 없게 됩니다
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     :({STRING})
 
+STR_SAVELOAD_SAVE_ORDERLIST                                     :{WHITE}경로 목록 저장
+STR_SAVELOAD_LOAD_ORDERLIST                                     :{WHITE}경로 목록 불러오기
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}설선 고도:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}설선 고도를 1칸 높입니다
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}설선 고도를 1칸 낮춥니다
@@ -1557,6 +1563,9 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING} SHIFT + 클릭해서 선택합니다
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지로 보내는 것을 취소합니다. CTRL + 클릭하면 메뉴를 엽니다. SHIFT + 클릭해서 선택합니다
 
+STR_VEHICLE_VIEW_ROUTE_OVERLAY_TOOLTIP                          :{BLACK}경로 오버레이 설정 변경
+STR_VEHICLE_VIEW_ALWAYS_SHOW_ROUTE_OVERLAY                      :항상 경로 오버레이를 표시
+
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}SHIFT + 클릭하면 시간표 배차 일정 창을 보여줍니다
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}
@@ -1724,6 +1733,8 @@ STR_ORDER_REVERSE_ORDER_LIST                                    :경로 목록 �
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :반전된 경로 추가
 STR_ORDER_DUPLICATE_ORDER                                       :경로 복제
 STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 번호 변경
+STR_ORDER_EXPORT_ORDER_LIST                                     :경로 목록 내보내기
+STR_ORDER_IMPORT_ORDER_LIST                                     :경로 목록 가져오기
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :슬롯 획득 시도
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
@@ -1890,6 +1901,9 @@ STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}현재 �
 
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}지형 스크린 샷
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}산업시설 스크린 샷
+
+STR_ORDER_IMPORT_ERROR_LIST_CAPTION                             :{WHITE}경로 목록 가져오기 오류
+STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS              :{BLACK}오류 없이 가져오기된 경로 보기/숨기기
 
 # Plans window
 STR_PLANS_CAPTION                                               :{WHITE}계획
@@ -2402,3 +2416,13 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}이 비�
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}비밀번호
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}다른 참가자가 이 회사에 참여하여 플레이하지 못 하도록 암호로 보호합니다
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}회사 비밀번호 설정
+
+# JSON messages
+STR_ERROR_ORDERLIST_MALFORMED_JSON                              :{WHITE}입력된 JSON 형식이 잘못되었습니다
+STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS                           :{WHITE}경로가 없습니다, 경로 목록을 인스턴스화할 수 없습니다
+STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_MISSING                   :{WHITE}유효한 '차량 종류'를 찾을 수 없습니다
+STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_DOES_NOT_MATCH            :{WHITE}차량 종류가 일치하지 않습니다
+STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}경로 목록 가져오기 도중 오류가 발생하였습니다
+STR_ERROR_JSON                                                  :{WHITE}JSON 오류
+STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}경로를 가져오기하면 기존에 존재하는 경로 목록이 삭제됩니다. 계속하시겠습니까?
+STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}경로 목록 가져오기 확인
