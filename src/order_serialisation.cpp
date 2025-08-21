@@ -815,7 +815,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	if (json_importer.TryGetField<bool>("waypoint-reverse", JOIET_MAJOR).value_or(false)) waypoint_flags.Set(OrderWaypointFlag::Reverse);
 	if (waypoint_flags.Any()) json_importer.ModifyOrder(MOF_WAYPOINT_FLAGS, waypoint_flags.base());
 
-	json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
+	if (type == OT_GOTO_DEPOT) {
+		json_importer.TryApplyModifyOrder<OrderDepotAction>("depot-action", MOF_DEPOT_ACTION, JOIET_MAJOR, DA_ALWAYS_GO);
+	}
 
 	json_importer.TryApplyModifyOrder<std::string>("label-text", MOF_LABEL_TEXT, JOIET_MINOR);
 
