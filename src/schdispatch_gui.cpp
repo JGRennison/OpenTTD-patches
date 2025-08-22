@@ -92,17 +92,15 @@ static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date,
 	/* Make sure the time is the closest future to the timetable start */
 	StateTicks start_tick = ds.GetScheduledDispatchStartTick();
 	uint32_t duration = ds.GetScheduledDispatchDuration();
-	while (date > start_tick) date -= duration;
-	while (date < start_tick) date += duration;
+	uint32_t slot = WrapTickToScheduledDispatchRange(start_tick, duration, date);
 
-	if (extra_slots > 0 && offset > 0 && !wrap_mode) {
-		StateTicks end_tick = start_tick + duration;
-		int64_t max_extra_slots = (end_tick - 1 - date).base() / offset;
-		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<int64_t>(0, max_extra_slots));
+	if (extra_slots > 0 && offset > 0 && !wrap_mode && slot < duration) {
+		uint max_extra_slots = (duration - 1 - slot) / offset;
+		if (max_extra_slots < extra_slots) extra_slots = max_extra_slots;
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	Command<CMD_SCH_DISPATCH_ADD>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, (uint32_t)(date - start_tick).base(), offset, extra_slots);
+	Command<CMD_SCH_DISPATCH_ADD>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, slot, offset, extra_slots);
 }
 
 /**

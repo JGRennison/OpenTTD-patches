@@ -799,40 +799,22 @@ void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 
 bool DispatchSchedule::UpdateScheduledDispatchToDate(StateTicks now)
 {
-	bool update_windows = false;
-	if (this->GetScheduledDispatchStartTick() == 0) {
-		StateTicks start = now - (now.base() % this->GetScheduledDispatchDuration());
-		this->SetScheduledDispatchStartTick(start);
-		int64_t last_dispatch = -(start.base());
-		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
-			/* Advance by multiples of 24 hours */
-			const int64_t day = 24 * 60 * _settings_game.game_time.ticks_per_minute;
-			this->scheduled_dispatch_last_dispatch = last_dispatch + (CeilDivT<int64_t>(INT_MIN - last_dispatch, day) * day);
-		} else {
-			this->scheduled_dispatch_last_dispatch = ClampTo<int32_t>(last_dispatch);
-		}
+	const StateTicks old_start = this->GetScheduledDispatchStartTick();
+	const StateTicks base = now + 1 - this->GetScheduledDispatchDuration();
+	const uint32_t new_start_offset = WrapTickToScheduledDispatchRange(base, this->GetScheduledDispatchDuration(), old_start);
+	const StateTicks new_start = base + new_start_offset;
+	if (new_start == old_start) return false;
+
+	this->SetScheduledDispatchStartTick(new_start);
+
+	OverflowSafeInt64 last_dispatch = this->scheduled_dispatch_last_dispatch;
+	if (last_dispatch != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+		last_dispatch -= (new_start - old_start).base();
+		if (last_dispatch <= INT32_MIN || last_dispatch >= INT32_MAX) last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET;
+		this->scheduled_dispatch_last_dispatch = static_cast<int32_t>(last_dispatch);
 	}
-	/* Most of the time this loop does not run. It makes sure start date in in past */
-	while (this->GetScheduledDispatchStartTick() > now) {
-		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
-		if (last_dispatch != INVALID_SCHEDULED_DISPATCH_OFFSET) {
-			last_dispatch += this->GetScheduledDispatchDuration();
-			this->scheduled_dispatch_last_dispatch = last_dispatch;
-		}
-		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration());
-		update_windows = true;
-	}
-	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
-	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= now) {
-		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
-		if (last_dispatch != INVALID_SCHEDULED_DISPATCH_OFFSET) {
-			last_dispatch -= this->GetScheduledDispatchDuration();
-			this->scheduled_dispatch_last_dispatch = last_dispatch;
-		}
-		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration());
-		update_windows = true;
-	}
-	return update_windows;
+
+	return true;
 }
 
 /**
@@ -864,5 +846,18 @@ void DispatchSchedule::SetSupplementaryName(ScheduledDispatchSupplementaryNameTy
 		this->supplementary_names.erase(key);
 	} else {
 		this->supplementary_names[key] = std::move(name);
+	}
+}
+
+uint32_t WrapTickToScheduledDispatchRange(StateTicks base, uint32_t duration, StateTicks value)
+{
+	if (value < base) {
+		StateTicksDelta delta = base - value;
+		return duration - static_cast<uint32_t>(delta.base() % static_cast<int64_t>(duration));
+	} else if (value >= base + duration) {
+		StateTicksDelta delta = value - base;
+		return static_cast<uint32_t>(delta.base() % static_cast<int64_t>(duration));
+	} else {
+		return static_cast<uint32_t>((value - base).base());
 	}
 }
