@@ -853,7 +853,8 @@ uint32_t WrapTickToScheduledDispatchRange(StateTicks base, uint32_t duration, St
 {
 	if (value < base) {
 		StateTicksDelta delta = base - value;
-		return duration - static_cast<uint32_t>(delta.base() % static_cast<int64_t>(duration));
+		uint32_t negative_offset = static_cast<uint32_t>(delta.base() % static_cast<int64_t>(duration));
+		return negative_offset == 0 ? 0 : duration - negative_offset;
 	} else if (value >= base + duration) {
 		StateTicksDelta delta = value - base;
 		return static_cast<uint32_t>(delta.base() % static_cast<int64_t>(duration));
