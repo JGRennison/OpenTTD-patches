@@ -24,6 +24,7 @@ enum class BulkOrderOp {
 	ReplaceWithFail,
 	InsertFail,
 	SeekTo,
+	SetRouteOverlayColour,
 	ClearSchedules,
 	AppendSchedule,
 	SelectSchedule,
@@ -97,6 +98,12 @@ public:
 	{
 		this->OpCode(BulkOrderOp::SeekTo);
 		this->serialiser.Send_generic(order_id);
+	}
+
+	void SetRouteOverlayColour(Colours colour)
+	{
+		this->OpCode(BulkOrderOp::SetRouteOverlayColour);
+		this->serialiser.Send_generic(colour);
 	}
 
 	void ClearSchedules()

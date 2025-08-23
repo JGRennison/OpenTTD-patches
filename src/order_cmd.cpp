@@ -4289,6 +4289,14 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					last_result = CommandCost();
 					break;
 
+				case BulkOrderOp::SetRouteOverlayColour: {
+					Colours colour;
+					buf.Recv_generic_integer(colour);
+					if (buf.error) return CMD_ERROR;
+					CmdSetRouteOverlayColour(flags, cmd_data.veh, colour);
+					break;
+				}
+
 				/* Scheduled dispatch opcodes follow */
 
 				case BulkOrderOp::ClearSchedules:

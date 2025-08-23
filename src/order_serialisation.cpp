@@ -39,10 +39,11 @@
 static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
 struct OrderSerialisationFieldNames {
-	static constexpr char VERSION[]            = "version";            ///< int
-	static constexpr char SOURCE[]             = "source";             ///< string      OTTD version that generated the list
-	static constexpr char VEHICLE_TYPE[]       = "vehicle-type";       ///< enum
-	static constexpr char VEHICLE_GROUP_NAME[] = "vehicle-group-name"; ///< string      Export-only, name of group of first vehicle in the orderlist
+	static constexpr char VERSION[]              = "version";              ///< int
+	static constexpr char SOURCE[]               = "source";               ///< string      OTTD version that generated the list
+	static constexpr char VEHICLE_TYPE[]         = "vehicle-type";         ///< enum
+	static constexpr char VEHICLE_GROUP_NAME[]   = "vehicle-group-name";   ///< string      Export-only, name of group of first vehicle in the orderlist
+	static constexpr char ROUTE_OVERLAY_COLOUR[] = "route-overlay-colour"; ///< enum
 
 	struct GameProperties {
 		static constexpr char OBJKEY[]                = "game-properties";
@@ -444,6 +445,10 @@ std::string OrderListToJSONString(const OrderList *ol)
 	json[FName::VEHICLE_TYPE] = vt;
 	if (group != nullptr && !group->name.empty()) {
 		json[FName::VEHICLE_GROUP_NAME] = group->name;
+	}
+
+	if (ol->GetRouteOverlayColour() != COLOUR_WHITE) {
+		json[FName::ROUTE_OVERLAY_COLOUR] = ol->GetRouteOverlayColour();
 	}
 
 	auto &game_properties = json[FName::GameProperties::OBJKEY];
@@ -1329,6 +1334,15 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 
 		order_id++;
+	}
+
+	{
+		Colours route_overlay_colour = COLOUR_WHITE;
+		json_importer.TryGetField(FName::ROUTE_OVERLAY_COLOUR, route_overlay_colour, JOIET_MINOR);
+		const Colours current = (veh->orders != nullptr) ? veh->orders->GetRouteOverlayColour() : COLOUR_WHITE;
+		if (route_overlay_colour != current) {
+			cmd_buffer.op_serialiser.SetRouteOverlayColour(route_overlay_colour);
+		}
 	}
 
 	/* Post processing (link jumps and assign schedules) */
