@@ -39,6 +39,7 @@
 #include "debug.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <vector>
 #include <algorithm>
@@ -1351,8 +1352,14 @@ Ticks GetDeparturesMaxTicksAhead()
 struct DispatchArrivalRecord {
 	const Order *order;
 	StateTicks arrival_tick;
+	uint32_t sequence_id;
 
-	DispatchArrivalRecord(const Order *order, StateTicks arrival_tick) : order(order), arrival_tick(arrival_tick) {}
+	DispatchArrivalRecord(const Order *order, StateTicks arrival_tick, uint32_t sequence_id)
+			: order(order), arrival_tick(arrival_tick), sequence_id(sequence_id) {}
+};
+
+struct DispatchScheduleModeSequenceIdHandler {
+	uint32_t last_sequence_id = 0;
 };
 
 struct DepartureListScheduleModeSlotEvaluator {
@@ -1371,6 +1378,7 @@ struct DepartureListScheduleModeSlotEvaluator {
 	const DepartureOrderDestinationDetector &source;
 	DepartureType type;
 	DepartureCallingSettings calling_settings;
+	DispatchScheduleModeSequenceIdHandler &sequence_id_handler;
 	std::vector<ArrivalHistoryEntry> &arrival_history;
 	std::vector<DispatchArrivalRecord> *dispatch_arrival_ticks; // This may be nullptr if not required
 
@@ -1430,6 +1438,9 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	d.show_as = this->calling_settings.GetShowAsType(source_order, D_DEPARTURE);
 	d.order = source_order;
 	d.scheduled_waiting_time = source_order->IsScheduledDispatchOrder(true) ? Departure::MISSING_WAIT_TICKS : Departure::INVALID_WAIT_TICKS;
+	if (this->calling_settings.VehicleCycleTrackingEnabled() && source_order == this->start_order) {
+		d.sequence_id = this->sequence_id_handler.last_sequence_id;
+	}
 
 	/* We'll be going through the order list later, so we need a separate variable for it. */
 	const Order *order = source_order;
@@ -1530,7 +1541,8 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 void DepartureListScheduleModeSlotEvaluator::CheckSourceOrderArrival(const Order *order, StateTicks departure_tick)
 {
 	if (this->dispatch_arrival_ticks != nullptr && departure_tick != this->slot) {
-		this->dispatch_arrival_ticks->emplace_back(order, departure_tick - order->GetWaitTime());
+		this->dispatch_arrival_ticks->emplace_back(order, departure_tick - order->GetWaitTime(),
+				this->sequence_id_handler.last_sequence_id);
 	}
 }
 
@@ -1539,6 +1551,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 	this->slot_index = slot_index;
 	this->slot = this->ds.GetScheduledDispatchStartTick() + this->ds.GetScheduledDispatch()[slot_index].offset;
 	StateTicks departure_tick = this->slot;
+	++this->sequence_id_handler.last_sequence_id;
 	this->arrival_history.clear();
 
 	/* The original last dispatch time will be restored in MakeDepartureListScheduleMode */
@@ -1584,6 +1597,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 			d.show_as = this->calling_settings.GetShowAsType(order, D_ARRIVAL);
 			d.order = order;
 			d.scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
+			if (this->calling_settings.VehicleCycleTrackingEnabled()) d.sequence_id = this->sequence_id_handler.last_sequence_id;
 			if (ProcessArrivalHistory(&d, this->arrival_history, (departure_tick - this->slot).AsTicks(), this->source, this->calling_settings)) {
 				this->result.push_back(std::make_unique<Departure>(std::move(d)));
 			}
@@ -1683,10 +1697,11 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 		const size_t done_first_slot_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
 		if (done_first_slot_dispatch_arrival_ticks > start_number_dispatch_arrival_ticks) {
 			for (size_t i = 1; i < slots.size(); i++) {
-				Ticks adjustment = slots[i].offset - first_offset;
+				const Ticks adjustment = slots[i].offset - first_offset;
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_first_slot_dispatch_arrival_ticks; j++) {
 					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
 					record.arrival_tick += adjustment;
+					if (record.sequence_id != 0) record.sequence_id += static_cast<uint32_t>(i);
 					this->dispatch_arrival_ticks->push_back(record);
 				}
 			}
@@ -1694,32 +1709,39 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 		const size_t done_schedule_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
 		if (done_schedule_dispatch_arrival_ticks > start_number_dispatch_arrival_ticks) {
 			for (uint i = 1; i < this->anno.repetition; i++) {
-				uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
+				const uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
+				const uint32_t seq_adjustment = static_cast<uint32_t>(i * slots.size());
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_schedule_dispatch_arrival_ticks; j++) {
 					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
 					record.arrival_tick += adjustment;
+					if (record.sequence_id != 0) record.sequence_id += seq_adjustment;
 					this->dispatch_arrival_ticks->push_back(record);
 				}
 			}
 		}
 
+		this->sequence_id_handler.last_sequence_id += static_cast<uint32_t>(this->anno.repetition * slots.size()) - 1;
+
 		/* Trivially repeat found departures */
 		const size_t done_first_slot_departures = this->result.size();
 		if (done_first_slot_departures == start_number_departures) return;
 		for (size_t i = 1; i < slots.size(); i++) {
-			Ticks adjustment = slots[i].offset - first_offset;
+			const Ticks adjustment = slots[i].offset - first_offset;
 			for (size_t j = start_number_departures; j != done_first_slot_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
 				d->ShiftTimes(StateTicksDelta{adjustment});
+				if (d->sequence_id != 0) d->sequence_id += static_cast<uint32_t>(i);
 				this->result.push_back(std::move(d));
 			}
 		}
 		const size_t done_schedule_departures = this->result.size();
 		for (uint i = 1; i < this->anno.repetition; i++) {
-			uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
+			const uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
+			const uint32_t seq_adjustment = static_cast<uint32_t>(i * slots.size());
 			for (size_t j = start_number_departures; j != done_schedule_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
 				d->ShiftTimes(StateTicksDelta{adjustment});
+				if (d->sequence_id != 0) d->sequence_id += seq_adjustment;
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1733,6 +1755,33 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 	std::vector<std::unique_ptr<Departure>> result;
 	std::vector<ArrivalHistoryEntry> arrival_history;
+
+	DispatchScheduleModeSequenceIdHandler sequence_id_handler{};
+
+	uint32_t last_seq_mapping_id = 0;
+	robin_hood::unordered_flat_map<uint32_t, uint32_t> seq_mapping;
+
+	auto link_seq_ids = [&](uint32_t a, uint32_t b) {
+		auto a_it = seq_mapping.find(a);
+		auto b_it = seq_mapping.find(b);
+		if (a_it != seq_mapping.end() && b_it != seq_mapping.end()) {
+			/* Merge existing sets */
+			const uint32_t old_id = a_it->second;
+			const uint32_t new_id = b_it->second;
+			for (auto &it : seq_mapping) {
+				if (it.second == old_id) it.second = new_id;
+			}
+		} else if (a_it != seq_mapping.end()) {
+			seq_mapping[b] = a_it->second;
+		} else if (b_it != seq_mapping.end()) {
+			seq_mapping[a] = b_it->second;
+		} else {
+			/* Make a new ID */
+			const uint32_t new_id = ++last_seq_mapping_id;
+			seq_mapping[a] = new_id;
+			seq_mapping[b] = new_id;
+		}
+	};
 
 	for (const Vehicle *veh : vehicles) {
 		if (!veh->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) continue;
@@ -1799,7 +1848,8 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 				DispatchSchedule &ds = const_cast<Vehicle *>(v)->orders->GetDispatchScheduleByIndex(schedule_index);
 				DepartureListScheduleModeSlotEvaluator evaluator{
-					result, v, start_order, ds, anno, schedule_index, source, type, calling_settings, arrival_history, calling_settings.DispatchArrivalTicksEnabled() ? &dispatch_arrival_ticks : nullptr
+					result, v, start_order, ds, anno, schedule_index, source, type, calling_settings, sequence_id_handler,
+					arrival_history, calling_settings.DispatchArrivalTicksEnabled() ? &dispatch_arrival_ticks : nullptr
 				};
 				evaluator.EvaluateSlots();
 			}
@@ -1856,6 +1906,11 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 							pending_departures.pop_back();
 
 							d->scheduled_waiting_time = (best_tick - arrival_tick).AsTicks();
+
+							if (d->sequence_id > 0 && it.sequence_id > 0) {
+								/* Vehicle cycle tracking is active, record a match to be resolved later. */
+								link_seq_ids(d->sequence_id, it.sequence_id);
+							}
 						}
 
 						if (pending_departures.empty()) break;
@@ -1881,11 +1936,44 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 	SortDepartures(result);
 
+	if (type == D_DEPARTURE && calling_settings.VehicleCycleTrackingEnabled()) {
+		uint32_t last_vehicle_idx = 0;
+		auto seq_mapping_to_vehicle_idx_map = std::make_unique<uint32_t[]>(last_seq_mapping_id);
+		for (std::unique_ptr<Departure> &d : result) {
+			if (d->sequence_id == 0) continue;
+
+			auto it = seq_mapping.find(d->sequence_id);
+			if (it == seq_mapping.end()) {
+				d->vehicle_idx = ++last_vehicle_idx;
+			} else {
+				uint32_t &seq_mapping_to_vehicle_idx = seq_mapping_to_vehicle_idx_map[it->second - 1];
+				if (seq_mapping_to_vehicle_idx == 0) seq_mapping_to_vehicle_idx = ++last_vehicle_idx;
+				d->vehicle_idx = seq_mapping_to_vehicle_idx;
+			}
+		}
+	}
+
 	if (type == D_DEPARTURE && calling_settings.SmartTerminusEnabled()) {
 		ScheduledDispatchSmartTerminusDetection(result, tick_duration);
 	}
 
 	return result;
+}
+
+void HandleDeparturesVehicleCycleTrackingSeparateMode(const DepartureList &departures, DepartureList &arrivals)
+{
+	robin_hood::unordered_flat_map<uint32_t, uint32_t> seq_to_vehicle_idx;
+
+	for (const std::unique_ptr<Departure> &d : departures) {
+		if (d->vehicle_idx > 0) seq_to_vehicle_idx[d->sequence_id] = d->vehicle_idx;
+	}
+	for (std::unique_ptr<Departure> &d : arrivals) {
+		if (d->sequence_id == 0) continue;
+		auto it = seq_to_vehicle_idx.find(d->sequence_id);
+		if (it != seq_to_vehicle_idx.end()) {
+			d->vehicle_idx = it->second;
+		}
+	}
 }
 
 /**

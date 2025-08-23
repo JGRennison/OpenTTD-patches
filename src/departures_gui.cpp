@@ -190,6 +190,15 @@ protected:
 		CompanyMask companies = {};
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
+		bool show_vehicle_name = false;
+		if (_settings_client.gui.departure_show_vehicle) {
+			if (this->order_list_filter != nullptr && this->source_mode == DSM_SCHEDULE_24H) {
+				this->veh_width = GetStringBoundingBox(GetString(STR_JUST_COMMA, GetParamMaxDigits(4))).width;
+			} else {
+				show_vehicle_name = true;
+			}
+		}
+
 		auto process_vehicle = [&](const Vehicle *veh) {
 			if (this->source_mode != DSM_LIVE && !veh->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)) return;
 			for (const Order *order : veh->Orders()) {
@@ -203,7 +212,7 @@ protected:
 					for (const Vehicle *v = veh; v != nullptr; v = v->NextShared()) {
 						if (this->source_mode == DSM_LIVE) this->vehicles.push_back(v);
 
-						if (_settings_client.gui.departure_show_vehicle) {
+						if (show_vehicle_name) {
 							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
 								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 							} else {
@@ -813,7 +822,8 @@ public:
 			settings.SetShowAllStops(this->show_empty);
 			settings.SetCargoFilter(show_pax, show_freight);
 			settings.SetSmartTerminusEnabled(_settings_client.gui.departure_smart_terminus && (this->source_type == DST_STATION));
-			settings.SetDispatchArrivalTicksEnabled(this->mode == DM_COMBINED && this->source_mode == DSM_SCHEDULE_24H);
+			settings.SetVehicleCycleTrackingEnabled(this->order_list_filter != nullptr && this->mode != DM_ARRIVALS && this->source_mode == DSM_SCHEDULE_24H);
+			settings.SetDispatchArrivalTicksEnabled(settings.VehicleCycleTrackingEnabled() || (this->mode == DM_COMBINED && this->source_mode == DSM_SCHEDULE_24H));
 
 			if (this->mode != DM_ARRIVALS) {
 				this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_DEPARTURE, settings);
@@ -821,9 +831,14 @@ public:
 				this->departures.clear();
 			}
 			if (this->mode == DM_ARRIVALS || this->mode == DM_SEPARATE) {
+				settings.SetDispatchArrivalTicksEnabled(false);
 				this->arrivals = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_ARRIVAL, settings);
 			} else {
 				this->arrivals.clear();
+			}
+
+			if (this->mode == DM_SEPARATE && settings.VehicleCycleTrackingEnabled()) {
+				HandleDeparturesVehicleCycleTrackingSeparateMode(this->departures, this->arrivals);
 			}
 
 			if (this->filter_target.IsValid()) {
@@ -1413,7 +1428,11 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int veh_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - veh_width : text_left + PadWidth(toc_width) + PadWidth(group_width);
 			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
 
-			DrawString(veh_left, veh_right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
+			if (this->order_list_filter != nullptr && this->source_mode == DSM_SCHEDULE_24H) {
+				if (d->vehicle_idx > 0) DrawString(veh_left, veh_right, y + 1, GetString(STR_JUST_COMMA, d->vehicle_idx), TC_SILVER);
+			} else {
+				DrawString(veh_left, veh_right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
+			}
 		}
 
 		/* Group name */
