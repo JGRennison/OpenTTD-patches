@@ -465,6 +465,15 @@ public:
 		this->filename_editbox.text.Assign(GenerateDefaultSaveName());
 	}
 
+	/** Generate a default order list filename. */
+	void GenerateOrderListName()
+	{
+		const Group *group = (veh == nullptr) ? nullptr : Group::GetIfValid(veh->group_id);
+		std::string name = (group == nullptr) ? "UNNAMED" : group->name;
+		SanitizeFilename(name);
+		this->filename_editbox.text.Assign(name);
+	}
+
 	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr)
 			: Window(desc), veh(veh), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
 	{
@@ -477,9 +486,12 @@ public:
 					this->GenerateFileName();
 					break;
 
+				case FT_ORDERLIST:
+					this->GenerateOrderListName();
+					break;
+
 				case FT_SCENARIO:
 				case FT_HEIGHTMAP:
-				case FT_ORDERLIST:
 					this->filename_editbox.text.Assign("UNNAMED");
 					break;
 
