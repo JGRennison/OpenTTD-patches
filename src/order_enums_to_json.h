@@ -117,7 +117,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(VehicleType, {
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionVariable, {
 	{OCV_END, nullptr},
 	{OCV_LOAD_PERCENTAGE, "load-percentage"},
-	{OCV_RELIABILITY, "readabilty"},
+	{OCV_RELIABILITY, "reliability"},
 	{OCV_MAX_SPEED, "max-speed"},
 	{OCV_AGE, "age"},
 	{OCV_REQUIRES_SERVICE, "requires-service"},
