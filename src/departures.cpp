@@ -1348,6 +1348,13 @@ Ticks GetDeparturesMaxTicksAhead()
 	}
 }
 
+struct DispatchArrivalRecord {
+	const Order *order;
+	StateTicks arrival_tick;
+
+	DispatchArrivalRecord(const Order *order, StateTicks arrival_tick) : order(order), arrival_tick(arrival_tick) {}
+};
+
 struct DepartureListScheduleModeSlotEvaluator {
 	struct DispatchScheduleAnno {
 		DispatchSchedule::PositionBackup original_position_backup;
@@ -1365,7 +1372,7 @@ struct DepartureListScheduleModeSlotEvaluator {
 	DepartureType type;
 	DepartureCallingSettings calling_settings;
 	std::vector<ArrivalHistoryEntry> &arrival_history;
-	std::vector<std::pair<const Order *, StateTicks>> *dispatch_arrival_ticks; // This may be nullptr if not required
+	std::vector<DispatchArrivalRecord> *dispatch_arrival_ticks; // This may be nullptr if not required
 
 	StateTicks slot{};
 	uint slot_index{};
@@ -1678,8 +1685,8 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			for (size_t i = 1; i < slots.size(); i++) {
 				Ticks adjustment = slots[i].offset - first_offset;
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_first_slot_dispatch_arrival_ticks; j++) {
-					std::pair<const Order *, StateTicks> record = (*this->dispatch_arrival_ticks)[j];
-					record.second += adjustment;
+					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
+					record.arrival_tick += adjustment;
 					this->dispatch_arrival_ticks->push_back(record);
 				}
 			}
@@ -1689,8 +1696,8 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			for (uint i = 1; i < this->anno.repetition; i++) {
 				uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_schedule_dispatch_arrival_ticks; j++) {
-					std::pair<const Order *, StateTicks> record = (*this->dispatch_arrival_ticks)[j];
-					record.second += adjustment;
+					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
+					record.arrival_tick += adjustment;
 					this->dispatch_arrival_ticks->push_back(record);
 				}
 			}
@@ -1782,7 +1789,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 		});
 
 		const size_t initial_result_size = result.size();
-		std::vector<std::pair<const Order *, StateTicks>> dispatch_arrival_ticks;
+		std::vector<DispatchArrivalRecord> dispatch_arrival_ticks;
 
 		for (const Order *start_order : v->Orders()) {
 			if (start_order->IsScheduledDispatchOrder(true)) {
@@ -1814,8 +1821,8 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 					if (pending_departures.empty()) continue;
 
 					for (const auto &it : dispatch_arrival_ticks) {
-						if (it.first != start_order) continue;
-						StateTicks arrival_tick = it.second;
+						if (it.order != start_order) continue;
+						StateTicks arrival_tick = it.arrival_tick;
 
 						size_t best_idx = SIZE_MAX;
 						StateTicks best_tick = StateTicks(INT64_MAX);
