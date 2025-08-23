@@ -96,6 +96,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char LOAD[]                        = "load";                        ///< enum
 		static constexpr char UNLOAD[]                      = "unload";                      ///< enum
 		static constexpr char LOAD_BY_CARGO_TYPE[]          = "load-by-cargo-type";          ///< object  Contains "load" and "unload" settings for specific cargo-ids
+		static constexpr char TIMETABLE_LEAVE_TYPE[]        = "timeable-leave-type";         ///< enum
 		static constexpr char COUNTER_ID[]                  = "counter-id";                  ///< int
 		static constexpr char SLOT_ID[]                     = "slot-id";                     ///< int
 		static constexpr char SLOT_GROUP_ID[]               = "slot-group-id";               ///< int
@@ -215,6 +216,10 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			json[OFName::STOP_LOCATION] = o.GetStopLocation();
 		} else if (vt == VEH_ROAD && o.GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 			json[OFName::STOP_DIRECTION] = o.GetRoadVehTravelDirection();
+		}
+
+		if (o.GetLeaveType() != OLT_NORMAL) {
+			json[OFName::TIMETABLE_LEAVE_TYPE] = o.GetLeaveType();
 		}
 	}
 
@@ -926,6 +931,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyTimetableCommand(OFName::MAX_SPEED, MTF_TRAVEL_SPEED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::WAIT_TIME, MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::TRAVEL_TIME, MTF_TRAVEL_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<OrderLeaveType>(OFName::TIMETABLE_LEAVE_TYPE, MTF_SET_LEAVE_TYPE, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::JUMP_TAKEN_TRAVEL_TIME, MTF_WAIT_TIME, JOIET_MINOR);
 
 	json_importer.TryApplyModifyOrder<OrderStopLocation>(OFName::STOP_LOCATION, MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);

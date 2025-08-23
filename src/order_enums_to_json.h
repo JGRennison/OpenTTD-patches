@@ -70,6 +70,14 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadFlags, {
 	{OLFB_NO_LOAD, "no-load"}
 })
 
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderLeaveType, {
+	{OLT_END, nullptr},
+	{OLT_NORMAL, "normal"},
+	{OLT_LEAVE_EARLY, "leave-early"},
+	{OLT_LEAVE_EARLY_FULL_ANY, "leave-early-if-any-cargo-full"},
+	{OLT_LEAVE_EARLY_FULL_ALL, "leave-early-if-all-cargo-full"}
+})
+
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadFlags, {
 	{static_cast<OrderUnloadFlags>(-1), nullptr},
 	{OUF_UNLOAD_IF_POSSIBLE, "unload"},
