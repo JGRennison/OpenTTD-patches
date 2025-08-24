@@ -395,6 +395,12 @@ public:
 			buf.finalise();
 		}
 
+		bool have_game_lock = true;
+		if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
+			this->WriteToStdout("Failed to acquire gamelock before filling crash log\n\n");
+			have_game_lock = false;
+		}
+
 		this->WriteToStdout("Writing crash log to disk...\n");
 		this->PrepareLogFileName(this->crashlog_filename, lastof(this->crashlog_filename), name_buffer);
 		bool bret = this->OpenLogFile(this->crashlog_filename);
@@ -408,7 +414,7 @@ public:
 		}
 		this->crash_buffer_write = buffer;
 
-		char *end = this->FillCrashLog(buffer, last);
+		char *end = this->FillCrashLog(buffer, last, have_game_lock);
 		this->CloseCrashLogFile(end);
 		this->WriteToStdout("Crash log generated.\n\n");
 

@@ -517,7 +517,7 @@ void CrashLog::LogSettings(format_target &buffer) const
  * @param last   The last position in the buffer to write to.
  * @return the position of the \c '\0' character after the buffer.
  */
-char *CrashLog::FillCrashLog(char *buffer, const char *last)
+char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock)
 {
 	this->StartCrashLogFaultHandler();
 	buffer = format_to_fixed_z::format_to(buffer, last, "*** OpenTTD Crash Report ***\n\n");
@@ -546,16 +546,16 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	});
 
 #if !defined(DISABLE_SCOPE_INFO)
-	buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, format_target &buffer) {
-		if (IsGameThread()) {
+	if (have_game_lock) {
+		buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, format_target &buffer) {
 			WriteScopeLog(buffer);
-		}
-	});
+		});
+	}
 #endif
 
-	if (_networking) {
+	if (_networking && have_game_lock) {
 		buffer = this->TryCrashLogFaultSection(buffer, last, "network sync", [](CrashLog *self, format_target &buffer) {
-			if (IsGameThread() && _record_sync_records && !_network_sync_records.empty()) {
+			if (_record_sync_records && !_network_sync_records.empty()) {
 				uint total = 0;
 				for (uint32_t count : _network_sync_record_counts) {
 					total += count;
@@ -950,8 +950,10 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	}
 #endif
 
+	bool have_game_lock = true;
 	if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
 		this->WriteToStdout("Failed to acquire gamelock before filling crash log\n\n");
+		have_game_lock = false;
 	}
 
 	this->WriteToStdout("Crash encountered, generating crash log...\n");
@@ -969,7 +971,7 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	}
 	this->crash_buffer_write = buffer;
 
-	char *end = this->FillCrashLog(buffer, last);
+	char *end = this->FillCrashLog(buffer, last, have_game_lock);
 	this->CloseCrashLogFile(end);
 	this->WriteToStdout("Crash log generated.\n\n");
 

@@ -156,7 +156,7 @@ public:
 	virtual void WriteToStdout(std::string_view data) = 0;
 	virtual void CloseLogFile() = 0;
 
-	char *FillCrashLog(char *buffer, const char *last);
+	char *FillCrashLog(char *buffer, const char *last, bool have_game_lock);
 	void FlushCrashLogBuffer(const char *end);
 	void CloseCrashLogFile(const char *end);
 	void FillDesyncCrashLog(struct format_target &buffer, const DesyncExtraInfo &info) const;
