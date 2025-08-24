@@ -1351,11 +1351,13 @@ Ticks GetDeparturesMaxTicksAhead()
 
 struct DispatchArrivalRecord {
 	const Order *order;
+	const Order *source_order;
 	StateTicks arrival_tick;
+	StateTicks departure_tick;
 	uint32_t sequence_id;
 
-	DispatchArrivalRecord(const Order *order, StateTicks arrival_tick, uint32_t sequence_id)
-			: order(order), arrival_tick(arrival_tick), sequence_id(sequence_id) {}
+	DispatchArrivalRecord(const Order *order, StateTicks arrival_tick, const Order *source_order, StateTicks departure_tick, uint32_t sequence_id)
+			: order(order), source_order(source_order), arrival_tick(arrival_tick), departure_tick(departure_tick), sequence_id(sequence_id) {}
 };
 
 struct DispatchScheduleModeSequenceIdHandler {
@@ -1542,6 +1544,7 @@ void DepartureListScheduleModeSlotEvaluator::CheckSourceOrderArrival(const Order
 {
 	if (this->dispatch_arrival_ticks != nullptr && departure_tick != this->slot) {
 		this->dispatch_arrival_ticks->emplace_back(order, departure_tick - order->GetWaitTime(),
+				this->start_order, this->slot,
 				this->sequence_id_handler.last_sequence_id);
 	}
 }
@@ -1701,6 +1704,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_first_slot_dispatch_arrival_ticks; j++) {
 					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
 					record.arrival_tick += adjustment;
+					record.departure_tick += adjustment;
 					if (record.sequence_id != 0) record.sequence_id += static_cast<uint32_t>(i);
 					this->dispatch_arrival_ticks->push_back(record);
 				}
@@ -1714,6 +1718,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 				for (size_t j = start_number_dispatch_arrival_ticks; j != done_schedule_dispatch_arrival_ticks; j++) {
 					DispatchArrivalRecord record = (*this->dispatch_arrival_ticks)[j];
 					record.arrival_tick += adjustment;
+					record.departure_tick += adjustment;
 					if (record.sequence_id != 0) record.sequence_id += seq_adjustment;
 					this->dispatch_arrival_ticks->push_back(record);
 				}
@@ -1858,35 +1863,56 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 		if (calling_settings.DispatchArrivalTicksEnabled() && !dispatch_arrival_ticks.empty()) {
 			/* Use dispatch arrival tick map to fill in missing arrival times for vehicles dispatched from here, if required */
 			std::vector<Departure *> pending_departures;
+			std::vector<const DispatchArrivalRecord *> pending_arrival_records;
+			robin_hood::unordered_flat_set<StateTicks> pending_departure_ticks;
 			for (const Order *start_order : v->Orders()) {
 				if (start_order->IsScheduledDispatchOrder(true)) {
 					pending_departures.clear();
+					pending_arrival_records.clear();
 					for (size_t i = initial_result_size; i < result.size(); i++) {
 						Departure *d = result[i].get();
 						if (d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS && d->order == start_order) {
 							pending_departures.push_back(d);
+							if (calling_settings.VehicleCycleTrackingEnabled()) pending_departure_ticks.insert(d->scheduled_tick);
 						}
 					}
+					if (calling_settings.VehicleCycleTrackingEnabled()) {
+						for (const auto &it : dispatch_arrival_ticks) {
+							if (it.source_order == start_order && !pending_departure_ticks.contains(it.departure_tick)) {
+								pending_arrival_records.push_back(&it);
+							}
+						}
+						pending_departure_ticks.clear();
+					}
 
-					if (pending_departures.empty()) continue;
+					if (pending_departures.empty() && pending_arrival_records.empty()) continue;
 
 					for (const auto &it : dispatch_arrival_ticks) {
 						if (it.order != start_order) continue;
 						StateTicks arrival_tick = it.arrival_tick;
 
-						size_t best_idx = SIZE_MAX;
+						enum class BestSourceType : uint8_t {
+							None,
+							Departure,
+							ArrivalRecord,
+						};
+						BestSourceType best_type = BestSourceType::None;
+						size_t best_idx{};
 						StateTicks best_tick = StateTicks(INT64_MAX);
+						bool best_wrapped{};
 
 						/* Evaluate pending departures */
 						for (size_t i = 0; i < pending_departures.size(); i++) {
 							const Departure *d = pending_departures[i];
 
 							StateTicks tick = d->scheduled_tick;
-							if (arrival_tick <= tick - d->order->GetWaitTime()) {
+							bool is_wrapped = false;
+							if (arrival_tick <= tick - start_order->GetWaitTime()) {
 								/* Found a usable departure */
-							} else if (arrival_tick <= tick + tick_duration - d->order->GetWaitTime()) {
+							} else if (arrival_tick <= tick + tick_duration - start_order->GetWaitTime()) {
 								/* Found a usable departure, with the schedule duration added (wrapping at end of schedule) */
 								tick += tick_duration;
+								is_wrapped = true;
 							} else {
 								/* Not usable */
 								continue;
@@ -1894,12 +1920,25 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 							/* Found first/better departure */
 							if (tick < best_tick) {
+								best_type = BestSourceType::Departure;
 								best_idx = i;
 								best_tick = tick;
+								best_wrapped = is_wrapped;
 							}
 						}
 
-						if (best_idx != SIZE_MAX) {
+						for (size_t i = 0; i < pending_arrival_records.size(); i++) {
+							/* Found first/better arrival record */
+							StateTicks tick = pending_arrival_records[i]->departure_tick;
+							if (arrival_tick <= tick - start_order->GetWaitTime() && tick < best_tick) {
+								best_type = BestSourceType::ArrivalRecord;
+								best_idx = i;
+								best_tick = pending_arrival_records[i]->departure_tick;
+								best_wrapped = false;
+							}
+						}
+
+						if (best_type == BestSourceType::Departure) {
 							/* Found a suitable departure for this arrival, update the waiting time (i.e. arrival time) and remove from pending list */
 							Departure *d = pending_departures[best_idx];
 							pending_departures[best_idx] = pending_departures.back();
@@ -1907,13 +1946,23 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 							d->scheduled_waiting_time = (best_tick - arrival_tick).AsTicks();
 
-							if (d->sequence_id > 0 && it.sequence_id > 0) {
+							if (!best_wrapped && d->sequence_id > 0 && it.sequence_id > 0) {
 								/* Vehicle cycle tracking is active, record a match to be resolved later. */
 								link_seq_ids(d->sequence_id, it.sequence_id);
 							}
 						}
+						if (best_type == BestSourceType::ArrivalRecord) {
+							const DispatchArrivalRecord *record = pending_arrival_records[best_idx];
+							pending_arrival_records[best_idx] = pending_arrival_records.back();
+							pending_arrival_records.pop_back();
 
-						if (pending_departures.empty()) break;
+							if (record->sequence_id > 0 && it.sequence_id > 0) {
+								/* Vehicle cycle tracking is active, record a match to be resolved later. */
+								link_seq_ids(record->sequence_id, it.sequence_id);
+							}
+						}
+
+						if (pending_departures.empty() && pending_arrival_records.empty()) break;
 					}
 				}
 			}
@@ -1962,16 +2011,23 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 void HandleDeparturesVehicleCycleTrackingSeparateMode(const DepartureList &departures, DepartureList &arrivals)
 {
-	robin_hood::unordered_flat_map<uint32_t, uint32_t> seq_to_vehicle_idx;
+	struct Record {
+		uint32_t vehicle_idx;
+		StateTicks tick;
+	};
+	robin_hood::unordered_flat_map<uint32_t, Record> seq_to_vehicle_idx;
 
 	for (const std::unique_ptr<Departure> &d : departures) {
-		if (d->vehicle_idx > 0) seq_to_vehicle_idx[d->sequence_id] = d->vehicle_idx;
+		if (d->vehicle_idx > 0) {
+			seq_to_vehicle_idx[d->sequence_id] = { d->vehicle_idx, d->scheduled_tick };
+		}
 	}
 	for (std::unique_ptr<Departure> &d : arrivals) {
 		if (d->sequence_id == 0) continue;
 		auto it = seq_to_vehicle_idx.find(d->sequence_id);
 		if (it != seq_to_vehicle_idx.end()) {
-			d->vehicle_idx = it->second;
+			const Record &record = it->second;
+			if (d->scheduled_tick > record.tick) d->vehicle_idx = record.vehicle_idx;
 		}
 	}
 }
