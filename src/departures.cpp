@@ -339,6 +339,8 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 	btree::btree_map<CallAtTargetID, StateTicks> earliest_seen;
 
 	auto check_departure = [&](Departure *d) {
+		if (d->type != D_DEPARTURE) return;
+
 		size_t calling_at_size = d->calling_at.size();
 
 		/* If the terminus has already been moved back, find the right starting offset */
@@ -1378,7 +1380,6 @@ struct DepartureListScheduleModeSlotEvaluator {
 	DispatchScheduleAnno &anno;
 	const uint schedule_index;
 	const DepartureOrderDestinationDetector &source;
-	DepartureType type;
 	DepartureCallingSettings calling_settings;
 	DispatchScheduleModeSequenceIdHandler &sequence_id_handler;
 	std::vector<ArrivalHistoryEntry> &arrival_history;
@@ -1388,14 +1389,15 @@ struct DepartureListScheduleModeSlotEvaluator {
 	uint slot_index{};
 	bool departure_dependant_condition_found = false;
 
-	void EvaluateSlots();
+	void EvaluateSlots(DepartureTypes types);
 
 private:
 	inline bool IsDepartureDependantConditionVariable(OrderConditionVariable ocv) const { return ocv == OCV_DISPATCH_SLOT || ocv == OCV_TIME_DATE; }
 
 	DeparturesConditionalJumpResult EvaluateConditionalOrder(const Order *order, StateTicks eval_tick);
 	std::pair<const Order *, StateTicks> EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
-	void EvaluateSlotIndex(uint slot_index);
+	void EvaluateSlotIndex(uint slot_index, DepartureTypes types);
+	void EvaluateSlotIndexForType(uint slot_index, DepartureType type);
 	void CheckSourceOrderArrival(const Order *order, StateTicks departure_tick);
 };
 
@@ -1549,11 +1551,10 @@ void DepartureListScheduleModeSlotEvaluator::CheckSourceOrderArrival(const Order
 	}
 }
 
-void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
+void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index, DepartureTypes types)
 {
 	this->slot_index = slot_index;
 	this->slot = this->ds.GetScheduledDispatchStartTick() + this->ds.GetScheduledDispatch()[slot_index].offset;
-	StateTicks departure_tick = this->slot;
 	++this->sequence_id_handler.last_sequence_id;
 	this->arrival_history.clear();
 
@@ -1563,6 +1564,14 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 		this->ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
 	});
 
+	for (DepartureType type : types.IterateSetBits()) {
+		this->EvaluateSlotIndexForType(slot_index, type);
+	}
+}
+
+void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(uint slot_index, DepartureType type)
+{
+	StateTicks departure_tick = this->slot;
 	const Order *order = this->start_order;
 
 	while (type == D_DEPARTURE && calling_settings.IsDeparture(order, this->source)) {
@@ -1610,7 +1619,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 		departure_tick += order->GetWaitTime();
 
 		if (order->IsScheduledDispatchOrder(true)) {
-			this->CheckSourceOrderArrival(order, departure_tick);
+			if (type == D_DEPARTURE) this->CheckSourceOrderArrival(order, departure_tick);
 			return;
 		}
 
@@ -1665,7 +1674,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 	}
 }
 
-void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
+void DepartureListScheduleModeSlotEvaluator::EvaluateSlots(DepartureTypes types)
 {
 	const size_t start_number_departures = this->result.size();
 
@@ -1673,12 +1682,12 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 	const size_t start_number_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
 
 	this->departure_dependant_condition_found = false;
-	this->EvaluateSlotIndex(0);
+	this->EvaluateSlotIndex(0, types);
 	const auto &slots = this->ds.GetScheduledDispatch();
 	if (this->departure_dependant_condition_found) {
 		/* Need to evaluate every slot individually */
 		for (uint i = 1; i < (uint)slots.size(); i++) {
-			this->EvaluateSlotIndex(i);
+			this->EvaluateSlotIndex(i, types);
 		}
 
 		if (this->anno.repetition > 1) {
@@ -1689,7 +1698,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			for (uint i = 1; i < this->anno.repetition; i++) {
 				this->ds.SetScheduledDispatchStartTick(this->ds.GetScheduledDispatchStartTick() + this->ds.GetScheduledDispatchDuration());
 				for (uint j = 0; j < (uint)slots.size(); j++) {
-					this->EvaluateSlotIndex(j);
+					this->EvaluateSlotIndex(j, types);
 				}
 			}
 		}
@@ -1753,7 +1762,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 	}
 }
 
-static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureType type,
+static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureTypes types,
 		DepartureCallingSettings calling_settings, const StateTicks start_tick, const StateTicks end_tick, const uint max_departure_slots_per_schedule)
 {
 	const Ticks tick_duration = (end_tick - start_tick).AsTicks();
@@ -1853,10 +1862,10 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 				DispatchSchedule &ds = const_cast<Vehicle *>(v)->orders->GetDispatchScheduleByIndex(schedule_index);
 				DepartureListScheduleModeSlotEvaluator evaluator{
-					result, v, start_order, ds, anno, schedule_index, source, type, calling_settings, sequence_id_handler,
+					result, v, start_order, ds, anno, schedule_index, source, calling_settings, sequence_id_handler,
 					arrival_history, calling_settings.DispatchArrivalTicksEnabled() ? &dispatch_arrival_ticks : nullptr
 				};
-				evaluator.EvaluateSlots();
+				evaluator.EvaluateSlots(types);
 			}
 		}
 
@@ -1871,7 +1880,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 					pending_arrival_records.clear();
 					for (size_t i = initial_result_size; i < result.size(); i++) {
 						Departure *d = result[i].get();
-						if (d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS && d->order == start_order) {
+						if (d->type == D_DEPARTURE && d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS && d->order == start_order) {
 							pending_departures.push_back(d);
 							if (calling_settings.VehicleCycleTrackingEnabled()) pending_departure_ticks.insert(d->scheduled_tick);
 						}
@@ -1980,29 +1989,38 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 		}
 		if (new_tick != d->scheduled_tick) {
 			d->ShiftTimes(new_tick - d->scheduled_tick);
+			d->sequence_id = 0;
 		}
 	}
 
 	SortDepartures(result);
 
-	if (type == D_DEPARTURE && calling_settings.VehicleCycleTrackingEnabled()) {
+	if (calling_settings.VehicleCycleTrackingEnabled()) {
 		uint32_t last_vehicle_idx = 0;
 		auto seq_mapping_to_vehicle_idx_map = std::make_unique<uint32_t[]>(last_seq_mapping_id);
+		robin_hood::unordered_flat_map<uint32_t, uint32_t> single_seq_id_to_vehicle_idx_map;
 		for (std::unique_ptr<Departure> &d : result) {
 			if (d->sequence_id == 0) continue;
 
 			auto it = seq_mapping.find(d->sequence_id);
 			if (it == seq_mapping.end()) {
-				d->vehicle_idx = ++last_vehicle_idx;
+				if (d->type == D_DEPARTURE) {
+					uint32_t &idx = single_seq_id_to_vehicle_idx_map[d->sequence_id];
+					if (idx == 0) idx = ++last_vehicle_idx;
+					d->vehicle_idx = idx;
+				} else {
+					auto idx_it = single_seq_id_to_vehicle_idx_map.find(d->sequence_id);
+					if (idx_it != single_seq_id_to_vehicle_idx_map.end()) d->vehicle_idx = idx_it->second;
+				}
 			} else {
 				uint32_t &seq_mapping_to_vehicle_idx = seq_mapping_to_vehicle_idx_map[it->second - 1];
-				if (seq_mapping_to_vehicle_idx == 0) seq_mapping_to_vehicle_idx = ++last_vehicle_idx;
+				if (seq_mapping_to_vehicle_idx == 0 && d->type == D_DEPARTURE) seq_mapping_to_vehicle_idx = ++last_vehicle_idx;
 				d->vehicle_idx = seq_mapping_to_vehicle_idx;
 			}
 		}
 	}
 
-	if (type == D_DEPARTURE && calling_settings.SmartTerminusEnabled()) {
+	if (types.Test(D_DEPARTURE) && calling_settings.SmartTerminusEnabled()) {
 		ScheduledDispatchSmartTerminusDetection(result, tick_duration);
 	}
 
@@ -2037,16 +2055,31 @@ void HandleDeparturesVehicleCycleTrackingSeparateMode(const DepartureList &depar
  * @param source_mode the departure source mode to use
  * @param source the station/etc to compute the departures of
  * @param vehicles set of all the vehicles stopping at this station, of all vehicles types that we are interested in
- * @param type the type of departures to get (departures or arrivals)
+ * @param types the types of departures to get (departures or arrivals)
  * @param calling_settings departure calling settings
  * @return a list of departures, which is empty if an error occurred
  */
 DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles,
-		DepartureType type, DepartureCallingSettings calling_settings)
+		DepartureTypes types, DepartureCallingSettings calling_settings)
 {
+	DepartureList departures;
+	DepartureList arrivals;
 	switch (source_mode) {
 		case DSM_LIVE:
-			return MakeDepartureListLiveMode(source, vehicles, type, calling_settings);
+			if (types.Test(D_DEPARTURE)) departures = MakeDepartureListLiveMode(source, vehicles, D_DEPARTURE, calling_settings);
+			if (types.Test(D_ARRIVAL)) arrivals = MakeDepartureListLiveMode(source, vehicles, D_ARRIVAL, calling_settings);
+			if (departures.empty()) {
+				departures = std::move(arrivals);
+			} else if (!arrivals.empty()) {
+				/* Merge */
+				const size_t partition = departures.size();
+				departures.insert(departures.end(), std::make_move_iterator(arrivals.begin()), std::make_move_iterator(arrivals.end()));
+				std::inplace_merge(departures.begin(), departures.begin() + partition, departures.end(),
+						[](const std::unique_ptr<Departure> &a, const std::unique_ptr<Departure> &b) {
+							return a->scheduled_tick < b->scheduled_tick;
+						});
+			}
+			return departures;
 
 		case DSM_SCHEDULE_24H: {
 			if (!_settings_time.time_in_minutes) return {};
@@ -2055,7 +2088,7 @@ DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrder
 			StateTicks end_tick = _settings_time.FromTickMinutes(start + (24 * 60));
 
 			/* Set maximum to 90 departures per hour per dispatch schedule, to prevent excessive numbers of departures */
-			return MakeDepartureListScheduleMode(source, vehicles, type, calling_settings, start_tick, end_tick, 90 * 24);
+			return MakeDepartureListScheduleMode(source, vehicles, types, calling_settings, start_tick, end_tick, 90 * 24);
 		}
 
 		default:

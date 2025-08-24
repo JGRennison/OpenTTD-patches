@@ -138,9 +138,8 @@ struct DeparturesWindow : public Window {
 protected:
 	DepartureSourceType source_type{};          ///< Source type.
 	DepartureOrderDestinationDetector source{}; ///< Source order detector.
-	DepartureList departures{};                 ///< The current list of departures from this station.
-	DepartureList arrivals{};                   ///< The current list of arrivals from this station.
-	bool departures_invalid = true;             ///< The departures and arrivals list are currently invalid.
+	DepartureList departures{};                 ///< The current list of departures and/or arrivals from this station.
+	bool departures_invalid = true;             ///< The departures/arrivals list is currently invalid.
 	bool vehicles_invalid = true;               ///< The vehicles list is currently invalid.
 	uint entry_height = 0;                      ///< The height of an entry in the departures list.
 	uint64_t elapsed_ms = 0;                    ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
@@ -580,43 +579,15 @@ public:
 				if (this->departures_invalid) return;
 
 				/* We need to find the departure corresponding to where the user clicked. */
-				uint32_t id_v = (pt.y - this->GetWidget<NWidgetBase>(WID_DB_LIST)->pos_y) / this->entry_height;
+				size_t id_v = (pt.y - this->GetWidget<NWidgetBase>(WID_DB_LIST)->pos_y) / this->entry_height;
 
-				if (id_v >= (uint32_t)this->vscroll->GetCapacity()) return; // click out of bounds
+				if (id_v >= (size_t)this->vscroll->GetCapacity()) return; // click out of bounds
 
-				id_v += (uint32_t)this->vscroll->GetPosition();
+				id_v += this->vscroll->GetPosition();
 
-				if (id_v >= (this->departures.size() + this->arrivals.size())) return; // click out of list bound
+				if (id_v >= this->departures.size()) return; // click out of list bound
 
-				uint departure = 0;
-				uint arrival = 0;
-
-				/* Draw each departure. */
-				for (uint i = 0; i <= id_v; ++i) {
-					const Departure *d = nullptr;
-
-					if (arrival == this->arrivals.size()) {
-						d = this->departures[departure++].get();
-					} else if (departure == this->departures.size()) {
-						d = this->arrivals[arrival++].get();
-					} else {
-						d = this->departures[departure].get();
-						const Departure *a = this->arrivals[arrival].get();
-
-						if (a->scheduled_tick < d->scheduled_tick) {
-							d = a;
-							arrival++;
-						} else {
-							departure++;
-						}
-					}
-
-					if (i == id_v) {
-						ShowVehicleViewWindow(d->vehicle);
-						break;
-					}
-				}
-
+				ShowVehicleViewWindow(this->departures[id_v]->vehicle);
 				break;
 			}
 
@@ -825,21 +796,14 @@ public:
 			settings.SetVehicleCycleTrackingEnabled(this->order_list_filter != nullptr && this->mode != DM_ARRIVALS && this->source_mode == DSM_SCHEDULE_24H);
 			settings.SetDispatchArrivalTicksEnabled(settings.VehicleCycleTrackingEnabled() || (this->mode == DM_COMBINED && this->source_mode == DSM_SCHEDULE_24H));
 
+			DepartureTypes types{};
 			if (this->mode != DM_ARRIVALS) {
-				this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_DEPARTURE, settings);
-			} else {
-				this->departures.clear();
+				types.Set(D_DEPARTURE);
 			}
 			if (this->mode == DM_ARRIVALS || this->mode == DM_SEPARATE) {
-				settings.SetDispatchArrivalTicksEnabled(false);
-				this->arrivals = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_ARRIVAL, settings);
-			} else {
-				this->arrivals.clear();
+				types.Set(D_ARRIVAL);
 			}
-
-			if (this->mode == DM_SEPARATE && settings.VehicleCycleTrackingEnabled()) {
-				HandleDeparturesVehicleCycleTrackingSeparateMode(this->departures, this->arrivals);
-			}
+			this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, types, settings);
 
 			if (this->filter_target.IsValid()) {
 				auto erase_non_matching = [&](const std::unique_ptr<Departure> &d) -> bool {
@@ -850,7 +814,6 @@ public:
 					return true;
 				};
 				this->departures.erase(std::remove_if(this->departures.begin(), this->departures.end(), erase_non_matching), this->departures.end());
-				this->arrivals.erase(std::remove_if(this->arrivals.begin(), this->arrivals.end(), erase_non_matching), this->arrivals.end());
 			}
 
 			this->departures_invalid = false;
@@ -1051,7 +1014,7 @@ void DeparturesWindow::RecomputeDateWidth()
 
 uint DeparturesWindow::GetScrollbarCapacity() const
 {
-	uint count = (uint)this->departures.size() + (uint)this->arrivals.size();
+	uint count = (uint)this->departures.size();
 	if (this->source_mode == DSM_LIVE) count = std::min<uint>(_settings_client.gui.max_departures, count);
 	return count;
 }
@@ -1116,7 +1079,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	const int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->GetScrollbarCapacity());
+	size_t max_departures = std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->GetScrollbarCapacity());
 
 	const int small_font_size = _settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL);
 
@@ -1175,32 +1138,9 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	/* Find the maximum vehicle name width. */
 	int veh_width = _settings_client.gui.departure_show_vehicle ? this->veh_width : 0;
 
-	uint departure = 0;
-	uint arrival = 0;
-
 	/* Draw each departure. */
-	for (uint i = 0; i < max_departures; ++i) {
-		const Departure *d;
-
-		if (arrival == this->arrivals.size()) {
-			d = this->departures[departure++].get();
-		} else if (departure == this->departures.size()) {
-			d = this->arrivals[arrival++].get();
-		} else {
-			d = this->departures[departure].get();
-			const Departure *a = this->arrivals[arrival].get();
-
-			if (a->scheduled_tick < d->scheduled_tick) {
-				d = a;
-				arrival++;
-			} else {
-				departure++;
-			}
-		}
-
-		if (i < (uint32_t)this->vscroll->GetPosition()) {
-			continue;
-		}
+	for (size_t i = this->vscroll->GetPosition(); i < max_departures; ++i) {
+		const Departure *d = this->departures[i].get();
 
 		if (!d->terminus.IsValid()) continue;
 

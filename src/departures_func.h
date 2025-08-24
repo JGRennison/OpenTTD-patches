@@ -17,8 +17,7 @@
 
 #include <vector>
 
-DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureType type, DepartureCallingSettings calling_settings);
-void HandleDeparturesVehicleCycleTrackingSeparateMode(const DepartureList &departures, DepartureList &arrivals);
+DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureTypes types, DepartureCallingSettings calling_settings);
 
 Ticks GetDeparturesMaxTicksAhead();
 

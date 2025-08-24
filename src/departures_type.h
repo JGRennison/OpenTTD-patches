@@ -17,6 +17,7 @@
 #include "order_base.h"
 #include "vehicle_base.h"
 #include "core/bitmath_func.hpp"
+#include "core/enum_type.hpp"
 #include <vector>
 
 /** Whether or not a vehicle has arrived for a departure. */
@@ -32,6 +33,7 @@ enum DepartureType : uint8_t {
 	D_DEPARTURE = 0,
 	D_ARRIVAL = 1,
 };
+using DepartureTypes = EnumBitSet<DepartureType, uint8_t>;
 
 enum DeparturesSourceMode : uint8_t {
 	DSM_LIVE,
