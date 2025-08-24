@@ -5449,9 +5449,16 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 			}
 		}
 	}
-	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
-		t->vehstatus.Set(VehState::TrainSlowing);
-		return true;
+	if (seg_state == SIGSEG_PBS) {
+		if (!CheckTrainStayInWormHolePathReserve(t, tile)) {
+			t->vehstatus.Set(VehState::TrainSlowing);
+			return true;
+		}
+	} else {
+		if (GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_RED) {
+			t->vehstatus.Set(VehState::TrainSlowing);
+			return true;
+		}
 	}
 
 	return false;
