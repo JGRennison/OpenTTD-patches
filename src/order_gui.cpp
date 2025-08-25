@@ -2706,8 +2706,11 @@ public:
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
 
-				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-					return GetString(stringid, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
+				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
+					if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+						return GetString(stringid, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
+					}
+					return GetString(stringid);
 				}
 				return {};
 			}
