@@ -327,8 +327,9 @@ static void SortDepartures(DepartureList &departure_list)
 {
 	std::sort(departure_list.begin(), departure_list.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
 		if (a->scheduled_tick == b->scheduled_tick) {
-			return std::tie(a->terminus.target, a->terminus.scheduled_tick, a->vehicle->index)
-					< std::tie(b->terminus.target, b->terminus.scheduled_tick, b->vehicle->index);
+			/* sort type field in the opposite direction so that arrivals come before departures */
+			return std::tie(b->type, a->terminus.target, a->terminus.scheduled_tick, a->vehicle->index)
+					< std::tie(a->type, b->terminus.target, b->terminus.scheduled_tick, b->vehicle->index);
 		}
 		return a->scheduled_tick < b->scheduled_tick;
 	});
@@ -2076,6 +2077,9 @@ DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrder
 				departures.insert(departures.end(), std::make_move_iterator(arrivals.begin()), std::make_move_iterator(arrivals.end()));
 				std::inplace_merge(departures.begin(), departures.begin() + partition, departures.end(),
 						[](const std::unique_ptr<Departure> &a, const std::unique_ptr<Departure> &b) {
+							if (a->scheduled_tick == b->scheduled_tick) {
+								return a->type > b->type;
+							}
 							return a->scheduled_tick < b->scheduled_tick;
 						});
 			}
