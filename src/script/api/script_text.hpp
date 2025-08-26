@@ -130,7 +130,6 @@ public:
 
 private:
 	using ScriptTextRef = ScriptObjectRef<ScriptText>;
-	using StringIDList = std::vector<StringIndexInTab>;
 	using ScriptTextList = std::vector<ScriptText *>;
 	using Param = std::variant<SQInteger, std::string, ScriptTextRef>;
 
@@ -153,8 +152,6 @@ private:
 	std::array<Param, SCRIPT_TEXT_MAX_PARAMETERS> param = {};
 	int paramc = 0;
 
-	void _TextParamError(std::string msg);
-
 	/**
 	 * Internal function to recursively fill a list of parameters.
 	 * The parameters are added as _GetEncodedText used to encode them
@@ -173,8 +170,6 @@ private:
 	 * @param first Whether it's the first call in the recursion.
 	 */
 	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args, bool first);
-
-	void _GetEncodedTextTraditional(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids);
 
 	/**
 	 * Set a parameter, where the value is the first item on the stack.
