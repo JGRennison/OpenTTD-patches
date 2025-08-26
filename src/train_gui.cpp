@@ -257,7 +257,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 				auto name_param = PackEngineNameDParam(v->engine_type, EngineNameContext::VehicleDetails);
 				uint16_t speed = get_speed();
 				if (speed > 0) {
-					draw(STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED, v->build_year, v->value, speed);
+					draw(STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED, name_param, v->build_year, v->value, speed);
 				} else {
 					draw(STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE, name_param, v->build_year, v->value);
 				}
