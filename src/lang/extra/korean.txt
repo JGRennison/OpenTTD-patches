@@ -160,7 +160,7 @@ STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :열차의 가�
 STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
 
 STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :선로 편집시 현실적 감속 무시: {STRING}
-STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :현실적 열차 감속 모델을 무시하고 선로를 편집하는 것을 허용합니다. 이 설정을 켜면, 움직이는 열차가 예약산 선로를 수정/제거하는 제한이 사라집니다. 이 경우 비현실적 감속이 발생할 수 있습니다
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :현실적 열차 감속 모델을 무시하고 선로를 편집하는 것을 허용합니다. 이 설정을 켜면, 움직이는 열차가 예약한 선로를 수정/제거하는 제한이 사라집니다. 이 경우 비현실적 감속이 발생할 수 있습니다
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :차례로 나눠 실을 때 열차 속력: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열차가 화물을 차례로 나눠 실으며 움직일 때 열차의 최대 허용 속력입니다
