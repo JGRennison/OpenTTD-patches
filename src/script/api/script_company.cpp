@@ -11,6 +11,7 @@
 #include "script_company.hpp"
 #include "script_error.hpp"
 #include "script_companymode.hpp"
+#include "../script_fatalerror.hpp"
 #include "../../company_func.h"
 #include "../../company_base.h"
 #include "../../company_cmd.h"
@@ -32,7 +33,9 @@
 /* static */ ::CompanyID ScriptCompany::FromScriptCompanyID(ScriptCompany::CompanyID company)
 {
 	/* If this assert gets triggered, then ScriptCompany::ResolveCompanyID needed to be called before. */
-	assert(company != ScriptCompany::COMPANY_SELF && company != ScriptCompany::COMPANY_SPECTATOR);
+	if (!(company != ScriptCompany::COMPANY_SELF && company != ScriptCompany::COMPANY_SPECTATOR)) {
+		throw Script_FatalError("ScriptCompany::FromScriptCompanyID: Invalid company ID");
+	}
 
 	if (company == ScriptCompany::COMPANY_INVALID) return ::CompanyID::Invalid();
 	return static_cast<::CompanyID>(company);
