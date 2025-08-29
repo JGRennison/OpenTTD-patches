@@ -54,24 +54,24 @@ enum CargoTypeOrdersWindowVariant {
 };
 
 /** Cargo type orders strings for load dropdowns. */
-static const StringID _cargo_type_load_order_drowdown[] = {
+static const StringID _cargo_type_load_order_dropdown[] = {
 	STR_ORDER_DROP_LOAD_IF_POSSIBLE,      // OLF_LOAD_IF_POSSIBLE
 	STR_EMPTY,
 	STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD, // OLFB_FULL_LOAD
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_LOADING,            // OLFB_NO_LOAD
 };
-static const uint32_t _cargo_type_load_order_drowdown_hidden_mask = 0xA; // 01010
+static const uint32_t _cargo_type_load_order_dropdown_hidden_mask = 0xA; // 01010
 
 /** Cargo type orders strings for unload dropdowns. */
-static const StringID _cargo_type_unload_order_drowdown[] = {
+static const StringID _cargo_type_unload_order_dropdown[] = {
 	STR_ORDER_DROP_UNLOAD_IF_ACCEPTED, // OUF_UNLOAD_IF_POSSIBLE
 	STR_ORDER_DROP_UNLOAD,             // OUFB_UNLOAD
 	STR_ORDER_DROP_TRANSFER,           // OUFB_TRANSFER
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_UNLOADING,       // OUFB_NO_UNLOAD
 };
-static const uint32_t _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
+static const uint32_t _cargo_type_unload_order_dropdown_hidden_mask = 0x8; // 01000
 
 DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types);
 DropDownList GetSlotGroupDropDownList(Owner owner, TraceRestrictSlotGroupID slot_group_id, int &selected, VehicleType vehtype);
@@ -166,8 +166,8 @@ public:
 	CargoTypeOrdersWindow(WindowDesc &desc, const Vehicle *v, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant) : Window(desc)
 	{
 		this->variant = variant;
-		this->cargo_type_order_dropdown = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_drowdown : _cargo_type_unload_order_drowdown;
-		this->cargo_type_order_dropdown_hmask = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_drowdown_hidden_mask : _cargo_type_unload_order_drowdown_hidden_mask;
+		this->cargo_type_order_dropdown = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_dropdown : _cargo_type_unload_order_dropdown;
+		this->cargo_type_order_dropdown_hmask = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_dropdown_hidden_mask : _cargo_type_unload_order_dropdown_hidden_mask;
 		this->InitMaxWidgetWidth();
 
 		this->vehicle = v;
@@ -573,14 +573,14 @@ static const StringID _station_load_types[][9][9] = {
 	}
 };
 
-static const StringID _order_non_stop_drowdown[] = {
+static const StringID _order_non_stop_dropdown[] = {
 	STR_ORDER_GO_TO,
 	STR_ORDER_GO_NON_STOP_TO,
 	STR_ORDER_GO_VIA,
 	STR_ORDER_GO_NON_STOP_VIA,
 };
 
-static const StringID _order_full_load_drowdown[] = {
+static const StringID _order_full_load_dropdown[] = {
 	STR_ORDER_DROP_LOAD_IF_POSSIBLE,
 	STR_EMPTY,
 	STR_ORDER_DROP_FULL_LOAD_ALL,
@@ -592,7 +592,7 @@ static const StringID _order_full_load_drowdown[] = {
 	STR_ORDER_DROP_CARGO_TYPE_LOAD,
 };
 
-static const StringID _order_unload_drowdown[] = {
+static const StringID _order_unload_dropdown[] = {
 	STR_ORDER_DROP_UNLOAD_IF_ACCEPTED,
 	STR_ORDER_DROP_UNLOAD,
 	STR_ORDER_DROP_TRANSFER,
@@ -3028,7 +3028,7 @@ public:
 					this->OrderClick_Nonstop(-1);
 				} else {
 					const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
-					ShowDropDownMenu(this, _order_non_stop_drowdown, o->GetNonStopType(), WID_O_NON_STOP, _settings_game.order.nonstop_only ? 5 : 0,
+					ShowDropDownMenu(this, _order_non_stop_dropdown, o->GetNonStopType(), WID_O_NON_STOP, _settings_game.order.nonstop_only ? 5 : 0,
 							o->IsType(OT_GOTO_STATION) ? 0 : (o->IsType(OT_GOTO_WAYPOINT) ? 3 : 12), 0, DDSF_SHARED);
 				}
 				break;
@@ -3086,7 +3086,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_FullLoad(OLF_FULL_LOAD_ANY, true);
 				} else {
-					ShowDropDownMenu(this, _order_full_load_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 0xE2 /* 1110 0010 */, 0, DDSF_SHARED);
+					ShowDropDownMenu(this, _order_full_load_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 0xE2 /* 1110 0010 */, 0, DDSF_SHARED);
 				}
 				break;
 
@@ -3094,7 +3094,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Unload(OUFB_UNLOAD, true);
 				} else {
-					ShowDropDownMenu(this, _order_unload_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 0xE8 /* 1110 1000 */, 0, DDSF_SHARED);
+					ShowDropDownMenu(this, _order_unload_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 0xE8 /* 1110 1000 */, 0, DDSF_SHARED);
 				}
 				break;
 
