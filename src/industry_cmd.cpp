@@ -1825,8 +1825,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	i->produced_cargo_count = 0;
 	for (size_t index = 0; index < std::size(indspec->produced_cargo); ++index) {
-		if (!IsValidCargoType(indspec->produced_cargo[index])) break;
-		i->produced_cargo_count++;
+		if (IsValidCargoType(indspec->produced_cargo[index])) {
+			i->produced_cargo_count = static_cast<uint8_t>(index + 1);
+		}
 	}
 	i->produced = std::make_unique<Industry::ProducedCargo[]>(i->produced_cargo_count);
 	for (uint8_t index = 0; index < i->produced_cargo_count; ++index) {
@@ -1837,8 +1838,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	i->accepted_cargo_count = 0;
 	for (size_t index = 0; index < std::size(indspec->accepts_cargo); ++index) {
-		if (!IsValidCargoType(indspec->accepts_cargo[index])) break;
-		i->accepted_cargo_count++;
+		if (IsValidCargoType(indspec->accepts_cargo[index])) {
+			i->accepted_cargo_count = static_cast<uint8_t>(index + 1);
+		}
 	}
 	i->accepted = std::make_unique<Industry::AcceptedCargo[]>(i->accepted_cargo_count);
 	for (uint8_t index = 0; index < i->accepted_cargo_count; ++index) {
