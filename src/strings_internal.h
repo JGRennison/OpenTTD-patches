@@ -61,7 +61,9 @@ public:
 		 * words, when the offset was already at the end of the parameters and
 		 * the string did not consume any parameters.
 		 */
-		assert(offset < this->parameters.size() || this->offset == offset);
+		if (!(offset < this->parameters.size() || this->offset == offset)) {
+			throw std::out_of_range("SetOffset() out of range");
+		}
 		this->offset = offset;
 	}
 
