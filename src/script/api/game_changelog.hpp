@@ -31,6 +31,7 @@
  * \li GSCargo::CC_NON_POTABLE
  * \li GSVehicleList_Waypoint
  * \li GSBaseStation::GetOwner
+ * \li GSError:ERR_BRIDGE_TOO_LOW
  * \li GSEngine::GetAllRailTypes
  * \li GSTile::IsHouseTile
  *
