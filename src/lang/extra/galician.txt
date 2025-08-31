@@ -182,7 +182,6 @@ STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Habilitar freos
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :Fiabilidade mínima: {STRING}
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :Ao introducirse un vehículo, escóllese aleatoriamente unha fiabilidade máxima entre este valor e o 100 %.{}{}Escolle un valor alto se queres que todos os vehículos teñan unha alta fiabilidade máxima.{}Escolle un valor baixo para aumentar o efecto do azar (baixo a túa responsabilidade).{}{}A fiabilidade máxima só se acada despois do período de introdución, e volve diminuír cara ao final da vida útil do vehículo (como sempre foi).{}{}Nunha partida xa iniciada, pode ser necesario reiniciar motores para que o cambio teña efecto.{}{}Comportamento anterior: o valor escollíase entre o 75 % e o 100 %.
 
-
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Evitar a colisión de barcos: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Cando se habilita, os barcos intentaran evitar pasar xunto a outro. Os mellores resultados obtéñense cando os xiros de 90º están prohibidos.
 
@@ -1280,6 +1279,9 @@ STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Estás 
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}O arquivo é dunha versión distinta{STRING}.{}Se sobreescribe o ficheiro non será lexible pola versión orixinal
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({STRING})
 
+STR_SAVELOAD_SAVE_ORDERLIST                                     :{WHITE}Gardar lista de ordes
+STR_SAVELOAD_LOAD_ORDERLIST                                     :{WHITE}Cargar lista de ordes
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Cota de neve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Subir a cota de neve unha altura
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Baixar a cota de neve unha altura
@@ -1561,6 +1563,9 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Renomear
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Click para seleccionar cal
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancelar e envíar o vehículo ó depósito/hangar. Ctrl+Click para menu. Shift+Click para seleccionar depósito/hangar
 
+STR_VEHICLE_VIEW_ROUTE_OVERLAY_TOOLTIP                          :{BLACK}Cambiar a configuración da superposición da ruta
+STR_VEHICLE_VIEW_ALWAYS_SHOW_ROUTE_OVERLAY                      :Amosar sempre a superposición da ruta
+
 STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+Click para amosar a fiestra de saídas programadas
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}:{SPACE}
@@ -1728,6 +1733,8 @@ STR_ORDER_REVERSE_ORDER_LIST                                    :Invertir a list
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Engadir lista de ordes invertidas
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxectivo de salto
+STR_ORDER_EXPORT_ORDER_LIST                                     :Exportar lista de ordes
+STR_ORDER_IMPORT_ORDER_LIST                                     :Importar lista de ordes
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Tentar adquirir slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Liberar slot
@@ -1893,6 +1900,9 @@ STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Captura 
 
 STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Captura de pantalla topográfica
 STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Captura de pantalla de industrias
+
+STR_ORDER_IMPORT_ERROR_LIST_CAPTION                             :{WHITE}Erros na importación da lista de ordes
+STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS              :{BLACK}Alternar a visualización das ordes que se importaron sen erros
 
 # Plans window
 STR_PLANS_CAPTION                                               :{WHITE}Plans
@@ -2403,3 +2413,13 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Usar o c
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Contrasinal
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protexe a túa compañía cun contrasinal para evitar que usuarios non autorizados se unan
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Establece o contrasinal da compañía
+
+# JSON messages
+STR_ERROR_ORDERLIST_MALFORMED_JSON                              :{WHITE}O JSON de entrada estaba mal formado
+STR_ERROR_ORDERLIST_JSON_NEEDS_ORDERS                           :{WHITE}Non se atoparon ordes, non se pode crear a lista de ordes
+STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_MISSING                   :{WHITE}Non se atopou ningún 'vehicle-type' válido
+STR_ERROR_ORDERLIST_JSON_VEHICLE_TYPE_DOES_NOT_MATCH            :{WHITE}Os tipos de vehículos non coinciden
+STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}A lista de ordes importouse con erros
+STR_ERROR_JSON                                                  :{WHITE}Erro de JSON
+STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}A importación substituirá todas as ordes existentes na lista. Queres continuar?
+STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirmar importación da lista de ordes
