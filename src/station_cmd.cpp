@@ -3847,7 +3847,8 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 					if (side != INVALID_DIAGDIR && axis != DiagDirToAxis(side)) break;
 					TrackBits trackbits = AxisToTrackBits(axis);
 					const uint drd_to_multiplier[DRD_END] = { 0x101, 0x100, 0x1, 0x0 };
-					trackdirbits = (TrackdirBits)(trackbits * drd_to_multiplier[GetDriveThroughStopDisallowedRoadDirections(tile)]);
+					DisallowedRoadDirections drd = (rtt == RTT_TRAM) ? DRD_NONE : GetDriveThroughStopDisallowedRoadDirections(tile);
+					trackdirbits = (TrackdirBits)(trackbits * drd_to_multiplier[drd]);
 				}
 			}
 			break;
