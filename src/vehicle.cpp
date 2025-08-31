@@ -4275,6 +4275,22 @@ static void SpawnAdvancedVisualEffect(const Vehicle *v)
 int ReversingDistanceTargetSpeed(const Train *v);
 
 /**
+ * Test if a bridge is above a vehicle.
+ * @param v Vehicle to test.
+ * @return true iff a bridge is above the vehicle.
+ */
+static bool IsBridgeAboveVehicle(const Vehicle *v)
+{
+	if (IsBridgeTile(v->tile)) {
+		/* If the vehicle is 'on' a bridge tile, check the real position of the vehicle. If it's different then the
+		 * vehicle is on the middle of the bridge, which cannot have a bridge above. */
+		TileIndex tile = TileVirtXY(v->x_pos, v->y_pos);
+		if (tile != v->tile) return false;
+	}
+	return IsBridgeAbove(v->tile);
+}
+
+/**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
  * @param max_speed The speed as limited by underground and orders, UINT_MAX if not already known
  * @pre this->IsPrimaryVehicle()
@@ -4341,7 +4357,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 		 * - The vehicle is a train engine that is currently unpowered */
 		if (effect_model == VESM_NONE ||
 				v->vehstatus.Test(VehState::Hidden) ||
-				IsBridgeAbove(v->tile) ||
+				IsBridgeAboveVehicle(v) ||
 				IsDepotTile(v->tile) ||
 				IsTunnelTile(v->tile) ||
 				(v->type == VEH_TRAIN &&
