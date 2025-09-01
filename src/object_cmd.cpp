@@ -716,6 +716,22 @@ ClearedObjectArea *FindClearedObject(TileIndex tile)
 	return nullptr;
 }
 
+bool WouldObjectLeaveWaterBehind(TileIndex tile)
+{
+	WaterClass wc = GetWaterClass(tile);
+	if (wc == WATER_CLASS_INVALID) return false;
+
+	Slope slope = GetTileSlope(tile);
+	if (slope != SLOPE_FLAT) {
+		/* Only river water should be restored on appropriate slopes. Other water would be invalid on slopes */
+		if (wc != WATER_CLASS_RIVER || GetInclinedSlopeDirection(slope) == INVALID_DIAGDIR) {
+			wc = WATER_CLASS_INVALID;
+		}
+	}
+
+	return wc != WATER_CLASS_INVALID;
+}
+
 static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 {
 	/* Get to the northern most tile. */
@@ -733,7 +749,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 
 	/* Water can remove everything! */
 	if (_current_company != OWNER_WATER) {
-		if (flags.Test(DoCommandFlag::NoWater) && IsTileOnWater(tile)) {
+		if (flags.Test(DoCommandFlag::NoWater) && IsTileOnWater(tile) && WouldObjectLeaveWaterBehind(tile)) {
 			/* There is water under the object, treat it as water tile. */
 			return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 		} else if (!spec->flags.Test(ObjectFlag::Autoremove) && flags.Test(DoCommandFlag::Auto)) {

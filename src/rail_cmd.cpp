@@ -42,6 +42,7 @@
 #include "pathfinder/water_regions.h"
 #include "landscape_cmd.h"
 #include "rail_cmd.h"
+#include "object_base.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -888,13 +889,15 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 
 		default: {
 			/* Will there be flat water on the lower halftile? */
-			bool water_ground = IsTileType(tile, MP_WATER) && IsSlopeWithOneCornerRaised(tileh);
+			bool water_ground = (IsTileType(tile, MP_WATER) || (IsTileType(tile, MP_OBJECT) && WouldObjectLeaveWaterBehind(tile))) && IsSlopeWithOneCornerRaised(tileh);
 
 			CommandCost ret = CheckRailSlope(tileh, trackbit, TRACK_BIT_NONE, tile);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret.GetCost());
 
-			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::AllowRemoveWater, tile);
+			DoCommandFlags clear_flags{flags | DoCommandFlag::AllowRemoveWater};
+			if (water_ground) clear_flags.Set(DoCommandFlag::ForceClearTile);
+			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(clear_flags, tile);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret.GetCost());
 

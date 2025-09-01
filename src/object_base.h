@@ -95,4 +95,6 @@ struct ClearedObjectArea {
 ClearedObjectArea *FindClearedObject(TileIndex tile);
 extern std::vector<ClearedObjectArea> _cleared_object_areas;
 
+bool WouldObjectLeaveWaterBehind(TileIndex tile);
+
 #endif /* OBJECT_BASE_H */
