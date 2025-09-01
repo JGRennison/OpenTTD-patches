@@ -778,6 +778,10 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 		return CMD_ERROR;
 	}
 
+	if (IsTileOnWater(tile) && IsSlopeWithOneCornerRaised(GetTileSlope(tile))) {
+		cost.AddCost(_price[PR_CLEAR_WATER]);
+	}
+
 	switch (type) {
 		case OBJECT_HQ: {
 			Company *c = Company::Get(GetTileOwner(tile));
