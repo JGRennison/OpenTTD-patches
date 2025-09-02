@@ -4281,13 +4281,15 @@ int ReversingDistanceTargetSpeed(const Train *v);
  */
 static bool IsBridgeAboveVehicle(const Vehicle *v)
 {
+	if (!IsBridgeAbove(v->tile)) return false;
+
 	if (IsBridgeTile(v->tile)) {
 		/* If the vehicle is 'on' a bridge tile, check the real position of the vehicle. If it's different then the
 		 * vehicle is on the middle of the bridge, which cannot have a bridge above. */
 		TileIndex tile = TileVirtXY(v->x_pos, v->y_pos);
 		if (tile != v->tile) return false;
 	}
-	return IsBridgeAbove(v->tile);
+	return true;
 }
 
 /**
