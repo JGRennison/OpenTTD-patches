@@ -73,7 +73,7 @@ public:
 	/** Called by YAPF to detect if node ends in the desired destination. */
 	inline bool PfDetectDestination(Node &n)
 	{
-		return this->PfDetectDestinationTile(n.segment_last_tile, n.segment_last_td);
+		return this->PfDetectDestinationTile(n.GetTile(), n.GetTrackdir());
 	}
 
 	inline bool PfDetectDestinationTile(TileIndex tile, Trackdir trackdir)
@@ -104,8 +104,8 @@ public:
 			return true;
 		}
 
-		TileIndex tile = n.segment_last_tile;
-		DiagDirection exitdir = TrackdirToExitdir(n.segment_last_td);
+		TileIndex tile = n.GetTile();
+		DiagDirection exitdir = TrackdirToExitdir(n.GetTrackdir());
 		int x1 = 2 * TileX(tile) + dg_dir_to_x_offs[(int)exitdir];
 		int y1 = 2 * TileY(tile) + dg_dir_to_y_offs[(int)exitdir];
 		int x2 = 2 * TileX(destination_tile);
