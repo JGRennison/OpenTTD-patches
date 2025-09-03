@@ -295,7 +295,7 @@ public:
 			return GetString(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant,
 					this->vehicle->index, this->order_id + 1, this->vehicle->GetOrder(this->order_id)->GetDestination());
 		}
-		return {};
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	/**
