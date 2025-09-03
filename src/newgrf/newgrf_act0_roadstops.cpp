@@ -50,6 +50,11 @@ static ChangeInfoResult IgnoreRoadStopProperty(uint prop, ByteReader &buf)
 			buf.ReadDWord();
 			break;
 
+		case 0x13:
+		case 0x14:
+			buf.Skip(buf.ReadExtendedByte());
+			break;
+
 		case 0x16: // Badge list
 			SkipBadgeList(buf);
 			break;
@@ -170,24 +175,26 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				break;
 
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
-				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
-				[[fallthrough]];
-			case 0x13: // Minimum height for a bridge above
+			case 0x13: { // Minimum height for a bridge above
 				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeHeightsSet);
-				for (uint i = 0; i < 6; i++) {
-					rs->bridge_height[i] = buf.ReadByte();
+				uint tiles = buf.ReadExtendedByte();
+				for (uint i = 0; i < tiles; i++) {
+					uint8_t height = buf.ReadByte();
+					if (i < lengthof(rs->bridge_height)) rs->bridge_height[i] = height;
 				}
 				break;
+			}
 
 			case A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS:
-				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
-				[[fallthrough]];
-			case 0x14: // Disallowed bridge pillars
+			case 0x14: { // Disallowed bridge pillars
 				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeDisallowedPillarsSet);
-				for (uint i = 0; i < 6; i++) {
-					rs->bridge_disallowed_pillars[i] = buf.ReadByte();
+				uint tiles = buf.ReadExtendedByte();
+				for (uint i = 0; i < tiles; i++) {
+					uint8_t pillars = buf.ReadByte();
+					if (i < lengthof(rs->bridge_disallowed_pillars)) rs->bridge_disallowed_pillars[i] = pillars;
 				}
 				break;
+			}
 
 			case A0RPI_ROADSTOP_COST_MULTIPLIERS:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
