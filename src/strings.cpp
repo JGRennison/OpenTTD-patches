@@ -1002,7 +1002,7 @@ StringID GetVelocityUnitName(VehicleType type)
 			return STR_UNIT_NAME_VELOCITY_IMPERIAL + setting;
 
 		case 3:
-			return EconTime::UsingWallclockUnits() ? STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK : STR_UNIT_NAME_VELOCITY_GAMEUNITS;
+			return (EconTime::UsingWallclockUnits() || DayLengthFactor() > 1) ? STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK : STR_UNIT_NAME_VELOCITY_GAMEUNITS;
 
 		case 4:
 			return STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS;
@@ -1024,7 +1024,7 @@ static const Units GetVelocityUnits(VehicleType type)
 	assert(setting < lengthof(_units_velocity_calendar));
 	assert(setting < lengthof(_units_velocity_realtime));
 
-	if (EconTime::UsingWallclockUnits()) return _units_velocity_realtime[setting];
+	if (EconTime::UsingWallclockUnits() || DayLengthFactor() > 1) return _units_velocity_realtime[setting];
 
 	return _units_velocity_calendar[setting];
 }
