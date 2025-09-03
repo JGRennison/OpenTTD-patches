@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.66.0 (2025-09-03)
+* Fix crash which could occur when removing vehicle groups after merging/buying another company.
+* Fix missing industry accept/produce cargoes with some industry NewGRFs (in particular ECS).
+* Fix pre-signal behaviour being applied to tunnel/bridge exit signals in non-PBS mode.
+* Fix trams not ignoring the one-way state of drive through road stops.
+* Fix auto-remove on build not working for purchased land and removable objects with coastal water.
+* Departure boards:
+  * Show estimated vehicle cycling in 24-hour schedule mode at scheduled dispatch points, when using vehicle shared order list filter.
+* JSON order list import/export:
+  * Add scheduled dispatch start time and route overlay colour.
+  * Fix various minor issues.
+* Remove game tick rate setting.
+* Show game speed units as tiles/second even in calendar mode when then economy speed reduction factor is greater than 1.
+* Fix regressions in v0.66-rc1:
+  * Fix crash opening industry window with certain industry NewGRFs.
+  * Fix various minor text issues.
+
 ### v0.66-rc1 (2025-08-21)
 * Fix crash when GS/AI script exceeds maximum memory allocation limit.
 * Fix crash when using picker tool on road stops in the scenario editor.
