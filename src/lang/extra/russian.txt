@@ -626,11 +626,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :Алгорит�
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Традиционный
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Современный
 
-STR_CONFIG_SETTING_TICK_RATE                                    :Скорость игровых тиков: {STRING}
-STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Количество миллисекунд на один игровой тик.
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 мс/тик (традиционная)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 мс/тик (современная)
-
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Минимальное расстояние между городами: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Устанавливает минимальное расстояние между городами (в клетках) при генерации карты и случайном основании.
 

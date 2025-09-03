@@ -644,11 +644,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :O algoritmo que
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Tradicional
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Moderno
 
-STR_CONFIG_SETTING_TICK_RATE                                    :Ratio de ticks do xogo: {STRING}
-STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Número de milisegundos por cada tick do xogo.
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/tick (tradicional)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/tick (moderno)
-
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre vilas: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fixa a distancia mínima en cadros entre cidades para a xeración do mapa e as fundacións aleatorias
 

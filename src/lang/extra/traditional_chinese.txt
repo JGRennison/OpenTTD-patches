@@ -638,11 +638,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :決定貨物運
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :原版
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :現代
 
-STR_CONFIG_SETTING_TICK_RATE                                    :一遊戲刻所對應的毫秒數：{STRING}
-STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :設定每一遊戲刻所對應的毫秒數
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/刻（原版）
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/刻（現代）
-
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :市鎮間最小距離：{STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :設定在產生地圖時市鎮間的最小距離
 

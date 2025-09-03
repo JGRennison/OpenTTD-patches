@@ -253,13 +253,6 @@ enum CargoPaymentAlgorithm : uint8_t {
 	CPA_END,             ///< Used for iterations and limit testing
 };
 
-enum TickRateMode : uint8_t {
-	TRM_BEGIN = 0,       ///< Used for iterations and limit testing
-	TRM_TRADITIONAL = 0, ///< Traditional value (30ms)
-	TRM_MODERN,          ///< Modern value (27ms)
-	TRM_END,             ///< Used for iterations and limit testing
-};
-
 enum CargoScalingMode : uint8_t {
 	CSM_BEGIN = 0,         ///< Used for iterations and limit testing
 	CSM_NORMAL = 0,        ///< Normal cargo scaling

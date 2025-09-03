@@ -545,11 +545,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :Algoritmus, pod
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :tradiční
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :moderní
 
-STR_CONFIG_SETTING_TICK_RATE                                    :Perioda herního cyklu: {STRING}
-STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Počet milisekund na jeden herní cyklus.
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/cyklus (tradiční)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/cyklus (moderní)
-
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimální vzdálenost mezi městy: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Nastaví minimální počet políček mezi městy při generování mapy a náhodném zakládání měst
 

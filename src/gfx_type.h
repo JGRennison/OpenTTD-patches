@@ -362,7 +362,7 @@ enum class SpriteType : uint8_t {
  * The value 27 together with a day length of 74 ticks makes one day 1998 milliseconds, almost exactly 2 seconds.
  * With a 2 second day, one standard month is 1 minute, and one standard year is slightly over 12 minutes.
  */
-#define MILLISECONDS_PER_TICK ((uint)_milliseconds_per_tick)
+static const uint MILLISECONDS_PER_TICK = 27;
 
 /** Information about the currently used palette. */
 struct Palette {

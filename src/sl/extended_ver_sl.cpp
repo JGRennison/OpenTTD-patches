@@ -192,7 +192,6 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_MULTI_CARGO_SHIPS,                XSCF_NULL,                1,   1, "multi_cargo_ships",                nullptr, nullptr, nullptr          },
 	{ XSLFI_REMAIN_NEXT_ORDER_STATION,        XSCF_IGNORABLE_UNKNOWN,   1,   1, "remain_next_order_station",        nullptr, nullptr, nullptr          },
 	{ XSLFI_LABEL_ORDERS,                     XSCF_NULL,                2,   2, "label_orders",                     nullptr, nullptr, nullptr          },
-	{ XSLFI_VARIABLE_TICK_RATE,               XSCF_IGNORABLE_ALL,       1,   1, "variable_tick_rate",               nullptr, nullptr, nullptr          },
 	{ XSLFI_ROAD_VEH_FLAGS,                   XSCF_NULL,                1,   1, "road_veh_flags",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_STATION_TILE_CACHE_FLAGS,         XSCF_IGNORABLE_ALL,       1,   1, "station_tile_cache_flags",         saveSTC, loadSTC, nullptr          },
 	{ XSLFI_INDUSTRY_CARGO_TOTALS,            XSCF_NULL,                1,   1, "industry_cargo_totals",            nullptr, nullptr, nullptr          },

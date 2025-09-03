@@ -1349,7 +1349,6 @@ static void ChangeTimekeepingUnits(int32_t)
 		EconTime::Detail::SetDate(new_economy_date, new_economy_date_fract);
 
 		UpdateOrderUIOnDateChange();
-		SetupTickRate();
 	}
 
 	UpdateTimeSettings(0);
@@ -2394,12 +2393,12 @@ static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
-static std::pair<StringParameter, StringParameter> WallclockModeDisabledDropDownText(const IntSettingDesc &sd, int32_t value)
+[[maybe_unused]] static std::pair<StringParameter, StringParameter> WallclockModeDisabledDropDownText(const IntSettingDesc &sd, int32_t value)
 {
 	return {EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK : sd.str_val + value, std::monostate{}};
 }
 
-static bool WallclockModeDisabledGUI(SettingOnGuiCtrlData &data)
+[[maybe_unused]] static bool WallclockModeDisabledGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_GUI_DISABLE:

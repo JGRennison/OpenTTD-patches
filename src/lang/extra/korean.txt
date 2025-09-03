@@ -644,11 +644,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :화물을 목�
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :구식
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
 
-STR_CONFIG_SETTING_TICK_RATE                                    :게임 틱 속도: {STRING}
-STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :1 게임틱을 몇 밀리초(ms)로 계산할 것인지 설정합니다
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30밀리초/틱 (구식)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27밀리초/틱 (현대식)
-
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다
 

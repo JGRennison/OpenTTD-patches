@@ -48,8 +48,6 @@ bool _shift_pressed;  ///< Is Shift pressed?
 bool _invert_ctrl;
 bool _invert_shift;
 uint16_t _game_speed = 100; ///< Current game-speed; 100 is 1x, 0 is infinite.
-uint8_t _milliseconds_per_tick = 27; ///< Milliseconds per tick
-float _ticks_per_second;           ///< Ticks per second
 bool _left_button_down;     ///< Is left mouse button pressed?
 bool _left_button_clicked;  ///< Is left mouse button clicked?
 bool _right_button_down;    ///< Is right mouse button pressed?
@@ -2310,10 +2308,4 @@ void ChangeGameSpeed(bool enable_fast_forward)
 	} else {
 		_game_speed = 100;
 	}
-}
-
-void SetupTickRate()
-{
-	_milliseconds_per_tick = (_settings_game.economy.tick_rate == TRM_MODERN || _settings_game.economy.timekeeping_units == TKU_WALLCLOCK) ? 27 : 30;
-	_ticks_per_second = 1000.0f / _milliseconds_per_tick;
 }

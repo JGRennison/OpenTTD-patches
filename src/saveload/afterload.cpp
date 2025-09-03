@@ -676,8 +676,6 @@ bool AfterLoadGame()
 	}
 	UpdateEffectiveDayLengthFactor();
 
-	SetupTickRate();
-
 	extern TileIndex _cur_tileloop_tile; // From landscape.cpp.
 	/* The LFSR used in RunTileLoop iteration cannot have a zeroed state, make it non-zeroed. */
 	if (_cur_tileloop_tile == 0) _cur_tileloop_tile = TileIndex{1};
@@ -4458,10 +4456,6 @@ bool AfterLoadGame()
 		_settings_game.economy.payment_algorithm = IsSavegameVersionBefore(SLV_MORE_CARGO_AGE) ? CPA_TRADITIONAL : CPA_MODERN;
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_TICK_RATE)) {
-		_settings_game.economy.tick_rate = IsSavegameVersionBeforeOrAt(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
-	}
-
 	if (SlXvIsFeatureMissing(XSLFI_ROAD_VEH_FLAGS)) {
 		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
 			if (IsLevelCrossingTile(rv->tile)) {
@@ -4565,8 +4559,6 @@ bool AfterLoadGame()
 	AfterLoadVehiclesRemoveAnyFoundInvalid();
 
 	GamelogPrintDebug(1);
-
-	SetupTickRate();
 
 	InitializeWindowsAndCaches();
 	/* Restore the signals */

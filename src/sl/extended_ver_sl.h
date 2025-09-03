@@ -141,7 +141,6 @@ enum SlXvFeatureIndex {
 	XSLFI_MULTI_CARGO_SHIPS,                      ///< Multi-cargo ships
 	XSLFI_REMAIN_NEXT_ORDER_STATION,              ///< Remain in station if next order is for same station
 	XSLFI_LABEL_ORDERS,                           ///< Label orders
-	XSLFI_VARIABLE_TICK_RATE,                     ///< Variable tick rate
 	XSLFI_ROAD_VEH_FLAGS,                         ///< Road vehicle flags
 	XSLFI_STATION_TILE_CACHE_FLAGS,               ///< Station tile cache flags
 	XSLFI_INDUSTRY_CARGO_TOTALS,                  ///< Industry cargo totals are 32 bit

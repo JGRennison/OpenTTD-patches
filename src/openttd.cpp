@@ -514,7 +514,6 @@ void MakeNewgameSettingsLive()
 	_old_vds = _settings_client.company.vehicle;
 
 	UpdateEffectiveDayLengthFactor();
-	SetupTickRate();
 }
 
 void OpenBrowser(const std::string &url)
@@ -1553,7 +1552,7 @@ void StateGameLoop()
 		}
 
 		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) && !_settings_client.gui.autosave_realtime && _settings_client.gui.autosave_interval != 0 &&
-				(_state_ticks.base() % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
+				(_state_ticks.base() % (_settings_client.gui.autosave_interval * (60000 / MILLISECONDS_PER_TICK))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
 			SetWindowDirty(WC_STATUS_BAR, 0);
