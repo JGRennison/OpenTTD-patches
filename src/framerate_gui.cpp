@@ -446,11 +446,11 @@ struct FramerateWindow : Window {
 		ResizeWindow(this, 0, (std::max(MIN_ELEMENTS, this->num_displayed) - MIN_ELEMENTS) * GetCharacterHeight(FS_NORMAL));
 	}
 
- 	/** Update the window on a regular interval. */
- 	IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
- 		this->UpdateData();
- 		this->SetDirty();
- 	}};
+	/** Update the window on a regular interval. */
+	IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
+		this->UpdateData();
+		this->SetDirty();
+	}};
 
 	void UpdateData()
 	{
