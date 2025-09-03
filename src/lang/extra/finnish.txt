@@ -104,3 +104,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Käytä 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Salasana
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Salasanalla voit suojata yhtiösi, jotta kukaan vieras ei pääse liittymään
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Aseta yhtiön salasana
+
+# JSON messages

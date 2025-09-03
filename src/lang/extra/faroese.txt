@@ -86,3 +86,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Nýt het
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Loyniorð
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Verj tína fyritøku við einum loyniorðið so eingin óynsktur tekur lut í henni
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Áset fyritøku loyniorð
+
+# JSON messages

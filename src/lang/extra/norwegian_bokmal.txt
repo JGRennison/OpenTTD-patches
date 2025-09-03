@@ -101,3 +101,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Bruk det
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Passord
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Passordbeskytt selskapet ditt for å forhindre uautoriserte brukere fra å bli med
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Velg selskapspassord
+
+# JSON messages

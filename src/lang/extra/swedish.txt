@@ -102,3 +102,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Använd 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Lösenord
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Lösenordsskydda ditt företag för att förhindra att obehöriga spelare ansluter
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Ange företagets lösenord
+
+# JSON messages

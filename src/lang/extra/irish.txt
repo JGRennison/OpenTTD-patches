@@ -99,3 +99,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Úsáid 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Pasfhocal
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Cosain do chuideachta le pasfhocal le nach mbeidh úsáideoirí neamhúdaraithe in ann dul isteach.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Socraigh pasfhocal cuideachta
+
+# JSON messages

@@ -107,3 +107,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Utiliser
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Mot de passe
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Permet de protéger par mot de passe votre compagnie pour empêcher des utilisateurs non autorisés de rejoindre
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Choisir le mot de passe de la compagnie
+
+# JSON messages

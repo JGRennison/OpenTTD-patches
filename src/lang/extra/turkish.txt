@@ -107,3 +107,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Bu şirk
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Parola
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Başkalarınin girmemesi için parola koy
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Şirket parolası
+
+# JSON messages

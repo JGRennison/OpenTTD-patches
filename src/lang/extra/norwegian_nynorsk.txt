@@ -87,3 +87,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Bruk pas
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Passord
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Passordbeskytt firmaet ditt slik at ikkje alle og einkvar kan verte med.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vel firmapassord
+
+# JSON messages

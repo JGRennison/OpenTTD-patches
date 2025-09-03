@@ -86,3 +86,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Nota lyk
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Lykilorð
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Til að vernda fyrirtæki þitt frá óboðnum notendum geturðu sett lykilorð á það
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Setja lykilorð á fyrirtæki
+
+# JSON messages

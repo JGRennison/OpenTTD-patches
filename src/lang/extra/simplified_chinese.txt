@@ -2382,3 +2382,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}将此�
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}密码
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}设置密码可以防止未经授权的用户随意加入
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}设置公司密码
+
+# JSON messages

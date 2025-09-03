@@ -105,3 +105,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Ez a jel
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Jelszó
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Védd le a vállalatodat jelszóval ha nem akarod hogy mások csatlakozzanak hozzá
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vállalati jelszó beállítása
+
+# JSON messages

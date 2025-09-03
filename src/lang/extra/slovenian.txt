@@ -89,3 +89,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Uporabi 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Geslo
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Zaščiti svoje podjetje z geslom, da preprečiš priključitev drugih uporabnikov k podjetju
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastavi geslo podjetja
+
+# JSON messages

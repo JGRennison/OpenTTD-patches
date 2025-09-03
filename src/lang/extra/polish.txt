@@ -107,3 +107,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Użyj te
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Hasło
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ochrona hasłem twojej firmy zapobiega nieautoryzowanemu przyłączeniu się
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Ustaw hasło firmy
+
+# JSON messages

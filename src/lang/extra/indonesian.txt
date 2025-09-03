@@ -100,3 +100,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Pergunak
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Kata Sandi
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Kata Sandi-Melindungi perusahaanmu dari pemakai yang tidak bewenang untuk bergabung
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Atur Kata Sandi Perusahaan
+
+# JSON messages

@@ -55,3 +55,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}کمپن
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}پاس ورڈ
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}اپنی کمپنی کو پاس ورڈ سے محفوظ بنائیں تاکہ غیر متعلقہ کھلاڑی اس میں شامل نہ ہو سکیں
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}کمپنی کا پاس ورڈ رکھیں
+
+# JSON messages

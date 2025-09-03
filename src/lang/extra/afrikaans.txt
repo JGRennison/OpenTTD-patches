@@ -93,3 +93,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Gebruik 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Wagwoord
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Beskerm maatskappy met wagwoord om te verhoed dat ongemagtigde spelers toegang verkry
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Stel maatskappy wagwoord
+
+# JSON messages

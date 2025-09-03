@@ -90,3 +90,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}இந�
 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}கடவுச்சொல்
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}நிறுவனத்தின் கடவுச்சொல்லை அமை
+
+# JSON messages

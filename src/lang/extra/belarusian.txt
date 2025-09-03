@@ -97,3 +97,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Выка
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Пароль
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Абараніць вашу кампанію паролем, каб неаўтарызаваныя карыстальнікі не маглі далучыцца
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Усталяваць пароль кампаніі
+
+# JSON messages

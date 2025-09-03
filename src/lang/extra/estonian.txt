@@ -101,3 +101,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Määra 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Salasõna
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ettevõtte kaitsmine salasõnaga, et võõrad ei saaks ilma loata ühineda
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vali ettevõttele salasõna
+
+# JSON messages

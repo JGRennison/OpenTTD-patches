@@ -94,3 +94,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}השתמ
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}ססמה
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}הגן על חברתך בסיסמה בכדי למנוע הצטרפות משתמשים בלתי-מורשים
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}קבע סיסמה לחברה
+
+# JSON messages

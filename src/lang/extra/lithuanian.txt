@@ -98,3 +98,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Naudoti 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Slaptažodis
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Apsaugok savo kompaniją slaptažodžiu nuo neleistinų vartotojų prisijungimo
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Įvesti slaptažodį
+
+# JSON messages

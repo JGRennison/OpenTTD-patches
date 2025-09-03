@@ -133,3 +133,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Use this
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Password
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Password-protect your company to prevent unauthorized users from joining
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Set company password
+
+# JSON messages

@@ -91,3 +91,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}استخ
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}كلمة المرور
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}احمي شركتك بكلمة مرور خاصة لمنع الوصول الغير مسموح من اللاعبين الآخرين.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}ادخل كلمة المرور
+
+# JSON messages

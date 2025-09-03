@@ -25,3 +25,5 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :केवल �
 # Network set password
 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}पासवर्ड
+
+# JSON messages

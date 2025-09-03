@@ -74,3 +74,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}استف
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}رمز
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}شرکت خود را با رمز محافظت کنید تا هر بازیگری نتواند به شرکت شما بپیوندد
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}ثبت رمز جدید
+
+# JSON messages

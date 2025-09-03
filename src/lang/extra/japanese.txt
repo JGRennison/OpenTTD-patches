@@ -185,3 +185,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}この�
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}パスワード
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}認証されていないプレーヤーの参加を防ぐために、会社をパスワードで保護します
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}会社パスワードを設定
+
+# JSON messages

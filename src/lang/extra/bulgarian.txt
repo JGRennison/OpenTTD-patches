@@ -91,3 +91,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Изпо
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Парола
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Постави парола за да предпазиш компанията си от неоторизирани потребители.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Поставяне парола на компанията
+
+# JSON messages

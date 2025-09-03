@@ -1726,3 +1726,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Benutze 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Passwort
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Die Firma durch ein Passwort schützen, sodass nur ausgewählte Spieler beitreten können
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Firmenpasswort setzen
+
+# JSON messages

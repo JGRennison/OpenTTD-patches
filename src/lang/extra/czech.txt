@@ -2030,3 +2030,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Použít
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Heslo
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Heslo - zabrání neautorizovaným uživatelům v připojení se k tvé společnosti
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastav heslo společnosti
+
+# JSON messages

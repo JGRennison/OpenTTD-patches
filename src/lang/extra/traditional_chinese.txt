@@ -2386,3 +2386,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}使用�
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}密碼
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}以密碼保護您的公司，避免未授權的玩家接手
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}設定公司密碼
+
+# JSON messages

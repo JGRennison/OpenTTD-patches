@@ -98,3 +98,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Defnyddi
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Cyfrinair
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Diogelwch eich cwmni gyda cyfrinair er mwyn rhwystro rhai heb awdurdod rhag ymuno
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Gosod cyfrinair cwmni
+
+# JSON messages

@@ -30,3 +30,5 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Летала
 # Modifier key toggle window
 
 # Network set password
+
+# JSON messages

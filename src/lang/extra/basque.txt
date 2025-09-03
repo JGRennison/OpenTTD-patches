@@ -89,3 +89,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Konpaini
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Pasahitza
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Pasahitzak zure konpainia babestuko du ez baimendutako bezeroetaz
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Konpainia pasahitza ezarri
+
+# JSON messages

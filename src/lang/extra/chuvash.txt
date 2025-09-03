@@ -30,3 +30,5 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Сывлӑш ҫ
 # Modifier key toggle window
 
 # Network set password
+
+# JSON messages

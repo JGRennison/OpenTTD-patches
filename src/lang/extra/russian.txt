@@ -2318,3 +2318,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Испо
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Пароль
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Защитить вашу компанию паролем, чтобы посторонние пользователи не могли присоединиться.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Установить пароль компании
+
+# JSON messages

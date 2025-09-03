@@ -101,3 +101,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Вико
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Пароль
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Пароль захищає вашу компанію від приєднання інших гравців
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Встановлення паролю
+
+# JSON messages

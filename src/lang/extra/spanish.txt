@@ -105,3 +105,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Usa la c
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Contraseña
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protege tu empresa con una contraseña para evitar que usuarios no autorizados se unan a ella
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Establecer contraseña de empresa
+
+# JSON messages

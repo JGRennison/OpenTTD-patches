@@ -101,3 +101,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Χρήσ
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Κωδικός
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Προστατεύστε την εταιρεία με κωδικό ώστε να αποφύγετε την συμμετοχή ανεπιθύμητων παικτών
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Θέση του κωδικού της εταιρείας
+
+# JSON messages

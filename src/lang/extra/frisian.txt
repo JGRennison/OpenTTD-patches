@@ -84,3 +84,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Brûk di
 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Wachtwurd
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Bedriuwswachtwurd ynstelle
+
+# JSON messages

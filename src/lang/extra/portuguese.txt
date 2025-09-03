@@ -107,3 +107,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Usar a p
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Palavra-chave
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Use palavra-chave para prevenir utilizadores não autorizados de entrar na sua empresa.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Definir palavra-chave da empresa
+
+# JSON messages

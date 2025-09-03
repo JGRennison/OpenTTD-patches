@@ -107,3 +107,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Utilitza
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Contrasenya
 STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protegeix la vostra companyia amb una contrasenya per tal d'evitar que la controlin altres usuaris no autoritzats.
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Estableix la contrasenya de la companyia.
+
+# JSON messages
