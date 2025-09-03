@@ -139,6 +139,21 @@ static ChangeInfoResult BridgeChangeInfo(uint first, uint last, int prop, const 
 				SetBit(bridge->ctrl_flags, BSCF_CUSTOM_PILLAR_FLAGS);
 				break;
 
+			case 0x15: { // Pillar information for each bridge piece.
+				uint16_t tiles = buf.ReadExtendedByte();
+				for (uint j = 0; j != tiles; ++j) {
+					if (j < 6) {
+						bridge->pillar_flags[j * 2] = buf.ReadByte();
+						bridge->pillar_flags[(j * 2) + 1] = buf.ReadByte();
+					} else {
+						buf.ReadWord();
+					}
+				}
+				ClrBit(bridge->ctrl_flags, BSCF_INVALID_PILLAR_FLAGS);
+				SetBit(bridge->ctrl_flags, BSCF_CUSTOM_PILLAR_FLAGS);
+				break;
+			}
+
 			case A0RPI_BRIDGE_AVAILABILITY_FLAGS: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t flags = buf.ReadByte();
