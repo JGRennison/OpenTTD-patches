@@ -270,16 +270,6 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				break;
 			}
 
-			case A0RPI_STATION_MIN_BRIDGE_HEIGHT: {
-				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeHeightsSet);
-				size_t length = buf.ReadExtendedByte();
-				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
-				for (size_t i = 0; i < length; i++) {
-					statspec->bridge_above_flags[i].height = buf.ReadByte();
-				}
-				break;
-			}
-
 			case 0x1B: // Minimum height for a bridge above
 				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeHeightsSet);
 				if (statspec->bridge_above_flags.size() < 8) statspec->bridge_above_flags.resize(8);
@@ -287,16 +277,6 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 					statspec->bridge_above_flags[i].height = buf.ReadByte();
 				}
 				break;
-
-			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS: {
-				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeDisallowedPillarsSet);
-				size_t length = buf.ReadExtendedByte();
-				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
-				for (size_t i = 0; i < length; i++) {
-					statspec->bridge_above_flags[i].disallowed_pillars = buf.ReadByte();
-				}
-				break;
-			}
 
 			case 0x1C: // Station Name
 				AddStringForMapping(GRFStringID{buf.ReadWord()}, &statspec->name);
@@ -316,6 +296,28 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			case 0x1F: // Badge list
 				statspec->badges = ReadBadgeList(buf, GSF_STATIONS);
 				break;
+
+			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
+			case 0x20: { // Minimum bridge height (extended)
+				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeHeightsSet);
+				size_t length = buf.ReadExtendedByte();
+				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
+				for (size_t i = 0; i < length; i++) {
+					statspec->bridge_above_flags[i].height = buf.ReadByte();
+				}
+				break;
+			}
+
+			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS:
+			case 0x21: { // Disallowed bridge pillars
+				statspec->internal_flags.Set(StationSpecIntlFlag::BridgeDisallowedPillarsSet);
+				size_t length = buf.ReadExtendedByte();
+				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
+				for (size_t i = 0; i < length; i++) {
+					statspec->bridge_above_flags[i].disallowed_pillars = buf.ReadByte();
+				}
+				break;
+			}
 
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
