@@ -42,7 +42,7 @@
 	<b>Properties:</b>
 	<table>
 		<tr><th>Number</th><th>Mappable name</th><th>Size in bytes</th><th>Description</th><th>Difference to specification</th></tr>
-		<tr><td><a href="#roadstop_class_id">08</a></td><td><a href="#roadstop_class_id">roadstop_class_id</a></td><td>4</td><td>Class ID</td><td>WAYP (road waypoints)</td></tr>
+		<tr><td><a href="#roadstop_class_id">08</a></td><td><a href="#roadstop_class_id">roadstop_class_id</a></td><td>4</td><td>Class ID</td><td></td></tr>
 		<tr><td><a href="#roadstop_stop_type">09</a></td><td><a href="#roadstop_stop_type">roadstop_stop_type</a></td><td>1</td><td>Stop type availability</td><td></td></tr>
 		<tr><td><a href="#roadstop_stop_name">0A</a></td><td><a href="#roadstop_stop_name">roadstop_stop_name</a></td><td>2</td><td>Name</td><td></td></tr>
 		<tr><td><a href="#roadstop_class_name">0B</a></td><td><a href="#roadstop_class_name">roadstop_class_name</a></td><td>2</td><td>Class name</td><td></td></tr>
@@ -53,8 +53,8 @@
 		<tr><td><a href="#roadstop_animation_triggers">10</a></td><td><a href="#roadstop_animation_triggers">roadstop_animation_triggers</a></td><td>2</td><td>Animation triggers</td><td></td></tr>
 		<tr><td><a href="#roadstop_callback_mask">11</a></td><td><a href="#roadstop_callback_mask">roadstop_callback_mask</a></td><td>1</td><td>Callback flags</td><td></td></tr>
 		<tr><td><a href="#roadstop_general_flags">12</a></td><td><a href="#roadstop_general_flags">roadstop_general_flags</a></td><td>4</td><td>General flags</td><td>Bits 1, 7, 8</td></tr>
-		<tr><td><a href="#roadstop_min_bridge_height">13</a></td><td><a href="#roadstop_min_bridge_height">roadstop_min_bridge_height</a></td><td>6</td><td>Minimum bridge heights</td><td>Not in spec</td></tr>
-		<tr><td><a href="#roadstop_disallowed_bridge_pillars">14</a></td><td><a href="#roadstop_disallowed_bridge_pillars">roadstop_disallowed_bridge_pillars</a></td><td>6</td><td>Disallowed bridge pillars</td><td>Not in spec</td></tr>
+		<tr><td><a href="#roadstop_min_bridge_height">13</a></td><td><a href="#roadstop_min_bridge_height">roadstop_min_bridge_height</a></td><td>6</td><td>Minimum bridge heights</td><td>Incompatible non-mapped property definitions, see details</td></tr>
+		<tr><td><a href="#roadstop_disallowed_bridge_pillars">14</a></td><td><a href="#roadstop_disallowed_bridge_pillars">roadstop_disallowed_bridge_pillars</a></td><td>6</td><td>Disallowed bridge pillars</td><td>Incompatible non-mapped property definitions, see details</td></tr>
 		<tr><td><a href="#roadstop_cost_multipliers">15</a></td><td><a href="#roadstop_cost_multipliers">roadstop_cost_multipliers</a></td><td>2</td><td>Cost multipliers</td><td></td></tr>
 		<tr><td><a href="#roadstop_height">16</a></td><td><a href="#roadstop_height">roadstop_height</a></td><td>1</td><td>Height (for build window)</td><td>Not in spec</td></tr>
 	</table>
@@ -66,7 +66,7 @@
 	<table>
 	<tr><th>Name</th><th>Class ID</th><th>Meaning</th></tr>
 	<tr><td>DFLT</td><td>44 46 4C 54</td><td>Default bus and lorry stops</td></tr>
-	<tr><td>WAYP</td><td>57 41 59 50</td><td>This class is used for road waypoints. This is reserved in the specification, but not implemented.</td></tr>
+	<tr><td>WAYP</td><td>57 41 59 50</td><td>This class is used for road waypoints.</td></tr>
 	</table>
 	All classes except WAYP are used for bus and/or lorry stops.<br />
 	This functions the same way as <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Station_class_.2808.29">station (feature 4) property 08</a>.<br />
@@ -170,15 +170,19 @@
 	<h4 id="roadstop_min_bridge_height">Road stop minimum bridge heights (13, or mappable property: roadstop_min_bridge_height)</h4>
 	<p>This property allows or disallows building bridges over road stops.<br />
 	The bridge height property defines minimum clearances required for a bridge for each of the 6 views/rotations (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).<br />
-	Each height value is 1 byte, the total property length is 6 bytes.<br />
-	This property is not in the specification.
+	Each height value is 1 byte.<br />
+	<br />
+	From <font face="monospace">road_stops</font> version 11, this is a variable length property which matches the behaviour of upstream property 13.<br />
+	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 13 did not use a length prefix, this is no longer supported.
 	</p>
 	<h4 id="roadstop_disallowed_bridge_pillars">Road stop disallowed bridge pillars (14, or mappable property: roadstop_disallowed_bridge_pillars)</h4>
 	<p>This property describes which bridge pillars are not allowed on the road stop tile.<br />
 	It consists of a set of pillar flags, for each of the 6 road stop views/rotations.<br />
-	Each set of flags is 1 byte, the total property length is 6 bytes.<br />
+	Each set of flags is 1 byte.<br />
 	Each set of flags has the format described in the <a href="newgrf-additions.html#bridge_pillar_flags">bridge_pillar_flags property section</a>.<br />
-	This property is not in the specification.
+	<br />
+	From <font face="monospace">road_stops</font> version 11, this is a variable length property which matches the behaviour of upstream property 14.<br />
+	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 14 did not use a length prefix, this is no longer supported.
 	</p>
 	<h4 id="roadstop_cost_multipliers">Road stop cost multipliers (15, or mappable property: roadstop_cost_multipliers)</h4>
 	<p>This property sets the build and removal cost multipliers.<br />
