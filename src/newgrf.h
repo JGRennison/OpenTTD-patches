@@ -314,6 +314,7 @@ enum NewLandscapeAction3ID {
 /** GRFFile control flags. */
 enum GRFFileCtrlFlags {
 	GFCF_HAVE_FEATURE_ID_REMAP  = 0,                          ///< This GRF has one or more feature ID mappings
+	GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID,                ///< The road stops feature was mapped to a non-default feature ID (not GSF_ROADSTOPS), enable some workarounds
 };
 
 struct NewSignalStyle;

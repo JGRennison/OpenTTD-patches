@@ -67,6 +67,15 @@ static ChangeInfoResult IgnoreRoadStopProperty(uint prop, ByteReader &buf)
 	return ret;
 }
 
+static uint ReadPropertyLengthWithLegacyFallback(int prop, ByteReader &buf, uint legacy_length)
+{
+	if (prop < A0RPI_UNKNOWN_IGNORE && HasBit(_cur.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID)) {
+		/* Treat as legacy behaviour */
+		return legacy_length;
+	}
+	return buf.ReadExtendedByte();
+}
+
 static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
@@ -177,7 +186,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
 			case 0x13: { // Minimum height for a bridge above
 				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeHeightsSet);
-				uint tiles = buf.ReadExtendedByte();
+				uint tiles = ReadPropertyLengthWithLegacyFallback(prop, buf, 6);
 				for (uint i = 0; i < tiles; i++) {
 					uint8_t height = buf.ReadByte();
 					if (i < lengthof(rs->bridge_height)) rs->bridge_height[i] = height;
@@ -188,7 +197,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 			case A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS:
 			case 0x14: { // Disallowed bridge pillars
 				rs->internal_flags.Set(RoadStopSpecIntlFlag::BridgeDisallowedPillarsSet);
-				uint tiles = buf.ReadExtendedByte();
+				uint tiles = ReadPropertyLengthWithLegacyFallback(prop, buf, 6);
 				for (uint i = 0; i < tiles; i++) {
 					uint8_t pillars = buf.ReadByte();
 					if (i < lengthof(rs->bridge_disallowed_pillars)) rs->bridge_disallowed_pillars[i] = pillars;

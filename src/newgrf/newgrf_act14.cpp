@@ -541,6 +541,10 @@ struct GRFPropertyMapAction {
 				entry.feature = info->feature;
 				entry.raw_id = this->prop_id;
 				success = true;
+				if (entry.feature == GSF_ROADSTOPS && this->prop_id != GSF_ROADSTOPS) {
+					GrfMsg(3, "Enabling legacy road stops feature workarounds");
+					SetBit(_cur.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID);
+				}
 				break;
 			}
 		}

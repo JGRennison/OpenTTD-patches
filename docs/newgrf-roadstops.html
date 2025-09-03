@@ -173,7 +173,8 @@
 	Each height value is 1 byte.<br />
 	<br />
 	From <font face="monospace">road_stops</font> version 11, this is a variable length property which matches the behaviour of upstream property 13.<br />
-	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 13 did not use a length prefix, this is no longer supported.
+	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 13 did not use a length prefix.<br />
+	For legacy support the old, fixed-size format is used for property 13 if the road stop feature is mapped to an ID other than 0x14.
 	</p>
 	<h4 id="roadstop_disallowed_bridge_pillars">Road stop disallowed bridge pillars (14, or mappable property: roadstop_disallowed_bridge_pillars)</h4>
 	<p>This property describes which bridge pillars are not allowed on the road stop tile.<br />
@@ -182,7 +183,8 @@
 	Each set of flags has the format described in the <a href="newgrf-additions.html#bridge_pillar_flags">bridge_pillar_flags property section</a>.<br />
 	<br />
 	From <font face="monospace">road_stops</font> version 11, this is a variable length property which matches the behaviour of upstream property 14.<br />
-	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 14 did not use a length prefix, this is no longer supported.
+	Before <font face="monospace">road_stops</font> version 11, this property had a fixed size of 6 value (6 bytes), and property 14 did not use a length prefix.<br />
+	For legacy support the old, fixed-size format is used for property 14 if the road stop feature is mapped to an ID other than 0x14.
 	</p>
 	<h4 id="roadstop_cost_multipliers">Road stop cost multipliers (15, or mappable property: roadstop_cost_multipliers)</h4>
 	<p>This property sets the build and removal cost multipliers.<br />
