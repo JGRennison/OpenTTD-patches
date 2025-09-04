@@ -336,7 +336,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	switch (action) {
 		case NETWORK_ACTION_SERVER_MESSAGE:
 			/* Ignore invalid messages */
-			AppendStringInPlace(message, STR_NETWORK_SERVER_MESSAGE, data_str);
+			AppendStringInPlace(message, STR_NETWORK_SERVER_MESSAGE, str);
 			colour = CC_DEFAULT;
 			break;
 		case NETWORK_ACTION_COMPANY_SPECTATOR:
