@@ -1160,7 +1160,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 		auto validation_error = [i](StringID str) -> CommandCost {
 			CommandCost result(str);
-			result.SetResultData(static_cast<uint>(i));
+			result.SetResultData(static_cast<uint32_t>(i));
 			return result;
 		};
 

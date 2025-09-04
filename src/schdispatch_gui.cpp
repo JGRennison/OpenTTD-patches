@@ -1479,11 +1479,13 @@ void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32
 
 void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t schedule_index, uint32_t offset, int32_t adjustment)
 {
-	if (!result.Succeeded() || !result.HasResultData()) return;
+	if (!result.Succeeded()) return;
+	auto slot_id = result.GetResultData<uint32_t>();
+	if (!slot_id.has_value()) return;
 
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
 	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index) && w->selected_slot == offset) {
-		w->selected_slot = result.GetResultData();
+		w->selected_slot = *slot_id;
 	}
 }
 

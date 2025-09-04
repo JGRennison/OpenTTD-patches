@@ -802,8 +802,8 @@ CommandCost CmdDepotMassAutoReplace(DoCommandFlags flags, TileIndex tile, Vehicl
 		if (v->type == VEH_TRAIN) {
 			CommandCost ret = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(flags, v->index);
 			if (ret.Succeeded()) cost.AddCost(ret.GetCost());
-			if (ret.HasResultData()) {
-				v = Vehicle::Get(ret.GetResultData());
+			if (auto result_v = ret.GetResultData<VehicleID>(); result_v.has_value()) {
+				v = Vehicle::Get(*result_v);
 			}
 		}
 
@@ -1410,7 +1410,9 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 		total_cost.AddCost(cost.GetCost());
 
 		if (flags.Test(DoCommandFlag::Execute)) {
-			w = Vehicle::Get(cost.GetResultData());
+			auto veh_id = cost.GetResultData<VehicleID>();
+			if (!veh_id.has_value()) return CMD_ERROR;
+			w = Vehicle::Get(*veh_id);
 
 			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
 				SetBit(Train::From(w)->flags, VRF_REVERSE_DIRECTION);
@@ -1553,11 +1555,13 @@ CommandCost CmdCloneVehicleFromTemplate(DoCommandFlags flags, TileIndex tile, Te
 
 	ret = Command<CMD_VIRTUAL_TRAIN_FROM_TEMPLATE>::Do(DoCommandFlag::Execute, tv->index, INVALID_CLIENT_ID);
 	if (ret.Failed()) return ret;
-	if (!ret.HasResultData()) return CMD_ERROR;
 
-	Train *virt = Train::Get(ret.GetResultData());
+	auto result_v = ret.GetResultData<VehicleID>();
+	if (!result_v.has_value()) return CMD_ERROR;
 
-	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, ret.GetResultData<VehicleID>(), false);
+	Train *virt = Train::Get(*result_v);
+
+	ret = Command<CMD_CLONE_VEHICLE>::Do(flags, tile, *result_v, false);
 
 	delete virt;
 

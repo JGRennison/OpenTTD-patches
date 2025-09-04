@@ -5157,9 +5157,9 @@ public:
 
 void CcCreateTraceRestrictSlot(const CommandCost &result)
 {
-	if (result.Succeeded() && result.HasResultData()) {
-		TraceRestrictRecordRecentSlot(static_cast<TraceRestrictSlotID>(result.GetResultData()));
-	}
+	if (!result.Succeeded()) return;
+	auto slot_id = result.GetResultData<TraceRestrictSlotID>();
+	if (slot_id.has_value()) TraceRestrictRecordRecentSlot(*slot_id);
 }
 
 static WindowDesc _slot_window_desc(__FILE__, __LINE__,
@@ -5551,9 +5551,9 @@ public:
 
 void CcCreateTraceRestrictCounter(const CommandCost &result)
 {
-	if (result.Succeeded() && result.HasResultData()) {
-		TraceRestrictRecordRecentCounter(static_cast<TraceRestrictCounterID>(result.GetResultData()));
-	}
+	if (!result.Succeeded()) return;
+	auto ctr_id = result.GetResultData<TraceRestrictCounterID>();
+	if (ctr_id.has_value()) TraceRestrictRecordRecentCounter(*ctr_id);
 }
 
 static WindowDesc _counter_window_desc(__FILE__, __LINE__,

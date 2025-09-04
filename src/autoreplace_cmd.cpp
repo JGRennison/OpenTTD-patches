@@ -343,9 +343,12 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
 {
 	/* Build the new vehicle */
 	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed() || !cost.HasResultData()) return cost;
+	if (cost.Failed()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
+	auto veh_id = cost.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return cost;
+
+	Vehicle *new_veh = Vehicle::Get(*veh_id);
 	*new_vehicle = new_veh;
 
 	Vehicle *v = new_veh;
@@ -450,9 +453,12 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 	/* Build the new vehicle */
 	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed() || !cost.HasResultData()) return cost;
+	if (cost.Failed()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
+	auto veh_id = cost.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return cost;
+
+	Vehicle *new_veh = Vehicle::Get(*veh_id);
 	*new_vehicle = new_veh;
 
 	size_t i = 0;
@@ -515,9 +521,12 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 
 	/* Build the new vehicle */
 	cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
-	if (cost.Failed() || !cost.HasResultData()) return cost;
+	if (cost.Failed()) return cost;
 
-	Vehicle *new_veh = Vehicle::Get(cost.GetResultData());
+	auto veh_id = cost.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return cost;
+
+	Vehicle *new_veh = Vehicle::Get(*veh_id);
 	*new_vehicle = new_veh;
 
 	/* Refit the vehicle if needed */

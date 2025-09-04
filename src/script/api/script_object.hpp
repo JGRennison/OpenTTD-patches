@@ -327,7 +327,7 @@ protected:
 	/**
 	 * Set the result data of the last command.
 	 */
-	static void SetLastCommandResultData(uint32_t last_result);
+	static void SetLastCommandResultData(CommandResultData last_result);
 
 	/**
 	 * Clear the result data of the last command.
@@ -340,8 +340,7 @@ protected:
 	template <typename T>
 	static T GetLastCommandResultData(T default_value)
 	{
-		auto res = ScriptObject::GetLastCommandResultDataRaw();
-		return res.second ? static_cast<T>(res.first) : default_value;
+		return ScriptObject::GetLastCommandResultDataRaw().GetOrDefault<T>(default_value);
 	}
 
 	/**
@@ -374,7 +373,7 @@ protected:
 	static void RegisterUniqueLogMessage(std::string &&msg);
 
 private:
-	static std::pair<uint32_t, bool> GetLastCommandResultDataRaw();
+	static CommandResultData GetLastCommandResultDataRaw();
 
 	using RandomizerArray = TypedIndexContainer<std::array<Randomizer, OWNER_END.base()>, Owner>;
 	static RandomizerArray random_states; ///< Random states for each of the scripts (game script uses OWNER_DEITY)

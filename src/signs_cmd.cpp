@@ -105,10 +105,13 @@ CommandCost CmdRenameSign(DoCommandFlags flags, SignID sign_id, const std::strin
  */
 void CcPlaceSign(const CommandCost &result)
 {
-	if (result.Failed() || !result.HasResultData()) return;
+	if (result.Failed()) return;
 
-	ShowRenameSignWindow(Sign::Get(result.GetResultData()));
-	ResetObjectToPlace();
+	auto sign_id = result.GetResultData<SignID>();
+	if (sign_id.has_value()) {
+		ShowRenameSignWindow(Sign::Get(*sign_id));
+		ResetObjectToPlace();
+	}
 }
 
 /**

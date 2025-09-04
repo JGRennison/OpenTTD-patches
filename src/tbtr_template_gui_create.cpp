@@ -719,11 +719,14 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 
 void CcSetVirtualTrain(const CommandCost &result)
 {
-	if (result.Failed() || !result.HasResultData()) return;
+	if (result.Failed()) return;
+
+	auto veh_id = result.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return;
 
 	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window != nullptr) {
-		Train *train = Train::From(Vehicle::Get(result.GetResultData()));
+		Train *train = Train::From(Vehicle::Get(*veh_id));
 		((TemplateCreateWindow *)window)->SetVirtualTrain(train);
 		window->InvalidateData();
 	}

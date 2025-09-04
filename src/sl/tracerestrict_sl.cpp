@@ -132,7 +132,7 @@ static void Load_TRRP()
 		if (validation_result.Failed()) {
 			format_buffer buffer;
 			buffer.format("Trace restrict program {}: {}\nProgram dump:", index, GetStringPtr(validation_result.GetErrorMessage()));
-			uint fail_offset = validation_result.HasResultData() ? validation_result.GetResultData() : UINT32_MAX;
+			uint fail_offset = validation_result.GetResultDataWithType().GetOrDefault<uint32_t>(UINT32_MAX);
 			for (uint i = 0; i < (uint)prog->items.size(); i++) {
 				if ((i % 3) == 0) {
 					buffer.format("\n{:4}:", i);

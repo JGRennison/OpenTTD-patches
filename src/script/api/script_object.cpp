@@ -171,22 +171,21 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->last_cost;
 }
 
-/* static */ void ScriptObject::SetLastCommandResultData(uint32_t last_result)
+/* static */ void ScriptObject::SetLastCommandResultData(CommandResultData last_result)
 {
 	auto *storage = GetStorage();
 	storage->last_result = last_result;
-	storage->last_result_valid = true;
 }
 
 /* static */ void ScriptObject::ClearLastCommandResultData()
 {
-	GetStorage()->last_result_valid = false;
+	GetStorage()->last_result = {};
 }
 
-/* static */ std::pair<uint32_t, bool> ScriptObject::GetLastCommandResultDataRaw()
+/* static */ CommandResultData ScriptObject::GetLastCommandResultDataRaw()
 {
 	auto *storage = GetStorage();
-	return { storage->last_result, storage->last_result_valid };
+	return storage->last_result;
 }
 
 /* static */ void ScriptObject::SetRoadType(RoadType road_type)
@@ -337,8 +336,8 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Costs of this operation. */
 	SetLastCost(res.GetCost());
-	if (res.HasResultData()) {
-		SetLastCommandResultData(res.GetResultData());
+	if (res.HasAnyResultData()) {
+		SetLastCommandResultData(res.GetResultDataWithType());
 	} else {
 		ClearLastCommandResultData();
 	}

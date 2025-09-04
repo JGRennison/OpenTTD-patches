@@ -1800,14 +1800,14 @@ void CallVehicleTicks()
 
 
 		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index);
-		if (res.HasResultData()) {
-			t = Train::Get(res.GetResultData());
+		if (auto result_v = res.GetResultData<VehicleID>(); result_v.has_value()) {
+			t = Train::Get(*result_v);
 		}
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
 		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index, true);
-		if (res2.HasResultData()) {
-			t = Train::Get(res2.GetResultData());
+		if (auto result_v = res2.GetResultData<VehicleID>(); result_v.has_value()) {
+			t = Train::Get(*result_v);
 		}
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2.GetCost());

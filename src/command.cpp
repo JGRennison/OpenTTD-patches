@@ -636,8 +636,8 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 
 	format_buffer summary;
 	payload.FormatDebugSummary(summary);
-	if (res.HasResultData()) {
-		summary.format(" --> {}", res.GetResultData());
+	if (res.HasAnyResultData()) {
+		summary.format(" --> {}", res.GetUntypedResultData());
 	}
 
 	if (_networking && cmd_log.count > 0) {
@@ -1199,11 +1199,9 @@ void CommandCost::SetAdditionalCashRequired(Money cash)
 	}
 }
 
-void CommandCost::SetResultData(uint32_t result)
+void CommandCost::SetResultDataWithType(CommandResultData result)
 {
 	this->flags |= CCIF_VALID_RESULT;
-
-	if (result == this->GetResultData()) return;
 
 	if (this->AddInlineData(CommandCostInlineType::Result)) {
 		this->inl.aux_data->result = result;

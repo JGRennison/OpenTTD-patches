@@ -127,9 +127,11 @@ extern void DepotSortList(VehicleList *list);
  */
 void CcCloneVehicle(const CommandCost &result)
 {
-	if (result.Failed() || !result.HasResultData()) return;
+	if (result.Failed()) return;
+	auto veh_id = result.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return;
 
-	const Vehicle *v = Vehicle::Get(result.GetResultData());
+	const Vehicle *v = Vehicle::Get(*veh_id);
 
 	ShowVehicleViewWindow(v);
 }

@@ -432,9 +432,10 @@ static bool TryFoundTownNearby(TileIndex tile, void *user_data)
 {
 	ExternalTownData &town = *static_cast<ExternalTownData *>(user_data);
 	CommandCost result = Command<CMD_FOUND_TOWN>::Do(DoCommandFlag::Execute, tile, TSZ_SMALL, town.is_city, _settings_game.economy.town_layout, false, 0, town.name);
-	if (result.HasResultData()) {
+	auto result_id = result.GetResultData<TownID>();
+	if (result_id.has_value()) {
 		/* The command succeeded, send the ID back through user_data. */
-		town.town_id = result.GetResultData<TownID>();
+		town.town_id = *result_id;
 		return true;
 	} else {
 		return false;

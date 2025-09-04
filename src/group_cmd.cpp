@@ -592,8 +592,9 @@ CommandCost CmdCreateGroupFromList(DoCommandFlags flags, VehicleListIdentifier v
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		if (!ret.HasResultData()) return CMD_ERROR;
-		const Group *g = Group::GetIfValid(ret.GetResultData());
+		auto group_id = ret.GetResultData<GroupID>();
+		if (!group_id.has_value()) return CMD_ERROR;
+		const Group *g = Group::GetIfValid(*group_id);
 		if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
 		if (!name.empty()) {
@@ -674,8 +675,9 @@ CommandCost CmdAddVehicleGroup(DoCommandFlags flags, GroupID group_id, VehicleID
 		/* Create new group. */
 		ret = CmdCreateGroup(flags, v->type, GroupID::Invalid());
 		if (ret.Failed()) return ret;
-		if (ret.HasResultData()) {
-			new_g = ret.GetResultData<GroupID>();
+		auto group_id = ret.GetResultData<GroupID>();
+		if (group_id.has_value()) {
+			new_g = *group_id;
 		} else if (flags.Test(DoCommandFlag::Execute)) {
 			return CMD_ERROR;
 		}

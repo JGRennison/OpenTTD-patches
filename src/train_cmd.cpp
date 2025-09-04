@@ -7489,11 +7489,12 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			/* Case 4 */
 			CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
 			/* break up in case buying the vehicle didn't succeed */
-			if (buy_cost.Failed() || !buy_cost.HasResultData()) {
-				return buy_cost;
-			}
+			if (buy_cost.Failed()) return buy_cost;
+			auto buy_veh_id = buy_cost.GetResultData<VehicleID>();
+			if (!buy_veh_id.has_value()) return buy_cost;
+
 			buy.AddCost(buy_cost.GetCost());
-			new_chain = Train::Get(buy_cost.GetResultData());
+			new_chain = Train::Get(*buy_veh_id);
 			/* prepare the remainder chain */
 			remainder_chain = incoming;
 			return CommandCost();
@@ -7550,11 +7551,17 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 
 				/* Case 3: must buy new engine */
 				CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
-				if (buy_cost.Failed() || !buy_cost.HasResultData()) {
+				if (buy_cost.Failed()) {
 					new_part = nullptr;
 					return;
 				}
-				new_part = Train::Get(buy_cost.GetResultData());
+				auto buy_veh_id = buy_cost.GetResultData<VehicleID>();
+				if (!buy_veh_id.has_value()) {
+					new_part = nullptr;
+					return;
+				}
+
+				new_part = Train::Get(*buy_veh_id);
 				CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost.GetCost());

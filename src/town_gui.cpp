@@ -1370,7 +1370,9 @@ void CcFoundTown(const CommandCost &result, TileIndex tile)
 
 void CcFoundRandomTown(const CommandCost &result)
 {
-	if (result.Succeeded() && result.HasResultData()) ScrollMainWindowToTile(Town::Get(result.GetResultData())->xy);
+	if (!result.Succeeded()) return;
+	auto town_id = result.GetResultData<TownID>();
+	if (town_id.has_value()) ScrollMainWindowToTile(Town::Get(*town_id)->xy);
 }
 
 static constexpr NWidgetPart _nested_found_town_widgets[] = {

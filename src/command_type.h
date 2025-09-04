@@ -33,6 +33,63 @@ enum CommandCostIntlFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
 
+using CommandCostAllowedResultTypes = std::tuple<uint32_t, struct PlanIDTag, struct VehicleIDTag, struct SignIDTag, struct GroupIDTag, struct GoalIDTag, struct TownIDTag,
+		struct StoryPageIDTag, struct StoryPageElementIDTag, struct LeagueTableElementIDTag, struct LeagueTableIDTag,
+		struct TraceRestrictSlotIDTag, struct TraceRestrictSlotGroupIDTag, struct TraceRestrictCounterIDTag>;
+using CommandCostResultTypeIndex = uint8_t;
+
+template <typename T>
+constexpr CommandCostResultTypeIndex GetCommandCostResultDataTypeID()
+{
+	if constexpr (std::is_base_of_v<struct PoolIDBase, T>) {
+		return GetCommandCostResultDataTypeID<typename T::TagType>();
+	} else if constexpr (std::is_same_v<uint16_t, T>) {
+		return GetCommandCostResultDataTypeID<uint32_t>();
+	} else {
+		constexpr size_t idx = GetTupleIndexIgnoreCvRef<T, CommandCostAllowedResultTypes>();
+		static_assert(idx < std::tuple_size_v<CommandCostAllowedResultTypes>,
+				"Could not find CommandCost result type in CommandCostAllowedResultTypes");
+		static_assert(idx < std::numeric_limits<CommandCostResultTypeIndex>::max());
+		return static_cast<CommandCostResultTypeIndex>(idx) + 1;
+	}
+}
+
+struct CommandResultData {
+	uint32_t result = 0;
+	CommandCostResultTypeIndex result_type = 0;
+
+private:
+	template <typename T>
+	T GetUnchecked() const
+	{
+		if constexpr (std::is_base_of_v<struct PoolIDBase, T>) {
+			return T(static_cast<typename T::BaseType>(this->result));
+		} else {
+			return static_cast<T>(this->result);
+		}
+	}
+
+public:
+	template <typename T>
+	inline bool IsType() const
+	{
+		return this->result_type == GetCommandCostResultDataTypeID<T>();
+	}
+
+	template <typename T>
+	std::optional<T> Get() const
+	{
+		if (!this->IsType<T>()) return std::nullopt;
+		return this->GetUnchecked<T>();
+	}
+
+	template <typename T>
+	T GetOrDefault(T default_value) const
+	{
+		return this->IsType<T>() ? this->GetUnchecked<T>() : default_value;
+	}
+};
+
 /**
  * Common return value for all commands. Wraps the cost and
  * a possible error message/state together.
@@ -66,11 +123,11 @@ class CommandCost {
 		EncodedString encoded_message;                  ///< Encoded error message, used if the error message includes parameters.
 		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
 		TileIndex tile = INVALID_TILE;
-		uint32_t result = 0;
+		CommandResultData result{};
 	};
 
 	union {
-		uint32_t result = 0;
+		CommandResultData result{};
 		StringID extra_message;                 ///< Additional warning message for when success is unset
 		uint32_t tile;
 		int64_t additional_cash_required;
@@ -310,38 +367,50 @@ public:
 
 	void SetAdditionalCashRequired(Money cash);
 
-	bool HasResultData() const
+	bool HasAnyResultData() const
 	{
 		return (this->flags & CCIF_VALID_RESULT);
 	}
 
-private:
-	uint32_t GetResultDataIntl() const
+	CommandResultData GetResultDataWithType() const
 	{
+		if (!this->HasAnyResultData()) return {};
 		if (this->GetInlineType() == CommandCostInlineType::Result) {
 			return this->inl.result;
 		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
 			return this->inl.aux_data->result;
 		} else {
-			return 0;
+			return {};
 		}
 	}
+
+private:
+	void SetResultDataWithType(CommandResultData result);
 
 public:
-	template <typename T = uint32_t>
-	T GetResultData() const
+	uint32_t GetUntypedResultData() const
 	{
-		if constexpr (std::is_base_of_v<struct PoolIDBase, T>) {
-			return T(static_cast<typename T::BaseType>(this->GetResultDataIntl()));
-		} else {
-			return static_cast<T>(this->GetResultDataIntl());
-		}
+		return this->GetResultDataWithType().result;
 	}
 
-	void SetResultData(uint32_t result);
+	template <typename T>
+	std::optional<T> GetResultData() const
+	{
+		if (!this->HasAnyResultData()) return std::nullopt;
+
+		return this->GetResultDataWithType().Get<T>();
+	}
+
+	inline void SetResultData(uint32_t result)
+	{
+		this->SetResultDataWithType({ result, GetCommandCostResultDataTypeID<uint32_t>() });
+	}
 
 	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
-	inline void SetResultData(T result) { this->SetResultData(static_cast<uint32_t>(result.base())); }
+	inline void SetResultData(T result)
+	{
+		this->SetResultDataWithType({ static_cast<uint32_t>(result.base()), GetCommandCostResultDataTypeID<T>() });
+	}
 };
 
 CommandCost CommandCostWithParam(StringID str, uint64_t value);

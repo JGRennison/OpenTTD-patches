@@ -1410,10 +1410,13 @@ static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner o
  */
 void CcCreateGroup(const CommandCost &result, VehicleType vt, GroupID parent_group)
 {
-	if (result.Failed() || !result.HasResultData() || vt >= VEH_COMPANY_END) return;
+	if (result.Failed() || vt >= VEH_COMPANY_END) return;
+
+	auto group_id = result.GetResultData<GroupID>();
+	if (!group_id.has_value()) return;
 
 	VehicleGroupWindow *w = FindVehicleGroupWindow(vt, _current_company);
-	if (w != nullptr) w->ShowRenameGroupWindow(result.GetResultData<GroupID>(), true);
+	if (w != nullptr) w->ShowRenameGroupWindow(*group_id, true);
 }
 
 /**
@@ -1422,9 +1425,12 @@ void CcCreateGroup(const CommandCost &result, VehicleType vt, GroupID parent_gro
  */
 void CcAddVehicleNewGroup(const CommandCost &result)
 {
-	if (result.Failed() || !result.HasResultData()) return;
+	if (result.Failed()) return;
 
-	const Group *g = Group::GetIfValid(result.GetResultData());
+	auto group_id = result.GetResultData<GroupID>();
+	if (!group_id.has_value()) return;
+
+	const Group *g = Group::GetIfValid(*group_id);
 	if (g != nullptr) {
 		CcCreateGroup(result, g->vehicle_type, GroupID::Invalid());
 	}

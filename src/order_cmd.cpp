@@ -4220,8 +4220,9 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					buf.Recv_generic(ref_tuple, {});
 					if (buf.error) return CMD_ERROR;
 					last_result = CmdInsertOrderIntl(flags, v, insert_pos, new_order, CIOIF_NONE);
-					if (last_result.Succeeded() && last_result.HasResultData()) {
-						modify_pos = last_result.GetResultData();
+					auto result_pos = last_result.GetResultData<VehicleOrderID>();
+					if (last_result.Succeeded() && result_pos.has_value()) {
+						modify_pos = *result_pos;
 						if (insert_pos != INVALID_VEH_ORDER_ID) insert_pos++;
 					} else {
 						modify_pos = INVALID_VEH_ORDER_ID;

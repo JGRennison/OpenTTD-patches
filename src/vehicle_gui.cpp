@@ -4711,10 +4711,12 @@ void StopGlobalFollowVehicle(const Vehicle *v)
  */
 void CcBuildPrimaryVehicle(const CommandCost &result)
 {
-	if (result.Failed() || !result.HasResultData()) return;
+	if (result.Failed()) return;
 
-	const Vehicle *v = Vehicle::Get(result.GetResultData());
-	ShowVehicleViewWindow(v);
+	auto veh_id = result.GetResultData<VehicleID>();
+	if (!veh_id.has_value()) return;
+
+	ShowVehicleViewWindow(Vehicle::Get(*veh_id));
 }
 
 /**
