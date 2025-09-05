@@ -193,7 +193,7 @@ static StringID GetEngineInfoCapacityStringParameter(EngineID engine)
 
 static StringID ProcessEngineCapacityString(StringID str)
 {
-	_temp_special_strings[0] = str_replace_wchar(GetStringPtr(str), SCC_CARGO_LONG, SCC_STRING1);
+	_temp_special_strings[0] = str_replace_wchar(GetStringPtr(str), SCC_CARGO_LONG, SCC_STRING);
 	return SPECSTR_TEMP_START;
 }
 
