@@ -81,15 +81,24 @@ vietnamese.txt
 welsh.txt
 );
 
-my ($commit, $upstream_dir);
+my $ref = "master";
+my $commit;
 
 Getopt::Long::Configure("no_auto_abbrev", "bundling");
 GetOptions (
+	"ref|r=s"      => \$ref,
 	"commit|c"     => \$commit,
-	"upstream|u=s" => \$upstream_dir,
 ) or die("Invalid options");
 
-die ("Upstream lang directory not specified") unless $upstream_dir;
+my $upstream_commit;
+if (!scalar IPC::Cmd::run(
+				command => [qw(git rev-parse --verify), "$ref^{commit}"],
+				verbose => 0,
+				buffer  => \$upstream_commit,
+				timeout => 20)) {
+	die "Could not get upstream commit from ref: $ref";
+}
+chomp $upstream_commit;
 
 my %lang_str;
 
@@ -118,7 +127,15 @@ for (@lines) {
 	}
 }
 
-my @upstream_lines = read_file("$upstream_dir/english.txt") or die("Can't read upstream english.txt at $upstream_dir/english.txt");
+my $upstream_lang;
+if (!scalar IPC::Cmd::run(
+				command => [qw(git show), "$upstream_commit:./english.txt"],
+				verbose => 0,
+				buffer  => \$upstream_lang,
+				timeout => 20)) {
+	die "Could not get upstream english.txt";
+}
+my @upstream_lines = split(/^/m, $upstream_lang);
 for (@upstream_lines) {
 	next if /^##/;
 
@@ -132,7 +149,16 @@ for (@upstream_lines) {
 
 for my $lang (@langs) {
 	my @in_lines = read_file($lang);
-	my @in_upstream_lines = read_file("$upstream_dir/$lang");
+
+	my $in_upstream_lang;
+	if (!scalar IPC::Cmd::run(
+					command => [qw(git show), "$upstream_commit:./$lang"],
+					verbose => 0,
+					buffer  => \$in_upstream_lang,
+					timeout => 20)) {
+		die "Could not get upstream $lang";
+	}
+	my @in_upstream_lines = split(/^/m, $in_upstream_lang);
 
 	my @lines;
 	my %translation_str;
@@ -197,15 +223,5 @@ for my $lang (@langs) {
 }
 
 if ($commit) {
-	my $upstream_commit;
-	if (!scalar IPC::Cmd::run(
-					command => [qw(git -C), $upstream_dir, qw(rev-parse --verify @^{commit})],
-					verbose => 0,
-					buffer  => \$upstream_commit,
-					timeout => 20)) {
-		die "Could not get upstream commit";
-	}
-	chomp $upstream_commit;
-
 	system(qw(git commit -m), "Merge translations up to $upstream_commit", '--author=translators <translators@openttd.org>', '--', @langs);
 }
