@@ -702,35 +702,41 @@ public:
 	}
 
 	template <typename T>
+	std::optional<T> TryGetFromValue(std::string_view label, const nlohmann::json &value, JsonOrderImportErrorType fail_type)
+	{
+		try {
+			if constexpr (std::is_same_v<T, std::string_view>) {
+				const std::string &ref = value.template get_ref<const std::string &>();
+				return ref;
+			} else {
+				T temp = (T)value;
+
+				/* Special case for enums, here we can also check if the value is valid. */
+				if constexpr (std::is_enum<T>::value) {
+					const char *result = nullptr;
+					to_json(result, temp);
+					if (result == nullptr) {
+						LogError(fmt::format("Value of '{}' is invalid", label), fail_type);
+						return std::nullopt;
+					}
+				}
+
+				return std::move(temp);
+			}
+		} catch (...) {
+			this->LogError(fmt::format("Data type of '{}' is invalid", label), fail_type);
+			return std::nullopt;
+		}
+	}
+
+	template <typename T>
 	std::optional<T> TryGetField(std::string_view key, JsonOrderImportErrorType fail_type)
 	{
-		auto iter = json.find(key);
-		if (iter != json.end()) {
-			try {
-				if constexpr (std::is_same_v<T, std::string_view>) {
-					const std::string &ref = iter->template get_ref<const std::string &>();
-					return ref;
-				} else {
-					T temp = (T)*iter;
-
-					/* Special case for enums, here we can also check if the value is valid. */
-					if constexpr (std::is_enum<T>::value) {
-						const char *result = nullptr;
-						to_json(result, temp);
-						if (result == nullptr) {
-							LogError(fmt::format("Value of '{}' is invalid", key), fail_type);
-							return std::nullopt;
-						}
-					}
-
-					return std::move(temp);
-				}
-			} catch (...) {
-				LogError(fmt::format("Data type of '{}' is invalid", key), fail_type);
-				return std::nullopt;
-			}
+		auto iter = this->json.find(key);
+		if (iter != this->json.end()) {
+			return this->TryGetFromValue<T>(key, *iter, fail_type);
 		} else if (fail_type == JOIET_CRITICAL) {
-			LogError(fmt::format("Required '{}' is missing", key), fail_type);
+			this->LogError(fmt::format("Required '{}' is missing", key), fail_type);
 		}
 		return std::nullopt;
 	}
