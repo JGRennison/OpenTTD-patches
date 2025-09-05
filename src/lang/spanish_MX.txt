@@ -2334,16 +2334,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Selecci�
 STR_FACE_LOAD                                                   :{BLACK}Cargar
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Cargar cara favorita
 STR_FACE_LOAD_DONE                                              :{WHITE}Cara favorita cargada desde el archivo de configuración
-STR_FACE_FACECODE                                               :{BLACK}Número de cara
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Establecer un número de cara
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Establecer un número de cara
-STR_FACE_FACECODE_SET                                           :{WHITE}Nuevo número de cara fue asignado
-STR_FACE_FACECODE_ERR                                           :{WHITE}No se puede asignar número de cara, ¡debe ser un valor entre 0 y 4,294,967,295!
+STR_FACE_FACECODE                                               :{BLACK}Código de cara
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Establecer un código de cara para el presidente
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Establecer un código para la cara del presidente
+STR_FACE_FACECODE_SET                                           :{WHITE}La nueva cara del presidente se ha asignado
+STR_FACE_FACECODE_ERR                                           :{WHITE}No se puede asignar código de cara, debe ser una etiqueta y número válidos
 STR_FACE_SAVE                                                   :{BLACK}Guardar
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Guardar cara favorita
 STR_FACE_SAVE_DONE                                              :{WHITE}Cara guardada como favorita en el archivo de configuración
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Sí
 STR_FACE_NO                                                     :No
+STR_FACE_STYLE                                                  :Estilo:
 STR_FACE_HAIR                                                   :Pelo:
 STR_FACE_EYEBROWS                                               :Cejas:
 STR_FACE_EYECOLOUR                                              :Color de ojos:
@@ -3056,6 +3059,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Elegir e
 STR_FOUND_TOWN_CITY                                             :{BLACK}Ciudad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Las ciudades crecen más rápido que los pueblos{}Según la configuración del juego, al ser fundadas son más grandes
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Expansión del pueblo:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Edificios
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Aumentar edificios de los pueblos
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Carreteras
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Aumentar carreteras de los pueblos
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Diseño urbano:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Elegir el patrón de carreteras de este pueblo
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Original
@@ -3682,6 +3691,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Cambiar 
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Aumentar
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Aumentar la población del pueblo
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Expandir edificios
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Aumentar edificios de los pueblos
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Expandir carreteras
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Aumentar carreteras de los pueblos
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Eliminar
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Eliminar este pueblo completamente
 
@@ -4754,8 +4767,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Viajar (durante
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Viajar (durante {STRING}, no programado) a {VELOCITY} como máximo
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(esperar {STRING}, no programado)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(viajar {STRING}, no programado)
-STR_TIMETABLE_STAY_FOR                                          :y esperar {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :y viajar {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}y esperar {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}y viajar {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}El horario tardará aproximadamente {STRING} en completarse
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}El horario tardará {STRING} en completarse
@@ -4987,6 +5000,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Se requi
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Tierra inclinada en dirección errónea
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}No se puede hacer eso...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Primero se debe demoler el edificio
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... el edificio está protegido
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}No se puede despejar esta zona...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... lugar no apto
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... ya construido

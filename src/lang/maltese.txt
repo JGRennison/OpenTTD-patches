@@ -924,6 +924,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {STRING}
 
 
 
+
 # Fund new industry window
 
 # Industry cargoes window

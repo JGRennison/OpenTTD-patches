@@ -457,10 +457,10 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Εμφά
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Εμφάνιση εταιρικών γραφημάτων και ποσοστών πληρωμής φορτίου
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Εμφάνιση πίνακα κατάταξης των εταιριών
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Εμφάνιση λίστας βιομηχανιών ή χρηματοδότηση κατασκευής νέας βιομηχανίας
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Εμφάνιση λίστας με τα τρένα της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Εμφάνιση λίστας με τα οδικά οχήματα της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Εμφάνιση λίστας με τα πλοία της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Εμφάνιση λίστας με τα αεροσκάφη της εταιρίας. Με Ctrl+Κλικ εναλλάσσεται η εμφάνιση/απόκρυψη των ομάδων οχημάτων
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Εμφάνιση λίστας με τα τρένα της εταιρίας. Ctrl+Κλικ για εμφάνιση/απόκρυψη των ομάδων οχημάτων
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Εμφάνιση λίστας με τα οδικά οχήματα της εταιρίας.Ctrl+Κλικ για εμφάνιση/απόκρυψη των ομάδων οχημάτων
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Εμφάνιση λίστας με τα πλοία της εταιρίας. Ctrl+Κλικ για εμφάνιση/απόκρυψη των ομάδων οχημάτων
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Εμφάνιση λίστας με τα αεροσκάφη της εταιρίας. Ctrl+Κλικ για εμφάνιση/απόκρυψη των ομάδων οχημάτων
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}Μεγέθυνση εικόνας
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}Σμίκρυνση εικόνας
 STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Κατασκευή σιδηροτροχιάς
@@ -2426,16 +2426,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Απλή
 STR_FACE_LOAD                                                   :{BLACK}Φόρτωση
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Φόρτωση αγαπημένου προσώπου
 STR_FACE_LOAD_DONE                                              :{WHITE}Το αγαπημένο πρόσωπο έχει φορτωθεί από το αρχείο ρυθμίσεων του OpenTTD
-STR_FACE_FACECODE                                               :{BLACK}Αρ. προσώπου παίκτη
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Εμφάνιση και/ή επιλογή του αριθμού του προσώπου του παίκτη
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Προβολή και/ή ορισμός του αριθμού του προσώπου του παίκτη
-STR_FACE_FACECODE_SET                                           :{WHITE}Ο νέος αριθμός προσώπου έχει οριστεί
-STR_FACE_FACECODE_ERR                                           :{WHITE}Δεν μπορεί να οριστεί ο αριθμός προσώπου του παίκτη - πρέπει να είναι αριθμητικός μεταξύ του 0 και του 4.294.967.295!
+STR_FACE_FACECODE                                               :{BLACK}Κωδ. προσώπου παίκτη
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Εμφάνιση και/ή επιλογή του κωδικού προσώπου του παίκτη
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Προβολή και/ή ορισμός του κωδικού προσώπου του παίκτη
+STR_FACE_FACECODE_SET                                           :{WHITE}Το νέο πρόσωπο του προέδρου έχει οριστεί
+STR_FACE_FACECODE_ERR                                           :{WHITE}Δεν μπορεί να οριστεί ο κωδικός προσώπου του παίκτη - πρέπει να είναι ένας έγκυρος αριθμός
 STR_FACE_SAVE                                                   :{BLACK}Αποθήκευση
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Αποθήκευση αγαπημένου προσώπου
 STR_FACE_SAVE_DONE                                              :{WHITE}Αυτό το πρόσωπο θα αποθηκευτεί ως αγαπημένο στο αρχείο ρυθμίσεων του OpenTTD
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ναι
 STR_FACE_NO                                                     :Όχι
+STR_FACE_STYLE                                                  :Στυλ:
 STR_FACE_HAIR                                                   :Μαλλιά:
 STR_FACE_EYEBROWS                                               :Φρύδια:
 STR_FACE_EYECOLOUR                                              :Χρώμα ματιών:
@@ -3141,12 +3144,18 @@ STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Δημι
 
 STR_FOUND_TOWN_INITIAL_SIZE_TITLE                               :{YELLOW}Μέγεθος πόλης:
 STR_FOUND_TOWN_INITIAL_SIZE_SMALL_BUTTON                        :{BLACK}Μικρό
-STR_FOUND_TOWN_INITIAL_SIZE_MEDIUM_BUTTON                       :{BLACK}Μεσαίο
+STR_FOUND_TOWN_INITIAL_SIZE_MEDIUM_BUTTON                       :{BLACK}Μέτριο
 STR_FOUND_TOWN_INITIAL_SIZE_LARGE_BUTTON                        :{BLACK}Μεγάλο
 STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}Τυχαίο
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Επιλογή μεγέθους πόλης
 STR_FOUND_TOWN_CITY                                             :{BLACK}Πόλη
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Οι πόλεις αναπτύσσονται ταχύτερα από τις απλές κωμοπόλεις{}Ανάλογα με τις ρυθμίσεις, είναι μεγαλύτερες όταν ιδρύονται
+
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Επέκταση πόλης:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Κτίρια
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Αύξηση κτιρίων πόλεων
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Δρόμοι
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Αύξηση δρόμων πόλεων
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Σχέδιο δρόμων πόλης
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Επιλογή σχεδίου δρόμων που χρησιμοποιείται για αυτή την πόλη
@@ -3774,6 +3783,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Αλλα
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Επέκταση
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Αύξηση μεγέθους της πόλης
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Επέκταση κτιρίων
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Αύξηση κτιρίων της πόλης
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Επέκταση δρόμων
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Αύξηση δρόμων της πόλης
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Διαγραφή
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Διαγραφή της πόλης ολοκληρωτικά
 
@@ -5087,6 +5100,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Απαι
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Το έδαφος έχει λάθος κλίση
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Αυτό δεν γίνεται...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Το κτίριο πρέπει πρώτα να κατεδαφιστεί
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... το κτίριο προστατεύεται
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Είναι αδύνατο να καθαριστεί αυτή η περιοχή...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... ακατάλληλη περιοχή
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... ήδη κατασκευασμένο

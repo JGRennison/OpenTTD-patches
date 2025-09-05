@@ -520,7 +520,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Исто
 STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Список задач
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Графики различных показателей деятельности компаний и оплаты грузоперевозок
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Рейтинги компаний
-STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Открыть промышленный каталог, производственную цепочку или финансировать строительство новой промышленности
+STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Показать список предприятий и производственные цепочки; профинансировать строительство нового предприятия
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Списки поездов по компаниям. Ctrl+щелчок - показать/скрыть группы.
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Списки автомобильного транспорта по компаниям. Ctrl+щелчок - показать/скрыть группы.
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Списки судов по компаниям. Ctrl+щелчок - показать/скрыть группы.
@@ -569,7 +569,7 @@ STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Создани�
 STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Размещение зданий
 
 # Settings menu
-STR_SETTINGS_MENU_GAME_OPTIONS                                  :Основные настройки
+STR_SETTINGS_MENU_GAME_OPTIONS                                  :Настройки игры
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Расширенные настройки
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Настройки ИИ
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Настройки игровых скриптов
@@ -583,7 +583,7 @@ STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Грузовы�
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Остановки автобусов
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Пристани
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Аэропорты
-STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Удалённые станции
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Закрытые станции
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Показывать названия маршрутных точек
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Показывать метки
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Показывать названия станций конкурентов
@@ -769,7 +769,7 @@ STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Ничего
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Показать все виды грузов на графике
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Скрыть все виды грузов на графике
-STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Включить/выключить отображение груза на графике
+STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Включить/отключить отображение груза на графике
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}График производительности: {INDUSTRY}
@@ -780,7 +780,7 @@ STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Пока
 
 # Graph key window
 STR_GRAPH_KEY_CAPTION                                           :{WHITE}Легенда
-STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Включить/выключить отображение компании на графике
+STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Включить/отключить отображение компании на графике
 
 # Company league window
 STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Сравнительная таблица компаний
@@ -909,16 +909,16 @@ STR_SMALLMAP_TYPE_ROUTES                                        :Маршрут�
 STR_SMALLMAP_TYPE_VEGETATION                                    :Растительность
 STR_SMALLMAP_TYPE_OWNERS                                        :Владельцы
 
-STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Показать контуры земли на карте
-STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Показать транспорт на карте
-STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Показать предприятия на карте
+STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Показать на карте ландшафт
+STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Показать на карте транспортные средства
+STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Показать на карте предприятия
 STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Показать на карте грузовые потоки
-STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Показать маршруты на карте
-STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Показать растительность на карте
-STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Показать владельцев земли на карте
+STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Показать на карте транспортную инфраструктуру
+STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Показать на карте растительность
+STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Показать на карте участки земли, находящиеся во владении компаний
 STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION                         :{BLACK}Щелчок по типу предприятия переключает отображение его на карте. Ctrl+щелчок отключает все типы, кроме выбранного. Повторный Ctrl+щелчок включает все типы предприятий.
 STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Щелчок по названию компании переключает отображение её собственности на карте. Ctrl+щелчок отключает отображение всех компаний, кроме выбранной. Повторный Ctrl+щелчок включает отображение всех компаний.
-STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Щелчок по названию груза переключает видимость этого груза. Ctrl+щелчок прячет все грузы кроме выбранного. Повторный Ctrl+щелчок отображает все грузы.
+STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Щелчок по названию груза переключает отображение этого груза. Ctrl+щелчок прячет все грузы кроме выбранного. Повторный Ctrl+щелчок отображает все грузы.
 
 STR_SMALLMAP_LEGENDA_ROADS                                      :{TINY_FONT}{BLACK}Автодороги
 STR_SMALLMAP_LEGENDA_RAILROADS                                  :{TINY_FONT}{BLACK}Железные дороги
@@ -929,7 +929,7 @@ STR_SMALLMAP_LEGENDA_TRAINS                                     :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_ROAD_VEHICLES                              :{TINY_FONT}{BLACK}Автотранспорт
 STR_SMALLMAP_LEGENDA_SHIPS                                      :{TINY_FONT}{BLACK}Водный транспорт
 STR_SMALLMAP_LEGENDA_AIRCRAFT                                   :{TINY_FONT}{BLACK}Авиатранспорт
-STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES                           :{TINY_FONT}{BLACK}Маршруты транспорта
+STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES                           :{TINY_FONT}{BLACK}Транспортная инфраструктура
 STR_SMALLMAP_LEGENDA_FOREST                                     :{TINY_FONT}{BLACK}Лес
 STR_SMALLMAP_LEGENDA_RAILROAD_STATION                           :{TINY_FONT}{BLACK}Ж/д станция
 STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Грузовой терминал
@@ -950,7 +950,7 @@ STR_SMALLMAP_LEGENDA_INDUSTRIES                                 :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLACK}Пустыня
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Снег
 
-STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Включить/выключить названия городов
+STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Показать/убрать названия городов
 STR_SMALLMAP_CENTER_TOOLTIP                                     :{BLACK}Центрировать миникарту по этой позиции
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
@@ -2014,7 +2014,7 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :При вклю
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Учитывать ограничение скорости у вагонов: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :При наличии в составе вагонов с ограничением скорости учитывать это ограничение при определении максимальной скорости состава
 
-STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Выключить электрифицированную железную дорогу: {STRING}
+STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Не требовать электрификации железной дороги: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :При включении этой настройки электровозы смогут ездить по неэлектрифицированной железной дороге
 
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OWN               :Первое транспортное средство игрока на станции: {STRING}
@@ -2351,7 +2351,7 @@ STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Загр
 STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Редактор сценариев
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Сетевая игра
 
-STR_INTRO_GAME_OPTIONS                                          :{BLACK}Основные настройки
+STR_INTRO_GAME_OPTIONS                                          :{BLACK}Настройки игры
 STR_INTRO_HIGHSCORE                                             :{BLACK}Таблица рекордов
 STR_INTRO_HELP                                                  :{BLACK}Помощь и документация
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Расширенные настройки
@@ -2485,15 +2485,18 @@ STR_FACE_LOAD                                                   :{BLACK}Загр
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Загрузить внешность
 STR_FACE_LOAD_DONE                                              :{WHITE}Ваша внешность загружена из файла конфигурации.
 STR_FACE_FACECODE                                               :{BLACK}Числовой код
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Посмотреть или изменить код внешности
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Числовой код внешнего вида
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Отобразить/изменить числовой код внешности президента компании
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Отобразить/изменить числовой код внешности президента компании
 STR_FACE_FACECODE_SET                                           :{WHITE}Числовой код нового лица установлен.
-STR_FACE_FACECODE_ERR                                           :{WHITE}Невозможно изменить внешность - значение должно быть целым и лежать в диапазоне от 0 до 4 294 967 295
+STR_FACE_FACECODE_ERR                                           :{WHITE}Невозможно изменить внешность: значение должно быть целым числом в диапазоне от 0 до 4{NBSP}294{NBSP}967{NBSP}295
 STR_FACE_SAVE                                                   :{BLACK}Сохранить
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Сохранить внешность
 STR_FACE_SAVE_DONE                                              :{WHITE}Внешность сохранена в файле конфигурации.
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Да
 STR_FACE_NO                                                     :Нет
+STR_FACE_STYLE                                                  :Стиль:
 STR_FACE_HAIR                                                   :Волосы:
 STR_FACE_EYEBROWS                                               :Брови:
 STR_FACE_EYECOLOUR                                              :Цвет глаз:
@@ -3230,6 +3233,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Выбо
 STR_FOUND_TOWN_CITY                                             :{BLACK}Мегаполис
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Большие города растут быстрее, чем маленькие.{}В зависимости от настроек, они при создании имеют больший размер.
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Расширение города:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Здания
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Строительство новых зданий в городе
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Дороги
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Строительство новых дорог в городе
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Сеть городских дорог:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Тип сети городских дорог
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Стандартная
@@ -3856,6 +3865,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Пере
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Расширить
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Увеличить размер города
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Больше зданий
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Увеличить количество зданий в городе
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Больше дорог
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Расширить дорожную сеть
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Уничтожить
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Полностью уничтожить этот город
 
@@ -4148,14 +4161,14 @@ STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Посл
 
 # Company infrastructure window
 STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}Инфраструктура «{COMPANY}»
-STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT                       :{GOLD}Ж/д участки:
+STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT                       :{GOLD}Железнодорожная инфраструктура:
 STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS                         :{WHITE}Сигналы
-STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT                       :{GOLD}Дорожные участки:
-STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT                       :{GOLD}Трамвайные участки:
-STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT                      :{GOLD}Водные поля:
+STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT                       :{GOLD}Автомобильная инфраструктура:
+STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT                       :{GOLD}Трамвайные пути:
+STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT                      :{GOLD}Водная инфраструктура:
 STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Каналы
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Станции:
-STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Площадь станций
+STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Занимаемая площадь
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Аэропорты
 STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENCY_LONG}/год
 STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG}/цикл
@@ -5173,6 +5186,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Необ
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Неверный уклон земли
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Это невозможно...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Сначала снесите здания
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... это здание защищено от изменений
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Невозможно расчистить данный участок...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... неподходящее место
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... уже построено

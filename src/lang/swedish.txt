@@ -349,7 +349,7 @@ STR_SORT_BY_WAITING_TOTAL                                       :Väntande gods 
 STR_SORT_BY_WAITING_AVAILABLE                                   :Väntande gods tillgängligt
 STR_SORT_BY_RATING_MAX                                          :Högsta godsvärdering
 STR_SORT_BY_RATING_MIN                                          :Lägsta godsvärdering
-STR_SORT_BY_ENGINE_ID                                           :MotorID (klassisk sortering)
+STR_SORT_BY_ENGINE_ID                                           :FordonsID (klassisk sortering)
 STR_SORT_BY_COST                                                :Kostnad
 STR_SORT_BY_POWER                                               :Kraft
 STR_SORT_BY_TRACTIVE_EFFORT                                     :Dragkraft
@@ -443,19 +443,21 @@ STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Generera städe
 STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Placera ut hus
 
 # Settings menu
-STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spelinställningar
+STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spelalternativ
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Inställningar
-STR_SETTINGS_MENU_AI_SETTINGS                                   :Inställningar för AI
+STR_SETTINGS_MENU_AI_SETTINGS                                   :AI-inställningar
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Spelskriptinställningar
-STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Inställningar för NewGRF
-STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Sandbox-inställningar
-STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Inställningar för genomskinlighet
+STR_SETTINGS_MENU_NEWGRF_SETTINGS                               : NewGRF-inställningar
+STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Sandlådealternativ
+STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Genomskinlighetsalternativ
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Stadsnamn visas
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Stationsnamn visas
 STR_SETTINGS_MENU_STATION_NAMES_TRAIN                           :Tågstationer
+STR_SETTINGS_MENU_STATION_NAMES_LORRY                           :Lastbilshållplatser
 STR_SETTINGS_MENU_STATION_NAMES_BUS                             :Busshållplatser
 STR_SETTINGS_MENU_STATION_NAMES_SHIP                            :Hamnar
 STR_SETTINGS_MENU_STATION_NAMES_PLANE                           :Flygplatser
+STR_SETTINGS_MENU_STATION_NAMES_GHOST                           :Spökstationer
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Riktmärken visas
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Skyltar visas
 STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Motståndarnas skyltar och namn visas
@@ -931,8 +933,8 @@ STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Öppna g
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} accepterar inte längre: {CARGO_LIST}
 STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} accepterar nu: {CARGO_LIST}
 
-STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Subventionen har gått ut:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
-STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subventionen gäller inte längre:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
+STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Erbjudanden subvention har gått ut:{}{}{STRING} från {STRING} till {STRING} kommer nu inte attrahera en subvention
+STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subventionen återkallad:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
 STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Subvention erbjuden:{}{}Första {STRING} från {STRING} till {STRING} kommer tilldelas en {UNITS_YEARS_OR_MINUTES}s subvention från de lokala myndigheterna!
 ###length 4
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} kommer ge 50% extra utdelning nästkommande {UNITS_YEARS_OR_MINUTES}!
@@ -954,7 +956,7 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Byt huvu
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Kopiera denna vys position till huvudvyn
 
 # Game options window
-STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelinställningar
+STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelalternativ
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Allmänt
 STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Välj generella inställningar
@@ -2177,9 +2179,9 @@ STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :inkompatibel me
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :okänd
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... kompressionsnivån '{STRING}' är inte giltig
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... filformatet '{STRING}' är inte tillgängligt. Återgår till '{STRING}'
-STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorerar grafikpaketet '{STRING}': hittades ej
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorerar grundgrafikpaketet '{STRING}': hittades ej
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorerar grundljudpaketet '{STRING}': hittades ej
-STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerar musikpaket '{STRING}': hittades ej
+STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerar grundmusikpaket '{STRING}': hittades ej
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Slut på minne
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokerandet av {BYTES} till spritecachen misslyckades. Spritecachen begränsades till {BYTES}. Detta kommer att begränsa OpenTTD:s prestanda. För att minska minneskraven kan du försöka att inaktivera 32bpp-grafik och/eller antalet inzoomningsnivåer
 
@@ -2198,7 +2200,7 @@ STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Spela h�
 STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Scenarioeditor
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Flera spelare
 
-STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spelinställningar
+STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spelalternativ
 STR_INTRO_HIGHSCORE                                             :{BLACK}Bästa spelresultat
 STR_INTRO_HELP                                                  :Hjälp & Manualer
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Inställningar
@@ -2220,7 +2222,7 @@ STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Välj 's
 STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Välj 'sub-tropiskt' som typ av landskap
 STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Välj 'leksaksland' som typ av landskap
 
-STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Öppna spelinställningar
+STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Öppna spelalternativ
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Öppna topplistan över de bästa spelresultaten
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Inhämta dokumentation och onlineresurser
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Öppna inställningar
@@ -2230,7 +2232,7 @@ STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Öppna i
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Öppna inställningar för spelskript
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avsluta 'OpenTTD'
 
-STR_INTRO_BASESET                                               :{BLACK}Det grafikpaket som för närvarande är valt som standard saknar {NUM} sprite{P "" s}. Vänligen kontrollera om det finns en uppdatering till paketet.
+STR_INTRO_BASESET                                               :{BLACK}Det nuvarande valda grundgrafikpaketet saknar {NUM} sprite{P "" s}. Vänligen kontrollera om det finns en uppdatering till paketet.
 STR_INTRO_TRANSLATION                                           :{BLACK}Den här översättningen saknar {NUM} sträng{P "" ar}. Hjälp gärna till att förbättra OpenTTD genom att bli översättare. Se readme.txt för mer info.
 
 # Quit window
@@ -2259,7 +2261,7 @@ STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Rapporte
 STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Gemenskap
 
 # Cheat window
-STR_CHEATS                                                      :{WHITE}Sandbox-inställningar
+STR_CHEATS                                                      :{WHITE}Sandlådealternativ
 STR_CHEAT_MONEY                                                 :{LTBLUE}Öka pengar med {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Spelar som företag:: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magisk bulldozer (ta bort industrier, oflyttbara objekt etc.): {ORANGE}{STRING}
@@ -2331,16 +2333,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Enkelt a
 STR_FACE_LOAD                                                   :{BLACK}Ladda
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Ladda favoritansikte
 STR_FACE_LOAD_DONE                                              :{WHITE}Ditt favoritansikte har laddats från OpenTTDs konfigurationsfil.
-STR_FACE_FACECODE                                               :{BLACK}Spelaransikte-nummer
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Visa och/eller välj ansiktsnummer
+STR_FACE_FACECODE                                               :{BLACK}Spelarens ansiktsnummer
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Visa och/eller välj ansiktsnummer för VD
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}Visa och/eller välj ansiktsnummer
-STR_FACE_FACECODE_SET                                           :{WHITE}Nytt ansiktsnummer har valts
-STR_FACE_FACECODE_ERR                                           :{WHITE}Kunde inte ange ansiktsnumret. Det måste vara en siffra mellan 0 och 4.294.967.295!
+STR_FACE_FACECODE_SET                                           :{WHITE}Nytt VD-ansikte har valts
+STR_FACE_FACECODE_ERR                                           :{WHITE}Kunde inte ange ansiktsnumret för VD. Det måste vara en siffra mellan 0 och 4.294.967.295!
 STR_FACE_SAVE                                                   :{BLACK}Spara
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Spara favoritansikte
 STR_FACE_SAVE_DONE                                              :{WHITE}Det här ansiktet kommer att sparas som ditt favoritansikte i OpenTTDs konfigurationsfil.
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nej
+STR_FACE_STYLE                                                  :Stil:
 STR_FACE_HAIR                                                   :Hår:
 STR_FACE_EYEBROWS                                               :Ögonbryn:
 STR_FACE_EYECOLOUR                                              :Ögonfärg:
@@ -2715,7 +2720,7 @@ STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Nedladdn
 STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Avsluta OpenTTD
 
 # Transparency settings window
-STR_TRANSPARENCY_CAPTION                                        :{WHITE}Genomskinlighetsinställningar
+STR_TRANSPARENCY_CAPTION                                        :{WHITE}Genomskinlighetsalternativ
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Växla genomskinlighet för skyltar. Ctrl+klick för att låsa
 STR_TRANSPARENT_TREES_TOOLTIP                                   :{BLACK}Växla genomskinlighet för träd. Ctrl+klick för att låsa
 STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}Växla genomskinlighet för byggnader. Ctrl+klick för att låsa
@@ -2835,6 +2840,7 @@ STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}År: {OR
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}År: {ORANGE}Till {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Storlek: {ORANGE}{NUM}x{NUM} rutor
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Accepterat gods: {ORANGE}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Fraktgods producerat: {ORANGE}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Gräns
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Utkanter
@@ -3051,6 +3057,12 @@ STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}Slumpa
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Välj stadsstorlek
 STR_FOUND_TOWN_CITY                                             :{BLACK}Stad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Storstäder växer snabbare än vanliga städer{}Beroende på inställningarna så är de större när de grundas
+
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Utöka stad:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Byggnader
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Öka antalet byggnader i städerna
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Vägar
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Öka antal vägar i städerna
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Utformning av stadens vägnät:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Välj vägnätets utformning för denna stad
@@ -3349,11 +3361,11 @@ STR_MAPGEN_VARIETY                                              :{BLACK}Varierad
 STR_MAPGEN_GENERATE                                             :{WHITE}Generera
 STR_MAPGEN_GENERATE_TOOLTIP                                     :{BLACK}Skapa världen och spela OpenTTD!
 STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}NewGRF-inställningar
-STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Öppna inställningar för NewGRF
-STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Inställningar för AI
-STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Öppna inställningar för AI
-STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Inställningar för spelskript
-STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Öppna inställningar för spelskript
+STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Öppna NewGRF-inställningar
+STR_MAPGEN_AI_SETTINGS                                          :{BLACK}AI-inställningar
+STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Öppna AI-inställningar
+STR_MAPGEN_GS_SETTINGS                                          :{BLACK}SpelskriptInställningar
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Öppna spelskriptinställningar
 
 ###length 21
 STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Engelska (Original)
@@ -3507,7 +3519,7 @@ STR_SAVE_PRESET_SAVE                                            :{BLACK}Spara
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Spara den inställda till den nuvarande valda namnet
 
 # NewGRF parameters window
-STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Ändra parametrar för standardgrafiken
+STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Ändra parametrar för grafikpaketet
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Ändra NewGRF-parametrar
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Stäng
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Återställ
@@ -3608,16 +3620,16 @@ STR_NEWGRF_LIST_MISSING                                         :{RED}Saknade fi
 
 # NewGRF 'it's broken' warnings
 STR_NEWGRF_BROKEN                                               :{WHITE}Beteendet hos NewGRF:en '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' kommer troligen orsaka desynkronisering och/eller krascher
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Power wagon-tillstånd för '{1:ENGINE}' ändrades utanför en depå
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Fordonslängd för '{1:ENGINE}' ändrades utanför en depå
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Kapaciteten ändrades för '{1:ENGINE}' utan att vara i depå eller anpassning
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Kraftförsörjning-vagn-tillstånd för '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' ändrades utanför en depå
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Fordonslängd för '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' ändrades utanför en depå
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Kapaciteten ändrades för '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' utan att vara i depå eller anpassning
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Tåget '{VEHICLE}' som tillhör '{COMPANY}' har ogiltig längd. Detta orsakas förmodligen av problem med en NewGRF. Spelet kan desynkroniseras eller krascha
 
 STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' ger felaktig information
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Last-/återställningsinformationen för '{1:ENGINE}' skiljer sig från köplistan efter konstruktion. Detta kan leda till att automatisk förnyelse/uppgradering misslyckas med att anpassa fordonen/vagnarna korrekt
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' skapade en oändlig loop i en produktions-callback-funktion
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Last-/återställningsinformationen för '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' skiljer sig från köplistan efter konstruktion. Detta kan leda till att automatisk förnyelse/uppgradering misslyckas med att anpassa fordonen/vagnarna korrekt
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' skapade en oändlig loop i produktions-callback-funktionen
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Callback-funktion {1:HEX} returnerade ett okänt/ogiltligt resultat {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' returnerade ogiltig lasttyp i produktions-callback vid {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' returnerade ogiltig lasttyp i produktions-callback vid {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<invalid cargo>
@@ -3678,6 +3690,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Byt namn
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Utöka
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Öka stadens storlek
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Utöka byggnader
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Öka byggnader i staden
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Utöka vägar
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Öka antal vägar i staden
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Ta bort
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Ta bort staden helt och hållet
 
@@ -4394,9 +4410,9 @@ STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}Skicka f
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}Köp en kopia av tåget inklusive alla vagnar. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
-STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Köp en kopia av vägfordonet. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Köp en kopia av vägfordonet. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
 STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Köp en kopia av skeppet. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
-STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Köp en kopia av en flygfarkost. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Köp en kopia av en flygfarkost. Ctrl+klicka för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
 
 STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP                    :{BLACK}Tvinga tåg att fortsätta utan att vänta på signal
 STR_VEHICLE_VIEW_TRAIN_REVERSE_TOOLTIP                          :{BLACK}Byt tågets riktning
@@ -4743,15 +4759,15 @@ STR_TIMETABLE_TOOLTIP                                           :{BLACK}Tidtabel
 STR_TIMETABLE_NO_TRAVEL                                         :Ingen resa
 STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Restid (automatisk; tidtabellen baseras på nästa manuella order)
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Restid (inte angiven)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Res (utan tidtabell) högst i {VELOCITY}
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Res (utan tidtabell) i högst {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR                                        :Res i {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Res i {STRING} med högsta hastighet {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Resor (för {STRING}, ej schemalagd)
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Resor (för {STRING}, ej schemalagd) med högst {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(stanna {STRING}, ej schemalagd)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(resor för {STRING}, ej schemalagd)
-STR_TIMETABLE_STAY_FOR                                          :och stanna i {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :och res i {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}och stanna i {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}och res i {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Den här tidtabellen kommer att ta ungefär {STRING} att slutföra
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Den här tidtabellen kommer att ta {STRING} att slutföra
@@ -4832,8 +4848,8 @@ STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Ett av s
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Felsökning av datorspelare / spelskript är bara tillgänglig för servern
 
 # AI configuration window
-STR_AI_CONFIG_CAPTION_AI                                        :{WHITE}Inställningar för AI
-STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}Inställningar för spelskript
+STR_AI_CONFIG_CAPTION_AI                                        :{WHITE}AI-inställningar
+STR_AI_CONFIG_CAPTION_GAMESCRIPT                                :{WHITE}Spelskriptinställningar
 STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Spelskriptet som kommer att läsas in i nästa spel
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}Datorspelare som kommer att läsas in i nästa spel
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Mänsklig spelare
@@ -4944,7 +4960,7 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<not available>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Spelet sparades i en version som ej stöder spårvagn. Alla spårvagnar har tagits bort
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Generering av kartan avbruten...{}... ingen lämplig plats för någon stad
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Generering av kartan avbruten...{}{}... inga lämpliga platser för någon stad
 STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... det finns ingen stad i detta scenario
 
 STR_ERROR_PNGMAP                                                :{WHITE}Kan inte ladda landskap från PNG...
@@ -4983,6 +4999,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Platt ma
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Marken lutar åt fel håll
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Kan inte utföra detta...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Byggnad måste rivas först
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... byggnaden är skyddad
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Kan inte röja området...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... platsen passar inte
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... redan byggd
@@ -5035,7 +5052,7 @@ STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... för
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... för många städer
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... det finns ingen plats kvar på kartan
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vägarbete pågår
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan inte ta bort den här staden...{}En station eller depå refererar till staden eller så kan inte en stadsägd ruta tas bort.
+STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan inte ta bort den här staden...{}{}En station eller depå refererar till staden eller så kan inte en stadsägd ruta tas bort.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... det finns ingen lämplig plats för en staty i stadens centrum
 STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Kan inte bygga hus...
 
@@ -5315,6 +5332,10 @@ STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Kan inte
 STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Kan inte sälja alla flygplan...
 
 ###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Kan inte bytta ut järnvägsfordon...
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Kan inte bytta ut vägfordon...
+STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Kan inte bytta ut skepp...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Kan inte byta ut flygplan...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}För många fordon i spelet
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan inte ändra service-intervall...

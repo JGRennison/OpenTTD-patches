@@ -441,7 +441,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :게임 종료
 
 STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :도시 생성
-STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :건물 건설
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :건물 생성
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :게임 기본 설정
@@ -1371,7 +1371,7 @@ STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :경사도 설�
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :자동차/전차에 적용시킬 경사도를 설정합니다. 값이 높을수록 차량이 언덕을 오를 때 더 힘이 듭니다.
 
 STR_CONFIG_SETTING_FORBID_90_DEG                                :열차의 90도 회전을 금지함: {STRING}
-STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :─ 모양의 수평 선로와 │ 모양의 수직 선로가 바로 이어져 만날 때 90도 회전이 발생합니다. 이 설정을 켜면, 열차가 칸 가장자리를 통과할 때 90도로 회전할 수 있도록 허용합니다. 이 설정은 선박의 회전 반경에도 적용됩니다
+STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :─ 모양의 수평 선로와 │ 모양의 수직 선로가 바로 이어져 만날 때 90도 회전이 발생합니다. 이 설정을 켜면, 열차가 칸 가장자리를 통과할 때 90도로 회전할 수 없도록 금지합니다
 
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :역이 같은 방향으로 붙어있지 않아도 같은 이름의 역 짓기 허용: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :이미 존재하는 역을 직접 건드리지 않고도 역의 일부분을 새로 추가/확장하는 것을 허용합니다. 인접한 칸에 기존과 다른 새로운 역을 놓을 때에는 CTRL+클릭해야 합니다
@@ -2099,7 +2099,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS   :게임 단위 (
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS            :노트
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :차량의 힘 단위: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :출력할 차량의 힘 단위를 선택합니다.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :출력할 차량의 힘 단위를 선택합니다
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_IMPERIAL            :야드파운드법 (마력)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :미터법 (마력)
@@ -2113,21 +2113,21 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_METRIC             :미터법 (톤)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_SI                 :국제표준규격 (kg)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME                    :부피 단위: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_HELPTEXT           :부피를 표시할 때 선택한 단위를 사용하여 나타냅니다.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_HELPTEXT           :부피를 표시할 때 선택한 단위를 사용하여 나타냅니다
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_IMPERIAL           :야드파운드법 (갤런)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_METRIC             :미터법 (리터)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :국제표준규격 (m³)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :견인 효과 단위: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :견인 효과(견인력)를 표시할 때 선택한 단위를 사용하여 나타냅니다.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :견인 효과(견인력)를 표시할 때 선택한 단위를 사용하여 나타냅니다
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :야드파운드법 (파운드중)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :미터법 (kgf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :국제표준규격 (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :높이 단위: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :높이를 표시할 때 선택한 단위를 사용하여 나타냅니다.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :높이를 표시할 때 선택한 단위를 사용하여 나타냅니다
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :야드파운드법 (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :미터법 (m)
@@ -2334,16 +2334,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}간편 �
 STR_FACE_LOAD                                                   :{BLACK}불러오기
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}즐겨찾는 얼굴 불러오기
 STR_FACE_LOAD_DONE                                              :{WHITE}당신이 즐겨찾는 얼굴을 OpenTTD 설정 파일로부터 불러왔습니다.
-STR_FACE_FACECODE                                               :{BLACK}플레이어 얼굴 번호
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}플레이어 얼굴 번호 보기/설정
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}플레이어 얼굴 번호 보기/설정
-STR_FACE_FACECODE_SET                                           :{WHITE}새 얼굴 번호 코드가 설정되었습니다.
-STR_FACE_FACECODE_ERR                                           :{WHITE}플레이어 얼굴 번호를 설정할 수 없습니다 - 0에서 4,294,967,295 사이의 값을 입력하십시오!
+STR_FACE_FACECODE                                               :{BLACK}플레이어 얼굴 코드
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}플레이어 얼굴 코드 보기/설정
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}플레이어 얼굴 코드 보기/설정
+STR_FACE_FACECODE_SET                                           :{WHITE}새 회사 소유주 얼굴이 설정되었습니다
+STR_FACE_FACECODE_ERR                                           :{WHITE}플레이어 얼굴 코드를 설정할 수 없습니다 - 올바른 값을 입력해야 합니다
 STR_FACE_SAVE                                                   :{BLACK}저장
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}즐겨찾는 얼굴로 저장
 STR_FACE_SAVE_DONE                                              :{WHITE}이 얼굴이 OpenTTD 설정 파일에 즐겨찾는 얼굴로 저장될 것입니다.
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :예
 STR_FACE_NO                                                     :아니요
+STR_FACE_STYLE                                                  :종류:
 STR_FACE_HAIR                                                   :머리:
 STR_FACE_EYEBROWS                                               :눈썹:
 STR_FACE_EYECOLOUR                                              :눈동자 색:
@@ -2846,7 +2849,7 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :바깥쪽 시�
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :안쪽 시내
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :도시 중심
 
-STR_HOUSE_PICKER_PROTECT_TITLE                                  :도시 발전 방지
+STR_HOUSE_PICKER_PROTECT_TITLE                                  :업그레이드 방지
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :이 건물이 도시가 성장함에 따라 교체되는 것을 막을지 여부를 선택합니다
 STR_HOUSE_PICKER_PROTECT_OFF                                    :끄기
 STR_HOUSE_PICKER_PROTECT_ON                                     :켜기
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}임의
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}도시 크기 선택
 STR_FOUND_TOWN_CITY                                             :{BLACK}대도시로 만듦
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}대도시는 도시보다 빠르게 성장합니다.{}도시를 만들었을 때, 위 설정에 따라 더욱 커집니다
+
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}도시 확장:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :건물
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :도시의 건물을 확장합니다
+STR_FOUND_TOWN_EXPAND_ROADS                                     :도로
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :도시의 도로를 확장합니다
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}도시 도로 설계:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}이 도시에 사용할 도로 설계를 선택합니다
@@ -3682,6 +3691,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}이 도�
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}확장
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}도시의 크기를 키웁니다.
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}건물 확장
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}도시의 건물을 확장합니다
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}도로 확장
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}도시의 도로를 확장합니다
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}삭제
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}이 도시를 완전히 삭제
 
@@ -4754,8 +4767,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :운행 ({STRING
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :최대 {1:VELOCITY}의 속력으로 운행 ({0:STRING} 동안, 시간표 작성 안 됨)
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}({STRING} 동안 정차, 시간표 작성 안 됨)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}({STRING} 동안 운행, 시간표 작성 안 됨)
-STR_TIMETABLE_STAY_FOR                                          :& {STRING} 동안 정차
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :& 다음 목적지({STRING})로 이동
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}& {STRING} 동안 정차
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}& 다음 목적지({STRING})로 이동
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}이 시간표는 완주하는데 대략 {0:STRING}{G 0 "이" "가"} 걸립니다
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}이 시간표는 완주하는데 {0:STRING}{G 0 "이" "가"} 걸립니다
@@ -4987,6 +5000,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}평지�
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}잘못된 방향으로 땅이 기울어졌습니다
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}그렇게 할 수 없습니다...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}건물을 먼저 제거해야 합니다
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... 건물이 보호되어 있습니다
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}이 지역을 파괴할 수 없습니다...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... 알맞지 않은 장소입니다
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... 이미 지어져있습니다

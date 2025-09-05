@@ -579,32 +579,32 @@ STR_DAY_NUMBER_30TH                                             :30.
 STR_DAY_NUMBER_31ST                                             :31.
 
 ###length 12
-STR_MONTH_ABBREV_JAN                                            :{NBSP}1.
-STR_MONTH_ABBREV_FEB                                            :{NBSP}2.
-STR_MONTH_ABBREV_MAR                                            :{NBSP}3.
-STR_MONTH_ABBREV_APR                                            :{NBSP}4.
-STR_MONTH_ABBREV_MAY                                            :{NBSP}5.
-STR_MONTH_ABBREV_JUN                                            :{NBSP}6.
-STR_MONTH_ABBREV_JUL                                            :{NBSP}7.
-STR_MONTH_ABBREV_AUG                                            :{NBSP}8.
-STR_MONTH_ABBREV_SEP                                            :{NBSP}9.
+STR_MONTH_ABBREV_JAN                                            :1.
+STR_MONTH_ABBREV_FEB                                            :2.
+STR_MONTH_ABBREV_MAR                                            :3.
+STR_MONTH_ABBREV_APR                                            :4.
+STR_MONTH_ABBREV_MAY                                            :5.
+STR_MONTH_ABBREV_JUN                                            :6.
+STR_MONTH_ABBREV_JUL                                            :7.
+STR_MONTH_ABBREV_AUG                                            :8.
+STR_MONTH_ABBREV_SEP                                            :9.
 STR_MONTH_ABBREV_OCT                                            :10.
 STR_MONTH_ABBREV_NOV                                            :11.
 STR_MONTH_ABBREV_DEC                                            :12.
 
 ###length 12
-STR_MONTH_JAN                                                   :Tammikuu
-STR_MONTH_FEB                                                   :Helmikuu
-STR_MONTH_MAR                                                   :Maaliskuu
-STR_MONTH_APR                                                   :Huhtikuu
-STR_MONTH_MAY                                                   :Toukokuu
-STR_MONTH_JUN                                                   :Kesäkuu
-STR_MONTH_JUL                                                   :Heinäkuu
-STR_MONTH_AUG                                                   :Elokuu
-STR_MONTH_SEP                                                   :Syyskuu
-STR_MONTH_OCT                                                   :Lokakuu
-STR_MONTH_NOV                                                   :Marraskuu
-STR_MONTH_DEC                                                   :Joulukuu
+STR_MONTH_JAN                                                   :tammikuu
+STR_MONTH_FEB                                                   :helmikuu
+STR_MONTH_MAR                                                   :maaliskuu
+STR_MONTH_APR                                                   :huhtikuu
+STR_MONTH_MAY                                                   :toukokuu
+STR_MONTH_JUN                                                   :kesäkuu
+STR_MONTH_JUL                                                   :heinäkuu
+STR_MONTH_AUG                                                   :elokuu
+STR_MONTH_SEP                                                   :syyskuu
+STR_MONTH_OCT                                                   :lokakuu
+STR_MONTH_NOV                                                   :marraskuu
+STR_MONTH_DEC                                                   :joulukuu
 
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Selite
@@ -1197,9 +1197,9 @@ STR_SUBSIDY_X3                                                  :× 3
 STR_SUBSIDY_X4                                                  :× 4
 
 ###length 4
-STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :lauhkea maasto
-STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :pohjoinen maasto
-STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :subtrooppinen maasto
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Lauhkea maasto
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Pohjoinen maasto
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Subtrooppinen maasto
 STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Lelumaan maasto
 
 ###length 7
@@ -1261,8 +1261,8 @@ STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Näytä 
 STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Näytä kaikki tulokset muuttamalla{}{SILVER}kategoriaksi {WHITE}{STRING} {BLACK}ja {SILVER}tyypiksi {WHITE}kaikki asetustyypit
 
 ###length 3
-STR_CONFIG_SETTING_OFF                                          :pois
-STR_CONFIG_SETTING_ON                                           :päällä
+STR_CONFIG_SETTING_OFF                                          :Pois
+STR_CONFIG_SETTING_ON                                           :Päällä
 STR_CONFIG_SETTING_DISABLED                                     :Pois käytöstä
 
 ###length 3
@@ -1276,9 +1276,9 @@ STR_CONFIG_SETTING_ORIGINAL                                     :Alkuperäinen
 STR_CONFIG_SETTING_REALISTIC                                    :Realistinen
 
 ###length 3
-STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :vasemmalla
-STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :keskellä
-STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :oikealla
+STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Vasemmalla
+STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Keskellä
+STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Oikealla
 
 STR_CONFIG_SETTING_SECONDS_VALUE                                :{COMMA}{NBSP}sekunti{P 0 "" a}
 
@@ -1490,11 +1490,11 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Mikäli käytö
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Varoita, jos kulkuneuvo on eksynyt: {STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Lähetä viesti, jos kulkuneuvo ei löydä reittiä määränpäähänsä
 
-STR_CONFIG_SETTING_ORDER_REVIEW                                 :Tarkista kulkuneuvojen pysähdykset: {STRING}
+STR_CONFIG_SETTING_ORDER_REVIEW                                 :Tarkista kulkuneuvojen käskyt: {STRING}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Mikäli käytössä, kulkuneuvojen käskyjä tarkastetaan väliajoin, ja havaituista ongelmista ilmoitetaan uutisviestillä
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :Ei
-STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :Kyllä, mutta ei pysäytetyille
+STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :Kyllä, paitsi pysäytetyille
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Kaikille kulkuneuvoille
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Varoita, jos kulkuneuvon tulos on negatiivinen: {STRING}
@@ -1714,12 +1714,12 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Ei
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Kyllä
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Vain ei-säilyvät
 
-STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Käytä {STRING} päivämäärämuotoa tallennettujen pelien niminä
+STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Tallennettujen pelien nimissä käytettävä päivämäärämuoto: {STRING}
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Pelitallenteiden tiedostonimissä käytettävä päivämäärän muoto
 ###length 3
-STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :pitkää (31. joulu 2008)
-STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :lyhyttä (31.12.2008)
-STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO- (2008-12-31)
+STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :tavallinen (1.4.2008)
+STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :etunollilla (01.04.2008)
+STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-04-01)
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :Uusi peli alkaa pysäytettynä: {STRING}
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :Mikäli käytössä, peli pysäytetään automaattisesti uuden pelin alussa, mahdollistaen esimerkiksi kartan tarkemman tutkimisen
@@ -2101,7 +2101,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Kulkuneuvon teh
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Kun käyttöliittymässä näytetään kulkuneuvon teho, näytä se valittua yksikköä käyttäen
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_IMPERIAL            :Brittiläinen (hp)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :Metrinen (hp)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :Metrinen (hv)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_SI                  :SI (kW)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT                    :Painon yksikkö: {STRING}
@@ -2122,7 +2122,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :Vetovoiman yksi
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :Kun käyttöliittymässä näytetään vetovoima, näytä se valittua yksikköä käyttäen
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :Brittiläinen (lbf)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :Metrinen (kgf)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :Metrinen (kp)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Korkeuden yksikkö: {STRING}
@@ -2175,7 +2175,7 @@ STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... jät
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :ei löydetty
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :ei turvallinen staattiseen käyttöön
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :järjestelmä-NewGRF
-STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :epäyhteensopiva tämän OpenTTD-version kanssa
+STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :yhteensopimaton OpenTTD:n tämän version kanssa
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :tuntematon
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... pakkaustaso ”{STRING}” on kelvoton
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... pelitallennemuoto ”{STRING}” ei ole saatavilla. Palataan muotoon ”{STRING}”
@@ -2333,16 +2333,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Yksinker
 STR_FACE_LOAD                                                   :{BLACK}Lataa
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Lataa suosikkikasvot
 STR_FACE_LOAD_DONE                                              :{WHITE}Suosikkikasvosi on ladattu OpenTTD:n kokoonpanotiedostosta.
-STR_FACE_FACECODE                                               :{BLACK}Pelaajan kasvojen nro
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Tarkastele ja/tai aseta johtajan kasvojen numero
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Tarkastele ja/tai aseta johtajan kasvojen numero
-STR_FACE_FACECODE_SET                                           :{WHITE}Uusi kasvojen numerokoodi on asetettu
-STR_FACE_FACECODE_ERR                                           :{WHITE}Johtajan kasvojen numeroa ei voitu asettaa – arvon on oltava numeerinen arvo väliltä 0–4 294 967 295!
+STR_FACE_FACECODE                                               :{BLACK}Pelaajan kasvojen koodi
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Tarkastele ja/tai aseta johtajan kasvojen koodi
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Tarkastele ja/tai aseta johtajan kasvojen koodi
+STR_FACE_FACECODE_SET                                           :{WHITE}Uudet johtajan kasvot on asetettu
+STR_FACE_FACECODE_ERR                                           :{WHITE}Johtajan kasvojen koodia ei voitu asettaa – tarvitaan kelvollinen tunniste ja luku
 STR_FACE_SAVE                                                   :{BLACK}Tallenna
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Tallenna suosikkikasvot
 STR_FACE_SAVE_DONE                                              :{WHITE}Nämä kasvot tallennetaan suosikkikasvoiksesi OpenTTD:n kokoonpanotiedostoon.
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} ({NUM})
 STR_FACE_YES                                                    :Kyllä
 STR_FACE_NO                                                     :Ei
+STR_FACE_STYLE                                                  :Tyyli:
 STR_FACE_HAIR                                                   :Hiukset:
 STR_FACE_EYEBROWS                                               :Kulmakarvat:
 STR_FACE_EYECOLOUR                                              :Silmien väri:
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Valitse 
 STR_FOUND_TOWN_CITY                                             :{BLACK}Kaupunki
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Kaupungit kasvavat nopeammin kuin tavalliset kunnat{}Asetuksista riippuen, ne ovat suurempia perustettaessa
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Kuntien laajentaminen:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Rakennukset
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Kasvata rakennusten määrää kunnissa
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Tiet
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Kasvata teiden määrää kunnissa
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Kunnan tiekaava:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Valitse tiekaava tälle kunnalle
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Alkuperäinen
@@ -3497,7 +3506,7 @@ STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Ei mitään
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Ei tietoa
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Sopivaa tiedostoa ei löydy
 STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Ei käytössä
-STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Epäyhteensopiva tämän OpenTTD-version kanssa
+STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Yhteensopimaton OpenTTD:n tämän version kanssa
 
 # NewGRF save preset window
 STR_SAVE_PRESET_CAPTION                                         :{WHITE}Tallenna valmislistaksi
@@ -3681,6 +3690,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Vaihda k
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Laajenna
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Laajenna kuntaa
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Laajenna rakennuksia
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Kasvata rakennusten määrää kunnassa
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Laajenna teitä
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Kasvata teiden määrää kunnassa
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Poista
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Poista tämä kunta kokonaan.
 
@@ -4148,7 +4161,7 @@ STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Ilma-alu
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Kaikki rahtityypit
-STR_CARGO_TYPE_FILTER_FREIGHT                                   :Rahti
+STR_CARGO_TYPE_FILTER_FREIGHT                                   :Rahtitavara
 STR_CARGO_TYPE_FILTER_NONE                                      :Ei mikään
 
 ###length VEHICLE_TYPES
@@ -4343,18 +4356,18 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :ajoneuvoja
 STR_REPLACE_VEHICLE_SHIP                                        :laivoja
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :lentokoneita
 
-STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Valitse korvattava veturityyppi.
-STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Valitse vasemmalla näkyvän veturityypinn korvaava uusi veturityyppi.
+STR_REPLACE_LEFT_ARRAY_TOOLTIP                                  :{BLACK}Valitse korvattava liikennevälineen tyyppi
+STR_REPLACE_RIGHT_ARRAY_TOOLTIP                                 :{BLACK}Valitse uusi liikennevälineen tyyppi, jota haluat käyttää vasemmalla valitun liikennevälinetyypin tilalla
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Aloita kulkuneuvojen korvaaminen
 STR_REPLACE_VEHICLES_NOW                                        :Korvaa kaikki kulkuneuvot heti
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Korvaa vain vanhat kulkuneuvot
-STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Napsauta aloittaaksesi vasemmalta valitun veturityypin korvauksen oikealta valitulla veturityypillä.
+STR_REPLACE_START_BUTTON_TOOLTIP                                :{BLACK}Napsauta aloittaaksesi vasemmalta valitun liikennevälinetyypin korvaaminen oikealta valitulla liikennevälineen tyypillä
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Ei korvata
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Ei kulkuneuvoa valittuna
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kun vanha
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Lopeta kulkuneuvojen korvaaminen
-STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Napsauta pysäyttääksesi vasemmalta valitun veturityypin korvauksen.
+STR_REPLACE_STOP_BUTTON_TOOLTIP                                 :{BLACK}Napsauta pysäyttääksesi vasemmalla valitun liikennevälineen korvaaminen
 
 STR_REPLACE_ENGINE_WAGON_SELECT_TOOLTIP                         :{BLACK}Vaihda toiseen korvausikkunaan
 STR_REPLACE_ENGINES                                             :Veturit
@@ -4363,11 +4376,11 @@ STR_REPLACE_ALL_RAILTYPE                                        :Kaikki junat
 STR_REPLACE_ALL_ROADTYPE                                        :Kaikki ajoneuvot
 
 ###length 2
-STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Valitse rautatietyyppi, jolle veturikorvaukset tehdään.
+STR_REPLACE_RAILTYPE_TOOLTIP                                    :{BLACK}Valitse raidetyyppi, jolle veturikorvaukset tehdään
 STR_REPLACE_ROADTYPE_TOOLTIP                                    :{BLACK}Valitse tien tyyppi, jolle ajoneuvojen korvaukset tehdään
 ###next-name-looks-similar
 
-STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Näyttää, millä vasemmalta valittu veturi korvataan, jos millään.
+STR_REPLACE_REPLACE_INFO_TAB_TOOLTIP                            :{BLACK}Näyttää, millä vasemmalta valittu liikenneväline korvataan, jos korvataan
 STR_REPLACE_RAIL_VEHICLES                                       :Junat
 STR_REPLACE_ELRAIL_VEHICLES                                     :Sähköjunat
 STR_REPLACE_MONORAIL_VEHICLES                                   :Yksiraiteiset
@@ -4666,7 +4679,7 @@ STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Näytä 
 
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :Kierrä reittipisteen {WAYPOINT} kautta
-STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Mene pysäht. pisteen {WAYPOINT} kautta
+STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Mene pysähtymättä reittipisteen {WAYPOINT} kautta
 
 STR_ORDER_SERVICE_AT                                            :Huolto
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Huolto pysäytyksettä
@@ -4986,6 +4999,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Tarvitaa
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Maa viettää väärään suuntaan.
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Ei onnistu...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Rakennus täytyy purkaa ensin.
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}… rakennus on suojattu
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Aluetta ei voi tyhjentää...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... maasto on sopimaton
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... se on jo rakennettu
@@ -5802,9 +5816,9 @@ STR_VEHICLE_NAME_AIRCRAFT_POWERNAUT_HELICOPTER                  :Powernaut-helik
 
 ##id 0x8800
 # Formatting of some strings
-STR_FORMAT_DATE_TINY                                            :{ZEROFILL_NUM}-{ZEROFILL_NUM}-{NUM}
-STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
-STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
+STR_FORMAT_DATE_TINY                                            :{ZEROFILL_NUM}.{ZEROFILL_NUM}.{NUM}
+STR_FORMAT_DATE_SHORT                                           :{STRING}ssa {NUM}
+STR_FORMAT_DATE_LONG                                            :{STRING}{STRING}{NUM}
 STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZEROFILL_NUM}-{0:ZEROFILL_NUM}
 
 STR_FORMAT_COMPANY_NUM                                          :(yhtiö {COMMA})

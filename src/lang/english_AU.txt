@@ -2333,16 +2333,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Simple f
 STR_FACE_LOAD                                                   :{BLACK}Load
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Load favourite face
 STR_FACE_LOAD_DONE                                              :{WHITE}Your favourite face has been loaded from the OpenTTD configuration file
-STR_FACE_FACECODE                                               :{BLACK}Player face no.
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}View and/or set face number of the company president
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}View and/or set president face number
-STR_FACE_FACECODE_SET                                           :{WHITE}New face number code has been set
-STR_FACE_FACECODE_ERR                                           :{WHITE}Couldn't set president face number - must be a number between 0 and 4,294,967,295!
+STR_FACE_FACECODE                                               :{BLACK}Player face code
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}View and/or set face code of the company president
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}View and/or set president face code
+STR_FACE_FACECODE_SET                                           :{WHITE}New president face has been set
+STR_FACE_FACECODE_ERR                                           :{WHITE}Couldn't set president face code - must be a valid label and number
 STR_FACE_SAVE                                                   :{BLACK}Save
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Save favourite face
 STR_FACE_SAVE_DONE                                              :{WHITE}This face will be saved as your favourite in the OpenTTD configuration file
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Yes
 STR_FACE_NO                                                     :No
+STR_FACE_STYLE                                                  :Style:
 STR_FACE_HAIR                                                   :Hair:
 STR_FACE_EYEBROWS                                               :Eyebrows:
 STR_FACE_EYECOLOUR                                              :Eye colour:
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Select t
 STR_FOUND_TOWN_CITY                                             :{BLACK}City
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Cities grow faster than regular towns{}Depending on settings, they are bigger when founded
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Town expansion:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Buildings
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Increase buildings of towns
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Roads
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Increase roads of towns
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Town road layout:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Select road layout used for this town
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Original
@@ -3681,6 +3690,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Change t
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Expand
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Increase size of town
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Expand buildings
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Increase buildings of town
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Expand roads
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Increase roads of town
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Delete
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Delete this town completely
 
@@ -4986,6 +4999,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Flat lan
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Land sloped in wrong direction
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Can't do this...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Building must be demolished first
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... building is protected
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Can't clear this area...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... site unsuitable
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... already built

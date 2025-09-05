@@ -288,7 +288,7 @@ STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Vindusti
 STR_TOOLTIP_SHADE                                               :{BLACK}Skyggevindu - Vis kun tittelfeltet
 STR_TOOLTIP_DEBUG                                               :{BLACK}Vis NewGRF-debuggingsinformasjon
 STR_TOOLTIP_DEFSIZE                                             :{BLACK}Gjennopprett vindu til standard størrelse. Ctrl + Klikk for å lagre gjeldende størrelse som standard
-STR_TOOLTIP_STICKY                                              :{BLACK}Beskytt dette vinduet mot 'Lukk alle vinduer'-knappen. Ctrl + Klikk for å lagre tilstanden som standard.
+STR_TOOLTIP_STICKY                                              :{BLACK}Beskytt dette vinduet mot 'Lukk alle vinduer'-knappen. Ctrl+klikk for å lagre tilstanden som standard
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klikk og dra for å endre størrelsen på vinduet
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Veksle mellom stor/liten vindustørrelse
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Rullefelt - ruller listen opp/ned
@@ -2335,16 +2335,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Enkelt a
 STR_FACE_LOAD                                                   :{BLACK}Last inn
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Last inn favorittansikt
 STR_FACE_LOAD_DONE                                              :{WHITE}Ditt favorittansikt har blitt lastet inn fra OpenTTDs konfigurasjonsfil
-STR_FACE_FACECODE                                               :{BLACK}Ansiktsnummer
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Vis og/eller endre ansiktsnummeret til selskapets president
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Vis og/eller endre lederens ansiktsnummer
-STR_FACE_FACECODE_SET                                           :{WHITE}Ny ansiktsnummerkode har blitt satt
-STR_FACE_FACECODE_ERR                                           :{WHITE}Kunne ikke endre lederens ansiktsnummer - må være et heltall mellom 0 og 4294967295!
+STR_FACE_FACECODE                                               :{BLACK}Ansiktskode
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Vis og/eller endre ansiktskoden til selskapets president
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Vis og/eller endre lederens ansiktskode
+STR_FACE_FACECODE_SET                                           :{WHITE}Nytt presidentansikt har blitt satt
+STR_FACE_FACECODE_ERR                                           :{WHITE}Kunne ikke endre lederens ansiktskode - må være et gyldig merke og nummer
 STR_FACE_SAVE                                                   :{BLACK}Lagre
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Lagre favorittansikt
 STR_FACE_SAVE_DONE                                              :{WHITE}Dette ansiktet vil bli lagret som din favoritt i OpenTTDs konfigurasjonsfil
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nei
+STR_FACE_STYLE                                                  :Stil:
 STR_FACE_HAIR                                                   :Hår:
 STR_FACE_EYEBROWS                                               :Øyenbryn:
 STR_FACE_EYECOLOUR                                              :Øyenfarge:
@@ -3057,6 +3060,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Velg bys
 STR_FOUND_TOWN_CITY                                             :{BLACK}By
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Storbyer vokser raskere enn vanlige byer{}Avhengig av innstillinger er de større når de blir grunnlagt
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Byutvidelse:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Bygninger
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Øk bygninger i byer
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Veier
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Øk veier i byer
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Byers veiløsning:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Velg veiløsning for denne byen
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Original
@@ -3683,6 +3692,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Endre na
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Utvid
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Øk bystørrelse
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Utvid bygninger
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Øk bygninger i by
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Utvid veier
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Øk veier i by
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Slett
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Slett denne byen fullstendig
 
@@ -4149,7 +4162,7 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rekkevid
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flytype: {GOLD}{STRING}
 
 ###length 3
-STR_CARGO_TYPE_FILTER_ALL                                       :Alle cargo typer
+STR_CARGO_TYPE_FILTER_ALL                                       :Alle varetyper
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Frakt
 STR_CARGO_TYPE_FILTER_NONE                                      :Ingen
 
@@ -4755,8 +4768,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Reise (i {STRIN
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Reise (i {STRING}, ikke oppsatt i rutetabell) med høyst {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(opphold i {STRING}, ikke oppsatt i rutetabell)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(reise for {STRING}, ikke oppsatt med rutetabell)
-STR_TIMETABLE_STAY_FOR                                          :og bli værende i {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :og reis i {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}og bli værende i {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}og reis i {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Denne rutetabellen vil ta omtrent {STRING} å fullføre
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Det vil ta {STRING} å fullføre rutetabellen
@@ -4988,6 +5001,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Flatt la
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Landet heller i feil retning
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Kan ikke gjøre dette...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Bygningen må rives først
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... bygning er vernet
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Kan ikke rydde dette området...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}...{NBSP}feltet er uegnet
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... allerede bygget

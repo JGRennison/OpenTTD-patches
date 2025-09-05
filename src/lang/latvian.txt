@@ -2413,7 +2413,7 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Pievieno
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Atsvaidzināt serveri
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Atsvaidzināt servera informāciju
 
-STR_NETWORK_SERVER_LIST_SEARCH_SERVER_INTERNET                  :Meklēt internetā
+STR_NETWORK_SERVER_LIST_SEARCH_SERVER_INTERNET                  :Meklēt tiešsaistē
 STR_NETWORK_SERVER_LIST_SEARCH_SERVER_INTERNET_TOOLTIP          :{BLACK}Meklēt publiskos serverus internetā
 STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN                       :{BLACK}Meklēt LAN
 STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN_TOOLTIP               :{BLACK}Meklēt serverus lokālajā tīklā
@@ -3059,6 +3059,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Izvēlē
 STR_FOUND_TOWN_CITY                                             :{BLACK}Pilsēta
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Pilsētas aug straujāk kā parastas apdzīvotās vietas{}Atkarībā no iestatījumiem, dibināšanas brīdī pilsētas ir lielākas
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Pilsētas paplašināšanās:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Ēkas
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Palieliniet pilsētu ēku skaitu
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Ceļi
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Palielināt pilsētu ceļu skaitu
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Pilsētas ceļu izskats:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Atlasīt šajā pilsētā lietojamo ceļu izkārtojumu
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Sākotnēji
@@ -3689,6 +3695,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Pārdēv
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Paplašināt
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Palielināt pilsētas izmērus
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Izvērst ēkas
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Palielināt pilsētas ēku skaitu
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Izvērst ceļus
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Palielināt pilsētas ceļu skaitu
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Izdzēst
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Pilnībā dzēst šo pilsētu
 
@@ -3902,14 +3912,14 @@ STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Būvniec�
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}Jauni transportlīdzekļi
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Vilcieni
 STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Autotransportlīdzekļi
-STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Lidaparāts
+STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}LidaparātI
 STR_FINANCES_SECTION_SHIP_RUNNING_COSTS                         :{GOLD}Kuģi
 STR_FINANCES_SECTION_INFRASTRUCTURE                             :{GOLD}Infrastruktūra
 STR_FINANCES_SECTION_TRAIN_REVENUE                              :{GOLD}Vilcieni
 STR_FINANCES_SECTION_ROAD_VEHICLE_REVENUE                       :{GOLD}Autotransportlīdzekļi
-STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Lidaparāts
+STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Lidaparāti
 STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Kuģi
-STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Aizdevuma procents
+STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Aizdevuma procenti
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Citi
 
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Kopā
@@ -4764,8 +4774,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Ceļot (priekš
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Ceļot (ilgums {STRING}, nav sarakstā) ne ātrāk kā {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(stāvēt {STRING}, nav sarakstā)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(ceļot uz {STRING}, nav sarakstā)
-STR_TIMETABLE_STAY_FOR                                          :un palikt līdz {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :un braukt līdz {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}un palikt līdz {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}un braukt līdz {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Šī saraksta pabeigšana prasīs aptuveni {STRING}.
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Šis saraksts aizņems {STRING}, lai pabeigtu

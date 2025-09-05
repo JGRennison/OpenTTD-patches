@@ -2334,16 +2334,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Seleçã
 STR_FACE_LOAD                                                   :{BLACK}Carregar
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Carregar face favorita
 STR_FACE_LOAD_DONE                                              :{WHITE}Sua face favorita foi carregada do arquivo de configuração do OpenTTD
-STR_FACE_FACECODE                                               :{BLACK}Número da face do jogador
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Ver e/ou definir o número de face do presidente da empresa
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Ver e/ou definir número de face do presidente
-STR_FACE_FACECODE_SET                                           :{WHITE}Novo código de número de face foi definido
-STR_FACE_FACECODE_ERR                                           :{WHITE}Não foi possível definir o número de face do presidente - deve ser um número entre 0 e 4,294,967,295!
+STR_FACE_FACECODE                                               :{BLACK}Código da face do jogador
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Ver e/ou definir o código da face do presidente da empresa
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Ver e/ou definir o código da face do presidente
+STR_FACE_FACECODE_SET                                           :{WHITE}Nova face do presidente foi definida
+STR_FACE_FACECODE_ERR                                           :{WHITE}Não foi possível definir o código da face do presidente - deve ser um número entre 0 e 4,294,967,295!
 STR_FACE_SAVE                                                   :{BLACK}Salvar
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Salvar face favorita
 STR_FACE_SAVE_DONE                                              :{WHITE}Esta face será armazenada como sua favorita no arquivo de configuração do OpenTTD
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Sim
 STR_FACE_NO                                                     :Não
+STR_FACE_STYLE                                                  :Estilo:
 STR_FACE_HAIR                                                   :Cabelo:
 STR_FACE_EYEBROWS                                               :Sobrancelhas:
 STR_FACE_EYECOLOUR                                              :Cor do olho:
@@ -2853,7 +2856,7 @@ STR_HOUSE_PICKER_PROTECT_ON                                     :Ativado
 
 STR_STATION_CLASS_DFLT                                          :Padrão
 STR_STATION_CLASS_DFLT_STATION                                  :Estação padrão
-STR_STATION_CLASS_DFLT_ROADSTOP                                 :Parada de estrada padrão
+STR_STATION_CLASS_DFLT_ROADSTOP                                 :Parada rodoviária padrão
 STR_STATION_CLASS_WAYP                                          :Pontos de controle
 STR_STATION_CLASS_WAYP_WAYPOINT                                 :Ponto de controle padrão
 
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}Aleatór
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Escolher o tamanho da localidade
 STR_FOUND_TOWN_CITY                                             :{BLACK}Cidade
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Cidades crescem mais depressa do que as localidades normais{}Dependendo das configurações, elas são maiores quando fundadas
+
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Expansão da cidade:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Construções
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Aumentar as construções das cidades
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Estradas
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Aumentar as estradas das localidades
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Disposição das estradas na localidade:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Selecionar disposição das estradas utilizada nesta localidade
@@ -3682,6 +3691,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Alterar 
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Expandir
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Aumentar o tamanho da localidade
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Expandir com construções
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Aumentar as construções da localidade
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Expandir com estradas
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Aumentar as estradas da localidade
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Remover
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Remover completamente esta localidade
 
@@ -4987,6 +5000,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}O terren
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Terreno inclinado na direção errada
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Não é possível fazer isto...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}A construção precisa ser demolida primeiro
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... construção é protegida
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Não é possível limpar esta área...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... local não adequado
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... já construído

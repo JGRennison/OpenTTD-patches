@@ -1013,6 +1013,7 @@ STR_GAME_OPTIONS_CURRENCY_IDR                                   :Rupia indonesia
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malaysiano
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats lettoni
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portoghese
+STR_GAME_OPTIONS_CURRENCY_UAH                                   :Grivna Ucraina
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Salvataggi automatici
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Seleziona l'intervallo fra i salvataggi automatici della partita
@@ -2903,6 +2904,7 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Costruis
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}Costruisce sezioni di tranvia usando la modalità automatica. Ctrl+Clic per rimuovere la sezione tranviaria. Premere anche Shift per visualizzare solo la stima dei costi
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_VEHICLE_DEPOT               :{BLACK}Costruisce un deposito automezzi (per comprare e manutenere i veicoli). Premere anche Shift per visualizzare solo la stima dei costi
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAM_VEHICLE_DEPOT               :{BLACK}Costruisce un deposito tranviario (per comprare e manutenere i veicoli). Premere anche Shift per mostrare solo la stima dei costi
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Costruisce un waypoint sulla strada. Ctrl+Clic per selezionare un altro waypoint da unire. Premere anche Shift per mostrare solo la stima dei costi
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_BUS_STATION                      :{BLACK}Costruisce una stazione degli autobus. Ctrl+Clic per selezionare un'altra stazione da unire. Premere anche Shift per visualizzare solo la stima dei costi
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_PASSENGER_TRAM_STATION           :{BLACK}Costruisce la stazione del tram passeggeri. Ctrl+Clic per selezionare un'altra stazione da unire. Premere anche Shift per visualizzare solo la stima dei costi
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Costruisce una stazione dei camion. Ctrl+Clic per selezionare un'altra stazione da unire. Premere anche Shift per visualizzare solo la stima dei costi
@@ -3052,6 +3054,7 @@ STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}Casuale
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Seleziona la dimensione della città
 STR_FOUND_TOWN_CITY                                             :{BLACK}Metropoli
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Le metropoli crescono più rapidamente delle normali città.{}A seconda delle impostazioni, sono più grandi quando vengono fondate.
+
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Disposizione strade:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Seleziona la disposizione delle strade per questa città
@@ -5282,6 +5285,8 @@ STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Impossib
 ###length VEHICLE_TYPES
 
 ###length VEHICLE_TYPES
+STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Non puoi rimpiazzare automaticamente gli autoveicoli...
+STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Non puoi rimpiazzare automaticamente l'aeromobile...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Troppi veicoli nel gioco
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Impossibile cambiare l'intervallo di manutenzione...

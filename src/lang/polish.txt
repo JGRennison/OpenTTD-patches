@@ -663,7 +663,7 @@ STR_TOOLTIP_CATCHMENT                                           :{BLACK}Przełą
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Zamknij okno
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tytuł okna - przeciągnij, aby przesunąć okno
 STR_TOOLTIP_SHADE                                               :{BLACK}Zwiń okno - pokaż tylko nagłówek
-STR_TOOLTIP_DEBUG                                               :{BLACK}Pokaż informacje debugerra NewGRF
+STR_TOOLTIP_DEBUG                                               :{BLACK}Pokaż informacje debuggera NewGRF
 STR_TOOLTIP_DEFSIZE                                             :{BLACK}Zmień rozmiar okna na domyślny. Użyj Ctrl, aby zapamiętać obecny rozmiar jako domyślny
 STR_TOOLTIP_STICKY                                              :{BLACK}Oznacz to okno jako niezamykalne przyciskiem „Zamknij Wszystkie Okna”. Użyj Ctrl, aby zapamiętać to ustawienie jako domyślne
 STR_TOOLTIP_RESIZE                                              :{BLACK}Kliknij i przeciągnij, by zmienić rozmiar okna
@@ -1010,12 +1010,12 @@ STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Żaden
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Wyświetl wszystkie ładunki na wykresie stawek za ładunek
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Ukryj wszystkie ładunki na wykresie stawek za ładunek
-STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Przełącz ukrywanie/wyświetlanie wykresu danego typu ładunku
+STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Przełącz ukrywanie/wyświetlanie wykresu ładunku danego typu
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Historia Produkcji
-STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Wyprodukowano
-STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Przetransportowano
+STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Wyprodukowany
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Przetransportowany
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Pokaż szczegóły oceny wydajności
 
@@ -1209,7 +1209,7 @@ STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}Pokaż o
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- - {COMPANY} - -
 STR_STATUSBAR_PAUSED                                            :{YELLOW}* * PAUZA * *
 STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}* * PAUZA (aktualizowanie grafu połączeń) * *
-STR_STATUSBAR_AUTOSAVE                                          :{RED}AUTOZAPIS
+STR_STATUSBAR_AUTOSAVE                                          :{RED}AUTOMATYCZNY ZAPIS
 STR_STATUSBAR_SAVING_GAME                                       :{RED}* * ZAPISYWANIE GRY * *
 
 STR_STATUSBAR_SPECTATOR                                         :{WHITE}(obserwator)
@@ -1367,7 +1367,7 @@ STR_GAME_OPTIONS_CURRENCY_ATS                                   :Szyling austria
 STR_GAME_OPTIONS_CURRENCY_BEF                                   :Frank belgijski
 STR_GAME_OPTIONS_CURRENCY_CHF                                   :Frank szwajcarski
 STR_GAME_OPTIONS_CURRENCY_CZK                                   :Korona czeska
-STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marki niemieckie
+STR_GAME_OPTIONS_CURRENCY_DEM                                   :Marka niemiecka
 STR_GAME_OPTIONS_CURRENCY_DKK                                   :Korona duńska
 STR_GAME_OPTIONS_CURRENCY_ESP                                   :Peseta hiszpańska
 STR_GAME_OPTIONS_CURRENCY_FIM                                   :Marka fińska
@@ -1378,7 +1378,7 @@ STR_GAME_OPTIONS_CURRENCY_ISK                                   :Korona islandzk
 STR_GAME_OPTIONS_CURRENCY_ITL                                   :Lira włoska
 STR_GAME_OPTIONS_CURRENCY_NLG                                   :Gulden holenderski
 STR_GAME_OPTIONS_CURRENCY_NOK                                   :Korona norweska
-STR_GAME_OPTIONS_CURRENCY_PLN                                   :Polski złoty
+STR_GAME_OPTIONS_CURRENCY_PLN                                   :Złoty polski
 STR_GAME_OPTIONS_CURRENCY_RON                                   :Lej rumuński
 STR_GAME_OPTIONS_CURRENCY_RUR                                   :Rubel rosyjski
 STR_GAME_OPTIONS_CURRENCY_SIT                                   :Tolar słowenski
@@ -1430,7 +1430,7 @@ STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
 STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Przyspieszenie sprzętowe
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Zaznacz to pole, aby zezwolić OpenTTD na użycie przyspieszenia sprzętowego. Ustawienia zostaną zastosowane dopiero po ponownym uruchomieniu gry.
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Ustawienie to zacznie obowiązywać dopiero po ponownym uruchomieniu gry.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Ustawienie zostanie zastosowane dopiero po ponownym uruchomieniu gry
 
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}Synchronizacja pionowa
 STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Zaznacz to pole aby włączyć synchronizację pionową. Zmiany zostaną zastosowane po restarcie gry. Działa tylko z włączonym przyspieszeniem sprzętowym.
@@ -1490,7 +1490,7 @@ STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}Stan wty
 
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Uruchomiona
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Inicjalizacja nie powiodła się
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_PLATFORM_NOT_RUNNING       :{ORANGE}{STRING} nie uruchomiona
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_PLATFORM_NOT_RUNNING       :{ORANGE}{STRING} nie został uruchomiony
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNLOADED                   :{RED}Niezaładowana
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_DUPLICATE                  :{RED}Zdublowana wtyczka
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNSUPPORTED_API            :{RED}Wersja nieobsługiwana
@@ -1577,9 +1577,9 @@ STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
 
 ###length 4
-STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Klimat umiarkowany
-STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Klimat arktyczny
-STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Klimat tropikalny
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Krajobraz umiarkowany
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Krajobraz arktyczny
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Krajobraz tropikalny
 STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Krajobraz zabawkowy
 
 ###length 7
@@ -2382,22 +2382,22 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Liniowy
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Rozmieszczenie drzew w grze: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Losowe pojawianie się drzew podczas gry. Może mieć to wpływ na przedsiębiorstwa opierające się na wyrastaniu drzew, np. tartaki
 ###length 4
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :Rosną, ale nie rozprzestrzeniają się {RED}(Klimat tropikalny: Tartaki nie działają)
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :Rosną, ale nie rozprzestrzeniają się {RED}(krajobraz tropikalny: tartaki nie działają)
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :Rosną, ale rozprzestrzeniają się tylko w lasach deszczowych
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :Rosną i rozprzestrzeniają się wszędzie
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :Nie rosną, nie rozprzestrzeniają się {RED}(Klimat tropikalny: Tartaki nie działają)
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :Nie rosną, nie rozprzestrzeniają się {RED}(krajobraz tropikalny: tartaki nie działają)
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Pozycja głównego paska narzędzi: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Pozioma pozycja głównego paska narzędzi na górze ekranu
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Pozycja paska stanu: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS_HELPTEXT                       :Pozioma pozycja paska statusu na dole ekranu
 STR_CONFIG_SETTING_SNAP_RADIUS                                  :Promień przyciągania okna: {STRING}
-STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Odległość między okienkami zanim przesuwane okno zostanie automatycznie dosunięte do sąsiedniego okna
+STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Odległość między oknami, zanim przesuwane okno zostanie automatycznie wyrównane do sąsiedniego okna
 STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} piksel{P "" e i}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SNAP_RADIUS_DISABLED                         :Wyłączone
-STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maksymalna liczba nie przyszpilonych okien: {STRING}
-STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Liczba nie przyklejonych okienek zanim stare okienka zostaną automatycznie zamknięte, by zrobić miejsce dla nowych
+STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maksymalna liczba nieprzypiętych okien: {STRING}
+STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Liczba nieprzypiętych okien, zanim stare okna zostaną automatycznie zamknięte, aby zrobić miejsce dla nowych
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :wyłączone
@@ -2448,7 +2448,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :Tryb „symetry
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Tryb dystrybucji dla poczty: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :Tryb „symetryczny” oznacza, że mniej więcej taka sama ilość poczty zostanie wysłana ze stacji A do stacji B, co z B do A. Tryb „asymetryczny” oznacza, że w obu kierunkach może być wysyłana różna ilość poczty. Tryb „ręczny” oznacza, że dla poczty nie będzie przeprowadzana dystrybucja automatyczna
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Tryb dystrybucji dla klasy ładunków CHRONIONYCH: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Klasa ładunków CHRONIONYCH zawiera kosztowności w klimacie umiarkowanym, diamenty w tropikalnym lub złoto w klimacie arktycznym. NewGRF-y mogą to zmienić. Tryb „symetryczny” oznacza, że mniej więcej taka sama ilość danego ładunku zostanie wysłana ze stacji A do stacji B, co z B do A. Tryb „asymetryczny” oznacza, że w obu kierunkach mogą być wysyłane różne ilości danego ładunku. Tryb „ręczny” oznacza, że dla danego ładunku nie będzie przeprowadzana dystrybucja automatyczna. Zaleca się ustawienie tej opcji na asymetryczną lub ręczną w klimacie arktycznym lub tropikalnym, ponieważ tam banki jedynie odbierają ładunek. Dla klimatu umiarkowanego możesz wybrać symetryczny, aby banki odsyłały kosztowności do pierwotnego banku
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Klasa ładunków CHRONIONYCH zawiera kosztowności w krajobrazie umiarkowanym, diamenty w tropikalnym lub złoto w krajobrazie arktycznym. NewGRF-y mogą to zmienić. Tryb „symetryczny” oznacza, że mniej więcej taka sama ilość danego ładunku zostanie wysłana ze stacji A do stacji B, co z B do A. Tryb „asymetryczny” oznacza, że w obu kierunkach mogą być wysyłane różne ilości danego ładunku. Tryb „ręczny” oznacza, że dla danego ładunku nie będzie przeprowadzana dystrybucja automatyczna. Zaleca się ustawienie tej opcji na asymetryczną lub ręczną w krajobrazie arktycznym lub tropikalnym, ponieważ tam banki jedynie odbierają ładunek. Dla krajobrazu umiarkowanego można wybrać symetryczny, aby banki odsyłały kosztowności do pierwotnego banku
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Tryb dystrybucji dla pozostałych klas ładunków: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Tryb „asymetryczny” oznacza, że w obu kierunkach mogą być wysyłane różne ilości ładunków. Tryb „ręczny” oznacza, że dla takich ładunków nie będzie przeprowadzana dystrybucja automatyczna
 ###length 3
@@ -2706,23 +2706,26 @@ STR_FACE_OK_TOOLTIP                                             :{BLACK}Zatwierd
 
 STR_FACE_NEW_FACE_BUTTON                                        :{BLACK}Nowa twarz
 STR_FACE_NEW_FACE_TOOLTIP                                       :{BLACK}Wygeneruj nową losową twarz
-STR_FACE_ADVANCED                                               :{BLACK}Szczegółowy
+STR_FACE_ADVANCED                                               :{BLACK}Zaawansowane
 STR_FACE_ADVANCED_TOOLTIP                                       :{BLACK}Szczegółowy widok wyboru twarzy
-STR_FACE_SIMPLE                                                 :{BLACK}Uproszczony
-STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Uproszczony widok wyboru twarzy
+STR_FACE_SIMPLE                                                 :{BLACK}Podstawowe
+STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Podstawowy widok wyboru twarzy
 STR_FACE_LOAD                                                   :{BLACK}Wczytaj
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Wczytaj ulubioną twarz
 STR_FACE_LOAD_DONE                                              :{WHITE}Twoja ulubiona twarz została wczytana z pliku konfiguracyjnego OpenTTD
-STR_FACE_FACECODE                                               :{BLACK}Numer twarzy gracza
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Obejrzyj i/lub ustaw numer twarzy prezesa firmy
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Obejrzyj i/lub ustaw numer twarzy prezesa
-STR_FACE_FACECODE_SET                                           :{WHITE}Ustawiono nowy numer twarzy gracza
-STR_FACE_FACECODE_ERR                                           :{WHITE}Nie można ustawić numeru twarzy prezesa - musi być liczbą pomiędzy 0 a 4{NBSP}294{NBSP}967{NBSP}295!
+STR_FACE_FACECODE                                               :{BLACK}Kod twarzy gracza
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Wyświetl i/lub ustaw kod twarzy prezesa firmy
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Wyświetl i/lub ustaw kod twarzy prezesa
+STR_FACE_FACECODE_SET                                           :{WHITE}Nowa twarz prezesa została ustalona
+STR_FACE_FACECODE_ERR                                           :{WHITE}Nie można ustawić kodu twarzy prezesa - musi to być odpowiednia etykieta i numer
 STR_FACE_SAVE                                                   :{BLACK}Zapisz
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Zapisz ulubioną twarz
 STR_FACE_SAVE_DONE                                              :{WHITE}Ta twarz będzie zapisana w pliku konfiguracyjnym OpenTTD jako twoja ulubiona
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Tak
 STR_FACE_NO                                                     :Nie
+STR_FACE_STYLE                                                  :Styl:
 STR_FACE_HAIR                                                   :Włosy:
 STR_FACE_EYEBROWS                                               :Brwi:
 STR_FACE_EYECOLOUR                                              :Kolor oczu:
@@ -3435,6 +3438,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Wybierz 
 STR_FOUND_TOWN_CITY                                             :{BLACK}Metropolia
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Metropolie rozwijają się szybciej od zwykłych miast{}W zależności od ustawień, są one większe przy zakładaniu
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Powiększanie miast:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Budynki
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Zwiększ liczbę budynków w miastach
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Drogi
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Rozbuduj drogi w miastach
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Układ dróg miasta:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Wybierz układ dróg dla tego miasta
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Oryginalnie
@@ -4061,6 +4070,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Zmień n
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Rozszerz
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Zwiększ rozmiar miasta
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Dodaj budynki
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Zwiększ liczbę budynków w mieście
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Dodaj drogi
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Rozbuduj drogi w mieście
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Skasuj
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Skasuj to miasto
 
@@ -5076,7 +5089,7 @@ STR_ORDER_WAIT_TO_UNBUNCH                                       :{SPACE}(Czekaj 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Nie może korzystać ze stacji){POP_COLOUR} {STRING} {STATION}
 
-STR_ORDER_IMPLICIT                                              :{SPACE}(Sugerowany)
+STR_ORDER_IMPLICIT                                              :{SPACE}(Sugerowane)
 
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Pełny załadunek)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Pełny załadunek czegokolwiek)
@@ -5130,21 +5143,21 @@ STR_TIMETABLE_ORDER_VIEW_TOOLTIP                                :{BLACK}Przełą
 STR_TIMETABLE_TOOLTIP                                           :{BLACK}Rozkład jazdy - kliknij na polecenie, aby je zaznaczyć
 
 STR_TIMETABLE_NO_TRAVEL                                         :Nie podróżuje
-STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Podróż (automatycznie; zaplanowana przez następne ręczne polecenie)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Przejazd (bez ustalonego czasu)
-STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Podróżuj (poza rozkładem) z maksymalną prędkością {VELOCITY}
+STR_TIMETABLE_NOT_TIMETABLEABLE                                 :Przejazd (dodany automatycznie)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Przejazd (nieustalony)
+STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Przejazd (nieustalony) z maksymalną prędkością {VELOCITY}
 STR_TIMETABLE_TRAVEL_FOR                                        :Przejazd przez {STRING}
-STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Podróżuj przez {STRING} z maksymalną prędkością {VELOCITY}
-STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Przejazd przez {STRING} (poza rozkładem)
-STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Podróżuj przez {STRING} z prędkością {VELOCITY} maks. (poza rozkładem)
-STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(postój przez {STRING}, poza rozkładem)
-STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(przejazd przez {STRING}, poza rozkładem)
+STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Przejazd przez {STRING} z maksymalną prędkością {VELOCITY}
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Przejazd (przez {STRING}, nieustalony)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Przejazd (przez {STRING}, nieustalony) z maksymalną prędkością {VELOCITY}
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(postój przez {STRING}, nieustalony)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(przejazd przez {STRING}, nieustalony)
 STR_TIMETABLE_STAY_FOR                                          :{SPACE}i pozostań tam przez {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}i podróżuj przez {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Ten rozkład jazdy zajmie około {STRING}
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Ten rozkład jazdy zajmie {STRING}
-STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Ten rozkład jazdy zajmie co najmniej {STRING} (nie wszystko jest zaplanowane)
+STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Ten rozkład jazdy zajmie co najmniej {STRING} (rozkład jest niepełny)
 
 STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}Ten pojazd podróżuje teraz zgodnie z rozkładem jazdy
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Ten pojazd jest teraz spóźniony o {STRING}
@@ -5317,7 +5330,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Szacowan
 
 # Saveload messages
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Zapisywanie trwa,{}proszę zaczekać do zakończenia!
-STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Błąd autozapisu
+STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Błąd automatycznego zapisu gry
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Nie można odczytać napędu
 STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Nie można zapisać gry...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Nie można usunąć pliku
@@ -5372,6 +5385,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Wymagany
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Teren pochylony w złym kierunku
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Nie można tego zrobić...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Należy najpierw zburzyć budynek
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... budynek jest chroniony
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Nie można wyczyścić terenu...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... nieodpowiednie miejsce
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... już zbudowano

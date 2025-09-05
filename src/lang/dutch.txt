@@ -2333,16 +2333,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Eenvoudi
 STR_FACE_LOAD                                                   :{BLACK}Laden
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Favoriet gezicht laden
 STR_FACE_LOAD_DONE                                              :{WHITE}Je favoriete gezicht is geladen uit het OpenTTD-configuratiebestand
-STR_FACE_FACECODE                                               :{BLACK}Gezichtsnummer
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Gezichtsnummer van directeur bekijken en/of instellen
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Huidig gezichtsnummer bekijken en/of instellen
-STR_FACE_FACECODE_SET                                           :{WHITE}Nieuwe gezichtsnummercode is opgeslagen
-STR_FACE_FACECODE_ERR                                           :{WHITE}Kon gezichtsnummer voor directeur niet instellen - moet een getal zijn tussen 0 en 4.294.967.295!
+STR_FACE_FACECODE                                               :{BLACK}Gezichtscode
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Gezichtscode van directeur bekijken en/of instellen
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Huidige gezichtscode bekijken en/of instellen
+STR_FACE_FACECODE_SET                                           :{WHITE}Nieuw gezicht van directeur is ingesteld
+STR_FACE_FACECODE_ERR                                           :{WHITE}Kon gezichtscode voor directeur niet instellen - moet een geldig label en nummer zijn
 STR_FACE_SAVE                                                   :{BLACK}Opslaan
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Favoriet gezicht opslaan
 STR_FACE_SAVE_DONE                                              :{WHITE}Dit gezicht wordt in het OpenTTD-configuratiebestand opgeslagen als jouw favoriet
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ja
 STR_FACE_NO                                                     :Nee
+STR_FACE_STYLE                                                  :Stijl:
 STR_FACE_HAIR                                                   :Haar:
 STR_FACE_EYEBROWS                                               :Wenkbrauwen:
 STR_FACE_EYECOLOUR                                              :Oogkleur:
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Stadsgro
 STR_FOUND_TOWN_CITY                                             :{BLACK}Groeistad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Groeisteden groeien sneller dan gewone steden{}Afhankelijk van de instellingen kunnen ze ook groter zijn als ze gesticht worden
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Uitbreiding van stad:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Gebouwen
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Meer gebouwen in steden
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Wegen
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Meer wegen in steden
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Wegpatroon
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Wegpatroon voor deze stad kiezen
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Origineel
@@ -3681,6 +3690,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Hiermee 
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Vergroot
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Vergroot stadsgrootte
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Gebouwen uitbreiden
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Meer gebouwen in stad
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Wegen uitbreiden
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Meer wegen in steden
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Verwijder
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Verwijder deze hele stad
 
@@ -4753,8 +4766,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Reis (gedurende
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Reis (gedurende {STRING}, geen dienstregeling) maximaal {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(wacht {STRING} lang, geen dienstregeling)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(reis gedurende {STRING}, geen dienstregeling)
-STR_TIMETABLE_STAY_FOR                                          :en blijf gedurende {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :en rijd {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}en blijf gedurende {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}en rijd {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Deze dienstregeling heeft ongeveer {STRING} nodig om te voltooien.
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Deze dienstregeling duurt {STRING}
@@ -4986,6 +4999,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Vlak lan
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Landhelling is in de verkeerde richting
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Kan dit niet uitvoeren...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Gebouw moet eerst gesloopt worden
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... gebouw is beschermd
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Kan dit gebied niet ontruimen...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... locatie ongeschikt
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... reeds gebouwd

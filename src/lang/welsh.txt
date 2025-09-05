@@ -2333,16 +2333,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Dewis wy
 STR_FACE_LOAD                                                   :{BLACK}Llwytho
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Llwytho hoff wyneb
 STR_FACE_LOAD_DONE                                              :{WHITE}Llwythwyd eich hoff wyneb o'r ffeil ffurfweddu OpenTTD
-STR_FACE_FACECODE                                               :{BLACK}Wyneb chwaraewr rhif:
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Gweld ac/neu osod rhif wyneb llywydd y cwmni
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Gweld ac/neu osod rhif gwyneb llywydd
-STR_FACE_FACECODE_SET                                           :{WHITE}Cafodd rhif wyneb newydd ei osod
-STR_FACE_FACECODE_ERR                                           :{WHITE}Methu gosod rhif wyneb llywydd - rhaid iddo fod yn rhif rhwng 0 a 4,294,967,295!
+STR_FACE_FACECODE                                               :{BLACK}Cod gwyneb chwaraewr
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Gweld ac/neu osod cod gwyneb llywydd y cwmni
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Gweld ac/neu osod cod gwyneb llywydd
+STR_FACE_FACECODE_SET                                           :{WHITE}Cafodd cod gwyneb newydd ei osod
+STR_FACE_FACECODE_ERR                                           :{WHITE}Methu gosod cod wyneb llywydd - rhaid iddo fod yn label a rhif dilys
 STR_FACE_SAVE                                                   :{BLACK}Cadw
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Cadw hoff wyneb
 STR_FACE_SAVE_DONE                                              :{WHITE}Bydd yr wyneb hwn yn cael ei gadw fel eich ffefryn yn y ffeil ffurfweddu OpenTTD
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ie
 STR_FACE_NO                                                     :Na
+STR_FACE_STYLE                                                  :Arddull:
 STR_FACE_HAIR                                                   :Gwallt:
 STR_FACE_EYEBROWS                                               :Aeliau:
 STR_FACE_EYECOLOUR                                              :Lliw llygaid
@@ -3055,6 +3058,12 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Dewiswch
 STR_FOUND_TOWN_CITY                                             :{BLACK}Dinas
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Mae dinasoedd yn tyfu'n gynt na threfi arferol{}Yn dibynnu ar y gosodiadau, maent hefyd yn fwy pan gânt eu sefydlu
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Ehangu tref:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Adeiladau
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Cynyddu adeiladau trefi
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Lonydd
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Cynyddu lonau mewn trefi
+
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Cynllun ffyrdd tref
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Dewiswch y cynllun ffyrdd i'w ddefnyddio ar gyfer y dref hon
 STR_FOUND_TOWN_SELECT_LAYOUT_ORIGINAL                           :{BLACK}Gwreiddiol
@@ -3681,6 +3690,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}newid en
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Ehangu
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Cynyddu maint tref
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Ehangu adeiladau
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Cynyddu adeiladau'r dref
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Ehangu lonydd
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Cynyddu lonau y dref
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Dileu
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Dileu'r dref hon yn llwyr
 
@@ -4753,8 +4766,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Teithio (am {ST
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Teitho (am {STRING}, heb ei amserlennu) dim cyflymach na {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(aros am {STRING}, heb ei amserlennu)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(teithio am {STRING}, heb ei amserlennu)
-STR_TIMETABLE_STAY_FOR                                          :aros am {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :a theithio am {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE}aros am {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}a theithio am {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Bydd yr amserlen hon yn cymryd tua {STRING} i'w chwblhau
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Bydd yr amserlen hon yn cymryd {STRING} i'w chwblhau
@@ -4986,6 +4999,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Rhaid i'
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Mae'r tir yn goleddu i'r cyfeiriad anghywir
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Does dim modd gwneud hynny...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Rhaid dymchwel adeilad yn gyntaf
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... adeilad wedi ei amddiffyn
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Does dim modd clirio’r ardal hon...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... safle anaddas
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... eisoes wedi'i adeiladu
