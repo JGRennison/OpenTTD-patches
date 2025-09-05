@@ -1071,13 +1071,21 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 }
 
 /**
-* Returns the tag index for a given rapresentative tag string, or -1 if it fails to parse the string
+* Returns true if the given integer is a valid serialised (i.e. 1-indexed) tag number
+*/
+static bool IsValidSerialisedTagNumber(int tag_num)
+{
+	return tag_num >= 1 && tag_num <= 4;
+}
+
+/**
+* Returns the tag index for a given serialised tag string, or -1 if it fails to parse the string
 */
 static int TagStringToIndex(std::string_view tag)
 {
 	/* Format : ^[1-4]$ */
 	auto res = IntFromChars<int>(tag);
-	if (res.has_value() && *res >= 1 && *res <= 4) return *res - 1;
+	if (res.has_value() && IsValidSerialisedTagNumber(*res)) return *res - 1;
 	return -1;
 }
 
@@ -1175,14 +1183,18 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 					}
 
 					if (auto it = slot_data.find(SFName::Slots::TAGS); it != slot_data.end() && it->is_array()) {
-						for (nlohmann::json::const_reference tag : *it) {
-							if (tag.is_string()) {
-								std::string tagString = std::string(tag);
-								int tag = TagStringToIndex(tagString);
-								if (tag == -1) {
-									json_importer.LogError(fmt::format("'{}' is not a valid tag index", tagString), JOIET_MAJOR);
-									continue;
-								}
+						for (nlohmann::json::const_reference tag_json : *it) {
+							int tag = -1;
+							if (tag_json.is_string()) {
+								auto tag_str = local_importer.TryGetFromValue<std::string_view>(SFName::Slots::TAGS, tag_json, JOIET_MAJOR);
+								if (tag_str.has_value()) tag = TagStringToIndex(*tag_str);
+							} else {
+								auto tag_num = local_importer.TryGetFromValue<int>(SFName::Slots::TAGS, tag_json, JOIET_MAJOR);
+								if (tag_num.has_value() && IsValidSerialisedTagNumber(*tag_num)) tag = *tag_num - 1;
+							}
+							if (tag == -1) {
+								json_importer.LogError(fmt::format("'{}' is not a valid tag index", tag_json.dump()), JOIET_MAJOR);
+							} else {
 								SetBit(flags, DispatchSlot::SDSF_FIRST_TAG + tag);
 							}
 						}
