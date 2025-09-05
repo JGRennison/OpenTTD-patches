@@ -691,7 +691,7 @@ public:
 		if (error_type == JOIET_OK) return;
 
 		if constexpr (TMode == JSONToVehicleMode::Global) {
-			LogGlobalError(error, error_type);
+			this->LogGlobalError(error, error_type);
 		} else if constexpr (TMode == JSONToVehicleMode::Order) {
 			Debug(misc, 1, "Order import error: {}, type: {}, order: {}", error, error_type, this->target_index);
 			this->errors.order[this->target_index].push_back({std::move(error), error_type});
@@ -716,7 +716,7 @@ public:
 					const char *result = nullptr;
 					to_json(result, temp);
 					if (result == nullptr) {
-						LogError(fmt::format("Value of '{}' is invalid", label), fail_type);
+						this->LogError(fmt::format("Value of '{}' is invalid", label), fail_type);
 						return std::nullopt;
 					}
 				}
@@ -758,10 +758,10 @@ public:
 	{
 		static_assert(std::is_convertible_v<T, int>, "Timetable operations only take numerical values");
 
-		return ParserFuncWrapper<T>(field, std::nullopt, error_type,
+		return this->ParserFuncWrapper<T>(field, std::nullopt, error_type,
 			[&](T val) {
 				if (oid != INVALID_VEH_ORDER_ID) this->cmd_buffer.op_serialiser.SeekTo(oid);
-				cmd_buffer.op_serialiser.Timetable(mtf, val, MTCF_NONE);
+				this->cmd_buffer.op_serialiser.Timetable(mtf, val, MTCF_NONE);
 				return true;
 			}
 		);
@@ -778,7 +778,7 @@ public:
 	bool TryApplyModifyOrder(std::string_view field, ModifyOrderFlags mof, JsonOrderImportErrorType error_type, std::optional<T> default_val = std::nullopt, CargoType cargo = INVALID_CARGO, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
 	requires (TMode == JSONToVehicleMode::Order)
 	{
-		return ParserFuncWrapper<T>(field, default_val, error_type,
+		return this->ParserFuncWrapper<T>(field, default_val, error_type,
 			[&](T val) {
 				if constexpr (std::is_same_v<std::string, T>) {
 					this->ModifyOrder(mof, 0, cargo, val, oid);
