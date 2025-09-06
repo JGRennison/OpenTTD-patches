@@ -1507,6 +1507,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						str = ParseStringChoice(str, DeterminePluralForm(static_cast<int64_t>(*v), plural_form), builder);
 					} else {
 						builder += "(invalid PLURAL parameter)";
+						return; // just exit to avoid invalid plural data
 					}
 					break;
 				}
