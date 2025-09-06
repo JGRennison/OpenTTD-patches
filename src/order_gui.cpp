@@ -2770,7 +2770,7 @@ public:
 			case WID_O_OCCUPANCY_TOGGLE:
 				const_cast<Vehicle *>(this->vehicle)->RecalculateOrderOccupancyAverage();
 				if (this->vehicle->order_occupancy_average >= 16) {
-					return GetString(STR_JUST_INT, this->vehicle->order_occupancy_average - 16);
+					return GetString(STR_ORDERS_OCCUPANCY_PERCENT, this->vehicle->order_occupancy_average - 16);
 				}
 				return {};
 
