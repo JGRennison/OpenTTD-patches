@@ -1806,7 +1806,6 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 		VarAction2GroupVariableTracking *var_tracking = nullptr;
 		std::bitset<256> output_bits;
 		bool done = false;
-		bool is_leaf_node = false;
 	};
 	inline static robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> record_map;
 	inline static std::vector<std::pair<const DeterministicSpriteGroup *, ProcedureRecord *>> record_queue;
@@ -1817,16 +1816,23 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 	static void DeterministicSpriteGroupDetermineProcCallIn(const DeterministicSpriteGroup *sub, const ProcedureRecord &record)
 	{
 		std::bitset<256> new_proc_call_out;
-		if (record.is_leaf_node) {
-			new_proc_call_out = record.output_bits;
+
+		/* A leaf node is one which has a direct variable relationship between the group and the caller.
+		 * i.e. it is not one where all possible paths between the group and the caller pass through other groups
+		 * where the variable requirement can be set on them instead. */
+		bool is_leaf_node = false;
+		if (sub->IsCalculatedResult()) {
+			is_leaf_node = true;
 		} else {
+			/* Do this here to ensure that all descendant leaf groups are updated with variable requirements. */
 			std::bitset<256> output_bits = record.output_bits;
 			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler handler(output_bits);
-			handler.ProcessGroup(sub->default_group, &new_proc_call_out, false, true);
+			is_leaf_node |= handler.ProcessGroup(sub->default_group, &new_proc_call_out, false, true);
 			for (const auto &range : sub->ranges) {
-				handler.ProcessGroup(range.group, &new_proc_call_out, false, true);
+				is_leaf_node |= handler.ProcessGroup(range.group, &new_proc_call_out, false, true);
 			}
 		}
+		if (is_leaf_node) new_proc_call_out = record.output_bits;
 
 		VarAction2GroupVariableTracking *var_tracking = record.var_tracking;
 		new_proc_call_out |= var_tracking->proc_call_out;
@@ -1873,17 +1879,6 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 				/* New procedure group, add to the front of the queue (i.e. the end of the vector) */
 				record.var_tracking = _cur_grf_optimise_state.GetVarAction2GroupVariableTracking(sub, true);
 				record_queue.emplace_back(sub, &record);
-
-				bool is_leaf_node = false;
-				if (sub->IsCalculatedResult()) {
-					is_leaf_node = true;
-				} else {
-					is_leaf_node |= this->ProcessGroup(sub->default_group, nullptr, false);
-					for (const auto &range : sub->ranges) {
-						is_leaf_node |= this->ProcessGroup(range.group, nullptr, false);
-					}
-				}
-				record.is_leaf_node = is_leaf_node;
 			}
 
 			if (determine_proc_call_in) {
