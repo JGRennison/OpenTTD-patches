@@ -1798,9 +1798,11 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 
 static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, std::bitset<256> *store_input_bits, bool quick_exit);
 
+struct UpdateNeededOutputBitsTag {};
+
 struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
-	std::bitset<256> &bits;             // Needed output bits
-	const std::bitset<256> output_bits; // Snapshots of needed output bits at construction
+	std::bitset<256> * const needed_output_bits; // Needed output bits (optional)
+	const std::bitset<256> output_bits;          // Snapshots of needed output bits at construction
 
 	struct ProcedureRecord {
 		VarAction2GroupVariableTracking *var_tracking = nullptr;
@@ -1810,8 +1812,11 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 	inline static robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> record_map;
 	inline static std::vector<std::pair<const DeterministicSpriteGroup *, ProcedureRecord *>> record_queue;
 
-	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(std::bitset<256> &bits)
-			: bits(bits), output_bits(bits) {}
+	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(const std::bitset<256> &bits)
+			: needed_output_bits(nullptr), output_bits(bits) {}
+
+	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(UpdateNeededOutputBitsTag, std::bitset<256> &bits)
+			: needed_output_bits(&bits), output_bits(bits) {}
 
 	static void DeterministicSpriteGroupDetermineProcCallIn(const DeterministicSpriteGroup *sub, const ProcedureRecord &record)
 	{
@@ -1825,8 +1830,7 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 			is_leaf_node = true;
 		} else {
 			/* Do this here to ensure that all descendant leaf groups are updated with variable requirements. */
-			std::bitset<256> output_bits = record.output_bits;
-			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler handler(output_bits);
+			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler handler(record.output_bits);
 			is_leaf_node |= handler.ProcessGroup(sub->default_group, &new_proc_call_out, false, true);
 			for (const auto &range : sub->ranges) {
 				is_leaf_node |= handler.ProcessGroup(range.group, &new_proc_call_out, false, true);
@@ -1886,7 +1890,7 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 				if (input_bits != nullptr) (*input_bits) |= record.var_tracking->proc_call_in;
 			}
 
-			if (top_level) this->bits |= record.var_tracking->in;
+			if (top_level && this->needed_output_bits != nullptr) (*this->needed_output_bits) |= record.var_tracking->in;
 			return false;
 		} else {
 			return true;
@@ -1948,7 +1952,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 		}
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
-			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(bits);
+			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(UpdateNeededOutputBitsTag{}, bits);
 			proc_handler.ProcessGroup(adjust.subroutine, nullptr, true);
 		}
 	}
@@ -3296,8 +3300,7 @@ static void PopulateRailStationAdvancedLayoutVariableUsage()
 			if (bits.any()) {
 				/* Simulate a procedure call on each of the root sprite groups which requires the bits used in the tile layouts */
 				for (const auto &[cargo, spritegroup] : statspec->grf_prop) {
-					std::bitset<256> proc_bits = bits;
-					CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(proc_bits);
+					CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler proc_handler(const_cast<const std::bitset<256> &>(bits));
 					proc_handler.ProcessGroup(spritegroup, nullptr, true);
 				}
 			}
