@@ -177,7 +177,7 @@ STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :当启用时，
 
 STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :改进载具故障：{STRING}
 
-STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :最大可靠性最低值：{STRING2}
+STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :最大可靠性最低值：{STRING}
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :游戏将在新载具上市时随机为新载具指定最大可靠性，范围为最大可靠性最低值与 100% 之间。{}{}最大可靠性最低值越高，载具的最大可靠性就越高。{}最大可靠性最低值越低，载具最大可靠性随机性越大（风险自负）。{}{}载具可靠性在推出一段时间后到达最大值，随后在载具超出使用寿命时逐步下降（默认特性）。{}{}在现有游戏中可能需要使用“resetengines”命令来使更改生效。{}{}旧行为：最大可靠性为 75%-100% 间的随机值
 
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶之间避免冲突：{STRING}
