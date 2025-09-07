@@ -1736,20 +1736,45 @@ CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrde
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
-	uint order_count = v->GetNumOrders();
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
 
 	switch (op) {
 		case ReverseOrderOperation::Reverse: {
+			VehicleOrderID order_count = v->GetNumOrders();
 			if (order_count < 2) return CMD_ERROR;
-			uint max_order = order_count - 1;
-			for (uint i = 0; i < max_order; i++) {
-				CommandCost cost = Command<CMD_MOVE_ORDER>::Do(flags, veh, max_order, i);
-				if (cost.Failed()) return cost;
+			if (flags.Test(DoCommandFlag::Execute)) {
+				auto map_order_id = [&](VehicleOrderID idx) -> VehicleOrderID {
+					if (idx == INVALID_VEH_ORDER_ID) return idx;
+					return (order_count - 1) - idx;
+				};
+
+				std::vector<Order> &orders = v->orders->GetOrderVector();
+				std::reverse(orders.begin(), orders.end());
+
+				/* As we move an order, the order to skip to will be 'wrong'. */
+				for (Order &order : orders) {
+					if (order.IsType(OT_CONDITIONAL)) {
+						order.SetConditionSkipToOrder(map_order_id(order.GetConditionSkipToOrder()));
+					}
+				}
+
+				/* Update shared list */
+				Vehicle *u = v->FirstShared();
+				DeleteOrderWarnings(u);
+				for (; u != nullptr; u = u->NextShared()) {
+					u->cur_real_order_index = map_order_id(u->cur_real_order_index);
+					u->cur_implicit_order_index = map_order_id(u->cur_implicit_order_index);
+					u->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
+					u->ResetDepotUnbunching();
+					InvalidateVehicleOrder(u, VIWD_REMOVE_ALL_ORDERS); // All orders have moved/been modified, deselect
+				}
 			}
 			break;
 		}
 
 		case ReverseOrderOperation::AppendReversed: {
+			uint order_count = v->GetNumOrders();
 			if (order_count < 3) return CMD_ERROR;
 			uint max_order = order_count - 1;
 			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
