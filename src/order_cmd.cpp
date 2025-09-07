@@ -4326,6 +4326,19 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					last_result = CommandCost();
 					break;
 
+				case BulkOrderOp::Move: {
+					VehicleOrderID from;
+					VehicleOrderID to;
+					uint16_t count;
+					buf.Recv_generic_seq({}, from, to, count);
+					if (buf.error) return CMD_ERROR;
+					if (count == INVALID_VEH_ORDER_ID) count = v->GetNumOrders() - from;
+					last_result = CmdMoveOrder(flags, cmd_data.veh, from, to, count);
+					insert_pos = INVALID_VEH_ORDER_ID;
+					modify_pos = INVALID_VEH_ORDER_ID;
+					break;
+				}
+
 				case BulkOrderOp::SetRouteOverlayColour: {
 					Colours colour;
 					buf.Recv_generic_integer(colour);
