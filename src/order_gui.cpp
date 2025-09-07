@@ -2105,9 +2105,6 @@ public:
 	 */
 	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
-		VehicleOrderID from = INVALID_VEH_ORDER_ID;
-		VehicleOrderID to   = INVALID_VEH_ORDER_ID;
-
 		switch (data) {
 			case VIWD_AUTOREPLACE:
 				/* Autoreplace replaced the vehicle */
@@ -2134,33 +2131,7 @@ public:
 
 			default:
 				if (gui_scope) break; // only do this once; from command scope
-				from = GB(data, 0, 16);
-				to   = GB(data, 16, 16);
-				/* Moving an order. If one of these is INVALID_VEH_ORDER_ID, then
-				 * the order is being created / removed */
-				if (this->selected_order == -1) break;
-
-				if (from == to) break; // no need to change anything
-
-				if (from != this->selected_order) {
-					/* Moving from preceding order? */
-					this->selected_order -= (int)(from <= this->selected_order);
-					/* Moving to   preceding order? */
-					this->selected_order += (int)(to   <= this->selected_order);
-					break;
-				}
-
-				/* Now we are modifying the selected order */
-				if (to == INVALID_VEH_ORDER_ID) {
-					/* Deleting selected order */
-					this->CloseChildWindows();
-					HideDropDownMenu(this);
-					this->selected_order = -1;
-					break;
-				}
-
-				/* Moving selected order */
-				this->selected_order = to;
+				this->OnOrderMove(GB(data, 0, 16), GB(data, 16, 16), 1);
 				break;
 		}
 
@@ -2170,6 +2141,35 @@ public:
 			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, 0);
 			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, 0);
 		}
+	}
+
+	void OnOrderMove(VehicleOrderID from, VehicleOrderID to, uint16_t count)
+	{
+		/* Moving an order. If one of these is INVALID_VEH_ORDER_ID, then
+		 * the order is being created / removed */
+		if (this->selected_order == -1) return;
+
+		if (from == to || count == 0) return; // no need to change anything
+
+		if (this->selected_order < from || this->selected_order >= from + count) {
+			/* Moving from preceding order? */
+			if (from < this->selected_order) this->selected_order -= count;
+			/* Moving to   preceding order? */
+			if (to <= this->selected_order) this->selected_order += count;
+			return;
+		}
+
+		/* Now we are modifying the selected order */
+		if (to == INVALID_VEH_ORDER_ID) {
+			/* Deleting selected order */
+			this->CloseChildWindows();
+			HideDropDownMenu(this);
+			this->selected_order = -1;
+			return;
+		}
+
+		/* Moving selected order */
+		this->selected_order = to;
 
 		/* Scroll to the new order. */
 		if (from == INVALID_VEH_ORDER_ID && to != INVALID_VEH_ORDER_ID && !this->vscroll->IsVisible(to)) {
@@ -3736,7 +3736,7 @@ public:
 				VehicleOrderID to_order = this->GetOrderFromPt(pt.y);
 
 				if (!(from_order == to_order || from_order == INVALID_VEH_ORDER_ID || from_order > this->vehicle->GetNumOrders() || to_order == INVALID_VEH_ORDER_ID || to_order > this->vehicle->GetNumOrders()) &&
-						Command<CMD_MOVE_ORDER>::Post(STR_ERROR_CAN_T_MOVE_THIS_ORDER, this->vehicle->tile, this->vehicle->index, from_order, to_order)) {
+						Command<CMD_MOVE_ORDER>::Post(STR_ERROR_CAN_T_MOVE_THIS_ORDER, this->vehicle->tile, this->vehicle->index, from_order, to_order, 1)) {
 					this->selected_order = -1;
 					this->UpdateButtonState();
 				}
@@ -3960,6 +3960,15 @@ public:
 
 	static HotkeyList hotkeys;
 };
+
+void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count)
+{
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, veh));
+	if (w != nullptr) {
+		w->InvalidateData(VIWD_MODIFY_ORDERS, false);
+		w->OnOrderMove(from, to, count);
+	}
+}
 
 static Hotkey order_hotkeys[] = {
 	Hotkey('D', "skip", OHK_SKIP),

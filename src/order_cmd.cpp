@@ -376,6 +376,22 @@ void InvalidateVehicleOrder(const Vehicle *v, int data)
 	SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 }
 
+/**
+ *
+ * Updates the widgets of a vehicle which contains the order-data
+ *
+ */
+void InvalidateVehicleOrderOnMove(const Vehicle *v, VehicleOrderID from, VehicleOrderID to, uint16_t count)
+{
+	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+	SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+
+	extern void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count);
+	extern void InvalidateTimetableListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count);
+	InvalidateOrderListWindowOnOrderMove(v->index, from, to, count);
+	InvalidateTimetableListWindowOnOrderMove(v->index, from, to, count);
+}
+
 const char *Order::GetLabelText() const
 {
 	assert(this->IsType(OT_LABEL) && this->GetLabelSubType() == OLST_TEXT);
@@ -722,21 +738,24 @@ void OrderList::DeleteOrderAt(VehicleOrderID index)
 
 /**
  * Move an order to another position within the order list.
- * @param from is the zero-based position of the order to move.
- * @param to is the zero-based position where the order is moved to.
+ * @param from is the zero-based position of the orders to move.
+ * @param to is the zero-based position where the orders are moved to.
+ * @param count is the number of orders to move
  */
-void OrderList::MoveOrder(VehicleOrderID from, VehicleOrderID to)
+void OrderList::MoveOrders(VehicleOrderID from, VehicleOrderID to, uint16_t count)
 {
-	if (from >= this->GetNumOrders() || to >= this->GetNumOrders() || from == to) return;
+	if (count == 0 || from >= this->GetNumOrders() || to >= this->GetNumOrders() || from == to) return;
 
 	if (from < to) {
+		if (to < from + count) return;
 		/* Rotate from towards end */
 		const auto it = this->orders.begin();
-		std::rotate(it + from, it + from + 1, it + to + 1);
+		std::rotate(it + from, it + from + count, it + to + count);
 	} else {
+		if (from + count > this->GetNumOrders()) return;
 		/* Rotate from towards begin */
 		const auto it = this->orders.begin();
-		std::rotate(it + to, it + from, it + from + 1);
+		std::rotate(it + to, it + from, it + from + count);
 	}
 }
 
@@ -1631,11 +1650,12 @@ CommandCost CmdSkipToOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderI
  * @param veh the ID of the vehicle
  * @param moving_order the order to move
  * @param target_order the target order
+ * @param count the number of orders to move
  * @return the cost of this operation or an error
  * @note The target order will move one place down in the orderlist
  *  if you move the order upwards else it'll move it one place down
  */
-CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID moving_order, VehicleOrderID target_order)
+CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID moving_order, VehicleOrderID target_order, uint16_t count)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -1643,21 +1663,32 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	/* Don't make senseless movements */
-	if (moving_order >= v->GetNumOrders() || target_order >= v->GetNumOrders() ||
-			moving_order == target_order || v->GetNumOrders() <= 1) return CMD_ERROR;
+	const VehicleOrderID order_count = v->GetNumOrders();
 
-	Order *moving_one = v->GetOrder(moving_order);
-	/* Don't move an empty order */
-	if (moving_one == nullptr) return CMD_ERROR;
+	/* Don't make senseless movements */
+	if (count == 0 || order_count <= 1 || moving_order >= order_count || target_order >= order_count || moving_order == target_order) return CMD_ERROR;
+
+	if (moving_order < target_order) {
+		if (target_order < moving_order + count) return CMD_ERROR;
+	} else {
+		if (moving_order + count > order_count) return CMD_ERROR;
+	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		v->orders->MoveOrder(moving_order, target_order);
+		v->orders->MoveOrders(moving_order, target_order, count);
 
 		/* Update shared list */
 		Vehicle *u = v->FirstShared();
 
 		DeleteOrderWarnings(u);
+
+		auto adjust_order_idx = [&](VehicleOrderID idx) -> VehicleOrderID {
+			if (idx >= order_count) return idx;
+			if (idx >= moving_order && idx < moving_order + count) return target_order + (idx - moving_order);
+			if (idx > moving_order && idx <= target_order) return idx - count;
+			if (idx < moving_order && idx >= target_order) return idx + count;
+			return idx;
+		};
 
 		for (; u != nullptr; u = u->NextShared()) {
 			/* Update the current order.
@@ -1676,21 +1707,9 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 			 * completely out-dated anyway. So, keep it simple and just keep cur_implicit_order_index as well.
 			 * The worst which can happen is that a lot of implicit orders are removed when reaching current_order.
 			 */
-			if (u->cur_real_order_index == moving_order) {
-				u->cur_real_order_index = target_order;
-			} else if (u->cur_real_order_index > moving_order && u->cur_real_order_index <= target_order) {
-				u->cur_real_order_index--;
-			} else if (u->cur_real_order_index < moving_order && u->cur_real_order_index >= target_order) {
-				u->cur_real_order_index++;
-			}
+			u->cur_real_order_index = adjust_order_idx(u->cur_real_order_index);
+			u->cur_implicit_order_index = adjust_order_idx(u->cur_implicit_order_index);
 
-			if (u->cur_implicit_order_index == moving_order) {
-				u->cur_implicit_order_index = target_order;
-			} else if (u->cur_implicit_order_index > moving_order && u->cur_implicit_order_index <= target_order) {
-				u->cur_implicit_order_index--;
-			} else if (u->cur_implicit_order_index < moving_order && u->cur_implicit_order_index >= target_order) {
-				u->cur_implicit_order_index++;
-			}
 			/* Unbunching data is no longer valid. */
 			u->ResetDepotUnbunching();
 
@@ -1699,21 +1718,13 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 
 			assert(v->orders == u->orders);
 			/* Update any possible open window of the vehicle */
-			InvalidateVehicleOrder(u, moving_order | (target_order << 16));
+			InvalidateVehicleOrderOnMove(u, moving_order, target_order, count);
 		}
 
 		/* As we move an order, the order to skip to will be 'wrong'. */
 		for (Order *order : v->Orders()) {
 			if (order->IsType(OT_CONDITIONAL)) {
-				VehicleOrderID order_id = order->GetConditionSkipToOrder();
-				if (order_id == moving_order) {
-					order_id = target_order;
-				} else if (order_id > moving_order && order_id <= target_order) {
-					order_id--;
-				} else if (order_id < moving_order && order_id >= target_order) {
-					order_id++;
-				}
-				order->SetConditionSkipToOrder(order_id);
+				order->SetConditionSkipToOrder(adjust_order_idx(order->GetConditionSkipToOrder()));
 			}
 		}
 

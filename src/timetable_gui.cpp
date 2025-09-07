@@ -525,49 +525,49 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			default: {
 				if (gui_scope) break; // only do this once; from command scope
-
-				/* Moving an order. If one of these is INVALID_VEH_ORDER_ID, then
-				 * the order is being created / removed */
-				if (this->sel_index == -1) break;
-
-				VehicleOrderID from = GB(data, 0, 16);
-				VehicleOrderID to   = GB(data, 16, 16);
-
-				if (from == to) break; // no need to change anything
-
-				/* if from == INVALID_VEH_ORDER_ID, one order was added; if to == INVALID_VEH_ORDER_ID, one order was removed */
-				uint old_num_orders = this->vehicle->GetNumOrders() - (uint)(from == INVALID_VEH_ORDER_ID) + (uint)(to == INVALID_VEH_ORDER_ID);
-
-				VehicleOrderID selected_order = (this->sel_index + 1) / 2;
-				if (selected_order == old_num_orders) selected_order = 0; // when last travel time is selected, it belongs to order 0
-
-				bool travel = HasBit(this->sel_index, 0);
-
-				if (from != selected_order) {
-					/* Moving from preceding order? */
-					selected_order -= (int)(from <= selected_order);
-					/* Moving to   preceding order? */
-					selected_order += (int)(to   <= selected_order);
-				} else {
-					/* Now we are modifying the selected order */
-					if (to == INVALID_VEH_ORDER_ID) {
-						/* Deleting selected order */
-						this->CloseChildWindows();
-						this->sel_index = -1;
-						break;
-					} else {
-						/* Moving selected order */
-						selected_order = to;
-					}
-				}
-
-				/* recompute new sel_index */
-				this->sel_index = 2 * selected_order - (int)travel;
-				/* travel time of first order needs special handling */
-				if (this->sel_index == -1) this->sel_index = this->vehicle->GetNumOrders() * 2 - 1;
-				break;
+				this->OnOrderMove(GB(data, 0, 16), GB(data, 16, 16), 1);
 			}
 		}
+	}
+
+	void OnOrderMove(VehicleOrderID from, VehicleOrderID to, uint16_t count)
+	{
+		/* Moving an order. If one of these is INVALID_VEH_ORDER_ID, then
+		 * the order is being created / removed */
+		if (this->sel_index == -1) return;
+
+		if (from == to || count == 0) return; // no need to change anything
+
+		/* if from == INVALID_VEH_ORDER_ID, one order was added; if to == INVALID_VEH_ORDER_ID, one order was removed */
+		uint old_num_orders = this->vehicle->GetNumOrders() - (uint)(from == INVALID_VEH_ORDER_ID) + (uint)(to == INVALID_VEH_ORDER_ID);
+
+		VehicleOrderID selected_order = (this->sel_index + 1) / 2;
+		if (selected_order == old_num_orders) selected_order = 0; // when last travel time is selected, it belongs to order 0
+
+		bool travel = HasBit(this->sel_index, 0);
+
+		if (selected_order < from || selected_order >= from + count) {
+			/* Moving from preceding order? */
+			if (from < selected_order) selected_order -= count;
+			/* Moving to   preceding order? */
+			if (to <= selected_order) selected_order += count;
+		} else {
+			/* Now we are modifying the selected order */
+			if (to == INVALID_VEH_ORDER_ID) {
+				/* Deleting selected order */
+				this->CloseChildWindows();
+				this->sel_index = -1;
+				return;
+			} else {
+				/* Moving selected order */
+				selected_order = to;
+			}
+		}
+
+		/* recompute new sel_index */
+		this->sel_index = 2 * selected_order - (int)travel;
+		/* travel time of first order needs special handling */
+		if (this->sel_index == -1) this->sel_index = this->vehicle->GetNumOrders() * 2 - 1;
 	}
 
 	virtual EventState OnCTRLStateChange() override
@@ -1257,6 +1257,15 @@ struct TimetableWindow : GeneralVehicleWindow {
 		return this->vehicle;
 	}
 };
+
+void InvalidateTimetableListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count)
+{
+	TimetableWindow *w = dynamic_cast<TimetableWindow *>(FindWindowById(WC_VEHICLE_TIMETABLE, veh));
+	if (w != nullptr) {
+		w->SetDirty();
+		w->OnOrderMove(from, to, count);
+	}
+}
 
 static constexpr NWidgetPart _nested_timetable_widgets[] = {
 	NWidget(NWID_HORIZONTAL),

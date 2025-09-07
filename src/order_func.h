@@ -19,6 +19,7 @@ void StartRemoveOrderFromAllVehiclesBatch();
 void StopRemoveOrderFromAllVehiclesBatch();
 void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool hangar = false);
 void InvalidateVehicleOrder(const Vehicle *v, int data);
+void InvalidateVehicleOrderOnMove(const Vehicle *v, VehicleOrderID from, VehicleOrderID to, uint16_t count);
 void CheckOrders(const Vehicle*);
 void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist = false, bool reset_order_indices = true);
 bool ProcessOrders(Vehicle *v);

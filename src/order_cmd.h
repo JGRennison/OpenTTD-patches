@@ -39,7 +39,7 @@ DEF_CMD_TUPLE_LT (CMD_DELETE_ORDER,             CmdDeleteOrder,                 
 DEF_CMD_DIRECT_LT(CMD_INSERT_ORDER,             CmdInsertOrder,                     {}, CMDT_ROUTE_MANAGEMENT, InsertOrderCmdData)
 DEF_CMD_TUPLE_LT (CMD_ORDER_REFIT,              CmdOrderRefit,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, CargoType>)
 DEF_CMD_TUPLE_LT (CMD_CLONE_ORDER,              CmdCloneOrder,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<CloneOptions, VehicleID, VehicleID>)
-DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,               CmdMoveOrder,                       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,               CmdMoveOrder,                       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, VehicleOrderID, uint16_t>)
 DEF_CMD_TUPLE_LT (CMD_REVERSE_ORDER_LIST,       CmdReverseOrderList,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, ReverseOrderOperation>)
 DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,          CmdDuplicateOrder,                  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
 DEF_CMD_TUPLE_LT (CMD_SET_ROUTE_OVERLAY_COLOUR, CmdSetRouteOverlayColour,           {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, Colours>)

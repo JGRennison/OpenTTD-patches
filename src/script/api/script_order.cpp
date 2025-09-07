@@ -668,7 +668,7 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 
 	int order_pos_move = ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position_move);
 	int order_pos_target = ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position_target);
-	return ScriptObject::Command<CMD_MOVE_ORDER>::Do(0, vehicle_id, order_pos_move, order_pos_target);
+	return ScriptObject::Command<CMD_MOVE_ORDER>::Do(0, vehicle_id, order_pos_move, order_pos_target, 1);
 }
 
 /* static */ bool ScriptOrder::CopyOrders(VehicleID vehicle_id, VehicleID main_vehicle_id)

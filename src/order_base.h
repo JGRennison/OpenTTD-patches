@@ -1179,7 +1179,7 @@ public:
 
 	void InsertOrderAt(Order &&new_order, VehicleOrderID index);
 	void DeleteOrderAt(VehicleOrderID index);
-	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
+	void MoveOrders(VehicleOrderID from, VehicleOrderID to, uint16_t count);
 
 	/**
 	 * Is this a shared order list?
