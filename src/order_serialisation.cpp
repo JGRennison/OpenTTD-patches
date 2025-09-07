@@ -809,7 +809,7 @@ public:
 	}
 };
 
-static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order> json_importer)
+static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order> json_importer, uint schedule_insert_offset)
 {
 	using OFName = OrderSerialisationFieldNames::Orders;
 
@@ -1009,7 +1009,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 			json_importer.ModifyOrder(MOF_COND_VALUE, val);
 
-			json_importer.TryApplyModifyOrder<uint16_t>(OFName::CONDITION_DISPATCH_SCHEDULE, MOF_COND_VALUE_2, JOIET_MAJOR);
+			if (auto sched_idx = json_importer.TryGetField<uint16_t>(OFName::CONDITION_DISPATCH_SCHEDULE, JOIET_MAJOR); sched_idx.has_value()) {
+				json_importer.ModifyOrder(MOF_COND_VALUE_2, static_cast<uint16_t>(*sched_idx + schedule_insert_offset));
+			}
 		}
 	}
 
@@ -1220,7 +1222,7 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 	}
 }
 
-OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str)
+OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str, VehicleOrderID insert_index, bool reverse_orders)
 {
 	using FName = OrderSerialisationFieldNames;
 
@@ -1305,9 +1307,17 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	JSONBulkOrderCommandBuffer cmd_buffer(veh);
 	JSONToVehicleCommandParser<> json_importer(veh, json, cmd_buffer, errors, import_settings_client);
 
-	/* Delete all orders before setting the new orders */
-	cmd_buffer.op_serialiser.ClearOrders();
-	cmd_buffer.op_serialiser.ClearSchedules();
+	const VehicleOrderID initial_order_count = veh->GetNumOrders();
+	if (insert_index != INVALID_VEH_ORDER_ID && insert_index > initial_order_count) insert_index = initial_order_count;
+
+	const bool replace_existing_mode = (insert_index == INVALID_VEH_ORDER_ID);
+	/* Delete all orders before setting the new orders if we are replacing order list contents */
+	if (replace_existing_mode) {
+		cmd_buffer.op_serialiser.ClearOrders();
+		cmd_buffer.op_serialiser.ClearSchedules();
+	}
+	const VehicleOrderID order_insert_offset = replace_existing_mode ? 0 : insert_index;
+	const uint schedule_insert_offset = (replace_existing_mode || veh->orders == nullptr) ? 0 : veh->orders->GetScheduledDispatchScheduleCount();
 
 	const auto &orders_json = json[FName::Orders::OBJKEY];
 
@@ -1331,7 +1341,8 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 				Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
 			}
 
-			uint schedule_index = 0;
+			uint schedule_index = schedule_insert_offset;
+
 			for (const auto &value : schedules) {
 				cmd_buffer.SetDispatchScheduleId(schedule_index);
 				ImportJsonDispatchSchedule(json_importer.WithNewTarget<JSONToVehicleMode::Dispatch>(value, schedule_index));
@@ -1345,12 +1356,12 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 	}
 
-	VehicleOrderID order_id = 0;
-	for (const auto &value : orders_json) {
+	VehicleOrderID order_id = order_insert_offset;
+	for (const auto &value : (reverse_orders ? std::views::reverse(orders_json) : orders_json)) {
 		auto order_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
-		ImportJsonOrder(order_importer);
+		ImportJsonOrder(order_importer, schedule_insert_offset);
 
 		std::string jump_label;
 		if (order_importer.TryGetField(FName::Orders::JUMP_FROM, jump_label, JOIET_MAJOR)) {
@@ -1358,6 +1369,10 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 
 		order_id++;
+	}
+
+	if (!replace_existing_mode) {
+		cmd_buffer.op_serialiser.Move(initial_order_count, insert_index, INVALID_VEH_ORDER_ID);
 	}
 
 	{
@@ -1370,12 +1385,15 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	}
 
 	/* Post processing (link jumps and assign schedules) */
-	order_id = 0;
-	for (const auto &value : orders_json) {
+	order_id = order_insert_offset;
+	for (const auto &value : (reverse_orders ? std::views::reverse(orders_json) : orders_json)) {
 		auto local_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
-		local_importer.TryApplyTimetableCommand(FName::Orders::SCHEDULE_INDEX, MTF_ASSIGN_SCHEDULE, JOIET_MAJOR, order_id);
+		if (auto sched_idx = local_importer.TryGetField<uint16_t>(FName::Orders::SCHEDULE_INDEX, JOIET_MAJOR); sched_idx.has_value()) {
+			local_importer.cmd_buffer.op_serialiser.SeekTo(order_id);
+			local_importer.cmd_buffer.op_serialiser.Timetable(MTF_ASSIGN_SCHEDULE, *sched_idx + schedule_insert_offset, MTCF_NONE);
+		};
 
 		std::string jump_label;
 		if (local_importer.TryGetField(FName::Orders::JUMP_TO, jump_label, JOIET_MAJOR)) {

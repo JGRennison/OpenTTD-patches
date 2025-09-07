@@ -621,7 +621,8 @@ static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_REVERSE_ORDER_LIST,
 	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
 	STR_ORDER_EXPORT_ORDER_LIST,
-	STR_ORDER_IMPORT_ORDER_LIST,
+	STR_ORDER_IMPORT_ORDER_LIST_REPLACE,
+	STR_ORDER_IMPORT_ORDER_LIST_APPEND
 };
 
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
@@ -2963,7 +2964,8 @@ public:
 
 				DropDownList list;
 				list.push_back(MakeDropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
-				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_IMPORT_ORDER_LIST_INSERT, 1, false));
+				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 2, false));
 
 				if (this->vehicle->type == VEH_TRAIN && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const OrderStopLocation osl = order->GetStopLocation();
@@ -3691,6 +3693,7 @@ public:
 					case 1: this->OrderClick_ReverseOrderList(ReverseOrderOperation::AppendReversed); break;
 					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, this->GetVehicle()); break;
 					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle()); break;
+					case 4: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle(), this->GetVehicle()->GetNumOrders()); break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -3718,6 +3721,10 @@ public:
 						break;
 
 					case 1:
+						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle(), this->OrderGetSel());
+						break;
+
+					case 2:
 						this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
 						break;
 

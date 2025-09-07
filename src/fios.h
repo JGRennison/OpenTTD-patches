@@ -14,6 +14,7 @@
 #include "company_base.h"
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"
+#include "order_type.h"
 #include <vector>
 
 
@@ -51,7 +52,7 @@ DECLARE_ENUM_AS_BIT_SET(SortingBits)
 /* Variables to display file lists */
 extern SortingBits _savegame_sort_order;
 
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr, VehicleOrderID order_insert_index = INVALID_VEH_ORDER_ID);
 
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);

@@ -432,6 +432,7 @@ private:
 	static const uint EDITBOX_MAX_SIZE   =  50;
 
 	const Vehicle *veh;           ///< Vehicle ID used for order list import.
+	const VehicleOrderID order_insert_index; ///< Vehicle Order ID, used when appending orderlists
 	QueryString filename_editbox; ///< Filename editbox.
 	AbstractFileType abstract_filetype{}; /// Type of file to select.
 	SaveLoadOperation fop{}; ///< File operation to perform.
@@ -474,8 +475,8 @@ public:
 		this->filename_editbox.text.Assign(name);
 	}
 
-	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr)
-			: Window(desc), veh(veh), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
+	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr, VehicleOrderID order_insert_index = INVALID_VEH_ORDER_ID)
+			: Window(desc), veh(veh), order_insert_index(order_insert_index), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
 	{
 		assert(this->fop == SLO_SAVE || this->fop == SLO_LOAD);
 
@@ -830,7 +831,7 @@ public:
 						if (file.has_value()) {
 							std::optional<UniqueBuffer<uint8_t>> buffer = ReadFileToBuffer(*file, 1 << 20);
 							if (buffer.has_value()) {
-								OrderImportErrors errs = ImportJsonOrderList(slo->veh, std::string_view((const char *)buffer->get(), buffer->size()));
+								OrderImportErrors errs = ImportJsonOrderList(slo->veh, std::string_view((const char *)buffer->get(), buffer->size()), slo->order_insert_index);
 								if (errs.HasErrors()) {
 									ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS), WL_ERROR);
 									ShowOrderListImportErrorsWindow(slo->veh, std::move(errs));
@@ -841,7 +842,7 @@ public:
 						slo->Close();
 					};
 
-					if (this->veh->orders != nullptr) {
+					if (this->veh->orders != nullptr && order_insert_index == INVALID_VEH_ORDER_ID) {
 						ShowQuery(GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION), GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE), this, callback);
 					} else {
 						callback(this, true);
@@ -1203,14 +1204,14 @@ static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
  * @param abstract_filetype Kind of file to handle.
  * @param fop File operation to perform (load or save).
  */
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop,const Vehicle * veh)
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh, VehicleOrderID order_insert_index)
 {
 	CloseWindowById(WC_SAVELOAD, 0);
 
 	if (fop == SLO_SAVE) {
 		switch (abstract_filetype) {
 			case FT_ORDERLIST:
-				new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop, veh);
+				new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop, veh, order_insert_index);
 				break;
 
 			default:
@@ -1228,7 +1229,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 				break;
 
 			case FT_ORDERLIST:
-				new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop, veh);
+				new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop, veh, order_insert_index);
 				break;
 
 			default:

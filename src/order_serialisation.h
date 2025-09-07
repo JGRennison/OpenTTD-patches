@@ -38,7 +38,7 @@ struct OrderImportErrors {
 	bool HasErrors() const;
 };
 
-OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str);
+OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str, VehicleOrderID insert_index = INVALID_VEH_ORDER_ID, bool reverse_orders = false);
 std::string OrderListToJSONString(const OrderList *ol);
 
 Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type);
