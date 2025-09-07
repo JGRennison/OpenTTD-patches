@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.66.1 (2025-09-07)
+* Fix crash with certain NewGRFs.
+* Fix network clients not being allowed to create new companies in multiplayer.
+* Fix text not being shown in the per cargo type orders window.
+* Fix network server messages being shown as blank.
+* Fix rail stations from certain NewGRFs being rendered incorrectly.
+* Fix engine capacity display in news/preview windows.
+* Fix false-positive inconsistency warnings about aircraft.
+* JSON order list import/export:
+  * Fix import of departure slot tags.
+
 ### v0.66.0 (2025-09-03)
 * Fix crash which could occur when removing vehicle groups after merging/buying another company.
 * Fix missing industry accept/produce cargoes with some industry NewGRFs (in particular ECS).
