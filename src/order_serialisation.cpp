@@ -224,7 +224,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	}
 
 	if (o.IsType(OT_GOTO_WAYPOINT)) {
-		if (o.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) json["waypoint-reverse"] = true;
+		if (o.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) json[OFName::WAYPOINT_REVERSE] = true;
 	}
 
 	if (o.IsSlotCounterOrder()) {
