@@ -71,8 +71,10 @@ btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;
 bool _order_destination_refcount_map_valid = false;
 
 enum class CmdInsertOrderIntlFlag : uint8_t {
-	AllowLoadByCargoType,  ///< Allow load by cargo type
-	AllowDuplicateUnbunch, ///< Allow duplicate unbunch orders
+	AllowLoadByCargoType,   ///< Allow load by cargo type
+	AllowDuplicateUnbunch,  ///< Allow duplicate unbunch orders
+	NoUnbunchChecks,        ///< Do not perform unbunch checks
+	NoConditionTargetCheck, ///< Do not check target of conditional jump orders
 };
 using CmdInsertOrderIntlFlags = EnumBitSet<CmdInsertOrderIntlFlag, uint8_t>;
 
@@ -1009,14 +1011,12 @@ CommandCost CmdSetRouteOverlayColour(DoCommandFlags flags, VehicleID veh_id, Col
 	return CommandCost();
 }
 
-static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags)
+static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdInsertOrderIntlFlags insert_flags)
 {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
-
-	if (sel_ord == INVALID_VEH_ORDER_ID) sel_ord = v->GetNumOrders(); // Append to end of list
 
 	/* Check if the inserted order is to the correct destination (owner, type),
 	 * and has the correct flags if any */
@@ -1051,7 +1051,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 
 				case OLFB_FULL_LOAD:
 				case OLF_FULL_LOAD_ANY:
-					if (v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_FULL_LOAD);
+					if (!insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_FULL_LOAD);
 					break;
 
 				default:
@@ -1134,7 +1134,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 			/* Check if we're allowed to have a new unbunching order. */
 			if ((new_order.GetDepotActionType() & ODATFB_UNBUNCH)) {
 				if (v->HasFullLoadOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-				if (!insert_flags.Test(CmdInsertOrderIntlFlag::AllowDuplicateUnbunch) && v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+				if (!insert_flags.Test(CmdInsertOrderIntlFlag::AllowDuplicateUnbunch) && !insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
 				if (v->HasConditionalOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
 			}
 			break;
@@ -1182,9 +1182,9 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 
 		case OT_CONDITIONAL: {
 			VehicleOrderID skip_to = new_order.GetConditionSkipToOrder();
-			if (skip_to != 0 && skip_to >= v->GetNumOrders()) return CMD_ERROR; // Always allow jumping to the first (even when there is no order).
+			if (skip_to != 0 && skip_to >= v->GetNumOrders() && !insert_flags.Test(CmdInsertOrderIntlFlag::NoConditionTargetCheck)) return CMD_ERROR; // Always allow jumping to the first (even when there is no order).
 			if (new_order.GetConditionVariable() >= OCV_END) return CMD_ERROR;
-			if (v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_CONDITIONAL);
+			if (!insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_CONDITIONAL);
 
 			OrderConditionComparator occ = new_order.GetConditionComparator();
 			if (occ >= OCC_END) return CMD_ERROR;
@@ -1352,6 +1352,16 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleO
 
 		default: return CMD_ERROR;
 	}
+
+	return CommandCost();
+}
+
+static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags)
+{
+	CommandCost ret = PreInsertOrderCheck(v, new_order, insert_flags);
+	if (ret.Failed()) return ret;
+
+	if (sel_ord == INVALID_VEH_ORDER_ID) sel_ord = v->GetNumOrders(); // Append to end of list
 
 	if (sel_ord > v->GetNumOrders()) return CMD_ERROR;
 
