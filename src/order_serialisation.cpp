@@ -87,8 +87,10 @@ struct OrderSerialisationFieldNames {
 		static constexpr char WAYPOINT_REVERSE[]            = "waypoint-reverse";            ///< bool
 		static constexpr char COLOUR[]                      = "colour";                      ///< enum
 		static constexpr char TRAVEL_TIME[]                 = "travel-time";                 ///< int
+		static constexpr char TRAVEL_FIXED[]                = "travel-fixed";                ///< bool
 		static constexpr char MAX_SPEED[]                   = "max-speed";                   ///< int
 		static constexpr char WAIT_TIME[]                   = "wait-time";                   ///< int
+		static constexpr char WAIT_FIXED[]                  = "wait-fixed";                  ///< bool
 		static constexpr char STOPPING_PATTERN[]            = "stopping-pattern";            ///< enum
 		static constexpr char STOP_LOCATION[]               = "stop-location";               ///< enum
 		static constexpr char STOP_DIRECTION[]              = "stop-direction";              ///< enum
@@ -106,6 +108,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char COUNTER_VALUE[]               = "counter-value";               ///< int     Value to be applied to "counter-operation"
 		static constexpr char SLOT_ACTION[]                 = "slot-action";                 ///< int
 		static constexpr char JUMP_TAKEN_TRAVEL_TIME[]      = "jump-taken-travel-time";      ///< int
+		static constexpr char JUMP_TAKEN_TRAVEL_FIXED[]     = "jump-taken-travel-fixed";     ///< bool
 		static constexpr char CONDITION_VARIABLE[]          = "condition-variable";          ///< enum    Required when "order-type" is OT_CONDITIONAL
 		static constexpr char CONDITION_COMPARATOR[]        = "condition-comparator";        ///< enum
 		static constexpr char JUMP_TO[]                     = "jump-to";                     ///< string  Jump-label to jump to
@@ -166,6 +169,9 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	if (o.IsGotoOrder() || o.GetType() == OT_CONDITIONAL) {
 		if (o.IsTravelTimetabled()) {
 			json[OFName::TRAVEL_TIME] = o.GetTravelTime();
+			if (o.IsTravelFixed()) {
+				json[OFName::TRAVEL_FIXED] = true;
+			}
 		}
 
 		if (o.GetMaxSpeed() != UINT16_MAX) {
@@ -176,6 +182,9 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	if (o.IsGotoOrder()) {
 		if (o.IsWaitTimetabled()) {
 			json[OFName::WAIT_TIME] = o.GetWaitTime();
+			if (o.IsWaitFixed()) {
+				json[OFName::WAIT_FIXED] = true;
+			}
 		}
 
 		if (vt == VEH_ROAD || vt == VEH_TRAIN) {
@@ -256,6 +265,9 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	if (o.IsType(OT_CONDITIONAL)) {
 		if (o.IsWaitTimetabled()) {
 			json[OFName::JUMP_TAKEN_TRAVEL_TIME] = o.GetWaitTime();
+			if (o.IsWaitFixed()) {
+				json[OFName::JUMP_TAKEN_TRAVEL_TIME] = true;
+			}
 		}
 
 		json[OFName::CONDITION_VARIABLE] = o.GetConditionVariable();
@@ -936,9 +948,12 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 	json_importer.TryApplyTimetableCommand(OFName::MAX_SPEED, MTF_TRAVEL_SPEED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::WAIT_TIME, MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<bool>(OFName::WAIT_FIXED, MTF_SET_WAIT_FIXED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::TRAVEL_TIME, MTF_TRAVEL_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<bool>(OFName::TRAVEL_FIXED, MTF_SET_TRAVEL_FIXED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand<OrderLeaveType>(OFName::TIMETABLE_LEAVE_TYPE, MTF_SET_LEAVE_TYPE, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand(OFName::JUMP_TAKEN_TRAVEL_TIME, MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<bool>(OFName::JUMP_TAKEN_TRAVEL_FIXED, MTF_SET_WAIT_FIXED, JOIET_MINOR);
 
 	json_importer.TryApplyModifyOrder<OrderStopLocation>(OFName::STOP_LOCATION, MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
 	json_importer.TryApplyModifyOrder<DiagDirection>(OFName::STOP_DIRECTION, MOF_RV_TRAVEL_DIR, JOIET_MINOR);
