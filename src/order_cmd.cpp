@@ -1804,29 +1804,29 @@ CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrde
 			uint max_order = order_count - 1;
 			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
 			for (uint i = 0; i < order_count; i++) {
-				if (v->GetOrder(i)->IsType(OT_CONDITIONAL)) return CMD_ERROR;
-			}
-			for (uint i = 1; i < max_order; i++) {
-				Order new_order;
-				new_order.AssignOrder(*v->GetOrder(i));
-				const bool wait_fixed = new_order.IsWaitFixed();
-				const bool wait_timetabled = new_order.IsWaitTimetabled();
-				new_order.SetWaitTimetabled(false);
-				new_order.SetTravelTimetabled(false);
-				new_order.SetTravelTime(0);
-				new_order.SetTravelFixed(false);
-				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, CmdInsertOrderIntlFlag::AllowLoadByCargoType);
-				if (cost.Failed()) return cost;
-				if (flags.Test(DoCommandFlag::Execute)) {
-					Order *order = v->orders->GetOrderAt(order_count);
-					order->SetRefit(new_order.GetRefitCargo());
-					order->SetMaxSpeed(new_order.GetMaxSpeed());
-					SetOrderFixedWaitTime(v, order_count, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
+				const Order *o = v->GetOrder(i);
+				if (o->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+				if (i >= 1 && i < max_order && o->IsType(OT_GOTO_DEPOT) && o->GetDepotActionType() & ODATFB_UNBUNCH) {
+					return CommandCost(STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
 				}
-				new_order.Free();
+			}
+			for (uint i = max_order - 1; i >= 1; i--) {
+				Order new_order(*v->GetOrder(i));
+				CommandCost ret = PreInsertOrderCheck(v, new_order, {CmdInsertOrderIntlFlag::AllowLoadByCargoType, CmdInsertOrderIntlFlag::NoUnbunchChecks});
+				if (ret.Failed()) return ret;
+
+				if (flags.Test(DoCommandFlag::Execute)) v->orders->InsertOrderAt(std::move(new_order), v->GetNumOrders());
+			}
+			if (flags.Test(DoCommandFlag::Execute)) {
+				Vehicle *u = v->FirstShared();
+				DeleteOrderWarnings(u);
+				for (; u != nullptr; u = u->NextShared()) {
+					u->ResetDepotUnbunching();
+					InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
+				}
 			}
 			break;
-		};
+		}
 
 		default:
 			return CMD_ERROR;
