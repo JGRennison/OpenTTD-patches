@@ -80,8 +80,6 @@ using CmdInsertOrderIntlFlags = EnumBitSet<CmdInsertOrderIntlFlag, uint8_t>;
 
 static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags);
 
-extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled, bool wait_fixed);
-
 void IntialiseOrderDestinationRefcountMap()
 {
 	ClearOrderDestinationRefcountMap();
@@ -967,24 +965,13 @@ CommandCost CmdDuplicateOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrd
 	const Order *src_order = v->GetOrder(sel_ord);
 	if (src_order == nullptr) return CMD_ERROR;
 
-	Order new_order;
-	new_order.AssignOrder(*src_order);
-	const bool wait_fixed = new_order.IsWaitFixed();
-	const bool wait_timetabled = new_order.IsWaitTimetabled();
-	new_order.SetWaitTimetabled(false);
+	Order new_order(*src_order);
 	new_order.SetTravelTimetabled(false);
 	new_order.SetTravelTime(0);
 	new_order.SetTravelFixed(false);
 	new_order.SetDispatchScheduleIndex(-1);
 	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, CmdInsertOrderIntlFlag::AllowLoadByCargoType);
 	if (cost.Failed()) return cost;
-	if (flags.Test(DoCommandFlag::Execute)) {
-		Order *order = v->orders->GetOrderAt(sel_ord + 1);
-		order->SetRefit(new_order.GetRefitCargo());
-		order->SetMaxSpeed(new_order.GetMaxSpeed());
-		SetOrderFixedWaitTime(v, sel_ord + 1, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
-	}
-	new_order.Free();
 	return CommandCost();
 }
 
@@ -4090,27 +4077,15 @@ CommandCost CmdMassChangeOrder(DoCommandFlags flags, DestinationID from_dest, Ve
 	if (flags.Test(DoCommandFlag::Execute)) {
 		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(vehtype)) {
 			if (v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
-				int index = 0;
-				for (Order *order : v->Orders()) {
+				uint index = 0;
+				for (const Order *order : v->Orders()) {
 					if (order->GetDestination() == from_dest && order->IsType(order_type) &&
 							!(order_type == OT_GOTO_DEPOT && order->GetDepotActionType() & ODATFB_NEAREST_DEPOT)) {
-						Order new_order;
-						new_order.AssignOrder(*order);
+						Order new_order(*order);
 						new_order.SetDestination(to_dest);
-						const bool wait_fixed = new_order.IsWaitFixed();
-						const bool wait_timetabled = new_order.IsWaitTimetabled();
-						new_order.SetWaitTimetabled(false);
-						if (!new_order.IsTravelFixed()) new_order.SetTravelTimetabled(false);
 						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, {CmdInsertOrderIntlFlag::AllowLoadByCargoType, CmdInsertOrderIntlFlag::AllowDuplicateUnbunch}).Succeeded()) {
 							Command<CMD_DELETE_ORDER>::Do(flags, v->index, index);
-
-							order = v->orders->GetOrderAt(index);
-							order->SetRefit(new_order.GetRefitCargo());
-							order->SetMaxSpeed(new_order.GetMaxSpeed());
-							SetOrderFixedWaitTime(v, index, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
 						}
-
-						new_order.Free();
 					}
 					index++;
 				}
