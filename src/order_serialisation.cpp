@@ -150,11 +150,11 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 
 		if (o.GetDepotActionType() & ODATFB_SELL) {
 			json[OFName::DEPOT_ACTION] = DA_SELL;
-		} else if (o.GetDepotActionType() & ODATFB_UNBUNCH) {
-			json[OFName::DEPOT_ACTION] = DA_UNBUNCH;
 		} else if (o.GetDepotActionType() & ODATFB_HALT) {
 			json[OFName::DEPOT_ACTION] = DA_STOP;
-		} else if (o.GetDepotActionType() & ODATF_SERVICE_ONLY) {
+		} else if (o.GetDepotActionType() & ODATFB_UNBUNCH) {
+			json[OFName::DEPOT_ACTION] = DA_UNBUNCH;
+		} else if (o.GetDepotOrderType() & ODTFB_SERVICE) {
 			json[OFName::DEPOT_ACTION] = DA_SERVICE;
 		}
 	}
