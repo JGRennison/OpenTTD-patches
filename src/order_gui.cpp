@@ -622,7 +622,8 @@ static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
 	STR_ORDER_EXPORT_ORDER_LIST,
 	STR_ORDER_IMPORT_ORDER_LIST_REPLACE,
-	STR_ORDER_IMPORT_ORDER_LIST_APPEND
+	STR_ORDER_IMPORT_ORDER_LIST_APPEND,
+	STR_ORDER_IMPORT_ORDER_LIST_APPEND_REVERSED
 };
 
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
@@ -2964,8 +2965,7 @@ public:
 
 				DropDownList list;
 				list.push_back(MakeDropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
-				list.push_back(MakeDropDownListStringItem(STR_ORDER_IMPORT_ORDER_LIST_INSERT, 1, false));
-				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 2, false));
+				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
 
 				if (this->vehicle->type == VEH_TRAIN && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const OrderStopLocation osl = order->GetStopLocation();
@@ -3013,6 +3013,11 @@ public:
 					add_colour(COLOUR_ORANGE);
 					add_colour(COLOUR_PINK);
 				}
+
+				list.push_back(MakeDropDownListDividerItem());
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_IMPORT_ORDER_LIST_INSERT, 0x400, false));
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_IMPORT_ORDER_LIST_INSERT_REVERSED, 0x401, false));
+
 				ShowDropDownList(this, std::move(list), -1, widget, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
@@ -3691,9 +3696,10 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(ReverseOrderOperation::Reverse); break;
 					case 1: this->OrderClick_ReverseOrderList(ReverseOrderOperation::AppendReversed); break;
-					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, this->GetVehicle()); break;
-					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle()); break;
-					case 4: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle(), this->GetVehicle()->GetNumOrders()); break;
+					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, FiosOrderListInfo(this->GetVehicle())); break;
+					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle())); break;
+					case 4: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders())); break;
+					case 5: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders(), true)); break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -3721,11 +3727,15 @@ public:
 						break;
 
 					case 1:
-						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle(), this->OrderGetSel());
+						this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
 						break;
 
-					case 2:
-						this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
+					case 0x400:
+						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel()));
+						break;
+
+					case 0x401:
+						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel(), true));
 						break;
 
 					default:

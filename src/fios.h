@@ -52,7 +52,16 @@ DECLARE_ENUM_AS_BIT_SET(SortingBits)
 /* Variables to display file lists */
 extern SortingBits _savegame_sort_order;
 
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, const Vehicle *veh = nullptr, VehicleOrderID order_insert_index = INVALID_VEH_ORDER_ID);
+struct FiosOrderListInfo {
+	const Vehicle * const veh;
+	const VehicleOrderID order_insert_index;
+	const bool reverse;
+
+	FiosOrderListInfo(const Vehicle *veh, VehicleOrderID order_insert_index = INVALID_VEH_ORDER_ID, bool reverse = false)
+			: veh(veh), order_insert_index(order_insert_index), reverse(reverse) {}
+};
+
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosOrderListInfo> order_list_info = std::nullopt);
 
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
