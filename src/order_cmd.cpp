@@ -48,6 +48,7 @@
 #include "table/strings.h"
 
 #include <limits>
+#include <ranges>
 #include <vector>
 
 #include "safeguards.h"
@@ -1736,6 +1737,61 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 	return CommandCost();
 }
 
+static void AdjustTravelAfterOrderReverse(std::span<Order> orders)
+{
+	auto is_usable = [](const Order &o) -> bool {
+		if (o.HasNoTimetableTimes()) return false;
+		if (o.IsType(OT_CONDITIONAL)) return false;
+		if (o.IsType(OT_GOTO_DEPOT) && (o.GetDepotOrderType() & ODTFB_SERVICE)) return false;
+		return true;
+	};
+
+	struct TravelInfo {
+		TimetableTicks travel_time;
+		bool travel_timetabled;
+		bool travel_fixed;
+		uint16_t max_speed;
+
+		void Read(const Order &o)
+		{
+			this->travel_time = o.GetTravelTime();
+			this->travel_timetabled = o.IsTravelTimetabled();
+			this->travel_fixed = o.IsTravelFixed();
+			this->max_speed = o.GetMaxSpeed();
+		}
+
+		void Write(Order &o) const
+		{
+			o.SetTravelTime(this->travel_time);
+			o.SetTravelTimetabled(this->travel_timetabled);
+			o.SetTravelFixed(this->travel_fixed);
+			o.SetMaxSpeed(this->max_speed);
+		}
+	};
+
+	TravelInfo tail_info{};
+	const Order *tail = nullptr;
+	Order *head = nullptr;
+	/* Iterate from tail to head, shuffle travel info by one place in head to tail direction. */
+	for (Order &o : std::views::reverse(orders)) {
+		if (!is_usable(o)) continue;
+		if (tail == nullptr) {
+			tail = &o;
+			tail_info.Read(o);
+		}
+		if (head != nullptr) {
+			TravelInfo info{};
+			info.Read(o);
+			info.Write(*head);
+		}
+		head = &o;
+	}
+	if (head != nullptr && head != tail) {
+		/* tail_info contains that state of tail before it was overwritten, write it to the end head (first usable order). */
+		tail_info.Write(*head);
+	}
+}
+
 /**
  * Reverse an orderlist
  * @param flags operation to perform
@@ -1763,6 +1819,7 @@ CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrde
 
 				std::vector<Order> &orders = v->orders->GetOrderVector();
 				std::reverse(orders.begin(), orders.end());
+				AdjustTravelAfterOrderReverse(orders);
 
 				/* As we move an order, the order to skip to will be 'wrong'. */
 				for (Order &order : orders) {
@@ -1786,9 +1843,9 @@ CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrde
 		}
 
 		case ReverseOrderOperation::AppendReversed: {
-			uint order_count = v->GetNumOrders();
+			const uint order_count = v->GetNumOrders();
 			if (order_count < 3) return CMD_ERROR;
-			uint max_order = order_count - 1;
+			const uint max_order = order_count - 1;
 			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
 			for (uint i = 0; i < order_count; i++) {
 				const Order *o = v->GetOrder(i);
@@ -1805,6 +1862,9 @@ CommandCost CmdReverseOrderList(DoCommandFlags flags, VehicleID veh, ReverseOrde
 				if (flags.Test(DoCommandFlag::Execute)) v->orders->InsertOrderAt(std::move(new_order), v->GetNumOrders());
 			}
 			if (flags.Test(DoCommandFlag::Execute)) {
+				std::vector<Order> &orders = v->orders->GetOrderVector();
+				AdjustTravelAfterOrderReverse(std::span<Order>(orders).subspan(order_count));
+
 				Vehicle *u = v->FirstShared();
 				DeleteOrderWarnings(u);
 				for (; u != nullptr; u = u->NextShared()) {
