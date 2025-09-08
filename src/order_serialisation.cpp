@@ -605,21 +605,21 @@ enum class JSONToVehicleMode {
 template <JSONToVehicleMode Tmode> struct JSONToVehicleModeTraits;
 
 template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Global> {
-	using IDType = std::monostate;
+	using LoggingIDType = std::monostate;
 };
 
 template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Order> {
-	using IDType = VehicleOrderID;
+	using LoggingIDType = VehicleOrderID;
 };
 
 template <> struct JSONToVehicleModeTraits<JSONToVehicleMode::Dispatch> {
-	using IDType = uint;
+	using LoggingIDType = uint;
 };
 
 template <JSONToVehicleMode TMode = JSONToVehicleMode::Global>
 class JSONToVehicleCommandParser {
 public:
-	using ID = typename JSONToVehicleModeTraits<TMode>::IDType;
+	using LoggingID = typename JSONToVehicleModeTraits<TMode>::LoggingIDType;
 
 	const JSONImportSettings &import_settings;
 	JSONBulkOrderCommandBuffer &cmd_buffer;
@@ -627,7 +627,7 @@ public:
 private:
 	const Vehicle *veh;
 	const nlohmann::json &json;
-	const ID target_index;
+	const LoggingID logging_index;
 
 	OrderImportErrors &errors;
 
@@ -667,13 +667,13 @@ private:
 
 public:
 	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, OrderImportErrors &errors, const JSONImportSettings &import_settings)
-			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index({}), errors(errors)
+			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), logging_index({}), errors(errors)
 	{
 		static_assert(TMode == JSONToVehicleMode::Global);
 	}
 
-	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, OrderImportErrors &errors, const JSONImportSettings &import_settings, ID target_index)
-			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), target_index(target_index), errors(errors) {}
+	JSONToVehicleCommandParser(const Vehicle *veh, const nlohmann::json &json, JSONBulkOrderCommandBuffer &cmd_buffer, OrderImportErrors &errors, const JSONImportSettings &import_settings, LoggingID logging_index)
+			: import_settings(import_settings), cmd_buffer(cmd_buffer), veh(veh), json(json), logging_index(logging_index), errors(errors) {}
 
 	const Vehicle *GetVehicle() const { return this->veh; }
 	const nlohmann::json &GetJson() const { return this->json; }
@@ -693,11 +693,11 @@ public:
 		if constexpr (TMode == JSONToVehicleMode::Global) {
 			this->LogGlobalError(error, error_type);
 		} else if constexpr (TMode == JSONToVehicleMode::Order) {
-			Debug(misc, 1, "Order import error: {}, type: {}, order: {}", error, error_type, this->target_index);
-			this->errors.order[this->target_index].push_back({std::move(error), error_type});
+			Debug(misc, 1, "Order import error: {}, type: {}, order: {}", error, error_type, this->logging_index);
+			this->errors.order[this->logging_index].push_back({ std::move(error), error_type });
 		} else if constexpr (TMode == JSONToVehicleMode::Dispatch) {
-			Debug(misc, 1, "Order import error: {}, type: {}, dispatch_slot: {}", error, error_type, this->target_index);
-			this->errors.schedule[this->target_index].push_back({ std::move(error), error_type });
+			Debug(misc, 1, "Order import error: {}, type: {}, dispatch_slot: {}", error, error_type, this->logging_index);
+			this->errors.schedule[this->logging_index].push_back({ std::move(error), error_type });
 		}
 	}
 
@@ -794,13 +794,13 @@ public:
 
 	JSONToVehicleCommandParser WithNewJson(const nlohmann::json &new_json)
 	{
-		return JSONToVehicleCommandParser(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, this->target_index);
+		return JSONToVehicleCommandParser(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, this->logging_index);
 	}
 
 	template <JSONToVehicleMode TNewMode>
-	JSONToVehicleCommandParser<TNewMode> WithNewTarget(const nlohmann::json &new_json, typename JSONToVehicleModeTraits<TNewMode>::IDType target_id)
+	JSONToVehicleCommandParser<TNewMode> WithNewTarget(const nlohmann::json &new_json, typename JSONToVehicleModeTraits<TNewMode>::LoggingIDType logging_id)
 	{
-		return JSONToVehicleCommandParser<TNewMode>(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, target_id);
+		return JSONToVehicleCommandParser<TNewMode>(this->veh, new_json, this->cmd_buffer, this->errors, this->import_settings, logging_id);
 	}
 
 	JSONToVehicleCommandParser operator[](auto val)
