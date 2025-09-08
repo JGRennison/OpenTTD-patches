@@ -1010,7 +1010,8 @@ CommandCost CmdSetRouteOverlayColour(DoCommandFlags flags, VehicleID veh_id, Col
 	return CommandCost();
 }
 
-static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags) {
+static CommandCost CmdInsertOrderIntl(DoCommandFlags flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags)
+{
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
