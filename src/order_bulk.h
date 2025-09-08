@@ -25,6 +25,7 @@ enum class BulkOrderOp {
 	InsertFail,
 	SeekTo,
 	Move,
+	AdjustTravelAfterReverse,
 	SetRouteOverlayColour,
 	ClearSchedules,
 	AppendSchedule,
@@ -105,6 +106,12 @@ public:
 	{
 		this->OpCode(BulkOrderOp::Move);
 		this->serialiser.Send_generic_seq(from, to, count);
+	}
+
+	void AdjustTravelAfterReverse(VehicleOrderID start, uint16_t count)
+	{
+		this->OpCode(BulkOrderOp::AdjustTravelAfterReverse);
+		this->serialiser.Send_generic_seq(start, count);
 	}
 
 	void SetRouteOverlayColour(Colours colour)

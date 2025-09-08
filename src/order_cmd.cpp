@@ -4388,6 +4388,24 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					break;
 				}
 
+				case BulkOrderOp::AdjustTravelAfterReverse: {
+					VehicleOrderID start;
+					uint16_t count;
+					buf.Recv_generic_seq({}, start, count);
+					if (buf.error) return CMD_ERROR;
+					if (count == INVALID_VEH_ORDER_ID) count = v->GetNumOrders() - start;
+					if (start < v->GetNumOrders() && start + count <= v->GetNumOrders() && v->GetNumOrders() > 1) {
+						std::vector<Order> &orders = v->orders->GetOrderVector();
+						AdjustTravelAfterOrderReverse(std::span<Order>(orders).subspan(start, count));
+						for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+							InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
+						}
+					}
+					insert_pos = INVALID_VEH_ORDER_ID;
+					modify_pos = INVALID_VEH_ORDER_ID;
+					break;
+				}
+
 				case BulkOrderOp::SetRouteOverlayColour: {
 					Colours colour;
 					buf.Recv_generic_integer(colour);

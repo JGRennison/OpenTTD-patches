@@ -1371,6 +1371,10 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		order_id++;
 	}
 
+	if (reverse_orders) {
+		cmd_buffer.op_serialiser.AdjustTravelAfterReverse(replace_existing_mode ? 0 : initial_order_count, INVALID_VEH_ORDER_ID);
+	}
+
 	if (!replace_existing_mode) {
 		cmd_buffer.op_serialiser.Move(initial_order_count, insert_index, INVALID_VEH_ORDER_ID);
 	}
