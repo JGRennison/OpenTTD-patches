@@ -1725,7 +1725,6 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :将反转调度
 STR_ORDER_DUPLICATE_ORDER                                       :复制命令
 STR_ORDER_CHANGE_JUMP_TARGET                                    :改变跳转目标
 STR_ORDER_EXPORT_ORDER_LIST                                     :导出调度计划
-STR_ORDER_IMPORT_ORDER_LIST                                     :导入调度计划
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :尝试领取路签
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :返还路签

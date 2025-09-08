@@ -1729,7 +1729,6 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Engadir lista d
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxectivo de salto
 STR_ORDER_EXPORT_ORDER_LIST                                     :Exportar lista de ordes
-STR_ORDER_IMPORT_ORDER_LIST                                     :Importar lista de ordes
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Tentar adquirir slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Liberar slot
