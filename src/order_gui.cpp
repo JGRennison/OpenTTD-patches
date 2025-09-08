@@ -609,6 +609,7 @@ enum OrderDropDownID {
 	ODDI_GO_TO_NEAREST_DEPOT,
 	ODDI_CONDITIONAL,
 	ODDI_SHARE,
+	ODDI_INSERT_FROM_VEHICLE,
 	ODDI_TRY_ACQUIRE_SLOT,
 	ODDI_RELEASE_SLOT,
 	ODDI_RELEASE_SLOT_GROUP,
@@ -1516,6 +1517,7 @@ private:
 		OPOS_GOTO,
 		OPOS_CONDITIONAL,
 		OPOS_SHARE,
+		OPOS_INSERT_FROM_VEHICLE,
 		OPOS_COND_VIA,
 		OPOS_COND_STATION,
 		OPOS_CONDITIONAL_RETARGET,
@@ -1697,6 +1699,7 @@ private:
 			HT_RECT | HT_VEHICLE, // OPOS_GOTO
 			HT_NONE,              // OPOS_CONDITIONAL
 			HT_VEHICLE,           // OPOS_SHARE
+			HT_VEHICLE,           // OPOS_INSERT_FROM_VEHICLE
 			HT_RECT,              // OPOS_COND_VIA
 			HT_RECT,              // OPOS_COND_STATION
 			HT_NONE,              // OPOS_CONDITIONAL_RETARGET
@@ -3055,6 +3058,7 @@ public:
 						case OPOS_GOTO:                 sel = ODDI_GO_TO; break;
 						case OPOS_CONDITIONAL:          sel = ODDI_CONDITIONAL; break;
 						case OPOS_SHARE:                sel = ODDI_SHARE; break;
+						case OPOS_INSERT_FROM_VEHICLE:  sel = ODDI_INSERT_FROM_VEHICLE; break;
 						case OPOS_CONDITIONAL_RETARGET: sel = -1; break;
 						case OPOS_DEPARTURE_VIA:        sel = ODDI_LABEL_DEPARTURES_VIA; break;
 						default: NOT_REACHED();
@@ -3074,6 +3078,7 @@ public:
 					list.push_back(MakeDropDownListStringItem((this->vehicle->type == VEH_AIRCRAFT) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL, ODDI_CONDITIONAL, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_SHARE, ODDI_SHARE, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_INSERT_FROM_VEHICLE, ODDI_INSERT_FROM_VEHICLE, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON, ODDI_TRY_ACQUIRE_SLOT, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_RELEASE_SLOT_BUTTON, ODDI_RELEASE_SLOT, false));
 					if (TraceRestrictSlotGroup::GetNumItems() > 0) {
@@ -3566,6 +3571,7 @@ public:
 					case ODDI_GO_TO_NEAREST_DEPOT:  this->OrderClick_NearestDepot(); break;
 					case ODDI_CONDITIONAL:          this->OrderClick_Goto(OPOS_CONDITIONAL); break;
 					case ODDI_SHARE:                this->OrderClick_Goto(OPOS_SHARE); break;
+					case ODDI_INSERT_FROM_VEHICLE:  this->OrderClick_Goto(OPOS_INSERT_FROM_VEHICLE); break;
 					case ODDI_TRY_ACQUIRE_SLOT:     this->OrderClick_TryAcquireSlot(); break;
 					case ODDI_RELEASE_SLOT:         this->OrderClick_ReleaseSlot(); break;
 					case ODDI_RELEASE_SLOT_GROUP:   this->OrderClick_ReleaseSlotGroup(); break;
@@ -3855,6 +3861,14 @@ public:
 
 	bool OnVehicleSelect(const Vehicle *v) override
 	{
+		if (this->goto_type == OPOS_INSERT_FROM_VEHICLE) {
+			if (Command<CMD_INSERT_ORDERS_FROM_VEH>::Post(STR_ERROR_CAN_T_COPY_ORDER_LIST, this->vehicle->tile, this->vehicle->index, v->index, this->OrderGetSel())) {
+				this->selected_order = -1;
+				ResetObjectToPlace();
+			}
+			return true;
+		}
+
 		/* v is vehicle getting orders. Only copy/clone orders if vehicle doesn't have any orders yet.
 		 * We disallow copying orders of other vehicles if we already have at least one order entry
 		 * ourself as it easily copies orders of vehicles within a station when we mean the station.

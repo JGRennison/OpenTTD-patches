@@ -2904,6 +2904,107 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 }
 
 /**
+ * Clone/share/copy an order-list of another vehicle.
+ * @param flags operation to perform
+ * @param veh_dst destination vehicle to copy orders to
+ * @param veh_src source vehicle to copy orders from
+ * @param insert_pos position to insert orders
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdInsertOrdersFromVehicle(DoCommandFlags flags, VehicleID veh_dst, VehicleID veh_src, VehicleOrderID insert_pos)
+{
+	Vehicle *dst = Vehicle::GetIfValid(veh_dst);
+	if (dst == nullptr || !dst->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(dst->owner);
+	if (ret.Failed()) return ret;
+
+	const Vehicle *src = Vehicle::GetIfValid(veh_src);
+
+	/* Sanity checks */
+	if (src == nullptr || !src->IsPrimaryVehicle() || dst->type != src->type || dst == src || src->FirstShared() == dst->FirstShared()) return CMD_ERROR;
+
+	if (insert_pos > dst->GetNumOrders()) return CMD_ERROR;
+
+	if (!_settings_game.economy.infrastructure_sharing[src->type]) {
+		CommandCost ret = CheckOwnership(src->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	if (src->orders == nullptr) return CommandCost();
+
+	/* make sure there are orders available */
+	if (dst->orders == nullptr && !OrderList::CanAllocateItem()) {
+		return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
+	}
+
+	if (src->GetNumOrders() + dst->GetNumOrders() > MAX_VEH_ORDER_ID) return CommandCost(STR_ERROR_TOO_MANY_ORDERS);
+
+	if (dst->HasUnbunchingOrder()) {
+		if (src->HasFullLoadOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
+		if (src->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+		if (src->HasConditionalOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_COPY_SHARE_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
+	}
+
+	const VehicleOrderID new_orders_start = dst->GetNumOrders();
+	const uint existing_schedule_count = (dst->orders != nullptr) ? dst->orders->GetScheduledDispatchScheduleCount() : 0;
+
+	/* Copy over scheduled dispatch data */
+	if (flags.Test(DoCommandFlag::Execute)) {
+		if (dst->orders == nullptr) {
+			dst->orders = new OrderList(nullptr, dst);
+		}
+
+		const std::vector<DispatchSchedule> &src_scheds = src->orders->GetScheduledDispatchScheduleSet();
+		std::vector<DispatchSchedule> &dst_scheds = dst->orders->GetScheduledDispatchScheduleSet();
+		dst_scheds.insert(dst_scheds.end(), src_scheds.begin(), src_scheds.end());
+	}
+
+	for (const Order *src_order : src->Orders()) {
+		/* Clone order and link in list */
+		Order order(*src_order);
+		TraceRestrictRemoveNonOwnedReferencesFromOrder(&order, dst->owner);
+		if (order.IsType(OT_CONDITIONAL)) {
+			order.SetConditionSkipToOrder(order.GetConditionSkipToOrder() + new_orders_start);
+			if (order.GetConditionVariable() == OCV_DISPATCH_SLOT && order.GetConditionDispatchScheduleID() != UINT16_MAX) {
+				order.SetConditionDispatchScheduleID(static_cast<uint16_t>(order.GetConditionDispatchScheduleID() + existing_schedule_count));
+			}
+		}
+		if (order.GetDispatchScheduleIndex() >= 0) {
+			order.SetDispatchScheduleIndex(order.GetDispatchScheduleIndex() + existing_schedule_count);
+		}
+
+		CommandCost ret = PreInsertOrderCheck(dst, order, {CmdInsertOrderIntlFlag::AllowLoadByCargoType, CmdInsertOrderIntlFlag::NoUnbunchChecks, CmdInsertOrderIntlFlag::NoConditionTargetCheck});
+		if (ret.Failed()) {
+			if (flags.Test(DoCommandFlag::Execute)) {
+				/* Remove partially inserted orders */
+				while (dst->GetNumOrders() > new_orders_start) {
+					dst->orders->DeleteOrderAt(dst->GetNumOrders() - 1);
+				}
+			}
+			return ret;
+		}
+
+		if (flags.Test(DoCommandFlag::Execute)) dst->orders->InsertOrderAt(std::move(order), dst->GetNumOrders());
+	}
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		CmdMoveOrder(flags, veh_dst, new_orders_start, insert_pos, dst->GetNumOrders() - new_orders_start);
+
+		for (Vehicle *u = dst->FirstShared(); u != nullptr; u = u->NextShared()) {
+			u->ResetDepotUnbunching();
+
+			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
+
+			InvalidateWindowClassesData(GetWindowClassForVehicleType(u->type), 0);
+		}
+		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Add/remove refit orders from an order
  * @param flags operation to perform
  * @param veh VehicleIndex of the vehicle having the order

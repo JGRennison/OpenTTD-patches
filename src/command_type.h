@@ -559,6 +559,7 @@ enum Commands : uint8_t {
 
 	CMD_ORDER_REFIT,                  ///< change the refit information of an order (for "goto depot" )
 	CMD_CLONE_ORDER,                  ///< clone (and share) an order
+	CMD_INSERT_ORDERS_FROM_VEH,       ///< insert orders from vehicle
 	CMD_CLEAR_AREA,                   ///< clear an area
 
 	CMD_MONEY_CHEAT,                  ///< do the money cheat

@@ -1789,6 +1789,8 @@ STR_ORDER_IMPORT_ORDER_LIST_INSERT                              :Import order li
 STR_ORDER_IMPORT_ORDER_LIST_APPEND_REVERSED                     :Import order list (append reversed)
 STR_ORDER_IMPORT_ORDER_LIST_INSERT_REVERSED                     :Import order list (insert reversed)
 
+STR_ORDER_INSERT_FROM_VEHICLE                                   :Insert vehicle's orders
+
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Try acquire slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Release slot
 STR_ORDER_RELEASE_SLOT_GROUP_BUTTON                             :Release slot group
