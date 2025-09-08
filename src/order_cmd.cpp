@@ -1430,7 +1430,11 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
 
 	/* As we insert an order, the order to skip to will be 'wrong'. */
 	VehicleOrderID cur_order_id = 0;
-	for (Order *order : v->Orders()) {
+	if (sel_ord + 1 == v->GetNumOrders() && sel_ord > 0) {
+		/* Avoid scanning whole order list for inserts at the end. */
+		cur_order_id = sel_ord - 1;
+	}
+	for (Order *order : v->Orders(cur_order_id)) {
 		if (order->IsType(OT_CONDITIONAL)) {
 			VehicleOrderID order_id = order->GetConditionSkipToOrder();
 			if (order_id >= sel_ord) {
