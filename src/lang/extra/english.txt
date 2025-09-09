@@ -219,6 +219,21 @@ STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Enable improved
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :Maximum reliability floor: {STRING2}
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :At vehicle introduction, a random maximum reliability is chosen between this value and 100%.{}{}Choose a high value if you want all vehicles to have high maximum reliability.{}Choose a low value to increase the effect of random chance (do this at your own risk).{}{}The maximum reliability is only reached after the introductory period, and declines again at the vehicle's end of life (as was always the case).{}{}In an existing game, resetengines may have to be called for a change to take effect.{}{}Old behavior: the value was chosen between 75% and 100%.
 
+STR_CONFIG_SETTING_RELIABILITY_SPEED                            :Reliability decay factor: {STRING2}
+STR_CONFIG_SETTING_RELIABILITY_SPEED_HELPTEXT                   :How fast a vehicle's reliability decreases.{}Higher values mean that reliability will decrease faster.
+###length 11
+STR_CONFIG_SETTING_DIVIDE_32                                    :x1/32
+STR_CONFIG_SETTING_DIVIDE_16                                    :x1/16
+STR_CONFIG_SETTING_DIVIDE_8                                     :x1/8
+STR_CONFIG_SETTING_DIVIDE_4                                     :x1/4
+STR_CONFIG_SETTING_DIVIDE_2                                     :x1/2
+STR_CONFIG_SETTING_TIMES_1                                      :x1
+STR_CONFIG_SETTING_TIMES_2                                      :x2
+STR_CONFIG_SETTING_TIMES_4                                      :x4
+STR_CONFIG_SETTING_TIMES_8                                      :x8
+STR_CONFIG_SETTING_TIMES_16                                     :x16
+STR_CONFIG_SETTING_TIMES_32                                     :x32
+
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. The best results are obtained when 90° turns are forbidden.
 

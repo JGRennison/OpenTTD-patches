@@ -2312,7 +2312,8 @@ void CheckVehicleBreakdown(Vehicle *v)
 	/* decrease reliability */
 	if (!_settings_game.order.no_servicing_if_no_breakdowns ||
 			_settings_game.difficulty.vehicle_breakdowns != 0) {
-		v->reliability = rel = std::max((rel_old = v->reliability) - v->reliability_spd_dec, 0);
+		const int reliability_dec = (v->reliability_spd_dec << 5) >> (5 - _settings_game.difficulty.reliability_decay_speed);
+		v->reliability = rel = std::max((rel_old = v->reliability) - reliability_dec, 0);
 		if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
 	}
 
