@@ -153,13 +153,13 @@ public:
 	/** Construct with storage for num_elements elements, the elements are uninitialised. */
 	TempBufferT(size_t num_elements)
 	{
-		init(num_elements);
+		this->init(num_elements);
 	}
 
-	/** Construct with storage for num_elements elements, the elements are uninitialised. */
+	/** Construct with storage for num_elements elements, the elements are initialised using init_value. */
 	TempBufferT(size_t num_elements, const T &init_value)
 	{
-		init(num_elements);
+		this->init(num_elements);
 		std::fill_n(this->ptr, num_elements, init_value);
 	}
 
