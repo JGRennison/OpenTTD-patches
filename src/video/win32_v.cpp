@@ -13,6 +13,7 @@
 #include "../gfx_func.h"
 #include "../os/windows/win32.h"
 #include "../blitter/factory.hpp"
+#include "../core/alloc_func.hpp"
 #include "../core/geometry_func.hpp"
 #include "../core/math_func.hpp"
 #include "../core/random_func.hpp"
@@ -342,14 +343,14 @@ static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		if (lParam & GCS_RESULTSTR) {
 			/* Read result string from the IME. */
 			LONG len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, nullptr, 0); // Length is always in bytes, even in UNICODE build.
-			wchar_t *str = (wchar_t *)_alloca(len + sizeof(wchar_t));
+			TempBufferST<wchar_t, 1024> str(1 + len / sizeof(wchar_t));
 			len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, str, len);
 			str[len / sizeof(wchar_t)] = '\0';
 
 			/* Transmit text to windowing system. */
 			if (len > 0) {
 				HandleTextInput(nullptr, true); // Clear marked string.
-				HandleTextInput(FS2OTTD(str).c_str());
+				HandleTextInput(FS2OTTD(str.get()).c_str());
 			}
 			SetCompositionPos(hwnd);
 
@@ -360,13 +361,13 @@ static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		if ((lParam & GCS_COMPSTR) && DrawIMECompositionString()) {
 			/* Read composition string from the IME. */
 			LONG len = ImmGetCompositionString(hIMC, GCS_COMPSTR, nullptr, 0); // Length is always in bytes, even in UNICODE build.
-			wchar_t *str = (wchar_t *)_alloca(len + sizeof(wchar_t));
+			TempBufferST<wchar_t, 1024> str(1 + len / sizeof(wchar_t));
 			len = ImmGetCompositionString(hIMC, GCS_COMPSTR, str, len);
 			str[len / sizeof(wchar_t)] = '\0';
 
 			if (len > 0) {
 				static char utf8_buf[1024];
-				convert_from_fs(str, utf8_buf);
+				convert_from_fs(str.get(), utf8_buf);
 
 				/* Convert caret position from bytes in the input string to a position in the UTF-8 encoded string. */
 				LONG caret_bytes = ImmGetCompositionString(hIMC, GCS_CURSORPOS, nullptr, 0);
