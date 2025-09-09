@@ -57,7 +57,7 @@ struct OrderSerialisationFieldNames {
 	struct Schedules {
 		static constexpr char OBJKEY[] = "schedules";
 
-		/** <array<int|object>, when item is an int the value rapresents the offset, when it's an object the offset can be found in the apropriate field */
+		/** <array<int|object>>, when item is an int the value rapresents the offset, when it's an object the offset can be found in the apropriate field */
 		struct Slots {
 			static constexpr char OBJKEY[]      = "slots";
 
@@ -81,7 +81,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char TYPE[]                        = "type";                        ///< enum    Required
 		static constexpr char DESTINATION_ID[]              = "destination-id";              ///< int     Unique in-game destination-id
 		static constexpr char DESTINATION_NAME[]            = "destination-name";            ///< string  Export-only
-		static constexpr char DESTINATION_LOCATION[]        = "destination-location";        ///< object  XY tile coordinate
+		static constexpr char DESTINATION_LOCATION[]        = "destination-location";        ///< object  Export-only XY tile coordinate
 		static constexpr char DEPOT_ID[]                    = "depot-id";                    ///< int|string  Unique in-game destination-id or "nearest"
 		static constexpr char DEPOT_ACTION[]                = "depot-action";                ///< enum
 		static constexpr char WAYPOINT_REVERSE[]            = "waypoint-reverse";            ///< bool
@@ -121,7 +121,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char CONDITION_VALUE2[]            = "condition-value2";            ///< int     Raw data
 		static constexpr char CONDITION_VALUE3[]            = "condition-value3";            ///< int     Raw data
 		static constexpr char CONDITION_VALUE4[]            = "condition-value4";            ///< int     Raw data
-		static constexpr char REFIT_CARGO[]                 = "refit-cargo";                 ///< int
+		static constexpr char REFIT_CARGO[]                 = "refit-cargo";                 ///< int     Cargo-id
 		static constexpr char SCHEDULE_INDEX[]              = "schedule-index";              ///< int
 	};
 };
