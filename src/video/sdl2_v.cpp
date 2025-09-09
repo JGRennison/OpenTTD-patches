@@ -872,6 +872,10 @@ static const char *InitializeSDL()
 	SDL_SetHint(SDL_HINT_APP_NAME, "OpenTTD");
 #endif
 
+#ifdef SDL_HINT_APP_NAME
+	SDL_SetHint(SDL_HINT_APP_NAME, "OpenTTD");
+#endif
+
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) return SDL_GetError();
 	return nullptr;
 }

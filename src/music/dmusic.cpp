@@ -18,6 +18,7 @@
 #include "../thread.h"
 #include "../fileio_func.h"
 #include "../base_media_base.h"
+#include "../base_media_music.h"
 #include "dmusic.h"
 #include "midifile.hpp"
 #include "midi.h"
@@ -1205,7 +1206,10 @@ void MusicDriver_DMusic::Stop()
 		_music = nullptr;
 	}
 
-	CloseHandle(_playback.thread_event);
+	if (_playback.thread_event != nullptr) {
+		CloseHandle(_playback.thread_event);
+		_playback.thread_event = nullptr;
+	}
 
 	CoUninitialize();
 }

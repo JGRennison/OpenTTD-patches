@@ -28,14 +28,16 @@ protected:
 	 * Various flags about properties of the last examined link that might have
 	 * an influence on the next one.
 	 */
-	enum RefreshFlags : uint8_t {
-		USE_NEXT,     ///< There was a conditional jump. Try to use the given next order when looking for a new one.
-		HAS_CARGO,    ///< Consist could leave the last stop where it could interact with cargo carrying cargo (i.e. not an "unload all" + "no loading" order).
-		WAS_REFIT,    ///< Consist was refit since the last stop where it could interact with cargo.
-		RESET_REFIT,  ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
-		IN_AUTOREFIT, ///< Currently doing an autorefit loop. Ignore the first autorefit order.
-		AIRCRAFT,     ///< Vehicle is an aircraft.
+	enum class RefreshFlag : uint8_t {
+		UseNext,     ///< There was a conditional jump. Try to use the given next order when looking for a new one.
+		HasCargo,    ///< Consist could leave the last stop where it could interact with cargo carrying cargo (i.e. not an "unload all" + "no loading" order).
+		WasRefit,    ///< Consist was refit since the last stop where it could interact with cargo.
+		ResetRefit,  ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
+		InAutorefit, ///< Currently doing an autorefit loop. Ignore the first autorefit order.
+		Aircraft,    ///< Vehicle is an aircraft.
 	};
+
+	using RefreshFlags = EnumBitSet<RefreshFlag, uint8_t>;
 
 	/**
 	 * Simulated cargo type and capacity for prediction of future links.
@@ -61,7 +63,7 @@ protected:
 		VehicleOrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
 		VehicleOrderID to;    ///< Next order to be processed.
 		CargoType cargo;      ///< Cargo the consist is probably carrying or INVALID_CARGO if unknown.
-		uint8_t flags;        ///< Flags, for branches
+		RefreshFlags flags;   ///< Flags, for branches
 
 		/**
 		 * Default constructor should not be called but has to be visible for
@@ -75,7 +77,7 @@ protected:
 		 * @param to Second order of the hop.
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
-		Hop(VehicleOrderID from, VehicleOrderID to, CargoType cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
+		Hop(VehicleOrderID from, VehicleOrderID to, CargoType cargo, RefreshFlags flags = {}) : from(from), to(to), cargo(cargo), flags(flags) {}
 		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator!=(const Hop &other) const { return !(*this == other); }
@@ -110,11 +112,11 @@ protected:
 
 	bool HandleRefit(CargoType refit_cargo);
 	void ResetRefit();
-	void RefreshStats(const Order *cur, const Order *next,uint32_t travel_estimate, uint8_t flags);
+	void RefreshStats(const Order *cur, const Order *next,uint32_t travel_estimate, RefreshFlags flags);
 	TimetableTravelTime UpdateTimetableTravelSoFar(const Order *from, const Order *to, TimetableTravelTime travel);
-	std::pair<const Order *, TimetableTravelTime> PredictNextOrder(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops = 0);
+	std::pair<const Order *, TimetableTravelTime> PredictNextOrder(const Order *cur, const Order *next, TimetableTravelTime travel, RefreshFlags flags, uint num_hops = 0);
 
-	void RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops = 0);
+	void RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, RefreshFlags flags, uint num_hops = 0);
 };
 
 #endif /* REFRESH_H */

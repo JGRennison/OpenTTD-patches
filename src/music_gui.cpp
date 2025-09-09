@@ -11,6 +11,7 @@
 #include <vector>
 #include "openttd.h"
 #include "base_media_base.h"
+#include "base_media_music.h"
 #include "music/music_driver.hpp"
 #include "window_gui.h"
 #include "strings_func.h"
@@ -745,7 +746,7 @@ struct MusicWindow : public Window {
 	{
 		switch (widget) {
 			case WID_M_TRACK_NR: {
-				GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel.left, WidgetDimensions::scaled.bevel.top, 0, WidgetDimensions::scaled.bevel.bottom), PC_BLACK);
+				GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK);
 				if (BaseMusic::GetUsedSet()->num_available == 0) {
 					break;
 				}
@@ -759,7 +760,7 @@ struct MusicWindow : public Window {
 			}
 
 			case WID_M_TRACK_NAME: {
-				GfxFillRect(r.Shrink(0, WidgetDimensions::scaled.bevel.top, WidgetDimensions::scaled.bevel.right, WidgetDimensions::scaled.bevel.bottom), PC_BLACK);
+				GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK);
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 
 				MusicSystem::PlaylistEntry entry(_music.GetCurrentSong());
@@ -903,11 +904,11 @@ static constexpr NWidgetPart _nested_music_window_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_VERTICAL), SetPadding(0, 0, 3, 3),
 				NWidget(WWT_LABEL, INVALID_COLOUR, WID_M_TRACK), SetFill(0, 0), SetStringTip(STR_MUSIC_TRACK),
-				NWidget(WWT_PANEL, COLOUR_GREY, WID_M_TRACK_NR), EndContainer(),
+				NWidget(WWT_INSET, COLOUR_GREY, WID_M_TRACK_NR), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL), SetPadding(0, 3, 3, 0),
 				NWidget(WWT_LABEL, INVALID_COLOUR, WID_M_TRACK_TITLE), SetFill(1, 0), SetStringTip(STR_MUSIC_XTITLE),
-				NWidget(WWT_PANEL, COLOUR_GREY, WID_M_TRACK_NAME), SetFill(1, 0), EndContainer(),
+				NWidget(WWT_INSET, COLOUR_GREY, WID_M_TRACK_NAME), SetFill(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1),

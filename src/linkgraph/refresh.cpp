@@ -55,9 +55,9 @@
 			HopSet seen_hops;
 			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, iter_cargo_mask);
 
-			uint8_t flags = 0;
-			if (iter_cargo_mask & have_cargo_mask) flags |= 1 << HAS_CARGO;
-			if (v->type == VEH_AIRCRAFT) flags |= 1 << AIRCRAFT;
+			RefreshFlags flags = {};
+			if (iter_cargo_mask & have_cargo_mask) flags.Set(RefreshFlag::HasCargo);
+			if (v->type == VEH_AIRCRAFT) flags.Set(RefreshFlag::Aircraft);
 			refresher.RefreshLinks(first, first, { 0, TTT_NO_WAIT_TIME }, flags);
 		}
 
@@ -226,17 +226,17 @@ LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(con
  * @param num_hops Number of hops already taken by recursive calls to this method.
  * @return new next Order, and travel time so far.
  */
-std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, LinkRefresher::TimetableTravelTime travel, uint8_t flags, uint num_hops)
+std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, LinkRefresher::TimetableTravelTime travel, RefreshFlags flags, uint num_hops)
 {
 	/* next is good if it's either nullptr (then the caller will stop the
 	 * evaluation) or if it's not conditional and the caller allows it to be
-	 * chosen (by setting USE_NEXT). */
-	while (next != nullptr && (!HasBit(flags, USE_NEXT) || next->IsType(OT_CONDITIONAL))) {
+	 * chosen (by setting RefreshFlag::UseNext). */
+	while (next != nullptr && (!flags.Test(RefreshFlag::UseNext) || next->IsType(OT_CONDITIONAL))) {
 
 		/* After the first step any further non-conditional order is good,
-		 * regardless of previous USE_NEXT settings. The case of cur and next or
+		 * regardless of previous RefreshFlag::UseNext settings. The case of cur and next or
 		 * their respective stations being equal is handled elsewhere. */
-		SetBit(flags, USE_NEXT);
+		flags.Set(RefreshFlag::UseNext);
 
 		if (next->IsType(OT_CONDITIONAL)) {
 			if (next->GetConditionVariable() == OCV_UNCONDITIONALLY) {
@@ -296,7 +296,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
  * @param travel_estimate Estimated travel time, only valid if non-zero.
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  */
-void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t travel_estimate, uint8_t flags)
+void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t travel_estimate, RefreshFlags flags)
 {
 	StationID next_station = next->GetDestination().ToStationID();
 	Station *st = Station::GetIfValid(cur->GetDestination().ToStationID());
@@ -333,7 +333,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 				time_estimate = Clamp<uint32_t>(travel_estimate, time_estimate / 3, time_estimate * 2);
 			}
 
-			if (HasBit(flags, AIRCRAFT)) restricted_modes.Set(EdgeUpdateMode::Aircraft);
+			if (flags.Test(RefreshFlag::Aircraft)) restricted_modes.Set(EdgeUpdateMode::Aircraft);
 
 			/* If the vehicle is currently full loading, increase the capacities at the station
 			 * where it is loading by an estimate of what it would have transported if it wasn't
@@ -373,16 +373,16 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  * @param num_hops Number of hops already taken by recursive calls to this method.
  */
-void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops)
+void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, RefreshFlags flags, uint num_hops)
 {
 	while (next != nullptr) {
 
 		if ((next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_GOTO_STATION)) && next->IsRefit()) {
-			SetBit(flags, WAS_REFIT);
+			flags.Set(RefreshFlag::WasRefit);
 			if (!next->IsAutoRefit()) {
 				this->HandleRefit(next->GetRefitCargo());
-			} else if (!HasBit(flags, IN_AUTOREFIT)) {
-				SetBit(flags, IN_AUTOREFIT);
+			} else if (!flags.Test(RefreshFlag::InAutorefit)) {
+				flags.Set(RefreshFlag::InAutorefit);
 				LinkRefresher backup(*this);
 				for (CargoType cargo = 0; cargo != NUM_CARGO; ++cargo) {
 					if (!CargoSpec::Get(cargo)->IsValid()) continue;
@@ -398,10 +398,10 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 		/* Only reset the refit capacities if the "previous" next is a station,
 		 * meaning that either the vehicle was refit at the previous station or
 		 * it wasn't at all refit during the current hop. */
-		if (HasBit(flags, WAS_REFIT) && (next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT))) {
-			SetBit(flags, RESET_REFIT);
+		if (flags.Test(RefreshFlag::WasRefit) && (next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT))) {
+			flags.Set(RefreshFlag::ResetRefit);
 		} else {
-			ClrBit(flags, RESET_REFIT);
+			flags.Reset(RefreshFlag::ResetRefit);
 		}
 
 		std::tie(next, travel) = this->PredictNextOrder(cur, next, travel, flags, num_hops);
@@ -415,23 +415,22 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 		}
 
 		/* Don't use the same order again, but choose a new one in the next round. */
-		ClrBit(flags, USE_NEXT);
+		flags.Reset(RefreshFlag::UseNext);
 
 		/* Skip resetting and link refreshing if next order won't do anything with cargo. */
 		if (!next->IsType(OT_GOTO_STATION) && !next->IsType(OT_IMPLICIT)) continue;
 
-		if (HasBit(flags, RESET_REFIT)) {
+		if (flags.Test(RefreshFlag::ResetRefit)) {
 			this->ResetRefit();
-			ClrBit(flags, RESET_REFIT);
-			ClrBit(flags, WAS_REFIT);
+			flags.Reset({RefreshFlag::ResetRefit, RefreshFlag::WasRefit});
 		}
 
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
-			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
-				SetBit(flags, HAS_CARGO);
+			if (cur->CanLeaveWithCargo(flags.Test(RefreshFlag::HasCargo), FindFirstBit(this->cargo_mask))) {
+				flags.Set(RefreshFlag::HasCargo);
 				this->RefreshStats(cur, next, ((travel.flags & TTT_INVALID) == 0 && travel.time_so_far > 0) ? (uint32_t)travel.time_so_far : 0, flags);
 			} else {
-				ClrBit(flags, HAS_CARGO);
+				flags.Reset(RefreshFlag::HasCargo);
 			}
 		}
 

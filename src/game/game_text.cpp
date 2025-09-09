@@ -174,12 +174,12 @@ struct StringNameWriter : HeaderWriter {
  */
 class LanguageScanner : protected FileScanner {
 private:
-	GameStrings *gs;
+	std::weak_ptr<GameStrings> gs;
 	std::string exclude;
 
 public:
 	/** Initialise */
-	LanguageScanner(GameStrings *gs, const std::string &exclude) : gs(gs), exclude(exclude) {}
+	LanguageScanner(std::weak_ptr<GameStrings> gs, const std::string &exclude) : gs(gs), exclude(exclude) {}
 
 	/**
 	 * Scan.
@@ -196,8 +196,12 @@ public:
 		auto ls = ReadRawLanguageStrings(filename);
 		if (!ls.IsValid()) return false;
 
-		gs->raw_strings.push_back(std::move(ls));
-		return true;
+		if (auto sp = this->gs.lock()) {
+			sp->raw_strings.push_back(std::move(ls));
+			return true;
+		}
+
+		return false;
 	}
 };
 
@@ -205,7 +209,7 @@ public:
  * Load all translations that we know of.
  * @return Container with all (compiled) translations.
  */
-GameStrings *LoadTranslations()
+static std::shared_ptr<GameStrings> LoadTranslations()
 {
 	const GameInfo *info = Game::GetInfo();
 	assert(info != nullptr);
@@ -220,7 +224,7 @@ GameStrings *LoadTranslations()
 	auto ls = ReadRawLanguageStrings(filename);
 	if (!ls.IsValid()) return nullptr;
 
-	GameStrings *gs = new GameStrings();
+	auto gs = std::make_shared<GameStrings>();
 	try {
 		gs->raw_strings.push_back(std::move(ls));
 
@@ -251,7 +255,6 @@ GameStrings *LoadTranslations()
 		gs->Compile();
 		return gs;
 	} catch (...) {
-		delete gs;
 		return nullptr;
 	}
 }
@@ -314,7 +317,7 @@ void GameStrings::Compile()
 }
 
 /** The currently loaded game strings. */
-GameStrings *_current_data = nullptr;
+std::shared_ptr<GameStrings> _current_data = nullptr;
 
 /**
  * Get the string pointer of a particular game string.
@@ -361,7 +364,6 @@ const std::string &GetGameStringName(StringIndexInTab id)
  */
 void RegisterGameTranslation(Squirrel *engine)
 {
-	delete _current_data;
 	_current_data = LoadTranslations();
 	if (_current_data == nullptr) return;
 

@@ -82,10 +82,10 @@ private:
 	 * @param type The type to get the driver for.
 	 * @return The active driver.
 	 */
-	static Driver **GetActiveDriver(Driver::Type type)
+	static std::unique_ptr<Driver> &GetActiveDriver(Driver::Type type)
 	{
-		static Driver *s_driver[3] = { nullptr, nullptr, nullptr };
-		return &s_driver[type];
+		static std::array<std::unique_ptr<Driver>, Driver::DT_END> s_driver{};
+		return s_driver[type];
 	}
 
 	/**
@@ -124,7 +124,7 @@ public:
 	static void ShutdownDrivers()
 	{
 		for (Driver::Type dt = Driver::DT_BEGIN; dt < Driver::DT_END; dt++) {
-			Driver *driver = *GetActiveDriver(dt);
+			auto &driver = GetActiveDriver(dt);
 			if (driver != nullptr) driver->Stop();
 		}
 	}
@@ -145,7 +145,7 @@ public:
 	 * Create an instance of this driver-class.
 	 * @return The instance.
 	 */
-	virtual Driver *CreateInstance() const = 0;
+	virtual std::unique_ptr<Driver> CreateInstance() const = 0;
 };
 
 #endif /* DRIVER_H */

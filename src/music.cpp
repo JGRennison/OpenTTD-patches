@@ -9,11 +9,8 @@
 
 #include "stdafx.h"
 #include "string_func.h"
-
-
-/** The type of set we're replacing */
-#define SET_TYPE "music"
 #include "base_media_func.h"
+#include "base_media_music.h"
 #include "random_access_file_type.h"
 
 #include "safeguards.h"
@@ -69,10 +66,8 @@ std::optional<std::vector<uint8_t>> GetMusicCatEntryData(const std::string &file
 	return data;
 }
 
-INSTANTIATE_BASE_MEDIA_METHODS(BaseMedia<MusicSet>, MusicSet)
-
 /** Names corresponding to the music set's files */
-static const char * const _music_file_names[] = {
+static const std::string_view _music_file_names[] = {
 	"theme",
 	"old_0", "old_1", "old_2", "old_3", "old_4", "old_5", "old_6", "old_7", "old_8", "old_9",
 	"new_0", "new_1", "new_2", "new_3", "new_4", "new_5", "new_6", "new_7", "new_8", "new_9",
@@ -81,22 +76,25 @@ static const char * const _music_file_names[] = {
 /** Make sure we aren't messing things up. */
 static_assert(lengthof(_music_file_names) == NUM_SONGS_AVAILABLE);
 
-template <class T, size_t Tnum_files, bool Tsearch_in_tars>
-/* static */ const char * const *BaseSet<T, Tnum_files, Tsearch_in_tars>::file_names = _music_file_names;
+template <>
+/* static */ std::span<const std::string_view> BaseSet<MusicSet>::GetFilenames()
+{
+	return _music_file_names;
+}
 
-template <class Tbase_set>
-/* static */ const char *BaseMedia<Tbase_set>::GetExtension()
+template <>
+/* static */ const char *BaseMedia<MusicSet>::GetExtension()
 {
 	return ".obm"; // OpenTTD Base Music
 }
 
-template <class Tbase_set>
-/* static */ bool BaseMedia<Tbase_set>::DetermineBestSet()
+template <>
+/* static */ bool BaseMedia<MusicSet>::DetermineBestSet()
 {
-	if (BaseMedia<Tbase_set>::used_set != nullptr) return true;
+	if (BaseMedia<MusicSet>::used_set != nullptr) return true;
 
-	const Tbase_set *best = nullptr;
-	for (const Tbase_set *c = BaseMedia<Tbase_set>::available_sets; c != nullptr; c = c->next) {
+	const MusicSet *best = nullptr;
+	for (const MusicSet *c = BaseMedia<MusicSet>::available_sets; c != nullptr; c = c->next) {
 		if (c->GetNumMissing() != 0) continue;
 
 		if (best == nullptr ||
@@ -108,13 +106,15 @@ template <class Tbase_set>
 		}
 	}
 
-	BaseMedia<Tbase_set>::used_set = best;
-	return BaseMedia<Tbase_set>::used_set != nullptr;
+	BaseMedia<MusicSet>::used_set = best;
+	return BaseMedia<MusicSet>::used_set != nullptr;
 }
+
+template class BaseMedia<MusicSet>;
 
 bool MusicSet::FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename)
 {
-	bool ret = this->BaseSet<MusicSet, NUM_SONGS_AVAILABLE, false>::FillSetDetails(ini, path, full_filename);
+	bool ret = this->BaseSet<MusicSet>::FillSetDetails(ini, path, full_filename);
 	if (ret) {
 		this->num_available = 0;
 		const IniGroup *names = ini.GetGroup("names");

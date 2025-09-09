@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "base_media_base.h"
+#include "base_media_graphics.h"
 #include "blitter/factory.hpp"
 #include "error_func.h"
 
@@ -406,7 +407,7 @@ bool HandleBootstrap()
 	if (_exit_game) return false;
 
 	/* Try to probe the graphics. Should work this time. */
-	if (!BaseGraphics::SetSet({})) goto failure;
+	if (!BaseGraphics::SetSet(nullptr)) goto failure;
 
 	/* Finally we can continue heading for the menu. */
 	_game_mode = GM_MENU;

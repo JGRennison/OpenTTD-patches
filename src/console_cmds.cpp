@@ -58,6 +58,7 @@
 #include "string_func_extra.h"
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
+#include "base_media_graphics.h"
 #include "debug_settings.h"
 #include "walltime_func.h"
 #include "debug_desync.h"
@@ -3315,7 +3316,6 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (CargoType i = 0; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
-		if (!spec->IsValid()) continue;
 		uint32_t grfid = 0;
 		const GRFFile *grf = spec->grffile;
 		if (grf == nullptr) {
