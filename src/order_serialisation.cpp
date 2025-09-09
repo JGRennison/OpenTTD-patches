@@ -94,7 +94,6 @@ struct OrderSerialisationFieldNames {
 		static constexpr char STOPPING_PATTERN[]            = "stopping-pattern";            ///< enum
 		static constexpr char STOP_LOCATION[]               = "stop-location";               ///< enum
 		static constexpr char STOP_DIRECTION[]              = "stop-direction";              ///< enum
-		static constexpr char WAYPOINT_ACTION[]             = "waypoint-action";
 		static constexpr char LOAD[]                        = "load";                        ///< enum
 		static constexpr char UNLOAD[]                      = "unload";                      ///< enum
 		static constexpr char LOAD_BY_CARGO_TYPE[]          = "load-by-cargo-type";          ///< object  Contains "load" and "unload" settings for specific cargo-ids
