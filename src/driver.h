@@ -12,6 +12,7 @@
 
 #include "core/enum_type.hpp"
 #include "string_type.h"
+#include <array>
 #include <map>
 
 const char *GetDriverParam(const StringList &parm, const char *name);
