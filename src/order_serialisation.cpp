@@ -150,10 +150,10 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		if (o.GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
 			json[OFName::DEPOT_ID] = "nearest";
 		} else {
-			DepotID depo_id = o.GetDestination().ToDepotID();
-			json[OFName::DEPOT_ID] = depo_id.base();
-			if (Depot::GetIfValid(depo_id) != nullptr){
-				const Depot * d = Depot::GetIfValid(depo_id);
+			DepotID depot_id = o.GetDestination().ToDepotID();
+			json[OFName::DEPOT_ID] = depot_id.base();
+			if (Depot::GetIfValid(depot_id) != nullptr) {
+				const Depot * d = Depot::GetIfValid(depot_id);
 				if (!d->name.empty()) {
 					json[OFName::DESTINATION_NAME] = d->name;
 				} else {
@@ -476,7 +476,7 @@ std::string OrderListToJSONString(const OrderList *ol)
 	if (group != nullptr && !group->name.empty()) {
 		json[FName::VEHICLE_GROUP_NAME] = group->name;
 		json[FName::NESTED_VEHICLE_GROUP_NAMES] = nlohmann::json::array();
-		for (; group != nullptr; group = Group::GetIfValid(group->parent)){
+		for (; group != nullptr; group = Group::GetIfValid(group->parent)) {
 			json[FName::NESTED_VEHICLE_GROUP_NAMES] += group->name;
 		}
 	}
