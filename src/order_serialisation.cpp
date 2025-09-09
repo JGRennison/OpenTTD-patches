@@ -26,6 +26,8 @@
 #include "vehicle_base.h"
 #include "core/format.hpp"
 #include "core/serialisation.hpp"
+#include "depot_base.h"
+#include "town.h"
 #include "3rdparty/fmt/std.h"
 #include "3rdparty/nlohmann/json.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
@@ -147,7 +149,18 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		if (o.GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
 			json[OFName::DEPOT_ID] = "nearest";
 		} else {
-			json[OFName::DEPOT_ID] = o.GetDestination().ToDepotID().base();
+			DepotID depo_id = o.GetDestination().ToDepotID();
+			json[OFName::DEPOT_ID] = depo_id.base();
+			if (Depot::GetIfValid(depo_id) != nullptr){
+				const Depot * d = Depot::GetIfValid(depo_id);
+				if (!d->name.empty()) {
+					json[OFName::DESTINATION_NAME] = d->name;
+				} else {
+					json[OFName::DESTINATION_NAME] = fmt::format("{} Depot #{}", d->town->cached_name.c_str(), d->town_cn + 1);
+				}
+				json[OFName::DESTINATION_LOCATION]["X"] = TileX(d->xy);
+				json[OFName::DESTINATION_LOCATION]["Y"] = TileY(d->xy);
+			}
 		}
 
 		if (o.GetDepotActionType() & ODATFB_SELL) {
