@@ -83,17 +83,17 @@ protected:
 		bool operator!=(const Hop &other) const { return !(*this == other); }
 	};
 
-	/** For TimetableTravelTime::flags */
-	enum : uint {
-		TTT_NO_WAIT_TIME       = 1 << 0,
-		TTT_NO_TRAVEL_TIME     = 1 << 1,
-		TTT_ALLOW_CONDITION    = 1 << 2,
-		TTT_INVALID            = 1 << 3,
+	enum class TimetableTravelTimeFlag : uint8_t {
+		NoWaitTime,
+		NoTravelTime,
+		AllowCondition,
+		Invalid,
 	};
+	using TimetableTravelTimeFlags = EnumBitSet<TimetableTravelTimeFlag, uint8_t>;
 
 	struct TimetableTravelTime {
 		int time_so_far = 0;
-		uint flags = 0;
+		TimetableTravelTimeFlags flags = {};
 	};
 
 	typedef std::vector<RefitDesc> RefitList;

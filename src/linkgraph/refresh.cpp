@@ -58,7 +58,7 @@
 			RefreshFlags flags = {};
 			if (iter_cargo_mask & have_cargo_mask) flags.Set(RefreshFlag::HasCargo);
 			if (v->type == VEH_AIRCRAFT) flags.Set(RefreshFlag::Aircraft);
-			refresher.RefreshLinks(first, first, { 0, TTT_NO_WAIT_TIME }, flags);
+			refresher.RefreshLinks(first, first, { 0, TimetableTravelTimeFlag::NoWaitTime }, flags);
 		}
 
 		cargo_mask &= ~iter_cargo_mask;
@@ -169,7 +169,7 @@ void LinkRefresher::ResetRefit()
  */
 LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(const Order *from, const Order *to, LinkRefresher::TimetableTravelTime travel)
 {
-	if (from == to || from == nullptr || to == nullptr || (travel.flags & TTT_INVALID) != 0) return travel;
+	if (from == to || from == nullptr || to == nullptr || travel.flags.Test(TimetableTravelTimeFlag::Invalid)) return travel;
 
 	do {
 		if (from->IsType(OT_CONDITIONAL)) {
@@ -177,40 +177,40 @@ LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(con
 				/* Taken branch travel time */
 				travel.time_so_far += from->GetWaitTime();
 				from = this->vehicle->orders->GetOrderAt(from->GetConditionSkipToOrder());
-				travel.flags |= TTT_NO_TRAVEL_TIME;
-			} else if ((travel.flags & TTT_ALLOW_CONDITION) == 0) {
+				travel.flags.Set(TimetableTravelTimeFlag::NoTravelTime);
+			} else if (!travel.flags.Test(TimetableTravelTimeFlag::AllowCondition)) {
 				/* Unexpected conditional branch, give up */
-				travel.flags |= TTT_INVALID;
+				travel.flags.Set(TimetableTravelTimeFlag::Invalid);
 				return travel;
 			} else {
 				/* Non-taken branch, ignore travel time field */
 				from = this->vehicle->orders->GetNext(from);
-				travel.flags &= ~TTT_NO_TRAVEL_TIME;
+				travel.flags.Reset(TimetableTravelTimeFlag::NoTravelTime);
 			}
 		} else {
-			if ((travel.flags & TTT_NO_WAIT_TIME) == 0) {
+			if (!travel.flags.Test(TimetableTravelTimeFlag::NoWaitTime)) {
 				if (from->IsScheduledDispatchOrder(true)) {
-					travel.flags |= TTT_INVALID;
+					travel.flags.Set(TimetableTravelTimeFlag::Invalid);
 					return travel;
 				}
 				travel.time_so_far += from->GetWaitTime();
 			}
 			from = this->vehicle->orders->GetNext(from);
-			travel.flags &= ~TTT_NO_TRAVEL_TIME;
+			travel.flags.Reset(TimetableTravelTimeFlag::NoTravelTime);
 		}
 
-		travel.flags &= ~TTT_NO_WAIT_TIME;
-		travel.flags &= ~TTT_ALLOW_CONDITION;
+		travel.flags.Reset(TimetableTravelTimeFlag::NoWaitTime);
+		travel.flags.Reset(TimetableTravelTimeFlag::AllowCondition);
 
-		if (!from->IsType(OT_CONDITIONAL) && (travel.flags & TTT_NO_TRAVEL_TIME) == 0) {
+		if (!from->IsType(OT_CONDITIONAL) && !travel.flags.Test(TimetableTravelTimeFlag::NoTravelTime)) {
 			if (from->GetTravelTime() == 0 && !from->IsTravelTimetabled() && !from->IsType(OT_IMPLICIT)) {
-				travel.flags |= TTT_INVALID;
+				travel.flags.Set(TimetableTravelTimeFlag::Invalid);
 				return travel;
 			}
 			travel.time_so_far += from->GetTravelTime();
 		}
 
-		travel.flags &= ~TTT_NO_TRAVEL_TIME;
+		travel.flags.Reset(TimetableTravelTimeFlag::NoTravelTime);
 	} while (from != to);
 
 	return travel;
@@ -266,7 +266,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
 					this->seen_hops->insert(iter, hop);
 					TimetableTravelTime branch_travel = travel;
 					branch_travel.time_so_far += next->GetWaitTime();
-					branch_travel.flags |= TTT_NO_TRAVEL_TIME;
+					branch_travel.flags.Set(TimetableTravelTimeFlag::NoTravelTime);
 					LinkRefresher branch(*this);
 					branch.RefreshLinks(cur, skip_to, this->UpdateTimetableTravelSoFar(target, skip_to, branch_travel), flags, num_hops + 1);
 				}
@@ -283,7 +283,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
 				this->vehicle->orders->GetNext(next), num_hops++, this_cargo_mask);
 		assert(this_cargo_mask == this->cargo_mask);
 
-		travel.flags |= TTT_ALLOW_CONDITION;
+		travel.flags.Set(TimetableTravelTimeFlag::AllowCondition);
 		travel = this->UpdateTimetableTravelSoFar(current, next, travel);
 	}
 	return std::make_pair(next, travel);
@@ -428,7 +428,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
 			if (cur->CanLeaveWithCargo(flags.Test(RefreshFlag::HasCargo), FindFirstBit(this->cargo_mask))) {
 				flags.Set(RefreshFlag::HasCargo);
-				this->RefreshStats(cur, next, ((travel.flags & TTT_INVALID) == 0 && travel.time_so_far > 0) ? (uint32_t)travel.time_so_far : 0, flags);
+				this->RefreshStats(cur, next, (!travel.flags.Test(TimetableTravelTimeFlag::Invalid) && travel.time_so_far > 0) ? (uint32_t)travel.time_so_far : 0, flags);
 			} else {
 				flags.Reset(RefreshFlag::HasCargo);
 			}
@@ -437,6 +437,6 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 		/* "cur" is only assigned here if the stop is a station so that
 		 * whenever stats are to be increased two stations can be found. */
 		cur = next;
-		travel = { 0, TTT_NO_WAIT_TIME };
+		travel = { 0, TimetableTravelTimeFlag::NoWaitTime };
 	}
 }
