@@ -118,6 +118,7 @@ struct DifficultySettings {
 	uint8_t  competitor_speed;                      ///< the speed at which the AI builds
 	uint8_t  vehicle_breakdowns;                    ///< likelihood of vehicles breaking down
 	uint8_t  max_reliability_floor;                 ///< The minimum value (%) for maximum reliability randomizer
+	int8_t   reliability_decay_speed;               ///< reliability decay factor (higher means faster decay)
 	uint8_t  subsidy_multiplier;                    ///< payment multiplier for subsidized deliveries
 	uint16_t subsidy_duration;                      ///< duration of subsidies
 	uint8_t  construction_cost;                     ///< how expensive is building
