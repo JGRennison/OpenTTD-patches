@@ -124,6 +124,25 @@ struct fmt::formatter<T, Char, std::enable_if_t<format_detail::FmtAsBaseHex<T>>>
 	}
 };
 
+template <typename T>
+class trivial_appender {
+protected:
+	T *container;
+
+public:
+	constexpr trivial_appender(T &buf) : container(&buf) {}
+
+	constexpr trivial_appender &operator=(char c)
+	{
+		this->container->push_back(c);
+		return *this;
+	}
+
+	constexpr trivial_appender &operator*() { return *this; }
+	constexpr trivial_appender &operator++() { return *this; }
+	constexpr trivial_appender operator++(int) { return *this; }
+};
+
 /**
  * Base fmt format target class. Users should take by reference.
  * Not directly instantiable, use format_to_buffer, format_buffer, format_buffer_sized, format_to_fixed or format_to_fixed_z.
@@ -228,6 +247,8 @@ public:
 	}
 
 	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
+
+	trivial_appender<format_target> back_inserter() { return trivial_appender<format_target>(*this); }
 
 	/** Only for specialised uses */
 	bool is_format_to_fixed_subtype() const { return (this->flags & FL_FIXED) != 0; }
