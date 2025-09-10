@@ -66,11 +66,11 @@ uint32_t GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32_t cur_g
 
 	if (gfx < NEW_INDUSTRYTILEOFFSET) { // Does it belongs to an old type?
 		/* It is an old tile.  We have to see if it's been overridden */
-		if (indtsp->grf_prop.override == INVALID_INDUSTRYTILE) { // has it been overridden?
+		if (indtsp->grf_prop.override_id == INVALID_INDUSTRYTILE) { // has it been overridden?
 			return 0xFF << 8 | gfx; // no. Tag FF + the gfx id of that tile
 		}
 		/* Overridden */
-		const IndustryTileSpec *tile_ovr = GetIndustryTileSpec(indtsp->grf_prop.override);
+		const IndustryTileSpec *tile_ovr = GetIndustryTileSpec(indtsp->grf_prop.override_id);
 
 		if (tile_ovr->grf_prop.grfid == cur_grfid) {
 			return tile_ovr->grf_prop.local_id; // same grf file
@@ -116,42 +116,42 @@ uint32_t IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
  * Implementation of both var 67 and 68
  * since the mechanism is almost the same, it is easier to regroup them on the same
  * function.
- * @param param_setID parameter given to the callback, which is the set id, or the local id, in our terminology
+ * @param param_set_id parameter given to the callback, which is the set id, or the local id, in our terminology
  * @param layout_filter on what layout do we filter?
  * @param town_filter Do we filter on the same town as the current industry?
  * @return the formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t param_setID, uint8_t layout_filter, bool town_filter, uint32_t mask) const
+uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t param_set_id, uint8_t layout_filter, bool town_filter, uint32_t mask) const
 {
-	uint32_t GrfID = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
-	IndustryType ind_index;
+	uint32_t grf_id = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
+	IndustryType industry_type;
 	uint32_t closest_dist = UINT32_MAX;
 	uint count = 0;
 
 	/* Determine what will be the industry type to look for */
-	switch (GrfID) {
+	switch (grf_id) {
 		case 0:  // this is a default industry type
-			ind_index = param_setID;
+			industry_type = param_set_id;
 			break;
 
 		case 0xFFFFFFFF: // current grf
-			GrfID = GetIndustrySpec(this->industry->type)->grf_prop.grfid;
+			grf_id = GetIndustrySpec(this->industry->type)->grf_prop.grfid;
 			[[fallthrough]];
 
 		default: // use the grfid specified in register 100h
-			SetBit(param_setID, 7); // bit 7 means it is not an old type
-			ind_index = MapNewGRFIndustryType(param_setID, GrfID);
+			SetBit(param_set_id, 7); // bit 7 means it is not an old type
+			industry_type = MapNewGRFIndustryType(param_set_id, grf_id);
 			break;
 	}
 
 	/* If the industry type is invalid, there is none and the closest is far away. */
-	if (ind_index >= NUM_INDUSTRYTYPES) return 0 | 0xFFFF;
+	if (industry_type >= NUM_INDUSTRYTYPES) return 0 | 0xFFFF;
 
 	if (layout_filter == 0 && !town_filter) {
 		/* If the filter is 0, it could be because none was specified as well as being really a 0.
 		 * In either case, just do the regular var67 */
-		if (mask & 0xFFFF) closest_dist = this->GetClosestIndustry(ind_index);
-		if (mask & 0xFF0000) count = ClampTo<uint8_t>(Industry::GetIndustryTypeCount(ind_index));
+		if (mask & 0xFFFF) closest_dist = this->GetClosestIndustry(industry_type);
+		if (mask & 0xFF0000) count = ClampTo<uint8_t>(Industry::GetIndustryTypeCount(industry_type));
 	} else if (layout_filter == 0 && town_filter) {
 		/* Count only those which match the same industry type and town */
 		std::unique_ptr<IndustryLocationDistanceAndCountCache> &cache = this->town_location_distance_cache;
@@ -168,13 +168,13 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 				cache->counts[entry.type] = SaturatingAdd<uint8_t>(cache->counts[entry.type], 1);
 			}
 		}
-		closest_dist = cache->distances[ind_index];
-		count = cache->counts[ind_index];
+		closest_dist = cache->distances[industry_type];
+		count = cache->counts[industry_type];
 	} else if (town_filter) {
 		/* Count only those who match the same industry type and layout filter using the town cache */
 		const IndustryID this_id = this->industry->index;
 		for (const IndustryLocationCacheEntry &entry : this->industry->town->industry_cache) {
-			if (entry.type == ind_index && entry.id != this_id && entry.selected_layout == layout_filter) {
+			if (entry.type == industry_type && entry.id != this_id && entry.selected_layout == layout_filter) {
 				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, entry.tile));
 				count++;
 			}
@@ -184,7 +184,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		/* Count only those who match the same industry type and layout filter
 		 * Unfortunately, we have to do it manually */
 		const IndustryID this_id = this->industry->index;
-		for (const IndustryLocationCacheEntry &entry : Industry::industries[ind_index]) {
+		for (const IndustryLocationCacheEntry &entry : Industry::industries[industry_type]) {
 			if (entry.id != this_id && entry.selected_layout == layout_filter) {
 				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, entry.tile));
 				count++;

@@ -142,7 +142,7 @@ private:
 
 		ParamCheck(StringIndexInTab owner, int idx, Param *param) : owner(owner), idx(idx), param(param) {}
 
-		void Encode(std::back_insert_iterator<std::string> &output, std::string_view cmd);
+		void Encode(struct format_target &output, std::string_view cmd);
 	};
 
 	using ParamList = std::vector<ParamCheck>;
@@ -169,7 +169,7 @@ private:
 	 * @param args The parameters to be consumed.
 	 * @param first Whether it's the first call in the recursion.
 	 */
-	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args, bool first);
+	void _GetEncodedText(struct format_target &output, int &param_count, ParamSpan args, bool first);
 
 	/**
 	 * Set a parameter, where the value is the first item on the stack.

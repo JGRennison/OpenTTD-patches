@@ -1252,12 +1252,12 @@ void SlString(void *ptr, size_t length, VarType conv)
 			}
 
 			((char *)ptr)[len] = '\0'; // properly terminate the string
-			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
-				settings = settings | SVS_ALLOW_CONTROL_CODE;
+				settings.Set(StringValidationSetting::AllowControlCode);
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
-				settings = settings | SVS_ALLOW_NEWLINE;
+				settings.Set(StringValidationSetting::AllowNewline);
 			}
 			StrMakeValidInPlace((char *)ptr, (char *)ptr + len, settings);
 			break;
@@ -1299,9 +1299,9 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			str.resize(len);
 			SlCopyBytesRead(str.data(), len);
 
-			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
-				settings = settings | SVS_ALLOW_CONTROL_CODE;
+				settings.Set(StringValidationSetting::AllowControlCode);
 				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT)) {
 					upstream_sl::FixSCCEncoded(str, IsSavegameVersionBefore(SLV_169));
 				}
@@ -1310,7 +1310,7 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
-				settings = settings | SVS_ALLOW_NEWLINE;
+				settings.Set(StringValidationSetting::AllowNewline);
 			}
 			StrMakeValidInPlace(str, settings);
 			break;

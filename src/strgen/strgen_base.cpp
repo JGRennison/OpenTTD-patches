@@ -13,6 +13,7 @@
 #include "../core/mem_func.hpp"
 #include "../error_func.h"
 #include "../string_func.h"
+#include "../core/string_builder.hpp"
 #include "../table/control_codes.h"
 
 #include "strgen.h"
@@ -166,43 +167,6 @@ uint StringData::CountInUse(uint tab) const
 	return count;
 }
 
-/** The buffer for writing a single string. */
-struct Buffer : std::string {
-	/**
-	 * Convenience method for adding a byte.
-	 * @param value The value to add.
-	 */
-	void AppendByte(uint8_t value)
-	{
-		this->push_back(static_cast<char>(value));
-	}
-
-	/**
-	 * Add an Unicode character encoded in UTF-8 to the buffer.
-	 * @param value The character to add.
-	 */
-	void AppendUtf8(char32_t value)
-	{
-		if (value < 0x80) {
-			this->push_back(value);
-		} else if (value < 0x800) {
-			this->push_back(0xC0 + GB(value,  6, 5));
-			this->push_back(0x80 + GB(value,  0, 6));
-		} else if (value < 0x10000) {
-			this->push_back(0xE0 + GB(value, 12, 4));
-			this->push_back(0x80 + GB(value,  6, 6));
-			this->push_back(0x80 + GB(value,  0, 6));
-		} else if (value < 0x110000) {
-			this->push_back(0xF0 + GB(value, 18, 3));
-			this->push_back(0x80 + GB(value, 12, 6));
-			this->push_back(0x80 + GB(value,  6, 6));
-			this->push_back(0x80 + GB(value,  0, 6));
-		} else {
-			StrgenWarning("Invalid unicode value U+{:04X}", static_cast<uint32_t>(value));
-		}
-	}
-};
-
 static size_t Utf8Validate(const char *s)
 {
 	char32_t c;
@@ -227,10 +191,10 @@ static size_t Utf8Validate(const char *s)
 	return 0;
 }
 
-void EmitSingleChar(Buffer *buffer, const char *buf, char32_t value)
+void EmitSingleChar(StringBuilder &builder, const char *buf, char32_t value)
 {
 	if (*buf != '\0') StrgenWarning("Ignoring trailing letters in command");
-	buffer->AppendUtf8(value);
+	builder.PutUtf8(value);
 }
 
 /* The plural specifier looks like
@@ -288,20 +252,20 @@ std::optional<std::string_view> ParseWord(const char **buf)
 
 /* This is encoded like
  *  CommandByte <ARG#> <NUM> {Length of each string} {each string} */
-static void EmitWordList(Buffer *buffer, std::span<const std::string> words)
+static void EmitWordList(StringBuilder builder, std::span<const std::string> words)
 {
-	buffer->AppendByte(static_cast<uint8_t>(words.size()));
+	builder.PutUint8(static_cast<uint8_t>(words.size()));
 	for (size_t i = 0; i < words.size(); i++) {
 		size_t len = words[i].size();
 		if (len > UINT8_MAX) StrgenFatal("WordList {}/{} string '{}' too long, max bytes {}", i + 1, words.size(), words[i], UINT8_MAX);
-		buffer->AppendByte(static_cast<uint8_t>(len));
+		builder.PutUint8(static_cast<uint8_t>(len));
 	}
 	for (size_t i = 0; i < words.size(); i++) {
-		buffer->append(words[i]);
+		builder.Put(words[i]);
 	}
 }
 
-void EmitPlural(Buffer *buffer, const char *buf, char32_t)
+void EmitPlural(StringBuilder &builder, const char *buf, char32_t)
 {
 	/* Parse out the number, if one exists. Otherwise default to prev arg. */
 	auto [argidx, offset] = ParseRelNum(&buf);
@@ -348,13 +312,13 @@ void EmitPlural(Buffer *buffer, const char *buf, char32_t)
 		}
 	}
 
-	buffer->AppendUtf8(SCC_PLURAL_LIST);
-	buffer->AppendByte(_lang.plural_form);
-	buffer->AppendByte(static_cast<uint8_t>(TranslateArgumentIdx(*argidx, *offset)));
-	EmitWordList(buffer, words);
+	builder.PutUtf8(SCC_PLURAL_LIST);
+	builder.PutUint8(_lang.plural_form);
+	builder.PutUint8(static_cast<uint8_t>(TranslateArgumentIdx(*argidx, *offset)));
+	EmitWordList(builder, words);
 }
 
-void EmitGender(Buffer *buffer, const char *buf, char32_t)
+void EmitGender(StringBuilder &builder, const char *buf, char32_t)
 {
 	if (buf[0] == '=') {
 		buf++;
@@ -364,8 +328,8 @@ void EmitGender(Buffer *buffer, const char *buf, char32_t)
 		if (nw >= MAX_NUM_GENDERS) StrgenFatal("G argument '{}' invalid", buf);
 
 		/* now nw contains the gender index */
-		buffer->AppendUtf8(SCC_GENDER_INDEX);
-		buffer->AppendByte(nw);
+		builder.PutUtf8(SCC_GENDER_INDEX);
+		builder.PutUint8(nw);
 	} else {
 		/* This is a {G 0 foo bar two} command.
 		 * If no relative number exists, default to +0 */
@@ -387,9 +351,9 @@ void EmitGender(Buffer *buffer, const char *buf, char32_t)
 		if (words.size() != _lang.num_genders) StrgenFatal("Bad # of arguments for gender command");
 
 		assert(IsInsideBS(cmd->value, SCC_CONTROL_START, UINT8_MAX));
-		buffer->AppendUtf8(SCC_GENDER_LIST);
-		buffer->AppendByte(static_cast<uint8_t>(TranslateArgumentIdx(*argidx, *offset)));
-		EmitWordList(buffer, words);
+		builder.PutUtf8(SCC_GENDER_LIST);
+		builder.PutUint8(static_cast<uint8_t>(TranslateArgumentIdx(*argidx, *offset)));
+		EmitWordList(builder, words);
 	}
 }
 
@@ -836,20 +800,22 @@ static size_t TranslateArgumentIdx(size_t argidx, size_t offset)
 	return sum + offset;
 }
 
-static void PutArgidxCommand(Buffer *buffer)
+static void PutArgidxCommand(StringBuilder &builder)
 {
-	buffer->AppendUtf8(SCC_ARG_INDEX);
-	buffer->AppendByte(static_cast<uint8_t>(TranslateArgumentIdx(_cur_argidx)));
+	builder.PutUtf8(SCC_ARG_INDEX);
+	builder.PutUint8(static_cast<uint8_t>(TranslateArgumentIdx(_cur_argidx)));
 }
 
-static void PutCommandString(Buffer *buffer, const char *str)
+static std::string PutCommandString(const char *str)
 {
+	format_buffer result;
+	StringBuilder builder(result);
 	_cur_argidx = 0;
 
 	while (*str != '\0') {
 		/* Process characters as they are until we encounter a { */
 		if (*str != '{') {
-			buffer->append(1, *str++);
+			builder.PutChar(*str++);
 			continue;
 		}
 
@@ -858,8 +824,8 @@ static void PutCommandString(Buffer *buffer, const char *str)
 		if (cmd == nullptr) break;
 
 		if (cs.casei.has_value()) {
-			buffer->AppendUtf8(SCC_SET_CASE); // {SET_CASE}
-			buffer->AppendByte(*cs.casei);
+			builder.PutUtf8(SCC_SET_CASE); // {SET_CASE}
+			builder.PutUint8(*cs.casei);
 		}
 
 		/* For params that consume values, we need to handle the argindex properly */
@@ -867,7 +833,7 @@ static void PutCommandString(Buffer *buffer, const char *str)
 			/* Check if we need to output a move-param command */
 			if (cs.argno.has_value() && *cs.argno != _cur_argidx) {
 				_cur_argidx = *cs.argno;
-				PutArgidxCommand(buffer);
+				PutArgidxCommand(builder);
 			}
 
 			/* Output the one from the master string... it's always accurate. */
@@ -877,8 +843,9 @@ static void PutCommandString(Buffer *buffer, const char *str)
 			}
 		}
 
-		cmd->proc(buffer, cs.param.c_str(), cmd->value);
+		cmd->proc(builder, cs.param.c_str(), cmd->value);
 	}
+	return result.to_string();
 }
 
 /**
@@ -927,12 +894,10 @@ void LanguageWriter::WriteLang(const StringData &data)
 	_lang.winlangid = TO_LE16(_lang.winlangid);
 
 	this->WriteHeader(&_lang);
-	Buffer buffer;
 
 	for (size_t tab = 0; tab < data.tabs; tab++) {
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
-			const std::string *cmdp;
 
 			/* For undefined strings, just set that it's an empty string */
 			if (ls == nullptr) {
@@ -940,6 +905,8 @@ void LanguageWriter::WriteLang(const StringData &data)
 				continue;
 			}
 
+			format_buffer output;
+			StringBuilder builder(output);
 			_cur_ident = ls->name.c_str();
 			_cur_line = ls->line;
 
@@ -949,64 +916,50 @@ void LanguageWriter::WriteLang(const StringData &data)
 					StrgenWarning("'{}' is untranslated", ls->name);
 				}
 				if (_annotate_todos) {
-					buffer.append("<TODO> ");
+					builder.Put("<TODO> ");
 				}
 			}
 
 			/* Extract the strings and stuff from the english command string */
 			_cur_pcs = ExtractCommandString(ls->english.c_str(), false);
 
+			const std::string *cmdpp = nullptr;
 			if (!ls->translated_cases.empty() || !ls->translated.empty()) {
-				cmdp = &ls->translated;
+				cmdpp = &ls->translated;
 			} else {
-				cmdp = &ls->english;
+				cmdpp = &ls->english;
 				if (ls->default_translation != nullptr && !ls->default_translation->translated.empty()) {
-					cmdp = &ls->default_translation->translated;
+					cmdpp = &ls->default_translation->translated;
 				}
 			}
+			const std::string &cmdp = *cmdpp;
 
-			_translated = cmdp != &ls->english;
-
-			std::optional<size_t> default_case_pos;
 			if (!ls->translated_cases.empty()) {
 				/* Need to output a case-switch.
 				 * It has this format
 				 * <0x9E> <NUM CASES> <CASE1> <LEN1> <STRING1> <CASE2> <LEN2> <STRING2> <CASE3> <LEN3> <STRING3> <LENDEFAULT> <STRINGDEFAULT>
 				 * Each LEN is printed using 2 bytes in little endian order. */
-				buffer.AppendUtf8(SCC_SWITCH_CASE);
-				buffer.AppendByte(static_cast<uint8_t>(ls->translated_cases.size()));
+				builder.PutUtf8(SCC_SWITCH_CASE);
+				builder.PutUint8(static_cast<uint8_t>(ls->translated_cases.size()));
 
 				/* Write each case */
 				for (const Case &c : ls->translated_cases) {
-					buffer.AppendByte(c.caseidx);
-					/* Make some space for the 16-bit length */
-					size_t pos = buffer.size();
-					buffer.AppendByte(0);
-					buffer.AppendByte(0);
-					/* Write string */
-					PutCommandString(&buffer, c.string.c_str());
-					/* Fill in the length */
-					size_t size = buffer.size() - (pos + 2);
-					buffer[pos + 0] = GB(size, 0, 8);
-					buffer[pos + 1] = GB(size, 8, 8);
+					auto case_str = PutCommandString(c.string.c_str());
+					builder.PutUint8(c.caseidx);
+					builder.PutUint16LE(static_cast<uint16_t>(case_str.size()));
+					builder.Put(case_str);
 				}
-
-				default_case_pos = buffer.size();
-				buffer.AppendByte(0);
-				buffer.AppendByte(0);
 			}
 
-			if (!cmdp->empty()) PutCommandString(&buffer, cmdp->c_str());
-
-			if (default_case_pos.has_value()) {
-				size_t size = buffer.size() - (*default_case_pos + 2);
-				buffer[*default_case_pos + 0] = GB(size, 0, 8);
-				buffer[*default_case_pos + 1] = GB(size, 8, 8);
+			std::string def_str;
+			if (!cmdp.empty()) def_str = PutCommandString(cmdp.c_str());
+			if (!ls->translated_cases.empty()) {
+				builder.PutUint16LE(static_cast<uint16_t>(def_str.size()));
 			}
+			builder.Put(def_str);
 
-			this->WriteLength(buffer.size());
-			this->Write(buffer.data(), buffer.size());
-			buffer.clear();
+			this->WriteLength(output.size());
+			this->Write(output.data(), output.size());
 		}
 	}
 }

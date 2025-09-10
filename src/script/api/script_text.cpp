@@ -166,12 +166,11 @@ EncodedString ScriptText::GetEncodedText()
 	seen_texts.clear();
 	ParamList params;
 	int param_count = 0;
-	std::string result;
-	auto output = std::back_inserter(result);
+	format_buffer result;
 	this->_FillParamList(params, seen_texts);
-	this->_GetEncodedText(output, param_count, params, true);
+	this->_GetEncodedText(result, param_count, params, true);
 	if (param_count > SCRIPT_TEXT_MAX_PARAMETERS) throw Script_FatalError(fmt::format("{}: Too many parameters", GetGameStringName(this->string)));
-	return ::EncodedString{std::move(result)};
+	return ::EncodedString{result.to_string()};
 }
 
 void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts)
@@ -197,52 +196,52 @@ void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts)
 	}
 }
 
-void ScriptText::ParamCheck::Encode(std::back_insert_iterator<std::string> &output, std::string_view cmd)
+void ScriptText::ParamCheck::Encode(format_target &output, std::string_view cmd)
 {
 	if (this->cmd.empty()) this->cmd = cmd;
 	if (this->used) return;
 
 	struct visitor {
-		std::back_insert_iterator<std::string> &output;
+		format_target &output;
 
 		void operator()(const std::string &value)
 		{
-			Utf8Encode(this->output, SCC_ENCODED_STRING);
-			fmt::format_to(this->output, "{}", value);
+			this->output.push_back_utf8(SCC_ENCODED_STRING);
+			AppendStrMakeValidInPlace(this->output, value, {StringValidationSetting::ReplaceWithQuestionMark, StringValidationSetting::AllowNewline, StringValidationSetting::ReplaceTabCrNlWithSpace});
 		}
 
 		void operator()(const StringParameterDataStringView &value)
 		{
-			Utf8Encode(this->output, SCC_ENCODED_STRING);
-			fmt::format_to(this->output, "{}", value.view);
+			this->output.push_back_utf8(SCC_ENCODED_STRING);
+			AppendStrMakeValidInPlace(this->output, value.view, {StringValidationSetting::ReplaceWithQuestionMark, StringValidationSetting::AllowNewline, StringValidationSetting::ReplaceTabCrNlWithSpace});
 		}
 
 		void operator()(const SQInteger &value)
 		{
-			Utf8Encode(this->output, SCC_ENCODED_NUMERIC);
+			this->output.push_back_utf8(SCC_ENCODED_NUMERIC);
 			/* Sign-extend the value, then store as unsigned */
-			fmt::format_to(this->output, "{:X}", static_cast<uint64_t>(static_cast<int64_t>(value)));
+			this->output.format("{:X}", static_cast<uint64_t>(static_cast<int64_t>(value)));
 		}
 
 		void operator()(const ScriptTextRef &value)
 		{
-			Utf8Encode(this->output, SCC_ENCODED);
-			fmt::format_to(this->output, "{:X}", value->string);
+			this->output.push_back_utf8(SCC_ENCODED);
+			this->output.format("{:X}", value->string);
 		}
 	};
 
-	*output = SCC_RECORD_SEPARATOR;
+	output.push_back_utf8(SCC_RECORD_SEPARATOR);
 	std::visit(visitor{output}, *this->param);
 	this->used = true;
 }
 
-void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args, bool first)
+void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamSpan args, bool first)
 {
 	const std::string &name = GetGameStringName(this->string);
 
 	if (first) {
-		Utf8Encode(output, SCC_ENCODED);
-		fmt::format_to(output, "{:X}", this->string);
+		output.push_back_utf8(SCC_ENCODED);
+		output.format("{:X}", this->string);
 	}
 
 	const StringParams &params = GetGameStringParams(this->string);
@@ -304,7 +303,7 @@ void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output,
 						log_warning(fmt::format("{}({}): {{{}}} expects {} to be consumed, but {} consumes {}", name, param_count + 1, cur_param.cmd, cur_param.consumes - 1, GetGameStringName(ref->string), count - 1));
 						/* Fill missing params if needed. */
 						for (int i = count; i < cur_param.consumes; i++) {
-							Utf8Encode(output, SCC_RECORD_SEPARATOR);
+							output.push_back_utf8(SCC_RECORD_SEPARATOR);
 						}
 					}
 					skip_args(cur_param.consumes - 1);

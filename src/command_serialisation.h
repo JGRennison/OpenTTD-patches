@@ -20,13 +20,13 @@
 template <typename T>
 inline bool EncodedString::Deserialise(T &buffer, StringValidationSettings default_string_validation)
 {
-	buffer.Recv_string(this->string, default_string_validation | SVS_ALLOW_CONTROL_CODE);
+	buffer.Recv_string(this->string, default_string_validation.Set(StringValidationSetting::AllowControlCode));
 	return true;
 }
 
 inline void EncodedString::Sanitise(StringValidationSettings settings)
 {
-	StrMakeValidInPlace(this->string, settings | SVS_ALLOW_CONTROL_CODE);
+	StrMakeValidInPlace(this->string, settings.Set(StringValidationSetting::AllowControlCode));
 }
 
 namespace TupleCmdDataDetail {

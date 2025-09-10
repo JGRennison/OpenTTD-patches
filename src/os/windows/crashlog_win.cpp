@@ -235,7 +235,7 @@ static const char *GetAccessViolationTypeString(uint type)
 	buffer.format(" Message:    {}\n\n",
 			message == nullptr ? "<none>" : message);
 
-	if (message != nullptr && strcasestr(message, "out of memory") != nullptr) {
+	if (message != nullptr && StrContainsIgnoreCase(message, "out of memory")) {
 		PROCESS_MEMORY_COUNTERS pmc;
 		if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
 			buffer.format(" WorkingSetSize: {}\n", pmc.WorkingSetSize);
@@ -979,12 +979,21 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			char *dos_nl = reinterpret_cast<char *>(crash_msgW + crash_msgW_length);
 
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
-			const char *unix_nl = cur->crashlog_buffer.data();
-			char *p = dos_nl;
-			char32_t c;
-			while ((c = Utf8Consume(&unix_nl)) && p < (dos_nl + dos_nl_length - 1) - 4) { // 4 is max number of bytes per character
-				if (c == '\n') p += Utf8Encode(p, '\r');
-				p += Utf8Encode(p, c);
+			{
+				const char *unix_nl = cur->crashlog_buffer.data();
+				char *p = dos_nl;
+				char *p_end = dos_nl + dos_nl_length - 2;
+				while (p < p_end) {
+					char c = *unix_nl;
+					if (c == 0) break;
+					unix_nl++;
+					if (static_cast<uint8_t>(c) >= 0x80 && !IsUtf8Part(c)) {
+						/* Leading byte of multi-byte sequence, just stop if we might truncate the sequence. */
+						if (p + 4 > p_end) break;
+					}
+					if (c == '\n') *p++ = '\r';
+					*p++ = c;
+				}
 			}
 
 			/* Add path to all files to the crash window text */

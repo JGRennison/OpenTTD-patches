@@ -108,36 +108,32 @@ EncodedString GetEncodedString(StringID str)
  */
 EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params)
 {
-	std::string result;
-	auto output = std::back_inserter(result);
-	Utf8Encode(output, SCC_ENCODED_INTERNAL);
-	fmt::format_to(output, "{:X}", str);
+	format_buffer result;
+	result.push_back_utf8(SCC_ENCODED_INTERNAL);
+	result.format("{:X}", str);
 
 	struct visitor {
-		std::back_insert_iterator<std::string> &output;
+		format_buffer &result;
 
 		void operator()(const std::monostate &) {}
 
 		void operator()(const uint64_t &arg)
 		{
-			Utf8Encode(output, SCC_ENCODED_NUMERIC);
-			fmt::format_to(this->output, "{:X}", arg);
+			this->result.push_back_utf8(SCC_ENCODED_INTERNAL);
+			this->result.format("{:X}", arg);
 		}
 
 		void visit_string(std::string_view value)
 		{
 #ifdef WITH_ASSERT
 			/* Don't allow an encoded string to contain another encoded string. */
-			if (!value.empty()) {
-				char32_t c;
-				const char *p = value.data();
-				if (Utf8Decode(&c, p)) {
-					assert(c != SCC_ENCODED && c != SCC_ENCODED_INTERNAL);
-				}
+			{
+				auto [len, c] = DecodeUtf8(value);
+				assert(len == 0 || (c != SCC_ENCODED && c != SCC_ENCODED_INTERNAL && c != SCC_RECORD_SEPARATOR));
 			}
 #endif /* WITH_ASSERT */
-			Utf8Encode(output, SCC_ENCODED_STRING);
-			fmt::format_to(this->output, "{}", value);
+			this->result.push_back_utf8(SCC_ENCODED_STRING);
+			this->result.append(value);
 		}
 
 		void operator()(const std::string &value)
@@ -151,13 +147,13 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 		}
 	};
 
-	visitor v{output};
+	visitor v{result};
 	for (const auto &param : params) {
-		*output = SCC_RECORD_SEPARATOR;
+		result.push_back_utf8(SCC_RECORD_SEPARATOR);
 		std::visit(v, param.data);
 	}
 
-	return EncodedString{std::move(result)};
+	return EncodedString{result.to_string()};
 }
 
 /**
@@ -1461,24 +1457,20 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						/* Now we need to figure out what text to resolve, i.e.
 						 * what do we need to draw? So get the actual raw string
 						 * first using the control code to get said string. */
-						char input[4 + 1];
-						char *p = input + Utf8Encode(input, args.GetTypeAtOffset(offset));
-						*p = '\0';
+						std::pair<char[4], size_t> input = EncodeUtf8(args.GetTypeAtOffset(offset));
+
+						format_buffer_fixed<32> buffer;
+						{
+							AutoRestoreBackup sgd_backup(_scan_for_gender_data, true);
+							StringBuilder tmp_builder(buffer);
+							StringParameters tmp_params = args.GetRemainingParameters(offset);
+							FormatString(tmp_builder, std::string_view(input.first, input.second), tmp_params);
+						}
 
 						/* The gender is stored at the start of the formatted string. */
-						bool old_sgd = _scan_for_gender_data;
-						_scan_for_gender_data = true;
-						format_buffer buffer;
-						StringBuilder tmp_builder(buffer);
-						StringParameters tmp_params = args.GetRemainingParameters(offset);
-						FormatString(tmp_builder, input, tmp_params);
-						_scan_for_gender_data = old_sgd;
-
-						/* And determine the string. */
-						const char *s = buffer.c_str();
-						char32_t c = Utf8Consume(&s);
+						auto [bytes, c] = DecodeUtf8((std::string_view)buffer);
 						/* Does this string have a gender, if so, set it */
-						if (c == SCC_GENDER_INDEX) gender = (uint8_t)s[0];
+						if (c == SCC_GENDER_INDEX) gender = (uint8_t)buffer.data()[bytes];
 					}
 					str = ParseStringChoice(str, gender, builder);
 					break;
@@ -2832,13 +2824,11 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		if (!bad_font && any_font_configured) {
 			/* If the user configured a bad font, and we found a better one,
 			 * show that we loaded the better font instead of the configured one.
-			 * The colour 'character' might change in the
-			 * future, so for safety we just Utf8 Encode it into the string,
-			 * which takes exactly three characters, so it replaces the "XXX"
-			 * with the colour marker. */
-			static std::string err_str("XXXThe current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
-			Utf8Encode(err_str.data(), SCC_YELLOW);
-			ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, err_str), {}, WL_WARNING);
+			 */
+			format_buffer err_str;
+			err_str.push_back_utf8(SCC_YELLOW);
+			err_str.append("The current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
+			ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_WARNING);
 		}
 
 		if (bad_font && base_font) {
@@ -2854,11 +2844,11 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		/* All attempts have failed. Display an error. As we do not want the string to be translated by
 		 * the translators, we 'force' it into the binary and 'load' it via a BindCString. To do this
 		 * properly we have to set the colour of the string, otherwise we end up with a lot of artifacts.
-		 * The colour 'character' might change in the future, so for safety we just Utf8 Encode it into
-		 * the string, which takes exactly three characters, so it replaces the "XXX" with the colour marker. */
-		static std::string err_str("XXXThe current font is missing some of the characters used in the texts for this language. Go to Help & Manuals > Fonts, or read the file docs/fonts.md in your OpenTTD directory, to see how to solve this.");
-		Utf8Encode(err_str.data(), SCC_YELLOW);
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, err_str), {}, WL_WARNING);
+		 */
+		format_buffer err_str;
+		err_str.push_back_utf8(SCC_YELLOW);
+		err_str.append("The current font is missing some of the characters used in the texts for this language. Go to Help & Manuals > Fonts, or read the file docs/fonts.md in your OpenTTD directory, to see how to solve this.");
+		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_WARNING);
 
 		/* Reset the font width */
 		LoadStringWidthTable(searcher->Monospace());
@@ -2878,16 +2868,14 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	 * be translated by the translators, we 'force' it into the
 	 * binary and 'load' it via a BindCString. To do this
 	 * properly we have to set the colour of the string,
-	 * otherwise we end up with a lot of artifacts. The colour
-	 * 'character' might change in the future, so for safety
-	 * we just Utf8 Encode it into the string, which takes
-	 * exactly three characters, so it replaces the "XXX" with
-	 * the colour marker.
+	 * otherwise we end up with a lot of artifacts.
 	 */
 	if (_current_text_dir != TD_LTR) {
-		static std::string err_str("XXXThis version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
-		Utf8Encode(err_str.data(), SCC_YELLOW);
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, err_str), {}, WL_ERROR);
+		std::string err_str;
+		StringBuilder builder(err_str);
+		builder.PutUtf8(SCC_YELLOW);
+		builder.Put("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
+		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WL_ERROR);
 	}
 #endif /* !(WITH_ICU_I18N && WITH_HARFBUZZ) && !WITH_UNISCRIBE && !WITH_COCOA */
 }

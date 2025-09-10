@@ -2896,7 +2896,7 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
  {
 	const HouseSpec *hs = HouseSpec::Get(house);
 	/* Disallow disabled and replaced houses. */
-	if (!hs->enabled || hs->grf_prop.override != INVALID_HOUSE_ID) return CMD_ERROR;
+	if (!hs->enabled || hs->grf_prop.override_id != INVALID_HOUSE_ID) return CMD_ERROR;
 
 	/* Check if we can build this house in current climate. */
 	if (_settings_game.game_creation.landscape != LandscapeType::Arctic) {
@@ -3124,7 +3124,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
 		probs.emplace_back(hs.Index(), cur_prob);
 	}
 
-	TileIndex baseTile = tile;
+	TileIndex base_tile = tile;
 
 	while (probability_max > 0) {
 		/* Building a multitile building can change the location of tile.
@@ -3132,7 +3132,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
 		 * its northern tile would be elsewhere. However, if the callback
 		 * fails we would be basing further work from the changed tile.
 		 * So a next 1x1 tile building could be built on the wrong tile. */
-		tile = baseTile;
+		tile = base_tile;
 
 		uint r = RandomRange(probability_max);
 		uint i;

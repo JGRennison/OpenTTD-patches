@@ -73,10 +73,10 @@
  * served as subject to the initial testing of this codec. */
 
 /** List of all loaded GRF files */
-static std::vector<GRFFile *> _grf_files;
+static std::vector<GRFFile> _grf_files;
 static robin_hood::unordered_map<uint32_t, GRFFile *> _grf_file_map;
 
-const std::vector<GRFFile *> &GetAllGRFFiles()
+std::span<const GRFFile> GetAllGRFFiles()
 {
 	return _grf_files;
 }
@@ -158,9 +158,8 @@ GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid)
  */
 static GRFFile *GetFileByFilename(const std::string &filename)
 {
-	for (GRFFile * const file : _grf_files) {
-		if (file->filename == filename) return file;
-	}
+	auto it = std::ranges::find(_grf_files, filename, &GRFFile::filename);
+	if (it != std::end(_grf_files)) return &*it;
 	return nullptr;
 }
 
@@ -527,18 +526,19 @@ void GRFUnsafe(ByteReader &)
 /** Reset and clear all NewGRFs */
 static void ResetNewGRF()
 {
-	for (GRFFile * const file : _grf_files) {
-		delete file;
-	}
-
-	_grf_files.clear();
-	_grf_file_map.clear();
 	_cur.grfconfig = nullptr;
 	_cur.grffile = nullptr;
+	_grf_files.clear();
+	_grf_file_map.clear();
 	_new_signals_grfs.clear();
 	_new_signal_styles.fill({});
 	_num_new_signal_styles = 0;
 	_new_landscape_rocks_grfs.clear();
+
+	/* We store pointers to GRFFiles in many places, so need to ensure that the pointers do not become invalid
+	 * due to vector reallocation. Should not happen due to loading taking place in multiple stages, but
+	 * reserving when the size is known is good practice anyway. */
+	_grf_files.reserve(_grfconfig.size());
 }
 
 /** Clear all NewGRF errors */
@@ -712,9 +712,9 @@ static void InitNewGRFFile(const GRFConfig &config)
 		return;
 	}
 
-	newfile = new GRFFile(config);
+	assert(_grf_files.size() < _grf_files.capacity()); // We must not invalidate pointers.
+	newfile = &_grf_files.emplace_back(config);
 	_cur.grffile = newfile;
-	_grf_files.push_back(newfile);
 	_grf_file_map[newfile->grfid] = newfile;
 }
 
@@ -761,6 +761,11 @@ GRFFile::GRFFile(const GRFConfig &config)
 	/* Copy the initial parameter list */
 	this->param = config.param;
 }
+
+/* Some compilers get confused about vectors of unique_ptrs. */
+GRFFile::GRFFile() = default;
+GRFFile::GRFFile(GRFFile &&other) = default;
+GRFFile::~GRFFile() = default;
 
 /**
  * Find first cargo label that exists and is active from a list of cargo labels.
@@ -1194,20 +1199,20 @@ static void FinaliseHouseArray()
 	 * On the other hand, why 1930? Just 'fix' the houses with the lowest
 	 * minimum introduction date to 0.
 	 */
-	for (GRFFile * const file : _grf_files) {
-		if (file->housespec.empty()) continue;
+	for (const auto &file : _grf_files) {
+		if (file.housespec.empty()) continue;
 
-		size_t num_houses = file->housespec.size();
+		size_t num_houses = file.housespec.size();
 		for (size_t i = 0; i < num_houses; i++) {
-			HouseSpec *hs = file->housespec[i].get();
+			HouseSpec *hs = file.housespec[i].get();
 
 			if (hs == nullptr) continue;
 
-			const HouseSpec *next1 = (i + 1 < num_houses ? file->housespec[i + 1].get() : nullptr);
-			const HouseSpec *next2 = (i + 2 < num_houses ? file->housespec[i + 2].get() : nullptr);
-			const HouseSpec *next3 = (i + 3 < num_houses ? file->housespec[i + 3].get() : nullptr);
+			const HouseSpec *next1 = (i + 1 < num_houses ? file.housespec[i + 1].get() : nullptr);
+			const HouseSpec *next2 = (i + 2 < num_houses ? file.housespec[i + 2].get() : nullptr);
+			const HouseSpec *next3 = (i + 3 < num_houses ? file.housespec[i + 3].get() : nullptr);
 
-			if (!IsHouseSpecValid(hs, next1, next2, next3, file->filename)) continue;
+			if (!IsHouseSpecValid(hs, next1, next2, next3, file.filename)) continue;
 
 			_house_mngr.SetEntitySpec(hs);
 		}
@@ -1263,14 +1268,14 @@ static void FinaliseHouseArray()
  */
 static void FinaliseIndustriesArray()
 {
-	for (GRFFile * const file : _grf_files) {
-		for (const auto &indsp : file->industryspec) {
+	for (const auto &file : _grf_files) {
+		for (const auto &indsp : file.industryspec) {
 			if (indsp == nullptr || !indsp->enabled) continue;
 
 			_industry_mngr.SetEntitySpec(indsp.get());
 		}
 
-		for (const auto &indtsp : file->indtspec) {
+		for (const auto &indtsp : file.indtspec) {
 			if (indtsp != nullptr) {
 				_industile_mngr.SetEntitySpec(indtsp.get());
 			}
@@ -1311,8 +1316,8 @@ static void FinaliseIndustriesArray()
  */
 static void FinaliseObjectsArray()
 {
-	for (GRFFile * const file : _grf_files) {
-		for (auto &objectspec : file->objectspec) {
+	for (const auto &file : _grf_files) {
+		for (auto &objectspec : file.objectspec) {
 			if (objectspec != nullptr && objectspec->grf_prop.HasGrfFile() && objectspec->IsEnabled()) {
 				_object_mngr.SetEntitySpec(objectspec.get());
 			}
@@ -1329,14 +1334,14 @@ static void FinaliseObjectsArray()
  */
 static void FinaliseAirportsArray()
 {
-	for (GRFFile * const file : _grf_files) {
-		for (auto &as : file->airportspec) {
+	for (const auto &file : _grf_files) {
+		for (auto &as : file.airportspec) {
 			if (as != nullptr && as->enabled) {
 				_airport_mngr.SetEntitySpec(as.get());
 			}
 		}
 
-		for (auto &ats : file->airtspec) {
+		for (auto &ats : file.airtspec) {
 			if (ats != nullptr && ats->enabled) {
 				_airporttile_mngr.SetEntitySpec(ats.get());
 			}
@@ -1629,77 +1634,77 @@ static void FinalisePriceBaseMultipliers()
 	for (int i = 0; i < num_grfs; i++) {
 		grf_overrides[i] = -1;
 
-		GRFFile *source = _grf_files[i];
-		auto it = _grf_id_overrides.find(source->grfid);
+		GRFFile &source = _grf_files[i];
+		auto it = _grf_id_overrides.find(source.grfid);
 		if (it == std::end(_grf_id_overrides)) continue;
-		uint32_t override = it->second;
+		uint32_t override_grfid = it->second;
 
-		GRFFile *dest = GetFileByGRFID(override);
-		if (dest == nullptr) continue;
+		auto dest = std::ranges::find(_grf_files, override_grfid, &GRFFile::grfid);
+		if (dest == std::end(_grf_files)) continue;
 
-		grf_overrides[i] = find_index(_grf_files, dest);
+		grf_overrides[i] = static_cast<int>(std::ranges::distance(std::begin(_grf_files), dest));
 		assert(grf_overrides[i] >= 0);
 	}
 
 	/* Override features and price base multipliers of earlier loaded grfs */
 	for (int i = 0; i < num_grfs; i++) {
 		if (grf_overrides[i] < 0 || grf_overrides[i] >= i) continue;
-		GRFFile *source = _grf_files[i];
-		GRFFile *dest = _grf_files[grf_overrides[i]];
+		GRFFile &source = _grf_files[i];
+		GRFFile &dest = _grf_files[grf_overrides[i]];
 
-		uint32_t features = (source->grf_features | dest->grf_features) & override_features;
-		source->grf_features |= features;
-		dest->grf_features |= features;
+		uint32_t features = (source.grf_features | dest.grf_features) & override_features;
+		source.grf_features |= features;
+		dest.grf_features |= features;
 
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			/* No price defined -> nothing to do */
-			if (!HasBit(features, _price_base_specs[p].grf_feature) || source->price_base_multipliers[p] == INVALID_PRICE_MODIFIER) continue;
-			Debug(grf, 3, "'{}' overrides price base multiplier {} of '{}'", source->filename, p, dest->filename);
-			dest->price_base_multipliers[p] = source->price_base_multipliers[p];
+			if (!HasBit(features, _price_base_specs[p].grf_feature) || source.price_base_multipliers[p] == INVALID_PRICE_MODIFIER) continue;
+			Debug(grf, 3, "'{}' overrides price base multiplier {} of '{}'", source.filename, p, dest.filename);
+			dest.price_base_multipliers[p] = source.price_base_multipliers[p];
 		}
 	}
 
 	/* Propagate features and price base multipliers of afterwards loaded grfs, if none is present yet */
 	for (int i = num_grfs - 1; i >= 0; i--) {
 		if (grf_overrides[i] < 0 || grf_overrides[i] <= i) continue;
-		GRFFile *source = _grf_files[i];
-		GRFFile *dest = _grf_files[grf_overrides[i]];
+		GRFFile &source = _grf_files[i];
+		GRFFile &dest = _grf_files[grf_overrides[i]];
 
-		uint32_t features = (source->grf_features | dest->grf_features) & override_features;
-		source->grf_features |= features;
-		dest->grf_features |= features;
+		uint32_t features = (source.grf_features | dest.grf_features) & override_features;
+		source.grf_features |= features;
+		dest.grf_features |= features;
 
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			/* Already a price defined -> nothing to do */
-			if (!HasBit(features, _price_base_specs[p].grf_feature) || dest->price_base_multipliers[p] != INVALID_PRICE_MODIFIER) continue;
-			Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, source->filename, dest->filename);
-			dest->price_base_multipliers[p] = source->price_base_multipliers[p];
+			if (!HasBit(features, _price_base_specs[p].grf_feature) || dest.price_base_multipliers[p] != INVALID_PRICE_MODIFIER) continue;
+			Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, source.filename, dest.filename);
+			dest.price_base_multipliers[p] = source.price_base_multipliers[p];
 		}
 	}
 
 	/* The 'master grf' now have the correct multipliers. Assign them to the 'addon grfs' to make everything consistent. */
 	for (int i = 0; i < num_grfs; i++) {
 		if (grf_overrides[i] < 0) continue;
-		GRFFile *source = _grf_files[i];
-		GRFFile *dest = _grf_files[grf_overrides[i]];
+		GRFFile &source = _grf_files[i];
+		GRFFile &dest = _grf_files[grf_overrides[i]];
 
-		uint32_t features = (source->grf_features | dest->grf_features) & override_features;
-		source->grf_features |= features;
-		dest->grf_features |= features;
+		uint32_t features = (source.grf_features | dest.grf_features) & override_features;
+		source.grf_features |= features;
+		dest.grf_features |= features;
 
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			if (!HasBit(features, _price_base_specs[p].grf_feature)) continue;
-			if (source->price_base_multipliers[p] != dest->price_base_multipliers[p]) {
-				Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, dest->filename, source->filename);
+			if (source.price_base_multipliers[p] != dest.price_base_multipliers[p]) {
+				Debug(grf, 3, "Price base multiplier {} from '{}' propagated to '{}'", p, dest.filename, source.filename);
 			}
-			source->price_base_multipliers[p] = dest->price_base_multipliers[p];
+			source.price_base_multipliers[p] = dest.price_base_multipliers[p];
 		}
 	}
 
 	/* Apply fallback prices for grf version < 8 */
-	for (GRFFile * const file : _grf_files) {
-		if (file->grf_version >= 8) continue;
-		PriceMultipliers &price_base_multipliers = file->price_base_multipliers;
+	for (auto &file : _grf_files) {
+		if (file.grf_version >= 8) continue;
+		PriceMultipliers &price_base_multipliers = file.price_base_multipliers;
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			Price fallback_price = _price_base_specs[p].fallback_price;
 			if (fallback_price != INVALID_PRICE && price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
@@ -1711,21 +1716,21 @@ static void FinalisePriceBaseMultipliers()
 	}
 
 	/* Decide local/global scope of price base multipliers */
-	for (GRFFile * const file : _grf_files) {
-		PriceMultipliers &price_base_multipliers = file->price_base_multipliers;
+	for (auto &file : _grf_files) {
+		PriceMultipliers &price_base_multipliers = file.price_base_multipliers;
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			if (price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
 				/* No multiplier was set; set it to a neutral value */
 				price_base_multipliers[p] = 0;
 			} else {
-				if (!HasBit(file->grf_features, _price_base_specs[p].grf_feature)) {
+				if (!HasBit(file.grf_features, _price_base_specs[p].grf_feature)) {
 					/* The grf does not define any objects of the feature,
 					 * so it must be a difficulty setting. Apply it globally */
-					Debug(grf, 3, "'{}' sets global price base multiplier {} to {}", file->filename, p, price_base_multipliers[p]);
+					Debug(grf, 3, "'{}' sets global price base multiplier {} to {}", file.filename, p, price_base_multipliers[p]);
 					SetPriceBaseMultiplier(p, price_base_multipliers[p]);
 					price_base_multipliers[p] = 0;
 				} else {
-					Debug(grf, 3, "'{}' sets local price base multiplier {} to {}", file->filename, p, price_base_multipliers[p]);
+					Debug(grf, 3, "'{}' sets local price base multiplier {} to {}", file.filename, p, price_base_multipliers[p]);
 				}
 			}
 		}
@@ -1745,24 +1750,24 @@ void AddBadgeToSpecs(T &specs, GrfSpecFeature feature, Badge &badge)
 /** Finish up applying badges to things */
 static void FinaliseBadges()
 {
-	for (GRFFile * const file : _grf_files) {
-		Badge *badge = GetBadgeByLabel(fmt::format("newgrf/{:08x}", std::byteswap(file->grfid)));
+	for (const auto &file : _grf_files) {
+		Badge *badge = GetBadgeByLabel(fmt::format("newgrf/{:08x}", std::byteswap(file.grfid)));
 		if (badge == nullptr) continue;
 
 		for (Engine *e : Engine::Iterate()) {
-			if (e->grf_prop.grffile != file) continue;
+			if (e->grf_prop.grffile != &file) continue;
 			e->badges.push_back(badge->index);
 			badge->features.Set(static_cast<GrfSpecFeature>(GSF_TRAINS + e->type));
 		}
 
-		AddBadgeToSpecs(file->stations, GSF_STATIONS, *badge);
-		AddBadgeToSpecs(file->housespec, GSF_HOUSES, *badge);
-		AddBadgeToSpecs(file->industryspec, GSF_INDUSTRIES, *badge);
-		AddBadgeToSpecs(file->indtspec, GSF_INDUSTRYTILES, *badge);
-		AddBadgeToSpecs(file->objectspec, GSF_OBJECTS, *badge);
-		AddBadgeToSpecs(file->airportspec, GSF_AIRPORTS, *badge);
-		AddBadgeToSpecs(file->airtspec, GSF_AIRPORTTILES, *badge);
-		AddBadgeToSpecs(file->roadstops, GSF_ROADSTOPS, *badge);
+		AddBadgeToSpecs(file.stations, GSF_STATIONS, *badge);
+		AddBadgeToSpecs(file.housespec, GSF_HOUSES, *badge);
+		AddBadgeToSpecs(file.industryspec, GSF_INDUSTRIES, *badge);
+		AddBadgeToSpecs(file.indtspec, GSF_INDUSTRYTILES, *badge);
+		AddBadgeToSpecs(file.objectspec, GSF_OBJECTS, *badge);
+		AddBadgeToSpecs(file.airportspec, GSF_AIRPORTS, *badge);
+		AddBadgeToSpecs(file.airtspec, GSF_AIRPORTTILES, *badge);
+		AddBadgeToSpecs(file.roadstops, GSF_ROADSTOPS, *badge);
 	}
 
 	ApplyBadgeFeaturesToClassBadges();

@@ -469,8 +469,7 @@ static void GetFileTitle(const std::string &file, char *title, const char *last,
 
 	size_t read = fread(title, 1, last - title, *f);
 	assert(title + read <= last);
-	title[read] = '\0';
-	StrMakeValidInPlace(title, last);
+	StrMakeValidInPlace(title, title + read);
 }
 
 /**

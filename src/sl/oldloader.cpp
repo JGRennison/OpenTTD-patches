@@ -225,7 +225,6 @@ static inline bool CheckOldSavegameType(FileHandle &f, char *temp, const char *l
 
 	bool ret = VerifyOldNameChecksum(temp, len);
 	temp[len - 2] = '\0'; // name is null-terminated in savegame, but it's better to be sure
-	StrMakeValidInPlace(temp, last);
 
 	return ret;
 }
@@ -247,12 +246,14 @@ static SavegameType DetermineOldSavegameType(FileHandle &f, char *title, const c
 	}
 
 	if (title != nullptr) {
+		format_to_fixed_z title_buf(title, last);
 		switch (type) {
-			case SGT_TTO: title = strecpy(title, "(TTO) ", last);    break;
-			case SGT_TTD: title = strecpy(title, "(TTD) ", last);    break;
-			default:      title = strecpy(title, "(broken) ", last); break;
+			case SGT_TTO: title_buf.append("(TTO) ");    break;
+			case SGT_TTD: title_buf.append("(TTD) ");    break;
+			default:      title_buf.append("(broken) "); break;
 		}
-		strecpy(title, temp, last);
+		AppendStrMakeValidInPlace(title_buf, temp);
+		title_buf.finalise();
 	}
 
 	return type;

@@ -1408,7 +1408,7 @@ DEF_CONSOLE_CMD(ConReturn)
  *  default console commands
  ******************************/
 extern bool CloseConsoleLogIfActive();
-extern const std::vector<GRFFile *> &GetAllGRFFiles();
+extern std::span<const GRFFile> GetAllGRFFiles();
 extern void ConPrintFramerate(); // framerate_gui.cpp
 extern void ShowFramerateWindow();
 
@@ -2528,7 +2528,7 @@ DEF_CONSOLE_CMD(ConContent)
 	if (StrEqualsIgnoreCase(argv[1], "state")) {
 		IConsolePrint(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			if (argc > 2 && strcasestr((*iter)->name.c_str(), argv[2]) == nullptr) continue;
+			if (argc > 2 && !StrContainsIgnoreCase((*iter)->name, argv[2])) continue;
 			OutputContentState(*iter);
 		}
 		return true;
@@ -3439,20 +3439,20 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 		return true;
 	}
 
-	const std::vector<GRFFile *> &files = GetAllGRFFiles();
+	const std::span<const GRFFile> files = GetAllGRFFiles();
 
 	format_buffer buffer;
 
-	for (const GRFFile *grf : files) {
-		if (grf->cargo_list.empty()) continue;
+	for (const GRFFile &grf : files) {
+		if (grf.cargo_list.empty()) continue;
 
-		IConsolePrint(CC_DEFAULT, "[{:08X}] {}: {} cargoes", std::byteswap(grf->grfid), grf->filename, grf->cargo_list.size());
+		IConsolePrint(CC_DEFAULT, "[{:08X}] {}: {} cargoes", std::byteswap(grf.grfid), grf.filename, grf.cargo_list.size());
 
 		uint i = 0;
-		for (const CargoLabel &cl : grf->cargo_list) {
+		for (const CargoLabel &cl : grf.cargo_list) {
 			buffer.clear();
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
-				if (grf->cargo_map[cs->Index()] == i) {
+				if (grf.cargo_map[cs->Index()] == i) {
 					buffer.format("{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
 				}
 			}
@@ -3881,19 +3881,19 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		return true;
 	}
 
-	const std::vector<GRFFile *> &files = GetAllGRFFiles();
+	std::span<const GRFFile> files = GetAllGRFFiles();
 
 	/* "list" sub-command */
 	if (argc == 1 || StrStartsWithIgnoreCase(argv[1], "lis")) {
 		IConsolePrint(CC_INFO, "Loaded GRF files:");
 		int i = 1;
-		for (GRFFile *grf : files) {
-			auto profiler = std::ranges::find(_newgrf_profilers, grf, &NewGRFProfiler::grffile);
+		for (const auto &grf : files) {
+			auto profiler = std::ranges::find(_newgrf_profilers, &grf, &NewGRFProfiler::grffile);
 			bool selected = profiler != _newgrf_profilers.end();
 			bool active = selected && profiler->active;
 			TextColour tc = active ? TC_LIGHT_BLUE : selected ? TC_GREEN : CC_INFO;
 			const char *statustext = active ? " (active)" : selected ? " (selected)" : "";
-			IConsolePrint(tc, "{}: [{:08X}] {}{}", i, std::byteswap(grf->grfid), grf->filename, statustext);
+			IConsolePrint(tc, "{}: [{:08X}] {}{}", i, std::byteswap(grf.grfid), grf.filename, statustext);
 			i++;
 		}
 		return true;
@@ -3907,7 +3907,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 				IConsolePrint(CC_WARNING, "GRF number {} out of range, not added.", grfnum);
 				continue;
 			}
-			GRFFile *grf = files[grfnum - 1];
+			const GRFFile *grf = &files[grfnum - 1];
 			if (std::any_of(_newgrf_profilers.begin(), _newgrf_profilers.end(), [&](NewGRFProfiler &pr) { return pr.grffile == grf; })) {
 				IConsolePrint(CC_WARNING, "GRF number {} [{:08X}] is already selected for profiling.", grfnum, std::byteswap(grf->grfid));
 				continue;
@@ -3929,7 +3929,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 				IConsolePrint(CC_WARNING, "GRF number {} out of range, not removing.", grfnum);
 				continue;
 			}
-			GRFFile *grf = files[grfnum - 1];
+			const GRFFile *grf = &files[grfnum - 1];
 			_newgrf_profilers.erase(std::ranges::find(_newgrf_profilers, grf, &NewGRFProfiler::grffile));
 		}
 		return true;

@@ -287,7 +287,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (!GetCommandFlags(cmd).Test(CommandFlag::StrCtrl)) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
-		payload.SanitiseStrings(SVS_NONE);
+		payload.SanitiseStrings({});
 	}
 
 	/* Set the default callback to return a true/false result of the DoCommand */

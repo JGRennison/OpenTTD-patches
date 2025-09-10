@@ -53,8 +53,6 @@
 #include "newgrf_debug.h"
 #include <algorithm>
 
-#include <sstream>
-
 #include "safeguards.h"
 
 TownKdtree _town_local_authority_kdtree{};

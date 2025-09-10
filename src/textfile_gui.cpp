@@ -14,6 +14,7 @@
 #include "gfx_type.h"
 #include "gfx_func.h"
 #include "string_func.h"
+#include "core/string_builder.hpp"
 #include "textfile_gui.h"
 #include "dropdown_type.h"
 #include "dropdown_func.h"
@@ -245,8 +246,8 @@ static std::string MakeAnchorSlug(const std::string &line)
 void TextfileWindow::FindHyperlinksInMarkdown(Line &line, size_t line_index)
 {
 	std::string::const_iterator last_match_end = line.text.cbegin();
-	std::string fixed_line;
-	char ccbuf[5];
+	format_buffer fixed_line;
+	StringBuilder builder(fixed_line);
 
 	std::sregex_iterator matcher{ line.text.cbegin(), line.text.cend(), _markdown_link_regex};
 	while (matcher != std::sregex_iterator()) {
@@ -274,13 +275,13 @@ void TextfileWindow::FindHyperlinksInMarkdown(Line &line, size_t line_index)
 
 		if (link_colour != SCC_CONTROL_END) {
 			/* Format the link to look like a link. */
-			fixed_line += std::string(last_match_end, match[0].first);
-			link.begin = fixed_line.length();
-			fixed_line += std::string(ccbuf, Utf8Encode(ccbuf, SCC_PUSH_COLOUR));
-			fixed_line += std::string(ccbuf, Utf8Encode(ccbuf, link_colour));
-			fixed_line += match[1].str();
-			link.end = fixed_line.length();
-			fixed_line += std::string(ccbuf, Utf8Encode(ccbuf, SCC_POP_COLOUR));
+			builder += std::string_view(last_match_end, match[0].first);
+			link.begin = fixed_line.size();
+			builder.PutUtf8(SCC_PUSH_COLOUR);
+			builder.PutUtf8(link_colour);
+			builder += match[1].str();
+			link.end = fixed_line.size();
+			builder.PutUtf8(SCC_POP_COLOUR);
 			last_match_end = match[0].second;
 		}
 
@@ -290,10 +291,10 @@ void TextfileWindow::FindHyperlinksInMarkdown(Line &line, size_t line_index)
 	if (last_match_end == line.text.cbegin()) return; // nothing found
 
 	/* Add remaining text on line. */
-	fixed_line += std::string(last_match_end, line.text.cend());
+	fixed_line.append(std::string_view(last_match_end, line.text.cend()));
 
 	/* Overwrite original line text with "fixed" line text. */
-	line.text = std::move(fixed_line);
+	line.text = fixed_line.to_string();
 }
 
 /**
@@ -804,7 +805,7 @@ static std::vector<char> Xunzip(std::span<char> input)
  */
 void TextfileWindow::LoadText(std::string_view buf)
 {
-	std::string text = StrMakeValid(buf, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE | SVS_REPLACE_TAB_CR_NL_WITH_SPACE);
+	std::string text = StrMakeValid(buf, {StringValidationSetting::ReplaceWithQuestionMark, StringValidationSetting::AllowNewline, StringValidationSetting::ReplaceTabCrNlWithSpace});
 	this->lines.clear();
 
 	/* Split the string on newlines. */

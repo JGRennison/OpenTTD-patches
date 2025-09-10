@@ -1504,7 +1504,7 @@ void StateGameLoop()
 
 		if (!HasModalProgress()) UpdateLandscapingLimits();
 #ifndef DEBUG_DUMP_COMMANDS
-		Game::GameLoop();
+		if (_game_mode == GM_NORMAL) Game::GameLoop();
 #endif
 		return;
 	}

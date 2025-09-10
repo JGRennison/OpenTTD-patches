@@ -393,6 +393,9 @@ struct GRFFile {
 	btree::btree_map<GRFStringID, StringIndexInTab> string_map{}; ///< Map of local GRF string ID to string ID
 
 	GRFFile(const struct GRFConfig &config);
+	GRFFile();
+	GRFFile(GRFFile &&other);
+	~GRFFile();
 
 	/** Get GRF Parameter with range checking */
 	uint32_t GetParam(uint number) const

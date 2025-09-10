@@ -27,11 +27,8 @@ enum ScreenshotType : uint8_t {
 	SC_SMALLMAP,    ///< Smallmap window screenshot.
 };
 
-class SmallMapWindow;
-
-void SetupScreenshotViewport(ScreenshotType t, struct Viewport *vp, uint32_t width = 0, uint32_t height = 0);
 bool MakeHeightmapScreenshot(const char *filename);
-bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window);
+bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, class SmallMapWindow *window);
 void MakeScreenshotWithConfirm(ScreenshotType t);
 bool MakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width = 0, uint32_t height = 0);
 bool MakeMinimapWorldScreenshot(const char *name);

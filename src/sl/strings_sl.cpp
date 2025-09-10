@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../string_func.h"
 #include "../strings_func.h"
+#include "../core/string_builder.hpp"
 #include "saveload_internal.h"
 
 #include "table/strings.h"
@@ -63,8 +64,7 @@ std::string CopyFromOldName(StringID id)
 	if (IsSavegameVersionBefore(SLV_37)) {
 		const std::string &strfrom = _old_name_array[GB(id, 0, 9)];
 
-		std::string tmp;
-		auto strto = std::back_inserter(tmp);
+		format_buffer result;
 		for (char s : strfrom) {
 			if (s == '\0') break;
 			char32_t c = static_cast<uint8_t>(s); // cast to unsigned before integer promotion
@@ -82,10 +82,10 @@ std::string CopyFromOldName(StringID id)
 				default: break;
 			}
 
-			if (IsPrintable(c)) Utf8Encode(strto, c);
+			if (IsPrintable(c)) result.push_back_utf8(c);
 		}
 
-		return tmp;
+		return result.to_string();
 	} else {
 		/* Name will already be in UTF-8. */
 		return StrMakeValid(_old_name_array[GB(id, 0, 9)]);

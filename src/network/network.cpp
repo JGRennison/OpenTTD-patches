@@ -331,7 +331,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	 * user name's characters will influence the direction of the "***" instead of the language setting
 	 * of the game. Manually set the direction of the "***" by inserting a text-direction marker. */
 	format_buffer message;
-	StringBuilder(message).Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
+	message.push_back_utf8(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
 
 	switch (action) {
 		case NETWORK_ACTION_SERVER_MESSAGE:

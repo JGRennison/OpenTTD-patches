@@ -38,15 +38,44 @@ void strecpy(std::span<char> dst, std::string_view src);
 
 std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case = true);
 
-char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK) NOACCESS(2);
-[[nodiscard]] std::string StrMakeValid(std::string_view str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
-void StrMakeValidInPlace(char *str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+template <typename T>
+inline T &BackInserterContainer(std::back_insert_iterator<T> iter)
+{
+	using BaseIter = std::back_insert_iterator<T>;
+	struct accessor : BaseIter {
+		constexpr accessor(BaseIter iter) : BaseIter(iter) {}
+		using BaseIter::container;
+	};
+	return *accessor(iter).container;
+}
 
-inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+char *StrMakeValidInPlaceIntl(char *str, const char *end, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark) NOACCESS(2);
+[[nodiscard]] std::string StrMakeValid(std::string_view str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark);
+void StrMakeValidInPlace(char *str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark);
+void AppendStrMakeValidInPlace(struct format_target &buf, std::string_view str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark);
+void AppendStrMakeValidInPlace(std::string &output, std::string_view str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark);
+
+inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 {
 	if (str.empty()) return;
 	char *buf = str.data();
-	str.resize(StrMakeValidInPlace(buf, buf + str.size(), settings) - buf);
+	str.resize(StrMakeValidInPlaceIntl(buf, buf + str.size(), settings) - buf);
+}
+
+[[nodiscard]] inline std::string StrMakeValid(std::string &&str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
+{
+	StrMakeValidInPlace(str, settings);
+	return std::move(str);
+}
+
+[[nodiscard]] inline std::string StrMakeValid(const char *str, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
+{
+	return StrMakeValid(std::string_view(str), settings);
+}
+
+inline void StrMakeValidInPlace(char *str, const char *end, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
+{
+	*StrMakeValidInPlaceIntl(str, end, settings) = '\0';
 }
 
 void str_strip_colours(char *str);
@@ -66,7 +95,7 @@ bool strtolower(std::string &str, std::string::size_type offs = 0);
 
 [[nodiscard]] bool StrValid(std::span<const char> str);
 void StrTrimInPlace(std::string &str);
-std::string_view StrTrimView(std::string_view str);
+[[nodiscard]] std::string_view StrTrimView(std::string_view str);
 
 const char *StrLastPathSegment(const char *path);
 
@@ -124,12 +153,6 @@ size_t Utf8Decode(char32_t *c, const char *s);
 /* std::string_view::iterator might be char *, in which case we do not want this templated variant to be taken. */
 template <typename T> requires (!std::is_same_v<T, char *> && (std::is_same_v<std::string_view::iterator, T> || std::is_same_v<std::string::iterator, T>))
 inline size_t Utf8Decode(char32_t *c, T &s) { return Utf8Decode(c, &*s); }
-size_t Utf8Encode(char *buf, char32_t c);
-size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, char32_t c);
-size_t Utf8Encode(std::back_insert_iterator<std::string> &buf, char32_t c);
-inline size_t Utf8Encode(std::string::iterator &s, char32_t c) { return Utf8Encode(&*s, c); }
-size_t Utf8TrimString(char *s, size_t maxlen);
-
 
 inline char32_t Utf8Consume(const char **s)
 {
@@ -147,23 +170,6 @@ inline char32_t Utf8Consume(Titr &s)
 }
 
 /**
- * Return the length of a UTF-8 encoded character.
- * @param c Unicode character.
- * @return Length of UTF-8 encoding for character.
- */
-inline int8_t Utf8CharLen(char32_t c)
-{
-	if (c < 0x80)       return 1;
-	if (c < 0x800)      return 2;
-	if (c < 0x10000)    return 3;
-	if (c < 0x110000)   return 4;
-
-	/* Invalid valid, we encode as a '?' */
-	return 1;
-}
-
-
-/**
  * Return the length of an UTF-8 encoded value based on a single char. This
  * char should be the first byte of the UTF-8 encoding. If not, or encoding
  * is invalid, return value is 0
@@ -179,36 +185,6 @@ inline int8_t Utf8EncodedCharLen(char c)
 
 	/* Invalid UTF8 start encoding */
 	return 0;
-}
-
-/**
- * Retrieve the previous UNICODE character in an UTF-8 encoded string.
- * @param s char pointer pointing to (the first char of) the next character
- * @return a pointer in 's' to the previous UNICODE character's first byte
- * @note The function should not be used to determine the length of the previous
- * encoded char because it might be an invalid/corrupt start-sequence
- */
-inline char *Utf8PrevChar(char *s)
-{
-	char *ret = s;
-	while (IsUtf8Part(*--ret)) {}
-	return ret;
-}
-
-inline const char *Utf8PrevChar(const char *s)
-{
-	const char *ret = s;
-	while (IsUtf8Part(*--ret)) {}
-	return ret;
-}
-
-inline std::string::iterator Utf8PrevChar(std::string::iterator &s)
-{
-	auto cur = s;
-	do {
-		cur = std::prev(cur);
-	} while (IsUtf8Part(*cur));
-	return cur;
 }
 
 size_t Utf8StringLength(std::string_view str);
@@ -305,14 +281,6 @@ inline bool IsWhitespace(char32_t c)
 #if defined(__NetBSD__) || defined(__FreeBSD__)
 #include <sys/param.h>
 #endif
-
-/* strcasestr is available for _GNU_SOURCE, BSD and some Apple */
-#if defined(_GNU_SOURCE) || (defined(__BSD_VISIBLE) && __BSD_VISIBLE) || (defined(__APPLE__) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))) || defined(_NETBSD_SOURCE)
-#	undef DEFINE_STRCASESTR
-#else
-#	define DEFINE_STRCASESTR
-char *strcasestr(const char *haystack, const char *needle);
-#endif /* strcasestr is available */
 
 /**
  * The use of a struct is so that when used as an argument to seprintf/etc, the buffer lives

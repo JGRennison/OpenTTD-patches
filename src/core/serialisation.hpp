@@ -354,7 +354,7 @@ public:
 	 * @param settings The string validation settings.
 	 * @return The validated string.
 	 */
-	std::string Recv_string(size_t length, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	std::string Recv_string(size_t length, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		assert(length > 1);
 
@@ -378,7 +378,7 @@ public:
 	 * @param buffer The buffer to put the data into.
 	 * @param settings The string validation settings.
 	 */
-	void Recv_string(std::string &buffer, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	void Recv_string(std::string &buffer, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		/* Don't allow reading from a closed socket */
 		if (!this->CanRecvBytes(0, false)) return;
@@ -496,7 +496,7 @@ public:
 	}
 
 	template <typename V>
-	void Recv_generic(V &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	void Recv_generic(V &data, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		if constexpr (std::is_same_v<V, std::string>) {
 			this->Recv_string(data, settings);
@@ -510,7 +510,7 @@ public:
 	}
 
 	template <typename... V>
-	void Recv_generic(std::tuple<V...> &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	void Recv_generic(std::tuple<V...> &data, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
 			((this->Recv_generic(std::get<Tindices>(data), settings)), ...);
@@ -519,7 +519,7 @@ public:
 	}
 
 	template <typename... V>
-	void Recv_generic(std::variant<V...> &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	void Recv_generic(std::variant<V...> &data, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		static_assert(sizeof...(V) < 256);
 		const size_t idx = Recv_uint8();
@@ -536,7 +536,7 @@ public:
 		handler(std::index_sequence_for<V...>{});
 	}
 
-	void Recv_generic(std::monostate &data, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+	void Recv_generic(std::monostate &data, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
 	{
 		/* Do nothing */
 	}

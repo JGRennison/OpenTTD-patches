@@ -711,8 +711,8 @@ void FixSCCEncoded(std::string &str, bool fix_code)
 	 * `:<HEX>`                   becomes `<RS><SCC_ENCODED_NUMERIC><HEX>`
 	 * `:"<STRING>"`              becomes `<RS><SCC_ENCODED_STRING><STRING>`
 	 */
-	std::string result;
-	auto output = std::back_inserter(result);
+	format_buffer result;
+	StringBuilder builder(result);
 
 	bool is_encoded = false; // Set if we determine by the presence of SCC_ENCODED that the string is an encoded string.
 	bool in_string = false; // Set if we in a string, between double-quotes.
@@ -724,11 +724,11 @@ void FixSCCEncoded(std::string &str, bool fix_code)
 
 		char32_t c;
 		Utf8Decode(&c, &*it);
+		it += len;
 		if (c == SCC_ENCODED || (fix_code && (c == 0xE028 || c == 0xE02A))) {
-			Utf8Encode(output, SCC_ENCODED);
+			builder.PutUtf8(SCC_ENCODED);
 			need_type = false;
 			is_encoded = true;
-			it += len;
 			continue;
 		}
 
@@ -739,30 +739,27 @@ void FixSCCEncoded(std::string &str, bool fix_code)
 			in_string = !in_string;
 			if (in_string && need_type) {
 				/* Started a new string parameter. */
-				Utf8Encode(output, SCC_ENCODED_STRING);
+				builder.PutUtf8(SCC_ENCODED_STRING);
 				need_type = false;
 			}
-			it += len;
 			continue;
 		}
 
 		if (!in_string && c == ':') {
-			*output = SCC_RECORD_SEPARATOR;
+			builder.PutUtf8(SCC_RECORD_SEPARATOR);
 			need_type = true;
-			it += len;
 			continue;
 		}
 		if (need_type) {
 			/* Started a new numeric parameter. */
-			Utf8Encode(output, SCC_ENCODED_NUMERIC);
+			builder.PutUtf8(SCC_ENCODED_NUMERIC);
 			need_type = false;
 		}
 
-		Utf8Encode(output, c);
-		it += len;
+		builder.PutUtf8(c);
 	}
 
-	str = std::move(result);
+	str.assign((std::string_view)result);
 }
 
 /**
@@ -829,14 +826,14 @@ static void SlStdString(void *ptr, VarType conv)
 
 			SlReadString(*str, len);
 
-			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
-				settings = settings | SVS_ALLOW_CONTROL_CODE;
+				settings.Set(StringValidationSetting::AllowControlCode);
 				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT)) FixSCCEncoded(*str, IsSavegameVersionBefore(SLV_169));
 				if (IsSavegameVersionBefore(SLV_FIX_SCC_ENCODED_NEGATIVE)) FixSCCEncodedNegative(*str);
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
-				settings = settings | SVS_ALLOW_NEWLINE;
+				settings.Set(StringValidationSetting::AllowNewline);
 			}
 
 			StrMakeValidInPlace(*str, settings);
@@ -909,12 +906,12 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			}
 
 			((char *)ptr)[len] = '\0'; // properly terminate the string
-			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
-				settings = settings | SVS_ALLOW_CONTROL_CODE;
+				settings.Set(StringValidationSetting::AllowControlCode);
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
-				settings = settings | SVS_ALLOW_NEWLINE;
+				settings.Set(StringValidationSetting::AllowNewline);
 			}
 			StrMakeValidInPlace((char *)ptr, (char *)ptr + len, settings);
 			break;

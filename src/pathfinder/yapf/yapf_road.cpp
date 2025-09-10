@@ -493,18 +493,18 @@ public:
 
 		/* if path not found - return INVALID_TRACKDIR */
 		Trackdir next_trackdir = INVALID_TRACKDIR;
-		Node *pNode = Yapf().GetBestNode();
-		if (pNode != nullptr) {
+		Node *node = Yapf().GetBestNode();
+		if (node != nullptr) {
 			/* path was found or at least suggested
 			 * walk through the path back to its origin */
-			while (pNode->parent != nullptr) {
-				if (pNode->GetIsChoice()) {
-					path_cache.push_front(pNode->GetTile(), pNode->GetTrackdir());
+			while (node->parent != nullptr) {
+				if (node->GetIsChoice()) {
+					path_cache.push_front(node->GetTile(), node->GetTrackdir());
 				}
-				pNode = pNode->parent;
+				node = node->parent;
 			}
 			/* return trackdir from the best origin node (one of start nodes) */
-			Node &best_next_node = *pNode;
+			Node &best_next_node = *node;
 			assert(best_next_node.GetTile() == tile);
 			next_trackdir = best_next_node.GetTrackdir();
 			/* remove last element for the special case when tile == dest_tile */
@@ -544,11 +544,11 @@ public:
 		/* find the best path */
 		if (!Yapf().FindPath(v)) return dist;
 
-		Node *pNode = Yapf().GetBestNode();
-		if (pNode != nullptr) {
+		Node *node = Yapf().GetBestNode();
+		if (node != nullptr) {
 			/* path was found
 			 * get the path cost estimate */
-			dist = pNode->GetCostEstimate();
+			dist = node->GetCostEstimate();
 		}
 
 		return dist;

@@ -10,6 +10,7 @@
 #ifndef STRINGS_TYPE_H
 #define STRINGS_TYPE_H
 
+#include "string_type.h"
 #include "core/strong_typedef_type.hpp"
 #include <optional>
 #include <variant>
@@ -158,8 +159,6 @@ public:
 	inline StringParameter(ReferenceCaptureTag, const StringParameter &param) : data(param.data), type(param.type) {}
 	inline StringParameter(ReferenceCaptureTag, StringParameter &&param) : data(std::move(param.data)), type(param.type) {}
 };
-
-enum StringValidationSettings : uint8_t;
 
 /**
  * Container for an encoded string, created by GetEncodedString.

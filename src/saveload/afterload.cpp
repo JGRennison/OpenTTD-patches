@@ -2205,8 +2205,8 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_81)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			if (GetTileType(t) == MP_TREES) {
-				TreeGround groundType = (TreeGround)GB(_m[t].m2, 4, 2);
-				if (groundType != TREE_GROUND_SNOW_DESERT) SB(_m[t].m2, 6, 2, 3);
+				TreeGround ground_type = (TreeGround)GB(_m[t].m2, 4, 2);
+				if (ground_type != TREE_GROUND_SNOW_DESERT) SB(_m[t].m2, 6, 2, 3);
 			}
 		}
 	}
@@ -4017,14 +4017,6 @@ bool AfterLoadGame()
 		/* Placing objects on docking tiles was not updating adjacent station's docking tiles. */
 		for (Station *st : Station::Iterate()) {
 			if (st->ship_station.tile != INVALID_TILE) UpdateStationDockingTiles(st);
-		}
-	}
-
-	/* Make sure all industries exclusive supplier/consumer set correctly. */
-	if (IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL)) {
-		for (Industry *i : Industry::Iterate()) {
-			i->exclusive_supplier = INVALID_OWNER;
-			i->exclusive_consumer = INVALID_OWNER;
 		}
 	}
 

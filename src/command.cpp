@@ -1244,7 +1244,7 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	this->error_msg = buffer.Recv_uint16();
 	this->tile = TileIndex(buffer.Recv_uint32());
 
-	StringValidationSettings default_settings = (!_network_server && GetCommandFlags(this->cmd).Test(CommandFlag::StrCtrl)) ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
+	StringValidationSettings default_settings = (!_network_server && GetCommandFlags(this->cmd).Test(CommandFlag::StrCtrl)) ? StringValidationSettings{StringValidationSetting::AllowControlCode, StringValidationSetting::ReplaceWithQuestionMark} : StringValidationSetting::ReplaceWithQuestionMark;
 
 	uint16_t payload_size = buffer.Recv_uint16();
 	size_t expected_offset = buffer.GetDeserialisationPosition() + payload_size;

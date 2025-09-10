@@ -44,12 +44,12 @@ RoadBits GetAnyRoadBits(TileIndex tile, RoadTramType rtt, bool straight_tunnel_b
 			}
 
 		case MP_STATION:
-			if (!IsAnyRoadStopTile(tile)) return ROAD_NONE;
+			dbg_assert(IsAnyRoadStopTile(tile)); // ensured by MayHaveRoad
 			if (IsDriveThroughStopTile(tile)) return AxisToRoadBits(GetDriveThroughStopAxis(tile));
 			return DiagDirToRoadBits(GetBayRoadStopDir(tile));
 
 		case MP_TUNNELBRIDGE:
-			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) return ROAD_NONE;
+			dbg_assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD); // ensured by MayHaveRoad
 			if (IsRoadCustomBridgeHeadTile(tile)) return GetCustomBridgeHeadRoadBits(tile, rtt);
 			return straight_tunnel_bridge_entrance ?
 					AxisToRoadBits(DiagDirToAxis(GetTunnelBridgeDirection(tile))) :
