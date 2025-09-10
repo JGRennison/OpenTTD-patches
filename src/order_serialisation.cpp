@@ -1388,8 +1388,21 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 	}
 
+	/* Iterate orders in either forward or reverse direction. */
+	auto iterate_orders = [&]<typename F>(F &&func) {
+		if (reverse_orders) {
+			for (const auto &value : std::views::reverse(orders_json)) {
+				func(value);
+			}
+		} else {
+			for (const auto &value : orders_json) {
+				func(value);
+			}
+		}
+	};
+
 	VehicleOrderID order_id = order_insert_offset;
-	for (const auto &value : (reverse_orders ? std::views::reverse(orders_json) : orders_json)) {
+	iterate_orders([&](const nlohmann::json &value) {
 		auto order_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
@@ -1401,7 +1414,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 
 		order_id++;
-	}
+	});
 
 	if (reverse_orders) {
 		cmd_buffer.op_serialiser.AdjustTravelAfterReverse(replace_existing_mode ? 0 : initial_order_count, INVALID_VEH_ORDER_ID);
@@ -1422,14 +1435,14 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 
 	/* Post processing (link jumps and assign schedules) */
 	order_id = order_insert_offset;
-	for (const auto &value : (reverse_orders ? std::views::reverse(orders_json) : orders_json)) {
+	iterate_orders([&](const nlohmann::json &value) {
 		auto local_importer = json_importer.WithNewTarget<JSONToVehicleMode::Order>(value, order_id);
 
 		cmd_buffer.StartOrder();
 		if (auto sched_idx = local_importer.TryGetField<uint16_t>(FName::Orders::SCHEDULE_INDEX, JOIET_MAJOR); sched_idx.has_value()) {
 			local_importer.cmd_buffer.op_serialiser.SeekTo(order_id);
 			local_importer.cmd_buffer.op_serialiser.Timetable(MTF_ASSIGN_SCHEDULE, *sched_idx + schedule_insert_offset, MTCF_NONE);
-		};
+		}
 
 		std::string jump_label;
 		if (local_importer.TryGetField(FName::Orders::JUMP_TO, jump_label, JOIET_MAJOR)) {
@@ -1442,7 +1455,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 
 		order_id++;
-	}
+	});
 
 	cmd_buffer.Flush();
 	return errors;
