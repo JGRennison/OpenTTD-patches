@@ -986,7 +986,6 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 				if (c == '\n') p += Utf8Encode(p, '\r');
 				p += Utf8Encode(p, c);
 			}
-			*p = '\0';
 
 			/* Add path to all files to the crash window text */
 			const wchar_t * const crash_desc_buf_last = crash_desc_buf + crash_desc_buf_length - 1;

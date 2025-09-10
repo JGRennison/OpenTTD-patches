@@ -12,6 +12,7 @@
 #include "textbuf_type.h"
 #include "string_func.h"
 #include "strings_func.h"
+#include "core/utf8.hpp"
 #include "gfx_type.h"
 #include "gfx_func.h"
 #include "gfx_layout.h"
@@ -58,46 +59,45 @@ bool Textbuf::DeleteChar(uint16_t keycode)
 
 	if (!CanDelChar(backspace)) return false;
 
-	auto s = this->buf.begin() + this->caretpos;
-	uint16_t len = 0;
-
+	size_t start;
+	size_t len;
 	if (word) {
 		/* Delete a complete word. */
 		if (backspace) {
 			/* Delete whitespace and word in front of the caret. */
-			len = this->caretpos - (uint16_t)this->char_iter->Prev(StringIterator::ITER_WORD);
-			s -= len;
+			start = this->char_iter->Prev(StringIterator::ITER_WORD);
+			len = this->caretpos - start;
 		} else {
 			/* Delete word and following whitespace following the caret. */
-			len = (uint16_t)this->char_iter->Next(StringIterator::ITER_WORD) - this->caretpos;
+			start = this->caretpos;
+			len = this->char_iter->Next(StringIterator::ITER_WORD) - start;
 		}
 		/* Update character count. */
-		for (auto ss = s; ss < s + len; Utf8Consume(ss)) {
-			this->chars--;
-		}
+		this->chars -= static_cast<uint16_t>(Utf8StringLength(std::string_view(this->buf).substr(start, len)));
 	} else {
 		/* Delete a single character. */
 		if (backspace) {
 			/* Delete the last code point in front of the caret. */
-			s = Utf8PrevChar(s);
-			char32_t c;
-			len = (uint16_t)Utf8Decode(&c, s);
+			Utf8View view(this->buf);
+			auto it = view.GetIterAtByte(this->caretpos);
+			--it;
+			start = it.GetByteOffset();
+			len = this->caretpos - start;
 			this->chars--;
 		} else {
 			/* Delete the complete character following the caret. */
-			len = (uint16_t)this->char_iter->Next(StringIterator::ITER_CHARACTER) - this->caretpos;
+			start = this->caretpos;
+			len = this->char_iter->Next(StringIterator::ITER_CHARACTER) - start;
 			/* Update character count. */
-			for (auto ss = s; ss < s + len; Utf8Consume(ss)) {
-				this->chars--;
-			}
+			this->chars -= static_cast<uint16_t>(Utf8StringLength(std::string_view(this->buf).substr(start, len)));
 		}
 	}
 
 	/* Move the remaining characters over the marker */
-	this->buf.erase(s - this->buf.begin(), len);
+	this->buf.erase(start, len);
 	if (this->markend >= this->buf.size()) this->markpos = this->markend = 0;
 
-	if (backspace) this->caretpos -= len;
+	if (backspace) this->caretpos -= static_cast<uint16_t>(len);
 
 	this->UpdateStringIter();
 	this->UpdateWidth();
@@ -128,12 +128,10 @@ void Textbuf::DeleteAll()
  */
 bool Textbuf::InsertChar(char32_t key)
 {
-	uint16_t len = (uint16_t)Utf8CharLen(key);
+	auto [src, len] = EncodeUtf8(key);
 	if (this->buf.size() + len < this->max_bytes && this->chars + 1 <= this->max_chars) {
 		/* Make space in the string, then overwrite it with the Utf8 encoded character. */
-		auto pos = this->buf.begin() + this->caretpos;
-		pos = this->buf.insert(pos, len, '\0');
-		Utf8Encode(pos, key);
+		this->buf.insert(this->caretpos, src, len);
 		this->chars++;
 		this->caretpos += len;
 
@@ -233,18 +231,12 @@ bool Textbuf::InsertClipboard()
  */
 void Textbuf::DeleteText(uint16_t from, uint16_t to, bool update)
 {
-	uint c = 0;
-	auto s = this->buf.begin() + from;
-	auto end = this->buf.begin() + to;
-	while (s < end) {
-		Utf8Consume(s);
-		c++;
-	}
+	assert(from <= to);
 
 	/* Strip marked characters from buffer. */
+	this->chars -= static_cast<uint16_t>(Utf8StringLength(std::string_view(this->buf).substr(from, to - from)));
 	this->buf.erase(from, to - from);
 	if (this->markend >= this->buf.size()) this->markpos = this->markend = 0;
-	this->chars -= c;
 
 	auto fixup = [&](uint16_t &pos) {
 		if (pos <= from) return;
@@ -284,7 +276,7 @@ void Textbuf::DiscardMarkedText(bool update)
 /** Update the character iter after the text has changed. */
 void Textbuf::UpdateStringIter()
 {
-	this->char_iter->SetString(this->buf.c_str());
+	this->char_iter->SetString(this->buf);
 	size_t pos = this->char_iter->SetCurPosition(this->caretpos);
 	this->caretpos = pos == StringIterator::END ? 0 : (uint16_t)pos;
 }
@@ -419,11 +411,13 @@ void Textbuf::Assign(const std::string_view text)
 
 	/* Make sure the name isn't too long for the text buffer in the number of
 	 * characters (not bytes). max_chars also counts the '\0' characters. */
-	auto iter = this->buf.begin();
-	for (size_t len = 1; len < this->max_chars && iter != this->buf.end(); ++len) Utf8Consume(iter);
+	Utf8View view(text);
+	auto it = view.begin();
+	const auto end = view.end();
+	for (size_t len = 1; len < this->max_chars && it != end; ++len) ++it;
 
-	if (iter != this->buf.end()) {
-		this->buf.erase(iter, this->buf.end());
+	if (it != end) {
+		this->buf.erase(it.GetByteOffset(), std::string::npos);
 	}
 
 	this->UpdateSize();
@@ -436,7 +430,7 @@ void Textbuf::Assign(const std::string_view text)
  */
 void Textbuf::UpdateSize()
 {
-	this->chars = static_cast<uint16_t>(Utf8StringLength(this->buf.c_str()) + 1); // terminating zero
+	this->chars = static_cast<uint16_t>(Utf8StringLength(this->buf) + 1); // terminating zero
 	assert(this->buf.size() < this->max_bytes);
 	assert(this->chars <= this->max_chars);
 

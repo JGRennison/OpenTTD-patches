@@ -43,6 +43,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "core/backup_type.hpp"
 #include "gfx_layout.h"
+#include "core/utf8.hpp"
 #include "core/y_combinator.hpp"
 #include "3rdparty/svector/svector.h"
 #include <stack>
@@ -2720,13 +2721,9 @@ bool MissingGlyphSearcher::FindMissingGlyphs()
 
 	this->Reset();
 	for (auto text = this->NextString(); text.has_value(); text = this->NextString()) {
-		auto src = text->cbegin();
-
 		FontSize size = this->DefaultSize();
 		FontCache *fc = FontCache::Get(size);
-		while (src != text->cend()) {
-			char32_t c = Utf8Consume(src);
-
+		for (char32_t c : Utf8View(*text)) {
 			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
 				size = (FontSize)(c - SCC_FIRST_FONT);
 				fc = FontCache::Get(size);

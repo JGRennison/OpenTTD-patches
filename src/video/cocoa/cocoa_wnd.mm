@@ -34,6 +34,7 @@
 #include "../../spritecache.h"
 #include "../../textbuf_type.h"
 #include "../../toolbar_gui.h"
+#include "../../core/utf8.hpp"
 #include <array>
 
 #include "../../table/sprites.h"

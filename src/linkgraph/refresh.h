@@ -78,9 +78,8 @@ protected:
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
 		Hop(VehicleOrderID from, VehicleOrderID to, CargoType cargo, RefreshFlags flags = {}) : from(from), to(to), cargo(cargo), flags(flags) {}
-		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
-		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
-		bool operator!=(const Hop &other) const { return !(*this == other); }
+
+		constexpr auto operator<=>(const Hop &) const noexcept = default;
 	};
 
 	enum class TimetableTravelTimeFlag : uint8_t {
