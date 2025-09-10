@@ -160,7 +160,7 @@ protected:
 	format_target(fmt::detail::buffer<char> &buffer, uint8_t flags) : target(buffer), flags(flags) {}
 	~format_target() = default;
 
-	void append_utf8_impl(char32_t c);
+	void push_back_utf8_impl(char32_t c);
 
 public:
 	format_target(const format_target &other) = delete;
@@ -237,12 +237,12 @@ public:
 		return std::span<char>(this->target.data() + orig_size, this->target.size() - orig_size);
 	}
 
-	void append_utf8(char32_t c)
+	void push_back_utf8(char32_t c)
 	{
 		if (c < 0x80) {
 			this->push_back((char)c);
 		} else {
-			this->append_utf8_impl(c);
+			this->push_back_utf8_impl(c);
 		}
 	}
 

@@ -1197,7 +1197,7 @@ static void FormatUnitWeightRatio(StringBuilder builder, const Units &unit, int6
 		if (c == SCC_DECIMAL) {
 			c = '/';
 		}
-		tmp_buffer.append_utf8(c);
+		tmp_buffer.push_back_utf8(c);
 	}
 
 	DecimalValue dv = ConvertWeightRatioToDisplay(unit, raw_value);

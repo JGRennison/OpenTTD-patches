@@ -15,7 +15,7 @@
 
 #include "../safeguards.h"
 
-void format_target::append_utf8_impl(char32_t c)
+void format_target::push_back_utf8_impl(char32_t c)
 {
 	if (this->has_overflowed()) return;
 	auto [buf, len] = EncodeUtf8(c);

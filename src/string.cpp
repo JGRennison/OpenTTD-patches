@@ -511,7 +511,7 @@ std::string str_strip_all_scc(const char *str)
 void str_replace_wchar(struct format_target &buf, std::string_view str, char32_t find, char32_t replace)
 {
 	for (char32_t c : Utf8View(str)) {
-		buf.append_utf8(c == find ? replace : c);
+		buf.push_back_utf8(c == find ? replace : c);
 	}
 }
 
