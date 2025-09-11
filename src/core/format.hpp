@@ -510,4 +510,19 @@ auto format_lambda(F func)
 	};
 };
 
+/**
+ * fmt::detail::buffer<char> implementation for a minimum overhead strictly non-growing and non-truncating fixed-size buffer.
+ * Calls NOT_REACHED on overflow.
+ */
+struct fmt_base_fixed_non_growing final : public fmt::detail::buffer<char> {
+private:
+	static void grow(fmt::detail::buffer<char> &, size_t)
+	{
+		NOT_REACHED();
+	}
+
+public:
+	fmt_base_fixed_non_growing(char *buf, size_t capacity, size_t initial_size = 0) : buffer(grow, buf, initial_size, capacity) {}
+};
+
 #endif /* FORMAT_HPP */
