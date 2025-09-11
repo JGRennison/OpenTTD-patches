@@ -21,6 +21,7 @@
 #include "settings_type.h"
 #include "console_func.h"
 #include "rev.h"
+#include "core/utf8.hpp"
 #include "video/video_driver.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <string>
@@ -482,22 +483,25 @@ static void IConsoleTabCompletion()
 	match_input_no_underscores.prefix = RemoveUnderscores(match_input.prefix);
 	if (match_input_no_underscores.prefix.empty()) return;
 
-	auto check_candidate = [&](const char *cmd_name, match_state &state) {
-		if (strncmp(cmd_name, state.prefix.c_str(), state.prefix.size()) != 0) return;
+	auto check_candidate = [&](std::string_view cmd_name, match_state &state) {
+		if (!cmd_name.starts_with(state.prefix)) return;
 
 		if (state.matches == 0) {
 			state.common_prefix = cmd_name;
 		} else {
-			const char *cp = state.common_prefix.c_str();
-			const char *cmdp = cmd_name;
+			std::string_view cp = state.common_prefix;
+			std::string_view cmdp = cmd_name;
 			while (true) {
-				const char *end = cmdp;
-				char32_t a = Utf8Consume(cp);
-				char32_t b = Utf8Consume(cmdp);
+				size_t a_bytes, b_bytes;
+				char32_t a, b;
+				std::tie(a_bytes, a) = DecodeUtf8(cp);
+				std::tie(b_bytes, b) = DecodeUtf8(cmdp);
 				if (a == 0 || b == 0 || a != b) {
-					state.common_prefix.resize(end - cmd_name);
+					state.common_prefix.resize(cmdp.data() - cmd_name.data());
 					break;
 				}
+				cp.remove_prefix(a_bytes);
+				cmdp.remove_prefix(b_bytes);
 			}
 		}
 		state.matches++;
@@ -507,13 +511,13 @@ static void IConsoleTabCompletion()
 	for (auto &it : IConsole::Commands()) {
 		const IConsoleCmd *cmd = &it.second;
 		if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
-			check_candidate(it.first.c_str(), match_input_no_underscores);
-			check_candidate(cmd->name.c_str(), match_input);
+			check_candidate(it.first, match_input_no_underscores);
+			check_candidate(cmd->name, match_input);
 		}
 	}
 	for (auto &it : IConsole::Aliases()) {
-		check_candidate(it.first.c_str(), match_input_no_underscores);
-		check_candidate(it.second.name.c_str(), match_input);
+		check_candidate(it.first, match_input_no_underscores);
+		check_candidate(it.second.name, match_input);
 	}
 	match_state &best = match_input_no_underscores.matches > match_input.matches ? match_input_no_underscores : match_input;
 	if (best.matches > 0) {
