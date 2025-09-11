@@ -119,7 +119,7 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 
 		void operator()(const uint64_t &arg)
 		{
-			this->result.push_back_utf8(SCC_ENCODED_INTERNAL);
+			this->result.push_back_utf8(SCC_ENCODED_NUMERIC);
 			this->result.format("{:X}", arg);
 		}
 
