@@ -2871,11 +2871,11 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	 * otherwise we end up with a lot of artifacts.
 	 */
 	if (_current_text_dir != TD_LTR) {
-		std::string err_str;
-		StringBuilder builder(err_str);
-		builder.PutUtf8(SCC_YELLOW);
-		builder.Put("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, std::move(err_str)), {}, WL_ERROR);
+		format_buffer err_str;
+		err_str.push_back_utf8(SCC_YELLOW);
+		err_str.push_back_utf8(SCC_YELLOW);
+		err_str.append("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
+		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_ERROR);
 	}
 #endif /* !(WITH_ICU_I18N && WITH_HARFBUZZ) && !WITH_UNISCRIBE && !WITH_COCOA */
 }
