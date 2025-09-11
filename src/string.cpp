@@ -16,6 +16,7 @@
 #include "string_func.h"
 #include "string_base.h"
 #include "stringfilter_type.h"
+#include "core/string_consumer.hpp"
 #include "core/utf8.hpp"
 
 #include "table/control_codes.h"
@@ -172,76 +173,41 @@ static bool IsSccEncodedCode(char32_t c)
 }
 
 /**
- * Copies the valid (UTF-8) characters from \c str up to \c last to the \c dst.
+ * Copies the valid (UTF-8) characters from \c consumer to the \c builder.
  * Depending on the \c settings invalid characters can be replaced with a
  * question mark, as well as determining what characters are deemed invalid.
  *
- * It is allowed for \c dst to be the same as \c src, in which case the string
- * is make valid in place.
- * @param dst The destination to write to.
- * @param str The string to validate.
- * @param end The character beyond the end of the string (where the null-terminator is/would be).
+ * @param buffer The destination to write to.
+ * @param consumer The string to validate.
  * @param settings The settings for the string validation.
  */
-template <class T>
-static void StrMakeValid(T &dst, const char *str, const char *end, StringValidationSettings settings)
+static void StrMakeValid(fmt::detail::buffer<char> &buffer, StringConsumer consumer, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
-
-	while (str < end && *str != '\0') {
-		size_t len = Utf8EncodedCharLen(*str);
-		char32_t c;
-		/* If the first byte does not look like the first byte of an encoded
-		 * character, i.e. encoded length is 0, then this byte is definitely bad
-		 * and it should be skipped.
-		 * When the first byte looks like the first byte of an encoded character,
-		 * then the remaining bytes in the string are checked whether the whole
-		 * encoded character can be there. If that is not the case, this byte is
-		 * skipped.
-		 * Finally we attempt to decode the encoded character, which does certain
-		 * extra validations to see whether the correct number of bytes were used
-		 * to encode the character. If that is not the case, the byte is probably
-		 * invalid and it is skipped. We could emit a question mark, but then the
-		 * logic below cannot just copy bytes, it would need to re-encode the
-		 * decoded characters as the length in bytes may have changed.
-		 *
-		 * The goals here is to get as much valid Utf8 encoded characters from the
-		 * source string to the destination string.
-		 *
-		 * Note: a multi-byte encoded termination ('\0') will trigger the encoded
-		 * char length and the decoded length to differ, so it will be ignored as
-		 * invalid character data. If it were to reach the termination, then we
-		 * would also reach the "last" byte of the string and a normal '\0'
-		 * termination will be placed after it.
-		 */
-		if (len == 0 || str + len > end || len != Utf8Decode(&c, str)) {
+	while (consumer.AnyBytesLeft()) {
+		auto cc = consumer.TryReadUtf8();
+		if (!cc.has_value()) {
 			/* Maybe the next byte is still a valid character? */
-			str++;
+			consumer.Skip(1);
 			continue;
 		}
+		char32_t c = *cc;
+		if (c == 0) break;
 
-		if ((IsPrintable(c) && (c < SCC_SPRITE_START || c > SCC_SPRITE_END)) || (settings.Test(StringValidationSetting::AllowControlCode) && IsSccEncodedCode(c))) {
-			/* Copy the character back. Even if dst is current the same as str
-			 * (i.e. no characters have been changed) this is quicker than
-			 * moving the pointers ahead by len */
-			do {
-				*dst++ = *str++;
-			} while (--len != 0);
-		} else if (settings.Test(StringValidationSetting::AllowNewline) && c == '\n') {
-			*dst++ = *str++;
-		} else {
-			if (settings.Test(StringValidationSetting::AllowNewline) && c == '\r' && str[1] == '\n') {
-				str += len;
-				continue;
-			}
-			str += len;
-			if (settings.Test(StringValidationSetting::ReplaceTabCrNlWithSpace) && (c == '\r' || c == '\n' || c == '\t')) {
-				/* Replace the tab, carriage return or newline with a space. */
-				*dst++ = ' ';
-			} else if (settings.Test(StringValidationSetting::ReplaceWithQuestionMark)) {
-				/* Replace the undesirable character with a question mark */
-				*dst++ = '?';
-			}
+		if ((IsPrintable(c) && (c < SCC_SPRITE_START || c > SCC_SPRITE_END)) ||
+				(settings.Test(StringValidationSetting::AllowControlCode) && IsSccEncodedCode(c)) ||
+				(settings.Test(StringValidationSetting::AllowNewline) && c == '\n')) {
+			auto [buf, len] = EncodeUtf8(c);
+			buffer.append(buf, buf + len);
+		} else if (settings.Test(StringValidationSetting::AllowNewline) && c == '\r' && consumer.PeekCharIf('\n')) {
+			/* Skip \r, if followed by \n */
+			/* continue */
+		} else if (settings.Test(StringValidationSetting::ReplaceTabCrNlWithSpace) && (c == '\r' || c == '\n' || c == '\t')) {
+			/* Replace the tab, carriage return or newline with a space. */
+			buffer.push_back(' ');
+		} else if (settings.Test(StringValidationSetting::ReplaceWithQuestionMark)) {
+			/* Replace the undesirable character with a question mark */
+			buffer.push_back('?');
 		}
 	}
 
@@ -258,9 +224,9 @@ static void StrMakeValid(T &dst, const char *str, const char *end, StringValidat
  */
 char *StrMakeValidInPlaceIntl(char *str, const char *end, StringValidationSettings settings)
 {
-	char *dst = str;
-	StrMakeValid(dst, str, end, settings);
-	return dst;
+	fmt_base_fixed_non_growing buf(str, end - str);
+	StrMakeValid(buf, StringConsumer(std::string_view(str, end)), settings);
+	return str + buf.size();
 }
 
 /**
@@ -283,17 +249,16 @@ void AppendStrMakeValidInPlace(struct format_target &buf, std::string_view str, 
 {
 	if (str.empty()) return;
 
-	auto dst_iter = buf.back_inserter();
-	StrMakeValid(dst_iter, str.data(), str.data() + str.size(), settings);
+	StrMakeValid(buf.GetTargetFmtBuffer(), StringConsumer(str), settings);
 }
 
 void AppendStrMakeValidInPlace(std::string &output, std::string_view str, StringValidationSettings settings)
 {
 	if (str.empty()) return;
 
-	format_buffer buf;
-	AppendStrMakeValidInPlace(buf, str, settings);
-	output += (std::string_view)buf;
+	fmt::memory_buffer buf;
+	StrMakeValid(buf, StringConsumer(str), settings);
+	output += std::string_view(buf.data(), buf.size());
 }
 
 /**
@@ -323,27 +288,17 @@ std::string StrMakeValid(std::string_view str, StringValidationSettings settings
 bool StrValid(std::span<const char> str)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
-	auto it = std::begin(str);
-	auto last = std::prev(std::end(str));
-
-	while (it <= last && *it != '\0') {
-		size_t len = Utf8EncodedCharLen(*it);
-		/* Encoded length is 0 if the character isn't known.
-		 * The length check is needed to prevent Utf8Decode to read
-		 * over the terminating '\0' if that happens to be placed
-		 * within the encoding of an UTF8 character. */
-		if (len == 0 || it + len > last) return false;
-
-		char32_t c;
-		len = Utf8Decode(&c, &*it);
-		if (!IsPrintable(c) || (c >= SCC_SPRITE_START && c <= SCC_SPRITE_END)) {
+	StringConsumer consumer(str);
+	while (consumer.AnyBytesLeft()) {
+		auto c = consumer.TryReadUtf8();
+		if (!c.has_value()) return false; // invalid codepoint
+		if (*c == 0) return true; // NUL termination
+		if (!IsPrintable(*c) || (*c >= SCC_SPRITE_START && *c <= SCC_SPRITE_END)) {
 			return false;
 		}
-
-		it += len;
 	}
 
-	return *it == '\0';
+	return false; // missing NUL termination
 }
 
 /**
@@ -614,48 +569,6 @@ bool IsValidChar(char32_t key, CharSetFilter afilter)
 		case CS_HEXADECIMAL:   return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'f') || (key >= 'A' && key <= 'F');
 		default: NOT_REACHED();
 	}
-}
-
-
-/* UTF-8 handling routines */
-
-
-/**
- * Decode and consume the next UTF-8 encoded character.
- * @param c Buffer to place decoded character.
- * @param s Character stream to retrieve character from.
- * @return Number of characters in the sequence.
- */
-size_t Utf8Decode(char32_t *c, const char *s)
-{
-	dbg_assert(c != nullptr);
-
-	if (!HasBit(s[0], 7)) {
-		/* Single byte character: 0xxxxxxx */
-		*c = s[0];
-		return 1;
-	} else if (GB(s[0], 5, 3) == 6) {
-		if (IsUtf8Part(s[1])) {
-			/* Double byte character: 110xxxxx 10xxxxxx */
-			*c = GB(s[0], 0, 5) << 6 | GB(s[1], 0, 6);
-			if (*c >= 0x80) return 2;
-		}
-	} else if (GB(s[0], 4, 4) == 14) {
-		if (IsUtf8Part(s[1]) && IsUtf8Part(s[2])) {
-			/* Triple byte character: 1110xxxx 10xxxxxx 10xxxxxx */
-			*c = GB(s[0], 0, 4) << 12 | GB(s[1], 0, 6) << 6 | GB(s[2], 0, 6);
-			if (*c >= 0x800) return 3;
-		}
-	} else if (GB(s[0], 3, 5) == 30) {
-		if (IsUtf8Part(s[1]) && IsUtf8Part(s[2]) && IsUtf8Part(s[3])) {
-			/* 4 byte character: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
-			*c = GB(s[0], 0, 3) << 18 | GB(s[1], 0, 6) << 12 | GB(s[2], 0, 6) << 6 | GB(s[3], 0, 6);
-			if (*c >= 0x10000 && *c <= 0x10FFFF) return 4;
-		}
-	}
-
-	*c = '?';
-	return 1;
 }
 
 /**

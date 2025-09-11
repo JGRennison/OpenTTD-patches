@@ -7,6 +7,7 @@ if (NOT HOST_BINARY_DIR)
             settingsgen.cpp
             ../core/alloc_func.cpp
             ../core/format.cpp
+            ../core/string_consumer.cpp
             ../core/utf8.cpp
             ../misc/getoptdata.cpp
             ../error.cpp

@@ -35,6 +35,6 @@ bool CheckGrfLangID(uint8_t lang_id, uint8_t grf_version);
 std::vector<StringParameter> GetGRFStringTextStackParameters(const struct GRFFile *grffile, StringID stringid, uint8_t num_entries);
 std::string GetGRFStringWithTextStack(const struct GRFFile *grffile, GRFStringID grfstringid, uint8_t num_entries);
 
-char32_t RemapNewGRFStringControlCode(char32_t scc, const char **str);
+char32_t RemapNewGRFStringControlCode(char32_t scc, class StringConsumer &consumer);
 
 #endif /* NEWGRF_TEXT_H */
