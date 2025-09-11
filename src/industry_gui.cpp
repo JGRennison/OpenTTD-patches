@@ -55,7 +55,7 @@
 
 #include "safeguards.h"
 
-bool _ignore_restrictions;
+bool _ignore_industry_restrictions;
 static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
 static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries_in;
 static std::bitset<NUM_INDUSTRYTYPES> _displayed_industries_out;
@@ -734,15 +734,11 @@ public:
 				return;
 			}
 
-			Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
-			Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
-			_ignore_restrictions = true;
+			AutoRestoreBackup backup_cur_company(_current_company, OWNER_NONE);
+			AutoRestoreBackup backup_generating_world(_generating_world, true);
+			AutoRestoreBackup backup_ignore_industry_restritions(_ignore_industry_restrictions, true);
 
 			Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
-
-			cur_company.Restore();
-			old_generating_world.Restore();
-			_ignore_restrictions = false;
 		} else {
 			success = Command<CMD_BUILD_INDUSTRY>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
 		}

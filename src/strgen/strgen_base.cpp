@@ -24,13 +24,8 @@
 
 #include "../safeguards.h"
 
+StrgenState _strgen;
 static bool _translated;              ///< Whether the current language is not the master language
-bool _translation;                    ///< Is the current file actually a translation or not
-const char *_file = "(unknown file)"; ///< The filename of the input, so we can refer to it in errors/warnings
-uint _cur_line;                       ///< The current line we're parsing in the input file
-uint _errors, _warnings;
-bool _show_warnings = false, _annotate_todos = false;
-LanguagePackHeader _lang;             ///< Header information about a language.
 static const char *_cur_ident;
 static ParsedCommandStruct _cur_pcs;
 static size_t _cur_argidx;
@@ -295,13 +290,13 @@ void EmitPlural(StringBuilder &builder, const char *buf, char32_t)
 		StrgenFatal("{}: No plural words", _cur_ident);
 	}
 
-	size_t expected = _plural_forms[_lang.plural_form].plural_count;
+	size_t expected = _plural_forms[_strgen.lang.plural_form].plural_count;
 	if (expected != words.size()) {
 		if (_translated) {
 			StrgenFatal("{}: Invalid number of plural forms. Expecting {}, found {}.", _cur_ident,
 				expected, words.size());
 		} else {
-			if (_show_warnings) StrgenWarning("'{}' is untranslated. Tweaking english string to allow compilation for plural forms", _cur_ident);
+			if (_strgen.show_warnings) StrgenWarning("'{}' is untranslated. Tweaking english string to allow compilation for plural forms", _cur_ident);
 			if (words.size() > expected) {
 				words.resize(expected);
 			} else {
@@ -313,7 +308,7 @@ void EmitPlural(StringBuilder &builder, const char *buf, char32_t)
 	}
 
 	builder.PutUtf8(SCC_PLURAL_LIST);
-	builder.PutUint8(_lang.plural_form);
+	builder.PutUint8(_strgen.lang.plural_form);
 	builder.PutUint8(static_cast<uint8_t>(TranslateArgumentIdx(*argidx, *offset)));
 	EmitWordList(builder, words);
 }
@@ -324,7 +319,7 @@ void EmitGender(StringBuilder &builder, const char *buf, char32_t)
 		buf++;
 
 		/* This is a {G=DER} command */
-		auto nw = _lang.GetGenderIndex(buf);
+		auto nw = _strgen.lang.GetGenderIndex(buf);
 		if (nw >= MAX_NUM_GENDERS) StrgenFatal("G argument '{}' invalid", buf);
 
 		/* now nw contains the gender index */
@@ -348,7 +343,7 @@ void EmitGender(StringBuilder &builder, const char *buf, char32_t)
 			if (!word.has_value()) break;
 			words.emplace_back(*word);
 		}
-		if (words.size() != _lang.num_genders) StrgenFatal("Bad # of arguments for gender command");
+		if (words.size() != _strgen.lang.num_genders) StrgenFatal("Bad # of arguments for gender command");
 
 		assert(IsInsideBS(cmd->value, SCC_CONTROL_START, UINT8_MAX));
 		builder.PutUtf8(SCC_GENDER_LIST);
@@ -367,7 +362,7 @@ static const CmdStruct *FindCmd(std::string_view s)
 
 static uint8_t ResolveCaseName(std::string_view str)
 {
-	uint8_t case_idx = _lang.GetCaseIndex(str);
+	uint8_t case_idx = _strgen.lang.GetCaseIndex(str);
 	if (case_idx >= MAX_NUM_CASES) StrgenFatal("Invalid case-name '{}'", str);
 	return case_idx + 1;
 }
@@ -508,7 +503,7 @@ static bool CheckCommandsMatch(const char *a, const char *b, const char *name)
 	 * it is pointless to do all these checks as it'll always be correct.
 	 * After all, all checks are based on the base language.
 	 */
-	if (!_translation) return true;
+	if (!_strgen.translation) return true;
 
 	bool result = true;
 
@@ -556,7 +551,7 @@ static bool CheckCommandsMatch(const char *a, const char *b, const char *name)
 void StringReader::HandleString(char *str)
 {
 	if (*str == '#') {
-		if (str[1] == '#' && str[2] != '#') this->HandlePragma(str + 2);
+		if (str[1] == '#' && str[2] != '#') this->HandlePragma(str + 2, _strgen.lang);
 		return;
 	}
 
@@ -610,7 +605,7 @@ void StringReader::HandleString(char *str)
 
 		if (ent != nullptr) {
 			if (this->data.override_mode) {
-				ent->ReplaceDefinition(s, _cur_line);
+				ent->ReplaceDefinition(s, _strgen.cur_line);
 				return;
 			}
 			StrgenError("String name '{}' is used multiple times", str);
@@ -625,7 +620,7 @@ void StringReader::HandleString(char *str)
 		}
 
 		/* Allocate a new LangString */
-		std::unique_ptr<LangString> ls(new LangString(str, s, this->data.next_string_id, _cur_line));
+		std::unique_ptr<LangString> ls(new LangString(str, s, this->data.next_string_id, _strgen.cur_line));
 		if (this->data.no_translate_mode) ls->no_translate_mode = true;
 		this->data.next_string_id = -1;
 		this->data.name_to_string[ls->name] = ls.get();
@@ -653,7 +648,7 @@ void StringReader::HandleString(char *str)
 			return;
 		}
 
-		if (ent->no_translate_mode && _translation) {
+		if (ent->no_translate_mode && _strgen.translation) {
 			StrgenError("String name '{}' is marked as no-translate", str);
 			return;
 		}
@@ -677,17 +672,17 @@ void StringReader::HandleString(char *str)
 			/* If the string was translated, use the line from the
 			 * translated language so errors in the translated file
 			 * are properly referenced to. */
-			ent->line = _cur_line;
+			ent->line = _strgen.cur_line;
 		}
 	}
 }
 
-void StringReader::HandlePragma(char *str)
+void StringReader::HandlePragma(char *str, LanguagePackHeader &lang)
 {
 	if (!memcmp(str, "plural ", 7)) {
-		_lang.plural_form = atoi(str + 7);
-		if (_lang.plural_form >= lengthof(_plural_forms)) {
-			StrgenFatal("Invalid pluralform {}", _lang.plural_form);
+		lang.plural_form = atoi(str + 7);
+		if (lang.plural_form >= lengthof(_plural_forms)) {
+			StrgenFatal("Invalid pluralform {}", lang.plural_form);
 		}
 	} else {
 		StrgenFatal("unknown pragma '{}'", str);
@@ -704,22 +699,22 @@ static void rstrip(char *buf)
 void StringReader::ParseFile()
 {
 	char buf[2048];
-	_warnings = _errors = 0;
+	_strgen.warnings = _strgen.errors = 0;
 
-	_translation = this->translation;
-	_file = this->file.c_str();
+	_strgen.translation = this->translation;
+	_strgen.file = this->file;
 
 	/* For each new file we parse, reset the genders, and language codes. */
-	MemSetT(&_lang, 0);
-	strecpy(_lang.digit_group_separator, ",");
-	strecpy(_lang.digit_group_separator_currency, ",");
-	strecpy(_lang.digit_decimal_separator, ".");
+	MemSetT(&_strgen.lang, 0);
+	strecpy(_strgen.lang.digit_group_separator, ",");
+	strecpy(_strgen.lang.digit_group_separator_currency, ",");
+	strecpy(_strgen.lang.digit_decimal_separator, ".");
 
-	_cur_line = 1;
+	_strgen.cur_line = 1;
 	while (this->ReadLine(buf, lastof(buf)) != nullptr) {
 		rstrip(buf);
 		this->HandleString(buf);
-		_cur_line++;
+		_strgen.cur_line++;
 	}
 
 	if (this->master) {
@@ -878,22 +873,22 @@ void LanguageWriter::WriteLang(const StringData &data)
 		uint n = data.CountInUse(tab);
 
 		in_use[tab] = n;
-		_lang.offsets[tab] = TO_LE16(static_cast<uint16_t>(n));
+		_strgen.lang.offsets[tab] = TO_LE16(static_cast<uint16_t>(n));
 
 		for (uint j = 0; j != in_use[tab]; j++) {
 			const LangString *ls = data.strings[(tab * TAB_SIZE) + j];
 			if (ls != nullptr && ls->translated.empty() && ls->default_translation == nullptr && !ls->no_translate_mode) {
-				_lang.missing++;
+				_strgen.lang.missing++;
 			}
 		}
 	}
 
-	_lang.ident = TO_LE32(LanguagePackHeader::IDENT);
-	_lang.version = TO_LE32(data.Version());
-	_lang.missing = TO_LE16(_lang.missing);
-	_lang.winlangid = TO_LE16(_lang.winlangid);
+	_strgen.lang.ident = TO_LE32(LanguagePackHeader::IDENT);
+	_strgen.lang.version = TO_LE32(data.Version());
+	_strgen.lang.missing = TO_LE16(_strgen.lang.missing);
+	_strgen.lang.winlangid = TO_LE16(_strgen.lang.winlangid);
 
-	this->WriteHeader(&_lang);
+	this->WriteHeader(&_strgen.lang);
 
 	for (size_t tab = 0; tab < data.tabs; tab++) {
 		for (uint j = 0; j != in_use[tab]; j++) {
@@ -908,14 +903,14 @@ void LanguageWriter::WriteLang(const StringData &data)
 			format_buffer output;
 			StringBuilder builder(output);
 			_cur_ident = ls->name.c_str();
-			_cur_line = ls->line;
+			_strgen.cur_line = ls->line;
 
 			/* Produce a message if a string doesn't have a translation. */
 			if (ls->translated.empty()) {
-				if (_show_warnings) {
+				if (_strgen.show_warnings) {
 					StrgenWarning("'{}' is untranslated", ls->name);
 				}
-				if (_annotate_todos) {
+				if (_strgen.annotate_todos) {
 					builder.Put("<TODO> ");
 				}
 			}

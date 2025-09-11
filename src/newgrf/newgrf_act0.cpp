@@ -64,7 +64,7 @@ struct GRFFilePropertyDescriptor {
 static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t feature)
 {
 	uint8_t raw_prop = buf.ReadByte();
-	const GRFFilePropertyRemapSet &remap = _cur.grffile->action0_property_remaps[feature];
+	const GRFFilePropertyRemapSet &remap = _cur_gps.grffile->action0_property_remaps[feature];
 	if (remap.remapped_ids[raw_prop]) {
 		auto iter = remap.mapping.find(raw_prop);
 		assert(iter != remap.mapping.end());
@@ -90,8 +90,8 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t 
 				return GRFFilePropertyDescriptor(A0RPI_UNKNOWN_IGNORE, &def);
 			}
 
-			auto ext = _cur.grffile->action0_extended_property_remaps.find((((uint32_t)feature) << 16) | mapped_id);
-			if (ext != _cur.grffile->action0_extended_property_remaps.end()) {
+			auto ext = _cur_gps.grffile->action0_extended_property_remaps.find((((uint32_t)feature) << 16) | mapped_id);
+			if (ext != _cur_gps.grffile->action0_extended_property_remaps.end()) {
 				buf.ResetReadPosition(inner_data);
 				const GRFFilePropertyRemapEntry &ext_def = ext->second;
 				prop = ext_def.id;
@@ -186,12 +186,12 @@ std::vector<BadgeID> ReadBadgeList(ByteReader &buf, GrfSpecFeature feature)
 
 	while (count-- > 0) {
 		uint16_t local_index = buf.ReadWord();
-		if (local_index >= std::size(_cur.grffile->badge_list)) {
-			GrfMsg(1, "ReadBadgeList: Badge label {} out of range (max {}), skipping.", local_index, std::size(_cur.grffile->badge_list) - 1);
+		if (local_index >= std::size(_cur_gps.grffile->badge_list)) {
+			GrfMsg(1, "ReadBadgeList: Badge label {} out of range (max {}), skipping.", local_index, std::size(_cur_gps.grffile->badge_list) - 1);
 			continue;
 		}
 
-		BadgeID index = _cur.grffile->badge_list[local_index];
+		BadgeID index = _cur_gps.grffile->badge_list[local_index];
 
 		/* Is badge already present? */
 		if (std::ranges::find(badges, index) != std::end(badges)) continue;
@@ -299,7 +299,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 	}
 
 	/* Mark the feature as used by the grf */
-	SetBit(_cur.grffile->grf_features, feature);
+	SetBit(_cur_gps.grffile->grf_features, feature);
 
 	while (numprops-- && buf.HasData()) {
 		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);

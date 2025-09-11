@@ -169,7 +169,7 @@ public:
 
 using SpriteSetInfo = GrfProcessingState::SpriteSetInfo;
 
-extern GrfProcessingState _cur;
+extern GrfProcessingState _cur_gps;
 
 struct GRFLocation {
 	uint32_t grfid;

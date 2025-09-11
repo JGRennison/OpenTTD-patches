@@ -104,10 +104,10 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 	}
 
 	/* Allocate house specs if they haven't been allocated already. */
-	if (_cur.grffile->housespec.size() < last) _cur.grffile->housespec.resize(last);
+	if (_cur_gps.grffile->housespec.size() < last) _cur_gps.grffile->housespec.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		HouseSpec *housespec = _cur.grffile->housespec[id].get();
+		HouseSpec *housespec = _cur_gps.grffile->housespec[id].get();
 
 		if (prop != 0x08 && housespec == nullptr) {
 			/* If the house property 08 is not yet set, ignore this property */
@@ -133,13 +133,13 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				/* Allocate space for this house. */
 				if (housespec == nullptr) {
 					/* Only the first property 08 setting copies properties; if you later change it, properties will stay. */
-					_cur.grffile->housespec[id] = std::make_unique<HouseSpec>(*HouseSpec::Get(subs_id));
-					housespec = _cur.grffile->housespec[id].get();
+					_cur_gps.grffile->housespec[id] = std::make_unique<HouseSpec>(*HouseSpec::Get(subs_id));
+					housespec = _cur_gps.grffile->housespec[id].get();
 
 					housespec->enabled = true;
 					housespec->grf_prop.local_id = id;
 					housespec->grf_prop.subst_id = subs_id;
-					housespec->grf_prop.SetGRFFile(_cur.grffile);
+					housespec->grf_prop.SetGRFFile(_cur_gps.grffile);
 					/* Set default colours for randomization, used if not overridden. */
 					housespec->random_colour[0] = COLOUR_RED;
 					housespec->random_colour[1] = COLOUR_BLUE;
@@ -235,7 +235,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 					continue;
 				}
 
-				_house_mngr.Add(id, _cur.grffile->grfid, override_id);
+				_house_mngr.Add(id, _cur_gps.grffile->grfid, override_id);
 				break;
 			}
 
@@ -266,7 +266,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				break;
 
 			case 0x1C: // Class of the building type
-				housespec->class_id = AllocateHouseClassID(buf.ReadByte(), _cur.grffile->grfid);
+				housespec->class_id = AllocateHouseClassID(buf.ReadByte(), _cur_gps.grffile->grfid);
 				break;
 
 			case 0x1D: { // Callback mask part 2
@@ -285,7 +285,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				for (uint j = 0; j < HOUSE_ORIGINAL_NUM_ACCEPTS; j++) {
 					/* Get the cargo number from the 'list' */
 					uint8_t cargo_part = GB(cargotypes, 8 * j, 8);
-					CargoType cargo = GetCargoTranslation(cargo_part, _cur.grffile);
+					CargoType cargo = GetCargoTranslation(cargo_part, _cur_gps.grffile);
 
 					if (!IsValidCargoType(cargo)) {
 						/* Disable acceptance of invalid cargo type */
@@ -305,7 +305,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 			case 0x20: { // Cargo acceptance watch list
 				uint8_t count = buf.ReadByte();
 				for (uint8_t j = 0; j < count; j++) {
-					CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 					if (IsValidCargoType(cargo)) SetBit(housespec->watched_cargoes, cargo);
 				}
 				break;
@@ -332,7 +332,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				 * any risks of array overrun. */
 				for (uint i = 0; i < lengthof(housespec->accepts_cargo); i++) {
 					if (i < count) {
-						housespec->accepts_cargo[i] = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						housespec->accepts_cargo[i] = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 						housespec->cargo_acceptance[i] = buf.ReadByte();
 					} else {
 						housespec->accepts_cargo[i] = INVALID_CARGO;

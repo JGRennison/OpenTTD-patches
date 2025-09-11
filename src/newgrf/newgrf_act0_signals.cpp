@@ -34,32 +34,32 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 		switch (prop) {
 			case A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_PROGSIG, buf.ReadByte() != 0);
+				AssignBit(_cur_gps.grffile->new_signal_ctrl_flags, NSCF_PROGSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_NO_ENTRY_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_NOENTRYSIG, buf.ReadByte() != 0);
+				AssignBit(_cur_gps.grffile->new_signal_ctrl_flags, NSCF_NOENTRYSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG, buf.ReadByte() != 0);
+				AssignBit(_cur_gps.grffile->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, buf.ReadByte() != 0);
+				AssignBit(_cur_gps.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_EXTRA_ASPECTS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				_cur.grffile->new_signal_extra_aspects = std::min<uint8_t>(buf.ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
+				_cur_gps.grffile->new_signal_extra_aspects = std::min<uint8_t>(buf.ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
 				break;
 
 			case A0RPI_SIGNALS_NO_DEFAULT_STYLE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_style_mask, 0, buf.ReadByte() == 0);
+				AssignBit(_cur_gps.grffile->new_signal_style_mask, 0, buf.ReadByte() == 0);
 				break;
 
 			case A0RPI_SIGNALS_DEFINE_STYLE: {
@@ -69,12 +69,12 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 					NewSignalStyle &style = _new_signal_styles[_num_new_signal_styles];
 					style = {};
 					_num_new_signal_styles++;
-					SetBit(_cur.grffile->new_signal_style_mask, _num_new_signal_styles);
+					SetBit(_cur_gps.grffile->new_signal_style_mask, _num_new_signal_styles);
 					style.grf_local_id = local_id;
-					style.grffile = _cur.grffile;
-					_cur.grffile->current_new_signal_style = &style;
+					style.grffile = _cur_gps.grffile;
+					_cur_gps.grffile->current_new_signal_style = &style;
 				} else {
-					_cur.grffile->current_new_signal_style = nullptr;
+					_cur_gps.grffile->current_new_signal_style = nullptr;
 				}
 				break;
 			}
@@ -82,8 +82,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_NAME: {
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
 				GRFStringID str = GRFStringID{buf.ReadWord()};
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AddStringForMapping(str, &(_cur.grffile->current_new_signal_style->name));
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AddStringForMapping(str, &(_cur_gps.grffile->current_new_signal_style->name));
 				}
 				break;
 			}
@@ -91,8 +91,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_NO_ASPECT_INCREASE: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_NO_ASPECT_INC, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_NO_ASPECT_INC, value != 0);
 				}
 				break;
 			}
@@ -100,8 +100,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_ALWAYS_RESERVE_THROUGH: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_ALWAYS_RESERVE_THROUGH, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_ALWAYS_RESERVE_THROUGH, value != 0);
 				}
 				break;
 			}
@@ -109,9 +109,9 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_LOOKAHEAD_EXTRA_ASPECTS: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SetBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_ASPECTS_SET);
-					_cur.grffile->current_new_signal_style->lookahead_extra_aspects = value;
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					SetBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_ASPECTS_SET);
+					_cur_gps.grffile->current_new_signal_style->lookahead_extra_aspects = value;
 				}
 				break;
 			}
@@ -119,8 +119,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_LOOKAHEAD_SINGLE_SIGNAL_ONLY: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL, value != 0);
 				}
 				break;
 			}
@@ -128,8 +128,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_SEMAPHORE_ENABLED: {
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				uint32_t mask = buf.ReadDWord();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					_cur.grffile->current_new_signal_style->semaphore_mask = (uint8_t)mask;
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					_cur_gps.grffile->current_new_signal_style->semaphore_mask = (uint8_t)mask;
 				}
 				break;
 			}
@@ -137,8 +137,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_ELECTRIC_ENABLED: {
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				uint32_t mask = buf.ReadDWord();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					_cur.grffile->current_new_signal_style->electric_mask = (uint8_t)mask;
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					_cur_gps.grffile->current_new_signal_style->electric_mask = (uint8_t)mask;
 				}
 				break;
 			}
@@ -146,8 +146,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_OPPOSITE_SIDE: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_OPPOSITE_SIDE, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_OPPOSITE_SIDE, value != 0);
 				}
 				break;
 			}
@@ -155,8 +155,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_COMBINED_NORMAL_SHUNT: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_COMBINED_NORMAL_SHUNT, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_COMBINED_NORMAL_SHUNT, value != 0);
 				}
 				break;
 			}
@@ -164,8 +164,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_REALISTIC_BRAKING_ONLY: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_REALISTIC_BRAKING_ONLY, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_REALISTIC_BRAKING_ONLY, value != 0);
 				}
 				break;
 			}
@@ -173,8 +173,8 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 			case A0RPI_SIGNALS_STYLE_BOTH_SIDES: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
-				if (_cur.grffile->current_new_signal_style != nullptr) {
-					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_BOTH_SIDES, value != 0);
+				if (_cur_gps.grffile->current_new_signal_style != nullptr) {
+					AssignBit(_cur_gps.grffile->current_new_signal_style->style_flags, NSSF_BOTH_SIDES, value != 0);
 				}
 				break;
 			}

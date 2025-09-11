@@ -27,19 +27,19 @@
 
 void CDECL StrgenWarningI(const std::string &msg)
 {
-	Debug(script, 0, "{}:{}: warning: {}", _file, _cur_line, msg);
-	_warnings++;
+	Debug(script, 0, "{}:{}: warning: {}", _strgen.file, _strgen.cur_line, msg);
+	_strgen.warnings++;
 }
 
 void CDECL StrgenErrorI(const std::string &msg)
 {
-	Debug(script, 0, "{}:{}: error: {}", _file, _cur_line, msg);
-	_errors++;
+	Debug(script, 0, "{}:{}: error: {}", _strgen.file, _strgen.cur_line, msg);
+	_strgen.errors++;
 }
 
 void CDECL StrgenFatalI(const std::string &msg)
 {
-	Debug(script, 0, "{}:{}: FATAL: {}", _file, _cur_line, msg);
+	Debug(script, 0, "{}:{}: FATAL: {}", _strgen.file, _strgen.cur_line, msg);
 	throw std::exception();
 }
 
@@ -295,7 +295,7 @@ void GameStrings::Compile()
 	StringData data(32);
 	StringListReader master_reader(data, this->raw_strings[0], true, false);
 	master_reader.ParseFile();
-	if (_errors != 0) throw std::exception();
+	if (_strgen.errors != 0) throw std::exception();
 
 	this->version = data.Version();
 
@@ -308,7 +308,7 @@ void GameStrings::Compile()
 		data.FreeTranslation();
 		StringListReader translation_reader(data, p, false, p.language != "english");
 		translation_reader.ParseFile();
-		if (_errors != 0) throw std::exception();
+		if (_strgen.errors != 0) throw std::exception();
 
 		auto &strings = this->compiled_strings.emplace_back(p.language);
 		TranslationWriter writer(strings.lines);
@@ -317,7 +317,7 @@ void GameStrings::Compile()
 }
 
 /** The currently loaded game strings. */
-std::shared_ptr<GameStrings> _current_data = nullptr;
+std::shared_ptr<GameStrings> _current_gamestrings_data = nullptr;
 
 /**
  * Get the string pointer of a particular game string.
@@ -326,8 +326,8 @@ std::shared_ptr<GameStrings> _current_data = nullptr;
  */
 std::string_view GetGameStringPtr(StringIndexInTab id)
 {
-	if (_current_data == nullptr || _current_data->cur_language == nullptr || id.base() >= _current_data->cur_language->lines.size()) return GetStringPtr(STR_UNDEFINED);
-	return _current_data->cur_language->lines[id];
+	if (_current_gamestrings_data == nullptr || _current_gamestrings_data->cur_language == nullptr || id.base() >= _current_gamestrings_data->cur_language->lines.size()) return GetStringPtr(STR_UNDEFINED);
+	return _current_gamestrings_data->cur_language->lines[id];
 }
 
 /**
@@ -340,8 +340,8 @@ const StringParams &GetGameStringParams(StringIndexInTab id)
 	/* An empty result for STR_UNDEFINED. */
 	static StringParams empty;
 
-	if (id.base() >= _current_data->string_params.size()) return empty;
-	return _current_data->string_params[id];
+	if (id.base() >= _current_gamestrings_data->string_params.size()) return empty;
+	return _current_gamestrings_data->string_params[id];
 }
 
 /**
@@ -354,8 +354,8 @@ const std::string &GetGameStringName(StringIndexInTab id)
 	/* The name for STR_UNDEFINED. */
 	static const std::string undefined = "STR_UNDEFINED";
 
-	if (id.base() >= _current_data->string_names.size()) return undefined;
-	return _current_data->string_names[id];
+	if (id.base() >= _current_gamestrings_data->string_names.size()) return undefined;
+	return _current_gamestrings_data->string_names[id];
 }
 
 /**
@@ -364,8 +364,8 @@ const std::string &GetGameStringName(StringIndexInTab id)
  */
 void RegisterGameTranslation(Squirrel *engine)
 {
-	_current_data = LoadTranslations();
-	if (_current_data == nullptr) return;
+	_current_gamestrings_data = LoadTranslations();
+	if (_current_gamestrings_data == nullptr) return;
 
 	HSQUIRRELVM vm = engine->GetVM();
 	sq_pushroottable(vm);
@@ -373,7 +373,7 @@ void RegisterGameTranslation(Squirrel *engine)
 	if (SQ_FAILED(sq_get(vm, -2))) return;
 
 	int idx = 0;
-	for (const auto &p : _current_data->string_names) {
+	for (const auto &p : _current_gamestrings_data->string_names) {
 		sq_pushstring(vm, p, -1);
 		sq_pushinteger(vm, idx);
 		sq_rawset(vm, -3);
@@ -390,7 +390,7 @@ void RegisterGameTranslation(Squirrel *engine)
  */
 void ReconsiderGameScriptLanguage()
 {
-	if (_current_data == nullptr) return;
+	if (_current_gamestrings_data == nullptr) return;
 
 	char temp[MAX_PATH];
 	strecpy(temp, _current_language->file.c_str(), lastof(temp));
@@ -405,12 +405,12 @@ void ReconsiderGameScriptLanguage()
 	assert(language != nullptr);
 	language++;
 
-	for (auto &p : _current_data->compiled_strings) {
+	for (auto &p : _current_gamestrings_data->compiled_strings) {
 		if (p.language == language) {
-			_current_data->cur_language = &p;
+			_current_gamestrings_data->cur_language = &p;
 			return;
 		}
 	}
 
-	_current_data->cur_language = &_current_data->compiled_strings[0];
+	_current_gamestrings_data->cur_language = &_current_gamestrings_data->compiled_strings[0];
 }

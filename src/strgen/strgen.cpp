@@ -43,34 +43,34 @@
 
 void StrgenWarningI(const std::string &msg)
 {
-	if (_translation) {
-		fmt::print(stderr, LINE_NUM_FMT("info"), _file, _cur_line, msg);
+	if (_strgen.translation) {
+		fmt::print(stderr, LINE_NUM_FMT("info"), _strgen.file, _strgen.cur_line, msg);
 	} else {
-		fmt::print(stderr, LINE_NUM_FMT("warning"), _file, _cur_line, msg);
+		fmt::print(stderr, LINE_NUM_FMT("warning"), _strgen.file, _strgen.cur_line, msg);
 	}
-	_warnings++;
+	_strgen.warnings++;
 }
 
 void StrgenErrorI(const std::string &msg)
 {
-	fmt::print(stderr, LINE_NUM_FMT("error"), _file, _cur_line, msg);
-	_errors++;
+	fmt::print(stderr, LINE_NUM_FMT("error"), _strgen.file, _strgen.cur_line, msg);
+	_strgen.errors++;
 }
 
 [[noreturn]] void StrgenFatalI(const std::string &msg)
 {
-	fmt::print(stderr, LINE_NUM_FMT("FATAL"), _file, _cur_line, msg);
+	fmt::print(stderr, LINE_NUM_FMT("FATAL"), _strgen.file, _strgen.cur_line, msg);
 #ifdef _MSC_VER
-	fmt::print(stderr, LINE_NUM_FMT("warning"), _file, _cur_line, "language is not compiled");
+	fmt::print(stderr, LINE_NUM_FMT("warning"), _strgen.file, _strgen.cur_line, "language is not compiled");
 #endif
 	throw std::exception();
 }
 
 [[noreturn]] void FatalErrorI(const std::string &msg)
 {
-	fmt::print(stderr, LINE_NUM_FMT("FATAL"), _file, _cur_line, msg);
+	fmt::print(stderr, LINE_NUM_FMT("FATAL"), _strgen.file, _strgen.cur_line, msg);
 #ifdef _MSC_VER
-	fmt::print(stderr, LINE_NUM_FMT("warning"), _file, _cur_line, "language is not compiled");
+	fmt::print(stderr, LINE_NUM_FMT("warning"), _strgen.file, _strgen.cur_line, "language is not compiled");
 #endif
 	exit(2);
 }
@@ -124,66 +124,66 @@ struct FileStringReader : StringReader {
 			this->fh = std::move(this->fh2);
 			this->fh2.reset();
 			this->file = std::move(this->file2);
-			_file = this->file.c_str();
-			_cur_line = 1;
+			_strgen.file = this->file.c_str();
+			_strgen.cur_line = 1;
 			return this->FileStringReader::ReadLine(buffer, last);
 		}
 		return result;
 	}
 
-	void HandlePragma(char *str) override;
+	void HandlePragma(char *str, LanguagePackHeader &lang) override;
 
 	void ParseFile() override
 	{
 		this->StringReader::ParseFile();
 
-		if (StrEmpty(_lang.name) || StrEmpty(_lang.own_name) || StrEmpty(_lang.isocode)) {
+		if (StrEmpty(_strgen.lang.name) || StrEmpty(_strgen.lang.own_name) || StrEmpty(_strgen.lang.isocode)) {
 			FatalError("Language must include ##name, ##ownname and ##isocode");
 		}
 	}
 };
 
-void FileStringReader::HandlePragma(char *str)
+void FileStringReader::HandlePragma(char *str, LanguagePackHeader &lang)
 {
 	if (!memcmp(str, "id ", 3)) {
 		this->data.next_string_id = std::strtoul(str + 3, nullptr, 0);
 	} else if (!memcmp(str, "name ", 5)) {
-		strecpy(_lang.name, str + 5);
+		strecpy(lang.name, str + 5);
 	} else if (!memcmp(str, "ownname ", 8)) {
-		strecpy(_lang.own_name, str + 8);
+		strecpy(lang.own_name, str + 8);
 	} else if (!memcmp(str, "isocode ", 8)) {
-		strecpy(_lang.isocode, str + 8);
+		strecpy(lang.isocode, str + 8);
 	} else if (!memcmp(str, "textdir ", 8)) {
 		if (!memcmp(str + 8, "ltr", 3)) {
-			_lang.text_dir = TD_LTR;
+			lang.text_dir = TD_LTR;
 		} else if (!memcmp(str + 8, "rtl", 3)) {
-			_lang.text_dir = TD_RTL;
+			lang.text_dir = TD_RTL;
 		} else {
 			FatalError("Invalid textdir {}", str + 8);
 		}
 	} else if (!memcmp(str, "digitsep ", 9)) {
 		str += 9;
-		strecpy(_lang.digit_group_separator, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
+		strecpy(lang.digit_group_separator, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
 	} else if (!memcmp(str, "digitsepcur ", 12)) {
 		str += 12;
-		strecpy(_lang.digit_group_separator_currency, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
+		strecpy(lang.digit_group_separator_currency, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
 	} else if (!memcmp(str, "decimalsep ", 11)) {
 		str += 11;
-		strecpy(_lang.digit_decimal_separator, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
+		strecpy(lang.digit_decimal_separator, strcmp(str, "{NBSP}") == 0 ? NBSP : str);
 	} else if (!memcmp(str, "winlangid ", 10)) {
 		const char *buf = str + 10;
 		long langid = std::strtol(buf, nullptr, 16);
 		if (langid > UINT16_MAX || langid < 0) {
 			FatalError("Invalid winlangid {}", buf);
 		}
-		_lang.winlangid = static_cast<uint16_t>(langid);
+		lang.winlangid = static_cast<uint16_t>(langid);
 	} else if (!memcmp(str, "grflangid ", 10)) {
 		const char *buf = str + 10;
 		long langid = std::strtol(buf, nullptr, 16);
 		if (langid >= 0x7F || langid < 0) {
 			FatalError("Invalid grflangid {}", buf);
 		}
-		_lang.newgrflangid = static_cast<uint8_t>(langid);
+		lang.newgrflangid = static_cast<uint8_t>(langid);
 	} else if (!memcmp(str, "gender ", 7)) {
 		if (this->master) FatalError("Genders are not allowed in the base translation.");
 		const char *buf = str + 7;
@@ -192,9 +192,9 @@ void FileStringReader::HandlePragma(char *str)
 			auto s = ParseWord(&buf);
 
 			if (!s.has_value()) break;
-			if (_lang.num_genders >= MAX_NUM_GENDERS) FatalError("Too many genders, max {}", MAX_NUM_GENDERS);
-			s->copy(_lang.genders[_lang.num_genders], CASE_GENDER_LEN - 1);
-			_lang.num_genders++;
+			if (lang.num_genders >= MAX_NUM_GENDERS) FatalError("Too many genders, max {}", MAX_NUM_GENDERS);
+			s->copy(lang.genders[lang.num_genders], CASE_GENDER_LEN - 1);
+			lang.num_genders++;
 		}
 	} else if (!memcmp(str, "case ", 5)) {
 		if (this->master) FatalError("Cases are not allowed in the base translation.");
@@ -204,9 +204,9 @@ void FileStringReader::HandlePragma(char *str)
 			auto s = ParseWord(&buf);
 
 			if (!s.has_value()) break;
-			if (_lang.num_cases >= MAX_NUM_CASES) FatalError("Too many cases, max {}", MAX_NUM_CASES);
-			s->copy(_lang.cases[_lang.num_cases], CASE_GENDER_LEN - 1);
-			_lang.num_cases++;
+			if (lang.num_cases >= MAX_NUM_CASES) FatalError("Too many cases, max {}", MAX_NUM_CASES);
+			s->copy(lang.cases[lang.num_cases], CASE_GENDER_LEN - 1);
+			lang.num_cases++;
 		}
 	} else if (!memcmp(str, "override ", 9)) {
 		if (this->translation) FatalError("Overrides are only allowed in the base translation.");
@@ -256,7 +256,7 @@ void FileStringReader::HandlePragma(char *str)
 			FatalError("Invalid no-translate mode {}", str + 13);
 		}
 	} else {
-		StringReader::HandlePragma(str);
+		StringReader::HandlePragma(str, lang);
 	}
 }
 
@@ -545,11 +545,11 @@ int CDECL main(int argc, char *argv[])
 				return 0;
 
 			case 't':
-				_annotate_todos = true;
+				_strgen.annotate_todos = true;
 				break;
 
 			case 'w':
-				_show_warnings = true;
+				_strgen.show_warnings = true;
 				break;
 
 			case 'h':
@@ -598,7 +598,7 @@ int CDECL main(int argc, char *argv[])
 			StringData data(TEXT_TAB_END);
 			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
-			if (_errors != 0) return 1;
+			if (_strgen.errors != 0) return 1;
 
 			/* write strings.h */
 			ottd_mkdir(dest_dir.c_str());
@@ -607,7 +607,7 @@ int CDECL main(int argc, char *argv[])
 			HeaderFileWriter writer(pathbuf);
 			writer.WriteHeader(data);
 			writer.Finalise(data);
-			if (_errors != 0) return 1;
+			if (_strgen.errors != 0) return 1;
 		} else {
 			mkpath(pathbuf, lastof(pathbuf), src_dir.c_str(), "english.txt");
 			mkpath2(pathbuf2, lastof(pathbuf2), src_dir.c_str(), "extra", "english.txt");
@@ -629,7 +629,7 @@ int CDECL main(int argc, char *argv[])
 				}
 				FileStringReader translation_reader(data, translation.c_str(), translation2, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
 				translation_reader.ParseFile(); // target file
-				if (_errors != 0) return 1;
+				if (_strgen.errors != 0) return 1;
 
 				/* get the targetfile, strip any directories and append to destination path */
 				mkpath(pathbuf, lastof(pathbuf), dest_dir.c_str(), (file != nullptr) ? file + 1 : translation.c_str());
@@ -644,8 +644,8 @@ int CDECL main(int argc, char *argv[])
 				writer.Finalise();
 
 				/* if showing warnings, print a summary of the language */
-				if (_show_warnings) {
-					fmt::print("{} warnings and {} errors for {}\n", _warnings, _errors, pathbuf);
+				if (_strgen.show_warnings) {
+					fmt::print("{} warnings and {} errors for {}\n", _strgen.warnings, _strgen.errors, pathbuf);
 				}
 			}
 		}

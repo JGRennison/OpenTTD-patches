@@ -87,7 +87,7 @@ GrfMiscBits _misc_grf_features{};
 /** Indicates which are the newgrf features currently loaded ingame */
 GRFLoadedFeatures _loaded_newgrf_features;
 
-GrfProcessingState _cur;
+GrfProcessingState _cur_gps;
 GrfProcessingOptimiserState _cur_grf_optimise_state;
 
 /** Clear temporary data before processing the next file in the current loading stage */
@@ -121,8 +121,8 @@ TypedIndexContainer<std::vector<GRFTempEngineData>, EngineID> _gted;  ///< Tempo
 void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args)
 {
 	format_buffer buf;
-	if (_cur.grfconfig != nullptr) {
-		buf.format("[{}:{}] ", _cur.grfconfig->filename, _cur.nfo_line);
+	if (_cur_gps.grfconfig != nullptr) {
+		buf.format("[{}:{}] ", _cur_gps.grfconfig->filename, _cur_gps.nfo_line);
 	}
 	buf.vformat(msg, args);
 	debug_print(DebugLevelID::grf, severity, buf);
@@ -147,7 +147,7 @@ GRFFile *GetFileByGRFID(uint32_t grfid)
  */
 GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid)
 {
-	if (_cur.grffile != nullptr && _cur.grffile->grfid == grfid) return _cur.grffile;
+	if (_cur_gps.grffile != nullptr && _cur_gps.grffile->grfid == grfid) return _cur_gps.grffile;
 	return GetFileByGRFID(grfid);
 }
 
@@ -181,18 +181,18 @@ GRFError *DisableGrf(StringID message, GRFConfig *config)
 	if (config != nullptr) {
 		file = GetFileByGRFID(config->ident.grfid);
 	} else {
-		config = _cur.grfconfig;
-		file = _cur.grffile;
+		config = _cur_gps.grfconfig;
+		file = _cur_gps.grffile;
 	}
 
 	config->status = GCS_DISABLED;
 	if (file != nullptr) ClearTemporaryNewGRFData(file);
-	if (config == _cur.grfconfig) _cur.skip_sprites = -1;
+	if (config == _cur_gps.grfconfig) _cur_gps.skip_sprites = -1;
 
 	if (message == STR_NULL) return nullptr;
 
 	config->error = {STR_NEWGRF_ERROR_MSG_FATAL, message};
-	if (config == _cur.grfconfig) config->error->param_value[0] = _cur.nfo_line;
+	if (config == _cur_gps.grfconfig) config->error->param_value[0] = _cur_gps.nfo_line;
 	return &config->error.value();
 }
 
@@ -208,7 +208,7 @@ GRFError *DisableGrf(StringID message, GRFConfig *config)
 void DisableStaticNewGRFInfluencingNonStaticNewGRFs(GRFConfig &c)
 {
 	GRFError *error = DisableGrf(STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC, &c);
-	error->data = _cur.grfconfig->GetName();
+	error->data = _cur_gps.grfconfig->GetName();
 }
 
 static robin_hood::unordered_flat_map<uint32_t, uint32_t> _grf_id_overrides;
@@ -235,7 +235,7 @@ void SetNewGRFOverride(uint32_t source_grfid, uint32_t target_grfid)
  */
 GRFFile *GetCurrentGRFOverride()
 {
-	auto found = _grf_id_overrides.find(_cur.grffile->grfid);
+	auto found = _grf_id_overrides.find(_cur_gps.grffile->grfid);
 	if (found != std::end(_grf_id_overrides)) {
 		GRFFile *grffile = GetFileByGRFID(found->second);
 		if (grffile != nullptr) return grffile;
@@ -367,7 +367,7 @@ CargoTypes TranslateRefitMask(uint32_t refit_mask)
 {
 	CargoTypes result = 0;
 	for (uint8_t bit : SetBitIterator(refit_mask)) {
-		CargoType cargo = GetCargoTranslation(bit, _cur.grffile, true);
+		CargoType cargo = GetCargoTranslation(bit, _cur_gps.grffile, true);
 		if (IsValidCargoType(cargo)) SetBit(result, cargo);
 	}
 	return result;
@@ -419,8 +419,8 @@ void ConvertTTDBasePrice(uint32_t base_pointer, const char *error_location, Pric
 
 GrfSpecFeatureRef ReadFeature(uint8_t raw_byte, bool allow_48)
 {
-	if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
-		const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+	if (unlikely(HasBit(_cur_gps.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+		const GRFFeatureMapRemapSet &remap = _cur_gps.grffile->feature_id_remaps;
 		if (remap.remapped_ids[raw_byte]) {
 			auto iter = remap.mapping.find(raw_byte);
 			const GRFFeatureMapRemapEntry &def = iter->second;
@@ -479,8 +479,8 @@ void GetFeatureStringFormatter::fmt_format_value(format_target &output) const
 	if (this->feature.id < GSF_END) {
 		output.format("0x{:02X} ({})", this->feature.raw_byte, _feature_names[this->feature.id]);
 	} else {
-		if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
-			const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+		if (unlikely(HasBit(_cur_gps.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+			const GRFFeatureMapRemapSet &remap = _cur_gps.grffile->feature_id_remaps;
 			if (remap.remapped_ids[this->feature.raw_byte]) {
 				auto iter = remap.mapping.find(this->feature.raw_byte);
 				const GRFFeatureMapRemapEntry &def = iter->second;
@@ -501,7 +501,7 @@ GetFeatureStringFormatter GetFeatureString(GrfSpecFeature feature)
 {
 	uint8_t raw_byte = feature;
 	if (feature >= GSF_REAL_FEATURE_END) {
-		for (const auto &entry : _cur.grffile->feature_id_remaps.mapping) {
+		for (const auto &entry : _cur_gps.grffile->feature_id_remaps.mapping) {
 			if (entry.second.feature == feature) {
 				raw_byte = entry.second.raw_id;
 				break;
@@ -517,17 +517,17 @@ GetFeatureStringFormatter GetFeatureString(GrfSpecFeature feature)
  */
 void GRFUnsafe(ByteReader &)
 {
-	_cur.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
+	_cur_gps.grfconfig->flags.Set(GRFConfigFlag::Unsafe);
 
 	/* Skip remainder of GRF */
-	_cur.skip_sprites = -1;
+	_cur_gps.skip_sprites = -1;
 }
 
 /** Reset and clear all NewGRFs */
 static void ResetNewGRF()
 {
-	_cur.grfconfig = nullptr;
-	_cur.grffile = nullptr;
+	_cur_gps.grfconfig = nullptr;
+	_cur_gps.grffile = nullptr;
 	_grf_files.clear();
 	_grf_file_map.clear();
 	_new_signals_grfs.clear();
@@ -688,14 +688,14 @@ std::span<const CargoLabel> GetCargoTranslationTable(const GRFFile &grffile)
  */
 static void BuildCargoTranslationMap()
 {
-	_cur.grffile->cargo_map.fill(UINT8_MAX);
+	_cur_gps.grffile->cargo_map.fill(UINT8_MAX);
 
-	auto cargo_list = GetCargoTranslationTable(*_cur.grffile);
+	auto cargo_list = GetCargoTranslationTable(*_cur_gps.grffile);
 
 	for (const CargoSpec *cs : CargoSpec::Iterate()) {
 		/* Check the translation table for this cargo's label */
 		int idx = find_index(cargo_list, cs->label);
-		if (idx >= 0) _cur.grffile->cargo_map[cs->Index()] = idx;
+		if (idx >= 0) _cur_gps.grffile->cargo_map[cs->Index()] = idx;
 	}
 }
 
@@ -708,13 +708,13 @@ static void InitNewGRFFile(const GRFConfig &config)
 	GRFFile *newfile = GetFileByFilename(config.filename);
 	if (newfile != nullptr) {
 		/* We already loaded it once. */
-		_cur.grffile = newfile;
+		_cur_gps.grffile = newfile;
 		return;
 	}
 
 	assert(_grf_files.size() < _grf_files.capacity()); // We must not invalidate pointers.
 	newfile = &_grf_files.emplace_back(config);
-	_cur.grffile = newfile;
+	_cur_gps.grffile = newfile;
 	_grf_file_map[newfile->grfid] = newfile;
 }
 
@@ -1392,21 +1392,21 @@ struct InvokeGrfActionHandler {
  * better make this more robust in the future. */
 static void DecodeSpecialSprite(uint8_t *buf, uint num, GrfLoadingStage stage)
 {
-	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line);
+	GRFLocation location(_cur_gps.grfconfig->ident.grfid, _cur_gps.nfo_line);
 
 	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
 	_action6_override_active = (it != _grf_line_to_action6_sprite_override.end());
 	if (it == _grf_line_to_action6_sprite_override.end()) {
 		/* No preloaded sprite to work with; read the
 		 * pseudo sprite content. */
-		_cur.file->ReadBlock(buf, num);
+		_cur_gps.file->ReadBlock(buf, num);
 	} else {
 		/* Use the preloaded sprite data. */
 		buf = it->second.get();
 		GrfMsg(7, "DecodeSpecialSprite: Using preloaded pseudo sprite data");
 
 		/* Skip the real (original) content of this action. */
-		_cur.file->SeekTo(num, SEEK_CUR);
+		_cur_gps.file->SeekTo(num, SEEK_CUR);
 	}
 
 	ByteReader br(buf, buf + num);
@@ -1435,8 +1435,8 @@ static void DecodeSpecialSprite(uint8_t *buf, uint num, GrfLoadingStage stage)
  */
 static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, SpriteFile &file)
 {
-	AutoRestoreBackup cur_file(_cur.file, &file);
-	AutoRestoreBackup cur_config(_cur.grfconfig, &config);
+	AutoRestoreBackup cur_file(_cur_gps.file, &file);
+	AutoRestoreBackup cur_config(_cur_gps.grfconfig, &config);
 
 	Debug(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '{}'", config.GetDisplayPath());
 
@@ -1475,16 +1475,16 @@ static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, Spr
 		return;
 	}
 
-	_cur.ClearDataForNextFile();
+	_cur_gps.ClearDataForNextFile();
 
 	ReusableBuffer<uint8_t> buf;
 
 	while ((num = (grf_container_version >= 2 ? file.ReadDword() : file.ReadWord())) != 0) {
 		uint8_t type = file.ReadByte();
-		_cur.nfo_line++;
+		_cur_gps.nfo_line++;
 
 		if (type == 0xFF) {
-			if (_cur.skip_sprites == 0) {
+			if (_cur_gps.skip_sprites == 0) {
 				/* Limit the special sprites to 1 MiB. */
 				if (num > 1024 * 1024) {
 					GrfMsg(0, "LoadNewGRFFile: Unexpectedly large sprite, disabling");
@@ -1495,14 +1495,14 @@ static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, Spr
 				DecodeSpecialSprite(buf.Allocate(num), num, stage);
 
 				/* Stop all processing if we are to skip the remaining sprites */
-				if (_cur.skip_sprites == -1) break;
+				if (_cur_gps.skip_sprites == -1) break;
 
 				continue;
 			} else {
 				file.SkipBytes(num);
 			}
 		} else {
-			if (_cur.skip_sprites == 0) {
+			if (_cur_gps.skip_sprites == 0) {
 				GrfMsg(0, "LoadNewGRFFile: Unexpected sprite, disabling");
 				DisableGrf(STR_NEWGRF_ERROR_UNEXPECTED_SPRITE);
 				break;
@@ -1517,7 +1517,7 @@ static void LoadNewGRFFileFromFile(GRFConfig &config, GrfLoadingStage stage, Spr
 			}
 		}
 
-		if (_cur.skip_sprites > 0) _cur.skip_sprites--;
+		if (_cur_gps.skip_sprites > 0) _cur_gps.skip_sprites--;
 	}
 }
 
@@ -1543,8 +1543,8 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 	 * carried out.  All others are ignored, because they only need to be
 	 * processed once at initialization.  */
 	if (stage != GLS_FILESCAN && stage != GLS_SAFETYSCAN && stage != GLS_LABELSCAN) {
-		_cur.grffile = GetFileByFilename(filename);
-		if (_cur.grffile == nullptr) UserError("File '{}' lost in cache.\n", filename);
+		_cur_gps.grffile = GetFileByFilename(filename);
+		if (_cur_gps.grffile == nullptr) UserError("File '{}' lost in cache.\n", filename);
 		if (stage == GLS_RESERVE && config.status != GCS_INITIALISED) return;
 		if (stage == GLS_ACTIVATION && !config.flags.Test(GRFConfigFlag::Reserved)) return;
 	}
@@ -1949,7 +1949,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		}
 	}
 
-	_cur.spriteid = load_index;
+	_cur_gps.spriteid = load_index;
 
 	/* Load newgrf sprites
 	 * in each loading stage, (try to) open each file specified in the config
@@ -1975,7 +1975,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		uint num_grfs = 0;
 		uint num_non_static = 0;
 
-		_cur.stage = stage;
+		_cur_gps.stage = stage;
 		for (const auto &c : _grfconfig) {
 			if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND) continue;
 			if (stage > GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) continue;
@@ -2006,24 +2006,24 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 				c->flags.Set(GRFConfigFlag::Reserved);
 			} else if (stage == GLS_ACTIVATION) {
 				c->flags.Reset(GRFConfigFlag::Reserved);
-				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur.grffile, "{:08X}", std::byteswap(c->ident.grfid));
-				ClearTemporaryNewGRFData(_cur.grffile);
+				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur_gps.grffile, "{:08X}", std::byteswap(c->ident.grfid));
+				ClearTemporaryNewGRFData(_cur_gps.grffile);
 				BuildCargoTranslationMap();
 				HandleVarAction2OptimisationPasses();
-				Debug(sprite, 2, "LoadNewGRF: Currently {} sprites are loaded", _cur.spriteid);
+				Debug(sprite, 2, "LoadNewGRF: Currently {} sprites are loaded", _cur_gps.spriteid);
 			} else if (stage == GLS_INIT && c->flags.Test(GRFConfigFlag::InitOnly)) {
 				/* We're not going to activate this, so free whatever data we allocated */
-				ClearTemporaryNewGRFData(_cur.grffile);
+				ClearTemporaryNewGRFData(_cur_gps.grffile);
 			}
 		}
 	}
 
 	/* We've finished reading files. */
-	_cur.grfconfig = nullptr;
-	_cur.grffile = nullptr;
+	_cur_gps.grfconfig = nullptr;
+	_cur_gps.grffile = nullptr;
 
 	/* Pseudo sprite processing is finished; free temporary stuff */
-	_cur.ClearDataForNextFile();
+	_cur_gps.ClearDataForNextFile();
 
 	/* Call any functions that should be run after GRFs have been loaded. */
 	AfterLoadGRFs();

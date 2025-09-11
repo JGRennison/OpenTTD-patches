@@ -38,10 +38,10 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 	}
 
 	/* Allocate station specs if necessary */
-	if (_cur.grffile->stations.size() < last) _cur.grffile->stations.resize(last);
+	if (_cur_gps.grffile->stations.size() < last) _cur_gps.grffile->stations.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		StationSpec *statspec = _cur.grffile->stations[id].get();
+		StationSpec *statspec = _cur_gps.grffile->stations[id].get();
 
 		/* Check that the station we are modifying is defined. */
 		if (statspec == nullptr && prop != 0x08) {
@@ -53,8 +53,8 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			case 0x08: { // Class ID
 				/* Property 0x08 is special; it is where the station is allocated */
 				if (statspec == nullptr) {
-					_cur.grffile->stations[id] = std::make_unique<StationSpec>();
-					statspec = _cur.grffile->stations[id].get();
+					_cur_gps.grffile->stations[id] = std::make_unique<StationSpec>();
+					statspec = _cur_gps.grffile->stations[id].get();
 				}
 
 				/* Swap classid because we read it in BE meaning WAYP or DFLT */
@@ -83,7 +83,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 					ReadSpriteLayoutSprite(buf, false, false, false, GSF_STATIONS, &dts->ground);
 					/* On error, bail out immediately. Temporary GRF data was already freed */
-					if (_cur.skip_sprites < 0) return CIR_DISABLED;
+					if (_cur_gps.skip_sprites < 0) return CIR_DISABLED;
 
 					std::vector<DrawTileSeqStruct> tmp_layout;
 					for (;;) {
@@ -101,7 +101,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 						ReadSpriteLayoutSprite(buf, false, true, false, GSF_STATIONS, &dtss.image);
 						/* On error, bail out immediately. Temporary GRF data was already freed */
-						if (_cur.skip_sprites < 0) return CIR_DISABLED;
+						if (_cur_gps.skip_sprites < 0) return CIR_DISABLED;
 					}
 					dts->seq = std::move(tmp_layout);
 				}
@@ -116,7 +116,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 			case 0x0A: { // Copy sprite layout
 				uint16_t srcid = buf.ReadExtendedByte();
-				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
+				const StationSpec *srcstatspec = srcid >= _cur_gps.grffile->stations.size() ? nullptr : _cur_gps.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
 					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy sprite layout to {}.", srcid, id);
@@ -169,7 +169,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 			case 0x0F: { // Copy custom layout
 				uint16_t srcid = buf.ReadExtendedByte();
-				const StationSpec *srcstatspec = srcid >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[srcid].get();
+				const StationSpec *srcstatspec = srcid >= _cur_gps.grffile->stations.size() ? nullptr : _cur_gps.grffile->stations[srcid].get();
 
 				if (srcstatspec == nullptr) {
 					GrfMsg(1, "StationChangeInfo: Station {} is not defined, cannot copy tile layout to {}.", srcid, id);
@@ -198,7 +198,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case 0x12: // Cargo types for random triggers
-				if (_cur.grffile->grf_version >= 7) {
+				if (_cur_gps.grffile->grf_version >= 7) {
 					statspec->cargo_triggers = TranslateRefitMask(buf.ReadDWord());
 				} else {
 					statspec->cargo_triggers = (CargoTypes)buf.ReadDWord();

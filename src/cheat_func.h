@@ -12,8 +12,6 @@
 
 #include "cheat_type.h"
 
-extern Cheats _cheats;
-
 bool CheatWindowMayBeShown();
 void ShowCheatWindow();
 

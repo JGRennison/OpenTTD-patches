@@ -69,7 +69,7 @@ static ChangeInfoResult IgnoreRoadStopProperty(uint prop, ByteReader &buf)
 
 static uint ReadPropertyLengthWithLegacyFallback(int prop, ByteReader &buf, uint legacy_length)
 {
-	if (prop < A0RPI_UNKNOWN_IGNORE && HasBit(_cur.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID)) {
+	if (prop < A0RPI_UNKNOWN_IGNORE && HasBit(_cur_gps.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID)) {
 		/* Treat as legacy behaviour */
 		return legacy_length;
 	}
@@ -85,10 +85,10 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 		return CIR_INVALID_ID;
 	}
 
-	if (_cur.grffile->roadstops.size() < last) _cur.grffile->roadstops.resize(last);
+	if (_cur_gps.grffile->roadstops.size() < last) _cur_gps.grffile->roadstops.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		RoadStopSpec *rs = _cur.grffile->roadstops[id].get();
+		RoadStopSpec *rs = _cur_gps.grffile->roadstops[id].get();
 
 		if (rs == nullptr && prop != 0x08 && prop != A0RPI_ROADSTOP_CLASS_ID) {
 			GrfMsg(1, "RoadStopChangeInfo: Attempt to modify undefined road stop {}, ignoring", id);
@@ -103,8 +103,8 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				[[fallthrough]];
 			case 0x08: { // Road Stop Class ID
 				if (rs == nullptr) {
-					_cur.grffile->roadstops[id] = std::make_unique<RoadStopSpec>();
-					rs = _cur.grffile->roadstops[id].get();
+					_cur_gps.grffile->roadstops[id] = std::make_unique<RoadStopSpec>();
+					rs = _cur_gps.grffile->roadstops[id].get();
 				}
 
 				uint32_t classid = buf.ReadDWord();

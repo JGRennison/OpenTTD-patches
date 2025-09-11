@@ -80,10 +80,10 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 	}
 
 	/* Allocate industry tile specs if they haven't been allocated already. */
-	if (_cur.grffile->indtspec.size() < last) _cur.grffile->indtspec.resize(last);
+	if (_cur_gps.grffile->indtspec.size() < last) _cur_gps.grffile->indtspec.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		IndustryTileSpec *tsp = _cur.grffile->indtspec[id].get();
+		IndustryTileSpec *tsp = _cur_gps.grffile->indtspec[id].get();
 
 		if (prop != 0x08 && tsp == nullptr) {
 			ChangeInfoResult cir = IgnoreIndustryTileProperty(prop, buf);
@@ -102,8 +102,8 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 
 				/* Allocate space for this industry. */
 				if (tsp == nullptr) {
-					_cur.grffile->indtspec[id] = std::make_unique<IndustryTileSpec>(_industry_tile_specs[subs_id]);
-					tsp = _cur.grffile->indtspec[id].get();
+					_cur_gps.grffile->indtspec[id] = std::make_unique<IndustryTileSpec>(_industry_tile_specs[subs_id]);
+					tsp = _cur_gps.grffile->indtspec[id].get();
 
 					tsp->enabled = true;
 
@@ -115,8 +115,8 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 
 					tsp->grf_prop.local_id = id;
 					tsp->grf_prop.subst_id = subs_id;
-					tsp->grf_prop.SetGRFFile(_cur.grffile);
-					_industile_mngr.AddEntityID(id, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
+					tsp->grf_prop.SetGRFFile(_cur_gps.grffile);
+					_industile_mngr.AddEntityID(id, _cur_gps.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
 				break;
 			}
@@ -130,7 +130,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 					continue;
 				}
 
-				_industile_mngr.Add(id, _cur.grffile->grfid, ovrid);
+				_industile_mngr.Add(id, _cur_gps.grffile->grfid, ovrid);
 				break;
 			}
 
@@ -138,7 +138,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 			case 0x0B:
 			case 0x0C: {
 				uint16_t acctp = buf.ReadWord();
-				tsp->accepts_cargo[prop - 0x0A] = GetCargoTranslation(GB(acctp, 0, 8), _cur.grffile);
+				tsp->accepts_cargo[prop - 0x0A] = GetCargoTranslation(GB(acctp, 0, 8), _cur_gps.grffile);
 				tsp->acceptance[prop - 0x0A] = Clamp(GB(acctp, 8, 8), 0, 16);
 				tsp->accepts_cargo_label[prop - 0x0A] = CT_INVALID;
 				break;
@@ -178,7 +178,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint first, uint last, int prop,
 				}
 				for (uint i = 0; i < std::size(tsp->acceptance); i++) {
 					if (i < num_cargoes) {
-						tsp->accepts_cargo[i] = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						tsp->accepts_cargo[i] = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 						/* Tile acceptance can be negative to counteract the IndustryTileSpecialFlag::AcceptsAllCargo flag */
 						tsp->acceptance[i] = (int8_t)buf.ReadByte();
 					} else {
@@ -347,10 +347,10 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 	}
 
 	/* Allocate industry specs if they haven't been allocated already. */
-	if (_cur.grffile->industryspec.size() < last) _cur.grffile->industryspec.resize(last);
+	if (_cur_gps.grffile->industryspec.size() < last) _cur_gps.grffile->industryspec.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		IndustrySpec *indsp = _cur.grffile->industryspec[id].get();
+		IndustrySpec *indsp = _cur_gps.grffile->industryspec[id].get();
 
 		if (prop != 0x08 && indsp == nullptr) {
 			ChangeInfoResult cir = IgnoreIndustryProperty(prop, buf);
@@ -376,13 +376,13 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				 * Only need to do it once. If ever it is called again, it should not
 				 * do anything */
 				if (indsp == nullptr) {
-					_cur.grffile->industryspec[id] = std::make_unique<IndustrySpec>(_origin_industry_specs[subs_id]);
-					indsp = _cur.grffile->industryspec[id].get();
+					_cur_gps.grffile->industryspec[id] = std::make_unique<IndustrySpec>(_origin_industry_specs[subs_id]);
+					indsp = _cur_gps.grffile->industryspec[id].get();
 
 					indsp->enabled = true;
 					indsp->grf_prop.local_id = id;
 					indsp->grf_prop.subst_id = subs_id;
-					indsp->grf_prop.SetGRFFile(_cur.grffile);
+					indsp->grf_prop.SetGRFFile(_cur_gps.grffile);
 					/* If the grf industry needs to check its surrounding upon creation, it should
 					 * rely on callbacks, not on the original placement functions */
 					indsp->check_proc = CHECK_NOTHING;
@@ -399,7 +399,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					continue;
 				}
 				indsp->grf_prop.override_id = ovrid;
-				_industry_mngr.Add(id, _cur.grffile->grfid, ovrid);
+				_industry_mngr.Add(id, _cur_gps.grffile->grfid, ovrid);
 				break;
 			}
 
@@ -463,7 +463,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 							bytes_read += 2;
 
 							/* Read the ID from the _industile_mngr. */
-							int tempid = _industile_mngr.GetID(local_tile_id, _cur.grffile->grfid);
+							int tempid = _industile_mngr.GetID(local_tile_id, _cur_gps.grffile->grfid);
 
 							if (tempid == INVALID_INDUSTRYTILE) {
 								GrfMsg(2, "IndustriesChangeInfo: Attempt to use industry tile {} with industry id {}, not yet defined. Ignoring.", local_tile_id, id);
@@ -482,7 +482,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 							 * Since GRF version 8 the position is interpreted as pair of independent int8.
 							 * For GRF version < 8 we need to emulate the old shifting behaviour.
 							 */
-							if (_cur.grffile->grf_version < 8 && it.ti.x < 0) it.ti.y += 1;
+							if (_cur_gps.grffile->grf_version < 8 && it.ti.x < 0) it.ti.y += 1;
 						}
 					}
 
@@ -521,14 +521,14 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 
 			case 0x10: // Production cargo types
 				for (uint8_t j = 0; j < INDUSTRY_ORIGINAL_NUM_OUTPUTS; j++) {
-					indsp->produced_cargo[j] = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					indsp->produced_cargo[j] = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 					indsp->produced_cargo_label[j] = CT_INVALID;
 				}
 				break;
 
 			case 0x11: // Acceptance cargo types
 				for (uint8_t j = 0; j < INDUSTRY_ORIGINAL_NUM_INPUTS; j++) {
-					indsp->accepts_cargo[j] = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+					indsp->accepts_cargo[j] = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 					indsp->accepts_cargo_label[j] = CT_INVALID;
 				}
 				buf.ReadByte(); // Unnused, eat it up
@@ -628,7 +628,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				}
 				for (uint i = 0; i < std::size(indsp->produced_cargo); i++) {
 					if (i < num_cargoes) {
-						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 						indsp->produced_cargo[i] = cargo;
 					} else {
 						indsp->produced_cargo[i] = INVALID_CARGO;
@@ -647,7 +647,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 				}
 				for (uint i = 0; i < std::size(indsp->accepts_cargo); i++) {
 					if (i < num_cargoes) {
-						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur.grffile);
+						CargoType cargo = GetCargoTranslation(buf.ReadByte(), _cur_gps.grffile);
 						indsp->accepts_cargo[i] = cargo;
 					} else {
 						indsp->accepts_cargo[i] = INVALID_CARGO;

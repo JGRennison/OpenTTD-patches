@@ -127,16 +127,16 @@ uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 {
 	/* First handle variable common with VarAction2 */
 	uint32_t value;
-	if (GetGlobalVariable(param - 0x80, &value, _cur.grffile)) return value;
+	if (GetGlobalVariable(param - 0x80, &value, _cur_gps.grffile)) return value;
 
 	/* Non-common variable */
 	switch (param) {
 		case 0x84: { // GRF loading stage
 			uint32_t res = 0;
 
-			if (_cur.stage > GLS_INIT) SetBit(res, 0);
-			if (_cur.stage == GLS_RESERVE) SetBit(res, 8);
-			if (_cur.stage == GLS_ACTIVATION) SetBit(res, 9);
+			if (_cur_gps.stage > GLS_INIT) SetBit(res, 0);
+			if (_cur_gps.stage == GLS_RESERVE) SetBit(res, 8);
+			if (_cur_gps.stage == GLS_ACTIVATION) SetBit(res, 9);
 			return res;
 		}
 
@@ -150,7 +150,7 @@ uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 				uint32_t param_val = 0;
 				if (index < (uint32_t)_ttdpatch_flags.size()) {
 					param_val = _ttdpatch_flags[index];
-					if (!_cur.grfconfig->flags.Any({GRFConfigFlag::Static, GRFConfigFlag::System})) {
+					if (!_cur_gps.grfconfig->flags.Any({GRFConfigFlag::Static, GRFConfigFlag::System})) {
 						SetBit(_observed_ttdpatch_flags[index], *cond_val);
 					}
 				}
@@ -164,7 +164,7 @@ uint32_t GetParamVal(uint8_t param, uint32_t *cond_val)
 
 		default:
 			/* GRF Parameter */
-			if (param < 0x80) return _cur.grffile->GetParam(param);
+			if (param < 0x80) return _cur_gps.grffile->GetParam(param);
 
 			/* In-game variable. */
 			GrfMsg(1, "Unsupported in-game variable 0x{:02X}", param);
@@ -204,7 +204,7 @@ static void SkipIf(ByteReader &buf)
 		default: break;
 	}
 
-	if (param < 0x80 && std::size(_cur.grffile->param) <= param) {
+	if (param < 0x80 && std::size(_cur_gps.grffile->param) <= param) {
 		GrfMsg(7, "SkipIf: Param {} undefined, skipping test", param);
 		return;
 	}
@@ -252,7 +252,7 @@ static void SkipIf(ByteReader &buf)
 
 		GRFConfig *c = GetGRFConfig(cond_val, mask);
 
-		if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
+		if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur_gps.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 			DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);
 			c = nullptr;
 		}
@@ -288,7 +288,7 @@ static void SkipIf(ByteReader &buf)
 			default: GrfMsg(1, "SkipIf: Unsupported GRF condition type {:02X}. Ignoring", condtype); return;
 		}
 	} else if (param == 0x91 && (condtype == 0x02 || condtype == 0x03) && cond_val > 0) {
-		const std::vector<uint32_t> &values = _cur.grffile->var91_values;
+		const std::vector<uint32_t> &values = _cur_gps.grffile->var91_values;
 		/* condtype 0x02: skip if test result found
 		 * condtype 0x03: skip if test result not found
 		 */
@@ -326,13 +326,13 @@ static void SkipIf(ByteReader &buf)
 	 * the current nfo_line. If no matching label is found, the first matching
 	 * label in the file is used. */
 	const GRFLabel *choice = nullptr;
-	for (const auto &label : _cur.grffile->labels) {
+	for (const auto &label : _cur_gps.grffile->labels) {
 		if (label.label != numsprites) continue;
 
 		/* Remember a goto before the current line */
 		if (choice == nullptr) choice = &label;
 		/* If we find a label here, this is definitely good */
-		if (label.nfo_line > _cur.nfo_line) {
+		if (label.nfo_line > _cur_gps.nfo_line) {
 			choice = &label;
 			break;
 		}
@@ -340,21 +340,21 @@ static void SkipIf(ByteReader &buf)
 
 	if (choice != nullptr) {
 		GrfMsg(2, "SkipIf: Jumping to label 0x{:X} at line {}, test was true", choice->label, choice->nfo_line);
-		_cur.file->SeekTo(choice->pos, SEEK_SET);
-		_cur.nfo_line = choice->nfo_line;
+		_cur_gps.file->SeekTo(choice->pos, SEEK_SET);
+		_cur_gps.nfo_line = choice->nfo_line;
 		return;
 	}
 
 	GrfMsg(2, "SkipIf: Skipping {} sprites, test was true", numsprites);
-	_cur.skip_sprites = numsprites;
-	if (_cur.skip_sprites == 0) {
+	_cur_gps.skip_sprites = numsprites;
+	if (_cur_gps.skip_sprites == 0) {
 		/* Zero means there are no sprites to skip, so
 		 * we use -1 to indicate that all further
 		 * sprites should be skipped. */
-		_cur.skip_sprites = -1;
+		_cur_gps.skip_sprites = -1;
 
 		/* If an action 8 hasn't been encountered yet, disable the grf. */
-		if (_cur.grfconfig->status != (_cur.stage < GLS_RESERVE ? GCS_INITIALISED : GCS_ACTIVATED)) {
+		if (_cur_gps.grfconfig->status != (_cur_gps.stage < GLS_RESERVE ? GCS_INITIALISED : GCS_ACTIVATED)) {
 			DisableGrf();
 		}
 	}

@@ -33,7 +33,7 @@ static ChangeInfoResult NewLandscapeChangeInfo(uint first, uint last, int prop, 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				bool enabled = (buf.ReadByte() != 0 ? 1 : 0);
 				if (id == NLA3ID_CUSTOM_ROCKS) {
-					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED, 1, enabled);
+					SB(_cur_gps.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED, 1, enabled);
 				}
 				break;
 			}
@@ -42,7 +42,7 @@ static ChangeInfoResult NewLandscapeChangeInfo(uint first, uint last, int prop, 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				bool enabled = (buf.ReadByte() != 0 ? 1 : 0);
 				if (id == NLA3ID_CUSTOM_ROCKS) {
-					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED, 1, enabled);
+					SB(_cur_gps.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED, 1, enabled);
 				}
 				break;
 			}

@@ -65,7 +65,7 @@ public:
 	 * @param md5sum Whether to check the MD5 checksum.
 	 * @return True iff we have a script matching.
 	 */
-	bool HasScript(const struct ContentInfo *ci, bool md5sum);
+	bool HasScript(const struct ContentInfo &ci, bool md5sum);
 
 	/**
 	 * Find a script of a #ContentInfo
@@ -73,7 +73,7 @@ public:
 	 * @param md5sum Whether to check the MD5 checksum.
 	 * @return A filename of a file of the content, else \c nullptr.
 	 */
-	const char *FindMainScript(const ContentInfo *ci, bool md5sum);
+	const char *FindMainScript(const ContentInfo &ci, bool md5sum);
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override;
 

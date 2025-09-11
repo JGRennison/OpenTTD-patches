@@ -22,21 +22,21 @@
 /** Callback function for 'INFO'->'NAME' to add a translation to the newgrf name. */
 static bool ChangeGRFName(uint8_t langid, std::string_view str)
 {
-	AddGRFTextToList(_cur.grfconfig->name, langid, _cur.grfconfig->ident.grfid, false, str);
+	AddGRFTextToList(_cur_gps.grfconfig->name, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'DESC' to add a translation to the newgrf description. */
 static bool ChangeGRFDescription(uint8_t langid, std::string_view str)
 {
-	AddGRFTextToList(_cur.grfconfig->info, langid, _cur.grfconfig->ident.grfid, true, str);
+	AddGRFTextToList(_cur_gps.grfconfig->info, langid, _cur_gps.grfconfig->ident.grfid, true, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'URL_' to set the newgrf url. */
 static bool ChangeGRFURL(uint8_t langid, std::string_view str)
 {
-	AddGRFTextToList(_cur.grfconfig->url, langid, _cur.grfconfig->ident.grfid, false, str);
+	AddGRFTextToList(_cur_gps.grfconfig->url, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
 }
 
@@ -47,7 +47,7 @@ static bool ChangeGRFNumUsedParams(size_t len, ByteReader &buf)
 		GrfMsg(2, "StaticGRFInfo: expected only 1 byte for 'INFO'->'NPAR' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
-		_cur.grfconfig->num_valid_params = std::min(buf.ReadByte(), GRFConfig::MAX_NUM_PARAMS);
+		_cur_gps.grfconfig->num_valid_params = std::min(buf.ReadByte(), GRFConfig::MAX_NUM_PARAMS);
 	}
 	return true;
 }
@@ -71,8 +71,8 @@ static bool ChangeGRFPalette(size_t len, ByteReader &buf)
 				break;
 		}
 		if (pal != GRFP_GRF_UNSET) {
-			_cur.grfconfig->palette &= ~GRFP_GRF_MASK;
-			_cur.grfconfig->palette |= pal;
+			_cur_gps.grfconfig->palette &= ~GRFP_GRF_MASK;
+			_cur_gps.grfconfig->palette |= pal;
 		}
 	}
 	return true;
@@ -94,8 +94,8 @@ static bool ChangeGRFBlitter(size_t len, ByteReader &buf)
 				GrfMsg(2, "StaticGRFInfo: unexpected value '{:02X}' for 'INFO'->'BLTR', ignoring this field", data);
 				return true;
 		}
-		_cur.grfconfig->palette &= ~GRFP_BLT_MASK;
-		_cur.grfconfig->palette |= pal;
+		_cur_gps.grfconfig->palette &= ~GRFP_BLT_MASK;
+		_cur_gps.grfconfig->palette |= pal;
 	}
 	return true;
 }
@@ -108,7 +108,7 @@ static bool ChangeGRFVersion(size_t len, ByteReader &buf)
 		buf.Skip(len);
 	} else {
 		/* Set min_loadable_version as well (default to minimal compatibility) */
-		_cur.grfconfig->version = _cur.grfconfig->min_loadable_version = buf.ReadDWord();
+		_cur_gps.grfconfig->version = _cur_gps.grfconfig->min_loadable_version = buf.ReadDWord();
 	}
 	return true;
 }
@@ -120,14 +120,14 @@ static bool ChangeGRFMinVersion(size_t len, ByteReader &buf)
 		GrfMsg(2, "StaticGRFInfo: expected 4 bytes for 'INFO'->'MINV' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
-		_cur.grfconfig->min_loadable_version = buf.ReadDWord();
-		if (_cur.grfconfig->version == 0) {
+		_cur_gps.grfconfig->min_loadable_version = buf.ReadDWord();
+		if (_cur_gps.grfconfig->version == 0) {
 			GrfMsg(2, "StaticGRFInfo: 'MINV' defined before 'VRSN' or 'VRSN' set to 0, ignoring this field");
-			_cur.grfconfig->min_loadable_version = 0;
+			_cur_gps.grfconfig->min_loadable_version = 0;
 		}
-		if (_cur.grfconfig->version < _cur.grfconfig->min_loadable_version) {
-			GrfMsg(2, "StaticGRFInfo: 'MINV' defined as {}, limiting it to 'VRSN'", _cur.grfconfig->min_loadable_version);
-			_cur.grfconfig->min_loadable_version = _cur.grfconfig->version;
+		if (_cur_gps.grfconfig->version < _cur_gps.grfconfig->min_loadable_version) {
+			GrfMsg(2, "StaticGRFInfo: 'MINV' defined as {}, limiting it to 'VRSN'", _cur_gps.grfconfig->min_loadable_version);
+			_cur_gps.grfconfig->min_loadable_version = _cur_gps.grfconfig->version;
 		}
 	}
 	return true;
@@ -138,14 +138,14 @@ static GRFParameterInfo *_cur_parameter; ///< The parameter which info is curren
 /** Callback function for 'INFO'->'PARAM'->param_num->'NAME' to set the name of a parameter. */
 static bool ChangeGRFParamName(uint8_t langid, std::string_view str)
 {
-	AddGRFTextToList(_cur_parameter->name, langid, _cur.grfconfig->ident.grfid, false, str);
+	AddGRFTextToList(_cur_parameter->name, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'PARAM'->param_num->'DESC' to set the description of a parameter. */
 static bool ChangeGRFParamDescription(uint8_t langid, std::string_view str)
 {
-	AddGRFTextToList(_cur_parameter->desc, langid, _cur.grfconfig->ident.grfid, true, str);
+	AddGRFTextToList(_cur_parameter->desc, langid, _cur_gps.grfconfig->ident.grfid, true, str);
 	return true;
 }
 
@@ -218,7 +218,7 @@ static bool ChangeGRFParamDefault(size_t len, ByteReader &buf)
 	} else {
 		_cur_parameter->def_value = buf.ReadDWord();
 	}
-	_cur.grfconfig->has_param_defaults = true;
+	_cur_gps.grfconfig->has_param_defaults = true;
 	return true;
 }
 
@@ -286,7 +286,7 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 		if (it == std::end(_cur_parameter->value_names) || it->first != id) {
 			it = _cur_parameter->value_names.emplace(it, id, GRFTextList{});
 		}
-		AddGRFTextToList(it->second, langid, _cur.grfconfig->ident.grfid, false, name_string);
+		AddGRFTextToList(it->second, langid, _cur_gps.grfconfig->ident.grfid, false, name_string);
 
 		type = buf.ReadByte();
 	}
@@ -315,20 +315,20 @@ static bool HandleParameterInfo(ByteReader &buf)
 	uint8_t type = buf.ReadByte();
 	while (type != 0) {
 		uint32_t id = buf.ReadDWord();
-		if (type != 'C' || id >= _cur.grfconfig->num_valid_params) {
+		if (type != 'C' || id >= _cur_gps.grfconfig->num_valid_params) {
 			GrfMsg(2, "StaticGRFInfo: all child nodes of 'INFO'->'PARA' should have type 'C' and their parameter number as id");
 			if (!SkipUnknownInfo(buf, type)) return false;
 			type = buf.ReadByte();
 			continue;
 		}
 
-		if (id >= _cur.grfconfig->param_info.size()) {
-			_cur.grfconfig->param_info.resize(id + 1);
+		if (id >= _cur_gps.grfconfig->param_info.size()) {
+			_cur_gps.grfconfig->param_info.resize(id + 1);
 		}
-		if (!_cur.grfconfig->param_info[id].has_value()) {
-			_cur.grfconfig->param_info[id] = GRFParameterInfo(id);
+		if (!_cur_gps.grfconfig->param_info[id].has_value()) {
+			_cur_gps.grfconfig->param_info[id] = GRFParameterInfo(id);
 		}
-		_cur_parameter = &_cur.grfconfig->param_info[id].value();
+		_cur_parameter = &_cur_gps.grfconfig->param_info[id].value();
 		/* Read all parameter-data and process each node. */
 		if (!HandleNodes(buf, _tags_parameters)) return false;
 		type = buf.ReadByte();
@@ -372,13 +372,13 @@ struct GRFFeatureTest {
 		uint16_t version = (this->feature != nullptr) ? this->feature->version : 0;
 		bool has_feature = (version >= this->min_version && version <= this->max_version);
 		if (this->platform_var_bit > 0) {
-			AssignBit(_cur.grffile->var9D_overlay, this->platform_var_bit, has_feature);
-			GrfMsg(2, "Action 14 feature test: feature test: setting bit {} of var 0x9D to {}, {}", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
+			AssignBit(_cur_gps.grffile->var9D_overlay, this->platform_var_bit, has_feature);
+			GrfMsg(2, "Action 14 feature test: feature test: setting bit {} of var 0x9D to {}, {}", platform_var_bit, has_feature ? 1 : 0, _cur_gps.grffile->var9D_overlay);
 		}
 		if (this->test_91_value > 0) {
 			if (has_feature) {
 				GrfMsg(2, "Action 14 feature test: feature test: adding test value 0x{:X} to var 0x91", this->test_91_value);
-				include(_cur.grffile->var91_values, this->test_91_value);
+				include(_cur_gps.grffile->var91_values, this->test_91_value);
 			} else {
 				GrfMsg(2, "Action 14 feature test: feature test: not adding test value 0x{:X} to var 0x91", this->test_91_value);
 			}
@@ -387,7 +387,7 @@ struct GRFFeatureTest {
 			GrfMsg(2, "Action 14 feature test: feature test: doing nothing: {}", has_feature ? 1 : 0);
 		}
 		if (this->feature != nullptr && this->feature->observation_flag != GFTOF_INVALID) {
-			SetBit(_cur.grffile->observed_feature_tests, this->feature->observation_flag);
+			SetBit(_cur_gps.grffile->observed_feature_tests, this->feature->observation_flag);
 		}
 	}
 };
@@ -530,29 +530,29 @@ struct GRFPropertyMapAction {
 			GrfMsg(2, "Action 14 {} remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
-		SetBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP);
+		SetBit(_cur_gps.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP);
 		bool success = false;
 		const char *str = this->name.c_str();
 		extern const GRFFeatureMapDefinition _grf_remappable_features[];
 		for (const GRFFeatureMapDefinition *info = _grf_remappable_features; info->name != nullptr; info++) {
 			if (strcmp(info->name, str) == 0) {
-				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				GRFFeatureMapRemapEntry &entry = _cur_gps.grffile->feature_id_remaps.Entry(this->prop_id);
 				entry.name = info->name;
 				entry.feature = info->feature;
 				entry.raw_id = this->prop_id;
 				success = true;
 				if (entry.feature == GSF_ROADSTOPS && this->prop_id != GSF_ROADSTOPS) {
 					GrfMsg(3, "Enabling legacy road stops feature workarounds");
-					SetBit(_cur.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID);
+					SetBit(_cur_gps.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID);
 				}
 				break;
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
+			AssignBit(_cur_gps.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
-			include(_cur.grffile->var91_values, this->test_91_value);
+			include(_cur_gps.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
@@ -565,8 +565,8 @@ struct GRFPropertyMapAction {
 				const char *str_store = stredup(str);
 				GrfMsg(2, "Unimplemented mapped {}: {}, mapped to: {:X}, {} on use",
 						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
-				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
-				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				_cur_gps.grffile->remap_unknown_property_names.emplace_back(str_store);
+				GRFFeatureMapRemapEntry &entry = _cur_gps.grffile->feature_id_remaps.Entry(this->prop_id);
 				entry.name = str_store;
 				entry.feature = (this->fallback_mode == GPMFM_IGNORE) ? GSF_INVALID : GSF_ERROR_ON_USE;
 				entry.raw_id = this->prop_id;
@@ -594,14 +594,14 @@ struct GRFPropertyMapAction {
 		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != nullptr; info++) {
 			if ((info->feature == GSF_INVALID || info->feature == this->feature) && strcmp(info->name, str) == 0) {
 				if (this->prop_id > 0) {
-					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+					GRFFilePropertyRemapEntry &entry = _cur_gps.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 					entry.name = info->name;
 					entry.id = info->id;
 					entry.feature = this->feature;
 					entry.property_id = this->prop_id;
 				}
 				if (this->ext_prop_id > 0) {
-					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_extended_property_remaps[(((uint32_t)this->feature) << 16) | this->ext_prop_id];
+					GRFFilePropertyRemapEntry &entry = _cur_gps.grffile->action0_extended_property_remaps[(((uint32_t)this->feature) << 16) | this->ext_prop_id];
 					entry.name = info->name;
 					entry.id = info->id;
 					entry.feature = this->feature;
@@ -613,10 +613,10 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
+			AssignBit(_cur_gps.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
-			include(_cur.grffile->var91_values, this->test_91_value);
+			include(_cur_gps.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			uint mapped_to = (this->prop_id > 0) ? this->prop_id : this->ext_prop_id;
@@ -631,16 +631,16 @@ struct GRFPropertyMapAction {
 				const char *str_store = stredup(str);
 				GrfMsg(2, "Unimplemented mapped {}: {}, feature: {}, mapped to: {:X}{}, {} on use",
 						this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
-				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
+				_cur_gps.grffile->remap_unknown_property_names.emplace_back(str_store);
 				if (this->prop_id > 0) {
-					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+					GRFFilePropertyRemapEntry &entry = _cur_gps.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 					entry.name = str_store;
 					entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
 					entry.feature = this->feature;
 					entry.property_id = this->prop_id;
 				}
 				if (this->ext_prop_id > 0) {
-					GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_extended_property_remaps[(((uint32_t)this->feature) << 16) | this->ext_prop_id];
+					GRFFilePropertyRemapEntry &entry = _cur_gps.grffile->action0_extended_property_remaps[(((uint32_t)this->feature) << 16) | this->ext_prop_id];
 					entry.name = str_store;
 					entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;;
 					entry.feature = this->feature;
@@ -666,16 +666,16 @@ struct GRFPropertyMapAction {
 		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
 		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
-				_cur.grffile->grf_variable_remaps.push_back({ (uint16_t)info->id, (uint8_t)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
+				_cur_gps.grffile->grf_variable_remaps.push_back({ (uint16_t)info->id, (uint8_t)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
 				success = true;
 				break;
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
+			AssignBit(_cur_gps.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
-			include(_cur.grffile->var91_values, this->test_91_value);
+			include(_cur_gps.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			GrfMsg(2, "Unimplemented mapped {}: {}, feature: {}, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
@@ -697,7 +697,7 @@ struct GRFPropertyMapAction {
 		extern const Action5TypeRemapDefinition _grf_action5_remappable_types[];
 		for (const Action5TypeRemapDefinition *info = _grf_action5_remappable_types; info->name != nullptr; info++) {
 			if (strcmp(info->name, str) == 0) {
-				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
+				Action5TypeRemapEntry &entry = _cur_gps.grffile->action5_type_remaps.Entry(this->prop_id);
 				entry.name = info->name;
 				entry.info = &(info->info);
 				entry.type_id = this->prop_id;
@@ -706,10 +706,10 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
+			AssignBit(_cur_gps.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
-			include(_cur.grffile->var91_values, this->test_91_value);
+			include(_cur_gps.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
@@ -721,8 +721,8 @@ struct GRFPropertyMapAction {
 				const char *str_store = stredup(str);
 				GrfMsg(2, "Unimplemented mapped {}: {}, mapped to: {:X}, {} on use",
 						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
-				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
-				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
+				_cur_gps.grffile->remap_unknown_property_names.emplace_back(str_store);
+				Action5TypeRemapEntry &entry = _cur_gps.grffile->action5_type_remaps.Entry(this->prop_id);
 				entry.name = str_store;
 				entry.info = nullptr;
 				entry.type_id = this->prop_id;

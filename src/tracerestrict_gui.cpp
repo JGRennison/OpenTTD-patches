@@ -62,6 +62,8 @@ static std::array<jgr::ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recen
 static std::array<jgr::ring_buffer<TraceRestrictSlotGroupID>, VEH_COMPANY_END> _recent_slot_groups;
 static jgr::ring_buffer<TraceRestrictCounterID> _recent_counters;
 
+extern std::array<Sorting, BaseVehicleListWindow::GB_END> _sorting;
+
 template <typename T>
 void EraseRecentSlotOrCounter(jgr::ring_buffer<T> &ring, T id)
 {

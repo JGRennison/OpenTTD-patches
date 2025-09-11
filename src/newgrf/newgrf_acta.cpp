@@ -26,7 +26,7 @@
 static bool IsGRMReservedSprite(SpriteID first_sprite, uint16_t num_sprites)
 {
 	for (const auto &grm_sprite : _grm_sprites) {
-		if (grm_sprite.first.grfid != _cur.grffile->grfid) continue;
+		if (grm_sprite.first.grfid != _cur_gps.grffile->grfid) continue;
 		if (grm_sprite.second.first <= first_sprite && grm_sprite.second.first + grm_sprite.second.second >= first_sprite + num_sprites) return true;
 	}
 	return false;
@@ -60,8 +60,8 @@ static void SpriteReplace(ByteReader &buf)
 					i, num_sprites, first_sprite, SPR_OPENTTD_BASE);
 
 				for (uint j = 0; j < num_sprites; j++) {
-					_cur.nfo_line++;
-					LoadNextSprite(INVALID_SPRITE_ID, *_cur.file, _cur.nfo_line);
+					_cur_gps.nfo_line++;
+					LoadNextSprite(INVALID_SPRITE_ID, *_cur_gps.file, _cur_gps.nfo_line);
 				}
 				return;
 			}
@@ -69,13 +69,13 @@ static void SpriteReplace(ByteReader &buf)
 
 		for (uint j = 0; j < num_sprites; j++) {
 			SpriteID load_index = first_sprite + j;
-			_cur.nfo_line++;
+			_cur_gps.nfo_line++;
 			if (load_index < (int)SPR_PROGSIGNAL_BASE || load_index >= (int)SPR_NEWGRFS_BASE) {
-				LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
+				LoadNextSprite(load_index, *_cur_gps.file, _cur_gps.nfo_line); // XXX
 			} else {
 				/* Skip sprite */
 				GrfMsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: {}", load_index);
-				LoadNextSprite(INVALID_SPRITE_ID, *_cur.file, _cur.nfo_line);
+				LoadNextSprite(INVALID_SPRITE_ID, *_cur_gps.file, _cur_gps.nfo_line);
 			}
 
 			/* Shore sprites now located at different addresses.
@@ -94,12 +94,12 @@ static void SkipActA(ByteReader &buf)
 
 	for (uint i = 0; i < num_sets; i++) {
 		/* Skip the sprites this replaces */
-		_cur.skip_sprites += buf.ReadByte();
+		_cur_gps.skip_sprites += buf.ReadByte();
 		/* But ignore where they go */
 		buf.ReadWord();
 	}
 
-	GrfMsg(3, "SkipActA: Skipping {} sprites", _cur.skip_sprites);
+	GrfMsg(3, "SkipActA: Skipping {} sprites", _cur_gps.skip_sprites);
 }
 
 template <> void GrfActionHandler<0x0A>::FileScan(ByteReader &buf) { SkipActA(buf); }

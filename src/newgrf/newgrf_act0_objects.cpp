@@ -85,10 +85,10 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 	}
 
 	/* Allocate object specs if they haven't been allocated already. */
-	if (_cur.grffile->objectspec.size() < last) _cur.grffile->objectspec.resize(last);
+	if (_cur_gps.grffile->objectspec.size() < last) _cur_gps.grffile->objectspec.resize(last);
 
 	for (uint id = first; id < last; ++id) {
-		ObjectSpec *spec = _cur.grffile->objectspec[id].get();
+		ObjectSpec *spec = _cur_gps.grffile->objectspec[id].get();
 
 		if (prop != 0x08 && spec == nullptr) {
 			/* If the object property 08 is not yet set, ignore this property */
@@ -101,8 +101,8 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 			case 0x08: { // Class ID
 				/* Allocate space for this object. */
 				if (spec == nullptr) {
-					_cur.grffile->objectspec[id] = std::make_unique<ObjectSpec>();
-					spec = _cur.grffile->objectspec[id].get();
+					_cur_gps.grffile->objectspec[id] = std::make_unique<ObjectSpec>();
+					spec = _cur_gps.grffile->objectspec[id].get();
 					spec->views = 1; // Default for NewGRFs that don't set it.
 					spec->size = OBJECT_SIZE_1X1; // Default for NewGRFs that manage to not set it (1x1)
 				}

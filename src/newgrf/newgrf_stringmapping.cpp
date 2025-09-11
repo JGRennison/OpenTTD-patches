@@ -43,13 +43,13 @@ static std::vector<StringIDMapping> _string_to_grf_mapping;
 void AddStringForMapping(GRFStringID source, StringID *target)
 {
 	*target = STR_UNDEFINED;
-	_string_to_grf_mapping.emplace_back(_cur.grffile, source, reinterpret_cast<uintptr_t>(target), nullptr);
+	_string_to_grf_mapping.emplace_back(_cur_gps.grffile, source, reinterpret_cast<uintptr_t>(target), nullptr);
 }
 
 void AddStringForMappingGeneric(GRFStringID source, uintptr_t data, StringIDMappingHandler func)
 {
 	func(STR_UNDEFINED, data);
-	_string_to_grf_mapping.emplace_back(_cur.grffile, source, data, func);
+	_string_to_grf_mapping.emplace_back(_cur_gps.grffile, source, data, func);
 }
 
 /**
