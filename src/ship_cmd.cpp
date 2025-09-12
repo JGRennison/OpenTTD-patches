@@ -357,6 +357,8 @@ TileIndex Ship::GetOrderStationLocation(StationID station)
 
 void Ship::UpdateDeltaXY()
 {
+	if (!this->IsPrimaryVehicle()) return;
+
 	static const int8_t _delta_xy_table[8][4] = {
 		/* y_extent, x_extent, y_offs, x_offs */
 		{ 6,  6,  -3,  -3}, // N
