@@ -36,8 +36,7 @@ inline bool MayHaveRoad(TileIndex t)
 			return true;
 
 		case MP_STATION: {
-			GB(_me[t].m6, 3, 4) == 2 || GB(_me[t].m6, 3, 4) == 3 || GB(_me[t].m6, 3, 4) == 8; // IsAnyRoadStop
-			return true;
+			return GB(_me[t].m6, 3, 4) == 2 || GB(_me[t].m6, 3, 4) == 3 || GB(_me[t].m6, 3, 4) == 8; // IsAnyRoadStop
 		}
 
 		case MP_TUNNELBRIDGE:
