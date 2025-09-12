@@ -132,7 +132,7 @@ struct ExecReadNullHandler {
 	}
 };
 
-static bool ExecReadStdout(const char *file, char *const *args, format_target &buffer)
+static bool ExecReadStdout(const char *file, char *const *args, format_target_ctrl &buffer)
 {
 	ExecReadNullHandler nulls;
 	if (!nulls.Init()) return false;
@@ -201,7 +201,7 @@ static bool ExecReadStdout(const char *file, char *const *args, format_target &b
 }
 
 #if defined(WITH_DBG_GDB)
-static bool ExecReadStdoutThroughFile(const char *file, char *const *args, format_target &buffer)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, format_target_ctrl &buffer)
 {
 	ExecReadNullHandler nulls;
 	if (!nulls.Init()) return false;
@@ -322,7 +322,7 @@ class CrashLogUnix final : public CrashLog {
 		this->crash_file = -1;
 	}
 
-	void LogOSVersion(format_target &buffer) const override
+	void LogOSVersion(format_target_ctrl &buffer) const override
 	{
 		struct utsname name;
 		if (uname(&name) < 0) {
@@ -343,7 +343,7 @@ class CrashLogUnix final : public CrashLog {
 		);
 	}
 
-	void LogOSVersionDetail(format_target &buffer) const override
+	void LogOSVersionDetail(format_target_ctrl &buffer) const override
 	{
 		struct utsname name;
 		if (uname(&name) < 0) return;
@@ -359,7 +359,7 @@ class CrashLogUnix final : public CrashLog {
 		}
 	}
 
-	void LogError(format_target &buffer, const char *message) const override
+	void LogError(format_target_ctrl &buffer, const char *message) const override
 	{
 		buffer.format(
 				"Crash reason:\n"
@@ -421,7 +421,7 @@ class CrashLogUnix final : public CrashLog {
 	/**
 	 * Log GDB information if available
 	 */
-	void LogDebugExtra(format_target &buffer) const override
+	void LogDebugExtra(format_target_ctrl &buffer) const override
 	{
 		this->LogGdbInfo(buffer);
 	}
@@ -429,7 +429,7 @@ class CrashLogUnix final : public CrashLog {
 	/**
 	 * Log crash trailer
 	 */
-	void LogCrashTrailer(format_target &buffer) const override
+	void LogCrashTrailer(format_target_ctrl &buffer) const override
 	{
 		uint32_t other_crashed_threads = _crash_other_threads.load();
 		if (other_crashed_threads > 0) {
@@ -440,7 +440,7 @@ class CrashLogUnix final : public CrashLog {
 	/**
 	 * Show registers if possible
 	 */
-	void LogRegisters(format_target &buffer) const override
+	void LogRegisters(format_target_ctrl &buffer) const override
 	{
 #ifdef WITH_UCONTEXT
 		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
@@ -505,7 +505,7 @@ class CrashLogUnix final : public CrashLog {
 	 * and there is some potentially useful information in the output from LogStacktrace
 	 * which is not in gdb's output.
 	 */
-	void LogGdbInfo(format_target &buffer) const
+	void LogGdbInfo(format_target_ctrl &buffer) const
 	{
 #if defined(WITH_DBG_GDB)
 
@@ -578,7 +578,7 @@ class CrashLogUnix final : public CrashLog {
 	 * If demangling support is available, try to demangle whatever symbol name we got back.
 	 * If we could find a symbol address from libdl or libbfd, show the offset from that to the frame address.
 	 */
-	void LogStacktrace(format_target &buffer) const override
+	void LogStacktrace(format_target_ctrl &buffer) const override
 	{
 		buffer.append("Stacktrace:\n");
 
@@ -746,6 +746,8 @@ class CrashLogUnix final : public CrashLog {
 	/* virtual */ char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override
 	{
 		this->FlushCrashLogBuffer(buffer);
+		if (buffer == last) return buffer;
+
 		internal_fault_saved_buffer = buffer;
 
 		int signum = setjmp(internal_fault_jmp_buf);
@@ -781,7 +783,7 @@ class CrashLogUnix final : public CrashLog {
 		return buffer;
 	}
 
-	/* virtual */ void CrashLogFaultSectionCheckpoint(format_target &buffer) const override
+	/* virtual */ void CrashLogFaultSectionCheckpoint(format_target_ctrl &buffer) const override
 	{
 		if (internal_fault_saved_buffer == nullptr) return;
 
@@ -954,7 +956,7 @@ static void CDECL HandleCrash(int signum)
 	log.MakeInconsistencyLog(info);
 }
 
-/* static */ void CrashLog::VersionInfoLog(format_target &buffer)
+/* static */ void CrashLog::VersionInfoLog(format_target_ctrl &buffer)
 {
 	CrashLogUnix log(CrashLogUnix::DesyncTag{});
 	log.FillVersionInfoLog(buffer);

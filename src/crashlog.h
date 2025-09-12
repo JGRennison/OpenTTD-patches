@@ -55,54 +55,54 @@ protected:
 	 * Writes OS' version to the buffer.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogOSVersion(struct format_target &buffer) const = 0;
+	virtual void LogOSVersion(struct format_target_ctrl &buffer) const = 0;
 
 	/**
 	 * Writes compiler (and its version, if available) to the buffer.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogCompiler(struct format_target &buffer) const;
+	virtual void LogCompiler(struct format_target_ctrl &buffer) const;
 
 	/**
 	 * Writes OS' version detail to the buffer, if available.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogOSVersionDetail(struct format_target &buffer) const;
+	virtual void LogOSVersionDetail(struct format_target_ctrl &buffer) const;
 
 	/**
 	 * Writes actually encountered error to the buffer.
 	 * @param buffer The output buffer.
 	 * @param message Message passed to use for possible errors. Can be nullptr.
 	 */
-	virtual void LogError(struct format_target &buffer, const char *message) const = 0;
+	virtual void LogError(struct format_target_ctrl &buffer, const char *message) const = 0;
 
 	/**
 	 * Writes the stack trace to the buffer, if there is information about it
 	 * available.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogStacktrace(struct format_target &buffer) const = 0;
+	virtual void LogStacktrace(struct format_target_ctrl &buffer) const = 0;
 
 	/**
 	 * Writes information about extra debug info, if there is
 	 * information about it available.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogDebugExtra(struct format_target &buffer) const;
+	virtual void LogDebugExtra(struct format_target_ctrl &buffer) const;
 
 	/**
 	 * Writes information about the data in the registers, if there is
 	 * information about it available.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogRegisters(struct format_target &buffer) const;
+	virtual void LogRegisters(struct format_target_ctrl &buffer) const;
 
 	/**
 	 * Writes a final section in the crash log, if there is anything
 	 * to add at the end.
 	 * @param buffer The output buffer.
 	 */
-	virtual void LogCrashTrailer(struct format_target &buffer) const;
+	virtual void LogCrashTrailer(struct format_target_ctrl &buffer) const;
 
 #if !defined(DISABLE_SCOPE_INFO)
 	/**
@@ -110,24 +110,24 @@ protected:
 	 * This may only be called when IsMainThread() returns true
 	 * @param buffer The output buffer.
 	 */
-	void LogScopeInfo(struct format_target &buffer) const;
+	void LogScopeInfo(struct format_target_ctrl &buffer) const;
 #endif
 
-	void LogOpenTTDVersion(struct format_target &buffer) const;
-	void LogConfiguration(struct format_target &buffer) const;
-	void LogLibraries(struct format_target &buffer) const;
-	void LogPlugins(struct format_target &buffer) const;
-	void LogGamelog(struct format_target &buffer) const;
-	void LogRecentNews(struct format_target &buffer) const;
-	void LogCommandLog(struct format_target &buffer) const;
-	void LogSettings(struct format_target &buffer) const;
+	void LogOpenTTDVersion(struct format_target_ctrl &buffer) const;
+	void LogConfiguration(struct format_target_ctrl &buffer) const;
+	void LogLibraries(struct format_target_ctrl &buffer) const;
+	void LogPlugins(struct format_target_ctrl &buffer) const;
+	void LogGamelog(struct format_target_ctrl &buffer) const;
+	void LogRecentNews(struct format_target_ctrl &buffer) const;
+	void LogCommandLog(struct format_target_ctrl &buffer) const;
+	void LogSettings(struct format_target_ctrl &buffer) const;
 
 	virtual void StartCrashLogFaultHandler();
 	virtual void StopCrashLogFaultHandler();
 
-	using CrashLogSectionWriter = void(CrashLog *self, struct format_target &buffer);
+	using CrashLogSectionWriter = void(CrashLog *self, struct format_target_ctrl &buffer);
 	virtual char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer);
-	virtual void CrashLogFaultSectionCheckpoint(struct format_target &buffer) const;
+	virtual void CrashLogFaultSectionCheckpoint(struct format_target_ctrl &buffer) const;
 
 public:
 	const char *crash_buffer_write = nullptr;
@@ -159,9 +159,9 @@ public:
 	char *FillCrashLog(char *buffer, const char *last, bool have_game_lock);
 	void FlushCrashLogBuffer(const char *end);
 	void CloseCrashLogFile(const char *end);
-	void FillDesyncCrashLog(struct format_target &buffer, const DesyncExtraInfo &info) const;
-	void FillInconsistencyLog(struct format_target &buffer, const InconsistencyExtraInfo &info) const;
-	void FillVersionInfoLog(struct format_target &buffer) const;
+	void FillDesyncCrashLog(struct format_target_ctrl &buffer, const DesyncExtraInfo &info) const;
+	void FillInconsistencyLog(struct format_target_ctrl &buffer, const InconsistencyExtraInfo &info) const;
+	void FillVersionInfoLog(struct format_target_ctrl &buffer) const;
 	void PrepareLogFileName(char *filename, const char *filename_last, const char *name) const;
 	bool WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, std::optional<FileHandle> *keep_file_open = nullptr) const;
 
@@ -198,7 +198,7 @@ public:
 
 	static void DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info);
 	static void InconsistencyLog(const InconsistencyExtraInfo &info);
-	static void VersionInfoLog(struct format_target &buffer);
+	static void VersionInfoLog(struct format_target_ctrl &buffer);
 
 	static void RegisterCrashed() { CrashLog::have_crashed = true; }
 	static bool HaveAlreadyCrashed() { return CrashLog::have_crashed; }

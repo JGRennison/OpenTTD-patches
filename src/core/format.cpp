@@ -17,41 +17,55 @@
 
 void format_target::push_back_utf8_impl(char32_t c)
 {
-	if (this->has_overflowed()) return;
 	auto [buf, len] = EncodeUtf8(c);
 	this->append(buf, buf + len);
 }
 
-void format_target::restore_size(size_t size)
+void format_target_ctrl::restore_size(size_t size)
 {
 	if ((this->flags & FL_FIXED) != 0) {
-		this->flags &= ~FL_OVERFLOW;
-		static_cast<format_to_fixed_base *>(this)->inner.restore_size_impl(size);
+		static_cast<format_to_fixed_base *>(this)->restore_size(size);
 	} else {
-		return this->target.try_resize(size);
+		return this->buffer.try_resize(size);
 	}
 }
 
-void format_to_fixed_base::inner_wrapper::grow(fmt::detail::buffer<char> &buf, size_t capacity)
+void format_buffer_base::grow(fmt::detail::buffer<char> &buf, size_t capacity)
 {
-	inner_wrapper &self = static_cast<inner_wrapper &>(buf);
+	format_buffer_base &self = from_buf<format_buffer_base>(buf);
 
-	if (self.size() == self.capacity()) {
+	size_t old_capacity = buf.capacity();
+	size_t new_capacity = old_capacity + old_capacity / 2;
+	if (capacity > new_capacity) {
+		new_capacity = capacity;
+	}
+	char *old_data = buf.data();
+	char *new_data = MallocT<char>(new_capacity);
+	builtin_assume(buf.size() <= new_capacity);
+	MemCpyT(new_data, old_data, buf.size());
+	self.buffer.set_state(new_data, new_capacity);
+
+	if (old_data != self.local_storage()) free(old_data);
+}
+
+void format_to_fixed_base::grow(fmt::detail::buffer<char> &buf, size_t capacity)
+{
+	format_to_fixed_base &self = from_buf<format_to_fixed_base>(buf);
+
+	if (self.buffer.size() == self.buffer.capacity()) {
 		/* Buffer is full, use the discard area for the overflow */
-		self.clear();
-		self.set(self.discard, sizeof(self.discard));
+		self.buffer.clear();
+		self.buffer.set_state(self.discard, sizeof(self.discard));
 
-		char *target = reinterpret_cast<char *>(&self);
-		target -= cpp_offsetof(format_to_fixed_base, inner);
-		format_to_fixed_base *fixed = reinterpret_cast<format_to_fixed_base *>(target);
-		fixed->flags |= FL_OVERFLOW;
+		self.flags |= FL_OVERFLOW;
 	}
 }
 
-void format_to_fixed_base::inner_wrapper::restore_size_impl(size_t size)
+void format_to_fixed_base::restore_size(size_t size)
 {
-	this->set(this->buffer_ptr, this->buffer_size);
-	this->try_resize(size);
+	this->flags &= ~FL_OVERFLOW;
+	this->buffer.set_state(this->fixed_ptr, this->fixed_size);
+	this->buffer.try_resize(size);
 }
 
 void format_detail::FmtResizeForCStr(fmt::detail::buffer<char> &buffer)

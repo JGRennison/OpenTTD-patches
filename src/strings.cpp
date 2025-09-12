@@ -445,8 +445,6 @@ std::string GetString(StringID string)
  */
 void AppendStringWithArgsInPlace(format_target &result, StringID string, std::span<StringParameter> args)
 {
-	if (unlikely(result.has_overflowed())) return;
-
 	StringParameters params{args};
 	GetStringWithArgs(result, string, params);
 }

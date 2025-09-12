@@ -42,7 +42,7 @@ public:
 	 * Create the builder of an external format_target or subtype.
 	 * @param buffer The buffer to write to.
 	 */
-	StringBuilder(format_target &buffer) : string(&buffer.GetTargetFmtBuffer()) {}
+	StringBuilder(format_target &buffer) : string(&buffer.GetFmtBuffer()) {}
 
 	/* Required operators for this to be an output_iterator; mimics std::back_insert_iterator, which has no-ops. */
 	StringBuilder &operator++() { return *this; }

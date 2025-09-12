@@ -101,7 +101,7 @@
 /* static */ const char *CrashLog::message = nullptr;
 /* static */ bool CrashLog::have_crashed = false;
 
-void CrashLog::LogCompiler(format_target &buffer) const
+void CrashLog::LogCompiler(format_target_ctrl &buffer) const
 {
 			buffer.format(" Compiler: "
 #if defined(_MSC_VER)
@@ -125,28 +125,28 @@ void CrashLog::LogCompiler(format_target &buffer) const
 #endif
 }
 
-/* virtual */ void CrashLog::LogOSVersionDetail(format_target &buffer) const
+/* virtual */ void CrashLog::LogOSVersionDetail(format_target_ctrl &buffer) const
 {
 	/* Stub implementation; not all OSes support this. */
 }
 
-/* virtual */ void CrashLog::LogDebugExtra(format_target &buffer) const
+/* virtual */ void CrashLog::LogDebugExtra(format_target_ctrl &buffer) const
 {
 	/* Stub implementation; not all OSes support this. */
 }
 
-/* virtual */ void CrashLog::LogRegisters(format_target &buffer) const
+/* virtual */ void CrashLog::LogRegisters(format_target_ctrl &buffer) const
 {
 	/* Stub implementation; not all OSes support this. */
 }
 
-/* virtual */ void CrashLog::LogCrashTrailer(format_target &buffer) const
+/* virtual */ void CrashLog::LogCrashTrailer(format_target_ctrl &buffer) const
 {
 	/* Stub implementation; not all OSes have anything to output for this section. */
 }
 
 #if !defined(DISABLE_SCOPE_INFO)
-/* virtual */ void CrashLog::LogScopeInfo(format_target &buffer) const
+/* virtual */ void CrashLog::LogScopeInfo(format_target_ctrl &buffer) const
 {
 	WriteScopeLog(buffer);
 }
@@ -166,12 +166,13 @@ void CrashLog::LogCompiler(format_target &buffer) const
 {
 	/* Stub implementation; not all OSes support internal fault handling. */
 	this->FlushCrashLogBuffer(buffer);
+	if (buffer == last) return buffer;
 	format_to_fixed buf(buffer, last - buffer);
 	writer(this, buf);
 	return buffer + buf.size();
 }
 
-/* virtual */ void CrashLog::CrashLogFaultSectionCheckpoint(format_target &buffer) const
+/* virtual */ void CrashLog::CrashLogFaultSectionCheckpoint(format_target_ctrl &buffer) const
 {
 	/* Stub implementation; not all OSes support this. */
 	const_cast<CrashLog *>(this)->FlushCrashLogBuffer(buffer.end());
@@ -181,7 +182,7 @@ void CrashLog::LogCompiler(format_target &buffer) const
  * Writes OpenTTD's version to the buffer.
  * @param buffer The output buffer.
  */
-void CrashLog::LogOpenTTDVersion(format_target &buffer) const
+void CrashLog::LogOpenTTDVersion(format_target_ctrl &buffer) const
 {
 	buffer.format(
 			"OpenTTD version:\n"
@@ -218,7 +219,7 @@ void CrashLog::LogOpenTTDVersion(format_target &buffer) const
  * E.g. graphics set, sound set, blitter and AIs.
  * @param buffer The output buffer.
  */
-void CrashLog::LogConfiguration(format_target &buffer) const
+void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 {
 	auto mode_name = []() -> const char * {
 		switch (_game_mode) {
@@ -335,7 +336,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
  * Writes information (versions) of the used libraries.
  * @param buffer The output buffer.
  */
-void CrashLog::LogLibraries(format_target &buffer) const
+void CrashLog::LogLibraries(format_target_ctrl &buffer) const
 {
 	buffer.append("Libraries:\n");
 
@@ -432,7 +433,7 @@ void CrashLog::LogLibraries(format_target &buffer) const
  * Writes information (versions) of the used plugins.
  * @param buffer The output buffer.
  */
-void CrashLog::LogPlugins(format_target &buffer) const
+void CrashLog::LogPlugins(format_target_ctrl &buffer) const
 {
 	if (SocialIntegration::GetPluginCount() == 0) return;
 
@@ -444,7 +445,7 @@ void CrashLog::LogPlugins(format_target &buffer) const
  * Writes the gamelog data to the buffer.
  * @param buffer The output buffer.
  */
-void CrashLog::LogGamelog(format_target &buffer) const
+void CrashLog::LogGamelog(format_target_ctrl &buffer) const
 {
 	if (_game_events_since_load || _game_events_overall) {
 		buffer.append("Events: ");
@@ -462,7 +463,7 @@ void CrashLog::LogGamelog(format_target &buffer) const
  * Writes up to 32 recent news messages to the buffer, with the most recent first.
  * @param buffer The output buffer.
  */
-void CrashLog::LogRecentNews(format_target &buffer) const
+void CrashLog::LogRecentNews(format_target_ctrl &buffer) const
 {
 	uint total = static_cast<uint>(GetNews().size());
 	uint show = std::min<uint>(total, 32);
@@ -484,7 +485,7 @@ void CrashLog::LogRecentNews(format_target &buffer) const
  * Writes the command log data to the buffer.
  * @param buffer The output buffer.
  */
-void CrashLog::LogCommandLog(format_target &buffer) const
+void CrashLog::LogCommandLog(format_target_ctrl &buffer) const
 {
 	DumpCommandLog(buffer);
 	buffer.push_back('\n');
@@ -496,7 +497,7 @@ void CrashLog::LogCommandLog(format_target &buffer) const
  * Writes the non-default settings to the buffer.
  * @param buffer The output buffer.
  */
-void CrashLog::LogSettings(format_target &buffer) const
+void CrashLog::LogSettings(format_target_ctrl &buffer) const
 {
 	buffer.append("Non-default settings:");
 
@@ -525,7 +526,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 	this->StartCrashLogFaultHandler();
 	buffer = format_to_fixed_z::format_to(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
-	buffer = this->TryCrashLogFaultSection(buffer, last, "emergency test", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "emergency test", [](CrashLog *self, format_target_ctrl &buffer) {
 		if (GamelogTestEmergency()) {
 			buffer.append("-=-=- As you loaded an emergency savegame no crash information would ordinarily be generated. -=-=-\n\n");
 		}
@@ -534,7 +535,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 		}
 	});
 
-	buffer = this->TryCrashLogFaultSection(buffer, last, "times", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "times", [](CrashLog *self, format_target_ctrl &buffer) {
 		UTCTime::FormatTo(buffer, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
 		buffer.format("In game date: {}-{:02}-{:02} ({}, {}) (DL: {})\n", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor());
@@ -544,20 +545,20 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 
 	buffer = format_to_fixed_z::format_to(buffer, last, "\n");
 
-	buffer = this->TryCrashLogFaultSection(buffer, last, "message", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "message", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogError(buffer, CrashLog::message);
 	});
 
 #if !defined(DISABLE_SCOPE_INFO)
 	if (have_game_lock) {
-		buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, format_target &buffer) {
+		buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, format_target_ctrl &buffer) {
 			WriteScopeLog(buffer);
 		});
 	}
 #endif
 
 	if (_networking && have_game_lock) {
-		buffer = this->TryCrashLogFaultSection(buffer, last, "network sync", [](CrashLog *self, format_target &buffer) {
+		buffer = this->TryCrashLogFaultSection(buffer, last, "network sync", [](CrashLog *self, format_target_ctrl &buffer) {
 			if (_record_sync_records && !_network_sync_records.empty()) {
 				uint total = 0;
 				for (uint32_t count : _network_sync_record_counts) {
@@ -572,7 +573,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 		});
 	}
 
-	buffer = this->TryCrashLogFaultSection(buffer, last, "thread", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "thread", [](CrashLog *self, format_target_ctrl &buffer) {
 		if (IsNonMainThread()) {
 			buffer.append("Non-main thread (");
 			GetCurrentThreadName(buffer);
@@ -580,49 +581,49 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 		}
 	});
 
-	buffer = this->TryCrashLogFaultSection(buffer, last, "OpenTTD version", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "OpenTTD version", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogOpenTTDVersion(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "stacktrace", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "stacktrace", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogStacktrace(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "debug extra", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "debug extra", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogDebugExtra(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "registers", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "registers", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogRegisters(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "OS version", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "OS version", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogOSVersion(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "compiler", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "compiler", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogCompiler(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "OS version detail", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "OS version detail", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogOSVersionDetail(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "config", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "config", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogConfiguration(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "libraries", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "libraries", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogLibraries(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "plugins", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "plugins", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogPlugins(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogSettings(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "command log", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "command log", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogCommandLog(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "gamelog", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "gamelog", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogGamelog(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "news", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "news", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogRecentNews(buffer);
 	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "trailer", [](CrashLog *self, format_target &buffer) {
+	buffer = this->TryCrashLogFaultSection(buffer, last, "trailer", [](CrashLog *self, format_target_ctrl &buffer) {
 		self->LogCrashTrailer(buffer);
 	});
 
@@ -632,7 +633,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last, bool have_game_lock
 	return buffer;
 }
 
-static void LogDesyncDateHeader(format_target &buffer)
+static void LogDesyncDateHeader(format_target_ctrl &buffer)
 {
 	extern uint32_t _frame_counter;
 
@@ -656,7 +657,7 @@ static void LogDesyncDateHeader(format_target &buffer)
  * Fill the crash log buffer with all data of a desync event.
  * @param buffer The output buffer.
  */
-void CrashLog::FillDesyncCrashLog(format_target &buffer, const DesyncExtraInfo &info) const
+void CrashLog::FillDesyncCrashLog(format_target_ctrl &buffer, const DesyncExtraInfo &info) const
 {
 	buffer.format("*** OpenTTD Multiplayer {} Desync Report ***\n\n", _network_server ? "Server" : "Client");
 
@@ -709,7 +710,7 @@ void CrashLog::FillDesyncCrashLog(format_target &buffer, const DesyncExtraInfo &
  * Fill the crash log buffer with all data of an inconsistency event.
  * @param buffer The output buffer.
  */
-void CrashLog::FillInconsistencyLog(format_target &buffer, const InconsistencyExtraInfo &info) const
+void CrashLog::FillInconsistencyLog(format_target_ctrl &buffer, const InconsistencyExtraInfo &info) const
 {
 	buffer.append("*** OpenTTD Inconsistency Report ***\n\n");
 
@@ -749,7 +750,7 @@ void CrashLog::FillInconsistencyLog(format_target &buffer, const InconsistencyEx
  * Fill the version info log buffer.
  * @param buffer The output buffer.
  */
-void CrashLog::FillVersionInfoLog(format_target &buffer) const
+void CrashLog::FillVersionInfoLog(format_target_ctrl &buffer) const
 {
 	buffer.append("*** OpenTTD Version Info Report ***\n\n");
 

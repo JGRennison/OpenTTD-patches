@@ -501,7 +501,7 @@ static void MakeFinnishTownName(StringBuilder output_builder, uint32_t seed)
 		uint sel = SeedChance( 0, std::size(_name_finnish_1), seed);
 		builder += _name_finnish_1[sel];
 
-		if (str.back() == 'i') str.back() = 'e';
+		if (!str.empty() && str.back() == 'i') str.back() = 'e';
 
 		std::string_view view = str;
 		if (view.find_first_of("aouAOU") != std::string_view::npos) {

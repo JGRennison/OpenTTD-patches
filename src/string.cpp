@@ -249,7 +249,7 @@ void AppendStrMakeValidInPlace(struct format_target &buf, std::string_view str, 
 {
 	if (str.empty()) return;
 
-	StrMakeValid(buf.GetTargetFmtBuffer(), StringConsumer(str), settings);
+	StrMakeValid(buf.GetFmtBuffer(), StringConsumer(str), settings);
 }
 
 void AppendStrMakeValidInPlace(std::string &output, std::string_view str, StringValidationSettings settings)

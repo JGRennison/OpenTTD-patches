@@ -46,7 +46,7 @@
 #define MAX_STACK_FRAMES 64
 
 #if !defined(WITHOUT_DBG_LLDB)
-static bool ExecReadStdoutThroughFile(const char *file, char *const *args, format_target &buffer)
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, format_target_ctrl &buffer)
 {
 	int null_fd = open("/dev/null", O_RDWR);
 	if (null_fd == -1) return false;
@@ -172,7 +172,7 @@ class CrashLogOSX final : public CrashLog {
 		this->crash_file = -1;
 	}
 
-	void LogOSVersion(format_target &buffer) const override
+	void LogOSVersion(format_target_ctrl &buffer) const override
 	{
 		int ver_maj, ver_min, ver_bug;
 		GetMacOSVersion(&ver_maj, &ver_min, &ver_bug);
@@ -193,7 +193,7 @@ class CrashLogOSX final : public CrashLog {
 		);
 	}
 
-	void LogError(format_target &buffer, const char *message) const override
+	void LogError(format_target_ctrl &buffer, const char *message) const override
 	{
 		buffer.format(
 				"Crash reason:\n"
@@ -222,7 +222,7 @@ class CrashLogOSX final : public CrashLog {
 		);
 	}
 
-	void LogStacktrace(format_target &buffer) const override
+	void LogStacktrace(format_target_ctrl &buffer) const override
 	{
 		buffer.append("\nStacktrace:\n");
 
@@ -247,7 +247,7 @@ class CrashLogOSX final : public CrashLog {
 	 * and there is some potentially useful information in the output from LogStacktrace
 	 * which is not in lldb's output.
 	 */
-	void LogLldbInfo(format_target &buffer) const
+	void LogLldbInfo(format_target_ctrl &buffer) const
 	{
 
 #if !defined(WITHOUT_DBG_LLDB)
@@ -293,7 +293,7 @@ class CrashLogOSX final : public CrashLog {
 	/**
 	 * Log LLDB information if available
 	 */
-	void LogDebugExtra(format_target &buffer) const override
+	void LogDebugExtra(format_target_ctrl &buffer) const override
 	{
 		this->LogLldbInfo(buffer);
 	}
@@ -301,7 +301,7 @@ class CrashLogOSX final : public CrashLog {
 	/**
 	 * Log registers if available
 	 */
-	void LogRegisters(format_target &buffer) const override
+	void LogRegisters(format_target_ctrl &buffer) const override
 	{
 #ifdef WITH_UCONTEXT
 		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
@@ -530,7 +530,7 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 }
 
 
-/* static */ void CrashLog::VersionInfoLog(format_target &buffer)
+/* static */ void CrashLog::VersionInfoLog(format_target_ctrl &buffer)
 {
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});
 	log.FillVersionInfoLog(buffer);

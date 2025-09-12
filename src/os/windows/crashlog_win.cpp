@@ -78,17 +78,17 @@ public:
 	DWORD crash_thread_id;
 	std::atomic<uint32_t> other_crash_threads;
 
-	void LogOSVersion(format_target &buffer) const override;
-	void LogError(format_target &buffer, const char *message) const override;
+	void LogOSVersion(format_target_ctrl &buffer) const override;
+	void LogError(format_target_ctrl &buffer, const char *message) const override;
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
-	void LogStacktrace(format_target &buffer) const override;
+	void LogStacktrace(format_target_ctrl &buffer) const override;
 #endif /* _MSC_VER || WITH_DBGHELP */
-	void LogRegisters(format_target &buffer) const override;
-	void LogCrashTrailer(format_target &buffer) const override;
+	void LogRegisters(format_target_ctrl &buffer) const override;
+	void LogCrashTrailer(format_target_ctrl &buffer) const override;
 
 protected:
 	char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override;
-	void CrashLogFaultSectionCheckpoint(format_target &buffer) const override;
+	void CrashLogFaultSectionCheckpoint(format_target_ctrl &buffer) const override;
 
 public:
 
@@ -172,7 +172,7 @@ public:
 
 /* static */ std::atomic<CrashLogWindows *> CrashLogWindows::current = nullptr;
 
-/* virtual */ void CrashLogWindows::LogOSVersion(format_target &buffer) const
+/* virtual */ void CrashLogWindows::LogOSVersion(format_target_ctrl &buffer) const
 {
 	_OSVERSIONINFOA os;
 	os.dwOSVersionInfoSize = sizeof(os);
@@ -203,7 +203,7 @@ static const char *GetAccessViolationTypeString(uint type)
 	}
 }
 
-/* virtual */ void CrashLogWindows::LogError(format_target &buffer, const char *message) const
+/* virtual */ void CrashLogWindows::LogError(format_target_ctrl &buffer, const char *message) const
 {
 	buffer.append("Crash reason:\n");
 	for (auto record = ep->ExceptionRecord; record != nullptr; record = record->ExceptionRecord) {
@@ -266,7 +266,7 @@ static const char *GetAccessViolationTypeString(uint type)
 	}
 }
 
-/* virtual */ void CrashLogWindows::LogRegisters(format_target &buffer) const
+/* virtual */ void CrashLogWindows::LogRegisters(format_target_ctrl &buffer) const
 {
 	buffer.append("Registers:\n");
 #ifdef _M_AMD64
@@ -379,7 +379,7 @@ static const char *GetAccessViolationTypeString(uint type)
 /**
  * Log crash trailer
  */
-void CrashLogWindows::LogCrashTrailer(format_target &buffer) const
+void CrashLogWindows::LogCrashTrailer(format_target_ctrl &buffer) const
 {
 	uint32_t other_crashed_threads = this->other_crash_threads.load();
 	if (other_crashed_threads > 0) {
@@ -398,7 +398,7 @@ static const uint MAX_FRAMES     = 64;
 #pragma warning(default:4091)
 #endif
 
-/* virtual */ void CrashLogWindows::LogStacktrace(format_target &buffer) const
+/* virtual */ void CrashLogWindows::LogStacktrace(format_target_ctrl &buffer) const
 {
 	LibraryLoader dbghelp("dbghelp.dll");
 	struct ProcPtrs {
@@ -648,6 +648,8 @@ static const uint MAX_FRAMES     = 64;
 	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
 	{
 		this->FlushCrashLogBuffer(buffer);
+		if (buffer == last) return buffer;
+
 		this->internal_fault_saved_buffer = buffer;
 
 		__try {
@@ -684,6 +686,8 @@ static const uint MAX_FRAMES     = 64;
 	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
 	{
 		this->FlushCrashLogBuffer(buffer);
+		if (buffer == last) return buffer;
+
 		this->internal_fault_saved_buffer = buffer;
 
 		int exception_num = setjmp(this->internal_fault_jmp_buf);
@@ -713,7 +717,7 @@ static const uint MAX_FRAMES     = 64;
 	}
 #endif /* _MSC_VER */
 
-	/* virtual */ void CrashLogWindows::CrashLogFaultSectionCheckpoint(format_target &buffer) const
+	/* virtual */ void CrashLogWindows::CrashLogFaultSectionCheckpoint(format_target_ctrl &buffer) const
 	{
 		CrashLogWindows *self = const_cast<CrashLogWindows *>(this);
 
@@ -910,7 +914,7 @@ void CrashLogWindowsInitThread()
 	log.MakeInconsistencyLog(info);
 }
 
-/* static */ void CrashLog::VersionInfoLog(format_target &buffer)
+/* static */ void CrashLog::VersionInfoLog(format_target_ctrl &buffer)
 {
 	CrashLogWindows log(nullptr);
 	log.FillVersionInfoLog(buffer);
