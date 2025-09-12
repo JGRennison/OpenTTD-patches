@@ -325,6 +325,25 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
 #	define GNU_TARGET(x)
 #endif /* __GNUC__ || __clang__ */
 
+#if !defined(__has_builtin)
+#	define WITH_BUILTIN_ASSUME 0
+#elif __has_builtin(__builtin_assume)
+#	define WITH_BUILTIN_ASSUME 1
+#else
+#	define WITH_BUILTIN_ASSUME 0
+#endif
+
+inline void builtin_assume(bool condition)
+{
+#if WITH_BUILTIN_ASSUME
+	__builtin_assume(condition);
+#elif defined(_MSC_VER)
+	__assume(condition);
+#elif defined(__GNUC__) || defined(__clang__)
+	if (!condition) __builtin_unreachable();
+#endif
+}
+
 #if defined(__GNUC__) || defined(__clang__)
 __attribute__((aligned(1))) typedef uint16_t unaligned_uint16;
 __attribute__((aligned(1))) typedef uint32_t unaligned_uint32;
