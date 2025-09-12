@@ -95,7 +95,11 @@ inline int64_t PackVelocity(uint speed, VehicleType type)
 	return speed | (static_cast<uint64_t>(type) << 56);
 }
 
-char32_t GetDecimalSeparatorChar();
+inline char32_t GetDecimalSeparatorChar()
+{
+	extern char32_t _decimal_separator_char;
+	return _decimal_separator_char;
+}
 
 uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 uint64_t GetParamMaxDigits(uint count, FontSize size = FS_NORMAL);

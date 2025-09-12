@@ -596,15 +596,15 @@ bool strtolower(std::string &str, std::string::size_type offs)
 bool IsValidChar(char32_t key, CharSetFilter afilter)
 {
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-	extern char32_t GetDecimalSeparatorChar();
+	extern char32_t _decimal_separator_char;
 #endif
 	switch (afilter) {
 		case CS_ALPHANUMERAL:  return IsPrintable(key);
 		case CS_NUMERAL:       return (key >= '0' && key <= '9');
 		case CS_NUMERAL_SIGNED:  return (key >= '0' && key <= '9') || key == '-';
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == GetDecimalSeparatorChar();
-		case CS_NUMERAL_DECIMAL_SIGNED: return (key >= '0' && key <= '9') || key == '.' || key == '-' || key == GetDecimalSeparatorChar();
+		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == _decimal_separator_char;
+		case CS_NUMERAL_DECIMAL_SIGNED: return (key >= '0' && key <= '9') || key == '.' || key == '-' || key == _decimal_separator_char;
 #else
 		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.';
 		case CS_NUMERAL_DECIMAL_SIGNED: return (key >= '0' && key <= '9') || key == '.' || key == '-';

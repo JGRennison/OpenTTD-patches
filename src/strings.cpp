@@ -64,6 +64,8 @@ const LanguageMetadata *_current_language = nullptr; ///< The currently loaded l
 
 TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently selected language.
 
+char32_t _decimal_separator_char; ///< For GetDecimalSeparatorChar.
+
 std::string _temp_special_strings[16];
 
 /**
@@ -551,13 +553,15 @@ static void FormatHexNumber(StringBuilder builder, uint64_t number)
 	builder.Format("0x{:X}", number);
 }
 
-char32_t GetDecimalSeparatorChar()
+void FillDecimalSeparatorChar()
 {
-	char32_t decimal_char = '.';
-	const char *decimal_separator = _settings_game.locale.digit_decimal_separator.c_str();
-	if (StrEmpty(decimal_separator)) decimal_separator = _langpack.langpack->digit_decimal_separator;
-	if (!StrEmpty(decimal_separator)) Utf8Decode(&decimal_char, decimal_separator);
-	return decimal_char;
+	if (!_settings_game.locale.digit_decimal_separator.empty()) {
+		_decimal_separator_char = DecodeUtf8(_settings_game.locale.digit_decimal_separator).second;
+	} else if (!StrEmpty(_langpack.langpack->digit_decimal_separator)) {
+		_decimal_separator_char = DecodeUtf8(_langpack.langpack->digit_decimal_separator).second;
+	} else {
+		_decimal_separator_char = '.';
+	}
 }
 
 /**
@@ -2502,6 +2506,8 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_config_language_file = c_file;
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
+
+	FillDecimalSeparatorChar();
 
 #ifdef _WIN32
 	extern void Win32SetCurrentLocaleName(std::string iso_code);
