@@ -516,10 +516,7 @@ auto format_lambda(F func)
  */
 struct fmt_base_fixed_non_growing final : public fmt::detail::buffer<char> {
 private:
-	static void grow(fmt::detail::buffer<char> &, size_t)
-	{
-		NOT_REACHED();
-	}
+	static void grow(fmt::detail::buffer<char> &, size_t);
 
 public:
 	fmt_base_fixed_non_growing(char *buf, size_t capacity, size_t initial_size = 0) : buffer(grow, buf, initial_size, capacity) {}

@@ -59,3 +59,11 @@ void format_detail::FmtResizeForCStr(fmt::detail::buffer<char> &buffer)
 	buffer.try_reserve(buffer.capacity() + 1);
 	assert(buffer.size() < buffer.capacity());
 }
+
+void fmt_base_fixed_non_growing::grow(fmt::detail::buffer<char> &buf, size_t capacity)
+{
+	if (buf.size() == buf.capacity()) {
+		/* Buffer is full, can't proceed from here. */
+		NOT_REACHED();
+	}
+}
