@@ -64,6 +64,19 @@ bool ValidateMapSize(uint size_x, uint size_y)
 	return true;
 }
 
+static void DeallocateMapStorage()
+{
+#if defined(__linux__) && defined(MADV_HUGEPAGE)
+	if (_munmap_size != 0) {
+		munmap(_m.tile_data, _munmap_size);
+		_munmap_size = 0;
+		_m.tile_data = nullptr;
+	}
+#endif
+
+	free(_m.tile_data);
+}
+
 /**
  * (Re)allocates a map with the given dimension
  * @param size_x the width of the map along the NE/SW edge
@@ -87,15 +100,7 @@ void AllocateMap(uint size_x, uint size_y)
 	_map_digits_x = GetBase10DigitsRequired(_map_size_x);
 	_map_digits_y = GetBase10DigitsRequired(_map_size_y);
 
-#if defined(__linux__) && defined(MADV_HUGEPAGE)
-	if (_munmap_size != 0) {
-		munmap(_m.tile_data, _munmap_size);
-		_munmap_size = 0;
-		_m.tile_data = nullptr;
-	}
-#endif
-
-	free(_m.tile_data);
+	DeallocateMapStorage();
 
 	const size_t total_size = (sizeof(Tile) + sizeof(TileExtended)) * _map_size;
 
@@ -139,6 +144,24 @@ void AllocateMap(uint size_x, uint size_y)
 	InitializeWaterRegions();
 }
 
+/** For use in the tests */
+void DeallocateMap()
+{
+	DeallocateMapStorage();
+
+	_map_log_x = {};
+	_map_log_y = {};
+	_map_size_x = {};
+	_map_size_y = {};
+	_map_size = {};
+	_map_tile_mask = {};
+	_map_digits_x = {};
+	_map_digits_y = {};
+	_m.tile_data = nullptr;
+	_me.tile_data = nullptr;
+
+	InitializeWaterRegions();
+}
 
 #ifdef _DEBUG
 TileIndex TileAdd(TileIndex tile, TileIndexDiff offset)

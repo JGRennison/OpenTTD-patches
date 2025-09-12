@@ -176,6 +176,7 @@ extern MapTilePtr<TileExtended> _me;
 
 bool ValidateMapSize(uint size_x, uint size_y);
 void AllocateMap(uint size_x, uint size_y);
+void DeallocateMap();
 
 /**
  * Returns the TileIndex of a coordinate.
