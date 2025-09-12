@@ -446,7 +446,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 	std::string log_msg;
 	auto log = [&](StringID str) {
 		std::string msg = GetStringWithArgs(str, params);
-		const char *start = strip_leading_colours(msg);
+		std::string_view start = strip_leading_colours(msg);
 		Debug(grf, 0, "{}", start);
 		log_msg += start;
 	};

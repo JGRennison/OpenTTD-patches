@@ -461,33 +461,25 @@ bool StrEqualsIgnoreCase(const std::string_view str1, const std::string_view str
 void str_strip_colours(char *str)
 {
 	char *dst = str;
-	char32_t c;
-	size_t len;
 
-	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
-		if (c < SCC_BLUE || c > SCC_BLACK) {
-			/* Copy the character back. Even if dst is current the same as str
-			 * (i.e. no characters have been changed) this is quicker than
-			 * moving the pointers ahead by len */
-			do {
-				*dst++ = *str++;
-			} while (--len != 0);
+	while (*str != '\0') {
+		if (IsUtf8CharInControlCharRange<SCC_BLUE, SCC_BLACK>(str)) {
+			str += UTF8_CONTROL_CHAR_LENGTH;
 		} else {
-			/* Just skip (strip) the colour codes */
-			str += len;
+			/* Copy the character back. */
+			*dst++ = *str++;
 		}
 	}
+
 	*dst = '\0';
 }
 
 /** Advances the pointer over any colour codes at the start of the string */
-const char *strip_leading_colours(const char *str)
+std::string_view strip_leading_colours(std::string_view str)
 {
-	while (true) {
-		char32_t c;
-		size_t len = Utf8Decode(&c, str);
-		if (c < SCC_BLUE || c > SCC_BLACK) break;
-		str += len;
+	while (str.size() >= UTF8_CONTROL_CHAR_LENGTH) {
+		if (!IsUtf8CharInControlCharRange<SCC_BLUE, SCC_BLACK>(str.data())) break;
+		str.remove_prefix(UTF8_CONTROL_CHAR_LENGTH);
 	}
 
 	return str;
@@ -496,22 +488,16 @@ const char *strip_leading_colours(const char *str)
 std::string str_strip_all_scc(const char *str)
 {
 	std::string out;
-	if (!str) return out;
+	if (str == nullptr) return out;
 
-	char32_t c;
-	size_t len;
-
-	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
-		if (c < SCC_CONTROL_START || c > SCC_SPRITE_END) {
-			/* Copy the characters */
-			do {
-				out.push_back(*str++);
-			} while (--len != 0);
+	while (*str != '\0') {
+		if (IsUtf8CharInControlCharRange<SCC_BLUE, SCC_BLACK>(str)) {
+			str += UTF8_CONTROL_CHAR_LENGTH;
 		} else {
-			/* Just skip (strip) the control codes */
-			str += len;
+			out.push_back(*str++);
 		}
 	}
+
 	return out;
 }
 

@@ -79,12 +79,7 @@ inline void StrMakeValidInPlace(char *str, const char *end, StringValidationSett
 }
 
 void str_strip_colours(char *str);
-const char *strip_leading_colours(const char *str);
-
-inline const char *strip_leading_colours(const std::string &str)
-{
-	return strip_leading_colours(str.c_str());
-}
+std::string_view strip_leading_colours(std::string_view str);
 
 
 std::string str_strip_all_scc(const char *str);
