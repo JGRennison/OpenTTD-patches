@@ -12,7 +12,6 @@
 #ifndef STRING_CONSUMER_HPP
 #define STRING_CONSUMER_HPP
 
-#include <charconv>
 #include <optional>
 
 /**
@@ -816,56 +815,7 @@ private:
 	static void LogErrorCannotParseInteger(std::string_view str, std::string_view str2);
 
 	template <class T>
-	[[nodiscard]] static std::pair<size_type, T> ParseIntegerBase(std::string_view src, int base, bool clamp, bool log_errors)
-	{
-		if (base == 0) {
-			/* Try positive hex */
-			if (src.starts_with("0x") || src.starts_with("0X")) {
-				auto [len, value] = ParseIntegerBase<T>(src.substr(2), 16, clamp, log_errors);
-				if (len == 0) return {};
-				return {len + 2, value};
-			}
-
-			/* Try negative hex */
-			if (std::is_signed_v<T> && (src.starts_with("-0x") || src.starts_with("-0X"))) {
-				using Unsigned = std::make_unsigned_t<T>;
-				auto [len, uvalue] = ParseIntegerBase<Unsigned>(src.substr(3), 16, clamp, log_errors);
-				if (len == 0) return {};
-				T value = static_cast<T>(0 - uvalue);
-				if (value > 0) {
-					if (!clamp) {
-						if (log_errors) LogErrorIntegerOutOfRange(src.substr(0, len + 3));
-						return {};
-					}
-					value = std::numeric_limits<T>::lowest();
-				}
-				return {len + 3, value};
-			}
-
-			/* Try decimal */
-			return ParseIntegerBase<T>(src, 10, clamp, log_errors);
-		}
-
-		T value{};
-		assert(base == 8 || base == 10 || base == 16); // we only support these bases when skipping
-		auto result = std::from_chars(src.data(), src.data() + src.size(), value, base);
-		auto len = result.ptr - src.data();
-		if (result.ec == std::errc::result_out_of_range) {
-			if (!clamp) {
-				if (log_errors) LogErrorCannotParseInteger(src.substr(0, len), src.substr(len, 4));
-				return {};
-			}
-			if (src.starts_with("-")) {
-				value = std::numeric_limits<T>::lowest();
-			} else {
-				value = std::numeric_limits<T>::max();
-			}
-		} else if (result.ec != std::errc{}) {
-			if (log_errors) LogErrorCannotParseInteger(src.substr(0, len), src.substr(len, 4));
-			return {};
-		}
-		return {len, value};
-	}
+	[[nodiscard]] static std::pair<size_type, T> ParseIntegerBase(std::string_view src, int base, bool clamp, bool log_errors);
 
 public:
 	/**
