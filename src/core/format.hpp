@@ -549,6 +549,8 @@ private:
 
 public:
 	fmt_base_fixed_non_growing(char *buf, size_t capacity, size_t initial_size = 0) : buffer(grow, buf, initial_size, capacity) {}
+
+	format_target &as_format_target() { return reinterpret_cast<format_target &>(*this); }
 };
 
 #endif /* FORMAT_HPP */

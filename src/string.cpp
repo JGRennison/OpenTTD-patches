@@ -181,7 +181,7 @@ static bool IsSccEncodedCode(char32_t c)
  * @param consumer The string to validate.
  * @param settings The settings for the string validation.
  */
-static void StrMakeValid(fmt::detail::buffer<char> &buffer, StringConsumer consumer, StringValidationSettings settings)
+static void StrMakeValid(format_target &buffer, StringConsumer consumer, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 	while (consumer.AnyBytesLeft()) {
@@ -197,8 +197,7 @@ static void StrMakeValid(fmt::detail::buffer<char> &buffer, StringConsumer consu
 		if ((IsPrintable(c) && (c < SCC_SPRITE_START || c > SCC_SPRITE_END)) ||
 				(settings.Test(StringValidationSetting::AllowControlCode) && IsSccEncodedCode(c)) ||
 				(settings.Test(StringValidationSetting::AllowNewline) && c == '\n')) {
-			auto [buf, len] = EncodeUtf8(c);
-			buffer.append(buf, buf + len);
+			buffer.push_back_utf8(c);
 		} else if (settings.Test(StringValidationSetting::AllowNewline) && c == '\r' && consumer.PeekCharIf('\n')) {
 			/* Skip \r, if followed by \n */
 			/* continue */
@@ -225,7 +224,7 @@ static void StrMakeValid(fmt::detail::buffer<char> &buffer, StringConsumer consu
 char *StrMakeValidInPlaceIntl(char *str, const char *end, StringValidationSettings settings)
 {
 	fmt_base_fixed_non_growing buf(str, end - str);
-	StrMakeValid(buf, StringConsumer(std::string_view(str, end)), settings);
+	StrMakeValid(buf.as_format_target(), StringConsumer(std::string_view(str, end)), settings);
 	return str + buf.size();
 }
 
@@ -249,14 +248,14 @@ void AppendStrMakeValidInPlace(struct format_target &buf, std::string_view str, 
 {
 	if (str.empty()) return;
 
-	StrMakeValid(buf.GetFmtBuffer(), StringConsumer(str), settings);
+	StrMakeValid(buf, StringConsumer(str), settings);
 }
 
 void AppendStrMakeValidInPlace(std::string &output, std::string_view str, StringValidationSettings settings)
 {
 	if (str.empty()) return;
 
-	fmt::memory_buffer buf;
+	format_buffer buf;
 	StrMakeValid(buf, StringConsumer(str), settings);
 	output += std::string_view(buf.data(), buf.size());
 }
