@@ -176,13 +176,21 @@ void StringConsumer::SkipIntegerBase(int base)
 			assert(false);
 			break;
 		case 8:
-			this->SkipUntilCharNotIn("01234567");
+			this->Skip(this->FindCharIf([](char c) {
+				return c < '0' || c > '7';
+			}));
 			break;
 		case 10:
-			this->SkipUntilCharNotIn("0123456789");
+			this->Skip(this->FindCharIf([](char c) {
+				return c < '0' || c > '9';
+			}));
 			break;
 		case 16:
-			this->SkipUntilCharNotIn("0123456789abcdefABCDEF");
+			this->Skip(this->FindCharIf([](char c) {
+				if (c >= '0' && c <= '9') return false;
+				c |= 0x20;
+				return c < 'a' || c > 'f';
+			}));
 			break;
 	}
 }

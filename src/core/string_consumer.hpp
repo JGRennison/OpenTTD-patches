@@ -587,6 +587,18 @@ public:
 	[[nodiscard]] size_type FindCharNotIn(std::string_view chars) const;
 
 	/**
+	 * Find first occurence of any 8-bit char not in 'chars'.
+	 * @return Offset from current reader position. 'npos' if no match found.
+	 */
+	template <typename F>
+	[[nodiscard]] size_type FindCharIf(F predicate) const
+	{
+		auto start = this->src.begin() + this->position;
+		auto it = std::find_if(start, this->src.end(), predicate);
+		return it == this->src.end() ? std::string_view::npos : it - start;
+	}
+
+	/**
 	 * Check whether the next 8-bit char is in 'chars'.
 	 * @return Matching char, std::nullopt if no match.
 	 */
