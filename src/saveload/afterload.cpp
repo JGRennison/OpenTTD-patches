@@ -273,7 +273,7 @@ static void InitializeWindowsAndCaches()
 		/* For each company, verify (while loading a scenario) that the inauguration date is the current year and set it
 		 * accordingly if it is not the case.  No need to set it on companies that are not been used already,
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
-		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != CalTime::MIN_YEAR) {
+		if (_file_to_saveload.ftype.abstract == FT_SCENARIO && c->inaugurated_year != CalTime::MIN_YEAR) {
 			c->inaugurated_year = CalTime::CurYear();
 			c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::CurYear());
 			c->age_years = EconTime::YearDelta{0};
@@ -864,7 +864,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.economy.day_length_factor = 1;
 		UpdateEffectiveDayLengthFactor();
-		if (_file_to_saveload.abstract_ftype != FT_SCENARIO) {
+		if (_file_to_saveload.ftype.abstract != FT_SCENARIO) {
 			/* If this is obviously a vanilla/non-patchpack savegame (and not a scenario),
 			 * set the savegame time units to be in days, as they would have been previously. */
 			_settings_game.game_time.time_in_minutes = false;
@@ -4093,7 +4093,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (_file_to_saveload.abstract_ftype == FT_SCENARIO && _game_mode == GM_NORMAL) {
+	if (_file_to_saveload.ftype.abstract == FT_SCENARIO && _game_mode == GM_NORMAL) {
 		/* Apply the new-game cargo scale values for scenarios */
 		_settings_game.economy.town_cargo_scale = _settings_newgame.economy.town_cargo_scale;
 		_settings_game.economy.industry_cargo_scale = _settings_newgame.economy.industry_cargo_scale;

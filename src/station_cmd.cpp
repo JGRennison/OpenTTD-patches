@@ -205,8 +205,6 @@ static bool CMSATree(TileIndex tile)
 	return IsTileType(tile, MP_TREES);
 }
 
-#define M(x) ((x) - STR_SV_STNAME)
-
 enum StationNaming : uint8_t {
 	STATIONNAMING_RAIL,
 	STATIONNAMING_ROAD,
@@ -218,49 +216,27 @@ enum StationNaming : uint8_t {
 
 /** Information to handle station action 0 property 24 correctly */
 struct StationNameInformation {
-	uint32_t free_names; ///< Current bitset of free names (we can remove names).
+	std::bitset<STR_SV_STNAME_FALLBACK - STR_SV_STNAME> used_names; ///< Used default station suffixes.
 	std::bitset<NUM_INDUSTRYTYPES> indtypes; ///< Bit set indicating when an industry type has been found.
+
+	bool IsAvailable(StringID str) const
+	{
+		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
+		return !this->used_names.test(str - STR_SV_STNAME);
+	}
+
+	void SetUsed(StringID str)
+	{
+		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
+		this->used_names.set(str - STR_SV_STNAME);
+	}
 };
-
-/**
- * Find a station action 0 property 24 station name, or reduce the
- * free_names if needed.
- * @param tile the tile to search
- * @param user_data the StationNameInformation to base the search on
- * @return true if the tile contains an industry that has not given
- *              its name to one of the other stations in town.
- */
-static bool FindNearIndustryName(TileIndex tile, void *user_data)
-{
-	/* All already found industry types */
-	StationNameInformation *sni = (StationNameInformation*)user_data;
-	if (!IsTileType(tile, MP_INDUSTRY)) return false;
-
-	/* If the station name is undefined it means that it doesn't name a station */
-	IndustryType indtype = GetIndustryType(tile);
-	if (GetIndustrySpec(indtype)->station_name == STR_UNDEFINED) return false;
-
-	/* In all cases if an industry that provides a name is found two of
-	 * the standard names will be disabled. */
-	sni->free_names &= ~(1 << M(STR_SV_STNAME_OILFIELD) | 1 << M(STR_SV_STNAME_MINES));
-	return !sni->indtypes[indtype];
-}
 
 static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming name_class, bool force_change = false)
 {
-	static const uint32_t _gen_station_name_bits[] = {
-		0,                                       // STATIONNAMING_RAIL
-		0,                                       // STATIONNAMING_ROAD
-		1U << M(STR_SV_STNAME_AIRPORT),          // STATIONNAMING_AIRPORT
-		1U << M(STR_SV_STNAME_OILFIELD),         // STATIONNAMING_OILRIG
-		1U << M(STR_SV_STNAME_DOCKS),            // STATIONNAMING_DOCK
-		1U << M(STR_SV_STNAME_HELIPORT),         // STATIONNAMING_HELIPORT
-	};
-
 	const Town *t = st->town;
 
 	StationNameInformation sni{};
-	sni.free_names = UINT32_MAX;
 
 	std::bitset<MAX_EXTRA_STATION_NAMES> extra_names;
 
@@ -281,38 +257,59 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 			if (s->extra_name_index < MAX_EXTRA_STATION_NAMES) {
 				extra_names.set(s->extra_name_index);
 			}
-			uint str = M(s->string_id);
-			if (str <= 0x20) {
-				if (str == M(STR_SV_STNAME_FOREST)) {
-					str = M(STR_SV_STNAME_WOODS);
-				}
-				ClrBit(sni.free_names, str);
+			if (IsInsideMM(s->string_id, STR_SV_STNAME, STR_SV_STNAME_FALLBACK)) {
+				auto str = s->string_id;
+				if (str == STR_SV_STNAME_FOREST) str = STR_SV_STNAME_WOODS;
+				sni.SetUsed(str);
 			}
 		}
 	}
 
 	st->extra_name_index = UINT16_MAX;
 
-	TileIndex indtile = tile;
-	if (CircularTileSearch(&indtile, 7, FindNearIndustryName, &sni)) {
-		/* An industry has been found nearby */
+	for (TileIndex indtile : SpiralTileSequence(tile, 7)) {
+		if (!IsTileType(indtile, MP_INDUSTRY)) continue;
+
+		/* If the station name is undefined it means that it doesn't name a station */
 		IndustryType indtype = GetIndustryType(indtile);
 		const IndustrySpec *indsp = GetIndustrySpec(indtype);
+		if (indsp->station_name == STR_UNDEFINED) continue;
+
+		/* In all cases if an industry that provides a name is found two of
+		 * the standard names will be disabled. */
+		sni.SetUsed(STR_SV_STNAME_OILFIELD);
+		sni.SetUsed(STR_SV_STNAME_MINES);
+		if (sni.indtypes[indtype]) continue;
+
 		/* STR_NULL means it only disables oil rig/mines */
 		if (indsp->station_name != STR_NULL) {
 			st->indtype = indtype;
 			return STR_SV_STNAME_FALLBACK;
 		}
+		break;
 	}
 
-	/* Oil rigs/mines name could be marked not free by looking for a near by industry. */
-
-	/* check default names */
-	uint32_t tmp = sni.free_names & _gen_station_name_bits[name_class];
-	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
+	/* check default names
+	 * Oil rigs/mines name could be marked not free by looking for a near by industry. */
+	switch (name_class) {
+		case STATIONNAMING_AIRPORT:
+			if (sni.IsAvailable(STR_SV_STNAME_AIRPORT)) return STR_SV_STNAME_AIRPORT;
+			break;
+		case STATIONNAMING_OILRIG:
+			if (sni.IsAvailable(STR_SV_STNAME_OILFIELD)) return STR_SV_STNAME_OILFIELD;
+			break;
+		case STATIONNAMING_DOCK:
+			if (sni.IsAvailable(STR_SV_STNAME_DOCKS)) return STR_SV_STNAME_DOCKS;
+			break;
+		case STATIONNAMING_HELIPORT:
+			if (sni.IsAvailable(STR_SV_STNAME_HELIPORT)) return STR_SV_STNAME_HELIPORT;
+			break;
+		default:
+			break;
+	};
 
 	/* check mine? */
-	if (HasBit(sni.free_names, M(STR_SV_STNAME_MINES))) {
+	if (sni.IsAvailable(STR_SV_STNAME_MINES)) {
 		if (CountMapSquareAround(tile, CMSAMine) >= 2) {
 			return STR_SV_STNAME_MINES;
 		}
@@ -320,7 +317,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 
 	/* check close enough to town to get central as name? */
 	const bool is_central = DistanceMax(tile, t->xy) < 8;
-	if (HasBit(sni.free_names, M(STR_SV_STNAME)) && (is_central ||
+	if (sni.IsAvailable(STR_SV_STNAME) && (is_central ||
 			DistanceSquare(tile, t->xy) <= std::max(t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB], t->cache.squared_town_zone_radius[HZB_TOWN_OUTER_SUBURB]))) {
 		return STR_SV_STNAME;
 	}
@@ -362,19 +359,19 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	}
 
 	/* check close enough to town to get central as name? */
-	if (is_central && HasBit(sni.free_names, M(STR_SV_STNAME_CENTRAL))) {
+	if (is_central && sni.IsAvailable(STR_SV_STNAME_CENTRAL)) {
 		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
-	if (HasBit(sni.free_names, M(STR_SV_STNAME_LAKESIDE)) &&
+	if (sni.IsAvailable(STR_SV_STNAME_LAKESIDE) &&
 			DistanceFromEdge(tile) < 20 &&
 			CountMapSquareAround(tile, CMSAWater) >= 5) {
 		return STR_SV_STNAME_LAKESIDE;
 	}
 
 	/* Check woods */
-	if (HasBit(sni.free_names, M(STR_SV_STNAME_WOODS)) && (
+	if (sni.IsAvailable(STR_SV_STNAME_WOODS) && (
 				CountMapSquareAround(tile, CMSATree) >= 8 ||
 				CountMapSquareAround(tile, IsTileForestIndustry) >= 2)
 			) {
@@ -385,47 +382,51 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	int z = GetTileZ(tile);
 	int z2 = GetTileZ(t->xy);
 	if (z < z2) {
-		if (HasBit(sni.free_names, M(STR_SV_STNAME_VALLEY))) return STR_SV_STNAME_VALLEY;
+		if (sni.IsAvailable(STR_SV_STNAME_VALLEY)) return STR_SV_STNAME_VALLEY;
 	} else if (z > z2) {
-		if (HasBit(sni.free_names, M(STR_SV_STNAME_HEIGHTS))) return STR_SV_STNAME_HEIGHTS;
+		if (sni.IsAvailable(STR_SV_STNAME_HEIGHTS)) return STR_SV_STNAME_HEIGHTS;
 	}
 
 	/* check direction compared to town */
-	static const int8_t _direction_and_table[] = {
-		~( (1 << M(STR_SV_STNAME_WEST))  | (1 << M(STR_SV_STNAME_EAST)) | (1 << M(STR_SV_STNAME_NORTH)) ),
-		~( (1 << M(STR_SV_STNAME_SOUTH)) | (1 << M(STR_SV_STNAME_WEST)) | (1 << M(STR_SV_STNAME_NORTH)) ),
-		~( (1 << M(STR_SV_STNAME_SOUTH)) | (1 << M(STR_SV_STNAME_EAST)) | (1 << M(STR_SV_STNAME_NORTH)) ),
-		~( (1 << M(STR_SV_STNAME_SOUTH)) | (1 << M(STR_SV_STNAME_WEST)) | (1 << M(STR_SV_STNAME_EAST)) ),
+	if (TileX(tile) < TileX(t->xy)) {
+		sni.SetUsed(STR_SV_STNAME_SOUTH);
+		sni.SetUsed(STR_SV_STNAME_WEST);
+	} else {
+		sni.SetUsed(STR_SV_STNAME_NORTH);
+		sni.SetUsed(STR_SV_STNAME_EAST);
+	}
+	if (TileY(tile) < TileY(t->xy)) {
+		sni.SetUsed(STR_SV_STNAME_SOUTH);
+		sni.SetUsed(STR_SV_STNAME_EAST);
+	} else {
+		sni.SetUsed(STR_SV_STNAME_NORTH);
+		sni.SetUsed(STR_SV_STNAME_WEST);
+	}
+
+	/** Remaining station names that can be used when a more specific name has not been used. */
+	static const StringID fallback_names[] = {
+		STR_SV_STNAME_NORTH,
+		STR_SV_STNAME_SOUTH,
+		STR_SV_STNAME_EAST,
+		STR_SV_STNAME_WEST,
+		STR_SV_STNAME_TRANSFER,
+		STR_SV_STNAME_HALT,
+		STR_SV_STNAME_EXCHANGE,
+		STR_SV_STNAME_ANNEXE,
+		STR_SV_STNAME_SIDINGS,
+		STR_SV_STNAME_BRANCH,
+		STR_SV_STNAME_UPPER,
+		STR_SV_STNAME_LOWER,
 	};
 
-	sni.free_names &= _direction_and_table[
-		(TileX(tile) < TileX(t->xy)) +
-		(TileY(tile) < TileY(t->xy)) * 2];
-
-	/** Bitmask of remaining station names that can be used when a more specific name has not been used. */
-	static const uint32_t fallback_names = (
-		(1U << M(STR_SV_STNAME_NORTH)) |
-		(1U << M(STR_SV_STNAME_SOUTH)) |
-		(1U << M(STR_SV_STNAME_EAST)) |
-		(1U << M(STR_SV_STNAME_WEST)) |
-		(1U << M(STR_SV_STNAME_TRANSFER)) |
-		(1U << M(STR_SV_STNAME_HALT)) |
-		(1U << M(STR_SV_STNAME_EXCHANGE)) |
-		(1U << M(STR_SV_STNAME_ANNEXE)) |
-		(1U << M(STR_SV_STNAME_SIDINGS)) |
-		(1U << M(STR_SV_STNAME_BRANCH)) |
-		(1U << M(STR_SV_STNAME_UPPER)) |
-		(1U << M(STR_SV_STNAME_LOWER))
-	);
-
-	sni.free_names &= fallback_names;
-	if (sni.free_names != 0) return STR_SV_STNAME + FindFirstBit(sni.free_names);
+	for (auto str : fallback_names) {
+		if (sni.IsAvailable(str)) return str;
+	}
 
 	if (check_extra_names()) return STR_SV_STNAME_FALLBACK;
 
 	return STR_SV_STNAME_FALLBACK;
 }
-#undef M
 
 /**
  * Find the closest deleted station of the current company
@@ -2875,7 +2876,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 			SetStationTileRandomBits(iter, GB(Random(), 0, 4));
 			st->airport.Add(iter);
 
-			if (AirportTileSpec::Get(GetTranslatedAirportTileID(iter.GetStationGfx()))->animation.status != ANIM_STATUS_NO_ANIMATION) AddAnimatedTile(iter);
+			if (AirportTileSpec::Get(GetTranslatedAirportTileID(iter.GetStationGfx()))->animation.status != AnimationStatus::NoAnimation) AddAnimatedTile(iter);
 		}
 
 		/* Only call the animation trigger after all tiles have been built */
@@ -3408,7 +3409,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 
 	PaletteID palette;
 	if (Company::IsValidID(owner)) {
-		palette = COMPANY_SPRITE_COLOUR(owner);
+		palette = GetCompanyPalette(owner);
 	} else {
 		/* Some stations are not owner by a company, namely oil rigs */
 		palette = PALETTE_TO_GREY;
@@ -3641,7 +3642,7 @@ draw_default_foundation:
 void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, RoadType roadtype, int image)
 {
 	int32_t total_offset = 0;
-	PaletteID pal = COMPANY_SPRITE_COLOUR(_local_company);
+	PaletteID pal = GetCompanyPalette(_local_company);
 	const DrawTileSprites *t = GetStationTileLayout(st, image);
 	const RailTypeInfo *railtype_info = nullptr;
 

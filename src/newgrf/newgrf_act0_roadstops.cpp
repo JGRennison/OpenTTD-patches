@@ -152,7 +152,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				[[fallthrough]];
 			case 0x0E: // Animation info
 				rs->animation.frames = buf.ReadByte();
-				rs->animation.status = buf.ReadByte();
+				rs->animation.status = static_cast<AnimationStatus>(buf.ReadByte());
 				break;
 
 			case A0RPI_ROADSTOP_ANIMATION_SPEED:

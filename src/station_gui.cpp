@@ -982,9 +982,13 @@ enum class CargoSortType : uint8_t {
 
 class CargoSorter {
 public:
+	using is_transparent = void;
 	CargoSorter(CargoSortType t = CargoSortType::StationID, SortOrder o = SO_ASCENDING) : type(t), order(o) {}
 	CargoSortType GetSortType() {return this->type;}
-	bool operator()(const CargoDataEntry *cd1, const CargoDataEntry *cd2) const;
+	bool operator()(const CargoDataEntry &cd1, const CargoDataEntry &cd2) const;
+	bool operator()(const CargoDataEntry &cd1, const std::unique_ptr<CargoDataEntry> &cd2) const { return this->operator()(cd1, *cd2); }
+	bool operator()(const std::unique_ptr<CargoDataEntry> &cd1, const CargoDataEntry &cd2) const { return this->operator()(*cd1, cd2); }
+	bool operator()(const std::unique_ptr<CargoDataEntry> &cd1, const std::unique_ptr<CargoDataEntry> &cd2) const { return this->operator()(*cd1, *cd2); }
 
 private:
 	CargoSortType type;
@@ -992,11 +996,11 @@ private:
 
 	template <class Tid>
 	bool SortId(Tid st1, Tid st2) const;
-	bool SortCount(const CargoDataEntry *cd1, const CargoDataEntry *cd2) const;
-	bool SortStation (StationID st1, StationID st2) const;
+	bool SortCount(const CargoDataEntry &cd1, const CargoDataEntry &cd2) const;
+	bool SortStation(StationID st1, StationID st2) const;
 };
 
-typedef std::set<CargoDataEntry *, CargoSorter> CargoDataSet;
+typedef std::set<std::unique_ptr<CargoDataEntry>, CargoSorter> CargoDataSet;
 
 /**
  * A cargo data entry representing one possible row in the station view window's
@@ -1013,7 +1017,7 @@ public:
 	 * @param station ID of the station for which an entry shall be created or retrieved
 	 * @return a child entry associated with the given station.
 	 */
-	CargoDataEntry *InsertOrRetrieve(StationID station)
+	CargoDataEntry &InsertOrRetrieve(StationID station)
 	{
 		return this->InsertOrRetrieve<StationID>(station);
 	}
@@ -1023,7 +1027,7 @@ public:
 	 * @param cargo type of the cargo for which an entry shall be created or retrieved
 	 * @return a child entry associated with the given cargo.
 	 */
-	CargoDataEntry *InsertOrRetrieve(CargoType cargo)
+	CargoDataEntry &InsertOrRetrieve(CargoType cargo)
 	{
 		return this->InsertOrRetrieve<CargoType>(cargo);
 	}
@@ -1037,7 +1041,7 @@ public:
 	void Remove(StationID station)
 	{
 		CargoDataEntry t(station);
-		this->Remove(&t);
+		this->Remove(t);
 	}
 
 	/**
@@ -1047,7 +1051,7 @@ public:
 	void Remove(CargoType cargo)
 	{
 		CargoDataEntry t(cargo);
-		this->Remove(&t);
+		this->Remove(t);
 	}
 
 	/**
@@ -1058,7 +1062,7 @@ public:
 	CargoDataEntry *Retrieve(StationID station) const
 	{
 		CargoDataEntry t(station);
-		return this->Retrieve(this->children->find(&t));
+		return this->Retrieve(this->children->find(t));
 	}
 
 	/**
@@ -1069,7 +1073,7 @@ public:
 	CargoDataEntry *Retrieve(CargoType cargo) const
 	{
 		CargoDataEntry t(cargo);
-		return this->Retrieve(this->children->find(&t));
+		return this->Retrieve(this->children->find(t));
 	}
 
 	void Resort(CargoSortType type, SortOrder order);
@@ -1120,19 +1124,19 @@ public:
 	void SetTransfers(bool value) { this->transfers = value; }
 
 	void Clear();
-private:
 
 	CargoDataEntry(StationID station, uint count, CargoDataEntry *parent);
 	CargoDataEntry(CargoType cargo, uint count, CargoDataEntry *parent);
 	CargoDataEntry(StationID station);
 	CargoDataEntry(CargoType cargo);
 
+private:
 	CargoDataEntry *Retrieve(CargoDataSet::iterator i) const;
 
 	template <class Tid>
-	CargoDataEntry *InsertOrRetrieve(Tid s);
+	CargoDataEntry &InsertOrRetrieve(Tid s);
 
-	void Remove(CargoDataEntry *entry);
+	void Remove(CargoDataEntry &entry);
 	void IncrementSize();
 
 	CargoDataEntry *parent;   ///< the parent of this entry.
@@ -1145,7 +1149,7 @@ private:
 	};
 	uint num_children;        ///< the number of subentries belonging to this entry.
 	uint count;               ///< sum of counts of all children or amount of cargo for this entry.
-	CargoDataSet *children;   ///< the children of this entry.
+	std::unique_ptr<CargoDataSet> children;   ///< the children of this entry.
 };
 
 CargoDataEntry::CargoDataEntry() :
@@ -1153,7 +1157,7 @@ CargoDataEntry::CargoDataEntry() :
 	station(StationID::Invalid()),
 	num_children(0),
 	count(0),
-	children(new CargoDataSet(CargoSorter(CargoSortType::CargoType)))
+	children(std::make_unique<CargoDataSet>(CargoSorter(CargoSortType::CargoType)))
 {}
 
 CargoDataEntry::CargoDataEntry(CargoType cargo, uint count, CargoDataEntry *parent) :
@@ -1161,7 +1165,7 @@ CargoDataEntry::CargoDataEntry(CargoType cargo, uint count, CargoDataEntry *pare
 	cargo(cargo),
 	num_children(0),
 	count(count),
-	children(new CargoDataSet)
+	children(std::make_unique<CargoDataSet>())
 {}
 
 CargoDataEntry::CargoDataEntry(StationID station, uint count, CargoDataEntry *parent) :
@@ -1169,7 +1173,7 @@ CargoDataEntry::CargoDataEntry(StationID station, uint count, CargoDataEntry *pa
 	station(station),
 	num_children(0),
 	count(count),
-	children(new CargoDataSet)
+	children(std::make_unique<CargoDataSet>())
 {}
 
 CargoDataEntry::CargoDataEntry(StationID station) :
@@ -1191,7 +1195,6 @@ CargoDataEntry::CargoDataEntry(CargoType cargo) :
 CargoDataEntry::~CargoDataEntry()
 {
 	this->Clear();
-	delete this->children;
 }
 
 /**
@@ -1199,13 +1202,7 @@ CargoDataEntry::~CargoDataEntry()
  */
 void CargoDataEntry::Clear()
 {
-	if (this->children != nullptr) {
-		for (auto &it : *this->children) {
-			assert(it != this);
-			delete it;
-		}
-		this->children->clear();
-	}
+	if (this->children != nullptr) this->children->clear();
 	if (this->parent != nullptr) this->parent->count -= this->count;
 	this->count = 0;
 	this->num_children = 0;
@@ -1217,13 +1214,10 @@ void CargoDataEntry::Clear()
  * which only contains the ID of the entry to be removed. In this case child is
  * not deleted.
  */
-void CargoDataEntry::Remove(CargoDataEntry *entry)
+void CargoDataEntry::Remove(CargoDataEntry &entry)
 {
 	CargoDataSet::iterator i = this->children->find(entry);
-	if (i != this->children->end()) {
-		delete *i;
-		this->children->erase(i);
-	}
+	if (i != this->children->end()) this->children->erase(i);
 }
 
 /**
@@ -1233,17 +1227,16 @@ void CargoDataEntry::Remove(CargoDataEntry *entry)
  * @return the new or retrieved subentry
  */
 template <class Tid>
-CargoDataEntry *CargoDataEntry::InsertOrRetrieve(Tid child_id)
+CargoDataEntry &CargoDataEntry::InsertOrRetrieve(Tid child_id)
 {
 	CargoDataEntry tmp(child_id);
-	CargoDataSet::iterator i = this->children->find(&tmp);
+	CargoDataSet::iterator i = this->children->find(tmp);
 	if (i == this->children->end()) {
 		IncrementSize();
-		return *(this->children->insert(new CargoDataEntry(child_id, 0, this)).first);
+		return **(this->children->insert(std::make_unique<CargoDataEntry>(child_id, 0, this)).first);
 	} else {
-		CargoDataEntry *ret = *i;
 		assert(this->children->value_comp().GetSortType() != CargoSortType::Count);
-		return ret;
+		return **i;
 	}
 }
 
@@ -1269,9 +1262,9 @@ void CargoDataEntry::IncrementSize()
 
 void CargoDataEntry::Resort(CargoSortType type, SortOrder order)
 {
-	CargoDataSet *new_subs = new CargoDataSet(this->children->begin(), this->children->end(), CargoSorter(type, order));
-	delete this->children;
-	this->children = new_subs;
+	auto new_children = std::make_unique<CargoDataSet>(CargoSorter(type, order));
+	new_children->merge(*this->children);
+	this->children = std::move(new_children);
 }
 
 CargoDataEntry *CargoDataEntry::Retrieve(CargoDataSet::iterator i) const
@@ -1280,21 +1273,21 @@ CargoDataEntry *CargoDataEntry::Retrieve(CargoDataSet::iterator i) const
 		return nullptr;
 	} else {
 		assert(this->children->value_comp().GetSortType() != CargoSortType::Count);
-		return *i;
+		return i->get();
 	}
 }
 
-bool CargoSorter::operator()(const CargoDataEntry *cd1, const CargoDataEntry *cd2) const
+bool CargoSorter::operator()(const CargoDataEntry &cd1, const CargoDataEntry &cd2) const
 {
 	switch (this->type) {
 		case CargoSortType::StationID:
-			return this->SortId<StationID>(cd1->GetStation(), cd2->GetStation());
+			return this->SortId<StationID>(cd1.GetStation(), cd2.GetStation());
 		case CargoSortType::CargoType:
-			return this->SortId<CargoType>(cd1->GetCargo(), cd2->GetCargo());
+			return this->SortId<CargoType>(cd1.GetCargo(), cd2.GetCargo());
 		case CargoSortType::Count:
 			return this->SortCount(cd1, cd2);
 		case CargoSortType::StationString:
-			return this->SortStation(cd1->GetStation(), cd2->GetStation());
+			return this->SortStation(cd1.GetStation(), cd2.GetStation());
 		default:
 			NOT_REACHED();
 	}
@@ -1306,12 +1299,12 @@ bool CargoSorter::SortId(Tid st1, Tid st2) const
 	return (this->order == SO_ASCENDING) ? st1 < st2 : st2 < st1;
 }
 
-bool CargoSorter::SortCount(const CargoDataEntry *cd1, const CargoDataEntry *cd2) const
+bool CargoSorter::SortCount(const CargoDataEntry &cd1, const CargoDataEntry &cd2) const
 {
-	uint c1 = cd1->GetCount();
-	uint c2 = cd2->GetCount();
+	uint c1 = cd1.GetCount();
+	uint c2 = cd2.GetCount();
 	if (c1 == c2) {
-		return this->SortStation(cd1->GetStation(), cd2->GetStation());
+		return this->SortStation(cd1.GetStation(), cd2.GetStation());
 	} else if (this->order == SO_ASCENDING) {
 		return c1 < c2;
 	} else {
@@ -1496,25 +1489,25 @@ struct StationViewWindow : public Window {
 			switch (groupings[i]) {
 				case GR_CARGO:
 					assert(i == 0);
-					data = data->InsertOrRetrieve(cargo);
+					data = &data->InsertOrRetrieve(cargo);
 					data->SetTransfers(source != this->window_number);
 					expand = expand->Retrieve(cargo);
 					break;
 				case GR_SOURCE:
 					if (auto_distributed || source != this->window_number) {
-						data = data->InsertOrRetrieve(source);
+						data = &data->InsertOrRetrieve(source);
 						expand = expand->Retrieve(source);
 					}
 					break;
 				case GR_NEXT:
 					if (auto_distributed) {
-						data = data->InsertOrRetrieve(next);
+						data = &data->InsertOrRetrieve(next);
 						expand = expand->Retrieve(next);
 					}
 					break;
 				case GR_DESTINATION:
 					if (auto_distributed) {
-						data = data->InsertOrRetrieve(dest);
+						data = &data->InsertOrRetrieve(dest);
 						expand = expand->Retrieve(dest);
 					}
 					break;
@@ -1650,7 +1643,7 @@ struct StationViewWindow : public Window {
 			/* Draw waiting cargo. */
 			NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_SV_WAITING);
 			Rect waiting_rect = nwi->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
-			this->DrawEntries(&cargo, waiting_rect, pos, maxrows, 0);
+			this->DrawEntries(cargo, waiting_rect, pos, maxrows, 0);
 			scroll_to_row = INT_MAX;
 		}
 	}
@@ -1673,21 +1666,21 @@ struct StationViewWindow : public Window {
 	void RecalcDestinations(CargoType cargo)
 	{
 		const Station *st = Station::Get(this->window_number);
-		CargoDataEntry *entry = cached_destinations.InsertOrRetrieve(cargo);
-		entry->Clear();
+		CargoDataEntry &entry = cached_destinations.InsertOrRetrieve(cargo);
+		entry.Clear();
 
 		if (st->goods[cargo].data == nullptr) return;
 
 		const FlowStatMap &flows = st->goods[cargo].data->flows;
 		for (const auto &it : flows) {
 			StationID from = it.GetOrigin();
-			CargoDataEntry *source_entry = entry->InsertOrRetrieve(from);
+			CargoDataEntry &source_entry = entry.InsertOrRetrieve(from);
 			uint32_t prev_count = 0;
 			for (const auto &flow_it : it) {
 				StationID via = flow_it.second;
-				CargoDataEntry *via_entry = source_entry->InsertOrRetrieve(via);
+				CargoDataEntry &via_entry = source_entry.InsertOrRetrieve(via);
 				if (via == this->window_number) {
-					via_entry->InsertOrRetrieve(via)->Update(flow_it.first - prev_count);
+					via_entry.InsertOrRetrieve(via).Update(flow_it.first - prev_count);
 				} else {
 					EstimateDestinations(cargo, from, via, flow_it.first - prev_count, via_entry);
 				}
@@ -1705,7 +1698,7 @@ struct StationViewWindow : public Window {
 	 * @param count Size of the batch of cargo.
 	 * @param dest CargoDataEntry to save the results in.
 	 */
-	void EstimateDestinations(CargoType cargo, StationID source, StationID next, uint count, CargoDataEntry *dest, uint depth = 0)
+	void EstimateDestinations(CargoType cargo, StationID source, StationID next, uint count, CargoDataEntry &dest, uint depth = 0)
 	{
 		if (depth <= 128 && Station::IsValidID(next) && Station::IsValidID(source)) {
 			CargoDataEntry tmp;
@@ -1717,20 +1710,20 @@ struct StationViewWindow : public Window {
 				if (map_it != flowmap.end()) {
 					uint32_t prev_count = 0;
 					for (FlowStat::const_iterator i = map_it->begin(); i != map_it->end(); ++i) {
-						tmp.InsertOrRetrieve(i->second)->Update(i->first - prev_count);
+						tmp.InsertOrRetrieve(i->second).Update(i->first - prev_count);
 						prev_count = i->first;
 					}
 				}
 			}
 
 			if (tmp.GetCount() == 0) {
-				dest->InsertOrRetrieve(StationID::Invalid())->Update(count);
+				dest.InsertOrRetrieve(StationID::Invalid()).Update(count);
 			} else {
 				uint sum_estimated = 0;
 				while (sum_estimated < count) {
 					for (CargoDataSet::iterator i = tmp.Begin(); i != tmp.End() && sum_estimated < count; ++i) {
-						CargoDataEntry *child = *i;
-						uint estimate = DivideApprox(child->GetCount() * count, tmp.GetCount());
+						CargoDataEntry &child = **i;
+						uint estimate = DivideApprox(child.GetCount() * count, tmp.GetCount());
 						if (estimate == 0) estimate = 1;
 
 						sum_estimated += estimate;
@@ -1740,10 +1733,10 @@ struct StationViewWindow : public Window {
 						}
 
 						if (estimate > 0) {
-							if (child->GetStation() == next) {
-								dest->InsertOrRetrieve(next)->Update(estimate);
+							if (child.GetStation() == next) {
+								dest.InsertOrRetrieve(next).Update(estimate);
 							} else {
-								EstimateDestinations(cargo, source, child->GetStation(), estimate, dest, depth + 1);
+								EstimateDestinations(cargo, source, child.GetStation(), estimate, dest, depth + 1);
 							}
 						}
 					}
@@ -1751,7 +1744,7 @@ struct StationViewWindow : public Window {
 				}
 			}
 		} else {
-			dest->InsertOrRetrieve(StationID::Invalid())->Update(count);
+			dest.InsertOrRetrieve(StationID::Invalid()).Update(count);
 		}
 	}
 
@@ -1771,8 +1764,8 @@ struct StationViewWindow : public Window {
 			for (FlowStat::const_iterator flow_it = it->begin(); flow_it != it->end(); ++flow_it) {
 				const CargoDataEntry *via_entry = source_entry->Retrieve(flow_it->second);
 				for (CargoDataSet::iterator dest_it = via_entry->Begin(); dest_it != via_entry->End(); ++dest_it) {
-					CargoDataEntry *dest_entry = *dest_it;
-					ShowCargo(entry, cargo, from, flow_it->second, dest_entry->GetStation(), dest_entry->GetCount());
+					CargoDataEntry &dest_entry = **dest_it;
+					ShowCargo(entry, cargo, from, flow_it->second, dest_entry.GetStation(), dest_entry.GetCount());
 				}
 			}
 		}
@@ -1805,7 +1798,7 @@ struct StationViewWindow : public Window {
 
 			uint remaining = cp->Count();
 			for (CargoDataSet::iterator dest_it = via_entry->Begin(); dest_it != via_entry->End();) {
-				CargoDataEntry *dest_entry = *dest_it;
+				CargoDataEntry &dest_entry = **dest_it;
 
 				/* Advance iterator here instead of in the for statement to test whether this is the last entry */
 				++dest_it;
@@ -1817,10 +1810,10 @@ struct StationViewWindow : public Window {
 					 * not matching GoodsEntry::TotalCount() */
 					val = remaining;
 				} else {
-					val = std::min<uint>(remaining, DivideApprox(cp->Count() * dest_entry->GetCount(), via_entry->GetCount()));
+					val = std::min<uint>(remaining, DivideApprox(cp->Count() * dest_entry.GetCount(), via_entry->GetCount()));
 					remaining -= val;
 				}
-				this->ShowCargo(entry, cargo, cp->GetFirstStation(), next, dest_entry->GetStation(), val);
+				this->ShowCargo(entry, cargo, cp->GetFirstStation(), next, dest_entry.GetStation(), val);
 			}
 		}
 		this->ShowCargo(entry, cargo, NEW_STATION, NEW_STATION, NEW_STATION, packets.ReservedCount());
@@ -1850,16 +1843,16 @@ struct StationViewWindow : public Window {
 	 * Mark a specific row, characterized by its CargoDataEntry, as expanded.
 	 * @param entry The row to be marked as expanded.
 	 */
-	void SetDisplayedRow(const CargoDataEntry *entry)
+	void SetDisplayedRow(const CargoDataEntry &entry)
 	{
 		std::vector<StationID> stations;
-		const CargoDataEntry *parent = entry->GetParent();
+		const CargoDataEntry *parent = entry.GetParent();
 		if (parent->GetParent() == nullptr) {
-			this->displayed_rows.push_back(RowDisplay(&this->expanded_rows, entry->GetCargo()));
+			this->displayed_rows.push_back(RowDisplay(&this->expanded_rows, entry.GetCargo()));
 			return;
 		}
 
-		StationID next = entry->GetStation();
+		StationID next = entry.GetStation();
 		while (parent->GetParent()->GetParent() != nullptr) {
 			stations.push_back(parent->GetStation());
 			parent = parent->GetParent();
@@ -1913,9 +1906,9 @@ struct StationViewWindow : public Window {
 	 * @param column The "column" the entry will be shown in.
 	 * @return either STR_STATION_VIEW_VIA or STR_STATION_VIEW_NONSTOP.
 	 */
-	StringID SearchNonStop(CargoDataEntry *cd, StationID station, int column)
+	StringID SearchNonStop(CargoDataEntry &cd, StationID station, int column)
 	{
-		CargoDataEntry *parent = cd->GetParent();
+		CargoDataEntry *parent = cd.GetParent();
 		for (int i = column - 1; i > 0; --i) {
 			if (this->groupings[i] == GR_DESTINATION) {
 				if (parent->GetStation() == station) {
@@ -1928,9 +1921,9 @@ struct StationViewWindow : public Window {
 		}
 
 		if (this->groupings[column + 1] == GR_DESTINATION) {
-			CargoDataSet::iterator begin = cd->Begin();
-			CargoDataSet::iterator end = cd->End();
-			if (begin != end && ++(cd->Begin()) == end && (*(begin))->GetStation() == station) {
+			CargoDataSet::iterator begin = cd.Begin();
+			CargoDataSet::iterator end = cd.End();
+			if (begin != end && ++(cd.Begin()) == end && (*(begin))->GetStation() == station) {
 				return STR_STATION_VIEW_NONSTOP;
 			} else {
 				return STR_STATION_VIEW_VIA;
@@ -1950,20 +1943,20 @@ struct StationViewWindow : public Window {
 	 * @param cargo Current cargo being drawn (if cargo column has been passed).
 	 * @return row (in "pos" counting) after the one we have last drawn to.
 	 */
-	int DrawEntries(CargoDataEntry *entry, const Rect &r, int pos, int maxrows, int column, CargoType cargo = INVALID_CARGO)
+	int DrawEntries(CargoDataEntry &entry, const Rect &r, int pos, int maxrows, int column, CargoType cargo = INVALID_CARGO)
 	{
 		if (this->sortings[column] == CargoSortType::AsGrouping) {
 			if (this->groupings[column] != GR_CARGO) {
-				entry->Resort(CargoSortType::StationString, this->sort_orders[column]);
+				entry.Resort(CargoSortType::StationString, this->sort_orders[column]);
 			}
 		} else {
-			entry->Resort(CargoSortType::Count, this->sort_orders[column]);
+			entry.Resort(CargoSortType::Count, this->sort_orders[column]);
 		}
-		for (CargoDataSet::iterator i = entry->Begin(); i != entry->End(); ++i) {
-			CargoDataEntry *cd = *i;
+		for (CargoDataSet::iterator i = entry.Begin(); i != entry.End(); ++i) {
+			CargoDataEntry &cd = **i;
 
 			Grouping grouping = this->groupings[column];
-			if (grouping == GR_CARGO) cargo = cd->GetCargo();
+			if (grouping == GR_CARGO) cargo = cd.GetCargo();
 			bool auto_distributed = _settings_game.linkgraph.GetDistributionType(cargo) != DT_MANUAL;
 
 			if (pos > -maxrows && pos <= 0) {
@@ -1972,10 +1965,10 @@ struct StationViewWindow : public Window {
 				int y = r.top - pos * GetCharacterHeight(FS_NORMAL);
 				if (this->groupings[column] == GR_CARGO) {
 					str = STR_STATION_VIEW_WAITING_CARGO;
-					DrawCargoIcons(cd->GetCargo(), cd->GetCount(), r.left + this->expand_shrink_width, r.right - this->expand_shrink_width, y);
+					DrawCargoIcons(cd.GetCargo(), cd.GetCount(), r.left + this->expand_shrink_width, r.right - this->expand_shrink_width, y);
 				} else {
 					if (!auto_distributed) grouping = GR_SOURCE;
-					station = cd->GetStation();
+					station = cd.GetStation();
 					str = this->GetGroupingString(grouping, station);
 					if (grouping == GR_NEXT && str == STR_STATION_VIEW_VIA) str = this->SearchNonStop(cd, station, column);
 
@@ -1988,18 +1981,18 @@ struct StationViewWindow : public Window {
 				Rect text = r.Indent(column * WidgetDimensions::scaled.hsep_indent, rtl).Indent(this->expand_shrink_width, !rtl);
 				Rect shrink = r.WithWidth(this->expand_shrink_width, !rtl);
 
-				DrawString(text.left, text.right, y, GetString(str, cargo, cd->GetCount(), station));
+				DrawString(text.left, text.right, y, GetString(str, cargo, cd.GetCount(), station));
 
 				if (column < NUM_COLUMNS - 1) {
 					const char *sym = nullptr;
-					if (cd->GetNumChildren() > 0) {
+					if (cd.GetNumChildren() > 0) {
 						sym = "-";
 					} else if (auto_distributed && str != STR_STATION_VIEW_RESERVED) {
 						sym = "+";
 					} else {
 						/* Only draw '+' if there is something to be shown. */
 						const GoodsEntry &ge = Station::Get(this->window_number)->goods[cargo];
-						if (grouping == GR_CARGO && (ge.CargoReservedCount() > 0 || cd->HasTransfers())) {
+						if (grouping == GR_CARGO && (ge.CargoReservedCount() > 0 || cd.HasTransfers())) {
 							sym = "+";
 						}
 					}
@@ -2425,14 +2418,12 @@ static std::vector<StationID> _stations_nearby_list;
  * Add station on this tile to _stations_nearby_list if it's fully within the
  * station spread.
  * @param tile Tile just being checked
- * @param user_data Pointer to TileArea context
+ * @param ctx Pointer to TileArea context
  * @tparam T the station filter type
  */
 template <class T>
-static bool AddNearbyStation(TileIndex tile, void *user_data)
+static void AddNearbyStation(TileIndex tile, TileArea *ctx)
 {
-	TileArea *ctx = (TileArea *)user_data;
-
 	/* First check if there were deleted stations here */
 	for (auto it = _deleted_stations_nearby.begin(); it != _deleted_stations_nearby.end(); /* nothing */) {
 		if (it->tile == tile) {
@@ -2444,21 +2435,19 @@ static bool AddNearbyStation(TileIndex tile, void *user_data)
 	}
 
 	/* Check if own station and if we stay within station spread */
-	if (!IsTileType(tile, MP_STATION)) return false;
+	if (!IsTileType(tile, MP_STATION)) return;
 
 	StationID sid = GetStationIndex(tile);
 
 	/* This station is (likely) a waypoint */
-	if (!T::IsValidID(sid)) return false;
+	if (!T::IsValidID(sid)) return;
 
 	BaseStation *st = BaseStation::Get(sid);
-	if (st->owner != _local_company || std::ranges::find(_stations_nearby_list, sid) != _stations_nearby_list.end()) return false;
+	if (st->owner != _local_company || std::ranges::find(_stations_nearby_list, sid) != _stations_nearby_list.end()) return;
 
 	if (st->rect.BeforeAddRect(ctx->tile, ctx->w, ctx->h, StationRect::ADD_TEST).Succeeded()) {
 		_stations_nearby_list.push_back(sid);
 	}
-
-	return false; // We want to include *all* nearby stations
 }
 
 /**
@@ -2506,8 +2495,9 @@ static const BaseStation *FindStationsNearby(TileArea ta, bool distant_join)
 	if (distant_join && std::min(ta.w, ta.h) >= _settings_game.station.station_spread) return nullptr;
 	uint max_dist = distant_join ? _settings_game.station.station_spread - std::min(ta.w, ta.h) : 1;
 
-	TileIndex tile = TileAddByDir(ctx.tile, DIR_N);
-	CircularTileSearch(&tile, max_dist, ta.w, ta.h, AddNearbyStation<T>, &ctx);
+	for (auto tile : SpiralTileSequence(TileAddByDir(ctx.tile, DIR_N), max_dist, ta.w, ta.h)) {
+		AddNearbyStation<T>(tile, &ctx);
+	}
 
 	return nullptr;
 }

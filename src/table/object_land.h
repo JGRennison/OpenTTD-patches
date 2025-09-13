@@ -104,7 +104,7 @@ static const DrawTileSpriteSpan _object_hq[] = {
 #undef TILE_SPRITE_LINE
 #undef TILE_SPRITE_LINE_NOTHING
 
-#define M(name, size, build_cost_multiplier, clear_cost_multiplier, height, climate, gen_amount, flags, ctrl_flags) { {INVALID_OBJECT_CLASS, 0}, FixedGRFFileProps<2>(), {0, 0, 0, 0}, name, climate, size, build_cost_multiplier, clear_cost_multiplier, CalTime::Date{}, CalTime::MAX_DATE + 1, flags, ctrl_flags, {0, 0, 0, 0}, ObjectCallbackMasks{}, height, 1, gen_amount, OVMT_DEFAULT, 0, {} }
+#define M(name, size, build_cost_multiplier, clear_cost_multiplier, height, climate, gen_amount, flags, ctrl_flags) { {INVALID_OBJECT_CLASS, 0}, FixedGRFFileProps<2>(), AnimationInfo{}, name, climate, size, build_cost_multiplier, clear_cost_multiplier, CalTime::Date{}, CalTime::MAX_DATE + 1, flags, ctrl_flags, {0, 0, 0, 0}, ObjectCallbackMasks{}, height, 1, gen_amount, OVMT_DEFAULT, 0, {} }
 
 /* Climates
  * T = Temperate

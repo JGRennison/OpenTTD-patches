@@ -122,7 +122,6 @@ void AyStar::CheckTile(AyStarNode *current, OpenListNode *parent)
 	assert(new_g >= 0);
 	/* Add the parent g-value to the new g-value */
 	new_g += parent->g;
-	if (this->max_path_cost != 0 && (uint)new_g > this->max_path_cost) return;
 
 	/* Calculate the h-value */
 	new_h = this->CalculateH(this, current, parent);
@@ -250,16 +249,13 @@ void AyStar::Clear()
  *  - #AyStarStatus::FoundEndNode
  *  - #AyStarStatus::NoPath
  *  - #AyStarStatus::StillBusy
- * @note When the algorithm is done (when the return value is not #AyStarStatus::StillBusy) #Clear() is called automatically.
- *       When you stop the algorithm halfway, you should call #Clear() yourself!
  */
 AyStarStatus AyStar::Main()
 {
-	AyStarStatus r = AyStarStatus::FoundEndNode;
-	int i = 0;
-	/* Loop through the OpenList
-	 *  Quit if result is no AyStarStatus::StillBusy or is more than loops_per_tick */
-	while ((r = this->Loop()) == AyStarStatus::StillBusy && (this->loops_per_tick == 0 || ++i < this->loops_per_tick)) { }
+	AyStarStatus r;
+	do {
+		r = this->Loop();
+	} while (r == AyStarStatus::StillBusy);
 #ifdef AYSTAR_DEBUG
 	switch (r) {
 		case AyStarStatus::FoundEndNode: Debug(misc, 0, "[AyStar] Found path!"); break;
@@ -283,9 +279,7 @@ AyStarStatus AyStar::Main()
 
 /**
  * Adds a node from where to start an algorithm. Multiple nodes can be added
- * if wanted. You should make sure that #Clear() is called before adding nodes
- * if the #AyStar has been used before (though the normal main loop calls
- * #Clear() automatically when the algorithm finishes.
+ * if wanted.
  * @param start_node Node to start with.
  * @param g the cost for starting with this node.
  */

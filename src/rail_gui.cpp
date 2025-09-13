@@ -20,6 +20,7 @@
 #include "waypoint_cmd.h"
 #include "waypoint_func.h"
 #include "newgrf_badge.h"
+#include "newgrf_badge_gui.h"
 #include "newgrf_station.h"
 #include "company_base.h"
 #include "strings_func.h"

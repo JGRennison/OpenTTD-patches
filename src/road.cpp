@@ -816,7 +816,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 				if (IsNormalRoadTile(tile)) {
 					const RoadBits existing_bits = GetRoadBits(tile, RTT_ROAD);
-					CLRBITS(road_bits, existing_bits);
+					road_bits &= ~existing_bits;
 					if (road_bits == ROAD_NONE) need_to_build_road = false;
 				} else if (MayHaveRoad(tile)) {
 					/* Tile already has road which can't be modified: level crossings, depots, drive-through stops, etc */

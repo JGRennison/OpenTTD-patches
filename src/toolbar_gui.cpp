@@ -112,7 +112,7 @@ public:
 	bool selectable;
 
 	DropDownListCompanyItem(CompanyID company, bool shaded, bool selectable = true) :
-			DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>>(SPR_COMPANY_ICON, COMPANY_SPRITE_COLOUR(company), NetworkCompanyIsPassworded(company) ? SPR_LOCK : SPR_EMPTY, PAL_NONE, GetString(STR_COMPANY_NAME_COMPANY_NUM, company, company), company.base(), false, shaded),
+			DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>>(SPR_COMPANY_ICON, GetCompanyPalette(company), NetworkCompanyIsPassworded(company) ? SPR_LOCK : SPR_EMPTY, PAL_NONE, GetString(STR_COMPANY_NAME_COMPANY_NUM, company, company), company.base(), false, shaded),
 			selectable(selectable)
 	{
 	}

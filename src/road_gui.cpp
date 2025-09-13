@@ -39,7 +39,7 @@
 #include "date_func.h"
 #include "station_map.h"
 #include "waypoint_func.h"
-#include "newgrf_badge.h"
+#include "newgrf_badge_gui.h"
 #include "newgrf_roadstop.h"
 #include "debug.h"
 #include "newgrf_station.h"

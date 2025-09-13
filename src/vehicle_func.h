@@ -22,9 +22,18 @@
 #include "cargo_type.h"
 #include <vector>
 
-#define is_custom_sprite(x) (x >= 0xFD)
-#define IS_CUSTOM_FIRSTHEAD_SPRITE(x) (x == 0xFD)
-#define IS_CUSTOM_SECONDHEAD_SPRITE(x) (x == 0xFE)
+/**
+ * Special values for Vehicle::spritenum and (Aircraft|Rail|Road|Ship)VehicleInfo::image_index
+ */
+enum CustomVehicleSpriteNum {
+	CUSTOM_VEHICLE_SPRITENUM = 0xFD, ///< Vehicle sprite from NewGRF
+	CUSTOM_VEHICLE_SPRITENUM_REVERSED = 0xFE, ///< Vehicle sprite from NewGRF with reverse driving direction (from articulation callback)
+};
+
+static inline bool IsCustomVehicleSpriteNum(uint8_t spritenum)
+{
+	return spritenum >= CUSTOM_VEHICLE_SPRITENUM;
+}
 
 static constexpr EconTime::DateDelta VEHICLE_PROFIT_MIN_AGE{DAYS_IN_YEAR * 2}; ///< Only vehicles older than this have a meaningful profit.
 static const Money VEHICLE_PROFIT_THRESHOLD = 10000;        ///< Threshold for a vehicle to be considered making good profit.

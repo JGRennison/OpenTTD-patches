@@ -87,17 +87,28 @@ static const uint GEN_HASHX_BUCKET_BITS = 7;
 static const uint GEN_HASHY_BUCKET_BITS = 6;
 
 /* Compute hash for vehicle coord */
-#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHX_BITS)
-#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
-#define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
+static inline uint GetViewportHashX(int x)
+{
+	return GB(x, GEN_HASHX_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHX_BITS);
+}
+
+static inline uint GetViewportHashY(int y)
+{
+	return GB(y, GEN_HASHY_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS;
+}
+
+static inline uint GetViewportHash(int x, int y)
+{
+	return GetViewportHashX(x) + GetViewportHashY(y);
+}
 
 /* Maximum size until hash repeats */
-//static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_BASE_SHIFT);
-//static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_BASE_SHIFT);
+//static const uint GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_BASE_SHIFT);
+//static const uint GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_BASE_SHIFT);
 
 /* Increments to reach next bucket in hash table */
-//static const int GEN_HASHX_INC = 1;
-//static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
+//static const uint GEN_HASHX_INC = 1;
+//static const uint GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
 
 /* Mask to wrap-around buckets */
 //static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
@@ -202,7 +213,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		v->vcache.cached_max_speed = rvi->max_speed;
 		if (Train::From(v)->IsFrontEngine()) {
 			Train::From(v)->ConsistChanged(CCF_REFIT);
-			CLRBITS(Train::From(v)->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN );
+			Train::From(v)->flags &= ~((1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
 		}
 	} else if (v->type == VEH_ROAD) {
 		RoadVehicle::From(v)->critical_breakdown_count = 0;
@@ -969,8 +980,8 @@ static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 	int old_x = v->coord.left;
 	int old_y = v->coord.top;
 
-	new_hash = (x == INVALID_COORD) ? nullptr : &_vehicle_viewport_hash[GEN_HASH(x, y)];
-	old_hash = (old_x == INVALID_COORD) ? nullptr : &_vehicle_viewport_hash[GEN_HASH(old_x, old_y)];
+	new_hash = (x == INVALID_COORD) ? nullptr : &_vehicle_viewport_hash[GetViewportHash(x, y)];
+	old_hash = (old_x == INVALID_COORD) ? nullptr : &_vehicle_viewport_hash[GetViewportHash(old_x, old_y)];
 
 	if (old_hash == new_hash) return;
 
@@ -1001,8 +1012,8 @@ static void UpdateVehicleViewportHashDeferred(Vehicle *v, int x, int y)
 	int old_x = v->coord.left;
 	int old_y = v->coord.top;
 
-	int new_hash = (x == INVALID_COORD) ? INVALID_COORD : GEN_HASH(x, y);
-	int old_hash = (old_x == INVALID_COORD) ? INVALID_COORD : GEN_HASH(old_x, old_y);
+	int new_hash = (x == INVALID_COORD) ? INVALID_COORD : GetViewportHash(x, y);
+	int old_hash = (old_x == INVALID_COORD) ? INVALID_COORD : GetViewportHash(old_x, old_y);
 
 	if (new_hash != old_hash) {
 		_viewport_hash_deferred.push_back({ v, new_hash, old_hash });

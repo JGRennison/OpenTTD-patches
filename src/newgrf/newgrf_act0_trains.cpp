@@ -99,7 +99,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 
 				/* TTD sprite IDs point to a location in a 16bit array, but we use it
 				 * as an array index, so we need it to be half the original value. */
-				if (spriteid < 0xFD) spriteid >>= 1;
+				if (spriteid < CUSTOM_VEHICLE_SPRITENUM) spriteid >>= 1;
 
 				if (IsValidNewGRFImageIndex<VEH_TRAIN>(spriteid)) {
 					rvi->image_index = spriteid;

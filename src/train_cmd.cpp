@@ -219,7 +219,7 @@ void CheckBreakdownFlags(Train *v)
 {
 	dbg_assert(v->IsFrontEngine());
 	/* clear the flags we're gonna check first, we'll set them again later (if applicable) */
-	CLRBITS(v->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
+	v->flags &= ~((1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
 
 	for (const Train *w = v; w != nullptr; w = w->Next()) {
 		if (v->IsEngine() || w->IsMultiheaded()) {
@@ -1289,7 +1289,7 @@ int Train::GetCursorImageOffset() const
 		int reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
 
 		const Engine *e = this->GetEngine();
-		if (e->GetGRF() != nullptr && is_custom_sprite(e->u.rail.image_index)) {
+		if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->u.rail.image_index)) {
 			reference_width = e->GetGRF()->traininfo_vehicle_width;
 		}
 
@@ -1309,7 +1309,7 @@ int Train::GetDisplayImageWidth(Point *offset) const
 	int vehicle_pitch = 0;
 
 	const Engine *e = this->GetEngine();
-	if (e->GetGRF() != nullptr && is_custom_sprite(e->u.rail.image_index)) {
+	if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->u.rail.image_index)) {
 		reference_width = e->GetGRF()->traininfo_vehicle_width;
 		vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}
@@ -1343,8 +1343,9 @@ void Train::GetImage(Direction direction, EngineImageType image_type, VehicleSpr
 
 	if (HasBit(this->flags, VRF_REVERSE_DIRECTION)) direction = ReverseDir(direction);
 
-	if (is_custom_sprite(spritenum)) {
-		GetCustomVehicleSprite(this, (Direction)(direction + 4 * IS_CUSTOM_SECONDHEAD_SPRITE(spritenum)), image_type, result);
+	if (IsCustomVehicleSpriteNum(spritenum)) {
+		if (spritenum == CUSTOM_VEHICLE_SPRITENUM_REVERSED) direction = ReverseDir(direction);
+		GetCustomVehicleSprite(this, direction, image_type, result);
 		if (result->IsValid()) return;
 
 		spritenum = this->GetEngine()->original_image_index;
@@ -1364,7 +1365,7 @@ static void GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImageType
 	Direction dir = rear_head ? DIR_E : DIR_W;
 	uint8_t spritenum = e->u.rail.image_index;
 
-	if (is_custom_sprite(spritenum)) {
+	if (IsCustomVehicleSpriteNum(spritenum)) {
 		GetCustomVehicleIcon(engine, dir, image_type, result);
 		if (result->IsValid()) {
 			if (e->GetGRF() != nullptr) {

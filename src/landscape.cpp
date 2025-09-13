@@ -1019,7 +1019,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
  * @param tile The tile to consider for being the spring.
  * @return True iff it is suitable as a spring.
  */
-static bool FindSpring(TileIndex tile, void *)
+static bool FindSpring(TileIndex tile)
 {
 	int reference_height;
 	if (!IsTileFlat(tile, &reference_height) || IsWaterTile(tile)) return false;
@@ -1063,14 +1063,12 @@ struct MakeLakeData {
 /**
  * Make a connected lake; fill all tiles in the circular tile search that are connected.
  * @param tile The tile to consider for lake making.
- * @param user_data The height of the lake.
- * @return Always false, so it continues searching.
+ * @param data Lake construction data.
  */
-static bool MakeLake(TileIndex tile, void *user_data)
+static void MakeLake(TileIndex tile, const MakeLakeData *data)
 {
-	const MakeLakeData *data = (const MakeLakeData *)user_data;
-	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return false;
-	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
+	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return;
 
 	/* Offset from centre tile */
 	const int64_t x_delta = (int)TileX(tile) - (int)TileX(data->centre);
@@ -1089,7 +1087,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
 	}
 
 	/* Check if inside ellipse */
-	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64_t)(max_distance * max_distance) << 16)) return false;
+	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64_t)(max_distance * max_distance) << 16)) return;
 
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
@@ -1098,11 +1096,9 @@ static bool MakeLake(TileIndex tile, void *user_data)
 			MarkTileDirtyByTile(tile);
 			/* Remove desert directly around the river tile. */
 			IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
-			return false;
+			return;
 		}
 	}
-
-	return false;
 }
 
 /**
@@ -1167,16 +1163,15 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 }
 
 /** Callback to widen a river tile. */
-static bool RiverMakeWider(TileIndex tile, void *user_data)
+static void RiverMakeWider(TileIndex tile, Slope origin_tile_slope)
 {
-	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)user_data)) {
+	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == origin_tile_slope) {
 		MakeRiver(tile, Random());
 		/* Remove desert directly around the river tile. */
 
 		MarkTileDirtyByTile(tile);
 		IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 	}
-	return false;
 }
 
 /* AyStar callback when an route has been found. */
@@ -1190,12 +1185,15 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 			// Widen river depending on how far we are away from the source.
 			const uint current_river_length = DistanceManhattan(_current_spring, path->node.tile);
 			const uint long_river_length = _settings_game.game_creation.min_river_length * 4;
-			const uint radius = std::min(3u, (current_river_length / (long_river_length / 3u)) + 1u);
+			const uint diameter = std::min(3u, (current_river_length / (long_river_length / 3u)) + 1u);
 
 			MarkTileDirtyByTile(tile);
 
-			if (_settings_game.game_creation.land_generator != LG_ORIGINAL && _is_main_river && (radius > 1)) {
-				CircularTileSearch(&tile, radius + RandomRange(1), RiverMakeWider, (void *)&path->node.tile);
+			if (_settings_game.game_creation.land_generator != LG_ORIGINAL && _is_main_river && (diameter > 1)) {
+				Slope origin_tile_slope = GetTileSlope(tile);
+				for (TileIndex river_tile : SpiralTileSequence(tile, diameter + RandomRange(1))) {
+					RiverMakeWider(river_tile, origin_tile_slope);
+				}
 			} else {
 				/* Remove desert directly around the river tile. */
 				IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
@@ -1311,12 +1309,12 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 
 			// Setting lake size +- 25%
 			const auto random_percentage = 75 + RandomRange(50);
-			const uint range = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
+			const uint diameter = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
 
 			MakeLakeData data;
 			data.centre = lake_centre;
 			data.height = height_begin;
-			data.max_distance = range / 2;
+			data.max_distance = diameter / 2;
 
 			/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
 			data.secondary_axis_scale = (1 << 16) + RandomRange(1 << 18);
@@ -1327,10 +1325,12 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			/* sin^2 + cos^2 = 1 */
 			data.cos_fp = (int)IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
 
-			CircularTileSearch(&lake_centre, range, MakeLake, &data);
-			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
-			lake_centre = end;
-			CircularTileSearch(&lake_centre, range, MakeLake, &data);
+			/* Run the loop twice, so artefacts from going circular in one direction get (mostly) hidden. */
+			for (uint loops = 0; loops < 2; ++loops) {
+				for (TileIndex tile : SpiralTileSequence(lake_centre, diameter)) {
+					MakeLake(tile, &data);
+				}
+			}
 			found = true;
 		}
 	}
@@ -1354,23 +1354,33 @@ static void CreateRivers()
 
 	for (; wells > num_short_rivers; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
+		bool done = false;
 		for (int tries = 0; tries < 128; tries++) {
-			TileIndex t = RandomTile();
-			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
-			_current_spring = t;
-			_is_main_river = false;
-			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length * 4)) break;
+			for (TileIndex t : SpiralTileSequence(RandomTile(), 8)) {
+				if (FindSpring(t)) {
+					_current_spring = t;
+					_is_main_river = false;
+					done = FlowRiver(t, t, _settings_game.game_creation.min_river_length * 4);
+					break;
+				}
+			}
+			if (done) break;
 		}
 	}
 
 	for (; wells != 0; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
+		bool done = false;
 		for (int tries = 0; tries < 128; tries++) {
-			TileIndex t = RandomTile();
-			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
-			_current_spring = t;
-			_is_main_river = false;
-			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length)) break;
+			for (TileIndex t : SpiralTileSequence(RandomTile(), 8)) {
+				if (FindSpring(t)) {
+					_current_spring = t;
+					_is_main_river = false;
+					done = FlowRiver(t, t, _settings_game.game_creation.min_river_length);
+					break;
+				}
+			}
+			if (done) break;
 		}
 	}
 
@@ -1504,7 +1514,7 @@ bool GenerateLandscape(uint8_t mode)
 
 	if (mode == GWM_HEIGHTMAP) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_HEIGHTMAP);
-		if (!LoadHeightmap(_file_to_saveload.detail_ftype, _file_to_saveload.name.c_str())) {
+		if (!LoadHeightmap(_file_to_saveload.ftype.detailed, _file_to_saveload.name.c_str())) {
 			return false;
 		}
 		IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);

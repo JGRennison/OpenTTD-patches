@@ -1008,8 +1008,8 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 		case 0x46: return v->GetEngine()->grf_prop.local_id;
 		case 0x47: return GB(v->GetEngine()->grf_prop.local_id, 8, 8);
 		case 0x48:
-			if (v->type != VEH_TRAIN || v->spritenum != 0xFD) return v->spritenum;
-			return HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION) ? 0xFE : 0xFD;
+			if (v->type != VEH_TRAIN || v->spritenum != CUSTOM_VEHICLE_SPRITENUM) return v->spritenum;
+			return HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION) ? CUSTOM_VEHICLE_SPRITENUM_REVERSED : CUSTOM_VEHICLE_SPRITENUM;
 
 		case 0x49: return v->day_counter;
 		case 0x4A: return v->breakdowns_since_last_service;
@@ -1272,9 +1272,7 @@ VehicleResolverObject::VehicleResolverObject(EngineID engine_type, const Vehicle
 	}
 }
 
-
-
-void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction direction, EngineImageType image_type, VehicleSpriteSeq *result)
+static void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction direction, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	VehicleResolverObject object(engine, v, VehicleResolverObject::WO_CACHED, false, CBID_NO_CALLBACK);
 	result->Clear();
@@ -1295,8 +1293,17 @@ void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction directio
 	}
 }
 
+void GetCustomVehicleSprite(const Vehicle *v, Direction direction, EngineImageType image_type, VehicleSpriteSeq *result)
+{
+	GetCustomEngineSprite(v->engine_type, v, direction, image_type, result);
+}
 
-void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result)
+void GetCustomVehicleIcon(EngineID engine, Direction direction, EngineImageType image_type, VehicleSpriteSeq *result)
+{
+	GetCustomEngineSprite(engine, nullptr, direction, image_type, result);
+}
+
+static void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
 
@@ -1329,6 +1336,15 @@ void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineIma
 	}
 }
 
+void GetCustomRotorSprite(const struct Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result)
+{
+	GetRotorOverrideSprite(v->engine_type, v, image_type, result);
+}
+
+void GetCustomRotorIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
+{
+	GetRotorOverrideSprite(engine, nullptr, image_type, result);
+}
 
 /**
  * Check if a wagon is currently using a wagon override

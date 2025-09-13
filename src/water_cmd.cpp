@@ -456,19 +456,6 @@ void RiverModifyDesertZone(TileIndex tile, void *)
 }
 
 /**
- * Make a river tile and remove desert directly around it.
- * @param tile The tile to change into river and create non-desert around
- */
-void MakeRiverAndModifyDesertZoneAround(TileIndex tile)
-{
-	MakeRiver(tile, Random());
-	MarkTileDirtyByTile(tile);
-
-	/* Remove desert directly around the river tile. */
-	IterateCurvedCircularTileArea(tile, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
-}
-
-/**
  * Build a piece of canal.
  * @param flags type of operation
  * @param tile end tile of stretch-dragging
@@ -910,7 +897,7 @@ static void DrawWaterLock(const TileInfo *ti)
 static void DrawWaterDepot(const TileInfo *ti)
 {
 	DrawWaterClassGround(ti);
-	DrawWaterTileStruct(ti, _shipdepot_display_data[GetShipDepotAxis(ti->tile)][GetShipDepotPart(ti->tile)].seq, 0, 0, COMPANY_SPRITE_COLOUR(GetTileOwner(ti->tile)), CF_END);
+	DrawWaterTileStruct(ti, _shipdepot_display_data[GetShipDepotAxis(ti->tile)][GetShipDepotPart(ti->tile)].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
 }
 
 static void DrawRiverWater(const TileInfo *ti)
@@ -1007,7 +994,7 @@ void DrawShipDepotSprite(int x, int y, Axis axis, DepotPart part)
 	const DrawTileSprites &dts = _shipdepot_display_data[axis][part];
 
 	DrawSprite(dts.ground.sprite, dts.ground.pal, x, y);
-	DrawOrigTileSeqInGUI(x, y, &dts, COMPANY_SPRITE_COLOUR(_local_company));
+	DrawOrigTileSeqInGUI(x, y, &dts, GetCompanyPalette(_local_company));
 }
 
 

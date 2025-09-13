@@ -433,7 +433,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGam
  * @param error The error to disconnect for.
  * @param reason In case of kicking a client, specifies the reason for kicking the client.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode error, const std::string &reason)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode error, std::string_view reason)
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_ERROR, TCP_MTU);
 
@@ -475,7 +475,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 	return this->CloseConnection(NETWORK_RECV_STATUS_SERVER_ERROR);
 }
 
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::string &log)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(std::string_view log)
 {
 	for (size_t offset = 0; offset < log.size();) {
 		auto p = std::make_unique<Packet>(this, PACKET_SERVER_DESYNC_LOG, TCP_MTU);
@@ -764,7 +764,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCommand(const OutgoingComm
  * @param msg The actual message.
  * @param data Arbitrary extra data.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action, ClientID client_id, bool self_send, const std::string &msg, NetworkTextMessageData data)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action, ClientID client_id, bool self_send, std::string_view msg, NetworkTextMessageData data)
 {
 	if (this->status < STATUS_PRE_ACTIVE) return NETWORK_RECV_STATUS_OKAY;
 
@@ -787,7 +787,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action,
  * @param user Name of the user who sent the message.
  * @param msg The actual message.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendExternalChat(std::string_view source, TextColour colour, std::string_view user, std::string_view msg)
 {
 	if (this->status < STATUS_PRE_ACTIVE) return NETWORK_RECV_STATUS_OKAY;
 
@@ -853,7 +853,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGame()
  * @param colour The colour of the result.
  * @param command The command that was executed.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour, const std::string &command)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour, std::string_view command)
 {
 	assert(this->rcon_reply_key != nullptr);
 
@@ -1514,7 +1514,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ACK(Packet &p)
  * @param data Arbitrary data.
  * @param from_admin Whether the origin is an admin or not.
  */
-void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, const std::string &msg, ClientID from_id, NetworkTextMessageData data, bool from_admin)
+void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, std::string_view msg, ClientID from_id, NetworkTextMessageData data, bool from_admin)
 {
 	const NetworkClientInfo *ci, *ci_own, *ci_to;
 
@@ -1633,7 +1633,7 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, co
  * @param user Name of the user who sent the message.
  * @param msg The actual message.
  */
-void NetworkServerSendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg)
+void NetworkServerSendExternalChat(std::string_view source, TextColour colour, std::string_view user, std::string_view msg)
 {
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) cs->SendExternalChat(source, colour, user, msg);
@@ -2185,7 +2185,7 @@ void NetworkServer_Tick(bool send_frame)
 static void NetworkRestartMap()
 {
 	_settings_newgame.game_creation.generation_seed = GENERATE_NEW_SEED;
-	switch (_file_to_saveload.abstract_ftype) {
+	switch (_file_to_saveload.ftype.abstract) {
 		case FT_SAVEGAME:
 		case FT_SCENARIO:
 			_switch_mode = SM_LOAD_GAME;
@@ -2266,7 +2266,7 @@ void NetworkServerEconomyDailyLoop()
  * Get the IP address/hostname of the connected client.
  * @return The IP address.
  */
-const char *ServerNetworkGameSocketHandler::GetClientIP()
+std::string_view ServerNetworkGameSocketHandler::GetClientIP()
 {
 	return this->client_address.GetHostname();
 }
@@ -2390,7 +2390,7 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
  * @param colour_code The colour of the text.
  * @param string The actual reply.
  */
-void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, const std::string &string)
+void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, std::string_view string)
 {
 	NetworkClientSocket::GetByClientID(client_id)->SendRConResult(colour_code, string);
 }
@@ -2411,7 +2411,7 @@ void NetworkServerSendRconDenied(ClientID client_id)
  * @param client_id The client to kick.
  * @param reason In case of kicking a client, specifies the reason for kicking the client.
  */
-void NetworkServerKickClient(ClientID client_id, const std::string &reason)
+void NetworkServerKickClient(ClientID client_id, std::string_view reason)
 {
 	if (client_id == CLIENT_ID_SERVER) return;
 	NetworkClientSocket::GetByClientID(client_id)->SendError(NETWORK_ERROR_KICKED, reason);
@@ -2423,7 +2423,7 @@ void NetworkServerKickClient(ClientID client_id, const std::string &reason)
  * @param ban Whether to ban or kick.
  * @param reason In case of kicking a client, specifies the reason for kicking the client.
  */
-uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, const std::string &reason)
+uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, std::string_view reason)
 {
 	return NetworkServerKickOrBanIP(NetworkClientSocket::GetByClientID(client_id)->GetClientIP(), ban, reason);
 }
@@ -2434,7 +2434,7 @@ uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, const std::string &r
  * @param ban Whether to ban or just kick.
  * @param reason In case of kicking a client, specifies the reason for kicking the client.
  */
-uint NetworkServerKickOrBanIP(const std::string &ip, bool ban, const std::string &reason)
+uint NetworkServerKickOrBanIP(std::string_view ip, bool ban, std::string_view reason)
 {
 	/* Add address to ban-list */
 	if (ban) {
@@ -2458,7 +2458,7 @@ uint NetworkServerKickOrBanIP(const std::string &ip, bool ban, const std::string
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->client_id == CLIENT_ID_SERVER) continue;
 		if (cs->client_id == _redirect_console_to_client) continue;
-		if (cs->client_address.IsInNetmask(ip.c_str())) {
+		if (cs->client_address.IsInNetmask(ip)) {
 			NetworkServerKickClient(cs->client_id, reason);
 			n++;
 		}

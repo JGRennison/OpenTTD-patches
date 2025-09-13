@@ -4054,7 +4054,7 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 {
 	const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
-	_drawtile_track_palette = COMPANY_SPRITE_COLOUR(GetTileOwner(ti->tile));
+	_drawtile_track_palette = GetCompanyPalette(GetTileOwner(ti->tile));
 
 	if (IsPlainRail(ti->tile)) {
 		if (!IsBridgeAbove(ti->tile) && params.min_visible_height > std::max<int>(SIGNAL_DIRTY_TOP, (TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE) * ZOOM_BASE) && !_signal_sprite_oversized) return;
@@ -4199,7 +4199,7 @@ void DrawTrainDepotSprite(int x, int y, int dir, RailType railtype)
 	uint32_t offset = rti->GetRailtypeSpriteOffset();
 
 	if (image != SPR_FLAT_GRASS_TILE) image += offset;
-	PaletteID palette = COMPANY_SPRITE_COLOUR(_local_company);
+	PaletteID palette = GetCompanyPalette(_local_company);
 
 	DrawSprite(image, PAL_NONE, x, y);
 

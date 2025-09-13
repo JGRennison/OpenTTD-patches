@@ -147,7 +147,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 					housespec->random_colour[3] = COLOUR_GREEN;
 
 					/* House flags 40 and 80 are exceptions; these flags are never set automatically. */
-					housespec->building_flags.Reset(BuildingFlag::IsChurch).Reset(BuildingFlag::IsStadium);
+					housespec->building_flags.Reset({BuildingFlag::IsChurch, BuildingFlag::IsStadium});
 
 					/* Make sure that the third cargo type is valid in this
 					 * climate. This can cause problems when copying the properties
@@ -255,11 +255,12 @@ static ChangeInfoResult TownHouseChangeInfo(uint first, uint last, int prop, con
 				housespec->extra_flags = static_cast<HouseExtraFlags>(buf.ReadByte());
 				break;
 
-			case 0x1A: // Animation frames
-				housespec->animation.frames = buf.ReadByte();
-				housespec->animation.status = GB(housespec->animation.frames, 7, 1);
-				SB(housespec->animation.frames, 7, 1, 0);
+			case 0x1A: { // Animation frames
+				uint8_t info = buf.ReadByte();
+				housespec->animation.frames = GB(info, 0, 7);
+				housespec->animation.status = HasBit(info, 7) ? AnimationStatus::Looping : AnimationStatus::NonLooping;
 				break;
+			}
 
 			case 0x1B: // Animation speed
 				housespec->animation.speed = Clamp(buf.ReadByte(), 2, 16);

@@ -35,8 +35,8 @@ DECLARE_ENUM_AS_BIT_SET(SaveToConfigFlags)
 
 void SaveToConfig(SaveToConfigFlags flags);
 
-void IniLoadWindowSettings(IniFile &ini, const char *grpname, void *desc);
-void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc);
+void IniLoadWindowSettings(IniFile &ini, const char *grpname, struct WindowDescPreferences *desc);
+void IniSaveWindowSettings(IniFile &ini, const char *grpname, struct WindowDescPreferences *desc);
 
 StringList GetGRFPresetList();
 GRFConfigList LoadGRFPresetFromConfig(const char *config_name);

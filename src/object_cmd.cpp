@@ -193,22 +193,29 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 }
 
 /**
- * Increase the animation stage of a whole structure.
- * @param tile The tile of the structure.
+ * Increase the HQ size.
+ * @param tile The (northern) tile of the company HQ.
  */
-static void IncreaseAnimationStage(TileIndex tile)
+static void IncreaseCompanyHQSize(TileIndex tile)
 {
 	TileArea ta = Object::GetByTile(tile)->location;
 	for (TileIndex t : ta) {
+		/* We encode the company HQ size in the animation state. */
 		SetAnimationFrame(t, GetAnimationFrame(t) + 1);
 		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 	}
 }
 
-/** We encode the company HQ size in the animation stage. */
-#define GetCompanyHQSize GetAnimationFrame
-/** We encode the company HQ size in the animation stage. */
-#define IncreaseCompanyHQSize IncreaseAnimationStage
+/**
+ * Get the size of the HQ.
+ * @param tile The (northern) tile of the company HQ.
+ * @return HQ size.
+ */
+static uint8_t GetCompanyHQSize(TileIndex tile)
+{
+	/* We encode the company HQ size in the animation state. */
+	return GetAnimationFrame(tile);
+}
 
 /**
  * Update the CompanyHQ to the state associated with the given score
@@ -302,7 +309,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 				if (!IsWaterTile(t)) {
 					/* Normal water tiles don't have to be cleared. For all other tile types clear
 					 * the tile but leave the water. */
-					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::NoWater).Reset(DoCommandFlag::Execute), t));
+					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset({DoCommandFlag::NoWater, DoCommandFlag::Execute}), t));
 				} else {
 					/* Can't build on water owned by another company. */
 					Owner o = GetTileOwner(t);
@@ -608,7 +615,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 	if (type < NEW_OBJECT_OFFSET) {
 		const DrawTileSprites *dts = nullptr;
 		Owner to = GetTileOwner(ti->tile);
-		PaletteID palette = to == OWNER_NONE ? PAL_NONE : COMPANY_SPRITE_COLOUR(to);
+		PaletteID palette = to == OWNER_NONE ? PAL_NONE : GetCompanyPalette(to);
 
 		if (type == OBJECT_HQ) {
 			TileIndexDiffCUnsigned diff = TileIndexToTileIndexDiffCUnsigned(ti->tile, Object::GetByTile(ti->tile)->location.tile);
@@ -1044,16 +1051,6 @@ void AnimateTile_Object(TileIndex tile)
 }
 
 /**
- * Helper function for \c CircularTileSearch.
- * @param tile The tile to check.
- * @return True iff the tile has a radio tower.
- */
-static bool HasTransmitter(TileIndex tile, void *)
-{
-	return IsObjectTypeTile(tile, OBJECT_TRANSMITTER);
-}
-
-/**
  * Try to build a lighthouse.
  * @return True iff building a lighthouse succeeded.
  */
@@ -1104,9 +1101,9 @@ static bool TryBuildTransmitter()
 	TileIndex tile = RandomTile();
 	int h;
 	if (IsTileType(tile, MP_CLEAR) && IsTileFlat(tile, &h) && h >= 4 && !IsBridgeAbove(tile)) {
-		TileIndex t = tile;
-		if (CircularTileSearch(&t, 9, HasTransmitter, nullptr)) return false;
-
+		for (auto t : SpiralTileSequence(tile, 9)) {
+			if (IsObjectTypeTile(t, OBJECT_TRANSMITTER)) return false;
+		}
 		BuildObject(OBJECT_TRANSMITTER, tile);
 		return true;
 	}

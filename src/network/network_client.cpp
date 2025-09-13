@@ -409,7 +409,7 @@ NetworkJoinInfo _network_join;
 /** Make sure the server ID length is the same as a md5 hash. */
 static_assert(NETWORK_SERVER_ID_LENGTH == MD5_HASH_BYTES * 2 + 1);
 
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketType packet_type, NetworkSharedSecrets &ss, const std::string &password, const std::string *payload)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketType packet_type, NetworkSharedSecrets &ss, std::string_view password, std::optional<std::string_view> payload)
 {
 	const NetworkGameKeys &keys = this->GetKeys();
 
@@ -439,7 +439,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 	buffer.Send_uint64(_next_key_message_id);
 
 	/* Put actual payload in message, if there is one */
-	if (payload != nullptr) buffer.Send_string(*payload);
+	if (payload.has_value()) buffer.Send_string(*payload);
 
 	/* Message authentication code */
 	std::array<uint8_t, 16> mac;
@@ -519,7 +519,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendAuthResponse()
  * Set the company password as requested.
  * @param password The company password.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const std::string &password)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(std::string_view password)
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_COMPANY_PASSWORD, TCP_MTU);
 	p->Send_string(GenerateCompanyPasswordHash(password, _company_password_server_id, _company_password_game_seed));
@@ -531,7 +531,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const std:
  * Set the game password as requested.
  * @param password The game password.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(const std::string &password)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(std::string_view password)
 {
 	if (password.empty()) {
 		auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_SETTINGS_PASSWORD, TCP_MTU);
@@ -539,7 +539,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(const std
 		return NETWORK_RECV_STATUS_OKAY;
 	} else {
 		NetworkSharedSecrets ss;
-		return my_client->SendKeyPasswordPacket(PACKET_CLIENT_SETTINGS_PASSWORD, ss, password, nullptr);
+		return my_client->SendKeyPasswordPacket(PACKET_CLIENT_SETTINGS_PASSWORD, ss, password, std::nullopt);
 	}
 }
 
@@ -594,7 +594,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCommand(const OutgoingComm
 }
 
 /** Send a chat-packet over the network */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action, DestType type, int dest, const std::string &msg, NetworkTextMessageData data)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action, DestType type, int dest, std::string_view msg, NetworkTextMessageData data)
 {
 	if (!my_client) return NETWORK_RECV_STATUS_CLIENT_QUIT;
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_CHAT, TCP_MTU);
@@ -623,7 +623,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode err
 }
 
 /** Send an error-packet over the network */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::string &log)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(std::string_view log)
 {
 	for (size_t offset = 0; offset < log.size();) {
 		auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_DESYNC_LOG, TCP_MTU);
@@ -638,7 +638,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 }
 
 /** Send an error-packet over the network */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *msg)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(std::string_view msg)
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_DESYNC_MSG, TCP_MTU);
 	p->Send_uint32(EconTime::CurDate().base());
@@ -685,7 +685,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
  * Tell the server that we like to change the password of the company.
  * @param password The new password.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetPassword(const std::string &password)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetPassword(std::string_view password)
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_SET_PASSWORD, TCP_MTU);
 
@@ -698,7 +698,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetPassword(const std::str
  * Tell the server that we like to change the name of the client.
  * @param name The new name.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetName(const std::string &name)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetName(std::string_view name)
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_SET_NAME, TCP_MTU);
 
@@ -723,9 +723,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendQuit()
  * @param pass The password for the remote command.
  * @param command The actual command.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendRCon(const std::string &pass, const std::string &command)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendRCon(std::string_view pass, std::string_view command)
 {
-	return my_client->SendKeyPasswordPacket(PACKET_CLIENT_RCON, my_client->last_rcon_shared_secrets, pass, &command);
+	return my_client->SendKeyPasswordPacket(PACKET_CLIENT_RCON, my_client->last_rcon_shared_secrets, pass, command);
 }
 
 /**
@@ -733,7 +733,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendRCon(const std::string &pa
  * @param company The company to move to.
  * @param password The password of the company to move to.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendMove(CompanyID company, const std::string &password)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendMove(CompanyID company, std::string_view password)
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_MOVE, TCP_MTU);
 	p->Send_uint8(company);
@@ -1081,7 +1081,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 	ClearErrorMessages();
 
 	/* Set the abstract filetype. This is read during savegame load. */
-	_file_to_saveload.SetMode(SLO_LOAD, FT_SAVEGAME, DFT_GAME_FILE);
+	_file_to_saveload.SetMode(FIOS_TYPE_FILE, SLO_LOAD);
 
 	std::string error_detail;
 	bool load_success = SafeLoad({}, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, std::move(this->savegame), &error_detail);
@@ -1531,7 +1531,7 @@ void NetworkClient_Connected()
  * @param password The password.
  * @param command The command to execute.
  */
-void NetworkClientSendRcon(const std::string &password, const std::string &command)
+void NetworkClientSendRcon(std::string_view password, std::string_view command)
 {
 	MyClient::SendRCon(password, command);
 }
@@ -1541,7 +1541,7 @@ void NetworkClientSendRcon(const std::string &password, const std::string &comma
  * @param password The password.
  * @param command The command to execute.
  */
-void NetworkClientSendSettingsPassword(const std::string &password)
+void NetworkClientSendSettingsPassword(std::string_view password)
 {
 	MyClient::SendSettingsPassword(password);
 }
@@ -1552,7 +1552,7 @@ void NetworkClientSendSettingsPassword(const std::string &password)
  * @param pass the password, is only checked on the server end if a password is needed.
  * @return void
  */
-void NetworkClientRequestMove(CompanyID company_id, const std::string &pass)
+void NetworkClientRequestMove(CompanyID company_id, std::string_view pass)
 {
 	MyClient::SendMove(company_id, pass);
 }
@@ -1659,13 +1659,13 @@ void NetworkUpdateClientName(const std::string &client_name)
  * @param msg The actual message.
  * @param data Arbitrary extra data.
  */
-void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const std::string &msg, NetworkTextMessageData data)
+void NetworkClientSendChat(NetworkAction action, DestType type, int dest, std::string_view msg, NetworkTextMessageData data)
 {
 	MyClient::SendChat(action, type, dest, msg, data);
 }
 
 
-void NetworkClientSendDesyncMsg(const char *msg)
+void NetworkClientSendDesyncMsg(std::string_view msg)
 {
 	MyClient::SendDesyncMessage(msg);
 }

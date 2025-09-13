@@ -152,7 +152,7 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 	/* If we are refitting we need to temporarily purchase the vehicle to be able to
 	 * test it. */
 	DoCommandFlags subflags = flags;
-	if (refitting && !flags.Test(DoCommandFlag::Execute)) subflags.Set(DoCommandFlag::Execute).Set(DoCommandFlag::AutoReplace);
+	if (refitting && !flags.Test(DoCommandFlag::Execute)) subflags.Set({DoCommandFlag::Execute, DoCommandFlag::AutoReplace});
 
 	/* Vehicle construction needs random bits, so we have to save the random
 	 * seeds to prevent desyncs. */

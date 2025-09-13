@@ -58,7 +58,7 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 	this->cached_veh_length = t->gcache.cached_veh_length;
 
 	const Engine *e = t->GetEngine();
-	if (e->GetGRF() != nullptr && is_custom_sprite(e->u.rail.image_index)) {
+	if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->u.rail.image_index)) {
 		this->reference_width = e->GetGRF()->traininfo_vehicle_width;
 		this->vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}

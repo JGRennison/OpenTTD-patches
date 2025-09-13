@@ -257,9 +257,9 @@ std::string NetworkChangeCompanyPassword(CompanyID company_id, std::string passw
  * @param password_game_seed Game seed.
  * @return The hashed password.
  */
-std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32_t password_game_seed)
+std::string GenerateCompanyPasswordHash(std::string_view password, std::string_view password_server_id, uint32_t password_game_seed)
 {
-	if (password.empty()) return password;
+	if (password.empty()) return {};
 
 	size_t password_length = password.size();
 	size_t password_server_id_length = password_server_id.size();
@@ -290,7 +290,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
  * @param password_game_seed Game seed.
  * @return The hashed password.
  */
-std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64_t password_game_seed)
+std::vector<uint8_t> GenerateGeneralPasswordHash(std::string_view password, std::string_view password_server_id, uint64_t password_game_seed)
 {
 	if (password.empty()) return {};
 

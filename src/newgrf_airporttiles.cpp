@@ -67,22 +67,22 @@ void AirportTileSpec::ResetAirportTiles()
 	_airporttile_mngr.ResetOverride();
 }
 
-void AirportTileOverrideManager::SetEntitySpec(const AirportTileSpec *airpts)
+void AirportTileOverrideManager::SetEntitySpec(AirportTileSpec &&airpts)
 {
-	StationGfx airpt_id = this->AddEntityID(airpts->grf_prop.local_id, airpts->grf_prop.grfid, airpts->grf_prop.subst_id);
+	StationGfx airpt_id = this->AddEntityID(airpts.grf_prop.local_id, airpts.grf_prop.grfid, airpts.grf_prop.subst_id);
 
 	if (airpt_id == this->invalid_id) {
 		GrfMsg(1, "AirportTile.SetEntitySpec: Too many airport tiles allocated. Ignoring.");
 		return;
 	}
 
-	AirportTileSpec::tiles[airpt_id] = *airpts;
+	AirportTileSpec::tiles[airpt_id] = std::move(airpts);
 
 	/* Now add the overrides. */
 	for (int i = 0; i < this->max_offset; i++) {
 		AirportTileSpec *overridden_airpts = &AirportTileSpec::tiles[i];
 
-		if (this->entity_overrides[i] != airpts->grf_prop.local_id || this->grfid_overrides[i] != airpts->grf_prop.grfid) continue;
+		if (this->entity_overrides[i] != AirportTileSpec::tiles[airpt_id].grf_prop.local_id || this->grfid_overrides[i] != AirportTileSpec::tiles[airpt_id].grf_prop.grfid) continue;
 
 		overridden_airpts->grf_prop.override_id = airpt_id;
 		overridden_airpts->enabled = false;
@@ -250,7 +250,7 @@ uint16_t GetAirportTileCallback(CallbackID callback, uint32_t param1, uint32_t p
 	return object.ResolveCallback();
 }
 
-static void AirportDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, uint8_t colour)
+static void AirportDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, Colours colour)
 {
 	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
 
@@ -261,11 +261,11 @@ static void AirportDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGrou
 		if (image == SPR_FLAT_WATER_TILE && IsTileOnWater(ti->tile)) {
 			DrawWaterClassGround(ti);
 		} else {
-			DrawGroundSprite(image, GroundSpritePaletteTransform(image, pal, GENERAL_SPRITE_COLOUR(colour)));
+			DrawGroundSprite(image, GroundSpritePaletteTransform(image, pal, GetColourPalette(colour)));
 		}
 	}
 
-	DrawNewGRFTileSeq(ti, dts, TO_BUILDINGS, 0, GENERAL_SPRITE_COLOUR(colour));
+	DrawNewGRFTileSeq(ti, dts, TO_BUILDINGS, 0, GetColourPalette(colour));
 }
 
 bool DrawNewAirportTile(TileInfo *ti, Station *st, const AirportTileSpec *airts)

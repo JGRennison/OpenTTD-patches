@@ -1018,7 +1018,7 @@ static void IniSaveSettingList(IniFile &ini, const char *grpname, StringList &li
  * @param grpname character string identifying the section-header of the ini file that will be parsed
  * @param desc Destination WindowDescPreferences
  */
-void IniLoadWindowSettings(IniFile &ini, const char *grpname, void *desc)
+void IniLoadWindowSettings(IniFile &ini, const char *grpname, WindowDescPreferences *desc)
 {
 	IniLoadSettings(ini, _window_settings, grpname, desc, false);
 }
@@ -1029,7 +1029,7 @@ void IniLoadWindowSettings(IniFile &ini, const char *grpname, void *desc)
  * @param grpname character string identifying the section-header of the ini file
  * @param desc Source WindowDescPreferences
  */
-void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc)
+void IniSaveWindowSettings(IniFile &ini, const char *grpname, WindowDescPreferences *desc)
 {
 	IniSaveSettings(ini, _window_settings, grpname, desc, false);
 }

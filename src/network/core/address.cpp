@@ -12,6 +12,7 @@
 #include "address.h"
 #include "../network_internal.h"
 #include "../../debug.h"
+#include "../../core/string_consumer.hpp"
 
 #include "../../safeguards.h"
 
@@ -159,31 +160,24 @@ bool NetworkAddress::IsFamily(int family)
  * @note netmask without /n assumes all bits need to match.
  * @return true if this IP is within the netmask.
  */
-bool NetworkAddress::IsInNetmask(const char *netmask)
+bool NetworkAddress::IsInNetmask(std::string_view netmask)
 {
 	/* Resolve it if we didn't do it already */
 	if (!this->IsResolved()) this->GetAddress();
 
 	int cidr = this->address.ss_family == AF_INET ? 32 : 128;
 
-	NetworkAddress mask_address;
-
+	StringConsumer consumer{netmask};
 	/* Check for CIDR separator */
-	const char *chr_cidr = strchr(netmask, '/');
-	if (chr_cidr != nullptr) {
-		int tmp_cidr = atoi(chr_cidr + 1);
+	NetworkAddress mask_address(consumer.ReadUntilChar('/', StringConsumer::SKIP_ONE_SEPARATOR), 0, this->address.ss_family);
+	if (mask_address.GetAddressLength() == 0) return false;
+
+	if (consumer.AnyBytesLeft()) {
+		int tmp_cidr = consumer.ReadIntegerBase(10, cidr);
 
 		/* Invalid CIDR, treat as single host */
 		if (tmp_cidr > 0 && tmp_cidr < cidr) cidr = tmp_cidr;
-
-		/* Remove the / so that NetworkAddress works on the IP portion */
-		std::string ip_str(netmask, chr_cidr - netmask);
-		mask_address = NetworkAddress(ip_str.c_str(), 0, this->address.ss_family);
-	} else {
-		mask_address = NetworkAddress(netmask, 0, this->address.ss_family);
 	}
-
-	if (mask_address.GetAddressLength() == 0) return false;
 
 	uint32_t *ip;
 	uint32_t *mask;

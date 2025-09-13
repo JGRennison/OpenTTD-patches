@@ -22,7 +22,7 @@
 #include "company_base.h"
 #include "station_type.h"
 #include "newgrf_airport.h"
-#include "newgrf_badge.h"
+#include "newgrf_badge_gui.h"
 #include "newgrf_callbacks.h"
 #include "dropdown_type.h"
 #include "dropdown_func.h"
@@ -401,7 +401,7 @@ public:
 			case WID_AP_AIRPORT_SPRITE:
 				if (this->preview_sprite != 0) {
 					Dimension d = GetSpriteSize(this->preview_sprite);
-					DrawSprite(this->preview_sprite, COMPANY_SPRITE_COLOUR(_local_company), CentreBounds(r.left, r.right, d.width), CentreBounds(r.top, r.bottom, d.height));
+					DrawSprite(this->preview_sprite, GetCompanyPalette(_local_company), CentreBounds(r.left, r.right, d.width), CentreBounds(r.top, r.bottom, d.height));
 				}
 				break;
 

@@ -2034,7 +2034,7 @@ static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, const std::vector<const Town *> &towns, bool small)
 {
 	ViewportStringFlags flags{};
-	if (small) flags.Set(ViewportStringFlag::Small).Set(ViewportStringFlag::Shadow);
+	if (small) flags.Set({ViewportStringFlag::Small, ViewportStringFlag::Shadow});
 
 	StringID stringid = small ? STR_VIEWPORT_TOWN_LABEL_TINY : STR_VIEWPORT_TOWN_LABEL;
 	for (const Town *t : towns) {

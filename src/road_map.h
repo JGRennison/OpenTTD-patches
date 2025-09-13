@@ -525,25 +525,21 @@ inline void SetCrossingOccupiedByRoadVehicle(TileIndex t, bool occupied)
 	AssignBit(_m[t].m5, 1, occupied);
 }
 
-/** Check if a road tile has snow/desert. */
-#define IsOnDesert IsOnSnow
 /**
  * Check if a road tile has snow/desert.
  * @param t The tile to query.
  * @return True if the tile has snow/desert.
  */
-inline bool IsOnSnow(TileIndex t)
+inline bool IsOnSnowOrDesert(TileIndex t)
 {
 	return HasBit(_me[t].m7, 5);
 }
 
-/** Toggle the snow/desert state of a road tile. */
-#define ToggleDesert ToggleSnow
 /**
  * Toggle the snow/desert state of a road tile.
  * @param t The tile to change.
  */
-inline void ToggleSnow(TileIndex t)
+inline void ToggleSnowOrDesert(TileIndex t)
 {
 	ToggleBit(_me[t].m7, 5);
 }

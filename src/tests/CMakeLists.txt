@@ -18,5 +18,6 @@ add_test_files(
     test_network_debug.cpp
     test_script_admin.cpp
     test_window_desc.cpp
+    tilearea.cpp
     utf8.cpp
 )

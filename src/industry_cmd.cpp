@@ -362,7 +362,7 @@ static void DrawTile_Industry(TileInfo *ti, DrawTileProcParams params)
 	if (image == SPR_FLAT_WATER_TILE && IsTileOnWater(ti->tile)) {
 		DrawWaterClassGround(ti);
 	} else {
-		DrawGroundSprite(image, GroundSpritePaletteTransform(image, dits->ground.pal, GENERAL_SPRITE_COLOUR(ind->random_colour)));
+		DrawGroundSprite(image, GroundSpritePaletteTransform(image, dits->ground.pal, GetColourPalette(ind->random_colour)));
 	}
 
 	/* If industries are transparent and invisible, do not draw the upper part */
@@ -371,7 +371,7 @@ static void DrawTile_Industry(TileInfo *ti, DrawTileProcParams params)
 	/* Add industry on top of the ground? */
 	image = dits->building.sprite;
 	if (image != 0) {
-		AddSortableSpriteToDraw(image, SpriteLayoutPaletteTransform(image, dits->building.pal, GENERAL_SPRITE_COLOUR(ind->random_colour)),
+		AddSortableSpriteToDraw(image, SpriteLayoutPaletteTransform(image, dits->building.pal, GetColourPalette(ind->random_colour)),
 			ti->x + dits->subtile_x,
 			ti->y + dits->subtile_y,
 			dits->width,
@@ -696,7 +696,7 @@ void AnimateTile_Industry(TileIndex tile)
 {
 	IndustryGfx gfx = GetIndustryGfx(tile);
 
-	if (GetIndustryTileSpec(gfx)->animation.status != ANIM_STATUS_NO_ANIMATION) {
+	if (GetIndustryTileSpec(gfx)->animation.status != AnimationStatus::NoAnimation) {
 		AnimateNewIndustryTile(tile);
 		return;
 	}
@@ -748,7 +748,7 @@ uint8_t GetAnimatedTileSpeed_Industry(TileIndex tile)
 {
 	IndustryGfx gfx = GetIndustryGfx(tile);
 
-	if (GetIndustryTileSpec(gfx)->animation.status != ANIM_STATUS_NO_ANIMATION) {
+	if (GetIndustryTileSpec(gfx)->animation.status != AnimationStatus::NoAnimation) {
 		return GetNewIndustryTileAnimationSpeed(tile);
 	}
 
@@ -1149,30 +1149,6 @@ void PlantRandomFarmField(const Industry *i)
 }
 
 /**
- * Search callback function for ChopLumberMillTrees
- * @param tile to test
- * @return the result of the test
- */
-static bool SearchLumberMillTrees(TileIndex tile, void *)
-{
-	if (IsTileType(tile, MP_TREES) && GetTreeGrowth(tile) >= TreeGrowthStage::Grown) {
-		/* found a tree */
-
-		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
-
-		_industry_sound_ctr = 1;
-		_industry_sound_tile = tile;
-		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_LUMBER_MILL_1, tile);
-
-		Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::Execute, tile);
-
-		cur_company.Restore();
-		return true;
-	}
-	return false;
-}
-
-/**
  * Perform a circular search around the Lumber Mill in order to find trees to cut
  * @param i industry
  */
@@ -1188,9 +1164,20 @@ static void ChopLumberMillTrees(Industry *i)
 		}
 	}
 
-	TileIndex tile = i->location.tile;
-	if (CircularTileSearch(&tile, 40, SearchLumberMillTrees, nullptr)) { // 40x40 tiles  to search.
-		i->produced[0].waiting = ClampTo<uint16_t>(i->produced[0].waiting + 45); // Found a tree, add according value to waiting cargo.
+	for (TileIndex tile : SpiralTileSequence(i->location.tile, 40)) { // 40x40 tiles to search.
+		if (!IsTileType(tile, MP_TREES) || GetTreeGrowth(tile) < TreeGrowthStage::Grown) continue;
+
+		/* found a tree */
+		_industry_sound_ctr = 1;
+		_industry_sound_tile = tile;
+		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_LUMBER_MILL_1, tile);
+
+		AutoRestoreBackup<CompanyID> cur_company(_current_company, OWNER_NONE);
+		Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::Execute, tile);
+
+		/* Add according value to waiting cargo. */
+		i->produced[0].waiting = ClampTo<uint16_t>(i->produced[0].waiting + 45);
+		break;
 	}
 }
 
@@ -2040,7 +2027,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			/* it->gfx is stored in the map. But the translated ID cur_gfx is the interesting one */
 			IndustryGfx cur_gfx = GetTranslatedIndustryTileID(it.gfx);
 			const IndustryTileSpec *its = GetIndustryTileSpec(cur_gfx);
-			if (its->animation.status != ANIM_STATUS_NO_ANIMATION) {
+			if (its->animation.status != AnimationStatus::NoAnimation) {
 				if (gfx_idx >= 64 || !HasBit(anim_inhibit_mask, gfx_idx)) AddAnimatedTile(cur_tile);
 			}
 

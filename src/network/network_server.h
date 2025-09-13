@@ -116,15 +116,15 @@ public:
 	NetworkRecvStatus SendQuit(ClientID client_id);
 	NetworkRecvStatus SendShutdown();
 	NetworkRecvStatus SendNewGame();
-	NetworkRecvStatus SendRConResult(uint16_t colour, const std::string &command);
+	NetworkRecvStatus SendRConResult(uint16_t colour, std::string_view command);
 	NetworkRecvStatus SendRConDenied();
 	NetworkRecvStatus SendMove(ClientID client_id, CompanyID company_id);
 
 	NetworkRecvStatus SendClientInfo(NetworkClientInfo *ci);
-	NetworkRecvStatus SendError(NetworkErrorCode error, const std::string &reason = {});
-	NetworkRecvStatus SendDesyncLog(const std::string &log);
-	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const std::string &msg, NetworkTextMessageData data);
-	NetworkRecvStatus SendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg);
+	NetworkRecvStatus SendError(NetworkErrorCode error, std::string_view reason = {});
+	NetworkRecvStatus SendDesyncLog(std::string_view log);
+	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, std::string_view msg, NetworkTextMessageData data);
+	NetworkRecvStatus SendExternalChat(std::string_view source, TextColour colour, std::string_view user, std::string_view msg);
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();
@@ -156,7 +156,7 @@ public:
 		return "server";
 	}
 
-	const char *GetClientIP();
+	std::string_view GetClientIP();
 	std::string_view GetPeerPublicKey() const { return this->peer_public_key; }
 
 	static ServerNetworkGameSocketHandler *GetByClientID(ClientID client_id);

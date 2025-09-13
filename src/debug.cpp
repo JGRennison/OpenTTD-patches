@@ -380,7 +380,7 @@ void DumpDesyncMsgLog(format_target &buffer)
 void LogDesyncMsg(std::string msg)
 {
 	if (_networking && !_network_server) {
-		NetworkClientSendDesyncMsg(msg.c_str());
+		NetworkClientSendDesyncMsg(msg);
 	}
 	_desync_msg_log.LogMsg(DesyncMsgLogEntry(std::move(msg)));
 }
