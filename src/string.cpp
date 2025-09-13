@@ -18,6 +18,7 @@
 #include "stringfilter_type.h"
 #include "core/string_consumer.hpp"
 #include "core/utf8.hpp"
+#include "core/utf8_util.hpp"
 
 #include "table/control_codes.h"
 

@@ -44,5 +44,6 @@ add_files(
     typed_container.hpp
     utf8.cpp
     utf8.hpp
+    utf8_util.hpp
     y_combinator.hpp
 )

@@ -124,20 +124,4 @@ public:
 	iterator GetIterAtByte(size_t offset) const;
 };
 
-template <char32_t MIN_C, char32_t MAX_C>
-bool IsUtf8CharInControlCharRange(const char *str)
-{
-	/* Ensure 3 byte character sequence */
-	static_assert(MIN_C <= MAX_C);
-	static_assert(MIN_C >= 0x800);
-	static_assert(MAX_C < 0x10000);
-
-	auto check = [&](uint8_t c, const uint8_t base, const uint8_t s, const uint8_t n) {
-		return c >= (base + GB(MIN_C, s, n)) && c <= (base + GB(MAX_C, s, n));
-	};
-	return check(str[0], 0xE0, 12, 4) && check(str[1], 0x80, 6, 6) && check(str[2], 0x80, 0, 6);
-}
-
-static constexpr size_t UTF8_CONTROL_CHAR_LENGTH = 3;
-
 #endif /* UTF8_HPP */
