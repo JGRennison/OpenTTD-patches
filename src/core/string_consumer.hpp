@@ -479,21 +479,25 @@ public:
 	 */
 	[[nodiscard]] bool PeekCharIf(char c) const
 	{
-		return this->PeekIf({&c, 1});
+		return this->GetBytesLeft() > 0 && this->src[this->position] == c;
 	}
 	/**
 	 * Check whether the next 8-bit char matches 'c', and skip it.
 	 */
 	[[nodiscard]] bool ReadCharIf(char c)
 	{
-		return this->ReadIf({&c, 1});
+		if (this->PeekCharIf(c)) {
+			this->Skip(1);
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * If the next data matches the 8-bit char 'c', then skip it.
 	 */
 	void SkipCharIf(char c)
 	{
-		return this->SkipIf({&c, 1});
+		if (this->PeekCharIf(c)) this->Skip(1);
 	}
 
 	/**
@@ -567,7 +571,7 @@ public:
 	 */
 	[[nodiscard]] size_type FindChar(char c) const
 	{
-		return this->Find({&c, 1});
+		return this->src.substr(this->position).find(c);
 	}
 	/**
 	 * Find first occurence of UTF-8 char 'c'.
