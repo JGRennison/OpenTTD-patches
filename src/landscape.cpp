@@ -1094,8 +1094,10 @@ static void MakeLake(TileIndex tile, const MakeLakeData *data)
 		if (IsWaterTile(t2)) {
 			MakeRiver(tile, Random());
 			MarkTileDirtyByTile(tile);
-			/* Remove desert directly around the river tile. */
-			IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
+			if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+				/* Remove desert directly around the river tile. */
+				IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
+			}
 			return;
 		}
 	}
@@ -1170,7 +1172,9 @@ static void RiverMakeWider(TileIndex tile, Slope origin_tile_slope)
 		/* Remove desert directly around the river tile. */
 
 		MarkTileDirtyByTile(tile);
-		IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+		if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+			IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+		}
 	}
 }
 
@@ -1194,7 +1198,7 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				for (TileIndex river_tile : SpiralTileSequence(tile, diameter + RandomRange(1))) {
 					RiverMakeWider(river_tile, origin_tile_slope);
 				}
-			} else {
+			} else if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
 				/* Remove desert directly around the river tile. */
 				IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			}
@@ -1304,8 +1308,10 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			end = lake_centre;
 			MakeRiver(lake_centre, Random());
 			MarkTileDirtyByTile(lake_centre);
-			/* Remove desert directly around the river tile. */
-			IterateCurvedCircularTileArea(lake_centre, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+				/* Remove desert directly around the river tile. */
+				IterateCurvedCircularTileArea(lake_centre, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			}
 
 			// Setting lake size +- 25%
 			const auto random_percentage = 75 + RandomRange(50);

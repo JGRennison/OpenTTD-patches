@@ -515,7 +515,7 @@ CommandCost CmdBuildCanal(DoCommandFlags flags, TileIndex tile, TileIndex start_
 			switch (wc) {
 				case WATER_CLASS_RIVER:
 					MakeRiver(current_tile, Random());
-					if (_game_mode == GM_EDITOR) {
+					if (_game_mode == GM_EDITOR && _settings_game.game_creation.landscape == LandscapeType::Tropic) {
 						IterateCurvedCircularTileArea(current_tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 					}
 					break;
