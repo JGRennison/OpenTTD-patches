@@ -104,7 +104,12 @@ public:
 	 * Peek binary uint8.
 	 * @return Read integer, std::nullopt if not enough data.
 	 */
-	[[nodiscard]] std::optional<uint8_t> PeekUint8() const;
+	[[nodiscard]] std::optional<uint8_t> PeekUint8() const
+	{
+		if (this->GetBytesLeft() < 1) return std::nullopt;
+		return static_cast<uint8_t>(this->src[this->position]);
+	}
+
 	/**
 	 * Try to read binary uint8, and then advance reader.
 	 */
@@ -376,7 +381,12 @@ public:
 	 * Peek 8-bit character.
 	 * @return Read char, std::nullopt if not enough data.
 	 */
-	[[nodiscard]] std::optional<char> PeekChar() const;
+	[[nodiscard]] std::optional<char> PeekChar() const
+	{
+		if (this->GetBytesLeft() < 1) return std::nullopt;
+		return static_cast<char>(this->src[this->position]);
+	}
+
 	/**
 	 * Try to read a 8-bit character, and then advance reader.
 	 */

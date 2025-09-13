@@ -36,12 +36,6 @@
 #endif
 }
 
-std::optional<uint8_t> StringConsumer::PeekUint8() const
-{
-	if (this->GetBytesLeft() < 1) return std::nullopt;
-	return static_cast<uint8_t>(this->src[this->position]);
-}
-
 std::optional<uint16_t> StringConsumer::PeekUint16LE() const
 {
 	if (this->GetBytesLeft() < 2) return std::nullopt;
@@ -69,13 +63,6 @@ std::optional<uint64_t> StringConsumer::PeekUint64LE() const
 		static_cast<uint64_t>(static_cast<uint8_t>(this->src[this->position + 5])) << 40 |
 		static_cast<uint64_t>(static_cast<uint8_t>(this->src[this->position + 6])) << 48 |
 		static_cast<uint64_t>(static_cast<uint8_t>(this->src[this->position + 7])) << 56;
-}
-
-std::optional<char> StringConsumer::PeekChar() const
-{
-	auto result = this->PeekUint8();
-	if (!result.has_value()) return {};
-	return static_cast<char>(*result);
 }
 
 std::pair<StringConsumer::size_type, char32_t> StringConsumer::PeekUtf8() const
