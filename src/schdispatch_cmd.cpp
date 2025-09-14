@@ -545,6 +545,13 @@ CommandCost CmdSchDispatchEditRoute(DoCommandFlags flags, VehicleID veh, uint32_
 						update_windows = true;
 					}
 				}
+				for (Order *o : v->Orders()) {
+					if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT && o->GetConditionDispatchScheduleID() == schedule_index) {
+						if (GB(o->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) == OCDM_ROUTE_ID && o->GetXData2Low() == route_id) {
+							o->SetXData2Low(INVALID_DISPATCH_SLOT_ROUTE_ID);
+						}
+					}
+				}
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
 					if (u->dispatch_records.empty()) continue;
 

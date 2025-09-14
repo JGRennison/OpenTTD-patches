@@ -83,6 +83,7 @@ void ClearOrderDestinationRefcountMap();
  * OCV_FREE_PLATFORMS: Bits 0-15: Station ID to test + 1
  * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Station ID to test + 1
  * OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: Bits 0-15: Station ID to test + 1, Bit 16: Refit mode
+ * OCV_DISPATCH_SLOT: OCDM_ROUTE_ID: Bits 0-15: Route ID
  */
 
 struct OrderExtraInfo {

@@ -752,6 +752,17 @@ static const StringID _order_conditional_condition_dispatch_slot_tag[] = {
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG,
 };
 
+static const StringID _order_conditional_condition_dispatch_slot_route[] = {
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_USES_ROUTE,
+	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_USE_ROUTE,
+};
+
 extern uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type);
 extern uint ConvertDisplaySpeedToSpeed(uint speed, VehicleType type);
 
@@ -1172,6 +1183,23 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						}
 						_temp_special_strings[0] = GetString(str, tag_id + 1, name);
 						cond_str = SPECSTR_TEMP_START;
+						break;
+					}
+
+					case OCDM_ROUTE_ID: {
+						uint16_t route_id = order->GetXData2Low();
+						uint stroffset = (order->GetConditionComparator() == OCC_IS_FALSE) ? 1 : 0;
+						if (route_id == 0) {
+							cond_str = STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_DEF_ROUTE + stroffset;
+						} else {
+							std::string_view name;
+							if (selected_schedule != nullptr) {
+								name = selected_schedule->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id);
+							}
+							if (name.empty()) name = GetStringPtr(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+							_temp_special_strings[0] = GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_ROUTE + stroffset, name);
+							cond_str = SPECSTR_TEMP_START;
+						}
 						break;
 					}
 
@@ -1668,6 +1696,9 @@ private:
 
 					case OCDM_TAG:
 						return _order_conditional_condition_dispatch_slot_tag;
+
+					case OCDM_ROUTE_ID:
+						return _order_conditional_condition_dispatch_slot_route;
 
 					default:
 						return _order_conditional_condition;
@@ -2390,7 +2421,7 @@ public:
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SCHED);
 						OrderDispatchConditionModes mode = ODCM_FIRST_LAST;
 						if (order != nullptr) mode = (OrderDispatchConditionModes)GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT);
-						this->SetWidgetDisabledState(WID_O_COND_SCHED_VALUE, mode != OCDM_TAG);
+						this->SetWidgetDisabledState(WID_O_COND_SCHED_VALUE, mode != OCDM_TAG && mode != OCDM_ROUTE_ID);
 					} else if (ConditionVariableTestsCargoWaitingAmount(ocv)) {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER_SHORT);
 					} else {
@@ -2764,6 +2795,23 @@ public:
 						switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 							case OCDM_TAG:
 								return GetString(STR_SCHDISPATCH_TAG_DEPARTURE, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
+
+							case OCDM_ROUTE_ID: {
+								uint16_t route_id = order->GetXData2Low();
+								if (route_id == 0) {
+									return GetString(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE);
+								} else {
+									uint schedule_index = order->GetConditionDispatchScheduleID();
+									if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && schedule_index != UINT16_MAX) {
+										if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
+											const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
+											std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id);
+											if (!name.empty()) return std::string{name};
+										}
+									}
+									return GetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+								}
+							}
 
 							default:
 								break;
@@ -3230,6 +3278,20 @@ public:
 					}
 				}
 
+				if ((OrderDispatchConditionModes)GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) == OCDM_ROUTE_ID) {
+					list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE), 1 << 16, false));
+
+					if (ds != nullptr) {
+						std::vector<std::pair<DispatchSlotRouteID, std::string_view>> route_names = ds->GetSortedRouteIDNames();
+						for (const auto &it : route_names) {
+							list.push_back(MakeDropDownListStringItem(std::string{it.second}, (1 << 16) | it.first));
+						}
+					}
+
+					ShowDropDownList(this, std::move(list), (1 << 16) | order->GetXData2Low(), WID_O_COND_SCHED_VALUE, 0, DDMF_NONE, DDSF_SHARED);
+					return;
+				}
+
 				for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
 					if (HasBit(slot_flags, tag + DispatchSlot::SDSF_FIRST_TAG)) {
 						int tag_cond_value = 0;
@@ -3355,6 +3417,13 @@ public:
 						SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
 						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG), true_cond | tag_cond_value, false));
 						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG), false_cond | tag_cond_value, false));
+					}
+
+					if (ds != nullptr && ds->HasSupplementaryNameOfType(DispatchSchedule::SupplementaryNameType::RouteID)) {
+						int route_cond_value = 0;
+						SB(route_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_ROUTE_ID);
+						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_USES_ROUTE), true_cond | route_cond_value, false));
+						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_USE_ROUTE), false_cond | route_cond_value, false));
 					}
 
 					uint16_t select_mask = GetBitMaskSC<uint16_t>(ODCB_MODE_START, ODCB_MODE_COUNT);
@@ -3744,7 +3813,15 @@ public:
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
 				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, (o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | index);
+					switch (index >> 16) {
+						case 0:
+							this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, (o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | index);
+							break;
+
+						case 1:
+							this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3, index & 0xFFFF);
+							break;
+					}
 				}
 				break;
 			}

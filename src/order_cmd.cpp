@@ -2171,6 +2171,12 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 					if (order->GetConditionStationID() == data) return CMD_ERROR;
 					break;
 
+				case OCV_DISPATCH_SLOT: {
+					if (GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) != OCDM_ROUTE_ID) return CMD_ERROR;
+					if (data >= 0x100) return CMD_ERROR;
+					break;
+				}
+
 				default:
 					return CMD_ERROR;
 			}
@@ -2483,6 +2489,14 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 						order->SetXDataLow(data);
 						break;
 
+					case OCV_DISPATCH_SLOT:
+						order->SetConditionValue(data);
+						if (GB(data, ODCB_MODE_START, ODCB_MODE_COUNT) != OCDM_ROUTE_ID && order->GetXData2Low() != 0) {
+							/* Clear any route ID when changing mode */
+							order->SetXData2Low(0);
+						}
+						break;
+
 					default:
 						order->SetConditionValue(data);
 						break;
@@ -2497,6 +2511,10 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 					case OCV_DISPATCH_SLOT:
 						order->SetConditionDispatchScheduleID(data);
+						if (GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) == OCDM_ROUTE_ID && order->GetXData2Low() != 0) {
+							/* Clear any route ID when changing schedule */
+							order->SetXData2Low(0);
+						}
 						break;
 
 					default:
@@ -2506,7 +2524,19 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_COND_VALUE_3:
-				order->SetConditionViaStationID(StationID(data));
+				switch (order->GetConditionVariable()) {
+					case OCV_CARGO_WAITING_AMOUNT:
+					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
+						order->SetConditionViaStationID(StationID(data));
+						break;
+
+					case OCV_DISPATCH_SLOT:
+						order->SetXData2Low(data);
+						break;
+
+					default:
+						NOT_REACHED();
+				}
 				break;
 
 			case MOF_COND_VALUE_4:
@@ -3437,6 +3467,12 @@ bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const
 			value = HasBit(record.slot_flags, DispatchSlot::SDSF_FIRST_TAG + tag);
 			break;
 		}
+
+		case OCDM_ROUTE_ID: {
+			uint16_t route_id = order->GetXData2Low();
+			value = (record.route_id == route_id);
+			break;
+		}
 	}
 
 	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
@@ -3516,6 +3552,17 @@ OrderConditionEvalResult EvaluateDispatchSlotConditionalOrder(const Order *order
 			for (const DispatchSlot &slot : sched.GetScheduledDispatch()) {
 				if (offset == (int32_t)slot.offset) {
 					value = HasBit(slot.flags, DispatchSlot::SDSF_FIRST_TAG + tag);
+					break;
+				}
+			}
+			break;
+		}
+
+		case OCDM_ROUTE_ID: {
+			uint16_t route_id = order->GetXData2Low();
+			for (const DispatchSlot &slot : sched.GetScheduledDispatch()) {
+				if (offset == (int32_t)slot.offset) {
+					value = (slot.route_id == route_id);
 					break;
 				}
 			}

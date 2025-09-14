@@ -346,6 +346,9 @@ enum OrderTimetableConditionMode {
  * +-+-+-+-+-+-+-+-+-+-+-+
  *           |
  *           Slot tag
+ *
+ * Mode = OCDM_ROUTE_ID
+ * Route ID is in low half of xdata2.
 */
 
 enum OrderDispatchConditionBits {
@@ -366,6 +369,7 @@ enum OrderDispatchConditionSources : uint8_t {
 enum OrderDispatchConditionModes : uint8_t {
 	ODCM_FIRST_LAST          = 0,
 	OCDM_TAG                 = 1,
+	OCDM_ROUTE_ID            = 2,
 };
 
 enum OrderDispatchFirstLastConditionBits {

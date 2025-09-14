@@ -119,8 +119,9 @@ struct OrderSerialisationFieldNames {
 		static constexpr char CONDITION_STATION[]           = "condition-station";           ///< int     Destination-id for a station used as a data source for a conditional order
 		static constexpr char CONDITION_DISPATCH_SCHEDULE[] = "condition-dispatch-schedule"; ///< int
 		static constexpr char CONDITION_SLOT_SOURCE[]       = "condition-slot-source";       ///< enum    Source of the slot that needs to be checked
-		static constexpr char CONDITION_CHECK_SLOT[]        = "condition-check-slot";        ///< string  Incompatible with "condition-check-tag"     "first" or "last"
-		static constexpr char CONDITION_CHECK_TAG[]         = "condition-check-tag";         ///< int     Incompatible with "condition-check-slot"    scheduled dispatch tag number [1-4]
+		static constexpr char CONDITION_CHECK_SLOT[]        = "condition-check-slot";        ///< string  Incompatible with other "condition-check-*"    "first" or "last"
+		static constexpr char CONDITION_CHECK_TAG[]         = "condition-check-tag";         ///< int     Incompatible with other "condition-check-*"    scheduled dispatch tag number [1-4]
+		static constexpr char CONDITION_CHECK_ROUTE[]       = "condition-check-route";       ///< int     Incompatible with other "condition-check-*"    scheduled dispatch route ID
 		static constexpr char CONDITION_VALUE1[]            = "condition-value1";            ///< int     Raw data
 		static constexpr char CONDITION_VALUE2[]            = "condition-value2";            ///< int     Raw data
 		static constexpr char CONDITION_VALUE3[]            = "condition-value3";            ///< int     Raw data
@@ -314,6 +315,10 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 
 					case OCDM_TAG:
 						json[OFName::CONDITION_CHECK_TAG] = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1;
+						break;
+
+					case OCDM_ROUTE_ID:
+						json[OFName::CONDITION_CHECK_ROUTE] = o.GetXData2Low();
 						break;
 				}
 
@@ -1033,8 +1038,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 			auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>(OFName::CONDITION_CHECK_SLOT, JOIET_MAJOR);
 			auto cond_dispatch_tag = json_importer.TryGetField<uint>(OFName::CONDITION_CHECK_TAG, JOIET_MAJOR);
-			if (cond_dispatch_slot.has_value() == cond_dispatch_tag.has_value()) {
-				json_importer.LogError(fmt::format("Either '{}' or '{}' must be defined", OFName::CONDITION_CHECK_SLOT, OFName::CONDITION_CHECK_TAG), JOIET_MAJOR);
+			auto cond_dispatch_route = json_importer.TryGetField<uint>(OFName::CONDITION_CHECK_ROUTE, JOIET_MAJOR);
+			if ((cond_dispatch_slot.has_value() + cond_dispatch_tag.has_value() + cond_dispatch_route.has_value()) != 1) {
+				json_importer.LogError(fmt::format("Either '{}', '{}' or '{}' must be defined", OFName::CONDITION_CHECK_SLOT, OFName::CONDITION_CHECK_TAG, OFName::CONDITION_CHECK_ROUTE), JOIET_MAJOR);
 			} else if (cond_dispatch_slot.has_value()) {
 				if (cond_dispatch_slot.value() == "last") {
 					SetBit(val, ODFLCB_LAST_SLOT);
@@ -1046,12 +1052,18 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 			} else if (cond_dispatch_tag.has_value()) {
 				SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
 				SB(val, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, cond_dispatch_tag.value() - 1);
+			} else if (cond_dispatch_route.has_value()) {
+				SB(val, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_ROUTE_ID);
+			}
+
+			if (auto sched_idx = json_importer.TryGetField<uint16_t>(OFName::CONDITION_DISPATCH_SCHEDULE, JOIET_MAJOR); sched_idx.has_value()) {
+				json_importer.ModifyOrder(MOF_COND_VALUE_2, static_cast<uint16_t>(*sched_idx + schedule_insert_offset));
 			}
 
 			json_importer.ModifyOrder(MOF_COND_VALUE, val);
 
-			if (auto sched_idx = json_importer.TryGetField<uint16_t>(OFName::CONDITION_DISPATCH_SCHEDULE, JOIET_MAJOR); sched_idx.has_value()) {
-				json_importer.ModifyOrder(MOF_COND_VALUE_2, static_cast<uint16_t>(*sched_idx + schedule_insert_offset));
+			if (cond_dispatch_route.has_value()) {
+				json_importer.ModifyOrder(MOF_COND_VALUE_3, cond_dispatch_route.value());
 			}
 		}
 	}
