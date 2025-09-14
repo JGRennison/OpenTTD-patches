@@ -103,6 +103,7 @@ StringConsumer::size_type StringConsumer::Find(std::string_view str) const
 StringConsumer::size_type StringConsumer::FindUtf8(char32_t c) const
 {
 	auto [data, len] = EncodeUtf8(c);
+	builtin_assume(len <= sizeof(data));
 	return this->Find({data, len});
 }
 
@@ -143,18 +144,21 @@ std::string_view StringConsumer::PeekUntil(std::string_view str, SeparatorUsage 
 std::string_view StringConsumer::PeekUntilUtf8(char32_t c, SeparatorUsage sep) const
 {
 	auto [data, len] = EncodeUtf8(c);
+	builtin_assume(len <= sizeof(data));
 	return PeekUntil({data, len}, sep);
 }
 
 std::string_view StringConsumer::ReadUntilUtf8(char32_t c, SeparatorUsage sep)
 {
 	auto [data, len] = EncodeUtf8(c);
+	builtin_assume(len <= sizeof(data));
 	return ReadUntil({data, len}, sep);
 }
 
 void StringConsumer::SkipUntilUtf8(char32_t c, SeparatorUsage sep)
 {
 	auto [data, len] = EncodeUtf8(c);
+	builtin_assume(len <= sizeof(data));
 	return SkipUntil({data, len}, sep);
 }
 
