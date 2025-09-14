@@ -15,11 +15,7 @@
 #include <vector>
 
 /** Parent sprite that should be drawn */
-#ifdef _MSC_VER
-struct __declspec(align(16)) ParentSpriteToDraw {
-#else
-struct __attribute__ ((aligned (16))) ParentSpriteToDraw {
-#endif
+struct alignas(16) ParentSpriteToDraw {
 	/* Block of 16B loadable in xmm register */
 	int32_t xmin;                   ///< minimal world X coordinate of bounding box
 	int32_t ymin;                   ///< minimal world Y coordinate of bounding box
