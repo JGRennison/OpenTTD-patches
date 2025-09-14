@@ -124,7 +124,7 @@ std::string_view StringConsumer::PeekUntil(std::string_view str, SeparatorUsage 
 {
 	assert(!str.empty());
 	auto buf = this->src.substr(this->position);
-	auto len = buf.find(str);
+	auto len = (str.size() == 1) ? buf.find(str[0]) : buf.find(str);
 	if (len != std::string_view::npos) {
 		switch (sep) {
 			case READ_ONE_SEPARATOR:
