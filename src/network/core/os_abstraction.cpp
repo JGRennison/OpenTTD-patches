@@ -33,7 +33,7 @@
  * @param error The error code.
  * @param message The error message. Leave empty to determine this automatically based on the error number.
  */
-NetworkError::NetworkError(int error, const std::string &message) : error(error), message(message)
+NetworkError::NetworkError(int error, std::string_view message) : error(error), message(message)
 {
 }
 
@@ -82,7 +82,7 @@ bool NetworkError::IsConnectInProgress() const
  * Get the string representation of the error message.
  * @return The string representation that will get overwritten by next calls.
  */
-const char *NetworkError::AsString() const
+std::string_view NetworkError::AsString() const
 {
 	if (this->message.empty()) {
 #if defined(_WIN32)
@@ -97,7 +97,7 @@ const char *NetworkError::AsString() const
 		this->message.assign(StrErrorDumper().Get(this->error));
 #endif
 	}
-	return this->message.c_str();
+	return this->message;
 }
 
 /**

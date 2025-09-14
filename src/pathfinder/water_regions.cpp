@@ -19,6 +19,7 @@
 #include "follow_track.hpp"
 #include "../ship.h"
 #include "../3rdparty/fmt/ranges.h"
+#include "../safeguards.h"
 
 #include <array>
 #include <limits>

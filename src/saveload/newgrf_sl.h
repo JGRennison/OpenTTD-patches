@@ -11,6 +11,7 @@
 #define SAVELOAD_UPSTREAM_NEWGRF_SL_H
 
 #include "../newgrf_commons.h"
+#include "saveload.h"
 
 namespace upstream_sl {
 

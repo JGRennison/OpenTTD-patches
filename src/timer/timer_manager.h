@@ -11,7 +11,6 @@
 #ifndef TIMER_MANAGER_H
 #define TIMER_MANAGER_H
 
-#include "../stdafx.h"
 #include "../3rdparty/cpp-btree/btree_set.h"
 
 template <typename TTimerType>

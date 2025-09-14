@@ -51,13 +51,13 @@ void NetworkReboot();
 void NetworkDisconnect(bool close_admins = true);
 void NetworkGameLoop();
 void NetworkBackgroundLoop();
-std::string_view ParseFullConnectionString(const std::string &connection_string, uint16_t &port, CompanyID *company_id = nullptr);
+std::string_view ParseFullConnectionString(std::string_view connection_string, uint16_t &port, CompanyID *company_id = nullptr);
 using NetworkCompanyStatsArray = TypedIndexContainer<std::array<NetworkCompanyStats, MAX_COMPANIES>, CompanyID>;
 NetworkCompanyStatsArray NetworkGetCompanyStats();
 
 void NetworkUpdateClientInfo(ClientID client_id);
 void NetworkClientsToSpectators(CompanyID cid);
-bool NetworkClientConnectGame(const std::string &connection_string, CompanyID default_company, const std::string &join_server_password = "", const std::string &join_company_password = "");
+bool NetworkClientConnectGame(std::string_view connection_string, CompanyID default_company, std::string_view join_server_password = {}, std::string_view join_company_password = {});
 void NetworkClientJoinGame();
 void NetworkClientRequestMove(CompanyID company, std::string_view pass = {});
 void NetworkClientSendRcon(std::string_view password, std::string_view command);

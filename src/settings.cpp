@@ -3563,11 +3563,11 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		sd->FormatValue(value, object);
 
 		if (show_min_max) {
-			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {})",
-				name, value, (sd->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? "(0) " : "", min_val, max_val);
+			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {}, def: {})",
+				name, value, (sd->flags.Test(SettingFlag::GuiZeroIsSpecial)) ? "(0) " : "", min_val, max_val, int_setting->GetDefaultValue());
 		} else {
-			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'",
-				name, value);
+			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (def: {})",
+				name, value, int_setting->GetDefaultValue());
 		}
 	}
 }

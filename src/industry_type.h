@@ -10,6 +10,8 @@
 #ifndef INDUSTRY_TYPE_H
 #define INDUSTRY_TYPE_H
 
+#include "core/pool_id_type.hpp"
+
 struct IndustryIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using IndustryID = PoolID<IndustryIDTag>;
 

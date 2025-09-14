@@ -7,6 +7,11 @@
 
 /** @file cargo_const.h Table of all default cargo types */
 
+#include "../table/sprites.h"
+#ifndef CHECK_UNUSED_STRINGS
+#include "table/strings.h"
+#endif
+
 #include <variant>
 
 /** Construction macros for the #CargoSpec StringID entries. */

@@ -12,6 +12,8 @@
 
 #include <iterator>
 
+#include "safeguards.h"
+
 [[noreturn]] void not_reached_error(int line, const char *file)
 {
 	FatalErrorI(fmt::format("NOT_REACHED triggered at line {} of {}", line, file));

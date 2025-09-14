@@ -10,6 +10,7 @@
 #ifndef DROPDOWN_COMMON_TYPE_H
 #define DROPDOWN_COMMON_TYPE_H
 
+#include "dropdown_type.h"
 #include "gfx_func.h"
 #include "gfx_type.h"
 #include "palette_func.h"

@@ -10,7 +10,6 @@
 #ifndef NEWGRF_PROFILING_H
 #define NEWGRF_PROFILING_H
 
-#include "stdafx.h"
 #include "date_type.h"
 #include "newgrf.h"
 #include "newgrf_callbacks.h"

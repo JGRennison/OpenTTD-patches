@@ -22,7 +22,7 @@
 #include "newgrf_internal.h"
 #include "newgrf_optimiser_internal.h"
 
-#include "../table/strings.h"
+#include "table/strings.h"
 
 #include "../safeguards.h"
 

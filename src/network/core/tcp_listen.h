@@ -14,6 +14,8 @@
 
 #include "tcp.h"
 #include "../network.h"
+#include "../network_func.h"
+#include "../network_internal.h"
 #include "../../debug.h"
 
 #include "table/strings.h"

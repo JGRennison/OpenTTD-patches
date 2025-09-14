@@ -14,6 +14,7 @@
 
 #include "../../string_type.h"
 #include "../../3rdparty/md5/md5.h"
+#include "../../textfile_type.h"
 #include <optional>
 #include <vector>
 

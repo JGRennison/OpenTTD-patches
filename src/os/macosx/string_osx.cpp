@@ -20,6 +20,7 @@
 #include <cmath>
 
 #include <CoreFoundation/CoreFoundation.h>
+#include "../../safeguards.h"
 
 
 /* CTRunDelegateCreate is supported since MacOS X 10.5, but was only included in the SDKs starting with the 10.9 SDK. */

@@ -203,7 +203,7 @@ EncodedString EncodedString::ReplaceParam(size_t param, StringParameter &&data) 
 			}
 
 			case SCC_ENCODED_STRING: {
-				params.emplace_back(std::string(record.Read(StringConsumer::npos)));
+				params.emplace_back(record.Read(StringConsumer::npos));
 				break;
 			}
 
@@ -1323,7 +1323,7 @@ static void DecodeEncodedString(StringConsumer &consumer, bool game_script, Stri
 			}
 
 			case SCC_ENCODED_STRING: {
-				sub_args.emplace_back(std::string(record.Read(StringConsumer::npos)));
+				sub_args.emplace_back(record.Read(StringConsumer::npos));
 				break;
 			}
 
@@ -1834,7 +1834,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 
 				case SCC_VELOCITY: { // {VELOCITY}
 					int64_t arg = args.GetNextParameter<int64_t>();
-					// Unpack vehicle type from packed argument to get desired units.
+					/* Unpack vehicle type from packed argument to get desired units. */
 					VehicleType vt = static_cast<VehicleType>(GB(arg, 56, 8));
 					const auto &x = GetVelocityUnits(vt);
 					auto tmp_params = MakeParameters(ConvertKmhishSpeedToDisplaySpeed(GB(arg, 0, 56), vt), x.decimal_places);

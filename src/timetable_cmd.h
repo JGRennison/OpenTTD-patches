@@ -13,6 +13,7 @@
 #include "command_type.h"
 #include "date_type.h"
 #include "order_type.h"
+#include "vehicle_type.h"
 
 /**
  * Enumeration for the data to set in #CmdChangeTimetable.

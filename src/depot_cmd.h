@@ -12,6 +12,7 @@
 
 #include "command_type.h"
 #include "depot_type.h"
+#include "vehicle_type.h"
 
 DEF_CMD_TUPLE_NT(CMD_RENAME_DEPOT, CmdRenameDepot, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<DepotID, std::string>)
 

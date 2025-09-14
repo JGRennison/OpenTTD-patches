@@ -20,7 +20,7 @@
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
 
-#include "../table/strings.h"
+#include "table/strings.h"
 
 #include "../safeguards.h"
 

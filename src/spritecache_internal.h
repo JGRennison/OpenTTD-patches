@@ -10,8 +10,6 @@
 #ifndef SPRITECACHE_INTERNAL_H
 #define SPRITECACHE_INTERNAL_H
 
-#include "stdafx.h"
-
 #include "core/alloc_func.hpp"
 #include "core/arena_alloc.hpp"
 #include "core/math_func.hpp"

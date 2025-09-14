@@ -13,6 +13,8 @@
 
 #include "../core/bitmath_func.hpp"
 
+#include "../safeguards.h"
+
 TEST_CASE("FindLastBit tests")
 {
 	CHECK(FindLastBit<uint8_t>(0) == 0);

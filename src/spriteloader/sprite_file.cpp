@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "sprite_file_type.hpp"
+#include "../safeguards.h"
 
 #include <array>
 

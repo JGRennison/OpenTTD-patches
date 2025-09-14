@@ -69,7 +69,7 @@ static Packet PrepareUdpClientFindServerPacket(NetworkUDPSocketHandler &socket)
 	return p;
 }
 
-///*** Communication with clients (we are server) ***/
+/* Communication with clients (we are server) */
 
 /** Helper class for handling all server side communication. */
 class ServerNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
@@ -109,7 +109,7 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet &p,
 	Debug(net, 7, "Queried (extended: {}) from {}", version, client_addr.GetHostname());
 }
 
-///*** Communication with servers (we are client) ***/
+/* Communication with servers (we are client) */
 
 /** Helper class for handling all client side communication. */
 class ClientNetworkUDPSocketHandler : public NetworkUDPSocketHandler {

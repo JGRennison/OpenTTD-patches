@@ -3969,7 +3969,7 @@ static bool ClickTile_Station(TileIndex tile)
 	return true;
 }
 
-static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, int x, int y)
+static VehicleEnterTileStates VehicleEnter_Station(Vehicle *v, TileIndex tile, int x, int y)
 {
 	if (v->type == VEH_TRAIN) {
 		StationID station_id = GetStationIndex(tile);
@@ -3985,16 +3985,16 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 					SetWindowDirty(WC_VEHICLE_VIEW, t->index);
 					t->current_order.MakeWaiting();
 					t->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
-					return VETSB_CONTINUE;
+					return {};
 				}
 			}
 		}
-		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return VETSB_CONTINUE;
+		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return {};
 		Train *front = Train::From(v)->First();
-		if (!front->IsFrontEngine()) return VETSB_CONTINUE;
-		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return VETSB_CONTINUE;
-		if (!HasStationTileRail(tile)) return VETSB_CONTINUE;
-		if (!front->current_order.ShouldStopAtStation(front, station_id, IsRailWaypoint(tile))) return VETSB_CONTINUE;
+		if (!front->IsFrontEngine()) return {};
+		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return {};
+		if (!HasStationTileRail(tile)) return {};
+		if (!front->current_order.ShouldStopAtStation(front, station_id, IsRailWaypoint(tile))) return {};
 
 		int station_ahead;
 		int station_length;
@@ -4004,7 +4004,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 		 * begin of the platform to the stop location is longer than the length
 		 * of the platform. Station ahead 'includes' the current tile where the
 		 * vehicle is on, so we need to subtract that. */
-		if (stop + station_ahead - (int)TILE_SIZE >= station_length) return VETSB_CONTINUE;
+		if (stop + station_ahead - (int)TILE_SIZE >= station_length) return {};
 
 		DiagDirection dir = DirToDiagDir(v->direction);
 
@@ -4029,13 +4029,13 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 					for (Train *u = front; u != nullptr; u = u->Next()) {
 						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
 					}
-					return VETSB_CONTINUE;
+					return {};
 				}
-				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id.base() << VETS_STATION_ID_OFFSET); // enter station
+				return VehicleEnterTileState::EnteredStation; // enter station
 			} else if (x < stop) {
 				if (front->UsingRealisticBraking() && front->cur_speed > 30) {
 					/* Travelling too fast, take no action */
-					return VETSB_CONTINUE;
+					return {};
 				}
 				front->vehstatus.Set(VehState::TrainSlowing);
 				uint16_t spd = std::max(0, (stop - x) * 20 - 15);
@@ -4047,12 +4047,13 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 		if (rv->state < RVSB_IN_ROAD_STOP && !IsReversingRoadTrackdir((Trackdir)rv->state) && rv->frame == 0) {
 			if (IsStationRoadStop(tile) && rv->IsFrontEngine()) {
 				/* Attempt to allocate a parking bay in a road stop */
-				return RoadStop::GetByTile(tile, GetRoadStopType(tile))->Enter(rv) ? VETSB_CONTINUE : VETSB_CANNOT_ENTER;
+				if (RoadStop::GetByTile(tile, GetRoadStopType(tile))->Enter(rv)) return {};
+				return VehicleEnterTileState::CannotEnter;
 			}
 		}
 	}
 
-	return VETSB_CONTINUE;
+	return {};
 }
 
 /**

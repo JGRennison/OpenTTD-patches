@@ -2073,7 +2073,7 @@ void DrawRoadCatenary(const TileInfo *ti)
 		road = GetCustomBridgeHeadRoadBits(ti->tile, RTT_ROAD);
 		tram = GetCustomBridgeHeadRoadBits(ti->tile, RTT_TRAM);
 	} else {
-		// No road here, no catenary to draw
+		/* No road here, no catenary to draw */
 		return;
 	}
 
@@ -2909,7 +2909,7 @@ static const uint8_t _roadveh_enter_depot_dir[4] = {
 	TRACKDIR_X_SW, TRACKDIR_Y_NW, TRACKDIR_X_NE, TRACKDIR_Y_SE
 };
 
-static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int, int)
+static VehicleEnterTileStates VehicleEnter_Road(Vehicle *v, TileIndex tile, int, int)
 {
 	switch (GetRoadTileType(tile)) {
 		case ROAD_TILE_DEPOT: {
@@ -2927,7 +2927,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int,
 				rv->UpdateIsDrawn();
 
 				InvalidateWindowData(WC_VEHICLE_DEPOT, rv->tile.base());
-				return VETSB_ENTERED_WORMHOLE;
+				return VehicleEnterTileState::EnteredWormhole;
 			}
 			break;
 		}
@@ -2941,7 +2941,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int,
 
 		default: break;
 	}
-	return VETSB_CONTINUE;
+	return {};
 }
 
 
@@ -3057,10 +3057,10 @@ static Vehicle *UpdateRoadVehPowerProc(Vehicle *v, void *data)
  */
 static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, RoadType from_type, RoadType to_type)
 {
-	// Scenario editor, maybe? Don't touch the owners when converting roadtypes...
+	/* Scenario editor, maybe? Don't touch the owners when converting roadtypes... */
 	if (_current_company >= MAX_COMPANIES) return;
 
-	// We can't get a company from invalid owners but we can get ownership of roads without an owner
+	/* We can't get a company from invalid owners but we can get ownership of roads without an owner */
 	if (owner >= MAX_COMPANIES && owner != OWNER_NONE) return;
 
 	assert(from_type != INVALID_ROADTYPE && to_type != INVALID_ROADTYPE);
