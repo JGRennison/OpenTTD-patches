@@ -298,6 +298,7 @@ NamedSaveLoadTable GetDispatchSlotDescription()
 	static const NamedSaveLoad _dispatch_slot_info_desc[] = {
 		NSL("offset",        SLE_VAR(DispatchSlot, offset,                                       SLE_UINT32)),
 		NSL("flags",         SLE_VAR(DispatchSlot, flags,                                        SLE_UINT16)),
+		NSLT("route_id",     SLE_VAR(DispatchSlot, route_id,                                     SLE_UINT8)),
 	};
 
 	return _dispatch_slot_info_desc;

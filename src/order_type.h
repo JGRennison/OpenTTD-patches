@@ -388,4 +388,6 @@ struct Order;
 struct OrderPoolItem;
 struct OrderList;
 
+using DispatchSlotRouteID = uint8_t;
+
 #endif /* ORDER_TYPE_H */

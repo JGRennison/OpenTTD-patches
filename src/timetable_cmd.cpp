@@ -830,6 +830,7 @@ LastDispatchRecord MakeLastDispatchRecord(const DispatchSchedule &ds, StateTicks
 		slot,
 		dispatch_slot.offset,
 		dispatch_slot.flags,
+		dispatch_slot.route_id,
 		record_flags,
 	};
 }

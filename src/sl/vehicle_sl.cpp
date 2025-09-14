@@ -976,6 +976,7 @@ NamedSaveLoadTable DispatchRecordsStructHandlerBase::GetDescription() const
 		NSL("dispatched",                   SLE_VAR(RecordPair, second.dispatched,     SLE_INT64)),
 		NSL("offset",                       SLE_VAR(RecordPair, second.offset,         SLE_UINT32)),
 		NSL("slot_flags",                   SLE_VAR(RecordPair, second.slot_flags,     SLE_UINT16)),
+		NSL("route_id",                     SLE_VAR(RecordPair, second.route_id,       SLE_UINT8)),
 		NSL("record_flags",                 SLE_VAR(RecordPair, second.record_flags,   SLE_UINT8)),
 	};
 

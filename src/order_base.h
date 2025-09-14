@@ -809,6 +809,7 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 struct DispatchSlot {
 	uint32_t offset = 0;
 	uint16_t flags = 0;
+	DispatchSlotRouteID route_id = 0;
 
 	bool operator<(const DispatchSlot &other) const
 	{
@@ -838,6 +839,7 @@ struct DispatchSchedule {
 
 	enum class SupplementaryNameType : uint16_t {
 		DepartureTag = 0, ///< Departure slot tag
+		RouteID      = 1, ///< Route ID
 	};
 
 	static inline uint32_t SupplementaryNameKey(SupplementaryNameType name_type, uint16_t id)

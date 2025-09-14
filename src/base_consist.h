@@ -26,6 +26,7 @@ struct LastDispatchRecord {
 	StateTicks dispatched;
 	uint32_t offset;
 	uint16_t slot_flags;
+	DispatchSlotRouteID route_id = 0;
 	uint8_t record_flags;
 };
 
