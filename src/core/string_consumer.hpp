@@ -12,7 +12,42 @@
 #ifndef STRING_CONSUMER_HPP
 #define STRING_CONSUMER_HPP
 
+#include "bitmath_func.hpp"
 #include <optional>
+
+struct StringConsumerControlCharFilter {
+private:
+	const uint32_t filter;
+
+	/* Not constexpr */
+	static void error(const char *msg)
+	{
+		throw msg;
+	}
+
+	static constexpr uint64_t parse(std::string_view input)
+	{
+		uint32_t val = 0;
+		for (size_t i = 0; i < input.size(); i++) {
+			uint8_t c = ((uint8_t)input[i]) - 8;
+			if (c >= 32) {
+				error("Characters must be in the range 8 - 39");
+			} else {
+				SetBit(val, c);
+			}
+		}
+		return val;
+	}
+
+public:
+	constexpr StringConsumerControlCharFilter(std::string_view input) : filter(parse(input)) {}
+
+	bool Matches(char input_char) const
+	{
+		uint8_t c = ((uint8_t)input_char) - 8;
+		return c < 32 && HasBit(this->filter, c);
+	}
+};
 
 /**
  * Parse data from a string / buffer.
@@ -36,12 +71,12 @@ public:
 	 * ASCII whitespace characters, excluding new-line.
 	 * Usable in FindChar(In|NotIn), (Peek|Read|Skip)(If|Until)Char(In|NotIn)
 	 */
-	static const std::string_view WHITESPACE_NO_NEWLINE;
+	static constexpr StringConsumerControlCharFilter WHITESPACE_NO_NEWLINE{"\t\v\f\r "};
 	/**
 	 * ASCII whitespace characters, including new-line.
 	 * Usable in FindChar(In|NotIn), (Peek|Read|Skip)(If|Until)Char(In|NotIn)
 	 */
-	static const std::string_view WHITESPACE_OR_NEWLINE;
+	static constexpr StringConsumerControlCharFilter WHITESPACE_OR_NEWLINE{"\t\n\v\f\r "};
 
 private:
 	std::string_view src;
@@ -591,7 +626,29 @@ public:
 	[[nodiscard]] size_type FindCharNotIn(std::string_view chars) const;
 
 	/**
+	 * Find first occurence of any 8-bit char in 'chars'.
+	 * @return Offset from current reader position. 'npos' if no match found.
+	 */
+	[[nodiscard]] size_type FindCharIn(StringConsumerControlCharFilter chars) const
+	{
+		return this->FindCharIf([&](char c) {
+			return chars.Matches(c);
+		});
+	}
+
+	/**
 	 * Find first occurence of any 8-bit char not in 'chars'.
+	 * @return Offset from current reader position. 'npos' if no match found.
+	 */
+	[[nodiscard]] size_type FindCharNotIn(StringConsumerControlCharFilter chars) const
+	{
+		return this->FindCharIf([&](char c) {
+			return !chars.Matches(c);
+		});
+	}
+
+	/**
+	 * Find first occurence of any 8-bit char matching the predicate.
 	 * @return Offset from current reader position. 'npos' if no match found.
 	 */
 	template <typename F>
@@ -614,10 +671,23 @@ public:
 		return std::nullopt;
 	}
 	/**
+	 * Check whether the next 8-bit char is in 'chars'.
+	 * @return Matching char, std::nullopt if no match.
+	 */
+	[[nodiscard]] std::optional<char> PeekCharIfIn(StringConsumerControlCharFilter chars) const
+	{
+		if (this->GetBytesLeft() > 0) {
+			char c = this->src[this->position];
+			if (chars.Matches(c)) return c;
+		}
+		return std::nullopt;
+	}
+	/**
 	 * Read next 8-bit char, check whether it is in 'chars', and advance reader.
 	 * @return Matching char, std::nullopt if no match.
 	 */
-	[[nodiscard]] std::optional<char> ReadCharIfIn(std::string_view chars)
+	template <typename T>
+	[[nodiscard]] std::optional<char> ReadCharIfIn(const T &chars)
 	{
 		auto result = this->PeekCharIfIn(chars);
 		if (result.has_value()) this->Skip(1);
@@ -626,7 +696,8 @@ public:
 	/**
 	 * If the next 8-bit char is in 'chars', skip it.
 	 */
-	void SkipCharIfIn(std::string_view chars)
+	template <typename T>
+	void SkipCharIfIn(const T &chars)
 	{
 		auto result = this->PeekCharIfIn(chars);
 		if (result.has_value()) this->Skip(1);
@@ -644,10 +715,23 @@ public:
 		return std::nullopt;
 	}
 	/**
+	 * Check whether the next 8-bit char is not in 'chars'.
+	 * @return Matching char, std::nullopt if no match.
+	 */
+	[[nodiscard]] std::optional<char> PeekCharIfNotIn(StringConsumerControlCharFilter chars) const
+	{
+		if (this->GetBytesLeft() > 0) {
+			char c = this->src[this->position];
+			if (!chars.Matches(c)) return c;
+		}
+		return std::nullopt;
+	}
+	/**
 	 * Read next 8-bit char, check whether it is not in 'chars', and advance reader.
 	 * @return Non-matching char, std::nullopt if match.
 	 */
-	[[nodiscard]] std::optional<char> ReadCharIfNotIn(std::string_view chars)
+	template <typename T>
+	[[nodiscard]] std::optional<char> ReadCharIfNotIn(const T &chars)
 	{
 		auto result = this->PeekCharIfNotIn(chars);
 		if (result.has_value()) this->Skip(1);
@@ -656,7 +740,8 @@ public:
 	/**
 	 * If the next 8-bit char is not in 'chars', skip it.
 	 */
-	void SkipCharIfNotIn(std::string_view chars)
+	template <typename T>
+	void SkipCharIfNotIn(const T &chars)
 	{
 		auto result = this->PeekCharIfNotIn(chars);
 		if (result.has_value()) this->Skip(1);
@@ -666,7 +751,8 @@ public:
 	 * Peek 8-bit chars, while they are not in 'chars', until they are.
 	 * @return Non-matching chars.
 	 */
-	[[nodiscard]] std::string_view PeekUntilCharIn(std::string_view chars) const
+	template <typename T>
+	[[nodiscard]] std::string_view PeekUntilCharIn(const T &chars) const
 	{
 		size_type len = this->FindCharIn(chars);
 		return this->Peek(len);
@@ -675,7 +761,8 @@ public:
 	 * Read 8-bit chars, while they are not in 'chars', until they are; and advance reader.
 	 * @return Non-matching chars.
 	 */
-	[[nodiscard]] std::string_view ReadUntilCharIn(std::string_view chars)
+	template <typename T>
+	[[nodiscard]] std::string_view ReadUntilCharIn(const T &chars)
 	{
 		size_type len = this->FindCharIn(chars);
 		return this->Read(len);
@@ -683,7 +770,8 @@ public:
 	/**
 	 * Skip 8-bit chars, while they are not in 'chars', until they are.
 	 */
-	void SkipUntilCharIn(std::string_view chars)
+	template <typename T>
+	void SkipUntilCharIn(const T &chars)
 	{
 		size_type len = this->FindCharIn(chars);
 		this->Skip(len);
@@ -693,7 +781,8 @@ public:
 	 * Peek 8-bit chars, while they are in 'chars', until they are not.
 	 * @return Matching chars.
 	 */
-	[[nodiscard]] std::string_view PeekUntilCharNotIn(std::string_view chars) const
+	template <typename T>
+	[[nodiscard]] std::string_view PeekUntilCharNotIn(const T &chars) const
 	{
 		size_type len = this->FindCharNotIn(chars);
 		return this->Peek(len);
@@ -702,7 +791,8 @@ public:
 	 * Read 8-bit chars, while they are in 'chars', until they are not; and advance reader.
 	 * @return Matching chars.
 	 */
-	[[nodiscard]] std::string_view ReadUntilCharNotIn(std::string_view chars)
+	template <typename T>
+	[[nodiscard]] std::string_view ReadUntilCharNotIn(const T &chars)
 	{
 		size_type len = this->FindCharNotIn(chars);
 		return this->Read(len);
@@ -710,7 +800,8 @@ public:
 	/**
 	 * Skip 8-bit chars, while they are in 'chars', until they are not.
 	 */
-	void SkipUntilCharNotIn(std::string_view chars)
+	template <typename T>
+	void SkipUntilCharNotIn(const T &chars)
 	{
 		size_type len = this->FindCharNotIn(chars);
 		this->Skip(len);
