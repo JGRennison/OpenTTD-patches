@@ -569,7 +569,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(flags, flag_bit)) {
-								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+								std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 								AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 							}
 						}
@@ -880,7 +880,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(record.slot_flags, flag_bit)) {
-								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+								std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 								auto tmp_params = MakeReferenceParameters(1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 								_temp_special_strings[1] = GetStringWithArgs(name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED, tmp_params);
 								add_detail(SPECSTR_TEMP_START + 1);
@@ -1125,7 +1125,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
-					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag);
+					std::string_view name = schedule.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag);
 					std::string str = GetString(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, tag + 1, name);
 					add_str_item(std::move(str), SCH_MD_RENAME_TAG | (tag << 16));
 				}
@@ -1202,7 +1202,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(GetString(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT), DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
-					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+					std::string_view name = schedule.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 					std::string str;
 					if (name.empty()) {
 						str = GetString(STR_SCHDISPATCH_TAG_DEPARTURE, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
@@ -1300,7 +1300,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					case SCH_MD_RENAME_TAG: {
 						this->clicked_widget = WID_SCHDISPATCH_MANAGEMENT;
 						this->click_subaction = index;
-						std::string_view str = this->GetSelectedSchedule().GetSupplementaryName(SDSNT_DEPARTURE_TAG, index >> 16);
+						std::string_view str = this->GetSelectedSchedule().GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, index >> 16);
 						ShowQueryString(str, STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION, MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 						break;
 					}

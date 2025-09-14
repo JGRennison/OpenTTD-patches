@@ -465,7 +465,7 @@ CommandCost CmdSchDispatchRenameTag(DoCommandFlags flags, VehicleID veh, uint32_
 	if (Utf8StringLength(name) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).SetSupplementaryName(SDSNT_DEPARTURE_TAG, tag_id, name);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag_id, name);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
 	}
 
@@ -827,21 +827,16 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	}
 }
 
-static inline uint32_t SupplementaryNameKey(ScheduledDispatchSupplementaryNameType name_type, uint16_t id)
+std::string_view DispatchSchedule::GetSupplementaryName(DispatchSchedule::SupplementaryNameType name_type, uint16_t id) const
 {
-	return (static_cast<uint32_t>(name_type) << 16) | id;
-}
-
-std::string_view DispatchSchedule::GetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id) const
-{
-	auto iter = this->supplementary_names.find(SupplementaryNameKey(name_type, id));
+	auto iter = this->supplementary_names.find(DispatchSchedule::SupplementaryNameKey(name_type, id));
 	if (iter == this->supplementary_names.end()) return {};
 	return iter->second;
 }
 
-void DispatchSchedule::SetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id, std::string name)
+void DispatchSchedule::SetSupplementaryName(DispatchSchedule::SupplementaryNameType name_type, uint16_t id, std::string name)
 {
-	uint32_t key = SupplementaryNameKey(name_type, id);
+	uint32_t key = DispatchSchedule::SupplementaryNameKey(name_type, id);
 	if (name.empty()) {
 		this->supplementary_names.erase(key);
 	} else {

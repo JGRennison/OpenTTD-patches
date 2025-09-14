@@ -383,7 +383,7 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 	nlohmann::ordered_json json;
 
 	for (uint i = 0; i < DispatchSchedule::DEPARTURE_TAG_COUNT; i++) {
-		std::string_view rename = sd.GetSupplementaryName(SDSNT_DEPARTURE_TAG, i);
+		std::string_view rename = sd.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, i);
 		if (!rename.empty()) {
 			json[SFName::RENAMED_TAGS][std::to_string(i + 1)] = rename;
 		}

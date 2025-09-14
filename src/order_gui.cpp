@@ -1167,7 +1167,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						uint tag_id = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
 						std::string_view name;
 						if (selected_schedule != nullptr) {
-							name = selected_schedule->GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag_id);
+							name = selected_schedule->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag_id);
 							if (!name.empty()) str++;
 						}
 						_temp_special_strings[0] = GetString(str, tag_id + 1, std::string{name});
@@ -3298,7 +3298,7 @@ public:
 							uint string_offset = 0;
 							std::string_view name;
 							if (ds != nullptr) {
-								name = ds->GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag);
+								name = ds->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag);
 								if (!name.empty()) string_offset = 1;
 							}
 							list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG + string_offset, tag + 1, name), true_cond | tag_cond_value, false));
