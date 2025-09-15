@@ -833,7 +833,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					y += WidgetDimensions::scaled.vsep_wide;
 
-					auto show_last_departure = [&](const StateTicks last_departure, bool vehicle_mode, std::string details) {
+					auto show_last_departure = [&](const StateTicks last_departure, bool vehicle_mode, std::string_view details) {
 						StringID str;
 						if (_state_ticks < last_departure) {
 							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
@@ -846,7 +846,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						if (details.empty()) {
 							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_EMPTY, std::monostate{}));
 						} else {
-							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS, std::move(details)));
+							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS, details));
 						}
 						y += GetCharacterHeight(FS_NORMAL);
 
@@ -873,28 +873,30 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						const LastDispatchRecord &record = record_iter->second;
 						format_buffer details;
 						auto add_detail = [&](StringID str) {
-							AppendStringInPlace(details, details.empty() ? STR_JUST_STRING : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR, str);
+							if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+							AppendStringInPlace(details, STR_JUST_STRING, str);
 						};
 						if (HasBit(record.record_flags, LastDispatchRecord::RF_FIRST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST);
 						if (HasBit(record.record_flags, LastDispatchRecord::RF_LAST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST);
 
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(record.slot_flags, flag_bit)) {
+								if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+
 								std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-								auto tmp_params = MakeReferenceParameters(1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
-								_temp_special_strings[1] = GetStringWithArgs(name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED, tmp_params);
-								add_detail(SPECSTR_TEMP_START + 1);
+								AppendStringInPlace(details, name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED,
+										1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 							}
 						}
 
-						show_last_departure(record.dispatched, true, details.to_string());
+						show_last_departure(record.dispatched, true, details);
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE);
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 
 					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
-						show_last_departure(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch(), false, "");
+						show_last_departure(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch(), false, {});
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE);
 						y += GetCharacterHeight(FS_NORMAL);
