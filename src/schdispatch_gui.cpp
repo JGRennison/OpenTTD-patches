@@ -500,6 +500,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					AppendStringInPlace(buf, STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX, str);
 				};
 				add_suffix(STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_ROUTE_DEPARTURE_TOOLTIP);
 				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				return true;
 			}
@@ -563,8 +564,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					auto flags = slot->flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
+					if (flags != 0 || slot->route_id != 0) buf.push_back('\n');
 					if (flags != 0) {
-						buf.push_back('\n');
 						if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
 							AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
 						}
@@ -575,6 +576,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 							}
 						}
+					}
+					if (slot->route_id != 0) {
+						AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_ROUTE, ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, slot->route_id));
 					}
 					GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				}
@@ -701,7 +705,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					auto flags = slot.flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					this->DrawScheduledTime(draw_time, x + WidgetDimensions::scaled.framerect.left, x + this->resize.step_width - 1 - (2 * WidgetDimensions::scaled.framerect.left),
-							y, colour, last, next, veh, flags != 0);
+							y, colour, last, next, veh, flags != 0 || slot.route_id != 0);
 				}
 				break;
 			}
@@ -1240,6 +1244,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					add_item(std::move(str), flag_bit, false);
 				}
 
+
+				std::vector<std::pair<DispatchSlotRouteID, std::string_view>> route_names = schedule.GetSortedRouteIDNames();
+				if (!route_names.empty() || selected_slot->route_id != 0) {
+					list.push_back(MakeDropDownListDividerItem());
+					list.push_back(MakeDropDownListCheckedItem(selected_slot->route_id == 0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE, 1 << 16));
+
+					for (const auto &it : route_names) {
+						list.push_back(MakeDropDownListCheckedItem(selected_slot->route_id == it.first, std::string{it.second}, (1 << 16) | it.first));
+					}
+				}
+
+				list.push_back(MakeDropDownListDividerItem());
+
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
@@ -1353,9 +1370,18 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
 				if (selected_slot == nullptr) break;
 
-				uint16_t mask = 1 << index;
-				uint16_t values = HasBit(selected_slot->flags, index) ? 0 : mask;
-				Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->selected_slot, values, mask);
+				switch (index >> 16) {
+					case 0: {
+						uint16_t mask = 1 << index;
+						uint16_t values = HasBit(selected_slot->flags, index) ? 0 : mask;
+						Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->selected_slot, values, mask);
+						break;
+					}
+
+					case 1:
+						Command<CMD_SCH_DISPATCH_SET_SLOT_ROUTE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->selected_slot, index & 0xFFFF);
+						break;
+				}
 				break;
 			}
 

@@ -180,10 +180,10 @@ public:
 		this->serialiser.Send_generic(offset);
 	}
 
-	void AddScheduleSlotWithFlags(uint32_t offset, uint16_t flags)
+	void AddScheduleSlotWithFlags(uint32_t offset, uint16_t flags, DispatchSlotRouteID route_id)
 	{
 		this->OpCode(BulkOrderOp::AddScheduleSlotWithFlags);
-		this->serialiser.Send_generic_seq(offset, flags);
+		this->serialiser.Send_generic_seq(offset, flags, route_id);
 	}
 };
 

@@ -787,7 +787,7 @@ CommandCost CmdSchDispatchSwapSchedules(DoCommandFlags flags, VehicleID veh, uin
 }
 
 /**
- * Add scheduled dispatch time offset
+ * Set scheduled dispatch slot flags
  *
  * @param flags Operation to perform.
  * @param veh Vehicle index
@@ -818,6 +818,47 @@ CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint
 			if (flags.Test(DoCommandFlag::Execute)) {
 				slot.flags &= ~mask;
 				slot.flags |= values;
+				SchdispatchInvalidateWindows(v);
+				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+			}
+			return CommandCost();
+		}
+	}
+
+	return CMD_ERROR;
+}
+
+/**
+ * Set scheduled dispatch slot route
+ *
+ * @param flags Operation to perform.
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param offset Slot offset.
+ * @param values flag values
+ * @param mask flag mask
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSchDispatchSetSlotRoute(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, DispatchSlotRouteID route_id)
+{
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+
+	if (route_id != 0 && ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id).empty()) return CMD_ERROR;
+
+	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+		if (slot.offset == offset) {
+			if (flags.Test(DoCommandFlag::Execute)) {
+				slot.route_id = route_id;
 				SchdispatchInvalidateWindows(v);
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 			}

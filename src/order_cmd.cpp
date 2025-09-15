@@ -4680,21 +4680,23 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 				case BulkOrderOp::AddScheduleSlotWithFlags: {
 					uint32_t offset;
 					uint16_t flags = 0;
+					DispatchSlotRouteID route_id = 0;
 					buf.Recv_generic_seq({}, offset);
-					if (op == BulkOrderOp::AddScheduleSlotWithFlags) buf.Recv_generic_seq({}, flags);
+					if (op == BulkOrderOp::AddScheduleSlotWithFlags) buf.Recv_generic_seq({}, flags, route_id);
 					if (buf.error) return CMD_ERROR;
 					if (active_schedule_id != UINT_MAX) {
 						std::vector<DispatchSlot> &dslist = active_schedule->GetScheduledDispatchMutable();
 						if (offset >= active_schedule_after_end) {
 							/* Append to end, fast path */
-							dslist.push_back({ offset, flags });
+							dslist.push_back({ offset, flags, route_id });
 							active_schedule_after_end = offset + 1;
 						} else {
 							auto insert_position = std::lower_bound(dslist.begin(), dslist.end(), DispatchSlot{ offset, 0 });
 							if (insert_position != dslist.end() && insert_position->offset == offset) {
 								insert_position->flags = flags;
+								insert_position->route_id = route_id;
 							} else {
-								dslist.insert(insert_position, { offset, flags });
+								dslist.insert(insert_position, { offset, flags, route_id });
 							}
 						}
 						update_active_schedule = true;

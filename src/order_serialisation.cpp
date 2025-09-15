@@ -66,6 +66,7 @@ struct OrderSerialisationFieldNames {
 
 			static constexpr char OFFSET[]      = "offset";      ///< int     Required
 			static constexpr char TAGS[]        = "tags";        ///< array<int>
+			static constexpr char ROUTE[]       = "route";       ///< int
 			static constexpr char RE_USE_SLOT[] = "re-use-slot"; ///< bool
 		};
 
@@ -440,6 +441,10 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 			if (HasBit(sd_slot.flags, DispatchSlot::SDSF_FIRST_TAG + i)) {
 				slot_object[SFName::Slots::TAGS].push_back(i + 1);
 			}
+		}
+
+		if (sd_slot.route_id != 0) {
+			slot_object[SFName::Slots::ROUTE] = sd_slot.route_id;
 		}
 
 		if (slot_object.is_object()) {
@@ -1270,8 +1275,11 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 						}
 					}
 
-					if (flags != 0) {
-						json_importer.cmd_buffer.op_serialiser.AddScheduleSlotWithFlags(offset, flags);
+					DispatchSlotRouteID route_id = 0;
+					local_importer.TryGetField(SFName::Slots::ROUTE, route_id, JOIET_MAJOR);
+
+					if (flags != 0 || route_id != 0) {
+						json_importer.cmd_buffer.op_serialiser.AddScheduleSlotWithFlags(offset, flags, route_id);
 					} else {
 						json_importer.cmd_buffer.op_serialiser.AddScheduleSlot(offset);
 					}
