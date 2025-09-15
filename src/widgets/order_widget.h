@@ -43,6 +43,7 @@ enum OrderWidgets : WidgetID {
 	WID_O_COND_TIME_DATE,            ///< Choose time/date value.
 	WID_O_COND_TIMETABLE,            ///< Choose timetable value.
 	WID_O_COND_SCHED_SELECT,         ///< Choose scheduled dispatch schedule.
+	WID_O_COND_SCHED_VALUE,          ///< Choose scheduled dispatch value.
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_COND_SCHED_TEST,           ///< Choose scheduled dispatch test.
 	WID_O_COND_AUX_STATION,          ///< Condition station button.

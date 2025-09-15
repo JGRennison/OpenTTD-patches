@@ -1163,14 +1163,14 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						break;
 
 					case OCDM_TAG: {
-						StringID str = (order->GetConditionComparator() == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG;
+						StringID str = (order->GetConditionComparator() == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG;
 						uint tag_id = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
 						std::string_view name;
 						if (selected_schedule != nullptr) {
 							name = selected_schedule->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag_id);
 							if (!name.empty()) str++;
 						}
-						_temp_special_strings[0] = GetString(str, tag_id + 1, std::string{name});
+						_temp_special_strings[0] = GetString(str, tag_id + 1, name);
 						cond_str = SPECSTR_TEMP_START;
 						break;
 					}
@@ -1565,6 +1565,7 @@ private:
 		DP_COND_VALUE_CARGO        = 2, ///< Display dropdown widget cargo types
 		DP_COND_VALUE_SLOT         = 3, ///< Display dropdown widget tracerestrict slots
 		DP_COND_VALUE_SLOT_GROUP   = 4, ///< Display dropdown widget tracerestrict slot groups
+		DP_COND_VALUE_SCHED        = 5, ///< Display dropdown widget scheduled dispatch condition
 
 		/* WID_O_SEL_COND_AUX */
 		DP_COND_AUX_CARGO = 0, ///< Display dropdown widget cargo types
@@ -2386,7 +2387,10 @@ public:
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT_GROUP)->SetString((slot_group_id != INVALID_TRACE_RESTRICT_SLOT_GROUP) ? STR_TRACE_RESTRICT_SLOT_GROUP_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT_GROUP);
 					} else if (is_sched_dispatch) {
-						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(SZSP_NONE);
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SCHED);
+						OrderDispatchConditionModes mode = ODCM_FIRST_LAST;
+						if (order != nullptr) mode = (OrderDispatchConditionModes)GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT);
+						this->SetWidgetDisabledState(WID_O_COND_SCHED_VALUE, mode != OCDM_TAG);
 					} else if (ConditionVariableTestsCargoWaitingAmount(ocv)) {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER_SHORT);
 					} else {
@@ -2748,6 +2752,25 @@ public:
 				} else {
 					return GetString(STR_TIMETABLE_ASSIGN_SCHEDULE_NONE);
 				}
+			}
+
+			case WID_O_COND_SCHED_VALUE: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
+					if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+						uint16_t value = order->GetConditionValue();
+						switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
+							case OCDM_TAG:
+								return GetString(STR_SCHDISPATCH_TAG_DEPARTURE, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
+
+							default:
+								break;
+						}
+					}
+				}
+				return {};
 			}
 
 			case WID_O_CAPTION:
@@ -3193,6 +3216,43 @@ public:
 				break;
 			}
 
+			case WID_O_COND_SCHED_VALUE: {
+				DropDownList list;
+
+				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
+				const DispatchSchedule *ds = nullptr;
+				uint16_t slot_flags = 0;
+				uint schedule_index = order->GetConditionDispatchScheduleID();
+				if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
+					ds = &(this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index));
+					for (const DispatchSlot &slot : ds->GetScheduledDispatch()) {
+						slot_flags |= slot.flags;
+					}
+				}
+
+				for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
+					if (HasBit(slot_flags, tag + DispatchSlot::SDSF_FIRST_TAG)) {
+						int tag_cond_value = 0;
+						SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
+						SB(tag_cond_value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, tag);
+						std::string_view name;
+						if (ds != nullptr) {
+							name = ds->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag);
+						}
+						if (name.empty()) {
+							list.push_back(MakeDropDownListStringItem(GetString(STR_SCHDISPATCH_TAG_DEPARTURE, tag + 1), tag_cond_value, false));
+						} else {
+							list.push_back(MakeDropDownListStringItem(GetString(STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, tag + 1, name), tag_cond_value, false));
+						}
+					}
+				}
+
+				int selected = (order->GetConditionValue() & GetBitMaskSC<uint16_t>(ODFLCB_TAG_START, ODFLCB_TAG_COUNT));
+				SB(selected, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
+				ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_VALUE, 0, DDMF_NONE, DDSF_SHARED);
+				break;
+			}
+
 			case WID_O_REVERSE: {
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -3290,23 +3350,18 @@ public:
 						}
 					}
 
-					for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
-						if (HasBit(slot_flags, tag + DispatchSlot::SDSF_FIRST_TAG)) {
-							int tag_cond_value = 0;
-							SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
-							SB(tag_cond_value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, tag);
-							uint string_offset = 0;
-							std::string_view name;
-							if (ds != nullptr) {
-								name = ds->GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, tag);
-								if (!name.empty()) string_offset = 1;
-							}
-							list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG + string_offset, tag + 1, name), true_cond | tag_cond_value, false));
-							list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG + string_offset, tag + 1, name), false_cond | tag_cond_value, false));
-						}
+					if ((slot_flags & GetBitMaskFL<uint16_t>(DispatchSlot::SDSF_FIRST_TAG, DispatchSlot::SDSF_LAST_TAG)) != 0) {
+						int tag_cond_value = 0;
+						SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
+						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG), true_cond | tag_cond_value, false));
+						list.push_back(MakeDropDownListStringItem(GetString(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG), false_cond | tag_cond_value, false));
 					}
 
-					int selected = (((int)o->GetConditionComparator()) << 16) | (o->GetConditionValue() & ~GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT));
+					uint16_t select_mask = GetBitMaskSC<uint16_t>(ODCB_MODE_START, ODCB_MODE_COUNT);
+					if ((OrderDispatchConditionModes)GB(o->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) == ODCM_FIRST_LAST) {
+						SetBit(select_mask, ODFLCB_LAST_SLOT);
+					}
+					int selected = (((int)o->GetConditionComparator()) << 16) | (o->GetConditionValue() & select_mask);
 					ShowDropDownList(this, std::move(list), selected, WID_O_COND_COMPARATOR, 0, DDMF_NONE, DDSF_SHARED);
 					break;
 				}
@@ -3316,6 +3371,7 @@ public:
 					case OCV_CARGO_ACCEPTANCE:
 					case OCV_CARGO_WAITING:
 					case OCV_VEH_IN_SLOT_GROUP:
+					case OCV_DISPATCH_SLOT:
 						mask = 0x3F;
 						break;
 
@@ -3599,7 +3655,40 @@ public:
 				if (o == nullptr) return;
 				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR, index >> 16);
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, (o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | (index & 0xFFFF));
+
+					const uint16_t old_value = o->GetConditionValue();
+
+					const OrderDispatchConditionModes old_mode = (OrderDispatchConditionModes)GB(old_value, ODCB_MODE_START, ODCB_MODE_COUNT);
+					const OrderDispatchConditionModes new_mode = (OrderDispatchConditionModes)GB(index, ODCB_MODE_START, ODCB_MODE_COUNT);
+
+					if (old_mode == new_mode && new_mode != ODCM_FIRST_LAST) {
+						/* No MOF_COND_VALUE required */
+						break;
+					}
+
+					uint16_t new_value = (old_value & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | (index & 0xFFFF);
+
+					if (old_mode != new_mode && new_mode == OCDM_TAG) {
+						const DispatchSchedule *ds = nullptr;
+						uint16_t slot_flags = 0;
+						uint schedule_index = o->GetConditionDispatchScheduleID();
+						if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
+							ds = &(this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index));
+							for (const DispatchSlot &slot : ds->GetScheduledDispatch()) {
+								slot_flags |= slot.flags;
+							}
+						}
+
+						for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
+							if (HasBit(slot_flags, tag + DispatchSlot::SDSF_FIRST_TAG)) {
+								/* Pick first usable tag for new tag value */
+								SB(new_value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, tag);
+								break;
+							}
+						}
+					}
+
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, new_value);
 				} else {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR, index);
 				}
@@ -3650,6 +3739,15 @@ public:
 			case WID_O_COND_SCHED_SELECT:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2, index);
 				break;
+
+			case WID_O_COND_SCHED_VALUE: {
+				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
+				if (o == nullptr) return;
+				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, (o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | index);
+				}
+				break;
+			}
 
 			case WID_O_COND_SCHED_TEST: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
@@ -4109,6 +4207,8 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT_GROUP), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
@@ -4258,6 +4358,8 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT_GROUP), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetToolTip(STR_ORDER_CONDITIONAL_SLOT_GROUP_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 			EndContainer(),
