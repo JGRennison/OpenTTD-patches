@@ -20,6 +20,7 @@ enum class QueryStringFlag : uint8_t {
 	EnableDefault,   ///< enable the 'Default' button ("\0" is returned)
 	LengthIsInChars, ///< the length of the string is counted in characters
 	Password,        ///< password entry box, show warning about password security
+	DefaultIsDelete, ///< Default button is labelled 'Delete'
 };
 
 using QueryStringFlags = EnumBitSet<QueryStringFlag, uint8_t>;

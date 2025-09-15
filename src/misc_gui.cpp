@@ -1037,12 +1037,15 @@ private:
 		this->flags = flags;
 
 		this->CreateNestedTree();
-		this->FinishInitNested(WN_QUERY_STRING);
 		if constexpr (N > 1) {
 			this->GetWidget<NWidgetCore>(WID_QS_LABEL1)->SetString(ed[0].label);
 			this->GetWidget<NWidgetCore>(WID_QS_LABEL2)->SetString(ed[1].label);
 		}
 		this->UpdateWarningStringSize();
+		if (this->flags.Test(QueryStringFlag::DefaultIsDelete)) {
+			this->GetWidget<NWidgetCore>(WID_QS_DEFAULT)->SetString(STR_TOWN_VIEW_DELETE_BUTTON);
+		}
+		this->FinishInitNested(WN_QUERY_STRING);
 
 		this->parent = parent;
 
@@ -1060,8 +1063,6 @@ public:
 		} else {
 			this->warning_size = Dimension{ 0, 0 };
 		}
-
-		this->ReInit();
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
