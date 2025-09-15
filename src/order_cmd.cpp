@@ -4596,6 +4596,17 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					break;
 				}
 
+				case BulkOrderOp::EditScheduleRoute: {
+					DispatchSlotRouteID route_id;
+					std::string text;
+					buf.Recv_generic_seq({}, route_id, text);
+					if (buf.error) return CMD_ERROR;
+					if (active_schedule_id != UINT_MAX) {
+						CmdSchDispatchEditRoute(flags, cmd_data.veh, active_schedule_id, route_id, text);
+					}
+					break;
+				}
+
 				case BulkOrderOp::SetScheduleMaxDelay: {
 					uint32_t delay;
 					buf.Recv_generic_seq({}, delay);

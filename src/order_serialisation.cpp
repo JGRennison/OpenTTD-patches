@@ -73,7 +73,8 @@ struct OrderSerialisationFieldNames {
 		static constexpr char NAME[]                = "name";                ///< string
 		static constexpr char MAX_DELAY[]           = "max-delay";           ///< int
 		static constexpr char RE_USE_ALL_SLOTS[]    = "re-use-all-slots";    ///< bool
-		static constexpr char RENAMED_TAGS[]        = "renamed-tags";        ///< string
+		static constexpr char RENAMED_TAGS[]        = "renamed-tags";        ///< object<string>
+		static constexpr char ROUTE_IDS[]           = "route-ids";           ///< object<string>
 		static constexpr char RELATIVE_START_TIME[] = "relative-start-time"; ///< int Incompatible with "absolute-start-time"
 		static constexpr char ABSOLUTE_START_TIME[] = "absolute-start-time"; ///< int Incompatible with "relative-start-time"
 	};
@@ -387,6 +388,14 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 		if (!rename.empty()) {
 			json[SFName::RENAMED_TAGS][std::to_string(i + 1)] = rename;
 		}
+	}
+
+	{
+		nlohmann::ordered_json routes;
+		sd.IterateRouteIDNames([&](DispatchSlotRouteID route_id, std::string_view name) {
+			routes[std::to_string(route_id)] = name;
+		});
+		if (routes.size() > 0) json[SFName::ROUTE_IDS] = routes;
 	}
 
 	/* Normalise the start tick where possible */
@@ -1192,6 +1201,21 @@ static void ImportJsonDispatchSchedule(JSONToVehicleCommandParser<JSONToVehicleM
 					json_importer.cmd_buffer.op_serialiser.RenameScheduleTag((uint16_t)index, *result);
 					json_importer.cmd_buffer.PostDispatchCmd();
 				}
+			}
+		}
+	}
+
+	if (auto it = json.find(SFName::ROUTE_IDS); it != json.end() && it->is_object()) {
+		for (const auto &names : it->items()) {
+			auto route_id = IntFromChars<uint8_t>(names.key());
+			if (names.value().is_string() && route_id.has_value() && route_id.value() > 0 && route_id.value() < INVALID_DISPATCH_SLOT_ROUTE_ID) {
+				auto name_str = json_importer.TryGetFromValue<std::string_view>(SFName::ROUTE_IDS, names.value(), JOIET_MAJOR);
+				if (name_str.has_value()) {
+					json_importer.cmd_buffer.op_serialiser.EditScheduleRoute(route_id.value(), name_str.value());
+					json_importer.cmd_buffer.PostDispatchCmd();
+				}
+			} else {
+				json_importer.LogError(fmt::format("'{}' is not a valid route ID.", names.key()), JOIET_MINOR);
 			}
 		}
 	}

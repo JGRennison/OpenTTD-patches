@@ -2285,6 +2285,11 @@ STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Rename tag {NUM
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}Rename departure slot tags (for use with conditional orders)
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}Name departure slot tag
 STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}Can't name departure tag...
+STR_SCHDISPATCH_CREATE_DEPARTURE_ROUTE                          :Create route ID
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE                            :Rename/delete route IDs...
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE_TOOLTIP                    :{BLACK}Create/rename/delete departure slot route IDs (for use with conditional orders)
+STR_SCHDISPATCH_RENAME_DEPARTURE_ROUTE_CAPTION                  :{BLACK}Name departure slot route ID
+STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE                          :{WHITE}Can't name departure slot route ID...
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Manage Slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Re-use departure slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Set whether the selected departure slot may be used more than once.
@@ -2317,6 +2322,7 @@ STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :first slot
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :last slot
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :tag {NUM}
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :tag {NUM} ({RAW_STRING})
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_ROUTE                  :route ID: {RAW_STRING}
 
 ###length 2
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {TT_TIME}.
@@ -2365,6 +2371,8 @@ STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :Cannot enable b
 
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... cannot unbunch a vehicle using scheduled dispatch
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... cannot unbunch a vehicle using automatic separation
+
+STR_ERROR_TOO_MANY_SCHDISPATCH_ROUTES                           :{WHITE}Too many route IDs for this schedule
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys

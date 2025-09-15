@@ -697,6 +697,7 @@ enum Commands : uint8_t {
 	CMD_SCH_DISPATCH_SWAP_SCHEDULES,            ///< scheduled dispatch swap schedules in order
 	CMD_SCH_DISPATCH_SET_SLOT_FLAGS,            ///< scheduled dispatch set flags of dispatch slot
 	CMD_SCH_DISPATCH_RENAME_TAG,                ///< scheduled dispatch rename departure tag
+	CMD_SCH_DISPATCH_EDIT_ROUTE,                ///< scheduled dispatch rename/create/delete departure route
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,

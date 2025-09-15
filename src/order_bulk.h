@@ -33,6 +33,7 @@ enum class BulkOrderOp {
 	SetDispatchEnabled,
 	RenameSchedule,
 	RenameScheduleTag,
+	EditScheduleRoute,
 	SetScheduleMaxDelay,
 	SetScheduleReuseSlots,
 	AddScheduleSlot,
@@ -153,6 +154,12 @@ public:
 	{
 		this->OpCode(BulkOrderOp::RenameScheduleTag);
 		this->serialiser.Send_generic_seq(tag_id, text);
+	}
+
+	void EditScheduleRoute(DispatchSlotRouteID route_id, std::string_view text)
+	{
+		this->OpCode(BulkOrderOp::EditScheduleRoute);
+		this->serialiser.Send_generic_seq(route_id, text);
 	}
 
 	void SetScheduleMaxDelay(uint32_t delay)

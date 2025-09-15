@@ -207,6 +207,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_APPEND_VEHICLE_SCHEDULES,
 		SCH_MD_REUSE_DEPARTURE_SLOTS,
 		SCH_MD_RENAME_TAG,
+		SCH_MD_EDIT_ROUTE,
 	};
 
 	struct DispatchSlotPositionHandler {
@@ -487,6 +488,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE_TOOLTIP);
 				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				return true;
 			}
@@ -889,6 +891,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							}
 						}
 
+						if (record.route_id != 0) {
+							if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+
+							std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, record.route_id);
+							AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_ROUTE, name);
+						}
+
 						show_last_departure(record.dispatched, true, details);
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE);
@@ -1131,6 +1140,23 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					std::string str = GetString(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, tag + 1, name);
 					add_str_item(std::move(str), SCH_MD_RENAME_TAG | (tag << 16));
 				}
+
+				list.push_back(MakeDropDownListDividerItem());
+				add_item(STR_SCHDISPATCH_CREATE_DEPARTURE_ROUTE, SCH_MD_EDIT_ROUTE);
+
+				std::vector<std::pair<DispatchSlotRouteID, std::string_view>> route_names = schedule.GetSortedRouteIDNames();
+				if (!route_names.empty()) {
+					auto item = std::make_unique<DropDownUnselectable<DropDownListStringItem>>(GetString(STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE), -1);
+					item->SetColourFlags(TC_FORCED);
+					list.push_back(std::move(item));
+
+					for (const auto &it : route_names) {
+						auto item = std::make_unique<DropDownListIndentStringItem>(1, std::string{it.second}, SCH_MD_EDIT_ROUTE | (it.first << 16));
+						item->SetColourFlags(TC_FORCED);
+						list.push_back(std::move(item));
+					}
+				}
+
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
@@ -1306,6 +1332,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						ShowQueryString(str, STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION, MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 						break;
 					}
+
+					case SCH_MD_EDIT_ROUTE: {
+						this->clicked_widget = WID_SCHDISPATCH_MANAGEMENT;
+						this->click_subaction = index;
+						uint16_t route_id = index >> 16;
+						if (route_id != 0) {
+							std::string_view str = this->GetSelectedSchedule().GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id);
+							ShowQueryString(str, STR_SCHDISPATCH_RENAME_DEPARTURE_ROUTE_CAPTION, MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::DefaultIsDelete, QueryStringFlag::LengthIsInChars});
+						} else {
+							ShowQueryString({}, STR_SCHDISPATCH_RENAME_DEPARTURE_ROUTE_CAPTION, MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::LengthIsInChars});
+						}
+						break;
+					}
 				}
 				break;
 			}
@@ -1411,6 +1450,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				switch (this->click_subaction & 0xFFFF) {
 					case SCH_MD_RENAME_TAG:
 						Command<CMD_SCH_DISPATCH_RENAME_TAG>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG, v->index, this->schedule_index, this->click_subaction >> 16, *str);
+						break;
+
+					case SCH_MD_EDIT_ROUTE:
+						Command<CMD_SCH_DISPATCH_EDIT_ROUTE>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE, v->index, this->schedule_index, this->click_subaction >> 16, *str);
 						break;
 				}
 				break;

@@ -389,5 +389,6 @@ struct OrderPoolItem;
 struct OrderList;
 
 using DispatchSlotRouteID = uint8_t;
+static const DispatchSlotRouteID INVALID_DISPATCH_SLOT_ROUTE_ID = 0xFF;
 
 #endif /* ORDER_TYPE_H */

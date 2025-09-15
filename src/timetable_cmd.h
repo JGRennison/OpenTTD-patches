@@ -65,5 +65,6 @@ DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_ADJUST_SLOT,         CmdSchDispatchAdjustSlot,
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SWAP_SCHEDULES,      CmdSchDispatchSwapSchedules,      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SET_SLOT_FLAGS,      CmdSchDispatchSetSlotFlags,       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, uint16_t, uint16_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_RENAME_TAG,          CmdSchDispatchRenameTag,          {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint16_t, std::string>)
+DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_EDIT_ROUTE,          CmdSchDispatchEditRoute,          {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, DispatchSlotRouteID, std::string>)
 
 #endif /* TIMETABLE_CMD_H */

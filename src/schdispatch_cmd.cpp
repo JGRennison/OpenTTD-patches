@@ -473,6 +473,100 @@ CommandCost CmdSchDispatchRenameTag(DoCommandFlags flags, VehicleID veh, uint32_
 }
 
 /**
+ * Edit (create/delete/rename) scheduled dispatch departure route
+ *
+ * @param flags Operation to perform.
+ * @param veh Vehicle index
+ * @param schedule_index Schedule index.
+ * @param route_id Route ID (0 to create new)
+ * @param name name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSchDispatchEditRoute(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, DispatchSlotRouteID route_id, const std::string &name)
+{
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (route_id == 0 && name.empty()) return CMD_ERROR;
+	if (route_id >= INVALID_DISPATCH_SLOT_ROUTE_ID) return CMD_ERROR;
+
+	if (Utf8StringLength(name) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
+
+	if (!name.empty()) {
+		bool in_use = false;
+		v->orders->GetDispatchScheduleByIndex(schedule_index).IterateRouteIDNames([&](DispatchSlotRouteID existing_id, std::string_view existing_name) {
+			if (existing_id != route_id && existing_name == name) in_use = true;
+		});
+		if (in_use) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	}
+
+	if (route_id == 0) {
+		/* Find suitable ID */
+		const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+		const auto &names = ds.GetSupplementaryNameMap();
+		route_id = 1;
+		auto it = names.find(DispatchSchedule::SupplementaryNameKey(DispatchSchedule::SupplementaryNameType::RouteID, route_id));
+		if (it != names.end()) {
+			/* Already exists, iterate */
+			while (true) {
+				++route_id;
+				if (route_id == INVALID_DISPATCH_SLOT_ROUTE_ID) {
+					/* No more space */
+					return CommandCost(STR_ERROR_TOO_MANY_SCHDISPATCH_ROUTES);
+				}
+				++it;
+				if (it == names.end() || it->first != DispatchSchedule::SupplementaryNameKey(DispatchSchedule::SupplementaryNameType::RouteID, route_id)) {
+					/* Found free ID */
+					break;
+				}
+			}
+		}
+	}
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+
+		if (!name.empty()) {
+			ds.SetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id, name);
+		} else {
+			bool removed = ds.RemoveSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id);
+			if (removed) {
+				/* Remove references from slots */
+				bool update_windows = false;
+				for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+					if (slot.route_id == route_id) {
+						slot.route_id = 0;
+						update_windows = true;
+					}
+				}
+				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+					if (u->dispatch_records.empty()) continue;
+
+					for (auto &iter : u->dispatch_records) {
+						if (iter.first == schedule_index && iter.second.route_id == route_id) {
+							iter.second.route_id = 0;
+							update_windows = true;
+						}
+					}
+				}
+				if (update_windows) {
+					SchdispatchInvalidateWindows(v);
+				}
+			}
+		}
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Duplicate scheduled dispatch schedule
  *
  * @param flags Operation to perform.
@@ -842,6 +936,29 @@ void DispatchSchedule::SetSupplementaryName(DispatchSchedule::SupplementaryNameT
 	} else {
 		this->supplementary_names[key] = std::move(name);
 	}
+}
+
+bool DispatchSchedule::RemoveSupplementaryName(SupplementaryNameType name_type, uint16_t id)
+{
+	uint32_t key = DispatchSchedule::SupplementaryNameKey(name_type, id);
+	return this->supplementary_names.erase(key) > 0;
+}
+
+std::vector<std::pair<DispatchSlotRouteID, std::string_view>> DispatchSchedule::GetSortedRouteIDNames() const
+{
+	std::vector<std::pair<DispatchSlotRouteID, std::string_view>> result;
+
+	this->IterateRouteIDNames([&](DispatchSlotRouteID route_id, std::string_view name) {
+		result.emplace_back(route_id, name);
+	});
+
+	std::sort(result.begin(), result.end(), [&](const auto &a, const auto &b) {
+		int r = StrNaturalCompare(a.second, b.second); // Sort by name (natural sorting).
+		if (r == 0) return a.first < b.first;
+		return r < 0;
+	});
+
+	return result;
 }
 
 uint32_t WrapTickToScheduledDispatchRange(StateTicks base, uint32_t duration, StateTicks value)

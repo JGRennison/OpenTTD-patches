@@ -847,6 +847,16 @@ struct DispatchSchedule {
 		return (static_cast<uint32_t>(to_underlying(name_type)) << 16) | id;
 	}
 
+	static inline SupplementaryNameType TypeFromSupplementaryNameKey(uint32_t key)
+	{
+		return static_cast<SupplementaryNameType>(key >> 16);
+	}
+
+	static inline uint16_t IDFromSupplementaryNameKey(uint32_t key)
+	{
+		return static_cast<uint16_t>(key & 0xFFFF);
+	}
+
 private:
 	friend NamedSaveLoadTable GetDispatchScheduleDescription();         ///< Saving and loading of dispatch schedules
 
@@ -970,7 +980,29 @@ public:
 
 	std::string_view GetSupplementaryName(SupplementaryNameType name_type, uint16_t id) const;
 	void SetSupplementaryName(SupplementaryNameType name_type, uint16_t id, std::string name);
+	bool RemoveSupplementaryName(SupplementaryNameType name_type, uint16_t id);
 	btree::btree_map<uint32_t, std::string> &GetSupplementaryNameMap() { return this->supplementary_names; }
+	const btree::btree_map<uint32_t, std::string> &GetSupplementaryNameMap() const { return this->supplementary_names; }
+
+	template <typename F>
+	void IterateRouteIDNames(F handler) const
+	{
+		const auto &names = this->supplementary_names;
+		auto iter = names.lower_bound(SupplementaryNameKey(DispatchSchedule::SupplementaryNameType::RouteID, 1));
+		for (; iter != names.end() && DispatchSchedule::TypeFromSupplementaryNameKey(iter->first) == DispatchSchedule::SupplementaryNameType::RouteID; ++iter) {
+			uint16_t route_id = DispatchSchedule::IDFromSupplementaryNameKey(iter->first);
+			if (route_id >= INVALID_DISPATCH_SLOT_ROUTE_ID) break;
+			handler(static_cast<DispatchSlotRouteID>(route_id), iter->second);
+		}
+	}
+
+	std::vector<std::pair<DispatchSlotRouteID, std::string_view>> GetSortedRouteIDNames() const;
+
+	bool HasSupplementaryNameOfType(SupplementaryNameType name_type) const
+	{
+		auto iter = this->supplementary_names.lower_bound(SupplementaryNameKey(name_type, 0));
+		return iter != this->supplementary_names.end() && TypeFromSupplementaryNameKey(iter->first) == name_type;
+	}
 };
 
 static_assert(DispatchSchedule::DEPARTURE_TAG_COUNT == 1 + (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG));
