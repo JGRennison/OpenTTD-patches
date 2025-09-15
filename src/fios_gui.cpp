@@ -472,7 +472,7 @@ public:
 		if (this->order_list_info.has_value()) {
 			group = Group::GetIfValid(this->order_list_info->veh->group_id);
 		}
-		std::string name = (group == nullptr) ? "UNNAMED" : group->name;
+		std::string name = (group == nullptr) ? "UNNAMED" : GetString(STR_GROUP_NAME, group->index);
 		SanitizeFilename(name);
 		this->filename_editbox.text.Assign(name);
 	}
