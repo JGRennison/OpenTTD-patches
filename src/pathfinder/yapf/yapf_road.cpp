@@ -580,14 +580,13 @@ public:
 	}
 };
 
-template <class Tpf_, class Tnode_list, template <class Types> class Tdestination>
-struct CYapfRoad_TypesT
-{
-	typedef CYapfRoad_TypesT<Tpf_, Tnode_list, Tdestination>  Types;
+template <class Tpf_, template <class Types> class Tdestination>
+struct CYapfRoad_TypesT {
+	typedef CYapfRoad_TypesT<Tpf_, Tdestination>  Types;
 
 	typedef Tpf_                              Tpf;
 	typedef CFollowTrackRoad                  TrackFollower;
-	typedef Tnode_list                        NodeList;
+	typedef CRoadNodeList                     NodeList;
 	typedef RoadVehicle                       VehicleType;
 	typedef CYapfBaseT<Types>                 PfBase;
 	typedef CYapfFollowRoadT<Types>           PfFollow;
@@ -602,18 +601,13 @@ struct CYapfRoadCommon : CYapfT<Types> {
 	TileIndex leader_targets[MAX_RV_LEADER_TARGETS]; ///< the tiles targeted by vehicles in front of the current vehicle
 };
 
-struct CYapfRoad1         : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad1        , CRoadNodeListTrackDir, CYapfDestinationTileRoadT    > > {};
-struct CYapfRoad2         : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad2        , CRoadNodeListExitDir , CYapfDestinationTileRoadT    > > {};
+struct CYapfRoad : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad, CYapfDestinationTileRoadT>> {};
 
-struct CYapfRoadAnyDepot1 : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoadAnyDepot1, CRoadNodeListTrackDir, CYapfDestinationAnyDepotRoadT> > {};
-struct CYapfRoadAnyDepot2 : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoadAnyDepot2, CRoadNodeListExitDir , CYapfDestinationAnyDepotRoadT> > {};
-
+struct CYapfRoadAnyDepot : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoadAnyDepot, CYapfDestinationAnyDepotRoadT>> {};
 
 Trackdir YapfRoadVehicleChooseTrack(const RoadVehicle *v, TileIndex tile, DiagDirection enterdir, TrackdirBits trackdirs, bool &path_found, RoadVehPathCache &path_cache)
 {
-	Trackdir td_ret = _settings_game.pf.yapf.disable_node_optimization
-		? CYapfRoad1::stChooseRoadTrack(v, tile, enterdir, path_found, path_cache) // Trackdir
-		: CYapfRoad2::stChooseRoadTrack(v, tile, enterdir, path_found, path_cache); // ExitDir, allow 90-deg
+	Trackdir td_ret = CYapfRoad::stChooseRoadTrack(v, tile, enterdir, path_found, path_cache);
 
 	return (td_ret != INVALID_TRACKDIR) ? td_ret : (Trackdir)FindFirstBit(trackdirs);
 }
@@ -627,7 +621,5 @@ FindDepotData YapfRoadVehicleFindNearestDepot(const RoadVehicle *v, int max_dist
 		return FindDepotData();
 	}
 
-	return _settings_game.pf.yapf.disable_node_optimization
-		? CYapfRoadAnyDepot1::stFindNearestDepot(v, tile, trackdir, max_distance) // Trackdir
-		: CYapfRoadAnyDepot2::stFindNearestDepot(v, tile, trackdir, max_distance); // ExitDir
+	return CYapfRoadAnyDepot::stFindNearestDepot(v, tile, trackdir, max_distance);
 }

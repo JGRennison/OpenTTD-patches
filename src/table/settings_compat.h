@@ -342,7 +342,7 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_NULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)), // pf.npf.npf_road_trafficlight_penalty
 	SLCX_NULL(8, SLV_130, SLV_TABLE_CHUNKS), // pf.npf.npf_road_dt_occupied_penalty, pf.npf.npf_road_bay_occupied_penalty
 	SLCX_NULL(4, SLV_131, SLV_TABLE_CHUNKS), // pf.npf.maximum_go_to_depot_penalty
-	SLCX_VAR("pf.yapf.disable_node_optimization"),
+	SLCX_NULL(1, SLV_28, SLV_TABLE_CHUNKS), // pf.yapf.disable_node_optimization
 	SLCX_VAR("pf.yapf.max_search_nodes"),
 	SLCX_VAR("pf.yapf.rail_firstred_twoway_eol"),
 	SLCX_VAR("pf.yapf.rail_firstred_penalty"),
