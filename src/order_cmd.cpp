@@ -323,6 +323,20 @@ bool Order::Equals(const Order &other) const
 }
 
 /**
+ * Is this order derived from another order.
+ * @param other the second order to compare to.
+ * @return true the order is derived from the other order.
+ */
+bool Order::IsDerivedFrom(const Order &other) const
+{
+	if (this->IsAnyLoadingType() || this->IsType(OT_GOTO_STATION)) {
+		return other.IsType(OT_GOTO_STATION) && this->dest == other.dest;
+	}
+
+	return this->Equals(other);
+}
+
+/**
  * Pack this order into a 16 bits integer as close to the TTD
  * representation as possible.
  * @return the TTD-like packed representation.

@@ -109,7 +109,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32_t va
 	SetTimetableWindowsDirty(v, (mtf == MTF_ASSIGN_SCHEDULE) ? STWDF_SCHEDULED_DISPATCH : STWDF_NONE);
 
 	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
-		if (v->cur_real_order_index == order_number && v->current_order.Equals(*order)) {
+		if (v->cur_real_order_index == order_number && v->current_order.IsDerivedFrom(*order)) {
 			switch (mtf) {
 				case MTF_WAIT_TIME:
 					v->current_order.SetWaitTime(val);
