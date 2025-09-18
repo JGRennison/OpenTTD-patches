@@ -12,6 +12,7 @@ add_test_files(
     string_consumer.cpp
     string_func.cpp
     strings_func.cpp
+    test_bitset.cpp
     test_main.cpp
     test_map.cpp
     test_network_crypto.cpp
