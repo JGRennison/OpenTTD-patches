@@ -38,7 +38,8 @@ public:
 	constexpr BaseBitSet() : data(0) {}
 	explicit constexpr BaseBitSet(Tstorage data) : data(data & Tmask) {}
 
-	constexpr auto operator <=>(const BaseBitSet &) const noexcept = default;
+	constexpr bool operator==(const BaseBitSet &rhs) const { return this->data == rhs.data; }
+	constexpr auto operator<=>(const BaseBitSet &rhs) const { return this->data <=> rhs.data; }
 
 	/**
 	 * Set all bits.

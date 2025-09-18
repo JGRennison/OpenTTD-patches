@@ -157,7 +157,8 @@ public:
 		}
 	}
 
-	constexpr auto operator <=>(const EnumBitSet &) const noexcept = default;
+	constexpr bool operator==(const EnumBitSet &rhs) const { return this->base() == rhs.base(); }
+	constexpr auto operator<=>(const EnumBitSet &rhs) const { return this->base() <=> rhs.base(); }
 
 	static constexpr size_t DecayValueType(const typename BaseClass::ValueType &value) { return to_underlying(value); }
 };
