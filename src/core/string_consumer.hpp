@@ -13,6 +13,7 @@
 #define STRING_CONSUMER_HPP
 
 #include "bitmath_func.hpp"
+#include "integer_type.hpp"
 #include <optional>
 
 struct StringConsumerControlCharFilter {
@@ -936,7 +937,8 @@ public:
 	template <class T>
 	[[nodiscard]] std::pair<size_type, T> PeekIntegerBase(int base, bool clamp = false) const
 	{
-		return ParseIntegerBase<T>(this->src.substr(this->position), base, clamp, false);
+		auto [len, value] = ParseIntegerBase<typename sized_integer_as<T>::type>(this->src.substr(this->position), base, clamp, false);
+		return std::make_pair(len, static_cast<T>(value));
 	}
 	/**
 	 * Try to read and parse an integer in number 'base', and then advance the reader.
@@ -966,9 +968,9 @@ public:
 	template <class T>
 	[[nodiscard]] T ReadIntegerBase(int base, T def = 0, bool clamp = false)
 	{
-		auto [len, value] = ParseIntegerBase<T>(this->src.substr(this->position), base, clamp, true);
+		auto [len, value] = ParseIntegerBase<typename sized_integer_as<T>::type>(this->src.substr(this->position), base, clamp, true);
 		this->SkipIntegerBase(base); // always advance
-		return len > 0 ? value : def;
+		return len > 0 ? static_cast<T>(value) : def;
 	}
 	/**
 	 * Skip an integer in number 'base'.
