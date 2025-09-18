@@ -3882,7 +3882,8 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 
 			/* If we did skip some tiles, backtrack to the first skipped tile so the pathfinder
 			 * actually starts its search at the first unreserved tile. */
-			if (ft.tiles_skipped != 0) ft.new_tile -= TileOffsByDiagDir(ft.exitdir) * ft.tiles_skipped;
+			if (ft.tiles_skipped != 0 && !IsTileType(ft.new_tile, MP_TUNNELBRIDGE)) ft.new_tile -= TileOffsByDiagDir(ft.exitdir) * ft.tiles_skipped;
+
 
 			/* Choice found, path valid but not okay. Save info about the choice tile as well. */
 			if (new_tracks != nullptr) *new_tracks = TrackdirBitsToTrackBits(ft.new_td_bits);
