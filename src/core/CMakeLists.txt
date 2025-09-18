@@ -18,6 +18,7 @@ add_files(
     geometry_func.cpp
     geometry_func.hpp
     geometry_type.hpp
+    integer_type.hpp
     kdtree.hpp
     math_func.cpp
     math_func.hpp
