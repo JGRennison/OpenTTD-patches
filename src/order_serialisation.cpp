@@ -1043,7 +1043,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 			auto cond_dispatch_slot = json_importer.TryGetField<std::string_view>(OFName::CONDITION_CHECK_SLOT, JOIET_MAJOR);
 			auto cond_dispatch_tag = json_importer.TryGetField<uint>(OFName::CONDITION_CHECK_TAG, JOIET_MAJOR);
-			auto cond_dispatch_route = json_importer.TryGetField<uint>(OFName::CONDITION_CHECK_ROUTE, JOIET_MAJOR);
+			auto cond_dispatch_route = json_importer.TryGetField<uint16_t>(OFName::CONDITION_CHECK_ROUTE, JOIET_MAJOR);
 			if ((cond_dispatch_slot.has_value() + cond_dispatch_tag.has_value() + cond_dispatch_route.has_value()) != 1) {
 				json_importer.LogError(fmt::format("Either '{}', '{}' or '{}' must be defined", OFName::CONDITION_CHECK_SLOT, OFName::CONDITION_CHECK_TAG, OFName::CONDITION_CHECK_ROUTE), JOIET_MAJOR);
 			} else if (cond_dispatch_slot.has_value()) {
