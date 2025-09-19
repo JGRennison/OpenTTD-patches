@@ -570,7 +570,12 @@ inline TrackdirBits DiagdirReachesTrackdirs(DiagDirection diagdir)
  * @return The tracks which can be used
  * @see DiagdirReachesTrackdirs
  */
-inline TrackBits DiagdirReachesTracks(DiagDirection diagdir) { return TrackdirBitsToTrackBits(DiagdirReachesTrackdirs(diagdir)); }
+inline TrackBits DiagdirReachesTracks(DiagDirection diagdir)
+{
+	dbg_assert(IsValidDiagDirection(diagdir));
+	extern const TrackBits _exitdir_reaches_tracks[DIAGDIR_END];
+	return _exitdir_reaches_tracks[diagdir];
+}
 
 /**
  * Maps a trackdir to the trackdirs that can be reached from it (ie, when
