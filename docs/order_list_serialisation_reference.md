@@ -5,7 +5,7 @@ If you have any questions and/or wish to edit this document submit a PR, contact
 ## Common Top level Fields
 |   Field                      |   Type         |   Notes / Legal Values                                                                                                                                          |
 | ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`                    | int            | Export format version number.                                                                                                                                   |
+| `version`                    | int            | Export format version number. This document describes version 1.                                                                                                |
 | `source`                     | string         | OpenTTD revision string.                                                                                                                                        |
 | `vehicle-type`               | enum           | `train`, `road`, `ship`, `aircraft`                                                                                                                             |
 | `vehicle-group-name`         | string         | Name of the vehicle group (export only).                                                                                                                        |
@@ -27,23 +27,25 @@ If you have any questions and/or wish to edit this document submit a PR, contact
 
 ---
 ## Dispatch Schedules
-| Field                 | Type              | Notes / Legal Values                               |
-| --------------------- | ----------------- | -------------------------------------------------- |
-| `duration`            | int               | **Required.** Length of the schedule in ticks.     |
-| `name`                | string            | Schedule name.                                     |
-| `relative-start-time` | int               | Start offset within repeating cycle.               |
-| `absolute-start-time` | int               | Absolute tick start (incompatible with relative).  |
-| `max-delay`           | int               | Optional max delay (ticks).                        |
-| `re-use-all-slots`    | bool              | Whether all slots can be reused.                   |
-| `renamed-tags`        | object            | Maps stringified tag IDs with corresponding name   |
-| `slots`               | array<int/object> | Can be an int representing an offset or an object. |
+| Field                 | Type               | Notes / Legal Values                                         |
+| --------------------- | ------------------ | ------------------------------------------------------------ |
+| `duration`            | int                | **Required.** Length of the schedule in ticks.               |
+| `name`                | string             | Schedule name.                                               |
+| `relative-start-time` | int                | Start offset in ticks within repeating cycle.                |
+| `absolute-start-time` | int                | Absolute tick start (incompatible with relative).            |
+| `max-delay`           | int                | Optional max delay (ticks).                                  |
+| `re-use-all-slots`    | bool               | Whether all slots can be reused.                             |
+| `renamed-tags`        | object\<string>    | Maps stringified tag IDs with corresponding name             |
+| `route-ids`           | object\<string>    | Maps stringified route IDs with corresponding name           |
+| `slots`               | array\<int/object> | Can be an int representing an offset in ticks, or an object. |
 #### Slots
 When they represent a complex slot.
-| Field         | Type  | Notes / Legal Values |
-| ------------- | ----- | -------------------- |
-| `offset`      | int   | Required.            |
-| `tags`        | array | Numbers 1–4.         |
-| `re-use-slot` | bool  | Reuse this slot.     |
+| Field         | Type        | Notes / Legal Values |
+| ------------- | ----------- | -------------------- |
+| `offset`      | int         | Required.            |
+| `tags`        | array\<int> | Numbers 1–4.         |
+| `route`       | int         | Route ID.            |
+| `re-use-slot` | bool        | Reuse this slot.     |
 
 ---
 ## Orders
@@ -65,16 +67,16 @@ Fields can depend on the `type` of the order
 | ------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `max-speed`        | int  | Maximum speed to this destination                                                                                                           |
 
-#### Go to station(`type: go-to-station`)
-| Field                  | Type        | Notes / Legal Values                                                                      |
-| ---------------------- | ----------- | ----------------------------------------------------------------------------------------- |
-| `destination-id`       | int         | Station ID                                                                                |
-| `destination-name`     | string      | Export only.                                                                              |
-| `destination-location` | obj         | `{X:int, Y:int}` tile location.                                                           |
-| `load`                 | enum        | `load`, `full-load`, `full-load-any`, `no-load`                                           |
-| `unload`               | enum        | `unload`, `unload-and-leave-empty`, `transfer`, `no-unload`                               |
-| `load-by-cargo-type`   | array\<obj> | `{"<cargo-id>": {"load": <load>, "unload": <unload>}}`                                    |
-| `timetable-leave-type` | enum        | `normal`, `leave-early`, `leave-early-if-any-cargo-full`, `leave-early-if-all-cargo-full` |
+#### Go to station (`type: go-to-station`)
+| Field                  | Type           | Notes / Legal Values                                                                      |
+| ---------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+| `destination-id`       | int            | Station ID                                                                                |
+| `destination-name`     | string         | Export only.                                                                              |
+| `destination-location` | object         | `{X:int, Y:int}` tile location.                                                           |
+| `load`                 | enum           | `load`, `full-load`, `full-load-any`, `no-load`                                           |
+| `unload`               | enum           | `unload`, `unload-and-leave-empty`, `transfer`, `no-unload`                               |
+| `load-by-cargo-type`   | array\<object> | `{"<cargo-id>": {"load": <load>, "unload": <unload>}}`                                    |
+| `timetable-leave-type` | enum           | `normal`, `leave-early`, `leave-early-if-any-cargo-full`, `leave-early-if-all-cargo-full` |
 #### Go to Depot (`type: go-to-depot`)
 | Field          | Type    | Nortes / Legal Values                                  |
 | -------------- | ------- | ------------------------------------------------------ |
@@ -85,9 +87,9 @@ Fields can depend on the `type` of the order
 | ---------------------- | ------ | ------------------------------- |
 | `destination-id`       | int    | Waypoint ID.                    |
 | `destination-name`     | string | Export only.                    |
-| `destination-location` | obj    | `{X:int, Y:int}` tile location. |
+| `destination-location` | object | `{X:int, Y:int}` tile location. |
 | `waypoint-reverse`     | bool   | Reverse direction at waypoint.  |
-#### Conditional(`type: conditional`)
+#### Conditional (`type: conditional`)
 | Field                  | Type   | Notes / Legal Values                                                                                                                                                                                                                                                                                                                                                            |
 | ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `condition-variable`   | enum   | **Required**<br>`always`, `load-percentage`, `cargo-load-percentage`, `reliability`, `max-reliability`, `requires-service`, `age`, `remaining-lifetime`, `cargo-waiting`, `cargo-waiting-amount`, `cargo-waiting-amount-percentage`, `free-platforms`, `slot-occupancy`, `vehicle-in-slot`, `vehicle-in-slot-group`, `counter-value`, `timetable`, `time-date`, `dispatch-slot` |
