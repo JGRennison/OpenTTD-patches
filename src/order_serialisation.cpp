@@ -102,7 +102,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char LOAD[]                        = "load";                        ///< enum
 		static constexpr char UNLOAD[]                      = "unload";                      ///< enum
 		static constexpr char LOAD_BY_CARGO_TYPE[]          = "load-by-cargo-type";          ///< object  Contains "load" and "unload" settings for specific cargo-ids
-		static constexpr char TIMETABLE_LEAVE_TYPE[]        = "timeable-leave-type";         ///< enum
+		static constexpr char TIMETABLE_LEAVE_TYPE[]        = "timetable-leave-type";        ///< enum
 		static constexpr char COUNTER_ID[]                  = "counter-id";                  ///< int
 		static constexpr char SLOT_ID[]                     = "slot-id";                     ///< int
 		static constexpr char SLOT_GROUP_ID[]               = "slot-group-id";               ///< int
