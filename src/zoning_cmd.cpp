@@ -453,7 +453,7 @@ inline SpriteID TileZoningSpriteEvaluationCached(TileIndex tile, Owner owner, Zo
  */
 void DrawTileZoning(const TileInfo *ti)
 {
-	if (IsTileType(ti->tile, MP_VOID) || _game_mode != GM_NORMAL) {
+	if (IsTileType(ti->tile, MP_VOID) || (_game_mode != GM_NORMAL && _game_mode != GM_EDITOR)) {
 		return;
 	}
 
