@@ -661,8 +661,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 
 	if (!IsTileType(tile, MP_ROAD)) {
 		const bool custom_bridge_head = IsBridgeTile(tile) &&
-				HasBridgeFlatRamp(GetTileSlope(tile), DiagDirToAxis(GetTunnelBridgeDirection(tile))) &&
-				(_settings_game.construction.road_custom_bridge_heads || IsRoadCustomBridgeHead(tile));
+				HasBridgeFlatRamp(GetTileSlope(tile), DiagDirToAxis(GetTunnelBridgeDirection(tile)));
 
 		/* If it's the last roadtype, just clear the whole tile */
 		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
@@ -1237,7 +1236,7 @@ CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, 
 				const RoadBits axial_pieces = AxisToRoadBits(DiagDirToAxis(entrance_dir));
 				existing = GetCustomBridgeHeadRoadBits(tile, rtt);
 
-				if (!(_settings_game.construction.road_custom_bridge_heads && HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir))) || HasFlag(build_flags, BuildRoadFlags::NoCustomBridgeHeads)) {
+				if (!HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir)) || HasFlag(build_flags, BuildRoadFlags::NoCustomBridgeHeads)) {
 					/* Ordinary bridge heads only */
 					/* Only allow building the outer roadbit, so building long roads stops at existing bridges */
 					if (MirrorRoadBits(entrance_piece) != pieces) goto do_clear;

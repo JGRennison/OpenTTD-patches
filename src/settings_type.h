@@ -585,9 +585,7 @@ struct ConstructionSettings {
 	uint16_t maximum_signal_evaluations;     ///< maximum number of programmable pre-signals which may be evaluated in one pass
 	bool     enable_build_river;             ///< enable building rivers in-game
 	bool     enable_remove_water;            ///< enable removing sea and rivers in-game
-	uint8_t  road_custom_bridge_heads;       ///< allow construction of road custom bridge heads
 	bool     chunnel;                        ///< allow construction of tunnels under water
-	uint8_t  rail_custom_bridge_heads;       ///< allow construction of rail custom bridge heads
 	bool     allow_grf_objects_under_bridges;///< allow all NewGRF objects under bridges
 	bool     allow_stations_under_bridges;   ///< allow NewGRF rail station/waypoint tiles that do not specify clearance under bridges
 	bool     allow_road_stops_under_bridges; ///< allow road/tram stops under bridges

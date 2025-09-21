@@ -661,11 +661,6 @@ STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :Нет
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :Только при удалении дорог
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :Да
 
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Включить настраиваемые опоры дорожных мостов: {STRING}
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Позволяет дорожным мостам иметь пользовательские, непрямые плоские клетки для въезда/выезда
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :Включить настраиваемые опоры железнодорожных мостов: {STRING}
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Позволяет железнодорожным мостам иметь нестандартные, непрямые плоские клетки для въезда/выезда
-
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :Разрешить все объекты NewGRF под мостами: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Разрешить всем объектам NewGRF строиться под мостами, даже если это не разрешено GRF.{}Может вызвать проблемы с графикой.
 

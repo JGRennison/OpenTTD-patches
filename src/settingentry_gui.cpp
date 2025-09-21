@@ -1107,8 +1107,6 @@ SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.maximum_signal_evaluations"));
 			limitations->Add(new SettingEntry("construction.enable_build_river"));
 			limitations->Add(new SettingEntry("construction.enable_remove_water"));
-			limitations->Add(new SettingEntry("construction.road_custom_bridge_heads"));
-			limitations->Add(new SettingEntry("construction.rail_custom_bridge_heads"));
 			limitations->Add(new SettingEntry("construction.allow_grf_objects_under_bridges"));
 			limitations->Add(new SettingEntry("construction.allow_stations_under_bridges"));
 			limitations->Add(new SettingEntry("construction.allow_road_stops_under_bridges"));

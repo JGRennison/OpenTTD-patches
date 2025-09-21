@@ -679,11 +679,6 @@ STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :아니요
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :도로가 제거될 때만
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :예
 
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :도로교의 시작점을 교차로로 만드는 것을 허용: {STRING}
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :도로교의 입 출구 타일을 경사가 지지 않았을 경우 사용자 지정할 수 있도록 허용합니다
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :철교의 시작점을 교차로로 만드는 것을 허용: {STRING}
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :철교의 입 출구 타일을 경사가 지지 않았을 경우 사용자 지정할 수 있도록 허용합니다
-
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :모든 NewGRF 오브젝트를 다리 밑에 설치하는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :NewGRF의 설정과 관계 없이 모든 NewGRF 오브젝트가 다리 밑에 설치될 수 있도록 허용합니다.{}그래픽 오류가 발생할 수 있습니다
 

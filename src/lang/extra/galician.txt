@@ -679,11 +679,6 @@ STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :Non
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :Só co borrado de estradas
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :Si
 
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Habilitar cabezas de pontes de estrada personalizadas: {STRING}
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Permitir as pontes de estrada ter cabezas de ponte de entrada/saída en cadros non planos.
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :Habilitar cabezas de pontes de ferrocarril personalizadas: {STRING}
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Permitir as pontes de ferrocarril ter cabezas de ponte de entrada/saída en cadros non planos.
-
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :Permitir todos os obxectos NewGRF baixo as pontes: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Permitir que todos os obxectos NewGRF se poidan construír baixo as pontes, incluso cando non está así habilitado polo GRF.{}Isto pode ter problemas gráficos.
 

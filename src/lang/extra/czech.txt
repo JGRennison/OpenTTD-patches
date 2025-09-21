@@ -579,11 +579,6 @@ STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :Ne
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :Pouze při odstranění silnice
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :Ano
 
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Povolit vlastní předmostí pro silniční mosty: {STRING}
-STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Umožní, aby silniční mosty měly na koncových políčkách vlastní, nepřímo směřující úseky silnic
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :Povolit vlastní předmostí pro železniční mosty: {STRING}
-STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Umožní, aby železniční mosty měly na koncových políčkách vlastní, nepřímo směřující koleje
-
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :Povolit všechny objekty z NewGRF pod mosty: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Pokud je zapnuto, všechny objekty z NewGRF mohou být stavěny pod mosty, i když to samotná grafika neumožňuje.{}Může to vést ke grafickým problémům.
 

@@ -751,7 +751,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
-			if (HasFlag(build_flags, BuildRailTrackFlags::NoCustomBridgeHeads) || !_settings_game.construction.rail_custom_bridge_heads || !IsFlatRailBridgeHeadTile(tile)) {
+			if (HasFlag(build_flags, BuildRailTrackFlags::NoCustomBridgeHeads) || !IsFlatRailBridgeHeadTile(tile)) {
 				return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile); // just get appropriate error message
 			}
 

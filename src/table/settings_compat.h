@@ -230,7 +230,7 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_VAR("order.gradual_loading"),
 	SLCX_VAR("construction.road_stop_on_town_road"),
 	SLCX_VAR("construction.road_stop_on_competitor_road"),
-	SLCX_XREF("construction.road_custom_bridge_heads", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
+	SLCX_NULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)), // construction.road_custom_bridge_heads
 	SLCX_NULL(1, SLV_62, SLV_TABLE_CHUNKS), // station.adjacent_stations
 	SLCX_VAR("economy.station_noise_level"),
 	SLCX_VAR("station.distant_join_stations"),
