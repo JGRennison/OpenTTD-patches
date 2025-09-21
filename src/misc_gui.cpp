@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "debug.h"
+#include "debug_settings.h"
 #include "landscape.h"
 #include "landscape_cmd.h"
 #include "error.h"
@@ -36,6 +37,7 @@
 
 #include "widgets/misc_widget.h"
 
+#include "table/control_codes.h"
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -291,6 +293,13 @@ public:
 		/* NewGRF name */
 		if (td.grf.has_value()) {
 			this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_NEWGRF_NAME, std::move(*td.grf)));
+		}
+
+		if (HasBit(_misc_debug_flags, MDF_LANDINFO_TILE_DUMP)) {
+			format_buffer buf;
+			buf.push_back_utf8(SCC_BLACK);
+			DumpTileFields(buf, this->tile);
+			this->landinfo_data.push_back(buf.to_string());
 		}
 
 		/* Cargo acceptance is displayed in a extra multiline */

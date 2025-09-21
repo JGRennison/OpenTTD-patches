@@ -521,11 +521,17 @@ void DumpTileInfo(format_target &buffer, TileIndex tile)
 		if (tile >= Map::Size()) {
 			buffer.format(", TILE OUTSIDE MAP (map size: 0x{:X})", Map::Size());
 		} else {
-			buffer.format(", type: {:02X} ({}), height: {:02X}, data: {:02X} {:04X} {:02X} {:02X} {:02X} {:02X} {:02X} {:04X}",
-					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
-					_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7, _me[tile].m8);
+			buffer.append(", ");
+			DumpTileFields(buffer, tile);
 		}
 	}
+}
+
+void DumpTileFields(format_target &buffer, TileIndex tile)
+{
+	buffer.format("type: {:02X} ({}), height: {:02X}, data: {:02X} {:04X} {:02X} {:02X} {:02X} {:02X} {:02X} {:04X}",
+			_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
+			_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7, _me[tile].m8);
 }
 
 void DumpMapStats(format_target &buffer)

@@ -3740,6 +3740,7 @@ static bool ConMiscDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 		IConsolePrint(CC_HELP, "Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsolePrint(CC_HELP, "  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
 		IConsolePrint(CC_HELP, "  2: MDF_ZONING_DEBUG_MODES");
+		IConsolePrint(CC_HELP, "  4: MDF_LANDINFO_TILE_DUMP");
 		IConsolePrint(CC_HELP, " 10: MDF_NEWGRF_SG_SAVE_RAW");
 		IConsolePrint(CC_HELP, " 20: MDF_SPECIAL_CMDS");
 		return true;
