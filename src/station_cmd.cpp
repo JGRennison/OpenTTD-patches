@@ -4292,7 +4292,7 @@ static void UpdateStationRating(Station *st)
 			if (ge->time_since_pickup == 255 && _settings_game.order.selectgoods && _settings_game.station.truncate_cargo) {
 				ge->status.Reset(GoodsEntry::State::Rating);
 				ge->last_speed = 0;
-				TruncateCargo(cs, ge);				
+				TruncateCargo(cs, ge);
 				waiting_changed = true;
 				continue;
 			}
