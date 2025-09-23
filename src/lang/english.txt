@@ -1346,8 +1346,8 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Have differentl
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Company stations can serve industries with attached neutral stations: {STRING2}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :When enabled, industries with attached stations (such as Oil Rigs) may also be served by company-owned stations built nearby. When disabled, these industries may only be served by their attached stations. Any nearby company stations won't be able to serve them, nor will the attached station serve anything else other than the industry
 
-STR_CONFIG_SETTING_TRUNCATE_CARGO				                        :Enable truncation of cargo: {STRING2}
-STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT			                :If enabled, cargo that waits too long at a station (e.g. due to low ratings or no service) will disappear. Disable to keep all waiting cargo, even if trains are rare.
+STR_CONFIG_SETTING_TRUNCATE_CARGO                               :Enable truncation of cargo: {STRING2}
+STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :If enabled, cargo that waits too long at a station (e.g. due to low ratings or no service) will disappear. Disable to keep all waiting cargo, even if trains are rare.
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Allow removal of more town-owned roads, bridges and tunnels: {STRING2}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Make it easier to remove town-owned infrastructure and buildings
