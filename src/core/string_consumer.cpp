@@ -86,7 +86,7 @@ void StringConsumer::Skip(size_type len)
 	if (len == std::string_view::npos) {
 		this->position = this->src.size();
 	} else if (size_type max_len = GetBytesLeft(); len > max_len) {
-		LogError(fmt::format("Source buffer too short: {} > {}", len, max_len));
+		LogErrorBufferTooShort(len, max_len);
 		this->position = this->src.size();
 	} else {
 		this->position += len;
