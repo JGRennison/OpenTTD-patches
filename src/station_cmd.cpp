@@ -4289,7 +4289,7 @@ static void UpdateStationRating(Station *st)
 		if (ge->HasRating()) {
 			byte_inc_sat(&ge->time_since_pickup);
 
-			if (ge->time_since_pickup == 255 && _settings_game.order.selectgoods) {
+			if (ge->time_since_pickup == 255 && _settings_game.order.selectgoods && _settings_game.station.truncate_cargo) {
 				ge->status.Reset(GoodsEntry::State::Rating);
 				ge->last_speed = 0;
 				TruncateCargo(cs, ge);
@@ -4366,8 +4366,9 @@ static void UpdateStationRating(Station *st)
 					/* Feed back the exact own waiting cargo at this station for the
 					 * next rating calculation. */
 					ge->max_waiting_cargo = 0;
-
-					TruncateCargo(cs, ge, ge->CargoAvailableCount() - waiting);
+					if (_settings_game.station.truncate_cargo) {
+						TruncateCargo(cs, ge, ge->CargoAvailableCount() - waiting);				
+					}
 				} else {
 					/* If the average number per next hop is low, be more forgiving. */
 					ge->max_waiting_cargo = waiting_avg;
