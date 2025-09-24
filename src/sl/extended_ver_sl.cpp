@@ -45,6 +45,7 @@
 #include "../rev.h"
 #include "../strings_func.h"
 #include "../company_func.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 #include "table/strings.h"
 
 #include <vector>
@@ -653,23 +654,24 @@ static void Load_SLXI()
 		SlError(STR_JUST_RAW_STRING, GetStringWithArgs(str, tmp_params));
 	};
 
+	static robin_hood::unordered_map<std::string_view, const SlxiSubChunkInfo *> sl_xv_sub_chunk_map;
+	if (sl_xv_sub_chunk_map.empty()) {
+		for (const SlxiSubChunkInfo &it : _sl_xv_sub_chunk_infos) {
+			sl_xv_sub_chunk_map[it.name] = &it;
+		}
+	}
+
 	uint32_t item_count = SlReadUint32();
 	for (uint32_t i = 0; i < item_count; i++) {
 		SlxiSubChunkFlags flags = static_cast<SlxiSubChunkFlags>(SlReadUint32());
 		uint16_t version = SlReadUint16();
 		SlGlobList(xlsi_sub_chunk_name_desc);
 
-		// linearly scan through feature list until found name match
-		const SlxiSubChunkInfo *info = nullptr;
-		for (const SlxiSubChunkInfo &it : _sl_xv_sub_chunk_infos) {
-			if (name_buffer == it.name) {
-				info = &it;
-				break;
-			}
-		}
+		auto info_iter = sl_xv_sub_chunk_map.find(name_buffer);
 
 		bool discard_chunks = false;
-		if (info != nullptr) {
+		if (info_iter != sl_xv_sub_chunk_map.end()) {
+			const SlxiSubChunkInfo *info = info_iter->second;
 			if (version > info->max_version) {
 				if (flags & XSCF_IGNORABLE_VERSION) {
 					// version too large but carry on regardless
