@@ -108,7 +108,7 @@ int RoadVehicle::GetDisplayImageWidth(Point *offset) const
 static void GetRoadVehIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
-	uint8_t spritenum = e->u.road.image_index;
+	uint8_t spritenum = e->VehInfo<RoadVehicleInfo>().image_index;
 
 	if (IsCustomVehicleSpriteNum(spritenum)) {
 		GetCustomVehicleIcon(engine, DIR_W, image_type, result);
@@ -204,7 +204,7 @@ static uint GetRoadVehLength(const RoadVehicle *v)
 		/* Use callback 11 */
 		veh_len = GetVehicleCallback(CBID_VEHICLE_LENGTH, 0, 0, v->engine_type, v);
 	}
-	if (veh_len == CALLBACK_FAILED) veh_len = e->u.road.shorten_factor;
+	if (veh_len == CALLBACK_FAILED) veh_len = e->VehInfo<RoadVehicleInfo>().shorten_factor;
 	if (veh_len != 0) {
 		length -= Clamp(veh_len, 0, VEHICLE_LENGTH - 1);
 	}
@@ -281,12 +281,12 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
 	/* Check that the vehicle can drive on the road in question */
-	RoadType rt = e->u.road.roadtype;
+	RoadType rt = e->VehInfo<RoadVehicleInfo>().roadtype;
 	const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 	if (!HasTileAnyRoadType(tile, rti->powered_roadtypes)) return CommandCost(STR_ERROR_DEPOT_WRONG_DEPOT_TYPE);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		const RoadVehicleInfo *rvi = &e->u.road;
+		const RoadVehicleInfo *rvi = &e->VehInfo<RoadVehicleInfo>();
 
 		RoadVehicle *v = new RoadVehicle();
 		*ret = v;
@@ -2188,12 +2188,12 @@ static bool RoadVehController(RoadVehicle *v)
 Money RoadVehicle::GetRunningCost() const
 {
 	const Engine *e = this->GetEngine();
-	if (e->u.road.running_cost_class == INVALID_PRICE) return 0;
+	if (e->VehInfo<RoadVehicleInfo>().running_cost_class == INVALID_PRICE) return 0;
 
-	uint cost_factor = GetVehicleProperty(this, PROP_ROADVEH_RUNNING_COST_FACTOR, e->u.road.running_cost);
+	uint cost_factor = GetVehicleProperty(this, PROP_ROADVEH_RUNNING_COST_FACTOR, e->VehInfo<RoadVehicleInfo>().running_cost);
 	if (cost_factor == 0) return 0;
 
-	Money cost = GetPrice(e->u.road.running_cost_class, cost_factor, e->GetGRF());
+	Money cost = GetPrice(e->VehInfo<RoadVehicleInfo>().running_cost_class, cost_factor, e->GetGRF());
 
 	if (this->cur_speed == 0) {
 		if (this->IsInDepot()) {

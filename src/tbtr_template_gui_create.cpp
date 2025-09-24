@@ -315,7 +315,7 @@ public:
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) {
 							buildable = false;
 						} else {
-							types &= GetAllCompatibleRailTypes(e->u.rail.railtypes);
+							types &= GetAllCompatibleRailTypes(e->VehInfo<RailVehicleInfo>().railtypes);
 						}
 						buy_cost += e->GetCost();
 					}

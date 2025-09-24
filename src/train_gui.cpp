@@ -22,7 +22,7 @@
 
 #include "safeguards.h"
 
-uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front);
+uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo &rvi_u, const Train *front);
 
 /**
  * Callback for building wagons.
@@ -291,7 +291,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 				} else {
 					if (HasBit(v->flags, VRF_NEED_REPAIR)) {
 						breakdown_status = STR_NEED_REPAIR;
-						p1 = GetTrainVehicleMaxSpeed(v, &(v->GetEngine()->u.rail), v->First());
+						p1 = GetTrainVehicleMaxSpeed(v, v->GetEngine()->VehInfo<RailVehicleInfo>(), v->First());
 					} else {
 						breakdown_status = STR_RUNNING;
 					}

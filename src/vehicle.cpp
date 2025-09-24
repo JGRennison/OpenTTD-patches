@@ -209,8 +209,8 @@ void VehicleServiceInDepot(Vehicle *v)
 		ClrBit(Train::From(v)->flags, VRF_HAS_HIT_RV);
 		ClrBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN);
 		Train::From(v)->critical_breakdown_count = 0;
-		const RailVehicleInfo *rvi = &e->u.rail;
-		v->vcache.cached_max_speed = rvi->max_speed;
+		const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
+		v->vcache.cached_max_speed = rvi.max_speed;
 		if (Train::From(v)->IsFrontEngine()) {
 			Train::From(v)->ConsistChanged(CCF_REFIT);
 			Train::From(v)->flags &= ~((1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
@@ -3050,7 +3050,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
 	if (max > 0) {
 		/* Can we actually build the vehicle type? */
 		for (const Engine *e : Engine::IterateType(type)) {
-			if (type == VEH_ROAD && GetRoadTramType(e->u.road.roadtype) != (RoadTramType)subtype) continue;
+			if (type == VEH_ROAD && GetRoadTramType(e->VehInfo<RoadVehicleInfo>().roadtype) != (RoadTramType)subtype) continue;
 			if (e->company_avail.Test(_local_company)) return true;
 		}
 		return false;
@@ -3080,7 +3080,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 	switch (e->type) {
 		default: NOT_REACHED();
 		case VEH_TRAIN:
-			if (v != nullptr && parent_engine_type != EngineID::Invalid() && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->u.rail.railveh_type != RAILVEH_WAGON))) {
+			if (v != nullptr && parent_engine_type != EngineID::Invalid() && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON))) {
 				/* Wagonoverrides use the colour scheme of the front engine.
 				 * Articulated parts use the colour scheme of the first part. (Not supported for articulated wagons) */
 				engine_type = parent_engine_type;
@@ -3091,7 +3091,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			if (!IsValidCargoType(cargo_type)) cargo_type = e->GetDefaultCargoType();
 			if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
 			assert(IsValidCargoType(cargo_type));
-			if (e->u.rail.railveh_type == RAILVEH_WAGON) {
+			if (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
 				if (!CargoSpec::Get(cargo_type)->is_freight) {
 					if (parent_engine_type == EngineID::Invalid()) {
 						return LS_PASSENGER_WAGON_STEAM;
@@ -3112,7 +3112,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			} else {
 				bool is_mu = e->info.misc_flags.Test(EngineMiscFlag::RailIsMU);
 
-				switch (e->u.rail.engclass) {
+				switch (e->VehInfo<RailVehicleInfo>().engclass) {
 					default: NOT_REACHED();
 					case EC_STEAM:    return LS_STEAM;
 					case EC_DIESEL:   return is_mu ? LS_DMU : LS_DIESEL;
@@ -3149,7 +3149,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			return IsCargoInClass(cargo_type, CargoClass::Passengers) ? LS_PASSENGER_SHIP : LS_FREIGHT_SHIP;
 
 		case VEH_AIRCRAFT:
-			switch (e->u.air.subtype) {
+			switch (e->VehInfo<AircraftVehicleInfo>().subtype) {
 				case AIR_HELI: return LS_HELICOPTER;
 				case AIR_CTOL: return LS_SMALL_PLANE;
 				case AIR_CTOL | AIR_FAST: return LS_LARGE_PLANE;
@@ -4112,9 +4112,9 @@ void Vehicle::UpdateVisualEffect(bool allow_power_change)
 	/* Evaluate properties */
 	uint8_t visual_effect;
 	switch (e->type) {
-		case VEH_TRAIN: visual_effect = e->u.rail.visual_effect; break;
-		case VEH_ROAD:  visual_effect = e->u.road.visual_effect; break;
-		case VEH_SHIP:  visual_effect = e->u.ship.visual_effect; break;
+		case VEH_TRAIN: visual_effect = e->VehInfo<RailVehicleInfo>().visual_effect; break;
+		case VEH_ROAD:  visual_effect = e->VehInfo<RoadVehicleInfo>().visual_effect; break;
+		case VEH_SHIP:  visual_effect = e->VehInfo<ShipVehicleInfo>().visual_effect; break;
 		default:        visual_effect = 1 << VE_DISABLE_EFFECT;  break;
 	}
 
@@ -4141,7 +4141,7 @@ void Vehicle::UpdateVisualEffect(bool allow_power_change)
 			(!HasBit(visual_effect, VE_DISABLE_EFFECT) && GB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT) == VE_TYPE_DEFAULT)) {
 		/* Only train engines have default effects.
 		 * Note: This is independent of whether the engine is a front engine or articulated part or whatever. */
-		if (e->type != VEH_TRAIN || e->u.rail.railveh_type == RAILVEH_WAGON || !IsInsideMM(e->u.rail.engclass, EC_STEAM, EC_MONORAIL)) {
+		if (e->type != VEH_TRAIN || e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON || !IsInsideMM(e->VehInfo<RailVehicleInfo>().engclass, EC_STEAM, EC_MONORAIL)) {
 			if (visual_effect == VE_DEFAULT) {
 				visual_effect = 1 << VE_DISABLE_EFFECT;
 			} else {
@@ -4150,9 +4150,9 @@ void Vehicle::UpdateVisualEffect(bool allow_power_change)
 		} else {
 			if (visual_effect == VE_DEFAULT) {
 				/* Also set the offset */
-				visual_effect = (VE_OFFSET_CENTRE - (e->u.rail.engclass == EC_STEAM ? 4 : 0)) << VE_OFFSET_START;
+				visual_effect = (VE_OFFSET_CENTRE - (e->VehInfo<RailVehicleInfo>().engclass == EC_STEAM ? 4 : 0)) << VE_OFFSET_START;
 			}
-			SB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT, e->u.rail.engclass - EC_STEAM + VE_TYPE_STEAM);
+			SB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT, e->VehInfo<RailVehicleInfo>().engclass - EC_STEAM + VE_TYPE_STEAM);
 		}
 	}
 
@@ -4718,7 +4718,7 @@ bool CanVehicleUseStation(EngineID engine_type, const Station *st)
 
 		case VEH_AIRCRAFT:
 			return st->facilities.Test(StationFacility::Airport) &&
-					st->airport.GetFTA()->flags.Test(e->u.air.subtype & AIR_CTOL ? AirportFTAClass::Flag::Airplanes : AirportFTAClass::Flag::Helicopters);
+					st->airport.GetFTA()->flags.Test(e->VehInfo<AircraftVehicleInfo>().subtype & AIR_CTOL ? AirportFTAClass::Flag::Airplanes : AirportFTAClass::Flag::Helicopters);
 
 		default:
 			return false;
@@ -4779,7 +4779,7 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 
 		case VEH_AIRCRAFT:
 			if (!st->facilities.Test(StationFacility::Airport)) return STR_ERROR_NO_AIRPORT;
-			if (v->GetEngine()->u.air.subtype & AIR_CTOL) {
+			if (v->GetEngine()->VehInfo<AircraftVehicleInfo>().subtype & AIR_CTOL) {
 				return STR_ERROR_AIRPORT_NO_PLANES;
 			} else {
 				return STR_ERROR_AIRPORT_NO_HELICOPTERS;

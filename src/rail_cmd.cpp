@@ -255,7 +255,7 @@ void InitRailTypesIndirectCompatibility()
 	}
 
 	for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
-		RailTypes rts = e->u.rail.intended_railtypes;
+		RailTypes rts = e->VehInfo<RailVehicleInfo>().intended_railtypes;
 		if (HasAtMostOneBit(rts)) continue;
 
 		RailType first_rt = *rts.begin();

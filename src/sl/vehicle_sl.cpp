@@ -490,7 +490,7 @@ void AfterLoadVehiclesPhase2(bool part_of_load)
 				if (rv->IsFrontEngine()) {
 					rv->gcache.last_speed = rv->cur_speed; // update displayed road vehicle speed
 
-					rv->roadtype = Engine::Get(rv->engine_type)->u.road.roadtype;
+					rv->roadtype = Engine::Get(rv->engine_type)->VehInfo<RoadVehicleInfo>().roadtype;
 					rv->compatible_roadtypes = GetRoadTypeInfo(rv->roadtype)->powered_roadtypes;
 					bool is_invalid = false;
 					for (RoadVehicle *u = rv; u != nullptr; u = u->Next()) {

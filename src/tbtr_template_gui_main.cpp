@@ -838,7 +838,7 @@ public:
 					buildable = false;
 					break;
 				} else {
-					types &= GetAllCompatibleRailTypes(Engine::Get(u->engine_type)->u.rail.railtypes);
+					types &= GetAllCompatibleRailTypes(Engine::Get(u->engine_type)->VehInfo<RailVehicleInfo>().railtypes);
 				}
 			}
 			/* Draw a notification string for chains that are not buildable */

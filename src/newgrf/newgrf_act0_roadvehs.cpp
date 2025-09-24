@@ -37,7 +37,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, c
 		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
-		RoadVehicleInfo *rvi = &e->u.road;
+		RoadVehicleInfo *rvi = &e->VehInfo<RoadVehicleInfo>();
 
 		switch (prop) {
 			case 0x05: // Road/tram type

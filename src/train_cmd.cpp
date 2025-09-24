@@ -238,9 +238,9 @@ void CheckBreakdownFlags(Train *v)
 	}
 }
 
-uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front)
+uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo &rvi_u, const Train *front)
 {
-	const uint16_t base_speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+	const uint16_t base_speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u.max_speed);
 	uint16_t speed = base_speed;
 	if (HasBit(u->flags, VRF_NEED_REPAIR) && front->IsFrontEngine()) {
 		for (uint i = 0; i < u->critical_breakdown_count; i++) {
@@ -314,7 +314,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	Vehicle *last_vis_effect = this;
 	for (Train *u = this; u != nullptr; u = u->Next()) {
 		const Engine *e_u = u->GetEngine();
-		const RailVehicleInfo *rvi_u = &e_u->u.rail;
+		const RailVehicleInfo &rvi_u = e_u->VehInfo<RailVehicleInfo>();
 
 		if (!e_u->info.misc_flags.Test(EngineMiscFlag::RailTilts)) train_can_tilt = false;
 		if (e_u->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) speed_varies_by_railtype = true;
@@ -331,7 +331,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		ClrBit(u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT);
 		if (!(HasBit(u->vcache.cached_vis_effect, VE_ADVANCED_EFFECT) && GB(u->vcache.cached_vis_effect, 0, VE_ADVANCED_EFFECT) == VESM_NONE)) last_vis_effect = u;
 
-		if (rvi_v->pow_wag_power != 0 && rvi_u->railveh_type == RAILVEH_WAGON &&
+		if (rvi_v->pow_wag_power != 0 && rvi_u.railveh_type == RAILVEH_WAGON &&
 				UsesWagonOverride(u) && !HasBit(u->vcache.cached_vis_effect, VE_DISABLE_WAGON_POWER)) {
 			/* wagon is powered */
 			SetBit(u->flags, VRF_POWEREDWAGON); // cache 'powered' status
@@ -342,7 +342,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		if (!u->IsArticulatedPart()) {
 			/* Do not count powered wagons for the compatible railtypes, as wagons always
 			   have railtype normal */
-			if (rvi_u->power > 0) {
+			if (rvi_u.power > 0) {
 				this->compatible_railtypes.Set(GetAllPoweredRailTypes(u->railtypes));
 			}
 
@@ -354,7 +354,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			}
 
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
-			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
+			if ((rvi_u.railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
 				uint16_t speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
 				if (speed != 0) max_speed = std::min(speed, max_speed);
 			}
@@ -385,7 +385,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* Use callback 11 */
 			veh_len = GetVehicleCallback(CBID_VEHICLE_LENGTH, 0, 0, u->engine_type, u);
 		}
-		if (veh_len == CALLBACK_FAILED) veh_len = rvi_u->shorten_factor;
+		if (veh_len == CALLBACK_FAILED) veh_len = rvi_u.shorten_factor;
 		veh_len = VEHICLE_LENGTH - Clamp(veh_len, 0, VEHICLE_LENGTH - 1);
 
 		if (allowed_changes.Test(ConsistChangeFlag::Length)) {
@@ -1307,7 +1307,7 @@ int Train::GetCursorImageOffset() const
 		int reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
 
 		const Engine *e = this->GetEngine();
-		if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->u.rail.image_index)) {
+		if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->VehInfo<RailVehicleInfo>().image_index)) {
 			reference_width = e->GetGRF()->traininfo_vehicle_width;
 		}
 
@@ -1327,7 +1327,7 @@ int Train::GetDisplayImageWidth(Point *offset) const
 	int vehicle_pitch = 0;
 
 	const Engine *e = this->GetEngine();
-	if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->u.rail.image_index)) {
+	if (e->GetGRF() != nullptr && IsCustomVehicleSpriteNum(e->VehInfo<RailVehicleInfo>().image_index)) {
 		reference_width = e->GetGRF()->traininfo_vehicle_width;
 		vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}
@@ -1381,7 +1381,7 @@ static void GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImageType
 {
 	const Engine *e = Engine::Get(engine);
 	Direction dir = rear_head ? DIR_E : DIR_W;
-	uint8_t spritenum = e->u.rail.image_index;
+	uint8_t spritenum = e->VehInfo<RailVehicleInfo>().image_index;
 
 	if (IsCustomVehicleSpriteNum(spritenum)) {
 		GetCustomVehicleIcon(engine, dir, image_type, result);
@@ -1477,7 +1477,7 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
  */
 static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
-	const RailVehicleInfo *rvi = &e->u.rail;
+	const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
 
 	/* Check that the wagon can drive on the track in question */
 	if (!IsCompatibleRail(rvi->railtypes, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
@@ -1635,7 +1635,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
  */
 CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **ret)
 {
-	const RailVehicleInfo *rvi = &e->u.rail;
+	const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
 
 	if (rvi->railveh_type == RAILVEH_WAGON) return CmdBuildRailWagon(tile, flags, e, ret);
 
@@ -6837,15 +6837,15 @@ Money Train::GetRunningCost() const
 
 	do {
 		const Engine *e = v->GetEngine();
-		if (e->u.rail.running_cost_class == INVALID_PRICE) continue;
+		if (e->VehInfo<RailVehicleInfo>().running_cost_class == INVALID_PRICE) continue;
 
-		uint cost_factor = GetVehicleProperty(v, PROP_TRAIN_RUNNING_COST_FACTOR, e->u.rail.running_cost);
+		uint cost_factor = GetVehicleProperty(v, PROP_TRAIN_RUNNING_COST_FACTOR, e->VehInfo<RailVehicleInfo>().running_cost);
 		if (cost_factor == 0) continue;
 
 		/* Halve running cost for multiheaded parts */
 		if (v->IsMultiheaded()) cost_factor /= 2;
 
-		cost += GetPrice(e->u.rail.running_cost_class, cost_factor, e->GetGRF());
+		cost += GetPrice(e->VehInfo<RailVehicleInfo>().running_cost_class, cost_factor, e->GetGRF());
 	} while ((v = v->GetNextVehicle()) != nullptr);
 
 	if (this->cur_speed == 0) {
@@ -7068,14 +7068,14 @@ void DeleteVisibleTrain(Train *v)
 
 static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_consist_change)
 {
-	const RailVehicleInfo *rvi = &e->u.rail;
+	const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 
 	Train *v = new Train();
 
 	v->x_pos = 0;
 	v->y_pos = 0;
 
-	v->spritenum = rvi->image_index;
+	v->spritenum = rvi.image_index;
 
 	v->engine_type = e->index;
 	v->gcache.first_engine = EngineID::Invalid(); // needs to be set before first callback
@@ -7094,9 +7094,9 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 	v->SetVirtual();
 
 	v->cargo_type = e->GetDefaultCargoType();
-	v->cargo_cap = rvi->capacity;
+	v->cargo_cap = rvi.capacity;
 
-	v->railtypes = rvi->railtypes;
+	v->railtypes = rvi.railtypes;
 
 	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
@@ -7130,9 +7130,9 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 		return nullptr;
 	}
 
-	const RailVehicleInfo *rvi = &e->u.rail;
+	const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 
-	int num_vehicles = (e->u.rail.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
+	int num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
 	if (!Train::CanAllocateItem(num_vehicles)) {
 		error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
 		return nullptr;
@@ -7140,7 +7140,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 
 	RegisterGameEvents(GEF_VIRT_TRAIN);
 
-	if (rvi->railveh_type == RAILVEH_WAGON) {
+	if (rvi.railveh_type == RAILVEH_WAGON) {
 		return CmdBuildVirtualRailWagon(e, user, no_consist_change);
 	}
 
@@ -7155,9 +7155,9 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->track = TRACK_BIT_DEPOT;
 	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 	v->vehstatus = {VehState::Hidden, VehState::Stopped, VehState::DefaultPalette};
-	v->spritenum = rvi->image_index;
+	v->spritenum = rvi.image_index;
 	v->cargo_type = e->GetDefaultCargoType();
-	v->cargo_cap = rvi->capacity;
+	v->cargo_cap = rvi.capacity;
 	v->last_station_visited = StationID::Invalid();
 	v->motion_counter = (uint32_t)user;
 
@@ -7173,7 +7173,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->vehicle_flags.Set(VehicleFlag::AutomateTimetable, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
 	v->vehicle_flags.Set(VehicleFlag::TimetableSeparation, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
-	v->railtypes = rvi->railtypes;
+	v->railtypes = rvi.railtypes;
 
 	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
@@ -7185,7 +7185,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->SetEngine();
 	v->SetVirtual();
 
-	if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
+	if (rvi.railveh_type == RAILVEH_MULTIHEAD) {
 		AddRearEngineToMultiheadedTrain(v);
 	} else {
 		AddArticulatedParts(v);

@@ -457,10 +457,10 @@ void AddArticulatedParts(Vehicle *first)
 				t->track = front->track;
 				t->railtypes = front->railtypes;
 
-				t->spritenum = e_artic->u.rail.image_index;
+				t->spritenum = e_artic->VehInfo<RailVehicleInfo>().image_index;
 				if (e_artic->CanCarryCargo()) {
 					t->cargo_type = e_artic->GetDefaultCargoType();
-					t->cargo_cap = e_artic->u.rail.capacity;  // Callback 36 is called when the consist is finished
+					t->cargo_cap = e_artic->VehInfo<RailVehicleInfo>().capacity;  // Callback 36 is called when the consist is finished
 				} else {
 					t->cargo_type = front->cargo_type; // Needed for livery selection
 					t->cargo_cap = 0;
@@ -486,11 +486,11 @@ void AddArticulatedParts(Vehicle *first)
 				rv->roadtype = front->roadtype;
 				rv->compatible_roadtypes = front->compatible_roadtypes;
 
-				rv->spritenum = e_artic->u.road.image_index;
+				rv->spritenum = e_artic->VehInfo<RoadVehicleInfo>().image_index;
 				if (e_artic->CanCarryCargo()) {
 					rv->cargo_type = e_artic->GetDefaultCargoType();
 					assert(IsValidCargoType(rv->cargo_type));
-					rv->cargo_cap = e_artic->u.road.capacity;  // Callback 36 is called when the consist is finished
+					rv->cargo_cap = e_artic->VehInfo<RoadVehicleInfo>().capacity;  // Callback 36 is called when the consist is finished
 				} else {
 					rv->cargo_type = front->cargo_type; // Needed for livery selection
 					rv->cargo_cap = 0;
@@ -517,7 +517,7 @@ void AddArticulatedParts(Vehicle *first)
 
 				if (e_artic->CanCarryCargo()) {
 					s->cargo_type = e_artic->GetDefaultCargoType();
-					s->cargo_cap = e_artic->u.ship.capacity;  // Callback 36 is called when the consist is finished
+					s->cargo_cap = e_artic->VehInfo<ShipVehicleInfo>().capacity;  // Callback 36 is called when the consist is finished
 				} else {
 					s->cargo_type = front->cargo_type;
 					s->cargo_cap = 0;

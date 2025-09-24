@@ -93,7 +93,7 @@ static inline TrackBits GetTileShipTrackStatus(TileIndex tile)
 static void GetShipIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
-	uint8_t spritenum = e->u.ship.image_index;
+	uint8_t spritenum = e->VehInfo<ShipVehicleInfo>().image_index;
 
 	if (IsCustomVehicleSpriteNum(spritenum)) {
 		GetCustomVehicleIcon(engine, DIR_W, image_type, result);
@@ -262,7 +262,7 @@ void Ship::UpdateCache()
 Money Ship::GetRunningCost() const
 {
 	const Engine *e = this->GetEngine();
-	uint cost_factor = GetVehicleProperty(this, PROP_SHIP_RUNNING_COST_FACTOR, e->u.ship.running_cost);
+	uint cost_factor = GetVehicleProperty(this, PROP_SHIP_RUNNING_COST_FACTOR, e->VehInfo<ShipVehicleInfo>().running_cost);
 	Money cost = GetPrice(PR_RUNNING_SHIP, cost_factor, e->GetGRF());
 
 	if (this->cur_speed == 0) {
@@ -1144,7 +1144,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlags flags, const Engine *e, 
 		int x;
 		int y;
 
-		const ShipVehicleInfo *svi = &e->u.ship;
+		const ShipVehicleInfo *svi = &e->VehInfo<ShipVehicleInfo>();
 
 		Ship *v = new Ship();
 		*ret = v;

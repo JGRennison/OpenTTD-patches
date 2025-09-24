@@ -622,7 +622,8 @@ class NIHVehicle : public NIHelper {
 				}
 
 				if (e->type == VEH_TRAIN) {
-					const RailTypes rts = e->u.rail.railtypes;
+					const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
+					const RailTypes rts = rvi.railtypes;
 					output.buffer.format("  Railtypes: {} (", rts);
 					const uint rt_count = CountBits(rts);
 					if (rt_count == 1) {
@@ -638,22 +639,24 @@ class NIHVehicle : public NIHelper {
 						"MULTIHEAD",
 						"WAGON",
 					};
-					output.Print("    Rail veh type: {}, power: {}", engine_types[e->u.rail.railveh_type], e->u.rail.power);
+					output.Print("    Rail veh type: {}, power: {}", engine_types[rvi.railveh_type], rvi.power);
 				}
 				if (e->type == VEH_ROAD) {
 					output.register_next_line_click_flag_toggle(16 << flag_shift);
-					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
+					const RoadVehicleInfo &rvi = e->VehInfo<RoadVehicleInfo>();
+					const RoadTypeInfo *rti = GetRoadTypeInfo(rvi.roadtype);
 					output.Print("    [{}] Roadtype: {} ({}), Powered: 0x{:X}",
-							(output.flags & (16 << flag_shift)) ? '-' : '+', e->u.road.roadtype, label_dumper().RoadTypeLabel(e->u.road.roadtype), rti->powered_roadtypes);
+							(output.flags & (16 << flag_shift)) ? '-' : '+', rvi.roadtype, label_dumper().RoadTypeLabel(rvi.roadtype), rti->powered_roadtypes);
 					if (output.flags & (16 << flag_shift)) {
 						DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
 					}
 					output.Print("    Capacity: {}, Weight: {}, Power: {}, TE: {}, Air drag: {}, Shorten: {}",
-							e->u.road.capacity, e->u.road.weight, e->u.road.power, e->u.road.tractive_effort, e->u.road.air_drag, e->u.road.shorten_factor);
+							rvi.capacity, rvi.weight, rvi.power, rvi.tractive_effort, rvi.air_drag, rvi.shorten_factor);
 				}
 				if (e->type == VEH_SHIP) {
+					const ShipVehicleInfo &svi = e->VehInfo<ShipVehicleInfo>();
 					output.Print("    Capacity: {}, Max speed: {}, Accel: {}, Ocean speed: {}, Canal speed: {}",
-							e->u.ship.capacity, e->u.ship.max_speed, e->u.ship.acceleration, e->u.ship.ocean_speed_frac, e->u.ship.canal_speed_frac);
+							svi.capacity, svi.max_speed, svi.acceleration, svi.ocean_speed_frac, svi.canal_speed_frac);
 				}
 
 				output.register_next_line_click_flag_toggle(4 << flag_shift);

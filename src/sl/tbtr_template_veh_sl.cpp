@@ -93,7 +93,7 @@ void AfterLoadTemplateVehicles()
 		tv->first = nullptr;
 
 		/* Set railtypes */
-		tv->railtypes = Engine::Get(tv->engine_type)->u.rail.railtypes;
+		tv->railtypes = Engine::Get(tv->engine_type)->VehInfo<RailVehicleInfo>().railtypes;
 	}
 	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 		/* Fill the first pointers */
