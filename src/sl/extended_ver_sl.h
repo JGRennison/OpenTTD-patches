@@ -148,6 +148,7 @@ enum SlXvFeatureIndex {
 	XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG,        ///< Signal special propagation flag
 	XSLFI_ORDER_VECTOR,                           ///< Use std::vector for order lists
 	XSLFI_ERNC_CHUNK,                             ///< ERNC chunk
+	XSLFI_STATION_CARGO_TRUNCATE,                 ///< Station cargo truncation setting
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

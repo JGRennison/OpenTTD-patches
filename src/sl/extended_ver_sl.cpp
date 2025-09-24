@@ -199,6 +199,7 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG,  XSCF_IGNORABLE_ALL,       2,   2, "signal_special_propagation_flag",  nullptr, nullptr, nullptr          },
 	{ XSLFI_ORDER_VECTOR,                     XSCF_NULL,                1,   1, "order_vector",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_ERNC_CHUNK,                       XSCF_IGNORABLE_ALL,       0,   1, "ernc_chunk",                       nullptr, nullptr, "ERNC"           },
+	{ XSLFI_STATION_CARGO_TRUNCATE,           XSCF_IGNORABLE_UNKNOWN,   1,   1, "station_cargo_truncate",           nullptr, nullptr, nullptr          },
 
 	{ XSLFI_SCRIPT_INT64,                     XSCF_NULL,                1,   1, "script_int64",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_U64_TICK_COUNTER,                 XSCF_NULL,                1,   1, "u64_tick_counter",                 nullptr, nullptr, nullptr          },

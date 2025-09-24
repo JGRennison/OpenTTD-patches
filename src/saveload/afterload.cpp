@@ -4518,6 +4518,10 @@ bool AfterLoadGame()
 		Debug(sl, 1, "Fixing: PR #13745 engine flag adjustment, {} changed", changed);
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_STATION_CARGO_TRUNCATE)) {
+		_settings_game.station.truncate_cargo = true;
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}
