@@ -474,7 +474,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 	return this->industry != nullptr ? this->industry->random : 0;
 }
 
-/* virtual */ uint32_t IndustriesScopeResolver::GetTriggers() const
+/* virtual */ uint32_t IndustriesScopeResolver::GetRandomTriggers() const
 {
 	return 0;
 }

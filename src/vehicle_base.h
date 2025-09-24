@@ -120,7 +120,7 @@ enum VehicleCacheFlags {
 	VCF_LAST_VISUAL_EFFECT      = 0, ///< Last vehicle in the consist with a visual effect.
 	VCF_GV_ZERO_SLOPE_RESIST    = 1, ///< GroundVehicle: Consist has zero slope resistance (valid only for the first engine), may be false negative.
 	VCF_IS_DRAWN                = 2, ///< Vehicle is currently drawn
-	VCF_REDRAW_ON_TRIGGER       = 3, ///< Clear cur_image_valid_dir on changes to waiting_triggers (valid only for the first engine)
+	VCF_REDRAW_ON_TRIGGER       = 3, ///< Clear cur_image_valid_dir on changes to waiting_random_triggers (valid only for the first engine)
 	VCF_REDRAW_ON_SPEED_CHANGE  = 4, ///< Clear cur_image_valid_dir on changes to cur_speed (ground vehicles) or aircraft movement state (aircraft) (valid only for the first engine)
 	VCF_IMAGE_REFRESH           = 5, ///< Image should be refreshed before drawing
 	VCF_IMAGE_REFRESH_NEXT      = 6, ///< Set VCF_IMAGE_REFRESH in next UpdateViewport call, if the image is not updated there
@@ -381,7 +381,7 @@ public:
 	uint32_t motion_counter = 0;                 ///< counter to occasionally play a vehicle sound. (Also used as virtual train client ID).
 
 	uint16_t random_bits = 0;                    ///< Bits used for randomized variational spritegroups.
-	uint8_t waiting_triggers = 0;                ///< Triggers to be yet matched before rerandomizing the random bits.
+	VehicleRandomTriggers waiting_random_triggers; ///< Triggers to be yet matched before rerandomizing the random bits.
 
 	uint8_t cargo_subtype = 0;                   ///< Used for livery refits (NewGRF variations)
 

@@ -162,7 +162,6 @@ void DecreaseVehicleValue(Vehicle *v);
 void CheckVehicleBreakdown(Vehicle *v);
 void EconomyAgeVehicle(Vehicle *v);
 void AgeVehicle(Vehicle *v);
-void VehicleEnteredDepotThisTick(Vehicle *v);
 
 UnitID GetFreeUnitNumber(VehicleType type);
 

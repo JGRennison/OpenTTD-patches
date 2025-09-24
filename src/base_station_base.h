@@ -78,13 +78,13 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	std::vector<StationSpecList> speclist{};           ///< List of rail station specs of this station.
 	std::vector<RoadStopSpecList> roadstop_speclist{}; ///< List of road stop specs of this station
 
-	uint16_t random_bits = 0;                    ///< Random bits assigned to this station
-	uint8_t waiting_triggers = 0;                ///< Waiting triggers (NewGRF) for this station
-	uint8_t delete_ctr = 0;                      ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
-	uint8_t cached_anim_triggers = 0;            ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
-	uint8_t cached_roadstop_anim_triggers = 0;   ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
-	CargoTypes cached_cargo_triggers{};          ///< NOSAVE: Combined cargo trigger bitmask
-	CargoTypes cached_roadstop_cargo_triggers{}; ///< NOSAVE: Combined cargo trigger bitmask for road stops
+	uint16_t random_bits = 0;                               ///< Random bits assigned to this station
+	StationRandomTriggers waiting_random_triggers;          ///< Waiting triggers (NewGRF), shared by all station parts/tiles, road stops, ... essentially useless and broken by design.
+	uint8_t delete_ctr = 0;                                 ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
+	StationAnimationTriggers cached_anim_triggers;          ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
+	StationAnimationTriggers cached_roadstop_anim_triggers; ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
+	CargoTypes cached_cargo_triggers{};                     ///< NOSAVE: Combined cargo trigger bitmask
+	CargoTypes cached_roadstop_cargo_triggers{};            ///< NOSAVE: Combined cargo trigger bitmask for road stops
 
 	TileArea train_station{INVALID_TILE, 0, 0}; ///< Tile area the train 'station' part covers
 	StationRect rect{}; ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions

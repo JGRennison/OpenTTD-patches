@@ -247,9 +247,9 @@ static uint32_t GetRailContinuationInfo(TileIndex tile)
 }
 
 
-/* virtual */ uint32_t StationScopeResolver::GetTriggers() const
+/* virtual */ uint32_t StationScopeResolver::GetRandomTriggers() const
 {
-	return this->st == nullptr ? 0 : this->st->waiting_triggers;
+	return this->st == nullptr ? 0 : this->st->waiting_random_triggers.base();
 }
 
 
@@ -464,8 +464,8 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 
 		case 0x8A: return this->had_vehicle_of_type;
 		case 0xF1: return (this->airport.tile != INVALID_TILE) ? this->airport.GetSpec()->ttd_airport_type : ATP_TTDP_LARGE;
-		case 0xF2: return (this->truck_stops != nullptr) ? this->truck_stops->status : 0;
-		case 0xF3: return (this->bus_stops != nullptr)   ? this->bus_stops->status   : 0;
+		case 0xF2: return (this->truck_stops != nullptr) ? this->truck_stops->status.base() : 0;
+		case 0xF3: return (this->bus_stops != nullptr)   ? this->bus_stops->status.base()   : 0;
 		case 0xF6: return this->airport.blocks.base();
 		case 0xF7: return GB(this->airport.blocks.base(), 8, 8);
 	}
@@ -616,7 +616,7 @@ uint32_t StationResolverObject::GetDebugID() const
  */
 StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseStation *base_station, TileIndex tile, RailType rt,
 		CallbackID callback, uint32_t callback_param1, uint32_t callback_param2)
-	: ResolverObject(statspec->grf_prop.grffile, callback, callback_param1, callback_param2),
+	: SpecializedResolverObject<StationRandomTriggers>(statspec->grf_prop.grffile, callback, callback_param1, callback_param2),
 	station_scope(*this, statspec, base_station, tile, rt)
 {
 	/* Invalidate all cached vars */
@@ -802,7 +802,7 @@ void DeallocateSpecFromStation(BaseStation *st, uint8_t specindex)
 			st->speclist.resize(num_specs + 1);
 		} else {
 			st->speclist.clear();
-			st->cached_anim_triggers = 0;
+			st->cached_anim_triggers = {};
 			st->cached_cargo_triggers = 0;
 			return;
 		}
@@ -910,7 +910,7 @@ uint16_t GetAnimStationCallback(CallbackID callback, uint32_t param1, uint32_t p
 /** Helper class for animation control. */
 struct StationAnimationBase : public AnimationBase<StationAnimationBase, StationSpec, BaseStation, int, GetAnimStationCallback, TileAnimationFrameAnimationHelper<BaseStation> > {
 	static constexpr CallbackID cb_animation_speed      = CBID_STATION_ANIMATION_SPEED;
-	static constexpr CallbackID cb_animation_next_frame = CBID_STATION_ANIM_NEXT_FRAME;
+	static constexpr CallbackID cb_animation_next_frame = CBID_STATION_ANIMATION_NEXT_FRAME;
 
 	static constexpr StationCallbackMask cbm_animation_speed      = StationCallbackMask::AnimationSpeed;
 	static constexpr StationCallbackMask cbm_animation_next_frame = StationCallbackMask::AnimationNextFrame;
@@ -944,23 +944,23 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
 
 	/* Check the cached animation trigger bitmask to see if we need
 	 * to bother with any further processing. */
-	if (!HasBit(st->cached_anim_triggers, trigger)) return;
+	if (!st->cached_anim_triggers.Test(trigger)) return;
 
 	uint16_t random_bits = Random();
-	ETileArea area = ETileArea(st, trigger_tile, tas[trigger]);
+	ETileArea area = ETileArea(st, trigger_tile, tas[static_cast<size_t>(trigger)]);
 
 	/* Check all tiles over the station to check if the specindex is still in use */
 	for (TileIndex tile : area) {
 		if (st->TileBelongsToRailStation(tile)) {
 			const StationSpec *ss = GetStationSpec(tile);
-			if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
+			if (ss != nullptr && ss->animation.triggers.Test(trigger)) {
 				uint8_t local_cargo;
 				if (cargo_type == INVALID_CARGO) {
 					local_cargo = UINT8_MAX;
 				} else {
 					local_cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
 				}
-				StationAnimationBase::ChangeAnimationFrame(CBID_STATION_ANIM_START_STOP, ss, st, tile, (random_bits << 16) | GB(Random(), 0, 16), (uint8_t)trigger | (local_cargo << 8));
+				StationAnimationBase::ChangeAnimationFrame(CBID_STATION_ANIMATION_TRIGGER, ss, st, tile, (random_bits << 16) | GB(Random(), 0, 16), to_underlying(trigger) | (local_cargo << 8));
 			}
 		}
 	}
@@ -989,14 +989,14 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 	if (cargo_type != INVALID_CARGO && !HasBit(st->cached_cargo_triggers, cargo_type)) return;
 
 	uint32_t whole_reseed = 0;
-	ETileArea area = ETileArea(st, trigger_tile, tas[trigger]);
+	ETileArea area = ETileArea(st, trigger_tile, tas[static_cast<size_t>(trigger)]);
 
 	/* Bitmask of completely empty cargo types to be matched. */
-	CargoTypes empty_mask = (trigger == SRT_CARGO_TAKEN) ? GetEmptyMask(st) : 0;
+	CargoTypes empty_mask = (trigger == StationRandomTrigger::CargoTaken) ? GetEmptyMask(st) : 0;
 
 	/* Store triggers now for var 5F */
-	SetBit(st->waiting_triggers, trigger);
-	uint32_t used_triggers = 0;
+	st->waiting_random_triggers.Set(trigger);
+	StationRandomTriggers used_random_triggers;
 
 	/* Check all tiles over the station to check if the specindex is still in use */
 	for (TileIndex tile : area) {
@@ -1006,18 +1006,18 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 
 			/* Cargo taken "will only be triggered if all of those
 			 * cargo types have no more cargo waiting." */
-			if (trigger == SRT_CARGO_TAKEN) {
+			if (trigger == StationRandomTrigger::CargoTaken) {
 				if ((ss->cargo_triggers & ~empty_mask) != 0) continue;
 			}
 
 			if (cargo_type == INVALID_CARGO || HasBit(ss->cargo_triggers, cargo_type)) {
 				StationResolverObject object(ss, st, tile, INVALID_RAILTYPE, CBID_RANDOM_TRIGGER, 0);
-				object.waiting_triggers = st->waiting_triggers;
+				object.SetWaitingRandomTriggers(st->waiting_random_triggers);
 
 				const SpriteGroup *group = object.Resolve();
 				if (group == nullptr) continue;
 
-				used_triggers |= object.used_triggers;
+				used_random_triggers.Set(object.GetUsedRandomTriggers());
 
 				uint32_t reseed = object.GetReseedSum();
 				if (reseed != 0) {
@@ -1037,7 +1037,7 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 	}
 
 	/* Update whole station random bits */
-	st->waiting_triggers &= ~used_triggers;
+	st->waiting_random_triggers.Reset(used_random_triggers);
 	if ((whole_reseed & 0xFFFF) != 0) {
 		st->random_bits &= ~whole_reseed;
 		st->random_bits |= Random() & whole_reseed;
@@ -1050,14 +1050,14 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
  */
 void StationUpdateCachedTriggers(BaseStation *st)
 {
-	st->cached_anim_triggers = 0;
+	st->cached_anim_triggers = {};
 	st->cached_cargo_triggers = 0;
 
 	/* Combine animation trigger bitmask for all station specs
 	 * of this station. */
 	for (const auto &sm : GetStationSpecList<StationSpec>(st)) {
 		if (sm.spec == nullptr) continue;
-		st->cached_anim_triggers |= sm.spec->animation.triggers;
+		st->cached_anim_triggers.Set(sm.spec->animation.triggers);
 		st->cached_cargo_triggers |= sm.spec->cargo_triggers;
 	}
 }

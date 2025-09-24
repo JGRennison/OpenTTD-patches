@@ -116,6 +116,16 @@ enum EngineImageType : uint8_t {
 	EIT_PREVIEW    = 0x21,  ///< Vehicle drawn in preview window, news, ...
 };
 
+/** Randomisation triggers for vehicles */
+enum class VehicleRandomTrigger : uint8_t {
+	NewCargo, ///< Affected vehicle only: Vehicle is loaded with cargo, after it was empty.
+	Depot, ///< Front vehicle only: Consist arrived in depot.
+	Empty, ///< Front vehicle only: Entire consist is empty.
+	AnyNewCargo, ///< All vehicles in consist: Any vehicle in the consist received new cargo.
+	Callback32, ///< All vehicles in consist: 32 day callback requested rerandomisation
+};
+using VehicleRandomTriggers = EnumBitSet<VehicleRandomTrigger, uint8_t>;
+
 static const uint32_t VEHICLE_NAME_NO_GROUP = 0x80000000; ///< String constant to not include the vehicle's group name, if using the long name format
 
 #endif /* VEHICLE_TYPE_H */

@@ -306,10 +306,10 @@ inline uint8_t GetHouseRandomBits(TileIndex t)
  * @param triggers the activated triggers
  * @pre IsTileType(t, MP_HOUSE)
  */
-inline void SetHouseTriggers(TileIndex t, uint8_t triggers)
+inline void SetHouseRandomTriggers(TileIndex t, HouseRandomTriggers triggers)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
-	SB(_m[t].m3, 0, 5, triggers);
+	SB(_m[t].m3, 0, 5, triggers.base());
 }
 
 /**
@@ -319,10 +319,10 @@ inline void SetHouseTriggers(TileIndex t, uint8_t triggers)
  * @pre IsTileType(t, MP_HOUSE)
  * @return triggers
  */
-inline uint8_t GetHouseTriggers(TileIndex t)
+inline HouseRandomTriggers GetHouseRandomTriggers(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
-	return GB(_m[t].m3, 0, 5);
+	return static_cast<HouseRandomTriggers>(GB(_m[t].m3, 0, 5));
 }
 
 /**

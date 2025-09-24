@@ -119,7 +119,7 @@ struct HouseSpec {
 	HouseExtraFlags extra_flags;              ///< some more flags
 	HouseCtrlFlags ctrl_flags;                ///< control flags
 	HouseClassID class_id;                    ///< defines the class this house has (not grf file based)
-	AnimationInfo animation;                  ///< information about the animation.
+	AnimationInfo<void> animation;            ///< information about the animation.
 	uint8_t processing_time;                  ///< Periodic refresh multiplier
 	uint8_t minimum_life;                     ///< The minimum number of years this house will survive before the town rebuilds it
 	CargoTypes watched_cargoes;               ///< Cargo types watched for acceptance.

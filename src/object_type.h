@@ -33,6 +33,14 @@ using ObjectID = PoolID<ObjectIDTag>;
 struct Object;
 struct ObjectSpec;
 
+/** Animation triggers for objects. */
+enum class ObjectAnimationTrigger : uint8_t {
+	Built, ///< Triggered when the object is built (for all tiles at the same time).
+	TileLoop, ///< Triggered in the periodic tile loop.
+	TileLoopNorth, ///< Triggered every 256 ticks (for all tiles at the same time).
+};
+using ObjectAnimationTriggers = EnumBitSet<ObjectAnimationTrigger, uint16_t>;
+
 enum ObjectEffectiveFoundationType {
 	OEFT_NONE,
 	OEFT_FLAT,

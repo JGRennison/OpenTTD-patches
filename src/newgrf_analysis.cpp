@@ -195,11 +195,11 @@ void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const Determinist
 		const auto &adjust = dsg->adjusts[0];
 
 		if (IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0xC, 0xFF)) {
-			/* Check for CBID_INDTILE_ANIM_NEXT_FRAME, mark layout subset as animated if found */
+			/* Check for CBID_INDTILE_ANIMATION_NEXT_FRAME, mark layout subset as animated if found */
 			if (this->cfg.check_anim_next_frame_cb) {
 				for (const auto &range : dsg->ranges) {
-					if (range.low <= CBID_INDTILE_ANIM_NEXT_FRAME && CBID_INDTILE_ANIM_NEXT_FRAME <= range.high) {
-						/* Found a CBID_INDTILE_ANIM_NEXT_FRAME */
+					if (range.low <= CBID_INDTILE_ANIMATION_NEXT_FRAME && CBID_INDTILE_ANIMATION_NEXT_FRAME <= range.high) {
+						/* Found a CBID_INDTILE_ANIMATION_NEXT_FRAME */
 						*(this->cfg.result_mask) &= ~this->check_mask;
 					}
 				}

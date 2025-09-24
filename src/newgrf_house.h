@@ -45,7 +45,7 @@ struct HouseScopeResolver : public ScopeResolver {
 
 	uint32_t GetRandomBits() const override;
 	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const override;
-	uint32_t GetTriggers() const override;
+	uint32_t GetRandomTriggers() const override;
 
 private:
 	HouseID GetOtherHouseID(uint32_t parameter) const;
@@ -76,7 +76,7 @@ struct FakeHouseScopeResolver : public ScopeResolver {
 };
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */
-struct HouseResolverObject : public ResolverObject {
+struct HouseResolverObject : public SpecializedResolverObject<HouseRandomTriggers> {
 	HouseScopeResolver house_scope;
 	TownScopeResolver  town_scope;
 
@@ -127,28 +127,20 @@ std::span<const uint> GetBuildingHouseIDCounts();
 void DrawNewHouseTile(TileInfo *ti, HouseID house_id);
 void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground);
 void AnimateNewHouseTile(TileIndex tile);
-void AnimateNewHouseConstruction(TileIndex tile);
+/* see also: void TriggerHouseAnimation_TileLoop(TileIndex tile, uint16_t random_bits) */
+void TriggerHouseAnimation_ConstructionStageChanged(TileIndex tile);
+void TriggerHouseAnimation_WatchedCargoAccepted(TileIndex tile, CargoTypes trigger_cargoes);
 uint8_t GetNewHouseTileAnimationSpeed(TileIndex tile);
 
 uint16_t GetHouseCallback(CallbackID callback, uint32_t param1, uint32_t param2, HouseID house_id, Town *town, TileIndex tile,
 		bool not_yet_constructed = false, uint8_t initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0, int view = 0);
-void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes);
 
 bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, uint8_t random_bits);
 bool CanDeleteHouse(TileIndex tile);
 
 bool NewHouseTileLoop(TileIndex tile);
 
-enum HouseTrigger : uint8_t {
-	/* The tile of the house has been triggered during the tileloop. */
-	HOUSE_TRIGGER_TILE_LOOP     = 0x01,
-	/*
-	 * The top tile of a (multitile) building has been triggered during and all
-	 * the tileloop other tiles of the same building get the same random value.
-	 */
-	HOUSE_TRIGGER_TILE_LOOP_TOP = 0x02,
-};
-void TriggerHouse(TileIndex t, HouseTrigger trigger);
+void TriggerHouseRandomisation(TileIndex t, HouseRandomTrigger trigger);
 
 void AnalyseHouseSpriteGroups();
 

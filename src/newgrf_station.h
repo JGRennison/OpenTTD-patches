@@ -47,7 +47,7 @@ struct StationScopeResolver : public ScopeResolver {
 	}
 
 	uint32_t GetRandomBits() const override;
-	uint32_t GetTriggers() const override;
+	uint32_t GetRandomTriggers() const override;
 
 	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const override;
 
@@ -60,7 +60,7 @@ private:
 };
 
 /** Station resolver. */
-struct StationResolverObject : public ResolverObject {
+struct StationResolverObject : public SpecializedResolverObject<StationRandomTriggers> {
 	StationScopeResolver station_scope; ///< The station scope resolver.
 	std::optional<TownScopeResolver> town_scope = std::nullopt; ///< The town scope resolver (created on the first call).
 
@@ -113,16 +113,6 @@ enum class StationSpecFlag : uint8_t {
 	ExtendedFoundations = 4, ///< Extended foundation block instead of simple.
 };
 using StationSpecFlags = EnumBitSet<StationSpecFlag, uint8_t>;
-
-/** Randomisation triggers for stations */
-enum StationRandomTrigger : uint8_t {
-	SRT_NEW_CARGO,        ///< Trigger station on new cargo arrival.
-	SRT_CARGO_TAKEN,      ///< Trigger station when cargo is completely taken.
-	SRT_TRAIN_ARRIVES,    ///< Trigger platform when train arrives.
-	SRT_TRAIN_DEPARTS,    ///< Trigger platform when train leaves.
-	SRT_TRAIN_LOADS,      ///< Trigger platform when train loads/unloads.
-	SRT_PATH_RESERVATION, ///< Trigger platform when train reserves path.
-};
 
 enum class StationSpecIntlFlag : uint8_t {
 	BridgeHeightsSet,           ///< bridge_height[8] is set.
@@ -193,7 +183,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	using TileFlags = EnumBitSet<TileFlag, uint8_t>;
 	std::vector<TileFlags> tileflags; ///< List of tile flags.
 
-	AnimationInfo animation;
+	AnimationInfo<StationAnimationTriggers> animation;
 
 	StationSpecIntlFlags internal_flags{}; ///< Bitmask of internal spec flags
 

@@ -413,7 +413,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		if (spec != nullptr) {
 			/* Include this road stop spec's animation trigger bitmask
 			 * in the station's cached copy. */
-			wp->cached_roadstop_anim_triggers |= spec->animation.triggers;
+			wp->cached_roadstop_anim_triggers.Set(spec->animation.triggers);
 		}
 
 		wp->delete_ctr = 0;

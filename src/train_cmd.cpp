@@ -4928,8 +4928,8 @@ static void TrainEnterStation(Train *v, StationID station)
 	v->BeginLoading();
 
 	TileIndex station_tile = v->GetStationLoadingVehicle()->tile;
-	TriggerStationRandomisation(st, station_tile, SRT_TRAIN_ARRIVES);
-	TriggerStationAnimation(st, station_tile, SAT_TRAIN_ARRIVES);
+	TriggerStationRandomisation(st, station_tile, StationRandomTrigger::VehicleArrives);
+	TriggerStationAnimation(st, station_tile, StationAnimationTrigger::VehicleArrives);
 }
 
 /* Check if the vehicle is compatible with the specified tile */

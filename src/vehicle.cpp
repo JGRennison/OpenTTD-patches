@@ -1342,7 +1342,7 @@ void Vehicle::PreCleanPool()
  * Adds a vehicle to the list of vehicles that visited a depot this tick
  * @param *v vehicle to add
  */
-void VehicleEnteredDepotThisTick(Vehicle *v)
+static void VehicleEnteredDepotThisTick(Vehicle *v)
 {
 	/* Template Replacement Setup stuff */
 	if (GetTemplateIDByGroupIDRecursive(v->group_id) != INVALID_TEMPLATE) {
@@ -1391,7 +1391,7 @@ static void RunVehicleDayProc()
 			uint16_t callback = GetVehicleCallback(CBID_VEHICLE_32DAY_CALLBACK, 0, 0, v->engine_type, v);
 			if (callback != CALLBACK_FAILED) {
 				if (HasBit(callback, 0)) {
-					TriggerVehicle(v, VEHICLE_TRIGGER_CALLBACK_32); // Trigger vehicle trigger 10
+					TriggerVehicleRandomisation(v, VehicleRandomTrigger::Callback32); // Trigger vehicle trigger 10
 				}
 
 				/* After a vehicle trigger, the graphics and properties of the vehicle could change.
@@ -2757,8 +2757,11 @@ void VehicleEnterDepot(Vehicle *v)
 
 	VehicleServiceInDepot(v);
 
+	/* Store that the vehicle entered a depot this tick */
+	VehicleEnteredDepotThisTick(v);
+
 	/* After a vehicle trigger, the graphics and properties of the vehicle could change. */
-	TriggerVehicle(v, VEHICLE_TRIGGER_DEPOT);
+	TriggerVehicleRandomisation(v, VehicleRandomTrigger::Depot);
 	v->MarkDirty();
 
 	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
@@ -3667,8 +3670,8 @@ void Vehicle::LeaveStation()
 	if (this->type == VEH_TRAIN && !this->vehstatus.Test(VehState::Crashed)) {
 		/* Trigger station animation (trains only) */
 		if (IsRailStationTile(station_tile)) {
-			TriggerStationRandomisation(st, station_tile, SRT_TRAIN_DEPARTS);
-			TriggerStationAnimation(st, station_tile, SAT_TRAIN_DEPARTS);
+			TriggerStationRandomisation(st, station_tile, StationRandomTrigger::VehicleDeparts);
+			TriggerStationAnimation(st, station_tile, StationAnimationTrigger::VehicleDeparts);
 		}
 
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
@@ -3676,9 +3679,9 @@ void Vehicle::LeaveStation()
 	}
 	if (this->type == VEH_ROAD && !this->vehstatus.Test(VehState::Crashed)) {
 		/* Trigger road stop animation */
-		if (IsAnyRoadStopTile(this->tile)) {
-			TriggerRoadStopRandomisation(st, this->tile, RSRT_VEH_DEPARTS);
-			TriggerRoadStopAnimation(st, this->tile, SAT_TRAIN_DEPARTS);
+		if (IsStationRoadStopTile(this->tile)) {
+			TriggerRoadStopRandomisation(st, this->tile, StationRandomTrigger::VehicleDeparts);
+			TriggerRoadStopAnimation(st, this->tile, StationAnimationTrigger::VehicleDeparts);
 		}
 	}
 

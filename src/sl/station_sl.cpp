@@ -150,7 +150,7 @@ void AfterLoadRoadStops()
 	}
 	/* And then rebuild the data in those entries */
 	for (RoadStop *rs : RoadStop::Iterate()) {
-		if (!HasBit(rs->status, RoadStop::RSSFB_BASE_ENTRY)) continue;
+		if (!rs->status.Test(RoadStop::RoadStopStatusFlag::BaseEntry)) continue;
 
 		rs->GetEntry(DIAGDIR_NE)->Rebuild(rs);
 		rs->GetEntry(DIAGDIR_NW)->Rebuild(rs);
@@ -207,7 +207,7 @@ static const SaveLoad _old_station_desc[] = {
 
 	/* Used by newstations for graphic variations */
 	SLE_CONDVAR(Station, random_bits,                SLE_UINT16,                 SLV_27, SL_MAX_VERSION),
-	SLE_CONDVAR(Station, waiting_triggers,           SLE_UINT8,                  SLV_27, SL_MAX_VERSION),
+	SLE_CONDVAR(Station, waiting_random_triggers,    SLE_UINT8,                  SLV_27, SL_MAX_VERSION),
 	SLEG_CONDVAR(_num_specs,                         SLE_UINT8,                  SLV_27, SL_MAX_VERSION),
 
 	SLE_CONDREFVEC(Station, loading_vehicles,        REF_VEHICLE,                SLV_57, SL_MAX_VERSION),
@@ -565,7 +565,7 @@ static const NamedSaveLoad _base_station_desc[] = {
 
 	/* Used by newstations for graphic variations */
 	NSL("random_bits",                            SLE_VAR(BaseStation, random_bits,               SLE_UINT16)),
-	NSL("waiting_triggers",                       SLE_VAR(BaseStation, waiting_triggers,          SLE_UINT8)),
+	NSL("waiting_triggers",                       SLE_VAR(BaseStation, waiting_random_triggers,   SLE_UINT8)),
 	NSL("",                                      SLEG_VAR(_num_specs,                             SLE_UINT8)),
 	NSL("",                                SLEG_CONDVAR_X(_num_roadstop_specs,                    SLE_UINT8,                   SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS))),
 	NSL("",                             SLEG_CONDVARVEC_X(_custom_road_stop_tiles,                SLE_UINT32,                  SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 1, 1))),

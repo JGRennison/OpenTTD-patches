@@ -317,7 +317,7 @@ public:
 
 		/* Used by newstations for graphic variations */
 		    SLE_VAR(BaseStation, random_bits,            SLE_UINT16),
-		    SLE_VAR(BaseStation, waiting_triggers,       SLE_UINT8),
+		    SLE_VARNAME(BaseStation, waiting_random_triggers, "waiting_triggers", SLE_UINT8),
 	};
 	inline const static SaveLoadCompatTable compat_description = _station_base_sl_compat;
 

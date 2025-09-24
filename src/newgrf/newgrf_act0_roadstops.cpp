@@ -166,7 +166,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x10: // Animation triggers
-				rs->animation.triggers = buf.ReadWord();
+				rs->animation.triggers = static_cast<StationAnimationTriggers>(buf.ReadWord());
 				break;
 
 			case A0RPI_ROADSTOP_CALLBACK_MASK:
