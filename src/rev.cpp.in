@@ -14,15 +14,6 @@
 #include "${CMAKE_SOURCE_DIR}/src/safeguards.h"
 
 /**
- * Is this version of OpenTTD a release version?
- * @return True if it is a release version.
- */
-bool IsReleasedVersion()
-{
-	return HasBit(_openttd_newgrf_version, 19);
-}
-
-/**
  * The text version of OpenTTD's revision.
  * This will be either
  * - "<tag>", like "<major>.<minor>.<build>[-RC<rc>]",

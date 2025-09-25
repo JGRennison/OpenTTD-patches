@@ -271,10 +271,12 @@ struct SelectGameWindow : public Window {
 
 	void OnInit() override
 	{
-		bool missing_sprites = _missing_extra_graphics > 0 && !IsReleasedVersion();
+		const bool disable_missing = true;
+
+		bool missing_sprites = _missing_extra_graphics > 0 && !disable_missing;
 		this->GetWidget<NWidgetStacked>(WID_SGI_BASESET_SELECTION)->SetDisplayedPlane(missing_sprites ? 0 : SZSP_NONE);
 
-		bool missing_lang = _current_language->missing >= _settings_client.gui.missing_strings_threshold && !IsReleasedVersion();
+		bool missing_lang = _current_language->missing >= _settings_client.gui.missing_strings_threshold && !disable_missing;
 		this->GetWidget<NWidgetStacked>(WID_SGI_TRANSLATION_SELECTION)->SetDisplayedPlane(missing_lang ? 0 : SZSP_NONE);
 	}
 
