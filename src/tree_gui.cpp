@@ -158,7 +158,7 @@ class BuildTreesWindow : public Window
 			default: NOT_REACHED();
 		}
 
-		PlaceTreeGroupAroundTile(tile, trees_to_plant, radius, count, cur_spent);
+		cur_spent += PlaceTreeGroupAroundTile(tile, trees_to_plant, radius, count, cur_spent);
 		
 		this->last_tile = tile.value;
 	}
