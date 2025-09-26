@@ -11,7 +11,24 @@
 #define TREE_CMD_H
 
 #include "command_type.h"
+#include <vector>
 
-DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, uint8_t, bool>)
+struct TreePlacerData {
+	TileIndex tile;
+	uint8_t type;
+	uint8_t count;
+};
+
+struct TreeSyncCmdData final : public CommandPayloadSerialisable<TreeSyncCmdData> {
+	ClientID calling_client = INVALID_CLIENT_ID; // Client using this command.
+	std::vector<TreePlacerData> sync_data = {}; // List of every tile index and the tree type/count intended to be on this tile.
+
+	void Serialise(BufferSerialisationRef buffer) const override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+	void FormatDebugSummary(format_target &output) const override;
+};
+
+DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, uint8_t, uint8_t, bool>)
+DEF_CMD_DIRECT_NT(CMD_SYNC_TREES, CmdSyncTrees, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, TreeSyncCmdData)
 
 #endif /* TREE_CMD_H */
