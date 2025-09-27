@@ -21,6 +21,7 @@
 #include "tree_map.h"
 #include "viewport_func.h"
 #include "tree_cmd.h"
+#include "tree_func.h"
 
 #include "widgets/tree_widget.h"
 
@@ -29,17 +30,11 @@
 #include "table/tree_land.h"
 
 #include <map>
-#include <set>
 
 #include "safeguards.h"
 
 extern std::map<TileIndex, TreePlacerData> _tree_placer_memory;
 extern int _tree_placer_cmd_count;
-
-void PlaceTreesRandomly();
-void RemoveAllTrees();
-Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> treetypes, uint radius, uint count, Money sim_cost);
-void SendSyncTrees();
 
 /**
  * Calculate the maximum size of all tree sprites
@@ -83,7 +78,7 @@ class BuildTreesWindow : public Window
 		PM_FOREST_LG,
 	};
 
-	std::set<TreeType> trees_to_plant = {}; /// < Container with every TreeType selected by the user.
+	TreeTypes trees_to_plant = {}; /// < Container with every TreeType selected by the user.
 	PlantingMode mode = PM_NORMAL; ///< Current mode for planting
 	Money cur_spent = 0; ///< Total cost of trees placed while the user is click-dragging trees.
 
@@ -92,12 +87,12 @@ class BuildTreesWindow : public Window
 	 */
 	void UpdateMode()
 	{
-		if (this->trees_to_plant.size() > 0) {
+		if (this->trees_to_plant.Any()) {
 			/* Activate placement */
 			if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
-			std::set<TreeType> trees_archive = trees_to_plant;
+			TreeTypes trees_archive = this->trees_to_plant;
 			SetObjectToPlace(SPR_CURSOR_TREE, PAL_NONE, HT_RECT | HT_DIAGONAL, this->window_class, this->window_number);
-			this->trees_to_plant = trees_archive; // Previous code restored tree_to_plant similarly, behaviour preserved because I can't be bothered to test if it's necessary
+			this->trees_to_plant = trees_archive; // This is to handle the case where SetObjectToPlace was previously active and is reset (in OnPlaceObjectAbort).
 		} else {
 			/* Deactivate placement */
 			ResetObjectToPlace();
@@ -106,14 +101,14 @@ class BuildTreesWindow : public Window
 		const uint8_t tree_types_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 		const uint8_t tree_types_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 
-		if (this->trees_to_plant.size() == tree_types_count) {
+		if (CountBits(this->trees_to_plant) == tree_types_count) {
 			this->LowerWidget(WID_BT_TYPE_RANDOM);
 		} else {
 			this->RaiseWidget(WID_BT_TYPE_RANDOM);
 		}
 
 		for (uint8_t i = 0; i < tree_types_count; i++) {
-			if (this->trees_to_plant.contains((TreeType)(i + tree_types_base))) {
+			if (this->trees_to_plant.Test(static_cast<TreeType>(i + tree_types_base))) {
 				this->LowerWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types_base);
 			} else {
 				this->RaiseWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types_base);
@@ -210,11 +205,11 @@ public:
 			case WID_BT_TYPE_RANDOM: { // tree of random type.
 				const uint8_t tree_types_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 				const uint8_t tree_types_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-				if (trees_to_plant.size() == tree_types_count) {
+				if (CountBits(this->trees_to_plant) == tree_types_count) {
 					this->trees_to_plant = {};
 				} else {
 					for (uint8_t i = 0; i < tree_types_count; i++) {
-						this->trees_to_plant.emplace((TreeType)(i + tree_types_base));
+						this->trees_to_plant.Set(static_cast<TreeType>(i + tree_types_base));
 					}
 				}
 				this->UpdateMode();
@@ -252,13 +247,9 @@ public:
 				if (widget >= WID_BT_TYPE_BUTTON_FIRST) {
 					const int index = widget - WID_BT_TYPE_BUTTON_FIRST;
 					NWidgetCore *nwid = this->GetWidget<NWidgetCore>(widget);
-					if (nwid->IsLowered()) {
-						this->trees_to_plant.erase((TreeType)(index));
-						this->RaiseWidget(widget);
-					} else {
-						this->trees_to_plant.emplace((TreeType)(index));
-						this->LowerWidget(widget);
-					}
+					const bool was_lowered = nwid->IsLowered();
+					nwid->SetLowered(!was_lowered);
+					this->trees_to_plant.Set(static_cast<TreeType>(index), !was_lowered);
 
 					this->UpdateMode();
 				}
@@ -284,7 +275,7 @@ public:
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
-		if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.size() >= 1) {
+		if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
 			SendSyncTrees();
 		}
 

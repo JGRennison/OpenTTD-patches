@@ -26,6 +26,7 @@
 #include "newgrf_generic.h"
 #include "date_func.h"
 #include "tree_cmd.h"
+#include "tree_func.h"
 #include "error.h"
 #include "strings_func.h"
 #include "network/network.h"
@@ -34,8 +35,6 @@
 #include "table/strings.h"
 #include "table/tree_land.h"
 #include "table/clear_land.h"
-
-#include <set>
 
 #include "safeguards.h"
 
@@ -587,7 +586,7 @@ void RemoveAllTrees()
  * @param sim_cost Extra cost to be added to the fake 'cost' popup users see when this is ran.
  * @return The amount of money this should cost when placed.
  */
-Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> tree_types, uint radius, uint count, Money sim_cost)
+Money PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count, Money sim_cost)
 {
 	/* Save seeds, because Random do the desyncy thing and the desyncy thing bad, so we restore the seeds when we're done. */
 	SavedRandomSeeds saved_seeds;
@@ -614,14 +613,11 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> tree_types, ui
 		const int32_t yofs = mkcoord();
 		const TileIndex tile_to_plant = TileAddWrap(tile, xofs, yofs);
 		if (tile_to_plant != INVALID_TILE) {
-			std::set<TreeType>::iterator selected = tree_types.begin();
-			std::advance(selected, RandomRange(tree_types.size()));
-
-			TreeType current_type = (TreeType)*selected;
+			TreeType current_type = *std::next(tree_types.IterateSetBits().begin(), RandomRange(CountBits(tree_types)));
 			int cur_tree_count = 0;
 			if (_tree_placer_memory.contains(tile_to_plant)) {
 				cur_tree_count = _tree_placer_memory[tile_to_plant].count;
-				current_type = (TreeType)_tree_placer_memory[tile_to_plant].type;
+				current_type = _tree_placer_memory[tile_to_plant].tree_type;
 			} else if (IsTileType(tile_to_plant, MP_TREES)) {
 				cur_tree_count = GetTreeCount(tile_to_plant);
 				current_type = GetTreeType(tile_to_plant);
@@ -643,7 +639,7 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> tree_types, ui
 				if (IsTileType(tile_to_plant, MP_TREES) || _tree_placer_memory.contains(tile_to_plant)) {
 					new_cost += _price[PR_BUILD_TREES];
 				}
-				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{tile_to_plant, current_type, count});
+				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, count});
 				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 			}
 		}
@@ -659,7 +655,7 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> tree_types, ui
 	}
 
 
-	if (_game_mode == GM_EDITOR && tree_types.size() == 1 && IsInsideMM(*tree_types.begin(), TREE_RAINFOREST, TREE_CACTUS)) {
+	if (_game_mode == GM_EDITOR && HasExactlyOneBit(tree_types) && IsInsideMM(*tree_types.IterateSetBits().begin(), TREE_RAINFOREST, TREE_CACTUS)) {
 		for (TileIndex t : TileArea(tile).Expand(radius)) {
 			if (GetTileType(t) != MP_VOID && DistanceSquare(tile, t) < radius * radius) SetTropicZone(t, TROPICZONE_RAINFOREST);
 		}
@@ -717,7 +713,7 @@ void GenerateTrees()
  * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, uint8_t tree_to_plant, uint8_t count, bool diagonal)
+CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, TreeType tree_to_plant, uint8_t count, bool diagonal)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
@@ -769,7 +765,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 					continue;
 				}
 
-				TreeType treetype = (TreeType)tree_to_plant;
+				TreeType treetype = tree_to_plant;
 				/* Be a bit picky about which trees go where. */
 				if (_settings_game.game_creation.landscape == LandscapeType::Tropic && treetype != TREE_INVALID && (
 						/* No cacti outside the desert */
@@ -877,12 +873,12 @@ CommandCost CmdSyncTrees(DoCommandFlags flags, const TreeSyncCmdData &cmd_data)
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
 	/* Iterate through sync_data, plant trees on every tile inside. */
-	for (TreePlacerData t : cmd_data.sync_data) {
-		if (t.tile >= Map::Size()) return CMD_ERROR;
+	for (const auto& [tile, data] : cmd_data.sync_data) {
+		if (tile >= Map::Size()) return CMD_ERROR;
 
-		uint8_t tree_count = (IsTileType(t.tile, MP_TREES)) ? t.count - GetTreeCount(t.tile) : t.count;
+		uint8_t tree_count = (IsTileType(tile, MP_TREES)) ? data.count - GetTreeCount(tile) : data.count;
 
-		CommandCost attempt = CmdPlantTree(flags, t.tile, t.tile, t.type, tree_count, false);
+		CommandCost attempt = CmdPlantTree(flags, tile, tile, data.tree_type, tree_count, false);
 		cost.AddCost(attempt.GetCost());
 
 		/* Tree limit used up? No need to check more. */
@@ -905,9 +901,9 @@ void TreeSyncCmdData::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint32(this->calling_client);
 	buffer.Send_uint32((uint32_t)this->sync_data.size());
-	for (TreePlacerData data : this->sync_data) {
-		buffer.Send_uint32(data.tile);
-		buffer.Send_uint8(data.type);
+	for (const auto& [tile, data] : this->sync_data) {
+		buffer.Send_uint32(tile);
+		buffer.Send_uint8(data.tree_type);
 		buffer.Send_uint8(data.count);
 	}
 }
@@ -921,7 +917,7 @@ bool TreeSyncCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidatio
 		TileIndex tile = TileIndex{buffer.Recv_uint32()};
 		TreeType type = (TreeType)buffer.Recv_uint8();
 		uint8_t count = buffer.Recv_uint8();
-		this->sync_data.emplace_back(TreePlacerData{tile, type, count});
+		this->sync_data.emplace_back(tile, TreePlacerData{type, count});
 	}
 	return true;
 }
@@ -945,9 +941,9 @@ void SendSyncTrees()
 
 	/* Iterate through the trees the user intends to place. - Iteration exists to apply limit to try and avoid excessive network traffic. */
 	data.calling_client = _network_own_client_id;
-	for (std::pair<TileIndex, TreePlacerData> t : _tree_placer_memory) {
-		data.sync_data.emplace_back(t.second);
-		tiles_to_clean.emplace_back(t.first);
+	for (const auto &it : _tree_placer_memory) {
+		data.sync_data.emplace_back(it.first, it.second);
+		tiles_to_clean.emplace_back(it.first);
 		count++;
 		if (count >= 128) {
 			break;

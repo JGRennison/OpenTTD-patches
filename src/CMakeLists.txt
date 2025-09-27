@@ -605,8 +605,10 @@ add_files(
     transparency_gui.h
     transport_type.h
     tree_cmd.cpp
+    tree_func.h
     tree_gui.cpp
     tree_map.h
+    tree_type.h
     tunnel_base.h
     tunnel_map.cpp
     tunnel_map.h
