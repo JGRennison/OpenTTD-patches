@@ -645,7 +645,7 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, std::set<TreeType> tree_types, ui
 				if (IsTileType(tile_to_plant, MP_TREES) || _tree_placer_memory.contains(tile_to_plant)) {
 					new_cost += _price[PR_BUILD_TREES];
 				}
-				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, count});
+				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{tile_to_plant, current_type, count});
 				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 			}
 		}
@@ -869,7 +869,7 @@ int _tree_placer_cmd_count = 0;
  */
 CommandCost CmdSyncTrees(DoCommandFlags flags, const TreeSyncCmdData &cmd_data)
 {
-	if (_networking && cmd_data.calling_client == _network_own_client_id && flags.Test(DoCommandFlag::Execute)) {
+	if (_networking && cmd_data.calling_client == _network_own_client_id && _tree_placer_cmd_count >= 0 && flags.Test(DoCommandFlag::Execute)) {
 		_tree_placer_cmd_count--;
 	}
 	StringID msg = INVALID_STRING_ID;
@@ -879,18 +879,13 @@ CommandCost CmdSyncTrees(DoCommandFlags flags, const TreeSyncCmdData &cmd_data)
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
 	/* Iterate through sync_data, plant trees on every tile inside. */
-	for (std::pair<TileIndex, TreePlacerData> t : cmd_data.sync_data) {
-		if (t.first >= Map::Size()) return CMD_ERROR;
+	for (TreePlacerData t : cmd_data.sync_data) {
+		if (t.tile >= Map::Size()) return CMD_ERROR;
 
-		uint8_t tree_count = (IsTileType(t.first, MP_TREES)) ? t.second.count - GetTreeCount(t.first) : t.second.count;
+		uint8_t tree_count = (IsTileType(t.tile, MP_TREES)) ? t.count - GetTreeCount(t.tile) : t.count;
 
-		CommandCost attempt = CmdPlantTree(flags, t.first, t.first, t.second.type, tree_count, false);
+		CommandCost attempt = CmdPlantTree(flags, t.tile, t.tile, t.type, tree_count, false);
 		cost.AddCost(attempt.GetCost());
-
-		/* If we're the client that sent this command, this cleans up everything we wanted to place. */
-		if (cmd_data.calling_client == _network_own_client_id && _tree_placer_memory.contains(t.first)) {
-			_tree_placer_memory.erase(t.first);
-		}
 		
 		/* Tree limit used up? No need to check more. */
 		if (limit < 0) break;
@@ -912,10 +907,10 @@ void TreeSyncCmdData::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint32(this->calling_client);
 	buffer.Send_uint32((uint32_t)this->sync_data.size());
-	for (std::pair<TileIndex, TreePlacerData> t : this->sync_data) {
-		buffer.Send_uint32(t.first.value);
-		buffer.Send_uint8(t.second.type);
-		buffer.Send_uint8(t.second.count);
+	for (TreePlacerData data : this->sync_data) {
+		buffer.Send_uint32(data.tile);
+		buffer.Send_uint8(data.type);
+		buffer.Send_uint8(data.count);
 	}
 }
 
@@ -923,12 +918,12 @@ bool TreeSyncCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidatio
 {
 	this->calling_client = (ClientID)buffer.Recv_uint32();
 	uint32_t size = buffer.Recv_uint32();
-	if (!buffer.CanRecvBytes(size * 4)) return false;
+	if (!buffer.CanRecvBytes(size * 6)) return false;
 	for (; size > 0; size--) {
 		TileIndex tile = TileIndex{buffer.Recv_uint32()};
 		TreeType type = (TreeType)buffer.Recv_uint8();
 		uint8_t count = buffer.Recv_uint8();
-		this->sync_data[tile] = TreePlacerData{type, count};
+		this->sync_data.emplace_back(TreePlacerData{tile, type, count});
 	}
 	return true;
 }
@@ -938,10 +933,8 @@ void TreeSyncCmdData::FormatDebugSummary(format_target &output) const
 	output.format("Size {}", this->sync_data.size());
 }
 
-static int last_cmd_limit_tick_count = 0;
 void SendSyncTrees()
 {
-	if (_tree_placer_memory.size() == 0) return;
 	if (_networking) {
 		if (_tree_placer_cmd_count > 4) return;
 		_tree_placer_cmd_count++;
@@ -950,14 +943,21 @@ void SendSyncTrees()
 	/* Prep the Tree Placer tool's data for us to send to the server. */
 	TreeSyncCmdData data;
 	int count = 0;
+	std::vector<TileIndex> tiles_to_clean = {};
 
+	/* Iterate through the trees the user intends to place. - Iteration exists to apply limit to try and avoid excessive network traffic. */
 	data.calling_client = _network_own_client_id;
 	for (std::pair<TileIndex, TreePlacerData> t : _tree_placer_memory) {
-		data.sync_data.emplace(t);
+		data.sync_data.emplace_back(t.second);
+		tiles_to_clean.emplace_back(t.first);
 		count++;
 		if (count >= 128) {
 			break;
 		}
+	}
+
+	for (TileIndex tile : tiles_to_clean) {
+		_tree_placer_memory.erase(tile);
 	}
 
 	DoCommandP<CMD_SYNC_TREES>(data, STR_NULL);

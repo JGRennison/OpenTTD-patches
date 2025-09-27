@@ -278,8 +278,6 @@ public:
 			this->DoPlantForest(tile);
 			SendSyncTrees();
 		}
-		if (_tree_placer_memory.size() >= 128 ) {
-		}
 	}
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override

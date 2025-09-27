@@ -14,12 +14,12 @@
 #include <map>
 
 struct TreePlacerData {
-	uint8_t type; uint8_t count;
+	TileIndex tile;  uint8_t type, count;
 };
 
 struct TreeSyncCmdData final : public CommandPayloadSerialisable<TreeSyncCmdData> {
 	ClientID calling_client = INVALID_CLIENT_ID; // Client using this command.
-	std::map<TileIndex, TreePlacerData> sync_data; // Map of every tile index and the tree type/count intended to be on this tile.
+	std::vector<TreePlacerData> sync_data = {}; // Map of every tile index and the tree type/count intended to be on this tile.
 
 	void Serialise(BufferSerialisationRef buffer) const override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
