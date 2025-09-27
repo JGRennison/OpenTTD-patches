@@ -482,6 +482,7 @@ enum Commands : uint8_t {
 	CMD_BUILD_BUOY,                   ///< build a buoy
 
 	CMD_PLANT_TREE,                   ///< plant a tree
+	CMD_SYNC_TREES,                   ///< place tree placer tool trees
 
 	CMD_BUILD_VEHICLE,                ///< build a vehicle
 	CMD_SELL_VEHICLE,                 ///< sell a vehicle
