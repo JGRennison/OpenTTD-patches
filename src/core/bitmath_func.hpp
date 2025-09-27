@@ -14,6 +14,9 @@
 #include <limits>
 #include <type_traits>
 
+template<typename T>
+concept BitsetTypeAsBase = T::bitset_as_base || false;
+
 /**
  * Fetch \a n bits from \a x, started at bit \a s.
  *
@@ -290,6 +293,8 @@ constexpr uint CountBits(T value)
 {
 	if constexpr (std::is_enum_v<T>) {
 		return std::popcount<std::underlying_type_t<T>>(value);
+	} else if constexpr (BitsetTypeAsBase<T>) {
+		return std::popcount(value.base());
 	} else {
 		return std::popcount(value);
 	}
@@ -328,7 +333,11 @@ inline bool IsOddParity(T value)
 template <typename T>
 constexpr bool HasExactlyOneBit(T value)
 {
-	return value != 0 && (value & (value - 1)) == 0;
+	if constexpr (BitsetTypeAsBase<T>) {
+		return HasExactlyOneBit(value.base());
+	} else {
+		return value != 0 && (value & (value - 1)) == 0;
+	}
 }
 
 /**
@@ -340,7 +349,11 @@ constexpr bool HasExactlyOneBit(T value)
 template <typename T>
 constexpr bool HasAtMostOneBit(T value)
 {
-	return (value & (value - 1)) == 0;
+	if constexpr (BitsetTypeAsBase<T>) {
+		return HasAtMostOneBit(value.base());
+	} else {
+		return (value & (value - 1)) == 0;
+	}
 }
 
  /**

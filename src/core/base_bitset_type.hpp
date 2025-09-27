@@ -30,6 +30,7 @@ public:
 	static inline constexpr bool string_parameter_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 	static inline constexpr bool integer_type_hint = true;
+	static inline constexpr bool bitset_as_base = true;
 
 	using ValueType = Tvalue_type; ///< Value type of this BaseBitSet.
 	using BaseType = Tstorage; ///< Storage type of this BaseBitSet, be ConvertibleThroughBase
