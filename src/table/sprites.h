@@ -356,7 +356,7 @@ static const uint16_t TRACERESTRICT_SPRITE_COUNT = 3;
 
 /* Misc GUI sprites */
 static const SpriteID SPR_MISC_GUI_BASE = SPR_TRACERESTRICT_BASE + TRACERESTRICT_SPRITE_COUNT;
-static const uint16_t MISC_GUI_SPRITE_COUNT = 1;
+static const uint16_t MISC_GUI_SPRITE_COUNT = 2;
 
 /* Duplicated signal sprites */
 static const SpriteID SPR_DUP_ORIGINAL_SIGNALS_BASE = SPR_MISC_GUI_BASE + MISC_GUI_SPRITE_COUNT;
@@ -1667,5 +1667,7 @@ static const PaletteID PALETTE_CHURCH_RED          = 1438; ///< Recolour sprite 
 static const PaletteID PALETTE_CHURCH_CREAM        = 1439; ///< Recolour sprite for white churches
 
 static const PaletteID PALETTE_ALL_BLACK           = SPR_PALETTE_BASE; ///< Exchange any color by black, needed for painting fictive tiles outside map
+
+static const PaletteID PALETTE_WHITE_TINT          = SPR_MISC_GUI_BASE + 1;
 
 #endif /* SPRITES_H */
