@@ -22,8 +22,6 @@
  */
 
 #include "stdafx.h"
-#include <array>
-#include <limits>
 #include "currency.h"
 #include "screenshot.h"
 #include "network/network.h"
@@ -86,6 +84,7 @@
 #include "string_func_extra.h"
 #include "engine_override.h"
 #include "core/backup_type.hpp"
+#include "core/string_consumer.hpp"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -102,6 +101,8 @@
 #include "table/settings_compat.h"
 
 #include <algorithm>
+#include <array>
+#include <limits>
 #include <vector>
 
 #include "safeguards.h"
@@ -242,24 +243,21 @@ enum IniFileVersion : uint32_t {
 const uint16_t INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Current ini-file version of OpenTTD.
 
 /**
- * Find the index value of a ONEofMANY type in a string separated by |
+ * Find the index value of a ONEofMANY type in a string
  * @param str the current value of the setting for which a value needs found
- * @param len length of the string
  * @param many full domain of values the ONEofMANY setting can have
- * @return the integer index of the full-list, or SIZE_MAX if not found
+ * @return the integer index of the full-list, or std::nullopt if not found
  */
-size_t OneOfManySettingDesc::ParseSingleValue(const char *str, size_t len, const std::vector<std::string> &many)
+std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, const std::vector<std::string> &many)
 {
+	StringConsumer consumer{str};
+	auto digit = consumer.TryReadIntegerBase<uint32_t>(10);
 	/* check if it's an integer */
-	if (isdigit(*str)) return std::strtoul(str, nullptr, 0);
+	if (digit.has_value()) return digit;
 
-	size_t idx = 0;
-	for (const auto &one : many) {
-		if (one.size() == len && strncmp(one.c_str(), str, len) == 0) return idx;
-		idx++;
-	}
-
-	return SIZE_MAX;
+	auto it = std::ranges::find(many, str);
+	if (it == many.end()) return std::nullopt;
+	return static_cast<uint32_t>(it - many.begin());
 }
 
 /**
@@ -268,10 +266,10 @@ size_t OneOfManySettingDesc::ParseSingleValue(const char *str, size_t len, const
  * @param str the current value of the setting for which a value needs found.
  * @return Either true/false, or nullopt if no boolean value found.
  */
-std::optional<bool> BoolSettingDesc::ParseSingleValue(const char *str)
+std::optional<bool> BoolSettingDesc::ParseSingleValue(std::string_view str)
 {
-	if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0 || strcmp(str, "1") == 0) return true;
-	if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0 || strcmp(str, "0") == 0) return false;
+	if (str == "true" || str == "on" || str == "1") return true;
+	if (str == "false" || str == "off" || str == "0") return false;
 
 	return std::nullopt;
 }
@@ -280,29 +278,26 @@ std::optional<bool> BoolSettingDesc::ParseSingleValue(const char *str)
  * Find the set-integer value MANYofMANY type in a string
  * @param many full domain of values the MANYofMANY setting can have
  * @param str the current string value of the setting, each individual
- * of separated by a whitespace,tab or | character
- * @return the 'fully' set integer, or SIZE_MAX if a set is not found
+ * of separated by a whitespace, tab or | character
+ * @return the 'fully' set integer, or std::nullopt if a set is not found
  */
-static size_t LookupManyOfMany(const std::vector<std::string> &many, const char *str)
+static std::optional<uint32_t> LookupManyOfMany(const std::vector<std::string> &many, std::string_view str)
 {
-	const char *s;
-	size_t r;
-	size_t res = 0;
+	static const std::string_view separators{" \t|"};
 
-	for (;;) {
+	uint32_t res = 0;
+	StringConsumer consumer{str};
+	while (consumer.AnyBytesLeft()) {
 		/* skip "whitespace" */
-		while (*str == ' ' || *str == '\t' || *str == '|') str++;
-		if (*str == 0) break;
+		consumer.SkipUntilCharNotIn(separators);
 
-		s = str;
-		while (*s != 0 && *s != ' ' && *s != '\t' && *s != '|') s++;
+		std::string_view value = consumer.ReadUntilCharIn(separators);
+		if (value.empty()) break;
 
-		r = OneOfManySettingDesc::ParseSingleValue(str, s - str, many);
-		if (r == SIZE_MAX) return r;
+		auto r = OneOfManySettingDesc::ParseSingleValue(value, many);
+		if (!r.has_value()) return r;
 
-		SetBit(res, (uint8_t)r); // value found, set it
-		if (*s == 0) break;
-		str = s + 1;
+		SetBit(res, *r); // value found, set it
 	}
 	return res;
 }
@@ -442,35 +437,36 @@ void ManyOfManySettingDesc::FormatIntValue(format_target &buf, uint32_t value) c
  * @param str Input string that will be parsed based on the type of desc.
  * @return The value from the parse string, or the default value of the setting.
  */
-size_t IntSettingDesc::ParseValue(const char *str) const
+int32_t IntSettingDesc::ParseValue(std::string_view str) const
 {
-	char *end;
-	size_t val = std::strtoul(str, &end, 0);
-	if (end == str) {
+	StringConsumer consumer{str};
+	/* The actual settings value might be int32 or uint32. Read as int64 and just cast away the high bits. */
+	auto value = consumer.TryReadIntegerBase<int64_t>(10);
+	if (!value.has_value()) {
 		if (this->flags.Test(SettingFlag::ConvertBoolToInt)) {
-			if (strcmp(str, "true") == 0 || strcmp(str, "on") == 0) return 1;
-			if (strcmp(str, "false") == 0 || strcmp(str, "off") == 0) return 0;
+			if (str == "true" || str == "on") return 1;
+			if (str == "false" || str == "off") return 0;
 		}
 		_settings_error_list.emplace_back(
 			GetEncodedString(STR_CONFIG_ERROR),
 			GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, str, this->name));
 		return this->GetDefaultValue();
 	}
-	if (*end != '\0') {
+	if (consumer.AnyBytesLeft()) {
 		_settings_error_list.emplace_back(
 			GetEncodedString(STR_CONFIG_ERROR),
 			GetEncodedString(STR_CONFIG_ERROR_TRAILING_CHARACTERS, this->name));
 	}
-	return val;
+	return static_cast<int32_t>(*value);
 }
 
-size_t OneOfManySettingDesc::ParseValue(const char *str) const
+int32_t OneOfManySettingDesc::ParseValue(std::string_view str) const
 {
-	size_t r = OneOfManySettingDesc::ParseSingleValue(str, strlen(str), this->many);
+	auto r = OneOfManySettingDesc::ParseSingleValue(str, this->many);
 	/* if the first attempt of conversion from string to the appropriate value fails,
 	 * look if we have defined a converter from old value to new value. */
-	if (r == SIZE_MAX && this->many_cnvt != nullptr) r = this->many_cnvt(str);
-	if (r != SIZE_MAX) return r; // and here goes converted value
+	if (!r.has_value() && this->many_cnvt != nullptr) r = this->many_cnvt(str);
+	if (r.has_value()) return *r; // and here goes converted value
 
 	_settings_error_list.emplace_back(
 		GetEncodedString(STR_CONFIG_ERROR),
@@ -478,10 +474,10 @@ size_t OneOfManySettingDesc::ParseValue(const char *str) const
 	return this->GetDefaultValue();
 }
 
-size_t ManyOfManySettingDesc::ParseValue(const char *str) const
+int32_t ManyOfManySettingDesc::ParseValue(std::string_view str) const
 {
-	size_t r = LookupManyOfMany(this->many, str);
-	if (r != SIZE_MAX) return r;
+	auto r = LookupManyOfMany(this->many, str);
+	if (r.has_value()) return *r;
 
 	_settings_error_list.emplace_back(
 		GetEncodedString(STR_CONFIG_ERROR),
@@ -489,7 +485,7 @@ size_t ManyOfManySettingDesc::ParseValue(const char *str) const
 	return this->GetDefaultValue();
 }
 
-size_t BoolSettingDesc::ParseValue(const char *str) const
+int32_t BoolSettingDesc::ParseValue(std::string_view str) const
 {
 	auto r = BoolSettingDesc::ParseSingleValue(str);
 	if (r.has_value()) return *r;
@@ -800,8 +796,8 @@ static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, co
 
 void IntSettingDesc::ParseValue(const IniItem *item, void *object) const
 {
-	size_t val = (item == nullptr) ? this->GetDefaultValue() : this->ParseValue(item->value.has_value() ? item->value->c_str() : "");
-	this->MakeValueValidAndWrite(object, (int32_t)val);
+	int32_t val = (item != nullptr && item->value.has_value()) ? this->ParseValue(*item->value) : this->GetDefaultValue();
+	this->MakeValueValidAndWrite(object, val);
 }
 
 void StringSettingDesc::ParseValue(const IniItem *item, void *object) const
@@ -898,7 +894,7 @@ void BoolSettingDesc::FormatIntValue(format_target &buf, uint32_t value) const
 
 bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
 {
-	int32_t item_value = (int32_t)this->ParseValue(item->value->c_str());
+	int32_t item_value = static_cast<int32_t>(this->ParseValue(*item->value));
 	int32_t object_value = this->Read(object);
 	return item_value == object_value;
 }
@@ -1902,11 +1898,11 @@ static void RoadSideChanged(int32_t new_value)
  * @param value that was read from config file
  * @return the "hopefully" converted value
  */
-static size_t ConvertLandscape(const char *value)
+static std::optional<uint32_t> ConvertLandscape(std::string_view value)
 {
 	/* try with the old values */
 	static std::vector<std::string> _old_landscape_values{"normal", "hilly", "desert", "candy"};
-	return OneOfManySettingDesc::ParseSingleValue(value, strlen(value), _old_landscape_values);
+	return OneOfManySettingDesc::ParseSingleValue(value, _old_landscape_values);
 }
 
 static bool CheckFreeformEdges(int32_t &new_value)
@@ -2936,41 +2932,43 @@ void LoadFromConfig(bool startup)
 		const IniItem *old_item;
 
 		if (generic_version < IFV_GAME_TYPE && IsConversionNeeded(generic_ini, "network", "server_advertise", "server_game_type", &old_item)) {
-			auto old_value = BoolSettingDesc::ParseSingleValue(old_item->value->c_str());
+			auto old_value = BoolSettingDesc::ParseSingleValue(*old_item->value);
 			_settings_client.network.server_game_type = old_value.value_or(false) ? SERVER_GAME_TYPE_PUBLIC : SERVER_GAME_TYPE_LOCAL;
 		}
 
 		if (generic_version < IFV_AUTOSAVE_RENAME && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
 			static std::vector<std::string> _old_autosave_interval{"off", "monthly", "quarterly", "half year", "yearly", "custom_days", "custom_realtime_minutes"};
-			auto old_value = OneOfManySettingDesc::ParseSingleValue(old_item->value->c_str(), old_item->value->size(), _old_autosave_interval);
+			auto old_value = OneOfManySettingDesc::ParseSingleValue(*old_item->value, _old_autosave_interval);
 
-			switch (old_value) {
-				case 0: _settings_client.gui.autosave_interval = 0; break;
-				case 1: _settings_client.gui.autosave_interval = 10; break;
-				case 2: _settings_client.gui.autosave_interval = 30; break;
-				case 3: _settings_client.gui.autosave_interval = 60; break;
-				case 4: _settings_client.gui.autosave_interval = 120; break;
-				case 5: {
-					const IniItem *old_autosave_custom_days;
-					if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_days", "autosave_interval", &old_autosave_custom_days)) {
-						_settings_client.gui.autosave_interval = (std::strtoul(old_autosave_custom_days->value->c_str(), nullptr, 10) + 2) / 3;
+			if (old_value.has_value()) {
+				switch (*old_value) {
+					case 0: _settings_client.gui.autosave_interval = 0; break;
+					case 1: _settings_client.gui.autosave_interval = 10; break;
+					case 2: _settings_client.gui.autosave_interval = 30; break;
+					case 3: _settings_client.gui.autosave_interval = 60; break;
+					case 4: _settings_client.gui.autosave_interval = 120; break;
+					case 5: {
+						const IniItem *old_autosave_custom_days;
+						if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_days", "autosave_interval", &old_autosave_custom_days)) {
+							_settings_client.gui.autosave_interval = (std::strtoul(old_autosave_custom_days->value->c_str(), nullptr, 10) + 2) / 3;
+						}
+						break;
 					}
-					break;
-				}
-				case 6: {
-					const IniItem *old_autosave_custom_minutes;
-					if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_minutes", "autosave_interval", &old_autosave_custom_minutes)) {
-						_settings_client.gui.autosave_interval = std::strtoul(old_autosave_custom_minutes->value->c_str(), nullptr, 10);
+					case 6: {
+						const IniItem *old_autosave_custom_minutes;
+						if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_minutes", "autosave_interval", &old_autosave_custom_minutes)) {
+							_settings_client.gui.autosave_interval = std::strtoul(old_autosave_custom_minutes->value->c_str(), nullptr, 10);
+						}
+						break;
 					}
-					break;
+					default: break;
 				}
-				default: break;
 			}
 		}
 
 		/* Persist the right click close option from older versions. */
 		if (generic_version < IFV_RIGHT_CLICK_CLOSE && IsConversionNeeded(generic_ini, "gui", "right_mouse_wnd_close", "right_click_wnd_close", &old_item)) {
-			auto old_value = BoolSettingDesc::ParseSingleValue(old_item->value->c_str());
+			auto old_value = BoolSettingDesc::ParseSingleValue(*old_item->value);
 			_settings_client.gui.right_click_wnd_close = old_value.value_or(false) ? RCC_YES : RCC_NO;
 		}
 
@@ -3431,16 +3429,16 @@ void SyncCompanySettings()
  * @param force_newgame force the newgame settings
  * @note Strings WILL NOT be synced over the network
  */
-bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_newgame)
+bool SetSettingValue(const StringSettingDesc *sd, std::string_view value, bool force_newgame)
 {
 	assert(sd->flags.Test(SettingFlag::NoNetworkSync));
 
-	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value.compare("(null)") == 0) {
-		value.clear();
+	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value == "(null)") {
+		value = {};
 	}
 
 	const void *object = (_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game;
-	sd->AsStringSetting()->ChangeValue(object, value, object == &_settings_newgame ? ConfigSaveFlagsFor(sd) : STCF_NONE);
+	sd->AsStringSetting()->ChangeValue(object, std::string{value}, object == &_settings_newgame ? ConfigSaveFlagsFor(sd) : STCF_NONE);
 	return true;
 }
 
@@ -3450,7 +3448,7 @@ bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_
  * @param object The object the setting is in.
  * @param newval The new value for the setting.
  */
-void StringSettingDesc::ChangeValue(const void *object, std::string &newval, SaveToConfigFlags ini_save_flags) const
+void StringSettingDesc::ChangeValue(const void *object, std::string &&newval, SaveToConfigFlags ini_save_flags) const
 {
 	this->MakeValueValid(newval);
 	if (this->pre_check != nullptr && !this->pre_check(newval)) return;
@@ -3473,7 +3471,7 @@ uint GetSettingIndexByFullName(const SettingTable &table, const char *name)
 
 /* Those 2 functions need to be here, else we have to make some stuff non-static
  * and besides, it is also better to keep stuff like this at the same place */
-void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
+void IConsoleSetSetting(std::string_view name, std::string_view value, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 	/* Company settings are not in "list_settings", so don't try to modify them. */
@@ -3511,7 +3509,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	}
 }
 
-void IConsoleSetSetting(const char *name, int value)
+void IConsoleSetSetting(std::string_view name, int value)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 	assert(sd != nullptr);
@@ -3523,7 +3521,7 @@ void IConsoleSetSetting(const char *name, int value)
  * @param name  Name of the setting to output its value
  * @param force_newgame force the newgame settings
  */
-void IConsoleGetSetting(const char *name, bool force_newgame)
+void IConsoleGetSetting(std::string_view name, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 	/* Company settings are not in "list_settings", so don't try to read them. */
@@ -3572,11 +3570,11 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	}
 }
 
-static void IConsoleListSettingsTable(const SettingTable &table, const char *prefilter, bool show_defaults)
+static void IConsoleListSettingsTable(const SettingTable &table, std::string_view prefilter, bool show_defaults)
 {
 	for (auto &sd : table) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
+		if (!prefilter.empty() && std::string_view(sd->name).find(prefilter) == std::string::npos) continue;
 		if (sd->flags.Test(SettingFlag::NoNewgame) && _game_mode == GM_MENU) continue;
 		format_buffer value;
 		sd->FormatValue(value, &GetGameSettings());
@@ -3598,7 +3596,7 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
  *
  * @param prefilter  If not \c nullptr, only list settings with names that begin with \a prefilter prefix
  */
-void IConsoleListSettings(const char *prefilter, bool show_defaults)
+void IConsoleListSettings(std::string_view prefilter, bool show_defaults)
 {
 	IConsolePrint(CC_WARNING, "All settings with their current {}:", show_defaults ? "and default values" : "value");
 

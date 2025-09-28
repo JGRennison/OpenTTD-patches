@@ -16,10 +16,10 @@
 
 struct IniFile;
 
-void IConsoleSetSetting(const char *name, const char *value, bool force_newgame = false);
-void IConsoleSetSetting(const char *name, int32_t value);
-void IConsoleGetSetting(const char *name, bool force_newgame = false);
-void IConsoleListSettings(const char *prefilter, bool show_defaults);
+void IConsoleSetSetting(std::string_view name, std::string_view value, bool force_newgame = false);
+void IConsoleSetSetting(std::string_view name, int32_t value);
+void IConsoleGetSetting(std::string_view name, bool force_newgame = false);
+void IConsoleListSettings(std::string_view prefilter, bool show_defaults);
 
 void LoadFromConfig(bool minimal = false);
 
