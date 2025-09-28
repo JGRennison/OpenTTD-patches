@@ -23,6 +23,7 @@
 #include "tree_cmd.h"
 #include "tree_func.h"
 #include "error.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "widgets/tree_widget.h"
 
@@ -30,11 +31,9 @@
 #include "table/strings.h"
 #include "table/tree_land.h"
 
-#include <map>
-
 #include "safeguards.h"
 
-extern std::map<TileIndex, TreePlacerData> _tree_placer_memory;
+extern robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
 
 /**
  * Calculate the maximum size of all tree sprites
@@ -175,6 +174,12 @@ public:
 			this->GetWidget<NWidgetStacked>(WID_BT_SE_PANE)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		}
 		this->FinishInitNested(window_number);
+	}
+
+	void Close([[maybe_unused]] int data = 0) override
+	{
+		this->Window::Close();
+		_tree_placer_memory.rehash(0); // shrink_to_fit
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override

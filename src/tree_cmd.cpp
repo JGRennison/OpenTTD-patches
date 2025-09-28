@@ -27,6 +27,7 @@
 #include "date_func.h"
 #include "tree_cmd.h"
 #include "tree_func.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 #include "table/tree_land.h"
@@ -56,8 +57,8 @@ enum ExtraTreePlacement : uint8_t {
 
 /** Determines when to consider building more trees. */
 uint8_t _trees_tick_ctr;
-/** Keeps track of what the Tree Placer tool intends to replace on it's next sync. */
-std::map<TileIndex, TreePlacerData> _tree_placer_memory;
+/** Tree placer tool current drag state. */
+robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
 
 static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
 static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
