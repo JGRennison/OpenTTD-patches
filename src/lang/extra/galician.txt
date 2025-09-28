@@ -182,6 +182,20 @@ STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Habilitar freos
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :Fiabilidade mínima: {STRING}
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :Ao introducirse un vehículo, escóllese aleatoriamente unha fiabilidade máxima entre este valor e o 100 %.{}{}Escolle un valor alto se queres que todos os vehículos teñan unha alta fiabilidade máxima.{}Escolle un valor baixo para aumentar o efecto do azar (baixo a túa responsabilidade).{}{}A fiabilidade máxima só se acada despois do período de introdución, e volve diminuír cara ao final da vida útil do vehículo (como sempre foi).{}{}Nunha partida xa iniciada, pode ser necesario reiniciar motores para que o cambio teña efecto.{}{}Comportamento anterior: o valor escollíase entre o 75 % e o 100 %.
 
+STR_CONFIG_SETTING_RELIABILITY_SPEED                            :Factor de decaemento da fiabilidade: {STRING}
+STR_CONFIG_SETTING_RELIABILITY_SPEED_HELPTEXT                   :Como de rápido baixa a fiabilidade dun vehículo.{}Valores máis altos fan que a fiabilidade diminúa máis rápido.
+STR_CONFIG_SETTING_DIVIDE_32                                    :x1/32
+STR_CONFIG_SETTING_DIVIDE_16                                    :x1/16
+STR_CONFIG_SETTING_DIVIDE_8                                     :x1/8
+STR_CONFIG_SETTING_DIVIDE_4                                     :x1/4
+STR_CONFIG_SETTING_DIVIDE_2                                     :x1/2
+STR_CONFIG_SETTING_TIMES_1                                      :x1
+STR_CONFIG_SETTING_TIMES_2                                      :x2
+STR_CONFIG_SETTING_TIMES_4                                      :x4
+STR_CONFIG_SETTING_TIMES_8                                      :x8
+STR_CONFIG_SETTING_TIMES_16                                     :x16
+STR_CONFIG_SETTING_TIMES_32                                     :x32
+
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Evitar a colisión de barcos: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Cando se habilita, os barcos intentaran evitar pasar xunto a outro. Os mellores resultados obtéñense cando os xiros de 90º están prohibidos.
 
@@ -1673,6 +1687,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}O campo 
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}O Campo do horario no que comprobar o valor
 STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}O programa de despachos a usar
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}A condición do programa de despachos a probar
+STR_ORDER_CONDITIONAL_SCHED_VALUE_TOOLTIP                       :{BLACK}O valor contra o que comparar os datos de valor da planificación de despachos
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Vía
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}A vía estación na que comprobar a cantidade de carga agardando por
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Estación
@@ -1705,11 +1720,25 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :non é o primei
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :é o último slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :non é o último slot
 
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :ten etiqueta
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :non ten etiqueta
+
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG                     :ten a etiqueta {NUM}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG_NAMED               :ten a etiqueta {NUM} ({STRING})
 
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG             :non ten a etiqueta {NUM}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED       :non ten a etiqueta {NUM} ({STRING})
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_USES_ROUTE       :usa ruta
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_USE_ROUTE :non usa ruta
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_DEF_ROUTE     :usa ruta por defecto
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_DEF_ROUTE :non usa ruta por defecto
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_ROUTE         :usa a ruta coa ID: {STRING}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_ROUTE     :non usa a ruta coa ID: {STRING}
+
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE                   :Ruta por defecto
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}Xestionar lista
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Xestiona esta lista de ordes
@@ -1724,6 +1753,13 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Engadir lista d
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxectivo de salto
 STR_ORDER_EXPORT_ORDER_LIST                                     :Exportar lista de ordes
+STR_ORDER_IMPORT_ORDER_LIST_REPLACE                             :Importar lista de ordes (reemprazar)
+STR_ORDER_IMPORT_ORDER_LIST_APPEND                              :Importar lista de ordes (engadir)
+STR_ORDER_IMPORT_ORDER_LIST_INSERT                              :Importar lista de ordes (inserir)
+STR_ORDER_IMPORT_ORDER_LIST_APPEND_REVERSED                     :Importar lista de ordes (engadir invertida)
+STR_ORDER_IMPORT_ORDER_LIST_INSERT_REVERSED                     :Importar lista de ordes (inserir invertida)
+
+STR_ORDER_INSERT_FROM_VEHICLE                                   :Insertar ordes do vehículo
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Tentar adquirir slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Liberar slot
@@ -2194,6 +2230,12 @@ STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Renomear etique
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}Renomear etiquetas de slot de saída (para usar con ordes condicionais)
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}Nomear a etiqueta do slot de saída
 STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}Non se pode nomear a etiqueta de saída...
+STR_SCHDISPATCH_CREATE_DEPARTURE_ROUTE                          :Crear ruta coa ID
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE                            :Renomear/eliminar IDs de ruta...
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE_TOOLTIP                    :{BLACK}Crear/renomear/eliminar IDs de ruta de saída (para usar con ordes condicionais)
+STR_SCHDISPATCH_RENAME_DEPARTURE_ROUTE_CAPTION                  :{BLACK}Nomear ID de ruta de saída
+STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE                          :{WHITE}Non se pode nomear o ID de ruta de saída...
+STR_SCHDISPATCH_ROUTE_DEPARTURE_TOOLTIP                         :{BLACK}Asignar o ID de ruta ao oco de saída seleccionado (para usar con ordes condicionais).
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Xestionar Slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Reutilizar este slot de saída
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establecer se a franxa de saída seleccionada pode ser utilizada máis dunha vez.
@@ -2217,6 +2259,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de sa�
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM}
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Etiqueta {NUM}: {STRING}
+STR_SCHDISPATCH_SLOT_TOOLTIP_ROUTE                              :{}ID da ruta: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}Este vehículo non saíu.
@@ -2226,6 +2269,7 @@ STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :primeiro slot
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :derradeiro slot
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :etiqueta {NUM}
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :etiqueta {NUM} ({STRING})
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_ROUTE                  :ID da ruta: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {TT_TIME}.
@@ -2272,6 +2316,8 @@ STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :Non se pode act
 
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... non se pode desagrupar un vehículo usando o despacho programado.
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... non se pode desagrupar un vehículo usando a separación automática.
+
+STR_ERROR_TOO_MANY_SCHDISPATCH_ROUTES                           :{WHITE}Demasiados IDs de ruta para este horario
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Teclas modificadoras
