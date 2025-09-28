@@ -22,6 +22,7 @@
 #include "viewport_func.h"
 #include "tree_cmd.h"
 #include "tree_func.h"
+#include "error.h"
 
 #include "widgets/tree_widget.h"
 
@@ -34,7 +35,6 @@
 #include "safeguards.h"
 
 extern std::map<TileIndex, TreePlacerData> _tree_placer_memory;
-extern int _tree_placer_cmd_count;
 
 /**
  * Calculate the maximum size of all tree sprites
@@ -80,7 +80,7 @@ class BuildTreesWindow : public Window
 
 	TreeTypes trees_to_plant = {}; /// < Container with every TreeType selected by the user.
 	PlantingMode mode = PM_NORMAL; ///< Current mode for planting
-	Money cur_spent = 0; ///< Total cost of trees placed while the user is click-dragging trees.
+	TileIndex last_tile = INVALID_TILE;
 
 	/**
 	 * Update the GUI and enable/disable planting to reflect selected options.
@@ -128,7 +128,6 @@ class BuildTreesWindow : public Window
 		this->SetDirty();
 	}
 
-	uint32_t last_tile = -1;
 	void DoPlantForest(TileIndex tile)
 	{
 		if (tile == this->last_tile) {
@@ -153,17 +152,15 @@ class BuildTreesWindow : public Window
 			default: NOT_REACHED();
 		}
 
-		this->cur_spent += PlaceTreeGroupAroundTile(tile, trees_to_plant, radius, count, cur_spent);
+		PlaceTreeGroupAroundTile(tile, trees_to_plant, radius, count);
 
-		this->last_tile = tile.value;
+		this->last_tile = tile;
 	}
 
 	void ResetToolData()
 	{
-		this->last_tile = -1;
-		_tree_placer_memory = {};
-		_tree_placer_cmd_count = 0;
-		this->cur_spent = 0;
+		this->last_tile = INVALID_TILE;
+		_tree_placer_memory.clear();
 	}
 
 public:
@@ -266,17 +263,22 @@ public:
 	{
 		TileIndex tile = TileVirtXY(pt.x, pt.y);
 
-		/* Test if the user is holding down the mouse button. base.OnPlaceDrag runs this at least once after user has let go, leading to an odd tree duplicating effect if we don't test. */
+		/* Test if the user is holding down the mouse button. base.
+		 * OnPlaceDrag runs this at least once after user has let go, leading to an odd tree duplicating effect if we don't test. */
 		if (_left_button_down) {
+			if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_BULK_TREE) && !_shift_pressed) {
+				ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
+				ResetObjectToPlace();
+				return;
+			}
 			this->DoPlantForest(tile);
-			SendSyncTrees();
 		}
 	}
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
-			SendSyncTrees();
+			SendSyncTrees(this->last_tile);
 		}
 
 		this->ResetToolData();

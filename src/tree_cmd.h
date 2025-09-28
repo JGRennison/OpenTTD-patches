@@ -19,9 +19,10 @@ struct TreePlacerData {
 	uint8_t count;
 };
 
-struct TreeSyncCmdData final : public CommandPayloadSerialisable<TreeSyncCmdData> {
-	ClientID calling_client = INVALID_CLIENT_ID; // Client using this command.
-	std::vector<std::pair<TileIndex, TreePlacerData>> sync_data; // List of every tile index and the tree type/count intended to be on this tile.
+struct BulkTreeCmdData final : public CommandPayloadSerialisable<BulkTreeCmdData> {
+	static constexpr size_t MAX_SERIALISED_COUNT = 512;
+
+	std::vector<std::pair<TileIndex, TreePlacerData>> plant_tree_data; // List of every tile index and the tree type/count intended to be on this tile.
 
 	void Serialise(BufferSerialisationRef buffer) const override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
@@ -29,6 +30,6 @@ struct TreeSyncCmdData final : public CommandPayloadSerialisable<TreeSyncCmdData
 };
 
 DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, TreeType, uint8_t, bool>)
-DEF_CMD_DIRECT_NT(CMD_SYNC_TREES, CmdSyncTrees, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, TreeSyncCmdData)
+DEF_CMD_DIRECT_LT(CMD_BULK_TREE, CmdBulkTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, BulkTreeCmdData)
 
 #endif /* TREE_CMD_H */

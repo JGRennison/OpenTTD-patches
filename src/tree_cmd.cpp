@@ -27,10 +27,6 @@
 #include "date_func.h"
 #include "tree_cmd.h"
 #include "tree_func.h"
-#include "error.h"
-#include "strings_func.h"
-#include "network/network.h"
-#include "network/network_func.h"
 
 #include "table/strings.h"
 #include "table/tree_land.h"
@@ -61,7 +57,7 @@ enum ExtraTreePlacement : uint8_t {
 /** Determines when to consider building more trees. */
 uint8_t _trees_tick_ctr;
 /** Keeps track of what the Tree Placer tool intends to replace on it's next sync. */
-std::map<TileIndex, TreePlacerData> _tree_placer_memory = {};
+std::map<TileIndex, TreePlacerData> _tree_placer_memory;
 
 static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
 static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
@@ -584,27 +580,13 @@ void RemoveAllTrees()
  * @param radius    Maximum distance (on each axis) from tile to place trees.
  * @param count     Maximum number of trees to place.
  * @param sim_cost Extra cost to be added to the fake 'cost' popup users see when this is ran.
- * @return The amount of money this should cost when placed.
  */
-Money PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count, Money sim_cost)
+void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count)
 {
-	/* Save seeds, because Random do the desyncy thing and the desyncy thing bad, so we restore the seeds when we're done. */
-	SavedRandomSeeds saved_seeds;
-	SaveRandomSeeds(&saved_seeds);
-
-	const Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
-
-	/* Not a real command, but we want to emulate one, so we need to protect this tool from being used when paused. (because how dare you cheat by... placing trees?) */
-	if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_SYNC_TREES)) {
-		ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
-		return 0;
-	}
-
-	Money new_cost = 0;
 	for (; count > 0; count--) {
 		/* Simple quasi-normal distribution with range [-radius; radius) */
 		auto mkcoord = [&]() -> int32_t {
-			const uint32_t rand = Random();
+			const uint32_t rand = InteractiveRandom();
 			const int32_t dist = GB<int32_t>(rand, 0, 8) + GB<int32_t>(rand, 8, 8) + GB<int32_t>(rand, 16, 8) + GB<int32_t>(rand, 24, 8);
 			const int32_t scu = dist * radius / 512;
 			return scu - radius;
@@ -613,14 +595,18 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius
 		const int32_t yofs = mkcoord();
 		const TileIndex tile_to_plant = TileAddWrap(tile, xofs, yofs);
 		if (tile_to_plant != INVALID_TILE) {
-			TreeType current_type = *std::next(tree_types.IterateSetBits().begin(), RandomRange(CountBits(tree_types)));
-			int cur_tree_count = 0;
-			if (_tree_placer_memory.contains(tile_to_plant)) {
-				cur_tree_count = _tree_placer_memory[tile_to_plant].count;
-				current_type = _tree_placer_memory[tile_to_plant].tree_type;
+			TreeType current_type;
+			uint8_t cur_tree_count;
+			auto iter = _tree_placer_memory.find(tile_to_plant);
+			if (iter != _tree_placer_memory.end()) {
+				current_type = iter->second.tree_type;
+				cur_tree_count = iter->second.count;
 			} else if (IsTileType(tile_to_plant, MP_TREES)) {
-				cur_tree_count = GetTreeCount(tile_to_plant);
 				current_type = GetTreeType(tile_to_plant);
+				cur_tree_count = GetTreeCount(tile_to_plant);
+			} else {
+				current_type = *std::next(tree_types.IterateSetBits().begin(), InteractiveRandomRange(CountBits(tree_types)));
+				cur_tree_count = 0;
 			}
 
 			/* Editor places trees for real, in-game only pretends. Easier for network connections to handle. */
@@ -634,35 +620,17 @@ Money PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius
 					MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 				}
 			} else if ((IsTileType(tile_to_plant, MP_TREES) || CanPlantTreesOnTile(tile_to_plant, (current_type == TREE_CACTUS))) && cur_tree_count < 4) {
-				uint8_t count = cur_tree_count + 1;
-				new_cost += _price[PR_BUILD_TREES];
-				if (IsTileType(tile_to_plant, MP_TREES) || _tree_placer_memory.contains(tile_to_plant)) {
-					new_cost += _price[PR_BUILD_TREES];
-				}
-				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, count});
+				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, static_cast<uint8_t>(cur_tree_count + 1)});
 				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 			}
 		}
 	}
-
-	if (c != nullptr && new_cost > c->money && !_settings_game.difficulty.infinite_money) {
-		ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY, new_cost), WL_INFO, ::TileX(tile), ::TileY(tile));
-	} else if (_game_mode != GM_EDITOR) {
-		/* Imitate how commands do prices, because again, we're a fake command. */
-		int x = TileX(tile) * TILE_SIZE;
-		int y = TileY(tile) * TILE_SIZE;
-		ShowCostOrIncomeAnimation(x, y, GetSlopePixelZ(x, y), sim_cost + new_cost);
-	}
-
 
 	if (_game_mode == GM_EDITOR && HasExactlyOneBit(tree_types) && IsInsideMM(*tree_types.IterateSetBits().begin(), TREE_RAINFOREST, TREE_CACTUS)) {
 		for (TileIndex t : TileArea(tile).Expand(radius)) {
 			if (GetTileType(t) != MP_VOID && DistanceSquare(tile, t) < radius * radius) SetTropicZone(t, TROPICZONE_RAINFOREST);
 		}
 	}
-
-	RestoreRandomSeeds(saved_seeds);
-	return new_cost;
 }
 
 /**
@@ -854,26 +822,22 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 }
 
 
-int _tree_placer_cmd_count = 0;
 /**
  * Sync trees, sent when a client is using the Tree Placer.
  * @param flags type of operation
  * @param cmd_data stuff
  * @return the cost of this operation or an error
  */
-CommandCost CmdSyncTrees(DoCommandFlags flags, const TreeSyncCmdData &cmd_data)
+CommandCost CmdBulkTree(DoCommandFlags flags, const BulkTreeCmdData &cmd_data)
 {
-	if (_networking && cmd_data.calling_client == _network_own_client_id && _tree_placer_cmd_count >= 0 && flags.Test(DoCommandFlag::Execute)) {
-		_tree_placer_cmd_count--;
-	}
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
 
-	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
-	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
+	const Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
+	int limit = (c == nullptr) ? INT32_MAX : GB(c->tree_limit, 16, 16);
 
 	/* Iterate through sync_data, plant trees on every tile inside. */
-	for (const auto& [tile, data] : cmd_data.sync_data) {
+	for (const auto& [tile, data] : cmd_data.plant_tree_data) {
 		if (tile >= Map::Size()) return CMD_ERROR;
 
 		uint8_t tree_count = (IsTileType(tile, MP_TREES)) ? data.count - GetTreeCount(tile) : data.count;
@@ -897,64 +861,60 @@ CommandCost CmdSyncTrees(DoCommandFlags flags, const TreeSyncCmdData &cmd_data)
 	}
 }
 
-void TreeSyncCmdData::Serialise(BufferSerialisationRef buffer) const
+void BulkTreeCmdData::Serialise(BufferSerialisationRef buffer) const
 {
-	buffer.Send_uint32(this->calling_client);
-	buffer.Send_uint32((uint32_t)this->sync_data.size());
-	for (const auto& [tile, data] : this->sync_data) {
+	buffer.Send_uint32((uint32_t)this->plant_tree_data.size());
+	for (const auto& [tile, data] : this->plant_tree_data) {
 		buffer.Send_uint32(tile);
 		buffer.Send_uint8(data.tree_type);
 		buffer.Send_uint8(data.count);
 	}
 }
 
-bool TreeSyncCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+bool BulkTreeCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	this->calling_client = (ClientID)buffer.Recv_uint32();
 	uint32_t size = buffer.Recv_uint32();
-	if (!buffer.CanRecvBytes(size * 6)) return false;
+	if (size > MAX_SERIALISED_COUNT || !buffer.CanRecvBytes(size * 6)) return false;
 	for (; size > 0; size--) {
 		TileIndex tile = TileIndex{buffer.Recv_uint32()};
 		TreeType type = (TreeType)buffer.Recv_uint8();
 		uint8_t count = buffer.Recv_uint8();
-		this->sync_data.emplace_back(tile, TreePlacerData{type, count});
+		this->plant_tree_data.emplace_back(tile, TreePlacerData{type, count});
 	}
 	return true;
 }
 
-void TreeSyncCmdData::FormatDebugSummary(format_target &output) const
+void BulkTreeCmdData::FormatDebugSummary(format_target &output) const
 {
-	output.format("Size {}", this->sync_data.size());
+	output.format("Size: {}", this->plant_tree_data.size());
 }
 
-void SendSyncTrees()
+void SendSyncTrees(TileIndex cmd_tile)
 {
-	if (_networking) {
-		if (_tree_placer_cmd_count > 4) return;
-		_tree_placer_cmd_count++;
-	}
-
-	/* Prep the Tree Placer tool's data for us to send to the server. */
-	TreeSyncCmdData data;
-	int count = 0;
-	std::vector<TileIndex> tiles_to_clean = {};
+	BulkTreeCmdData cmd_data;
+	auto flush = [&]() {
+		if (!cmd_data.plant_tree_data.empty()) {
+			EnqueueDoCommandP<CMD_BULK_TREE>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
+			cmd_data.plant_tree_data.clear();
+		}
+	};
 
 	/* Iterate through the trees the user intends to place. - Iteration exists to apply limit to try and avoid excessive network traffic. */
-	data.calling_client = _network_own_client_id;
 	for (const auto &it : _tree_placer_memory) {
-		data.sync_data.emplace_back(it.first, it.second);
-		tiles_to_clean.emplace_back(it.first);
-		count++;
-		if (count >= 128) {
-			break;
+		cmd_data.plant_tree_data.emplace_back(it.first, it.second);
+		if (!_shift_pressed && _networking && cmd_data.plant_tree_data.size() >= BulkTreeCmdData::MAX_SERIALISED_COUNT) {
+			/* Don't chunk command in cost estimation mode or when not networking */
+			flush();
 		}
 	}
+	_tree_placer_memory.clear();
 
-	for (TileIndex tile : tiles_to_clean) {
-		_tree_placer_memory.erase(tile);
+	if (_shift_pressed) {
+		/* Cost estimation mode */
+		DoCommandP<CMD_BULK_TREE>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
+	} else {
+		flush();
 	}
-
-	DoCommandP<CMD_SYNC_TREES>(data, STR_NULL);
 }
 
 struct TreeListEnt : PalSpriteID {

@@ -18,7 +18,7 @@ using TreeTypes = EnumBitSet<TreeType, uint64_t>;
 
 void PlaceTreesRandomly();
 void RemoveAllTrees();
-Money PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count, Money sim_cost);
-void SendSyncTrees();
+void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count);
+void SendSyncTrees(TileIndex cmd_tile);
 
 #endif /* TREE_FUNC_H */
