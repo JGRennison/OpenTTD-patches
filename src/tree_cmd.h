@@ -14,11 +14,6 @@
 #include "tree_type.h"
 #include <vector>
 
-struct TreePlacerData {
-	TreeType tree_type;
-	uint8_t count;
-};
-
 struct BulkTreeCmdData final : public CommandPayloadSerialisable<BulkTreeCmdData> {
 	static constexpr size_t MAX_SERIALISED_COUNT = 512;
 

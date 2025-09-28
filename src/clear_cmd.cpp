@@ -17,6 +17,7 @@
 #include "core/random_func.hpp"
 #include "newgrf_generic.h"
 #include "newgrf_newlandscape.h"
+#include "tree_func.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"
@@ -208,6 +209,14 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 		case CLEAR_DESERT:
 			if (!params.no_ground_tiles) DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetClearDensity(ti->tile)), PAL_NONE);
 			break;
+	}
+
+	if (unlikely(_tree_placer_preview_active) && ground != CLEAR_FIELDS && ground != CLEAR_ROCKS && !IsInvisibilitySet(TO_TREES)) {
+		auto it = _tree_placer_memory.find(ti->tile);
+		if (it != _tree_placer_memory.end()) {
+			extern void DrawClearTileSimulatedTreeTileOverlay(TileInfo *ti, bool secondary_ground, TreeType tree_type, uint8_t count);
+			DrawClearTileSimulatedTreeTileOverlay(ti, ground == CLEAR_SNOW || ground == CLEAR_DESERT, it->second.tree_type, it->second.count);
+		}
 	}
 
 	DrawBridgeMiddle(ti);

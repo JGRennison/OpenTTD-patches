@@ -58,6 +58,7 @@ enum ExtraTreePlacement : uint8_t {
 /** Determines when to consider building more trees. */
 uint8_t _trees_tick_ctr;
 /** Tree placer tool current drag state. */
+bool _tree_placer_preview_active = false;
 robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
 
 static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
@@ -622,7 +623,8 @@ void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius,
 				}
 			} else if ((IsTileType(tile_to_plant, MP_TREES) || CanPlantTreesOnTile(tile_to_plant, (current_type == TREE_CACTUS))) && cur_tree_count < 4) {
 				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, static_cast<uint8_t>(cur_tree_count + 1)});
-				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
+				_tree_placer_preview_active = true;
+				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE);
 			}
 		}
 	}
@@ -913,6 +915,7 @@ void SendSyncTrees(TileIndex cmd_tile)
 			/* Don't chunk command in cost estimation mode or when not networking */
 			flush();
 		}
+		MarkTileDirtyByTile(it.first, VMDF_NOT_MAP_MODE);
 	}
 	_tree_placer_memory.clear();
 
@@ -923,6 +926,14 @@ void SendSyncTrees(TileIndex cmd_tile)
 		flush();
 	}
 }
+
+enum class DrawTreeTileOverlayFlag : uint8_t {
+	Simulated,
+	SecondaryGroundStyle,
+};
+using DrawTreeTileOverlayFlags = EnumBitSet<DrawTreeTileOverlayFlag, uint64_t>;
+
+static void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growth_stage, uint trees, DrawTreeTileOverlayFlags flags);
 
 struct TreeListEnt : PalSpriteID {
 	uint8_t x, y;
@@ -942,13 +953,31 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 	/* Do not draw trees when the invisible trees setting is set */
 	if (IsInvisibilitySet(TO_TREES)) return;
 
+	DrawTreeTileOverlayFlags flags{};
+	if ((GetTreeGround(ti->tile) == TREE_GROUND_SNOW_DESERT || GetTreeGround(ti->tile) == TREE_GROUND_ROUGH_SNOW) &&
+			GetTreeDensity(ti->tile) >= 2) {
+		flags.Set(DrawTreeTileOverlayFlag::SecondaryGroundStyle);
+	}
+
+	if (unlikely(_tree_placer_preview_active)) {
+		auto it = _tree_placer_memory.find(ti->tile);
+		if (it != _tree_placer_memory.end()) {
+			flags.Set(DrawTreeTileOverlayFlag::Simulated);
+			DrawTreeTileOverlay(ti, it->second.tree_type, TreeGrowthStage::Growing1, it->second.count, flags);
+			return;
+		}
+	}
+
+	DrawTreeTileOverlay(ti, GetTreeType(ti->tile), GetTreeGrowth(ti->tile), GetTreeCount(ti->tile), flags);
+}
+
+void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growth_stage, uint trees, DrawTreeTileOverlayFlags flags)
+{
 	uint tmp = CountBits(ti->tile.base() + ti->x + ti->y);
-	uint index = GB(tmp, 0, 2) + (GetTreeType(ti->tile) << 2);
+	uint index = GB(tmp, 0, 2) + (tree_type << 2);
 
 	/* different tree styles above one of the grounds */
-	if ((GetTreeGround(ti->tile) == TREE_GROUND_SNOW_DESERT || GetTreeGround(ti->tile) == TREE_GROUND_ROUGH_SNOW) &&
-			GetTreeDensity(ti->tile) >= 2 &&
-			IsInsideMM(index, TREE_SUB_ARCTIC << 2, TREE_RAINFOREST << 2)) {
+	if (flags.Test(DrawTreeTileOverlayFlag::SecondaryGroundStyle) && IsInsideMM(index, TREE_SUB_ARCTIC << 2, TREE_RAINFOREST << 2)) {
 		index += 164 - (TREE_SUB_ARCTIC << 2);
 	}
 
@@ -962,11 +991,8 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 
 	TreeListEnt te[4];
 
-	/* put the trees to draw in a list */
-	uint trees = GetTreeCount(ti->tile);
-
 	PaletteID palette_adjust = 0;
-	if (_settings_client.gui.shade_trees_on_slopes && ti->tileh != SLOPE_FLAT) {
+	if (_settings_client.gui.shade_trees_on_slopes && ti->tileh != SLOPE_FLAT && !flags.Test(DrawTreeTileOverlayFlag::Simulated)) {
 		extern int GetSlopeTreeBrightnessAdjust(Slope slope);
 		int adjust = GetSlopeTreeBrightnessAdjust(ti->tileh);
 		if (adjust != 0) {
@@ -975,9 +1001,15 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 		}
 	}
 
+	/* put the trees to draw in a list */
 	for (uint i = 0; i < trees; i++) {
-		SpriteID sprite = s[0].sprite + (i == trees - 1 ? static_cast<uint>(GetTreeGrowth(ti->tile)) : 3);
-		PaletteID pal = s[0].pal | palette_adjust;
+		SpriteID sprite = s[0].sprite + (i == trees - 1 ? static_cast<uint>(growth_stage) : 3);
+		PaletteID pal;
+		if (flags.Test(DrawTreeTileOverlayFlag::Simulated)) {
+			pal = PALETTE_WHITE_TINT;
+		} else {
+			pal = s[0].pal | palette_adjust;
+		}
 
 		te[i].sprite = sprite;
 		te[i].pal    = pal;
@@ -1010,6 +1042,13 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 	EndSpriteCombine();
 }
 
+void DrawClearTileSimulatedTreeTileOverlay(TileInfo *ti, bool secondary_ground, TreeType tree_type, uint8_t count)
+{
+	DrawTreeTileOverlayFlags flags{DrawTreeTileOverlayFlag::Simulated};
+	if (secondary_ground) flags.Set(DrawTreeTileOverlayFlag::SecondaryGroundStyle);
+
+	DrawTreeTileOverlay(ti, tree_type, TreeGrowthStage::Growing1, count, flags);
+}
 
 static int GetSlopePixelZ_Trees(TileIndex tile, uint x, uint y, bool)
 {

@@ -41,4 +41,9 @@ static const uint TREE_COUNT_RAINFOREST   = TREE_CACTUS     - TREE_RAINFOREST;  
 static const uint TREE_COUNT_SUB_TROPICAL = TREE_TOYLAND    - TREE_SUB_TROPICAL; ///< number of tree types for the 'sub-tropic part' of a sub-tropic map.
 static const uint TREE_COUNT_TOYLAND      = 9;                                   ///< number of tree types on a toyland map.
 
+struct TreePlacerData {
+	TreeType tree_type;
+	uint8_t count;
+};
+
 #endif /* TREE_TYPE_H */

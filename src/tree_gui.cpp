@@ -23,7 +23,6 @@
 #include "tree_cmd.h"
 #include "tree_func.h"
 #include "error.h"
-#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "widgets/tree_widget.h"
 
@@ -32,8 +31,6 @@
 #include "table/tree_land.h"
 
 #include "safeguards.h"
-
-extern robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
 
 /**
  * Calculate the maximum size of all tree sprites
@@ -159,7 +156,11 @@ class BuildTreesWindow : public Window
 	void ResetToolData()
 	{
 		this->last_tile = INVALID_TILE;
+		for (const auto &it : _tree_placer_memory) {
+			MarkTileDirtyByTile(it.first, VMDF_NOT_MAP_MODE);
+		}
 		_tree_placer_memory.clear();
+		_tree_placer_preview_active = false;
 	}
 
 public:
