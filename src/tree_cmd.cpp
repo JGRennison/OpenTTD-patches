@@ -884,12 +884,15 @@ bool BulkTreeCmdData::Deserialise(DeserialisationBuffer &buffer, StringValidatio
 {
 	uint32_t size = buffer.Recv_uint32();
 	if (size > MAX_SERIALISED_COUNT || !buffer.CanRecvBytes(size * 6)) return false;
+	robin_hood::unordered_flat_set<TileIndex> tile_set;
 	for (; size > 0; size--) {
 		TileIndex tile = TileIndex{buffer.Recv_uint32()};
 		TreeType type = (TreeType)buffer.Recv_uint8();
 		uint8_t count = buffer.Recv_uint8();
 		this->plant_tree_data.emplace_back(tile, TreePlacerData{type, count});
+		tile_set.insert(tile);
 	}
+	if (tile_set.size() != this->plant_tree_data.size()) return false;
 	return true;
 }
 
