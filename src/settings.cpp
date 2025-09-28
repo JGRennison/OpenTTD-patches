@@ -297,7 +297,7 @@ static std::optional<uint32_t> LookupManyOfMany(const std::vector<std::string> &
 		auto r = OneOfManySettingDesc::ParseSingleValue(value, many);
 		if (!r.has_value()) return r;
 
-		SetBit(res, *r); // value found, set it
+		SetBit(res, static_cast<uint8_t>(*r)); // value found, set it
 	}
 	return res;
 }
