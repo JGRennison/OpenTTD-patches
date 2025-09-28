@@ -687,7 +687,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
 
-	if (start_tile >= Map::Size() || count < 1) return CMD_ERROR;
+	if (start_tile >= Map::Size() || count < 1 || count > 4) return CMD_ERROR;
 	/* Check the tree type within the current climate */
 	if (tree_to_plant != TREE_INVALID && !IsInsideBS(tree_to_plant, _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])) return CMD_ERROR;
 
@@ -706,18 +706,21 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 				}
 
 				/* Test tree limit. */
-				if (--limit < 1) {
+				if (limit <= 0) {
 					msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
 					break;
 				}
 
+				const uint to_plant = std::min<uint>(static_cast<uint>(limit), std::min<uint>(4 - GetTreeCount(tile), count));
+				limit -= static_cast<int>(to_plant);
+
 				if (flags.Test(DoCommandFlag::Execute)) {
-					AddTreeCount(tile, count);
+					AddTreeCount(tile, to_plant);
 					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
-					if (c != nullptr) c->tree_limit -= 1 << 16;
+					if (c != nullptr) c->tree_limit -= to_plant << 16;
 				}
 				/* 2x as expensive to add more trees to an existing tile */
-				cost.AddCost((_price[PR_BUILD_TREES] * 2) * count);
+				cost.AddCost((_price[PR_BUILD_TREES] * 2) * to_plant);
 				break;
 			}
 
@@ -748,10 +751,13 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 				}
 
 				/* Test tree limit. */
-				if (--limit < 1) {
+				if (limit <= 0) {
 					msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
 					break;
 				}
+
+				const uint to_plant = std::min<uint>(static_cast<uint>(limit), count);
+				limit -= static_cast<int>(to_plant);
 
 				if (IsTileType(tile, MP_CLEAR)) {
 					/* Remove fields or rocks. Note that the ground will get barrened */
@@ -790,9 +796,9 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 					}
 
 					/* Plant full grown trees in scenario editor */
-					PlantTreesOnTile(tile, treetype, count - 1, _game_mode == GM_EDITOR ? TreeGrowthStage::Grown : TreeGrowthStage::Growing1);
+					PlantTreesOnTile(tile, treetype, to_plant - 1, _game_mode == GM_EDITOR ? TreeGrowthStage::Grown : TreeGrowthStage::Growing1);
 					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
-					if (c != nullptr) c->tree_limit -= 1 << 16;
+					if (c != nullptr) c->tree_limit -= to_plant << 16;
 
 					/* When planting rainforest-trees, set tropiczone to rainforest in editor. */
 					if (_game_mode == GM_EDITOR && IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS)) {
@@ -802,7 +808,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 
 				/* Add the cost for the first tree, then extra for every tree after the first. */
 				cost.AddCost(_price[PR_BUILD_TREES]);
-				cost.AddCost((_price[PR_BUILD_TREES] * 2) * (count - 1));
+				cost.AddCost((_price[PR_BUILD_TREES] * 2) * (to_plant - 1));
 				break;
 			}
 
