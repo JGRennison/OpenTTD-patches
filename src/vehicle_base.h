@@ -1670,6 +1670,39 @@ void ShiftVehicleDates(EconTime::DateDelta interval);
 
 Vehicle *GetFirstVehicleOnTile(TileIndex tile, VehicleType type);
 
+template <VehicleType TYPE>
+struct VehicleTypeHelper {};
+
+template <>
+struct VehicleTypeHelper<VEH_TRAIN> {
+	using VehType = Train;
+};
+
+template <>
+struct VehicleTypeHelper<VEH_ROAD> {
+	using VehType = RoadVehicle;
+};
+
+template <>
+struct VehicleTypeHelper<VEH_SHIP> {
+	using VehType = Ship;
+};
+
+template <>
+struct VehicleTypeHelper<VEH_AIRCRAFT> {
+	using VehType = Aircraft;
+};
+
+template <>
+struct VehicleTypeHelper<VEH_EFFECT> {
+	using VehType = EffectVehicle;
+};
+
+template <>
+struct VehicleTypeHelper<VEH_DISASTER> {
+	using VehType = DisasterVehicle;
+};
+
 /**
  * Iterate over all vehicles on a tile.
  * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
