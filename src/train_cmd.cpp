@@ -2674,15 +2674,15 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnTile(tile_from, VEH_TRAIN, [&](const Vehicle *v) {
-			return TrainApproachingCrossingEnum(Train::From(v), tile);
+	if (HasVehicleOnTile<VEH_TRAIN>(tile_from, [&](const Train *t) {
+			return TrainApproachingCrossingEnum(t, tile);
 		})) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnTile(tile_from, VEH_TRAIN, [&](const Vehicle *v) {
-		return TrainApproachingCrossingEnum(Train::From(v), tile);
+	return HasVehicleOnTile<VEH_TRAIN>(tile_from, [&](const Train *t) {
+		return TrainApproachingCrossingEnum(t, tile);
 	});
 }
 
@@ -5173,18 +5173,18 @@ struct FindSpaceBetweenTrainsChecker {
 	uint16_t distance;
 	DiagDirection direction;
 
-	bool operator()(const Vehicle *v) const;
+	bool operator()(const Train *v) const;
 };
 
 /** Find train in front and keep distance between trains in tunnel/bridge. */
-bool FindSpaceBetweenTrainsChecker::operator()(const Vehicle *v) const
+bool FindSpaceBetweenTrainsChecker::operator()(const Train *v) const
 {
 	/* Don't look at wagons between front and back of train. */
 	if ((v->Previous() != nullptr && v->Next() != nullptr)) return false;
 
 	if (!IsDiagonalDirection(v->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
-		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return false;
+		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & v->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return false;
 	}
 
 	int32_t a = 0;
@@ -5250,7 +5250,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, b
 		case DIAGDIR_NW: checker.pos = (TileY(tile) * TILE_SIZE) + TILE_UNIT_MASK; break;
 	}
 
-	if (HasVehicleOnTile(t->tile, VEH_TRAIN, checker)) {
+	if (HasVehicleOnTile<VEH_TRAIN>(t->tile, checker)) {
 		/* Revert train if not going with tunnel direction. */
 		if (checker.direction != GetTunnelBridgeDirection(t->tile)) {
 			SetBit(t->flags, VRF_REVERSING);
@@ -5259,7 +5259,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, b
 	}
 	/* Cover blind spot at end of tunnel bridge. */
 	if (check_endtile){
-		if (HasVehicleOnTile(GetOtherTunnelBridgeEnd(t->tile), VEH_TRAIN, checker)) {
+		if (HasVehicleOnTile<VEH_TRAIN>(GetOtherTunnelBridgeEnd(t->tile), checker)) {
 			/* Revert train if not going with tunnel direction. */
 			if (checker.direction != GetTunnelBridgeDirection(t->tile)) {
 				SetBit(t->flags, VRF_REVERSING);
@@ -5729,9 +5729,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 								exitdir = ReverseDiagDir(exitdir);
 
 								/* check if a train is waiting on the other side */
-								if (!HasVehicleOnTile(o_tile, VEH_TRAIN, [&exitdir](const Vehicle *u) {
-										if (u->vehstatus.Test(VehState::Crashed)) return false;
-										const Train *t = Train::From(u);
+								if (!HasVehicleOnTile<VEH_TRAIN>(o_tile, [&exitdir](const Train *t) {
+										if (t->vehstatus.Test(VehState::Crashed)) return false;
 
 										/* not front engine of a train, inside wormhole or depot, crashed */
 										if (!t->IsFrontEngine() || !(t->track & TRACK_BIT_MASK)) return false;

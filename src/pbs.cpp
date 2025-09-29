@@ -1389,10 +1389,10 @@ CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, T
 {
 	if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC || _settings_game.vehicle.track_edit_ignores_realistic_braking) return CommandCost();
 
-	auto handler = [&](const Vehicle *v) -> bool {
-		return CheckTrainReservationPreventsTrackModification(Train::From(v)->First()).Failed();
+	auto handler = [&](const Train *t) -> bool {
+		return CheckTrainReservationPreventsTrackModification(t->First()).Failed();
 	};
-	if (HasVehicleOnTile(start, VEH_TRAIN, handler) || HasVehicleOnTile(end, VEH_TRAIN, handler)) {
+	if (HasVehicleOnTile<VEH_TRAIN>(start, handler) || HasVehicleOnTile<VEH_TRAIN>(end, handler)) {
 		return CommandCost(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();

@@ -872,11 +872,11 @@ struct OvertakeData {
 	RoadTypeCollisionMode collision_mode;
 };
 
-static bool EnumFindVehBlockingOvertake(const Vehicle *v, const OvertakeData *od)
+static bool EnumFindVehBlockingOvertake(const RoadVehicle *v, const OvertakeData *od)
 {
 	if (v->First() == od->u || v->First() == od->v) return false;
-	if (!_collision_mode_roadtypes[od->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return false;
-	if (RoadVehicle::From(v)->overtaking != 0 || v->direction != od->v->direction) return true;
+	if (!_collision_mode_roadtypes[od->collision_mode].Test(v->roadtype)) return false;
+	if (v->overtaking != 0 || v->direction != od->v->direction) return true;
 
 	/* Check if other vehicle is behind */
 	switch (DirToDiagDir(v->direction)) {
@@ -898,7 +898,7 @@ static bool EnumFindVehBlockingOvertake(const Vehicle *v, const OvertakeData *od
 	return true;
 }
 
-static bool EnumFindVehBlockingOvertakeTunnelBridge(const Vehicle *v, const OvertakeData *od)
+static bool EnumFindVehBlockingOvertakeTunnelBridge(const RoadVehicle *v, const OvertakeData *od)
 {
 	switch (DiagDirToAxis(DirToDiagDir(v->direction))) {
 		case AXIS_X:
@@ -913,11 +913,11 @@ static bool EnumFindVehBlockingOvertakeTunnelBridge(const Vehicle *v, const Over
 	return EnumFindVehBlockingOvertake(v, od);
 }
 
-static bool EnumFindVehBlockingOvertakeBehind(const Vehicle *v, const OvertakeData *od)
+static bool EnumFindVehBlockingOvertakeBehind(const RoadVehicle *v, const OvertakeData *od)
 {
 	if (v->First() == od->u || v->First() == od->v) return false;
-	if (!_collision_mode_roadtypes[od->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return false;
-	if (RoadVehicle::From(v)->overtaking != 0 && TileVirtXY(v->x_pos, v->y_pos) == od->tile) return true;
+	if (!_collision_mode_roadtypes[od->collision_mode].Test(v->roadtype)) return false;
+	if (v->overtaking != 0 && TileVirtXY(v->x_pos, v->y_pos) == od->tile) return true;
 	return false;
 }
 
@@ -957,7 +957,7 @@ static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
 static bool CheckRoadBlockedForOvertaking(const OvertakeData *od)
 {
 	/* Are there more vehicles on the tile except the two vehicles involved in overtaking */
-	return HasVehicleOnTile(od->tile, VEH_ROAD, [&](const Vehicle *v) {
+	return HasVehicleOnTile<VEH_ROAD>(od->tile, [&](const RoadVehicle *v) {
 		return EnumFindVehBlockingOvertake(v, od);
 	});
 }
@@ -1006,11 +1006,11 @@ static bool CheckTunnelBridgeBlockedForOvertaking(OvertakeData *od, TileIndex be
 			NOT_REACHED();
 	}
 
-	auto handler = [&](const Vehicle *v) {
+	auto handler = [&](const RoadVehicle *v) {
 		return EnumFindVehBlockingOvertakeTunnelBridge(v, od);
 	};
-	if (HasVehicleOnTile(behind_end, VEH_ROAD, handler)) return true;
-	if (HasVehicleOnTile(ahead_end, VEH_ROAD, handler)) return true;
+	if (HasVehicleOnTile<VEH_ROAD>(behind_end, handler)) return true;
+	if (HasVehicleOnTile<VEH_ROAD>(ahead_end, handler)) return true;
 	return false;
 }
 
@@ -1127,10 +1127,10 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 		od.tile = behind_check_tile;
 		if (behind_tile_count == 1) {
 			RoadBits rb = GetAnyRoadBits(behind_check_tile, RTT_ROAD);
-			auto check_overtake_behind = [&](const Vehicle *v) {
+			auto check_overtake_behind = [&](const RoadVehicle *v) {
 				return EnumFindVehBlockingOvertakeBehind(v, &od);
 			};
-			if ((rb & DiagDirToRoadBits(dir)) && HasVehicleOnTile(behind_check_tile, VEH_ROAD, check_overtake_behind)) return;
+			if ((rb & DiagDirToRoadBits(dir)) && HasVehicleOnTile<VEH_ROAD>(behind_check_tile, check_overtake_behind)) return;
 		} else {
 			if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
 			if (IsTileType(behind_check_tile, MP_TUNNELBRIDGE)) {
@@ -1558,8 +1558,8 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 			std::swap(ahead, check_tile);
 		}
 
-		if (HasVehicleOnTile(ahead, VEH_ROAD, od)) return;
-		if (HasVehicleOnTile(check_tile, VEH_ROAD, od)) return;
+		if (HasVehicleOnTile<VEH_ROAD>(ahead, od)) return;
+		if (HasVehicleOnTile<VEH_ROAD>(check_tile, od)) return;
 		tiles_behind -= 1 + DistanceManhattan(check_tile, TileVirtXY(v->x_pos, v->y_pos));
 		check_tile = TileAddWrap(check_tile, -ti.x, -ti.y);
 	}
@@ -1567,17 +1567,17 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 	if (check_ahead) {
 		TileIndex ahead_tile = TileAddWrap(check_tile, ti.x, ti.y);
 		if (ahead_tile != INVALID_TILE) {
-			if (HasVehicleOnTile(ahead_tile, VEH_ROAD, od)) return;
-			if (IsTileType(ahead_tile, MP_TUNNELBRIDGE) && HasVehicleOnTile(GetOtherTunnelBridgeEnd(ahead_tile), VEH_ROAD, od)) return;
+			if (HasVehicleOnTile<VEH_ROAD>(ahead_tile, od)) return;
+			if (IsTileType(ahead_tile, MP_TUNNELBRIDGE) && HasVehicleOnTile<VEH_ROAD>(GetOtherTunnelBridgeEnd(ahead_tile), od)) return;
 		}
 	}
 
 	for (; check_tile != INVALID_TILE && tiles_behind > 0; tiles_behind--, check_tile = TileAddWrap(check_tile, -ti.x, -ti.y)) {
-		if (HasVehicleOnTile(check_tile, VEH_ROAD, od)) return;
+		if (HasVehicleOnTile<VEH_ROAD>(check_tile, od)) return;
 		if (IsTileType(check_tile, MP_TUNNELBRIDGE)) {
 			TileIndex other_end = GetOtherTunnelBridgeEnd(check_tile);
 			tiles_behind -= DistanceManhattan(other_end, check_tile);
-			if (HasVehicleOnTile(other_end, VEH_ROAD, od)) return;
+			if (HasVehicleOnTile<VEH_ROAD>(other_end, od)) return;
 			check_tile = other_end;
 		}
 	}

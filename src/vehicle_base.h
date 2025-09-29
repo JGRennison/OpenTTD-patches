@@ -1763,4 +1763,20 @@ bool HasVehicleOnTile(TileIndex tile, VehicleType veh_type, UnaryPred &&predicat
 	return false;
 }
 
+/**
+ * Loop over vehicles on a tile, and check whether a predicate is true for any of them.
+ * The predicate must have the signature: bool Predicate(const Vehicle *);
+ */
+template <VehicleType TYPE, class UnaryPred>
+bool HasVehicleOnTile(TileIndex tile, UnaryPred &&predicate)
+{
+	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
+	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
+	for (Vehicle *v = GetFirstVehicleOnTile(tile, TYPE); v != nullptr; v = v->HashTileNext()) {
+		if (predicate(VehType::From(v))) return true;
+	}
+	return false;
+}
+
 #endif /* VEHICLE_BASE_H */
