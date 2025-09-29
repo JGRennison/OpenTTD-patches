@@ -258,11 +258,11 @@ static bool IsTrainNotInDepot(const Train *t)
 /** Check whether there is a train only on ramp. */
 static bool IsTrainInWormholeTile(const TileIndex veh_tile, const TileIndex portal_tile)
 {
-	for (Vehicle *v : VehiclesOnTile(veh_tile, VEH_TRAIN)) {
+	for (const Train *v : VehiclesOnTile<VEH_TRAIN>(veh_tile)) {
 		/* Only look for front engine or last wagon. */
 		if ((v->Previous() != nullptr && v->Next() != nullptr)) continue;
 		if (portal_tile != TileVirtXY(v->x_pos, v->y_pos)) continue;
-		if (!(Train::From(v)->track & TRACK_BIT_WORMHOLE) && !(Train::From(v)->track & GetAcrossTunnelBridgeTrackBits(portal_tile))) continue;
+		if (!(v->track & TRACK_BIT_WORMHOLE) && !(v->track & GetAcrossTunnelBridgeTrackBits(portal_tile))) continue;
 
 		return true;
 	}

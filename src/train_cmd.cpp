@@ -5148,10 +5148,10 @@ static bool CheckTrainCollision(Train *v)
 
 	/* find colliding vehicles */
 	if (v->track == TRACK_BIT_WORMHOLE) {
-		for (Vehicle *u : VehiclesOnTile(v->tile, VEH_TRAIN)) {
+		for (Train *u : VehiclesOnTile<VEH_TRAIN>(v->tile)) {
 			FindTrainCollideEnum(u, &tcc);
 		}
-		for (Vehicle *u : VehiclesOnTile(GetOtherTunnelBridgeEnd(v->tile), VEH_TRAIN)) {
+		for (Train *u : VehiclesOnTile<VEH_TRAIN>(GetOtherTunnelBridgeEnd(v->tile))) {
 			FindTrainCollideEnum(u, &tcc);
 		}
 	} else {
@@ -6339,9 +6339,9 @@ static void DeleteLastWagon(Train *v)
 
 		/* If there are still crashed vehicles on the tile, give the track reservation to them */
 		TrackBits remaining_trackbits = TRACK_BIT_NONE;
-		for (const Vehicle *u : VehiclesOnTile(tile, VEH_TRAIN)) {
+		for (const Train *u : VehiclesOnTile<VEH_TRAIN>(tile)) {
 			if (!u->vehstatus.Test(VehState::Crashed)) continue;
-			remaining_trackbits |= GetTrackbitsFromCrashedVehicle(Train::From(u));
+			remaining_trackbits |= GetTrackbitsFromCrashedVehicle(u);
 		}
 
 		/* It is important that these two are the first in the loop, as reservation cannot deal with every trackbit combination */

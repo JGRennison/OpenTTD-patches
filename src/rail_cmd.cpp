@@ -2418,28 +2418,28 @@ CommandCost CmdRemoveSignalTrack(DoCommandFlags flags, TileIndex tile, TileIndex
 }
 
 /** Update power of train under which is the railtype being converted */
-static void UpdateTrainPowerProcAcrossTunnelBridge(const Vehicle *v, TrainList &affected_trains, TrackBits test_track_bits)
+static void UpdateTrainPowerProcAcrossTunnelBridge(const Train *t, TrainList &affected_trains, TrackBits test_track_bits)
 {
-	TrackBits vehicle_track = Train::From(v)->track;
+	TrackBits vehicle_track = t->track;
 	if (!(vehicle_track & TRACK_BIT_WORMHOLE) && !(test_track_bits & vehicle_track)) return;
 
-	include(affected_trains, Train::From(v)->First());
+	include(affected_trains, t->First());
 }
 
 /** Update power of train under which is the railtype being converted */
-static void UpdateTrainPowerProcOnTrackBits(const Vehicle *v, TrainList &affected_trains, TrackBits test_track_bits)
+static void UpdateTrainPowerProcOnTrackBits(const Train *t, TrainList &affected_trains, TrackBits test_track_bits)
 {
-	if (!(test_track_bits & Train::From(v)->track)) return;
+	if (!(test_track_bits & t->track)) return;
 
-	include(affected_trains, Train::From(v)->First());
+	include(affected_trains, t->First());
 }
 
 CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(const TileIndex tile, const RailType type)
 {
 	const int max_z = GetTileMaxPixelZ(tile);
-	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-		if (v->z_pos > max_z) continue;
-		if (Train::From(v)->First()->compatible_railtypes.Test(type)) continue;
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+		if (t->z_pos > max_z) continue;
+		if (t->First()->compatible_railtypes.Test(type)) continue;
 
 		return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
 	}
@@ -2448,9 +2448,8 @@ CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(const TileIndex tile, cons
 
 CommandCost EnsureNoIncompatibleRailtypeTrainOnTrackBits(const TileIndex tile, const TrackBits track_bits, const RailType type)
 {
-	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
 		TrackBits rail_bits = track_bits;
-		const Train *t = Train::From(v);
 		if (t->First()->compatible_railtypes.Test(type)) continue;
 		if (rail_bits & TRACK_BIT_WORMHOLE) {
 			if (t->track & TRACK_BIT_WORMHOLE) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
@@ -2604,8 +2603,8 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-					include(affected_trains, Train::From(v)->First());
+				for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+					include(affected_trains, t->First());
 				}
 			}
 		}
@@ -2691,11 +2690,11 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 					SetSecondaryRailType(tile, totype);
 					SetSecondaryRailType(endtile, totype);
 
-					for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-						include(affected_trains, Train::From(v)->First());
+					for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+						include(affected_trains, t->First());
 					}
-					for (Vehicle *v : VehiclesOnTile(endtile, VEH_TRAIN)) {
-						include(affected_trains, Train::From(v)->First());
+					for (Train *t : VehiclesOnTile<VEH_TRAIN>(endtile)) {
+						include(affected_trains, t->First());
 					}
 
 					/* notify YAPF about the track layout change */
@@ -2908,8 +2907,8 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-					UpdateTrainPowerProcOnTrackBits(v, affected_trains, track_bits);
+				for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+					UpdateTrainPowerProcOnTrackBits(t, affected_trains, track_bits);
 				}
 			}
 		}
@@ -2995,16 +2994,16 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 					}
 
 					if (across) {
-						for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-							UpdateTrainPowerProcAcrossTunnelBridge(v, affected_trains, track_bits);
+						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+							UpdateTrainPowerProcAcrossTunnelBridge(t, affected_trains, track_bits);
 						}
 						const TrackBits end_track_bits = GetPrimaryTunnelBridgeTrackBits(endtile);
-						for (const Vehicle *v : VehiclesOnTile(endtile, VEH_TRAIN)) {
-							UpdateTrainPowerProcAcrossTunnelBridge(v, affected_trains, end_track_bits);
+						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(endtile)) {
+							UpdateTrainPowerProcAcrossTunnelBridge(t, affected_trains, end_track_bits);
 						}
 					} else {
-						for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-							UpdateTrainPowerProcOnTrackBits(v, affected_trains, track_bits);
+						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+							UpdateTrainPowerProcOnTrackBits(t, affected_trains, track_bits);
 						}
 					}
 

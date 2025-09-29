@@ -1053,7 +1053,7 @@ static void FloodVehicle(Vehicle *v)
  * Flood a vehicle if we are allowed to flood it, i.e. when it is on the ground.
  * @param v    The vehicle to test for flooding.
  */
-static void FloodAircraftProc(Vehicle *v)
+static void FloodAircraftProc(Aircraft *v)
 {
 	if (v->vehstatus.Test(VehState::Crashed)) return;
 
@@ -1084,7 +1084,7 @@ static void FloodVehicleProc(Vehicle *v, int z)
 
 static void FloodVehiclesOnTile(TileIndex tile, int z)
 {
-	for (Vehicle *v : VehiclesOnTile(tile, VEH_AIRCRAFT)) {
+	for (Aircraft *v : VehiclesOnTile<VEH_AIRCRAFT>(tile)) {
 		FloodAircraftProc(v);
 	}
 	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {

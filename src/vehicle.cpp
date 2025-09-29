@@ -594,7 +594,7 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 {
 	if (IsAirportTile(tile)) {
 		const int z = GetTileMaxPixelZ(tile);
-		for (const Vehicle *v : VehiclesOnTile(tile, VEH_AIRCRAFT)) {
+		for (const Aircraft *v : VehiclesOnTile<VEH_AIRCRAFT>(tile)) {
 			if (v->subtype == AIR_SHADOW) continue;
 			if (v->z_pos > z) continue;
 
@@ -624,8 +624,8 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 
 bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile)
 {
-	for (const Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
-		if (!_roadtypes_non_train_colliding.Test(RoadVehicle::From(v)->roadtype)) return true;
+	for (const RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
+		if (!_roadtypes_non_train_colliding.Test(rv->roadtype)) return true;
 	}
 
 	return false;
@@ -675,14 +675,12 @@ struct FindTrainClosestToTunnelBridgeEndInfo {
 };
 
 /** Callback for Has/FindVehicleOnPos to find a train in a signalled tunnel/bridge */
-static void FindClosestTrainToTunnelBridgeEndEnum(const Vehicle *v, FindTrainClosestToTunnelBridgeEndInfo *info)
+static void FindClosestTrainToTunnelBridgeEndEnum(const Train *t, FindTrainClosestToTunnelBridgeEndInfo *info)
 {
 	/* Only look for train heads and tails. */
-	if (v->Previous() != nullptr && v->Next() != nullptr) return;
+	if (t->Previous() != nullptr && t->Next() != nullptr) return;
 
-	if (v->vehstatus.Test(VehState::Crashed)) return;
-
-	const Train *t = Train::From(v);
+	if (t->vehstatus.Test(VehState::Crashed)) return;
 
 	if (!IsDiagonalDirection(t->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
@@ -692,10 +690,10 @@ static void FindClosestTrainToTunnelBridgeEndEnum(const Vehicle *v, FindTrainClo
 	int32_t pos;
 	switch (info->direction) {
 		default: NOT_REACHED();
-		case DIAGDIR_NE: pos = -v->x_pos; break; // X: lower is better
-		case DIAGDIR_SE: pos =  v->y_pos; break; // Y: higher is better
-		case DIAGDIR_SW: pos =  v->x_pos; break; // X: higher is better
-		case DIAGDIR_NW: pos = -v->y_pos; break; // Y: lower is better
+		case DIAGDIR_NE: pos = -t->x_pos; break; // X: lower is better
+		case DIAGDIR_SE: pos =  t->y_pos; break; // Y: higher is better
+		case DIAGDIR_SW: pos =  t->x_pos; break; // X: higher is better
+		case DIAGDIR_NW: pos = -t->y_pos; break; // Y: lower is better
 	}
 
 	/* ALWAYS return the lowest ID (anti-desync!) if the coordinate is the same */
@@ -708,11 +706,11 @@ static void FindClosestTrainToTunnelBridgeEndEnum(const Vehicle *v, FindTrainClo
 Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile)
 {
 	FindTrainClosestToTunnelBridgeEndInfo info(ReverseDiagDir(GetTunnelBridgeDirection(tile)));
-	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-		FindClosestTrainToTunnelBridgeEndEnum(v, &info);
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+		FindClosestTrainToTunnelBridgeEndEnum(t, &info);
 	}
-	for (const Vehicle *v : VehiclesOnTile(other_tile, VEH_TRAIN)) {
-		FindClosestTrainToTunnelBridgeEndEnum(v, &info);
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(other_tile)) {
+		FindClosestTrainToTunnelBridgeEndEnum(t, &info);
 	}
 	return info.best;
 }
@@ -724,14 +722,14 @@ struct GetAvailableFreeTilesInSignalledTunnelBridgeChecker {
 	int lowest_seen;
 };
 
-static void GetAvailableFreeTilesInSignalledTunnelBridgeEnum(const Vehicle *v, GetAvailableFreeTilesInSignalledTunnelBridgeChecker *checker)
+static void GetAvailableFreeTilesInSignalledTunnelBridgeEnum(const Train *v, GetAvailableFreeTilesInSignalledTunnelBridgeChecker *checker)
 {
 	/* Don't look at wagons between front and back of train. */
 	if ((v->Previous() != nullptr && v->Next() != nullptr)) return;
 
 	if (!IsDiagonalDirection(v->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
-		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
+		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & v->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
 	}
 
 	int v_pos;
@@ -770,11 +768,11 @@ int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex e
 		case DIAGDIR_NW: checker.pos = -(int)(TileY(tile) * TILE_SIZE); break;
 	}
 
-	for (const Vehicle *v : VehiclesOnTile(entrance, VEH_TRAIN)) {
-		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(v, &checker);
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(entrance)) {
+		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(t, &checker);
 	}
-	for (const Vehicle *v : VehiclesOnTile(exit, VEH_TRAIN)) {
-		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(v, &checker);
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(exit)) {
+		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(t, &checker);
 	}
 
 	if (checker.lowest_seen == INT_MAX) {
@@ -799,8 +797,7 @@ CommandCost EnsureNoTrainOnTrackBits(const TileIndex tile, const TrackBits track
 	 * error message only (which may be different for different machines).
 	 * Such a message does not affect MP synchronisation.
 	 */
-	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-		const Train *t = Train::From(v);
+	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
 		TrackBits rail_bits = track_bits;
 		if (rail_bits & TRACK_BIT_WORMHOLE) {
 			if (t->track & TRACK_BIT_WORMHOLE) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);

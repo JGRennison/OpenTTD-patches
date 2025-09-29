@@ -748,10 +748,10 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 	rvf.collision_mode = collision_mode;
 
 	if (front->state == RVSB_WORMHOLE) {
-		for (Vehicle *u : VehiclesOnTile(v->tile, VEH_ROAD)) {
+		for (RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(v->tile)) {
 			EnumCheckRoadVehClose(u, &rvf);
 		}
-		for (Vehicle *u : VehiclesOnTile(GetOtherTunnelBridgeEnd(v->tile), VEH_ROAD)) {
+		for (RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(GetOtherTunnelBridgeEnd(v->tile))) {
 			EnumCheckRoadVehClose(u, &rvf);
 		}
 	} else {
@@ -1468,19 +1468,19 @@ static bool IsRoadVehicleOnOtherSideOfRoad(const RoadVehicle *v)
 
 struct FinishOvertakeData {
 	Direction direction;
-	const Vehicle *v;
+	const RoadVehicle *v;
 	int min_coord;
 	int max_coord;
 	uint8_t not_road_pos;
 	RoadTypeCollisionMode collision_mode;
 
-	bool operator()(const Vehicle *v) const;
+	bool operator()(const RoadVehicle *rv) const;
 };
 
-bool FinishOvertakeData::operator()(const Vehicle *v) const
+bool FinishOvertakeData::operator()(const RoadVehicle *v) const
 {
 	if (v->First() == this->v) return false;
-	if (!_collision_mode_roadtypes[this->collision_mode].Test(RoadVehicle::From(v)->roadtype)) return false;
+	if (!_collision_mode_roadtypes[this->collision_mode].Test(v->roadtype)) return false;
 
 	/* Check if other vehicle is behind */
 	switch (DirToDiagDir(v->direction)) {

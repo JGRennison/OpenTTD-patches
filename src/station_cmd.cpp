@@ -2375,14 +2375,13 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
 	if (IsDriveThroughStopTile(tile) && flags.Test(DoCommandFlag::Bankrupt)) {
 		/* remove the 'going through road stop' status from all vehicles on that tile */
 		if (flags.Test(DoCommandFlag::Execute)) {
-			for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+			for (RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
 				/* Okay... we are a road vehicle on a drive through road stop.
 				 * But that road stop has just been removed, so we need to make
 				 * sure we are in a valid state... however, vehicles can also
 				 * turn on road stop tiles, so only clear the 'road stop' state
 				 * bits and only when the state was 'in road stop', otherwise
 				 * we'll end up clearing the turn around bits. */
-				RoadVehicle *rv = RoadVehicle::From(v);
 				if (HasBit(rv->state, RVS_IN_DT_ROAD_STOP)) rv->state &= RVSB_ROAD_STOP_TRACKDIR_MASK;
 			}
 		}

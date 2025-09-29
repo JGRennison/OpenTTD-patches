@@ -238,7 +238,7 @@ static bool IsTrainUsableAsTemplateReplacementSource(const Train *t)
 
 void TemplateDepotVehicles::Init(TileIndex tile)
 {
-	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+	for (const Train *v : VehiclesOnTile<VEH_TRAIN>(tile)) {
 		this->vehicles.insert(v->index);
 	}
 }

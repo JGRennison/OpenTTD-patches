@@ -1704,51 +1704,71 @@ struct VehicleTypeHelper<VEH_DISASTER> {
 };
 
 /**
+ * Forward iterator
+ */
+template <typename T>
+class VehiclesOnTileIterator {
+public:
+	using value_type = T *;
+	using difference_type = std::ptrdiff_t;
+	using iterator_category = std::forward_iterator_tag;
+	using pointer = void;
+	using reference = void;
+
+	explicit VehiclesOnTileIterator(T *first_on_tile) : current(first_on_tile) {}
+
+	bool operator==(const VehiclesOnTileIterator &rhs) const { return this->current == rhs.current; }
+	bool operator==(const std::default_sentinel_t &) const { return this->current == nullptr; }
+
+	T *operator*() const { return static_cast<T *>(this->current); }
+
+	VehiclesOnTileIterator &operator++()
+	{
+		this->current = this->current->HashTileNext();
+		return *this;
+	}
+
+	VehiclesOnTileIterator operator++(int)
+	{
+		VehiclesOnTileIterator result = *this;
+		++*this;
+		return result;
+	}
+private:
+	Vehicle *current;
+};
+
+template <typename T>
+class VehiclesOnTileIterable {
+public:
+	explicit VehiclesOnTileIterable(T *first_on_tile) : start(first_on_tile) {}
+	VehiclesOnTileIterator<T> begin() const { return this->start; }
+	std::default_sentinel_t end() const { return std::default_sentinel_t(); }
+private:
+	VehiclesOnTileIterator<T> start;
+};
+
+/**
  * Iterate over all vehicles on a tile.
  * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
  */
-class VehiclesOnTile {
-public:
-	/**
-	 * Forward iterator
-	 */
-	class Iterator {
-	public:
-		using value_type = Vehicle *;
-		using difference_type = std::ptrdiff_t;
-		using iterator_category = std::forward_iterator_tag;
-		using pointer = void;
-		using reference = void;
+inline VehiclesOnTileIterable<Vehicle> VehiclesOnTile(TileIndex tile, VehicleType veh_type)
+{
+	return VehiclesOnTileIterable<Vehicle>(GetFirstVehicleOnTile(tile, veh_type));
+}
 
-		explicit Iterator(Vehicle *first) : current(first) {}
-
-		bool operator==(const Iterator &rhs) const { return this->current == rhs.current; }
-		bool operator==(const std::default_sentinel_t &) const { return this->current == nullptr; }
-
-		Vehicle *operator*() const { return this->current; }
-
-		Iterator &operator++()
-		{
-			this->current = this->current->HashTileNext();
-			return *this;
-		}
-
-		Iterator operator++(int)
-		{
-			Iterator result = *this;
-			++*this;
-			return result;
-		}
-	private:
-		Vehicle *current;
-	};
-
-	explicit VehiclesOnTile(TileIndex tile, VehicleType veh_type) : start(GetFirstVehicleOnTile(tile, veh_type)) {}
-	Iterator begin() const { return this->start; }
-	std::default_sentinel_t end() const { return std::default_sentinel_t(); }
-private:
-	Iterator start;
-};
+/**
+ * Iterate over all vehicles on a tile.
+ * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
+ */
+template <VehicleType TYPE>
+inline VehiclesOnTileIterable<typename VehicleTypeHelper<TYPE>::VehType> VehiclesOnTile(TileIndex tile)
+{
+	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
+	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
+	return VehiclesOnTileIterable<VehType>(static_cast<VehType *>(GetFirstVehicleOnTile(tile, TYPE)));
+}
 
 /**
  * Loop over vehicles on a tile, and check whether a predicate is true for any of them.

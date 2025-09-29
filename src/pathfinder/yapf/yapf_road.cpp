@@ -448,9 +448,9 @@ public:
 				Yapf().leader_targets[i] = INVALID_TILE;
 			}
 
-			const Vehicle *origin_vehicle = v;
-			for (const Vehicle *u : VehiclesOnTile(tile, VEH_ROAD)) {
-				const Vehicle *front = u->First();
+			const RoadVehicle *origin_vehicle = v;
+			for (const RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(tile)) {
+				const RoadVehicle *front = u->First();
 				if (front == origin_vehicle) continue;
 
 				/* only consider vehicles going to the same station as us */

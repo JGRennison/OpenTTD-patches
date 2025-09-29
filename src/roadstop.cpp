@@ -457,13 +457,12 @@ void RoadStop::Entry::Rebuild(const RoadStop *rs, int side)
 	TileIndexDiff offset = TileOffsByAxis(axis);
 	for (TileIndex tile = rs->xy; IsDriveThroughRoadStopContinuation(rs->xy, tile); tile += offset) {
 		this->length += TILE_SIZE;
-		for (const Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+		for (const RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
 			/* Not a RV or not in the right direction or crashed :( */
-			DiagDirection diag_dir = DirToDiagDir(v->direction);
-			if (RoadVehicle::From(v)->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);
-			if (diag_dir != entry_dir || !v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed)) continue;
+			DiagDirection diag_dir = DirToDiagDir(rv->direction);
+			if (rv->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);
+			if (diag_dir != entry_dir || !rv->IsPrimaryVehicle() || rv->vehstatus.Test(VehState::Crashed)) continue;
 
-			const RoadVehicle *rv = RoadVehicle::From(v);
 			/* Don't add ones not in a road stop */
 			if (rv->state < RVSB_IN_ROAD_STOP) continue;
 

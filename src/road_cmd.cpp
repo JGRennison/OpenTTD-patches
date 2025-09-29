@@ -3206,8 +3206,8 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 				MarkTileDirtyByTile(tile);
 
 				/* update power of train on this tile */
-				for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
-					include(affected_rvs, RoadVehicle::From(v)->First());
+				for (RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
+					include(affected_rvs, rv->First());
 				}
 
 				if (IsRoadDepotTile(tile)) {
@@ -3302,11 +3302,11 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 				AddRoadTunnelBridgeInfrastructure(tile, endtile);
 
-				for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
-					include(affected_rvs, RoadVehicle::From(v)->First());
+				for (RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
+					include(affected_rvs, rv->First());
 				}
-				for (Vehicle *v : VehiclesOnTile(endtile, VEH_ROAD)) {
-					include(affected_rvs, RoadVehicle::From(v)->First());
+				for (RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(endtile)) {
+					include(affected_rvs, rv->First());
 				}
 
 				MarkBridgeOrTunnelDirty(tile, endtile);

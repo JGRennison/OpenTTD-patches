@@ -834,10 +834,9 @@ struct FindTrainOnTrackInfo {
 /** Find the best matching vehicle on a tile. */
 static void CheckTrainsOnTrack(FindTrainOnTrackInfo &info, TileIndex tile)
 {
-	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
-		if (v->vehstatus.Test(VehState::Crashed)) continue;
+	for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+		if (t->vehstatus.Test(VehState::Crashed)) continue;
 
-		Train *t = Train::From(v);
 		if (t->track & TRACK_BIT_WORMHOLE) {
 			/* Do not find trains inside bridges, when the search track is a bridge-bypassing custom bridge head track. */
 			if (IsCustomBridgeHeadTile(info.res.tile) && !IsTrackAcrossTunnelBridge(info.res.tile, TrackdirToTrack(info.res.trackdir))) {
@@ -1622,11 +1621,11 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			if (HasAcrossTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
 			const Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
-			for (const Vehicle *v : VehiclesOnTile(other_end, VEH_TRAIN)) {
-				DirDiff diff = DirDifference(v->direction, dir);
+			for (const Train *u : VehiclesOnTile<VEH_TRAIN>(other_end)) {
+				DirDiff diff = DirDifference(u->direction, dir);
 				if (diff == DIRDIFF_SAME) return false;
 				if (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT) {
-					if (GetAcrossTunnelBridgeTrackBits(other_end) & Train::From(v)->track) return false;
+					if (GetAcrossTunnelBridgeTrackBits(other_end) & u->track) return false;
 				}
 			}
 		}
