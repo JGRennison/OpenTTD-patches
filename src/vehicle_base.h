@@ -1668,4 +1668,66 @@ void UpdateAllVehiclesIsDrawn();
 
 void ShiftVehicleDates(EconTime::DateDelta interval);
 
+Vehicle *GetFirstVehicleOnTile(TileIndex tile, VehicleType type);
+
+/**
+ * Iterate over all vehicles on a tile.
+ * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
+ */
+class VehiclesOnTile {
+public:
+	/**
+	 * Forward iterator
+	 */
+	class Iterator {
+	public:
+		using value_type = Vehicle *;
+		using difference_type = std::ptrdiff_t;
+		using iterator_category = std::forward_iterator_tag;
+		using pointer = void;
+		using reference = void;
+
+		explicit Iterator(Vehicle *first) : current(first) {}
+
+		bool operator==(const Iterator &rhs) const { return this->current == rhs.current; }
+		bool operator==(const std::default_sentinel_t &) const { return this->current == nullptr; }
+
+		Vehicle *operator*() const { return this->current; }
+
+		Iterator &operator++()
+		{
+			this->current = this->current->HashTileNext();
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator result = *this;
+			++*this;
+			return result;
+		}
+	private:
+		Vehicle *current;
+	};
+
+	explicit VehiclesOnTile(TileIndex tile, VehicleType veh_type) : start(GetFirstVehicleOnTile(tile, veh_type)) {}
+	Iterator begin() const { return this->start; }
+	std::default_sentinel_t end() const { return std::default_sentinel_t(); }
+private:
+	Iterator start;
+};
+
+/**
+ * Loop over vehicles on a tile, and check whether a predicate is true for any of them.
+ * The predicate must have the signature: bool Predicate(const Vehicle *);
+ */
+template <class UnaryPred>
+bool HasVehicleOnTile(TileIndex tile, VehicleType veh_type, UnaryPred &&predicate)
+{
+	for (Vehicle *v = GetFirstVehicleOnTile(tile, veh_type); v != nullptr; v = v->HashTileNext()) {
+		if (predicate(v)) return true;
+	}
+	return false;
+}
+
 #endif /* VEHICLE_BASE_H */

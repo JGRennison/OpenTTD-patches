@@ -24,7 +24,7 @@
  */
 const uint MAX_RV_PF_TILES = 1 << 11;
 
-const int MAX_RV_LEADER_TARGETS = 4;
+const uint MAX_RV_LEADER_TARGETS = 4;
 
 template <class Types>
 class CYapfCostRoadT
@@ -73,7 +73,7 @@ protected:
 		int cost = 0;
 
 		bool predicted_occupied = false;
-		for (int i = 0; i < MAX_RV_LEADER_TARGETS && Yapf().leader_targets[i] != INVALID_TILE; ++i) {
+		for (uint i = 0; i < MAX_RV_LEADER_TARGETS && Yapf().leader_targets[i] != INVALID_TILE; ++i) {
 			if (Yapf().leader_targets[i] != tile) continue;
 			cost += Yapf().PfGetSettings().road_curve_penalty;
 			predicted_occupied = true;
@@ -364,41 +364,6 @@ public:
 	}
 };
 
-struct FindVehiclesOnTileProcData {
-	const Vehicle *origin_vehicle;
-	TileIndex (*targets)[MAX_RV_LEADER_TARGETS];
-};
-
-static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
-{
-	FindVehiclesOnTileProcData *data = (FindVehiclesOnTileProcData*)(_data);
-
-	const Vehicle *front = v->First();
-
-	if (data->origin_vehicle == front) {
-		return nullptr;
-	}
-
-	/* only consider vehicles going to the same station as us */
-	if (!front->current_order.IsType(OT_GOTO_STATION) || data->origin_vehicle->current_order.GetDestination() != front->current_order.GetDestination()) {
-		return nullptr;
-	}
-
-	TileIndex ti = v->tile + TileOffsByDir(v->direction);
-
-	for (int i = 0; i < MAX_RV_LEADER_TARGETS; i++) {
-		if ((*data->targets)[i] == INVALID_TILE) {
-			(*data->targets)[i] = ti;
-			break;
-		}
-		if ((*data->targets)[i] == ti) {
-			break;
-		}
-	}
-
-	return nullptr;
-}
-
 template <class Types>
 class CYapfFollowRoadT
 {
@@ -478,14 +443,32 @@ public:
 		Yapf().leader_targets[0] = INVALID_TILE;
 		if (multiple_targets && non_cached_area.Contains(tile)) {
 			/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
-			 * check for other vehicles headin to the same destination directly in front */
-			for (int i = 1; i < MAX_RV_LEADER_TARGETS; ++i) {
+			 * check for other vehicles heading to the same destination directly in front */
+			for (uint i = 1; i < MAX_RV_LEADER_TARGETS; ++i) {
 				Yapf().leader_targets[i] = INVALID_TILE;
 			}
-			FindVehiclesOnTileProcData data;
-			data.origin_vehicle = v;
-			data.targets = &Yapf().leader_targets;
-			FindVehicleOnPos(tile, VEH_ROAD, &data, &FindVehiclesOnTileProc);
+
+			const Vehicle *origin_vehicle = v;
+			for (const Vehicle *u : VehiclesOnTile(tile, VEH_ROAD)) {
+				const Vehicle *front = u->First();
+				if (front == origin_vehicle) continue;
+
+				/* only consider vehicles going to the same station as us */
+				if (!front->current_order.IsType(OT_GOTO_STATION) || origin_vehicle->current_order.GetDestination() != front->current_order.GetDestination()) continue;
+
+				TileIndex ti = u->tile + TileOffsByDir(u->direction);
+
+				auto &targets = Yapf().leader_targets;
+				for (uint i = 0; i < MAX_RV_LEADER_TARGETS; i++) {
+					if (targets[i] == INVALID_TILE) {
+						targets[i] = ti;
+						break;
+					}
+					if (targets[i] == ti) {
+						break;
+					}
+				}
+			}
 		}
 
 		/* find the best path */

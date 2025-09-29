@@ -2418,108 +2418,52 @@ CommandCost CmdRemoveSignalTrack(DoCommandFlags flags, TileIndex tile, TileIndex
 }
 
 /** Update power of train under which is the railtype being converted */
-static Vehicle *UpdateTrainPowerProc(Vehicle *v, void *data)
+static void UpdateTrainPowerProcAcrossTunnelBridge(const Vehicle *v, TrainList &affected_trains, TrackBits test_track_bits)
 {
-	TrainList *affected_trains = static_cast<TrainList*>(data);
-	include(*affected_trains, Train::From(v)->First());
-
-	return nullptr;
-}
-
-struct UpdateTrainPowerProcData {
-	TrainList *train_list;
-	TrackBits track_bits;
-};
-
-/** Update power of train under which is the railtype being converted */
-static Vehicle *UpdateTrainPowerProcAcrossTunnelBridge(Vehicle *v, void *data)
-{
-	UpdateTrainPowerProcData *utpp_data = static_cast<UpdateTrainPowerProcData*>(data);
-
 	TrackBits vehicle_track = Train::From(v)->track;
-	if (!(vehicle_track & TRACK_BIT_WORMHOLE) && !(utpp_data->track_bits & vehicle_track)) return nullptr;
+	if (!(vehicle_track & TRACK_BIT_WORMHOLE) && !(test_track_bits & vehicle_track)) return;
 
-	include(*(utpp_data->train_list), Train::From(v)->First());
-
-	return nullptr;
+	include(affected_trains, Train::From(v)->First());
 }
 
 /** Update power of train under which is the railtype being converted */
-static Vehicle *UpdateTrainPowerProcOnTrackBits(Vehicle *v, void *data)
+static void UpdateTrainPowerProcOnTrackBits(const Vehicle *v, TrainList &affected_trains, TrackBits test_track_bits)
 {
-	UpdateTrainPowerProcData *utpp_data = static_cast<UpdateTrainPowerProcData*>(data);
+	if (!(test_track_bits & Train::From(v)->track)) return;
 
-	if (!(utpp_data->track_bits & Train::From(v)->track)) return nullptr;
-
-	include(*(utpp_data->train_list), Train::From(v)->First());
-
-	return nullptr;
+	include(affected_trains, Train::From(v)->First());
 }
 
-struct EnsureNoIncompatibleRailtypeTrainOnGroundData {
-	int z;
-	RailType type;
-};
-
-static Vehicle *EnsureNoIncompatibleRailtypeTrainProc(Vehicle *v, void *data)
+CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(const TileIndex tile, const RailType type)
 {
-	const EnsureNoIncompatibleRailtypeTrainOnGroundData *procdata = (EnsureNoIncompatibleRailtypeTrainOnGroundData *)data;
+	const int max_z = GetTileMaxPixelZ(tile);
+	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		if (v->z_pos > max_z) continue;
+		if (Train::From(v)->First()->compatible_railtypes.Test(type)) continue;
 
-	if (v->z_pos > procdata->z) return nullptr;
-	if (Train::From(v)->First()->compatible_railtypes.Test(procdata->type)) return nullptr;
-
-	return v;
-}
-
-CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(TileIndex tile, RailType type)
-{
-	EnsureNoIncompatibleRailtypeTrainOnGroundData data = {
-		GetTileMaxPixelZ(tile),
-		type
-	};
-
-	if (HasVehicleOnPos(tile, VEH_TRAIN, &data, &EnsureNoIncompatibleRailtypeTrainProc)) {
 		return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
 	}
 	return CommandCost();
 }
 
-struct EnsureNoIncompatibleRailtypeTrainOnTrackBitsData {
-	TrackBits track_bits;
-	RailType type;
-};
-
-static Vehicle *EnsureNoIncompatibleRailtypeTrainOnTrackProc(Vehicle *v, void *data)
+CommandCost EnsureNoIncompatibleRailtypeTrainOnTrackBits(const TileIndex tile, const TrackBits track_bits, const RailType type)
 {
-	const EnsureNoIncompatibleRailtypeTrainOnTrackBitsData *procdata = (EnsureNoIncompatibleRailtypeTrainOnTrackBitsData *)data;
-	TrackBits rail_bits = procdata->track_bits;
+	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		TrackBits rail_bits = track_bits;
+		const Train *t = Train::From(v);
+		if (t->First()->compatible_railtypes.Test(type)) continue;
+		if (rail_bits & TRACK_BIT_WORMHOLE) {
+			if (t->track & TRACK_BIT_WORMHOLE) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
+			rail_bits &= ~TRACK_BIT_WORMHOLE;
+		} else if (t->track & TRACK_BIT_WORMHOLE) {
+			continue;
+		}
+		if ((t->track != rail_bits) && !TracksOverlap(t->track | rail_bits)) continue;
 
-	Train *t = Train::From(v);
-	if (t->First()->compatible_railtypes.Test(procdata->type)) return nullptr;
-	if (rail_bits & TRACK_BIT_WORMHOLE) {
-		if (t->track & TRACK_BIT_WORMHOLE) return v;
-		rail_bits &= ~TRACK_BIT_WORMHOLE;
-	} else if (t->track & TRACK_BIT_WORMHOLE) {
-		return nullptr;
-	}
-	if ((t->track != rail_bits) && !TracksOverlap(t->track | rail_bits)) return nullptr;
-
-	return v;
-}
-
-CommandCost EnsureNoIncompatibleRailtypeTrainOnTrackBits(TileIndex tile, TrackBits track_bits, RailType type)
-{
-	EnsureNoIncompatibleRailtypeTrainOnTrackBitsData data = {
-		track_bits,
-		type
-	};
-
-	if (HasVehicleOnPos(tile, VEH_TRAIN, &data, &EnsureNoIncompatibleRailtypeTrainOnTrackProc)) {
 		return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
 	}
 	return CommandCost();
 }
-
 
 /**
  * Convert one rail type to the other. You can convert normal rail to
@@ -2660,7 +2604,9 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				FindVehicleOnPos(tile, VEH_TRAIN, &affected_trains, &UpdateTrainPowerProc);
+				for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+					include(affected_trains, Train::From(v)->First());
+				}
 			}
 		}
 
@@ -2745,8 +2691,12 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 					SetSecondaryRailType(tile, totype);
 					SetSecondaryRailType(endtile, totype);
 
-					FindVehicleOnPos(tile, VEH_TRAIN, &affected_trains, &UpdateTrainPowerProc);
-					FindVehicleOnPos(endtile, VEH_TRAIN, &affected_trains, &UpdateTrainPowerProc);
+					for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+						include(affected_trains, Train::From(v)->First());
+					}
+					for (Vehicle *v : VehiclesOnTile(endtile, VEH_TRAIN)) {
+						include(affected_trains, Train::From(v)->First());
+					}
 
 					/* notify YAPF about the track layout change */
 					yapf_notify_track_change(tile, GetTunnelBridgeTrackBits(tile));
@@ -2958,10 +2908,9 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				UpdateTrainPowerProcData data;
-				data.train_list = &affected_trains;
-				data.track_bits = track_bits;
-				FindVehicleOnPos(tile, VEH_TRAIN, &data, &UpdateTrainPowerProcOnTrackBits);
+				for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+					UpdateTrainPowerProcOnTrackBits(v, affected_trains, track_bits);
+				}
 			}
 		}
 
@@ -3045,15 +2994,18 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 						SetSecondaryRailType(tile, totype);
 					}
 
-					UpdateTrainPowerProcData data;
-					data.train_list = &affected_trains;
-					data.track_bits = track_bits;
 					if (across) {
-						FindVehicleOnPos(tile, VEH_TRAIN, &data, &UpdateTrainPowerProcAcrossTunnelBridge);
-						data.track_bits = GetPrimaryTunnelBridgeTrackBits(endtile);
-						FindVehicleOnPos(endtile, VEH_TRAIN, &data, &UpdateTrainPowerProcAcrossTunnelBridge);
+						for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+							UpdateTrainPowerProcAcrossTunnelBridge(v, affected_trains, track_bits);
+						}
+						const TrackBits end_track_bits = GetPrimaryTunnelBridgeTrackBits(endtile);
+						for (const Vehicle *v : VehiclesOnTile(endtile, VEH_TRAIN)) {
+							UpdateTrainPowerProcAcrossTunnelBridge(v, affected_trains, end_track_bits);
+						}
 					} else {
-						FindVehicleOnPos(tile, VEH_TRAIN, &data, &UpdateTrainPowerProcOnTrackBits);
+						for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+							UpdateTrainPowerProcOnTrackBits(v, affected_trains, track_bits);
+						}
 					}
 
 					/* notify YAPF about the track layout change */
@@ -4826,14 +4778,6 @@ static CommandCost TestAutoslopeOnRailTile(TileIndex tile, DoCommandFlags flags,
 	return  cost;
 }
 
-/**
- * Test-procedure for HasVehicleOnPos to check for a ship.
- */
-static Vehicle *EnsureNoShipProc(Vehicle *v, void *)
-{
-	return v;
-}
-
 static CommandCost TerraformTile_Track(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	auto [tileh_old, z_old] = GetTileSlopeZ(tile);
@@ -4843,7 +4787,9 @@ static CommandCost TerraformTile_Track(TileIndex tile, DoCommandFlags flags, int
 		bool was_water = (GetRailGroundType(tile) == RAIL_GROUND_WATER && IsSlopeWithOneCornerRaised(tileh_old));
 
 		/* Allow clearing the water only if there is no ship */
-		if (was_water && HasVehicleOnPos(tile, VEH_SHIP, nullptr, &EnsureNoShipProc)) return CommandCost(STR_ERROR_SHIP_IN_THE_WAY);
+		if (was_water && GetFirstVehicleOnTile(tile, VEH_SHIP) != nullptr) {
+			return CommandCost(STR_ERROR_SHIP_IN_THE_WAY);
+		}
 
 		if (was_water && _game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !flags.Test(DoCommandFlag::AllowRemoveWater)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 

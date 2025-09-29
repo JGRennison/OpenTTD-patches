@@ -831,36 +831,33 @@ struct FindTrainOnTrackInfo {
 	FindTrainOnTrackInfo() : best(nullptr) {}
 };
 
-/** Callback for Has/FindVehicleOnPos to find a train on a specific track. */
-static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
+/** Find the best matching vehicle on a tile. */
+static void CheckTrainsOnTrack(FindTrainOnTrackInfo &info, TileIndex tile)
 {
-	FindTrainOnTrackInfo *info = (FindTrainOnTrackInfo *)data;
+	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		if (v->vehstatus.Test(VehState::Crashed)) continue;
 
-	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
+		Train *t = Train::From(v);
+		if (t->track & TRACK_BIT_WORMHOLE) {
+			/* Do not find trains inside bridges, when the search track is a bridge-bypassing custom bridge head track. */
+			if (IsCustomBridgeHeadTile(info.res.tile) && !IsTrackAcrossTunnelBridge(info.res.tile, TrackdirToTrack(info.res.trackdir))) {
+				continue;
+			}
 
-	Train *t = Train::From(v);
-	if (t->track & TRACK_BIT_WORMHOLE) {
-		/* Do not find trains inside bridges, when the search track is a bridge-bypassing custom bridge head track. */
-		if (IsCustomBridgeHeadTile(info->res.tile) && !IsTrackAcrossTunnelBridge(info->res.tile, TrackdirToTrack(info->res.trackdir))) {
-			return nullptr;
+			/* Do not find trains inside signalled bridge/tunnels.
+			 * Trains on the ramp/entrance itself are found though.
+			 */
+			if (IsTileType(info.res.tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(info.res.tile) && info.res.tile != TileVirtXY(t->x_pos, t->y_pos)) {
+				continue;
+			}
 		}
+		if (t->track & TRACK_BIT_WORMHOLE || HasBit((TrackBits)t->track, TrackdirToTrack(info.res.trackdir))) {
+			t = t->First();
 
-		/* Do not find trains inside signalled bridge/tunnels.
-		 * Trains on the ramp/entrance itself are found though.
-		 */
-		if (IsTileType(info->res.tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(info->res.tile) && info->res.tile != TileVirtXY(t->x_pos, t->y_pos)) {
-			return nullptr;
+			/* ALWAYS return the lowest ID (anti-desync!) */
+			if (info.best == nullptr || t->index < info.best->index) info.best = t;
 		}
 	}
-	if (t->track & TRACK_BIT_WORMHOLE || HasBit((TrackBits)t->track, TrackdirToTrack(info->res.trackdir))) {
-		t = t->First();
-
-		/* ALWAYS return the lowest ID (anti-desync!) */
-		if (info->best == nullptr || t->index < info->best->index) info->best = t;
-		return t;
-	}
-
-	return nullptr;
 }
 
 void TrainReservationLookAhead::SetNextExtendPosition()
@@ -929,7 +926,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 	ftoti.res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir, FRF_NONE, v, nullptr);
 	ftoti.res.okay = flags.Test(FollowTrainReservationFlag::OkayUnused) ? false : IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
 	if (train_on_res != nullptr) {
-		FindVehicleOnPos(ftoti.res.tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+		CheckTrainsOnTrack(ftoti, ftoti.res.tile);
 		if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
 		if (*train_on_res == nullptr && IsRailStationTile(ftoti.res.tile)) {
 			/* The target tile is a rail station. The track follower
@@ -938,13 +935,13 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 			 * for a possible train. */
 			TileIndexDiff diff = TileOffsByDiagDir(TrackdirToExitdir(ReverseTrackdir(ftoti.res.trackdir)));
 			for (TileIndex st_tile = ftoti.res.tile + diff; *train_on_res == nullptr && IsCompatibleTrainStationTile(st_tile, ftoti.res.tile); st_tile += diff) {
-				FindVehicleOnPos(st_tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+				CheckTrainsOnTrack(ftoti, st_tile);
 				if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
 			}
 		}
 		if (*train_on_res == nullptr && IsTileType(ftoti.res.tile, MP_TUNNELBRIDGE) && IsTrackAcrossTunnelBridge(ftoti.res.tile, TrackdirToTrack(ftoti.res.trackdir)) && !IsTunnelBridgeWithSignalSimulation(ftoti.res.tile)) {
 			/* The target tile is a bridge/tunnel, also check the other end tile. */
-			FindVehicleOnPos(GetOtherTunnelBridgeEnd(ftoti.res.tile), VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+			CheckTrainsOnTrack(ftoti, GetOtherTunnelBridgeEnd(ftoti.res.tile));
 			if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
 		}
 	}
@@ -1342,14 +1339,14 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
 		FindTrainOnTrackInfo ftoti;
 		ftoti.res = FollowReservation(GetTileOwner(tile), rts, tile, trackdir, FRF_IGNORE_ONEWAY, nullptr, nullptr);
 
-		FindVehicleOnPos(ftoti.res.tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+		CheckTrainsOnTrack(ftoti, ftoti.res.tile);
 		if (ftoti.best != nullptr) return ftoti.best;
 
 		/* Special case for stations: check the whole platform for a vehicle. */
 		if (IsRailStationTile(ftoti.res.tile)) {
 			TileIndexDiff diff = TileOffsByDiagDir(TrackdirToExitdir(ReverseTrackdir(ftoti.res.trackdir)));
 			for (TileIndex st_tile = ftoti.res.tile + diff; IsCompatibleTrainStationTile(st_tile, ftoti.res.tile); st_tile += diff) {
-				FindVehicleOnPos(st_tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+				CheckTrainsOnTrack(ftoti, st_tile);
 				if (ftoti.best != nullptr) return ftoti.best;
 			}
 		}
@@ -1362,7 +1359,7 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
 				}
 			} else {
 				/* Special case for bridges/tunnels: check the other end as well. */
-				FindVehicleOnPos(GetOtherTunnelBridgeEnd(ftoti.res.tile), VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
+				CheckTrainsOnTrack(ftoti, GetOtherTunnelBridgeEnd(ftoti.res.tile));
 			}
 			if (ftoti.best != nullptr) return ftoti.best;
 		}
@@ -1388,19 +1385,14 @@ CommandCost CheckTrainReservationPreventsTrackModification(const Train *v)
 	return CommandCost();
 }
 
-static Vehicle *TrainInTunnelBridgePreventsTrackModificationEnum(Vehicle *v, void *)
-{
-	if (CheckTrainReservationPreventsTrackModification(Train::From(v)->First()).Failed()) return v;
-
-	return nullptr;
-}
-
 CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, TileIndex end)
 {
 	if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC || _settings_game.vehicle.track_edit_ignores_realistic_braking) return CommandCost();
 
-	if (HasVehicleOnPos(start, VEH_TRAIN, nullptr, &TrainInTunnelBridgePreventsTrackModificationEnum) ||
-			HasVehicleOnPos(end, VEH_TRAIN, nullptr, &TrainInTunnelBridgePreventsTrackModificationEnum)) {
+	auto handler = [&](const Vehicle *v) -> bool {
+		return CheckTrainReservationPreventsTrackModification(Train::From(v)->First()).Failed();
+	};
+	if (HasVehicleOnTile(start, VEH_TRAIN, handler) || HasVehicleOnTile(end, VEH_TRAIN, handler)) {
 		return CommandCost(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();
@@ -1629,15 +1621,14 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		if (free && IsTunnelBridgeSignalSimulationBidirectional(tile)) {
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			if (HasAcrossTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
-			Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
-			if (HasVehicleOnPos(other_end, VEH_TRAIN, &dir, [](Vehicle *v, void *data) -> Vehicle * {
-				DirDiff diff = DirDifference(v->direction, *((Direction *) data));
-				if (diff == DIRDIFF_SAME) return v;
+			const Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
+			for (const Vehicle *v : VehiclesOnTile(other_end, VEH_TRAIN)) {
+				DirDiff diff = DirDifference(v->direction, dir);
+				if (diff == DIRDIFF_SAME) return false;
 				if (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT) {
-					if (GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track) return v;
+					if (GetAcrossTunnelBridgeTrackBits(other_end) & Train::From(v)->track) return false;
 				}
-				return nullptr;
-			})) return false;
+			}
 		}
 		return free;
 	}

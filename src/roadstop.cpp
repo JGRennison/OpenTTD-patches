@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "roadveh.h"
 #include "core/pool_func.hpp"
+#include "core/container_func.hpp"
 #include "roadstop_base.h"
 #include "station_base.h"
 #include "vehicle_func.h"
@@ -422,41 +423,6 @@ void RoadStop::Entry::Enter(const RoadVehicle *rv)
 			GetDriveThroughStopDisallowedRoadDirections(next) == GetDriveThroughStopDisallowedRoadDirections(rs);
 }
 
-typedef std::vector<const RoadVehicle *> RVList; ///< A list of road vehicles
-
-/** Helper for finding RVs in a road stop. */
-struct RoadStopEntryRebuilderHelper {
-	RVList vehicles;   ///< The list of vehicles to possibly add to.
-	DiagDirection dir; ///< The direction the vehicle has to face to be added.
-};
-
-/**
- * Add road vehicles to the station's list if needed.
- * @param v the found vehicle
- * @param data the extra data used to make our decision
- * @return always nullptr
- */
-Vehicle *FindVehiclesInRoadStop(Vehicle *v, void *data)
-{
-	RoadStopEntryRebuilderHelper *rserh = (RoadStopEntryRebuilderHelper*)data;
-	/* Not a RV or not in the right direction or crashed :( */
-	DiagDirection diag_dir = DirToDiagDir(v->direction);
-	if (RoadVehicle::From(v)->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);
-	if (diag_dir != rserh->dir || !v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed)) return nullptr;
-
-	RoadVehicle *rv = RoadVehicle::From(v);
-	/* Don't add ones not in a road stop */
-	if (rv->state < RVSB_IN_ROAD_STOP) return nullptr;
-
-	/* Do not add duplicates! */
-	for (const auto &it : rserh->vehicles) {
-		if (rv == it) return nullptr;
-	}
-
-	rserh->vehicles.push_back(rv);
-	return nullptr;
-}
-
 /**
  * Get the DiagDirection for entering the drive through stop from the given 'side' (east or west) on the given axis.
  * @param east Enter from the east when true or from the west when false.
@@ -484,18 +450,29 @@ void RoadStop::Entry::Rebuild(const RoadStop *rs, int side)
 	Axis axis = GetDriveThroughStopAxis(rs->xy);
 	if (side == -1) side = (rs->east == this);
 
-	RoadStopEntryRebuilderHelper rserh;
-	rserh.dir = GetEntryDirection(side, axis);
+	auto entry_dir = GetEntryDirection(side, axis);
+	std::vector<const RoadVehicle *> vehicles;
 
 	this->length = 0;
 	TileIndexDiff offset = TileOffsByAxis(axis);
 	for (TileIndex tile = rs->xy; IsDriveThroughRoadStopContinuation(rs->xy, tile); tile += offset) {
 		this->length += TILE_SIZE;
-		FindVehicleOnPos(tile, VEH_ROAD, &rserh, FindVehiclesInRoadStop);
+		for (const Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+			/* Not a RV or not in the right direction or crashed :( */
+			DiagDirection diag_dir = DirToDiagDir(v->direction);
+			if (RoadVehicle::From(v)->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);
+			if (diag_dir != entry_dir || !v->IsPrimaryVehicle() || v->vehstatus.Test(VehState::Crashed)) continue;
+
+			const RoadVehicle *rv = RoadVehicle::From(v);
+			/* Don't add ones not in a road stop */
+			if (rv->state < RVSB_IN_ROAD_STOP) continue;
+
+			include(vehicles, rv);
+		}
 	}
 
 	this->occupied = 0;
-	for (const auto &it : rserh.vehicles) {
+	for (const auto &it : vehicles) {
 		this->occupied += it->gcache.cached_total_length;
 	}
 }

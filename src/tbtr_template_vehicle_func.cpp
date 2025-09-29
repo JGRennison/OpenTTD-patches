@@ -238,11 +238,9 @@ static bool IsTrainUsableAsTemplateReplacementSource(const Train *t)
 
 void TemplateDepotVehicles::Init(TileIndex tile)
 {
-	FindVehicleOnPos(tile, VEH_TRAIN, this, [](Vehicle *v, void *data) -> Vehicle * {
-		TemplateDepotVehicles *self = static_cast<TemplateDepotVehicles *>(data);
-		self->vehicles.insert(v->index);
-		return v;
-	});
+	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		this->vehicles.insert(v->index);
+	}
 }
 
 void TemplateDepotVehicles::RemoveVehicle(VehicleID id)

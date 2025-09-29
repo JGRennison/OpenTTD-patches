@@ -1521,7 +1521,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 
 		/* Try to connect the vehicle to one of free chains of wagons. */
 		std::vector<Train *> candidates;
-		for (Train *w = Train::From(GetFirstVehicleOnPos(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
+		for (Train *w = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
 			if (w->IsFreeWagon() &&                          ///< A free wagon chain
 					w->engine_type == e->index &&            ///< Same type
 					w->First() != v &&                       ///< Don't connect to ourself
@@ -1550,7 +1550,7 @@ void NormalizeTrainVehInDepot(const Train *u)
 {
 	assert(u->IsEngine());
 	std::vector<Train *> candidates;
-	for (Train *v = Train::From(GetFirstVehicleOnPos(u->tile, VEH_TRAIN)); v != nullptr; v = v->HashTileNext()) {
+	for (Train *v = Train::From(GetFirstVehicleOnTile(u->tile, VEH_TRAIN)); v != nullptr; v = v->HashTileNext()) {
 		if (v->IsFreeWagon() &&
 				v->track == TRACK_BIT_DEPOT &&
 				v->owner == u->owner) {
@@ -1705,7 +1705,7 @@ static std::vector<Train *> FindGoodVehiclePosList(const Train *src)
 
 	std::vector<Train *> candidates;
 
-	for (Train *dst = Train::From(GetFirstVehicleOnPos(tile, VEH_TRAIN)); dst != nullptr; dst = dst->HashTileNext()) {
+	for (Train *dst = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); dst != nullptr; dst = dst->HashTileNext()) {
 		if (dst->IsFreeWagon() && !dst->vehstatus.Test(VehState::Crashed) && dst->owner == src->owner) {
 			/* check so all vehicles in the line have the same engine. */
 			Train *t = dst;
@@ -2632,17 +2632,6 @@ void ReverseTrainSwapVeh(Train *v, int l, int r)
 	}
 }
 
-
-/**
- * Check if the vehicle is a train
- * @param v vehicle on tile
- * @return v if it is a train, nullptr otherwise
- */
-static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
-{
-	return v;
-}
-
 /**
  * Check if a level crossing tile has a train on it
  * @param tile tile to test
@@ -2653,28 +2642,22 @@ bool TrainOnCrossing(TileIndex tile)
 {
 	assert(IsLevelCrossingTile(tile));
 
-	return HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum);
+	return GetFirstVehicleOnTile(tile, VEH_TRAIN) != nullptr;
 }
-
 
 /**
  * Checks if a train is approaching a rail-road crossing
  * @param v vehicle on tile
- * @param data tile with crossing we are testing
- * @return v if it is approaching a crossing, nullptr otherwise
+ * @param tile tile with crossing we are testing
+ * @return true if v is approaching a crossing
  */
-static Vehicle *TrainApproachingCrossingEnum(Vehicle *v, void *data)
+static bool TrainApproachingCrossingEnum(const Train *t, TileIndex tile)
 {
-	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
+	if (t->vehstatus.Test(VehState::Crashed)) return false;
 
-	Train *t = Train::From(v);
-	if (!t->IsFrontEngine()) return nullptr;
+	if (!t->IsFrontEngine()) return false;
 
-	TileIndex tile = (TileIndex) reinterpret_cast<uintptr_t>(data);
-
-	if (TrainApproachingCrossingTile(t) != tile) return nullptr;
-
-	return t;
+	return TrainApproachingCrossingTile(t) == tile;
 }
 
 
@@ -2691,12 +2674,16 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainApproachingCrossingEnum)) return true;
+	if (HasVehicleOnTile(tile_from, VEH_TRAIN, [&](const Vehicle *v) {
+			return TrainApproachingCrossingEnum(Train::From(v), tile);
+		})) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile.base()), &TrainApproachingCrossingEnum);
+	return HasVehicleOnTile(tile_from, VEH_TRAIN, [&](const Vehicle *v) {
+		return TrainApproachingCrossingEnum(Train::From(v), tile);
+	});
 }
 
 /** Check if the crossing should be closed
@@ -5160,9 +5147,13 @@ static bool CheckTrainCollision(Train *v)
 	tcc.num = 0;
 
 	/* find colliding vehicles */
-	if (v->track & TRACK_BIT_WORMHOLE) {
-		FindVehicleOnPos(v->tile, VEH_TRAIN, &tcc, FindTrainCollideEnum);
-		FindVehicleOnPos(GetOtherTunnelBridgeEnd(v->tile), VEH_TRAIN, &tcc, FindTrainCollideEnum);
+	if (v->track == TRACK_BIT_WORMHOLE) {
+		for (Vehicle *u : VehiclesOnTile(v->tile, VEH_TRAIN)) {
+			FindTrainCollideEnum(u, &tcc);
+		}
+		for (Vehicle *u : VehiclesOnTile(GetOtherTunnelBridgeEnd(v->tile), VEH_TRAIN)) {
+			FindTrainCollideEnum(u, &tcc);
+		}
 	} else {
 		FindVehicleOnPosXY(v->x_pos, v->y_pos, VEH_TRAIN, &tcc, FindTrainCollideEnum);
 	}
@@ -5177,51 +5168,38 @@ static bool CheckTrainCollision(Train *v)
 	return true;
 }
 
-static Vehicle *CheckTrainAtSignal(Vehicle *v, void *data)
-{
-	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
-
-	Train *t = Train::From(v);
-	DiagDirection exitdir = *(DiagDirection *)data;
-
-	/* not front engine of a train, inside wormhole or depot, crashed */
-	if (!t->IsFrontEngine() || !(t->track & TRACK_BIT_MASK)) return nullptr;
-
-	if (t->cur_speed > 5 || VehicleExitDir(t->direction, t->track) != exitdir) return nullptr;
-
-	return t;
-}
-
 struct FindSpaceBetweenTrainsChecker {
 	int32_t pos;
 	uint16_t distance;
 	DiagDirection direction;
+
+	bool operator()(const Vehicle *v) const;
 };
 
 /** Find train in front and keep distance between trains in tunnel/bridge. */
-static Vehicle *FindSpaceBetweenTrainsEnum(Vehicle *v, void *data)
+bool FindSpaceBetweenTrainsChecker::operator()(const Vehicle *v) const
 {
 	/* Don't look at wagons between front and back of train. */
-	if ((v->Previous() != nullptr && v->Next() != nullptr)) return nullptr;
+	if ((v->Previous() != nullptr && v->Next() != nullptr)) return false;
 
 	if (!IsDiagonalDirection(v->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
-		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return nullptr;
+		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return false;
 	}
 
-	const FindSpaceBetweenTrainsChecker *checker = (FindSpaceBetweenTrainsChecker*) data;
-	int32_t a, b = 0;
+	int32_t a = 0;
+	int32_t b = 0;
 
-	switch (checker->direction) {
+	switch (this->direction) {
 		default: NOT_REACHED();
-		case DIAGDIR_NE: a = checker->pos; b = v->x_pos; break;
-		case DIAGDIR_SE: a = v->y_pos; b = checker->pos; break;
-		case DIAGDIR_SW: a = v->x_pos; b = checker->pos; break;
-		case DIAGDIR_NW: a = checker->pos; b = v->y_pos; break;
+		case DIAGDIR_NE: a = this->pos; b = v->x_pos; break;
+		case DIAGDIR_SE: a = v->y_pos; b = this->pos; break;
+		case DIAGDIR_SW: a = v->x_pos; b = this->pos; break;
+		case DIAGDIR_NW: a = this->pos; b = v->y_pos; break;
 	}
 
-	if (a > b && a <= (b + (int)(checker->distance)) + (int)(TILE_SIZE) - 1) return v;
-	return nullptr;
+	if (a > b && a <= (b + (int)(this->distance)) + (int)(TILE_SIZE) - 1) return true;
+	return false;
 }
 
 static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, bool check_endtile)
@@ -5272,7 +5250,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, b
 		case DIAGDIR_NW: checker.pos = (TileY(tile) * TILE_SIZE) + TILE_UNIT_MASK; break;
 	}
 
-	if (HasVehicleOnPos(t->tile, VEH_TRAIN, &checker, &FindSpaceBetweenTrainsEnum)) {
+	if (HasVehicleOnTile(t->tile, VEH_TRAIN, checker)) {
 		/* Revert train if not going with tunnel direction. */
 		if (checker.direction != GetTunnelBridgeDirection(t->tile)) {
 			SetBit(t->flags, VRF_REVERSING);
@@ -5281,7 +5259,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, b
 	}
 	/* Cover blind spot at end of tunnel bridge. */
 	if (check_endtile){
-		if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(t->tile), VEH_TRAIN, &checker, &FindSpaceBetweenTrainsEnum)) {
+		if (HasVehicleOnTile(GetOtherTunnelBridgeEnd(t->tile), VEH_TRAIN, checker)) {
 			/* Revert train if not going with tunnel direction. */
 			if (checker.direction != GetTunnelBridgeDirection(t->tile)) {
 				SetBit(t->flags, VRF_REVERSING);
@@ -5751,7 +5729,17 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 								exitdir = ReverseDiagDir(exitdir);
 
 								/* check if a train is waiting on the other side */
-								if (!HasVehicleOnPos(o_tile, VEH_TRAIN, &exitdir, &CheckTrainAtSignal)) return false;
+								if (!HasVehicleOnTile(o_tile, VEH_TRAIN, [&exitdir](const Vehicle *u) {
+										if (u->vehstatus.Test(VehState::Crashed)) return false;
+										const Train *t = Train::From(u);
+
+										/* not front engine of a train, inside wormhole or depot, crashed */
+										if (!t->IsFrontEngine() || !(t->track & TRACK_BIT_MASK)) return false;
+
+										if (t->cur_speed > 5 || VehicleExitDir(t->direction, t->track) != exitdir) return false;
+
+										return true;
+									})) return false;
 							}
 						}
 
@@ -6262,7 +6250,7 @@ reverse_train_direction:
 	return false;
 }
 
-static TrackBits GetTrackbitsFromCrashedVehicle(Train *t)
+static TrackBits GetTrackbitsFromCrashedVehicle(const Train *t)
 {
 	TrackBits train_tbits = t->track;
 	if (train_tbits & TRACK_BIT_WORMHOLE) {
@@ -6275,25 +6263,6 @@ static TrackBits GetTrackbitsFromCrashedVehicle(Train *t)
 	} else {
 		return train_tbits;
 	}
-}
-
-/**
- * Collect trackbits of all crashed train vehicles on a tile
- * @param v Vehicle passed from Find/HasVehicleOnPos()
- * @param data trackdirbits for the result
- * @return nullptr to iterate over all vehicles on the tile.
- */
-static Vehicle *CollectTrackbitsFromCrashedVehiclesEnum(Vehicle *v, void *data)
-{
-	TrackBits *trackbits = (TrackBits *)data;
-
-	if (v->vehstatus.Test(VehState::Crashed)) {
-		if (Train::From(v)->track != TRACK_BIT_DEPOT) {
-			*trackbits |= GetTrackbitsFromCrashedVehicle(Train::From(v));
-		}
-	}
-
-	return nullptr;
 }
 
 static void SetSignalledBridgeTunnelGreenIfClear(TileIndex tile, TileIndex end)
@@ -6318,10 +6287,10 @@ static bool IsRailStationPlatformOccupied(TileIndex tile)
 	TileIndexDiff delta = TileOffsByAxis(GetRailStationAxis(tile));
 
 	for (TileIndex t = tile; IsCompatibleTrainStationTile(t, tile); t -= delta) {
-		if (HasVehicleOnPos(t, VEH_TRAIN, nullptr, &TrainOnTileEnum)) return true;
+		if (GetFirstVehicleOnTile(t, VEH_TRAIN) != nullptr) return true;
 	}
 	for (TileIndex t = tile + delta; IsCompatibleTrainStationTile(t, tile); t += delta) {
-		if (HasVehicleOnPos(t, VEH_TRAIN, nullptr, &TrainOnTileEnum)) return true;
+		if (GetFirstVehicleOnTile(t, VEH_TRAIN) != nullptr) return true;
 	}
 
 	return false;
@@ -6339,11 +6308,11 @@ static void DeleteLastWagon(Train *v)
 	Train *first = v->First();
 
 	/* Go to the last wagon and delete the link pointing there
-	 * *u is then the one-before-last wagon, and *v the last
+	 * new_last is then the one-before-last wagon, and v the last
 	 * one which will physically be removed */
-	Train *u = v;
-	for (; v->Next() != nullptr; v = v->Next()) u = v;
-	u->SetNext(nullptr);
+	Train *new_last = v;
+	for (; v->Next() != nullptr; v = v->Next()) new_last = v;
+	new_last->SetNext(nullptr);
 
 	if (first != v) {
 		/* Recalculate cached train properties */
@@ -6371,7 +6340,10 @@ static void DeleteLastWagon(Train *v)
 
 		/* If there are still crashed vehicles on the tile, give the track reservation to them */
 		TrackBits remaining_trackbits = TRACK_BIT_NONE;
-		FindVehicleOnPos(tile, VEH_TRAIN, &remaining_trackbits, CollectTrackbitsFromCrashedVehiclesEnum);
+		for (const Vehicle *u : VehiclesOnTile(tile, VEH_TRAIN)) {
+			if (!u->vehstatus.Test(VehState::Crashed)) continue;
+			remaining_trackbits |= GetTrackbitsFromCrashedVehicle(Train::From(u));
+		}
 
 		/* It is important that these two are the first in the loop, as reservation cannot deal with every trackbit combination */
 		dbg_assert(TRACK_BEGIN == TRACK_X && TRACK_Y == TRACK_BEGIN + 1);

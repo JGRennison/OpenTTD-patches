@@ -2920,7 +2920,7 @@ static bool ClickTile_TunnelBridge(TileIndex tile)
 
 		std::vector<const Vehicle *> candidates;
 		for (TileIndex test_tile : { tile, tile_end }) {
-			for (const Vehicle *v = GetFirstVehicleOnPos(test_tile, veh_type); v != nullptr; v = v->HashTileNext()) {
+			for (const Vehicle *v = GetFirstVehicleOnTile(test_tile, veh_type); v != nullptr; v = v->HashTileNext()) {
 				if (v->IsFrontEngine()) candidates.push_back(v);
 			}
 		}

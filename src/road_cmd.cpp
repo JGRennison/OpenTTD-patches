@@ -3037,15 +3037,6 @@ static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlags flags, int 
 	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 }
 
-/** Update power of road vehicle under which is the roadtype being converted */
-static Vehicle *UpdateRoadVehPowerProc(Vehicle *v, void *data)
-{
-	RoadVehicleList *affected_rvs = static_cast<RoadVehicleList*>(data);
-	include(*affected_rvs, RoadVehicle::From(v)->First());
-
-	return nullptr;
-}
-
 /**
  * Convert the ownership of the RoadType of the tile if applicable
  * @param tile the tile of which convert ownership
@@ -3215,7 +3206,9 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 				MarkTileDirtyByTile(tile);
 
 				/* update power of train on this tile */
-				FindVehicleOnPos(tile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
+				for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+					include(affected_rvs, RoadVehicle::From(v)->First());
+				}
 
 				if (IsRoadDepotTile(tile)) {
 					/* Update build vehicle window related to this depot */
@@ -3309,8 +3302,12 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 				AddRoadTunnelBridgeInfrastructure(tile, endtile);
 
-				FindVehicleOnPos(tile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
-				FindVehicleOnPos(endtile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
+				for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+					include(affected_rvs, RoadVehicle::From(v)->First());
+				}
+				for (Vehicle *v : VehiclesOnTile(endtile, VEH_ROAD)) {
+					include(affected_rvs, RoadVehicle::From(v)->First());
+				}
 
 				MarkBridgeOrTunnelDirty(tile, endtile);
 			}

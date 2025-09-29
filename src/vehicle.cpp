@@ -567,42 +567,13 @@ Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFro
 }
 
 /**
- * Helper function for FindVehicleOnPos/HasVehicleOnPos.
- * @note Do not call this function directly!
- * @param tile The location on the map
- * @param type The vehicle type
- * @param data Arbitrary data passed to \a proc.
- * @param proc The proc that determines whether a vehicle will be "found".
- * @param find_first Whether to return on the first found or iterate over
- *                   all vehicles
- * @return the best matching or first vehicle (depending on find_first).
- */
-Vehicle *VehicleFromPos(TileIndex tile, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first)
-{
-	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
-
-	auto iter = vhash.find(tile);
-	if (iter != vhash.end()) {
-		Vehicle *v = Vehicle::Get(iter->second);
-		do {
-			Vehicle *a = proc(v, data);
-			if (find_first && a != nullptr) return a;
-
-			v = v->hash_tile_next;
-		} while (v != nullptr);
-	}
-
-	return nullptr;
-}
-
-/**
  * Returns the first vehicle on a specific location, this should be iterated using Vehicle::HashTileNext.
  * @note Use #GetFirstVehicleOnPos when you have the intention that all vehicles should be iterated over using Vehicle::HashTileNext. The iteration order is non-deterministic.
  * @param tile The location on the map
  * @param type The vehicle type
  * @return First vehicle or nullptr.
  */
-Vehicle *GetFirstVehicleOnPos(TileIndex tile, VehicleType type)
+Vehicle *GetFirstVehicleOnTile(TileIndex tile, VehicleType type)
 {
 	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
 
@@ -615,46 +586,6 @@ Vehicle *GetFirstVehicleOnPos(TileIndex tile, VehicleType type)
 }
 
 /**
- * Callback that returns 'real' vehicles lower or at height \c *(int*)data .
- * @param v Vehicle to examine.
- * @param data unused.
- * @return \a v if conditions are met, else \c nullptr.
- */
-static Vehicle *EnsureNoVehicleProc(Vehicle *v, void *data)
-{
-	return v;
-}
-
-/**
- * Callback that returns 'real' train-collidable road vehicles lower or at height \c *(int*)data .
- * @param v Vehicle to examine.
- * @param data unused
- * @return \a v if conditions are met, else \c nullptr.
- */
-static Vehicle *EnsureNoTrainCollidableRoadVehicleProc(Vehicle *v, void *data)
-{
-	if (_roadtypes_non_train_colliding.Test(RoadVehicle::From(v)->roadtype)) return nullptr;
-
-	return v;
-}
-
-/**
- * Callback that returns 'real' vehicles lower or at height \c *(int*)data .
- * @param v Vehicle to examine.
- * @param data Pointer to height data.
- * @return \a v if conditions are met, else \c nullptr.
- */
-static Vehicle *EnsureNoAircraftProcZ(Vehicle *v, void *data)
-{
-	int z = static_cast<int>(reinterpret_cast<intptr_t>(data));
-
-	if (v->subtype == AIR_SHADOW) return nullptr;
-	if (v->z_pos > z) return nullptr;
-
-	return v;
-}
-
-/**
  * Ensure there is no vehicle at the ground at the given position.
  * @param tile Position to examine.
  * @return Succeeded command (ground is free) or failed command (a vehicle is found).
@@ -662,25 +593,28 @@ static Vehicle *EnsureNoAircraftProcZ(Vehicle *v, void *data)
 CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 {
 	if (IsAirportTile(tile)) {
-		int z = GetTileMaxPixelZ(tile);
-		if (VehicleFromPos(tile, VEH_AIRCRAFT, reinterpret_cast<void *>(static_cast<intptr_t>(z)), &EnsureNoAircraftProcZ, true) != nullptr) {
+		const int z = GetTileMaxPixelZ(tile);
+		for (const Vehicle *v : VehiclesOnTile(tile, VEH_AIRCRAFT)) {
+			if (v->subtype == AIR_SHADOW) continue;
+			if (v->z_pos > z) continue;
+
 			return CommandCost(STR_ERROR_AIRCRAFT_IN_THE_WAY);
 		}
 		return CommandCost();
 	}
 
 	if (IsTileType(tile, MP_RAILWAY) || IsLevelCrossingTile(tile) || HasStationTileRail(tile) || IsRailTunnelBridgeTile(tile)) {
-		if (VehicleFromPos(tile, VEH_TRAIN, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+		if (GetFirstVehicleOnTile(tile, VEH_TRAIN) != nullptr) {
 			return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
 		}
 	}
 	if (IsTileType(tile, MP_ROAD) || IsAnyRoadStopTile(tile) || (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD)) {
-		if (VehicleFromPos(tile, VEH_ROAD, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+		if (GetFirstVehicleOnTile(tile, VEH_ROAD) != nullptr) {
 			return CommandCost(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
 		}
 	}
 	if (HasTileWaterClass(tile) || (IsBridgeTile(tile) && GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER)) {
-		if (VehicleFromPos(tile, VEH_SHIP, nullptr, &EnsureNoVehicleProc, true) != nullptr) {
+		if (GetFirstVehicleOnTile(tile, VEH_SHIP) != nullptr) {
 			return CommandCost(STR_ERROR_SHIP_IN_THE_WAY);
 		}
 	}
@@ -690,30 +624,11 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 
 bool IsTrainCollidableRoadVehicleOnGround(TileIndex tile)
 {
-	return VehicleFromPos(tile, VEH_ROAD, nullptr, &EnsureNoTrainCollidableRoadVehicleProc, true) != nullptr;
-}
-
-struct GetVehicleTunnelBridgeProcData {
-	const Vehicle *v;
-	TileIndex t;
-	TunnelBridgeIsFreeMode mode;
-};
-
-/** Procedure called for every vehicle found in tunnel/bridge in the hash map */
-static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
-{
-	const GetVehicleTunnelBridgeProcData *info = (GetVehicleTunnelBridgeProcData*) data;
-	if (v == info->v) return nullptr;
-
-	if (v->type == VEH_TRAIN && info->mode != TBIFM_ALL && IsBridge(info->t)) {
-		TrackBits vehicle_track = Train::From(v)->track;
-		if (!(vehicle_track & TRACK_BIT_WORMHOLE)) {
-			if (info->mode == TBIFM_ACROSS_ONLY && !(GetAcrossBridgePossibleTrackBits(info->t) & vehicle_track)) return nullptr;
-			if (info->mode == TBIFM_PRIMARY_ONLY && !(GetPrimaryTunnelBridgeTrackBits(info->t) & vehicle_track)) return nullptr;
-		}
+	for (const Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+		if (!_roadtypes_non_train_colliding.Test(RoadVehicle::From(v)->roadtype)) return true;
 	}
 
-	return v;
+	return false;
 }
 
 /**
@@ -730,18 +645,24 @@ CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle 
 	 * error message only (which may be different for different machines).
 	 * Such a message does not affect MP synchronisation.
 	 */
-	GetVehicleTunnelBridgeProcData data;
-	data.v = ignore;
-	data.t = tile;
-	data.mode = mode;
-	VehicleType type = static_cast<VehicleType>(GetTunnelBridgeTransportType(tile));
-	Vehicle *v = VehicleFromPos(tile, type, &data, &GetVehicleTunnelBridgeProc, true);
-	if (v == nullptr) {
-		data.t = endtile;
-		v = VehicleFromPos(endtile, type, &data, &GetVehicleTunnelBridgeProc, true);
+
+	const VehicleType type = static_cast<VehicleType>(GetTunnelBridgeTransportType(tile));
+	for (TileIndex t : { tile, endtile }) {
+		for (const Vehicle *v : VehiclesOnTile(t, type)) {
+			if (v == ignore) continue;
+
+			if (type == VEH_TRAIN && mode != TBIFM_ALL && IsBridge(t)) {
+				TrackBits vehicle_track = Train::From(v)->track;
+				if (!(vehicle_track & TRACK_BIT_WORMHOLE)) {
+					if (mode == TBIFM_ACROSS_ONLY && !(GetAcrossBridgePossibleTrackBits(t) & vehicle_track)) continue;
+					if (mode == TBIFM_PRIMARY_ONLY && !(GetPrimaryTunnelBridgeTrackBits(t) & vehicle_track)) continue;
+				}
+			}
+
+			return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
+		}
 	}
 
-	if (v != nullptr) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
 	return CommandCost();
 }
 
@@ -754,20 +675,18 @@ struct FindTrainClosestToTunnelBridgeEndInfo {
 };
 
 /** Callback for Has/FindVehicleOnPos to find a train in a signalled tunnel/bridge */
-static Vehicle *FindClosestTrainToTunnelBridgeEndEnum(Vehicle *v, void *data)
+static void FindClosestTrainToTunnelBridgeEndEnum(const Vehicle *v, FindTrainClosestToTunnelBridgeEndInfo *info)
 {
-	FindTrainClosestToTunnelBridgeEndInfo *info = (FindTrainClosestToTunnelBridgeEndInfo *)data;
-
 	/* Only look for train heads and tails. */
-	if (v->Previous() != nullptr && v->Next() != nullptr) return nullptr;
+	if (v->Previous() != nullptr && v->Next() != nullptr) return;
 
-	if (v->vehstatus.Test(VehState::Crashed)) return nullptr;
+	if (v->vehstatus.Test(VehState::Crashed)) return;
 
-	Train *t = Train::From(v);
+	const Train *t = Train::From(v);
 
 	if (!IsDiagonalDirection(t->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
-		if ((GetAcrossTunnelBridgeTrackBits(t->tile) & t->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return nullptr;
+		if ((GetAcrossTunnelBridgeTrackBits(t->tile) & t->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
 	}
 
 	int32_t pos;
@@ -784,15 +703,17 @@ static Vehicle *FindClosestTrainToTunnelBridgeEndEnum(Vehicle *v, void *data)
 		info->best = t->First();
 		info->best_pos = pos;
 	}
-
-	return t;
 }
 
 Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile)
 {
 	FindTrainClosestToTunnelBridgeEndInfo info(ReverseDiagDir(GetTunnelBridgeDirection(tile)));
-	FindVehicleOnPos(tile, VEH_TRAIN, &info, FindClosestTrainToTunnelBridgeEndEnum);
-	FindVehicleOnPos(other_tile, VEH_TRAIN, &info, FindClosestTrainToTunnelBridgeEndEnum);
+	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		FindClosestTrainToTunnelBridgeEndEnum(v, &info);
+	}
+	for (const Vehicle *v : VehiclesOnTile(other_tile, VEH_TRAIN)) {
+		FindClosestTrainToTunnelBridgeEndEnum(v, &info);
+	}
 	return info.best;
 }
 
@@ -803,19 +724,17 @@ struct GetAvailableFreeTilesInSignalledTunnelBridgeChecker {
 	int lowest_seen;
 };
 
-static Vehicle *GetAvailableFreeTilesInSignalledTunnelBridgeEnum(Vehicle *v, void *data)
+static void GetAvailableFreeTilesInSignalledTunnelBridgeEnum(const Vehicle *v, GetAvailableFreeTilesInSignalledTunnelBridgeChecker *checker)
 {
 	/* Don't look at wagons between front and back of train. */
-	if ((v->Previous() != nullptr && v->Next() != nullptr)) return nullptr;
+	if ((v->Previous() != nullptr && v->Next() != nullptr)) return;
 
 	if (!IsDiagonalDirection(v->direction)) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
-		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return nullptr;
+		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
 	}
 
-	GetAvailableFreeTilesInSignalledTunnelBridgeChecker *checker = (GetAvailableFreeTilesInSignalledTunnelBridgeChecker*) data;
 	int v_pos;
-
 	switch (checker->direction) {
 		default: NOT_REACHED();
 		case DIAGDIR_NE: v_pos = -v->x_pos + TILE_UNIT_MASK; break;
@@ -826,8 +745,6 @@ static Vehicle *GetAvailableFreeTilesInSignalledTunnelBridgeEnum(Vehicle *v, voi
 	if (v_pos > checker->pos && v_pos < checker->lowest_seen) {
 		checker->lowest_seen = v_pos;
 	}
-
-	return nullptr;
 }
 
 int GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(TileIndex entrance, TileIndex exit, int offset)
@@ -853,8 +770,12 @@ int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex e
 		case DIAGDIR_NW: checker.pos = -(int)(TileY(tile) * TILE_SIZE); break;
 	}
 
-	FindVehicleOnPos(entrance, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);
-	FindVehicleOnPos(exit, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);
+	for (const Vehicle *v : VehiclesOnTile(entrance, VEH_TRAIN)) {
+		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(v, &checker);
+	}
+	for (const Vehicle *v : VehiclesOnTile(exit, VEH_TRAIN)) {
+		GetAvailableFreeTilesInSignalledTunnelBridgeEnum(v, &checker);
+	}
 
 	if (checker.lowest_seen == INT_MAX) {
 		/* Remainder of bridge/tunnel is clear */
@@ -862,22 +783,6 @@ int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex e
 	}
 
 	return (checker.lowest_seen - checker.pos) / TILE_SIZE;
-}
-
-static Vehicle *EnsureNoTrainOnTrackProc(Vehicle *v, void *data)
-{
-	TrackBits rail_bits = *(TrackBits *)data;
-
-	Train *t = Train::From(v);
-	if (rail_bits & TRACK_BIT_WORMHOLE) {
-		if (t->track & TRACK_BIT_WORMHOLE) return v;
-		rail_bits &= ~TRACK_BIT_WORMHOLE;
-	} else if (t->track & TRACK_BIT_WORMHOLE) {
-		return nullptr;
-	}
-	if ((t->track != rail_bits) && !TracksOverlap(t->track | rail_bits)) return nullptr;
-
-	return v;
 }
 
 /**
@@ -888,14 +793,25 @@ static Vehicle *EnsureNoTrainOnTrackProc(Vehicle *v, void *data)
  * @param track_bits The track bits.
  * @return \c true if no train that interacts, is found. \c false if a train is found.
  */
-CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits)
+CommandCost EnsureNoTrainOnTrackBits(const TileIndex tile, const TrackBits track_bits)
 {
 	/* Value v is not safe in MP games, however, it is used to generate a local
 	 * error message only (which may be different for different machines).
 	 * Such a message does not affect MP synchronisation.
 	 */
-	Vehicle *v = VehicleFromPos(tile, VEH_TRAIN, &track_bits, &EnsureNoTrainOnTrackProc, true);
-	if (v != nullptr) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
+	for (const Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+		const Train *t = Train::From(v);
+		TrackBits rail_bits = track_bits;
+		if (rail_bits & TRACK_BIT_WORMHOLE) {
+			if (t->track & TRACK_BIT_WORMHOLE) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
+			rail_bits &= ~TRACK_BIT_WORMHOLE;
+		} else if (t->track & TRACK_BIT_WORMHOLE) {
+			continue;
+		}
+		if ((t->track != rail_bits) && !TracksOverlap(t->track | rail_bits)) continue;
+
+		return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
+	}
 	return CommandCost();
 }
 

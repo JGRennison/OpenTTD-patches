@@ -416,14 +416,6 @@ int Ship::GetEffectiveMaxSpeed() const
 	return std::max<uint16_t>(max_speed, std::min<uint16_t>(10, (this->vcache.cached_max_speed + 7) >> 3));
 }
 
-/**
- * Test-procedure for HasVehicleOnPos to check for any ships which are moving.
- */
-static Vehicle *EnsureNoMovingShipProc(Vehicle *v, void *)
-{
-	return (v->cur_speed != 0) ? v : nullptr;
-}
-
 static bool CheckReverseShip(const Ship *v, Trackdir *trackdir = nullptr)
 {
 	/* Ask pathfinder for best direction */
@@ -456,7 +448,9 @@ static bool CheckShipLeaveDepot(Ship *v)
 
 	/* Don't leave depot if another vehicle is already entering/leaving */
 	/* This helps avoid CPU load if many ships are set to start at the same time */
-	if (HasVehicleOnPos(v->tile, VEH_SHIP, nullptr, &EnsureNoMovingShipProc)) return true;
+	if (HasVehicleOnTile(v->tile, VEH_SHIP, [](const Vehicle *u) { return u->cur_speed != 0; })) {
+		return true;
+	}
 
 	TileIndex tile = v->tile;
 	Axis axis = GetShipDepotAxis(tile);
@@ -683,24 +677,24 @@ struct ShipCollideChecker {
 	TrackBits track_bits;   ///< Pathfinder chosen track converted to trackbits, or is v->state of requesting ship. (one bit set)
 	TileIndex search_tile;  ///< The tile that we really want to check.
 	Ship *v;                ///< Ship we are testing for collision.
+
+	bool operator()(const Vehicle *v) const;
 };
 
 /** Helper function for collision avoidance. */
-static Vehicle *FindShipOnTile(Vehicle *v, void *data)
+bool ShipCollideChecker::operator()(const Vehicle *v) const
 {
-	ShipCollideChecker *scc = (ShipCollideChecker*)data;
-
 	/* Don't detect vehicles on different parallel tracks. */
-	TrackBits bits = scc->track_bits | Ship::From(v)->state;
-	if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) return nullptr;
+	TrackBits bits = this->track_bits | Ship::From(v)->state;
+	if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) return false;
 
 	/* Don't detect ships passing on aqueduct. */
-	if (abs(v->z_pos - scc->v->z_pos) >= 8) return nullptr;
+	if (abs(v->z_pos - this->v->z_pos) >= 8) return false;
 
 	/* Only requested tiles are checked. avoid desync. */
-	if (TileVirtXY(v->x_pos, v->y_pos) != scc->search_tile) return nullptr;
+	if (TileVirtXY(v->x_pos, v->y_pos) != this->search_tile) return false;
 
-	return v;
+	return true;
 }
 
 /**
@@ -722,8 +716,8 @@ static bool HandleSpeedOnAqueduct(Ship *v, TileIndex tile, TileIndex ramp)
 	if (scc.search_tile == INVALID_TILE) return false;
 
 	if (IsValidTile(scc.search_tile) &&
-			(HasVehicleOnPos(ramp, VEH_SHIP, &scc, FindShipOnTile) ||
-			HasVehicleOnPos(GetOtherTunnelBridgeEnd(ramp), VEH_SHIP, &scc, FindShipOnTile))) {
+			(HasVehicleOnTile(ramp, VEH_SHIP, scc) ||
+			HasVehicleOnTile(GetOtherTunnelBridgeEnd(ramp), VEH_SHIP, scc))) {
 		UpdateShipSpeed(v, v->cur_speed / 4);
 	}
 	return false;
@@ -762,7 +756,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	scc.track_bits = track_bits;
 	scc.search_tile = tile;
 
-	bool found = HasVehicleOnPos(tile, VEH_SHIP, &scc, FindShipOnTile);
+	bool found = HasVehicleOnTile(tile, VEH_SHIP, scc);
 
 	if (!found) {
 		/* Bridge entrance */
@@ -773,7 +767,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		scc.search_tile = TileAddWrap(tile, ti.x, ti.y);
 		if (scc.search_tile == INVALID_TILE) return;
 
-		found = HasVehicleOnPos(scc.search_tile, VEH_SHIP, &scc, FindShipOnTile);
+		found = HasVehicleOnTile(scc.search_tile, VEH_SHIP, scc);
 	}
 	if (!found) {
 		scc.track_bits = track_bits;
@@ -781,7 +775,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		scc.search_tile = TileAddWrap(scc.search_tile, ti.x, ti.y);
 		if (scc.search_tile == INVALID_TILE) return;
 
-		found = HasVehicleOnPos(scc.search_tile, VEH_SHIP, &scc, FindShipOnTile);
+		found = HasVehicleOnTile(scc.search_tile, VEH_SHIP, scc);
 	}
 	if (found) {
 
@@ -805,7 +799,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 
 			scc.search_tile = tile_check;
 			scc.track_bits = TrackToTrackBits(IsDiagonalTrack(track) ? track : TrackToOppositeTrack(track));
-			if (HasVehicleOnPos(scc.search_tile, VEH_SHIP, &scc, FindShipOnTile)) continue;
+			if (HasVehicleOnTile(scc.search_tile, VEH_SHIP, scc)) continue;
 
 			TrackBits bits = GetTileShipTrackStatus(tile_check) & DiagdirReachesTracks(_ship_search_directions[track][diagdir]);
 			if (!IsDiagonalTrack(track)) bits &= TRACK_BIT_CROSS;  // No 90 degree turns.

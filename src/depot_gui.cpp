@@ -1268,25 +1268,23 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 	};
 	depot_totals totals;
 
-	FindVehicleOnPos(tile, GetDepotVehicleType(tile), &totals, [](Vehicle *v, void *data) -> Vehicle * {
-		depot_totals *totals = static_cast<depot_totals *>(data);
+	for (const Vehicle *v : VehiclesOnTile(tile, GetDepotVehicleType(tile))) {
 		if (v->IsInDepot()) {
 			if (v->IsPrimaryVehicle()) {
-				totals->total_vehicle_count++;
-				if (v->IsWaitingInDepot()) totals->waiting_vehicle_count++;
-				if (v->IsStoppedInDepot()) totals->stopped_vehicle_count++;
+				totals.total_vehicle_count++;
+				if (v->IsWaitingInDepot()) totals.waiting_vehicle_count++;
+				if (v->IsStoppedInDepot()) totals.stopped_vehicle_count++;
 			}
 			if (v->type == VEH_TRAIN) {
 				const Train *t = Train::From(v);
 				if (t->IsFreeWagon()) {
 					for (const Train *u = t; u != nullptr; u = u->GetNextUnit()) {
-						totals->free_wagon_count++;
+						totals.free_wagon_count++;
 					}
 				}
 			}
 		}
-		return nullptr;
-	});
+	}
 
 	if (totals.total_vehicle_count == 0) {
 		if (totals.free_wagon_count > 0) {
