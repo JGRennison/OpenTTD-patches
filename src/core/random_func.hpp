@@ -34,7 +34,6 @@ extern Randomizer _interactive_random; ///< Random used everywhere else, where i
 /** Stores the state of all random number generators */
 struct SavedRandomSeeds {
 	Randomizer random;
-	Randomizer interactive_random;
 };
 
 /**
@@ -44,7 +43,6 @@ struct SavedRandomSeeds {
 inline void SaveRandomSeeds(SavedRandomSeeds *storage)
 {
 	storage->random = _random;
-	storage->interactive_random = _interactive_random;
 }
 
 /**
@@ -54,7 +52,6 @@ inline void SaveRandomSeeds(SavedRandomSeeds *storage)
 inline void RestoreRandomSeeds(const SavedRandomSeeds &storage)
 {
 	_random = storage.random;
-	_interactive_random = storage.interactive_random;
 }
 
 struct GameRandomSeedChecker {
