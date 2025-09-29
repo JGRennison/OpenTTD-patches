@@ -262,11 +262,20 @@ public:
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		VpStartDragging(DDSP_PLANT_TREES);
+		if (_game_mode != GM_EDITOR && this->mode == PM_NORMAL) {
+			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_PLANT_TREES);
+		} else {
+			VpStartDragging(DDSP_PLANT_TREES);
+		}
 	}
 
 	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
+		if (this->mode == PM_NORMAL) {
+			VpSelectTilesWithMethod(pt.x, pt.y, select_method);
+			return;
+		}
+
 		TileIndex tile = TileVirtXY(pt.x, pt.y);
 
 		if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_BULK_TREE) && !_shift_pressed) {
@@ -279,11 +288,17 @@ public:
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
-		if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
-			SendSyncTrees(this->last_tile);
-		}
+		if (this->mode == PM_NORMAL) {
+			if (pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
+				Command<CMD_PLANT_TREE>::Post(STR_ERROR_CAN_T_PLANT_TREE_HERE, end_tile, start_tile, this->trees_to_plant, 1, _ctrl_pressed);
+			}
+		} else {
+			if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
+				SendSyncTrees(this->last_tile);
+			}
 
-		this->ResetToolData();
+			this->ResetToolData();
+		}
 	}
 
 	void OnPlaceObjectAbort() override
@@ -342,7 +357,7 @@ static constexpr NWidgetPart _nested_build_trees_widgets[] = {
 			NWidgetFunction(MakeTreeTypeButtons),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_TYPE_RANDOM), SetStringTip(STR_TREES_RANDOM_TYPE, STR_TREES_RANDOM_TYPE_TOOLTIP),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_NORMAL), SetFill(1, 0), SetStringTip(STR_TREES_MODE_NORMAL_BUTTON, STR_TREES_MODE_NORMAL_TOOLTIP),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_NORMAL), SetFill(1, 0), SetStringTip(STR_TREES_MODE_NORMAL_BUTTON, STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_FOREST_SM), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_SM_BUTTON, STR_TREES_MODE_FOREST_SM_TOOLTIP),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_FOREST_LG), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_LG_BUTTON, STR_TREES_MODE_FOREST_LG_TOOLTIP),
 			EndContainer(),
