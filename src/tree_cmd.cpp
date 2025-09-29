@@ -675,68 +675,56 @@ void GenerateTrees()
 	}
 }
 
-/**
- * Plant trees.
- * @param flags type of operation
- * @param end_tile end tile of area-drag
- * @param start_tile start tile of area-drag of tree plantation
- * @param tree_to_plant tree type, TREE_INVALID means random.
- * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
- * @return the cost of this operation or an error
- */
-CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, TreeType tree_to_plant, uint8_t count, bool diagonal)
-{
+
+struct CmdPlantTreeHelper {
 	StringID msg = INVALID_STRING_ID;
-	CommandCost cost(EXPENSES_OTHER);
+	CommandCost cost;
+	DoCommandFlags flags;
+	Company *c;
+	int limit;
 
-	if (start_tile >= Map::Size() || count < 1 || count > 4) return CMD_ERROR;
-	/* Check the tree type within the current climate */
-	if (tree_to_plant != TREE_INVALID && !IsInsideBS(tree_to_plant, _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])) return CMD_ERROR;
+	CmdPlantTreeHelper(DoCommandFlags flags, Company *c) : cost(EXPENSES_OTHER), flags(flags), c(c), limit((c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16))) {}
 
-	Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
-	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
-
-	OrthogonalOrDiagonalTileIterator iter(end_tile, start_tile, diagonal);
-	for (; *iter != INVALID_TILE; ++iter) {
-		TileIndex tile = *iter;
+	void PlantTrees(TileIndex tile, TreeType tree_to_plant, uint8_t count)
+	{
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
 				/* no more space for trees? */
 				if (GetTreeCount(tile) == 4) {
-					msg = STR_ERROR_TREE_ALREADY_HERE;
-					continue;
-				}
-
-				/* Test tree limit. */
-				if (limit <= 0) {
-					msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
+					this->msg = STR_ERROR_TREE_ALREADY_HERE;
 					break;
 				}
 
-				const uint to_plant = std::min<uint>(static_cast<uint>(limit), std::min<uint>(4 - GetTreeCount(tile), count));
-				limit -= static_cast<int>(to_plant);
+				/* Test tree limit. */
+				if (this->limit <= 0) {
+					this->msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
+					break;
+				}
 
-				if (flags.Test(DoCommandFlag::Execute)) {
+				const uint to_plant = std::min<uint>(static_cast<uint>(this->limit), std::min<uint>(4 - GetTreeCount(tile), count));
+				this->limit -= static_cast<int>(to_plant);
+
+				if (this->flags.Test(DoCommandFlag::Execute)) {
 					AddTreeCount(tile, to_plant);
 					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
-					if (c != nullptr) c->tree_limit -= to_plant << 16;
+					if (this->c != nullptr) this->c->tree_limit -= to_plant << 16;
 				}
 				/* 2x as expensive to add more trees to an existing tile */
-				cost.AddCost((_price[PR_BUILD_TREES] * 2) * to_plant);
+				this->cost.AddCost((_price[PR_BUILD_TREES] * 2) * to_plant);
 				break;
 			}
 
 			case MP_WATER:
 				if (!IsCoast(tile) || IsSlopeWithOneCornerRaised(GetTileSlope(tile))) {
-					msg = STR_ERROR_CAN_T_BUILD_ON_WATER;
-					continue;
+					this->msg = STR_ERROR_CAN_T_BUILD_ON_WATER;
+					break;
 				}
 				[[fallthrough]];
 
 			case MP_CLEAR: {
 				if (IsTreeDisallowedByArcticPerfectMode(tile) || IsBridgeAbove(tile)) {
-					msg = STR_ERROR_SITE_UNSUITABLE;
-					continue;
+					this->msg = STR_ERROR_SITE_UNSUITABLE;
+					break;
 				}
 
 				TreeType treetype = tree_to_plant;
@@ -748,27 +736,30 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 						(IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS) && GetTropicZone(tile) != TROPICZONE_RAINFOREST && _game_mode != GM_EDITOR) ||
 						/* And no subtropical trees in the desert/rainforest */
 						(IsInsideMM(treetype, TREE_SUB_TROPICAL, TREE_TOYLAND) && GetTropicZone(tile) != TROPICZONE_NORMAL))) {
-					msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
-					continue;
-				}
-
-				/* Test tree limit. */
-				if (limit <= 0) {
-					msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
+					this->msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
 					break;
 				}
 
-				const uint to_plant = std::min<uint>(static_cast<uint>(limit), count);
-				limit -= static_cast<int>(to_plant);
+				/* Test tree limit. */
+				if (this->limit <= 0) {
+					this->msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
+					break;
+				}
+
+				const uint to_plant = std::min<uint>(static_cast<uint>(this->limit), count);
+				this->limit -= static_cast<int>(to_plant);
 
 				if (IsTileType(tile, MP_CLEAR)) {
 					/* Remove fields or rocks. Note that the ground will get barrened */
 					switch (GetClearGround(tile)) {
 						case CLEAR_FIELDS:
 						case CLEAR_ROCKS: {
-							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
-							if (ret.Failed()) return ret;
-							cost.AddCost(ret.GetCost());
+							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(this->flags, tile);
+							if (ret.Failed()) {
+								this->msg = ret.GetErrorMessage();
+								return;
+							}
+							this->cost.AddCost(ret.GetCost());
 							break;
 						}
 
@@ -778,10 +769,10 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 
 				if (_game_mode != GM_EDITOR && Company::IsValidID(_current_company)) {
 					Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
-					if (t != nullptr) ChangeTownRating(t, RATING_TREE_UP_STEP, RATING_TREE_MAXIMUM, flags);
+					if (t != nullptr) ChangeTownRating(t, RATING_TREE_UP_STEP, RATING_TREE_MAXIMUM, this->flags);
 				}
 
-				if (flags.Test(DoCommandFlag::Execute)) {
+				if (this->flags.Test(DoCommandFlag::Execute)) {
 					if (treetype == TREE_INVALID) {
 						treetype = GetRandomTreeType(tile, GB(Random(), 24, 8));
 						if (treetype == TREE_INVALID) {
@@ -800,7 +791,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 					/* Plant full grown trees in scenario editor */
 					PlantTreesOnTile(tile, treetype, to_plant - 1, _game_mode == GM_EDITOR ? TreeGrowthStage::Grown : TreeGrowthStage::Growing1);
 					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
-					if (c != nullptr) c->tree_limit -= to_plant << 16;
+					if (this->c != nullptr) this->c->tree_limit -= to_plant << 16;
 
 					/* When planting rainforest-trees, set tropiczone to rainforest in editor. */
 					if (_game_mode == GM_EDITOR && IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS)) {
@@ -809,24 +800,47 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 				}
 
 				/* Add the cost for the first tree, then extra for every tree after the first. */
-				cost.AddCost(_price[PR_BUILD_TREES]);
-				cost.AddCost((_price[PR_BUILD_TREES] * 2) * (to_plant - 1));
+				this->cost.AddCost(_price[PR_BUILD_TREES]);
+				this->cost.AddCost((_price[PR_BUILD_TREES] * 2) * (to_plant - 1));
 				break;
 			}
 
 			default:
-				msg = STR_ERROR_SITE_UNSUITABLE;
+				this->msg = STR_ERROR_SITE_UNSUITABLE;
 				break;
 		}
+	}
+};
+
+/**
+ * Plant trees.
+ * @param flags type of operation
+ * @param end_tile end tile of area-drag
+ * @param start_tile start tile of area-drag of tree plantation
+ * @param tree_to_plant tree type, TREE_INVALID means random.
+ * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, TreeType tree_to_plant, uint8_t count, bool diagonal)
+{
+	if (start_tile >= Map::Size() || count < 1 || count > 4) return CMD_ERROR;
+	/* Check the tree type within the current climate */
+	if (tree_to_plant != TREE_INVALID && !IsInsideBS(tree_to_plant, _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])) return CMD_ERROR;
+
+	CmdPlantTreeHelper helper(flags, (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr);
+
+	OrthogonalOrDiagonalTileIterator iter(end_tile, start_tile, diagonal);
+	for (; *iter != INVALID_TILE; ++iter) {
+		helper.PlantTrees(*iter, tree_to_plant, count);
 
 		/* Tree limit used up? No need to check more. */
-		if (limit < 0) break;
+		if (helper.limit <= 0 && helper.msg == STR_ERROR_TREE_PLANT_LIMIT_REACHED) break;
 	}
 
-	if (cost.GetCost() == 0) {
-		return CommandCost(msg);
+	if (helper.cost.GetCost() == 0) {
+		return CommandCost(helper.msg);
 	} else {
-		return cost;
+		return helper.cost;
 	}
 }
 
@@ -839,34 +853,28 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
  */
 CommandCost CmdBulkTree(DoCommandFlags flags, const BulkTreeCmdData &cmd_data)
 {
-	StringID msg = INVALID_STRING_ID;
-	CommandCost cost(EXPENSES_OTHER);
+	CmdPlantTreeHelper helper(flags, (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr);
 
-	const Company *c = (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr;
-	int limit = (c == nullptr) ? INT32_MAX : GB(c->tree_limit, 16, 16);
+	const auto tree_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const auto tree_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 
 	/* Iterate through sync_data, plant trees on every tile inside. */
 	for (const auto& [tile, data] : cmd_data.plant_tree_data) {
-		if (tile >= Map::Size()) return CMD_ERROR;
+		if (tile >= Map::Size() || data.count < 1 || data.count > 4) return CMD_ERROR;
+		if (!IsInsideBS(data.tree_type, tree_base, tree_count)) return CMD_ERROR;
 
+		if (IsTileType(tile, MP_TREES) && GetTreeCount(tile) >= data.count) continue;
 		uint8_t tree_count = (IsTileType(tile, MP_TREES)) ? data.count - GetTreeCount(tile) : data.count;
-
-		CommandCost attempt = CmdPlantTree(flags, tile, tile, data.tree_type, tree_count, false);
-		cost.AddCost(attempt.GetCost());
+		helper.PlantTrees(tile, data.tree_type, tree_count);
 
 		/* Tree limit used up? No need to check more. */
-		if (limit < 0) break;
+		if (helper.limit <= 0 && helper.msg == STR_ERROR_TREE_PLANT_LIMIT_REACHED) break;
 	}
 
-	/* Test tree limit. */
-	if (--limit < 1) {
-		msg = STR_ERROR_TREE_PLANT_LIMIT_REACHED;
-	}
-
-	if (cost.GetCost() == 0) {
-		return CommandCost(msg);
+	if (helper.cost.GetCost() == 0) {
+		return CommandCost(helper.msg);
 	} else {
-		return cost;
+		return helper.cost;
 	}
 }
 
