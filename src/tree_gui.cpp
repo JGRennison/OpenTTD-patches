@@ -148,7 +148,7 @@ class BuildTreesWindow : public Window
 			default: NOT_REACHED();
 		}
 
-		PlaceTreeGroupAroundTile(tile, trees_to_plant, radius, count);
+		PlaceTreeGroupAroundTile(tile, this->trees_to_plant, radius, count);
 
 		this->last_tile = tile;
 	}
@@ -269,16 +269,12 @@ public:
 	{
 		TileIndex tile = TileVirtXY(pt.x, pt.y);
 
-		/* Test if the user is holding down the mouse button. base.
-		 * OnPlaceDrag runs this at least once after user has let go, leading to an odd tree duplicating effect if we don't test. */
-		if (_left_button_down) {
-			if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_BULK_TREE) && !_shift_pressed) {
-				ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
-				ResetObjectToPlace();
-				return;
-			}
-			this->DoPlantForest(tile);
+		if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_BULK_TREE) && !_shift_pressed) {
+			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
+			ResetObjectToPlace();
+			return;
 		}
+		this->DoPlantForest(tile);
 	}
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
