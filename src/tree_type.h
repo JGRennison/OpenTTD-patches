@@ -10,6 +10,8 @@
 #ifndef TREE_TYPE_H
 #define TREE_TYPE_H
 
+#include "core/enum_type.hpp"
+
 /**
  * List of tree types along all landscape types.
  *
@@ -28,6 +30,8 @@ enum TreeType : uint8_t {
 	TREE_TOYLAND      = 0x20, ///< tree on a toyland map
 	TREE_INVALID      = 0xFF, ///< An invalid tree
 };
+
+using TreeTypes = EnumBitSet<TreeType, uint64_t>;
 
 /* Counts the number of tree types for each landscape.
  *

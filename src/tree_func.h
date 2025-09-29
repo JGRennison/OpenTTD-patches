@@ -12,13 +12,10 @@
 
 #include "economy_type.h"
 #include "tree_type.h"
-#include "core/enum_type.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 extern bool _tree_placer_preview_active;
 extern robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
-
-using TreeTypes = EnumBitSet<TreeType, uint64_t>;
 
 void PlaceTreesRandomly();
 void RemoveAllTrees();

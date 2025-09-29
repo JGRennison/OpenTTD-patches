@@ -817,21 +817,28 @@ struct CmdPlantTreeHelper {
  * @param flags type of operation
  * @param end_tile end tile of area-drag
  * @param start_tile start tile of area-drag of tree plantation
- * @param tree_to_plant tree type, TREE_INVALID means random.
+ * @param tree_to_plants tree types, no bits set means all within the current climate.
  * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, TreeType tree_to_plant, uint8_t count, bool diagonal)
+CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, TreeTypes trees_to_plant, uint8_t count, bool diagonal)
 {
 	if (start_tile >= Map::Size() || count < 1 || count > 4) return CMD_ERROR;
-	/* Check the tree type within the current climate */
-	if (tree_to_plant != TREE_INVALID && !IsInsideBS(tree_to_plant, _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])) return CMD_ERROR;
+
+	const TreeTypes valid_types{GetBitMaskSC<TreeTypes::BaseType>(_tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])};
+	if ((trees_to_plant & valid_types) != trees_to_plant) return CMD_ERROR;
+	if (trees_to_plant.None()) trees_to_plant = valid_types;
+
+	const uint8_t tree_type_count = CountBits(trees_to_plant);
+	const bool randomise_tree_type = flags.Test(DoCommandFlag::Execute) && tree_type_count > 1;
+	TreeType tree_type = *trees_to_plant.IterateSetBits().begin();
 
 	CmdPlantTreeHelper helper(flags, (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr);
 
 	OrthogonalOrDiagonalTileIterator iter(end_tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
-		helper.PlantTrees(*iter, tree_to_plant, count);
+		if (randomise_tree_type) tree_type = *std::next(trees_to_plant.IterateSetBits().begin(), RandomRange(tree_type_count));
+		helper.PlantTrees(*iter, tree_type, count);
 
 		/* Tree limit used up? No need to check more. */
 		if (helper.limit <= 0 && helper.msg == STR_ERROR_TREE_PLANT_LIMIT_REACHED) break;
