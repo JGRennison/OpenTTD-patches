@@ -6731,9 +6731,11 @@ EventState VpHandlePlaceSizingDrag()
 		_thd.selstart.y = _thd.new_pos.y;
 	}
 
-	/* While dragging execute the drag procedure of the corresponding window (mostly VpSelectTilesWithMethod() ).
-	 * Do it even if the button is no longer pressed to make sure that OnPlaceDrag was called at least once. */
-	w->OnPlaceDrag(_thd.select_method, _thd.select_proc, GetTileBelowCursor());
+	if (_left_button_down || _thd.place_mode & HT_POLY) {
+		/* While dragging execute the drag procedure of the corresponding window (mostly VpSelectTilesWithMethod() ).
+		 * Do it even if the button is no longer pressed to make sure that OnPlaceDrag was called at least once. */
+		w->OnPlaceDrag(_thd.select_method, _thd.select_proc, GetTileBelowCursor());
+	}
 	if (_left_button_down) return ES_HANDLED;
 
 	/* Mouse button released. */
