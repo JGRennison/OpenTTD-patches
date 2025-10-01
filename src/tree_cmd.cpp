@@ -827,13 +827,25 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 
 	const TreeTypes valid_types{GetBitMaskSC<TreeTypes::BaseType>(_tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])};
 	if ((trees_to_plant & valid_types) != trees_to_plant) return CMD_ERROR;
-	if (trees_to_plant.None()) trees_to_plant = valid_types;
 
-	const uint8_t tree_type_count = CountBits(trees_to_plant);
-	const bool randomise_tree_type = flags.Test(DoCommandFlag::Execute) && tree_type_count > 1;
-	TreeType tree_type = *trees_to_plant.IterateSetBits().begin();
+	uint8_t tree_type_count = 0;
+	TreeType tree_type{};
+	bool randomise_tree_type;
+	if (trees_to_plant.None() || trees_to_plant == valid_types) {
+		/* Use default tree randomisation */
+		tree_type = TREE_INVALID;
+		randomise_tree_type = false;
+	} else {
+		/* Use provided tree types */
+		tree_type_count = CountBits(trees_to_plant);
+		tree_type = *trees_to_plant.IterateSetBits().begin();
+		randomise_tree_type = tree_type_count > 1;
+	}
 
 	CmdPlantTreeHelper helper(flags, (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr);
+
+	SavedRandomSeeds random_seeds{};
+	if (!flags.Test(DoCommandFlag::Execute)) SaveRandomSeeds(&random_seeds);
 
 	OrthogonalOrDiagonalTileIterator iter(end_tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
@@ -843,6 +855,8 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 		/* Tree limit used up? No need to check more. */
 		if (helper.limit <= 0 && helper.msg == STR_ERROR_TREE_PLANT_LIMIT_REACHED) break;
 	}
+
+	if (!flags.Test(DoCommandFlag::Execute)) RestoreRandomSeeds(random_seeds);
 
 	if (helper.cost.GetCost() == 0) {
 		return CommandCost(helper.msg);
