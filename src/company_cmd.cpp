@@ -1006,7 +1006,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 				if (!_company_manager_face.empty()) {
 					auto cmf = ParseCompanyManagerFaceCode(_company_manager_face);
 					if (cmf.has_value()) {
-						NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>({}, CmdPayload<CMD_SET_COMPANY_MANAGER_FACE>::Make(cmf->bits, cmf->style), STR_NULL, CommandCallback::None, 0, c->index);
+						NetworkSendCommand<CMD_SET_COMPANY_MANAGER_FACE>({}, CmdPayload<CMD_SET_COMPANY_MANAGER_FACE>::Make(cmf->style, cmf->bits), STR_NULL, CommandCallback::None, 0, c->index);
 					}
 				}
 
@@ -1181,11 +1181,11 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlags flags, CompanyAllowListCtrlAc
 /**
  * Change the company manager's face.
  * @param flags operation to perform
- * @param bits The bits of company manager face.
  * @param style The style of the company manager face.
+ * @param bits The bits of company manager face.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyManagerFace(DoCommandFlags flags, uint32_t bits, uint style)
+CommandCost CmdSetCompanyManagerFace(DoCommandFlags flags, uint style, uint32_t bits)
 {
 	CompanyManagerFace tmp_face{style, bits, {}};
 	if (!IsValidCompanyManagerFace(tmp_face)) return CMD_ERROR;
