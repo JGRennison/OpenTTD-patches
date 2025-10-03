@@ -2106,7 +2106,7 @@ const char *NewGRFLabelDumper::Label(uint32_t label)
 	if (IsLabelPrintable(label)) {
 		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "{:c}{:c}{:c}{:c}", label >> 24, label >> 16, label >> 8, label);
 	} else {
-		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "0x{:08X}", std::byteswap(label));
+		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "0x{:08X}", label);
 	}
 	return this->buffer;
 }
