@@ -742,6 +742,12 @@ struct CmdPlantTreeHelper {
 					this->msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
 					break;
 				}
+				if (_settings_game.game_creation.landscape == LandscapeType::Arctic && treetype < TREE_SUB_ARCTIC) {
+					if (GetTileZ(tile) >= LowestTreePlacementSnowLine()) {
+						this->msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
+						break;
+					}
+				}
 
 				/* Test tree limit. */
 				if (this->limit <= 0) {
