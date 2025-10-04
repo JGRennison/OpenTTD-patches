@@ -11,9 +11,15 @@
 #define TREE_LAND_H
 
 #include "../sprite.h"
+#include "../tree_type.h"
 
-static const uint8_t _tree_base_by_landscape[4] = {0, 12, 20, 32};
-static const uint8_t _tree_count_by_landscape[4] = {12, 8, 12, 9};
+static const TreeTypeRange _tree_range_by_landscape[4] = {
+	{ 0, 12 },
+	{ 12, 8 },
+	{ 20, 12 },
+	{ 32, 9 },
+};
+
 #define MAX_TREE_COUNT_BY_LANDSCAPE 12
 
 struct TreePos {

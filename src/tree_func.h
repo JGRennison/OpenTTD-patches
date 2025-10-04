@@ -16,10 +16,13 @@
 
 extern bool _tree_placer_preview_active;
 extern robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
+extern TreeTypeRange _current_tree_type_range;
+extern TreeTypes _current_tree_type_mask;
 
 void PlaceTreesRandomly();
 void RemoveAllTrees();
 void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius, uint count);
 void SendSyncTrees(TileIndex cmd_tile);
+void UpdateTreeTypeRange();
 
 #endif /* TREE_FUNC_H */

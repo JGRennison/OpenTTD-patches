@@ -60,6 +60,9 @@ uint8_t _trees_tick_ctr;
 /** Tree placer tool current drag state. */
 bool _tree_placer_preview_active = false;
 robin_hood::unordered_flat_map<TileIndex, TreePlacerData> _tree_placer_memory;
+/** Current landscape tree types. */
+TreeTypeRange _current_tree_type_range;
+TreeTypes _current_tree_type_mask;
 
 static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
 static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
@@ -825,7 +828,7 @@ CommandCost CmdPlantTree(DoCommandFlags flags, TileIndex end_tile, TileIndex sta
 {
 	if (start_tile >= Map::Size() || count < 1 || count > 4) return CMD_ERROR;
 
-	const TreeTypes valid_types{GetBitMaskSC<TreeTypes::BaseType>(_tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)], _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)])};
+	const TreeTypes valid_types = _current_tree_type_mask;
 	if ((trees_to_plant & valid_types) != trees_to_plant) return CMD_ERROR;
 
 	uint8_t tree_type_count = 0;
@@ -876,13 +879,12 @@ CommandCost CmdBulkTree(DoCommandFlags flags, const BulkTreeCmdData &cmd_data)
 {
 	CmdPlantTreeHelper helper(flags, (_game_mode != GM_EDITOR) ? Company::GetIfValid(_current_company) : nullptr);
 
-	const auto tree_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-	const auto tree_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const TreeTypeRange tree_range = _current_tree_type_range;
 
 	/* Iterate through sync_data, plant trees on every tile inside. */
 	for (const auto& [tile, data] : cmd_data.plant_tree_data) {
 		if (tile >= Map::Size() || data.count < 1 || data.count > 4) return CMD_ERROR;
-		if (!IsInsideBS(data.tree_type, tree_base, tree_count)) return CMD_ERROR;
+		if (!tree_range.IsTreeInRange(data.tree_type)) return CMD_ERROR;
 
 		if (IsTileType(tile, MP_TREES) && GetTreeCount(tile) >= data.count) continue;
 		uint8_t tree_count = (IsTileType(tile, MP_TREES)) ? data.count - GetTreeCount(tile) : data.count;
@@ -1431,9 +1433,16 @@ static void ChangeTileOwner_Trees(TileIndex, Owner, Owner)
 	/* not used */
 }
 
+void UpdateTreeTypeRange()
+{
+	_current_tree_type_range = _tree_range_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	_current_tree_type_mask = TreeTypes{GetBitMaskSC<TreeTypes::BaseType>(_current_tree_type_range.base, _current_tree_type_range.count)};
+}
+
 void InitializeTrees()
 {
 	_trees_tick_ctr = 0;
+	UpdateTreeTypeRange();
 }
 
 static CommandCost TerraformTile_Trees(TileIndex tile, DoCommandFlags flags, int, Slope)

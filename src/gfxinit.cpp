@@ -443,14 +443,13 @@ void GfxDetermineMainColours()
 
 	/* Trees. */
 	extern uint32_t _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
-	const uint base  = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-	const uint count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const TreeTypeRange tree_range  = _tree_range_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 	for (uint tg = 0; tg < 5; tg++) {
-		for (uint i = base; i < base + count; i++) {
-			_vp_map_vegetation_tree_colours[0][tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
+		for (uint i = tree_range.base; i < tree_range.base + tree_range.count; i++) {
+			_vp_map_vegetation_tree_colours[0][tg][i - tree_range.base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
 		}
-		for (uint i = count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
-			_vp_map_vegetation_tree_colours[0][tg][i] = _vp_map_vegetation_tree_colours[0][tg][i - count];
+		for (uint i = tree_range.count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
+			_vp_map_vegetation_tree_colours[0][tg][i] = _vp_map_vegetation_tree_colours[0][tg][i - tree_range.count];
 		}
 	}
 	for (int s = 1; s <= SLOPE_ELEVATED; ++s) {

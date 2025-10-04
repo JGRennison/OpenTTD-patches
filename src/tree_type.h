@@ -50,4 +50,14 @@ struct TreePlacerData {
 	uint8_t count;
 };
 
+struct TreeTypeRange {
+	uint8_t base;
+	uint8_t count;
+
+	bool IsTreeInRange(TreeType tree_type) const
+	{
+		return tree_type >= this->base && tree_type < this->base + this->count;
+	}
+};
+
 #endif /* TREE_TYPE_H */

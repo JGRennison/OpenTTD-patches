@@ -38,8 +38,7 @@
  */
 static Dimension GetMaxTreeSpriteSize()
 {
-	const uint16_t base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-	const uint16_t count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const TreeTypeRange tree_types = _current_tree_type_range;
 
 	Dimension size, this_size;
 	Point offset;
@@ -49,8 +48,8 @@ static Dimension GetMaxTreeSpriteSize()
 	offset.x = 0;
 	offset.y = 0;
 
-	for (int i = base; i < base + count; i++) {
-		if (i >= (int)lengthof(_tree_sprites)) return size;
+	for (uint i = tree_types.base; i < tree_types.base + tree_types.count; i++) {
+		if (i >= (uint)lengthof(_tree_sprites)) return size;
 		this_size = GetSpriteSize(_tree_sprites[i].sprite, &offset);
 		size.width = std::max<int>(size.width, 2 * std::max<int>(this_size.width, -offset.x));
 		size.height = std::max<int>(size.height, std::max<int>(this_size.height, -offset.y));
@@ -94,20 +93,19 @@ class BuildTreesWindow : public Window
 			ResetObjectToPlace();
 		}
 
-		const uint8_t tree_types_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-		const uint8_t tree_types_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+		const TreeTypeRange tree_types = _current_tree_type_range;
 
-		if (CountBits(this->trees_to_plant) == tree_types_count) {
+		if (CountBits(this->trees_to_plant) == tree_types.count) {
 			this->LowerWidget(WID_BT_TYPE_RANDOM);
 		} else {
 			this->RaiseWidget(WID_BT_TYPE_RANDOM);
 		}
 
-		for (uint8_t i = 0; i < tree_types_count; i++) {
-			if (this->trees_to_plant.Test(static_cast<TreeType>(i + tree_types_base))) {
-				this->LowerWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types_base);
+		for (uint8_t i = 0; i < tree_types.count; i++) {
+			if (this->trees_to_plant.Test(static_cast<TreeType>(i + tree_types.base))) {
+				this->LowerWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types.base);
 			} else {
-				this->RaiseWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types_base);
+				this->RaiseWidget(WID_BT_TYPE_BUTTON_FIRST + i + tree_types.base);
 			}
 		}
 
@@ -206,13 +204,12 @@ public:
 	{
 		switch (widget) {
 			case WID_BT_TYPE_RANDOM: { // tree of random type.
-				const uint8_t tree_types_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-				const uint8_t tree_types_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-				if (CountBits(this->trees_to_plant) == tree_types_count) {
+				const TreeTypeRange tree_types = _current_tree_type_range;
+				if (CountBits(this->trees_to_plant) == tree_types.count) {
 					this->trees_to_plant = {};
 				} else {
-					for (uint8_t i = 0; i < tree_types_count; i++) {
-						this->trees_to_plant.Set(static_cast<TreeType>(i + tree_types_base));
+					for (uint8_t i = 0; i < tree_types.count; i++) {
+						this->trees_to_plant.Set(static_cast<TreeType>(i + tree_types.base));
 					}
 				}
 				this->UpdateMode();
@@ -318,13 +315,12 @@ public:
  */
 static std::unique_ptr<NWidgetBase> MakeTreeTypeButtons()
 {
-	const uint8_t type_base = _tree_base_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
-	const uint8_t type_count = _tree_count_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
+	const TreeTypeRange tree_types = _current_tree_type_range;
 
 	/* Toyland has 9 tree types, which look better in 3x3 than 4x3 */
-	const int num_columns = type_count == 9 ? 3 : 4;
-	const int num_rows = CeilDiv(type_count, num_columns);
-	uint8_t cur_type = type_base;
+	const int num_columns = tree_types.count == 9 ? 3 : 4;
+	const int num_rows = CeilDiv(tree_types.count, num_columns);
+	uint8_t cur_type = tree_types.base;
 
 	auto vstack = std::make_unique<NWidgetVertical>(NWidContainerFlag::EqualSize);
 	vstack->SetPIP(0, 1, 0);
@@ -333,7 +329,7 @@ static std::unique_ptr<NWidgetBase> MakeTreeTypeButtons()
 		auto hstack = std::make_unique<NWidgetHorizontal>(NWidContainerFlag::EqualSize);
 		hstack->SetPIP(0, 1, 0);
 		for (int col = 0; col < num_columns; col++) {
-			if (cur_type > type_base + type_count) break;
+			if (cur_type > tree_types.base + tree_types.count) break;
 			auto button = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_BT_TYPE_BUTTON_FIRST + cur_type);
 			button->SetToolTip(STR_PLANT_TREE_TOOLTIP);
 			hstack->Add(std::move(button));
