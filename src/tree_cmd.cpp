@@ -884,7 +884,9 @@ CommandCost CmdBulkTree(DoCommandFlags flags, const BulkTreeCmdData &cmd_data)
 	/* Iterate through sync_data, plant trees on every tile inside. */
 	for (const auto& [tile, data] : cmd_data.plant_tree_data) {
 		if (tile >= Map::Size() || data.count < 1 || data.count > 4) return CMD_ERROR;
-		if (!tree_range.IsTreeInRange(data.tree_type)) return CMD_ERROR;
+		if (!tree_range.IsTreeInRange(data.tree_type)) {
+			if (!IsTileType(tile, MP_TREES) || GetTreeType(tile) != data.tree_type) return CMD_ERROR;
+		}
 
 		if (IsTileType(tile, MP_TREES) && GetTreeCount(tile) >= data.count) continue;
 		uint8_t tree_count = (IsTileType(tile, MP_TREES)) ? data.count - GetTreeCount(tile) : data.count;
