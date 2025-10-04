@@ -51,8 +51,8 @@
 
 class TemplateReplaceWindow;
 
-// some space in front of the virtual train in the matrix
-uint16_t TRAIN_FRONT_SPACE = 16;
+/* Some space in front of the virtual train in the matrix */
+static constexpr uint16_t TRAIN_FRONT_SPACE = 16;
 
 enum TemplateReplaceCreateWindowWidgets : WidgetID {
 	TCW_CAPTION,
@@ -603,9 +603,6 @@ public:
 		MODE_START_STOP,
 	};
 
-	uint count_width;
-	uint header_width;
-
 	DepotGUIAction GetVehicleFromDepotWndPt(int x, int y, const Vehicle **veh, GetDepotVehiclePtData *d) const
 	{
 		const NWidgetCore *matrix_widget = this->GetWidget<NWidgetCore>(TCW_NEW_TMPL_PANEL);
@@ -613,23 +610,10 @@ public:
 		if (_current_text_dir == TD_RTL) x = matrix_widget->current_x - x;
 
 		x -= TRAIN_FRONT_SPACE;
-
-		uint xm = x;
-
-		bool wagon = false;
-
 		x += this->hscroll->GetPosition();
+
 		const Train *v = this->virtual_train;
 		d->head = d->wagon = v;
-
-		if (xm <= this->header_width) {
-			if (wagon) return MODE_ERROR;
-
-			return MODE_SHOW_VEHICLE;
-		}
-
-		/* Account for the header */
-		x -= this->header_width;
 
 		/* find the vehicle in this row that was clicked */
 		for (; v != nullptr; v = v->Next()) {
