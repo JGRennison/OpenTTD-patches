@@ -1795,19 +1795,22 @@ static void ClimateThresholdModeChanged(int32_t new_value)
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 }
 
-static void VelocityUnitsChanged(int32_t new_value) {
+static void VelocityUnitsChanged(int32_t new_value)
+{
 	InvalidateWindowClassesData(WC_PAYMENT_RATES);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 	MarkWholeScreenDirty();
 }
 
-static void ChangeTrackTypeSortMode(int32_t new_value) {
+static void ChangeTrackTypeSortMode(int32_t new_value)
+{
 	extern void SortRailTypes();
 	SortRailTypes();
 	MarkWholeScreenDirty();
 }
 
-static void TrainSpeedAdaptationChanged(int32_t new_value) {
+static void TrainSpeedAdaptationChanged(int32_t new_value)
+{
 	extern void ClearAllSignalSpeedRestrictions();
 	ClearAllSignalSpeedRestrictions();
 	for (Train *t : Train::Iterate()) {
@@ -1816,7 +1819,8 @@ static void TrainSpeedAdaptationChanged(int32_t new_value) {
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
 }
 
-static void AutosaveModeChanged(int32_t new_value) {
+static void AutosaveModeChanged(int32_t new_value)
+{
 	extern void ChangeAutosaveFrequency(bool reset);
 	ChangeAutosaveFrequency(false);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
