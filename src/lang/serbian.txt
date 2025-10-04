@@ -1494,6 +1494,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Drugačije veli
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stanice preduzeća mogu da usluže fabrike sa povezanim neutralnim stanicama: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kada je uključeno, fabrike sa povezanim stanicama (kao što su naftne platforme) mogu biti uslužene od strane stanica preduzeća koje su izgrađene u blizini. Kada je isključeno, ove fabrike mogu biti uslužene samo od strane njihovih stanica. Nijedno preduzeće u blizini neće moći da usluži fabriku, niti će povezane stanice služiti bilo čemu osim fabrici.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Dozvoljeno uklanjanje više gradskih kolovoza, mostova i tunela: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Olakšava uklanjanje infrastrukture i zgrada u gradskom vlasništvu
 

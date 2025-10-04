@@ -1385,6 +1385,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Erineva suuruse
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Ettevõtte jaamad teenindavad ka liidetud, erapooletu jaamaga tööstuseid: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kui lubatud, saavad liidetud jaamaga tööstuseid (nagu naftaplatvormid) teenindada ka lähedalolevad ettevõttele kuuluvad jaamad. Muidu võivad neid tööstuseid teenindada vaid nendega liidetud jaamad. Lähedale ehitatud ettevõtte jaamad neid teenindada ei saa, ning liidetud jaamad ei teeninda teisi tööstuseid
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Asulateede, -sildade, -tunnelite jne lammutamine: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Lihtsusta asulatele kuuluva taristu ja hoonete eemaldamist
 

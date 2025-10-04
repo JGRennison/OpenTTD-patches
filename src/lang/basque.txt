@@ -1120,6 +1120,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Geltokien irism
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Tamaina ezberdinetako jasotze eremuak izan mota ezberdinetako geltoki eta aireportuentzat
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Herriarenak diren errepide, zubi eta tunel gehiago kentzea baimendu: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Herrien eraikin eta infraestrukturak kentzea errazago egin.
 

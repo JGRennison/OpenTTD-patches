@@ -1335,6 +1335,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Si electa, aero
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stationes societatum licet operari industriis quae proprias stationes habent: {STRING}
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Sinere plures vias, pontes, et cuniculos removere in oppidis: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Si electa, infrastructura et aedificia oppidorum sunt magis facilia remotu
 

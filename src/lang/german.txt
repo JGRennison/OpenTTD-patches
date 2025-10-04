@@ -286,7 +286,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Fenster 
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Titelleiste klicken und ziehen, um das Fenster zu verschieben
 STR_TOOLTIP_SHADE                                               :{BLACK}Fenster einklappen – Nur die Titelleiste zeigen
 STR_TOOLTIP_DEBUG                                               :{BLACK}Zeige Daten für NewGRF-Fehlerbeseitigung
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Standardgröße des Fensters wieder herstellen. Strg+Klick um die aktuelle Größe als Standard zu speichern
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Standardgröße des Fensters wieder herstellen. Strg+Klick um die aktuelle Größe als Standard zu speichern. Doppelt Strg+Klick machen, um Standard wiederherzustellen
 STR_TOOLTIP_STICKY                                              :{BLACK}Fenster wird nicht durch die „Schließe alle Fenster“-Taste geschlossen. Strg+Klick, um den Status als Standard zu speichern
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klicken und Ziehen zum Ändern der Größe des Fensters
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Zwischen Fenstergrößen umschalten
@@ -1347,6 +1347,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Wird diese Opti
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Firmenstationen können Industrien mit integrierter Haltestelle bedienen: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Falls aktiv, können Industrien mit integrierter Haltestelle (wie Ölbohrtürme) auch von nahegelegenen Stationen der Spieler bedient werden. Falls inaktiv, können diese Industrien ausschließlich mittels ihrer eigenen Stationen bedient werden. Die integrierten Stationen bedienen dabei keine anderen Industrien in der Nähe
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Entfernung von weiteren Straßen, Brücken usw. erlauben: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Erlaubt einfacheres Entfernen von städtischer Infrastruktur und Gebäuden
 
@@ -2021,7 +2022,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maximale Fenste
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Anzahl nicht angehefteter, offener Fenster, bevor alte Fenster automatisch geschlossen werden, um Platz für neue Fenster zu schaffen
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :deaktiviert
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Deaktiviert
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximale Hineinzoomstufe: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maximale Vergrößerung für Kartenansichten. Bedenke, dass höhere Vergrößerungsstufen mehr Arbeitsspeicher benötigen

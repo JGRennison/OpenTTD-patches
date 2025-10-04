@@ -1294,6 +1294,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Dovoli bolj res
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Postaje in letališča različnih tipov imajo različna področja zajema
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Dovoli odstanitev mestnih cest in mostov: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Poenostavi odstranitev infrastrukture in zgradb v lasti mesta
 

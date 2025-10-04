@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Stäng f
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Fönstertitel - dra för att flytta fönstret
 STR_TOOLTIP_SHADE                                               :{BLACK}Dölj fönster - Visa bara namnlisten
 STR_TOOLTIP_DEBUG                                               :{BLACK}Visa NewGRF felsökningsinformation
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Återställ fönstret till standardstorlek. Ctrl+Klick för att sätta nuvarande storlek som ny standard
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Återställ fönstret till standardstorlek. Ctrl+Klick för att sätta nuvarande storlek som ny standard. Dubbelklicka Ctrl+Klick för att återställa till sparad standard
 STR_TOOLTIP_STICKY                                              :{BLACK}Markera att fönstret ska lämnas öppet när 'Stäng alla fönster'-knappen används. Ctrl+klick för att spara som standardinställning
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klicka och dra för att förstora fönstret
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Växla stor/liten fönsterstorlek
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Ha olika stora 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Företagsstationerna kan betjäna industrier med tillhörande neutrala stationer: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :När det är aktiverat kan industrier med anslutna stationer (t.ex. oljeplattformar) också betjänas av företagsägda stationer som är byggda i närheten. När det är inaktiverat kan dessa industrier endast betjänas av deras anslutna stationer. Inga närliggande företagsstationer kommer att kunna betjäna dem och inte heller kommer den anslutna stationen att betjäna något annat än sin industri
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillåt borttagning av fler stadsägda vägar, broar och tunnlar: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Underlätta borttagning av stadsägd infrastruktur och byggnader
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maximalt antal 
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Antal icke-klistrade fönster som kan vara öppna innan gamla fönster börjar stängas automatiskt för att ge plats åt nya
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :avstängd
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Avstängd
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximal inzoomning: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Den maximala inzoomningsnivån för vyer. Tänk på att högre möjliga inzoomningsnivåer kräver högre minneskapacitet

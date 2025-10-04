@@ -1101,6 +1101,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Benarkan kawasa
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Mempunyai kawasan tadahan yang berbeza saiz untuk jenis stesen dan lapangan terbang
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Benarkan lebih pemusnahan jalanraya, jambatan, dan sbgnya yang dimiliki bandar: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Jadikan lebih mudah untuk menghapuskan infrastruktur dan bangunan milik bandaran
 

@@ -664,7 +664,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Zamknij 
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tytuł okna - przeciągnij, aby przesunąć okno
 STR_TOOLTIP_SHADE                                               :{BLACK}Zwiń okno - pokaż tylko nagłówek
 STR_TOOLTIP_DEBUG                                               :{BLACK}Pokaż informacje debuggera NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Zmień rozmiar okna na domyślny. Użyj Ctrl, aby zapamiętać obecny rozmiar jako domyślny
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Zmień rozmiar okna na domyślny. Użyj Ctrl, aby zapamiętać obecny rozmiar jako domyślny. Kliknij dwukrotnie z użyciem Ctrl, aby zresetować zapamiętany rozmiar
 STR_TOOLTIP_STICKY                                              :{BLACK}Oznacz to okno jako niezamykalne przyciskiem „Zamknij Wszystkie Okna”. Użyj Ctrl, aby zapamiętać to ustawienie jako domyślne
 STR_TOOLTIP_RESIZE                                              :{BLACK}Kliknij i przeciągnij, by zmienić rozmiar okna
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Przełącz na duży/mały rozmiar okna
@@ -1726,6 +1726,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Używaj różny
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stacje firmowe mogą obsługiwać przedsiębiorstwa z dołączonymi stacjami neutralnymi: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Jeśli włączone, przedsiębiorstwa z dołączonymi stacjami (takie jak platformy wiertnicze) mogą być obsługiwane także przez stacje firmowe znajdujące się w pobliżu. Jeśli wyłączone, przedsiębiorstwa te mogą być obsługiwane wyłącznie przez dołączone do nich stacje. Żadne pobliskie stacje firmowe nie będą mogły ich obsługiwać, a ponadto dołączone stacje nie będą obsługiwały niczego innego poza ich przedsiębiorstwem
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Pozwól usuwać drogi, mosty, tunele, itp. należące do miasta: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Ułatwiaj usuwanie infrastruktury i budynków należących do miast
 
@@ -2400,7 +2401,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maksymalna licz
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Liczba nieprzypiętych okien, zanim stare okna zostaną automatycznie zamknięte, aby zrobić miejsce dla nowych
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :wyłączone
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Wyłączone
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maksymalne przybliżenie: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maksymalne zbliżenie w dodatkowych oknach podglądu. Wyższa wartość oznacza większe zużycie pamięci
@@ -3152,10 +3153,10 @@ STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Zbuduj 
 STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}Nieaktywne, ponieważ nie są dostępne pojazdy korzystające z takiej infrastruktury
 
 # Rail construction toolbar
-STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Budowa linii kolejowej
-STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Budowa linii zelektryfikowanej
-STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Budowa linii jednoszynowej
-STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Budowa linii Maglev
+STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Budowa Linii Kolejowej
+STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Budowa Linii Zelektryfikowanej
+STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Budowa Linii Jednoszynowej
+STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Budowa Linii Maglev
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Zbuduj tory kolejowe. Użyj Ctrl, aby usunąć tory. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Zbuduj tory kolejowe za pomocą trybu Autotory. Użyj Ctrl, aby usunąć tory. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
@@ -3278,8 +3279,8 @@ STR_BRIDGE_TUBULAR_SILICON                                      :Cylindryczny, k
 
 
 # Road construction toolbar
-STR_ROAD_TOOLBAR_ROAD_CONSTRUCTION_CAPTION                      :{WHITE}Budowa dróg
-STR_ROAD_TOOLBAR_TRAM_CONSTRUCTION_CAPTION                      :{WHITE}Budowa linii tramwajowej
+STR_ROAD_TOOLBAR_ROAD_CONSTRUCTION_CAPTION                      :{WHITE}Budowa Dróg
+STR_ROAD_TOOLBAR_TRAM_CONSTRUCTION_CAPTION                      :{WHITE}Budowa Linii Tramwajowej
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}Zbuduj drogę. Użyj Ctrl, aby usunąć fragment drogi. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_SECTION                  :{BLACK}Zbuduj tory tramwajowe. Użyj Ctrl, aby usunąć fragment torów. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Zbuduj drogę za pomocą trybu Autodroga. Użyj Ctrl, aby usunąć fragment drogi. Użyj Shift, aby tylko wyświetlić szacunkowy koszt
@@ -3678,10 +3679,10 @@ STR_FRAMETIME_CAPTION_AI                                        :SI {NUM} {STRIN
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Zapisz Grę
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Wczytaj Grę
-STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Zapisz scenariusz
+STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Zapisz Scenariusz
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Wczytaj Scenariusz
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Wczytaj Mapę Wysokości
-STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Zapisz mapę wysokości
+STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Zapisz Mapę Wysokości
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Wczytaj Dane o Miastach
 STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Kliknij tutaj, aby przejść do domyślnego katalogu zapisów
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} wolnego miejsca
@@ -3695,12 +3696,12 @@ STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Wczytaj
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Wczytaj wybraną grę
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Wczytaj wybraną mapę wysokości
 STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Wczytaj zaznaczone dane o miastach
-STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Szczegóły gry
+STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Szczegóły Gry
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Brak dostępnych informacji
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtr:
-STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Zastąp plik
+STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Zastąp Plik
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Czy na pewno chcesz zastąpić istniejący stan gry?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (folder)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (folder nadrzędny)
@@ -5405,14 +5406,14 @@ STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}Lokalne 
 STR_ERROR_BRIBE_FAILED                                          :{WHITE}Twoja próba przekupstwa została wykryta przez miejscowych śledczych
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Nie można tutaj podnieść lądu...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Nie można tutaj obniżyć lądu...
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Nie można tutaj podnieść terenu...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Nie można tutaj obniżyć terenu...
 STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Nie można tutaj wyrównać terenu...
 STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Wykop zniszczyłby tunel
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... już na poziomie morza
 STR_ERROR_TOO_HIGH                                              :{WHITE}... zbyt wysoko
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... już wyrównany
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Potem most powyżej byłby zbyt wysoko.
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Most nad nim byłby zbyt wysoki.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Nie można zmienić nazwy firmy...

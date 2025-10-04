@@ -1432,6 +1432,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Rozdílná veli
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Obsluhovat průmysl s vlastní stanicí i prostřednictvím jiných stanic: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Když je tato funkce povolena, průmyslové podniky s připojenými stanicemi (například ropné plošiny) mohou být také obsluhovány stanicemi vlastněnými společností postavenými v blízkosti. Když je tato funkce zakázána, tyto průmyslové podniky mohou být obsluhovány pouze svými připojenými stanicemi. Žádné blízké stanice společnosti nebudou schopny je obsluhovat a ani připojená stanice nebude schopna obsluhovat nic jiného než samotný průmysl.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Povolit bourání více městských silnic, mostů a tunelů: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Usnadňuje odstranění městských staveb a silnic
 

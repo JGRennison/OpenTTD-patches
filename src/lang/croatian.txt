@@ -1263,6 +1263,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Različiti dohv
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stanice kompanije mogu opsluživati industrije sa priključenim neutralnim stanicama: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kada je uključeno, industrije sa priključenim stanicama (kao naftne platforme) mogu biti opsluživane od strane kompanija koje imaju stanice izgrađene u blizini. Kada je isključeno, ove industrije mogu biti opsluživane samo putem svojih priključenih stanica. Bilo koja stanica u blizini u vlasništvu neke kompanije neće moći opsluživati ove industrije niti će stanice priključene industriji moći opsluživati bilo što osim te industrije.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Dopusti rušenje više cesta, mostova i tunela u vlasništvu grada: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Jednostavnije uklanjanje infrastrukture i građevina u vlasništvu grada
 

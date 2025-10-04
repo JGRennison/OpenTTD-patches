@@ -1150,6 +1150,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :อนุญา
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :สร้างความแตกต่างของพื้นที่บริการสำหรับสถานีในประเภทที่แตกต่างกัน
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :อนุญาตให้ทำลายถนน, สะพาน, สิ่งก่อสร้างของเมืองได้มากขึ้น: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :ทำให้ง่ายขึ้นสำหรับการรื้อถอนสาธารณูปโภคและสิ่งปลูกสร้างของเมือง
 

@@ -1373,6 +1373,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Diversaj tipoj 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Kompaniaj stacioj povas servi fabrikojn kun alkroĉitaj neŭtralaj stacioj: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kiam tiu ĉi agordo estas aktiva, fabrikoj kun alkroĉitaj stacioj (ekzemple oleplatformoj) povas ankaŭ esti servataj de apudaj stacioj konstruitaj de kompanioj. Kiam tiu ĉi agordo estas malaktiva, tiaj ĉi fabrikoj serveblas nur per siaj alkroĉitaj stacioj. Apudaj stacioj konstruitaj de kompanioj ne povos servi ilin, kaj la alkroĉita stacio ankaŭ ne servos ion alian ol la fabrikon mem
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permesu forigon de pli da urbaj stratoj, pontoj ktp: {STRING}
 
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maksimuma longeco de vagonaroj: {STRING}

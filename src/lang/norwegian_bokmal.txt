@@ -287,7 +287,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Lukk vin
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Vindustittel - dra her for å flytte vindu
 STR_TOOLTIP_SHADE                                               :{BLACK}Skyggevindu - Vis kun tittelfeltet
 STR_TOOLTIP_DEBUG                                               :{BLACK}Vis NewGRF-debuggingsinformasjon
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Gjennopprett vindu til standard størrelse. Ctrl + Klikk for å lagre gjeldende størrelse som standard
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Gjennopprett vindu til standard størrelse. Ctrl+klikk for å lagre gjeldende størrelse som standard. Dobbelt Ctrl+klikk for å nullstille lagret standard
 STR_TOOLTIP_STICKY                                              :{BLACK}Beskytt dette vinduet mot 'Lukk alle vinduer'-knappen. Ctrl+klikk for å lagre tilstanden som standard
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klikk og dra for å endre størrelsen på vinduet
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Veksle mellom stor/liten vindustørrelse
@@ -1348,6 +1348,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Ha dekningssomr
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Selskapets stasjoner kan betjene industrier med tilknyttede nøytrale stasjoner: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Hvis aktivert, vil industrier med tilknyttede stasjoner (slik som oljerigger) også kunne betjenes av selskapseide stasjoner bygget i nærheten. Hvis deaktivert, vil disse industriene bare kunne betjenes av sine tilknyttede stasjoner. Nærliggende selskapsstasjoner vil ikke kunne betjene dem, heller ikke vil den tilknyttede stasjonen betjene noe annet enn industrien
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillat fjerning av flere veier, broer osv. eid av byene: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Gjør det enklere å fjerne infrastruktur og bygninger som tilhører byer
 
@@ -2022,7 +2023,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Største antall
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Antall ikke-klebrige åpne vinduer før gamle vinduer automatisk blir lukket for å gi plass til nye vinduer
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :deaktivert
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Deaktivert
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Største zoom-inn nivå: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Største forstørrelsesnivå for synsfelt. Vær oppmerksom på at aktivering av høyere forstørrelsesnivå øker minnekravet

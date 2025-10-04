@@ -1331,6 +1331,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Farklı istasyo
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Şirket istasyonları, bağlı nötr istasyonları olan endüstrilere hizmet edebilir: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Etkinleştirildiğinde, bağlı istasyonlara (Petrol Kuleleri gibi) sahip endüstrilere, yakınlarda inşa edilen şirkete ait istasyonlar tarafından da hizmet verilebilir. Devre dışı bırakıldığında, bu sektörlere yalnızca bağlı oldukları istasyonlar tarafından hizmet verilebilir. Yakındaki herhangi bir şirket istasyonu onlara hizmet veremeyecektir ve bağlı istasyon endüstri dışında başka bir şeye hizmet etmeyecektir.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Şehirlere ait köprülerin, yolların ve tünellerin yıkılmasına izin vermeleri için, şehir yetkililerinin toleransını arttır: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Belediyelerin sahip olduğu altyapı ve binaların yıkımını kolaylaştır
 

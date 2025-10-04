@@ -1197,6 +1197,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Bíodh an ceant
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Is féidir le stáisiúin cuideachtaí freastal ar thionscail a bhfuil stáisiúin neodracha ceangailte díobh: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Má tá seo cumasaithe, is féidir freastal ar thionscail a bhufil stáisiúin ceangailte díobh (Rigí Ola, mar shampla) le stáisiúin atá i seilbh cuideachtaí a thógtar in aice láimhe. Má tá seo díchumasaithe, ní féidir freastal orthu ach leis na stáisiúin atá ceangailte díobh. Ní bheidh aon stáisiúin atá ag cuideachtaí in aice láimhe a bheith in ann freastal orthu, ná ní bheidh an stáisiún ceangailte ag freastal ar aon rud eile seachas an tionscal
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Ceadaigh tuilleadh bóithre, droichid agus tolláin ar le baile iad a bhaint: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Fág go mbeidh sé níos éasca bonneagar agus foirgnimh ar le bailte iad a bhaint
 

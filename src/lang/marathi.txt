@@ -799,6 +799,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 
 
+
 STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :वाहनांचा धूर/ठिणग्या: {STRING}
 
 

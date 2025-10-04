@@ -1347,6 +1347,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Áreas de influ
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :As estacións da compañía poden atender a industrias con estacións neutrais incorporadas: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Cando se activa, as industrias con estacións incorporadas (coma plataformas petrolíferas) poden ser atendidas por estacións cercanas propiedade da compañía. Cando se desactiva, estas industrias só poden ser atendidas polas estacións incorporadas. Calquera estación cercana dunha compañía non poderá atendelas, e a estación incorporada non poderá servir a nada máis que á industria
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permiti-la eliminación de máis estradas, pontes e túneis de titularidade municipal: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Facilita a destrución de infraestrutura e edificacións de titularidade municipal
 

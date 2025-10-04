@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Sulje ik
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Ikkunan otsake – siirrä ikkunaa vetämällä tästä
 STR_TOOLTIP_SHADE                                               :{BLACK}Pienennä ikkuna – näytä vain otsikko
 STR_TOOLTIP_DEBUG                                               :{BLACK}Näytä NewGRF-vianmääritystiedot
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Palauta ikkunan oletuskoko. Ctrl+napsautus tallentaa nykyisen koon oletukseksi.
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Palauta ikkuna oletuskokoon. Ctrl+napsautus tallentaa nykyisen koon oletukseksi. Ctrl+kaksoisnapautus asettaa oletuskoon alkutilaan
 STR_TOOLTIP_STICKY                                              :{BLACK}Aseta ikkuna säilymään ”Sulje kaikki ikkunat” -napista huolimatta. Ctrl+napsautus tallentaa tilan oletukseksi.
 STR_TOOLTIP_RESIZE                                              :{BLACK}Napsauta ja vedä muuttaaksesi tämän ikkunan kokoa
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Suurenna/pienennä ikkuna
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Erityyppisillä
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Yhtiöiden asemat voivat palvella laitoksia, joilla on omat asemat: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Mikäli käytössä, asemilla valmiiksi varustettuja teollisuuslaitoksia (kuten öljynporauslauttoja) voivat palvella myös yhtiöiden lähistölle rakentamat asemat. Mikäli pois käytöstä, tällaisia laitoksia voivat palvella vain niiden omat asemat. Lähistöllä olevat yhtiöiden asemat eivät tällöin voi palvella näitä laitoksia, eivätkä laitosten asemat palvele muita kuin näitä laitoksia
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Kunnan omistamien teiden, siltojen ja tunneleiden raivaaminen sallittu: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Tekee kuntien omistaman infrastruktuurin ja rakennusten tuhoamisesta helpompaa
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Suurin sallittu
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Suurin sallittu ei-säilyvien ikkunoiden määrä ennen vanhojen ikkunoiden sulkemista uusien ikkunoiden tieltä
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :pois käytöstä
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Pois käytöstä
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Suurin sallittu suurennustaso: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Suurin mahdollinen lähennystaso näkymille. Huomioi, että suuret lähennystasot vaativat enemmän muistia

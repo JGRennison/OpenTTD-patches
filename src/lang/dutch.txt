@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Venster 
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Vensternaam - sleep om venster te verplaatsen
 STR_TOOLTIP_SHADE                                               :{BLACK}Venster inklappen - alleen titelbalk weergeven
 STR_TOOLTIP_DEBUG                                               :{BLACK}Probleemgegevens voor NewGRF weergeven
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Venster op standaardgrootte weergeven. Ctrl+klik slaat huidige grootte op als standaard.
+STR_TOOLTIP_DEFSIZE                                             :Venster op standaardgrootte weergeven. Ctrl+klik slaat huidige grootte op als standaard.
 STR_TOOLTIP_STICKY                                              :{BLACK}Dit venster markeren als niet-sluitbaar met de knop 'Alle vensters sluiten'. Ctrl+klik om slaat status op als standaard.
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klik en sleep om de grootte van dit venster te veranderen
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Schakelen tussen groot/klein venster
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Verzorgingsgebi
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stations van het bedrijf kunnen leveren aan industrieën met bijbehorend neutraal station: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Wanneer dit is ingeschakeld kunnen industrieën met bijbehorende stations (zoals olievelden) ook worden voorzien door stations van het bedrijf die in de buurt zijn gebouwd. Wanneer dit is uitgeschakeld kunnen deze industrieën alleen worden voorzien door het bijbehorende station. Eventuele stations van het bedrijif in de buurt kunnen niet aan ze leveren; ook levert het bijbehorende station alleen aan de industrie zelf.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Verwijderen van meer stedelijke wegen, bruggen en tunnels toestaan: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Maakt het gemakkelijker om door de stad beheerde infrastructuur en gebouwen te verwijderen.
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maximumaantal (
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Aantal niet-blijvende open vensters voordat oude vensters automatisch worden gesloten om ruimte voor nieuwe vensters te maken
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :uitgeschakeld
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Uitgeschakeld
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximaal inzoomniveau: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Het maximale inzoomniveau voor kijkvensters. Merk op dat hogere inzoomniveaus hogere eisen stellen aan het geheugen.

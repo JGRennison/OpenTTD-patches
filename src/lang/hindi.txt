@@ -444,6 +444,7 @@ STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
 
 
 
+
 STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS_HELPTEXT               :ट्रेन के लिये ढलान की तेजी की स्थापना। ऊँची संख्या से चढ़ान पर चढ़ना अधिक कठिन हो जाता है।
 
 

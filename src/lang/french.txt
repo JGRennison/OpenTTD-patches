@@ -286,7 +286,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Fermer l
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Titre de fenêtre - Faire glisser pour déplacer la fenêtre
 STR_TOOLTIP_SHADE                                               :{BLACK}Réduire la fenêtre - N'affiche que la barre de titre
 STR_TOOLTIP_DEBUG                                               :{BLACK}Afficher les informations de débogage NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensionner la fenêtre à sa taille par défaut. Ctrl-clic pour définir la taille actuelle comme défaut
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensionner la fenêtre à sa taille par défaut. Ctrl+clic pour définir la taille actuelle comme défaut. Double Ctrl+clic pour réinitialiser la taille par défaut
 STR_TOOLTIP_STICKY                                              :{BLACK}Marquer cette fenêtre comme ineffaçable pour la touche «{NBSP}Fermer toutes les fenêtres{NBSP}». Ctrl-clic pour définir l'état par défaut
 STR_TOOLTIP_RESIZE                                              :{BLACK}Cliquer et faire glisser pour redimensionner la fenêtre
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Alterner entre grande et petite fenêtre
@@ -798,7 +798,7 @@ STR_SMALLMAP_LEGENDA_BARE_LAND                                  :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_RAINFOREST                                 :{TINY_FONT}{BLACK}Région tropicale
 STR_SMALLMAP_LEGENDA_FIELDS                                     :{TINY_FONT}{BLACK}Champs
 STR_SMALLMAP_LEGENDA_TREES                                      :{TINY_FONT}{BLACK}Arbres
-STR_SMALLMAP_LEGENDA_ROCKS                                      :{TINY_FONT}{BLACK}Rochers
+STR_SMALLMAP_LEGENDA_ROCKS                                      :{TINY_FONT}{BLACK}Roches
 STR_SMALLMAP_LEGENDA_WATER                                      :{TINY_FONT}{BLACK}Eau
 STR_SMALLMAP_LEGENDA_NO_OWNER                                   :{TINY_FONT}{BLACK}Sans propriétaire
 STR_SMALLMAP_LEGENDA_TOWNS                                      :{TINY_FONT}{BLACK}Villes
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Les zones de de
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Les stations des compagnies peuvent desservir les industries avec une station intégrée{NBSP}: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Si activé, les industries avec une station intégrée (comme les plateformes pétrolières) peuvent aussi être desservies par les stations des compagnies construites à proximité. Si désactivé, ces industries peuvent uniquement être desservies par leur station intégrée. Aucune station de compagnie ne pourra desservir cette industrie, et la station intégrée ne desservira que cette industrie
+
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permettre le retrait de plus d'éléments possédés par une ville{NBSP}: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Simplifier le retrait d'éléments possédés par une ville

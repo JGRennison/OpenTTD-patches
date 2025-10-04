@@ -1144,6 +1144,7 @@ STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Tillet å endre
 STR_CONFIG_SETTING_CATCHMENT                                    :Meir realistisk storleik på oppfangingsområde: {STRING}
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillet fjerning av fleire vegar, bruar osb. egd av byane.: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Gjer det greiare å fjerne infrastruktur og bygningar eigd av byar.
 

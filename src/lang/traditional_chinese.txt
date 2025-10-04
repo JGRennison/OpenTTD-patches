@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}關閉�
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}視窗標題 - 點此拖曳可移動視窗
 STR_TOOLTIP_SHADE                                               :{BLACK}陰影視窗 - 只顯示標題列
 STR_TOOLTIP_DEBUG                                               :{BLACK}顯示 NewGRF 除錯資訊
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}將視窗改回預設大小。按下 Ctrl 鍵點選此掣則將視窗現時大小定為預設
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}將視窗改回預設大小。按住 <Ctrl> 鍵單擊點選此按鈕可將視窗現時大小設為預設。按住 <Ctrl> 鍵雙擊點選則可重設預設大小
 STR_TOOLTIP_STICKY                                              :{BLACK}標記此視窗使其不受「關閉所有視窗」掣影響。按住 Ctrl 鍵點選此掣以將選項定為常態
 STR_TOOLTIP_RESIZE                                              :{BLACK}點選並拖曳可縮放視窗大小
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}切換大／小視窗
@@ -1345,6 +1345,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :使車站和機
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :公司車站可以服務附設車站的工業設施：{STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :啟用後，公司車站可以為附近附設車站的工業（如鑽油平台）提供服務。停用後，這些工業只能由其附設的車站提供服務，並且附設車站不會提供除了該工業設施以外的任何服務
+
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :允許移除更多市鎮擁有的道路、橋樑及隧道：{STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :使玩家更容易地移除市鎮擁有的基礎建設和建築物。
@@ -2594,7 +2595,7 @@ STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :已有人使用
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :密碼錯誤
 STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :不在允許名單內
 STR_NETWORK_ERROR_CLIENT_NO_AUTHENTICATION_METHOD_AVAILABLE     :已請求的驗證方式均不可用
-STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :DoCommand 內含錯誤的 company-id
+STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :DoCommand 內含錯誤的公司 ID
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :被伺服器踢除
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :想試著作弊
 STR_NETWORK_ERROR_CLIENT_SERVER_FULL                            :伺服器已滿
@@ -5157,7 +5158,7 @@ STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}列車�
 STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}列車過長
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}無法調轉車輛方向...
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}... 由多節車廂組成
-STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :軌道種類不相容
+STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :軌道類型不相容
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}無法移動車輛...
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}後端車頭一定要跟著前端車頭

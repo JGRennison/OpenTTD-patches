@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Statiounen a Fl
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Gare vun der Firma kënnen Industrie beliwwere mat neutrale Statiounen: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Wann ugeschalt dierfen Industrien mat agebaute Statiounen (z.b Buerinselen) och vu Firmestatiounen déi an der Géigend gebaut goufen beliwwert ginn. Wann ausgeschalt, dierfen se just vun den agebaute Statioune benotzt ginn. An der Géigend gebaute Firmestatiounen wäerten se net benotzen an déi agebaute Statiounen beliwweren och keen ausser d'Industrie selwer.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Erlaabt d'Ewechhuelen vu méi Stroossen, Brécken, etc. vun der Stad: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Mach et méi einfach fir Infrastruktur oder Gebaier ewechzehuelen déi enger Stad gehéiren
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maximal Unzuel 
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Unzuel un net-gepinnten openen Fënster befier al Fënsteren automatesch zougemaach ginn fir nei Plaz ze man fir nei Fënsteren
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :ausgeschalt
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Ausgeschalt
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximale Razoom Level: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maximal Razoomstuf fir Usiichtsfënsteren. Et gëtt méi Späicher gebraucht wann d'Stufen ze grouss ginn

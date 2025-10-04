@@ -1098,6 +1098,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Raunverulegri s
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Mismunandi stærð á söfnunarsvæðum fyrir mismunandi stöðvar og flugvelli
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Leyfa meiri eyðingu vega, brúa, gangna o.s.frv. í eigu bæjar: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Að það sé auðveldara að fjarlægja byggingar og mannvirki í eigu bæjarins
 

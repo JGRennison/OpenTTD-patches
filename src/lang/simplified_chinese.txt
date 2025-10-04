@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}关闭�
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}窗口标题 - 拖动这里可以移动该窗口
 STR_TOOLTIP_SHADE                                               :{BLACK}阴影窗口 - 仅显示标题栏
 STR_TOOLTIP_DEBUG                                               :{BLACK}显示 NewGRF 纠错信息
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}将窗口调整到默认大小。按住 <Ctrl> 键点击以将当前大小存为默认大小
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}将窗口调整到默认大小。按住 <Ctrl> 键单击以将当前大小存为默认大小。按住 <Ctrl> 键双击以重置大小。
 STR_TOOLTIP_STICKY                                              :{BLACK}标记此窗口，使其不受“关闭所有窗口”快捷键影晌。按住 <Ctrl> 键单击将当前状态设为默认状态
 STR_TOOLTIP_RESIZE                                              :{BLACK}点击并拖动这里可以缩放窗口
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}切换窗口大小
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :启用时不同
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :公司私有车站可以服务自带车站的工业设施：{STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :启用后，公司车站可以为附近自带车站的工业（如钻井平台）提供服务。禁用后，这些工业只能由其自带的车站提供服务，并且自带车站不会为除了所属工业之外的其他设施提供任何服务
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :允许拆除更多的城市桥隧道路：{STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :启用时更容易拆除城市自有的设施和建筑
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :窗口数量上
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :设定窗口数量上限。超出此限值时游戏会自动关闭最早打开的窗口。已固定的窗口不受此项限制
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :关闭
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :禁用
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :最大视角放大倍数：{STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :画面的最大放大倍数，注意：提高放大倍数增加内存需求

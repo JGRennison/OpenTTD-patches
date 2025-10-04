@@ -286,7 +286,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Cierra l
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Título de la ventana - arrastra para moverla
 STR_TOOLTIP_SHADE                                               :{BLACK}Oculta la ventana - muestra sólo el título de la ventana
 STR_TOOLTIP_DEBUG                                               :{BLACK}Muestra la información de depuración NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensionar ventana al tamaño por defecto. Ctrl+clic permite almacenar el tamaño actual como tamaño por defecto
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensionar ventana al tamaño por defecto. Ctrl+Clic permite almacenar el tamaño actual como tamaño por defecto
 STR_TOOLTIP_STICKY                                              :{BLACK}Esta ventana no se cerrará tras usar el comando 'Cerrar Todas las Ventanas'. Ctrl+clic permite guardar el estado como estado por defecto
 STR_TOOLTIP_RESIZE                                              :{BLACK}Clica y arrastra para redimensionar la ventana
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Alterna el tamaño de ventana entre grande/pequeño
@@ -1347,6 +1347,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Permite tener d
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Las estaciones de la empresa pueden atender industrias con las estaciones neutrales adheridas: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Al habilitarse esta opción, las industrias con estaciones adjuntas (como las Plataformas Petrolíferas) pueden atenderse por las estaciones propiedad de las empresas que se construyan en las cercanías. Al deshabilitarse, estas industrias sólo pueden ser atendidas mediante sus respectivas estaciones adjuntas. Cualquier estación cercana propiedad de una empresa no podrá atenderlas, y las estaciones adjuntas sólo podrán atender a su respectiva industria.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permitir eliminar más propiedades de los municipios: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Permite que sea más sencillo eliminar las infraestructuras y edificios de los municipios
 
@@ -2021,7 +2022,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Máximo número
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Número máximo de ventanas sin anclar que pueden estar abiertas antes de que las más antiguas se cierren automáticamente para dejar paso a las nuevas
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :deshabilitado
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Deshabilitado
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Máximo acercamiento: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Nivel máximo de acercamiento para las ventanas de vista y la vista principal. Los niveles altos de acercamiento incrementan el consumo de memoria del juego

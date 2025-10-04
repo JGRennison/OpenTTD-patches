@@ -1294,6 +1294,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Gunakan area pe
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stasiun perusahaan dapat melayani pabrik dengan stasiun netral terpasang: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Jika diaktifkan, industri dengan stasiun terlampir (seperti Rig Minyak) juga dapat dilayani oleh stasiun milik perusahaan yang dibangun di dekatnya. Saat dinonaktifkan, industri ini hanya dapat dilayani oleh stasiun yang terhubung. Stasiun perusahaan terdekat mana pun tidak akan dapat melayani mereka, dan stasiun terlampir tidak akan melayani hal lain selain industri
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Ijinkan menggusur lebih banyak jalan, jembatan, terowongan milik kota, dsb: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Permudah membuang infrasturktur yang dimiliki kota
 

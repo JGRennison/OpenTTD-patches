@@ -1397,6 +1397,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Má úchytné p
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stanice spoločnosti môžu obsluhovať priemysel s pripojenými stanicami: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Ak je povolené, priemysel s pripojenými neutrálnymi stanicami (napríklad Ropné plošiny) môžu obsluhovať aj stanice vlastnené spoločnosťou postavené v blízkosti. Ak je zakázané, tento priemysel môžu obsluhovať iba jeho pripojené stanice. Žiadne blízke stanice vlastnené spoločnosťou ich nebudú môcť obsluhovať a pripojená stanica nebude slúžiť ničomu inému ako priemyslu
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Odstrániť viaceré mestské cesty, mosty a tunely: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Uľahči odstraňovanie mestom vlastnených budov a infraštruktúry
 

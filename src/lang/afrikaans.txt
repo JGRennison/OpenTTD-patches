@@ -1159,6 +1159,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Laat verskillen
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Maatskappy stasies kan industriëe bedien met aangehegte neutrale stasies: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Indien gekies, kan industrieë met aangeslote stasies (soos Olie Rigs) ook bedien word deur maatskappybesitte stasies wat in die omgewing gebou word. As dit af is, mag hierdie industrieë slegs deur hul aangeslote stasies bedien word. Enige nabygeleë maatskappystasies sal dit nie kan bedien nie, en die aangehegte stasie sal ook niks anders as die industrie bedien nie
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Laat verwydering van meer stad-besite paaie, bruge, ens toe: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Maak dit makliker om dorps eiendom en infrastruktuur te verwyder
 

@@ -1099,6 +1099,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Loyv meira ver�
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Ymiskar støddir á upplandi fyri ymisk sløg av støðum og floghavnum
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Loyv burtur beining av vegum, brúm og bergholum ið bygdir eiga: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Ger tað lættari at beina burtur innankervi og bygningar hjá bygdum
 

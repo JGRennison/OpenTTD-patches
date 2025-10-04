@@ -1342,6 +1342,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Ceadaich raoint
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Bi meud eadar-dhealaichte aig raointean tionail a-rèir seòrsa an stèisein no puirt-adhair
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Faodar barrachd rathaidean, dhrochaidean is thunailean le baile a thoirt air falbh: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Bidh e nas fhasa bun-structar is togalaichean a tha le baile a thoirt air falbh
 

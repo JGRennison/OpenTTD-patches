@@ -1182,6 +1182,7 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :السماح ب
 STR_CONFIG_SETTING_CATCHMENT                                    :السماح بحدود اكثر واقعية للمحطات بحسب الحجم: {STRING}
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :السماح بحذف اكثر من الطرق المملوكة للمدينة و الجسور و غيرها: {STRING}
 
 

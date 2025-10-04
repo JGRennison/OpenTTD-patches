@@ -1269,6 +1269,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :駅や空港の
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :会社の駅が中立の専用荷役所を持つ産業からサービスを受けられるようにする: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :有効にすると専用の荷役所がある産業(石油掘削装置)などが近傍にある駅にもサービスを提供するようになります。無効にすると産業は専用の駅にのみサービスを提供するようになり近傍の駅には提供しなくなります。
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :街有道路・橋・トンネルの撤去容認: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :街有の交通インフラや建物の撤去をより容易にします
 

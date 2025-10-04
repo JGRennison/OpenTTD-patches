@@ -1048,6 +1048,7 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :تعمیرات 
 STR_CONFIG_SETTING_CATCHMENT                                    :کوریج کے علاقے کے حقیقت پسندانہ سائز کی اجازت: {STRING}
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :شہروں کی ملکیت زیادہ سڑکوں، پلوں اور سرنگوں کو توڑنے کی اجازت: {STRING}
 
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :ریل گاڑیوں کی زیادہ سے زیادہ لمبائی: {STRING}

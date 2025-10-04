@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Cau ffen
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Teitl ffenestr - llusgwch hwn i symud ffenestr
 STR_TOOLTIP_SHADE                                               :{BLACK}Cysgodi'r ffenest - dangos y bar teitl yn unig
 STR_TOOLTIP_DEBUG                                               :{BLACK}Dangos gwybodaeth dadnamu NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Ailfeintio'r ffenestr i'w faint rhagosodedig. Bydd Ctrl+Clic yn storio'r maint presenol fel rhagosodiad
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Ailfeintio'r ffenestr i'w faint rhagosodedig. Bydd Ctrl+Clic yn storio'r maint presenol fel rhagosodiad. Dwbl Ctrl+Clic i ailosod y rhagosodiad a storiwyd
 STR_TOOLTIP_STICKY                                              :{BLACK}Nodi'r ffenest yma fel un na ellir ei gau can yr allwedd 'Cau Pob Ffenestr'. Bydd Ctrl+Clicio'n cadw'r dewis fel rhagosodiad
 STR_TOOLTIP_RESIZE                                              :{BLACK}Cliciwch a llusgo er mwyn newid maint y ffenestr
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Toglu maint ffenestri mawr/bach
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Defnyddio dalgy
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Gall gorsafoedd cwmni wasanaethu diwydiannau gyda gorsafoedd niwtral ynghlwm: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Pan y galluogir, bydd diwydiannau gyda gorsafoedd ynghlwm (fel Rigiau Olew) yn gallu caen eu gwasanaethu gan orsafoedd cwmni sydd gerllaw. Pan analluogir, dim ond yn y gorsafoedd ynghlwm y gellir gwasanaethu'r diwydiannau yma. Ni fydd gorsafoedd gerllaw yn gallu eu gweini, ac ni fydd y gorsaf ynghlwm yn gweini unrhyw beth ond y diwydiant yna
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Caniatáu chwalu mwy o ffyrdd, pontydd ayb. sy'n berthyn i drefi: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Hwyluso chwalu tanadeiledd ac adeiladau sy'n eiddo i drefi
 
@@ -2020,7 +2021,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Uchafswm ffenes
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Y nifer o ffenestri agored (nad ydynt yn ludiog) cyn y caiff hen ffenestri eu cau'n ddiofyn i wneud lle ar gyfer ffenestri newydd
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :analluogwyd
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Analluogwyd
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Lefel mwyháu uchafsymol: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Y lefel agosáu uchaf ar gyfer ffenestri olygfa. Sylwer y bydd galluogi lefelau uwch yn codi 'r gofynion côf

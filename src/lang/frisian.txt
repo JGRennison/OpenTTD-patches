@@ -1153,6 +1153,7 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Gebrûk meer re
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Brûk ferskillende opheinbewâlden foar ferskillende typen stasjons en fleanfjilden
 
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Stjin ferwiderje fan stedelike dyken, brêgen en tunnels ta: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Meitsje it makliker om gebouwen en ynfrastruktuer dy't yn it besit fan in stêd binne te ferwiderjen
 

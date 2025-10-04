@@ -286,7 +286,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Cerrar v
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Título de la ventana (arrastrar para mover)
 STR_TOOLTIP_SHADE                                               :{BLACK}Ocultar ventana (mostrar solo título)
 STR_TOOLTIP_DEBUG                                               :{BLACK}Mostrar información de depuración de NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Cambiar al tamaño por defecto de la ventana. Ctrl+Clic guarda el tamaño actual como nuevo tamaño por defecto
+STR_TOOLTIP_DEFSIZE                                             :Cambiar al tamaño por defecto de la ventana. Ctrl+Clic guarda el tamaño actual como nuevo tamaño por defecto
 STR_TOOLTIP_STICKY                                              :{BLACK}Excluir esta ventana de la función de la tecla "Cerrar todas las ventanas". Ctrl+Clic guarda esta preferencia como opción por defecto
 STR_TOOLTIP_RESIZE                                              :{BLACK}Arrastrar para cambiar el tamaño de esta ventana
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Cambiar entre tamaño de ventana grande o pequeño
@@ -1346,6 +1346,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Las áreas de r
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Las estaciones privadas pueden dar servicio a industrias con estaciones neutrales: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Al activarse, las industrias con estaciones integradas (ej. plataformas petrolíferas) podrán aceptar carga de estaciones aledañas. Al desactivarse, tales industrias solo recibirán carga en sus propias estaciones y no aceptarán de otras estaciones, ni la estación integrada brindará servicio a nada más que su industria
+
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permitir eliminar más carreteras, puentes y túneles propiedad de pueblos: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Hacer más fácil la eliminación de la infraestructura y los edificios que sean propiedad de los pueblos

@@ -286,7 +286,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Tanca la
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Títol de la finestra: arrossegueu el títol per desplaçar la finestra.
 STR_TOOLTIP_SHADE                                               :{BLACK}Ombra de la finestra: mostra només la barra de títol.
 STR_TOOLTIP_DEBUG                                               :{BLACK}Mostra la informació de depuració NewGRF
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensiona la finestra a la mida predeterminada. Ctrl+Clic desa la mida actual com a predeterminada.
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Redimensiona la finestra a la mida predeterminada. Amb Ctrl+Clic, es desa la mida actual com a predeterminada. Amb Ctrl+doble clic, es restableix als valors per defecte.
 STR_TOOLTIP_STICKY                                              :{BLACK}Marca aquesta finestra com a no eliminable per la tecla «Tanca totes les finestres». Ctrl+Clic per desar també l'estat predeterminat.
 STR_TOOLTIP_RESIZE                                              :{BLACK}Clica i arrossega per redimensionar aquesta finestra
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Commuta entre la mida gran i petita de la finestra
@@ -1347,6 +1347,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Permet tenir di
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Les estacions de la companyia poden donar servei a industries amb estacions neutrals: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Quan s'activa, les indústries amb estacions pròpies, com ara les plataformes petrolíferes, es poden servir amb estacions properes de les companyies. Quan es desactiva, aquestes indústries només es poden servir amb les estacions de la indústria: qualsevol estació propera que no sigui la de l'estació no la podrà servir, ni l'estació de la indústria podrà servir res que no provingui d'aquesta indústria.
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permet l'esborrat de carreteres, ponts i túnels propietat de les poblacions: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Aquesta opció permet fer més fàcil l'esborrat d'infraestructures i construccions propietat de la població
 
@@ -2021,7 +2022,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Nombre màxim d
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Nombre de finestres no-enganxoses obertes abans que les finestres antigues es tanquin automàticament per fer lloc a les noves finestres
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :desactivat
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Desactivat
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Zoom màxim d'apropament: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Nivell de zoom d'apropament màxim a les vistes. Un major nivell de zoom d'apropament incrementa les necessitats de memòria
@@ -4101,7 +4102,7 @@ STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Canvia l
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Clica per protegir aquest grup de l'autosubstitució global. Ctrl + clic també protegeix els subgrups.
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Esborrar grup
-STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Estàs segur que vols esborrar aquest grup i tots els seus subgrups?
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Esteu segur que voleu esborrar aquest grup i tots els seus subgrups?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Afegeix vehicles compartits
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Treu tots els vehicles

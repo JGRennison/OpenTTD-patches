@@ -287,7 +287,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Aizvērt
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Loga virsraksts - vilkt to, lai pārvietotu logu
 STR_TOOLTIP_SHADE                                               :{BLACK}Aizēnot logu - rādīt tikai virsrakstu
 STR_TOOLTIP_DEBUG                                               :{BLACK}Rādīt NewGRF atkļūdošanas informāciju
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Mainīt loga izmēru uz tā noklusējuma izmēru. Ctrl+klikšķis, lai saglabātu esošo izmēru kā noklusējuma
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Mainīt loga izmēru uz tā noklusējuma izmēru. Ctrl+klikšķis, lai saglabātu esošo izmēru kā noklusējuma. Divreiz Ctrl+kilkšķis, lai atiestatītu saglabātos noklusējuma iestatījumus
 STR_TOOLTIP_STICKY                                              :{BLACK}Atzīmēt šo logu kā neaizveramu ar "Aizvērt visus logus" taustiņu. Ctrl+klikšķis, lai saglabātu stāvokli kā noklusējumu
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klikšķināt un vilkt, lai mainītu šī loga lielumu
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Pārslēgties starp lielu/mazu loga izmēru
@@ -1348,6 +1348,7 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Atšķirīga li
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Uzņēmumu stacijas var apkalpot industrijas, kurām ir pievienotas neitrālas stacijas: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kad ieslēgts, nozares ar pievienotajām stacijām (piemēram, naftas ieguves platformām) var apkalpot arī uzņēmumam piederošas stacijas, kas uzbūvētas tuvumā. Ja tas ir atspējots, šīs nozares var apkalpot tikai tām pievienotās stacijas. Nevienas tuvumā esošās uzņēmuma stacijas nevarēs tos apkalpot, kā arī pievienotā stacija apkalpos neko citu kā tikai nozari
 
+
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Atļaut pilsētai piederošo ceļu, tiltu un tuneļu nojaukšanu: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Padara vieglāku pilsētai piederošas infrastruktūras un ēku nojaukšanu
 
@@ -2022,7 +2023,7 @@ STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maksimālais lo
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Atvērtu nepielipušo logu skaits, pirms tie tiek automātiski aizvērti lai atbrīvotu vietu jauniem logiem
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
-STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :izslēgts
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Izslēgts
 
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Maksimālais pietuvinājuma līmenis: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maksimālais pietuvinājuma līmenis skatvietām. Ir jāievēro ka paaugstinot pietuvinājuma līmeni, pieaug operatīvās atmiņas izlietojums
@@ -2337,16 +2338,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Vienkār
 STR_FACE_LOAD                                                   :{BLACK}Ielādēt
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Ielādēt iecienīto seju
 STR_FACE_LOAD_DONE                                              :{WHITE}Jūsu iecienītā seja tika ielādēta no OpenTDD konfigurācijas faila
-STR_FACE_FACECODE                                               :{BLACK}Spēlētāja sejas nr.
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Skatīt un/vai pielikt uzņēmuma prezidenta sejas numuru
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Skatīt un/vai pielikt prezidenta sejas numuru
-STR_FACE_FACECODE_SET                                           :{WHITE}Jauns sejas numurs ir pielikts
-STR_FACE_FACECODE_ERR                                           :{WHITE}Nevar pielikt numuru spēlētāja sejai - tam ir jābūt skaitlim no 0 līdz 4,294,967,295!
+STR_FACE_FACECODE                                               :{BLACK}Spēlētāja sejas kods
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Skatīt un/vai pielikt uzņēmuma prezidenta sejas kodu
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Skatīt un/vai pielikt prezidenta sejas kodu
+STR_FACE_FACECODE_SET                                           :{WHITE}Jauns prezidenta seja ir pielikta
+STR_FACE_FACECODE_ERR                                           :{WHITE}Nevar pielikt kodu spēlētāja sejai - tam ir jābūt derīgai etiķetei un numuram
 STR_FACE_SAVE                                                   :{BLACK}Saglabāt
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Saglabāt iecienīto seju
 STR_FACE_SAVE_DONE                                              :{WHITE}Šī seja tiks saglabāta OpenTDD konfigurācijas failā kā iecienītā seja
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ir
 STR_FACE_NO                                                     :Nav
+STR_FACE_STYLE                                                  :Stils:
 STR_FACE_HAIR                                                   :Mati:
 STR_FACE_EYEBROWS                                               :Uzacis:
 STR_FACE_EYECOLOUR                                              :Acu krāsa:
@@ -5007,6 +5011,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Nepiecie
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Nogāze ir uz nepareizo pusi
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Nav iespējams tā izdarīt...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Vispirms ir jānojauc ēku
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... ēka ir aizsargāta
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Šo laukumu nevar nolīdzināt...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... vieta nav piemērota
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... jau ir uzbūvēts
