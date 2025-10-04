@@ -449,10 +449,8 @@ void GfxDetermineMainColours()
 		for (uint i = base; i < base + count; i++) {
 			_vp_map_vegetation_tree_colours[0][tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
 		}
-		const int diff = MAX_TREE_COUNT_BY_LANDSCAPE - count;
-		if (diff > 0) {
-			for (uint i = count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++)
-				_vp_map_vegetation_tree_colours[0][tg][i] = _vp_map_vegetation_tree_colours[0][tg][i - count];
+		for (uint i = count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
+			_vp_map_vegetation_tree_colours[0][tg][i] = _vp_map_vegetation_tree_colours[0][tg][i - count];
 		}
 	}
 	for (int s = 1; s <= SLOPE_ELEVATED; ++s) {
