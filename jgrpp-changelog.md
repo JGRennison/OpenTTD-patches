@@ -2,6 +2,37 @@
 
 * * *
 
+### v0.67.0 (2025-10-04)
+* Fix incorrect text for some languages which use grammatical case, on Windows.
+* Fix incorrect drag and tooltip behaviour in the template based train replacement template edit window.
+* Fix building objects not updating town ratings.
+* Fix hang that could occur with certain NewGRFs.
+* Fix incorrect handling of custom bridge heads that could cause path reservation errors in certain special cases.
+* Fix incorrect handling of path reservations which look back to a different track on the starting tile.
+* Fix duplicate clicks when releasing the mouse for certain drag operations.
+* Add setting for vehicle reliability decay speed.
+* Add setting to disable automatic truncation of cargo in stations.
+* Enable the display of zoning overlays in the scenario editor.
+* Trees:
+  * Unify the in-game and scenario editor tree functionality, allowing the use of grove/forest tree brushes in-game.
+  * Allow randomising from only a subset of the available tree types.
+  * Allow rectangular tree placement in the scenario editor.
+* Scheduled dispatch:
+  * Each departure slot can now have an associated route ID, this is separate and orthogonal to tags.
+  * Add conditional order types for departure slot route ID.
+* Orders and timetables:
+  * Adjust timetabled travel times when reversing order lists.
+  * No longer clear timetabled travel times when appending reversed order lists.
+  * Allow inserting the order list from another vehicle.
+  * Allow timetable updates to vehicles' current order when loading.
+* JSON order list import/export:
+  * Allow inserting imported orders into existing order lists, instead of replacing all existing orders.
+  * Allow reversing imported order lists.
+  * Fix various minor issues.
+* Remove settings for rail/road custom bridge heads, these are now always allowed.
+* Remove non-relevant warning text about baseset sprites from the title screen window.
+* Bump trunk base from commit 9feaa6b7bc59f2a79be3a1d1893d424fef23692e to commit 2bee313642f0351b7da72ef616eb2f47ffa6b8d0.
+
 ### v0.66.1 (2025-09-07)
 * Fix crash with certain NewGRFs.
 * Fix network clients not being allowed to create new companies in multiplayer.

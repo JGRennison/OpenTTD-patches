@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.66.1
+## JGR's Patchpack version 0.67.0
 
 This is a collection of features and other modifications applied to [OpenTTD](http://www.openttd.org/).  
 It's a separate version of the game which can be installed and played alongside the standard game, not a loadable mod (NewGRF, script, or so on).
@@ -217,6 +217,7 @@ The TT-Forums thread for this patchpack can be found [here](https://www.tt-forum
 * Add map generation settings to control river/lake, rocky patch, and tropic zone generation.
 * Add settings to customise the size of town zones, and city zones.
 * Add setting to show purchased land using clear tile ground sprites (dirt, grass, snow, desert, etc).
+* Unify the in-game and scenario editor tree placer functionality, allowing the use of grove/forest tree brushes in-game.
 
 #### Construction
 
