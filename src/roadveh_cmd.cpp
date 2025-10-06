@@ -711,6 +711,8 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *veh, void *data)
 	/* Not a close Road vehicle when it's not a road vehicle, in the depot, or ourself. */
 	if (v->IsInDepot() || rvf->veh->First() == v->First()) return nullptr;
 
+	if (!_collision_mode_roadtypes[rvf->collision_mode].Test(v->roadtype)) return nullptr;
+
 	/* Not close when at a different height or when going in a different direction. */
 	if (abs(v->z_pos - rvf->veh->z_pos) >= 6 || v->direction != rvf->dir) return nullptr;
 
