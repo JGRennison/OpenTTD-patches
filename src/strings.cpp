@@ -380,7 +380,8 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 		case TEXT_TAB_OLD_CUSTOM:
 			/* Old table for custom names. This is no longer used */
 			if (!game_script) {
-				FatalError("Incorrect conversion of custom name string.");
+				Debug(misc, 0, "Incorrect conversion of custom name string.");
+				return GetStringWithArgs(builder, STR_UNDEFINED, args);
 			}
 			break;
 
@@ -402,10 +403,10 @@ void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters 
 	}
 
 	if (index >= _langpack.langtab_num[tab]) {
-		if (game_script) {
-			return GetStringWithArgs(builder, STR_UNDEFINED, args);
+		if (!game_script) {
+			Debug(misc, 0, "String 0x{:X} is invalid. You are probably using an old version of the .lng file.\n", string);
 		}
-		FatalError("String 0x{:X} is invalid. You are probably using an old version of the .lng file.\n", string);
+		return GetStringWithArgs(builder, STR_UNDEFINED, args);
 	}
 
 	FormatString(builder, GetStringPtr(string), args, case_index);
