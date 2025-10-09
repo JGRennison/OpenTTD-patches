@@ -265,7 +265,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
 	if (same_length && old_total_length != v->gcache.cached_total_length) {
 		if (IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) {
 			RoadStop *rs = RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile));
-			rs->GetEntry(v)->AdjustOccupation((int)v->gcache.cached_total_length - (int)old_total_length);
+			rs->GetEntry(v).AdjustOccupation((int)v->gcache.cached_total_length - (int)old_total_length);
 		}
 	}
 }
@@ -1113,9 +1113,9 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 		if (IsStationRoadStopTile(check_tile) && IsDriveThroughStopTile(check_tile) && GetDriveThroughStopDisallowedRoadDirections(check_tile) != DRD_NONE) {
 			const RoadStop *rs = RoadStop::GetByTile(check_tile, GetRoadStopType(check_tile));
 			DiagDirection dir = DirToDiagDir(v->direction);
-			const RoadStop::Entry *entry = rs->GetEntry(dir);
-			const RoadStop::Entry *opposite_entry = rs->GetEntry(ReverseDiagDir(dir));
-			if (entry->GetOccupied() < opposite_entry->GetOccupied()) return;
+			const RoadStop::Entry &entry = rs->GetEntry(dir);
+			const RoadStop::Entry &opposite_entry = rs->GetEntry(ReverseDiagDir(dir));
+			if (entry.GetOccupied() < opposite_entry.GetOccupied()) return;
 			break;
 		}
 		if (check_tile != v->tile && GetRoadCachedOneWayState(check_tile) != RCOWS_NORMAL) {

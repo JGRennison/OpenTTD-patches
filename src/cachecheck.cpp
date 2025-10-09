@@ -283,9 +283,8 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		for (const RoadStop *rs : RoadStop::Iterate()) {
 			if (IsBayRoadStopTile(rs->xy)) continue;
 
-			assert(rs->GetEntry(DIAGDIR_NE) != rs->GetEntry(DIAGDIR_NW));
-			rs->GetEntry(DIAGDIR_NE)->CheckIntegrity(rs);
-			rs->GetEntry(DIAGDIR_NW)->CheckIntegrity(rs);
+			rs->GetEntry(DIAGDIR_NE).CheckIntegrity(rs);
+			rs->GetEntry(DIAGDIR_NW).CheckIntegrity(rs);
 		}
 
 		struct SavedVehicleInfo {
