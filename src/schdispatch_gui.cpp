@@ -879,7 +879,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						const LastDispatchRecord &record = record_iter->second;
 						format_buffer details;
 						auto add_detail = [&](StringID str) {
-							if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+							if (!details.empty()) details.append(GetListSeparator());
 							AppendStringInPlace(details, STR_JUST_STRING, str);
 						};
 						if (HasBit(record.record_flags, LastDispatchRecord::RF_FIRST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST);
@@ -887,7 +887,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(record.slot_flags, flag_bit)) {
-								if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+								if (!details.empty()) details.append(GetListSeparator());
 
 								std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 								AppendStringInPlace(details, name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED,
@@ -896,7 +896,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 
 						if (record.route_id != 0) {
-							if (!details.empty()) AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR);
+							if (!details.empty()) details.append(GetListSeparator());
 
 							std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, record.route_id);
 							AppendStringInPlace(details, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_ROUTE, name);
