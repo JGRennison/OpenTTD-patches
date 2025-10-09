@@ -2217,8 +2217,6 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}마지막 출
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용 가능한 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}태그 {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}이 차량은 아직 출발하지 않았습니다

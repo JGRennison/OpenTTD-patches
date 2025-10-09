@@ -58,6 +58,7 @@ enum SchdispatchWidgets : WidgetID {
 	WID_SCHDISPATCH_NEXT,            ///< Next schedule.
 	WID_SCHDISPATCH_ADD_SCHEDULE,    ///< Add schedule.
 
+	WID_SCHDISPATCH_SLOT_DISPLAY_MODE, ///< Slot display mode toggle
 	WID_SCHDISPATCH_ADD,             ///< Add Departure Time button
 	WID_SCHDISPATCH_SET_DURATION,    ///< Duration button
 	WID_SCHDISPATCH_SET_START_DATE,  ///< Start Date button
@@ -196,6 +197,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	int arrow_flag_height = 0;
 
 	bool remove_slot_mode = false;
+	bool slot_display_long_mode = false;
+
 	uint32_t selected_slot = UINT32_MAX;
 	uint32_t adjust_slot_offset = UINT32_MAX;
 
@@ -324,8 +327,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				resize.height = min_height;
 				resize.width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
-				size.width = resize.width * 3;
 				size.height = resize.height * 3;
+				if (this->slot_display_long_mode) {
+					resize.width *= 4;
+					size.width = resize.width * 2;
+				} else {
+					size.width = resize.width * 3;
+				}
 
 				fill.width = resize.width;
 				fill.height = resize.height;
@@ -378,6 +386,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 		const bool disabled = unusable || !v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch)  || !this->IsScheduleSelected();
 		const bool no_editable_slots = disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty();
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_SLOT_DISPLAY_MODE, unviewable);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, disabled);
@@ -565,20 +574,24 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					auto flags = slot->flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
 					if (flags != 0 || slot->route_id != 0) buf.push_back('\n');
-					if (flags != 0) {
-						if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
-							AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
-						}
 
-						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
-							if (HasBit(flags, flag_bit)) {
-								std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-								AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
-							}
-						}
+					if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+						AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
 					}
+
 					if (slot->route_id != 0) {
-						AppendStringInPlace(buf, STR_SCHDISPATCH_SLOT_TOOLTIP_ROUTE, ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, slot->route_id));
+						buf.push_back('\n');
+						AppendStringInPlace(buf, STR_SCHDISPATCH_ROUTE, ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, slot->route_id));
+					}
+
+					if (flags != 0) {
+						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+							if (!HasBit(flags, flag_bit)) continue;
+
+							std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+							buf.push_back('\n');
+							AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
+						}
 					}
 					GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
 				}
@@ -704,8 +717,75 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 					auto flags = slot.flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
-					this->DrawScheduledTime(draw_time, x + WidgetDimensions::scaled.framerect.left, x + this->resize.step_width - 1 - (2 * WidgetDimensions::scaled.framerect.left),
-							y, colour, last, next, veh, flags != 0 || slot.route_id != 0);
+					const int left = x + WidgetDimensions::scaled.framerect.left;
+					const int right = x + this->resize.step_width - 1 - (2 * WidgetDimensions::scaled.framerect.left);
+
+					if (this->slot_display_long_mode) {
+						int detail_left = left;
+						int detail_right = right;
+						if (_current_text_dir == TD_RTL) {
+							detail_right -= this->base_width + WidgetDimensions::scaled.vsep_wide;
+						} else {
+							detail_left += this->base_width + WidgetDimensions::scaled.vsep_wide;
+						}
+
+						format_buffer str;
+						auto prepare_str = [&](bool short_mode) {
+							if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+								AppendStringInPlace(str, STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT);
+							}
+
+							if (slot.route_id != 0) {
+								if (!str.empty()) str.append(GetListSeparator());
+								AppendStringInPlace(str, STR_SCHDISPATCH_ROUTE, ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, slot.route_id));
+							}
+
+							if ((flags & GetBitMaskFL<uint16_t>(DispatchSlot::SDSF_FIRST_TAG, DispatchSlot::SDSF_LAST_TAG)) != 0) {
+								uint tag_count = 0;
+								uint named_tag_count = 0;
+								std::array<std::string_view, 1 + DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG> tag_names{};
+								for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+									if (!HasBit(flags, flag_bit)) continue;
+
+									tag_count++;
+									if (!short_mode) {
+										std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+										if (!name.empty()) {
+											named_tag_count++;
+											tag_names[flag_bit - DispatchSlot::SDSF_FIRST_TAG] = name;
+										}
+									}
+								}
+
+								const bool condense = ((named_tag_count == 0) && (tag_count > 1));
+								bool first = true;
+								for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+									if (!HasBit(flags, flag_bit)) continue;
+
+									if (!str.empty()) str.append(GetListSeparator());
+									const uint tag_num = 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG;
+									if (condense) {
+										if (first) AppendStringInPlace(str, STR_SCHDISPATCH_TAGS_PREFIX);
+										AppendStringInPlace(str, STR_JUST_INT, tag_num);
+									} else {
+										std::string_view name = tag_names[flag_bit - DispatchSlot::SDSF_FIRST_TAG];
+										AppendStringInPlace(str, name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, tag_num, name);
+									}
+									first = false;
+								}
+							}
+						};
+						prepare_str(false);
+						if ((int)GetStringBoundingBox(str).width > detail_right - detail_left) {
+							/* Use shortened version of string */
+							str.clear();
+							prepare_str(true);
+						}
+
+						DrawString(detail_left, detail_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, colour);
+					}
+
+					this->DrawScheduledTime(draw_time, left, right, y, colour, last, next, veh, !this->slot_display_long_mode && (flags != 0 || slot.route_id != 0));
 				}
 				break;
 			}
@@ -1274,6 +1354,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					Command<CMD_SCH_DISPATCH_SWAP_SCHEDULES>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::SwapSchDispatchSchedules, this->vehicle->index, this->schedule_index + 1, this->schedule_index);
 				}
 				break;
+
+			case WID_SCHDISPATCH_SLOT_DISPLAY_MODE: {
+				this->slot_display_long_mode = !this->slot_display_long_mode;
+				this->SetWidgetLoweredState(WID_SCHDISPATCH_SLOT_DISPLAY_MODE, this->slot_display_long_mode);
+				this->ReInit();
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -1585,11 +1672,14 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 			NWidget(WWT_MATRIX, COLOUR_GREY, WID_SCHDISPATCH_MATRIX), SetResize(1, 1), SetScrollbar(WID_SCHDISPATCH_V_SCROLL),
 			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_SCHDISPATCH_V_SCROLL),
 		EndContainer(),
-		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADD), SetStringTip(STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADJUST), SetStringTip(STR_SCHDISPATCH_ADJUST, STR_SCHDISPATCH_ADJUST_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SCHDISPATCH_REMOVE), SetStringTip(STR_SCHDISPATCH_REMOVE, STR_SCHDISPATCH_REMOVE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCHDISPATCH_MANAGE_SLOT), SetStringTip(STR_SCHDISPATCH_MANAGE_SLOT, STR_NULL), SetFill(1, 1), SetResize(1, 0),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_SCHDISPATCH_SLOT_DISPLAY_MODE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_SCHDISPATCH_SLOT_DISPLAY_MODE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
+			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADD), SetStringTip(STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADJUST), SetStringTip(STR_SCHDISPATCH_ADJUST, STR_SCHDISPATCH_ADJUST_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SCHDISPATCH_REMOVE), SetStringTip(STR_SCHDISPATCH_REMOVE, STR_SCHDISPATCH_REMOVE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCHDISPATCH_MANAGE_SLOT), SetStringTip(STR_SCHDISPATCH_MANAGE_SLOT, STR_NULL), SetFill(1, 1), SetResize(1, 0),
+			EndContainer(),
 		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_SCHDISPATCH_SUMMARY_PANEL), SetMinimalSize(400, 22), SetResize(1, 0), EndContainer(),
 		NWidget(NWID_HORIZONTAL),

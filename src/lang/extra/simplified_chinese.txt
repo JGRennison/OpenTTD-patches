@@ -2215,8 +2215,6 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}最近发车�
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}下一可用发车时间
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}发车时间可被多次使用
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        :（{TT_TIME}）
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}标签 #{NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}标签 #{NUM}：{STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}线路最近没有发车
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}载具最近没有发车

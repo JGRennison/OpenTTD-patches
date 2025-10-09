@@ -2131,8 +2131,6 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Послед�
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Следующий доступный слот отправления
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}Слот отправления может быть использован более одного раза
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Метка {NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Метка {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Предыдущих отправлений нет.
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}Этот транспорт не отбывал.

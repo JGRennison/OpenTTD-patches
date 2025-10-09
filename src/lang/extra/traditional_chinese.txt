@@ -2193,8 +2193,6 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}最近發車�
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}下一可用發車時間
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}發車時間可被多次使用
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        :（{TT_TIME}）
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}標簽 #{NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}標簽 #{NUM}：{STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}線路最近沒有發車
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}車輛最近沒有發車

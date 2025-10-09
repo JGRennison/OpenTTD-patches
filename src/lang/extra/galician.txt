@@ -2241,6 +2241,7 @@ STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Reutilizar este
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establecer se a franxa de saída seleccionada pode ser utilizada máis dunha vez.
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :Etiqueta {NUM}
 STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :Etiqueta {NUM}: {STRING}
+STR_SCHDISPATCH_ROUTE                                           :ID da ruta: {STRING}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
@@ -2257,9 +2258,6 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Último slot 
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Seguinte slot de saída dispoñible
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de saída pódese usar máis dunha vez
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Etiqueta {NUM}: {STRING}
-STR_SCHDISPATCH_SLOT_TOOLTIP_ROUTE                              :{}ID da ruta: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}Este vehículo non saíu.

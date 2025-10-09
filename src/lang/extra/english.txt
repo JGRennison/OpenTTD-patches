@@ -2288,6 +2288,7 @@ STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Create a
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Append Schedules From Vehicle
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Append the dispatch schedules from another vehicle.
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :Re-use departure slots
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT                     :Re-use
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Set whether departure slots may be used more than once.
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :Rename tag {NUM}
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Rename tag {NUM}: {RAW_STRING}
@@ -2305,6 +2306,8 @@ STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Re-use departur
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Set whether the selected departure slot may be used more than once.
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :Tag {NUM}
 STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :Tag {NUM}: {RAW_STRING}
+STR_SCHDISPATCH_ROUTE                                           :Route ID: {RAW_STRING}
+STR_SCHDISPATCH_TAGS_PREFIX                                     :Tags:{SPACE}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Tag the selected departure slot (for use with conditional orders).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}No Schedules
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Schedule {NUM} of {NUM}
@@ -2321,9 +2324,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Last departur
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Next available departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}Departure slot may be used more than once
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Tag {NUM}
-STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Tag {NUM}: {RAW_STRING}
-STR_SCHDISPATCH_SLOT_TOOLTIP_ROUTE                              :{}Route ID: {RAW_STRING}
+STR_SCHDISPATCH_SLOT_DISPLAY_MODE_TOOLTIP                       :{BLACK}Switch between compact and detailed slot views
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}No previous departures.
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}This vehicle has not departed.
