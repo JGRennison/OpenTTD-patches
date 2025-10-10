@@ -661,6 +661,18 @@ public:
 	}
 
 	/**
+	 * Find first occurence of any 8-bit char not matching the predicate.
+	 * @return Offset from current reader position. 'npos' if no match found.
+	 */
+	template <typename F>
+	[[nodiscard]] size_type FindCharNotIf(F predicate) const
+	{
+		return this->FindCharIf([&](char c) {
+			return !predicate(c);
+		});
+	}
+
+	/**
 	 * Check whether the next 8-bit char is in 'chars'.
 	 * @return Matching char, std::nullopt if no match.
 	 */

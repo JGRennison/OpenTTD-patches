@@ -8,6 +8,7 @@
 /** @file debug.cpp Handling of printing debug messages. */
 
 #include "stdafx.h"
+#include "core/string_consumer.hpp"
 #include "console_func.h"
 #include "core/math_func.hpp"
 #include "debug.h"
@@ -117,7 +118,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 	if (dbg == DebugLevelID::desync) {
 		static std::optional<FileHandle> f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
 		if (f.has_value()) {
-			fprintf(*f, "%s%s", log_prefix().GetLogPrefix(true), buf + prefix_size);
+			fmt::print(*f, "{}{}", log_prefix().GetLogPrefix(true), buf + prefix_size);
 			fflush(*f);
 		}
 #ifdef RANDOM_DEBUG
@@ -218,52 +219,57 @@ void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg)
  * @param s Text describing the wanted debugging levels.
  * @param error_func The function to call if a parse error occurs.
  */
-void SetDebugString(const char *s, void (*error_func)(std::string))
+void SetDebugString(std::string_view s, SetDebugStringErrorFunc error_func)
 {
-	int v;
-	char *end;
-	const char *t;
+	StringConsumer consumer{s};
 
 	/* Store planned changes into map during parse */
 	std::map<DebugLevelID, int> new_levels;
 
 	/* Global debugging level? */
-	if (*s >= '0' && *s <= '9') {
-		v = std::strtoul(s, &end, 0);
-		s = end;
-
+	auto level = consumer.TryReadIntegerBase<int>(10);
+	if (level.has_value()) {
 		for (uint i = 0; i < DebugLevelCount; i++) {
-			new_levels[static_cast<DebugLevelID>(i)] = v;
+			new_levels[static_cast<DebugLevelID>(i)] = *level;
 		}
 	}
 
 	/* Individual levels */
-	for (;;) {
-		/* skip delimiters */
-		while (*s == ' ' || *s == ',' || *s == '\t') s++;
-		if (*s == '\0') break;
+	while (consumer.AnyBytesLeft()) {
+		consumer.Skip(consumer.FindCharIf([](char c) {
+			return c >= 'a' && c <= 'z';
+		}));
 
-		t = s;
-		while (*s >= 'a' && *s <= 'z') s++;
+		if (!consumer.AnyBytesLeft()) break;
 
-		/* check debugging levels */
+		/* Find the level by name. */
+		std::string_view key = consumer.Read(consumer.FindCharNotIf([](char c) {
+			return c >= 'a' && c <= 'z';
+		}));
+
 		DebugLevelID found = DebugLevelID::END;
 		for (uint i = 0; i < DebugLevelCount; i++) {
-			if (s == t + strlen(_debug_level_names[i]) && strncmp(t, _debug_level_names[i], s - t) == 0) {
+			if (_debug_level_names[i] == key) {
 				found = static_cast<DebugLevelID>(i);
 				break;
 			}
 		}
+		if (found == DebugLevelID::END) {
+			error_func(fmt::format("Unknown debug level '{}'", key));
+		}
 
-		if (*s == '=') s++;
-		v = std::strtoul(s, &end, 0);
-		s = end;
-		if (found != DebugLevelID::END) {
-			new_levels[found] = v;
-		} else {
-			error_func(fmt::format("Unknown debug level '{}'", std::string_view(t, s - t)));
+		/* Do not skip lowercase letters, so 'net misc=2' won't be resolved
+		 * to setting 'net=2' and leaving misc untouched. */
+		consumer.Skip(consumer.FindCharIf([](char c) {
+			return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+		}));
+		level = consumer.TryReadIntegerBase<int>(10);
+		if (!level.has_value()) {
+			error_func(fmt::format("Level for '{}' must be a valid integer.", key));
 			return;
 		}
+
+		new_levels[found] = *level;
 	}
 
 	/* Apply the changes after parse is successful */
@@ -294,14 +300,13 @@ std::string GetDebugString()
  *
  * @return the prefix for logs (do not free), never nullptr.
  */
-const char *log_prefix::GetLogPrefix(bool force)
+std::string_view log_prefix::GetLogPrefix(bool force)
 {
+	size_t size = 0;
 	if (force || _settings_client.gui.show_date_in_logs) {
-		LocalTime::Format(this->buffer, lastof(this->buffer), "[%Y-%m-%d %H:%M:%S] ");
-	} else {
-		this->buffer[0] = '\0';
+		size = LocalTime::Format(this->buffer, lastof(this->buffer), "[%Y-%m-%d %H:%M:%S] ");
 	}
-	return this->buffer;
+	return std::string_view(this->buffer, size);
 }
 
 struct DesyncMsgLogEntry {

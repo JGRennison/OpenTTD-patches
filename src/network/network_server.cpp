@@ -2015,7 +2015,7 @@ bool NetworkServerChangeClientName(ClientID client_id, const std::string &new_na
  * @param password The new password.
  * @param already_hashed Is the given password already hashed?
  */
-void NetworkServerSetCompanyPassword(CompanyID company_id, const std::string &password, bool already_hashed)
+void NetworkServerSetCompanyPassword(CompanyID company_id, std::string_view password, bool already_hashed)
 {
 	if (!Company::IsValidHumanID(company_id)) return;
 

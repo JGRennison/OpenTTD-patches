@@ -86,7 +86,8 @@ extern std::string _loadgame_DBGC_data;
 void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg);
 
 void DumpDebugFacilityNames(struct format_target &output);
-void SetDebugString(const char *s, void (*error_func)(std::string));
+using SetDebugStringErrorFunc = void(std::string_view);
+void SetDebugString(std::string_view s, SetDebugStringErrorFunc error_func);
 std::string GetDebugString();
 
 /* Shorter form for passing filename and linenumber */
@@ -102,7 +103,7 @@ void ShowInfo(fmt::format_string<T...> msg, T&&... args)
 }
 
 struct log_prefix {
-	const char *GetLogPrefix(bool force = false);
+	std::string_view GetLogPrefix(bool force = false);
 
 private:
 	char buffer[24];

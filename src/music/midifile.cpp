@@ -1083,13 +1083,13 @@ std::string MidiFile::GetSMFFile(const MusicSongInfo &song)
 }
 
 
-static bool CmdDumpSMF(uint8_t argc, char *argv[])
+static bool CmdDumpSMF(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
-		IConsolePrint(CC_WARNING, "Write the current song to a Standard MIDI File. Usage: 'dumpsmf <filename>'");
+	if (argv.empty()) {
+		IConsolePrint(CC_HELP, "Write the current song to a Standard MIDI File. Usage: 'dumpsmf <filename>'.");
 		return true;
 	}
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_WARNING, "You must specify a filename to write MIDI data to.");
 		return false;
 	}

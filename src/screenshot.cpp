@@ -428,7 +428,7 @@ static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
  * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @return true iff the screenshot was made successfully
  */
-static bool RealMakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width, uint32_t height)
+static bool RealMakeScreenshot(ScreenshotType t, std::string_view name, uint32_t width, uint32_t height)
 {
 	if (t == SC_VIEWPORT) {
 		/* First draw the dirty parts of the screen and only then change the name
@@ -474,15 +474,15 @@ static bool RealMakeScreenshot(ScreenshotType t, const std::string &name, uint32
 		}
 
 		case SC_MINIMAP:
-			ret = MakeMinimapWorldScreenshot(name.empty() ? nullptr : name.c_str());
+			ret = MakeMinimapWorldScreenshot(name);
 			break;
 
 		case SC_TOPOGRAPHY:
-			ret = MakeTopographyScreenshot(name.empty() ? nullptr : name.c_str());
+			ret = MakeTopographyScreenshot(name);
 			break;
 
 		case SC_INDUSTRY:
-			ret = MakeIndustryScreenshot(name.empty() ? nullptr : name.c_str());
+			ret = MakeIndustryScreenshot(name);
 			break;
 
 		default:
@@ -504,7 +504,7 @@ static bool RealMakeScreenshot(ScreenshotType t, const std::string &name, uint32
  * @return true iff the screenshot was successfully made.
  * @see MakeScreenshotWithConfirm
  */
-bool MakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width, uint32_t height)
+bool MakeScreenshot(ScreenshotType t, std::string_view name, uint32_t width, uint32_t height)
 {
 	if (t == SC_CRASHLOG) {
 		/* Video buffer might or might not be locked. */
@@ -797,10 +797,9 @@ static void IndustryScreenCallback(void *userdata, void *buf, uint y, uint pitch
 /**
  * Make a minimap screenshot.
  */
-bool MakeMinimapWorldScreenshot(const char *name)
+bool MakeMinimapWorldScreenshot(std::string_view name)
 {
-	_screenshot_name.clear();
-	if (name != nullptr) _screenshot_name.assign(name);
+	_screenshot_name = name;
 
 	auto provider = GetScreenshotProvider();
 	if (provider == nullptr) return false;
@@ -811,10 +810,9 @@ bool MakeMinimapWorldScreenshot(const char *name)
 /**
  * Make a topography screenshot.
  */
-bool MakeTopographyScreenshot(const char *name)
+bool MakeTopographyScreenshot(std::string_view name)
 {
-	_screenshot_name.clear();
-	if (name != nullptr) _screenshot_name.assign(name);
+	_screenshot_name = name;
 
 	auto provider = GetScreenshotProvider();
 	if (provider == nullptr) return false;
@@ -825,10 +823,9 @@ bool MakeTopographyScreenshot(const char *name)
 /**
  * Make an industry screenshot.
  */
-bool MakeIndustryScreenshot(const char *name)
+bool MakeIndustryScreenshot(std::string_view name)
 {
-	_screenshot_name.clear();
-	if (name != nullptr) _screenshot_name.assign(name);
+	_screenshot_name = name;
 
 	auto provider = GetScreenshotProvider();
 	if (provider == nullptr) return false;

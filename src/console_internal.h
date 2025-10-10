@@ -14,7 +14,6 @@
 #include <map>
 
 static const uint ICON_CMDLN_SIZE     = 1024; ///< maximum length of a typed in command
-static const uint ICON_MAX_STREAMSIZE = 2048; ///< maximum length of a totally expanded command
 
 /** Return values of console hooks (#IConsoleHook). */
 enum ConsoleHookResult : uint8_t {
@@ -31,8 +30,8 @@ enum ConsoleHookResult : uint8_t {
  * If you want to handle multiple words as one, enclose them in double-quotes
  * eg. 'say "hello everybody"'
  */
-typedef bool IConsoleCmdProc(uint8_t argc, char *argv[]);
-typedef ConsoleHookResult IConsoleHook(bool echo);
+using IConsoleCmdProc = bool(std::span<std::string_view>);
+using IConsoleHook = ConsoleHookResult(bool);
 struct IConsoleCmd {
 	IConsoleCmd(std::string_view name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted) : name(name), proc(proc), hook(hook), unlisted(unlisted) {}
 

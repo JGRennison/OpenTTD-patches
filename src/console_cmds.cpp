@@ -103,7 +103,7 @@ static IntervalTimer<TimerGameCalendar> _scheduled_monthly_timer = {{TimerGameCa
 	_scheduled_monthly_script.clear();
 
 	IConsolePrint(CC_DEFAULT, "Executing scheduled script file '{}'...", filename);
-	IConsoleCmdExec(std::string("exec") + " " + filename);
+	IConsoleCmdExec(fmt::format("exec {}", filename));
 }};
 
 
@@ -296,9 +296,9 @@ static ConsoleHookResult ConHookSpecialCmd(bool echo)
  * Reset status of all engines.
  * @return Will always succeed.
  */
-static bool ConResetEngines([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConResetEngines(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reset status data of all engines. This might solve some issues with 'lost' engines. Usage: 'resetengines'.");
 		return true;
 	}
@@ -312,9 +312,9 @@ static bool ConResetEngines([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
  * @return Will always return true.
  * @note Resetting the pool only succeeds when there are no vehicles ingame.
  */
-static bool ConResetEnginePool([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConResetEnginePool(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reset NewGRF allocations of engine slots. This will remove invalid engine definitions, and might make default engines available again.");
 		return true;
 	}
@@ -338,17 +338,17 @@ static bool ConResetEnginePool([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
  * param tile number.
  * @return True when the tile is reset or the help on usage was printed (0 or two parameters).
  */
-static bool ConResetTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConResetTile(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reset a tile to bare land. Usage: 'resettile <tile>'.");
 		IConsolePrint(CC_HELP, "Tile can be either decimal (34161) or hexadecimal (0x4a5B).");
 		return true;
 	}
 
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		auto result = ParseInteger(argv[1], 0);
-		if (result.has_value() && IsValidTile(*result)) {
+		if (result.has_value() && IsValidTile(TileIndex{*result})) {
 			DoClearSquare(TileIndex{*result});
 			return true;
 		}
@@ -363,9 +363,9 @@ static bool ConResetTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
  * param level As defined by ZoomLevel and as limited by zoom_min/zoom_max from GUISettings.
  * @return True when either console help was shown or a proper amount of parameters given.
  */
-static bool ConZoomToLevel([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConZoomToLevel(std::span<std::string_view> argv)
 {
-	switch (argc) {
+	switch (argv.size()) {
 		case 0:
 			IConsolePrint(CC_HELP, "Set the current zoom level of the main viewport.");
 			IConsolePrint(CC_HELP, "Usage: 'zoomto <level>'.");
@@ -422,25 +422,25 @@ static bool ConZoomToLevel([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
  *       and y coordinates.
  * @return True when either console help was shown or a proper amount of parameters given.
  */
-static bool ConScrollToTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConScrollToTile(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Center the screen on a given tile.");
 		IConsolePrint(CC_HELP, "Usage: 'scrollto [instant] <tile>' or 'scrollto [instant] <x> <y>'.");
 		IConsolePrint(CC_HELP, "Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
 		IConsolePrint(CC_HELP, "'instant' will immediately move and redraw viewport without smooth scrolling.");
 		return true;
 	}
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 
 	uint32_t arg_index = 1;
 	bool instant = false;
-	if (strcmp(argv[arg_index], "instant") == 0) {
+	if (argv[arg_index] == "instant") {
 		++arg_index;
 		instant = true;
 	}
 
-	switch (argc - arg_index) {
+	switch (argv.size() - arg_index) {
 		case 1: {
 			auto result = ParseInteger(argv[arg_index], 0);
 			if (result.has_value()) {
@@ -481,9 +481,9 @@ static bool ConScrollToTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
  *       and y coordinates.
  * @return True when either console help was shown or a proper amount of parameters given.
  */
-static bool ConHighlightTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConHighlightTile(std::span<std::string_view> argv)
 {
-	switch (argc) {
+	switch (argv.size()) {
 		case 0:
 			IConsolePrint(CC_HELP, "Highlight a given tile.");
 			IConsolePrint(CC_HELP, "Usage: 'highlight_tile <tile>' or 'highlight_tile <x> <y>'");
@@ -526,14 +526,14 @@ static bool ConHighlightTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
  * param filename the filename to save the map to.
  * @return True when help was displayed or the file attempted to be saved.
  */
-static bool ConSave([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSave(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Save the current game. Usage: 'save <filename>'.");
 		return true;
 	}
 
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		std::string filename = fmt::format("{}.sav", argv[1]);
 		IConsolePrint(CC_DEFAULT, "Saving map...");
 
@@ -552,9 +552,9 @@ static bool ConSave([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
  * Explicitly save the configuration.
  * @return True.
  */
-static bool ConSaveConfig([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSaveConfig(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Saves the configuration for new games to the configuration file, typically 'openttd.cfg'.");
 		IConsolePrint(CC_HELP, "It does not save the configuration of the current game to the configuration file.");
 		return true;
@@ -565,14 +565,14 @@ static bool ConSaveConfig([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConLoad([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConLoad(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Load a game by name or index. Usage: 'load <file | number>'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList();
@@ -591,14 +591,14 @@ static bool ConLoad([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConLoadScenario([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConLoadScenario(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Load a scenario by name or index. Usage: 'load_scenario <file | number>'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	std::string_view file = argv[1];
 	_console_file_list_scenario.ValidateFileList();
@@ -617,14 +617,14 @@ static bool ConLoadScenario([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConLoadHeightmap([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConLoadHeightmap(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Load a heightmap by name or index. Usage: 'load_heightmap <file | number>'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	std::string_view file = argv[1];
 	_console_file_list_heightmap.ValidateFileList();
@@ -643,14 +643,14 @@ static bool ConLoadHeightmap([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConRemove([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRemove(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Remove a savegame by name or index. Usage: 'rm <file | number>'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList();
@@ -673,9 +673,9 @@ static bool ConRemove([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 
 
 /* List all the files in the current dir via console */
-static bool ConListFiles([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListFiles(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List all loadable savegames and directories in the current dir via console. Usage: 'ls | dir'.");
 		return true;
 	}
@@ -689,9 +689,9 @@ static bool ConListFiles([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 }
 
 /* List all the scenarios */
-static bool ConListScenarios([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListScenarios(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List all loadable scenarios. Usage: 'list_scenarios'.");
 		return true;
 	}
@@ -705,9 +705,9 @@ static bool ConListScenarios([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 }
 
 /* List all the heightmaps */
-static bool ConListHeightmaps([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListHeightmaps(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List all loadable heightmaps. Usage: 'list_heightmaps'.");
 		return true;
 	}
@@ -721,14 +721,14 @@ static bool ConListHeightmaps([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 }
 
 /* Change the dir via console */
-static bool ConChangeDirectory([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConChangeDirectory(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Change the dir via console. Usage: 'cd <directory | number>'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList(true);
@@ -750,9 +750,9 @@ static bool ConChangeDirectory([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	return true;
 }
 
-static bool ConPrintWorkingDirectory([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConPrintWorkingDirectory(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Print out the current working directory. Usage: 'pwd'.");
 		return true;
 	}
@@ -765,9 +765,9 @@ static bool ConPrintWorkingDirectory([[maybe_unused]] uint8_t argc, [[maybe_unus
 	return true;
 }
 
-static bool ConClearBuffer([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConClearBuffer(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Clear the console buffer. Usage: 'clear'.");
 		return true;
 	}
@@ -829,21 +829,21 @@ static bool ConKickOrBan(std::string_view arg, bool ban, const std::string_view 
 	return true;
 }
 
-static bool ConKick([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConKick(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Kick a client from a network game. Usage: 'kick <ip | client-id> [<kick-reason>]'.");
 		IConsolePrint(CC_HELP, "For client-id's, see the command 'clients'.");
 		return true;
 	}
 
-	if (argc != 2 && argc != 3) return false;
+	if (argv.size() != 2 && argv.size() != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], false, {});
+	if (argv.size() == 2) return ConKickOrBan(argv[1], false, {});
 
 	/* Reason for kicking supplied */
-	size_t kick_message_length = strlen(argv[2]);
+	size_t kick_message_length = argv[2].size();
 	if (kick_message_length >= 255) {
 		IConsolePrint(CC_ERROR, "Maximum kick message length is 254 characters. You entered {} characters.", kick_message_length);
 		return false;
@@ -852,22 +852,22 @@ static bool ConKick([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	}
 }
 
-static bool ConBan([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConBan(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Ban a client from a network game. Usage: 'ban <ip | client-id> [<ban-reason>]'.");
 		IConsolePrint(CC_HELP, "For client-id's, see the command 'clients'.");
 		IConsolePrint(CC_HELP, "If the client is no longer online, you can still ban their IP.");
 		return true;
 	}
 
-	if (argc != 2 && argc != 3) return false;
+	if (argv.size() != 2 && argv.size() != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], true, {});
+	if (argv.size() == 2) return ConKickOrBan(argv[1], true, {});
 
 	/* Reason for kicking supplied */
-	size_t kick_message_length = strlen(argv[2]);
+	size_t kick_message_length = argv[2].size();
 	if (kick_message_length >= 255) {
 		IConsolePrint(CC_ERROR, "Maximum kick message length is 254 characters. You entered {} characters.", kick_message_length);
 		return false;
@@ -876,15 +876,15 @@ static bool ConBan([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
 	}
 }
 
-static bool ConUnBan([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConUnBan(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Unban a client from a network game. Usage: 'unban <ip | banlist-index>'.");
 		IConsolePrint(CC_HELP, "For a list of banned IP's, see the command 'banlist'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	/* Try by IP. */
 	uint index;
@@ -908,9 +908,9 @@ static bool ConUnBan([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[
 	return true;
 }
 
-static bool ConBanList([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConBanList(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List the IP's of banned clients: Usage 'banlist'.");
 		return true;
 	}
@@ -926,9 +926,9 @@ static bool ConBanList([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConPauseGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConPauseGame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Pause a network game. Usage: 'pause'.");
 		return true;
 	}
@@ -948,9 +948,9 @@ static bool ConPauseGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 	return true;
 }
 
-static bool ConUnpauseGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConUnpauseGame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Unpause a network game. Usage: 'unpause'.");
 		return true;
 	}
@@ -974,13 +974,16 @@ static bool ConUnpauseGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConStepGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConStepGame(std::span<std::string_view> argv)
 {
-	if (argc == 0 || argc > 2) {
+	if (argv.empty() || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Advances the game for a certain amount of ticks (default 1). Usage: 'step [n]'");
 		return true;
 	}
-	auto n = (argc > 1 ? atoi(argv[1]) : 1);
+	uint32_t n = 1;
+	if (argv.size() > 1) {
+		n = ParseInteger(argv[1]).value_or(0);
+	}
 
 	extern void UnpauseStepGame(uint32_t steps);
 	UnpauseStepGame(n);
@@ -988,16 +991,16 @@ static bool ConStepGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConRcon([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRcon(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Remote control the server from another client. Usage: 'rcon <password> <command>'.");
 		IConsolePrint(CC_HELP, "Remember to enclose the command in quotes, otherwise only the first parameter is sent.");
 		IConsolePrint(CC_HELP, "When your client's public key is in the 'authorized keys' for 'rcon', '*' may be used instead of the password.");
 		return true;
 	}
 
-	if (argc < 3) return false;
+	if (argv.size() < 3) return false;
 
 	if (_network_server) {
 		IConsoleCmdExec(argv[2]);
@@ -1007,16 +1010,16 @@ static bool ConRcon([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConSettingsAccess([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSettingsAccess(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Enable changing game settings from this client. Usage: 'settings_access <password>'");
 		IConsolePrint(CC_HELP, "Send an empty password \"\" to drop access");
 		IConsolePrint(CC_HELP, "When your client's public key is in the 'authorized keys' for 'settings', the password is not checked and may be '*'.");
 		return true;
 	}
 
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 
 	if (!_network_server) {
 		NetworkClientSendSettingsPassword(argv[1]);
@@ -1024,9 +1027,9 @@ static bool ConSettingsAccess([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConStatus([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConStatus(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List the status of all clients connected to the server. Usage 'status'.");
 		return true;
 	}
@@ -1035,9 +1038,9 @@ static bool ConStatus([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 	return true;
 }
 
-static bool ConServerInfo([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConServerInfo(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List current and maximum client/company limits. Usage 'server_info'.");
 		IConsolePrint(CC_HELP, "You can change these values by modifying settings 'network.max_clients' and 'network.max_companies'.");
 		return true;
@@ -1051,9 +1054,9 @@ static bool ConServerInfo([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConClientNickChange([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConClientNickChange(std::span<std::string_view> argv)
 {
-	if (argc != 3) {
+	if (argv.size() != 3) {
 		IConsolePrint(CC_HELP, "Change the nickname of a connected client. Usage: 'client_name <client-id> <new-name>'.");
 		IConsolePrint(CC_HELP, "For client-id's, see the command 'clients'.");
 		return true;
@@ -1096,9 +1099,9 @@ static std::optional<CompanyID> ParseCompanyID(std::string_view arg)
 	return company_id;
 }
 
-static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConJoinCompany(std::span<std::string_view> argv)
 {
-	if (argc < 2) {
+	if (argv.size() < 2) {
 		IConsolePrint(CC_HELP, "Request joining another company. Usage: 'join <company-id> [<password>]'.");
 		IConsolePrint(CC_HELP, "For valid company-id see company list, use 255 for spectator.");
 		return true;
@@ -1146,7 +1149,7 @@ static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	}
 
 	/* Check if the company requires a password */
-	if (NetworkCompanyIsPassworded(*company_id) && argc < 3) {
+	if (NetworkCompanyIsPassworded(*company_id) && argv.size() < 3) {
 		IConsolePrint(CC_ERROR, "Company {} requires a password to join.", *company_id + 1);
 		return true;
 	}
@@ -1161,9 +1164,9 @@ static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConMoveClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMoveClient(std::span<std::string_view> argv)
 {
-	if (argc < 3) {
+	if (argv.size() < 3) {
 		IConsolePrint(CC_HELP, "Move a client to another company. Usage: 'move <client-id> <company-id>'.");
 		IConsolePrint(CC_HELP, "For valid client-id see 'clients', for valid company-id see 'companies', use 255 for moving to spectators.");
 		return true;
@@ -1214,15 +1217,15 @@ static bool ConMoveClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConResetCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConResetCompany(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Remove an idle company from the game. Usage: 'reset_company <company-id>'.");
 		IConsolePrint(CC_HELP, "For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	auto index = ParseCompanyID(argv[1]);
 	if (!index.has_value()) {
@@ -1259,33 +1262,37 @@ static bool ConResetCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConOfferCompanySale([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConOfferCompanySale(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Offer a company for sale. Usage: 'offer_company_sale <company-id>'");
 		IConsolePrint(CC_HELP, "For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
-	CompanyID index = (CompanyID)(atoi(argv[1]) - 1);
+	auto index = ParseCompanyID(argv[1]);
+	if (!index.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
 
 	/* Check valid range */
-	if (!Company::IsValidID(index)) {
+	if (!Company::IsValidID(*index)) {
 		IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
-	Command<CMD_COMPANY_CTRL>::Post(CCA_SALE, index, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_SALE, *index, CRR_NONE, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
 
 	return true;
 }
 
-static bool ConMergeCompanies([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMergeCompanies(std::span<std::string_view> argv)
 {
-	if (argc != 3) {
+	if (argv.size() != 3) {
 		IConsolePrint(CC_HELP, "Merge two companies together. Usage: 'merge_companies <main-company-id> <to-merge-company-id>'");
 		IConsolePrint(CC_HELP, "The first company ID <main-company-id> will be left with the combined assets of both companies.");
 		IConsolePrint(CC_HELP, "The second company ID <to-merge-company-id> will be removed, with all assets transferred to the first company ID.");
@@ -1293,28 +1300,32 @@ static bool ConMergeCompanies([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 		return true;
 	}
 
-	CompanyID main_company = (CompanyID)(atoi(argv[1]) - 1);
-	CompanyID to_merge_company = (CompanyID)(atoi(argv[2]) - 1);
+	auto main_company = ParseCompanyID(argv[1]);
+	auto to_merge_company = ParseCompanyID(argv[2]);
+	if (!main_company.has_value() || !to_merge_company.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
 
 	/* Check valid range */
-	if (!Company::IsValidID(main_company)) {
+	if (!Company::IsValidID(*main_company)) {
 		IConsolePrint(CC_ERROR, "Main company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
-	if (!Company::IsValidID(to_merge_company)) {
+	if (!Company::IsValidID(*to_merge_company)) {
 		IConsolePrint(CC_ERROR, "Company to merge does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
-	Command<CMD_COMPANY_CTRL>::Post(CCA_MERGE, main_company, CRR_NONE, INVALID_CLIENT_ID, to_merge_company);
+	Command<CMD_COMPANY_CTRL>::Post(CCA_MERGE, *main_company, CRR_NONE, INVALID_CLIENT_ID, *to_merge_company);
 	IConsolePrint(CC_DEFAULT, "Companies merged.");
 
 	return true;
 }
 
-static bool ConNetworkClients([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNetworkClients(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Get a list of connected clients including their ID, name, company-id, and IP. Usage: 'clients'.");
 		return true;
 	}
@@ -1324,9 +1335,9 @@ static bool ConNetworkClients([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConNetworkReconnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNetworkReconnect(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reconnect to server to which you were connected last time. Usage: 'reconnect [<company-id>]'.");
 		IConsolePrint(CC_HELP, "Company 255 is spectator (default, if not specified), 254 means creating new company.");
 		IConsolePrint(CC_HELP, "All others are a certain company with Company 1 being #1.");
@@ -1334,7 +1345,7 @@ static bool ConNetworkReconnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	}
 
 	CompanyID playas = COMPANY_SPECTATOR;
-	if (argc >= 2) {
+	if (argv.size() >= 2) {
 		auto company_id = ParseCompanyID(argv[1]);
 		if (!company_id.has_value()) {
 			IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
@@ -1355,16 +1366,16 @@ static bool ConNetworkReconnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	return NetworkClientConnectGame(_settings_client.network.last_joined, playas);
 }
 
-static bool ConNetworkConnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNetworkConnect(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Connect to a remote OTTD server and join the game. Usage: 'connect <ip>'.");
 		IConsolePrint(CC_HELP, "IP can contain port and company: 'IP[:Port][#Company]', eg: 'server.ottd.org:443#2'.");
 		IConsolePrint(CC_HELP, "Company #255 is spectator all others are a certain company with Company 1 being #1.");
 		return true;
 	}
 
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 
 	return NetworkClientConnectGame(argv[1], COMPANY_NEW_COMPANY);
 }
@@ -1373,20 +1384,20 @@ static bool ConNetworkConnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
  *  script file console commands
  *********************************/
 
-static bool ConExec([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConExec(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Execute a local script file. Usage: 'exec <script> [0]'.");
 		IConsolePrint(CC_HELP, "By passing '0' after the script name, no warning about a missing script file will be shown.");
 		return true;
 	}
 
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 
 	auto script_file = FioFOpenFile(argv[1], "r", BASE_DIR);
 
 	if (!script_file.has_value()) {
-		if (argc == 2 || strcmp(argv[2], "0") != 0) IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[1]);
+		if (argv.size() == 2 || argv[2] != "0") IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[1]);
 		return true;
 	}
 
@@ -1423,9 +1434,9 @@ static bool ConExec([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConSchedule([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSchedule(std::span<std::string_view> argv)
 {
-	if (argc < 3 || std::string_view(argv[1]) != "on-next-calendar-month") {
+	if (argv.size() < 3 || std::string_view(argv[1]) != "on-next-calendar-month") {
 		IConsolePrint(CC_HELP, "Schedule a local script to execute later. Usage: 'schedule on-next-calendar-month <script>'.");
 		return true;
 	}
@@ -1452,9 +1463,9 @@ static bool ConSchedule([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConReturn([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConReturn(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Stop executing a running script. Usage: 'return'.");
 		return true;
 	}
@@ -1471,20 +1482,20 @@ extern std::span<const GRFFile> GetAllGRFFiles();
 extern void ConPrintFramerate(); // framerate_gui.cpp
 extern void ShowFramerateWindow();
 
-static bool ConScript([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConScript(std::span<std::string_view> argv)
 {
 	extern std::optional<FileHandle> _iconsole_output_file;
 
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Start or stop logging console output to a file. Usage: 'script <filename>'.");
 		IConsolePrint(CC_HELP, "If filename is omitted, a running log is stopped if it is active.");
 		return true;
 	}
 
 	if (!CloseConsoleLogIfActive()) {
-		if (argc < 2) return false;
+		if (argv.size() < 2) return false;
 
-		_iconsole_output_file = FileHandle::Open(argv[1], "ab");
+		_iconsole_output_file = FileHandle::Open(std::string(argv[1]), "ab");
 		if (!_iconsole_output_file.has_value()) {
 			IConsolePrint(CC_ERROR, "Could not open console log file '{}'.", argv[1]);
 		} else {
@@ -1495,26 +1506,26 @@ static bool ConScript([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 	return true;
 }
 
-static bool ConEcho([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConEcho(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Print back the first argument to the console. Usage: 'echo <arg>'.");
 		return true;
 	}
 
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 	IConsolePrint(CC_DEFAULT, "{}", argv[1]);
 	return true;
 }
 
-static bool ConEchoC([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConEchoC(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Print back the first argument to the console in a given colour. Usage: 'echoc <colour> <arg2>'.");
 		return true;
 	}
 
-	if (argc < 3) return false;
+	if (argv.size() < 3) return false;
 
 	auto colour = ParseInteger(argv[1]);
 	if (!colour.has_value() || !IsInsideMM(*colour, TC_BEGIN, TC_END)) {
@@ -1522,25 +1533,35 @@ static bool ConEchoC([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[
 		return true;
 	}
 
-	IConsolePrint(static_cast<TextColour>(*colour), argv[2]);
+	IConsolePrint(static_cast<TextColour>(*colour), "{}", argv[2]);
 	return true;
 }
 
-static bool ConNewGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNewGame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Start a new game. Usage: 'newgame [seed]'.");
 		IConsolePrint(CC_HELP, "The server can force a new game using 'newgame'; any client joined will rejoin after the server is done generating the new game.");
 		return true;
 	}
 
-	StartNewGameWithoutGUI((argc == 2) ? std::strtoul(argv[1], nullptr, 10) : GENERATE_NEW_SEED);
+	uint32_t seed = GENERATE_NEW_SEED;
+	if (argv.size() >= 2) {
+		auto param = ParseInteger(argv[1]);
+		if (!param.has_value()) {
+			IConsolePrint(CC_ERROR, "The given seed must be a valid number.");
+			return true;
+		}
+		seed = *param;
+	}
+
+	StartNewGameWithoutGUI(seed);
 	return true;
 }
 
-static bool ConRestart([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRestart(std::span<std::string_view> argv)
 {
-	if (argc == 0 || argc > 2) {
+	if (argv.empty() || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Restart game. Usage: 'restart [current|newgame]'.");
 		IConsolePrint(CC_HELP, "Restarts a game, using either the current or newgame (default) settings.");
 		IConsolePrint(CC_HELP, " * if you started from a new game, and your current/newgame settings haven't changed, the game will be identical to when you started it.");
@@ -1548,7 +1569,7 @@ static bool ConRestart([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 		return true;
 	}
 
-	if (argc == 1 || std::string_view(argv[1]) == "newgame") {
+	if (argv.size() == 1 || std::string_view(argv[1]) == "newgame") {
 		StartNewGameWithoutGUI(_settings_game.game_creation.generation_seed);
 	} else {
 		_settings_game.game_creation.map_x = Map::LogX();
@@ -1559,9 +1580,9 @@ static bool ConRestart([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConReload([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConReload(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reload game. Usage: 'reload'.");
 		IConsolePrint(CC_HELP, "Reloads a game if loaded via savegame / scenario / heightmap.");
 		return true;
@@ -1590,9 +1611,9 @@ static void PrintLineByLine(std::string_view full_string)
 	});
 }
 
-static bool ConListAILibs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListAILibs(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List installed AI libraries. Usage: 'list_ai_libs'.");
 		return true;
 	}
@@ -1601,9 +1622,9 @@ static bool ConListAILibs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConListAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListAI(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List installed AIs. Usage: 'list_ai'.");
 		return true;
 	}
@@ -1612,9 +1633,9 @@ static bool ConListAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 	return true;
 }
 
-static bool ConListGameLibs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListGameLibs(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List installed Game Script libraries. Usage: 'list_game_libs'.");
 		return true;
 	}
@@ -1623,9 +1644,9 @@ static bool ConListGameLibs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConListGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListGame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List installed Game Scripts. Usage: 'list_game'.");
 		return true;
 	}
@@ -1634,9 +1655,9 @@ static bool ConListGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConStartAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConStartAI(std::span<std::string_view> argv)
 {
-	if (argc == 0 || argc > 3) {
+	if (argv.empty() || argv.size() > 3) {
 		IConsolePrint(CC_HELP, "Start a new AI. Usage: 'start_ai [<AI>] [<settings>]'.");
 		IConsolePrint(CC_HELP, "Start a new AI. If <AI> is given, it starts that specific AI (if found).");
 		IConsolePrint(CC_HELP, "If <settings> is given, it is parsed and the AI settings are set to that.");
@@ -1674,24 +1695,22 @@ static bool ConStartAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	}
 
 	AIConfig *config = AIConfig::GetConfig((CompanyID)n);
-	if (argc >= 2) {
+	if (argv.size() >= 2) {
 		config->Change(argv[1], -1, false);
 
 		/* If the name is not found, and there is a dot in the name,
 		 * try again with the assumption everything right of the dot is
 		 * the version the user wants to load. */
 		if (!config->HasScript()) {
-			const char *e = strrchr(argv[1], '.');
-			if (e != nullptr) {
-				size_t name_length = e - argv[1];
-				e++;
-
-				auto version = ParseInteger(e);
+			StringConsumer consumer{std::string_view{argv[1]}};
+			auto name = consumer.ReadUntilChar('.', StringConsumer::SKIP_ONE_SEPARATOR);
+			if (consumer.AnyBytesLeft()) {
+				auto version = consumer.TryReadIntegerBase<uint32_t>(10);
 				if (!version.has_value()) {
 					IConsolePrint(CC_ERROR, "The version is not a valid number.");
 					return true;
 				}
-				config->Change(std::string(argv[1], name_length), *version, true);
+				config->Change(name, *version, true);
 			}
 		}
 
@@ -1699,7 +1718,7 @@ static bool ConStartAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 			IConsolePrint(CC_ERROR, "Failed to load the specified AI.");
 			return true;
 		}
-		if (argc == 3) {
+		if (argv.size() == 3) {
 			config->StringToSettings(argv[2]);
 		}
 	}
@@ -1710,9 +1729,9 @@ static bool ConStartAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConReloadAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConReloadAI(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Reload an AI. Usage: 'reload_ai <company-id>'.");
 		IConsolePrint(CC_HELP, "Reload the AI with the given company id. For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
 		return true;
@@ -1753,9 +1772,9 @@ static bool ConReloadAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConStopAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConStopAI(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Stop an AI. Usage: 'stop_ai <company-id>'.");
 		IConsolePrint(CC_HELP, "Stop the AI with the given company id. For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
 		return true;
@@ -1795,9 +1814,9 @@ static bool ConStopAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 	return true;
 }
 
-static bool ConRescanAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRescanAI(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Rescan the AI dir for scripts. Usage: 'rescan_ai'.");
 		return true;
 	}
@@ -1812,9 +1831,9 @@ static bool ConRescanAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConRescanGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRescanGame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Rescan the Game Script dir for scripts. Usage: 'rescan_game'.");
 		return true;
 	}
@@ -1829,9 +1848,9 @@ static bool ConRescanGame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConRescanNewGRF([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRescanNewGRF(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Rescan the data dir for NewGRFs. Usage: 'rescan_newgrf'.");
 		return true;
 	}
@@ -1843,9 +1862,9 @@ static bool ConRescanNewGRF([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConGetSeed([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGetSeed(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Returns the seed used to create this game. Usage: 'getseed'.");
 		IConsolePrint(CC_HELP, "The seed can be used to reproduce the exact same map as the game started with.");
 		return true;
@@ -1855,9 +1874,9 @@ static bool ConGetSeed([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConGetDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGetDate(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Returns the current date (year-month-day) of the game. Usage: 'getdate'.");
 		return true;
 	}
@@ -1866,9 +1885,9 @@ static bool ConGetDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConGetSysDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGetSysDate(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Returns the current date (year-month-day) of your system. Usage: 'getsysdate'.");
 		return true;
 	}
@@ -1877,29 +1896,29 @@ static bool ConGetSysDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConAlias([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConAlias(std::span<std::string_view> argv)
 {
 	IConsoleAlias *alias;
 
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Add a new alias, or redefine the behaviour of an existing alias . Usage: 'alias <name> <command>'.");
 		return true;
 	}
 
-	if (argc < 3) return false;
+	if (argv.size() < 3) return false;
 
-	alias = IConsole::AliasGet(argv[1]);
+	alias = IConsole::AliasGet(std::string(argv[1]));
 	if (alias == nullptr) {
-		IConsole::AliasRegister(argv[1], argv[2]);
+		IConsole::AliasRegister(std::string(argv[1]), argv[2]);
 	} else {
 		alias->cmdline = argv[2];
 	}
 	return true;
 }
 
-static bool ConScreenShot([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConScreenShot(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Create a screenshot of the game. Usage: 'screenshot [viewport | normal | big | giant | world | heightmap | minimap] [no_con] [size <width> <height>] [<filename>]'.");
 		IConsolePrint(CC_HELP, "  'viewport' (default) makes a screenshot of the current viewport (including menus, windows).");
 		IConsolePrint(CC_HELP, "  'normal' makes a screenshot of the visible area.");
@@ -1916,7 +1935,7 @@ static bool ConScreenShot([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		return true;
 	}
 
-	if (argc > 7) return false;
+	if (argv.size() > 7) return false;
 
 	ScreenshotType type = SC_VIEWPORT;
 	uint32_t width = 0;
@@ -1924,38 +1943,38 @@ static bool ConScreenShot([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	std::string name{};
 	uint32_t arg_index = 1;
 
-	if (argc > arg_index) {
-		if (strcmp(argv[arg_index], "viewport") == 0) {
+	if (argv.size() > arg_index) {
+		if (argv[arg_index] == "viewport") {
 			type = SC_VIEWPORT;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "normal") == 0) {
+		} else if (argv[arg_index] == "normal") {
 			type = SC_DEFAULTZOOM;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "big") == 0) {
+		} else if (argv[arg_index] == "big") {
 			type = SC_ZOOMEDIN;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "giant") == 0) {
+		} else if (argv[arg_index] == "giant") {
 			type = SC_WORLD;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "world") == 0) {
+		} else if (argv[arg_index] == "world") {
 			type = SC_WORLD_ZOOM;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "heightmap") == 0) {
+		} else if (argv[arg_index] == "heightmap") {
 			type = SC_HEIGHTMAP;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "minimap") == 0) {
+		} else if (argv[arg_index] == "minimap") {
 			type = SC_MINIMAP;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "topography") == 0) {
+		} else if (argv[arg_index] == "topography") {
 			type = SC_TOPOGRAPHY;
 			arg_index += 1;
-		} else if (strcmp(argv[arg_index], "industry") == 0) {
+		} else if (argv[arg_index] == "industry") {
 			type = SC_INDUSTRY;
 			arg_index += 1;
 		}
 	}
 
-	if (argc > arg_index && strcmp(argv[arg_index], "no_con") == 0) {
+	if (argv.size() > arg_index && argv[arg_index] == "no_con") {
 		if (type != SC_VIEWPORT) {
 			IConsolePrint(CC_ERROR, "'no_con' can only be used in combination with 'viewport'.");
 			return true;
@@ -1964,7 +1983,7 @@ static bool ConScreenShot([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		arg_index += 1;
 	}
 
-	if (argc > arg_index + 2 && strcmp(argv[arg_index], "size") == 0) {
+	if (argv.size() > arg_index + 2 && argv[arg_index] == "size") {
 		/* size <width> <height> */
 		if (type != SC_DEFAULTZOOM && type != SC_ZOOMEDIN) {
 			IConsolePrint(CC_ERROR, "'size' can only be used in combination with 'normal' or 'big'.");
@@ -1986,37 +2005,37 @@ static bool ConScreenShot([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		arg_index += 3;
 	}
 
-	if (argc > arg_index) {
+	if (argv.size() > arg_index) {
 		/* Last parameter that was not one of the keywords must be the filename. */
 		name = argv[arg_index];
 		arg_index += 1;
 	}
 
-	if (argc > arg_index) {
+	if (argv.size() > arg_index) {
 		/* We have parameters we did not process; means we misunderstood any of the above. */
 		return false;
 	}
 
-	MakeScreenshot(type, std::move(name), width, height);
+	MakeScreenshot(type, name, width, height);
 	return true;
 }
 
-static bool ConMinimap([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMinimap(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Create a flat image of the game minimap. Usage: 'minimap [owner] [file name]'");
 		IConsolePrint(CC_HELP, "'owner' uses the tile owner to colour the minimap image, this is the only mode at present");
 		return true;
 	}
 
-	const char *name = nullptr;
-	if (argc > 1) {
-		if (strcmp(argv[1], "owner") != 0) {
+	std::string_view name = {};
+	if (argv.size() > 1) {
+		if (argv[1] != "owner") {
 			/* invalid mode */
 			return false;
 		}
 	}
-	if (argc > 2) {
+	if (argv.size() > 2) {
 		name = argv[2];
 	}
 
@@ -2024,16 +2043,16 @@ static bool ConMinimap([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConInfoCmd([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConInfoCmd(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Print out debugging information about a command. Usage: 'info_cmd <cmd>'.");
 		return true;
 	}
 
-	if (argc < 2) return false;
+	if (argv.size() < 2) return false;
 
-	const IConsoleCmd *cmd = IConsole::CmdGet(argv[1]);
+	const IConsoleCmd *cmd = IConsole::CmdGet(std::string(argv[1]));
 	if (cmd == nullptr) {
 		IConsolePrint(CC_ERROR, "The given command was not found.");
 		return true;
@@ -2046,28 +2065,28 @@ static bool ConInfoCmd([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConDebugLevel([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDebugLevel(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Get/set the default debugging level for the game. Usage: 'debug_level [<level>]'.");
 		IConsolePrint(CC_HELP, "Level can be any combination of names, levels. Eg 'net=5 ms=4'. Remember to enclose it in \"'\"s.");
 		return true;
 	}
 
-	if (argc > 2) return false;
+	if (argv.size() > 2) return false;
 
-	if (argc == 1) {
+	if (argv.size() == 1) {
 		IConsolePrint(CC_DEFAULT, "Current debug-level: '{}'", GetDebugString());
 	} else {
-		SetDebugString(argv[1], [](std::string err) { IConsolePrint(CC_ERROR, err); });
+		SetDebugString(argv[1], [](std::string_view err) { IConsolePrint(CC_ERROR, std::string{err}); });
 	}
 
 	return true;
 }
 
-static bool ConExit([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConExit(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Exit the game. Usage: 'exit'.");
 		return true;
 	}
@@ -2078,9 +2097,9 @@ static bool ConExit([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConPart([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConPart(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Leave the currently joined/running game (only ingame). Usage: 'part'.");
 		return true;
 	}
@@ -2096,23 +2115,23 @@ static bool ConPart([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConHelp([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConHelp(std::span<std::string_view> argv)
 {
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		const IConsoleCmd *cmd;
 		const IConsoleAlias *alias;
 
-		cmd = IConsole::CmdGet(argv[1]);
+		cmd = IConsole::CmdGet(std::string(argv[1]));
 		if (cmd != nullptr) {
-			cmd->proc(0, nullptr);
+			cmd->proc({});
 			return true;
 		}
 
-		alias = IConsole::AliasGet(argv[1]);
+		alias = IConsole::AliasGet(std::string(argv[1]));
 		if (alias != nullptr) {
 			cmd = IConsole::CmdGet(alias->cmdline);
 			if (cmd != nullptr) {
-				cmd->proc(0, nullptr);
+				cmd->proc({});
 				return true;
 			}
 			IConsolePrint(CC_ERROR, "Alias is of special type, please see its execution-line: '{}'.", alias->cmdline);
@@ -2135,16 +2154,16 @@ static bool ConHelp([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConListCommands([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListCommands(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List all registered commands. Usage: 'list_cmds [<pre-filter>]'.");
 		return true;
 	}
 
 	for (auto &it : IConsole::Commands()) {
 		const IConsoleCmd *cmd = &it.second;
-		if (argv[1] == nullptr || cmd->name.find(argv[1]) != std::string::npos) {
+		if (argv.size() <= 1 || cmd->name.find(argv[1]) != std::string::npos) {
 			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrint(CC_DEFAULT, cmd->name);
 		}
 	}
@@ -2152,16 +2171,16 @@ static bool ConListCommands([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConListAliases([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListAliases(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List all registered aliases. Usage: 'list_aliases [<pre-filter>]'.");
 		return true;
 	}
 
 	for (auto &it : IConsole::Aliases()) {
 		const IConsoleAlias *alias = &it.second;
-		if (argv[1] == nullptr || alias->name.find(argv[1]) != std::string::npos) {
+		if (argv.size() <= 1 || alias->name.find(argv[1]) != std::string::npos) {
 			IConsolePrint(CC_DEFAULT, "{} => {}", alias->name, alias->cmdline);
 		}
 	}
@@ -2169,9 +2188,9 @@ static bool ConListAliases([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConCompanies([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCompanies(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List the details of all companies in the game. Usage 'companies'.");
 		return true;
 	}
@@ -2201,14 +2220,14 @@ static bool ConCompanies([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 	return true;
 }
 
-static bool ConSay([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSay(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Chat to your fellow players in a multiplayer game. Usage: 'say \"<msg>\"'.");
 		return true;
 	}
 
-	if (argc != 2) return false;
+	if (argv.size() != 2) return false;
 
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_CHAT, DESTTYPE_BROADCAST, 0 /* param does not matter */, argv[1]);
@@ -2220,15 +2239,15 @@ static bool ConSay([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
 	return true;
 }
 
-static bool ConSayCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSayCompany(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Chat to a certain company in a multiplayer game. Usage: 'say_company <company-no> \"<msg>\"'.");
 		IConsolePrint(CC_HELP, "CompanyNo is the company that plays as company <companyno>, 1 through max_companies.");
 		return true;
 	}
 
-	if (argc != 3) return false;
+	if (argv.size() != 3) return false;
 
 	auto company_id = ParseCompanyID(argv[1]);
 	if (!company_id.has_value()) {
@@ -2251,15 +2270,15 @@ static bool ConSayCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConSayClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSayClient(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Chat to a certain client in a multiplayer game. Usage: 'say_client <client-id> \"<msg>\"'.");
 		IConsolePrint(CC_HELP, "For client-id's, see the command 'clients'.");
 		return true;
 	}
 
-	if (argc != 3) return false;
+	if (argv.size() != 3) return false;
 
 	auto client_id = ParseType<ClientID>(argv[1]);
 	if (!client_id.has_value()) {
@@ -2277,9 +2296,9 @@ static bool ConSayClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 	return true;
 }
 
-static bool ConCompanyPassword([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCompanyPassword(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		if (_network_dedicated) {
 			IConsolePrint(CC_HELP, "Change the password of a company. Usage: 'company_pw <company-no> \"<password>\".");
 		} else if (_network_server) {
@@ -2296,12 +2315,12 @@ static bool ConCompanyPassword([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	std::string password;
 	const char *errormsg;
 
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		company_id = _local_company;
 		password = argv[1];
 		errormsg = "You have to own a company to make use of this command.";
-	} else if (argc == 3 && _network_server) {
-		company_id = (CompanyID)(atoi(argv[1]) - 1);
+	} else if (argv.size() == 3 && _network_server) {
+		company_id = ParseCompanyID(argv[1]).value_or(CompanyID::Invalid());
 		password = argv[2];
 		errormsg = "You have to specify the ID of a valid human controlled company.";
 	} else {
@@ -2378,9 +2397,9 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 	}
 }
 
-static bool ConNetworkAuthorizedKey([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNetworkAuthorizedKey(std::span<std::string_view> argv)
 {
-	if (argc <= 2) {
+	if (argv.size() <= 2) {
 		IConsolePrint(CC_HELP, "List and update authorized keys. Usage: 'authorized_key list [type]|add [type] [key]|remove [type] [key]'.");
 		IConsolePrint(CC_HELP, "  list: list all the authorized keys of the given type.");
 		IConsolePrint(CC_HELP, "  add: add the given key to the authorized keys of the given type.");
@@ -2408,7 +2427,7 @@ static bool ConNetworkAuthorizedKey([[maybe_unused]] uint8_t argc, [[maybe_unuse
 
 	std::string authorized_key;
 	if (action != CNAKA_LIST) {
-		if (argc <= 3) {
+		if (argv.size() <= 3) {
 			IConsolePrint(CC_ERROR, "You must enter the key.");
 			return false;
 		}
@@ -2459,29 +2478,29 @@ static bool ConNetworkAuthorizedKey([[maybe_unused]] uint8_t argc, [[maybe_unuse
 	return false;
 }
 
-static bool ConCompanyPasswordHash([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCompanyPasswordHash(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Change the password hash of a company. Usage: 'company_pw_hash <company-no> \"<password_hash>\"");
 		IConsolePrint(CC_HELP, "Use \"*\" to disable the password.");
 		return true;
 	}
 
-	if (argc != 3) return false;
+	if (argv.size() != 3) return false;
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
-	const char *password = argv[2];
+	CompanyID company_id = ParseCompanyID(argv[1]).value_or(CompanyID::Invalid());
+	std::string_view password = argv[2];
 
 	if (!Company::IsValidHumanID(company_id)) {
 		IConsolePrint(CC_ERROR, "You have to specify the ID of a valid human controlled company.");
 		return false;
 	}
 
-	if (strcmp(password, "*") == 0) password = "";
+	if (password == "*") password = {};
 
 	NetworkServerSetCompanyPassword(company_id, password, true);
 
-	if (StrEmpty(password)) {
+	if (password.empty()) {
 		IConsolePrint(CC_WARNING, "Company password hash cleared");
 	} else {
 		IConsolePrint(CC_WARNING, "Company password hash changed to: {}", password);
@@ -2490,9 +2509,9 @@ static bool ConCompanyPasswordHash([[maybe_unused]] uint8_t argc, [[maybe_unused
 	return true;
 }
 
-static bool ConCompanyPasswordHashes([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCompanyPasswordHashes(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List the password hashes of all companies in the game. Usage 'company_pw_hashes'");
 		return true;
 	}
@@ -2561,7 +2580,7 @@ static void OutputContentState(const ContentInfo &ci)
 	IConsolePrint(state_to_colour[ci.state], "{}, {}, {}, {}, {:08X}, {}", ci.id, types[ci.type - 1], states[ci.state], ci.name, ci.unique_id, FormatArrayAsHex(ci.md5sum));
 }
 
-static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConContent(std::span<std::string_view> argv)
 {
 	static ContentCallback *cb = nullptr;
 	if (cb == nullptr) {
@@ -2569,7 +2588,7 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 		_network_content_client.AddCallback(cb);
 	}
 
-	if (argc <= 1) {
+	if (argv.size() <= 1) {
 		IConsolePrint(CC_HELP, "Query, select and download content. Usage: 'content update|upgrade|select [id]|unselect [all|id]|state [filter]|download'.");
 		IConsolePrint(CC_HELP, "  update: get a new list of downloadable content; must be run first.");
 		IConsolePrint(CC_HELP, "  upgrade: select all items that are upgrades.");
@@ -2581,7 +2600,7 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "update")) {
-		_network_content_client.RequestContentList((argc > 2) ? StringToContentType(argv[2]) : CONTENT_TYPE_END);
+		_network_content_client.RequestContentList((argv.size() > 2) ? StringToContentType(argv[2]) : CONTENT_TYPE_END);
 		return true;
 	}
 
@@ -2591,7 +2610,7 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "select")) {
-		if (argc <= 2) {
+		if (argv.size() <= 2) {
 			/* List selected content */
 			IConsolePrint(CC_WHITE, "id, type, state, name");
 			for (const ContentInfo &ci : _network_content_client.Info()) {
@@ -2615,7 +2634,7 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "unselect")) {
-		if (argc <= 2) {
+		if (argv.size() <= 2) {
 			IConsolePrint(CC_ERROR, "You must enter the id.");
 			return false;
 		}
@@ -2632,7 +2651,7 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	if (StrEqualsIgnoreCase(argv[1], "state")) {
 		IConsolePrint(CC_WHITE, "id, type, state, name");
 		for (const ContentInfo &ci : _network_content_client.Info()) {
-			if (argc > 2 && !StrContainsIgnoreCase(ci.name, argv[2])) continue;
+			if (argv.size() > 2 && !StrContainsIgnoreCase(ci.name, argv[2])) continue;
 			OutputContentState(ci);
 		}
 		return true;
@@ -2650,9 +2669,9 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 }
 #endif /* defined(WITH_ZLIB) */
 
-static bool ConFont([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConFont(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Manage the fonts configuration.");
 		IConsolePrint(CC_HELP, "Usage 'font'.");
 		IConsolePrint(CC_HELP, "  Print out the fonts configuration.");
@@ -2669,13 +2688,13 @@ static bool ConFont([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 
 	FontSize argfs;
 	for (argfs = FS_BEGIN; argfs < FS_END; argfs++) {
-		if (argc > 1 && StrEqualsIgnoreCase(argv[1], FontSizeToName(argfs))) break;
+		if (argv.size() > 1 && StrEqualsIgnoreCase(argv[1], FontSizeToName(argfs))) break;
 	}
 
 	/* First argument must be a FontSize. */
-	if (argc > 1 && argfs == FS_END) return false;
+	if (argv.size() > 1 && argfs == FS_END) return false;
 
-	if (argc > 2) {
+	if (argv.size() > 2) {
 		FontCacheSubSetting *setting = GetFontCacheSubSetting(argfs);
 		std::string font = setting->font;
 		uint size = setting->size;
@@ -2686,7 +2705,7 @@ static bool ConFont([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 			font = argv[arg_index++];
 		}
 
-		if (argc > arg_index) {
+		if (argv.size() > arg_index) {
 			/* For <size> we want a number. */
 			auto v = ParseInteger(argv[arg_index]);
 			if (v.has_value()) {
@@ -2716,17 +2735,17 @@ static bool ConFont([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	return true;
 }
 
-static bool ConSetting([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSetting(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Change setting for all clients. Usage: 'setting <name> [<value>]'.");
 		IConsolePrint(CC_HELP, "Omitting <value> will print out the current value of the setting.");
 		return true;
 	}
 
-	if (argc == 1 || argc > 3) return false;
+	if (argv.size() == 1 || argv.size() > 3) return false;
 
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		IConsoleGetSetting(argv[1]);
 	} else {
 		IConsoleSetSetting(argv[1], argv[2]);
@@ -2735,17 +2754,17 @@ static bool ConSetting([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 	return true;
 }
 
-static bool ConSettingNewgame([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSettingNewgame(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Change setting for the next game. Usage: 'setting_newgame <name> [<value>]'.");
 		IConsolePrint(CC_HELP, "Omitting <value> will print out the current value of the setting.");
 		return true;
 	}
 
-	if (argc == 1 || argc > 3) return false;
+	if (argv.size() == 1 || argv.size() > 3) return false;
 
-	if (argc == 2) {
+	if (argv.size() == 2) {
 		IConsoleGetSetting(argv[1], true);
 	} else {
 		IConsoleSetSetting(argv[1], argv[2], true);
@@ -2754,35 +2773,35 @@ static bool ConSettingNewgame([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConListSettings([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListSettings(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List settings. Usage: 'list_settings [<pre-filter>]'.");
 		return true;
 	}
 
-	if (argc > 2) return false;
+	if (argv.size() > 2) return false;
 
-	IConsoleListSettings((argc == 2) ? argv[1] : std::string_view{}, false);
+	IConsoleListSettings((argv.size() == 2) ? argv[1] : std::string_view{}, false);
 	return true;
 }
 
-static bool ConListSettingsDefaults([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListSettingsDefaults(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "List settings and also show default value. Usage: 'list_settings_def [<pre-filter>]'");
 		return true;
 	}
 
-	if (argc > 2) return false;
+	if (argv.size() > 2) return false;
 
-	IConsoleListSettings((argc == 2) ? argv[1] : std::string_view{}, true);
+	IConsoleListSettings((argv.size() == 2) ? argv[1] : std::string_view{}, true);
 	return true;
 }
 
-static bool ConGamelogPrint([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGamelogPrint(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Print logged fundamental changes to the game since the start. Usage: 'gamelog'.");
 		return true;
 	}
@@ -2791,9 +2810,9 @@ static bool ConGamelogPrint([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConNewGRFReload([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNewGRFReload(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Reloads all active NewGRFs from disk. Equivalent to reapplying NewGRFs via the settings, but without asking for confirmation. This might crash OpenTTD!");
 		return true;
 	}
@@ -2805,7 +2824,7 @@ static bool ConNewGRFReload([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConListDirs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConListDirs(std::span<std::string_view> argv)
 {
 	struct SubdirNameMap {
 		Subdirectory subdir; ///< Index of subdirectory type
@@ -2829,7 +2848,7 @@ static bool ConListDirs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 		{ SOCIAL_INTEGRATION_DIR, "social_integration", true },
 	};
 
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "List all search paths or default directories for various categories.");
 		IConsolePrint(CC_HELP, "Usage: list_dirs <category>");
 		std::string cats = subdir_name_map[0].name;
@@ -2871,9 +2890,9 @@ static bool ConListDirs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return false;
 }
 
-static bool ConResetBlockedHeliports([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConResetBlockedHeliports(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Resets heliports blocked by the improved breakdowns bug, for single-player use only.");
 		return true;
 	}
@@ -2902,9 +2921,9 @@ static bool ConResetBlockedHeliports([[maybe_unused]] uint8_t argc, [[maybe_unus
 	return true;
 }
 
-static bool ConMergeLinkgraphJobsAsap([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMergeLinkgraphJobsAsap(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Merge linkgraph jobs asap, for single-player use only.");
 		return true;
 	}
@@ -2915,9 +2934,9 @@ static bool ConMergeLinkgraphJobsAsap([[maybe_unused]] uint8_t argc, [[maybe_unu
 	return true;
 }
 
-static bool ConUnblockBayRoadStops([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConUnblockBayRoadStops(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Unblock bay road stops blocked by a bug, for single-player use only.");
 		return true;
 	}
@@ -2939,15 +2958,15 @@ static bool ConUnblockBayRoadStops([[maybe_unused]] uint8_t argc, [[maybe_unused
 	return true;
 }
 
-static bool ConDbgSpecial([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDbgSpecial(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Debug special.");
 		return true;
 	}
 
-	if (argc == 2) {
-		if (strcmp(argv[1], "error") == 0) {
+	if (argv.size() == 2) {
+		if (argv[1] == "error") {
 			FatalErrorI("User triggered");
 			return true;
 		}
@@ -2957,18 +2976,18 @@ static bool ConDbgSpecial([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 }
 
 #ifdef _DEBUG
-static bool ConDeleteVehicleID([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDeleteVehicleID(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Delete vehicle ID, for emergency single-player use only.");
 		return true;
 	}
 
-	if (argc == 2) {
-		uint32_t result;
-		if (GetArgumentInteger(&result, argv[1])) {
+	if (argv.size() == 2) {
+		auto result = ParseInteger(argv[1], 0);
+		if (result.has_value()) {
 			extern void ConsoleRemoveVehicle(VehicleID id);
-			ConsoleRemoveVehicle(VehicleID(result));
+			ConsoleRemoveVehicle(VehicleID{*result});
 			return true;
 		}
 	}
@@ -2976,27 +2995,29 @@ static bool ConDeleteVehicleID([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	return false;
 }
 
-static bool ConRunTileLoopTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRunTileLoopTile(std::span<std::string_view> argv)
 {
-	if (argc == 0 || argc > 3) {
+	if (argv.empty() || argv.size() > 3) {
 		IConsolePrint(CC_HELP, "Run tile loop proc on tile.");
 		return true;
 	}
 
-	if (argc >= 2) {
-		uint32_t tile;
-		if (!GetArgumentInteger(&tile, argv[1])) return false;
+	if (argv.size() >= 2) {
+		auto tile = ParseInteger(argv[1], 0);
+		if (!tile.has_value()) return false;
 
 		if (tile >= Map::Size()) {
 			IConsolePrint(CC_ERROR, "Tile does not exist.");
 			return true;
 		}
 		uint32_t count = 1;
-		if (argc >= 3) {
-			if (!GetArgumentInteger(&count, argv[2])) return false;
+		if (argv.size() >= 3) {
+			auto val = ParseInteger(argv[2], 0);
+			if (!val.has_value()) return false;
+			count = *val;
 		}
 		for (uint32_t i = 0; i < count; i++) {
-			_tile_type_procs[GetTileType(TileIndex{tile})]->tile_loop_proc(TileIndex{tile});
+			_tile_type_procs[GetTileType(TileIndex{*tile})]->tile_loop_proc(TileIndex{*tile});
 		}
 		return true;
 	}
@@ -3005,9 +3026,9 @@ static bool ConRunTileLoopTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 }
 #endif
 
-static bool ConGetFullDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGetFullDate(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Returns the current full date/tick information of the game. Usage: 'getfulldate'");
 		return true;
 	}
@@ -3029,9 +3050,9 @@ static bool ConGetFullDate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConDumpCommandLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpCommandLog(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump log of recently executed commands.");
 		return true;
 	}
@@ -3042,9 +3063,9 @@ static bool ConDumpCommandLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConDumpSpecialEventsLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpSpecialEventsLog(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump log of special events.");
 		return true;
 	}
@@ -3055,9 +3076,9 @@ static bool ConDumpSpecialEventsLog([[maybe_unused]] uint8_t argc, [[maybe_unuse
 	return true;
 }
 
-static bool ConDumpDesyncMsgLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpDesyncMsgLog(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump log of desync messages.");
 		return true;
 	}
@@ -3068,9 +3089,9 @@ static bool ConDumpDesyncMsgLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	return true;
 }
 
-static bool ConDumpInflation([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpInflation(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump inflation data.");
 		return true;
 	}
@@ -3084,9 +3105,9 @@ static bool ConDumpInflation([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConDumpCpdpStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpCpdpStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump cargo packet deferred payment stats.");
 		return true;
 	}
@@ -3096,9 +3117,9 @@ static bool ConDumpCpdpStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConVehicleStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConVehicleStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump vehicle stats.");
 		return true;
 	}
@@ -3110,9 +3131,9 @@ static bool ConVehicleStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 	return true;
 }
 
-static bool ConMapStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMapStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump map stats.");
 		return true;
 	}
@@ -3129,9 +3150,9 @@ static bool ConMapStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return true;
 }
 
-static bool ConStFlowStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConStFlowStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump station flow stats.");
 		return true;
 	}
@@ -3143,9 +3164,9 @@ static bool ConStFlowStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConSlotsStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSlotsStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump routing restrictions slots and counter stats.");
 		return true;
 	}
@@ -3157,9 +3178,9 @@ static bool ConSlotsStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConDumpGameEvents([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpGameEvents(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump game events.");
 		return true;
 	}
@@ -3173,9 +3194,9 @@ static bool ConDumpGameEvents([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConDumpLoadDebugLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpLoadDebugLog(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump load debug log.");
 		return true;
 	}
@@ -3185,9 +3206,9 @@ static bool ConDumpLoadDebugLog([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	return true;
 }
 
-static bool ConDumpLoadDebugConfig([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpLoadDebugConfig(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump load debug config.");
 		return true;
 	}
@@ -3198,9 +3219,9 @@ static bool ConDumpLoadDebugConfig([[maybe_unused]] uint8_t argc, [[maybe_unused
 }
 
 
-static bool ConDumpLinkgraphJobs([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpLinkgraphJobs(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump link-graph jobs.");
 		return true;
 	}
@@ -3214,9 +3235,9 @@ static bool ConDumpLinkgraphJobs([[maybe_unused]] uint8_t argc, [[maybe_unused]]
 	return true;
 }
 
-static bool ConDumpRoadTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump road/tram types.");
 		return true;
 	}
@@ -3273,9 +3294,9 @@ static bool ConDumpRoadTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConDumpRailTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpRailTypes(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump rail types.");
 		return true;
 	}
@@ -3332,9 +3353,9 @@ static bool ConDumpRailTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConDumpBridgeTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpBridgeTypes(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump bridge types.");
 		return true;
 	}
@@ -3384,9 +3405,9 @@ static bool ConDumpBridgeTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	return true;
 }
 
-static bool ConDumpCargoTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump cargo types.");
 		return true;
 	}
@@ -3465,14 +3486,14 @@ static bool ConDumpCargoTypes([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConDumpVehicle([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpVehicle(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Show vehicle information.  Usage: 'dump_vehicle <vehicle-id>'");
 		return true;
 	}
 
-	const Vehicle *v = Vehicle::GetIfValid(atoi(argv[1]));
+	const Vehicle *v = Vehicle::GetIfValid(ParseType<VehicleID>(argv[1]).value_or(VehicleID::Invalid()));
 	if (v != nullptr) {
 		IConsolePrint(CC_DEFAULT, "{}", VehicleInfoDumper(v));
 	} else {
@@ -3491,9 +3512,9 @@ static bool ConDumpVehicle([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
  *       and y coordinates.
  * @return True when either console help was shown or a proper amount of parameters given.
  */
-static bool ConDumpTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpTile(std::span<std::string_view> argv)
 {
-	switch (argc) {
+	switch (argv.size()) {
 		case 0:
 			IConsolePrint(CC_HELP, "Dump the map state of a given tile.");
 			IConsolePrint(CC_HELP, "Usage: 'dump_tile <tile>' or 'dump_tile <x> <y>'");
@@ -3537,9 +3558,9 @@ static bool ConDumpTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	return false;
 }
 
-static bool ConDumpGrfCargoTables([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpGrfCargoTables(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump GRF cargo translation tables.");
 		return true;
 	}
@@ -3569,9 +3590,9 @@ static bool ConDumpGrfCargoTables([[maybe_unused]] uint8_t argc, [[maybe_unused]
 	return true;
 }
 
-static bool ConDumpSignalStyles([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpSignalStyles(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump custom signal styles.");
 		return true;
 	}
@@ -3620,9 +3641,9 @@ static bool ConDumpSignalStyles([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	return true;
 }
 
-static bool ConSpriteCacheStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSpriteCacheStats(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump sprite cache stats.");
 		return true;
 	}
@@ -3634,9 +3655,9 @@ static bool ConSpriteCacheStats([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 	return true;
 }
 
-static bool ConDumpVersion([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpVersion(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Dump version info");
 		return true;
 	}
@@ -3647,16 +3668,16 @@ static bool ConDumpVersion([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConCheckCaches([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCheckCaches(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Debug: Check caches. Usage: 'check_caches [<broadcast>]'");
 		return true;
 	}
 
-	if (argc > 2) return false;
+	if (argv.size() > 2) return false;
 
-	bool broadcast = (argc == 2 && atoi(argv[1]) > 0 && (!_networking || _network_server));
+	bool broadcast = (argv.size() == 2 && ParseInteger(argv[1]).value_or(0) > 0 && (!_networking || _network_server));
 	if (broadcast) {
 		Command<CMD_DESYNC_CHECK>::Post();
 	} else {
@@ -3669,9 +3690,9 @@ static bool ConCheckCaches([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	return true;
 }
 
-static bool ConShowTownWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConShowTownWindow(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Show town window.  Usage: 'show_town_window <town-id>'");
 		return true;
 	}
@@ -3680,7 +3701,7 @@ static bool ConShowTownWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 		return true;
 	}
 
-	TownID town_id = (TownID)(atoi(argv[1]));
+	TownID town_id = ParseType<TownID>(argv[1]).value_or(TownID::Invalid());
 	if (!Town::IsValidID(town_id)) {
 		return true;
 	}
@@ -3690,9 +3711,9 @@ static bool ConShowTownWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 	return true;
 }
 
-static bool ConShowStationWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConShowStationWindow(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Show station window.  Usage: 'show_station_window <station-id>'");
 		return true;
 	}
@@ -3701,7 +3722,7 @@ static bool ConShowStationWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]]
 		return true;
 	}
 
-	const BaseStation *bst = BaseStation::GetIfValid(atoi(argv[1]));
+	const BaseStation *bst = BaseStation::GetIfValid(ParseType<StationID>(argv[1]).value_or(StationID::Invalid()));
 	if (bst == nullptr) return true;
 	if (bst->facilities.Test(StationFacility::Waypoint)) {
 		ShowWaypointWindow(Waypoint::From(bst));
@@ -3712,9 +3733,9 @@ static bool ConShowStationWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]]
 	return true;
 }
 
-static bool ConShowIndustryWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConShowIndustryWindow(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Show industry window.  Usage: 'show_industry_window <industry-id>'");
 		return true;
 	}
@@ -3723,7 +3744,7 @@ static bool ConShowIndustryWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]
 		return true;
 	}
 
-	IndustryID ind_id = (IndustryID)(atoi(argv[1]));
+	IndustryID ind_id = ParseType<IndustryID>(argv[1]).value_or(IndustryID::Invalid());
 	if (!Industry::IsValidID(ind_id)) {
 		return true;
 	}
@@ -3734,9 +3755,9 @@ static bool ConShowIndustryWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]
 	return true;
 }
 
-static bool ConViewportDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConViewportDebug(std::span<std::string_view> argv)
 {
-	if (argc < 1 || argc > 2) {
+	if (argv.size() < 1 || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Debug: viewports flags.  Usage: 'viewport_debug [<flags>]'");
 		IConsolePrint(CC_HELP, "   1: VDF_DIRTY_BLOCK_PER_DRAW");
 		IConsolePrint(CC_HELP, "   2: VDF_DIRTY_WHOLE_VIEWPORT");
@@ -3749,27 +3770,32 @@ static bool ConViewportDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	}
 
 	extern uint32_t _viewport_debug_flags;
-	if (argc == 1) {
+	if (argv.size() == 1) {
 		IConsolePrint(CC_DEFAULT, "Viewport debug flags: {:X}", _viewport_debug_flags);
 	} else {
-		_viewport_debug_flags = std::strtoul(argv[1], nullptr, 16);
+		auto val = ParseInteger(argv[1], 16);
+		if (val.has_value()) {
+			_viewport_debug_flags = *val;
+		} else {
+			IConsolePrint(CC_ERROR, "Unable to parse: {}", argv[1]);
+		}
 	}
 
 	return true;
 }
 
-static bool ConViewportMarkDirty([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConViewportMarkDirty(std::span<std::string_view> argv)
 {
-	if (argc < 3 || argc > 5) {
+	if (argv.size() < 3 || argv.size() > 5) {
 		IConsolePrint(CC_HELP, "Debug: Mark main viewport dirty.  Usage: 'viewport_mark_dirty <x> <y> [<w> <h>]'");
 		return true;
 	}
 
 	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
-	uint l = std::strtoul(argv[1], nullptr, 0);
-	uint t = std::strtoul(argv[2], nullptr, 0);
-	uint r = std::min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);
-	uint b = std::min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
+	uint l = ParseInteger(argv[1], 0).value_or(0);
+	uint t = ParseInteger(argv[2], 0).value_or(0);
+	uint r = std::min<uint>(l + ((argv.size() > 3) ? ParseInteger(argv[3], 0).value_or(0) : 1), vp->dirty_blocks_per_row);
+	uint b = std::min<uint>(t + ((argv.size() > 4) ? ParseInteger(argv[4], 0).value_or(0) : 1), vp->dirty_blocks_per_column);
 	for (uint x = l; x < r; x++) {
 		for (uint y = t; y < b; y++) {
 			SetBit(vp->dirty_blocks[(x * vp->dirty_blocks_column_pitch) + (y / VP_BLOCK_BITS)], y % VP_BLOCK_BITS);
@@ -3781,9 +3807,9 @@ static bool ConViewportMarkDirty([[maybe_unused]] uint8_t argc, [[maybe_unused]]
 }
 
 
-static bool ConViewportMarkStationOverlayDirty([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConViewportMarkStationOverlayDirty(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Mark main viewport link graph overlay station links.  Usage: 'viewport_mark_dirty_st_overlay <station-id>'");
 		return true;
 	}
@@ -3792,16 +3818,16 @@ static bool ConViewportMarkStationOverlayDirty([[maybe_unused]] uint8_t argc, [[
 		return true;
 	}
 
-	const Station *st = Station::GetIfValid(atoi(argv[1]));
+	const Station *st = Station::GetIfValid(ParseType<StationID>(argv[1]).value_or(StationID::Invalid()));
 	if (st == nullptr) return true;
 	MarkAllViewportOverlayStationLinksDirty(st);
 
 	return true;
 }
 
-static bool ConGfxDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConGfxDebug(std::span<std::string_view> argv)
 {
-	if (argc < 1 || argc > 2) {
+	if (argv.size() < 1 || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Debug: gfx flags.  Usage: 'gfx_debug [<flags>]'");
 		IConsolePrint(CC_HELP, "  1: GDF_SHOW_WINDOW_DIRTY");
 		IConsolePrint(CC_HELP, "  2: GDF_SHOW_WIDGET_DIRTY");
@@ -3810,30 +3836,30 @@ static bool ConGfxDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	}
 
 	extern uint32_t _gfx_debug_flags;
-	if (argc == 1) {
+	if (argv.size() == 1) {
 		IConsolePrint(CC_DEFAULT, "Gfx debug flags: {:X}", _gfx_debug_flags);
 	} else {
-		_gfx_debug_flags = std::strtoul(argv[1], nullptr, 16);
+		_gfx_debug_flags = ParseInteger(argv[1], 16).value_or(0);
 	}
 
 	return true;
 }
 
-static bool ConCSleep([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConCSleep(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Sleep.  Usage: 'csleep <milliseconds>'");
 		return true;
 	}
 
-	CSleep(atoi(argv[1]));
+	CSleep(ParseInteger(argv[1]).value_or(0));
 
 	return true;
 }
 
-static bool ConRecalculateRoadCachedOneWayStates([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRecalculateRoadCachedOneWayStates(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Debug: Recalculate road cached one way states");
 		return true;
 	}
@@ -3844,9 +3870,9 @@ static bool ConRecalculateRoadCachedOneWayStates([[maybe_unused]] uint8_t argc, 
 	return true;
 }
 
-static bool ConMiscDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConMiscDebug(std::span<std::string_view> argv)
 {
-	if (argc < 1 || argc > 2) {
+	if (argv.size() < 1 || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsolePrint(CC_HELP, "  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
 		IConsolePrint(CC_HELP, "  2: MDF_ZONING_DEBUG_MODES");
@@ -3856,23 +3882,23 @@ static bool ConMiscDebug([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 		return true;
 	}
 
-	if (argc == 1) {
+	if (argv.size() == 1) {
 		IConsolePrint(CC_DEFAULT, "Misc debug flags: {:X}", _misc_debug_flags);
 	} else {
-		_misc_debug_flags = std::strtoul(argv[1], nullptr, 16);
+		_misc_debug_flags = ParseInteger(argv[1], 16).value_or(0);
 	}
 
 	return true;
 }
 
-static bool ConSetNewGRFOptimiserFlags([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSetNewGRFOptimiserFlags(std::span<std::string_view> argv)
 {
-	if (argc < 1 || argc > 2) {
+	if (argv.size() < 1 || argv.size() > 2) {
 		IConsolePrint(CC_HELP, "Debug: misc set_newgrf_optimiser_flags.  Usage: 'set_newgrf_optimiser_flags [<flags>]'");
 		return true;
 	}
 
-	if (argc == 1) {
+	if (argv.size() == 1) {
 		IConsolePrint(CC_DEFAULT, "NewGRF optimiser flags: {:X}", _settings_game.debug.newgrf_optimiser_flags);
 	} else {
 		if (_game_mode == GM_MENU || (_networking && !_network_server)) {
@@ -3885,9 +3911,13 @@ static bool ConSetNewGRFOptimiserFlags([[maybe_unused]] uint8_t argc, [[maybe_un
 			return true;
 		}
 
-		uint value = std::strtoul(argv[1], nullptr, 16);
-		if (_settings_game.debug.newgrf_optimiser_flags == value) return true;
-		_settings_game.debug.newgrf_optimiser_flags = value;
+		auto value = ParseInteger(argv[1], 16);
+		if (!value.has_value()) {
+			IConsolePrint(CC_ERROR, "Failed to parse: {}", argv[1]);
+			return true;
+		}
+		if (_settings_game.debug.newgrf_optimiser_flags == *value) return true;
+		_settings_game.debug.newgrf_optimiser_flags = *value;
 
 		ReloadNewGRFData();
 
@@ -3898,9 +3928,9 @@ static bool ConSetNewGRFOptimiserFlags([[maybe_unused]] uint8_t argc, [[maybe_un
 	return true;
 }
 
-static bool ConDoDisaster([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDoDisaster(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Debug: Do disaster");
 		return true;
 	}
@@ -3911,9 +3941,9 @@ static bool ConDoDisaster([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 	return true;
 }
 
-static bool ConBankruptCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConBankruptCompany(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Mark company as bankrupt.  Usage: 'bankrupt_company <company-id>'");
 		return true;
 	}
@@ -3923,7 +3953,7 @@ static bool ConBankruptCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 		return true;
 	}
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
+	CompanyID company_id = ParseCompanyID(argv[1]).value_or(CompanyID::Invalid());
 	if (!Company::IsValidID(company_id)) {
 		IConsolePrint(CC_DEFAULT, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
@@ -3939,9 +3969,9 @@ static bool ConBankruptCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	return true;
 }
 
-static bool ConDeleteCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDeleteCompany(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Delete company.  Usage: 'delete_company <company-id>'");
 		return true;
 	}
@@ -3951,7 +3981,7 @@ static bool ConDeleteCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 		return true;
 	}
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
+	CompanyID company_id = ParseCompanyID(argv[1]).value_or(CompanyID::Invalid());
 	if (!Company::IsValidID(company_id)) {
 		IConsolePrint(CC_DEFAULT, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
@@ -3968,9 +3998,9 @@ static bool ConDeleteCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return true;
 }
 
-static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConNewGRFProfile(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Collect performance data about NewGRF sprite requests and callbacks. Sub-commands can be abbreviated.");
 		IConsolePrint(CC_HELP, "Usage: 'newgrf_profile [list]':");
 		IConsolePrint(CC_HELP, "  List all NewGRFs that can be profiled, and their status.");
@@ -3990,7 +4020,7 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	std::span<const GRFFile> files = GetAllGRFFiles();
 
 	/* "list" sub-command */
-	if (argc == 1 || StrStartsWithIgnoreCase(argv[1], "lis")) {
+	if (argv.size() == 1 || StrStartsWithIgnoreCase(argv[1], "lis")) {
 		IConsolePrint(CC_INFO, "Loaded GRF files:");
 		int i = 1;
 		for (const auto &grf : files) {
@@ -4006,8 +4036,8 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	}
 
 	/* "select" sub-command */
-	if (StrStartsWithIgnoreCase(argv[1], "sel") && argc >= 3) {
-		for (size_t argnum = 2; argnum < argc; ++argnum) {
+	if (StrStartsWithIgnoreCase(argv[1], "sel") && argv.size() >= 3) {
+		for (size_t argnum = 2; argnum < argv.size(); ++argnum) {
 			auto grfnum = ParseInteger(argv[argnum]);
 			if (!grfnum.has_value() || *grfnum < 1 || static_cast<size_t>(*grfnum) > files.size()) {
 				IConsolePrint(CC_WARNING, "GRF number {} out of range, not added.", *grfnum);
@@ -4024,8 +4054,8 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	}
 
 	/* "unselect" sub-command */
-	if (StrStartsWithIgnoreCase(argv[1], "uns") && argc >= 3) {
-		for (size_t argnum = 2; argnum < argc; ++argnum) {
+	if (StrStartsWithIgnoreCase(argv[1], "uns") && argv.size() >= 3) {
+		for (size_t argnum = 2; argnum < argv.size(); ++argnum) {
 			if (StrEqualsIgnoreCase(argv[argnum], "all")) {
 				_newgrf_profilers.clear();
 				break;
@@ -4057,8 +4087,8 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 		if (started > 0) {
 			IConsolePrint(CC_DEBUG, "Started profiling for GRFID{} {}.", (started > 1) ? "s" : "", grfids);
 
-			if (argc >= 3) {
-				auto ticks = StringConsumer{std::string_view{argv[2]}}.TryReadIntegerBase<uint64_t>(0);
+			if (argv.size() >= 3) {
+				auto ticks = StringConsumer{argv[2]}.TryReadIntegerBase<uint64_t>(0);
 				if (!ticks.has_value()) {
 					IConsolePrint(CC_ERROR, "No valid amount of ticks was given, profiling will not stop automatically.");
 				} else {
@@ -4092,50 +4122,58 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return false;
 }
 
-static bool ConRoadTypeFlagCtl([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRoadTypeFlagCtl(std::span<std::string_view> argv)
 {
-	if (argc != 3) {
+	if (argv.size() != 3) {
 		IConsolePrint(CC_HELP, "Debug: Road/tram type flag control.");
 		return true;
 	}
 
-	RoadType rt = (RoadType)atoi(argv[1]);
-	uint flag = atoi(argv[2]);
+	RoadType rt = ParseType<RoadType>(argv[1]).value_or(ROADTYPE_END);
+	auto flag = ParseInteger(argv[2]);
+	if (!flag.has_value()) {
+		IConsolePrint(CC_ERROR, "Failed to parse: {}", argv[2]);
+		return true;
+	}
 
 	if (rt >= ROADTYPE_END) return true;
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 
 	if (flag >= 100) {
-		ToggleBit(_roadtypes[rt].extra_flags.edit_base(), flag - 100);
+		ToggleBit(_roadtypes[rt].extra_flags.edit_base(), *flag - 100);
 	} else {
-		ToggleBit(_roadtypes[rt].flags.edit_base(), flag);
+		ToggleBit(_roadtypes[rt].flags.edit_base(), *flag);
 	}
 
 	return true;
 }
 
-static bool ConRailTypeMapColourCtl([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConRailTypeMapColourCtl(std::span<std::string_view> argv)
 {
-	if (argc != 3) {
+	if (argv.size() != 3) {
 		IConsolePrint(CC_HELP, "Debug: Rail type map colour control.");
 		return true;
 	}
 
-	RailType rt = (RailType)atoi(argv[1]);
-	uint8_t map_colour = atoi(argv[2]);
+	RailType rt = ParseType<RailType>(argv[1]).value_or(RAILTYPE_END);
+	auto map_colour = ParseInteger(argv[2]);
+	if (!map_colour.has_value()) {
+		IConsolePrint(CC_ERROR, "Failed to parse: {}", argv[2]);
+		return true;
+	}
 
 	if (rt >= RAILTYPE_END) return true;
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
 
-	_railtypes[rt].map_colour = map_colour;
+	_railtypes[rt].map_colour = (uint8_t)*map_colour;
 	MarkAllViewportMapLandscapesDirty();
 
 	return true;
 }
 
-static bool ConSwitchBaseset([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConSwitchBaseset(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Debug: Try to switch baseset and reload NewGRFs. Usage: 'switch_baseset <baseset-name>'");
 		return true;
 	}
@@ -4154,52 +4192,56 @@ static bool ConSwitchBaseset([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	return 1;
 }
 
-static bool ConConditionalCommon(uint8_t argc, char *argv[], int value, const char *value_name, const char *name)
+static bool ConConditionalCommon(std::span<std::string_view> argv, int value, const char *value_name, const char *name)
 {
-	if (argc < 4) {
+	if (argv.size() < 4) {
 		IConsolePrint(CC_WARNING, "- Execute command if {} is within the specified range. Usage: '{} <minimum> <maximum> <command...>'", value_name, name);
 		return true;
 	}
 
-	int min_value = atoi(argv[1]);
-	int max_value = atoi(argv[2]);
+	auto min_value = StringConsumer{argv[1]}.TryReadIntegerBase<int>(10);
+	auto max_value = StringConsumer{argv[2]}.TryReadIntegerBase<int>(10);
+	if (!min_value.has_value() || !max_value.has_value()) {
+		IConsolePrint(CC_ERROR, "Failed to parse values.");
+		return true;
+	}
 
-	if (value >= min_value && value <= max_value) IConsoleCmdExecTokens(argc - 3, argv + 3);
+	if (value >= *min_value && value <= *max_value) IConsoleCmdExecTokens(argv.subspan(3));
 
 	return true;
 }
 
-static bool ConIfYear([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfYear(std::span<std::string_view> argv)
 {
-	return ConConditionalCommon(argc, argv, CalTime::CurYear().base(), "the current year (in game)", "if_year");
+	return ConConditionalCommon(argv, CalTime::CurYear().base(), "the current year (in game)", "if_year");
 }
 
-static bool ConIfMonth([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfMonth(std::span<std::string_view> argv)
 {
-	return ConConditionalCommon(argc, argv, CalTime::CurMonth() + 1, "the current month (in game)", "if_month");
+	return ConConditionalCommon(argv, CalTime::CurMonth() + 1, "the current month (in game)", "if_month");
 }
 
-static bool ConIfDay([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfDay(std::span<std::string_view> argv)
 {
-	return ConConditionalCommon(argc, argv, CalTime::CurDay(), "the current day of the month (in game)", "if_day");
+	return ConConditionalCommon(argv, CalTime::CurDay(), "the current day of the month (in game)", "if_day");
 }
 
-static bool ConIfHour([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfHour(std::span<std::string_view> argv)
 {
 	TickMinutes minutes = _settings_time.NowInTickMinutes();
-	return ConConditionalCommon(argc, argv, minutes.ClockHour(), "the current hour (in game, assuming time is in minutes)", "if_hour");
+	return ConConditionalCommon(argv, minutes.ClockHour(), "the current hour (in game, assuming time is in minutes)", "if_hour");
 }
 
-static bool ConIfMinute([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfMinute(std::span<std::string_view> argv)
 {
 	TickMinutes minutes = _settings_time.NowInTickMinutes();
-	return ConConditionalCommon(argc, argv, minutes.ClockMinute(), "the current minute (in game, assuming time is in minutes)", "if_minute");
+	return ConConditionalCommon(argv, minutes.ClockMinute(), "the current minute (in game, assuming time is in minutes)", "if_minute");
 }
 
-static bool ConIfHourMinute([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConIfHourMinute(std::span<std::string_view> argv)
 {
 	TickMinutes minutes = _settings_time.NowInTickMinutes();
-	return ConConditionalCommon(argc, argv, minutes.ClockHHMM(), "the current hour and minute 0000 - 2359 (in game, assuming time is in minutes)", "if_hour_minute");
+	return ConConditionalCommon(argv, minutes.ClockHHMM(), "the current hour and minute 0000 - 2359 (in game, assuming time is in minutes)", "if_hour_minute");
 }
 
 #ifdef _DEBUG
@@ -4215,9 +4257,9 @@ static void IConsoleDebugLibRegister()
 }
 #endif
 
-static bool ConFramerate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConFramerate(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Show frame rate and game speed information.");
 		return true;
 	}
@@ -4226,9 +4268,9 @@ static bool ConFramerate([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 	return true;
 }
 
-static bool ConFramerateWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConFramerateWindow(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Open the frame rate window.");
 		return true;
 	}
@@ -4242,9 +4284,9 @@ static bool ConFramerateWindow([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 	return true;
 }
 
-static bool ConFindNonRealisticBrakingSignal([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConFindNonRealisticBrakingSignal(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Find the next signal tile which prevents enabling of realistic braking");
 		return true;
 	}
@@ -4271,9 +4313,9 @@ static bool ConFindNonRealisticBrakingSignal([[maybe_unused]] uint8_t argc, [[ma
 	return true;
 }
 
-static bool ConFindMissingObject([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConFindMissingObject(std::span<std::string_view> argv)
 {
-	if (argc == 0) {
+	if (argv.empty()) {
 		IConsolePrint(CC_HELP, "Find the next object tile where the spec is missing");
 		return true;
 	}
@@ -4288,9 +4330,9 @@ static bool ConFindMissingObject([[maybe_unused]] uint8_t argc, [[maybe_unused]]
 	return true;
 }
 
-static bool ConDumpInfo([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
+static bool ConDumpInfo(std::span<std::string_view> argv)
 {
-	if (argc != 2) {
+	if (argv.size() != 2) {
 		IConsolePrint(CC_HELP, "Dump debugging information.");
 		IConsolePrint(CC_HELP, "Usage: 'dump_info roadtypes|railtypes|cargotypes'.");
 		IConsolePrint(CC_HELP, "  Show information about road/tram types, rail types or cargo types.");
@@ -4298,17 +4340,17 @@ static bool ConDumpInfo([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "roadtypes")) {
-		ConDumpRoadTypes(argc, argv);
+		ConDumpRoadTypes(argv);
 		return true;
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "railtypes")) {
-		ConDumpRailTypes(argc, argv);
+		ConDumpRailTypes(argv);
 		return true;
 	}
 
 	if (StrEqualsIgnoreCase(argv[1], "cargotypes")) {
-		ConDumpCargoTypes(argc, argv);
+		ConDumpCargoTypes(argv);
 		return true;
 	}
 

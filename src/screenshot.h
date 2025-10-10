@@ -30,10 +30,10 @@ enum ScreenshotType : uint8_t {
 bool MakeHeightmapScreenshot(const char *filename);
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, class SmallMapWindow *window);
 void MakeScreenshotWithConfirm(ScreenshotType t);
-bool MakeScreenshot(ScreenshotType t, const std::string &name, uint32_t width = 0, uint32_t height = 0);
-bool MakeMinimapWorldScreenshot(const char *name);
-bool MakeTopographyScreenshot(const char *name);
-bool MakeIndustryScreenshot(const char *name);
+bool MakeScreenshot(ScreenshotType t, std::string_view name, uint32_t width = 0, uint32_t height = 0);
+bool MakeMinimapWorldScreenshot(std::string_view name);
+bool MakeTopographyScreenshot(std::string_view name);
+bool MakeIndustryScreenshot(std::string_view name);
 
 extern std::string _screenshot_format_name;
 extern std::string _full_screenshot_path;
