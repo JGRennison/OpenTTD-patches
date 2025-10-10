@@ -444,7 +444,6 @@ STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Gosod tai
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Dewisiadau Gêm
-STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Gosodiadau
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Gosodiadau AI
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Gosodiadau sgript gêm
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Gosodiadau NewGRF
@@ -1080,7 +1079,6 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Mae hwn 
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Rhagolwg o ganlyniad yr arolwg
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Dangos canlyniadau arolwg y gêm sy'n rhedeg
 
-STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Graffeg
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Dangos cyfradd adnewyddu
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Dewis y cyfradd adnewyddu sgrin i'w defnyddio
@@ -1220,7 +1218,6 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Bodlon (dim eff
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Dim AI addas ar gael...{}{}Gallwch lawrlwytho sawl AI drwy'r system 'Cynnwys Ar-lein'
 
 # Settings tree window
-STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Gosodiadau
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Hidlydd:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Ehangu oll
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Cywasgu oll
@@ -2204,7 +2201,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Amlchwar
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Dewisiadau Gêm
 STR_INTRO_HIGHSCORE                                             :{BLACK}Tabl Sgôr Uchaf
 STR_INTRO_HELP                                                  :{BLACK}Cymorth a Llawlyfrau
-STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Gosodiadau
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Gosodiadau NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Cynnwys Ar-lein
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Gosodiadau AI
@@ -2226,7 +2222,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Dewis ti
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Agor dewisiadau'r gêm
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Agor y tabl sgôr uchaf
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Cael mynediad at ddogfenyddiaeth ac adnoddau ar-lein
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Agor gosodiadau
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Agor gosodiadau NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Gwirio am gynnwys newydd neu wedi'i ddiweddaru i'w lwytho i lawr
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Agor gosodiadau AI

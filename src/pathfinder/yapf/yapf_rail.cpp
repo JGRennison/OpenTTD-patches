@@ -108,7 +108,8 @@ private:
 			tile = TileAdd(tile, diff);
 		} while (IsCompatibleTrainStationTile(tile, start) && tile != this->origin_tile);
 
-		TriggerStationRandomisation(nullptr, start, StationRandomTrigger::PathReservation);
+		auto *st = Station::GetByTile(start);
+		TriggerStationRandomisation(st, start, StationRandomTrigger::PathReservation);
 
 		return true;
 	}
@@ -128,6 +129,11 @@ private:
 				this->res_fail_tile = tile;
 				this->res_fail_td = td;
 				return false;
+			}
+
+			if (IsRailWaypointTile(tile)) {
+				auto *st = BaseStation::GetByTile(tile);
+				TriggerStationRandomisation(st, tile, StationRandomTrigger::PathReservation);
 			}
 		}
 

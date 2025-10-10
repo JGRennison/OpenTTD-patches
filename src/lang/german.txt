@@ -445,7 +445,6 @@ STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Häuser platzie
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spieleinstellungen
-STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Einstellungen
 STR_SETTINGS_MENU_AI_SETTINGS                                   :KI-Einstellungen
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Spielskripteinstellungen
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-Einstellungen
@@ -1081,7 +1080,6 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Dies öf
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Vorschau des Datenerhebungsergebnisses
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Zeige die Datenerhebungsergebnisse des gerade laufenden Spiels an
 
-STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Bildwiederholrate
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Zu verwendende Bildwiederholrate auswählen
@@ -1221,7 +1219,6 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Hoch (kein Effe
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Keine geeignete KIs verfügbar …{}{}Verschiedene KIs sind via „Online-Inhalt“ verfügbar
 
 # Settings tree window
-STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Einstellungen
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filter:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Alles ausklappen
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Alles einklappen
@@ -2205,7 +2202,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Mehrspie
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spieleinstellungen
 STR_INTRO_HIGHSCORE                                             :{BLACK}Bestenliste
 STR_INTRO_HELP                                                  :{BLACK}Hilfe u. Anleitungen
-STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Einstellungen
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-Einstellungen
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Online-Inhalt
 STR_INTRO_AI_SETTINGS                                           :{BLACK}KI-Einstellungen
@@ -2227,7 +2223,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Spielzeu
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Spieleinstellungen öffnen
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Bestenliste öffnen
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Zugriff auf Dokumentation und Onlinehilfsmittel erhalten
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Einstellungen öffnen
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF-Einstellungen öffnen
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Prüfe, ob neue oder aktualisierte Erweiterungen zum Herunterladen bereitstehen
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}KI-Einstellungen öffnen

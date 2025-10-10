@@ -445,7 +445,6 @@ STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Placer des mais
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Options du Jeu
-STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Paramètres
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Configuration des IAs
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Configuration du script de jeu
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Paramètres NewGRF
@@ -1081,7 +1080,6 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Ouvre un
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Prévisualisation des données d'analyse
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Voir les données d'analyse de la partie en cours
 
-STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK} Graphiques
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Taux de rafraîchissement de l'affichage
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK} Sélectionnez la fréquence de rafraîchissement à utiliser
@@ -1221,7 +1219,6 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Permissive (pas
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Aucune IA utilisable...{}{}Vous pouvez télécharger diverses IA via le système de «{NBSP}Contenu en ligne{NBSP}».
 
 # Settings tree window
-STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Paramètres
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtre{NBSP}:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Tout développer
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Tout réduire
@@ -2205,7 +2202,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Jouer en
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Options du jeu
 STR_INTRO_HIGHSCORE                                             :{BLACK}Meilleurs scores
 STR_INTRO_HELP                                                  :{BLACK}Aide et manuels
-STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Paramètres de jeu
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Paramètres NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Contenu en ligne
 STR_INTRO_AI_SETTINGS                                           :{BLACK}Configuration des IAs
@@ -2227,7 +2223,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Sélecti
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Ouvrir les options du jeu
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Ouvrir le tableau des meilleurs scores
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Accéder à la documentation et aux ressources en ligne
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ouvrir les paramètres
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ouvrir la configuration des NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Vérifier les contenus nouveaux ou mis à jour téléchargeables
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Ouvrir la configuration des IAs

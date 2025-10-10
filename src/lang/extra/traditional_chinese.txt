@@ -2294,7 +2294,7 @@ STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}無法�
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}無法出售這間公司的股份……
 STR_ERROR_PROTECTED                                             :{WHITE}這間公司才剛成立，還不能交易股票……
 
-STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}更大的主工具欄
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :更大的主工具欄
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}增加主工具欄的大小
 
 STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}工具提示

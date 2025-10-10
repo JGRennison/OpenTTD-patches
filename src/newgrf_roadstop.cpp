@@ -438,8 +438,7 @@ uint8_t GetRoadStopTileAnimationSpeed(TileIndex tile)
 
 void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoType cargo_type)
 {
-	/* Get Station if it wasn't supplied */
-	if (st == nullptr) st = BaseStation::GetByTile(trigger_tile);
+	assert(st != nullptr);
 
 	/* Check the cached animation trigger bitmask to see if we need
 	 * to bother with any further processing. */
@@ -476,12 +475,13 @@ void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAn
  * @param trigger trigger type
  * @param cargo_type cargo type causing the trigger
  */
-void TriggerRoadStopRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoType cargo_type)
+void TriggerRoadStopRandomisation(BaseStation *st, TileIndex tile, StationRandomTrigger trigger, CargoType cargo_type)
 {
-	if (st == nullptr) st = Station::GetByTile(tile);
+	assert(st != nullptr);
 
 	/* Check the cached cargo trigger bitmask to see if we need
-	 * to bother with any further processing. */
+	 * to bother with any further processing.
+	 * Note: cached_roadstop_cargo_triggers must be non-zero even for cargo-independent triggers. */
 	if (st->cached_roadstop_cargo_triggers == 0) return;
 	if (cargo_type != INVALID_CARGO && !HasBit(st->cached_roadstop_cargo_triggers, cargo_type)) return;
 
@@ -490,7 +490,10 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, StationRandomTrig
 	uint32_t whole_reseed = 0;
 
 	/* Bitmask of completely empty cargo types to be matched. */
-	CargoTypes empty_mask = (trigger == StationRandomTrigger::CargoTaken) ? GetEmptyMask(st) : 0;
+	CargoTypes empty_mask{};
+	if (trigger == StationRandomTrigger::CargoTaken) {
+		empty_mask = GetEmptyMask(Station::From(st));
+	}
 
 	StationRandomTriggers used_random_triggers;
 	auto process_tile = [&](TileIndex cur_tile) {

@@ -444,7 +444,6 @@ STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :放置房屋
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :游戏选项
-STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :设置
 STR_SETTINGS_MENU_AI_SETTINGS                                   :AI 设置
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :游戏脚本设置
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF 设置
@@ -1080,7 +1079,6 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}这会�
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}预览调查结果
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}展示正在运行的存档的调查结果
 
-STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}图像
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}显示刷新率
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}选择需要的屏幕刷新率
@@ -1220,7 +1218,6 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :放任（所有
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}无合适的 AI 可用……{}{}可以使用“线上拓展内容”功能下载新的 AI
 
 # Settings tree window
-STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}设置
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}搜索条目：
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}展开全部
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}关闭全部
@@ -2204,7 +2201,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}联机�
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}游戏选项
 STR_INTRO_HIGHSCORE                                             :{BLACK}高分榜
 STR_INTRO_HELP                                                  :{BLACK}帮助和指南
-STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}设置
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 设置
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}线上拓展内容
 STR_INTRO_AI_SETTINGS                                           :{BLACK}AI 设置
@@ -2226,7 +2222,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}选择�
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}显示游戏选项
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}显示高分榜
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}获取说明和在线资源
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}显示设置
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}显示 NewGRF 设定
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}检查有无最新或可更新的内容可供下载
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}显示 AI 设置

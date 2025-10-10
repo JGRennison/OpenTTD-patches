@@ -446,7 +446,6 @@ STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Plasser hus
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spillinnstillinger
-STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Innstillinger
 STR_SETTINGS_MENU_AI_SETTINGS                                   :KI-innstilinger
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Innstillinger for Game Script
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-innstillinger
@@ -1082,7 +1081,6 @@ STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Dette å
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Forhåndsvis undersøkelsesresultater
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Vis undersøkelsesresultatene fra det pågående spillet
 
-STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafikk
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}VIs oppdateringsfrekvens
 STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Velg oppdateringsfrekvensen på skjermen
@@ -1222,7 +1220,6 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Tillatende (ing
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Ingen egnet KI tilgjengelig...{}{}Du kan laste ned flere KI-er fra nettet med spillets nedlastingssystem.
 
 # Settings tree window
-STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Innstillinger
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtrer:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Vis alle
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Skjul alle
@@ -2206,7 +2203,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Flerspil
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spillinnstillinger
 STR_INTRO_HIGHSCORE                                             :{BLACK}Tavle med høyeste poengsummer
 STR_INTRO_HELP                                                  :{BLACK}Hjelp og manualer
-STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Innstillinger
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-innstillinger
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Innhold på nettet
 STR_INTRO_AI_SETTINGS                                           :{BLACK}KI-innstillinger
@@ -2228,7 +2224,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Velg lek
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Åpne spillinnstillinger
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Åpne tabell med høyeste poengsummer
 STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Få tilgang til dokumentasjon og ressurser på nettet
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Åpne innstillinger
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Åpne NewGRF-instillinger
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Se etter nytt og oppdatert innhold for nedlasting
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Åpne KI-innstillinger

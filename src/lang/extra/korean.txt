@@ -2318,7 +2318,7 @@ STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}이 회�
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}이 회사 지분의 25%를 매도할 수 없습니다...
 STR_ERROR_PROTECTED                                             :{WHITE}이 회사는 지분을 거래할 수 있을 만큼 오래되지 않았습니다...
 
-STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}큰 메인 메뉴
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :큰 메인 메뉴
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}메인 메뉴의 크기를 키우려면 이 항목에 체크하세요
 
 STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}도움말

@@ -211,7 +211,7 @@ void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offs
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view);
 void AnimateNewObjectTile(TileIndex tile);
 uint8_t GetNewObjectTileAnimationSpeed(TileIndex tile);
-void TriggerObjectTileAnimation(Object *o, TileIndex tile, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
-void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
+bool TriggerObjectTileAnimation(Object *o, TileIndex tile, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
+bool TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
 
 #endif /* NEWGRF_OBJECT_H */

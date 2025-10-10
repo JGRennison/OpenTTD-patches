@@ -1947,12 +1947,12 @@ struct CompanyInfrastructureWindow : Window
 		this->vscroll->SetCapacityFromWidget(this, WID_CI_DESC);
 	}
 
-	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	void FindWindowPlacementAndResize(int def_width, int def_height, bool allow_resize) override
 	{
 		if (this->window_desc.GetPreferences().pref_height == 0) {
 			def_height = this->nested_root->smallest_y + this->height_extra;
 		}
-		Window::FindWindowPlacementAndResize(def_width, def_height);
+		Window::FindWindowPlacementAndResize(def_width, def_height, allow_resize);
 	}
 
 	/**

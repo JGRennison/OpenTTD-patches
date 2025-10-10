@@ -110,11 +110,26 @@ static IntervalTimer<TimerGameCalendar> _scheduled_monthly_timer = {{TimerGameCa
 /**
  * Change a string into its number representation. Supports decimal and hexadecimal numbers.
  * @param arg The string to be converted.
+ * @param base The base for parsing the number, defaults to only decimal numbers. Use 0 to also allow hexadecimal.
  * @return The number, or std::nullopt when it could not be parsed.
  */
-static std::optional<uint32_t> ParseInteger(std::string_view arg)
+static std::optional<uint32_t> ParseInteger(std::string_view arg, int base = 10)
 {
-	return StringConsumer{arg}.TryReadIntegerBase<uint32_t>(0);
+	return StringConsumer{arg}.TryReadIntegerBase<uint32_t>(base);
+}
+
+/**
+ * Parse an integer using #ParseInteger and convert it to the requested type.
+ * @param arg The string to be converted.
+ * @tparam T The type to return.
+ * @return The number in the given type, or std::nullopt when it could not be parsed.
+ */
+template <typename T>
+static std::optional<T> ParseType(std::string_view arg)
+{
+	auto i = ParseInteger(arg);
+	if (i.has_value()) return static_cast<T>(*i);
+	return std::nullopt;
 }
 
 /** File list storage for the console, for caching the last 'ls' command. */
@@ -332,7 +347,7 @@ static bool ConResetTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *a
 	}
 
 	if (argc == 2) {
-		auto result = ParseInteger(argv[1]);
+		auto result = ParseInteger(argv[1], 0);
 		if (result.has_value() && IsValidTile(*result)) {
 			DoClearSquare(TileIndex{*result});
 			return true;
@@ -427,7 +442,7 @@ static bool ConScrollToTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 
 	switch (argc - arg_index) {
 		case 1: {
-			auto result = ParseInteger(argv[arg_index]);
+			auto result = ParseInteger(argv[arg_index], 0);
 			if (result.has_value()) {
 				if (*result >= Map::Size()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
@@ -440,8 +455,8 @@ static bool ConScrollToTile([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 		}
 
 		case 2: {
-			auto x = ParseInteger(argv[arg_index]);
-			auto y = ParseInteger(argv[arg_index + 1]);
+			auto x = ParseInteger(argv[arg_index], 0);
+			auto y = ParseInteger(argv[arg_index + 1], 0);
 			if (x.has_value() && y.has_value()) {
 				if (*x >= Map::SizeX() || *y >= Map::SizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
@@ -519,8 +534,7 @@ static bool ConSave([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	}
 
 	if (argc == 2) {
-		std::string filename = argv[1];
-		filename += ".sav";
+		std::string filename = fmt::format("{}.sav", argv[1]);
 		IConsolePrint(CC_DEFAULT, "Saving map...");
 
 		if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, SAVE_DIR) != SL_OK) {
@@ -560,7 +574,7 @@ static bool ConLoad([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 
 	if (argc != 2) return false;
 
-	const char *file = argv[1];
+	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList();
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
@@ -586,7 +600,7 @@ static bool ConLoadScenario([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 
 	if (argc != 2) return false;
 
-	const char *file = argv[1];
+	std::string_view file = argv[1];
 	_console_file_list_scenario.ValidateFileList();
 	const FiosItem *item = _console_file_list_scenario.FindItem(file);
 	if (item != nullptr) {
@@ -612,7 +626,7 @@ static bool ConLoadHeightmap([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 
 	if (argc != 2) return false;
 
-	const char *file = argv[1];
+	std::string_view file = argv[1];
 	_console_file_list_heightmap.ValidateFileList();
 	const FiosItem *item = _console_file_list_heightmap.FindItem(file);
 	if (item != nullptr) {
@@ -638,7 +652,7 @@ static bool ConRemove([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 
 	if (argc != 2) return false;
 
-	const char *file = argv[1];
+	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList();
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
@@ -716,7 +730,7 @@ static bool ConChangeDirectory([[maybe_unused]] uint8_t argc, [[maybe_unused]] c
 
 	if (argc != 2) return false;
 
-	const char *file = argv[1];
+	std::string_view file = argv[1];
 	_console_file_list_savegame.ValidateFileList(true);
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
@@ -768,38 +782,42 @@ static bool ConClearBuffer([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
  * Network Core Console Commands
  **********************************/
 
-static bool ConKickOrBan(const char *argv, bool ban, const std::string &reason)
+static bool ConKickOrBan(std::string_view arg, bool ban, const std::string_view reason)
 {
 	uint n;
 
-	if (strchr(argv, '.') == nullptr && strchr(argv, ':') == nullptr) { // banning with ID
-		ClientID client_id = (ClientID)atoi(argv);
+	if (arg.find_first_of(".:") == std::string::npos) { // banning with ID
+		auto client_id = ParseType<ClientID>(arg);
+		if (!client_id.has_value()) {
+			IConsolePrint(CC_ERROR, "The given client-id is not a valid number.");
+			return true;
+		}
 
 		/* Don't kill the server, or the client doing the rcon. The latter can't be kicked because
 		 * kicking frees closes and subsequently free the connection related instances, which we
 		 * would be reading from and writing to after returning. So we would read or write data
 		 * from freed memory up till the segfault triggers. */
-		if (client_id == CLIENT_ID_SERVER || client_id == _redirect_console_to_client) {
+		if (*client_id == CLIENT_ID_SERVER || *client_id == _redirect_console_to_client) {
 			IConsolePrint(CC_ERROR, "You can not {} yourself!", ban ? "ban" : "kick");
 			return true;
 		}
 
-		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
+		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(*client_id);
 		if (ci == nullptr) {
-			IConsolePrint(CC_ERROR, "Invalid client ID.");
+			IConsolePrint(CC_ERROR, "Invalid client-id.");
 			return true;
 		}
 
 		if (!ban) {
 			/* Kick only this client, not all clients with that IP */
-			NetworkServerKickClient(client_id, reason);
+			NetworkServerKickClient(*client_id, reason);
 			return true;
 		}
 
 		/* When banning, kick+ban all clients with that IP */
-		n = NetworkServerKickOrBanIP(client_id, ban, reason);
+		n = NetworkServerKickOrBanIP(*client_id, ban, reason);
 	} else {
-		n = NetworkServerKickOrBanIP(argv, ban, reason);
+		n = NetworkServerKickOrBanIP(arg, ban, reason);
 	}
 
 	if (n == 0) {
@@ -876,7 +894,7 @@ static bool ConUnBan([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[
 
 	/* Try by index. */
 	if (index >= _network_ban_list.size()) {
-		index = atoi(argv[1]) - 1U; // let it wrap
+		index = ParseInteger(argv[1]).value_or(0) - 1U; // let it wrap
 	}
 
 	if (index < _network_ban_list.size()) {
@@ -1041,15 +1059,19 @@ static bool ConClientNickChange([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 		return true;
 	}
 
-	ClientID client_id = (ClientID)atoi(argv[1]);
+	auto client_id = ParseType<ClientID>(argv[1]);
+	if (!client_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given client-id is not a valid number.");
+		return true;
+	}
 
-	if (client_id == CLIENT_ID_SERVER) {
+	if (*client_id == CLIENT_ID_SERVER) {
 		IConsolePrint(CC_ERROR, "Please use the command 'name' to change your own name!");
 		return true;
 	}
 
-	if (NetworkClientInfo::GetByClientID(client_id) == nullptr) {
-		IConsolePrint(CC_ERROR, "Invalid client ID.");
+	if (NetworkClientInfo::GetByClientID(*client_id) == nullptr) {
+		IConsolePrint(CC_ERROR, "Invalid client-id.");
 		return true;
 	}
 
@@ -1060,11 +1082,18 @@ static bool ConClientNickChange([[maybe_unused]] uint8_t argc, [[maybe_unused]] 
 		return true;
 	}
 
-	if (!NetworkServerChangeClientName(client_id, client_name)) {
+	if (!NetworkServerChangeClientName(*client_id, client_name)) {
 		IConsolePrint(CC_ERROR, "Cannot give a client a duplicate name.");
 	}
 
 	return true;
+}
+
+static std::optional<CompanyID> ParseCompanyID(std::string_view arg)
+{
+	auto company_id = ParseType<CompanyID>(arg);
+	if (company_id.has_value() && *company_id <= MAX_COMPANIES) return static_cast<CompanyID>(*company_id - 1);
+	return company_id;
 }
 
 static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
@@ -1075,17 +1104,21 @@ static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 		return true;
 	}
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) <= MAX_COMPANIES ? atoi(argv[1]) - 1 : atoi(argv[1]));
+	auto company_id = ParseCompanyID(argv[1]);
+	if (!company_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
 
 	if (!_networking) {
 		/* Check we have a valid company id! */
-		if (!Company::IsValidID(company_id)) {
+		if (!Company::IsValidID(*company_id)) {
 			IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 			return true;
 		}
 
 		OrderBackup::Reset();
-		SetLocalCompany(company_id);
+		SetLocalCompany(*company_id);
 		_cheats.switch_company.been_used = true;
 		return true;
 	}
@@ -1097,32 +1130,32 @@ static bool ConJoinCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char 
 	}
 
 	/* Check we have a valid company id! */
-	if (!Company::IsValidID(company_id) && company_id != COMPANY_SPECTATOR) {
+	if (!Company::IsValidID(*company_id) && *company_id != COMPANY_SPECTATOR) {
 		IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
-	if (info->client_playas == company_id) {
+	if (info->client_playas == *company_id) {
 		IConsolePrint(CC_ERROR, "You are already there!");
 		return true;
 	}
 
-	if (company_id != COMPANY_SPECTATOR && !Company::IsHumanID(company_id)) {
+	if (*company_id != COMPANY_SPECTATOR && !Company::IsHumanID(*company_id)) {
 		IConsolePrint(CC_ERROR, "Cannot join AI company.");
 		return true;
 	}
 
 	/* Check if the company requires a password */
-	if (NetworkCompanyIsPassworded(company_id) && argc < 3) {
-		IConsolePrint(CC_ERROR, "Company {} requires a password to join.", company_id + 1);
+	if (NetworkCompanyIsPassworded(*company_id) && argc < 3) {
+		IConsolePrint(CC_ERROR, "Company {} requires a password to join.", *company_id + 1);
 		return true;
 	}
 
 	/* non-dedicated server may just do the move! */
 	if (_network_server) {
-		NetworkServerDoMove(CLIENT_ID_SERVER, company_id);
+		NetworkServerDoMove(CLIENT_ID_SERVER, *company_id);
 	} else {
-		NetworkClientRequestMove(company_id, NetworkCompanyIsPassworded(company_id) ? argv[2] : "");
+		NetworkClientRequestMove(*company_id, NetworkCompanyIsPassworded(*company_id) ? argv[2] : "");
 	}
 
 	return true;
@@ -1136,8 +1169,18 @@ static bool ConMoveClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		return true;
 	}
 
-	const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID((ClientID)atoi(argv[1]));
-	CompanyID company_id = (CompanyID)(atoi(argv[2]) <= MAX_COMPANIES ? atoi(argv[2]) - 1 : atoi(argv[2]));
+	auto client_id = ParseType<ClientID>(argv[1]);
+	if (!client_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given client-id is not a valid number.");
+		return true;
+	}
+	const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(*client_id);
+
+	auto company_id = ParseCompanyID(argv[2]);
+	if (!company_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
 
 	/* check the client exists */
 	if (ci == nullptr) {
@@ -1145,12 +1188,12 @@ static bool ConMoveClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		return true;
 	}
 
-	if (!Company::IsValidID(company_id) && company_id != COMPANY_SPECTATOR) {
+	if (!Company::IsValidID(*company_id) && *company_id != COMPANY_SPECTATOR) {
 		IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
-	if (company_id != COMPANY_SPECTATOR && !Company::IsHumanID(company_id)) {
+	if (*company_id != COMPANY_SPECTATOR && !Company::IsHumanID(*company_id)) {
 		IConsolePrint(CC_ERROR, "You cannot move clients to AI companies.");
 		return true;
 	}
@@ -1160,13 +1203,13 @@ static bool ConMoveClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 		return true;
 	}
 
-	if (ci->client_playas == company_id) {
+	if (ci->client_playas == *company_id) {
 		IConsolePrint(CC_ERROR, "You cannot move someone to where they already are!");
 		return true;
 	}
 
 	/* we are the server, so force the update */
-	NetworkServerDoMove(ci->client_id, company_id);
+	NetworkServerDoMove(ci->client_id, *company_id);
 
 	return true;
 }
@@ -1181,32 +1224,36 @@ static bool ConResetCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char
 
 	if (argc != 2) return false;
 
-	CompanyID index = (CompanyID)(atoi(argv[1]) - 1);
-
-	/* Check valid range */
-	if (!Company::IsValidID(index)) {
-		IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
+	auto index = ParseCompanyID(argv[1]);
+	if (!index.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
 		return true;
 	}
 
-	if (!Company::IsHumanID(index)) {
+	/* Check valid range */
+	if (!Company::IsValidID(*index)) {
+		IConsolePrint(CC_ERROR, "Company does not exist. company-id must be between 1 and {}.", MAX_COMPANIES);
+		return true;
+	}
+
+	if (!Company::IsHumanID(*index)) {
 		IConsolePrint(CC_ERROR, "Company is owned by an AI.");
 		return true;
 	}
 
-	if (NetworkCompanyHasClients(index)) {
+	if (NetworkCompanyHasClients(*index)) {
 		IConsolePrint(CC_ERROR, "Cannot remove company: a client is connected to that company.");
 		return false;
 	}
 	const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
 	assert(ci != nullptr);
-	if (ci->client_playas == index) {
+	if (ci->client_playas == *index) {
 		IConsolePrint(CC_ERROR, "Cannot remove company: the server is connected to that company.");
 		return true;
 	}
 
 	/* It is safe to remove this company */
-	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, index, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, *index, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;
@@ -1280,21 +1327,21 @@ static bool ConNetworkClients([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 static bool ConNetworkReconnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
 {
 	if (argc == 0) {
-		IConsolePrint(CC_HELP, "Reconnect to server to which you were connected last time. Usage: 'reconnect [<company>]'.");
-		IConsolePrint(CC_HELP, "Company 255 is spectator (default, if not specified), 0 means creating new company.");
+		IConsolePrint(CC_HELP, "Reconnect to server to which you were connected last time. Usage: 'reconnect [<company-id>]'.");
+		IConsolePrint(CC_HELP, "Company 255 is spectator (default, if not specified), 254 means creating new company.");
 		IConsolePrint(CC_HELP, "All others are a certain company with Company 1 being #1.");
 		return true;
 	}
 
-	CompanyID playas = (argc >= 2) ? (CompanyID)atoi(argv[1]) : COMPANY_SPECTATOR;
-	switch (playas.base()) {
-		case 0: playas = COMPANY_NEW_COMPANY; break;
-		case COMPANY_SPECTATOR.base(): /* nothing to do */ break;
-		default:
-			/* From a user pov 0 is a new company, internally it's different and all
-			 * companies are offset by one to ease up on users (eg companies 1-8 not 0-7) */
-			if (playas < CompanyID::Begin() + 1 || playas > MAX_COMPANIES + 1) return false;
-			break;
+	CompanyID playas = COMPANY_SPECTATOR;
+	if (argc >= 2) {
+		auto company_id = ParseCompanyID(argv[1]);
+		if (!company_id.has_value()) {
+			IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+			return true;
+		}
+		if (*company_id >= MAX_COMPANIES && *company_id != COMPANY_NEW_COMPANY && *company_id != COMPANY_SPECTATOR) return false;
+		playas = *company_id;
 	}
 
 	if (_settings_client.network.last_joined.empty()) {
@@ -1329,7 +1376,8 @@ static bool ConNetworkConnect([[maybe_unused]] uint8_t argc, [[maybe_unused]] ch
 static bool ConExec([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
 {
 	if (argc == 0) {
-		IConsolePrint(CC_HELP, "Execute a local script file. Usage: 'exec <script> <?>'.");
+		IConsolePrint(CC_HELP, "Execute a local script file. Usage: 'exec <script> [0]'.");
+		IConsolePrint(CC_HELP, "By passing '0' after the script name, no warning about a missing script file will be shown.");
 		return true;
 	}
 
@@ -1338,7 +1386,7 @@ static bool ConExec([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	auto script_file = FioFOpenFile(argv[1], "r", BASE_DIR);
 
 	if (!script_file.has_value()) {
-		if (argc == 2 || atoi(argv[2]) != 0) IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[1]);
+		if (argc == 2 || strcmp(argv[2], "0") != 0) IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[1]);
 		return true;
 	}
 
@@ -1455,7 +1503,7 @@ static bool ConEcho([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[]
 	}
 
 	if (argc < 2) return false;
-	IConsolePrint(CC_DEFAULT, argv[1]);
+	IConsolePrint(CC_DEFAULT, "{}", argv[1]);
 	return true;
 }
 
@@ -1467,7 +1515,14 @@ static bool ConEchoC([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[
 	}
 
 	if (argc < 3) return false;
-	IConsolePrint((TextColour)Clamp(atoi(argv[1]), TC_BEGIN, TC_END - 1), argv[2]);
+
+	auto colour = ParseInteger(argv[1]);
+	if (!colour.has_value() || !IsInsideMM(*colour, TC_BEGIN, TC_END)) {
+		IConsolePrint(CC_ERROR, "The colour must be a number between {} and {}.", TC_BEGIN, TC_END - 1);
+		return true;
+	}
+
+	IConsolePrint(static_cast<TextColour>(*colour), argv[2]);
 	return true;
 }
 
@@ -1631,8 +1686,12 @@ static bool ConStartAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 				size_t name_length = e - argv[1];
 				e++;
 
-				int version = atoi(e);
-				config->Change(std::string(argv[1], name_length), version, true);
+				auto version = ParseInteger(e);
+				if (!version.has_value()) {
+					IConsolePrint(CC_ERROR, "The version is not a valid number.");
+					return true;
+				}
+				config->Change(std::string(argv[1], name_length), *version, true);
 			}
 		}
 
@@ -1669,21 +1728,26 @@ static bool ConReloadAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *ar
 		return true;
 	}
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
-	if (!Company::IsValidID(company_id)) {
+	auto company_id = ParseCompanyID(argv[1]);
+	if (!company_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
+
+	if (!Company::IsValidID(*company_id)) {
 		IConsolePrint(CC_ERROR, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
 	/* In singleplayer mode the player can be in an AI company, after cheating or loading network save with an AI in first slot. */
-	if (Company::IsHumanID(company_id) || company_id == _local_company) {
+	if (Company::IsHumanID(*company_id) || *company_id == _local_company) {
 		IConsolePrint(CC_ERROR, "Company is not controlled by an AI.");
 		return true;
 	}
 
 	/* First kill the company of the AI, then start a new one. This should start the current AI again */
-	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
-	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, company_id, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, *company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_NEW_AI, *company_id, CRR_NONE, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI reloaded.");
 
 	return true;
@@ -1707,20 +1771,25 @@ static bool ConStopAI([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv
 		return true;
 	}
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
-	if (!Company::IsValidID(company_id)) {
+	auto company_id = ParseCompanyID(argv[1]);
+	if (!company_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
+
+	if (!Company::IsValidID(*company_id)) {
 		IConsolePrint(CC_ERROR, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
 	/* In singleplayer mode the player can be in an AI company, after cheating or loading network save with an AI in first slot. */
-	if (Company::IsHumanID(company_id) || company_id == _local_company) {
+	if (Company::IsHumanID(*company_id) || *company_id == _local_company) {
 		IConsolePrint(CC_ERROR, "Company is not controlled by an AI.");
 		return true;
 	}
 
 	/* Now kill the company of the AI. */
-	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, *company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI stopped, company deleted.");
 
 	return true;
@@ -2161,17 +2230,22 @@ static bool ConSayCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 
 	if (argc != 3) return false;
 
-	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
-	if (!Company::IsValidID(company_id)) {
+	auto company_id = ParseCompanyID(argv[1]);
+	if (!company_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given company-id is not a valid number.");
+		return true;
+	}
+
+	if (!Company::IsValidID(*company_id)) {
 		IConsolePrint(CC_DEFAULT, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id.base(), argv[2]);
+		NetworkClientSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id->base(), argv[2]);
 	} else {
 		bool from_admin = (_redirect_console_to_admin < AdminID::Invalid());
-		NetworkServerSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id.base(), argv[2], CLIENT_ID_SERVER, from_admin);
+		NetworkServerSendChat(NETWORK_ACTION_CHAT_COMPANY, DESTTYPE_TEAM, company_id->base(), argv[2], CLIENT_ID_SERVER, from_admin);
 	}
 
 	return true;
@@ -2180,18 +2254,24 @@ static bool ConSayCompany([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *
 static bool ConSayClient([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *argv[])
 {
 	if (argc == 0) {
-		IConsolePrint(CC_HELP, "Chat to a certain client in a multiplayer game. Usage: 'say_client <client-no> \"<msg>\"'.");
+		IConsolePrint(CC_HELP, "Chat to a certain client in a multiplayer game. Usage: 'say_client <client-id> \"<msg>\"'.");
 		IConsolePrint(CC_HELP, "For client-id's, see the command 'clients'.");
 		return true;
 	}
 
 	if (argc != 3) return false;
 
+	auto client_id = ParseType<ClientID>(argv[1]);
+	if (!client_id.has_value()) {
+		IConsolePrint(CC_ERROR, "The given client-id is not a valid number.");
+		return true;
+	}
+
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, atoi(argv[1]), argv[2]);
+		NetworkClientSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, *client_id, argv[2]);
 	} else {
 		bool from_admin = (_redirect_console_to_admin < AdminID::Invalid());
-		NetworkServerSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, atoi(argv[1]), argv[2], CLIENT_ID_SERVER, from_admin);
+		NetworkServerSendChat(NETWORK_ACTION_CHAT_CLIENT, DESTTYPE_CLIENT, *client_id, argv[2], CLIENT_ID_SERVER, from_admin);
 	}
 
 	return true;
@@ -2433,7 +2513,7 @@ static bool ConCompanyPasswordHashes([[maybe_unused]] uint8_t argc, [[maybe_unus
 #include "network/network_content.h"
 
 /** Resolve a string to a content type. */
-static ContentType StringToContentType(const char *str)
+static ContentType StringToContentType(std::string_view str)
 {
 	static const std::initializer_list<std::pair<std::string_view, ContentType>> content_types = {
 		{"base",      CONTENT_TYPE_BASE_GRAPHICS},
@@ -2526,8 +2606,10 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 			 * the spirit of this service. Additionally, these few people were
 			 * good for 70% of the consumed bandwidth of BaNaNaS. */
 			IConsolePrint(CC_ERROR, "'select all' is no longer supported since 1.11.");
+		} else if (auto content_id = ParseType<ContentID>(argv[2]); content_id.has_value()) {
+			_network_content_client.Select(*content_id);
 		} else {
-			_network_content_client.Select((ContentID)atoi(argv[2]));
+			IConsolePrint(CC_ERROR, "The given content-id is not a number or 'all'");
 		}
 		return true;
 	}
@@ -2539,8 +2621,10 @@ static bool ConContent([[maybe_unused]] uint8_t argc, [[maybe_unused]] char *arg
 		}
 		if (StrEqualsIgnoreCase(argv[2], "all")) {
 			_network_content_client.UnselectAll();
+		} else if (auto content_id = ParseType<ContentID>(argv[2]); content_id.has_value()) {
+			_network_content_client.Unselect(*content_id);
 		} else {
-			_network_content_client.Unselect((ContentID)atoi(argv[2]));
+			IConsolePrint(CC_ERROR, "The given content-id is not a number or 'all'");
 		}
 		return true;
 	}
@@ -3924,14 +4008,14 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 	/* "select" sub-command */
 	if (StrStartsWithIgnoreCase(argv[1], "sel") && argc >= 3) {
 		for (size_t argnum = 2; argnum < argc; ++argnum) {
-			int grfnum = atoi(argv[argnum]);
-			if (grfnum < 1 || grfnum > (int)files.size()) { // safe cast, files.size() should not be larger than a few hundred in the most extreme cases
-				IConsolePrint(CC_WARNING, "GRF number {} out of range, not added.", grfnum);
+			auto grfnum = ParseInteger(argv[argnum]);
+			if (!grfnum.has_value() || *grfnum < 1 || static_cast<size_t>(*grfnum) > files.size()) {
+				IConsolePrint(CC_WARNING, "GRF number {} out of range, not added.", *grfnum);
 				continue;
 			}
-			const GRFFile *grf = &files[grfnum - 1];
+			const GRFFile *grf = &files[*grfnum - 1];
 			if (std::any_of(_newgrf_profilers.begin(), _newgrf_profilers.end(), [&](NewGRFProfiler &pr) { return pr.grffile == grf; })) {
-				IConsolePrint(CC_WARNING, "GRF number {} [{:08X}] is already selected for profiling.", grfnum, std::byteswap(grf->grfid));
+				IConsolePrint(CC_WARNING, "GRF number {} [{:08X}] is already selected for profiling.", *grfnum, std::byteswap(grf->grfid));
 				continue;
 			}
 			_newgrf_profilers.emplace_back(grf);
@@ -3946,12 +4030,12 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 				_newgrf_profilers.clear();
 				break;
 			}
-			int grfnum = atoi(argv[argnum]);
-			if (grfnum < 1 || grfnum > (int)files.size()) {
-				IConsolePrint(CC_WARNING, "GRF number {} out of range, not removing.", grfnum);
+			auto grfnum = ParseInteger(argv[argnum]);
+			if (!grfnum.has_value() || *grfnum < 1 || static_cast<size_t>(*grfnum) > files.size()) {
+				IConsolePrint(CC_WARNING, "GRF number {} out of range, not removing.", *grfnum);
 				continue;
 			}
-			const GRFFile *grf = &files[grfnum - 1];
+			const GRFFile *grf = &files[*grfnum - 1];
 			_newgrf_profilers.erase(std::ranges::find(_newgrf_profilers, grf, &NewGRFProfiler::grffile));
 		}
 		return true;
@@ -3974,9 +4058,13 @@ static bool ConNewGRFProfile([[maybe_unused]] uint8_t argc, [[maybe_unused]] cha
 			IConsolePrint(CC_DEBUG, "Started profiling for GRFID{} {}.", (started > 1) ? "s" : "", grfids);
 
 			if (argc >= 3) {
-				uint64_t ticks = std::max(atoi(argv[2]), 1);
-				NewGRFProfiler::StartTimer(ticks);
-				IConsolePrint(CC_DEBUG, "Profiling will automatically stop after {} ticks.", ticks);
+				auto ticks = StringConsumer{std::string_view{argv[2]}}.TryReadIntegerBase<uint64_t>(0);
+				if (!ticks.has_value()) {
+					IConsolePrint(CC_ERROR, "No valid amount of ticks was given, profiling will not stop automatically.");
+				} else {
+					NewGRFProfiler::StartTimer(*ticks);
+					IConsolePrint(CC_DEBUG, "Profiling will automatically stop after {} ticks.", *ticks);
+				}
 			}
 		} else if (_newgrf_profilers.empty()) {
 			IConsolePrint(CC_ERROR, "No GRFs selected for profiling, did not start.");

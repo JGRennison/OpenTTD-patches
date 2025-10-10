@@ -1950,7 +1950,7 @@ STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nelze ko
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nelze prodat podíl v této společnosti...
 STR_ERROR_PROTECTED                                             :{WHITE}Tato společnost zatím neobchoduje s akciemi...
 
-STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Zvětšit hlavní lištu
+STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :Zvětšit hlavní lištu
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Zaškrtni pro zvětšení hlavní lišty nástrojů
 
 STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}Kontextová nápověda
