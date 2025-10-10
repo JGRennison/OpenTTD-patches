@@ -622,7 +622,7 @@ void AfterLoadVehiclesPhase2(bool part_of_load)
 		v->UpdateDeltaXY();
 		v->coord.left = INVALID_COORD;
 		v->UpdatePosition();
-		v->UpdateViewport(false);
+		if (v->type != VEH_SHIP || v->Previous() == nullptr) v->UpdateViewport(false);
 		v->cargo.AssertCountConsistency();
 	}
 }
