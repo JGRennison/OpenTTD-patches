@@ -967,9 +967,12 @@ void SetCommandPayloadClientID(T &payload, ClientID client_id)
 template <typename T>
 concept CommandPayloadStringType = std::is_same_v<T, std::string> || std::is_same_v<T, EncodedString>;
 
+template <typename T>
+concept CommandPayloadAsRef = CommandPayloadStringType<T> || T::command_payload_as_ref || false;
+
 struct CommandProcTupleAdapter {
 	template <typename T>
-	using replace_string_t = std::conditional_t<CommandPayloadStringType<T>, const T &, T>;
+	using with_ref_params = std::conditional_t<CommandPayloadAsRef<T>, const T &, T>;
 };
 
 struct BaseTupleCmdDataTag{};
@@ -980,8 +983,8 @@ namespace TupleCmdDataDetail {
 	 */
 	template <typename... T>
 	struct EMPTY_BASES BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
-		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::replace_string_t<T>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::replace_string_t<T>...);
+		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
 		using Tuple = std::tuple<T...>;
 		Tuple values;
 
@@ -1042,8 +1045,8 @@ private:
 
 	template <typename... Targs>
 	struct TupleHelper<std::tuple<Targs...>> {
-		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
 		using ValueTuple = std::tuple<std::remove_cvref_t<Targs>...>;
 		using ConstRefTuple = std::tuple<const std::remove_reference_t<Targs> &...>;
 

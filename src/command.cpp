@@ -230,8 +230,8 @@ template <Commands Tcmd, typename S> struct CommandCallbackTupleHelper;
 
 template <Commands Tcmd, typename... Targs>
 struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
-	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
-	using ResultTileTupleCommandCallback = void(const CommandCost &, TileIndex, typename CommandProcTupleAdapter::replace_string_t<std::remove_cvref_t<Targs>>...);
+	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
+	using ResultTileTupleCommandCallback = void(const CommandCost &, TileIndex, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
 
 	static inline bool ResultExecute(ResultTupleCommandCallback *cb, Commands cmd, const CommandCost &result, const CommandPayloadBase &payload)
 	{
