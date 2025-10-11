@@ -1047,6 +1047,8 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	return res2;
 }
 
+CommandLargeResultBase::~CommandLargeResultBase() {}
+
 CommandCost::CommandCost(const CommandCost &other)
 {
 	*this = other;
@@ -1208,6 +1210,15 @@ void CommandCost::SetResultDataWithType(CommandResultData result)
 	} else {
 		this->inl.result = result;
 	}
+}
+
+void CommandCost::SetLargeResult(std::shared_ptr<const CommandLargeResultBase> large_result)
+{
+	if (this->GetInlineType() != CommandCostInlineType::AuxiliaryData) {
+		this->AllocAuxData();
+	}
+
+	this->inl.aux_data->large_result = std::move(large_result);
 }
 
 template <typename T>

@@ -90,6 +90,10 @@ public:
 	}
 };
 
+struct CommandLargeResultBase {
+	virtual ~CommandLargeResultBase();
+};
+
 /**
  * Common return value for all commands. Wraps the cost and
  * a possible error message/state together.
@@ -124,6 +128,7 @@ class CommandCost {
 		StringID extra_message = INVALID_STRING_ID;     ///< Additional warning message for when success is unset
 		TileIndex tile = INVALID_TILE;
 		CommandResultData result{};
+		std::shared_ptr<const CommandLargeResultBase> large_result;
 	};
 
 	union {
@@ -410,6 +415,17 @@ public:
 	inline void SetResultData(T result)
 	{
 		this->SetResultDataWithType({ static_cast<uint32_t>(result.base()), GetCommandCostResultDataTypeID<T>() });
+	}
+
+	void SetLargeResult(std::shared_ptr<const CommandLargeResultBase> large_result);
+
+	template <typename T>
+	std::shared_ptr<const T> GetLargeResult() const
+	{
+		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			return std::dynamic_pointer_cast<const T>(this->inl.aux_data->large_result);
+		}
+		return {};
 	}
 };
 
