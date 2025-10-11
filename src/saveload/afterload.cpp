@@ -693,6 +693,9 @@ bool AfterLoadGame()
 	UpdateCachedSnowLine();
 	UpdateCachedSnowLineBounds();
 
+	extern void UpdateTreeTypeRange();
+	UpdateTreeTypeRange();
+
 	_viewport_sign_kdtree_valid = false;
 
 	if (IsSavegameVersionBefore(SLV_98)) GamelogGRFAddList(_grfconfig);
