@@ -966,7 +966,7 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32_t offset)
  * @param adjust The time adjustment to add to the time slot.
  * @return the adjusted time slot.
  */
-uint32_t DispatchSchedule::AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust)
+uint32_t DispatchSchedule::AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust) const
 {
 	int32_t t = (int32_t)offset + adjust;
 	if (t < 0) t += this->GetScheduledDispatchDuration();

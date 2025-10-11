@@ -1622,7 +1622,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					if (!this->adjust_slot_set.slots.empty()) {
 						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_set, val);
 					} else {
-						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
+						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatch, v->index, this->schedule_index, val);
 					}
 				}
 				break;
@@ -1701,6 +1701,21 @@ void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32
 		w->schedule_index = schedule_index_1;
 		w->AutoSelectSchedule();
 		w->ReInit();
+	}
+}
+
+void CcAdjustSchDispatch(const CommandCost &result, VehicleID veh, uint32_t schedule_index, int32_t adjustment)
+{
+	if (!result.Succeeded()) return;
+
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index)) {
+		const DispatchSchedule &ds = w->GetSelectedSchedule();
+		btree::btree_set<uint32_t> new_selection;
+		for (uint32_t slot : w->selected_slots) {
+			new_selection.insert(ds.AdjustScheduledDispatchOffset(slot, adjustment));
+		}
+		w->selected_slots = std::move(new_selection);
 	}
 }
 

@@ -891,7 +891,7 @@ public:
 	void AddScheduledDispatch(uint32_t offset);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void ResortDispatchOffsets();
-	uint32_t AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust);
+	uint32_t AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust) const;
 	void AdjustScheduledDispatch(int32_t adjust);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(StateTicks now);
