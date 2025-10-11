@@ -3147,6 +3147,13 @@ static bool ConMapStats(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "towns: {}", Town::GetNumItems());
 	IConsolePrint(CC_DEFAULT, "industries: {}", Industry::GetNumItems());
 	IConsolePrint(CC_DEFAULT, "objects: {}", Object::GetNumItems());
+
+	if (_settings_game.game_creation.landscape == LandscapeType::Arctic) {
+		IConsolePrint(CC_DEFAULT, "");
+		IConsolePrint(CC_DEFAULT, "Snow line: {}, lowest: {}, highest: {}, tree placement: {} - {}",
+				GetSnowLine(), LowestSnowLine(), HighestSnowLine(), LowestTreePlacementSnowLine(), HighestTreePlacementSnowLine());
+	}
+
 	return true;
 }
 
