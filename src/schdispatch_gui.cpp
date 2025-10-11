@@ -199,13 +199,16 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	bool remove_slot_mode = false;
 	bool slot_display_long_mode = false;
 
-	uint32_t selected_slot = UINT32_MAX;
+	btree::btree_set<uint32_t> selected_slots;
 	ScheduledDispatchSlotSet adjust_slot_set;
 
 	ScheduledDispatchSlotSet GetSelectedSlotSet() const
 	{
 		ScheduledDispatchSlotSet slot_set;
-		slot_set.slots.push_back(this->selected_slot);
+		slot_set.slots.reserve(this->selected_slots.size());
+		for (uint32_t slot : this->selected_slots) {
+			slot_set.slots.push_back(slot);
+		}
 		return slot_set;
 	}
 
@@ -286,7 +289,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			} else {
 				this->schedule_index = -1;
 			}
-			this->selected_slot = UINT32_MAX;
+			this->selected_slots.clear();
 		}
 	}
 
@@ -295,19 +298,38 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return this->vehicle->orders->GetDispatchScheduleByIndex(this->schedule_index);
 	}
 
-	const DispatchSlot *GetSelectedDispatchSlot() const
+	template <typename F>
+	void IterateSelectedSlots(F handler)
 	{
-		if (!this->IsScheduleSelected()) return nullptr;
+		if (this->selected_slots.empty()) return;
 
-		const DispatchSchedule &ds = this->GetSelectedSchedule();
-		if (this->selected_slot != UINT32_MAX) {
-			for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
-				if (slot.offset == this->selected_slot) {
-					return &slot;
-				}
+		if (!this->IsScheduleSelected()) {
+			this->selected_slots.clear();
+			return;
+		}
+
+		auto it = this->selected_slots.begin();
+		for (const DispatchSlot &slot : this->GetSelectedSchedule().GetScheduledDispatch()) {
+			while (slot.offset > *it) {
+				/* Selected slot no longer in schedule, erase. */
+				it = this->selected_slots.erase(it);
+				if (it == this->selected_slots.end()) return;
+			}
+			if (slot.offset == *it) {
+				handler(slot);
+				++it;
+				if (it == this->selected_slots.end()) return;
 			}
 		}
-		return nullptr;
+		if (it != this->selected_slots.end()) {
+			this->selected_slots.erase(it, this->selected_slots.end());
+		}
+	}
+
+	void ValidateSelectedSlots()
+	{
+		/* Clear any missing selected slots. */
+		this->IterateSelectedSlots([](const DispatchSlot &) {});
 	}
 
 	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
@@ -401,10 +423,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGEMENT, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADJUST, no_editable_slots);
 
-		if (no_editable_slots || this->GetSelectedDispatchSlot() == nullptr) {
-			this->selected_slot = UINT32_MAX;
+		if (no_editable_slots || !this->IsScheduleSelected()) {
+			this->selected_slots.clear();
+		} else {
+			this->ValidateSelectedSlots();
 		}
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGE_SLOT, this->selected_slot == UINT32_MAX);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGE_SLOT, this->selected_slots.empty());
 
 		NWidgetCore *remove_slot_widget = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_REMOVE);
 		remove_slot_widget->SetDisabled(no_editable_slots);
@@ -527,7 +551,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSlot *slot;
 				bool is_header;
 				std::tie(slot, is_header) = this->GetSlotFromMatrixPoint(pt.x - nwi->pos_x, pt.y - nwi->pos_y);
-				if (slot == nullptr) return false;
+				if (slot == nullptr) {
+					GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_SELECT_SLOT_TOOLTIP), close_cond);
+					return true;
+				}
 
 				if (is_header && this->remove_slot_mode) {
 					GuiShowTooltips(this, GetEncodedString(STR_SCHDISPATCH_REMOVE_SLOT), close_cond);
@@ -717,7 +744,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					bool next = next_offset == (int32_t)slot.offset;
 					bool veh = veh_dispatch == (int32_t)slot.offset;
 					TextColour colour;
-					if (this->selected_slot == slot.offset) {
+					if (this->selected_slots.count(slot.offset) > 0) {
 						colour = TC_WHITE;
 					} else {
 						colour = draw_time >= end_tick ? TC_RED : TC_BLACK;
@@ -1107,8 +1134,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		std::tie(slot, is_header) = this->GetSlotFromMatrixPoint(x, y);
 
 		if (slot == nullptr) {
-			if (this->selected_slot != UINT32_MAX) {
-				this->selected_slot = UINT32_MAX;
+			if (!_ctrl_pressed && !this->selected_slots.empty()) {
+				this->selected_slots.clear();
 				this->SetWidgetDirty(WID_SCHDISPATCH_MATRIX);
 			}
 			return;
@@ -1119,10 +1146,24 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			return;
 		}
 
-		if (this->selected_slot == slot->offset) {
-			this->selected_slot = UINT32_MAX;
+		if (_ctrl_pressed) {
+			auto [iter, inserted] = this->selected_slots.insert(slot->offset);
+			if (!inserted) {
+				/* Slot was already in selection. */
+				this->selected_slots.erase(iter);
+			}
+		} else if (this->selected_slots.size() > 1) {
+			this->selected_slots.clear();
+			this->selected_slots.insert(slot->offset);
 		} else {
-			this->selected_slot = slot->offset;
+			auto iter = this->selected_slots.find(slot->offset);
+			if (iter != this->selected_slots.end()) {
+				/* Slot was already in selection. */
+				this->selected_slots.erase(iter);
+			} else {
+				this->selected_slots.clear();
+				this->selected_slots.insert(slot->offset);
+			}
 		}
 		this->SetWidgetDirty(WID_SCHDISPATCH_MATRIX);
 	}
@@ -1256,7 +1297,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index > 0) {
 					this->schedule_index--;
-					this->selected_slot = UINT32_MAX;
+					this->selected_slots.clear();
 				}
 				this->ReInit();
 				break;
@@ -1265,7 +1306,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index < (int)(this->vehicle->orders->GetScheduledDispatchScheduleCount() - 1)) {
 					this->schedule_index++;
-					this->selected_slot = UINT32_MAX;
+					this->selected_slots.clear();
 				}
 				this->ReInit();
 				break;
@@ -1286,12 +1327,24 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				StringID caption = STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset();
 
 				if (_ctrl_pressed) {
-					const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
-					if (selected_slot != nullptr) {
+					uint32_t first_slot_offset = 0;
+					uint32_t slot_count = 0;
+					this->IterateSelectedSlots([&](const DispatchSlot &slot) {
+						if (slot_count == 0) {
+							first_slot_offset = slot.offset;
+						}
+						slot_count++;
+					});
+					if (slot_count > 0) {
 						const DispatchSchedule &ds = this->GetSelectedSchedule();
-						EncodedString caption_str = GetEncodedString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED,
-								ds.GetScheduledDispatchStartTick() + selected_slot->offset, caption);
-
+						EncodedString caption_str;
+						if (slot_count == 1) {
+							caption_str = GetEncodedString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED,
+									ds.GetScheduledDispatchStartTick() + first_slot_offset, caption);
+						} else {
+							caption_str = GetEncodedString(STR_SCHDISPATCH_ADJUST_CAPTION_MULTI_SLOT_PREFIXED,
+									slot_count, ds.GetScheduledDispatchStartTick() + first_slot_offset, caption);
+						}
 						this->adjust_slot_set = this->GetSelectedSlotSet();
 						ShowQueryString(GetString(STR_JUST_INT, 0), std::move(caption_str), 31, this, charset_filter, {});
 					}
@@ -1310,13 +1363,24 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MANAGE_SLOT: {
-				const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
-				if (selected_slot == nullptr) break;
+				uint16_t merged_flags = 0;
+				bool non_default_route_id = false;
+				std::bitset<256> route_ids{};
+				uint count = 0;
+				this->IterateSelectedSlots([&](const DispatchSlot &slot) {
+					merged_flags |= slot.flags;
+					route_ids.set(slot.route_id);
+					if (slot.route_id != 0) non_default_route_id = true;
+					count++;
+				});
+				if (count == 0) break;
+
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 
 				DropDownList list;
 				auto add_item = [&](std::string &&str, uint bit, bool disabled) {
-					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), std::move(str), bit, disabled));
+					if (!HasBit(merged_flags, bit)) bit |= 0x100;
+					list.push_back(MakeDropDownListCheckedItem(HasBit(merged_flags, bit), std::move(str), bit, disabled));
 				};
 				add_item(GetString(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT), DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
 				list.push_back(MakeDropDownListDividerItem());
@@ -1333,12 +1397,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 
 				std::vector<std::pair<DispatchSlotRouteID, std::string_view>> route_names = schedule.GetSortedRouteIDNames();
-				if (!route_names.empty() || selected_slot->route_id != 0) {
+				if (!route_names.empty() || non_default_route_id) {
 					list.push_back(MakeDropDownListDividerItem());
-					list.push_back(MakeDropDownListCheckedItem(selected_slot->route_id == 0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE, 1 << 16));
+					list.push_back(MakeDropDownListCheckedItem(route_ids.test(0), STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE, 1 << 16));
 
 					for (const auto &it : route_names) {
-						list.push_back(MakeDropDownListCheckedItem(selected_slot->route_id == it.first, std::string{it.second}, (1 << 16) | it.first));
+						list.push_back(MakeDropDownListCheckedItem(route_ids.test(it.first), std::string{it.second}, (1 << 16) | it.first));
 					}
 				}
 
@@ -1459,13 +1523,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MANAGE_SLOT: {
-				const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
-				if (selected_slot == nullptr) break;
+				this->ValidateSelectedSlots();
+				if (this->selected_slots.empty()) break;
 
 				switch (index >> 16) {
 					case 0: {
-						uint16_t mask = 1 << index;
-						uint16_t values = HasBit(selected_slot->flags, index) ? 0 : mask;
+						uint16_t mask = 1 << (index & 0xFF);
+						uint16_t values = HasBit(index, 8) ? mask : 0;
 						Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), values, mask);
 						break;
 					}
@@ -1648,9 +1712,15 @@ void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t 
 
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
 	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index)) {
+		btree::btree_set<uint32_t> new_selection;
 		for (const ScheduledDispatchAdjustSlotResult::Change &change : changes->changes) {
-			if (w->selected_slot == change.old_slot) w->selected_slot = change.new_slot;
+			auto it = w->selected_slots.find(change.old_slot);
+			if (it != w->selected_slots.end()) {
+				new_selection.insert(change.new_slot);
+				w->selected_slots.erase(it);
+			}
 		}
+		w->selected_slots.insert(new_selection.begin(), new_selection.end());
 	}
 }
 
