@@ -200,7 +200,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	bool slot_display_long_mode = false;
 
 	uint32_t selected_slot = UINT32_MAX;
-	uint32_t adjust_slot_offset = UINT32_MAX;
+	ScheduledDispatchSlotSet adjust_slot_set;
+
+	ScheduledDispatchSlotSet GetSelectedSlotSet() const
+	{
+		ScheduledDispatchSlotSet slot_set;
+		slot_set.slots.push_back(this->selected_slot);
+		return slot_set;
+	}
 
 	enum ManagementDropdown {
 		SCH_MD_RESET_LAST_DISPATCHED,
@@ -1285,11 +1292,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						EncodedString caption_str = GetEncodedString(STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED,
 								ds.GetScheduledDispatchStartTick() + selected_slot->offset, caption);
 
-						this->adjust_slot_offset = selected_slot->offset;
+						this->adjust_slot_set = this->GetSelectedSlotSet();
 						ShowQueryString(GetString(STR_JUST_INT, 0), std::move(caption_str), 31, this, charset_filter, {});
 					}
 				} else {
-					this->adjust_slot_offset = UINT32_MAX;
+					this->adjust_slot_set = {};
 					ShowQueryString(GetString(STR_JUST_INT, 0), caption, 31, this, charset_filter, {});
 				}
 				break;
@@ -1459,12 +1466,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					case 0: {
 						uint16_t mask = 1 << index;
 						uint16_t values = HasBit(selected_slot->flags, index) ? 0 : mask;
-						Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->selected_slot, values, mask);
+						Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), values, mask);
 						break;
 					}
 
 					case 1:
-						Command<CMD_SCH_DISPATCH_SET_SLOT_ROUTE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->selected_slot, index & 0xFFFF);
+						Command<CMD_SCH_DISPATCH_SET_SLOT_ROUTE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), index & 0xFFFF);
 						break;
 				}
 				break;
@@ -1548,8 +1555,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				Ticks val = ParseTimetableDuration(*str);
 
 				if (val != 0) {
-					if (this->adjust_slot_offset != UINT32_MAX) {
-						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_offset, val);
+					if (!this->adjust_slot_set.slots.empty()) {
+						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_set, val);
 					} else {
 						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
 					}
@@ -1633,15 +1640,17 @@ void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32
 	}
 }
 
-void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t schedule_index, uint32_t offset, int32_t adjustment)
+void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t schedule_index, const ScheduledDispatchSlotSet &slots, int32_t adjustment)
 {
 	if (!result.Succeeded()) return;
-	auto slot_id = result.GetResultData<uint32_t>();
-	if (!slot_id.has_value()) return;
+	auto changes = result.GetLargeResult<ScheduledDispatchAdjustSlotResult>();
+	if (changes == nullptr) return;
 
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
-	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index) && w->selected_slot == offset) {
-		w->selected_slot = *slot_id;
+	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index)) {
+		for (const ScheduledDispatchAdjustSlotResult::Change &change : changes->changes) {
+			if (w->selected_slot == change.old_slot) w->selected_slot = change.new_slot;
+		}
 	}
 }
 

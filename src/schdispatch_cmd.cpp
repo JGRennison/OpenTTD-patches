@@ -673,18 +673,60 @@ CommandCost CmdSchDispatchAdjust(DoCommandFlags flags, VehicleID veh, uint32_t s
 	return CommandCost();
 }
 
+bool ScheduledDispatchSlotSet::IsValid() const
+{
+	if (this->slots.empty()) return false;
+
+	/* Valid if slot offsets are monotonically increasing. */
+	auto error_it = std::adjacent_find(this->slots.begin(), this->slots.end(), [](uint32_t a, uint32_t b) {
+		return a >= b;
+	});
+	return error_it == this->slots.end();
+}
+
+void ScheduledDispatchSlotSet::fmt_format_value(struct format_target &buf) const
+{
+	buf.format("{} slots: [", this->slots.size());
+	for (size_t idx = 0; idx < this->slots.size(); idx++) {
+		if (idx >= 3) {
+			buf.append("...");
+			break;
+		}
+		if (idx > 0) buf.append(", ");
+		buf.format("{}", this->slots[idx]);
+	}
+	buf.push_back(']');
+}
+
+template <typename F>
+uint32_t ApplyDispatchSlotSetToSchedule(std::vector<DispatchSlot> &schedule, const ScheduledDispatchSlotSet &apply_slots, F handler)
+{
+	auto it = apply_slots.slots.begin();
+	const auto end = apply_slots.slots.end();
+
+	for (DispatchSlot &slot : schedule) {
+		if (slot.offset == *it) {
+			handler(slot);
+			++it;
+			if (it == end) break;
+		}
+	}
+
+	return static_cast<uint32_t>(it - apply_slots.slots.begin());
+}
+
 /**
  * Adjust scheduled dispatch time offset of a single departure slot
  *
  * @param flags Operation to perform.
  * @param veh Vehicle index
  * @param schedule_index Schedule index.
- * @param offset Slot offset.
+ * @param slots Slot offsets.
  * @param adjustment Signed adjustment.
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdSchDispatchAdjustSlot(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, int32_t adjustment)
+CommandCost CmdSchDispatchAdjustSlot(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, const ScheduledDispatchSlotSet &slots, int32_t adjustment)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -696,29 +738,35 @@ CommandCost CmdSchDispatchAdjustSlot(DoCommandFlags flags, VehicleID veh, uint32
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
+	if (!slots.IsValid()) return CMD_ERROR;
+
 	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 	if (abs(adjustment) >= (int)ds.GetScheduledDispatchDuration()) return CommandCost(STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE);
 
-	uint32_t new_offset = ds.AdjustScheduledDispatchOffset(offset, adjustment);
-	for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
-		if (slot.offset == new_offset) return CommandCost(STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME);
-	}
+	std::vector<DispatchSlot> schedule = ds.GetScheduledDispatch(); // Clone schedule
+	ScheduledDispatchAdjustSlotResult result;
+	uint32_t change_count = ApplyDispatchSlotSetToSchedule(schedule, slots, [&](DispatchSlot &slot) {
+		const uint32_t current_offset = slot.offset;
+		slot.offset = ds.AdjustScheduledDispatchOffset(current_offset, adjustment);
+		result.changes.emplace_back(current_offset, slot.offset);
+	});
+	if (change_count == 0) return CMD_ERROR;
 
-	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
-		if (slot.offset == offset) {
-			if (flags.Test(DoCommandFlag::Execute)) {
-				slot.offset = new_offset;
-				ds.ResortDispatchOffsets();
-				ds.UpdateScheduledDispatch(nullptr);
-				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
-			}
-			CommandCost cost;
-			cost.SetResultData(new_offset);
-			return cost;
-		}
-	}
+	std::sort(schedule.begin(), schedule.end());
 
-	return CMD_ERROR;
+	auto dup_it = std::adjacent_find(schedule.begin(), schedule.end(), [](const DispatchSlot &a, const DispatchSlot &b) {
+		return a.offset == b.offset;
+	});
+	if (dup_it != schedule.end()) return CommandCost(STR_ERROR_SCHDISPATCH_SLOT_ALREADY_EXISTS_AT_ADJUSTED_TIME);
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		ds.GetScheduledDispatchMutable() = std::move(schedule);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+	CommandCost cost;
+	cost.SetLargeResult(std::make_shared<const ScheduledDispatchAdjustSlotResult>(std::move(result)));
+	return cost;
 }
 
 /**
@@ -792,12 +840,12 @@ CommandCost CmdSchDispatchSwapSchedules(DoCommandFlags flags, VehicleID veh, uin
  * @param flags Operation to perform.
  * @param veh Vehicle index
  * @param schedule_index Schedule index.
- * @param offset Slot offset.
+ * @param slots Slot offsets.
  * @param values flag values
  * @param mask flag mask
  * @return the cost of this operation or an error
  */
-CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, uint16_t values, uint16_t mask)
+CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, const ScheduledDispatchSlotSet &slots, uint16_t values, uint16_t mask)
 {
 	if ((mask & DispatchSlot::PERMITTED_FLAG_MASK) != mask) return CMD_ERROR;
 	if ((values & (~mask)) != 0) return CMD_ERROR;
@@ -812,20 +860,22 @@ CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
-	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
-		if (slot.offset == offset) {
-			if (flags.Test(DoCommandFlag::Execute)) {
-				slot.flags &= ~mask;
-				slot.flags |= values;
-				SchdispatchInvalidateWindows(v);
-				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
-			}
-			return CommandCost();
-		}
-	}
+	if (!slots.IsValid()) return CMD_ERROR;
 
-	return CMD_ERROR;
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	uint32_t change_count = ApplyDispatchSlotSetToSchedule(ds.GetScheduledDispatchMutable(), slots, [&](DispatchSlot &slot) {
+		if (flags.Test(DoCommandFlag::Execute)) {
+			slot.flags &= ~mask;
+			slot.flags |= values;
+		}
+	});
+	if (change_count == 0) return CMD_ERROR;
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		SchdispatchInvalidateWindows(v);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+	return CommandCost();
 }
 
 /**
@@ -839,7 +889,7 @@ CommandCost CmdSchDispatchSetSlotFlags(DoCommandFlags flags, VehicleID veh, uint
  * @param mask flag mask
  * @return the cost of this operation or an error
  */
-CommandCost CmdSchDispatchSetSlotRoute(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t offset, DispatchSlotRouteID route_id)
+CommandCost CmdSchDispatchSetSlotRoute(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, const ScheduledDispatchSlotSet &slots, DispatchSlotRouteID route_id)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -851,22 +901,24 @@ CommandCost CmdSchDispatchSetSlotRoute(DoCommandFlags flags, VehicleID veh, uint
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
+	if (!slots.IsValid()) return CMD_ERROR;
+
 	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 
 	if (route_id != 0 && ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id).empty()) return CMD_ERROR;
 
-	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
-		if (slot.offset == offset) {
-			if (flags.Test(DoCommandFlag::Execute)) {
-				slot.route_id = route_id;
-				SchdispatchInvalidateWindows(v);
-				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
-			}
-			return CommandCost();
+	uint32_t change_count = ApplyDispatchSlotSetToSchedule(ds.GetScheduledDispatchMutable(), slots, [&](DispatchSlot &slot) {
+		if (flags.Test(DoCommandFlag::Execute)) {
+			slot.route_id = route_id;
 		}
-	}
+	});
+	if (change_count == 0) return CMD_ERROR;
 
-	return CMD_ERROR;
+	if (flags.Test(DoCommandFlag::Execute)) {
+		SchdispatchInvalidateWindows(v);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+	return CommandCost();
 }
 
 /**
