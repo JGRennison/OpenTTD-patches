@@ -832,9 +832,9 @@ public:
 	 * Get the next station the vehicle will stop at.
 	 * @return ID of the next station the vehicle will stop at or StationID::Invalid().
 	 */
-	inline CargoStationIDStackSet GetNextStoppingStation() const
+	inline CargoStationIDVectorSet GetNextStoppingStation() const
 	{
-		CargoStationIDStackSet set;
+		CargoStationIDVectorSet set;
 		if (this->orders != nullptr) set.FillNextStoppingStation(this, this->orders);
 		return set;
 	}
@@ -843,9 +843,9 @@ public:
 	 * Get the next station the vehicle will stop at.
 	 * @return ID of the next station the vehicle will stop at or StationID::Invalid().
 	 */
-	inline StationIDStack GetNextStoppingStationCargoIndependent() const
+	inline StationIDVector GetNextStoppingStationCargoIndependent() const
 	{
-		StationIDStack set;
+		StationIDVector set;
 		if (this->orders != nullptr) set = this->orders->GetNextStoppingStation(this, 0).station;
 		return set;
 	}

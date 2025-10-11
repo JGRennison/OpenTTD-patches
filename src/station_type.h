@@ -12,7 +12,6 @@
 
 #include "core/enum_type.hpp"
 #include "core/pool_id_type.hpp"
-#include "core/smallstack_type.hpp"
 
 struct StationIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using StationID = PoolID<StationIDTag>;
@@ -29,8 +28,6 @@ struct StationSpec;
 struct Waypoint;
 
 static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;
-
-using StationIDStack = SmallStack<StationID, StationID::BaseType, StationID::Invalid().base(), 8, StationID::End().base()>;
 
 /** Station types */
 enum class StationType : uint8_t {

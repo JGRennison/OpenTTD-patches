@@ -36,7 +36,6 @@ add_files(
     ring_buffer_queue.hpp
     serialisation.cpp
     serialisation.hpp
-    smallstack_type.hpp
     string_builder.cpp
     string_builder.hpp
     string_consumer.cpp

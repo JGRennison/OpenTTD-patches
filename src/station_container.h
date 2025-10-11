@@ -13,6 +13,7 @@
 #include "station_type.h"
 #include "tilearea_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/svector/svector.h"
 
 struct StationCompare {
 	bool operator() (const Station *lhs, const Station *rhs) const;
@@ -35,5 +36,7 @@ public:
 	StationFinder(const TileArea &area) : TileArea(area) {}
 	const StationList &GetStations();
 };
+
+using StationIDVector = ankerl::svector<StationID, 1>;
 
 #endif /* STATION_CONTAINER_H */

@@ -17,6 +17,7 @@
 #include "depot_type.h"
 #include "direction_type.h"
 #include "station_type.h"
+#include "station_container.h"
 #include "tile_type.h"
 #include "vehicle_type.h"
 #include "cargotype.h"
@@ -772,24 +773,27 @@ struct OrderPoolItem : OrderPool::PoolItem<&_order_pool> {
 void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord);
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord);
 
-struct CargoMaskedStationIDStack {
+struct CargoMaskedStationIDVector {
 	CargoTypes cargo_mask;
-	StationIDStack station;
+	StationIDVector station;
 
-	CargoMaskedStationIDStack(CargoTypes cargo_mask, StationIDStack station)
+	CargoMaskedStationIDVector(CargoTypes cargo_mask)
+			: cargo_mask(cargo_mask) {}
+
+	CargoMaskedStationIDVector(CargoTypes cargo_mask, StationIDVector station)
 			: cargo_mask(cargo_mask), station(station) {}
 };
 
-struct CargoStationIDStackSet {
+struct CargoStationIDVectorSet {
 private:
-	CargoMaskedStationIDStack first;
-	std::vector<CargoMaskedStationIDStack> more;
+	CargoMaskedStationIDVector first;
+	std::vector<CargoMaskedStationIDVector> more;
 
 public:
-	CargoStationIDStackSet()
-			: first(ALL_CARGOTYPES, StationID::Invalid()) {}
+	CargoStationIDVectorSet()
+			: first(ALL_CARGOTYPES) {}
 
-	const StationIDStack& Get(CargoType cargo) const
+	const StationIDVector& Get(CargoType cargo) const
 	{
 		if (HasBit(first.cargo_mask, cargo)) return first.station;
 		for (size_t i = 0; i < more.size(); i++) {
@@ -1229,7 +1233,7 @@ public:
 	 */
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
 
-	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first = nullptr, uint hops = 0) const;
+	CargoMaskedStationIDVector GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first = nullptr, uint hops = 0) const;
 	const Order *GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const;
 
 	void InsertOrderAt(Order &&new_order, VehicleOrderID index);

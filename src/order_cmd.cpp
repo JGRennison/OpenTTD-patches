@@ -469,7 +469,7 @@ void Order::DeAllocExtraInfo()
 	this->extra.reset();
 }
 
-void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)
+void CargoStationIDVectorSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)
 {
 	this->more.clear();
 	this->first = o->GetNextStoppingStation(v, ALL_CARGOTYPES, first, hops);
@@ -614,15 +614,15 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
  * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest. This may be 0 to ignore cargo types entirely.
  * @param first Order to start searching at or nullptr to start at cur_implicit_order_index + 1.
  * @param hops Number of orders we have already looked at.
- * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stopping station or StationID::Invalid().
+ * @return A CargoMaskedStationIDVector of the cargo mask the result is valid for, and the next stopping station or StationID::Invalid().
  * @pre The vehicle is currently loading and v->last_station_visited is meaningful.
  * @note This function may draw a random number. Don't use it from the GUI.
  */
-CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
+CargoMaskedStationIDVector OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
 {
 	static std::vector<bool> seen_orders_container;
 	if (hops == 0) {
-		if (this->GetNumOrders() == 0) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // No orders at all
+		if (this->GetNumOrders() == 0) return CargoMaskedStationIDVector(cargo_mask); // No orders at all
 		seen_orders_container.assign(this->GetNumOrders(), false);
 	}
 
@@ -631,7 +631,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 		next = this->GetOrderAt(v->cur_implicit_order_index);
 		if (next == nullptr) {
 			next = this->GetFirstOrder();
-			if (next == nullptr) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
+			if (next == nullptr) return CargoMaskedStationIDVector(cargo_mask);
 		} else {
 			/* GetNext never returns nullptr if there is a valid station in the list.
 			 * As the given "next" is already valid and a station in the list, we
@@ -645,11 +645,11 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 	auto seen_order = [&](const Order *o) -> std::vector<bool>::reference { return seen_orders_container[o - order_span.data()]; };
 
 	do {
-		if (seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // Already handled
+		if (seen_order(next)) return CargoMaskedStationIDVector(cargo_mask); // Already handled
 
 		const Order *decision_node = this->GetNextDecisionNode(next, ++hops, cargo_mask);
 
-		if (decision_node == nullptr || seen_order(decision_node)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid()); // Invalid or already handled
+		if (decision_node == nullptr || seen_order(decision_node)) return CargoMaskedStationIDVector(cargo_mask); // Invalid or already handled
 
 		seen_order(next) = true;
 		seen_order(decision_node) = true;
@@ -669,15 +669,15 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			} else if (skip_to == nullptr || skip_to == first || seen_order(skip_to)) {
 				next = (advance == first) ? nullptr : advance;
 			} else {
-				CargoMaskedStationIDStack st1 = this->GetNextStoppingStation(v, cargo_mask, skip_to, hops);
+				CargoMaskedStationIDVector st1 = this->GetNextStoppingStation(v, cargo_mask, skip_to, hops);
 				cargo_mask &= st1.cargo_mask;
-				CargoMaskedStationIDStack st2 = this->GetNextStoppingStation(v, cargo_mask, advance, hops);
+				CargoMaskedStationIDVector st2 = this->GetNextStoppingStation(v, cargo_mask, advance, hops);
 				st1.cargo_mask &= st2.cargo_mask;
-				while (!st2.station.IsEmpty()) st1.station.Push(st2.station.Pop());
+				st1.station.insert(st1.station.end(), st2.station.begin(), st2.station.end());
 				return st1;
 			}
 
-			if (next == nullptr || seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
+			if (next == nullptr || seen_order(next)) return CargoMaskedStationIDVector(cargo_mask);
 			++hops;
 		}
 
@@ -690,12 +690,12 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
 				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
 			});
-			if (invalid) return CargoMaskedStationIDStack(cargo_mask, StationID::Invalid());
+			if (invalid) return CargoMaskedStationIDVector(cargo_mask);
 		}
 	} while (next->IsType(OT_GOTO_DEPOT) || next->IsSlotCounterOrder() || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
-	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination().ToStationID());
+	return CargoMaskedStationIDVector(cargo_mask, { next->GetDestination().ToStationID() });
 }
 
 /**

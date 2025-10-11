@@ -425,7 +425,7 @@ public:
 
 	void AddFlow(StationID origin, StationID via, uint amount);
 	void PassOnFlow(StationID origin, StationID via, uint amount);
-	StationIDStack DeleteFlows(StationID via);
+	StationIDVector DeleteFlows(StationID via);
 	void RestrictFlows(StationID via);
 	void FinalizeLocalConsumption(StationID self);
 

@@ -133,11 +133,11 @@ void LinkGraphJob::FinaliseJob()
 					st2->goods[this->Cargo()].node != edge.To() ||
 					lg_edge.LastUpdate() == EconTime::INVALID_DATE) {
 				/* Edge has been removed. Delete flows. */
-				StationIDStack erased = flows.DeleteFlows(to);
+				StationIDVector erased = flows.DeleteFlows(to);
 				/* Delete old flows for source stations which have been deleted
 				 * from the new flows. This avoids flow cycles between old and
 				 * new flows. */
-				while (!erased.IsEmpty()) geflows.erase(erased.Pop());
+				for (StationID station : erased) geflows.erase(station);
 			} else if (lg_edge.LastUnrestrictedUpdate() == EconTime::INVALID_DATE) {
 				/* Edge is fully restricted. */
 				flows.RestrictFlows(to);
