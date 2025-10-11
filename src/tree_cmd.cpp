@@ -786,7 +786,7 @@ struct CmdPlantTreeHelper {
 						treetype = GetRandomTreeType(tile, GB(Random(), 24, 8));
 						if (treetype == TREE_INVALID) {
 							if (_settings_game.construction.trees_around_snow_line_enabled && _settings_game.game_creation.landscape == LandscapeType::Arctic) {
-								if (GetTileZ(tile) <= (int)_settings_game.game_creation.snow_line_height) {
+								if (GetTileZ(tile) < LowestTreePlacementSnowLine()) {
 									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
 								} else {
 									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
