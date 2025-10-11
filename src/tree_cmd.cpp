@@ -575,6 +575,8 @@ void RemoveAllTrees()
 	}
 }
 
+static bool CanPlantSpecificTreeTypeOnTile(TileIndex tile, TreeType tree_type);
+
 /**
  * Place some trees in a radius around a tile.
  * The trees are placed in an quasi-normal distribution around the indicated tile, meaning that while
@@ -625,6 +627,8 @@ void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius,
 					MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 				}
 			} else if ((IsTileType(tile_to_plant, MP_TREES) || CanPlantTreesOnTile(tile_to_plant, (current_type == TREE_CACTUS))) && cur_tree_count < 4) {
+				if (cur_tree_count == 0 && !CanPlantSpecificTreeTypeOnTile(tile_to_plant, current_type)) continue;
+
 				_tree_placer_memory.insert_or_assign(tile_to_plant, TreePlacerData{current_type, static_cast<uint8_t>(cur_tree_count + 1)});
 				_tree_placer_preview_active = true;
 				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE);
@@ -820,6 +824,18 @@ struct CmdPlantTreeHelper {
 		}
 	}
 };
+
+bool CanPlantSpecificTreeTypeOnTile(TileIndex tile, TreeType tree_type)
+{
+	if (_settings_game.game_creation.landscape == LandscapeType::Arctic || _settings_game.game_creation.landscape == LandscapeType::Tropic) {
+		/* Perform snowline, and tropic-zone related checks. */
+		CmdPlantTreeHelper helper({}, nullptr);
+		helper.PlantTrees(tile, tree_type, 1);
+		if (helper.msg != INVALID_STRING_ID) return false;
+	}
+
+	return true;
+}
 
 /**
  * Plant trees.
