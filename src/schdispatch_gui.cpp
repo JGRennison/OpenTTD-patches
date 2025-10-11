@@ -1335,8 +1335,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 				}
 
-				list.push_back(MakeDropDownListDividerItem());
-
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
