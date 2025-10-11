@@ -804,7 +804,7 @@ static void MakeIndustryTileBigger(TileIndex tile)
 	uint8_t stage = GetIndustryConstructionStage(tile) + 1;
 	SetIndustryConstructionCounter(tile, 0);
 	SetIndustryConstructionStage(tile, stage);
-	TriggerIndustryTileAnimation(tile, IndustryAnimationTrigger::ConstructionStageChanged);
+	TriggerIndustryTileAnimation_ConstructionStageChanged(tile, false);
 	if (stage == INDUSTRY_COMPLETED) SetIndustryCompleted(tile);
 
 	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -2037,6 +2037,15 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	/* Needs to be done after layout and location are populated */
 	i->AddToLocationCache();
+
+	/* Call callbacks after all tiles have been created. */
+	for (TileIndex cur_tile : i->location) {
+		if (i->TileBelongsToIndustry(cur_tile)) {
+			/* There are no shared random bits, consistent with "MakeIndustryTileBigger" in tile loop.
+			 * So, trigger tiles individually */
+			TriggerIndustryTileAnimation_ConstructionStageChanged(cur_tile, true);
+		}
+	}
 
 	if (GetIndustrySpec(i->type)->behaviour.Test(IndustryBehaviour::PlantOnBuild)) {
 		for (uint j = 0; j != 50; j++) PlantRandomFarmField(i);

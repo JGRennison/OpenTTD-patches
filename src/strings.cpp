@@ -1530,10 +1530,9 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					builder += _openttd_revision;
 					break;
 
-				case SCC_RAW_STRING_POINTER: { // {RAW_STRING}
+				case SCC_RAW_STRING_POINTER: // {RAW_STRING}
 					FormatString(builder, args.GetNextParameterString(), args);
 					break;
-				}
 
 				case SCC_STRING: {// {STRING}
 					StringID string_id = args.GetNextParameter<StringID>();

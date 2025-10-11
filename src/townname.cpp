@@ -720,11 +720,11 @@ static void MakeCzechTownName(StringBuilder output_builder, uint32_t seed)
 	if (dynamic_subst) {
 		builder += _name_czech_subst_stem[stem].name;
 		if (postfix < std::size(_name_czech_subst_postfix)) {
-			const char *poststr = _name_czech_subst_postfix[postfix];
-			const char *endstr = _name_czech_subst_ending[ending].name;
+			std::string_view poststr = _name_czech_subst_postfix[postfix];
+			std::string_view endstr = _name_czech_subst_ending[ending].name;
 
-			size_t postlen = strlen(poststr);
-			size_t endlen = strlen(endstr);
+			size_t postlen = poststr.size();
+			size_t endlen = endstr.size();
 			assert(postlen > 0 && endlen > 0);
 
 			/* Kill the "avava" and "Jananna"-like cases */
@@ -901,7 +901,7 @@ static void MakeItalianTownName(StringBuilder builder, uint32_t seed)
 		return;
 	}
 
-	static const char * const mascul_femin_italian[] = {
+	static std::string_view const mascul_femin_italian[] = {
 		"o",
 		"a",
 	};

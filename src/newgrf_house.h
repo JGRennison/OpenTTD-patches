@@ -128,7 +128,7 @@ void DrawNewHouseTile(TileInfo *ti, HouseID house_id);
 void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground);
 void AnimateNewHouseTile(TileIndex tile);
 /* see also: void TriggerHouseAnimation_TileLoop(TileIndex tile, uint16_t random_bits) */
-void TriggerHouseAnimation_ConstructionStageChanged(TileIndex tile);
+void TriggerHouseAnimation_ConstructionStageChanged(TileIndex tile, bool first_call);
 void TriggerHouseAnimation_WatchedCargoAccepted(TileIndex tile, CargoTypes trigger_cargoes);
 uint8_t GetNewHouseTileAnimationSpeed(TileIndex tile);
 

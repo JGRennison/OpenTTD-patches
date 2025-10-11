@@ -35,13 +35,13 @@ DECLARE_ENUM_AS_BIT_SET(SaveToConfigFlags)
 
 void SaveToConfig(SaveToConfigFlags flags);
 
-void IniLoadWindowSettings(IniFile &ini, const char *grpname, struct WindowDescPreferences *desc);
-void IniSaveWindowSettings(IniFile &ini, const char *grpname, struct WindowDescPreferences *desc);
+void IniLoadWindowSettings(IniFile &ini, std::string_view grpname, struct WindowDescPreferences *desc);
+void IniSaveWindowSettings(IniFile &ini, std::string_view grpname, struct WindowDescPreferences *desc);
 
 StringList GetGRFPresetList();
-GRFConfigList LoadGRFPresetFromConfig(const char *config_name);
-void SaveGRFPresetToConfig(const char *config_name, GRFConfigList &config);
-void DeleteGRFPresetFromConfig(const char *config_name);
+GRFConfigList LoadGRFPresetFromConfig(std::string_view config_name);
+void SaveGRFPresetToConfig(std::string_view config_name, GRFConfigList &config);
+void DeleteGRFPresetFromConfig(std::string_view config_name);
 
 void SetDefaultCompanySettings(CompanyID cid);
 

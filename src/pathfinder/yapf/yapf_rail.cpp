@@ -110,6 +110,7 @@ private:
 
 		auto *st = Station::GetByTile(start);
 		TriggerStationRandomisation(st, start, StationRandomTrigger::PathReservation);
+		TriggerStationAnimation(st, start, StationAnimationTrigger::PathReservation);
 
 		return true;
 	}
@@ -134,6 +135,7 @@ private:
 			if (IsRailWaypointTile(tile)) {
 				auto *st = BaseStation::GetByTile(tile);
 				TriggerStationRandomisation(st, tile, StationRandomTrigger::PathReservation);
+				TriggerStationAnimation(st, tile, StationAnimationTrigger::PathReservation);
 			}
 		}
 

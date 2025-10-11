@@ -190,8 +190,8 @@ static const SettingTable _secrets_setting_tables[] = {
 	_network_secrets_settings,
 };
 
-typedef void SettingDescProc(IniFile &ini, const SettingTable &desc, const char *grpname, void *object, bool only_startup);
-typedef void SettingDescProcList(IniFile &ini, const char *grpname, StringList &list);
+using SettingDescProc = void(IniFile &ini, const SettingTable &desc, std::string_view grpname, void *object, bool only_startup);
+using SettingDescProcList = void(IniFile &ini, std::string_view grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
 
@@ -747,7 +747,7 @@ static const char *GetSettingConfigName(const SettingDesc &sd)
  * @param object pointer to the object been loaded
  * @param only_startup load only the startup settings set
  */
-static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, const char *grpname, void *object, bool only_startup)
+static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, std::string_view grpname, void *object, bool only_startup)
 {
 	const IniGroup *group;
 	const IniGroup *group_def = ini.GetGroup(grpname);
@@ -837,7 +837,7 @@ void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
  * values are reloaded when saving). If settings indeed have changed, we get
  * these and save them.
  */
-static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, const char *grpname, void *object, bool)
+static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, std::string_view grpname, void *object, bool)
 {
 	IniGroup *group_def = nullptr, *group;
 
@@ -976,7 +976,7 @@ void ListSettingDesc::ResetToDefault(void *) const
  * @param grpname character string identifying the section-header of the ini file that will be parsed
  * @param list new list with entries of the given section
  */
-static void IniLoadSettingList(IniFile &ini, const char *grpname, StringList &list)
+static void IniLoadSettingList(IniFile &ini, std::string_view grpname, StringList &list)
 {
 	const IniGroup *group = ini.GetGroup(grpname);
 
@@ -998,7 +998,7 @@ static void IniLoadSettingList(IniFile &ini, const char *grpname, StringList &li
  * @param list pointer to an string(pointer) array that will be used as the
  *             source to be saved into the relevant ini section
  */
-static void IniSaveSettingList(IniFile &ini, const char *grpname, StringList &list)
+static void IniSaveSettingList(IniFile &ini, std::string_view grpname, StringList &list)
 {
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
@@ -1014,7 +1014,7 @@ static void IniSaveSettingList(IniFile &ini, const char *grpname, StringList &li
  * @param grpname character string identifying the section-header of the ini file that will be parsed
  * @param desc Destination WindowDescPreferences
  */
-void IniLoadWindowSettings(IniFile &ini, const char *grpname, WindowDescPreferences *desc)
+void IniLoadWindowSettings(IniFile &ini, std::string_view grpname, WindowDescPreferences *desc)
 {
 	IniLoadSettings(ini, _window_settings, grpname, desc, false);
 }
@@ -1025,7 +1025,7 @@ void IniLoadWindowSettings(IniFile &ini, const char *grpname, WindowDescPreferen
  * @param grpname character string identifying the section-header of the ini file
  * @param desc Source WindowDescPreferences
  */
-void IniSaveWindowSettings(IniFile &ini, const char *grpname, WindowDescPreferences *desc)
+void IniSaveWindowSettings(IniFile &ini, std::string_view grpname, WindowDescPreferences *desc)
 {
 	IniSaveSettings(ini, _window_settings, grpname, desc, false);
 }
@@ -2464,7 +2464,7 @@ static void HandleOldDiffCustom(bool savegame)
 	}
 }
 
-static void AILoadConfig(const IniFile &ini, const char *grpname)
+static void AILoadConfig(const IniFile &ini, std::string_view grpname)
 {
 	const IniGroup *group = ini.GetGroup(grpname);
 
@@ -2493,7 +2493,7 @@ static void AILoadConfig(const IniFile &ini, const char *grpname)
 	}
 }
 
-static void GameLoadConfig(const IniFile &ini, const char *grpname)
+static void GameLoadConfig(const IniFile &ini, std::string_view grpname)
 {
 	const IniGroup *group = ini.GetGroup(grpname);
 
@@ -2556,7 +2556,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
  * @param grpname   Group name containing the configuration of the GRF.
  * @param is_static GRF is static.
  */
-static GRFConfigList GRFLoadConfig(const IniFile &ini, const char *grpname, bool is_static)
+static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname, bool is_static)
 {
 	const IniGroup *group = ini.GetGroup(grpname);
 	GRFConfigList list;
@@ -2677,7 +2677,7 @@ static IniFileVersion LoadVersionFromConfig(const IniFile &ini)
 	return static_cast<IniFileVersion>(*version_result);
 }
 
-static void AISaveConfig(IniFile &ini, const char *grpname)
+static void AISaveConfig(IniFile &ini, std::string_view grpname)
 {
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
@@ -2697,7 +2697,7 @@ static void AISaveConfig(IniFile &ini, const char *grpname)
 	}
 }
 
-static void GameSaveConfig(IniFile &ini, const char *grpname)
+static void GameSaveConfig(IniFile &ini, std::string_view grpname)
 {
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
@@ -2749,7 +2749,7 @@ static void GraphicsSetSaveConfig(IniFile &ini)
 }
 
 /* Save a GRF configuration to the given group name */
-static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfigList &list)
+static void GRFSaveConfig(IniFile &ini, std::string_view grpname, const GRFConfigList &list)
 {
 	IniGroup &group = ini.GetOrCreateGroup(grpname);
 	group.Clear();
@@ -3118,7 +3118,7 @@ StringList GetGRFPresetList()
  * @return NewGRF configuration.
  * @see GetGRFPresetList
  */
-GRFConfigList LoadGRFPresetFromConfig(const char *config_name)
+GRFConfigList LoadGRFPresetFromConfig(std::string_view config_name)
 {
 	format_buffer section;
 	section.format("preset-{}", config_name);
@@ -3135,7 +3135,7 @@ GRFConfigList LoadGRFPresetFromConfig(const char *config_name)
  * @param config      NewGRF configuration to save.
  * @see GetGRFPresetList
  */
-void SaveGRFPresetToConfig(const char *config_name, GRFConfigList &config)
+void SaveGRFPresetToConfig(std::string_view config_name, GRFConfigList &config)
 {
 	format_buffer section;
 	section.format("preset-{}", config_name);
@@ -3149,7 +3149,7 @@ void SaveGRFPresetToConfig(const char *config_name, GRFConfigList &config)
  * Delete a NewGRF configuration by preset name.
  * @param config_name Name of the preset.
  */
-void DeleteGRFPresetFromConfig(const char *config_name)
+void DeleteGRFPresetFromConfig(std::string_view config_name)
 {
 	format_buffer section;
 	section.format("preset-{}", config_name);

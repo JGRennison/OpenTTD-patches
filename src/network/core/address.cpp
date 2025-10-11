@@ -312,8 +312,8 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
-		const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
+		std::string_view type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
+		std::string_view family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
 		Debug(net, 0, "Could not create {} {} socket: {}", type, family, NetworkError::GetLast().AsString());
 		return INVALID_SOCKET;
 	}
@@ -381,7 +381,7 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
  * @return the string representation
  * @note only works for SOCK_STREAM and SOCK_DGRAM
  */
-/* static */ const char *NetworkAddress::SocketTypeAsString(int socktype)
+/* static */ std::string_view NetworkAddress::SocketTypeAsString(int socktype)
 {
 	switch (socktype) {
 		case SOCK_STREAM: return "tcp";
@@ -396,7 +396,7 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
  * @return the string representation
  * @note only works for AF_INET, AF_INET6 and AF_UNSPEC
  */
-/* static */ const char *NetworkAddress::AddressFamilyAsString(int family)
+/* static */ std::string_view NetworkAddress::AddressFamilyAsString(int family)
 {
 	switch (family) {
 		case AF_UNSPEC: return "either IPv4 or IPv6";

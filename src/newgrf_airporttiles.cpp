@@ -318,9 +318,9 @@ static bool DoTriggerAirportTileAnimation(Station *st, TileIndex tile, AirportAn
 	return true;
 }
 
-bool TriggerAirportTileAnimation(Station *st, TileIndex tile, AirportAnimationTrigger trigger, CargoType cargo_type)
+bool TriggerAirportTileAnimation(Station *st, TileIndex tile, AirportAnimationTrigger trigger)
 {
-	return DoTriggerAirportTileAnimation(st, tile, trigger, Random(), cargo_type << 8);
+	return DoTriggerAirportTileAnimation(st, tile, trigger, Random());
 }
 
 bool TriggerAirportAnimation(Station *st, AirportAnimationTrigger trigger, CargoType cargo_type)
@@ -332,7 +332,15 @@ bool TriggerAirportAnimation(Station *st, AirportAnimationTrigger trigger, Cargo
 	for (TileIndex tile : st->airport) {
 		if (!st->TileBelongsToAirport(tile)) continue;
 
-		if (DoTriggerAirportTileAnimation(st, tile, trigger, random, cargo_type << 8)) {
+		const AirportTileSpec *ats = AirportTileSpec::GetByTile(tile);
+		if (ats->grf_prop.grffile == nullptr) continue;
+
+		uint8_t var18_extra = 0;
+		if (IsValidCargoType(cargo_type)) {
+			var18_extra |= ats->grf_prop.grffile->cargo_map[cargo_type] << 8;
+		}
+
+		if (DoTriggerAirportTileAnimation(st, tile, trigger, random, var18_extra)) {
 			SB(random, 0, 16, Random());
 		} else {
 			ret = false;
