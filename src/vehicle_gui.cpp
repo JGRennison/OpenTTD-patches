@@ -4083,7 +4083,33 @@ public:
 		if (widget != WID_VV_CAPTION) return this->Window::GetWidgetString(widget, stringid);
 
 		const Vehicle *v = Vehicle::Get(this->window_number);
-		return GetString(STR_VEHICLE_VIEW_CAPTION, v->index);
+		format_buffer buf;
+		AppendStringInPlace(buf, STR_VEHICLE_VIEW_CAPTION, v->index);
+
+		if (_settings_client.gui.show_vehicle_route_id_vehicle_view && v->orders != nullptr && !v->dispatch_records.empty()) {
+			const auto schedule_count = v->orders->GetScheduledDispatchScheduleCount();
+			const std::pair<const uint16_t, LastDispatchRecord> *best_record = nullptr;
+			StateTicks best_tick = StateTicks{INT64_MIN};
+			for (const std::pair<const uint16_t, LastDispatchRecord> &record_pair : v->dispatch_records) {
+				if (record_pair.first >= schedule_count) continue;
+
+				const LastDispatchRecord &record = record_pair.second;
+				if (record.dispatched > best_tick) {
+					best_tick = record.dispatched;
+					best_record = &record_pair;
+				}
+			}
+
+			if (best_record != nullptr) {
+				const DispatchSchedule &schedule = v->orders->GetDispatchScheduleByIndex(best_record->first);
+				std::string_view name = schedule.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, best_record->second.route_id);
+				if (!name.empty()) {
+					AppendStringInPlace(buf, STR_VEHICLE_VIEW_CAPTION_ROUTE_ID_SUFFIX, name);
+				}
+			}
+		}
+
+		return buf.to_string();
 	}
 
 	std::string GetVehicleStatusString(const Vehicle *v, TextColour &text_colour) const

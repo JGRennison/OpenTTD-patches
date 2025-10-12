@@ -867,6 +867,7 @@ SettingsContainer &GetSettingsTree()
 				vehicle_windows->Add(new SettingEntry("gui.show_order_occupancy_by_default"));
 				vehicle_windows->Add(new SettingEntry("gui.show_group_hierarchy_name"));
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
+				vehicle_windows->Add(new SettingEntry("gui.show_vehicle_route_id_vehicle_view"));
 				vehicle_windows->Add(new SettingEntry("gui.enable_single_veh_shared_order_gui"));
 				vehicle_windows->Add(new SettingEntry("gui.show_order_number_vehicle_view"));
 				vehicle_windows->Add(new SettingEntry("gui.shorten_vehicle_view_status"));

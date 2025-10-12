@@ -360,6 +360,7 @@ struct GUISettings : public TimeSettings {
 	bool        show_order_occupancy_by_default;                 ///< Show order occupancy by default in vehicle order window
 	bool        show_group_hierarchy_name;                       ///< Show the full hierarchy in group names
 	bool        show_vehicle_group_hierarchy_name;               ///< Show the full group hierarchy in vehicle names
+	bool        show_vehicle_route_id_vehicle_view;              ///< Show the route ID in vehicle view window
 	bool        show_order_number_vehicle_view;                  ///< Show order number in vehicle view window
 	bool        show_speed_first_vehicle_view;                   ///< Show speed before destination in vehicle view window
 	bool        shorten_vehicle_view_status;                     ///< Show status text in vehicle view window
