@@ -1823,9 +1823,10 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent) :
 			Window(desc)
 	{
-		this->start = _settings_time.NowInTickMinutes().ToClockFaceMinutes();
+		const DispatchSchedule &ds = parent->GetSelectedSchedule();
+		this->start = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick()).ToClockFaceMinutes();
 		this->step = ClockFaceMinutes{30};
-		this->end = this->start + 60;
+		this->end = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()).ToClockFaceMinutes() - 1;
 		this->parent = parent;
 		this->CreateNestedTree();
 		this->FinishInitNested(window_number);
