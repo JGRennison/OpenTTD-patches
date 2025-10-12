@@ -89,7 +89,7 @@ DEF_CMD_TUPLE_NT(CMD_TIMETABLE_SEPARATION,             CmdTimetableSeparation,  
 DEF_CMD_TUPLE_NT(CMD_SET_TIMETABLE_START,              CmdSetTimetableStart,             {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool, StateTicks>)
 
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH,                     CmdSchDispatch,                   {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, bool>)
-DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_ADD,                 CmdSchDispatchAdd,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, uint32_t, uint32_t>)
+DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_ADD,                 CmdSchDispatchAdd,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t, uint32_t, uint32_t, uint16_t, DispatchSlotRouteID>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_REMOVE,              CmdSchDispatchRemove,             {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SET_DURATION,        CmdSchDispatchSetDuration,        {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, uint32_t>)
 DEF_CMD_TUPLE_NT(CMD_SCH_DISPATCH_SET_START_DATE,      CmdSchDispatchSetStartDate,       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, uint32_t, StateTicks>)

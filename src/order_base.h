@@ -888,7 +888,7 @@ public:
 	inline std::vector<DispatchSlot> &GetScheduledDispatchMutable() { return this->scheduled_dispatch; }
 
 	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
-	void AddScheduledDispatch(uint32_t offset);
+	void AddScheduledDispatch(uint32_t offset, uint16_t slot_flags, DispatchSlotRouteID route_id);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void ResortDispatchOffsets();
 	uint32_t AdjustScheduledDispatchOffset(uint32_t offset, int32_t adjust) const;

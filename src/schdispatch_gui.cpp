@@ -83,7 +83,7 @@ static void SetScheduleStartDateCallback(const Window *w, StateTicks date, void 
 /**
  * Callback for when a time has been chosen to add to the schedule
  */
-static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date, uint extra_slots, uint offset, bool wrap_mode = false)
+static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date, uint extra_slots, uint offset, uint16_t slot_flags, DispatchSlotRouteID route_id, bool wrap_mode = false)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle() || schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return;
@@ -101,7 +101,7 @@ static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date,
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	Command<CMD_SCH_DISPATCH_ADD>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, slot, offset, extra_slots);
+	Command<CMD_SCH_DISPATCH_ADD>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, slot, offset, extra_slots, slot_flags, route_id);
 }
 
 /**
@@ -112,7 +112,7 @@ static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date,
  */
 static void ScheduleAddCallback(const Window *w, StateTicks date, void *callback_data)
 {
-	ScheduleAddIntl(w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date, 0, 0);
+	ScheduleAddIntl(w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date, 0, 0, 0, 0);
 }
 
 /**
@@ -1567,7 +1567,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					StateTicks slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
-					ScheduleAddIntl(v->index, this->schedule_index, slot, 0, 0);
+					ScheduleAddIntl(v->index, this->schedule_index, slot, 0, 0, 0, 0);
 				}
 				break;
 			}
@@ -1666,7 +1666,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return this->vehicle;
 	}
 
-	void AddMultipleDepartureSlots(uint start, uint step, uint end)
+	void AddMultipleDepartureSlots(uint start, uint step, uint end, uint16_t slot_flags, DispatchSlotRouteID route_id)
 	{
 		bool wrap_mode = false;
 		if (end < start) {
@@ -1680,7 +1680,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		if (end < start || step == 0 || !this->IsScheduleSelected()) return;
 
 		StateTicks slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, start));
-		ScheduleAddIntl(this->vehicle->index, this->schedule_index, slot, (end - start) / step, step * _settings_time.ticks_per_minute, wrap_mode);
+		ScheduleAddIntl(this->vehicle->index, this->schedule_index, slot, (end - start) / step, step * _settings_time.ticks_per_minute, slot_flags, route_id, wrap_mode);
 	}
 };
 
@@ -1813,12 +1813,29 @@ enum ScheduledDispatchAddSlotsWindowWidgets : WidgetID {
 	WID_SCHDISPATCH_ADD_SLOT_START_TEXT,
 	WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT,
 	WID_SCHDISPATCH_ADD_SLOT_END_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_REUSE_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_REUSE,
+	WID_SCHDISPATCH_ADD_SLOT_TAG1_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_TAG2_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_TAG3_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_TAG4_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_TAG1,
+	WID_SCHDISPATCH_ADD_SLOT_TAG2,
+	WID_SCHDISPATCH_ADD_SLOT_TAG3,
+	WID_SCHDISPATCH_ADD_SLOT_TAG4,
+	WID_SCHDISPATCH_ADD_SLOT_ROUTE_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_ROUTE,
+	WID_SCHDISPATCH_ADD_SLOT_ROUTE_SEL,
 };
 
 struct ScheduledDispatchAddSlotsWindow : Window {
 	ClockFaceMinutes start{};
 	ClockFaceMinutes step{};
 	ClockFaceMinutes end{};
+	uint16_t slot_flags = 0;
+	DispatchSlotRouteID route_id = 0;
+	std::array<std::string, 4> tag_names;
+	std::vector<std::pair<DispatchSlotRouteID, std::string>> route_names;
 
 	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent) :
 			Window(desc)
@@ -1827,8 +1844,19 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		this->start = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick()).ToClockFaceMinutes();
 		this->step = ClockFaceMinutes{30};
 		this->end = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()).ToClockFaceMinutes() - 1;
+
+		for (uint i = 0; i < 4; i++) {
+			this->tag_names[i] = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::DepartureTag, i);
+		}
+		auto route_names_view = ds.GetSortedRouteIDNames();
+		this->route_names.reserve(route_names_view.size());
+		for (const std::pair<DispatchSlotRouteID, std::string_view> &it : route_names_view) {
+			this->route_names.emplace_back(it.first, it.second);
+		}
+
 		this->parent = parent;
 		this->CreateNestedTree();
+		this->GetWidget<NWidgetStacked>(WID_SCHDISPATCH_ADD_SLOT_ROUTE_SEL)->SetDisplayedPlane(this->route_names.empty() ? SZSP_NONE : 0);
 		this->FinishInitNested(window_number);
 	}
 
@@ -1855,16 +1883,24 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR:
 			case WID_SCHDISPATCH_ADD_SLOT_END_HOUR:
-				for (uint i = 0; i < 24; i++) {
-					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
-				}
-				break;
-
 			case WID_SCHDISPATCH_ADD_SLOT_START_MINUTE:
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE:
 			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:
-				for (uint i = 0; i < 60; i++) {
-					d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, i)));
+				d = maxdim(d, GetStringBoundingBox(GetString(STR_JUST_INT, GetParamMaxDigits(2))));
+				break;
+
+			case WID_SCHDISPATCH_ADD_SLOT_TAG1_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG2_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG3_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG4_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE_TEXT:
+				d = maxdim(d, GetStringBoundingBox(this->GetWidgetString(widget, STR_NULL)));
+				break;
+
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE:
+				d = maxdim(d, GetStringBoundingBox(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE));
+				for (const auto &it : this->route_names) {
+					d = maxdim(d, GetStringBoundingBox(it.second));
 				}
 				break;
 		}
@@ -1883,6 +1919,25 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE:  return GetString(STR_JUST_INT, step.ClockMinute()); break;
 			case WID_SCHDISPATCH_ADD_SLOT_END_HOUR:     return GetString(STR_JUST_INT, end.ClockHour()); break;
 			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:   return GetString(STR_JUST_INT, end.ClockMinute()); break;
+
+			case WID_SCHDISPATCH_ADD_SLOT_TAG1_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG2_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG3_TEXT:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG4_TEXT: {
+				const uint tag = widget - WID_SCHDISPATCH_ADD_SLOT_TAG1_TEXT;
+				return GetString(this->tag_names[tag].empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, tag + 1, this->tag_names[tag]);
+			}
+
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE_TEXT:
+				return GetString(STR_SCHDISPATCH_ROUTE, std::string_view{});
+
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE:
+				if (this->route_id == 0) return GetString(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE);
+				for (const auto &it : this->route_names) {
+					if (it.first == this->route_id) return it.second;
+				}
+				return {};
+
 			default: return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
@@ -1924,9 +1979,36 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:
 				handle_minutes_dropdown(this->end);
 				break;
+			case WID_SCHDISPATCH_ADD_SLOT_REUSE:
+				ToggleBit(this->slot_flags, DispatchSlot::SDSF_REUSE_SLOT);
+				this->SetWidgetLoweredState(widget, HasBit(this->slot_flags, DispatchSlot::SDSF_REUSE_SLOT));
+				this->SetWidgetDirty(widget);
+				break;
+			case WID_SCHDISPATCH_ADD_SLOT_TAG1:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG2:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG3:
+			case WID_SCHDISPATCH_ADD_SLOT_TAG4: {
+				const uint8_t flag_bit =  DispatchSlot::SDSF_FIRST_TAG + (widget - WID_SCHDISPATCH_ADD_SLOT_TAG1);
+				ToggleBit(this->slot_flags, flag_bit);
+				this->SetWidgetLoweredState(widget, HasBit(this->slot_flags, flag_bit));
+				this->SetWidgetDirty(widget);
+				break;
+			}
+
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE:
+				if (!this->route_names.empty()) {
+					DropDownList list;
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE, 0));
+
+					for (const auto &it : route_names) {
+						list.push_back(MakeDropDownListStringItem(std::string{it.second}, it.first));
+					}
+					ShowDropDownList(this, std::move(list), this->route_id, widget);
+				}
+				break;
 
 			case WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON:
-				static_cast<SchdispatchWindow *>(this->parent)->AddMultipleDepartureSlots(this->start.base(), this->step.base(), this->end.base());
+				static_cast<SchdispatchWindow *>(this->parent)->AddMultipleDepartureSlots(this->start.base(), this->step.base(), this->end.base(), this->slot_flags, this->route_id);
 				this->Close();
 				break;
 		}
@@ -1952,6 +2034,9 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 				break;
 			case WID_SCHDISPATCH_ADD_SLOT_END_MINUTE:
 				this->end = ClockFaceMinutes::FromClockFace(this->end.ClockHour(), index);
+				break;
+			case WID_SCHDISPATCH_ADD_SLOT_ROUTE:
+				this->route_id = static_cast<DispatchSlotRouteID>(index);
 				break;
 		}
 
@@ -1981,6 +2066,32 @@ static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_REUSE_TEXT), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT, STR_NULL),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_REUSE),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_TAG1_TEXT), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_TAG1),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_TAG2_TEXT), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_TAG2),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_TAG3_TEXT), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_TAG3),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_TAG4_TEXT), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_TAG4),
+			EndContainer(),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_ROUTE_SEL),
+				NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+					NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_ROUTE_TEXT), SetFill(1, 0), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_ROUTE),
+				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_SPACER), SetFill(1, 0),

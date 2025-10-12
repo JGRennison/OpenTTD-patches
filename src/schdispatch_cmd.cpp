@@ -63,12 +63,15 @@ CommandCost CmdSchDispatch(DoCommandFlags flags, VehicleID veh, bool enable)
  * @param time Time to add.
  * @param offset The offset for additional slots
  * @param extra_slots The number of additional slots to add
+ * @param slot_flags Slot flags for new slots
+ * @param route_id Rote ID for new slots
  * @return the cost of this operation or an error
  */
-CommandCost CmdSchDispatchAdd(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t time, uint32_t offset, uint32_t extra_slots)
+CommandCost CmdSchDispatchAdd(DoCommandFlags flags, VehicleID veh, uint32_t schedule_index, uint32_t time, uint32_t offset, uint32_t extra_slots, uint16_t slot_flags, DispatchSlotRouteID route_id)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if ((slot_flags & DispatchSlot::PERMITTED_FLAG_MASK) != slot_flags) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -80,13 +83,16 @@ CommandCost CmdSchDispatchAdd(DoCommandFlags flags, VehicleID veh, uint32_t sche
 	if (extra_slots > 512) return CommandCost(STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS);
 	if (extra_slots > 0 && offset == 0) return CMD_ERROR;
 
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+
+	if (route_id != 0 && ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id).empty()) return CMD_ERROR;
+
 	if (flags.Test(DoCommandFlag::Execute)) {
-		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.AddScheduledDispatch(time);
+		ds.AddScheduledDispatch(time, slot_flags, route_id);
 		for (uint i = 0; i < extra_slots; i++) {
 			time += offset;
 			if (time >= ds.GetScheduledDispatchDuration()) time -= ds.GetScheduledDispatchDuration();
-			ds.AddScheduledDispatch(time);
+			ds.AddScheduledDispatch(time, slot_flags, route_id);
 		}
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
@@ -936,14 +942,14 @@ void DispatchSchedule::SetScheduledDispatch(std::vector<DispatchSlot> dispatch_l
  * Add new scheduled dispatch slot at offsets time.
  * @param offset The offset time to add.
  */
-void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
+void DispatchSchedule::AddScheduledDispatch(uint32_t offset, uint16_t slot_flags, DispatchSlotRouteID route_id)
 {
 	/* Maintain sorted list status */
 	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), DispatchSlot{ offset, 0 });
 	if (insert_position != this->scheduled_dispatch.end() && insert_position->offset == offset) {
 		return;
 	}
-	this->scheduled_dispatch.insert(insert_position, { offset, 0 });
+	this->scheduled_dispatch.insert(insert_position, { offset, slot_flags, route_id });
 }
 
 /**
