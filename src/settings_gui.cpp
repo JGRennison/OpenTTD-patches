@@ -1951,7 +1951,7 @@ static constexpr NWidgetPart _nested_game_options_widgets[] = {
 };
 
 static WindowDesc _game_options_desc(__FILE__, __LINE__,
-	WDP_CENTER, "game_options", 0, 0,
+	WDP_CENTER, "game_options", 510, 450,
 	WC_GAME_OPTIONS, WC_NONE,
 	{},
 	_nested_game_options_widgets
