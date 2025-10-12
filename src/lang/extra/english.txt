@@ -2240,6 +2240,7 @@ STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}Enable
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order.
 STR_SCHDISPATCH_ADD                                             :{BLACK}Add Slot
+STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}Add Slots
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click to add multiple departure slots at once.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
@@ -2360,9 +2361,11 @@ STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}This dis
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}This is more than {NUM} hours in the past.
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}This is more than {NUM} hours in the future.
 
-STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Start:
-STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Period:
-STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}End:
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_MULTIPLE                    :{BLACK}Multiple
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_TIME                        :{BLACK}Time
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Start
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Period
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}End
 
 STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_CAPTION                    :{WHITE}Clear Departure Slots
 STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_TEXT                       :{WHITE}Are you sure you want to clear all {NUM} departure slot{P "" s} from this schedule?

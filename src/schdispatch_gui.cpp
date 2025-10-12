@@ -1207,9 +1207,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_ADD: {
 				if (!this->IsScheduleSelected()) break;
-				if (_settings_time.time_in_minutes && _ctrl_pressed) {
-					void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number);
-					ShowScheduledDispatchAddSlotsWindow(this, v->index);
+				if (_settings_time.time_in_minutes) {
+					void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number, bool multiple);
+					ShowScheduledDispatchAddSlotsWindow(this, v->index, _ctrl_pressed);
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString({}, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, {});
 				} else {
@@ -1666,6 +1666,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return this->vehicle;
 	}
 
+	void AddSingleDepartureSlot(uint mins, uint16_t slot_flags, DispatchSlotRouteID route_id)
+	{
+		if (!this->IsScheduleSelected()) return;
+		StateTicks slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, mins));
+		ScheduleAddIntl(this->vehicle->index, this->schedule_index, slot, 0, 0, slot_flags, route_id);
+	}
+
 	void AddMultipleDepartureSlots(uint start, uint step, uint end, uint16_t slot_flags, DispatchSlotRouteID route_id)
 	{
 		bool wrap_mode = false;
@@ -1805,8 +1812,10 @@ void ShowSchdispatchWindow(const Vehicle *v)
 enum ScheduledDispatchAddSlotsWindowWidgets : WidgetID {
 	WID_SCHDISPATCH_ADD_SLOT_START_HOUR,
 	WID_SCHDISPATCH_ADD_SLOT_START_MINUTE,
+	WID_SCHDISPATCH_ADD_SLOT_STEP_SEL,
 	WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR,
 	WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE,
+	WID_SCHDISPATCH_ADD_SLOT_END_SEL,
 	WID_SCHDISPATCH_ADD_SLOT_END_HOUR,
 	WID_SCHDISPATCH_ADD_SLOT_END_MINUTE,
 	WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON,
@@ -1826,6 +1835,8 @@ enum ScheduledDispatchAddSlotsWindowWidgets : WidgetID {
 	WID_SCHDISPATCH_ADD_SLOT_ROUTE_TEXT,
 	WID_SCHDISPATCH_ADD_SLOT_ROUTE,
 	WID_SCHDISPATCH_ADD_SLOT_ROUTE_SEL,
+	WID_SCHDISPATCH_ADD_SLOT_MULTIPLE_TEXT,
+	WID_SCHDISPATCH_ADD_SLOT_MULTIPLE,
 };
 
 struct ScheduledDispatchAddSlotsWindow : Window {
@@ -1834,11 +1845,12 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	ClockFaceMinutes end{};
 	uint16_t slot_flags = 0;
 	DispatchSlotRouteID route_id = 0;
+	bool multiple;
 	std::array<std::string, 4> tag_names;
 	std::vector<std::pair<DispatchSlotRouteID, std::string>> route_names;
 
-	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent) :
-			Window(desc)
+	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent, bool multiple) :
+			Window(desc), multiple(multiple)
 	{
 		const DispatchSchedule &ds = parent->GetSelectedSchedule();
 		this->start = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick()).ToClockFaceMinutes();
@@ -1856,8 +1868,16 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 
 		this->parent = parent;
 		this->CreateNestedTree();
+		this->SetWidgetLoweredState(WID_SCHDISPATCH_ADD_SLOT_MULTIPLE, this->multiple);
 		this->GetWidget<NWidgetStacked>(WID_SCHDISPATCH_ADD_SLOT_ROUTE_SEL)->SetDisplayedPlane(this->route_names.empty() ? SZSP_NONE : 0);
+		this->SetupTimeDisplayPanes();
 		this->FinishInitNested(window_number);
+	}
+
+	void SetupTimeDisplayPanes()
+	{
+		this->GetWidget<NWidgetStacked>(WID_SCHDISPATCH_ADD_SLOT_STEP_SEL)->SetDisplayedPlane(this->multiple ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_SCHDISPATCH_ADD_SLOT_END_SEL)->SetDisplayedPlane(this->multiple ? 0 : SZSP_NONE);
 	}
 
 	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
@@ -1875,6 +1895,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			case WID_SCHDISPATCH_ADD_SLOT_START_TEXT:
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT:
 			case WID_SCHDISPATCH_ADD_SLOT_END_TEXT:
+				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_TIME));
 				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START));
 				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP));
 				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END));
@@ -1903,6 +1924,11 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 					d = maxdim(d, GetStringBoundingBox(it.second));
 				}
 				break;
+
+			case WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON:
+				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD));
+				d = maxdim(d, GetStringBoundingBox(STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS));
+				break;
 		}
 
 		d.width += padding.width;
@@ -1913,6 +1939,9 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
+			case WID_SCHDISPATCH_ADD_SLOT_START_TEXT:
+				return GetString(this->multiple ? STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START : STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_TIME);
+
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:   return GetString(STR_JUST_INT, start.ClockHour()); break;
 			case WID_SCHDISPATCH_ADD_SLOT_START_MINUTE: return GetString(STR_JUST_INT, start.ClockMinute()); break;
 			case WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR:    return GetString(STR_JUST_INT, step.ClockHour()); break;
@@ -1938,6 +1967,9 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 				}
 				return {};
 
+			case WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON:
+				return GetString(this->multiple ? STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS : STR_SCHDISPATCH_ADD);
+
 			default: return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
@@ -1961,6 +1993,13 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		};
 
 		switch (widget) {
+			case WID_SCHDISPATCH_ADD_SLOT_MULTIPLE:
+				this->multiple = !this->multiple;
+				this->SetWidgetLoweredState(widget, this->multiple);
+				this->SetupTimeDisplayPanes();
+				this->ReInit();
+				break;
+
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:
 				handle_hours_dropdown(this->start);
 				break;
@@ -2008,7 +2047,11 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 				break;
 
 			case WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON:
-				static_cast<SchdispatchWindow *>(this->parent)->AddMultipleDepartureSlots(this->start.base(), this->step.base(), this->end.base(), this->slot_flags, this->route_id);
+				if (this->multiple) {
+					static_cast<SchdispatchWindow *>(this->parent)->AddMultipleDepartureSlots(this->start.base(), this->step.base(), this->end.base(), this->slot_flags, this->route_id);
+				} else {
+					static_cast<SchdispatchWindow *>(this->parent)->AddSingleDepartureSlot(this->start.base(), this->slot_flags, this->route_id);
+				}
 				this->Close();
 				break;
 		}
@@ -2048,24 +2091,32 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_TIME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetTextStyle(TC_WHITE | TC_FORCED), SetStringTip(STR_SCHDISPATCH_ADD, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
+			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_MULTIPLE_TEXT), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_MULTIPLE, STR_NULL),
+				NWidget(WWT_BOOLBTN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_MULTIPLE),
+			EndContainer(),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_START_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START, STR_NULL),
+				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_START_TEXT),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
 				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_START_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP, STR_NULL),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_STEP_SEL),
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
+					NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_STEP_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP, STR_NULL),
+					NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+					NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_STEP_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
-				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
-				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_SEL),
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(6, 6, 6),
+					NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_END_TEXT), SetStringTip(STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END, STR_NULL),
+					NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_HOUR), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_HOUR_TOOLTIP),
+					NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SCHDISPATCH_ADD_SLOT_END_MINUTE), SetFill(1, 0), SetToolTip(STR_DATE_MINUTES_MINUTE_TOOLTIP),
+				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL), SetPIP(6, 6, 6),
 				NWidget(WWT_TEXT, INVALID_COLOUR, WID_SCHDISPATCH_ADD_SLOT_REUSE_TEXT), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT, STR_NULL),
@@ -2095,7 +2146,7 @@ static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_SPACER), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON), SetMinimalSize(100, 12), SetStringTip(STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_SCHDISPATCH_ADD_SLOT_ADD_BUTTON), SetMinimalSize(100, 12), SetToolTip(STR_SCHDISPATCH_ADD_TOOLTIP),
 				NWidget(NWID_SPACER), SetFill(1, 0),
 			EndContainer(),
 		EndContainer(),
@@ -2109,11 +2160,11 @@ static WindowDesc _scheduled_dispatch_add_desc(__FILE__, __LINE__,
 	_nested_scheduled_dispatch_add_widgets
 );
 
-void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number)
+void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number, bool multiple)
 {
 	CloseWindowByClass(WC_SET_DATE);
 
-	new ScheduledDispatchAddSlotsWindow(_scheduled_dispatch_add_desc, window_number, parent);
+	new ScheduledDispatchAddSlotsWindow(_scheduled_dispatch_add_desc, window_number, parent, multiple);
 }
 
 void SchdispatchInvalidateWindows(const Vehicle *v)
