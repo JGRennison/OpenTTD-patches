@@ -654,6 +654,7 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 	bool force_keep = (order_flags & OUFB_NO_UNLOAD) != 0;
 	bool force_unload = (order_flags & OUFB_UNLOAD) != 0;
 	bool force_transfer = (order_flags & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0;
+	bool transfer_cargodist_mode = force_transfer && _settings_game.linkgraph.GetDistributionType(cargo) != DT_MANUAL;
 	dbg_assert(this->count > 0 || it == this->packets.end());
 	while (sum < this->count) {
 		CargoPacket *cp = *it;
@@ -661,11 +662,8 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 		it = this->packets.erase(it);
 		StationID cargo_next = StationID::Invalid();
 		MoveToAction action = MTA_LOAD;
-		if (force_keep) {
-			action = MTA_KEEP;
-		} else if (force_unload && accepted && cp->first_station != current_station) {
-			action = MTA_DELIVER;
-		} else if (force_transfer) {
+
+		auto handle_forced_transfer = [&]() {
 			action = MTA_TRANSFER;
 			/* We cannot send the cargo to any of the possible next hops and
 			 * also not to the current station. */
@@ -685,6 +683,14 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 					cargo_next = new_shares.GetVia();
 				}
 			}
+		};
+
+		if (force_keep) {
+			action = MTA_KEEP;
+		} else if (force_unload && !transfer_cargodist_mode && accepted && cp->first_station != current_station) {
+			action = MTA_DELIVER;
+		} else if (force_transfer && !transfer_cargodist_mode) {
+			handle_forced_transfer();
 		} else {
 			/* Rewrite an invalid source station to some random other one to
 			 * avoid keeping the cargo in the vehicle forever. */
@@ -704,6 +710,9 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 				 * unrestricted one instead. */
 				cargo_next = flow_it->GetVia();
 				action = VehicleCargoList::ChooseAction(cp, cargo_next, current_station, accepted, next_station);
+			}
+			if (transfer_cargodist_mode && action == MTA_KEEP) {
+				handle_forced_transfer();
 			}
 		}
 		Money share;
