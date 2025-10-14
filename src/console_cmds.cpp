@@ -4146,7 +4146,7 @@ static bool ConRoadTypeFlagCtl(std::span<std::string_view> argv)
 	if (rt >= ROADTYPE_END) return true;
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 
-	if (flag >= 100) {
+	if (*flag >= 100) {
 		ToggleBit(_roadtypes[rt].extra_flags.edit_base(), *flag - 100);
 	} else {
 		ToggleBit(_roadtypes[rt].flags.edit_base(), *flag);
