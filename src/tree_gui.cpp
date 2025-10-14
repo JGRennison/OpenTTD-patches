@@ -48,7 +48,7 @@ static Dimension GetMaxTreeSpriteSize()
 	offset.x = 0;
 	offset.y = 0;
 
-	for (uint i = tree_types.base; i < tree_types.base + tree_types.count; i++) {
+	for (uint i = tree_types.base; i < (uint)(tree_types.base + tree_types.count); i++) {
 		if (i >= (uint)lengthof(_tree_sprites)) return size;
 		this_size = GetSpriteSize(_tree_sprites[i].sprite, &offset);
 		size.width = std::max<int>(size.width, 2 * std::max<int>(this_size.width, -offset.x));

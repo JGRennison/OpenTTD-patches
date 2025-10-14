@@ -445,7 +445,7 @@ void GfxDetermineMainColours()
 	extern uint32_t _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
 	const TreeTypeRange tree_range  = _tree_range_by_landscape[to_underlying(_settings_game.game_creation.landscape)];
 	for (uint tg = 0; tg < 5; tg++) {
-		for (uint i = tree_range.base; i < tree_range.base + tree_range.count; i++) {
+		for (uint i = tree_range.base; i < (uint)(tree_range.base + tree_range.count); i++) {
 			_vp_map_vegetation_tree_colours[0][tg][i - tree_range.base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
 		}
 		for (uint i = tree_range.count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
