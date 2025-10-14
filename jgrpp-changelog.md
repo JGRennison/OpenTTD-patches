@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.67.1 (2025-10-14)
+* Fix crash that could occur with invalid/missing NewGRF text strings.
+* Fix elevated road type vehicles not ignoring non-elevated road vehicles in collision detection.
+* Fix handling of unload/transfer orders, when using cargodist.
+* Grove/forest tree brushes:
+  * Fix placement failing in the arctic climate when used on existing trees below the snow line with adjusted arctic tree placement enabled.
+  * Improve handling of tropic-zone specific trees in the tropic climate.
+* Scheduled dispatch:
+  * Add detailed slot view mode to scheduled dispatch window.
+  * Allow multiple slots to be selected and edited at once.
+  * Allow setting slot tags and route ID from the add slot window.
+  * Support text input when adding multiple slots.
+* Bump trunk base from commit 2bee313642f0351b7da72ef616eb2f47ffa6b8d0 to commit ac3ed9f3ade8040a06d6f7eb51761ca5b6c005ac.
+
 ### v0.67.0 (2025-10-04)
 * Fix incorrect text for some languages which use grammatical case, on Windows.
 * Fix incorrect drag and tooltip behaviour in the template based train replacement template edit window.
