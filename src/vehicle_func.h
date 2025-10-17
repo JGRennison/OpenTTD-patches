@@ -49,50 +49,8 @@ struct Viewport;
 template <VehicleType T>
 bool IsValidImageIndex(uint8_t image_index);
 
-typedef Vehicle *VehicleFromPosProc(Vehicle *v, void *data);
-
 void VehicleServiceInDepot(Vehicle *v);
 uint CountVehiclesInChain(const Vehicle *v);
-
-/**
- * Find a vehicle from a specific location. It will call proc for ALL vehicles
- * on the tile and YOU must make SURE that the "best one" is stored in the
- * data value and is ALWAYS the same regardless of the order of the vehicles
- * where proc was called on!
- * When you fail to do this properly you create an almost untraceable DESYNC!
- * @note The return value of proc will be ignored.
- * @note Use this when you have the intention that all vehicles
- *       should be iterated over.
- * @param x    The X location on the map
- * @param y    The Y location on the map
- * @param type The vehicle type
- * @param data Arbitrary data passed to proc
- * @param proc The proc that determines whether a vehicle will be "found".
- */
-inline void FindVehicleOnPosXY(int x, int y, VehicleType type, void *data, VehicleFromPosProc *proc)
-{
-	extern Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first);
-	VehicleFromPosXY(x, y, type, data, proc, false);
-}
-
-/**
- * Checks whether a vehicle in on a specific location. It will call proc for
- * vehicles until it returns non-nullptr.
- * @note Use FindVehicleOnPosXY when you have the intention that all vehicles
- *       should be iterated over.
- * @param x    The X location on the map
- * @param y    The Y location on the map
- * @param type The vehicle type
- * @param data Arbitrary data passed to proc
- * @param proc The proc that determines whether a vehicle will be "found".
- * @return True if proc returned non-nullptr.
- */
-inline bool HasVehicleOnPosXY(int x, int y, VehicleType type, void *data, VehicleFromPosProc *proc)
-{
-	extern Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first);
-	return VehicleFromPosXY(x, y, type, data, proc, true) != nullptr;
-}
-
 void CallVehicleTicks();
 uint8_t CalcPercentVehicleFilled(const Vehicle *v, StringID *colour);
 uint8_t CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoType cargo);

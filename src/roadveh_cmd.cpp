@@ -567,36 +567,6 @@ static bool RoadVehIsCrashed(RoadVehicle *v)
 	return true;
 }
 
-struct CheckRoadVehCrashTrainInfo {
-	const Vehicle *u;
-	bool found = false;
-
-	CheckRoadVehCrashTrainInfo(const Vehicle *u_)
-			: u(u_) { }
-};
-
-/**
- * Check routine whether a road and a train vehicle have collided.
- * @param v    %Train vehicle to test.
- * @param data Info including road vehicle to test.
- * @return %Train vehicle if the vehicles collided, else \c nullptr.
- */
-static Vehicle *EnumCheckRoadVehCrashTrain(Vehicle *v, void *data)
-{
-	CheckRoadVehCrashTrainInfo *info = (CheckRoadVehCrashTrainInfo*) data;
-
-	if (abs(v->z_pos - info->u->z_pos) <= 6 &&
-			abs(v->x_pos - info->u->x_pos) <= 4 &&
-			abs(v->y_pos - info->u->y_pos) <= 4) {
-		info->found = true;
-		extern void TrainRoadVehicleCrashBreakdown(Vehicle *v);
-		TrainRoadVehicleCrashBreakdown(v);
-		return v;
-	} else {
-		return nullptr;
-	}
-}
-
 uint RoadVehicle::Crash(bool flooded)
 {
 	uint victims = this->GroundVehicleBase::Crash(flooded);
@@ -647,9 +617,18 @@ static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 
 		still_on_level_crossing = true;
 
-		CheckRoadVehCrashTrainInfo info(u);
-		FindVehicleOnPosXY(v->x_pos, v->y_pos, VEH_TRAIN, &info, EnumCheckRoadVehCrashTrain);
-		if (info.found) {
+		bool crashed = false;
+		VehicleID lowest_train = VehicleID::Invalid();
+		for (const Vehicle *t : VehiclesNearTileXY(v->x_pos, v->y_pos, 4, VEH_TRAIN)) {
+			if (abs(t->z_pos - u->z_pos) <= 6) {
+				if (!crashed || t->index < lowest_train) lowest_train = t->index;
+				crashed = true;
+			}
+		}
+
+		if (crashed) {
+			extern void TrainRoadVehicleCrashBreakdown(Vehicle *v);
+			TrainRoadVehicleCrashBreakdown(Vehicle::Get(lowest_train));
 			RoadVehCrash(v);
 			return true;
 		}
@@ -697,28 +676,25 @@ struct RoadVehFindData {
 	RoadTypeCollisionMode collision_mode;
 };
 
-static Vehicle *EnumCheckRoadVehClose(Vehicle *veh, void *data)
+static void FindClosestBlockingRoadVeh(RoadVehicle *v, RoadVehFindData *rvf)
 {
 	static const int8_t dist_x[] = { -4, -8, -4, -1, 4, 8, 4, 1 };
 	static const int8_t dist_y[] = { -4, -1, 4, 8, 4, 1, -4, -8 };
-
-	RoadVehFindData *rvf = (RoadVehFindData*)data;
-	RoadVehicle *v = RoadVehicle::From(veh);
 
 	int x_diff = v->x_pos - rvf->x;
 	int y_diff = v->y_pos - rvf->y;
 
 	/* Not a close Road vehicle when it's not a road vehicle, in the depot, or ourself. */
-	if (v->IsInDepot() || rvf->veh->First() == v->First()) return nullptr;
+	if (v->IsInDepot() || rvf->veh->First() == v->First()) return;
 
-	if (!_collision_mode_roadtypes[rvf->collision_mode].Test(v->roadtype)) return nullptr;
+	if (!_collision_mode_roadtypes[rvf->collision_mode].Test(v->roadtype)) return;
 
 	/* Not close when at a different height or when going in a different direction. */
-	if (abs(v->z_pos - rvf->veh->z_pos) >= 6 || v->direction != rvf->dir) return nullptr;
+	if (abs(v->z_pos - rvf->veh->z_pos) >= 6 || v->direction != rvf->dir) return;
 
 	/* We 'return' the closest vehicle, in distance and then VehicleID as tie-breaker. */
 	uint diff = abs(x_diff) + abs(y_diff);
-	if (diff > rvf->best_diff || (diff == rvf->best_diff && v->index > rvf->best->index)) return nullptr;
+	if (diff > rvf->best_diff || (diff == rvf->best_diff && v->index > rvf->best->index)) return;
 
 	auto IsCloseOnAxis = [](int dist, int diff) {
 		if (dist < 0) return diff > dist && diff <= 0;
@@ -729,8 +705,6 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *veh, void *data)
 		rvf->best = v;
 		rvf->best_diff = diff;
 	}
-
-	return nullptr;
 }
 
 static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction dir, bool update_blocked_ctr = true)
@@ -751,13 +725,15 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 
 	if (front->state == RVSB_WORMHOLE) {
 		for (RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(v->tile)) {
-			EnumCheckRoadVehClose(u, &rvf);
+			FindClosestBlockingRoadVeh(u, &rvf);
 		}
 		for (RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(GetOtherTunnelBridgeEnd(v->tile))) {
-			EnumCheckRoadVehClose(u, &rvf);
+			FindClosestBlockingRoadVeh(u, &rvf);
 		}
 	} else {
-		FindVehicleOnPosXY(x, y, VEH_ROAD, &rvf, EnumCheckRoadVehClose);
+		for (RoadVehicle *u : VehiclesNearTileXY<VEH_ROAD>(x, y, 8)) {
+			FindClosestBlockingRoadVeh(u, &rvf);
+		}
 	}
 
 	/* This code protects a roadvehicle from being blocked for ever

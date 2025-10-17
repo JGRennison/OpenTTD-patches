@@ -1799,4 +1799,154 @@ bool HasVehicleOnTile(TileIndex tile, UnaryPred &&predicate)
 	return false;
 }
 
+/**
+ * Forward iterator
+ */
+class VehiclesNearTileXYBaseIterator {
+	template <typename T>
+	friend class VehiclesNearTileXYIterator;
+
+public:
+	using value_type = Vehicle *;
+	using difference_type = std::ptrdiff_t;
+	using iterator_category = std::forward_iterator_tag;
+	using pointer = void;
+	using reference = void;
+
+	explicit VehiclesNearTileXYBaseIterator(int32_t x, int32_t y, uint max_dist, VehicleType veh_type);
+
+	bool operator==(const VehiclesNearTileXYBaseIterator &rhs) const { return this->current_veh == rhs.current_veh; }
+	bool operator==(const std::default_sentinel_t &) const { return this->current_veh == nullptr; }
+
+	Vehicle *operator*() const { return this->current_veh; }
+
+	VehiclesNearTileXYBaseIterator &operator++()
+	{
+		this->Increment();
+		this->SkipFalseMatches();
+		return *this;
+	}
+
+	VehiclesNearTileXYBaseIterator operator++(int)
+	{
+		VehiclesNearTileXYBaseIterator result = *this;
+		++*this;
+		return result;
+	}
+
+	struct Iterable {
+		explicit Iterable(int32_t x, int32_t y, uint max_dist, VehicleType veh_type) : x(x), y(y), max_dist(max_dist), veh_type(veh_type) {}
+		VehiclesNearTileXYBaseIterator begin() const { return VehiclesNearTileXYBaseIterator(this->x, this->y, this->max_dist, this->veh_type); }
+		std::default_sentinel_t end() const { return std::default_sentinel_t(); }
+
+	private:
+		int32_t x;
+		int32_t y;
+		uint max_dist;
+		VehicleType veh_type;
+	};
+
+private:
+	Rect pos_rect;
+	uint hxmin, hxmax, hymin, hymax;
+	uint hx, hy;
+	const VehicleType veh_type;
+	Vehicle *current_veh;
+
+	void Increment();
+	void SkipEmptyBuckets();
+	void SkipFalseMatches();
+};
+
+template <typename T>
+class VehiclesNearTileXYIterator : public VehiclesNearTileXYBaseIterator {
+public:
+	using value_type = T *;
+
+	explicit VehiclesNearTileXYIterator(int32_t x, int32_t y, uint max_dist) : VehiclesNearTileXYBaseIterator(x, y, max_dist, T::EXPECTED_TYPE) {}
+
+	bool operator==(const VehiclesNearTileXYIterator &rhs) const { return this->current_veh == rhs.current_veh; }
+	bool operator==(const std::default_sentinel_t &) const { return this->current_veh == nullptr; }
+
+	T *operator*() const { return static_cast<T *>(this->current_veh); }
+
+	VehiclesNearTileXYIterator &operator++()
+	{
+		this->Increment();
+		this->SkipFalseMatches();
+		return *this;
+	}
+
+	VehiclesNearTileXYIterator operator++(int)
+	{
+		VehiclesNearTileXYIterator result = *this;
+		++*this;
+		return result;
+	}
+
+	struct Iterable {
+		explicit Iterable(int32_t x, int32_t y, uint max_dist) : x(x), y(y), max_dist(max_dist) {}
+		VehiclesNearTileXYIterator begin() const { return VehiclesNearTileXYIterator(this->x, this->y, this->max_dist); }
+		std::default_sentinel_t end() const { return std::default_sentinel_t(); }
+
+	private:
+		int32_t x;
+		int32_t y;
+		uint max_dist;
+	};
+};
+
+
+/**
+ * Iterate over all vehicles on a tile.
+ * @warning This only works for vehicles with proper Vehicle::Tile, so only ground vehicles outside wormholes.
+ * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
+ */
+inline VehiclesNearTileXYBaseIterator::Iterable VehiclesNearTileXY(int32_t x, int32_t y, uint max_dist, VehicleType veh_type)
+{
+	return VehiclesNearTileXYBaseIterator::Iterable(x, y, max_dist, veh_type);
+}
+
+/**
+ * Iterate over all vehicles on a tile.
+ * @warning This only works for vehicles with proper Vehicle::Tile, so only ground vehicles outside wormholes.
+ * @warning The order is non-deterministic. You have to make sure, that your processing is not order dependant.
+ */
+template <VehicleType TYPE>
+inline typename VehiclesNearTileXYIterator<typename VehicleTypeHelper<TYPE>::VehType>::Iterable VehiclesNearTileXY(int32_t x, int32_t y, uint max_dist)
+{
+	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
+	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
+	return typename VehiclesNearTileXYIterator<VehType>::Iterable(x, y, max_dist);
+}
+
+/**
+ * Loop over vehicles near a given world coordinate, and check whether a predicate is true for any of them.
+ * The predicate must have the signature: bool Predicate(const Vehicle *);
+ * @warning This only works for vehicles with proper Vehicle::Tile, so only ground vehicles outside wormholes.
+ */
+template <class UnaryPred>
+bool HasVehicleNearTileXY(int32_t x, int32_t y, uint max_dist, VehicleType type, UnaryPred &&predicate)
+{
+	for (const auto *v : VehiclesNearTileXY(x, y, max_dist, type)) {
+		if (predicate(v)) return true;
+	}
+	return false;
+}
+
+/**
+ * Loop over vehicles near a given world coordinate, and check whether a predicate is true for any of them.
+ * The predicate must have the signature: bool Predicate(const Vehicle *);
+ * @warning This only works for vehicles with proper Vehicle::Tile, so only ground vehicles outside wormholes.
+ */
+template <VehicleType TYPE, class UnaryPred>
+bool HasVehicleNearTileXY(int32_t x, int32_t y, uint max_dist, UnaryPred &&predicate)
+{
+	for (const auto *v : VehiclesNearTileXY<TYPE>(x, y, max_dist)) {
+		if (predicate(v)) return true;
+	}
+	return false;
+}
+
 #endif /* VEHICLE_BASE_H */

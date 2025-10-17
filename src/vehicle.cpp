@@ -517,55 +517,6 @@ Vehicle::Vehicle(VehicleType type)
 using VehicleTypeTileHash = robin_hood::unordered_map<TileIndex, VehicleID>;
 static std::array<VehicleTypeTileHash, 4> _vehicle_tile_hashes;
 
-static Vehicle *VehicleFromTileHash(int xl, int yl, int xu, int yu, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first)
-{
-	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
-
-	for (int y = yl; ; y++) {
-		for (int x = xl; ; x++) {
-			auto iter = vhash.find(TileXY(x, y));
-			if (iter != vhash.end()) {
-				Vehicle *v = Vehicle::Get(iter->second);
-				do {
-					Vehicle *a = proc(v, data);
-					if (find_first && a != nullptr) return a;
-
-					v = v->hash_tile_next;
-				} while (v != nullptr);
-			}
-			if (x == xu) break;
-		}
-		if (y == yu) break;
-	}
-
-	return nullptr;
-}
-
-
-/**
- * Helper function for FindVehicleOnPos/HasVehicleOnPos.
- * @note Do not call this function directly!
- * @param x    The X location on the map
- * @param y    The Y location on the map
- * @param data Arbitrary data passed to proc
- * @param proc The proc that determines whether a vehicle will be "found".
- * @param find_first Whether to return on the first found or iterate over
- *                   all vehicles
- * @return the best matching or first vehicle (depending on find_first).
- */
-Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFromPosProc *proc, bool find_first)
-{
-	const int COLL_DIST = 6;
-
-	/* Hash area to scan is from xl,yl to xu,yu */
-	int xl = (x - COLL_DIST) / TILE_SIZE;
-	int xu = (x + COLL_DIST) / TILE_SIZE;
-	int yl = (y - COLL_DIST) / TILE_SIZE;
-	int yu = (y + COLL_DIST) / TILE_SIZE;
-
-	return VehicleFromTileHash(xl, yl, xu, yu, type, data, proc, find_first);
-}
-
 /**
  * Returns the first vehicle on a specific location, this should be iterated using Vehicle::HashTileNext.
  * @note Use #GetFirstVehicleOnPos when you have the intention that all vehicles should be iterated over using Vehicle::HashTileNext. The iteration order is non-deterministic.
@@ -583,6 +534,77 @@ Vehicle *GetFirstVehicleOnTile(TileIndex tile, VehicleType type)
 	} else {
 		return nullptr;
 	}
+}
+
+/**
+ * Iterator constructor.
+ * Find first vehicle near (x, y).
+ */
+VehiclesNearTileXYBaseIterator::VehiclesNearTileXYBaseIterator(int32_t x, int32_t y, uint max_dist, VehicleType veh_type) : veh_type(veh_type)
+{
+	/* There are no negative tile coordinates */
+	this->pos_rect.left = std::max<int>(0, x - max_dist);
+	this->pos_rect.right = std::max<int>(0, x + max_dist);
+	this->pos_rect.top = std::max<int>(0, y - max_dist);
+	this->pos_rect.bottom = std::max<int>(0, y + max_dist);
+
+	/* Hash area to scan */
+	this->hxmin = this->hx = pos_rect.left / TILE_SIZE;
+	this->hxmax = pos_rect.right / TILE_SIZE;
+	this->hymin = this->hy = pos_rect.top / TILE_SIZE;
+	this->hymax = pos_rect.bottom / TILE_SIZE;
+
+	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[this->veh_type];
+	auto iter = vhash.find(TileXY(this->hx, this->hy));
+	if (iter != vhash.end()) {
+		this->current_veh = Vehicle::Get(iter->second);
+	} else {
+		this->current_veh = nullptr;
+		this->SkipEmptyBuckets();
+		this->SkipFalseMatches();
+	}
+}
+
+/**
+ * Advance the internal state to the next potential vehicle.
+ */
+void VehiclesNearTileXYBaseIterator::Increment()
+{
+	dbg_assert(this->current_veh != nullptr);
+	this->current_veh = this->current_veh->hash_tile_next;
+	this->SkipEmptyBuckets();
+}
+
+/**
+ * Advance the internal state until we reach a non-empty bucket, or the end.
+ */
+void VehiclesNearTileXYBaseIterator::SkipEmptyBuckets()
+{
+	while (this->current_veh == nullptr) {
+		if (this->hx != this->hxmax) {
+			this->hx++;
+		} else if (this->hy != this->hymax) {
+			this->hx = this->hxmin;
+			this->hy++;
+		} else {
+			return;
+		}
+		VehicleTypeTileHash &vhash = _vehicle_tile_hashes[this->veh_type];
+		auto iter = vhash.find(TileXY(this->hx, this->hy));
+		if (iter != vhash.end()) {
+			this->current_veh = Vehicle::Get(iter->second);
+		} else {
+			this->current_veh = nullptr;
+		}
+	}
+}
+
+/**
+ * Advance the internal state until it reaches a vehicle within the search area.
+ */
+void VehiclesNearTileXYBaseIterator::SkipFalseMatches()
+{
+	while (this->current_veh != nullptr && !this->pos_rect.Contains({this->current_veh->x_pos, this->current_veh->y_pos})) this->Increment();
 }
 
 /**
