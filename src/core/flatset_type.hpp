@@ -19,8 +19,30 @@
 template <class Tkey, class Tcompare = std::less<>>
 class FlatSet {
 	std::vector<Tkey> data; ///< Sorted vector. of values.
+
+	void sort_initial_values()
+	{
+		std::sort(this->data.begin(), this->data.end(), Tcompare{});
+		this->data.erase(std::unique(this->data.begin(), this->data.end()), this->data.end());
+	}
+
 public:
 	using const_iterator = std::vector<Tkey>::const_iterator;
+
+	FlatSet() = default;
+	FlatSet(const FlatSet &) = default;
+	FlatSet(FlatSet &&) = default;
+
+	FlatSet(std::initializer_list<Tkey> init) : data(init)
+	{
+		this->sort_initial_values();
+	}
+
+	template <typename InputIt>
+	FlatSet(InputIt first, InputIt last) : data(first, last)
+	{
+		this->sort_initial_values();
+	}
 
 	/**
 	 * Insert a key into the set.
@@ -51,9 +73,16 @@ public:
 	 * @param key Key to test.
 	 * @return true iff the key exists in the set.
 	 */
-	bool contains(const Tkey &key)
+	bool contains(const Tkey &key) const
 	{
 		return std::ranges::binary_search(this->data, key, Tcompare{});
+	}
+
+	const_iterator find(const Tkey &key) const
+	{
+		auto it = std::ranges::lower_bound(this->data, key, Tcompare{});
+		if (it != this->end() && *it != key) it = this->end();
+		return it;
 	}
 
 	const_iterator begin() const { return std::cbegin(this->data); }
