@@ -173,6 +173,7 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 				NWidget(NWID_HORIZONTAL),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_WAGONS),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
+					NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_CONFIGURE_BADGES), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetResize(0, 0), SetFill(0, 1), SetSpriteTip(SPR_EXTRA_MENU, STR_BADGE_CONFIG_MENU_TOOLTIP),
 				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY),
 					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
@@ -2410,7 +2411,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	PanelState wagon{};
 	bool wagon_selected = false;
 	bool dual_button_mode = false;
-	GUIBadgeClasses badge_classes;
+	GUIBadgeClasses badge_classes{};
+
+	static constexpr int BADGE_COLUMNS = 3; ///< Number of columns available for badges (0 = left of image, 1 = between image and name, 2 = after name)
 
 	bool GetRefitButtonMode(const PanelState &state) const
 	{
@@ -2808,6 +2811,10 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				break;
 			}
 
+			case WID_BV_CONFIGURE_BADGES:
+				ShowDropDownList(this, this->BuildBadgeConfigurationList(), -1, widget, 0, DDMF_PERSIST);
+				break;
+
 			/* Locomotives */
 
 			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
@@ -3122,6 +3129,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_RENAME_LOCO: {
 				size = maxdim(size, NWidgetLeaf::GetResizeBoxDimension());
 				break;
+
+			case WID_BV_CONFIGURE_BADGES:
+				/* Hide the configuration button if no configurable badges are present. */
+				if (this->badge_classes.GetClasses().empty()) size = {0, 0};
+				break;
 			}
 		}
 	}
@@ -3216,7 +3228,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index, int) override
+	void OnDropdownSelect(WidgetID widget, int index, int click_result) override
 	{
 		switch (widget) {
 			case WID_BV_SORT_DROPDOWN_LOCO: {
@@ -3258,6 +3270,19 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				}
 				break;
 			}
+
+			case WID_BV_CONFIGURE_BADGES: {
+				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result);
+
+				this->ReInit();
+
+				if (reopen) {
+					ReplaceDropDownList(this, this->BuildBadgeConfigurationList(), -1);
+				} else {
+					this->CloseChildWindows(WC_DROPDOWN_MENU);
+				}
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -3296,6 +3321,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 
 		return ES_HANDLED;
+	}
+
+	DropDownList BuildBadgeConfigurationList() const
+	{
+		static const auto separators = {STR_BADGE_CONFIG_PREVIEW, STR_BADGE_CONFIG_NAME};
+		return BuildBadgeClassConfigurationList(this->badge_classes, BADGE_COLUMNS, separators);
 	}
 };
 
