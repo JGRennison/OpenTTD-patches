@@ -32,6 +32,7 @@
 #include "company_func.h"
 #include "viewport_func.h"
 #include "core/backup_type.hpp"
+#include "core/flatset_type.hpp"
 #include "core/geometry_func.hpp"
 #include "ai/ai.hpp"
 #include "blitter/factory.hpp"
@@ -168,7 +169,7 @@ DropDownList BuildSetDropDownList(int *selected_index)
 	return list;
 }
 
-std::set<int> _refresh_rates = { 30, 60, 75, 90, 100, 120, 144, 240 };
+FlatSet<int> _refresh_rates{ 30, 60, 75, 90, 100, 120, 144, 240 };
 
 /**
  * Add the refresh rate from the config and the refresh rates from all the monitors to
@@ -181,7 +182,9 @@ static void AddCustomRefreshRates()
 
 	/* Add all the refresh rates of all monitors connected to the machine.  */
 	std::vector<int> monitor_rates = VideoDriver::GetInstance()->GetListOfMonitorRefreshRates();
-	std::copy(monitor_rates.begin(), monitor_rates.end(), std::inserter(_refresh_rates, _refresh_rates.end()));
+	for (int rate : monitor_rates) {
+		_refresh_rates.insert(rate);
+	}
 }
 
 static const int SCALE_NMARKS = (MAX_INTERFACE_SCALE - MIN_INTERFACE_SCALE) / 25 + 1; // Show marks at 25% increments
