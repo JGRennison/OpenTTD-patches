@@ -21,8 +21,8 @@
 #include "rail_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 #include <vector>
-#include <unordered_map>
 
 /** Scope resolver for stations. */
 struct StationScopeResolver : public ScopeResolver {
@@ -188,7 +188,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	StationSpecIntlFlags internal_flags{}; ///< Bitmask of internal spec flags
 
 	/** Custom platform layouts, keyed by platform and length combined. */
-	std::unordered_map<uint16_t, std::vector<uint8_t>> layouts;
+	btree::btree_map<uint16_t, std::vector<uint8_t>> layouts;
 
 	std::vector<BadgeID> badges;
 

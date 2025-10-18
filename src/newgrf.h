@@ -352,7 +352,7 @@ struct GRFFile {
 	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoType -> local ID)
 
 	std::vector<BadgeID> badge_list{}; ///< Badge translation table (local index -> global index)
-	std::unordered_map<uint16_t, BadgeID> badge_map{};
+	btree::btree_map<uint16_t, BadgeID> badge_map{};
 
 	std::vector<RailTypeLabel> railtype_list{}; ///< Railtype translation table
 	std::array<RailType, RAILTYPE_END> railtype_map{};
