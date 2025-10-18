@@ -109,6 +109,8 @@ enum GrfSpecFeature : uint8_t {
 	GSF_FAKE_TRACERESTRICT,   ///< Fake routing restriction GrfSpecFeature for debugging
 	GSF_FAKE_END,             ///< End of the fake features
 
+	GSF_DEFAULT = GSF_END,    ///< Unspecified feature, default badge
+
 	GSF_ERROR_ON_USE = 0xFE,  ///< An invalid value which generates an immediate error on mapping
 	GSF_INVALID = 0xFF,       ///< An invalid spec feature
 };

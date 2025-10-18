@@ -43,7 +43,7 @@ void SetWagonOverrideSprites(EngineID engine, CargoType cargo, const SpriteGroup
 {
 	Engine *e = Engine::Get(engine);
 
-	assert(cargo < NUM_CARGO + 2); // Include SpriteGroupCargo::SG_DEFAULT and SpriteGroupCargo::SG_PURCHASE pseudo cargoes.
+	assert(cargo < NUM_CARGO + 2); // Include CargoGRFFileProps::SG_DEFAULT and CargoGRFFileProps::SG_PURCHASE pseudo cargoes.
 
 	WagonOverride *wo = &e->overrides.emplace_back();
 	wo->group = group;
@@ -56,7 +56,7 @@ const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoType cargo, E
 	const Engine *e = Engine::Get(engine);
 
 	for (const WagonOverride &wo : e->overrides) {
-		if (wo.cargo != cargo && wo.cargo != SpriteGroupCargo::SG_DEFAULT) continue;
+		if (wo.cargo != cargo && wo.cargo != CargoGRFFileProps::SG_DEFAULT) continue;
 		if (std::ranges::find(wo.engines, overriding_engine) != wo.engines.end()) return wo.group;
 	}
 	return nullptr;
@@ -1247,7 +1247,7 @@ VehicleResolverObject::VehicleResolverObject(EngineID engine_type, const Vehicle
 	cached_relative_count(0)
 {
 	if (wagon_override == WO_SELF) {
-		this->root_spritegroup = GetWagonOverrideSpriteSet(engine_type, SpriteGroupCargo::SG_DEFAULT, engine_type);
+		this->root_spritegroup = GetWagonOverrideSpriteSet(engine_type, CargoGRFFileProps::SG_DEFAULT, engine_type);
 	} else {
 		if (wagon_override != WO_NONE && v != nullptr && v->IsGroundVehicle()) {
 			assert(v->engine_type == engine_type); // overrides make little sense with fake scopes
@@ -1264,9 +1264,9 @@ VehicleResolverObject::VehicleResolverObject(EngineID engine_type, const Vehicle
 
 		if (this->root_spritegroup == nullptr) {
 			const Engine *e = Engine::Get(engine_type);
-			CargoType cargo = v != nullptr ? v->cargo_type : SpriteGroupCargo::SG_PURCHASE;
+			CargoType cargo = v != nullptr ? v->cargo_type : CargoGRFFileProps::SG_PURCHASE;
 			this->root_spritegroup = e->grf_prop.GetSpriteGroup(cargo);
-			if (this->root_spritegroup == nullptr) this->root_spritegroup = e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT);
+			if (this->root_spritegroup == nullptr) this->root_spritegroup = e->grf_prop.GetSpriteGroup(CargoGRFFileProps::SG_DEFAULT);
 		}
 	}
 }
@@ -1458,7 +1458,7 @@ static void DoTriggerVehicleRandomisation(Vehicle *v, VehicleRandomTrigger trigg
 		v->waiting_random_triggers.Set(trigger);
 
 		const Engine *e = Engine::Get(v->engine_type);
-		if (e->grf_prop.GetSpriteGroup(v->cargo_type) == nullptr && e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT) == nullptr) return;
+		if (e->grf_prop.GetSpriteGroup(v->cargo_type) == nullptr && e->grf_prop.GetSpriteGroup(CargoGRFFileProps::SG_DEFAULT) == nullptr) return;
 	}
 
 	/* Rerandomise bits. Scopes other than SELF are invalid for rerandomisation. For bug-to-bug-compatibility with TTDP we ignore the scope. */
@@ -1665,7 +1665,7 @@ void AnalyseEngineCallbacks()
 		};
 
 		for (const auto &[cargo, spritegroup] : e->grf_prop) {
-			process_sg(spritegroup, cargo == SpriteGroupCargo::SG_PURCHASE);
+			process_sg(spritegroup, cargo == CargoGRFFileProps::SG_PURCHASE);
 		}
 		for (const WagonOverride &wo : e->overrides) {
 			process_sg(wo.group, false);
@@ -1678,8 +1678,8 @@ void AnalyseEngineCallbacks()
 			}
 		}
 
-		if (refit_cap_whitelist_ok && non_purchase_groups <= 1 && e->info.callback_mask.Test(VehicleCallbackMask::RefitCapacity) && e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT) != nullptr) {
-			const SpriteGroup **purchase_sg_ptr = e->grf_prop.GetSpriteGroupPtr(SpriteGroupCargo::SG_PURCHASE);
+		if (refit_cap_whitelist_ok && non_purchase_groups <= 1 && e->info.callback_mask.Test(VehicleCallbackMask::RefitCapacity) && e->grf_prop.GetSpriteGroup(CargoGRFFileProps::SG_DEFAULT) != nullptr) {
+			const SpriteGroup **purchase_sg_ptr = e->grf_prop.GetSpriteGroupPtr(CargoGRFFileProps::SG_PURCHASE);
 			const SpriteGroup *purchase_sg = nullptr;
 			if (purchase_sg_ptr != nullptr) {
 				purchase_sg = *purchase_sg_ptr;
@@ -1734,7 +1734,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 			root_spritegroup = cargo_spritegroup;
 			dumper.Print(fmt::format("Cargo: {}", v->cargo_type));
 		} else {
-			root_spritegroup = e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT);
+			root_spritegroup = e->grf_prop.GetSpriteGroup(CargoGRFFileProps::SG_DEFAULT);
 			dumper.Print("SG_DEFAULT");
 		}
 	}
@@ -1745,10 +1745,10 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 		if (spritegroup != root_spritegroup) {
 			dumper.Print("");
 			switch (cargo) {
-				case SpriteGroupCargo::SG_DEFAULT:
+				case CargoGRFFileProps::SG_DEFAULT:
 					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT");
 					break;
-				case SpriteGroupCargo::SG_PURCHASE:
+				case CargoGRFFileProps::SG_PURCHASE:
 					dumper.Print("OTHER SPRITE GROUP: SG_PURCHASE");
 					break;
 				default:

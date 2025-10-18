@@ -14,7 +14,7 @@
 #include "textfile_type.h"
 #include "textfile_gui.h"
 #include "3rdparty/md5/md5.h"
-#include <unordered_map>
+#include <vector>
 
 /* Forward declare these; can't do 'struct X' in functions as older GCCs barf on that */
 struct IniFile;
@@ -41,14 +41,28 @@ struct MD5File {
 /** Defines the traits of a BaseSet type. */
 template <class T> struct BaseSetTraits;
 
+struct BaseSetBase {
+	typedef std::vector<std::pair<std::string, std::string>> TranslatedStrings;
+
+	std::string name;              ///< The name of the base set
+	std::string url;               ///< URL for information about the base set
+	TranslatedStrings description; ///< Description of the base set
+	uint32_t shortname = 0;        ///< Four letter short variant of the name
+	uint32_t version = 0;          ///< The version of this base set
+	bool fallback = false;         ///< This set is a fallback set, i.e. it should be used only as last resort
+
+	uint found_files = 0; ///< Number of the files that could be found
+	uint valid_files = 0; ///< Number of the files that could be found and are valid
+
+	const std::string &GetDescription(std::string_view isocode) const;
+};
+
 /**
  * Information about a single base set.
  * @tparam T the real class we're going to be
  */
 template <class T>
-struct BaseSet {
-	typedef std::unordered_map<std::string, std::string> TranslatedStrings;
-
+struct BaseSet : public BaseSetBase {
 	/** Number of files in this set */
 	static constexpr size_t NUM_FILES = BaseSetTraits<T>::num_files;
 
@@ -58,16 +72,7 @@ struct BaseSet {
 	/** BaseSet type name. */
 	static constexpr std::string_view SET_TYPE = BaseSetTraits<T>::set_type;
 
-	std::string name;              ///< The name of the base set
-	std::string url;               ///< URL for information about the base set
-	TranslatedStrings description; ///< Description of the base set
-	uint32_t shortname = 0;        ///< Four letter short variant of the name
-	uint32_t version = 0;          ///< The version of this base set
-	bool fallback = false;         ///< This set is a fallback set, i.e. it should be used only as last resort
-
 	std::array<MD5File, BaseSet<T>::NUM_FILES> files{}; ///< All files part of this set
-	uint found_files = 0; ///< Number of the files that could be found
-	uint valid_files = 0; ///< Number of the files that could be found and are valid
 
 	T *next = nullptr; ///< The next base set in this list
 
@@ -98,29 +103,6 @@ struct BaseSet {
 
 	bool FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename, bool allow_empty_filename = true);
 	void CopyCompatibleConfig([[maybe_unused]] const T &src) {}
-
-	/**
-	 * Get the description for the given ISO code.
-	 * It falls back to the first two characters of the ISO code in case
-	 * no match could be made with the full ISO code. If even then the
-	 * matching fails the default is returned.
-	 * @param isocode the isocode to search for
-	 * @return the description
-	 */
-	const std::string &GetDescription(const std::string &isocode) const
-	{
-		if (!isocode.empty()) {
-			/* First the full ISO code */
-			auto desc = this->description.find(isocode);
-			if (desc != this->description.end()) return desc->second;
-
-			/* Then the first two characters */
-			desc = this->description.find(isocode.substr(0, 2));
-			if (desc != this->description.end()) return desc->second;
-		}
-		/* Then fall back */
-		return this->description.at(std::string{});
-	}
 
 	/**
 	 * Calculate and check the MD5 hash of the supplied file.
@@ -176,7 +158,7 @@ protected:
 	 * Get the extension that is used to identify this set.
 	 * @return the extension
 	 */
-	static const char *GetExtension();
+	static std::string_view GetExtension();
 public:
 	/**
 	 * Determine the graphics pack that has to be used.
@@ -219,9 +201,9 @@ public:
  * @param ci The content info to compare it to.
  * @param md5sum Should the MD5 checksum be tested as well?
  * @param s The list with sets.
- * @return The filename of the first file of the base set, or \c nullptr if there is no match.
+ * @return The filename of the first file of the base set, or \c std::nullopt if there is no match.
  */
 template <class Tbase_set>
-const char *TryGetBaseSetFile(const ContentInfo &ci, bool md5sum, const Tbase_set *s);
+std::optional<std::string_view> TryGetBaseSetFile(const ContentInfo &ci, bool md5sum, const Tbase_set *s);
 
 #endif /* BASE_MEDIA_BASE_H */

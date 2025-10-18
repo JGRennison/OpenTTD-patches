@@ -38,8 +38,8 @@
 static CargoType TranslateCargo(uint8_t feature, uint8_t ctype)
 {
 	/* Special cargo types for purchase list and stations */
-	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return SpriteGroupCargo::SG_DEFAULT_NA;
-	if (ctype == 0xFF) return SpriteGroupCargo::SG_PURCHASE;
+	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return CargoGRFFileProps::SG_DEFAULT_NA;
+	if (ctype == 0xFF) return CargoGRFFileProps::SG_PURCHASE;
 
 	auto cargo_list = GetCargoTranslationTable(*_cur_gps.grffile);
 
@@ -153,9 +153,9 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 		EngineID engine = engines[i];
 
 		if (wagover) {
-			SetWagonOverrideSprites(engine, SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid), last_engines);
+			SetWagonOverrideSprites(engine, CargoGRFFileProps::SG_DEFAULT, GetGroupByID(groupid), last_engines);
 		} else {
-			SetCustomEngineSprites(engine, SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
+			SetCustomEngineSprites(engine, CargoGRFFileProps::SG_DEFAULT, GetGroupByID(groupid));
 			SetEngineGRF(engine, _cur_gps.grffile);
 		}
 	}
@@ -207,8 +207,8 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		uint16_t groupid = buf.ReadWord();
 		if (!IsValidGroupID(groupid, "StationMapSpriteGroup")) continue;
 
-		ctype = TranslateCargo(GSF_STATIONS, ctype);
-		if (ctype == INVALID_CARGO) continue;
+		CargoType cargo_type = TranslateCargo(GSF_STATIONS, ctype);
+		if (!IsValidCargoType(cargo_type)) continue;
 
 		for (uint i = 0; i < idcount; i++) {
 			StationSpec *statspec = stations[i] >= _cur_gps.grffile->stations.size() ? nullptr : _cur_gps.grffile->stations[stations[i]].get();
@@ -218,7 +218,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 				continue;
 			}
 
-			statspec->grf_prop.SetSpriteGroup(ctype, GetGroupByID(groupid));
+			statspec->grf_prop.SetSpriteGroup(cargo_type, GetGroupByID(groupid));
 		}
 	}
 
@@ -238,7 +238,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		statspec->grf_prop.SetSpriteGroup(SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
+		statspec->grf_prop.SetSpriteGroup(CargoGRFFileProps::SG_DEFAULT, GetGroupByID(groupid));
 		statspec->grf_prop.SetGRFFile(_cur_gps.grffile);
 		statspec->grf_prop.local_id = stations[i];
 		StationClass::Assign(statspec);
@@ -273,7 +273,7 @@ static void TownHouseMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		hs->grf_prop.SetSpriteGroup(0, GetGroupByID(groupid));
+		hs->grf_prop.SetSpriteGroup(GetGroupByID(groupid));
 	}
 }
 
@@ -304,7 +304,7 @@ static void IndustryMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		indsp->grf_prop.SetSpriteGroup(0, GetGroupByID(groupid));
+		indsp->grf_prop.SetSpriteGroup(GetGroupByID(groupid));
 	}
 }
 
@@ -335,7 +335,7 @@ static void IndustrytileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		indtsp->grf_prop.SetSpriteGroup(0, GetGroupByID(groupid));
+		indtsp->grf_prop.SetSpriteGroup(GetGroupByID(groupid));
 	}
 }
 
@@ -432,7 +432,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 				continue;
 			}
 
-			spec->grf_prop.SetSpriteGroup(OBJECT_SPRITE_GROUP_PURCHASE, GetGroupByID(groupid));
+			spec->grf_prop.SetSpriteGroup(StandardSpriteGroup::Purchase, GetGroupByID(groupid));
 		}
 	}
 
@@ -452,7 +452,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		spec->grf_prop.SetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT, GetGroupByID(groupid));
+		spec->grf_prop.SetSpriteGroup(StandardSpriteGroup::Default, GetGroupByID(groupid));
 		spec->grf_prop.SetGRFFile(_cur_gps.grffile);
 		spec->grf_prop.local_id = objects[i];
 	}
@@ -549,7 +549,7 @@ static void AirportMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		as->grf_prop.SetSpriteGroup(0, GetGroupByID(groupid));
+		as->grf_prop.SetSpriteGroup(GetGroupByID(groupid));
 	}
 }
 
@@ -580,7 +580,7 @@ static void AirportTileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		airtsp->grf_prop.SetSpriteGroup(0, GetGroupByID(groupid));
+		airtsp->grf_prop.SetSpriteGroup(GetGroupByID(groupid));
 	}
 }
 
@@ -597,8 +597,8 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		uint16_t groupid = buf.ReadWord();
 		if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) continue;
 
-		ctype = TranslateCargo(GSF_ROADSTOPS, ctype);
-		if (ctype == INVALID_CARGO) continue;
+		CargoType cargo_type = TranslateCargo(GSF_ROADSTOPS, ctype);
+		if (!IsValidCargoType(cargo_type)) continue;
 
 		for (uint i = 0; i < idcount; i++) {
 			RoadStopSpec *roadstopspec = (roadstops[i] >= _cur_gps.grffile->roadstops.size()) ? nullptr : _cur_gps.grffile->roadstops[roadstops[i]].get();
@@ -608,7 +608,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 				continue;
 			}
 
-			roadstopspec->grf_prop.SetSpriteGroup(ctype, GetGroupByID(groupid));
+			roadstopspec->grf_prop.SetSpriteGroup(cargo_type, GetGroupByID(groupid));
 		}
 	}
 
@@ -633,7 +633,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		roadstopspec->grf_prop.SetSpriteGroup(SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
+		roadstopspec->grf_prop.SetSpriteGroup(CargoGRFFileProps::SG_DEFAULT, GetGroupByID(groupid));
 		roadstopspec->grf_prop.SetGRFFile(_cur_gps.grffile);
 		roadstopspec->grf_prop.local_id = roadstops[i];
 		RoadStopClass::Assign(roadstopspec);
@@ -669,7 +669,7 @@ static void BadgeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			}
 
 			auto &badge = *GetBadge(found->second);
-			badge.grf_prop.SetSpriteGroup(ctype, _cur_gps.spritegroups[groupid]);
+			badge.grf_prop.SetSpriteGroup(static_cast<GrfSpecFeature>(ctype), _cur_gps.spritegroups[groupid]);
 		}
 	}
 
@@ -684,7 +684,7 @@ static void BadgeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		}
 
 		auto &badge = *GetBadge(found->second);
-		badge.grf_prop.SetSpriteGroup(GSF_END, _cur_gps.spritegroups[groupid]);
+		badge.grf_prop.SetSpriteGroup(GSF_DEFAULT, _cur_gps.spritegroups[groupid]);
 		badge.grf_prop.SetGRFFile(_cur_gps.grffile);
 		badge.grf_prop.local_id = local_id;
 	}

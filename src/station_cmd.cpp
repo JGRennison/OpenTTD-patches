@@ -3572,17 +3572,15 @@ draw_default_foundation:
 		if (stopspec != nullptr) {
 			stop_draw_mode = stopspec->draw_mode;
 			st = BaseStation::GetByTile(ti->tile);
-			RoadStopResolverObject object(stopspec, st, ti->tile, INVALID_ROADTYPE, type, view);
-			const SpriteGroup *group = object.Resolve();
-			if (group != nullptr && group->type == SGT_TILELAYOUT) {
-				const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
+			const TileLayoutSpriteGroup *group = GetRoadStopLayout(ti, stopspec, st, type, view);
+			if (group != nullptr) {
 				if (stopspec->flags.Test(RoadStopSpecFlag::DrawModeRegister)) {
 					stop_draw_mode = static_cast<RoadStopDrawModes>(GetRegister(0x100));
 				}
-				t = dts;
 				if (type == StationType::RoadWaypoint && stop_draw_mode.Test(RoadStopDrawMode::WaypGround)) {
 					draw_ground = true;
 				}
+				t = group->ProcessRegisters(nullptr);
 			}
 		}
 

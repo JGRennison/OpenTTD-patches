@@ -21,6 +21,7 @@
 #include "window_type.h"
 #include "date_func.h"
 #include "town.h"
+#include "tile_cmd.h"
 #include "viewport_func.h"
 #include "newgrf_animation_base.h"
 #include "newgrf_sound.h"
@@ -284,11 +285,12 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 		CallbackID callback, uint32_t param1, uint32_t param2)
 	: SpecializedResolverObject<StationRandomTriggers>(roadstopspec->grf_prop.grffile, callback, param1, param2), roadstop_scope(*this, st, roadstopspec, tile, roadtype, type, view)
 {
-	CargoType ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+	CargoType ctype = CargoGRFFileProps::SG_DEFAULT_NA;
 
 	if (st == nullptr) {
 		/* No station, so we are in a purchase list */
-		ctype = SpriteGroupCargo::SG_PURCHASE;
+		ctype = CargoGRFFileProps::SG_PURCHASE;
+		this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	} else if (Station::IsExpected(st)) {
 		const Station *station = Station::From(st);
 		/* Pick the first cargo that we have waiting */
@@ -299,12 +301,16 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 				break;
 			}
 		}
+
+		if (this->root_spritegroup == nullptr) {
+			ctype = CargoGRFFileProps::SG_DEFAULT_NA;
+			this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
+		}
 	}
 
-	this->root_spritegroup = this->roadstop_scope.roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	if (this->root_spritegroup == nullptr) {
-		ctype = SpriteGroupCargo::SG_DEFAULT;
-		this->root_spritegroup = this->roadstop_scope.roadstopspec->grf_prop.GetSpriteGroup(ctype);
+		ctype = CargoGRFFileProps::SG_DEFAULT;
+		this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	/* Remember the cargo type we've picked */
@@ -398,6 +404,14 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	}
 
 	DrawCommonTileSeqInGUI(x, y, dts, 0, 0, palette, true);
+}
+
+const TileLayoutSpriteGroup *GetRoadStopLayout(TileInfo *ti, const RoadStopSpec *spec, BaseStation *st, StationType type, int view)
+{
+	RoadStopResolverObject object(spec, st, ti->tile, INVALID_ROADTYPE, type, view);
+	const SpriteGroup *group = object.Resolve();
+	if (group == nullptr || group->type != SGT_TILELAYOUT) return nullptr;
+	return static_cast<const TileLayoutSpriteGroup *>(group);
 }
 
 /** Wrapper for animation control, see GetRoadStopCallback. */
@@ -717,13 +731,13 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Sp
 			written_group = true;
 		}
 		switch (cargo) {
-			case SpriteGroupCargo::SG_DEFAULT:
+			case CargoGRFFileProps::SG_DEFAULT:
 				dumper.Print("SG_DEFAULT");
 				break;
-			case SpriteGroupCargo::SG_PURCHASE:
+			case CargoGRFFileProps::SG_PURCHASE:
 				dumper.Print("SG_PURCHASE");
 				break;
-			case SpriteGroupCargo::SG_DEFAULT_NA:
+			case CargoGRFFileProps::SG_DEFAULT_NA:
 				dumper.Print("SG_DEFAULT_NA");
 				break;
 			default:

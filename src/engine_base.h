@@ -90,7 +90,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * Used for obtaining the sprite offset of custom sprites, and for
 	 * evaluating callbacks.
 	 */
-	VariableGRFFileProps grf_prop{};
+	CargoGRFFileProps grf_prop{}; ///< Link to NewGRF
 	ankerl::svector<WagonOverride, 0> overrides{};
 	std::vector<BadgeID> badges{};
 

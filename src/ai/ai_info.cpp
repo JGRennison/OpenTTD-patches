@@ -56,8 +56,8 @@ template <> const char *GetClassName<AIInfo, ScriptType::AI>() { return "AIInfo"
 	SQAIInfo.DefSQConst(engine, ScriptConfigFlags{ScriptConfigFlag::InGame}.base(), "AICONFIG_INGAME");
 
 	SQAIInfo.PostRegister(engine);
-	engine->AddMethod("RegisterAI", &AIInfo::Constructor, 2, "tx");
-	engine->AddMethod("RegisterDummyAI", &AIInfo::DummyConstructor, 2, "tx");
+	engine->AddMethod("RegisterAI", &AIInfo::Constructor, "tx");
+	engine->AddMethod("RegisterDummyAI", &AIInfo::DummyConstructor, "tx");
 }
 
 /* static */ SQInteger AIInfo::Constructor(HSQUIRRELVM vm)
@@ -136,7 +136,7 @@ bool AIInfo::CanLoadFromVersion(int version) const
 	/* Create the AILibrary class, and add the RegisterLibrary function */
 	engine->AddClassBegin("AILibrary");
 	engine->AddClassEnd();
-	engine->AddMethod("RegisterLibrary", &AILibrary::Constructor, 2, "tx");
+	engine->AddMethod("RegisterLibrary", &AILibrary::Constructor, "tx");
 }
 
 /* static */ SQInteger AILibrary::Constructor(HSQUIRRELVM vm)

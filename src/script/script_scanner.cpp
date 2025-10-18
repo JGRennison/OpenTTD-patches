@@ -57,7 +57,7 @@ void ScriptScanner::ResetEngine()
 	this->RegisterAPI(this->engine);
 }
 
-void ScriptScanner::Initialize(const char *name)
+void ScriptScanner::Initialize(std::string_view name)
 {
 	this->engine = new Squirrel(name);
 
@@ -201,8 +201,8 @@ struct ScriptFileChecksumCreator : FileScanner {
 static bool IsSameScript(const ContentInfo &ci, bool md5sum, ScriptInfo *info, Subdirectory dir)
 {
 	uint32_t id = 0;
-	const char *str = info->GetShortName().c_str();
-	for (int j = 0; j < 4 && *str != '\0'; j++, str++) id |= *str << (8 * j);
+	auto str = std::string_view{info->GetShortName()}.substr(0, 4);
+	for (size_t j = 0; j < str.size(); j++) id |= static_cast<uint8_t>(str[j]) << (8 * j);
 
 	if (id != ci.unique_id) return false;
 	if (!md5sum) return true;
@@ -243,10 +243,10 @@ bool ScriptScanner::HasScript(const ContentInfo &ci, bool md5sum)
 	return false;
 }
 
-const char *ScriptScanner::FindMainScript(const ContentInfo &ci, bool md5sum)
+std::optional<std::string_view> ScriptScanner::FindMainScript(const ContentInfo &ci, bool md5sum)
 {
 	for (const auto &item : this->info_list) {
-		if (IsSameScript(ci, md5sum, item.second, this->GetDirectory())) return item.second->GetMainScript().c_str();
+		if (IsSameScript(ci, md5sum, item.second, this->GetDirectory())) return item.second->GetMainScript();
 	}
-	return nullptr;
+	return std::nullopt;
 }

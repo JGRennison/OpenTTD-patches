@@ -540,7 +540,7 @@ class NIHVehicle : public NIHelper {
 					if (root_spritegroup == nullptr) {
 						CargoType cargo = v->cargo_type;
 						const SpriteGroup *cargo_spritegroup = e->grf_prop.GetSpriteGroup(cargo);
-						root_spritegroup = (cargo_spritegroup != nullptr) ? cargo_spritegroup : e->grf_prop.GetSpriteGroup(SpriteGroupCargo::SG_DEFAULT);
+						root_spritegroup = (cargo_spritegroup != nullptr) ? cargo_spritegroup : e->grf_prop.GetSpriteGroup(CargoGRFFileProps::SG_DEFAULT);
 					}
 					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
 					if (iter != e->sprite_group_cb36_properties_used.end()) {

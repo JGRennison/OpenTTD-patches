@@ -410,8 +410,8 @@ ObjectResolverObject::ObjectResolverObject(const ObjectSpec *spec, Object *obj, 
 		CallbackID callback, uint32_t param1, uint32_t param2)
 	: ResolverObject(spec->grf_prop.grffile, callback, param1, param2), object_scope(*this, obj, spec, tile, view)
 {
-	this->root_spritegroup = (obj == nullptr) ? spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_PURCHASE) : nullptr;
-	if (this->root_spritegroup == nullptr) this->root_spritegroup = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT);
+	this->root_spritegroup = (obj == nullptr) ? spec->grf_prop.GetSpriteGroup(StandardSpriteGroup::Purchase) : nullptr;
+	if (this->root_spritegroup == nullptr) this->root_spritegroup = spec->grf_prop.GetSpriteGroup(StandardSpriteGroup::Default);
 }
 
 /**
@@ -662,10 +662,10 @@ bool TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 
 void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper)
 {
-	const SpriteGroup *def = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_DEFAULT);
+	const SpriteGroup *def = spec->grf_prop.GetSpriteGroup(StandardSpriteGroup::Default);
 	dumper.DumpSpriteGroup(def, 0);
 
-	const SpriteGroup *purchase = spec->grf_prop.GetSpriteGroup(OBJECT_SPRITE_GROUP_PURCHASE);
+	const SpriteGroup *purchase = spec->grf_prop.GetSpriteGroup(StandardSpriteGroup::Purchase);
 	if (purchase != nullptr && purchase != def) {
 		dumper.Print("");
 		dumper.Print("PURCHASE:");

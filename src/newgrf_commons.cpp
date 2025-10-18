@@ -759,7 +759,7 @@ void GRFFilePropsBase::SetGRFFile(const struct GRFFile *grffile)
  * @param index Index to get.
  * @returns SpriteGroup at index, or nullptr if not present.
  */
-const SpriteGroup *VariableGRFFileProps::GetSpriteGroup(VariableGRFFileProps::IndexType index) const
+const SpriteGroup *VariableGRFFilePropsBase::GetSpriteGroupImpl(VariableGRFFilePropsBase::IndexType index) const
 {
 	const IndexType *keys = this->get_keys();
 	for (IndexType i = 0; i < this->size; i++) {
@@ -775,7 +775,7 @@ const SpriteGroup *VariableGRFFileProps::GetSpriteGroup(VariableGRFFileProps::In
  * @param index Index to get.
  * @returns Pointer to SpriteGroup at index, or nullptr if not present.
  */
-const SpriteGroup **VariableGRFFileProps::GetSpriteGroupPtr(VariableGRFFileProps::IndexType index)
+const SpriteGroup **VariableGRFFilePropsBase::GetSpriteGroupPtrImpl(VariableGRFFilePropsBase::IndexType index)
 {
 	const IndexType *keys = this->get_keys();
 	for (IndexType i = 0; i < this->size; i++) {
@@ -791,7 +791,7 @@ const SpriteGroup **VariableGRFFileProps::GetSpriteGroupPtr(VariableGRFFileProps
  * @param index Index to set.
  * @param spritegroup SpriteGroup to set.
  */
-void VariableGRFFileProps::SetSpriteGroup(VariableGRFFileProps::IndexType index, const SpriteGroup *spritegroup)
+void VariableGRFFilePropsBase::SetSpriteGroupImpl(VariableGRFFilePropsBase::IndexType index, const SpriteGroup *spritegroup)
 {
 	const IndexType *keys = this->get_keys();
 	const GroupType *groups = this->get_groups();

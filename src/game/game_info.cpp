@@ -47,7 +47,7 @@ template <> const char *GetClassName<GameInfo, ScriptType::GS>() { return "GSInf
 	SQGSInfo.DefSQConst(engine, ScriptConfigFlags{ScriptConfigFlag::Developer}.base(), "CONFIG_DEVELOPER");
 
 	SQGSInfo.PostRegister(engine);
-	engine->AddMethod("RegisterGS", &GameInfo::Constructor, 2, "tx");
+	engine->AddMethod("RegisterGS", &GameInfo::Constructor, "tx");
 }
 
 /* static */ SQInteger GameInfo::Constructor(HSQUIRRELVM vm)
@@ -105,7 +105,7 @@ bool GameInfo::CanLoadFromVersion(int version) const
 	/* Create the GameLibrary class, and add the RegisterLibrary function */
 	engine->AddClassBegin("GSLibrary");
 	engine->AddClassEnd();
-	engine->AddMethod("RegisterLibrary", &GameLibrary::Constructor, 2, "tx");
+	engine->AddMethod("RegisterLibrary", &GameLibrary::Constructor, "tx");
 }
 
 /* static */ SQInteger GameLibrary::Constructor(HSQUIRRELVM vm)

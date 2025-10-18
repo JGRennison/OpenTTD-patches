@@ -48,7 +48,7 @@ public:
 	/**
 	 * Create a new script.
 	 */
-	ScriptInstance(const char *APIName, ScriptType script_type);
+	ScriptInstance(std::string_view api_name, ScriptType script_type);
 	virtual ~ScriptInstance();
 
 	/**
@@ -304,7 +304,7 @@ private:
 	bool in_shutdown = false;                       ///< Is this instance currently being destructed?
 	Script_SuspendCallbackProc *callback = nullptr; ///< Callback that should be called in the next tick the script runs.
 	size_t last_allocated_memory = 0;               ///< Last known allocated memory value (for display for crashed scripts)
-	const char *APIName = nullptr;                  ///< Name of the API used for this squirrel.
+	std::string_view api_name{};                    ///< Name of the API used for this squirrel.
 	ScriptType script_type{};                       ///< Script type.
 	bool allow_text_param_mismatch = false;         ///< Whether ScriptText parameter mismatches are allowed
 

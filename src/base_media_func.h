@@ -14,6 +14,7 @@
 #include "ini_type.h"
 #include "string_func.h"
 #include "error_func.h"
+#include <map>
 
 extern void CheckExternalFiles();
 
@@ -51,8 +52,10 @@ bool BaseSet<T>::FillSetDetails(const IniFile &ini, const std::string &path, con
 	fetch_metadata("name");
 	this->name = *item->value;
 
+	std::map<std::string_view, std::string> descriptions;
+
 	fetch_metadata("description");
-	this->description[std::string{}] = *item->value;
+	descriptions[std::string_view{}] = *item->value;
 
 	item = metadata->GetItem("url");
 	if (item != nullptr) this->url = *item->value;
@@ -61,8 +64,14 @@ bool BaseSet<T>::FillSetDetails(const IniFile &ini, const std::string &path, con
 	for (const IniItem &titem : metadata->items) {
 		if (titem.name.compare(0, 12, "description.") != 0) continue;
 
-		this->description[titem.name.substr(12)] = titem.value.value_or("");
+		descriptions[titem.name.substr(12)] = titem.value.value_or("");
 	}
+	this->description.reserve(descriptions.size());
+	for (auto &it : descriptions) {
+		/* Create description list pre-sorted and with duplicates removed due to std::map temporary. */
+		this->description.emplace_back(it.first, std::move(it.second));
+	}
+	descriptions.clear();
 
 	fetch_metadata("shortname");
 	for (uint i = 0; (*item->value)[i] != '\0' && i < 4; i++) {
@@ -319,28 +328,28 @@ template <class Tbase_set>
 
 #include "network/core/tcp_content_type.h"
 
-template <class Tbase_set> const char *TryGetBaseSetFile(const ContentInfo &ci, bool md5sum, const Tbase_set *s)
+template <class Tbase_set> std::optional<std::string_view> TryGetBaseSetFile(const ContentInfo &ci, bool md5sum, const Tbase_set *s)
 {
 	for (; s != nullptr; s = s->next) {
 		if (s->GetNumMissing() != 0) continue;
 
 		if (s->shortname != ci.unique_id) continue;
-		if (!md5sum) return s->files[0].filename.c_str();
+		if (!md5sum) return s->files[0].filename;
 
 		MD5Hash md5;
 		for (const auto &file : s->files) {
 			md5 ^= file.hash;
 		}
-		if (md5 == ci.md5sum) return s->files[0].filename.c_str();
+		if (md5 == ci.md5sum) return s->files[0].filename;
 	}
-	return nullptr;
+	return std::nullopt;
 }
 
 template <class Tbase_set>
 /* static */ bool BaseMedia<Tbase_set>::HasSet(const ContentInfo &ci, bool md5sum)
 {
-	return (TryGetBaseSetFile(ci, md5sum, BaseMedia<Tbase_set>::available_sets) != nullptr) ||
-			(TryGetBaseSetFile(ci, md5sum, BaseMedia<Tbase_set>::duplicate_sets) != nullptr);
+	return TryGetBaseSetFile(ci, md5sum, BaseMedia<Tbase_set>::available_sets).has_value() ||
+			TryGetBaseSetFile(ci, md5sum, BaseMedia<Tbase_set>::duplicate_sets).has_value();
 }
 
 /**

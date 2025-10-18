@@ -17,6 +17,7 @@
 #include "command_type.h"
 #include "direction_type.h"
 #include "company_type.h"
+#include "cargo_type.h"
 #include <vector>
 
 /** Context for tile accesses */
@@ -294,8 +295,6 @@ struct GRFFilePropsBase {
 	uint32_t grfid = 0;                          ///< grfid that introduced this entity.
 	const struct GRFFile *grffile = nullptr;     ///< grf file that introduced this entity
 
-	using IndexType = uint8_t;
-
 	void SetGRFFile(const struct GRFFile *grffile);
 
 	/**
@@ -307,9 +306,10 @@ struct GRFFilePropsBase {
 
 /**
  * Fixed-length list of sprite groups for an entity.
+ * @tparam Tkey Key for indexing spritegroups
  * @tparam Tcount Number of spritegroups
  */
-template <size_t Tcount>
+template <class Tkey, size_t Tcount>
 struct FixedGRFFileProps : GRFFilePropsBase {
 	std::array<const struct SpriteGroup *, Tcount> spritegroups{}; ///< pointers to the different sprite groups of the entity
 
@@ -318,23 +318,42 @@ struct FixedGRFFileProps : GRFFilePropsBase {
 	 * @param index Index to get.
 	 * @returns SpriteGroup at index, or nullptr if not present.
 	 */
-	const struct SpriteGroup *GetSpriteGroup(IndexType index = 0) const { return this->spritegroups[index]; }
+	const struct SpriteGroup *GetSpriteGroup(Tkey index) const { return this->spritegroups[static_cast<size_t>(index)]; }
 
 	/**
 	 * Set the SpriteGroup at the specified index.
 	 * @param index Index to set.
 	 * @param spritegroup SpriteGroup to set.
 	 */
-	void SetSpriteGroup(size_t index, const struct SpriteGroup *spritegroup) { this->spritegroups[index] = spritegroup; }
+	void SetSpriteGroup(Tkey index, const struct SpriteGroup *spritegroup) { this->spritegroups[static_cast<size_t>(index)] = spritegroup; }
 };
 
 /**
- * Variable-length list of sprite groups for an entity.
+ * Entities with single sprite group.
  */
-struct VariableGRFFileProps : GRFFilePropsBase {
-private:
-	using GroupType = const struct SpriteGroup *;
+struct SingleGRFFileProps : GRFFilePropsBase {
+	const struct SpriteGroup *spritegroup;
 
+	const struct SpriteGroup *GetSpriteGroup() const { return this->spritegroup; }
+	void SetSpriteGroup(const struct SpriteGroup *spritegroup) { this->spritegroup = spritegroup; }
+};
+
+/**
+ * Standard sprite groups.
+ */
+enum class StandardSpriteGroup {
+	Default, ///< Default type used when no more-specific group matches.
+	Purchase, ///< Used before an entity exists.
+	End
+};
+using StandardGRFFileProps = FixedGRFFileProps<StandardSpriteGroup, static_cast<size_t>(StandardSpriteGroup::End)>;
+
+struct VariableGRFFilePropsBase : GRFFilePropsBase {
+protected:
+	using GroupType = const struct SpriteGroup *;
+	using IndexType = uint8_t;
+
+private:
 	IndexType capacity = 2;
 	IndexType size = 0;
 	IndexType inline_keys[2];
@@ -349,10 +368,8 @@ private:
 	} data;
 
 	inline bool inline_mode() const { return this->capacity == 2; }
-	inline const IndexType *get_keys() const { return this->inline_mode() ? this->inline_keys : this->data.allocated_keys; }
-	inline const GroupType *get_groups() const { return this->inline_mode() ? this->data.inline_groups : this->data.allocated_groups; }
 
-	void move_from(VariableGRFFileProps &&other)
+	void move_from(VariableGRFFilePropsBase &&other)
 	{
 		this->capacity = other.capacity;
 		this->size = other.size;
@@ -363,16 +380,68 @@ private:
 		other.size = 0;
 	}
 
+protected:
+	inline const IndexType *get_keys() const { return this->inline_mode() ? this->inline_keys : this->data.allocated_keys; }
+	inline const GroupType *get_groups() const { return this->inline_mode() ? this->data.inline_groups : this->data.allocated_groups; }
+	inline IndexType get_size() const { return this->size; }
+
+	const struct SpriteGroup *GetSpriteGroupImpl(IndexType index) const;
+	const struct SpriteGroup **GetSpriteGroupPtrImpl(IndexType index);
+	void SetSpriteGroupImpl(IndexType index, const struct SpriteGroup *spritegroup);
+
 public:
-	const struct SpriteGroup *GetSpriteGroup(IndexType index) const;
-	const struct SpriteGroup **GetSpriteGroupPtr(IndexType index);
-	void SetSpriteGroup(IndexType index, const struct SpriteGroup *spritegroup);
+	VariableGRFFilePropsBase() = default;
+	VariableGRFFilePropsBase(const VariableGRFFilePropsBase &) = delete;
+	VariableGRFFilePropsBase(VariableGRFFilePropsBase &&other) noexcept { this->move_from(std::move(other)); }
+	VariableGRFFilePropsBase& operator=(const VariableGRFFilePropsBase &) = delete;
+	VariableGRFFilePropsBase& operator=(VariableGRFFilePropsBase &&other) noexcept { this->move_from(std::move(other)); return *this; }
+
+	~VariableGRFFilePropsBase()
+	{
+		if (!this->inline_mode()) free(this->data.allocated_groups);
+	}
+};
+
+/**
+ * Variable-length list of sprite groups for an entity.
+ * @tparam Tkey Key for indexing spritegroups
+ */
+template <class Tkey>
+struct VariableGRFFileProps : VariableGRFFilePropsBase {
+	static_assert(sizeof(Tkey) == sizeof(IndexType));
+
+	using ValueType = std::pair<Tkey, const struct SpriteGroup *>;
+
+	/**
+	 * Get the SpriteGroup at the specified index.
+	 * @param index Index to get.
+	 * @returns SpriteGroup at index, or nullptr if not present.
+	 */
+	const struct SpriteGroup *GetSpriteGroup(Tkey index) const
+	{
+		return this->GetSpriteGroupImpl(static_cast<IndexType>(index));
+	}
+
+	const struct SpriteGroup **GetSpriteGroupPtr(Tkey index)
+	{
+		return this->GetSpriteGroupPtrImpl(static_cast<IndexType>(index));
+	}
+
+	/**
+	 * Set the SpriteGroup at the specified index.
+	 * @param index Index to set.
+	 * @param spritegroup SpriteGroup to set.
+	*/
+	void SetSpriteGroup(Tkey index, const struct SpriteGroup *spritegroup)
+	{
+		this->SetSpriteGroupImpl(static_cast<IndexType>(index), spritegroup);
+	}
 
 	struct VariableGRFFilePropsIterator {
 		VariableGRFFilePropsIterator(const IndexType *keys, const GroupType *groups) : keys(keys), groups(groups) {}
 
 		bool operator==(const VariableGRFFilePropsIterator &other) const { return this->keys == other.keys; }
-		std::pair<const IndexType, const GroupType> operator*() const { return { *this->keys, *this->groups }; }
+		std::pair<const Tkey, const GroupType> operator*() const { return { static_cast<Tkey>(*this->keys), *this->groups }; }
 		VariableGRFFilePropsIterator &operator++() { ++this->keys; ++this->groups; return *this; }
 
 	private:
@@ -381,22 +450,20 @@ public:
 	};
 
 	VariableGRFFilePropsIterator begin() const { return { this->get_keys(), this->get_groups() }; }
-	VariableGRFFilePropsIterator end() const { return { this->get_keys() + this->size, nullptr }; }
+	VariableGRFFilePropsIterator end() const { return { this->get_keys() + this->get_size(), nullptr }; }
+};
 
-	VariableGRFFileProps() = default;
-	VariableGRFFileProps(const VariableGRFFileProps &) = delete;
-	VariableGRFFileProps(VariableGRFFileProps &&other) noexcept { this->move_from(std::move(other)); }
-	VariableGRFFileProps& operator=(const VariableGRFFileProps &) = delete;
-	VariableGRFFileProps& operator=(VariableGRFFileProps &&other) noexcept { this->move_from(std::move(other)); return *this; }
-
-	~VariableGRFFileProps()
-	{
-		if (!this->inline_mode()) free(this->data.allocated_groups);
-	}
+/**
+ * Sprite groups indexed by CargoType.
+ */
+struct CargoGRFFileProps : VariableGRFFileProps<CargoType> {
+	static constexpr CargoType SG_DEFAULT = NUM_CARGO; ///< Default type used when no more-specific cargo matches.
+	static constexpr CargoType SG_PURCHASE = NUM_CARGO + 1; ///< Used in purchase lists before an item exists.
+	static constexpr CargoType SG_DEFAULT_NA = NUM_CARGO + 2; ///< Used only by stations and roads when no more-specific cargo matches.
 };
 
 /** Data related to the handling of grf files. */
-struct GRFFileProps : FixedGRFFileProps<1> {
+struct GRFFileProps : SingleGRFFileProps {
 	/** Set all default data constructor for the props. */
 	constexpr GRFFileProps(uint16_t subst_id = 0) : subst_id(subst_id), override_id(subst_id) {}
 

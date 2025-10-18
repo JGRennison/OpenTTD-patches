@@ -88,7 +88,7 @@ void StringData::FreeTranslation()
  * @param s The string name to search on.
  * @return The LangString or nullptr if it is not known.
  */
-LangString *StringData::Find(const std::string_view s)
+LangString *StringData::Find(std::string_view s)
 {
 	auto it = this->name_to_string.find(s);
 	if (it == this->name_to_string.end()) return nullptr;

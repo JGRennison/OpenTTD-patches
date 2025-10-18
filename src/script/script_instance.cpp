@@ -52,10 +52,10 @@ static void PrintFunc(bool error_msg, const std::string &message)
 	ScriptController::Print(error_msg, message);
 }
 
-ScriptInstance::ScriptInstance(const char *APIName, ScriptType script_type) : APIName(APIName), script_type(script_type)
+ScriptInstance::ScriptInstance(std::string_view api_name, ScriptType script_type) : api_name(api_name), script_type(script_type)
 {
 	this->storage = new ScriptStorage();
-	this->engine  = new Squirrel(APIName);
+	this->engine  = new Squirrel(api_name);
 	this->engine->SetPrintFunction(&PrintFunc);
 }
 

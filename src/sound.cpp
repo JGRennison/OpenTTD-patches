@@ -261,7 +261,7 @@ template <>
 }
 
 template <>
-/* static */ const char *BaseMedia<SoundsSet>::GetExtension()
+/* static */ std::string_view BaseMedia<SoundsSet>::GetExtension()
 {
 	return ".obs"; // OpenTTD Base Sounds
 }

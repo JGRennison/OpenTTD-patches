@@ -73,7 +73,7 @@ public:
 	 * @param md5sum Whether to check the MD5 checksum.
 	 * @return A filename of a file of the content, else \c nullptr.
 	 */
-	const char *FindMainScript(const ContentInfo &ci, bool md5sum);
+	std::optional<std::string_view> FindMainScript(const ContentInfo &ci, bool md5sum);
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override;
 
@@ -94,7 +94,7 @@ protected:
 	 * Initialize the scanner.
 	 * @param name The name of the scanner ("AIScanner", "GSScanner", ..).
 	 */
-	void Initialize(const char *name);
+	void Initialize(std::string_view name);
 
 	/**
 	 * Get the script name how to store the script in memory.
@@ -104,7 +104,7 @@ protected:
 	/**
 	 * Get the filename to scan for this type of script.
 	 */
-	virtual const char *GetFileName() const = 0;
+	virtual std::string_view GetFileName() const = 0;
 
 	/**
 	 * Get the directory to scan in.
@@ -119,7 +119,7 @@ protected:
 	/**
 	 * Get the type of the script, in plural.
 	 */
-	virtual const char *GetScannerName() const = 0;
+	virtual std::string_view GetScannerName() const = 0;
 
 	/**
 	 * Reset all allocated lists.

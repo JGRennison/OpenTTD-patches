@@ -608,6 +608,39 @@ MD5File::ChecksumResult MD5File::CheckMD5(Subdirectory subdir, size_t max_size) 
 	return this->hash == digest ? CR_MATCH : CR_MISMATCH;
 }
 
+/**
+ * Get the description for the given ISO code.
+ * It falls back to the first two characters of the ISO code in case
+ * no match could be made with the full ISO code. If even then the
+ * matching fails the default is returned.
+ * @param isocode the isocode to search for
+ * @return the description
+ */
+const std::string &BaseSetBase::GetDescription(std::string_view isocode) const
+{
+	const std::span<const std::pair<std::string, std::string>> descs(this->description);
+
+	auto find = [&descs](std::string_view key) -> const std::string * {
+		auto it = std::lower_bound(descs.begin(), descs.end(), key, [](const std::pair<std::string, std::string> &a, const std::string_view &b) -> bool {
+			return a.first < b;
+		});
+		if (it != descs.end() && it->first == key) return &(it->second);
+		return nullptr;
+	};
+
+	if (!isocode.empty()) {
+		/* First the full ISO code */
+		auto desc = find(isocode);
+		if (desc != nullptr) return *desc;
+
+		/* Then the first two characters */
+		desc = find(isocode.substr(0, 2));
+		if (desc != nullptr) return *desc;
+	}
+	/* Then fall back */
+	return *find({});
+}
+
 /** Names corresponding to the GraphicsFileType */
 static const std::string_view _graphics_file_names[] = { "base", "logos", "arctic", "tropical", "toyland", "extra" };
 
@@ -652,7 +685,7 @@ template <>
 }
 
 template <>
-/* static */ const char *BaseMedia<GraphicsSet>::GetExtension()
+/* static */ std::string_view BaseMedia<GraphicsSet>::GetExtension()
 {
 	return ".obg"; // OpenTTD Base Graphics
 }

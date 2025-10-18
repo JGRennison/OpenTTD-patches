@@ -559,12 +559,12 @@ uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t vari
 
 	switch (this->station_scope.cargo_type) {
 		case INVALID_CARGO:
-		case SpriteGroupCargo::SG_DEFAULT_NA:
-		case SpriteGroupCargo::SG_PURCHASE:
+		case CargoGRFFileProps::SG_DEFAULT_NA:
+		case CargoGRFFileProps::SG_PURCHASE:
 			cargo = 0;
 			break;
 
-		case SpriteGroupCargo::SG_DEFAULT:
+		case CargoGRFFileProps::SG_DEFAULT:
 			for (const GoodsEntry &ge : st->goods) {
 				cargo += ge.CargoTotalCount();
 			}
@@ -622,11 +622,12 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	/* Invalidate all cached vars */
 	_svc.valid = 0;
 
-	CargoType ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+	CargoType ctype = CargoGRFFileProps::SG_DEFAULT_NA;
 
 	if (this->station_scope.st == nullptr) {
 		/* No station, so we are in a purchase list */
-		ctype = SpriteGroupCargo::SG_PURCHASE;
+		ctype = CargoGRFFileProps::SG_PURCHASE;
+		this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
 	} else if (Station::IsExpected(this->station_scope.st)) {
 		const Station *st = Station::From(this->station_scope.st);
 		/* Pick the first cargo that we have waiting */
@@ -636,12 +637,16 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 				break;
 			}
 		}
+
+		if (this->root_spritegroup == nullptr) {
+			ctype = CargoGRFFileProps::SG_DEFAULT_NA;
+			this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
+		}
 	}
 
-	this->root_spritegroup = this->station_scope.statspec->grf_prop.GetSpriteGroup(ctype);
 	if (this->root_spritegroup == nullptr) {
-		ctype = SpriteGroupCargo::SG_DEFAULT;
-		this->root_spritegroup = this->station_scope.statspec->grf_prop.GetSpriteGroup(ctype);
+		ctype = CargoGRFFileProps::SG_DEFAULT;
+		this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	/* Remember the cargo type we've picked */
@@ -1076,13 +1081,13 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 	StationResolverObject ro(statspec, st, INVALID_TILE, INVALID_RAILTYPE);
 
 	switch (ro.station_scope.cargo_type) {
-		case SpriteGroupCargo::SG_DEFAULT:
+		case CargoGRFFileProps::SG_DEFAULT:
 			dumper.Print("SG_DEFAULT");
 			break;
-		case SpriteGroupCargo::SG_PURCHASE:
+		case CargoGRFFileProps::SG_PURCHASE:
 			dumper.Print("SG_PURCHASE");
 			break;
-		case SpriteGroupCargo::SG_DEFAULT_NA:
+		case CargoGRFFileProps::SG_DEFAULT_NA:
 			dumper.Print("SG_DEFAULT_NA");
 			break;
 		default:
@@ -1096,13 +1101,13 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 		if (spritegroup != ro.root_spritegroup) {
 			dumper.Print("");
 			switch (cargo) {
-				case SpriteGroupCargo::SG_DEFAULT:
+				case CargoGRFFileProps::SG_DEFAULT:
 					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT");
 					break;
-				case SpriteGroupCargo::SG_PURCHASE:
+				case CargoGRFFileProps::SG_PURCHASE:
 					dumper.Print("OTHER SPRITE GROUP: SG_PURCHASE");
 					break;
-				case SpriteGroupCargo::SG_DEFAULT_NA:
+				case CargoGRFFileProps::SG_DEFAULT_NA:
 					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT_NA");
 					break;
 				default:

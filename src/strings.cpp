@@ -487,7 +487,7 @@ std::string GetStringWithArgs(StringID string, std::span<StringParameter> args)
  * @param fractional_digits number of fractional digits to display after a decimal separator. The decimal separator is inserted
  *                          in front of the \a fractional_digits last digit of \a number.
  */
-static void FormatNumber(StringBuilder builder, int64_t number, const char *separator, int zerofill = 1, int fractional_digits = 0)
+static void FormatNumber(StringBuilder builder, int64_t number, std::string_view separator, int zerofill = 1, int fractional_digits = 0)
 {
 	static const int max_digits = 20;
 	uint64_t divisor = 10000000000000000000ULL;
@@ -524,8 +524,8 @@ static void FormatNumber(StringBuilder builder, int64_t number, const char *sepa
 
 static void FormatCommaNumber(StringBuilder builder, int64_t number, int fractional_digits = 0)
 {
-	const char *separator = _settings_game.locale.digit_group_separator.c_str();
-	if (StrEmpty(separator)) separator = _langpack.langpack->digit_group_separator;
+	std::string_view separator = _settings_game.locale.digit_group_separator;
+	if (separator.empty()) separator = _langpack.langpack->digit_group_separator;
 	FormatNumber(builder, number, separator, 1, fractional_digits);
 }
 
@@ -564,8 +564,8 @@ static void FormatBytes(StringBuilder builder, int64_t number)
 {
 	assert(number >= 0);
 
-	/*                                   1   2^10  2^20  2^30  2^40  2^50  2^60 */
-	const char * const iec_prefixes[] = {"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"};
+	/*                                          1   2^10  2^20  2^30  2^40  2^50  2^60 */
+	static const char * const iec_prefixes[] = {"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"};
 	uint id = 1;
 	while (number >= 1024 * 1024) {
 		number /= 1024;
@@ -677,9 +677,9 @@ static void FormatGenericCurrency(StringBuilder builder, const CurrencySpec *spe
 		}
 	}
 
-	const char *separator = _settings_game.locale.digit_group_separator_currency.c_str();
-	if (StrEmpty(separator)) separator = GetCurrency().separator.c_str();
-	if (StrEmpty(separator)) separator = _langpack.langpack->digit_group_separator_currency;
+	std::string_view separator = _settings_game.locale.digit_group_separator_currency;
+	if (separator.empty()) separator = GetCurrency().separator;
+	if (separator.empty()) separator = _langpack.langpack->digit_group_separator_currency;
 	FormatNumber(builder, number, separator);
 	if (number_str != STR_NULL) {
 		FormatString(builder, GetStringPtr(number_str), {});
@@ -2339,7 +2339,7 @@ static std::span<const char * const> GetSurnameOptions()
  * @param seed The seed the surname was generated from.
  * @return The surname.
  */
-static const char *GetSurname(uint32_t seed)
+static std::string_view GetSurname(uint32_t seed)
 {
 	auto surname_options = GetSurnameOptions();
 	return surname_options[surname_options.size() * GB(seed, 16, 8) >> 8];
@@ -2495,7 +2495,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 #endif
 
 #ifdef WITH_COCOA
-	extern void MacOSSetCurrentLocaleName(const char *iso_code);
+	extern void MacOSSetCurrentLocaleName(std::string_view iso_code);
 	MacOSSetCurrentLocaleName(_current_language->isocode);
 #endif
 
@@ -2684,7 +2684,7 @@ void InitializeLanguagePacks()
  * Get the ISO language code of the currently loaded language.
  * @return the ISO code.
  */
-const char *GetCurrentLanguageIsoCode()
+std::string_view GetCurrentLanguageIsoCode()
 {
 	return _langpack.langpack->isocode;
 }
@@ -2761,7 +2761,7 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 		return false;
 	}
 
-	void SetFontNames([[maybe_unused]] FontCacheSettings *settings, [[maybe_unused]] const char *font_name, [[maybe_unused]] const void *os_data) override
+	void SetFontNames([[maybe_unused]] FontCacheSettings *settings, [[maybe_unused]] std::string_view font_name, [[maybe_unused]] const void *os_data) override
 	{
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 		settings->small.font = font_name;
