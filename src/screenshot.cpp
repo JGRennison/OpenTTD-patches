@@ -513,8 +513,8 @@ bool MakeScreenshot(ScreenshotType t, std::string_view name, uint32_t width, uin
 		return RealMakeScreenshot(t, name, width, height);
 	}
 
-	VideoDriver::GetInstance()->QueueOnMainThread([=] { // Capture by value to not break scope.
-		RealMakeScreenshot(t, name, width, height);
+	VideoDriver::GetInstance()->QueueOnMainThread([t, name_str = std::string{name}, width, height] { // Capture by value to not break scope.
+		RealMakeScreenshot(t, name_str, width, height);
 	});
 
 	return true;
