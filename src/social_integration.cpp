@@ -18,8 +18,7 @@
 #include "rev.h"
 #include "string_func.h"
 #include "signature.h"
-
-#include <set>
+#include "core/flatset_type.hpp"
 
 #include "safeguards.h"
 
@@ -50,7 +49,7 @@ public:
 };
 
 static std::vector<std::unique_ptr<InternalSocialIntegrationPlugin>> _plugins; ///< List of loaded plugins.
-static std::set<std::string> _loaded_social_platform; ///< List of Social Platform plugins already loaded. Used to prevent loading a plugin for the same Social Platform twice.
+static FlatSet<std::string> _loaded_social_platform; ///< List of Social Platform plugins already loaded. Used to prevent loading a plugin for the same Social Platform twice.
 
 /** Helper for scanning for files with SocialIntegration as extension */
 class SocialIntegrationFileScanner : FileScanner {
