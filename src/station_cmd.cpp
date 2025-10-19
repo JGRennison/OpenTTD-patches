@@ -1842,7 +1842,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 		/* If there is a vehicle on ground, do not allow to remove (flood) the tile */
 		CommandCost ret = EnsureNoVehicleOnGround(tile);
 		error.AddCost(std::move(ret));
-		if (error.Failed()) continue;
+		if (ret.Failed()) continue;
 
 		/* Check ownership of station */
 		T *st = T::GetByTile(tile);
@@ -1851,7 +1851,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 		if (_current_company != OWNER_WATER) {
 			ret = CheckOwnership(st->owner);
 			error.AddCost(std::move(ret));
-			if (error.Failed()) continue;
+			if (ret.Failed()) continue;
 		}
 
 		Train *v = nullptr;
@@ -1860,7 +1860,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 			v = GetTrainForReservation(tile, track);
 			if (v != nullptr) {
 				CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
-				error.AddCost(ret.GetCost());
+				error.AddCost(std::move(ret));
 				if (ret.Failed()) continue;
 				if (flags.Test(DoCommandFlag::Execute)) FreeTrainReservation(v);
 			}
