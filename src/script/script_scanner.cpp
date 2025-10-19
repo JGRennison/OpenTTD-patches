@@ -21,6 +21,7 @@
 #include "../3rdparty/md5/md5.h"
 #include "../tar_type.h"
 #include "../core/format.hpp"
+#include "../scope_info.h"
 
 #include "../safeguards.h"
 
@@ -34,6 +35,8 @@ bool ScriptScanner::AddFile(const std::string &filename, size_t, const std::stri
 	this->main_script += "main.nut";
 
 	if (!FioCheckFileExists(filename, this->subdir) || !FioCheckFileExists(this->main_script, this->subdir)) return false;
+
+	SCOPE_INFO_FMT([&], "ScriptScanner::AddFile: {}, {}", filename, tar_filename);
 
 	this->ResetEngine();
 	try {
