@@ -1014,7 +1014,8 @@ StringID GetVelocityUnitName(VehicleType type)
  */
 static const Units GetVelocityUnits(VehicleType type)
 {
-	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
+	const GameSettings &game_settings = GetGameSettings();
+	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? game_settings.locale.units_velocity_nautical : game_settings.locale.units_velocity;
 
 	assert(setting < lengthof(_units_velocity_calendar));
 	assert(setting < lengthof(_units_velocity_realtime));

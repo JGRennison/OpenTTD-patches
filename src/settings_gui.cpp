@@ -1422,7 +1422,7 @@ struct GameOptionsWindow : Window {
 				if (sd->flags.Test(SettingFlag::GuiVelocity)) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
 
 				this->valuewindow_entry = pe;
-				if (sd->flags.Test(SettingFlag::GuiVelocity) && _settings_game.locale.units_velocity == 3) {
+				if (sd->flags.Test(SettingFlag::GuiVelocity) && GetGameSettings().locale.units_velocity == 3) {
 					CharSetFilter charset_filter = CS_NUMERAL_DECIMAL; //default, only numeric input and decimal point allowed
 					if (min_val < 0) charset_filter = CS_NUMERAL_DECIMAL_SIGNED; // special case, also allow '-' sign for negative input
 
@@ -1475,7 +1475,7 @@ struct GameOptionsWindow : Window {
 		int32_t value;
 		if (!str->empty()) {
 			long long llvalue;
-			if (sd->flags.Test(SettingFlag::GuiVelocity) && _settings_game.locale.units_velocity == 3) {
+			if (sd->flags.Test(SettingFlag::GuiVelocity) && GetGameSettings().locale.units_velocity == 3) {
 				llvalue = atof(str->c_str()) * 10;
 			} else {
 				llvalue = atoll(str->c_str());
