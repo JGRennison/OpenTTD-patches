@@ -64,7 +64,7 @@ bool BaseSet<T>::FillSetDetails(const IniFile &ini, const std::string &path, con
 	for (const IniItem &titem : metadata->items) {
 		if (titem.name.compare(0, 12, "description.") != 0) continue;
 
-		descriptions[titem.name.substr(12)] = titem.value.value_or("");
+		descriptions[std::string_view(titem.name).substr(12)] = titem.value.value_or("");
 	}
 	this->description.reserve(descriptions.size());
 	for (auto &it : descriptions) {
