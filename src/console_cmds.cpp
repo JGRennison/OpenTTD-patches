@@ -2521,7 +2521,7 @@ static bool ConCompanyPasswordHashes(std::span<std::string_view> argv)
 		std::string company_name = GetString(STR_COMPANY_NAME, c->index);
 
 		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Hash: '{}'",
-			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password.c_str());
+			c->index + 1, GetStringFmtParam(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password);
 	}
 
 	return true;
@@ -3292,7 +3292,7 @@ static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 				rti->extra_flags.Test(RoadTypeExtraFlag::NoTunnels)          ? 'T' : '-',
 				rti->extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)   ? 'c' : '-',
 				std::byteswap(grfid),
-				GetStringPtr(rti->strings.name)
+				GetStringFmtParam(rti->strings.name)
 		);
 	}
 	for (const auto &grf : grfs) {
@@ -3351,7 +3351,7 @@ static bool ConDumpRailTypes(std::span<std::string_view> argv)
 				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRecolourEnabled) ? 'c' : '-',
 				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteNoEntry)         ? 'n' : '-',
 				std::byteswap(grfid),
-				GetStringPtr(rti->strings.name)
+				GetStringFmtParam(rti->strings.name)
 		);
 	}
 	for (const auto &grf : grfs) {
@@ -3401,7 +3401,7 @@ static bool ConDumpBridgeTypes(std::span<std::string_view> argv)
 				spec->pillar_flags[10],
 				spec->pillar_flags[11],
 				std::byteswap(grfid),
-				GetStringPtr(spec->material)
+				GetStringFmtParam(spec->material)
 		);
 	}
 	for (uint32_t grfid : grfids) {
@@ -3484,7 +3484,7 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 				spec->classes.Test(CargoClass::Special)      ? 'S' : '-',
 				tae_char[spec->town_acceptance_effect - TAE_BEGIN],
 				std::byteswap(grfid),
-				GetStringPtr(spec->name)
+				GetStringFmtParam(spec->name)
 		);
 	}
 	for (const auto &grf : grfs) {
@@ -3638,7 +3638,7 @@ static bool ConDumpSignalStyles(std::span<std::string_view> argv)
 				HasBit(style.style_flags, NSSF_COMBINED_NORMAL_SHUNT)   ? 'c' : '-',
 				HasBit(style.style_flags, NSSF_REALISTIC_BRAKING_ONLY)  ? 'r' : '-',
 				HasBit(style.style_flags, NSSF_BOTH_SIDES)              ? 'b' : '-',
-				GetStringPtr(style.name)
+				GetStringFmtParam(style.name)
 		);
 	}
 	for (const auto &grf : grfs) {

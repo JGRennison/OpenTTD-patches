@@ -286,7 +286,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 		if (no_text) {
 			handler_func({}, warning);
 		} else {
-			handler_func(GetStringPtr(str), warning);
+			handler_func(GetString(str), warning);
 		}
 	};
 
@@ -842,8 +842,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 					DrawString(time.left, time.right, tr.top, GetStringInPlace(buffer, str, std::forward<T>(params)...), colour);
 				};
 
-				std::string_view arrival_abbr = GetStringPtr(STR_TIMETABLE_ARRIVAL_ABBREVIATION);
-				std::string_view departure_abbr = GetStringPtr(STR_TIMETABLE_DEPARTURE_ABBREVIATION);
+				std::string arrival_abbr = GetString(STR_TIMETABLE_ARRIVAL_ABBREVIATION);
+				std::string departure_abbr = GetString(STR_TIMETABLE_DEPARTURE_ABBREVIATION);
 
 				for (int i = this->vscroll->GetPosition(); i / 2 < v->GetNumOrders(); ++i) { // note: i is also incremented in the loop
 					/* Don't draw anything if it extends past the end of the window. */

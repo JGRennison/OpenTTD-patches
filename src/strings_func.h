@@ -245,6 +245,17 @@ std::string_view GetStringWithArgsInPlace(T &buffer, StringID string, std::span<
 	return buffer;
 }
 
+struct GetStringFmtParam {
+	StringID string;
+
+	GetStringFmtParam(StringID string) : string(string) {}
+
+	void fmt_format_value(struct format_target &output) const
+	{
+		AppendStringWithArgsInPlace(output, this->string, {});
+	}
+};
+
 /**
  * A searcher for missing glyphs.
  */

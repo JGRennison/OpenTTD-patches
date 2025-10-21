@@ -1471,13 +1471,13 @@ void CompanyInfrastructure::Dump(format_target &buffer) const
 {
 	uint rail_total = 0;
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		if (rail[rt]) buffer.format("Rail: {}: {}\n", GetStringPtr(GetRailTypeInfo(rt)->strings.name), rail[rt]);
+		if (rail[rt]) buffer.format("Rail: {}: {}\n", GetStringFmtParam(GetRailTypeInfo(rt)->strings.name), rail[rt]);
 		rail_total += rail[rt];
 	}
 	buffer.format("Total Rail: {}\n", rail_total);
 	buffer.format("Signal: {}\n", signal);
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
-		if (road[rt]) buffer.format("{}: {}: {}\n", RoadTypeIsTram(rt) ? "Tram" : "Road", GetStringPtr(GetRoadTypeInfo(rt)->strings.name), road[rt]);
+		if (road[rt]) buffer.format("{}: {}: {}\n", RoadTypeIsTram(rt) ? "Tram" : "Road", GetStringFmtParam(GetRoadTypeInfo(rt)->strings.name), road[rt]);
 	}
 	buffer.format("Total Road: {}\n", this->GetRoadTotal());
 	buffer.format("Total Tram: {}\n", this->GetTramTotal());

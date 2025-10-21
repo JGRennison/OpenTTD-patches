@@ -1186,7 +1186,7 @@ class NIHIndustry : public NIHelper {
 				output.Print("  Produces:");
 				for (const auto &p : ind->Produced()) {
 					if (p.cargo != INVALID_CARGO) {
-						output.Print("    {}:", GetStringPtr(CargoSpec::Get(p.cargo)->name));
+						output.Print("    {}:", GetStringFmtParam(CargoSpec::Get(p.cargo)->name));
 						output.Print("      Waiting: {}, rate: {}",
 								p.waiting, p.rate);
 						output.Print("      This month: production: {}, transported: {}",
@@ -1199,7 +1199,7 @@ class NIHIndustry : public NIHelper {
 				for (const auto &a : ind->Accepted()) {
 					if (a.cargo != INVALID_CARGO) {
 						output.Print("    {}: waiting: {}",
-								GetStringPtr(CargoSpec::Get(a.cargo)->name), a.waiting);
+								GetStringFmtParam(CargoSpec::Get(a.cargo)->name), a.waiting);
 					}
 				}
 				output.Print("  Counter: {}", ind->counter);
@@ -1945,7 +1945,7 @@ class NIHTown : public NIHelper {
 		output.Print("  Growth rate: {}, Growth Counter: {}, T to Rebuild: {}, Growing: {}, Custom growth: {}",
 				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
 
-		output.Print("  Road layout: {}", GetStringPtr(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
+		output.Print("  Road layout: {}", GetStringFmtParam(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
 
 		if (t->have_ratings.Any()) {
 			output.Print("  Company ratings:");
@@ -2055,7 +2055,7 @@ class NIHStationStruct : public NIHelper {
 
 				const StationCargoPacketMap *pkts = ge->data != nullptr ? ge->data->cargo.Packets() : nullptr;
 
-				output.Print("  Goods entry: {}: {}", cs->Index(), GetStringPtr(cs->name));
+				output.Print("  Goods entry: {}: {}", cs->Index(), GetStringFmtParam(cs->name));
 				output.buffer.format("    Status: {}{}{}{}{}{}{}",
 						ge->status.Test(GoodsEntry::State::Acceptance)      ? 'a' : '-',
 						ge->status.Test(GoodsEntry::State::Rating)          ? 'r' : '-',
