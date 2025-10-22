@@ -174,18 +174,21 @@ public:
 	}
 
 private:
-	// returns true if ExecuteTraceRestrict should be called
-	inline bool ShouldCheckTraceRestrict(Node& n, TileIndex tile)
+	inline bool IsWithinTraceRestrictExecuteDistance(Node& n)
 	{
-		return n.num_signals_passed < this->sig_look_ahead_costs.size() &&
-				IsRestrictedSignal(tile);
+		return n.num_signals_passed < this->sig_look_ahead_costs.size();
 	}
 
-	// returns true if ExecuteTunnelBridgeTraceRestrict should be called
+	/* Returns true if ExecuteTraceRestrict should be called. */
+	inline bool ShouldCheckTraceRestrict(Node& n, TileIndex tile)
+	{
+		return this->IsWithinTraceRestrictExecuteDistance(n) && IsRestrictedSignal(tile);
+	}
+
+	/* Returns true if ExecuteTunnelBridgeTraceRestrict should be called. */
 	inline bool ShouldCheckTunnelBridgeTraceRestrict(Node& n, TileIndex tile)
 	{
-		return n.num_signals_passed < this->sig_look_ahead_costs.size() &&
-				IsTunnelBridgeRestrictedSignal(tile);
+		return this->IsWithinTraceRestrictExecuteDistance(n) && IsTunnelBridgeRestrictedSignal(tile);
 	}
 
 	/**
@@ -408,11 +411,14 @@ public:
 					}
 
 					bool is_reserve_through = false;
-					if (ShouldCheckTraceRestrict(n, tile)) {
-						TraceRestrictProgramResult out;
-						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through, nullptr)) {
-							return -1;
+					if (IsWithinTraceRestrictExecuteDistance(n)) {
+						if (IsRestrictedSignal(tile)) {
+							TraceRestrictProgramResult out;
+							if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through, nullptr)) {
+								return -1;
+							}
 						}
+						if (GetSignalAlwaysReserveThrough(tile, TrackdirToTrack(trackdir))) is_reserve_through = true;
 					}
 					if (!is_reserve_through) {
 						n.last_non_reserve_through_signal_tile = tile;
