@@ -111,7 +111,6 @@ struct CYapfRailNodeT
 
 	CYapfRailSegment  *segment;
 	uint16_t          num_signals_passed;
-	uint16_t          num_signals_res_through_passed;
 	union {
 		uint32_t        inherited_flags;
 		struct {
@@ -133,7 +132,6 @@ struct CYapfRailNodeT
 		this->segment = nullptr;
 		if (parent == nullptr) {
 			this->num_signals_passed                   = 0;
-			this->num_signals_res_through_passed       = 0;
 			this->last_non_reserve_through_signal_tile = INVALID_TILE;
 			this->last_non_reserve_through_signal_td   = INVALID_TRACKDIR;
 			this->flags_u.inherited_flags              = 0;
@@ -151,7 +149,6 @@ struct CYapfRailNodeT
 			this->last_signal_type = SIGTYPE_PBS;
 		} else {
 			this->num_signals_passed                   = parent->num_signals_passed;
-			this->num_signals_res_through_passed       = parent->num_signals_res_through_passed;
 			this->last_non_reserve_through_signal_tile = parent->last_non_reserve_through_signal_tile;
 			this->last_non_reserve_through_signal_td   = parent->last_non_reserve_through_signal_td;
 			this->flags_u.inherited_flags              = parent->flags_u.inherited_flags;
@@ -242,7 +239,6 @@ struct CYapfRailNodeT
 		base::Dump(dmp);
 		dmp.WriteStructT("segment", this->segment);
 		dmp.WriteValue("num_signals_passed", this->num_signals_passed);
-		dmp.WriteValue("num_signals_res_through_passed", this->num_signals_res_through_passed);
 		dmp.WriteValue("target_seen", this->flags_u.flags_s.target_seen ? "Yes" : "No");
 		dmp.WriteValue("choice_seen", this->flags_u.flags_s.choice_seen ? "Yes" : "No");
 		dmp.WriteValue("last_signal_was_red", this->flags_u.flags_s.last_signal_was_red ? "Yes" : "No");

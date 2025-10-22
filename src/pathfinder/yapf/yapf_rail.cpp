@@ -62,6 +62,11 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), *f2);
 }
 
+template <class Node>
+struct CYapfReserveTrackSafePositionNodes {
+	inline static std::vector<Node *> safe_position_nodes;
+};
+
 template <class Types>
 class CYapfReserveTrack
 {
@@ -167,16 +172,27 @@ public:
 		this->res_dest_td = td;
 	}
 
-	/** Check the node for a possible reservation target. */
-	inline void FindSafePositionOnNode(Node *node)
+	/**
+	 * Check the node for a possible reservation target.
+	 * Return true if found.
+	 */
+	inline bool FindSafePositionOnNode(Node *node)
 	{
 		dbg_assert(node->parent != nullptr);
 
-		/* We will never pass more than two non-reserve-through signals, no need to check for a safe tile. */
-		if (node->parent->num_signals_passed - node->parent->num_signals_res_through_passed >= 2) return;
-
 		if (!node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::FindSafePositionProc)) {
 			this->res_dest_node = node;
+			return true;
+		}
+		return false;
+	}
+
+	/** Find a reservation target on the path ending at this node. */
+	void FindSafePositionOnSafePositionNodes()
+	{
+		const auto &safe_position_nodes = CYapfReserveTrackSafePositionNodes<Node>::safe_position_nodes;
+		for (auto it = safe_position_nodes.rbegin(); it != safe_position_nodes.rend(); ++it) {
+			if (this->FindSafePositionOnNode(*it)) return;
 		}
 	}
 
@@ -527,13 +543,16 @@ public:
 		this->SetReservationTarget(node, node->GetLastTile(), node->GetLastTrackdir());
 
 		/* Walk through the path back to the origin. */
+		auto &safe_position_nodes = CYapfReserveTrackSafePositionNodes<Node>::safe_position_nodes;
+		safe_position_nodes.clear();
 		Node *prev = nullptr;
 		while (node->parent != nullptr) {
 			prev = node;
 			node = node->parent;
 
-			this->FindSafePositionOnNode(prev);
+			safe_position_nodes.push_back(prev);
 		}
+		this->FindSafePositionOnSafePositionNodes();
 
 		return dont_reserve || this->TryReservePath(nullptr, node->GetLastTile());
 	}
@@ -642,13 +661,16 @@ public:
 
 			/* path was found or at least suggested
 			 * walk through the path back to the origin */
+			auto &safe_position_nodes = CYapfReserveTrackSafePositionNodes<Node>::safe_position_nodes;
+			safe_position_nodes.clear();
 			Node *prev = nullptr;
 			while (node->parent != nullptr) {
 				prev = node;
 				node = node->parent;
 
-				this->FindSafePositionOnNode(prev);
+				safe_position_nodes.push_back(prev);
 			}
+			this->FindSafePositionOnSafePositionNodes();
 
 			/* If the best PF node has no parent, then there is no (valid) best next trackdir to return.
 			 * This occurs when the PF is called while the train is already at its destination. */

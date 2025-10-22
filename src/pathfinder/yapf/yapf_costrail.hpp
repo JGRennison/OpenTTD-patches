@@ -413,7 +413,6 @@ public:
 						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through, nullptr)) {
 							return -1;
 						}
-						if (is_reserve_through) n.num_signals_res_through_passed++;
 					}
 					if (!is_reserve_through) {
 						n.last_non_reserve_through_signal_tile = tile;
