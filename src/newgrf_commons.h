@@ -321,6 +321,20 @@ struct FixedGRFFileProps : GRFFilePropsBase {
 	const struct SpriteGroup *GetSpriteGroup(Tkey index) const { return this->spritegroups[static_cast<size_t>(index)]; }
 
 	/**
+	 * Get the first existing SpriteGroup from a list of options.
+	 * @param indices Valid options.
+	 * @return First existing, or nullptr if none exists.
+	 */
+	const struct SpriteGroup *GetFirstSpriteGroupOf(std::initializer_list<Tkey> indices) const
+	{
+		for (auto key : indices) {
+			auto *result = GetSpriteGroup(key);
+			if (result != nullptr) return result;
+		}
+		return nullptr;
+	}
+
+	/**
 	 * Set the SpriteGroup at the specified index.
 	 * @param index Index to set.
 	 * @param spritegroup SpriteGroup to set.
@@ -334,6 +348,7 @@ struct FixedGRFFileProps : GRFFilePropsBase {
 struct SingleGRFFileProps : GRFFilePropsBase {
 	const struct SpriteGroup *spritegroup;
 
+	bool HasSpriteGroups() const { return this->spritegroup != nullptr; }
 	const struct SpriteGroup *GetSpriteGroup() const { return this->spritegroup; }
 	void SetSpriteGroup(const struct SpriteGroup *spritegroup) { this->spritegroup = spritegroup; }
 };
@@ -346,7 +361,31 @@ enum class StandardSpriteGroup {
 	Purchase, ///< Used before an entity exists.
 	End
 };
-using StandardGRFFileProps = FixedGRFFileProps<StandardSpriteGroup, static_cast<size_t>(StandardSpriteGroup::End)>;
+
+/**
+ * Container for standard sprite groups.
+ */
+struct StandardGRFFileProps : FixedGRFFileProps<StandardSpriteGroup, static_cast<size_t>(StandardSpriteGroup::End)> {
+	using FixedGRFFileProps<StandardSpriteGroup, static_cast<size_t>(StandardSpriteGroup::End)>::GetSpriteGroup;
+
+	/**
+	 * Check whether the entity has sprite groups.
+	 */
+	bool HasSpriteGroups() const
+	{
+		return GetSpriteGroup(StandardSpriteGroup::Default) != nullptr;
+	}
+
+	/**
+	 * Get the standard sprite group.
+	 * @param entity_exists Whether the entity exists (true), or is being constructed or shown in the GUI (false).
+	 */
+	const struct SpriteGroup *GetSpriteGroup(bool entity_exists) const
+	{
+		auto *res = entity_exists ? nullptr : GetSpriteGroup(StandardSpriteGroup::Purchase);
+		return res ? res : GetSpriteGroup(StandardSpriteGroup::Default);
+	}
+};
 
 struct VariableGRFFilePropsBase : GRFFilePropsBase {
 protected:
@@ -428,6 +467,20 @@ struct VariableGRFFileProps : VariableGRFFilePropsBase {
 	}
 
 	/**
+	 * Get the first existing SpriteGroup from a list of options.
+	 * @param indices Valid options.
+	 * @return First existing, or nullptr if none exists.
+	 */
+	const struct SpriteGroup *GetFirstSpriteGroupOf(std::initializer_list<Tkey> indices) const
+	{
+		for (auto key : indices) {
+			auto *result = GetSpriteGroup(key);
+			if (result != nullptr) return result;
+		}
+		return nullptr;
+	}
+
+	/**
 	 * Set the SpriteGroup at the specified index.
 	 * @param index Index to set.
 	 * @param spritegroup SpriteGroup to set.
@@ -462,10 +515,12 @@ struct CargoGRFFileProps : VariableGRFFileProps<CargoType> {
 	static constexpr CargoType SG_DEFAULT_NA = NUM_CARGO + 2; ///< Used only by stations and roads when no more-specific cargo matches.
 };
 
-/** Data related to the handling of grf files. */
-struct GRFFileProps : SingleGRFFileProps {
+/**
+ * NewGRF entities which can replace default entities.
+ */
+struct SubstituteGRFFileProps : SingleGRFFileProps {
 	/** Set all default data constructor for the props. */
-	constexpr GRFFileProps(uint16_t subst_id = 0) : subst_id(subst_id), override_id(subst_id) {}
+	constexpr SubstituteGRFFileProps(uint16_t subst_id = 0) : subst_id(subst_id), override_id(subst_id) {}
 
 	uint16_t subst_id;
 	uint16_t override_id; ///< id of the entity been replaced by

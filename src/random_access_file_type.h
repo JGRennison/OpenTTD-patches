@@ -45,7 +45,7 @@ class RandomAccessFile {
 	void SeekToIntl(size_t pos, int mode);
 
 public:
-	RandomAccessFile(const std::string &filename, Subdirectory subdir);
+	RandomAccessFile(std::string_view filename, Subdirectory subdir);
 	RandomAccessFile(const RandomAccessFile&) = delete;
 	void operator=(const RandomAccessFile&) = delete;
 

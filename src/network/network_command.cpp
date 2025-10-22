@@ -212,7 +212,7 @@ void NetworkDistributeCommands()
  * Receives a command from the network.
  * @param p the packet to read from.
  * @param cp the struct to write the data to.
- * @return an error message. When nullptr there has been no error.
+ * @return An error message, or nullptr when there has been no error.
  */
 const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &cp)
 {

@@ -213,7 +213,7 @@ bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool use_cur_s
 GRFFile *GetFileByGRFID(uint32_t grfid);
 GRFError *DisableGrf(StringID message = {}, GRFConfig *config = nullptr);
 void DisableStaticNewGRFInfluencingNonStaticNewGRFs(GRFConfig &c);
-bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property);
+bool HandleChangeInfoResult(std::string_view caller, ChangeInfoResult cir, GrfSpecFeature feature, int property);
 uint32_t GetParamVal(uint8_t param, uint32_t *cond_val);
 void GRFUnsafe(ByteReader &);
 

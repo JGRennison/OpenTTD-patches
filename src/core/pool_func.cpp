@@ -37,18 +37,18 @@
 }
 
 /* These are here to avoid needing formatting includes in pool_func */
-[[noreturn]] void PoolNoMoreFreeItemsError(const char *name)
+[[noreturn]] void PoolNoMoreFreeItemsError(std::string_view name)
 {
 	FatalError("{}: no more free items", name);
 }
 
-[[noreturn]] void PoolOutOfRangeError(const char *name, size_t index, size_t max_size)
+[[noreturn]] void PoolOutOfRangeError(std::string_view name, size_t index, size_t max_size)
 {
 	[[noreturn]] extern void SlErrorCorrupt(std::string msg);
 	SlErrorCorrupt(fmt::format("{} index {} out of range ({})", name, index, max_size));
 }
 
-[[noreturn]] void PoolIndexAlreadyInUseError(const char *name, size_t index)
+[[noreturn]] void PoolIndexAlreadyInUseError(std::string_view name, size_t index)
 {
 	[[noreturn]] extern void SlErrorCorrupt(std::string msg);
 	SlErrorCorrupt(fmt::format("{} index {} already in use", name, index));

@@ -74,7 +74,7 @@ static const SpriteGroup *GetGroupByID(uint16_t groupid)
 	return result;
 }
 
-static bool IsValidGroupID(uint16_t groupid, const char *function)
+static bool IsValidGroupID(uint16_t groupid, std::string_view function)
 {
 	if ((size_t)groupid >= _cur_gps.spritegroups.size() || _cur_gps.spritegroups[groupid] == nullptr) {
 		GrfMsg(1, "{}: Spritegroup 0x{:04X} out of range or empty, skipping.", function, groupid);

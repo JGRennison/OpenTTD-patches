@@ -203,7 +203,7 @@ std::vector<BadgeID> ReadBadgeList(ByteReader &buf, GrfSpecFeature feature)
 	return badges;
 }
 
-bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property)
+bool HandleChangeInfoResult(std::string_view caller, ChangeInfoResult cir, GrfSpecFeature feature, int property)
 {
 	switch (cir) {
 		default: NOT_REACHED();

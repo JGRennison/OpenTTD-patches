@@ -138,8 +138,6 @@ struct RoadStopResolverObject : public SpecializedResolverObject<StationRandomTr
 	}
 
 	TownScopeResolver *GetTown();
-
-	const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const override;
 };
 
 /** Road stop specification. */

@@ -125,7 +125,7 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 	this->checked--;
 #endif /* WITH_FULL_ASSERTS */
 	if (index == NO_FREE_ITEM) {
-		[[noreturn]] extern void PoolNoMoreFreeItemsError(const char *name);
+		[[noreturn]] extern void PoolNoMoreFreeItemsError(std::string_view name);
 		PoolNoMoreFreeItemsError(this->name);
 	}
 
@@ -143,14 +143,14 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index, Pool::ParamType param)
 {
 	if (unlikely(index >= MAX_SIZE)) {
-		[[noreturn]] extern void PoolOutOfRangeError(const char *name, size_t index, size_t max_size);
+		[[noreturn]] extern void PoolOutOfRangeError(std::string_view name, size_t index, size_t max_size);
 		PoolOutOfRangeError(this->name, index, MAX_SIZE);
 	}
 
 	if (index >= this->size) this->ResizeFor(index);
 
 	if (unlikely(this->data[index] != Tops::NullValue())) {
-		[[noreturn]] extern void PoolIndexAlreadyInUseError(const char *name, size_t index);
+		[[noreturn]] extern void PoolIndexAlreadyInUseError(std::string_view name, size_t index);
 		PoolIndexAlreadyInUseError(this->name, index);
 	}
 

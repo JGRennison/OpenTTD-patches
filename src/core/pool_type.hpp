@@ -107,7 +107,7 @@ private:
 public:
 	static constexpr size_t MAX_SIZE = Tindex::End().base(); ///< Make template parameter accessible from outside
 
-	const char * const name = nullptr; ///< Name of this pool
+	std::string_view name;   ///< Name of this pool
 
 	size_t size = 0;         ///< Current allocated size
 	size_t first_free = 0;   ///< No item with index lower than this is free (doesn't say anything about this one!)
@@ -121,7 +121,7 @@ public:
 	PtrType *data = nullptr;         ///< Pointer to array of Tops::Tptr (by default: pointers to Titem)
 	uint64_t *free_bitmap = nullptr; ///< Pointer to free bitmap
 
-	Pool(const char *name) : PoolBase(Tpool_type), name(name) {}
+	Pool(std::string_view name) : PoolBase(Tpool_type), name(name) {}
 	void CleanPool() override;
 
 	inline PtrType &GetRawRef(size_t index)

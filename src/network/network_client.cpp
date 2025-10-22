@@ -64,28 +64,21 @@ struct PacketReader : LoadFilter {
 	PacketReader() : LoadFilter(nullptr), buf(nullptr), bufe(nullptr), current_block(0), written_bytes(0), read_bytes(0) {}
 
 	/**
-	 * Simple wrapper around fwrite to be able to pass it to Packet's TransferOut.
-	 * @param destination The reader to add the data to.
-	 * @param source      The buffer to read data from.
-	 * @param amount      The number of bytes to copy.
-	 * @return The number of bytes that were copied.
-	 */
-	static inline ssize_t TransferOutMemCopy(PacketReader *destination, const char *source, size_t amount)
-	{
-		memcpy(destination->buf, source, amount);
-		destination->buf += amount;
-		destination->written_bytes += amount;
-		return amount;
-	}
-
-	/**
 	 * Add a packet to this buffer.
 	 * @param p The packet to add.
 	 */
 	void AddPacket(Packet &p)
 	{
 		assert(this->read_bytes == 0);
-		p.TransferOutWithLimit(TransferOutMemCopy, this->bufe - this->buf, this);
+
+		auto transfer_out = [&](std::span<const uint8_t> source_data) {
+			memcpy(this->buf, source_data.data(), source_data.size());
+			this->buf += source_data.size();
+			this->written_bytes += source_data.size();
+			return source_data.size();
+		};
+
+		p.TransferOutWithLimit(transfer_out, this->bufe - this->buf);
 
 		/* Did everything fit in the current chunk, then we're done. */
 		if (p.RemainingBytesToTransfer() == 0) return;
@@ -95,7 +88,7 @@ struct PacketReader : LoadFilter {
 		this->bufe = this->buf + CHUNK;
 		this->blocks.emplace_back(this->buf);
 
-		p.TransferOutWithLimit(TransferOutMemCopy, this->bufe - this->buf, this);
+		p.TransferOutWithLimit(transfer_out, this->bufe - this->buf);
 	}
 
 	size_t Read(uint8_t *rbuf, size_t size) override

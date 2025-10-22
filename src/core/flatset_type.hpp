@@ -10,6 +10,9 @@
 #ifndef FLATSET_TYPE_HPP
 #define FLATSET_TYPE_HPP
 
+#include <ranges>
+#include <vector>
+
 /**
  * Flat set implementation that uses a sorted vector for storage.
  * This is subset of functionality implemented by std::flat_set in c++23.

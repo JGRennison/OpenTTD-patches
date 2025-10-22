@@ -499,7 +499,7 @@ CommandFlags GetCommandFlags(Commands cmd)
  * @param cmd The integer value of the command
  * @return The name for this command
  */
-const char *GetCommandName(Commands cmd)
+std::string_view GetCommandName(Commands cmd)
 {
 	if (!IsValidCommand(cmd)) return "????"; // This can be reached in error/crash log paths when IsValidCommand checks fail
 

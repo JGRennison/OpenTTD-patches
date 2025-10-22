@@ -163,7 +163,7 @@ void NetworkSendCommand(TileIndex tile, const CmdPayload<Tcmd> &payload, StringI
 
 inline bool IsValidCommand(Commands cmd) { return cmd < CMD_END; }
 CommandFlags GetCommandFlags(Commands cmd);
-const char *GetCommandName(Commands cmd);
+std::string_view GetCommandName(Commands cmd);
 bool IsCommandAllowedWhilePaused(Commands cmd);
 bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase &payload);
 
