@@ -140,6 +140,8 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 				NWidget(WWT_PANEL, COLOUR_GREY),
 					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_LOCO), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
+				NWidget(NWID_VERTICAL, NWidContainerFlag{}, WID_BV_BADGE_FILTER_LOCO),
+				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for locomotives. */
 			NWidget(NWID_HORIZONTAL),
@@ -179,6 +181,8 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY),
 					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+				EndContainer(),
+				NWidget(NWID_VERTICAL, NWidContainerFlag{}, WID_BV_BADGE_FILTER_WAGON),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for wagons. */
@@ -2442,6 +2446,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		TestedEngineDetails te;                        ///< Tested cost and capacity after refit.
 		StringFilter string_filter;                    ///< Filter for vehicle name
 		QueryString vehicle_editbox { MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS }; ///< Filter editbox
+
+		std::pair<WidgetID, WidgetID> badge_filters{}; ///< First and last widgets IDs of badge filters.
+		BadgeFilterChoices badge_filter_choices{};
 	};
 
 	PanelState loco{};
@@ -2656,6 +2663,14 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		this->loco.vscroll->SetCount(this->loco.eng_list.size());
 		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
+
+		auto loco_badge_container = this->GetWidget<NWidgetContainer>(WID_BV_BADGE_FILTER_LOCO);
+		this->loco.badge_filters = AddBadgeDropdownFilters(*loco_badge_container, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
+		auto wagon_badge_container = this->GetWidget<NWidgetContainer>(WID_BV_BADGE_FILTER_WAGON);
+		this->wagon.badge_filters = AddBadgeDropdownFilters(*wagon_badge_container, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
+
+		this->widget_lookup.clear();
+		this->nested_root->FillWidgetLookup(this->widget_lookup);
 	}
 
 	/* Filter a single engine */
@@ -2690,6 +2705,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		list.clear();
 
+		BadgeTextFilter btf(state.string_filter, GSF_TRAINS);
+		BadgeDropdownFilter bdf(state.badge_filter_choices);
+
 		/* Make list of all available train engines and wagons.
 		 * Also check to see if the previously selected engine is still available,
 		 * and if not, reset selection to EngineID::Invalid(). This could be the case
@@ -2704,6 +2722,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			if (!FilterSingleEngine(state, eid)) continue;
 
+			if (!bdf.Filter(engine->badges)) continue;
+
 			const Engine *top_engine = engine;
 			for (int depth = 0; depth < 16; depth++) {
 				if (top_engine->info.variant_id == EngineID::Invalid()) break;
@@ -2712,7 +2732,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			if ((top_engine->u.rail.railveh_type == RAILVEH_WAGON) != wagon) continue;
 
 			/* Filter by name or NewGRF extra text */
-			if (!FilterByText(state, engine)) continue;
+			if (!FilterByText(state, engine) && !btf.Filter(engine->badges)) continue;
 
 			list.emplace_back(eid, engine->info.variant_id, engine->display_flags, 0);
 
@@ -2849,6 +2869,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_CONFIGURE_BADGES:
+				if (this->badge_classes.GetClasses().empty()) break;
 				ShowDropDownList(this, this->BuildBadgeConfigurationList(), -1, widget, 0, DDMF_PERSIST);
 				break;
 
@@ -2979,6 +3000,14 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				}
 				break;
 			}
+
+			/* Badges */
+
+			default:
+				if (IsInsideMM(widget, this->loco.badge_filters.first, this->loco.badge_filters.second) || IsInsideMM(widget, this->wagon.badge_filters.first, this->wagon.badge_filters.second)) {
+					ShowDropDownList(this, this->GetWidget<NWidgetBadgeFilter>(widget)->GetDropDownList(), -1, widget, 0, DDMF_NONE);
+				}
+				break;
 		}
 	}
 
@@ -3066,6 +3095,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			default:
+				if (IsInsideMM(widget, this->loco.badge_filters.first, this->loco.badge_filters.second)) {
+					return this->GetWidget<NWidgetBadgeFilter>(widget)->GetStringParameter(this->loco.badge_filter_choices);
+				}
+				if (IsInsideMM(widget, this->wagon.badge_filters.first, this->wagon.badge_filters.second)) {
+					return this->GetWidget<NWidgetBadgeFilter>(widget)->GetStringParameter(this->wagon.badge_filter_choices);
+				}
+
 				return this->Window::GetWidgetString(widget, stringid);
 		}
 	}
@@ -3318,6 +3354,23 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				} else {
 					this->CloseChildWindows(WC_DROPDOWN_MENU);
 				}
+				break;
+			}
+
+			default: {
+				auto check_badges = [&](PanelState &state) {
+					if (IsInsideMM(widget, state.badge_filters.first, state.badge_filters.second)) {
+						if (index < 0) {
+							ResetBadgeFilter(state.badge_filter_choices, this->GetWidget<NWidgetBadgeFilter>(widget)->GetBadgeClassID());
+						} else {
+							SetBadgeFilter(state.badge_filter_choices, BadgeID(index));
+						}
+						state.eng_list.ForceRebuild();
+						this->SetDirty();
+					}
+				};
+				check_badges(this->loco);
+				check_badges(this->wagon);
 				break;
 			}
 		}

@@ -68,6 +68,9 @@ enum BuildVehicleWidgets : WidgetID {
 
 	WID_BV_CONFIGURE_BADGES = 0x1000,       ///< Button to configure badges.
 	WID_BV_BADGE_FILTER,                    ///< Container for dropdown badge filters.
+
+	WID_BV_BADGE_FILTER_LOCO  = 0x2000,     ///< Container for dropdown badge filters.
+	WID_BV_BADGE_FILTER_WAGON = 0x3000,     ///< Container for dropdown badge filters.
 };
 
 #endif /* WIDGETS_BUILD_VEHICLE_WIDGET_H */
