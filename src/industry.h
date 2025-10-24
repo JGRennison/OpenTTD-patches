@@ -26,6 +26,8 @@ struct IndustryLocationCacheEntry {
 	IndustryType type;
 	uint8_t selected_layout;
 	TileIndex tile;
+
+	bool operator==(const IndustryLocationCacheEntry&) const = default;
 };
 static_assert(sizeof(IndustryLocationCacheEntry) == 8);
 

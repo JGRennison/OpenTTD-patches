@@ -77,6 +77,13 @@ static bool SignalInfraTotalMatches()
 	return old_signal_totals == new_signal_totals;
 }
 
+static void SortIndustryCacheEntries(std::vector<IndustryLocationCacheEntry> &entries)
+{
+	std::sort(entries.begin(), entries.end(), [&](const IndustryLocationCacheEntry &a, const IndustryLocationCacheEntry &b) -> bool {
+		return a.id < b.id;
+	});
+}
+
 /**
  * Check the validity of some of the caches.
  * Especially in the sense of desyncs between
@@ -163,9 +170,14 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		/* Check the town caches. */
 		std::vector<TownCache> old_town_caches;
 		std::vector<StationList> old_town_stations_nears;
-		for (const Town *t : Town::Iterate()) {
+		std::vector<std::vector<IndustryLocationCacheEntry>> old_town_industry_caches;
+		for (Town *t : Town::Iterate()) {
 			old_town_caches.push_back(t->cache);
 			old_town_stations_nears.push_back(t->stations_near);
+
+			SortIndustryCacheEntries(t->industry_cache);
+			old_town_industry_caches.emplace_back(std::move(t->industry_cache));
+			t->industry_cache.clear();
 		}
 
 		std::vector<IndustryList> old_station_industries_nears;
@@ -187,10 +199,26 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			old_industry_infos.push_back({ ind->part_of_subsidy });
 		}
 
+		std::array<std::vector<IndustryLocationCacheEntry>, NUM_INDUSTRYTYPES> old_industries;
+		static_assert(std::tuple_size<decltype(Industry::industries)>::value == NUM_INDUSTRYTYPES);
+		for (size_t i = 0; i < NUM_INDUSTRYTYPES; i++) {
+			old_industries[i] = std::move(Industry::industries[i]);
+			SortIndustryCacheEntries(old_industries[i]);
+			Industry::industries[i].clear();
+		}
+
+		AddIndustriesToLocationCaches();
 		RebuildTownCaches(false);
 		RebuildSubsidisedSourceAndDestinationCache();
 
 		Station::RecomputeCatchmentForAll();
+
+		std::vector<IndustryLocationCacheEntry> temp_industry_cache_entries;
+		auto check_industry_cache = [&](const std::vector<IndustryLocationCacheEntry> &expected, const std::vector<IndustryLocationCacheEntry> &current_unsorted) -> bool {
+			temp_industry_cache_entries = current_unsorted;
+			SortIndustryCacheEntries(temp_industry_cache_entries);
+			return temp_industry_cache_entries == expected;
+		};
 
 		uint i = 0;
 		for (Town *t : Town::Iterate()) {
@@ -211,6 +239,9 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
 				cclog("town stations_near mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_stations_nears[i].size(), t->stations_near.size());
+			}
+			if (!check_industry_cache(old_town_industry_caches[i], t->industry_cache)) {
+				cclog("town industry_cache mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_industry_caches[i].size(), t->industry_cache.size());
 			}
 			i++;
 		}
@@ -252,6 +283,11 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				}
 			}
 			i++;
+		}
+		for (i = 0; i < NUM_INDUSTRYTYPES; i++) {
+			if (!check_industry_cache(old_industries[i], Industry::industries[i])) {
+				cclog("industry type cache mismatch: type {}, (old size: {}, new size: {})", i, old_industries[i].size(), Industry::industries[i].size());
+			}
 		}
 	}
 
