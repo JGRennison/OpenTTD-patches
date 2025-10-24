@@ -25,6 +25,8 @@ extern bool _record_sync_records;
 enum NetworkSyncRecordEvents : uint32_t {
 	NSRE_BEGIN,
 	NSRE_CMD,
+	NSRE_CALDATE_INC,
+	NSRE_ECONDATE_INC,
 	NSRE_AUX_TILE,
 	NSRE_TILE,
 	NSRE_TOWN,

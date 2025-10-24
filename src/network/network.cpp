@@ -1220,6 +1220,8 @@ const char *GetSyncRecordEventName(NetworkSyncRecordEvents event)
 	static const char *names[] = {
 		"BEGIN",
 		"CMD",
+		"CALDATE_INC",
+		"ECONDATE_INC",
 		"AUX_TILE",
 		"TILE",
 		"TOWN",

@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "network/network.h"
 #include "network/network_func.h"
+#include "network/network_sync.h"
 #include "currency.h"
 #include "window_func.h"
 #include "settings_type.h"
@@ -522,6 +523,8 @@ void IncreaseCalendarDate()
 	}
 	if (new_year) SetBit(calendar_triggers, TimerGameCalendar::YEAR);
 	TimerManager<TimerGameCalendar>::Elapsed(calendar_triggers);
+
+	RecordSyncEvent(NSRE_CALDATE_INC);
 }
 
 static void IncreaseEconomyDate()
@@ -552,6 +555,8 @@ static void IncreaseEconomyDate()
 
 	/* yes, call various yearly loops */
 	if (new_year) OnNewEconomyYear();
+
+	RecordSyncEvent(NSRE_ECONDATE_INC);
 }
 
 /**
