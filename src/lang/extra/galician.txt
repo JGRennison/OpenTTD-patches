@@ -2177,6 +2177,7 @@ STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}Habilitar
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Habilitar saída programada para esta orde. Require que a separación automática estea deshabilitada.
 STR_SCHDISPATCH_ADD                                             :{BLACK}Engadir slot de saída
+STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}Engadir slots
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Engadir novo slot de saída para este programa.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click para engadir múltiples slots de saída á vez.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Slot de saída
@@ -2201,10 +2202,12 @@ STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Axustar 
 STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}{}Ctrl+Click para axustar só o slot seleccionado.
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}Habilitar a eliminación de franxas de saída deste horario.
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}Eliminar slot de saída
+STR_SCHDISPATCH_SELECT_SLOT_TOOLTIP                             :{BLACK}Click para seleccionar slot de saída, Ctrl+Click para seleccionar varios
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Axuste a engadir (minutos)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Axuste a engadir (días)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Axuste a engadir (ticks)
 STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}: {STRING}
+STR_SCHDISPATCH_ADJUST_CAPTION_MULTI_SLOT_PREFIXED              :{BLACK}{NUM} slots dende {TT_TIME}: {STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Restablecer última saída
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Restablecer cando un vehículo fora despachado por última vez dende o programa.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}Limpar slots de saídas
@@ -2224,6 +2227,7 @@ STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Crear un
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Engadir programacións dende vehículo
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Engadir as programacións dende outro vehículo.
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :Reutilizar franxas de saída
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT                     :Reutilizar
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Establecer se as franxas de saída poden ser usadas máis dunha vez.
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :Renomear etiqueta {NUM}
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Renomear etiqueta {NUM}: {STRING}
@@ -2242,6 +2246,7 @@ STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establec
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :Etiqueta {NUM}
 STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :Etiqueta {NUM}: {STRING}
 STR_SCHDISPATCH_ROUTE                                           :ID da ruta: {STRING}
+STR_SCHDISPATCH_TAGS_PREFIX                                     :Etiquetas:{SPACE}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
@@ -2258,6 +2263,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Último slot 
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Seguinte slot de saída dispoñible
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de saída pódese usar máis dunha vez
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
+STR_SCHDISPATCH_SLOT_DISPLAY_MODE_TOOLTIP                       :{BLACK}Alternar entre a visión detallada e compacta dos slots
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}Este vehículo non saíu.
@@ -2289,6 +2295,8 @@ STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}Esta sa�
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}Isto é máis de {NUM} horas no pasado.
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}Isto é máis de {NUM} horas no futuro.
 
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_MULTIPLE                    :{BLACK}Múltiples
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_TIME                        :{BLACK}Hora
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Inicio:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Período:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}Fin:
