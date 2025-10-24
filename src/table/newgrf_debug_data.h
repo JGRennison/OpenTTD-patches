@@ -1202,7 +1202,7 @@ class NIHIndustry : public NIHelper {
 								GetStringFmtParam(CargoSpec::Get(a.cargo)->name), a.waiting);
 					}
 				}
-				output.Print("  Counter: {}", ind->counter);
+				output.Print("  Counter: {}, Prod level: {}", ind->counter, ind->prod_level);
 			}
 		}
 
