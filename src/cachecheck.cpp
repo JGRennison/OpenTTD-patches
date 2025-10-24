@@ -178,8 +178,13 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		}
 
 		std::vector<StationList> old_industry_stations_nears;
+		struct IndustryInfo {
+			PartsOfSubsidy part_of_subsidy{};
+		};
+		std::vector<IndustryInfo> old_industry_infos;
 		for (Industry *ind : Industry::Iterate()) {
 			old_industry_stations_nears.push_back(ind->stations_near);
+			old_industry_infos.push_back({ ind->part_of_subsidy });
 		}
 
 		RebuildTownCaches(false);
@@ -226,6 +231,9 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		for (Industry *ind : Industry::Iterate()) {
 			if (old_industry_stations_nears[i] != ind->stations_near) {
 				cclog("industry stations_near mismatch: ind {}, (old size: {}, new size: {})", ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
+			}
+			if (old_industry_infos[i].part_of_subsidy != ind->part_of_subsidy) {
+				cclog("industry subsidy mismatch: ind {}, (old: {}, new: {})", ind->index, old_industry_infos[i].part_of_subsidy, ind->part_of_subsidy);
 			}
 			StationList stlist;
 			if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
