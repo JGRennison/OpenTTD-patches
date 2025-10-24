@@ -1240,6 +1240,7 @@ bool AfterLoadGame()
 
 				case MP_ROAD:
 					_m[t].m4 |= (_m[t].m2 << 4);
+					if (GB(_m[t].m5, 4, 2) == ROAD_TILE_DEPOT) break;
 					if ((GB(_m[t].m5, 4, 2) == ROAD_TILE_CROSSING ? (Owner)_m[t].m3 : GetTileOwner(t)) == OWNER_TOWN) {
 						SetTownIndex(t, CalcClosestTownFromTile(t)->index);
 					} else {
