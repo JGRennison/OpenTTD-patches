@@ -196,7 +196,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				cclog("town cache population mismatch: town {}i, (old size: {}, new size: {})", t->index, old_town_caches[i].population, t->cache.population);
 			}
 			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
-				cclog("town cache population mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
+				cclog("town cache subsidy mismatch: town {}, (old: {}, new: {})", t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
 			}
 			if (old_town_caches[i].squared_town_zone_radius != t->cache.squared_town_zone_radius) {
 				cclog("town cache squared_town_zone_radius mismatch: town {}", t->index);
