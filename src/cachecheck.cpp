@@ -282,6 +282,16 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 					cclog("industry FindStationsAroundTiles mismatch: ind {}, (recalc size: {}, find size: {})", ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 				}
 			}
+			size_t j = 0;
+			for (const auto &p : ind->Produced()) {
+				if (!IsValidCargoType(p.cargo)) {
+					/* Check unused cargo slots. */
+					if (std::find_if(p.history.begin(), p.history.end(), [&](const auto &it) { return it.production != 0 || it.transported != 0; }) != p.history.end()) {
+						cclog("industry unused production slot history incorrect: ind {}, slot {}", ind->index, j);
+					}
+				}
+				j++;
+			}
 			i++;
 		}
 		for (i = 0; i < NUM_INDUSTRYTYPES; i++) {
