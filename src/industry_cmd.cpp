@@ -1886,13 +1886,13 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 		if (indspec->callback_mask.Test(IndustryCallbackMask::Production256Ticks)) {
 			IndustryProductionCallback(i, 1);
 			for (auto &p : i->Produced()) {
-				p.history[LAST_MONTH].production = _industry_cargo_scaler.Scale(p.waiting * 8);
+				if (IsValidCargoType(p.cargo)) p.history[LAST_MONTH].production = _industry_cargo_scaler.Scale(p.waiting * 8);
 				p.waiting = 0;
 			}
 		}
 
 		for (auto &p : i->Produced()) {
-			p.history[LAST_MONTH].production += _industry_cargo_scaler.Scale(p.rate * 8);
+			if (IsValidCargoType(p.cargo)) p.history[LAST_MONTH].production += _industry_cargo_scaler.Scale(p.rate * 8);
 		}
 	}
 
