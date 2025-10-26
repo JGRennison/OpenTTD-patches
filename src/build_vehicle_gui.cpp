@@ -3209,6 +3209,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				size.height += padding.height;
 				break;
 
+			case WID_BV_COMB_RENAME:
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON);
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON));
+				size.width += padding.width;
+				size.height += padding.height;
+				break;
+
 			case WID_BV_RENAME_LOCO: {
 				size = maxdim(size, NWidgetLeaf::GetResizeBoxDimension());
 				break;
