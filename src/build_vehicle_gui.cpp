@@ -3232,8 +3232,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	{
 		switch (widget) {
 			case WID_BV_LIST_LOCO: {
+				EngineID selected = this->dual_button_mode || !this->wagon_selected ? this->loco.sel_engine : EngineID::Invalid();
 				DrawEngineList(this->vehicle_type, r,
-					this->loco.eng_list, *(this->loco.vscroll), this->loco.sel_engine, false,
+					this->loco.eng_list, *(this->loco.vscroll), selected, false,
 					DEFAULT_GROUP, this->badge_classes);
 				break;
 			}
@@ -3244,8 +3245,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_LIST_WAGON: {
+				EngineID selected = this->dual_button_mode || this->wagon_selected ? this->wagon.sel_engine : EngineID::Invalid();
 				DrawEngineList(this->vehicle_type, r,
-					this->wagon.eng_list, *(this->wagon.vscroll), this->wagon.sel_engine, false,
+					this->wagon.eng_list, *(this->wagon.vscroll), selected, false,
 					DEFAULT_GROUP, this->badge_classes);
 				break;
 			}
