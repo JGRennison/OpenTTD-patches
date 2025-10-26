@@ -35,6 +35,4 @@ enum class BadgeFlag : uint8_t {
 };
 using BadgeFlags = EnumBitSet<BadgeFlag, uint8_t>;
 
-using BadgeFilterChoices = std::unordered_map<BadgeClassID, BadgeID>;
-
 #endif /* NEWGRF_BADGE_TYPE_H */

@@ -16,6 +16,9 @@
 #include "newgrf_badge_type.h"
 #include "newgrf_commons.h"
 #include "strings_type.h"
+#include <unordered_map>
+
+using BadgeFilterChoices = std::unordered_map<BadgeClassID, BadgeID>;
 
 class Badge {
 public:
