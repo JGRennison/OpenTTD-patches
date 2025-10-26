@@ -6248,6 +6248,8 @@ static TrackBits GetTrackbitsFromCrashedVehicle(const Train *t)
 		/* Pick the first available tunnel/bridge head track which could be reserved */
 		train_tbits = GetAcrossTunnelBridgeTrackBits(t->tile);
 		return train_tbits ^ KillFirstBit(train_tbits);
+	} else if (train_tbits == TRACK_BIT_DEPOT) {
+		return TRACK_BIT_NONE;
 	} else {
 		return train_tbits;
 	}
