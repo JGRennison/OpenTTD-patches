@@ -4678,6 +4678,18 @@ void ShowVehicleViewWindow(const Vehicle *v)
 	AllocateWindowDescFront<VehicleViewWindow>((v->type == VEH_TRAIN) ? _train_view_desc : _vehicle_view_desc, v->index);
 }
 
+void DirtySharedVehicleViewWindowTitles(const Vehicle *v)
+{
+	if (!HaveWindowByClass(WC_VEHICLE_VIEW)) return;
+
+	v = v->FirstShared();
+	for (Window *w : Window::Iterate()) {
+		if (w->window_class == WC_VEHICLE_VIEW && Vehicle::Get(w->window_number)->FirstShared() == v) {
+			w->SetWidgetDirty(WID_VV_CAPTION);
+		}
+	}
+}
+
 /**
  * Dispatch a "vehicle selected" event if any window waits for it.
  * @param v selected vehicle;

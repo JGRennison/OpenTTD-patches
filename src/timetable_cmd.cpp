@@ -21,6 +21,8 @@
 #include "scope.h"
 #include "timetable_cmd.h"
 
+#include "widgets/vehicle_widget.h"
+
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -892,6 +894,9 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 				set_scheduled_dispatch = true;
 				v->dispatch_records[static_cast<uint16_t>(real_implicit_order->GetDispatchScheduleIndex())] = MakeLastDispatchRecord(ds, slot, slot_index);
+				if (_settings_client.gui.show_vehicle_route_id_vehicle_view) {
+					SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_CAPTION);
+				}
 			}
 		}
 	}

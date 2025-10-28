@@ -387,6 +387,7 @@ CommandCost CmdSchDispatchRemoveSchedule(DoCommandFlags flags, VehicleID veh, ui
 				}
 			}
 		}
+		bool dispatch_records_changed = false;
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (v2->dispatch_records.empty()) continue;
 
@@ -399,8 +400,12 @@ CommandCost CmdSchDispatchRemoveSchedule(DoCommandFlags flags, VehicleID veh, ui
 				}
 			}
 			v2->dispatch_records = std::move(new_records);
+			dispatch_records_changed = true;
 		}
 		SchdispatchInvalidateWindows(v);
+		if (dispatch_records_changed && _settings_client.gui.show_vehicle_route_id_vehicle_view) {
+			DirtySharedVehicleViewWindowTitles(v);
+		}
 	}
 
 	return CommandCost();
@@ -574,6 +579,7 @@ CommandCost CmdSchDispatchEditRoute(DoCommandFlags flags, VehicleID veh, uint32_
 			}
 		}
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
+		if (_settings_client.gui.show_vehicle_route_id_vehicle_view) DirtySharedVehicleViewWindowTitles(v);
 	}
 
 	return CommandCost();
