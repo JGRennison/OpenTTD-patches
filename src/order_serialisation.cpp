@@ -872,31 +872,25 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	}
 
 	DestinationID destination = StationID::Invalid();
-	OrderLabelSubType labelSubtype = OLST_TEXT;
+	OrderLabelSubType label_subtype = OLST_TEXT;
 
 	/* Get basic order data required to build order. */
 	switch (type) {
 		case OT_LABEL:
-			json_importer.TryGetField(OFName::LABEL_SUBTYPE, labelSubtype, JOIET_MAJOR);
-			if (labelSubtype == OLST_DEPARTURES_REMOVE_VIA || labelSubtype == OLST_DEPARTURES_VIA) {
-				if (json_importer.TryGetField(OFName::DESTINATION_ID, destination.edit_base(), JOIET_MAJOR)) {
-					destination = StationID(destination.edit_base());
-				}
+			json_importer.TryGetField(OFName::LABEL_SUBTYPE, label_subtype, JOIET_MAJOR);
+			if (label_subtype == OLST_DEPARTURES_REMOVE_VIA || label_subtype == OLST_DEPARTURES_VIA) {
+				json_importer.TryGetField(OFName::DESTINATION_ID, destination, JOIET_MAJOR);
 			}
 			break;
 
 		case OT_GOTO_STATION:
 		case OT_GOTO_WAYPOINT:
 		case OT_IMPLICIT:
-			if (json_importer.TryGetField(OFName::DESTINATION_ID, destination.edit_base(), JOIET_MAJOR)) {
-				destination = StationID(destination.edit_base());
-			}
+			json_importer.TryGetField(OFName::DESTINATION_ID, destination, JOIET_MAJOR);
 			break;
 
 		case OT_GOTO_DEPOT:
-			if (json_importer.TryGetField(OFName::DEPOT_ID, destination.edit_base(), JOIET_OK)) {
-				destination = DepotID(destination.edit_base());
-			} else {
+			if (!json_importer.TryGetField(OFName::DEPOT_ID, destination, JOIET_OK)) {
 				destination = DepotID::Invalid();
 				if (auto it = json.find(OFName::DEPOT_ID); it != json.end()) {
 					if (!it->is_string() || !(*it == "nearest")) {
@@ -914,14 +908,14 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	Order new_order;
 	switch (type) {
 		case OT_GOTO_STATION:
-			new_order.MakeGoToStation(StationID(destination.edit_base()));
+			new_order.MakeGoToStation(destination.ToStationID());
 			if (veh->type != VEH_TRAIN) {
 				new_order.SetStopLocation(OSL_PLATFORM_FAR_END);
 			}
 			break;
 
 		case OT_GOTO_WAYPOINT:
-			new_order.MakeGoToWaypoint(StationID(destination.edit_base()));
+			new_order.MakeGoToWaypoint(destination.ToStationID());
 			break;
 
 		case OT_GOTO_DEPOT:
@@ -932,12 +926,12 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 			break;
 
 		case OT_IMPLICIT:
-			new_order.MakeImplicit(StationID(destination.edit_base()));
+			new_order.MakeImplicit(destination.ToStationID());
 			break;
 
 		case OT_LABEL:
-			new_order.MakeLabel(labelSubtype);
-			if (new_order.GetLabelSubType() != OLST_TEXT) {
+			new_order.MakeLabel(label_subtype);
+			if (label_subtype == OLST_DEPARTURES_REMOVE_VIA || label_subtype == OLST_DEPARTURES_VIA) {
 				new_order.SetDestination(destination);
 			}
 			break;
