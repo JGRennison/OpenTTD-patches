@@ -105,6 +105,12 @@ enum OrderLabelSubType : uint8_t {
 	OLST_TEXT                  = 0,
 	OLST_DEPARTURES_VIA        = 1,
 	OLST_DEPARTURES_REMOVE_VIA = 2,
+	OLST_ERROR                 = 3,
+};
+
+enum class OrderLabelError : uint16_t {
+	Default                    = 0,
+	ParseError                 = 1,
 };
 
 inline bool IsDestinationOrderLabelSubType(OrderLabelSubType subtype)

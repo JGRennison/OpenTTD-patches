@@ -2536,3 +2536,6 @@ STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}Order li
 STR_ERROR_JSON                                                  :{WHITE}JSON error
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}Importing will replace all existing orders in the order list. Do you want to continue?
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirm order list import
+
+STR_ORDER_UNKNOWN_ERROR                                         :[Error] Unknown error
+STR_ORDER_PARSE_ERROR                                           :[Error] This order could not be parsed

@@ -36,7 +36,14 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderLabelSubType, {
 	{static_cast<OrderLabelSubType>(-1), nullptr},
 	{OLST_TEXT, "text"},
 	{OLST_DEPARTURES_VIA, "show-departure-via"},
-	{OLST_DEPARTURES_REMOVE_VIA, "rem-departure-via"}
+	{OLST_DEPARTURES_REMOVE_VIA, "rem-departure-via"},
+	{OLST_ERROR, "error"}
+})
+
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderLabelError, {
+	{static_cast<OrderLabelError>(-1), nullptr},
+	{OrderLabelError::Default, "default"},
+	{OrderLabelError::ParseError, "parse-error"}
 })
 
 /* Temporary ordertypes omitted */

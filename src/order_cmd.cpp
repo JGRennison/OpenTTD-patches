@@ -1346,6 +1346,16 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					break;
 				}
 
+				case OLST_ERROR:
+					switch (new_order.GetLabelError()) {
+						case OrderLabelError::Default:
+						case OrderLabelError::ParseError:
+							break;
+						default:
+							return CMD_ERROR;
+					}
+					break;
+
 				default:
 					return CMD_ERROR;
 			}
@@ -4437,9 +4447,9 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 
 		auto create_error_order = [&]() {
 			Order error_order;
-			error_order.MakeLabel(OLST_TEXT);
+			error_order.MakeLabel(OLST_ERROR);
 			error_order.SetColour(COLOUR_RED);
-			error_order.SetLabelText("[Error] This order could not be parsed");
+			error_order.SetLabelError(OrderLabelError::ParseError);
 
 			if (modify_pos != INVALID_VEH_ORDER_ID) {
 				DeleteOrder(v, modify_pos);

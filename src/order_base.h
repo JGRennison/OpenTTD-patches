@@ -733,6 +733,18 @@ public:
 		SB(this->flags, 0, 8, subtype);
 	}
 
+	inline OrderLabelError GetLabelError() const
+	{
+		assert(this->GetLabelSubType() == OLST_ERROR);
+		return (OrderLabelError)this->dest.base();
+	}
+
+	inline void SetLabelError(OrderLabelError err)
+	{
+		assert(this->GetLabelSubType() == OLST_ERROR);
+		this->dest = DestinationID{to_underlying(err)};
+	}
+
 	const char *GetLabelText() const;
 	void SetLabelText(std::string_view text);
 

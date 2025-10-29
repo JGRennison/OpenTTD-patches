@@ -108,6 +108,7 @@ struct OrderSerialisationFieldNames {
 		static constexpr char SLOT_GROUP_ID[]               = "slot-group-id";               ///< int
 		static constexpr char LABEL_TEXT[]                  = "label-text";                  ///< string
 		static constexpr char LABEL_SUBTYPE[]               = "label-subtype";               ///< enum
+		static constexpr char LABEL_ERROR[]                 = "label-error";                 ///< enum
 		static constexpr char COUNTER_OPERATION[]           = "counter-operation";           ///< int
 		static constexpr char COUNTER_VALUE[]               = "counter-value";               ///< int     Value to be applied to "counter-operation"
 		static constexpr char SLOT_ACTION[]                 = "slot-action";                 ///< int
@@ -267,6 +268,9 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			json[OFName::LABEL_TEXT] = o.GetLabelText();
 		} else {
 			json[OFName::LABEL_SUBTYPE] = o.GetLabelSubType();
+		}
+		if (o.GetLabelSubType() == OLST_ERROR) {
+			json[OFName::LABEL_ERROR] = o.GetLabelError();
 		}
 	}
 	if (o.IsType(OT_COUNTER)) {
@@ -873,6 +877,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 	DestinationID destination = StationID::Invalid();
 	OrderLabelSubType label_subtype = OLST_TEXT;
+	OrderLabelError label_err{};
 
 	/* Get basic order data required to build order. */
 	switch (type) {
@@ -880,6 +885,8 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 			json_importer.TryGetField(OFName::LABEL_SUBTYPE, label_subtype, JOIET_MAJOR);
 			if (label_subtype == OLST_DEPARTURES_REMOVE_VIA || label_subtype == OLST_DEPARTURES_VIA) {
 				json_importer.TryGetField(OFName::DESTINATION_ID, destination, JOIET_MAJOR);
+			} else if (label_subtype == OLST_ERROR) {
+				json_importer.TryGetField(OFName::LABEL_ERROR, label_err, JOIET_MAJOR);
 			}
 			break;
 
@@ -933,6 +940,9 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 			new_order.MakeLabel(label_subtype);
 			if (label_subtype == OLST_DEPARTURES_REMOVE_VIA || label_subtype == OLST_DEPARTURES_VIA) {
 				new_order.SetDestination(destination);
+			}
+			if (label_subtype == OLST_ERROR) {
+				new_order.SetLabelError(label_err);
 			}
 			break;
 

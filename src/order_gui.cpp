@@ -1345,6 +1345,18 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 							get_destination_string(), order->GetDestination().ToStationID());
 					break;
 
+				case OLST_ERROR:
+					switch (order->GetLabelError()) {
+						case OrderLabelError::ParseError:
+							AppendStringInPlace(line, STR_ORDER_PARSE_ERROR);
+							break;
+
+						default:
+							AppendStringInPlace(line, STR_ORDER_UNKNOWN_ERROR);
+							break;
+					}
+					break;
+
 				default:
 					AppendStringInPlace(line, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 					break;
