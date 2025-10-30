@@ -29,7 +29,7 @@
  * \li GSCargo::CC_NON_POTABLE
  * \li GSVehicleList_Waypoint
  * \li GSBaseStation::GetOwner
- * \li GSRail::GetAllRailTypes
+ * \li GSEngine::GetAllRailTypes
  *
  * Other changes:
  * \li GSBridge::GetBridgeID renamed to GSBridge::GetBridgeType
@@ -37,7 +37,7 @@
  * \li GSList instances can now be saved
  * \li GSVehicleList_Station accepts an optional GSVehicle::VehicleType parameter
  * \li GSList instances can now be cloned
- * \li GSRail::GetRailType will only return the first RailType of an engine, use GSRail::GetAllRailTypes instead
+ * \li GSEngine::GetRailType will only return the first RailType of an engine, use GSEngine::GetAllRailTypes instead
  *
  * \b 14.0
  *

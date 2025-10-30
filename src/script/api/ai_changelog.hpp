@@ -28,7 +28,7 @@
  * \li AICargo::CC_POTABLE
  * \li AICargo::CC_NON_POTABLE
  * \li AIVehicleList_Waypoint
- * \li AIRail::GetAllRailTypes
+ * \li AIEngine::GetAllRailTypes
  *
  * Other changes:
  * \li AIBridge::GetBridgeID renamed to AIBridge::GetBridgeType
@@ -36,7 +36,7 @@
  * \li AIList instances can now be saved
  * \li AIVehicleList_Station accepts an optional AIVehicle::VehicleType parameter
  * \li AIList instances can now be cloned
- * \li AIRail::GetRailType will only return the first RailType of an engine, use AIRail::GetAllRailTypes instead
+ * \li AIEngine::GetRailType will only return the first RailType of an engine, use AIEngine::GetAllRailTypes instead
  *
  * \b 14.0
  *
