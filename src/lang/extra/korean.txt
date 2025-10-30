@@ -182,6 +182,20 @@ STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :개선된 고�
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR                        :최대 신뢰도의 최솟값: {STRING}
 STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :차량이 도입될 때, 최대 신뢰도가 이 값과 100% 사이에서 무작위로 선택됩니다.{}{}모든 차량이 높은 최대 신뢰도를 갖길 원할 경우 이 값을 높게 설정하세요.{}무작위 효과를 더 받으려면 이 값을 낮게 설정하세요. (이 작업은 사용자의 책임이 따릅니다){}{}최대 신뢰도는 도입 직후에만 최대치로 적용되며 차량의 수명이 다 되어가면서 (항상 그래왔듯이) 감소합니다.{}{}이미 플레이하던 게임에서는 변경 사항을 적용하려면 resetengines 명령어를 콘솔에 입력해야 할 수도 있습니다.{}{}기존 설정: 이 값은 75% ~ 100% 사이에서 선택됩니다.
 
+STR_CONFIG_SETTING_RELIABILITY_SPEED                            :신뢰도 하락 배수: {STRING}
+STR_CONFIG_SETTING_RELIABILITY_SPEED_HELPTEXT                   :차량의 신뢰도가 얼마나 빨리 하락할지 결정합니다.{}높은 값일 수록 신뢰도가 더 빠르게 하락합니다.
+STR_CONFIG_SETTING_DIVIDE_32                                    :x1/32
+STR_CONFIG_SETTING_DIVIDE_16                                    :x1/16
+STR_CONFIG_SETTING_DIVIDE_8                                     :x1/8
+STR_CONFIG_SETTING_DIVIDE_4                                     :x1/4
+STR_CONFIG_SETTING_DIVIDE_2                                     :x1/2
+STR_CONFIG_SETTING_TIMES_1                                      :x1
+STR_CONFIG_SETTING_TIMES_2                                      :x2
+STR_CONFIG_SETTING_TIMES_4                                      :x4
+STR_CONFIG_SETTING_TIMES_8                                      :x8
+STR_CONFIG_SETTING_TIMES_16                                     :x16
+STR_CONFIG_SETTING_TIMES_32                                     :x32
+
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다
 
@@ -296,6 +310,10 @@ STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :이 설정을 �
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :차량 이름에 그룹 체계 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :이 설정과 이름에 그룹 순서롤 모두 표시 설정을 켜면, 그룹 이름을 포함한 차량 이름에 부모 그룹의 이름을 모두 포함시켜 표시합니다
+
+STR_CONFIG_SETTING_SHOW_ROUTE_ID_IN_VEHICLE_VIEW                :차량 보기 창에 차량 경로 ID 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_ROUTE_ID_IN_VEHICLE_VIEW_HELPTEXT       :이 설정을 켜면, (적용 가능한 경우) 차량 보기 창의 타이틀 바에 가장 최근에 적용된 배차 일정과 연관된 배차 일정 경로 ID를 표시합니다.
+STR_VEHICLE_VIEW_CAPTION_ROUTE_ID_SUFFIX                        : [{STRING}]
 
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :차량 정보 창에 경로 번호 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :이 설정을 켜면, 차량 정보 창 하단의 출발/정지 부분에 현재 경로의 번호를 표시합니다
@@ -1673,6 +1691,7 @@ STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}비교�
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}비교할 시간표 값을 선택하세요
 STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}사용할 배차 일정을 선택하세요
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}테스트할 배차 일정 조건을 선택하세요
+STR_ORDER_CONDITIONAL_SCHED_VALUE_TOOLTIP                       :{BLACK}비교할 배차 일정 값 데이터를 선택하세요
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}대기 화물량을 확인할 경유 역을 선택하세요
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}역
@@ -1705,11 +1724,25 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :첫 번째 슬�
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :마지막 슬롯일 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :마지막 슬롯이 아닐 때
 
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :태그가 있을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :태그가 없을 때
+
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG                     :태그 {0:NUM}{P 0 "이" "가"} 있을 때
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG_NAMED               :태그 {0:NUM}({1:STRING}){P 0 "이" "가"} 있을 때
 
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG             :태그 {0:NUM}{P 0 "이" "가"} 없을 때
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED       :태그 {0:NUM}({1:STRING}){P 0 "이" "가"} 없을 때
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_USES_ROUTE       :이 경로를 사용
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_USE_ROUTE :이 경로를 사용하지 않음
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_DEF_ROUTE     :기본 경로를 사용
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_DEF_ROUTE :기본 경로를 사용하지 않음
+
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_ROUTE         :경로 ID {STRING}(을)를 사용
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_ROUTE     :경로 ID {STRING}(을)를 사용하지 않음
+
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE                   :기본 경로
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}목록 관리
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}이 경로 목록 관리
@@ -1724,6 +1757,13 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :반전된 경�
 STR_ORDER_DUPLICATE_ORDER                                       :경로 복제
 STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 번호 변경
 STR_ORDER_EXPORT_ORDER_LIST                                     :경로 목록 내보내기
+STR_ORDER_IMPORT_ORDER_LIST_REPLACE                             :경로 목록 내보내기 (바꾸기)
+STR_ORDER_IMPORT_ORDER_LIST_APPEND                              :경로 목록 내보내기 (추가)
+STR_ORDER_IMPORT_ORDER_LIST_INSERT                              :경로 목록 내보내기 (삽입)
+STR_ORDER_IMPORT_ORDER_LIST_APPEND_REVERSED                     :경로 목록 내보내기 (위에 추가)
+STR_ORDER_IMPORT_ORDER_LIST_INSERT_REVERSED                     :경로 목록 내보내기 (위에 삽입)
+
+STR_ORDER_INSERT_FROM_VEHICLE                                   :차량의 경로 입력
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :슬롯 획득 시도
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
@@ -2142,6 +2182,7 @@ STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성화
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다
 STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
+STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}슬롯 추가
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 일정에 새 출발 슬롯을 추가합니다
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL + 클릭하면 여러 출발 슬롯을 한 번에 추가할 수 있습니다
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
@@ -2167,10 +2208,12 @@ STR_SCHDISPATCH_ADJUST_TOOLTIP_SELECTED                         :{BLACK}{STRING}
 STR_SCHDISPATCH_REMOVE                                          :{BLACK}슬롯 제거
 STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}이 일정에서 출발 슬롯을 제거하는 것을 허용합니다
 STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}출발 슬롯 제거
+STR_SCHDISPATCH_SELECT_SLOT_TOOLTIP                             :{BLACK}출발 슬롯을 선택하려면 클릭하세요. 여러 개를 선택하려면 CTRL + 클릭하세요
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}일괄 추가 (분)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}일괄 추가 (일)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}일괄 추가 (틱)
 STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME}: {STRING}
+STR_SCHDISPATCH_ADJUST_CAPTION_MULTI_SLOT_PREFIXED              :{BLACK}{1:TT_TIME}이후에 {0:NUM}개 슬롯: {2:STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하세요.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}출발 슬롯 초기화
@@ -2190,17 +2233,25 @@ STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}이 배�
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}다른 차량 일정 덧붙이기
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}다른 차량의 배차 일정을 덧붙입니다
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :출발 슬롯 재사용
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_SHORT                     :재사용
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :태그 {NUM} 이름 바꾸기
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :태그 {NUM} 이름 바꾸기: {STRING}
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}출발 슬롯 태그 이름 바꾸기 (조건부 경로에 사용)
 STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}출발 슬롯 태그 이름 바꾸기
 STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}출발 슬롯 태그의 이름을 바꿀 수 없습니다...
+STR_SCHDISPATCH_CREATE_DEPARTURE_ROUTE                          :경로 ID 생성
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE                            :경로 ID 이름 바꾸기/삭제...
+STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE_TOOLTIP                    :{BLACK}(조건 경로에 사용하기 위해) 출발 슬롯 경로 ID를 생성하거나 이름을 바꾸거나 삭제합니다
+STR_SCHDISPATCH_RENAME_DEPARTURE_ROUTE_CAPTION                  :{BLACK}출발 슬롯 경로 ID 이름 바꾸기
+STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE                          :{WHITE}출발 슬롯 경로 ID의 이름을 변경할 수 없습니다...
+STR_SCHDISPATCH_ROUTE_DEPARTURE_TOOLTIP                         :{BLACK}(조건 경로에 사용하기 위해) 선택한 출발 슬롯의 경로 ID를 설정합니다
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}슬롯 관리
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :출발 슬롯 재사용
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}선택한 출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :태그 {NUM}
 STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :태그 {NUM}: {STRING}
+STR_SCHDISPATCH_TAGS_PREFIX                                     :태그:{SPACE}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}(조건부 경로에 사용하기 위해) 선택한 출발 슬롯에 태그를 붙입니다
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
@@ -2217,6 +2268,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}마지막 출
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용 가능한 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
+STR_SCHDISPATCH_SLOT_DISPLAY_MODE_TOOLTIP                       :{BLACK}슬롯 보기를 간략하게 또는 자세하게 보여주도록 전환합니다
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}이 차량은 아직 출발하지 않았습니다
@@ -2225,6 +2277,7 @@ STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :첫 번째 슬�
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :마지막 슬롯
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :태그 {NUM}
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :태그 {NUM} ({STRING})
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_ROUTE                  :경로 ID: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {TT_TIME}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {TT_TIME}에 출발할 예정입니다
@@ -2247,6 +2300,8 @@ STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}이 배�
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}{NUM}시간 이상 지났습니다
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}{NUM}시간 이상 남았습니다
 
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_MULTIPLE                    :{BLACK}여러 개
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_TIME                        :{BLACK}시각
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}시작:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}간격:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}종료:
@@ -2271,6 +2326,8 @@ STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :현재 시간 �
 
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... 배차 일정을 이용하여 차량의 배차 간격을 유지할 수 없습니다
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... 자동 배차를 이용하여 차량의 배차 간격을 유지할 수 없습니다
+
+STR_ERROR_TOO_MANY_SCHDISPATCH_ROUTES                           :{WHITE}이 일정에 너무 많은 경로 ID가 있습니다
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}보조 키
@@ -2412,3 +2469,6 @@ STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}경로 �
 STR_ERROR_JSON                                                  :{WHITE}JSON 오류
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}경로를 가져오기하면 기존에 존재하는 경로 목록이 삭제됩니다. 계속하시겠습니까?
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}경로 목록 가져오기 확인
+
+STR_ORDER_UNKNOWN_ERROR                                         :[오류] 알 수 없는 오류
+STR_ORDER_PARSE_ERROR                                           :[오류] 이 오류는 파싱할 수 없습니다
