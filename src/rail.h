@@ -516,6 +516,12 @@ void UpdateRailGuiSprites();
 void InitRailTypes();
 RailType AllocateRailType(RailTypeLabel label);
 
+inline RailTypes GetAccelerationTypeRailTypes(VehicleAccelerationModel acceleration_type)
+{
+	extern std::array<RailTypes, 3> _railtypes_acceleration_type_masks;
+	return _railtypes_acceleration_type_masks[static_cast<size_t>(acceleration_type)];
+}
+
 extern std::vector<RailType> _sorted_railtypes;
 extern RailTypes _railtypes_hidden_mask;
 
