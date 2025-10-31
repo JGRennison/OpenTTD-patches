@@ -616,7 +616,7 @@ class NIHVehicle : public NIHelper {
 				if (e->type == VEH_TRAIN) {
 					const RailTypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
 					output.Print("    Railtype: {} ({}), Compatible: 0x{:X}, Powered: 0x{:X}, All compatible: 0x{:X}",
-							e->u.rail.railtype, label_dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
+							e->u.rail.railtype, label_dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->indirect_compatible_railtypes);
 					static const char *engine_types[] = {
 						"SINGLEHEAD",
 						"MULTIHEAD",
@@ -1695,7 +1695,7 @@ class NIHRailType : public NIHelper {
 			};
 			dump_railtypes("Powered", info->powered_railtypes, {});
 			dump_railtypes("Compatible", info->compatible_railtypes, {});
-			dump_railtypes("All compatible", info->all_compatible_railtypes, RailTypes(~info->compatible_railtypes.base()));
+			dump_railtypes("Indirect compatible", info->indirect_compatible_railtypes, RailTypes(~info->compatible_railtypes.base()));
 
 			PrintTypeLabels(output, "  ", info->label, (const uint32_t*) info->alternate_labels.data(), info->alternate_labels.size());
 			output.Print("  Cost multiplier: {}/8, Maintenance multiplier: {}/8", info->cost_multiplier, info->maintenance_multiplier);

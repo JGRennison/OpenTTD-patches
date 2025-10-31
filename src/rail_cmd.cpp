@@ -239,10 +239,10 @@ void InitRailTypes()
 	SortRailTypes();
 
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		_railtypes[rt].all_compatible_railtypes = _railtypes[rt].compatible_railtypes;
+		_railtypes[rt].indirect_compatible_railtypes = _railtypes[rt].compatible_railtypes;
 	}
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		RailTypes::BaseType compatible = _railtypes[rt].all_compatible_railtypes.base();
+		RailTypes::BaseType compatible = _railtypes[rt].indirect_compatible_railtypes.base();
 		RailTypes::BaseType to_check = compatible;
 		while (to_check != 0) {
 			RailType i = (RailType)FindFirstBit(to_check);
@@ -255,7 +255,7 @@ void InitRailTypes()
 		while (to_update != 0) {
 			RailType i = (RailType)FindFirstBit(to_update);
 			to_update = KillFirstBit(to_update);
-			_railtypes[i].all_compatible_railtypes = RailTypes(compatible);
+			_railtypes[i].indirect_compatible_railtypes = RailTypes(compatible);
 		}
 	}
 }

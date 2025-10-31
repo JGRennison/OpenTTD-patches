@@ -3004,7 +3004,7 @@ void ReverseTrainDirection(Train *v)
 		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
 		if ((!no_near_end_unreserve && next_tile == v->tile) || (!no_far_end_unreserve && next_tile == GetOtherTunnelBridgeEnd(v->tile))) {
 			Trackdir exit_td = GetTunnelBridgeExitTrackdir(next_tile);
-			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
+			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->indirect_compatible_railtypes);
 			if (ft.Follow(next_tile, exit_td)) {
 				TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
 				if (reserved == TRACKDIR_BIT_NONE) {
@@ -3749,7 +3749,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 		}
 	}
 
-	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
+	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->indirect_compatible_railtypes);
 	while (ft.Follow(tile, td)) {
 		tile = ft.new_tile;
 		TrackdirBits bits = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(tile));
@@ -5268,7 +5268,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	});
 
 	Trackdir td = GetTunnelBridgeExitTrackdir(tile);
-	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->all_compatible_railtypes);
+	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->indirect_compatible_railtypes);
 
 	if (ft.Follow(tile, td)) {
 		TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
@@ -5407,7 +5407,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgeEffectivelyPBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state != SIGSEG_PBS) {
-		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->all_compatible_railtypes);
+		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->indirect_compatible_railtypes);
 		if (ft.Follow(tile, GetTunnelBridgeExitTrackdir(tile))) {
 			if (ft.new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.new_td_bits) == TRACKDIR_BIT_NONE) {
 				Trackdir td = FindFirstTrackdir(ft.new_td_bits);
