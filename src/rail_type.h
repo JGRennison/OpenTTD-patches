@@ -37,6 +37,11 @@ DECLARE_INCREMENT_DECREMENT_OPERATORS(RailType)
 
 using RailTypes = EnumBitSet<RailType, uint64_t>;
 
+template <>
+struct BaseBitSetEnableDirectIteration<RailTypes> {
+	static const bool value = true;
+};
+
 static constexpr RailTypes INVALID_RAILTYPES{UINT64_MAX};
 
 #endif /* RAIL_TYPE_H */

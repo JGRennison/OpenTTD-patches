@@ -17,6 +17,12 @@
 #include <limits>
 #include <optional>
 
+/** Trait to enable direct iteration of BaseBitSet bits without use of IterateSetBits. */
+template <typename enum_type>
+struct BaseBitSetEnableDirectIteration {
+	static constexpr bool value = false;
+};
+
 /**
  * Base for bit set wrapper.
  * Allows wrapping strong type values as a bit set. Methods are loosely modelled on std::bitset.
@@ -249,9 +255,15 @@ public:
 
 	inline constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
 
-	/* Use IterateSetBits instead */
-	//auto begin() const { return SetBitIterator<Tvalue_type>(this->data).begin(); }
-	//auto end() const { return SetBitIterator<Tvalue_type>(this->data).end(); }
+	/* Use IterateSetBits instead, unless BaseBitSetEnableDirectIteration is specifically enabled for the implementation type */
+	auto begin() const requires BaseBitSetEnableDirectIteration<Timpl>::value
+	{
+		return SetBitIterator<Tvalue_type>(this->data).begin();
+	}
+	auto end() const requires BaseBitSetEnableDirectIteration<Timpl>::value
+	{
+		return SetBitIterator<Tvalue_type>(this->data).end();
+	}
 
 private:
 	Tstorage data; ///< Bitmask of values.
