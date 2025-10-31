@@ -60,6 +60,7 @@ std::vector<RailType> _sorted_railtypes; ///< Sorted list of rail types.
 TileIndex _rail_track_endtile; ///< The end of a rail track; as hidden return from the rail build/remove command for GUI purposes.
 RailTypes _railtypes_hidden_mask;
 std::array<RailTypes, 3> _railtypes_acceleration_type_masks;
+RailTypes _railtypes_non_realistic_braking;
 
 /**
  * Reset all rail type information to its default values.
@@ -231,6 +232,7 @@ void InitRailTypes()
 
 	_sorted_railtypes.clear();
 	_railtypes_acceleration_type_masks.fill({});
+	_railtypes_non_realistic_braking = {};
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
 		if (hidden) _railtypes_hidden_mask.Set(rt);
@@ -239,6 +241,7 @@ void InitRailTypes()
 		}
 		size_t accel_type = static_cast<size_t>(_railtypes[rt].acceleration_type);
 		if (accel_type < _railtypes_acceleration_type_masks.size()) _railtypes_acceleration_type_masks[accel_type].Set(rt);
+		if (_railtypes[rt].ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking)) _railtypes_non_realistic_braking.Set(rt);
 	}
 	SortRailTypes();
 
