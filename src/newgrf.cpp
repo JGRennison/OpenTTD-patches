@@ -1925,6 +1925,8 @@ static void AfterLoadGRFs()
 		}
 	}
 
+	InitRailTypesIndirectCompatibility();
+
 	SetYearEngineAgingStops();
 
 	FinalisePriceBaseMultipliers();

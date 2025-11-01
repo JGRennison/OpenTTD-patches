@@ -586,6 +586,7 @@ RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels = t
 void ResetRailTypes();
 void UpdateRailGuiSprites();
 void InitRailTypes();
+void InitRailTypesIndirectCompatibility();
 RailType AllocateRailType(RailTypeLabel label);
 
 inline RailTypes GetAccelerationTypeRailTypes(VehicleAccelerationModel acceleration_type)

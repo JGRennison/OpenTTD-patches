@@ -244,17 +244,31 @@ void InitRailTypes()
 		if (_railtypes[rt].ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking)) _railtypes_non_realistic_braking.Set(rt);
 	}
 	SortRailTypes();
+}
 
+void InitRailTypesIndirectCompatibility()
+{
+	std::array<RailTypes, RAILTYPE_END> overall_compatibility;
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		overall_compatibility[rt] = _railtypes[rt].compatible_railtypes;
 		_railtypes[rt].indirect_compatible_railtypes = _railtypes[rt].compatible_railtypes;
 	}
+
+	for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
+		RailTypes rts = e->u.rail.intended_railtypes;
+		if (HasAtMostOneBit(rts)) continue;
+
+		RailType first_rt = *rts.begin();
+		overall_compatibility[first_rt].Set(rts);
+	}
+
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		RailTypes::BaseType compatible = _railtypes[rt].indirect_compatible_railtypes.base();
+		RailTypes::BaseType compatible = overall_compatibility[rt].base();
 		RailTypes::BaseType to_check = compatible;
 		while (to_check != 0) {
 			RailType i = (RailType)FindFirstBit(to_check);
 			to_check = KillFirstBit(to_check);
-			RailTypes::BaseType new_types = _railtypes[i].compatible_railtypes.base() & (~compatible);
+			RailTypes::BaseType new_types = overall_compatibility[i].base() & (~compatible);
 			to_check |= new_types;
 			compatible |= new_types;
 		}
