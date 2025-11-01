@@ -50,7 +50,7 @@
 {
 	if (IsHeadless() || !_settings_client.gui.ai_developer_tools) return;
 
-	ScriptObject::GetActiveInstance()->Pause();
+	ScriptObject::GetActiveInstance().Pause();
 
 	ScriptLog::Log(ScriptLogTypes::LOG_SQ_ERROR, fmt::format("Break: {}", message));
 
@@ -77,22 +77,22 @@ ScriptController::ScriptController(::CompanyID company) :
 
 /* static */ uint ScriptController::GetTick()
 {
-	return ScriptObject::GetActiveInstance()->GetController()->ticks;
+	return ScriptObject::GetActiveInstance().GetController()->ticks;
 }
 
 /* static */ int ScriptController::GetOpsTillSuspend()
 {
-	return ScriptObject::GetActiveInstance()->GetOpsTillSuspend();
+	return ScriptObject::GetActiveInstance().GetOpsTillSuspend();
 }
 
 /* static */ void ScriptController::DecreaseOps(int amount)
 {
-	Squirrel::DecreaseOps(ScriptObject::GetActiveInstance()->engine->GetVM(), amount);
+	Squirrel::DecreaseOps(ScriptObject::GetActiveInstance().engine->GetVM(), amount);
 }
 
 /* static */ int ScriptController::GetSetting(const std::string &name)
 {
-	return ScriptObject::GetActiveInstance()->GetSetting(name);
+	return ScriptObject::GetActiveInstance().GetSetting(name);
 }
 
 /* static */ uint ScriptController::GetVersion()
@@ -102,11 +102,11 @@ ScriptController::ScriptController(::CompanyID company) :
 
 /* static */ HSQOBJECT ScriptController::Import(const std::string &library, const std::string &class_name, int version)
 {
-	ScriptController *controller = ScriptObject::GetActiveInstance()->GetController();
-	Squirrel *engine = ScriptObject::GetActiveInstance()->engine;
+	ScriptController *controller = ScriptObject::GetActiveInstance().GetController();
+	Squirrel *engine = ScriptObject::GetActiveInstance().engine;
 	HSQUIRRELVM vm = engine->GetVM();
 
-	ScriptInfo *lib = ScriptObject::GetActiveInstance()->FindLibrary(library, version);
+	ScriptInfo *lib = ScriptObject::GetActiveInstance().FindLibrary(library, version);
 	if (lib == nullptr) {
 		throw sq_throwerror(vm, fmt::format("couldn't find library '{}' with version {}", library, version));
 	}

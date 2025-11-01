@@ -50,12 +50,12 @@ AIScannerInfo::~AIScannerInfo()
 	delete this->info_dummy;
 }
 
-std::string AIScannerInfo::GetScriptName(ScriptInfo *info)
+std::string AIScannerInfo::GetScriptName(ScriptInfo &info)
 {
-	return info->GetName();
+	return info.GetName();
 }
 
-void AIScannerInfo::RegisterAPI(class Squirrel *engine)
+void AIScannerInfo::RegisterAPI(class Squirrel &engine)
 {
 	AIInfo::RegisterAPI(engine);
 }
@@ -126,13 +126,13 @@ void AIScannerLibrary::Initialize()
 	ScriptScanner::Initialize("AIScanner");
 }
 
-std::string AIScannerLibrary::GetScriptName(ScriptInfo *info)
+std::string AIScannerLibrary::GetScriptName(ScriptInfo &info)
 {
-	AILibrary *library = static_cast<AILibrary *>(info);
-	return fmt::format("{}.{}", library->GetCategory(), library->GetInstanceName());
+	AILibrary &library = static_cast<AILibrary &>(info);
+	return fmt::format("{}.{}", library.GetCategory(), library.GetInstanceName());
 }
 
-void AIScannerLibrary::RegisterAPI(class Squirrel *engine)
+void AIScannerLibrary::RegisterAPI(class Squirrel &engine)
 {
 	AILibrary::RegisterAPI(engine);
 }

@@ -302,9 +302,10 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 			const SpriteGroup *subgroup = SpriteGroup::Resolve(adjust.subroutine, object, false);
 			if (subgroup == nullptr) {
-				value = CALLBACK_FAILED;
+				value = UINT16_MAX;
 			} else {
 				value = subgroup->GetCallbackResult();
+				if (value == CALLBACK_FAILED) value = UINT16_MAX;
 			}
 
 			if (relative_scope_vehicle != nullptr) {

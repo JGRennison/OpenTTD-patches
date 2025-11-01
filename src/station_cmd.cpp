@@ -318,7 +318,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	/* check close enough to town to get central as name? */
 	const bool is_central = DistanceMax(tile, t->xy) < 8;
 	if (sni.IsAvailable(STR_SV_STNAME) && (is_central ||
-			DistanceSquare(tile, t->xy) <= std::max(t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB], t->cache.squared_town_zone_radius[HZB_TOWN_OUTER_SUBURB]))) {
+			DistanceSquare(tile, t->xy) <= std::max(t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownInnerSuburb)], t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownOuterSuburb)]))) {
 		return STR_SV_STNAME;
 	}
 
@@ -3901,14 +3901,14 @@ static void TileLoop_Station(TileIndex tile)
 				default: break;
 			}
 
-			HouseZonesBits grp = HZB_TOWN_EDGE;
+			HouseZone new_zone = HouseZone::TownEdge;
 			const Town *t = ClosestTownFromTile(tile, UINT_MAX);
 			if (t != nullptr) {
-				grp = GetTownRadiusGroup(t, tile);
+				new_zone = GetTownRadiusGroup(t, tile);
 			}
 
-			/* Adjust road ground type depending on 'grp' (grp is the distance to the center) */
-			Roadside new_rs = grp > HZB_TOWN_EDGE ? ROADSIDE_PAVED : ROADSIDE_GRASS;
+			/* Adjust road ground type depending on 'new_zone' */
+			Roadside new_rs = new_zone != HouseZone::TownEdge ? ROADSIDE_PAVED : ROADSIDE_GRASS;
 			Roadside cur_rs = GetRoadWaypointRoadside(tile);
 
 			if (new_rs != cur_rs) {

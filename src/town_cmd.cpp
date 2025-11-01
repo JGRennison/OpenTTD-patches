@@ -2122,7 +2122,7 @@ static bool GrowTown(Town *t, TownExpandModes modes)
  */
 void UpdateTownRadius(Town *t)
 {
-	static const std::array<std::array<uint32_t, HZB_END>, 23> _town_squared_town_zone_radius_data = {{
+	static const std::array<std::array<uint32_t, NUM_HOUSE_ZONES>, 23> _town_squared_town_zone_radius_data = {{
 		{  4,  0,  0,  0,  0}, // 0
 		{ 16,  0,  0,  0,  0},
 		{ 25,  0,  0,  0,  0},
@@ -2185,11 +2185,11 @@ void UpdateTownRadius(Town *t)
 		/* Actually we are proportional to sqrt() but that's right because we are covering an area.
 		 * The offsets are to make sure the radii do not decrease in size when going from the table
 		 * to the calculated value.*/
-		t->cache.squared_town_zone_radius[HZB_TOWN_EDGE] = mass * 15 - 40;
-		t->cache.squared_town_zone_radius[HZB_TOWN_OUTSKIRT] = mass * 9 - 15;
-		t->cache.squared_town_zone_radius[HZB_TOWN_OUTER_SUBURB] = 0;
-		t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB] = mass * 5 - 5;
-		t->cache.squared_town_zone_radius[HZB_TOWN_CENTRE] = mass * 3 + 5;
+		t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownEdge)] = mass * 15 - 40;
+		t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownOutskirt)] = mass * 9 - 15;
+		t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownOuterSuburb)] = 0;
+		t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownInnerSuburb)] = mass * 5 - 5;
+		t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownCentre)] = mass * 3 + 5;
 	}
 }
 
@@ -2544,6 +2544,30 @@ static TileIndex FindNearestGoodCoastalTownSpot(TileIndex tile, TownLayout layou
 	return INVALID_TILE;
 }
 
+/**
+ * Get the HouseZones climate mask for the current landscape type.
+ * @return HouseZones climate mask.
+ */
+HouseZones GetClimateMaskForLandscape()
+{
+	switch (_settings_game.game_creation.landscape) {
+		case LandscapeType::Temperate: return HouseZone::ClimateTemperate;
+		case LandscapeType::Arctic: return {HouseZone::ClimateSubarcticAboveSnow, HouseZone::ClimateSubarcticBelowSnow};
+		case LandscapeType::Tropic: return HouseZone::ClimateSubtropic;
+		case LandscapeType::Toyland: return HouseZone::ClimateToyland;
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Create a random town somewhere in the world.
+ * @param attempts How many times should we try?
+ * @param townnameparts The name of the town.
+ * @param size The size preset of the town.
+ * @param city Should we build a city?
+ * @param layout The road layout to build.
+ * @return The town object, or nullptr if we failed to create a town anywhere.
+ */
 static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize size, bool city, TownLayout layout)
 {
 	assert(_game_mode == GM_EDITOR || _generating_world); // These are the preconditions for CMD_DELETE_TOWN
@@ -2673,42 +2697,24 @@ bool GenerateTowns(TownLayout layout, std::optional<uint> number)
 
 /**
  * Returns the bit corresponding to the town zone of the specified tile
- * or #HZB_END if the tile is outside of the town.
+ * or HouseZone::TownEdge if the tile is either in an edge zone or outside of the town.
  *
  * @param t Town on which town zone is to be found
  * @param tile TileIndex where town zone needs to be found
  * @return the bit position of the given zone, as defined in HouseZones
- *
- * @see GetTownRadiusGroup
  */
-HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile)
+HouseZone GetTownRadiusGroup(const Town *t, TileIndex tile)
 {
 	uint dist = DistanceSquare(tile, t->xy);
 
-	if (t->fund_buildings_months && dist <= 25) return HZB_TOWN_CENTRE;
+	if (t->fund_buildings_months != 0 && dist <= 25) return HouseZone::TownCentre;
 
-	HouseZonesBits smallest = HZB_END;
-	for (HouseZonesBits i = HZB_BEGIN; i < HZB_END; i++) {
-		if (dist < t->cache.squared_town_zone_radius[i]) smallest = i;
+	HouseZone smallest = HouseZone::TownEdge;
+	for (HouseZone i = HouseZone::TownEdge; i < HouseZone::TownEnd; i++) {
+		if (dist < t->cache.squared_town_zone_radius[to_underlying(i)]) smallest = i;
 	}
 
 	return smallest;
-}
-
-/**
- * Returns the bit corresponding to the town zone of the specified tile.
- * Returns #HZB_TOWN_EDGE if the tile is either in an edge zone or outside of the town.
- *
- * @param t Town on which town zone is to be found
- * @param tile TileIndex where town zone needs to be found
- * @return the bit position of the given zone, as defined in HouseZones
- *
- * @see TryGetTownRadiusGroup
- */
-HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile)
-{
-	HouseZonesBits ret = TryGetTownRadiusGroup(t, tile);
-	return ret != HZB_END ? ret : HZB_TOWN_EDGE;
 }
 
 /**
@@ -2840,7 +2846,7 @@ static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int
  * @param zone return error if houses are forbidden in this house zone
  * @return success if house is available, error message otherwise
  */
-static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline, HouseZonesBits zone)
+static CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline, HouseZone zone)
  {
 	const HouseSpec *hs = HouseSpec::Get(house);
 	/* Disallow disabled and replaced houses. */
@@ -2848,15 +2854,15 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
 
 	/* Check if we can build this house in current climate. */
 	if (_settings_game.game_creation.landscape != LandscapeType::Arctic) {
-		if (!(hs->building_availability & (HZ_TEMP << to_underlying(_settings_game.game_creation.landscape)))) return CMD_ERROR;
+		if (!hs->building_availability.Test(HouseZone::ClimateTemperate + to_underlying(_settings_game.game_creation.landscape))) return CMD_ERROR;
 	} else if (above_snowline) {
-		if (!(hs->building_availability & HZ_SUBARTC_ABOVE)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE);
+		if (!hs->building_availability.Test(HouseZone::ClimateSubarcticAboveSnow)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE);
 	} else {
-		if (!(hs->building_availability & HZ_SUBARTC_BELOW)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE);
+		if (!hs->building_availability.Test(HouseZone::ClimateSubarcticBelowSnow)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE);
 	}
 
 	/* Check if the house zone is allowed for this type of houses. */
-	if (!HasBit(hs->building_availability & HZ_ZONALL, zone)) {
+	if (!hs->building_availability.Test(zone)) {
 		return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE);
 	}
 
@@ -3059,7 +3065,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
 	if (CanBuildHouseHere(tile, t->index, false).Failed()) return false;
 
 	bool above_snowline = _settings_game.game_creation.landscape == LandscapeType::Arctic && GetTileMaxZ(tile) > HighestSnowLine();
-	HouseZonesBits zone = GetTownRadiusGroup(t, tile);
+	HouseZone zone = GetTownRadiusGroup(t, tile);
 
 	/* bits 0-4 are used
 	 * bits 11-15 are used
@@ -4028,9 +4034,9 @@ static void ForAllStationsNearTown(Town *t, Func func)
 	 * The true radius is not stored or calculated anywhere, only the squared radius. */
 	/* The efficiency of this search might be improved for large towns and many stations on the map,
 	 * by using an integer square root approximation giving a value not less than the true square root. */
-	uint search_radius = t->cache.squared_town_zone_radius[HZB_TOWN_EDGE] / 2;
+	uint search_radius = t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownEdge)] / 2;
 	ForAllStationsRadius(t->xy, search_radius, [&](const Station * st) {
-		if (DistanceSquare(st->xy, t->xy) <= t->cache.squared_town_zone_radius[HZB_TOWN_EDGE]) {
+		if (DistanceSquare(st->xy, t->xy) <= t->cache.squared_town_zone_radius[to_underlying(HouseZone::TownEdge)]) {
 			func(st);
 		}
 	});

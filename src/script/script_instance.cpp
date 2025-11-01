@@ -61,7 +61,7 @@ ScriptInstance::ScriptInstance(std::string_view api_name, ScriptType script_type
 
 void ScriptInstance::Initialize(const std::string &main_script, const std::string &instance_name, CompanyID company)
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	this->controller = new ScriptController(company);
 
@@ -158,7 +158,7 @@ bool ScriptInstance::LoadCompatibilityScripts(Subdirectory dir, std::span<const 
 
 ScriptInstance::~ScriptInstance()
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 	this->in_shutdown = true;
 
 	if (instance != nullptr) this->engine->ReleaseObject(this->instance);
@@ -191,7 +191,7 @@ void ScriptInstance::Died()
 
 void ScriptInstance::GameLoop() noexcept
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	if (this->IsDead()) return;
 	if (this->engine->HasScriptCrashed()) {
@@ -215,7 +215,7 @@ void ScriptInstance::GameLoop() noexcept
 			this->is_save_data_on_stack = false;
 		}
 		try {
-			this->callback(this);
+			this->callback(*this);
 		} catch (Script_Suspend &e) {
 			this->suspend  = e.GetSuspendTime();
 			this->callback = e.GetSuspendCallback();
@@ -281,54 +281,54 @@ void ScriptInstance::GameLoop() noexcept
 void ScriptInstance::CollectGarbage() noexcept
 {
 	if (this->is_started && !this->IsDead()) {
-		ScriptObject::ActiveInstance active(this);
+		ScriptObject::ActiveInstance active(*this);
 		this->engine->CollectGarbage();
 	}
 }
 
-/* static */ void ScriptInstance::DoCommandReturn(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturn(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandRes());
+	instance.engine->InsertResult(ScriptObject::GetLastCommandRes());
 }
 
-/* static */ void ScriptInstance::DoCommandReturnVehicleID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnVehicleID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<VehicleID>(::VehicleID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<VehicleID>(::VehicleID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnSignID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnSignID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<SignID>(::SignID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<SignID>(::SignID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnGroupID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnGroupID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GroupID>(::GroupID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<GroupID>(::GroupID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnGoalID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<GoalID>(::GoalID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<GoalID>(::GoalID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageID>(::StoryPageID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageID>(::StoryPageID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnStoryPageElementID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnStoryPageElementID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageElementID>(::StoryPageElementID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<StoryPageElementID>(::StoryPageElementID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnLeagueTableElementID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableElementID>(::LeagueTableElementID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableElementID>(::LeagueTableElementID::Invalid()));
 }
 
-/* static */ void ScriptInstance::DoCommandReturnLeagueTableID(ScriptInstance *instance)
+/* static */ void ScriptInstance::DoCommandReturnLeagueTableID(ScriptInstance &instance)
 {
-	instance->engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableID>(::LeagueTableID::Invalid()));
+	instance.engine->InsertResult(ScriptObject::GetLastCommandResultData<LeagueTableID>(::LeagueTableID::Invalid()));
 }
 
 
@@ -339,7 +339,7 @@ ScriptStorage *ScriptInstance::GetStorage()
 
 ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	return ScriptObject::GetLogData();
 }
@@ -472,7 +472,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 
 void ScriptInstance::Save()
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	/* Don't save data if the script didn't start yet or if it crashed. */
 	if (this->engine == nullptr || this->engine->HasScriptCrashed()) {
@@ -713,7 +713,7 @@ bool ScriptInstance::IsPaused()
 
 void ScriptInstance::LoadOnStack(ScriptData *data)
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	if (this->IsDead() || data == nullptr) return;
 
@@ -796,7 +796,7 @@ uint32_t ScriptInstance::GetMaxOpsTillSuspend() const
 
 bool ScriptInstance::DoCommandCallback(const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param)
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	if (!ScriptObject::CheckLastCommand(cmd, tile, param)) {
 		Debug(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
@@ -820,7 +820,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, Commands cmd, 
 
 void ScriptInstance::InsertEvent(class ScriptEvent *event)
 {
-	ScriptObject::ActiveInstance active(this);
+	ScriptObject::ActiveInstance active(*this);
 
 	ScriptEventController::InsertEvent(event);
 }

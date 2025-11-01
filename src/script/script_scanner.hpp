@@ -99,7 +99,7 @@ protected:
 	/**
 	 * Get the script name how to store the script in memory.
 	 */
-	virtual std::string GetScriptName(ScriptInfo *info) = 0;
+	virtual std::string GetScriptName(ScriptInfo &info) = 0;
 
 	/**
 	 * Get the filename to scan for this type of script.
@@ -114,7 +114,7 @@ protected:
 	/**
 	 * Register the API for this ScriptInfo.
 	 */
-	virtual void RegisterAPI(class Squirrel *engine) = 0;
+	virtual void RegisterAPI(class Squirrel &engine) = 0;
 
 	/**
 	 * Get the type of the script, in plural.

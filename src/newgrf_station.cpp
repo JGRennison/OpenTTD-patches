@@ -660,14 +660,14 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
  * @param tile Station tile being drawn (INVALID_TILE in GUI)
  * @param rt %RailType of the station (unbuilt stations only).
  * @param var10 Value to put in variable 10; normally 0; 1 when resolving the groundsprite and StationSpecFlag::SeparateGround is set.
- * @return First sprite of the Action 1 spriteset to use, minus an offset of 0x42D to accommodate for weird NewGRF specs.
+ * @return First sprite of the Action 1 spriteset to use, minus an offset of SPR_RAIL_PLATFORM_Y_FRONT (0x42D) to accommodate for weird NewGRF specs.
  */
 SpriteID GetCustomStationRelocation(const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt, uint32_t var10)
 {
 	StationResolverObject object(statspec, st, tile, rt, CBID_NO_CALLBACK, var10);
 	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->type != SGT_RESULT) return 0;
-	return group->GetResult() - 0x42D;
+	if (group == nullptr || group->GetNumResults() == 0) return 0;
+	return group->GetResult() - SPR_RAIL_PLATFORM_Y_FRONT;
 }
 
 /**
@@ -685,10 +685,11 @@ SpriteID GetCustomStationFoundationRelocation(const StationSpec *statspec, BaseS
 	StationResolverObject object(statspec, st, tile, INVALID_RAILTYPE, CBID_NO_CALLBACK, 2, layout | (edge_info << 16));
 
 	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->type != SGT_RESULT) return 0;
-
 	/* Note: SpriteGroup::Resolve zeroes all registers, so register 0x100 is initialised to 0. (compatibility) */
-	return group->GetResult() + GetRegister(0x100);
+	auto offset = GetRegister(0x100);
+	if (group == nullptr || group->GetNumResults() <= offset) return 0;
+
+	return group->GetResult() + offset;
 }
 
 
@@ -1028,8 +1029,7 @@ void TriggerStationRandomisation(BaseStation *st, TileIndex trigger_tile, Statio
 				StationResolverObject object(ss, st, tile, INVALID_RAILTYPE, CBID_RANDOM_TRIGGER, 0);
 				object.SetWaitingRandomTriggers(st->waiting_random_triggers);
 
-				const SpriteGroup *group = object.Resolve();
-				if (group == nullptr) continue;
+				object.ResolveRerandomisation();
 
 				used_random_triggers.Set(object.GetUsedRandomTriggers());
 

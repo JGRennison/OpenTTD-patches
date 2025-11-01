@@ -68,7 +68,7 @@ uint32_t GetTrackTypes(TileIndex tile, const GRFFile *grffile)
 			case 0x41: return 0;
 			case 0x42: return 0;
 			case 0x43: return CalTime::CurDate().base();
-			case 0x44: return HZB_TOWN_EDGE;
+			case 0x44: return to_underlying(HouseZone::TownEdge);
 			case 0x45: {
 				auto rt = GetRoadTypeInfoIndex(this->rti);
 				uint8_t local = GetReverseRoadTypeTranslation(rt, this->ro.grffile);
@@ -96,7 +96,7 @@ uint32_t GetTrackTypes(TileIndex tile, const GRFFile *grffile)
 			} else {
 				t = ClosestTownFromTile(this->tile, UINT_MAX);
 			}
-			return t != nullptr ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
+			return to_underlying(t != nullptr ? GetTownRadiusGroup(t, this->tile) : HouseZone::TownEdge);
 		}
 		case 0x45:
 			return GetTrackTypes(this->tile, ro.grffile);

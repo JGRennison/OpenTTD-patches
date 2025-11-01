@@ -365,7 +365,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x41: return IsTileType(this->tile, MP_HOUSE) ? GetHouseAge(this->tile).base() : 0;
 
 		/* Town zone */
-		case 0x42: return GetTownRadiusGroup(this->town, this->tile);
+		case 0x42: return to_underlying(GetTownRadiusGroup(this->town, this->tile));
 
 		/* Terrain type */
 		case 0x43: return GetTerrainType(this->tile);
@@ -494,10 +494,10 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x41: return 0;
 
 		/* Town zone */
-		case 0x42: return FindFirstBit<HouseZones>(HouseSpec::Get(this->house_id)->building_availability & HZ_ZONALL); // first available
+		case 0x42: return FindFirstBit((HouseSpec::Get(this->house_id)->building_availability & HZ_ZONE_ALL).base()); // first available
 
 		/* Terrain type */
-		case 0x43: return _settings_game.game_creation.landscape == LandscapeType::Arctic && (HouseSpec::Get(house_id)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) == HZ_SUBARTC_ABOVE ? 4 : 0;
+		case 0x43: return (_settings_game.game_creation.landscape == LandscapeType::Arctic && ((HouseSpec::Get(house_id)->building_availability & HouseZones{HouseZone::ClimateSubarcticAboveSnow, HouseZone::ClimateSubarcticBelowSnow}) == HouseZones{HouseZone::ClimateSubarcticAboveSnow})) ? 4 : 0;
 
 		/* Number of this type of building on the map. */
 		case 0x44: return 0;
@@ -828,8 +828,7 @@ static void DoTriggerHouseRandomisation(TileIndex tile, HouseRandomTrigger trigg
 	SetHouseRandomTriggers(tile, waiting_random_triggers); // store now for var 5F
 	object.SetWaitingRandomTriggers(waiting_random_triggers);
 
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr) return;
+	object.ResolveRerandomisation();
 
 	/* Store remaining triggers. */
 	waiting_random_triggers.Reset(object.GetUsedRandomTriggers());

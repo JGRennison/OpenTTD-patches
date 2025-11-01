@@ -49,16 +49,16 @@ void SimpleCountedObject::Release()
  */
 static ScriptStorage *GetStorage()
 {
-	return ScriptObject::GetActiveInstance()->GetStorage();
+	return ScriptObject::GetActiveInstance().GetStorage();
 }
 
 
 /* static */ ScriptInstance *ScriptObject::ActiveInstance::active = nullptr;
 
-ScriptObject::ActiveInstance::ActiveInstance(ScriptInstance *instance) : alc_scope(instance->engine)
+ScriptObject::ActiveInstance::ActiveInstance(ScriptInstance &instance) : alc_scope(instance.engine)
 {
 	this->last_active = ScriptObject::ActiveInstance::active;
-	ScriptObject::ActiveInstance::active = instance;
+	ScriptObject::ActiveInstance::active = &instance;
 }
 
 ScriptObject::ActiveInstance::~ActiveInstance()
@@ -66,10 +66,10 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	ScriptObject::ActiveInstance::active = this->last_active;
 }
 
-/* static */ ScriptInstance *ScriptObject::GetActiveInstance()
+/* static */ ScriptInstance &ScriptObject::GetActiveInstance()
 {
 	assert(ScriptObject::ActiveInstance::active != nullptr);
-	return ScriptObject::ActiveInstance::active;
+	return *ScriptObject::ActiveInstance::active;
 }
 
 
@@ -248,7 +248,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 /* static */ bool ScriptObject::CanSuspend()
 {
-	Squirrel *squirrel = ScriptObject::GetActiveInstance()->engine;
+	Squirrel *squirrel = ScriptObject::GetActiveInstance().engine;
 	return GetStorage()->allow_do_command && squirrel->CanSuspend();
 }
 
@@ -297,7 +297,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	bool estimate_only = GetDoCommandMode() != nullptr && !GetDoCommandMode()();
 
 	/* Should the command be executed asynchronously? */
-	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance()->GetScriptType() == ScriptType::GS;
+	bool asynchronous = GetDoCommandAsyncMode() != nullptr && GetDoCommandAsyncMode()() && GetActiveInstance().GetScriptType() == ScriptType::GS;
 
 #if !defined(DISABLE_SCOPE_INFO)
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
@@ -316,7 +316,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	/* Try to perform the command. */
 	const bool use_cb = (_networking && !_generating_world && !asynchronous);
-	CommandCost res = ::DoCommandPScript(cmd, tile, payload, use_cb ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : CommandCallback::None, use_cb ? cb_param : 0,
+	CommandCost res = ::DoCommandPScript(cmd, tile, payload, use_cb ? ScriptObject::GetActiveInstance().GetDoCommandCallback() : CommandCallback::None, use_cb ? cb_param : 0,
 			intl_flags, estimate_only, asynchronous);
 
 	/* We failed; set the error and bail out */
@@ -345,6 +345,11 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	if (_generating_world || asynchronous) {
 		IncreaseDoCommandCosts(res.GetCost());
+		if (!_generating_world) {
+			/* Charge a nominal fee for asynchronously executed commands */
+			Squirrel *engine = ScriptObject::GetActiveInstance().engine;
+			Squirrel::DecreaseOps(engine->GetVM(), 100);
+		}
 		if (callback != nullptr) {
 			/* Insert return value into to stack and throw a control code that
 			 * the return value in the stack should be used. */
@@ -356,7 +361,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	} else if (_networking) {
 		/* Suspend the script till the command is really executed. */
 		throw Script_Suspend(-(int)GetDoCommandDelay(), callback);
-	} else if (GetActiveInstance()->GetScriptType() == ScriptType::GS && _pause_mode.Test(PauseMode::GameScript)) {
+	} else if (GetActiveInstance().GetScriptType() == ScriptType::GS && _pause_mode.Test(PauseMode::GameScript)) {
 		/* Game is paused due to GS, just execute as fast as possible */
 		IncreaseDoCommandCosts(res.GetCost());
 		ScriptController::DecreaseOps(100);

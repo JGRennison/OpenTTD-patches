@@ -40,11 +40,11 @@ public:
 	void SetDummyAI(class AIInfo *info);
 
 protected:
-	std::string GetScriptName(ScriptInfo *info) override;
+	std::string GetScriptName(ScriptInfo &info) override;
 	std::string_view GetFileName() const override { return PATHSEP "info.nut"; }
 	Subdirectory GetDirectory() const override { return AI_DIR; }
 	std::string_view GetScannerName() const override { return "AIs"; }
-	void RegisterAPI(class Squirrel *engine) override;
+	void RegisterAPI(class Squirrel &engine) override;
 
 private:
 	AIInfo *info_dummy; ///< The dummy AI.
@@ -63,11 +63,11 @@ public:
 	class AILibrary *FindLibrary(const std::string &library, int version);
 
 protected:
-	std::string GetScriptName(ScriptInfo *info) override;
+	std::string GetScriptName(ScriptInfo &info) override;
 	std::string_view GetFileName() const override { return PATHSEP "library.nut"; }
 	Subdirectory GetDirectory() const override { return AI_LIBRARY_DIR; }
 	std::string_view GetScannerName() const override { return "AI Libraries"; }
-	void RegisterAPI(class Squirrel *engine) override;
+	void RegisterAPI(class Squirrel &engine) override;
 };
 
 #endif /* AI_SCANNER_HPP */

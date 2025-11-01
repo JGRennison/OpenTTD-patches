@@ -247,14 +247,14 @@ void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamS
 	const StringParams &params = GetGameStringParams(this->string);
 
 	auto log_error = [&](std::string msg) {
-		if (this->GetActiveInstance()->IsTextParamMismatchAllowed()) {
+		if (this->GetActiveInstance().IsTextParamMismatchAllowed()) {
 			ScriptLog::LogOnce(ScriptLogTypes::LOG_ERROR, std::move(msg));
 		} else {
 			ScriptLog::Error(std::move(msg));
 		}
 	};
 	auto log_warning = [&](std::string msg) {
-		if (this->GetActiveInstance()->IsTextParamMismatchAllowed()) {
+		if (this->GetActiveInstance().IsTextParamMismatchAllowed()) {
 			ScriptLog::LogOnce(ScriptLogTypes::LOG_WARNING, std::move(msg));
 		} else {
 			ScriptLog::Warning(std::move(msg));

@@ -922,12 +922,12 @@ class NIHHouse : public NIHelper {
 		}
 		output.FinishPrint();
 
-		auto zone_flag = [&](HouseZonesBits zone) -> char {
-			if (HasBit(hs->building_availability, zone)) return '0' + zone;
+		auto zone_flag = [&](HouseZone zone) -> char {
+			if (hs->building_availability.Test(zone)) return '0' + to_underlying(zone);
 			return '-';
 		};
 		output.Print("  building_flags: 0x{:X}, zones: {}{}{}{}{}", hs->building_flags,
-				zone_flag(HZB_TOWN_EDGE), zone_flag(HZB_TOWN_OUTSKIRT), zone_flag(HZB_TOWN_OUTER_SUBURB), zone_flag(HZB_TOWN_INNER_SUBURB), zone_flag(HZB_TOWN_CENTRE));
+				zone_flag(HouseZone::TownEdge), zone_flag(HouseZone::TownOutskirt), zone_flag(HouseZone::TownOuterSuburb), zone_flag(HouseZone::TownInnerSuburb), zone_flag(HouseZone::TownCentre));
 
 		output.Print("  extra_flags: 0x{:X}, ctrl_flags: 0x{:X}", hs->extra_flags, hs->ctrl_flags);
 		output.Print("  remove_rating_decrease: {}, minimum_life: {}", hs->remove_rating_decrease, hs->minimum_life);

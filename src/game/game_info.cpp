@@ -32,7 +32,7 @@ static bool CheckAPIVersion(const std::string &api_version)
 #endif /* _WIN32 */
 template <> const char *GetClassName<GameInfo, ScriptType::GS>() { return "GSInfo"; }
 
-/* static */ void GameInfo::RegisterAPI(Squirrel *engine)
+/* static */ void GameInfo::RegisterAPI(Squirrel &engine)
 {
 	/* Create the GSInfo class, and add the RegisterGS function */
 	DefSQClass<GameInfo, ScriptType::GS> SQGSInfo("GSInfo");
@@ -47,7 +47,7 @@ template <> const char *GetClassName<GameInfo, ScriptType::GS>() { return "GSInf
 	SQGSInfo.DefSQConst(engine, ScriptConfigFlags{ScriptConfigFlag::Developer}.base(), "CONFIG_DEVELOPER");
 
 	SQGSInfo.PostRegister(engine);
-	engine->AddMethod("RegisterGS", &GameInfo::Constructor, "tx");
+	engine.AddMethod("RegisterGS", &GameInfo::Constructor, "tx");
 }
 
 /* static */ SQInteger GameInfo::Constructor(HSQUIRRELVM vm)
@@ -57,7 +57,7 @@ template <> const char *GetClassName<GameInfo, ScriptType::GS>() { return "GSInf
 	if (SQ_FAILED(sq_getinstanceup(vm, 2, &instance, nullptr)) || instance == nullptr) return sq_throwerror(vm, "Pass an instance of a child class of GameInfo to RegisterGame");
 	GameInfo *info = (GameInfo *)instance;
 
-	SQInteger res = ScriptInfo::Constructor(vm, info);
+	SQInteger res = ScriptInfo::Constructor(vm, *info);
 	if (res != 0) return res;
 
 	if (info->engine->MethodExists(info->SQ_instance, "MinVersionToLoad")) {
@@ -100,12 +100,12 @@ bool GameInfo::CanLoadFromVersion(int version) const
 }
 
 
-/* static */ void GameLibrary::RegisterAPI(Squirrel *engine)
+/* static */ void GameLibrary::RegisterAPI(Squirrel &engine)
 {
 	/* Create the GameLibrary class, and add the RegisterLibrary function */
-	engine->AddClassBegin("GSLibrary");
-	engine->AddClassEnd();
-	engine->AddMethod("RegisterLibrary", &GameLibrary::Constructor, "tx");
+	engine.AddClassBegin("GSLibrary");
+	engine.AddClassEnd();
+	engine.AddMethod("RegisterLibrary", &GameLibrary::Constructor, "tx");
 }
 
 /* static */ SQInteger GameLibrary::Constructor(HSQUIRRELVM vm)
@@ -113,7 +113,7 @@ bool GameInfo::CanLoadFromVersion(int version) const
 	/* Create a new library */
 	GameLibrary *library = new GameLibrary();
 
-	SQInteger res = ScriptInfo::Constructor(vm, library);
+	SQInteger res = ScriptInfo::Constructor(vm, *library);
 	if (res != 0) {
 		delete library;
 		return res;

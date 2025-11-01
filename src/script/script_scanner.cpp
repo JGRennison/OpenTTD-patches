@@ -57,7 +57,7 @@ void ScriptScanner::ResetEngine()
 {
 	this->engine->Reset();
 	this->engine->SetGlobalPointer(this);
-	this->RegisterAPI(this->engine);
+	this->RegisterAPI(*this->engine);
 }
 
 void ScriptScanner::Initialize(std::string_view name)
@@ -97,7 +97,7 @@ void ScriptScanner::Reset()
 
 void ScriptScanner::RegisterScript(ScriptInfo *info)
 {
-	std::string script_original_name = this->GetScriptName(info);
+	std::string script_original_name = this->GetScriptName(*info);
 	std::string script_name = fmt::format("{}.{}", script_original_name, info->GetVersion());
 
 	/* Check if GetShortName follows the rules */

@@ -9,7 +9,7 @@
 
 template <> const char *GetClassName<ScriptController, ScriptType::GS>() { return "GSController"; }
 
-void SQGSController_Register(Squirrel *engine)
+void SQGSController_Register(Squirrel &engine)
 {
 	DefSQClass<ScriptController, ScriptType::GS> SQGSController("GSController");
 	SQGSController.PreRegister(engine);

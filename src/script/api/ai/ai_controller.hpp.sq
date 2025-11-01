@@ -9,7 +9,7 @@
 
 template <> const char *GetClassName<ScriptController, ScriptType::AI>() { return "AIController"; }
 
-void SQAIController_Register(Squirrel *engine)
+void SQAIController_Register(Squirrel &engine)
 {
 	DefSQClass<ScriptController, ScriptType::AI> SQAIController("AIController");
 	SQAIController.PreRegister(engine);

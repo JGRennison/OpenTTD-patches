@@ -340,7 +340,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 		case 0x44: return GetTileOwner(this->tile).base();
 
 		/* Get town zone and Manhattan distance of closest town */
-		case 0x45: return (t == nullptr) ? 0 : (GetTownRadiusGroup(t, this->tile) << 16 | ClampTo<uint16_t>(DistanceManhattan(this->tile, t->xy)));
+		case 0x45: return (t == nullptr) ? 0 : (to_underlying(GetTownRadiusGroup(t, this->tile)) << 16 | ClampTo<uint16_t>(DistanceManhattan(this->tile, t->xy)));
 
 		/* Get square of Euclidean distance of closest town */
 		case 0x46: return (t == nullptr) ? 0 : DistanceSquare(this->tile, t->xy);
