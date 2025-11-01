@@ -561,8 +561,8 @@ VehiclesNearTileXYBaseIterator::VehiclesNearTileXYBaseIterator(int32_t x, int32_
 	} else {
 		this->current_veh = nullptr;
 		this->SkipEmptyBuckets();
-		this->SkipFalseMatches();
 	}
+	this->SkipFalseMatches();
 }
 
 /**
