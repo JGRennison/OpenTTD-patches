@@ -65,6 +65,25 @@ inline constexpr enum_type operator --(enum_type &e, int)
 		static const bool value = true; \
 	};
 
+/** Trait to enable adding the underlying type. */
+template <typename enum_type>
+struct is_enum_add_underlying_type {
+	static constexpr bool value = false;
+};
+
+/** Postfix decrement, uses prefix decrement. */
+template <typename enum_type, std::enable_if_t<is_enum_add_underlying_type<enum_type>::value, bool> = true>
+inline constexpr enum_type operator + (enum_type e, std::underlying_type_t<enum_type> other)
+{
+	return static_cast<enum_type>(to_underlying(e) + other);
+}
+
+/** Operator that allows adding the underlying type. */
+#define DECLARE_ENUM_ADD_OPERATOR(enum_type) \
+	template <> struct is_enum_add_underlying_type<enum_type> { \
+		static const bool value = true; \
+	};
+
 
 /** Operators to allow to work with enum as with type safe bit set in C++ */
 #define DECLARE_ENUM_AS_BIT_SET(enum_type) \
