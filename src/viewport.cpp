@@ -3006,6 +3006,7 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 	for (const Plan *p : Plan::Iterate()) {
 		if (!p->IsVisible()) continue;
 		for (const PlanLine &pl : p->lines) {
+			if (!pl.visible) continue;
 			if (
 				bounds.left   > pl.viewport_extents.right ||
 				bounds.right  < pl.viewport_extents.left ||
