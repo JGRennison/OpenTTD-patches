@@ -349,6 +349,12 @@ public:
 		return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->acceleration_type;
 	}
 
+	inline RailTypes GetIndirectCompatibleRailTypes() const
+	{
+		/* Use first railtype, indirect_compatible_railtypes also includes indirection via engine railtypes. */
+		return GetRailTypeInfo(*this->railtypes.begin())->indirect_compatible_railtypes;
+	}
+
 protected: // These functions should not be called outside acceleration code.
 	/**
 	 * Gets the speed a broken down train (low speed breakdown) is limited to.

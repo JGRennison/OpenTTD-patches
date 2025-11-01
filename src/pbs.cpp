@@ -926,7 +926,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 	if (IsRailDepotTile(tile) && !GetDepotReservationTrackBits(tile)) return PBSTileInfo(tile, trackdir, false);
 
 	FindTrainOnTrackInfo ftoti;
-	ftoti.res = FollowReservation(v->owner, GetAllIndirectCompatibleRailTypes(v->railtypes), tile, trackdir, FRF_NONE, v, nullptr);
+	ftoti.res = FollowReservation(v->owner, v->GetIndirectCompatibleRailTypes(), tile, trackdir, FRF_NONE, v, nullptr);
 	ftoti.res.okay = flags.Test(FollowTrainReservationFlag::OkayUnused) ? false : IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
 	if (train_on_res != nullptr) {
 		CheckTrainsOnTrack(ftoti, ftoti.res.tile);
@@ -1267,7 +1267,7 @@ void FillTrainReservationLookAhead(Train *v)
 
 	FollowReservationFlags flags = FRF_NONE;
 	if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) flags |= FRF_TB_EXIT_FREE;
-	PBSTileInfo res = FollowReservation(v->owner, GetAllIndirectCompatibleRailTypes(v->railtypes), tile, trackdir, flags, v, v->lookahead.get());
+	PBSTileInfo res = FollowReservation(v->owner, v->GetIndirectCompatibleRailTypes(), tile, trackdir, flags, v, v->lookahead.get());
 
 	if (IsTunnelBridgeWithSignalSimulation(res.tile) && TrackdirEntersTunnelBridge(res.tile, res.trackdir)) {
 		v->lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
@@ -1467,7 +1467,7 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile)
 {
 	bool found = false;
-	FollowReservationEnumerate(v->owner, GetAllIndirectCompatibleRailTypes(v->railtypes), v->tile, v->GetVehicleTrackdir(), FRF_NONE, [&](TileIndex tile, Trackdir trackdir) -> bool {
+	FollowReservationEnumerate(v->owner, v->GetIndirectCompatibleRailTypes(), v->tile, v->GetVehicleTrackdir(), FRF_NONE, [&](TileIndex tile, Trackdir trackdir) -> bool {
 		if (tile == search_tile) {
 			found = true;
 			return true;
@@ -1501,7 +1501,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	}
 
 	/* Check next tile. For performance reasons, we check for 90 degree turns ourself. */
-	CFollowTrackRail ft(v, GetAllIndirectCompatibleRailTypes(v->railtypes));
+	CFollowTrackRail ft(v, v->GetIndirectCompatibleRailTypes());
 
 	/* End of track? */
 	if (!ft.Follow(tile, trackdir)) {
@@ -1637,7 +1637,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	}
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
-	CFollowTrackRail ft(v, GetAllIndirectCompatibleRailTypes(v->railtypes));
+	CFollowTrackRail ft(v, v->GetIndirectCompatibleRailTypes());
 
 	if (!ft.Follow(tile, trackdir)) return true;
 
