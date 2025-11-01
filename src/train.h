@@ -117,6 +117,8 @@ enum TrainCacheFlags : uint8_t {
 	TCF_TILT         = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
 	TCF_RL_BRAKING   = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
 	TCF_SPD_RAILTYPE = 0x04,     ///< Train speed varies depending on railtype
+
+	TCF_ACCEL_TYPE_MASK = 0xC0,  ///< Acceleration type: 0 - 2 for corresponding value, 3 for mixed
 };
 DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 
@@ -140,6 +142,9 @@ struct TrainCache {
 	uint16_t cached_max_curve_speed = 0; ///< max consist speed limited by curves
 
 	bool operator==(const TrainCache &) const = default;
+
+	uint8_t GetCachedAccelType() const { return this->cached_tflags >> 6; }
+	void SetCachedAccelType(uint8_t type) { this->cached_tflags |= static_cast<TrainCacheFlags>(type << 6); }
 };
 
 /**
@@ -340,13 +345,17 @@ public:
 		return this->GetCargoWeight(this->cargo.StoredCount());
 	}
 
+	VehicleAccelerationModel GetAccelerationTypeFromTrack() const;
+
 	/**
 	 * Allows to know the acceleration type of a vehicle.
 	 * @return Acceleration type of the vehicle.
 	 */
 	inline VehicleAccelerationModel GetAccelerationType() const
 	{
-		return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->acceleration_type;
+		uint8_t accel_type = this->tcache.GetCachedAccelType();
+		if (accel_type == 3) return this->GetAccelerationTypeFromTrack();
+		return static_cast<VehicleAccelerationModel>(accel_type);
 	}
 
 	inline RailTypes GetIndirectCompatibleRailTypes() const

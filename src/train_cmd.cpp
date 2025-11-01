@@ -408,6 +408,16 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	this->tcache.cached_curve_speed_mod = min_curve_speed_mod;
 	this->tcache.cached_max_curve_speed = this->GetCurveSpeedLimit();
 
+	extern std::array<RailTypes, 3> _railtypes_acceleration_type_masks;
+	uint8_t accel_type = 3;
+	for (uint8_t i = 0; i < 3; i++) {
+		if (_railtypes_acceleration_type_masks[i].All(this->compatible_railtypes)) {
+			accel_type = i;
+			break;
+		}
+	}
+	this->tcache.SetCachedAccelType(accel_type);
+
 	/* recalculate cached weights and power too (we do this *after* the rest, so it is known which wagons are powered and need extra weight added) */
 	this->CargoChanged();
 
@@ -7772,6 +7782,11 @@ uint16_t GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex tile, uint16_t tra
 	}
 
 	return lowest_speed;
+}
+
+VehicleAccelerationModel Train::GetAccelerationTypeFromTrack() const
+{
+	return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->acceleration_type;
 }
 
 uint16_t Train::GetMaxWeight() const
