@@ -176,6 +176,14 @@ enum DeparturesConditionalJumpResult : uint8_t {
 	DCJD_LAST = DCJD_NOT_TAKEN
 };
 
+enum SelectedPlanLineDrawMode : uint8_t {
+	SPLDM_BEGIN = 0,
+	SPLDM_RED_LINE = SPLDM_BEGIN,
+	SPLDM_RED_HIGHLIGHT,
+
+	SPLDM_LAST = SPLDM_RED_HIGHLIGHT,
+};
+
 /** Settings related to time display. This may be loaded from the savegame and/or overridden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
@@ -340,7 +348,9 @@ struct GUISettings : public TimeSettings {
 	uint8_t     show_vehicle_route_mode;                         ///< How to show a vehicle's route when one of its windows is focused
 	bool        show_vehicle_route;                              ///< Show route lines when vehicles route overlay is being shown
 	bool        show_vehicle_route_steps;                        ///< Show route step markers when vehicles route overlay is being shown
-	uint8_t     dash_level_of_route_lines;                       ///< the dash level passed to GfxDrawLine() (plain if 0)
+	uint8_t     dash_level_of_route_lines;                       ///< the dash level passed to GfxDrawLine() (plain if 0) for vehicle route lines
+	uint8_t     dash_level_of_plan_lines;                        ///< the dash level passed to GfxDrawLine() (plain if 0) for plan lines
+	SelectedPlanLineDrawMode selected_plan_line_mode;            ///< mode for drawing selected plan lines
 	bool        show_vehicle_list_company_colour;                ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool        enable_single_veh_shared_order_gui;              ///< enable showing a single vehicle in the shared order GUI window
 	bool        show_adv_load_mode_features;                     ///< enable advanced loading mode features in UI

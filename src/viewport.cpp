@@ -3016,6 +3016,11 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 				continue;
 			}
 
+			const uint8_t dash_level = _settings_client.gui.dash_level_of_plan_lines;
+			const uint8_t line_colour = pl.focused ? PC_RED : _colour_value[p->colour];
+			const uint8_t background_width = (dash_level == 0) ? 3 : 0;
+			const uint8_t line_width = (dash_level == 0) ? 1 : 3;
+
 			TileIndex to_tile = pl.tiles[0];
 			int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
 			for (uint i = 1; i < pl.tiles.size(); i++) {
@@ -3035,17 +3040,21 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-				GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, 3);
-				if (pl.focused) {
-					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_RED, 1);
+				if (pl.focused && _settings_client.gui.selected_plan_line_mode == SPLDM_RED_HIGHLIGHT) {
+					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_RED, line_width + 3);
+					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], line_width, dash_level);
 				} else {
-					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
+					if (background_width != 0) GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, background_width, dash_level);
+					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, line_colour, line_width, dash_level);
 				}
 			}
 		}
 	}
 
 	if (_current_plan && _current_plan->temp_line.tiles.size() > 1) {
+		const uint8_t dash_level = _settings_client.gui.dash_level_of_plan_lines;
+		const uint8_t line_width = (dash_level == 0) ? 3 : 5;
+
 		const BasePlanLine &pl = _current_plan->temp_line;
 		TileIndex to_tile = pl.tiles[0];
 		int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
@@ -3066,7 +3075,7 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-			GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
+			GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], line_width, dash_level);
 		}
 	}
 }

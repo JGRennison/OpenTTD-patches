@@ -808,6 +808,11 @@ SettingsContainer &GetSettingsTree()
 					viewport_map->Add(new SettingEntry("gui.show_tunnels_on_map"));
 					viewport_map->Add(new SettingEntry("gui.use_owner_colour_for_tunnelbridge"));
 				}
+				SettingsPage *viewport_plans = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_PLANS));
+				{
+					viewport_plans->Add(new SettingEntry("gui.dash_level_of_plan_lines"));
+					viewport_plans->Add(new SettingEntry("gui.selected_plan_line_mode"));
+				}
 				SettingsPage *viewport_route_overlay = viewports->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY));
 				{
 					viewport_route_overlay->Add(new SettingEntry("gui.show_vehicle_route_mode"));

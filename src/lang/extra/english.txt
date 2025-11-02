@@ -487,6 +487,14 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :How to draw the
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :dashed lines of {COMMA} pixel{P "" s}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plain lines
 
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH               :Drawing style of plans lines: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH_HELPTEXT      :How to draw plan lines in viewports.
+
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE                 :Draw selected plan lines with: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE_HELPTEXT        :How to draw plan lines which are currently selected.
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_LINE             :red line
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_HIGHLIGHT        :red highlight
+
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Select interval between automatic game saves
 
@@ -735,6 +743,7 @@ STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Vehicle
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Rivers & Lakes
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Cargo distribution - per cargo overrides
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
+STR_CONFIG_SETTING_PLANS                                        :{ORANGE}Plans
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Vehicle route overlay
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 

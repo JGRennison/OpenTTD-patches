@@ -84,6 +84,7 @@
 #include "graph_gui.h"
 #include "string_func_extra.h"
 #include "engine_override.h"
+#include "plans_func.h"
 #include "core/backup_type.hpp"
 #include "core/string_consumer.hpp"
 
@@ -1651,6 +1652,12 @@ static void SpriteZoomMinChanged(int32_t new_value)
 static void DeveloperModeChanged(int32_t new_value)
 {
 	DebugReconsiderSendRemoteMessages();
+}
+
+static void PlanDisplayModeChanged(int32_t new_value)
+{
+	InvalidatePlanCaches();
+	MarkWholeScreenDirty();
 }
 
 /**
