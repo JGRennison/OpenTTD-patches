@@ -927,7 +927,7 @@ SettingsContainer &GetSettingsTree()
 				}
 
 				timetable->Add(new SettingEntry("gui.timetable_in_ticks"));
-				timetable->Add(new SettingEntry("gui.timetable_leftover_ticks"));
+				timetable->Add(new SettingEntry("gui.timetable_leftover_time"));
 				timetable->Add(new SettingEntry("gui.timetable_arrival_departure"));
 				timetable->Add(new SettingEntry("gui.timetable_start_text_entry"));
 			}

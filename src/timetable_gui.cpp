@@ -887,7 +887,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					StringID str;
 					if (!v->orders->IsCompleteTimetable()) {
 						str = STR_TIMETABLE_TOTAL_TIME_INCOMPLETE;
-					} else if (!_settings_client.gui.timetable_in_ticks && !_settings_client.gui.timetable_leftover_ticks && total_time % TimetableDisplayUnitSize() != 0) {
+					} else if (!_settings_client.gui.timetable_in_ticks && _settings_client.gui.timetable_leftover_time == TLT_OFF && total_time % TimetableDisplayUnitSize() != 0) {
 						str = STR_TIMETABLE_APPROX_TIME;
 					} else {
 						str = STR_TIMETABLE_TOTAL_TIME;

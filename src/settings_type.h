@@ -166,6 +166,14 @@ enum PublicRoadsConstruction : uint8_t {
 	PRC_END
 };
 
+/** Settings related to the timetable leftover time display. */
+enum TimetableLeftoverTimeSetting : uint8_t {
+	TLT_OFF = 0,         ///< Do not show leftover time.
+	TLT_TICKS = 1,       ///< Show leftover time as ticks.
+	TLT_SECONDS = 2,     ///< Show leftover time as seconds.
+};
+
+
 /** Deaptures conditional jump result */
 enum DeparturesConditionalJumpResult : uint8_t {
 	DCJD_BEGIN = 0,
@@ -308,7 +316,7 @@ struct GUISettings : public TimeSettings {
 	CalTime::Year coloured_news_year;                            ///< when does newspaper become coloured?
 	bool        override_time_settings;                          ///< Whether to override time display settings stored in savegame.
 	bool        timetable_in_ticks;                              ///< whether to show the timetable in ticks rather than days
-	bool        timetable_leftover_ticks;                        ///< whether to show leftover ticks after converting to minutes/days, in the timetable
+	TimetableLeftoverTimeSetting timetable_leftover_time;        ///< whether to show leftover time in ticks or seconds after converting to minutes/days, in the timetable
 	bool        timetable_start_text_entry;                      ///< whether to enter timetable start times as text (hhmm format)
 	uint8_t     date_with_time;                                  ///< whether to show the month and year with the time
 	bool        quick_goto;                                      ///< Allow quick access to 'goto button' in vehicle orders window
