@@ -45,6 +45,7 @@ public:
 	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
 
 	void DumpSpriteGroup(const SpriteGroup *sg, uint flags);
+	void DumpStandardGRFFileProps(const struct StandardGRFFileProps &props);
 
 	void Print(std::string_view msg)
 	{

@@ -978,3 +978,24 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 		}
 	}
 }
+
+void SpriteGroupDumper::DumpStandardGRFFileProps(const StandardGRFFileProps &grf_prop)
+{
+	bool written_group = false;
+
+	auto write_group = [&](StandardSpriteGroup ssg, const char *label) {
+		const SpriteGroup *sg = grf_prop.spritegroups[static_cast<size_t>(ssg)];
+		if (sg == nullptr) return;
+
+		if (written_group) {
+			this->Print("");
+		} else {
+			written_group = true;
+		}
+		this->Print(label);
+		this->DumpSpriteGroup(sg, 0);
+	};
+
+	write_group(StandardSpriteGroup::Default, "Default:");
+	write_group(StandardSpriteGroup::Purchase, "Purchase:");
+}
