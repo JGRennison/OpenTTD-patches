@@ -727,6 +727,7 @@ void CcAddPlan(const CommandCost &result)
 	auto plan_id = result.GetResultData<PlanID>();
 	if (!plan_id.has_value()) return;
 
+	if (_current_plan != nullptr) _current_plan->SetFocus(false);
 	_current_plan = Plan::Get(*plan_id);
 	_current_plan->SetVisibility(true);
 
