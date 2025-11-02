@@ -166,7 +166,7 @@ CommandCost CmdRemovePlanLine(DoCommandFlags flags, PlanID plan, uint32_t line)
 		p->lines[line].SetVisibility(false);
 		p->lines.erase(p->lines.begin() + line);
 		if (p->IsListable()) {
-			InvalidateWindowData(WC_PLANS, 0, p->index, false);
+			InvalidateWindowData(WC_PLANS, 0, INVALID_PLAN, false);
 		}
 	}
 	return CommandCost();

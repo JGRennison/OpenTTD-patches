@@ -156,7 +156,7 @@ private:
 
 	void RebuildList()
 	{
-		PlanID old_focused_plan_id = this->selected == INT_MAX ? INVALID_PLAN : this->list[this->selected].plan_id;
+		const ListItem old_focused_item = this->selected == INT_MAX ? ListItem{ true, INVALID_PLAN, 0 } : this->list[this->selected];
 		this->selected = INT_MAX;
 
 		int sbcnt = 0;
@@ -167,17 +167,36 @@ private:
 			li.is_plan = true;
 			li.plan_id = p->index;
 			this->list.push_back(li);
-			if (old_focused_plan_id == p->index) this->selected = sbcnt;
+			if (old_focused_item.is_plan && old_focused_item.plan_id == p->index && p == _current_plan) {
+				_current_plan->SetFocus(true);
+				this->selected = sbcnt;
+			}
 			sbcnt++;
 
 			if (p->show_lines) {
 				const int sz = (int) p->lines.size();
-				sbcnt += sz;
+
+				/* Select single line if only one plan line focused. */
+				if (!old_focused_item.is_plan && old_focused_item.plan_id == p->index && p == _current_plan) {
+					uint focus_count = 0;
+					int last_focused = 0;
+					for (int i = 0; i < sz; i++) {
+						if (p->lines[i].focused) {
+							focus_count++;
+							last_focused = i;
+						}
+					}
+					if (focus_count == 1) {
+						this->selected = sbcnt + last_focused;
+					}
+				}
+
 				li.is_plan = false;
 				for (int i = 0; i < sz; i++) {
 					li.line_id = i;
 					this->list.push_back(li);
 				}
+				sbcnt += sz;
 			}
 
 			if (p == _current_plan) seen_current_plan = true;
@@ -188,7 +207,10 @@ private:
 			_current_plan = nullptr;
 		}
 
-		if (this->selected == INT_MAX) ResetObjectToPlace();
+		if (this->selected == INT_MAX) {
+			ResetObjectToPlace();
+			if (_current_plan != nullptr) _current_plan->SetFocus(false);
+		}
 
 		this->vscroll->SetCount(sbcnt);
 	}
