@@ -180,6 +180,20 @@ struct TemporaryStorageArray {
 			this->init_key = 1;
 		}
 	}
+
+	std::span<const TYPE> GetValueRange(uint pos, uint count)
+	{
+		if (pos + count > SIZE) count = SIZE - pos;
+		for (uint i = pos; i < pos + count; i++) {
+			if (this->init[i] != this->init_key) this->storage[i] = 0;
+		}
+		return std::span<const TYPE>(this->storage.data() + pos, count);
+	}
+
+	std::span<const TYPE> GetValueRange(uint pos)
+	{
+		return this->GetValueRange(pos, SIZE - pos);
+	}
 };
 
 void AddChangedPersistentStorage(BasePersistentStorageArray *storage);

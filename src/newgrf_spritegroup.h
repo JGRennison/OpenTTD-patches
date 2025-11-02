@@ -39,6 +39,12 @@ inline uint32_t GetRegister(uint i)
 	return _temp_store.GetValue(i);
 }
 
+inline const std::span<const int32_t> GetRegisterRange(uint start)
+{
+	extern TemporaryStorageArray<int32_t, 0x110> _temp_store;
+	return _temp_store.GetValueRange(start);
+}
+
 /* List of different sprite group types */
 enum SpriteGroupType : uint8_t {
 	SGT_REAL,
