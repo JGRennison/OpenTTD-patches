@@ -1766,7 +1766,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						const int64_t ticks = args.GetNextParameter<int64_t>();
 						const int64_t ratio = TimetableDisplayUnitSize();
 						const int64_t units = ticks / ratio;
-						const int64_t leftover = _settings_client.gui.timetable_leftover_ticks ? ticks % ratio : 0;
+						const int64_t leftover = (_settings_client.gui.timetable_leftover_time != TLT_OFF) ? ticks % ratio : 0;
 						auto tmp_params = MakeParameters(units);
 						FormatString(builder, GetStringPtr(str), tmp_params);
 						if (b == SCC_TT_TICKS_LONG && _settings_time.time_in_minutes && units > 59) {
@@ -1779,9 +1779,19 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 							);
 							FormatString(builder, GetStringPtr(STR_TIMETABLE_MINUTES_SUFFIX), tmp_params);
 						}
-						if (leftover != 0) {
-							auto tmp_params = MakeParameters(leftover);
-							FormatString(builder, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), tmp_params);
+						if (leftover != 0 && _settings_client.gui.timetable_leftover_time != TLT_OFF) {
+							StringID leftover_str;
+							int64_t leftover_value;
+							if (_settings_client.gui.timetable_leftover_time == TLT_SECONDS && _settings_time.time_in_minutes) {
+								/* Convert leftover ticks to seconds (only when using minutes mode) */
+								leftover_value = (leftover * 60) / _settings_time.ticks_per_minute;
+								leftover_str = STR_TIMETABLE_LEFTOVER_SECONDS;
+							} else {
+								leftover_value = leftover;
+								leftover_str = STR_TIMETABLE_LEFTOVER_TICKS;
+							}
+							auto leftover_params = MakeParameters(leftover_value);
+							FormatString(builder, GetStringPtr(leftover_str), leftover_params);
 						}
 					}
 					break;

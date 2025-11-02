@@ -509,8 +509,10 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Choose whether 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Use timetable to ensure vehicle separation by default: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Choose whether to ensure separation of vehicles should be automatically enabled for new vehicles
 
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Show leftover ticks in timetable: {STRING2}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :When converting from ticks to days/minutes in timetables, also show any leftover ticks
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME                      :Show leftover time in timetable: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_HELPTEXT             :When converting from ticks to days/minutes in timetables, also show any leftover ticks or seconds
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_TICKS                :Ticks
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_SECONDS              :Seconds
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Use client timetable time settings instead of savegame time settings: {STRING2}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Select whether to use local client settings for timetable time display, instead of the time settings in the savegame.
@@ -1916,6 +1918,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}ho
 STR_TIMETABLE_MINUTES_SUFFIX                                    : ({STRING2})
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} tick{P "" s}
+STR_TIMETABLE_LEFTOVER_SECONDS                                  : {COMMA} second{P "" s}
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey
