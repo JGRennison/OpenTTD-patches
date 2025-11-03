@@ -27,7 +27,7 @@
 struct EngineIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using EngineID = PoolID<EngineIDTag>;
 
-class Engine;
+struct Engine;
 
 /** Available types of rail vehicles. */
 enum RailVehicleTypes : uint8_t {
