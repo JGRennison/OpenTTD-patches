@@ -2223,9 +2223,14 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlags flags, TileIndex tile, Ti
 		}
 
 		/* only build/remove signals with the specified density */
-		if (tile_ok && (remove || HasFlag(drag_flags, SignalDragFlags::MinimiseGaps) || signal_ctr % signal_density == 0 || IsTileType(tile, MP_TUNNELBRIDGE))) {
+		bool skipped_tunnel_bridge = false;
+		auto check_skip_tunnel_bridge = [&]() -> bool {
+			skipped_tunnel_bridge = IsTileType(tile, MP_TUNNELBRIDGE);
+			return skipped_tunnel_bridge;
+		};
+		if (tile_ok && (remove || HasFlag(drag_flags, SignalDragFlags::MinimiseGaps) || signal_ctr % signal_density == 0 || check_skip_tunnel_bridge())) {
 			/* Test tiles in between for suitability as well if minimising gaps. */
-			bool test_only = !remove && HasFlag(drag_flags, SignalDragFlags::MinimiseGaps) && signal_ctr < (last_used_ctr + signal_density);
+			bool test_only = !remove && (HasFlag(drag_flags, SignalDragFlags::MinimiseGaps) || skipped_tunnel_bridge) && signal_ctr < (last_used_ctr + signal_density);
 			CommandCost ret = build_signal(tile, trackdir, test_only, signal_ctr == 0);
 
 			if (ret.Succeeded()) {
