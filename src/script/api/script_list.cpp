@@ -161,7 +161,7 @@ public:
 		if (this->IsEnd()) return;
 
 		/* If we remove the 'next' item, skip to the next */
-		if (item == this->item_next) {
+		if (item == this->item_next && this->value_iter != this->list->values.end()) {
 			FindNext();
 			return;
 		}
@@ -264,7 +264,7 @@ public:
 		if (this->IsEnd()) return;
 
 		/* If we remove the 'next' item, skip to the next */
-		if (item == this->item_next) {
+		if (item == this->item_next && this->value_iter != this->list->values.end()) {
 			FindNext();
 			return;
 		}
@@ -349,7 +349,7 @@ public:
 		if (this->IsEnd()) return;
 
 		/* If we remove the 'next' item, skip to the next */
-		if (item == this->item_next) {
+		if (item == this->item_next && this->item_iter != this->list->items.end()) {
 			FindNext();
 			return;
 		}
@@ -451,7 +451,7 @@ public:
 		if (this->IsEnd()) return;
 
 		/* If we remove the 'next' item, skip to the next */
-		if (item == this->item_next) {
+		if (item == this->item_next && this->item_iter != this->list->items.end()) {
 			FindNext();
 			return;
 		}
