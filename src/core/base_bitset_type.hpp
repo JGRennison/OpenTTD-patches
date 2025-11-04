@@ -258,11 +258,11 @@ public:
 	/* Use IterateSetBits instead, unless BaseBitSetEnableDirectIteration is specifically enabled for the implementation type */
 	auto begin() const requires BaseBitSetEnableDirectIteration<Timpl>::value
 	{
-		return SetBitIterator<Tvalue_type>(this->data).begin();
+		return SetBitIterator<Tvalue_type, Tstorage>(this->data).begin();
 	}
 	auto end() const requires BaseBitSetEnableDirectIteration<Timpl>::value
 	{
-		return SetBitIterator<Tvalue_type>(this->data).end();
+		return SetBitIterator<Tvalue_type, Tstorage>(this->data).end();
 	}
 
 private:
