@@ -182,7 +182,6 @@ STR_CONFIG_SETTING_MAX_RELIABILITY_FLOOR_HELPTEXT               :游戏将在新
 
 STR_CONFIG_SETTING_RELIABILITY_SPEED                            :可靠性衰减因子：{STRING}
 STR_CONFIG_SETTING_RELIABILITY_SPEED_HELPTEXT                   :载具可靠性下降的速度。数值越高，可靠性下降得越快
-
 STR_CONFIG_SETTING_DIVIDE_32                                    :1/32 倍
 STR_CONFIG_SETTING_DIVIDE_16                                    :1/16 倍
 STR_CONFIG_SETTING_DIVIDE_8                                     :1/8 倍
@@ -466,9 +465,6 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :选择是否默
 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :默认使用自动分离：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择是否默认自动启用自动分离
-
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :在时刻表中显示剩余的游戏刻：{STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :使用客户端时刻表时间设置代替存档时刻表时间设置：{STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时刻表时间显示设置代替游戏存档中所保存的时刻表时间设置

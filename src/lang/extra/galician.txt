@@ -465,9 +465,6 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Escolle se os h
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Usar horarios para asegurar a separación dos vehículos por defecto: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Escolle se para asegurar a separación dos vehículos deberíase habilitar automáticamente para os novos vehículos
 
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Amosar os tícks sobrantes nos horarios: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Cando se convirten ticks a días/minutos nos horarios, tamén amosar os tícks sobrantes
-
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Usar as opcións de tempo do cliente en lugar das da partida gardada: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Selecciona se se usan as opcións do cliente para amosar o tempo, en lugar das opcións da partida gardada.
 

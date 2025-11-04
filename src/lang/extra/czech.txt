@@ -386,9 +386,6 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Zvol, zda má b
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Rozestup vozidel pomocí jízdního řádu jako výchozí: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Zvol, zda má být u nově zakoupených vozidel vytvářen automatický rozestup.
 
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zobrazit zbývající cykly v jízním řádu: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Při přepočtu z cyklů na dny či minuty zobrazí také zbývající cykly
-
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Použít nastavení času z klienta namísto nastavení času uložené hry: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Zvol, zda použít nastavení času z místního klienta namísto zobrazení času podle nastavení uložené hry.
 
