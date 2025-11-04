@@ -121,7 +121,7 @@ public:
 		this->has_no_more_items = false;
 
 		this->value_iter = this->list->values.begin();
-		this->item_next = (*this->value_iter).second;
+		this->item_next = this->value_iter->second;
 
 		SQInteger item_current = this->item_next;
 		FindNext();
@@ -144,7 +144,7 @@ public:
 			return;
 		}
 		this->value_iter++;
-		if (this->value_iter != this->list->values.end()) item_next = (*this->value_iter).second;
+		if (this->value_iter != this->list->values.end()) this->item_next = this->value_iter->second;
 	}
 
 	SQInteger Next() override
@@ -247,7 +247,7 @@ public:
 		} else {
 			this->value_iter--;
 		}
-		if (this->value_iter != this->list->values.end()) item_next = this->value_iter->second;
+		if (this->value_iter != this->list->values.end()) this->item_next = this->value_iter->second;
 	}
 
 	SQInteger Next() override
@@ -310,7 +310,7 @@ public:
 		this->has_no_more_items = false;
 
 		this->item_iter = this->list->items.begin();
-		this->item_next = (*this->item_iter).first;
+		this->item_next = this->item_iter->first;
 
 		SQInteger item_current = this->item_next;
 		FindNext();
@@ -332,7 +332,7 @@ public:
 			return;
 		}
 		this->item_iter++;
-		if (this->item_iter != this->list->items.end()) item_next = (*this->item_iter).first;
+		if (this->item_iter != this->list->items.end()) this->item_next = this->item_iter->first;
 	}
 
 	SQInteger Next() override
@@ -407,7 +407,7 @@ public:
 
 		this->item_iter = this->list->items.end();
 		--this->item_iter;
-		this->item_next = (*this->item_iter).first;
+		this->item_next = this->item_iter->first;
 
 		SQInteger item_current = this->item_next;
 		FindNext();
@@ -434,7 +434,7 @@ public:
 		} else {
 			this->item_iter--;
 		}
-		if (this->item_iter != this->list->items.end()) item_next = (*this->item_iter).first;
+		if (this->item_iter != this->list->items.end()) this->item_next = this->item_iter->first;
 	}
 
 	SQInteger Next() override
@@ -816,7 +816,7 @@ void ScriptList::RemoveAboveValue(SQInteger value)
 
 	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
 		next_iter = iter; next_iter++;
-		if ((*iter).second > value) this->RemoveItem((*iter).first);
+		if (iter->second > value) this->RemoveItem(iter->first);
 	}
 }
 
@@ -826,7 +826,7 @@ void ScriptList::RemoveBelowValue(SQInteger value)
 
 	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
 		next_iter = iter; next_iter++;
-		if ((*iter).second < value) this->RemoveItem((*iter).first);
+		if (iter->second < value) this->RemoveItem(iter->first);
 	}
 }
 
@@ -836,7 +836,7 @@ void ScriptList::RemoveBetweenValue(SQInteger start, SQInteger end)
 
 	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
 		next_iter = iter; next_iter++;
-		if ((*iter).second > start && (*iter).second < end) this->RemoveItem((*iter).first);
+		if (iter->second > start && iter->second < end) this->RemoveItem(iter->first);
 	}
 }
 
@@ -846,7 +846,7 @@ void ScriptList::RemoveValue(SQInteger value)
 
 	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
 		next_iter = iter; next_iter++;
-		if ((*iter).second == value) this->RemoveItem((*iter).first);
+		if (iter->second == value) this->RemoveItem(iter->first);
 	}
 }
 
@@ -1098,7 +1098,7 @@ SQInteger ScriptList::Valuate(HSQUIRRELVM vm)
 		/* Push the root table as instance object, this is what squirrel does for meta-functions. */
 		sq_pushroottable(vm);
 		/* Push all arguments for the valuator function. */
-		sq_pushinteger(vm, (*iter).first);
+		sq_pushinteger(vm, iter->first);
 		for (int i = 0; i < nparam - 1; i++) {
 			sq_push(vm, i + 3);
 		}
