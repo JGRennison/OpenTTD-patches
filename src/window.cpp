@@ -972,15 +972,6 @@ static void SetWindowDirtyPending(Window *w)
  * Mark entire window as dirty (in need of re-paint)
  * @ingroup dirty
  */
-void Window::SetDirty()
-{
-	this->flags.Set(WindowFlag::Dirty);
-}
-
-/**
- * Mark entire window as dirty (in need of re-paint)
- * @ingroup dirty
- */
 void Window::SetDirtyAsBlocks()
 {
 	extern bool _gfx_draw_active;

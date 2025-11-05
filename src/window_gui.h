@@ -617,7 +617,15 @@ public:
 	void CloseChildWindows(WindowClass wc = WC_INVALID) const;
 	void CloseChildWindowById(WindowClass wc, WindowNumber number) const;
 
-	void SetDirty();
+	/**
+	 * Mark entire window as dirty (in need of re-paint)
+	 * @ingroup dirty
+	 */
+	inline void SetDirty()
+	{
+		this->flags.Set(WindowFlag::Dirty);
+	}
+
 	void SetDirtyAsBlocks();
 	void ReInit(int rx = 0, int ry = 0, bool reposition = false);
 
