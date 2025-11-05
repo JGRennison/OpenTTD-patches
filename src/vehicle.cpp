@@ -398,11 +398,10 @@ uint Vehicle::Crash(bool)
 	if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 	/* Dirty some windows */
-	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
+	InvalidateVehicleListWindows(this->type);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 	SetWindowDirty(WC_VEHICLE_DEPOT, this->tile.base());
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
@@ -1218,8 +1217,7 @@ void Vehicle::PreDestructor()
 		SetWindowDirty(WC_COMPANY, this->owner);
 		OrderBackup::ClearVehicle(this);
 	}
-	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateVehicleListWindows(this->type);
 
 	this->cargo.Truncate();
 	DeleteVehicleOrders(this);

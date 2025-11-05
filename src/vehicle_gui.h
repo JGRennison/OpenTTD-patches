@@ -17,6 +17,7 @@
 #include "engine_type.h"
 #include "company_type.h"
 #include "dropdown_func.h"
+#include <bitset>
 #include <vector>
 
 void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit = false, bool is_virtual_train = false);
@@ -107,6 +108,14 @@ inline WindowClass GetWindowClassForVehicleType(VehicleType vt)
 		case VEH_SHIP:     return WC_SHIPS_LIST;
 		case VEH_AIRCRAFT: return WC_AIRCRAFT_LIST;
 	}
+}
+
+inline void InvalidateVehicleListWindows(VehicleType vt)
+{
+	extern std::bitset<WC_END> _invalidate_deferred_window_types;
+	_invalidate_deferred_window_types.set(WC_TRAINS_LIST + vt);
+	_invalidate_deferred_window_types.set(WC_TRACE_RESTRICT_SLOTS);
+	_invalidate_deferred_window_types.set(WC_DEPARTURES_BOARD);
 }
 
 typedef std::vector<const Vehicle *> VehicleList;

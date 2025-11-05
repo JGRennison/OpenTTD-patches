@@ -2327,9 +2327,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		/* But only if the moved vehicle is not virtual */
 		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile.base());
-			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
-			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
-			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+			InvalidateVehicleListWindows(VEH_TRAIN);
 		}
 	} else {
 		/* We don't want to execute what we're just tried. */
@@ -2420,9 +2418,7 @@ CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, 
 		/* Unless its a virtual train */
 		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
-			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
-			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
-			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+			InvalidateVehicleListWindows(VEH_TRAIN);
 		}
 
 		/* Actually delete the sold 'goods' */

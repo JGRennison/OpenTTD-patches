@@ -201,8 +201,7 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 			}
 
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
-			InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
-			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+			InvalidateVehicleListWindows(type);
 			SetWindowDirty(WC_COMPANY, _current_company);
 			if (IsLocalCompany()) {
 				InvalidateAutoreplaceWindow(v->engine_type, v->group_id); // updates the auto replace window (must be called before incrementing num_engines)
@@ -588,8 +587,7 @@ CommandCost CmdRefitVehicle(DoCommandFlags flags, VehicleID veh_id, CargoType ne
 
 		if (!free_wagon) {
 			InvalidateWindowData(WC_VEHICLE_DETAILS, front->index);
-			InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
-			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+			InvalidateVehicleListWindows(v->type);
 		}
 		/* virtual vehicles get their cargo changed by the TemplateCreateWindow, so set this dirty instead of a depot window */
 		if (HasBit(front->subtype, GVSF_VIRTUAL)) {
