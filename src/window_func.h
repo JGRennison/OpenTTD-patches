@@ -47,6 +47,18 @@ void InvalidateWindowClassesData(WindowClass cls, int data = 0, bool gui_scope =
 template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
 void InvalidateWindowClassesData(WindowClass cls, T data, bool gui_scope = false) { InvalidateWindowClassesData(cls, data.base(), gui_scope); }
 
+inline void InvalidateWindowClassesDeferred(WindowClass cls)
+{
+	extern std::bitset<WC_END> _invalidate_deferred_window_types;
+	if (cls < WC_END) _invalidate_deferred_window_types.set(cls);
+}
+
+inline bool WindowClassHasDeferredInvalidate(WindowClass cls)
+{
+	extern std::bitset<WC_END> _invalidate_deferred_window_types;
+	return cls < WC_END && _invalidate_deferred_window_types[cls];
+}
+
 void CloseNonVitalWindows();
 void CloseAllNonVitalWindows();
 void DeleteAllMessages();
