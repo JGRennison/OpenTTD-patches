@@ -629,8 +629,9 @@ public:
 		}
 		this->groups.ForceRebuild();
 		this->templates.ForceRebuild();
+
+		if (!gui_scope) return;
 		this->UpdateButtonState();
-		this->SetDirty();
 	}
 
 	void OnQueryTextFinished(std::optional<std::string> str) override

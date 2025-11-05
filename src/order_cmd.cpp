@@ -114,7 +114,7 @@ void Order::InvalidateGuiOnRemove()
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (this->IsType(OT_GOTO_STATION) || this->IsType(OT_GOTO_WAYPOINT)) {
 		BaseStation *bs = BaseStation::GetIfValid(this->GetDestination().ToStationID());
-		if (bs != nullptr && bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST, 0);
+		if (bs != nullptr && bs->owner == OWNER_NONE) InvalidateWindowClassesDeferred(WC_STATION_LIST);
 	}
 }
 
@@ -722,7 +722,7 @@ void OrderList::InsertOrderAt(Order &&ins_order, VehicleOrderID index)
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (new_order->IsType(OT_GOTO_STATION) || new_order->IsType(OT_GOTO_WAYPOINT)) {
 		BaseStation *bs = BaseStation::Get(new_order->GetDestination().ToStationID());
-		if (bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST, 0);
+		if (bs->owner == OWNER_NONE) InvalidateWindowClassesDeferred(WC_STATION_LIST);
 	}
 
 }
@@ -1470,8 +1470,8 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
 	}
 
 	/* Make sure to rebuild the whole list */
-	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(v->type));
+	InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 }
 
 /**
@@ -1489,8 +1489,8 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
 
 		DeleteVehicleOrders(dst);
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
-		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+		InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(dst->type));
+		InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 	}
 	return CommandCost();
 }
@@ -1621,8 +1621,8 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 		cur_order_id++;
 	}
 
-	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(v->type));
+	InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 }
 
 /**
@@ -1755,7 +1755,8 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 		}
 
 		/* Make sure to rebuild the whole list */
-		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
+		InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(v->type));
+		InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 	}
 
 	return CommandCost();
@@ -2846,8 +2847,8 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 				InvalidateVehicleOrder(src, VIWD_MODIFY_ORDERS);
 
-				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
-				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+				InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(dst->type));
+				InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2942,8 +2943,8 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 
-				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
-				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+				InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(dst->type));
+				InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -3049,10 +3050,9 @@ CommandCost CmdInsertOrdersFromVehicle(DoCommandFlags flags, VehicleID veh_dst, 
 			u->ResetDepotUnbunching();
 
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
-
-			InvalidateWindowClassesData(GetWindowClassForVehicleType(u->type), 0);
 		}
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+		InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(dst->type));
+		InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 	}
 
 	return CommandCost();
@@ -3320,7 +3320,7 @@ bool Vehicle::HasDepotOrder() const
 void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indices)
 {
 	DeleteOrderWarnings(v);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 
 	extern void UpdateDeparturesWindowVehicleFilter(const OrderList *order_list, bool remove);
 
@@ -3364,7 +3364,7 @@ static void ClearVehicleOrders(Vehicle *v, bool reset_order_indices = true)
 	if (v->orders == nullptr) return;
 
 	DeleteOrderWarnings(v->FirstShared());
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 	v->orders->FreeChain(true);
 
 	for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
@@ -4332,7 +4332,7 @@ void UpdateOrderUIOnDateChange()
 	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
 	SetWindowClassesDirty(WC_SCHDISPATCH_SLOTS);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
 }
 
 const char *GetOrderTypeName(OrderType order_type)

@@ -1748,10 +1748,10 @@ static void InvalidateCompanyWindow(int32_t new_value)
 static void EnableSingleVehSharedOrderGuiChanged(int32_t new_value)
 {
 	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
-		InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
+		InvalidateWindowClassesDeferred(GetWindowClassForVehicleType(type));
 	}
 	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
-	InvalidateWindowClassesData(WC_VEHICLE_ORDERS, 0);
+	InvalidateWindowClassesDeferred(WC_VEHICLE_ORDERS);
 }
 
 static void CheckYapfRailSignalPenalties(int32_t new_value)

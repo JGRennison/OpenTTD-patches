@@ -1819,7 +1819,7 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 				if (IsTunnelBridgeRestrictedSignal(tile) || IsTunnelBridgeRestrictedSignal(tile_exit)) {
-					InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+					InvalidateWindowClassesDeferred(WC_TRACE_RESTRICT);
 				}
 			}
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));

@@ -176,7 +176,7 @@ public:
 		/* more cleanup */
 		*this->create_window_open = false;
 		CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
 		this->Window::Close();
 	}
 
@@ -205,15 +205,14 @@ public:
 
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		if (!gui_scope) return;
-
 		if (this->template_index != INVALID_TEMPLATE) {
 			if (TemplateVehicle::GetIfValid(this->template_index) == nullptr) {
 				this->Close();
 				return;
 			}
 		}
-		this->SetDirty();
+
+		if (!gui_scope) return;
 		UpdateButtonState();
 	}
 
