@@ -49,6 +49,11 @@ struct VehicleListIdentifier {
 	bool UnpackIfValid(uint32_t data);
 	static VehicleListIdentifier UnPack(uint32_t data);
 
+	static VehicleType UnPackVehicleType(uint32_t data)
+	{
+		return (VehicleType)GB(data, 26, 2);
+	}
+
 	using WindowNumber = int32_t;
 	WindowNumber ToWindowNumber() const { return (WindowNumber)this->Pack(); }
 

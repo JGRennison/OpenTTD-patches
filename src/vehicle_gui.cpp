@@ -2895,11 +2895,11 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileInde
 
 void DirtyVehicleListWindowForVehicle(const Vehicle *v)
 {
-	WindowClass cls = static_cast<WindowClass>(WC_TRAINS_LIST + v->type);
-	WindowClass cls2 = (v->type == VEH_TRAIN) ? WC_TRACE_RESTRICT_SLOTS : cls;
-	if (!HaveWindowByClass(cls) && !HaveWindowByClass(cls2)) return;
+	const VehicleType vt = v->type;
+	WindowClass cls = static_cast<WindowClass>(WC_TRAINS_LIST + vt);
+	if (!HaveWindowByClass(cls) && !HaveWindowByClass(WC_TRACE_RESTRICT_SLOTS)) return;
 	for (Window *w : Window::Iterate()) {
-		if (w->window_class == cls || w->window_class == cls2) {
+		if (w->window_class == cls || (w->window_class == WC_TRACE_RESTRICT_SLOTS && VehicleListIdentifier::UnPackVehicleType(w->window_number) == vt)) {
 			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
 			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehgroups.size());
 			switch (listwin->grouping) {
