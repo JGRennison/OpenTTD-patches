@@ -3912,8 +3912,8 @@ void DumpWindowInfo(format_target &buffer, const Window *w)
 		buffer.append("window: nullptr");
 		return;
 	}
-	buffer.format("window: class: {}, num: {}, flags: 0x{:X}, l: {}, t: {}, w: {}, h: {}, owner: {}",
-			w->window_class, w->window_number.base(), w->flags, w->left, w->top, w->width, w->height, w->owner);
+	buffer.format("window: class: {}, num: {}, token: {}, flags: 0x{:X}, l: {}, t: {}, w: {}, h: {}, owner: {}",
+			w->window_class, w->window_number.base(), w->GetWindowToken(), w->flags, w->left, w->top, w->width, w->height, w->owner);
 	if (w->viewport != nullptr) {
 		const ViewportData *vd = w->viewport;
 		buffer.format(", viewport: (veh: 0x{:X}, x: ({}, {}), y: ({}, {}), z: {}, l: {}, t: {}, w: {}, h: {}, vl: {}, vt: {}, vw: {}, vh: {}, dbc: {}, dbr: {}, dblm: {}, dbcp: {}, db: {})",
