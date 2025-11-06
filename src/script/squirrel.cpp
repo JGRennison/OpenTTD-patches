@@ -259,11 +259,17 @@ void Squirrel::PrintFunc(HSQUIRRELVM vm, std::string_view s)
 	}
 }
 
-void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::string_view params, void *userdata, int size)
+void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::string_view params, void *userdata, int size, bool suspendable)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
-	sq_pushstring(this->vm, method_name);
+	if (suspendable) {
+		format_buffer_sized<128> buf;
+		buf.format("@{}@", method_name);
+		sq_pushstring(this->vm, buf);
+	} else {
+		sq_pushstring(this->vm, method_name);
+	}
 
 	if (size != 0) {
 		void *ptr = sq_newuserdata(vm, size);
@@ -274,6 +280,24 @@ void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::str
 	if (!params.empty()) sq_setparamscheck(this->vm, params.size(), params.data());
 	sq_setnativeclosurename(this->vm, -1, method_name);
 	sq_newslot(this->vm, -3, SQFalse);
+
+	if (suspendable) {
+		std::string squirrel_script = fmt::format(
+			"function {0}(...)\n"
+			"{{\n"
+			"    local args = [this];\n"
+			"    for(local i = 0; i < vargc; i++) args.push(vargv[i]);\n"
+			"    while(this[\"@{0}@\"].acall(args)); \n"
+			"}}\n"
+			"return {0};\n", method_name);
+
+		sq_pushstring(this->vm, method_name);
+		if (SQ_FAILED(sq_compilebuffer(this->vm, squirrel_script, method_name, SQTrue))) NOT_REACHED();
+		sq_pushroottable(this->vm);
+		if (SQ_FAILED(sq_call(this->vm, 1, SQTrue, SQTrue))) NOT_REACHED();
+		sq_remove(this->vm, -2);
+		sq_newslot(this->vm, -3, SQFalse);
+	}
 }
 
 void Squirrel::AddConst(std::string_view var_name, SQInteger value)
