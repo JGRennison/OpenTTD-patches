@@ -52,6 +52,7 @@ private:
 	bool initialized;             ///< Whether an iteration has been started
 	bool values_inited;           ///< Whether the 'values' field has been initialised
 	int modifications;            ///< Number of modification that has been done. To prevent changing data while valuating.
+	std::optional<SQInteger> resume_item; ///< Item to use on valuation start.
 
 	void InitValues();
 	void InitSorter();
@@ -441,6 +442,7 @@ public:
 
 	/**
 	 * The Valuate() wrapper from Squirrel.
+	 * @suspendable
 	 */
 	SQInteger Valuate(HSQUIRRELVM vm);
 #else
