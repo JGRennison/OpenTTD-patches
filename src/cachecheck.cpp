@@ -23,6 +23,7 @@
 #include "settings_cmd.h"
 #include "ship.h"
 #include "station_base.h"
+#include "station_container.h"
 #include "station_map.h"
 #include "string_func_extra.h"
 #include "subsidy_func.h"

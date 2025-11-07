@@ -12,6 +12,7 @@
 
 #include "command_type.h"
 #include "cargo_type.h"
+#include "direction_type.h"
 #include "station_type.h"
 
 enum StationClassID : uint16_t;

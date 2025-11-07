@@ -36,6 +36,7 @@
 #include "timetable_cmd.h"
 #include "schdispatch.h"
 #include "error.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include <vector>
 #include <algorithm>

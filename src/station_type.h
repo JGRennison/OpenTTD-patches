@@ -10,10 +10,9 @@
 #ifndef STATION_TYPE_H
 #define STATION_TYPE_H
 
+#include "core/enum_type.hpp"
 #include "core/pool_id_type.hpp"
 #include "core/smallstack_type.hpp"
-#include "tilearea_type.h"
-#include "3rdparty/cpp-btree/btree_set.h"
 
 struct StationIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
 using StationID = PoolID<StationIDTag>;
@@ -135,27 +134,5 @@ enum StationDelivery : uint8_t {
 };
 
 static const uint MAX_LENGTH_STATION_NAME_CHARS = 128; ///< The maximum length of a station name in characters including '\0'
-
-struct StationCompare {
-	bool operator() (const Station *lhs, const Station *rhs) const;
-};
-
-/** List of stations */
-typedef btree::btree_set<Station *, StationCompare> StationList;
-
-/**
- * Structure contains cached list of stations nearby. The list
- * is created upon first call to GetStations()
- */
-class StationFinder : TileArea {
-	StationList stations; ///< List of stations nearby
-public:
-	/**
-	 * Constructs StationFinder
-	 * @param area the area to search from
-	 */
-	StationFinder(const TileArea &area) : TileArea(area) {}
-	const StationList &GetStations();
-};
 
 #endif /* STATION_TYPE_H */

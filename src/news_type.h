@@ -19,6 +19,7 @@
 #include "sound_type.h"
 #include "station_type.h"
 #include "strings_type.h"
+#include "tile_type.h"
 #include "town_type.h"
 #include "vehicle_type.h"
 #include <list>

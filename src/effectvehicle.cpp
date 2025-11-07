@@ -18,6 +18,7 @@
 #include "effectvehicle_base.h"
 #include "core/checksum_func.hpp"
 #include "core/container_func.hpp"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include <algorithm>
 

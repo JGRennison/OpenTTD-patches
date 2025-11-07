@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../animated_tile.h"
+#include "../map_type.h"
 #include "../tile_type.h"
 #include "../core/alloc_func.hpp"
 

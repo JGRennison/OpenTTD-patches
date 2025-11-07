@@ -18,6 +18,7 @@
 #include "source_type.h"
 #include "vehicle_type.h"
 #include "company_type.h"
+#include "map_func.h"
 #include "core/multimap.hpp"
 #include "sl/saveload_common.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"

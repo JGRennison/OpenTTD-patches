@@ -16,6 +16,7 @@
 #include "industrytype.h"
 #include "tilearea_type.h"
 #include "station_base.h"
+#include "station_container.h"
 
 
 typedef Pool<Industry, IndustryID, 64> IndustryPool;

@@ -507,6 +507,7 @@ add_files(
     station_base.h
     station_cmd.cpp
     station_cmd.h
+    station_container.h
     station_func.h
     station_gui.cpp
     station_gui.h

@@ -36,6 +36,7 @@
 #include "elrail_func.h"
 #include "station_base.h"
 #include "station_cmd.h"
+#include "station_container.h"
 #include "station_func.h"
 #include "station_kdtree.h"
 #include "roadstop_base.h"
