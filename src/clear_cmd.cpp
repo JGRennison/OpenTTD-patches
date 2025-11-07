@@ -95,10 +95,10 @@ bool DrawCustomSpriteIDForRocks(const TileInfo *ti, uint8_t slope_to_sprite_offs
 
 		NewLandscapeResolverObject object(grf, ti, NEW_LANDSCAPE_ROCKS);
 
-		const SpriteGroup *group = object.Resolve();
-		if (group != nullptr && group->GetNumResults() > slope_to_sprite_offset) {
+		const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+		if (group != nullptr && group->num_sprites > slope_to_sprite_offset) {
 			PaletteID pal = HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
-			DrawGroundSprite(group->GetResult() + slope_to_sprite_offset, pal);
+			DrawGroundSprite(group->sprite + slope_to_sprite_offset, pal);
 			return true;
 		}
 	}

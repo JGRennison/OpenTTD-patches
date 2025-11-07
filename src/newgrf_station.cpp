@@ -665,9 +665,9 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 SpriteID GetCustomStationRelocation(const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt, uint32_t var10)
 {
 	StationResolverObject object(statspec, st, tile, rt, CBID_NO_CALLBACK, var10);
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->GetNumResults() == 0) return 0;
-	return group->GetResult() - SPR_RAIL_PLATFORM_Y_FRONT;
+	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+	if (group == nullptr || group->num_sprites == 0) return 0;
+	return group->sprite - SPR_RAIL_PLATFORM_Y_FRONT;
 }
 
 /**
@@ -684,12 +684,12 @@ SpriteID GetCustomStationFoundationRelocation(const StationSpec *statspec, BaseS
 	/* callback_param1 == 2 means  we are resolving the foundation sprites. */
 	StationResolverObject object(statspec, st, tile, INVALID_RAILTYPE, CBID_NO_CALLBACK, 2, layout | (edge_info << 16));
 
-	const SpriteGroup *group = object.Resolve();
+	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
 	/* Note: SpriteGroup::Resolve zeroes all registers, so register 0x100 is initialised to 0. (compatibility) */
 	auto offset = GetRegister(0x100);
-	if (group == nullptr || group->GetNumResults() <= offset) return 0;
+	if (group == nullptr || group->num_sprites <= offset) return 0;
 
-	return group->GetResult() + offset;
+	return group->sprite + offset;
 }
 
 

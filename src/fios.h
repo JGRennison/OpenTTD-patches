@@ -38,7 +38,7 @@ struct FiosItem {
 class FileList : public std::vector<FiosItem> {
 public:
 	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop, bool show_dirs);
-	const FiosItem *FindItem(const std::string_view file);
+	const FiosItem *FindItem(std::string_view file);
 };
 
 enum SortingBits : uint8_t {

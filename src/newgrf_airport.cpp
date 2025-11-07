@@ -258,10 +258,10 @@ AirportResolverObject::AirportResolverObject(TileIndex tile, Station *st, const 
 SpriteID GetCustomAirportSprite(const AirportSpec *as, uint8_t layout)
 {
 	AirportResolverObject object(INVALID_TILE, nullptr, as, layout);
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->GetNumResults() == 0) return as->preview_sprite;
+	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+	if (group == nullptr || group->num_sprites == 0) return as->preview_sprite;
 
-	return group->GetResult();
+	return group->sprite;
 }
 
 uint16_t GetAirportCallback(CallbackID callback, uint32_t param1, uint32_t param2, Station *st, TileIndex tile)

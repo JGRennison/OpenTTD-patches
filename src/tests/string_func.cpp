@@ -488,7 +488,7 @@ TEST_CASE("FixSCCEncoded")
 	CHECK(FixSCCEncodedWrapper("\uE000777:\uE0008888:\"Foo\":\"BarBaz\"", false) == Compose(SCC_ENCODED, "777", SCC_RECORD_SEPARATOR, SCC_ENCODED, "8888", SCC_RECORD_SEPARATOR, SCC_ENCODED_STRING, "Foo", SCC_RECORD_SEPARATOR, SCC_ENCODED_STRING, "BarBaz"));
 }
 
-TEST_CASE("EncodedString::ReplaceParam")
+TEST_CASE("EncodedString::ReplaceParam - positive")
 {
 	/* Test that two encoded strings with different parameters are not the same. */
 	EncodedString string1 = GetEncodedString(STR_NULL, "Foo", 10, "Bar");
@@ -498,6 +498,21 @@ TEST_CASE("EncodedString::ReplaceParam")
 	/* Test that replacing parameter results in the same string. */
 	EncodedString string3 = string1.ReplaceParam(1, 15);
 	CHECK(string2 == string3);
+}
+
+TEST_CASE("EncodedString::ReplaceParam - negative")
+{
+	EncodedString string1 = GetEncodedString(STR_NULL, "Foo", -1, "Bar");
+	EncodedString string2 = GetEncodedString(STR_NULL, "Foo", -2, "Bar");
+	EncodedString string3 = GetEncodedString(STR_NULL, "Foo", 0xFFFF'FFFF'FFFF'FFFF, "Bar");
+	/* Test that two encoded strings with different parameters are not the same. */
+	CHECK(string1 != string2);
+	/* Test that signed values are stored as unsigned. */
+	CHECK(string1 == string3);
+
+	/* Test that replacing parameter results in the same string. */
+	EncodedString string4 = string1.ReplaceParam(1, -2);
+	CHECK(string2 == string4);
 }
 
 namespace upstream_sl {

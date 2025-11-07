@@ -100,6 +100,7 @@
 #include "network/network_sync.h"
 #include "plans_func.h"
 #include "misc_cmd.h"
+#include "core/string_consumer.hpp"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -377,14 +378,17 @@ static void WriteSavegameDebugData(const char *name)
  */
 static void ParseResolution(Dimension *res, const char *s)
 {
-	const char *t = strchr(s, 'x');
-	if (t == nullptr) {
+	StringConsumer consumer(std::string_view{s});
+	auto width = consumer.TryReadIntegerBase<uint>(10);
+	auto valid = consumer.ReadIf("x");
+	auto height = consumer.TryReadIntegerBase<uint>(10);
+	if (!width.has_value() || !valid || !height.has_value() || consumer.AnyBytesLeft()) {
 		ShowInfo("Invalid resolution '{}'", s);
 		return;
 	}
 
-	res->width  = std::max(std::strtoul(s, nullptr, 0), 64UL);
-	res->height = std::max(std::strtoul(t + 1, nullptr, 0), 64UL);
+	res->width  = std::max<uint>(*width, 64);
+	res->height = std::max<uint>(*height, 64);
 }
 
 

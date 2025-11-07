@@ -2510,7 +2510,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_current_language = lang;
 	const TextDirection old_text_dir = _current_text_dir;
 	_current_text_dir = (TextDirection)_current_language->text_dir;
-	const char *c_file = StrLastPathSegment(_current_language->file);
+	std::string_view c_file = StrLastPathSegment(_current_language->file);
 	_config_language_file = c_file;
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
@@ -2684,7 +2684,7 @@ void InitializeLanguagePacks()
 		/* We are trying to find a default language. The priority is by
 		 * configuration file, local environment and last, if nothing found,
 		 * English. */
-		const char *lang_file = StrLastPathSegment(lng.file);
+		std::string_view lang_file = StrLastPathSegment(lng.file);
 		if (_config_language_file == lang_file) {
 			chosen_language = &lng;
 			break;

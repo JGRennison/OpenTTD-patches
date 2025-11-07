@@ -272,3 +272,4 @@ template std::pair<StringConsumer::size_type, int64_t> StringConsumer::ParseInte
 template std::pair<StringConsumer::size_type, uint64_t> StringConsumer::ParseIntegerBase<uint64_t>(std::string_view src, int base, bool clamp, bool log_errors);
 template std::pair<StringConsumer::size_type, int32_t> StringConsumer::ParseIntegerBase<int32_t>(std::string_view src, int base, bool clamp, bool log_errors);
 template std::pair<StringConsumer::size_type, uint32_t> StringConsumer::ParseIntegerBase<uint32_t>(std::string_view src, int base, bool clamp, bool log_errors);
+template std::pair<StringConsumer::size_type, uint8_t> StringConsumer::ParseIntegerBase<uint8_t>(std::string_view src, int base, bool clamp, bool log_errors);

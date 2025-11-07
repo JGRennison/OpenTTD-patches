@@ -157,12 +157,12 @@ SpriteID GetCustomRailSprite(const RailTypeInfo *rti, TileIndex tile, RailTypeSp
 	if (rti->group[rtsg] == nullptr) return 0;
 
 	RailTypeResolverObject object(rti, tile, context, rtsg);
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->GetNumResults() == 0) return 0;
+	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+	if (group == nullptr || group->num_sprites == 0) return 0;
 
-	if (num_results) *num_results = group->GetNumResults();
+	if (num_results) *num_results = group->num_sprites;
 
-	return group->GetResult();
+	return group->sprite;
 }
 
 inline uint8_t RemapAspect(uint8_t aspect, uint8_t extra_aspects, uint8_t style)
@@ -191,11 +191,11 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailTypeInfo *rti, TileIn
 	if ((prog != nullptr) && rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRestrictedSig)) SetBit(param2, 24);
 	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2, context, prog, z);
 
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->GetNumResults() == 0) return { 0, PAL_NONE };
+	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+	if (group == nullptr || group->num_sprites == 0) return { 0, PAL_NONE };
 
 	PaletteID pal = rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRecolourEnabled) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
-	return { group->GetResult(), pal };
+	return { group->sprite, pal };
 }
 
 /**
@@ -230,10 +230,10 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
 		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, style, prog, z);
 
-		const SpriteGroup *group = object.Resolve();
-		if (group != nullptr && group->GetNumResults() != 0) {
+		const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
+		if (group != nullptr && group->num_sprites != 0) {
 			PaletteID pal = HasBit(grf->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
-			return { { group->GetResult(), pal }, HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG) };
+			return { { group->sprite, pal }, HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG) };
 		}
 	}
 

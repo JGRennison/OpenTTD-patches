@@ -1043,20 +1043,14 @@ std::string MidiFile::GetSMFFile(const MusicSongInfo &song)
 
 	if (song.filetype != MTT_MPSMIDI) return std::string();
 
-	char basename[MAX_PATH];
+	std::string tempdirname = FioGetDirectory(Searchpath::SP_AUTODOWNLOAD_DIR, Subdirectory::BASESET_DIR);
 	{
-		const char *fnstart = StrLastPathSegment(song.filename);
-
 		/* Remove all '.' characters from filename */
-		char *wp = basename;
-		for (const char *rp = fnstart; *rp != '\0'; rp++) {
-			if (*rp != '.') *wp++ = *rp;
+		for (char rp : StrLastPathSegment(song.filename)) {
+			if (rp != '.') tempdirname += rp;
 		}
-		*wp++ = '\0';
 	}
 
-	std::string tempdirname = FioGetDirectory(Searchpath::SP_AUTODOWNLOAD_DIR, Subdirectory::BASESET_DIR);
-	tempdirname += basename;
 	AppendPathSeparator(tempdirname);
 	FioCreateDirectory(tempdirname);
 

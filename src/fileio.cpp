@@ -518,7 +518,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 
 	_tar_list[this->subdir][filename] = std::string{};
 
-	std::string filename_base = StrLastPathSegment(filename);
+	std::string filename_base{StrLastPathSegment(filename)};
 	SimplifyFileName(filename_base);
 
 	TarHeader th;

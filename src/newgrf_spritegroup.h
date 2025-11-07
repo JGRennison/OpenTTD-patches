@@ -91,8 +91,6 @@ public:
 	GrfSpecFeature feature{};
 	SpriteGroupFlags sg_flags = SGF_NONE;
 
-	virtual SpriteID GetResult() const { return 0; }
-	virtual uint8_t GetNumResults() const { return 0; }
 	virtual uint16_t GetCallbackResult() const { return CALLBACK_FAILED; }
 
 	static const SpriteGroup *Resolve(const SpriteGroup *group, ResolverObject &object, bool top_level = true);
@@ -102,6 +100,8 @@ public:
 /* 'Real' sprite groups contain a list of other result or callback sprite
  * groups. */
 struct RealSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_REAL;
+
 	RealSpriteGroup() : SpriteGroup(SGT_REAL) {}
 
 	/* Loaded = in motion, loading = not moving
@@ -491,6 +491,8 @@ enum DeterministicSpriteGroupFlags : uint16_t {
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
 struct DeterministicSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_DETERMINISTIC;
+
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
 
 	VarSpriteGroupScope var_scope{};
@@ -523,6 +525,8 @@ enum RandomizedSpriteGroupCompareMode : uint8_t {
 };
 
 struct RandomizedSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_RANDOMIZED;
+
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
 
 	VarSpriteGroupScope var_scope{};  ///< Take this object:
@@ -544,6 +548,8 @@ extern bool _grfs_loaded_with_sg_shadow_enable;
 /* This contains a callback result. A failed callback has a value of
  * CALLBACK_FAILED */
 struct CallbackResultSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_CALLBACK;
+
 	/**
 	 * Creates a spritegroup representing a callback result
 	 * @param result The result as returned from TransformResultValue
@@ -573,12 +579,16 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 };
 
 struct CalculatedResultSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_CALCULATED_RESULT;
+
 	CalculatedResultSpriteGroup() : SpriteGroup(SGT_CALCULATED_RESULT) {}
 };
 
 /* A result sprite group returns the first SpriteID and the number of
  * sprites in the set */
 struct ResultSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_RESULT;
+
 	/**
 	 * Creates a spritegroup representing a sprite number result.
 	 * @param sprite The sprite number.
@@ -594,15 +604,14 @@ struct ResultSpriteGroup : SpriteGroup {
 
 	uint8_t num_sprites = 0;
 	SpriteID sprite = 0;
-
-	SpriteID GetResult() const override { return this->sprite; }
-	uint8_t GetNumResults() const override { return this->num_sprites; }
 };
 
 /**
  * Action 2 sprite layout for houses, industry tiles, objects and airport tiles.
  */
 struct TileLayoutSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_TILELAYOUT;
+
 	TileLayoutSpriteGroup() : SpriteGroup(SGT_TILELAYOUT) {}
 	~TileLayoutSpriteGroup() {}
 
@@ -612,6 +621,8 @@ struct TileLayoutSpriteGroup : SpriteGroup {
 };
 
 struct IndustryProductionSpriteGroup : SpriteGroup {
+	static constexpr SpriteGroupType TYPE = SGT_INDUSTRY_PRODUCTION;
+
 	IndustryProductionSpriteGroup() : SpriteGroup(SGT_INDUSTRY_PRODUCTION) {}
 
 	uint8_t version = 0; ///< Production callback version used, or 0xFF if marked invalid
@@ -695,9 +706,16 @@ public:
 	 * Resolve SpriteGroup.
 	 * @return Result spritegroup.
 	 */
-	const SpriteGroup *Resolve()
+	template <typename TSpriteGroup = SpriteGroup>
+	const TSpriteGroup *Resolve()
 	{
-		return SpriteGroup::Resolve(this->root_spritegroup, *this);
+		const SpriteGroup *sg = SpriteGroup::Resolve(this->root_spritegroup, *this);
+		if constexpr (!std::is_same_v<TSpriteGroup, SpriteGroup>) {
+			if (sg == nullptr || sg->type != TSpriteGroup::TYPE) return nullptr;
+			return static_cast<const TSpriteGroup *>(sg);
+		} else {
+			return sg;
+		}
 	}
 
 	/**

@@ -1288,7 +1288,7 @@ void NetworkGameLoop()
 					extern void NetworkSendCommandImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, CompanyID company);
 					NetworkSendCommandImplementation(cp->command_container.cmd, cp->command_container.tile, *cp->command_container.payload, (StringID)0, CommandCallback::None, 0, cp->company);
 					Debug(net, 0, "injecting: {}; {:02x}; {:06x}; {:08x} ({})",
-							debug_date_dumper().HexDate(), (int)_current_company, cp->command_container.tile, cp->command_container.cmd, GetCommandName(cp->command_container.cmd));
+							debug_date_dumper().HexDate(), _current_company, cp->command_container.tile, cp->command_container.cmd, GetCommandName(cp->command_container.cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
