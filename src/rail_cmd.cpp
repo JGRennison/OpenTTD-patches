@@ -2043,10 +2043,10 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
 			return true;
 
 		case MP_TUNNELBRIDGE: {
-			if (!remove && IsTunnelBridgeWithSignalSimulation(tile)) return false;
+			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return false;
+			if (!remove && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetAcrossTunnelBridgeTrackBits(tile), TrackdirToTrack(trackdir))) return false;
 			TileIndex orig_tile = tile; // backup old value
 
-			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return false;
 			signal_ctr += IsDiagonalTrackdir(trackdir) ? 2 : 1;
 			if (GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) {
 				/* Skip to end of tunnel or bridge
