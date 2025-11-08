@@ -2,6 +2,25 @@
 
 * * *
 
+### v0.68.0 (2025-11-08)
+* Fix crash which could occur when saving a screenshot.
+* Fix crash which could occur when clearing crashed trains from inside depots.
+* Fix crash which could occur when road vehicles, aircraft are ships are deleted and the corresponding slot window is open.
+* Fix incorrect path reservation behaviour, including excessive reservation length, in some cases involving many reserve-through signals.
+* Fix signal dragging over tunnels/bridges in fixed signal spacing mode.
+* Fix signal dragging over the bridge-bypassing track of signalled bridges with dual-track custom bridge heads.
+* Fix crashes which could occur in some debug/console texts for non-English languages.
+* Fix multiplayer desync which could occur with certain industry NewGRFs.
+* Fix error message when removing station part fails due to path reservation.
+* Extend leftover timetible ticks setting to also allow showing leftover timetable times in seconds.
+* Add setting to show most recent scheduled dispatch route ID in the vehicle's window title.
+* Only highlight selected pane in single button mode of dual pane train purchase window.
+* Plans:
+  * Fix visibility for individual plan lines being ignored when drawing.
+  * Preserve selection of individual plan lines in the plan window when plans are updated.
+  * Add settings to control the drawing style of plan lines.
+* Bump trunk base from commit ac3ed9f3ade8040a06d6f7eb51761ca5b6c005ac to commit 397319987904bda685e7a242ae30e2e589530b3a.
+
 ### v0.67.1 (2025-10-14)
 * Fix crash that could occur with invalid/missing NewGRF text strings.
 * Fix elevated road type vehicles not ignoring non-elevated road vehicles in collision detection.
