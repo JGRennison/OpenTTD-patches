@@ -381,6 +381,31 @@ bool TraceRestrictIsVehicleInSlotGroup(const TraceRestrictSlotGroup *sg, Owner o
 	return member;
 }
 
+static const Order *TraceRestrictGetNextGotoOrder(const Train *v)
+{
+	if (v->orders == nullptr) return nullptr;
+	if (v->orders->GetNumOrders() == 0) return nullptr;
+
+	const auto num_orders = v->GetNumOrders();
+	const uint max_depth = std::min<uint>(32, num_orders);
+	uint order_idx = v->cur_real_order_index;
+	for (uint depth = 0; depth < max_depth; depth++) {
+		const Order *order = v->GetOrder(order_idx);
+		if (depth != 0) {
+			if (order_idx == v->cur_real_order_index) return nullptr;
+			if (order->IsGotoOrder()) return order;
+		}
+		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+			order_idx = order->GetConditionSkipToOrder();
+		} else {
+			order_idx++;
+			if (order_idx >= num_orders) order_idx = 0;
+		}
+	}
+
+	return nullptr;
+}
+
 /**
  * Execute program on train and store results in out
  * @p v Vehicle (may not be nullptr)
@@ -437,15 +462,9 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_COND_NEXT_ORDER: {
-						if (v->orders == nullptr) break;
-						if (v->orders->GetNumOrders() == 0) break;
-
-						const Order *current_order = v->GetOrder(v->cur_real_order_index);
-						for (const Order *order = v->orders->GetNext(current_order); order != current_order; order = v->orders->GetNext(order)) {
-							if (order->IsGotoOrder()) {
-								result = TestOrderCondition(order, item);
-								break;
-							}
+						const Order *order = TraceRestrictGetNextGotoOrder(v);
+						if (order != nullptr) {
+							result = TestOrderCondition(order, item);
 						}
 						break;
 					}
@@ -737,16 +756,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRTDCAF_NEXT_ORDER:
-								if (v->orders == nullptr) break;
-								if (v->orders->GetNumOrders() == 0) break;
-
-								const Order *current_order = v->GetOrder(v->cur_real_order_index);
-								for (const Order *order = v->orders->GetNext(current_order); order != current_order; order = v->orders->GetNext(order)) {
-									if (order->IsGotoOrder()) {
-										o = order;
-										break;
-									}
-								}
+								o = TraceRestrictGetNextGotoOrder(v);
 								break;
 						}
 
