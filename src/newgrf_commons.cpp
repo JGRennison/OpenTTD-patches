@@ -817,8 +817,8 @@ void VariableGRFFilePropsBase::SetSpriteGroupImpl(VariableGRFFilePropsBase::Inde
 		const SpriteGroup **new_groups = reinterpret_cast<const SpriteGroup **>(MallocT<char>(new_capacity * (sizeof(GroupType) + sizeof(IndexType))));
 		IndexType *new_keys = reinterpret_cast<IndexType *>(new_groups + new_capacity);
 
-		MemCpyT(new_keys, keys, this->size );
-		MemCpyT(new_groups, groups, this->size );
+		MemCpyT(new_keys, keys, this->size);
+		MemCpyT(new_groups, groups, this->size);
 		new_keys[insert_pos] = index;
 		new_groups[insert_pos] = spritegroup;
 		MemCpyT(new_keys + insert_pos + 1, keys + insert_pos, this->size - insert_pos);
