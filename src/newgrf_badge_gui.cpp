@@ -195,9 +195,12 @@ public:
 	{
 		for (const auto &gc : gui_classes->GetClasses()) {
 			if (gc.column_group != 0) continue;
-			dim.width += gc.size.width + WidgetDimensions::scaled.hsep_normal;
-			dim.height = std::max(dim.height, gc.size.height);
+			dim.width += ScaleGUITrad(gc.size.width) + WidgetDimensions::scaled.hsep_normal;
+			dim.height = std::max<uint>(dim.height, ScaleGUITrad(gc.size.height));
 		}
+
+		/* Remove trailing `hsep_normal` spacer. */
+		if (dim.width > 0) dim.width -= WidgetDimensions::scaled.hsep_normal;
 	}
 
 	uint Height() const override
@@ -207,13 +210,13 @@ public:
 
 	uint Width() const override
 	{
-		return this->dim.width + WidgetDimensions::scaled.hsep_wide + this->TBase::Width();
+		return this->dim.width + WidgetDimensions::scaled.hsep_normal + this->TBase::Width();
 	}
 
 	int OnClick(const Rect &r, const Point &pt) const override
 	{
 		bool rtl = TEnd ^ (_current_text_dir == TD_RTL);
-		return this->TBase::OnClick(r.Indent(this->dim.width + WidgetDimensions::scaled.hsep_wide, rtl), pt);
+		return this->TBase::OnClick(r.Indent(this->dim.width + WidgetDimensions::scaled.hsep_normal, rtl), pt);
 	}
 
 	void Draw(const Rect &full, const Rect &r, bool sel, int click_result, Colours bg_colour) const override
@@ -222,7 +225,7 @@ public:
 
 		DrawBadgeColumn(r.WithWidth(this->dim.width, rtl), 0, *this->gui_classes, this->badges, this->feature, this->introduction_date, PAL_NONE);
 
-		this->TBase::Draw(full, r.Indent(this->dim.width + WidgetDimensions::scaled.hsep_wide, rtl), sel, click_result, bg_colour);
+		this->TBase::Draw(full, r.Indent(this->dim.width + WidgetDimensions::scaled.hsep_normal, rtl), sel, click_result, bg_colour);
 	}
 
 private:
