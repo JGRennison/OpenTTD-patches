@@ -288,17 +288,16 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 		const Station *station = Station::From(st);
 		/* Pick the first cargo that we have waiting */
 		for (const auto &[cargo, spritegroup] : roadstopspec->grf_prop) {
-			if (cargo < NUM_CARGO && station->goods[cargo].CargoTotalCount() > 0) {
+			if (cargo < NUM_CARGO && station->goods[cargo].CargoTotalCount() > 0 && spritegroup != nullptr) {
 				ctype = cargo;
 				this->root_spritegroup = spritegroup;
 				break;
 			}
 		}
+	}
 
-		if (this->root_spritegroup == nullptr) {
-			ctype = CargoGRFFileProps::SG_DEFAULT_NA;
-			this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
-		}
+	if (ctype == CargoGRFFileProps::SG_DEFAULT_NA) {
+		this->root_spritegroup = roadstopspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	if (this->root_spritegroup == nullptr) {

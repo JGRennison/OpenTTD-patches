@@ -632,16 +632,16 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 		const Station *st = Station::From(this->station_scope.st);
 		/* Pick the first cargo that we have waiting */
 		for (const auto &[cargo, spritegroup] : statspec->grf_prop) {
-			if (cargo < NUM_CARGO && st->goods[cargo].CargoTotalCount() > 0) {
+			if (cargo < NUM_CARGO && st->goods[cargo].CargoTotalCount() > 0 && spritegroup != nullptr) {
 				ctype = cargo;
+				this->root_spritegroup = spritegroup;
 				break;
 			}
 		}
+	}
 
-		if (this->root_spritegroup == nullptr) {
-			ctype = CargoGRFFileProps::SG_DEFAULT_NA;
-			this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
-		}
+	if (ctype == CargoGRFFileProps::SG_DEFAULT_NA) {
+		this->root_spritegroup = statspec->grf_prop.GetSpriteGroup(ctype);
 	}
 
 	if (this->root_spritegroup == nullptr) {
