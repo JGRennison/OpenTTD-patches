@@ -3837,11 +3837,13 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 /* FlushAdvanceOrderIndexDeferred must be called after calling this */
 VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 {
-	int depth = 0;
+	const auto num_orders = v->GetNumOrders();
+	const uint max_depth = std::min<uint>(32, num_orders);
+	uint depth = 0;
 
 	do {
 		/* Wrap around. */
-		if (index >= v->GetNumOrders()) index = 0;
+		if (index >= num_orders) index = 0;
 
 		const Order *order = v->GetOrder(index);
 		assert(order != nullptr);
@@ -3918,10 +3920,10 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 		 * orders can lead to an infinite loop. */
 		++index;
 		depth++;
-	} while (depth < v->GetNumOrders());
+	} while (depth < max_depth);
 
 	/* Wrap around. */
-	if (index >= v->GetNumOrders()) index = 0;
+	if (index >= num_orders) index = 0;
 
 	return index;
 }
