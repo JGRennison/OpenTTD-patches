@@ -1284,6 +1284,8 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Исто
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Показать историю ожидающих грузов
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Информация о путешествиях в реальном времени
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - В направлении {STRING}
+STR_DEPARTURES_CAPTION_VEHICLE_FILTER                           :{WHITE}{STRING} - Общие задания: {VEHICLE}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Установите режим фильтрации грузов для прибытий/отбытий
 STR_DEPARTURES_DEPARTURES                                       :Прибытия
 STR_DEPARTURES_ARRIVALS                                         :Отбытия
@@ -1296,6 +1298,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Пуст
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Также показывать отбытия, прибытия и станции, через которые транспортное средство проходит пустым или не загружает/выгружает груз.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}через
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Показать транспортные средства, которые не останавливаются здесь по расписанию
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}Фильтр
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}Показывать только прибытия/отправления в определенном направлении, или из отдельной группы заданий.
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Показать расписание поездов
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Показать расписание автотранспорта
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Показать расписание судов
@@ -1314,16 +1318,16 @@ STR_DEPARTURES_VIA                                              :{ORANGE}чер�
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
-STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Вызов по адресу:
+STR_DEPARTURES_CALLING_AT                                       :{ORANGE}В направлении:
 STR_DEPARTURES_CALLING_AT_STATION                               :, {STRING}
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          : и {STRING}
 STR_DEPARTURES_CALLING_AT_LIST_SUFFIX                           :.
-STR_DEPARTURES_CALLING_AT_LIST_SUFFIX_SMART_TERMINUS            :. Эта служба продолжает {STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_SUFFIX_SMART_TERMINUS            :. Следует до {STRING}.
 STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} и {STRING}
-STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Установите, показывать ли отправления в реальном времени или 24-часовое расписание отправлений по расписанию..
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Установите, показывать ли отправления в реальном времени или 24-часовое расписание отправлений по расписанию.
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :Реальное время
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24-часовое расписание
 
