@@ -110,13 +110,7 @@ inline WindowClass GetWindowClassForVehicleType(VehicleType vt)
 	}
 }
 
-inline void InvalidateVehicleListWindows(VehicleType vt)
-{
-	extern std::bitset<WC_END> _invalidate_deferred_window_types;
-	_invalidate_deferred_window_types.set(WC_TRAINS_LIST + vt);
-	_invalidate_deferred_window_types.set(WC_TRACE_RESTRICT_SLOTS);
-	_invalidate_deferred_window_types.set(WC_DEPARTURES_BOARD);
-}
+void InvalidateVehicleListWindows(VehicleType vt);
 
 typedef std::vector<const Vehicle *> VehicleList;
 struct GUIVehicleGroup;

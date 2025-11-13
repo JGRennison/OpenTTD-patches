@@ -49,14 +49,8 @@ void InvalidateWindowClassesData(WindowClass cls, T data, bool gui_scope = false
 
 inline void InvalidateWindowClassesDeferred(WindowClass cls)
 {
-	extern std::bitset<WC_END> _invalidate_deferred_window_types;
-	if (cls < WC_END) _invalidate_deferred_window_types.set(cls);
-}
-
-inline bool WindowClassHasDeferredInvalidate(WindowClass cls)
-{
-	extern std::bitset<WC_END> _invalidate_deferred_window_types;
-	return cls < WC_END && _invalidate_deferred_window_types[cls];
+	/* Temporary */
+	InvalidateWindowClassesData(cls, 0);
 }
 
 void CloseNonVitalWindows();

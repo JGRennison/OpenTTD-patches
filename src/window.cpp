@@ -92,7 +92,6 @@ bool _mouse_hovering;      ///< The mouse is hovering over the same point.
 SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
 
 std::bitset<WC_END> _present_window_types;
-std::bitset<WC_END> _invalidate_deferred_window_types;
 
 /**
  * List of all WindowDescs.
@@ -1998,7 +1997,6 @@ void InitWindowSystem()
 	_scrolling_viewport = nullptr;
 	_scrolling_viewport_bound = { 0, 0, 0, 0 };
 	_mouse_hovering = false;
-	_invalidate_deferred_window_types.reset();
 
 	SetupWidgetDimensions();
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
@@ -3311,19 +3309,6 @@ void InputLoop()
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());
 
-	/* Handle deferred invalidations before processing any form of input.
-	 * Check again in ProcessScheduledInvalidations to handle further invalidations created during input processing. */
-	_invalidate_deferred_window_types &= _present_window_types;
-	if (_invalidate_deferred_window_types.any()) {
-		for (Window *w : Window::Iterate()) {
-			if (w->window_class < WC_END && _invalidate_deferred_window_types[w->window_class]) {
-				w->OnInvalidateData(0, true);
-				w->SetDirty();
-			}
-		}
-		_invalidate_deferred_window_types.reset();
-	}
-
 	CheckSoftLimit();
 
 	Window::DeleteClosedWindows();
@@ -3384,7 +3369,6 @@ void UpdateWindows()
 		w->ProcessScheduledInvalidations();
 		w->ProcessHighlightedInvalidations();
 	}
-	_invalidate_deferred_window_types.reset(); // processed in ProcessScheduledInvalidations
 
 	static GUITimer window_timer = GUITimer(1);
 	if (window_timer.Elapsed(delta_ms)) {
@@ -3532,11 +3516,6 @@ void Window::ProcessScheduledInvalidations()
 	}
 	if (!this->scheduled_invalidation_data.empty()) this->SetDirty();
 	this->scheduled_invalidation_data.clear();
-
-	if (this->window_class < WC_END && _invalidate_deferred_window_types[this->window_class]) {
-		this->OnInvalidateData(0, true);
-		this->SetDirty();
-	}
 }
 
 /**

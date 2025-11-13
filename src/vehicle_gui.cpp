@@ -2900,7 +2900,6 @@ void DirtyVehicleListWindowForVehicle(const Vehicle *v)
 	if (!HaveWindowByClass(cls) && !HaveWindowByClass(WC_TRACE_RESTRICT_SLOTS)) return;
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls || (w->window_class == WC_TRACE_RESTRICT_SLOTS && VehicleListIdentifier::UnPackVehicleType(w->window_number) == vt)) {
-			if (WindowClassHasDeferredInvalidate(w->window_class)) continue;
 			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
 			if (listwin->vehgroups.NeedRebuild()) continue;
 			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehgroups.size());
@@ -4857,4 +4856,11 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 	}
 
 	UpdateCursorSize();
+}
+
+void InvalidateVehicleListWindows(VehicleType vt)
+{
+	InvalidateWindowClassesData(WC_TRAINS_LIST + vt);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
 }
