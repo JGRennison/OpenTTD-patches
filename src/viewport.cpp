@@ -7090,7 +7090,7 @@ static void SetWindowDirtyForViewportCatchment()
 	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
 	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint->index);
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
-	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesDeferred(WC_TRACE_RESTRICT);
+	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
 static void ClearViewportCatchment()
@@ -7173,7 +7173,7 @@ void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, 
 		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	}
-	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesDeferred(WC_TRACE_RESTRICT);
+	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
 int GetSlopeTreeBrightnessAdjust(Slope slope)

@@ -176,7 +176,7 @@ public:
 		/* more cleanup */
 		*this->create_window_open = false;
 		CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 		this->Window::Close();
 	}
 

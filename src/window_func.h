@@ -47,12 +47,6 @@ void InvalidateWindowClassesData(WindowClass cls, int data = 0, bool gui_scope =
 template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
 void InvalidateWindowClassesData(WindowClass cls, T data, bool gui_scope = false) { InvalidateWindowClassesData(cls, data.base(), gui_scope); }
 
-inline void InvalidateWindowClassesDeferred(WindowClass cls)
-{
-	/* Temporary */
-	InvalidateWindowClassesData(cls, 0);
-}
-
 void CloseNonVitalWindows();
 void CloseAllNonVitalWindows();
 void DeleteAllMessages();

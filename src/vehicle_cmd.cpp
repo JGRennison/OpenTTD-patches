@@ -926,7 +926,7 @@ CommandCost CmdChangeFlagTemplateReplace(DoCommandFlags flags, TemplateID templa
 			default:
 				return CMD_ERROR;
 		}
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -961,7 +961,7 @@ CommandCost CmdRenameTemplateReplace(DoCommandFlags flags, TemplateID template_i
 			template_vehicle->name = name;
 		}
 
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1218,7 +1218,7 @@ CommandCost CmdReplaceTemplateVehicle(DoCommandFlags flags, TemplateID template_
 			MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 		}
 
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1261,7 +1261,7 @@ CommandCost CmdTemplateVehicleFromTrain(DoCommandFlags flags, VehicleID veh_id)
 
 		tmp->First()->SetRealLength(CeilDiv(init_clicked->gcache.cached_total_length * 10, TILE_SIZE));
 
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1288,7 +1288,7 @@ CommandCost CmdDeleteTemplateVehicle(DoCommandFlags flags, TemplateID template_i
 		delete del;
 
 		InvalidateWindowClassesData(WC_CREATE_TEMPLATE, 0);
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1313,7 +1313,7 @@ CommandCost CmdIssueTemplateReplacement(DoCommandFlags flags, GroupID group_id, 
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		IssueTemplateReplacement(group_id, template_id);
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1333,7 +1333,7 @@ CommandCost CmdDeleteTemplateReplacement(DoCommandFlags flags, GroupID group_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		RemoveTemplateReplacement(group_id);
-		InvalidateWindowClassesDeferred(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
@@ -1666,7 +1666,7 @@ CommandCost CmdRenameVehicle(DoCommandFlags flags, VehicleID veh_id, const std::
 			v->name = text;
 		}
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 1);
-		InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
+		InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
 		MarkWholeScreenDirty();
 	}
 

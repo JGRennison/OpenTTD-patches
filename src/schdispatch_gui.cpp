@@ -2248,7 +2248,7 @@ void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber
 
 void SchdispatchInvalidateWindows(const Vehicle *v)
 {
-	if (_pause_mode.Any()) InvalidateWindowClassesDeferred(WC_DEPARTURES_BOARD);
+	if (_pause_mode.Any()) InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
 
 	if (!HaveWindowByClass(WC_VEHICLE_TIMETABLE) && !HaveWindowByClass(WC_SCHDISPATCH_SLOTS) && !HaveWindowByClass(WC_VEHICLE_ORDERS)) return;
 
