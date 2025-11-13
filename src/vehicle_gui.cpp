@@ -4860,7 +4860,21 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 
 void InvalidateVehicleListWindows(VehicleType vt)
 {
-	InvalidateWindowClassesData(WC_TRAINS_LIST + vt);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	extern std::bitset<WC_END> _present_window_types;
+	std::bitset<WC_END> types;
+
+	/* These window types only require one invalidation, not a second queued one. */
+	types.set(WC_TRAINS_LIST + vt);
+	types.set(WC_TRACE_RESTRICT_SLOTS);
+	types.set(WC_DEPARTURES_BOARD);
+
+	types &= _present_window_types;
+
+	if (types.none()) return; // No window types of interest present
+
+	for (Window *w : Window::Iterate()) {
+		if (types[w->window_class]) {
+			w->InvalidateData(0);
+		}
+	}
 }
