@@ -2110,7 +2110,8 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 			default:
 				if (IsInsideMM(widget, this->badge_filters.first, this->badge_filters.second)) {
-					ShowDropDownList(this, this->GetWidget<NWidgetBadgeFilter>(widget)->GetDropDownList(), -1, widget, 0, DDMF_NONE);
+					PaletteID palette = SPR_2CCMAP_BASE + Company::Get(_local_company)->GetCompanyRecolourOffset(LS_DEFAULT);
+					ShowDropDownList(this, this->GetWidget<NWidgetBadgeFilter>(widget)->GetDropDownList(palette), -1, widget, 0, DDMF_NONE);
 				}
 				break;
 		}
