@@ -60,6 +60,7 @@ class ExtraViewportWindow : public Window {
 public:
 	ExtraViewportWindow(WindowDesc &desc, int window_number, TileIndex tile) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->InitNested(window_number);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_EV_VIEWPORT);

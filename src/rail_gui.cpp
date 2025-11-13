@@ -537,6 +537,7 @@ struct BuildRailToolbarWindow : Window {
 
 	BuildRailToolbarWindow(WindowDesc &desc, RailType railtype) : Window(desc), railtype(railtype)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		if (!_settings_client.gui.show_rail_polyline_tool) {
 			this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(SZSP_NONE);
@@ -1776,6 +1777,7 @@ private:
 public:
 	BuildSignalWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->SetSignalUIMode();
 		this->FinishInitNested(TRANSPORT_RAIL);

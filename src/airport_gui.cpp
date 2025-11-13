@@ -85,6 +85,7 @@ struct BuildAirToolbarWindow : Window {
 
 	BuildAirToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->InitNested(window_number);
 		this->OnInvalidateData();
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);

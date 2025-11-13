@@ -106,6 +106,7 @@ private:
 public:
 	ErrmsgWindow(const ErrorMessageData &data) : Window(data.HasFace() ? _errmsg_face_desc : _errmsg_desc), ErrorMessageData(data)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->InitNested();
 	}
 

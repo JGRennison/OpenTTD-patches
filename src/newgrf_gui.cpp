@@ -160,6 +160,8 @@ struct NewGRFParametersWindow : public Window {
 		grf_config(c),
 		editable(editable)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
+
 		this->action14present = (this->grf_config.num_valid_params != GRFConfig::MAX_NUM_PARAMS || !this->grf_config.param_info.empty());
 
 		this->CreateNestedTree();

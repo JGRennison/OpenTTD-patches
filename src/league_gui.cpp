@@ -88,6 +88,7 @@ private:
 public:
 	PerformanceLeagueWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->InitNested(window_number);
 		this->companies.ForceRebuild();
 		this->companies.NeedResort();
@@ -292,6 +293,7 @@ private:
 public:
 	ScriptLeagueWindow(WindowDesc &desc, WindowNumber table) : Window(desc), table(table)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->BuildTable();
 		this->InitNested(table);
 	}

@@ -559,6 +559,8 @@ public:
 
 	TownViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
+
 		this->CreateNestedTree();
 
 		this->town = Town::Get(window_number);
@@ -1055,6 +1057,8 @@ private:
 public:
 	TownDirectoryWindow(WindowDesc &desc) : Window(desc), townname_editbox(MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_TOWN_NAME_CHARS)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
+
 		this->CreateNestedTree();
 
 		this->vscroll = this->GetScrollbar(WID_TD_SCROLLBAR);

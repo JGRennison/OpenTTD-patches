@@ -273,6 +273,7 @@ class ReplaceVehicleWindow : public Window {
 public:
 	ReplaceVehicleWindow(WindowDesc &desc, VehicleType vehicletype, GroupID id_g) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->vehicle_type = vehicletype;
 		this->engines[0].ForceRebuild();
 		this->engines[1].ForceRebuild();

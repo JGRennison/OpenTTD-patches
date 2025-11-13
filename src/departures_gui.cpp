@@ -387,6 +387,7 @@ public:
 	struct DepotTag{};
 	DeparturesWindow(WindowDesc &desc, DepotTag tag, TileIndex tile, VehicleType vt) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueueZero;
 		this->ConstructWidgetLayout(DeparturesWindow::GetDepotWindowNumber(tile));
 
 		this->source_type = DST_DEPOT;

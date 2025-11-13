@@ -2395,6 +2395,8 @@ private:
 public:
 	VehicleListWindow(WindowDesc &desc, WindowNumber window_number, const VehicleListIdentifier &vli) : BaseVehicleListWindow(desc, vli)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
+
 		this->CreateNestedTree();
 
 		this->GetWidget<NWidgetStacked>(WID_VL_FILTER_BY_CARGO_SEL)->SetDisplayedPlane((this->vli.type == VL_SHARED_ORDERS || this->vli.type == VL_SINGLE_VEH) ? SZSP_NONE : 0);
@@ -3052,6 +3054,7 @@ struct VehicleDetailsWindow : Window {
 	/** Initialize a newly created vehicle details window */
 	VehicleDetailsWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		const Vehicle *v = Vehicle::Get(window_number);
 
 		this->CreateNestedTree();

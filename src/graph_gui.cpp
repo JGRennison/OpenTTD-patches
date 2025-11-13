@@ -580,6 +580,7 @@ protected:
 			format_str_y_axis(format_str_y_axis)
 	{
 		SetWindowDirty(WC_GRAPH_LEGEND, 0);
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 	}
 
 	void InitializeWindow(WindowNumber number)

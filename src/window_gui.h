@@ -269,6 +269,13 @@ enum class WindowFlag : uint8_t {
 };
 using WindowFlags = EnumBitSet<WindowFlag, uint16_t>;
 
+enum class WindowInvalidationPolicy : uint8_t {
+	Normal,          ///< Normal/default policy
+	NoQueue,         ///< No queueing of GUI-mode invalidations
+	NoQueueZero,     ///< No queueing of GUI-mode invalidations, for values of 0
+	QueueSingle,     ///< Queue only a single GUI-mode invalidation
+};
+
 static const int TIMEOUT_DURATION = 7; ///< The initial timeout value for WindowFlag::Timeout.
 static const int WHITE_BORDER_DURATION = 3; ///< The initial timeout value for WindowFlag::WhiteBorder.
 
@@ -360,6 +367,8 @@ public:
 	ResizeInfo resize{}; ///< Resize information
 
 	Owner owner = INVALID_OWNER; ///< The owner of the content shown in this window. Company colour is acquired from this variable.
+
+	WindowInvalidationPolicy invalidation_policy = WindowInvalidationPolicy::Normal; ///< Window invalidation policy
 
 	ViewportData *viewport = nullptr; ///< Pointer to viewport data, if present.
 	NWidgetViewport *viewport_widget = nullptr; ///< Pointer to viewport widget, if present.

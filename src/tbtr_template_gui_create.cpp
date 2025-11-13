@@ -141,6 +141,7 @@ private:
 public:
 	TemplateCreateWindow(WindowDesc &desc, TemplateVehicle *to_edit, bool *window_open) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->hscroll = this->GetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL);
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);

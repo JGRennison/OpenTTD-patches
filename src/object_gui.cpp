@@ -125,6 +125,7 @@ class BuildObjectWindow : public PickerWindow {
 public:
 	BuildObjectWindow(WindowDesc &desc, WindowNumber) : PickerWindow(desc, nullptr, 0, ObjectPickerCallbacks::instance)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		ResetObjectToPlace();
 		this->ConstructWindow();
 	}

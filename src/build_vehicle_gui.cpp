@@ -2538,6 +2538,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	BuildVehicleWindowTrainAdvanced(WindowDesc &desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VEH_TRAIN, virtual_train_out)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
+
 		this->loco.sel_engine             = EngineID::Invalid();
 		this->loco.sort_criteria          = _last_sort_criteria_loco;
 		this->loco.descending_sort_order  = _last_sort_order_loco;

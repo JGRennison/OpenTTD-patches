@@ -2247,6 +2247,7 @@ public:
 	TraceRestrictWindow(WindowDesc &desc, TileIndex tile, Track track)
 			: Window(desc), tile(tile), track(track)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(TR_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_AUX)->SetDisplayedPlane(SZSP_NONE);
@@ -4549,6 +4550,8 @@ private:
 public:
 	TraceRestrictSlotWindow(WindowDesc &desc, WindowNumber window_number, const VehicleListIdentifier &vli) : BaseVehicleListWindow(desc, vli)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
+
 		this->CreateNestedTree();
 
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
@@ -5340,6 +5343,7 @@ private:
 public:
 	TraceRestrictCounterWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->ctr_company = (Owner)window_number;
 		this->CreateNestedTree();
 

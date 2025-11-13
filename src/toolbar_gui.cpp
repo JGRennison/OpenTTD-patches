@@ -2172,6 +2172,7 @@ struct MainToolbarWindow : Window {
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;
@@ -2562,6 +2563,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->InitNested(0);
 
 		_last_started_action = CBF_NONE;

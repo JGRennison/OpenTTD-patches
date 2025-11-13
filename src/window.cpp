@@ -3496,13 +3496,35 @@ void Window::ProcessScheduledResize()
  */
 void Window::InvalidateData(int data, bool gui_scope)
 {
-	if (!gui_scope) {
-		/* Schedule GUI-scope invalidation for next redraw. */
-		this->scheduled_invalidation_data.push_back(data);
-	} else {
-		this->SetDirty();
-	}
 	this->OnInvalidateData(data, gui_scope);
+
+	if (!gui_scope) {
+		bool enqueue = true;
+		switch (this->invalidation_policy) {
+			case WindowInvalidationPolicy::Normal:
+				enqueue = true;
+				break;
+
+			case WindowInvalidationPolicy::NoQueue:
+				enqueue = false;
+				break;
+
+			case WindowInvalidationPolicy::NoQueueZero:
+				enqueue = (data != 0);
+				break;
+
+			case WindowInvalidationPolicy::QueueSingle:
+				enqueue = this->scheduled_invalidation_data.empty();
+				break;
+		}
+		if (enqueue) {
+			/* Schedule GUI-scope invalidation for next redraw. */
+			this->scheduled_invalidation_data.push_back(data);
+			return;
+		}
+	}
+
+	this->SetDirty();
 }
 
 /**

@@ -249,6 +249,7 @@ class ProgramWindow : public Window {
 public:
 	ProgramWindow(WindowDesc &desc, SignalReference ref) : Window(desc), tile(ref.tile), track(ref.track)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(PROGRAM_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX)->SetDisplayedPlane(SZSP_NONE);

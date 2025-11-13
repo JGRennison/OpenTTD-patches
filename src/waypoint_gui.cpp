@@ -78,6 +78,7 @@ public:
 	 */
 	WaypointWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->wp = Waypoint::Get(window_number);
 		if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
 			this->vt = HasBit(this->wp->waypoint_flags, WPF_ROAD) ? VEH_ROAD : VEH_TRAIN;

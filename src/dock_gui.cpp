@@ -100,6 +100,7 @@ struct BuildDocksToolbarWindow : Window {
 
 	BuildDocksToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		if (_game_mode != GM_EDITOR) {
 			this->GetWidget<NWidgetStacked>(WID_DT_RIVER_SEL)->SetDisplayedPlane(_settings_game.construction.enable_build_river ? 0 : SZSP_NONE);

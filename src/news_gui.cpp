@@ -1211,6 +1211,7 @@ struct MessageHistoryWindow : Window {
 
 	MessageHistoryWindow(WindowDesc &desc) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_MH_SCROLLBAR);
 		this->FinishInitNested(); // Initializes 'this->line_height' and 'this->date_width'.

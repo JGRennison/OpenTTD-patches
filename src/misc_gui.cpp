@@ -1450,6 +1450,7 @@ struct ModifierKeyToggleWindow : Window {
 	ModifierKeyToggleWindow(WindowDesc &desc, WindowNumber window_number) :
 			Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->InitNested(window_number);
 		this->UpdateButtons();
 	}

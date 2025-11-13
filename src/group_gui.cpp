@@ -470,6 +470,8 @@ private:
 public:
 	VehicleGroupWindow(WindowDesc &desc, WindowNumber window_number, const VehicleListIdentifier &vli) : BaseVehicleListWindow(desc, vli)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
+
 		this->CreateNestedTree();
 
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
@@ -585,8 +587,6 @@ public:
 			this->vli.SetIndex(ALL_GROUP);
 			HideDropDownMenu(this);
 		}
-
-		this->SetDirty();
 	}
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override

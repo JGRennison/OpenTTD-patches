@@ -142,6 +142,7 @@ struct SignListWindow : Window, SignList {
 
 	SignListWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc), filter_editbox(MAX_LENGTH_SIGN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_SIGN_NAME_CHARS)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SIL_SCROLLBAR);
 		this->FinishInitNested(window_number);

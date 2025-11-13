@@ -866,6 +866,7 @@ class IndustryViewWindow : public Window
 public:
 	IndustryViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->flags.Set(WindowFlag::DisableVpScroll);
 		this->info_height = WidgetDimensions::scaled.framerect.Vertical() + 2 * GetCharacterHeight(FS_NORMAL); // Info panel has at least two lines text.
 
@@ -1706,6 +1707,8 @@ protected:
 public:
 	IndustryDirectoryWindow(WindowDesc &desc, WindowNumber) : Window(desc), industry_editbox(MAX_FILTER_LENGTH * MAX_CHAR_LENGTH, MAX_FILTER_LENGTH)
 	{
+		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
+
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ID_VSCROLLBAR);
 		this->hscroll = this->GetScrollbar(WID_ID_HSCROLLBAR);
