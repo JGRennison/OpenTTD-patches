@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.68.1 (2025-11-14)
+* Fix crash when using "send to depot and sell" from vehicle list windows to immediately sell vehicles in depots.
+* Fix crash with some currency replacement NewGRFs.
+* Fix incorrect display of some NewGRF rail stations/waypoints and road stops.
+* Scheduled dispatch:
+  * Fix incorrect timetable autofill behaviour with scheduled dispatch.
+  * Fix default end time in add slot window for schedules ending at midnight.
+* Routing restrictions: follow unconditional jumps in next order conditions.
+
 ### v0.68.0 (2025-11-08)
 * Fix crash which could occur when saving a screenshot.
 * Fix crash which could occur when clearing crashed trains from inside depots.
