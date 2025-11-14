@@ -1853,7 +1853,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		const DispatchSchedule &ds = parent->GetSelectedSchedule();
 		this->start = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick()).ToClockFaceMinutes();
 		this->step = ClockFaceMinutes{30};
-		this->end = _settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()).ToClockFaceMinutes() - 1;
+		this->end = (_settings_time.ToTickMinutes(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()) - 1).ToClockFaceMinutes();
 
 		if (this->text_mode) {
 			format_buffer_sized<32> buf;
