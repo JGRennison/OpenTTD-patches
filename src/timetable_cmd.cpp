@@ -995,9 +995,10 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * off again. */
 		v->vehicle_flags.Reset(VehicleFlag::AutofillTimetable);
 		v->vehicle_flags.Reset(VehicleFlag::AutofillPreserveWaitTime);
+	} else if (autofilling) {
+		if (!set_scheduled_dispatch) v->lateness_counter = 0;
+		return;
 	}
-
-	if (autofilling) return;
 
 	uint timetabled = travel_field ? real_timetable_order->GetTimetabledTravel() :
 			real_timetable_order->GetTimetabledWait();
