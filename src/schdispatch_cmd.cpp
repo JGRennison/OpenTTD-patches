@@ -608,8 +608,7 @@ CommandCost CmdSchDispatchDuplicateSchedule(DoCommandFlags flags, VehicleID veh,
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().emplace_back(v->orders->GetDispatchScheduleByIndex(schedule_index));
-		ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
-		ds.UpdateScheduledDispatch(nullptr);
+		ds.ResetStateAfterClone();
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -642,8 +641,7 @@ CommandCost CmdSchDispatchAppendVehSchedules(DoCommandFlags flags, VehicleID dst
 	if (flags.Test(DoCommandFlag::Execute)) {
 		for (uint i = 0; i < v2->orders->GetScheduledDispatchScheduleCount(); i++) {
 			DispatchSchedule &ds = v1->orders->GetScheduledDispatchScheduleSet().emplace_back(v2->orders->GetDispatchScheduleByIndex(i));
-			ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
-			ds.UpdateScheduledDispatch(nullptr);
+			ds.ResetStateAfterClone();
 		}
 		SetTimetableWindowsDirty(v1, STWDF_SCHEDULED_DISPATCH);
 	}

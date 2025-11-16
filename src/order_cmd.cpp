@@ -2918,6 +2918,9 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 				assert(dst->orders != nullptr);
 				if (src->orders != nullptr) {
 					dst->orders->GetScheduledDispatchScheduleSet() = src->orders->GetScheduledDispatchScheduleSet();
+					for (DispatchSchedule &ds : dst->orders->GetScheduledDispatchScheduleSet()) {
+						ds.ResetStateAfterClone();
+					}
 				}
 
 				/* Set automation bit if target has it. */
@@ -3012,7 +3015,11 @@ CommandCost CmdInsertOrdersFromVehicle(DoCommandFlags flags, VehicleID veh_dst, 
 
 		const std::vector<DispatchSchedule> &src_scheds = src->orders->GetScheduledDispatchScheduleSet();
 		std::vector<DispatchSchedule> &dst_scheds = dst->orders->GetScheduledDispatchScheduleSet();
-		dst_scheds.insert(dst_scheds.end(), src_scheds.begin(), src_scheds.end());
+		dst_scheds.reserve(dst_scheds.size() + src_scheds.size());
+		for (const DispatchSchedule &src_ds : src_scheds) {
+			dst_scheds.push_back(src_ds);
+			dst_scheds.back().ResetStateAfterClone();
+		}
 	}
 
 	for (const Order *src_order : src->Orders()) {

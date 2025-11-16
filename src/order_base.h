@@ -984,6 +984,15 @@ public:
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
 
+	/**
+	 * Reset any state which should be cleared when cloning the schedule, e.g. to another vehicle.
+	 */
+	inline void ResetStateAfterClone()
+	{
+		this->SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
+		this->UpdateScheduledDispatch(nullptr);
+	}
+
 	inline PositionBackup BackupPosition() const
 	{
 		return PositionBackup{ this->scheduled_dispatch_start_tick, this->scheduled_dispatch_last_dispatch };
