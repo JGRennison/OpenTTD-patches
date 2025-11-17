@@ -14,6 +14,8 @@
 #include "tree_type.h"
 #include <vector>
 
+void PlaceTree(TileIndex tile, uint32_t r, bool keep_density = false);
+
 struct BulkTreeCmdData final : public CommandPayloadSerialisable<BulkTreeCmdData> {
 	static constexpr size_t MAX_SERIALISED_COUNT = 512;
 

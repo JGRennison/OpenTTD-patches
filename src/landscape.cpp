@@ -29,6 +29,7 @@
 #include "animated_tile_func.h"
 #include "core/random_func.hpp"
 #include "object_base.h"
+#include "tree_cmd.h"
 #include "company_func.h"
 #include "tunnelbridge_map.h"
 #include "pathfinder/aystar.h"
@@ -1049,6 +1050,16 @@ static bool FindSpring(TileIndex tile)
 	return true;
 }
 
+static void MakeRiverAndModifyDesertZoneAround(TileIndex tile)
+{
+	MakeRiver(tile, Random());
+	MarkTileDirtyByTile(tile);
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+		/* Remove desert directly around the river tile. */
+		IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
+	}
+}
+
 struct MakeLakeData {
 	TileIndex centre;            ///< Lake centre tile
 	uint height;                 ///< Lake height
@@ -1063,7 +1074,7 @@ struct MakeLakeData {
  * @param tile The tile to consider for lake making.
  * @param data Lake construction data.
  */
-static void MakeLake(TileIndex tile, const MakeLakeData *data)
+static void MakeLakeHandler(TileIndex tile, const MakeLakeData *data)
 {
 	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return;
 	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return;
@@ -1090,13 +1101,94 @@ static void MakeLake(TileIndex tile, const MakeLakeData *data)
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
 		if (IsWaterTile(t2)) {
-			MakeRiver(tile, Random());
-			MarkTileDirtyByTile(tile);
-			if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
-				/* Remove desert directly around the river tile. */
-				IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
-			}
+			MakeRiverAndModifyDesertZoneAround(tile);
 			return;
+		}
+	}
+}
+
+/**
+ * Make a lake centred on the given tile, of a random diameter.
+ * @param lake_centre The middle tile of the lake.
+ * @param height_lake The height of the lake.
+ */
+static void MakeLake(TileIndex lake_centre, uint height_lake)
+{
+	MakeRiverAndModifyDesertZoneAround(lake_centre);
+
+	/* Setting lake size +- 25% */
+	const auto random_percentage = 75 + RandomRange(50);
+	const uint diameter = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
+
+	MakeLakeData data;
+	data.centre = lake_centre;
+	data.height = height_lake;
+	data.max_distance = diameter / 2;
+
+	/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
+	data.secondary_axis_scale = (1 << 16) + RandomRange(1 << 18);
+
+	/* Range from -1 to 1 (16 bit fixed point) */
+	data.sin_fp = RandomRange(1 << 17) - (1 << 16);
+
+	/* sin^2 + cos^2 = 1 */
+	data.cos_fp = (int)IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
+
+	/* Run the loop twice, so artefacts from going circular in one direction get (mostly) hidden. */
+	for (uint loops = 0; loops < 2; ++loops) {
+		for (TileIndex tile : SpiralTileSequence(lake_centre, diameter)) {
+			MakeLakeHandler(tile, &data);
+		}
+	}
+}
+
+/**
+ * Is this a valid tile for the water feature at the end of a river?
+ * @param tile The tile to check.
+ * @param height The height of the rest of the water feature, which must match.
+ * @return True iff this is a valid tile to be part of the river terminus.
+ */
+static bool IsValidRiverTerminusTile(TileIndex tile, uint height)
+{
+	if (!IsValidTile(tile) || TileHeight(tile) != height || !IsTileFlat(tile)) return false;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT) return false;
+
+	return true;
+}
+
+/**
+ * Make wetlands around the given tile.
+ * @param centre The starting tile.
+ * @param height The height of the wetlands.
+ * @param river_length The length of the river.
+ */
+static void MakeWetlands(TileIndex centre, uint height, uint river_length)
+{
+	MakeRiverAndModifyDesertZoneAround(centre);
+
+	uint diameter = std::max((river_length), 16u);
+
+	/* Some wetlands have trees planted among the water tiles. */
+	bool has_trees = Chance16(1, 2);
+
+	/* Create the main wetland area. */
+	for (TileIndex tile : SpiralTileSequence(centre, diameter)) {
+		if (!IsValidRiverTerminusTile(tile, height)) continue;
+
+		/* Don't make a perfect square, but a circle with a noisy border. */
+		uint radius = diameter / 2;
+		if ((DistanceSquare(tile, centre) > radius * radius) && Chance16(3, 4)) continue;
+
+		if (Chance16(1, 3)) {
+			/* This tile is water. */
+			MakeRiverAndModifyDesertZoneAround(tile);
+		} else if (IsTileType(tile, MP_CLEAR)) {
+			/* This tile is ground, which we always make rough. */
+			SetClearGroundDensity(tile, CLEAR_ROUGH, 3);
+			/* Maybe place trees? */
+			if (has_trees && _settings_game.game_creation.tree_placer != TP_NONE) {
+				PlaceTree(tile, Random(), true);
+			}
 		}
 	}
 }
@@ -1166,13 +1258,7 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 static void RiverMakeWider(TileIndex tile, Slope origin_tile_slope)
 {
 	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == origin_tile_slope) {
-		MakeRiver(tile, Random());
-		/* Remove desert directly around the river tile. */
-
-		MarkTileDirtyByTile(tile);
-		if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
-			IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
-		}
+		MakeRiverAndModifyDesertZoneAround(tile);
 	}
 }
 
@@ -1296,7 +1382,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 				/* A river, or lake, can only be built on flat slopes. */
 				IsTileFlat(lake_centre) &&
 				/* We want the lake to be built at the height of the river. */
-				TileHeight(begin) == TileHeight(lake_centre) &&
+				height_begin == TileHeight(lake_centre) &&
 				/* We don't want the lake at the entry of the valley. */
 				lake_centre != begin &&
 				/* We don't want lakes in the desert. */
@@ -1304,38 +1390,15 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 				/* We only want a lake if the river is long enough. */
 				DistanceManhattan(spring, lake_centre) > min_river_length) {
 			end = lake_centre;
-			MakeRiver(lake_centre, Random());
-			MarkTileDirtyByTile(lake_centre);
-			if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
-				/* Remove desert directly around the river tile. */
-				IterateCurvedCircularTileArea(lake_centre, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
-			}
-
-			// Setting lake size +- 25%
-			const auto random_percentage = 75 + RandomRange(50);
-			const uint diameter = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
-
-			MakeLakeData data;
-			data.centre = lake_centre;
-			data.height = height_begin;
-			data.max_distance = diameter / 2;
-
-			/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
-			data.secondary_axis_scale = (1 << 16) + RandomRange(1 << 18);
-
-			/* Range from -1 to 1 (16 bit fixed point) */
-			data.sin_fp = RandomRange(1 << 17) - (1 << 16);
-
-			/* sin^2 + cos^2 = 1 */
-			data.cos_fp = (int)IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
-
-			/* Run the loop twice, so artefacts from going circular in one direction get (mostly) hidden. */
-			for (uint loops = 0; loops < 2; ++loops) {
-				for (TileIndex tile : SpiralTileSequence(lake_centre, diameter)) {
-					MakeLake(tile, &data);
-				}
-			}
 			found = true;
+
+			/* Checks successful, time to build.
+			 * Chance of water feature is split evenly between a lake, a wetland with trees, and a wetland with grass. */
+			if (Chance16(1, 3)) {
+				MakeLake(lake_centre, height_begin);
+			} else {
+				MakeWetlands(lake_centre, height_begin, DistanceManhattan(begin, end));
+			}
 		}
 	}
 
