@@ -2530,10 +2530,26 @@ static void GraphicsSetLoadConfig(IniFile &ini)
 		if (const IniItem *item = group->GetItem("name"); item != nullptr && item->value) BaseGraphics::ini_data.name = *item->value;
 
 		if (const IniItem *item = group->GetItem("shortname"); item != nullptr && item->value && item->value->size() == 8) {
-			BaseGraphics::ini_data.shortname = std::byteswap<uint32_t>(std::strtoul(item->value->c_str(), nullptr, 16));
+			auto val = ParseInteger<uint32_t>(*item->value, 16);
+			if (val.has_value()) {
+				BaseGraphics::ini_data.shortname = std::byteswap<uint32_t>(*val);
+			} else {
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+					GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, *item->value, BaseGraphics::ini_data.name),
+					WL_CRITICAL);
+			}
 		}
 
-		if (const IniItem *item = group->GetItem("extra_version"); item != nullptr && item->value) BaseGraphics::ini_data.extra_version = std::strtoul(item->value->c_str(), nullptr, 10);
+		if (const IniItem *item = group->GetItem("extra_version"); item != nullptr && item->value) {
+			auto val = ParseInteger<uint32_t>(*item->value);
+			if (val.has_value()) {
+				BaseGraphics::ini_data.extra_version = *val;
+			} else {
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR),
+					GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, *item->value, BaseGraphics::ini_data.name),
+					WL_CRITICAL);
+			}
+		}
 
 		if (const IniItem *item = group->GetItem("extra_params"); item != nullptr && item->value) {
 			auto params = ParseIntList(item->value->c_str());
@@ -2722,7 +2738,7 @@ static void SaveVersionInConfig(IniFile &ini)
 	IniGroup &group = ini.GetOrCreateGroup("version");
 	group.GetOrCreateItem("version_string").SetValue(_openttd_revision);
 	group.GetOrCreateItem("version_number").SetValue(fmt::format("{:08X}", _openttd_newgrf_version));
-	group.GetOrCreateItem("ini_version").SetValue(std::to_string(INIFILE_VERSION));
+	group.GetOrCreateItem("ini_version").SetValue(fmt::format("{}", INIFILE_VERSION));
 }
 
 /**
@@ -2952,14 +2968,14 @@ void LoadFromConfig(bool startup)
 					case 5: {
 						const IniItem *old_autosave_custom_days;
 						if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_days", "autosave_interval", &old_autosave_custom_days)) {
-							_settings_client.gui.autosave_interval = (std::strtoul(old_autosave_custom_days->value->c_str(), nullptr, 10) + 2) / 3;
+							_settings_client.gui.autosave_interval = (ParseInteger<uint>(*old_autosave_custom_days->value).value_or(0) + 2) / 3;
 						}
 						break;
 					}
 					case 6: {
 						const IniItem *old_autosave_custom_minutes;
 						if (IsConversionNeeded(generic_ini, "gui", "autosave_custom_minutes", "autosave_interval", &old_autosave_custom_minutes)) {
-							_settings_client.gui.autosave_interval = std::strtoul(old_autosave_custom_minutes->value->c_str(), nullptr, 10);
+							_settings_client.gui.autosave_interval = ParseInteger<uint>(*old_autosave_custom_minutes->value).value_or(0);
 						}
 						break;
 					}

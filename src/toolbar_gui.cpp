@@ -66,6 +66,7 @@
 #include "help_gui.h"
 #include "industry_map.h"
 #include "misc_cmd.h"
+#include "core/string_consumer.hpp"
 
 #include "widgets/toolbar_widget.h"
 
@@ -2748,7 +2749,9 @@ struct ScenarioEditorToolbarWindow : Window {
 
 		CalTime::Year value;
 		if (!str->empty()) {
-			value = CalTime::Year{atoi(str->c_str())};
+			auto val = ParseInteger(*str);
+			if (!val.has_value()) return;
+			value = static_cast<CalTime::Year>(*val);
 		} else {
 			/* An empty string means revert to the default */
 			value = CalTime::DEF_START_YEAR;

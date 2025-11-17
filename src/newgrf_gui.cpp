@@ -31,6 +31,7 @@
 #include "fios.h"
 #include "guitimer_func.h"
 #include "zoom_func.h"
+#include "core/string_consumer.hpp"
 
 #include "widgets/newgrf_widget.h"
 #include "widgets/misc_widget.h"
@@ -451,9 +452,10 @@ struct NewGRFParametersWindow : public Window {
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		if (!str.has_value() || str->empty()) return;
-		int32_t value = atoi(str->c_str());
+		auto value = ParseInteger<int32_t>(*str);
+		if (!value.has_value()) return;
 		GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
-		this->grf_config.SetValue(par_info, value);
+		this->grf_config.SetValue(par_info, *value);
 		this->SetDirty();
 	}
 

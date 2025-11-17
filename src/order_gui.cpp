@@ -40,6 +40,7 @@
 #include "order_cmd.h"
 #include "group_cmd.h"
 #include "core/backup_type.hpp"
+#include "core/string_consumer.hpp"
 #include "fios.h"
 
 #include "widgets/order_widget.h"
@@ -3594,7 +3595,9 @@ public:
 	{
 		if (this->query_text_widget == WID_O_COND_VALUE && str.has_value() && !str->empty()) {
 			VehicleOrderID sel = this->OrderGetSel();
-			uint value = atoi(str->c_str());
+			auto try_value = ParseInteger<uint>(*str);
+			if (!try_value.has_value()) return;
+			uint value = *try_value;
 
 			switch (this->vehicle->GetOrder(sel)->GetConditionVariable()) {
 				case OCV_MAX_SPEED:
@@ -3631,8 +3634,11 @@ public:
 		}
 
 		if (this->query_text_widget == WID_O_COUNTER_VALUE && str.has_value() && !str->empty()) {
+			auto try_value = ParseInteger<uint>(*str);
+			if (!try_value.has_value()) return;
+
 			VehicleOrderID sel = this->OrderGetSel();
-			uint value = Clamp(atoi(str->c_str()), 0, 0xFFFF);
+			uint value = Clamp<uint>(*try_value, 0, 0xFFFF);
 			this->ModifyOrder(sel, MOF_COUNTER_VALUE, value);
 		}
 
@@ -3660,7 +3666,14 @@ public:
 				data.vehtype = this->vehicle->type;
 				data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 				data.name = std::move(*str);
-				data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+				data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+
+				if (str2.has_value() && !str2->empty()) {
+					auto try_value = ParseInteger<uint>(*str2);
+					if (!try_value.has_value()) return;
+					data.max_occupancy = *try_value;
+				}
+
 				data.follow_up_cmd = std::move(follow_up);
 				DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 			}

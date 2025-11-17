@@ -19,6 +19,7 @@
 #include "../tile_type.h"
 #include "../track_type.h"
 #include "../core/arena_alloc.hpp"
+#include "../core/format.hpp"
 
 /** Helper template class that provides C array length and item type */
 template <typename T> struct ArrayT;
@@ -135,16 +136,16 @@ struct DumpTarget {
 
 		bool operator<(const KnownStructKey &other) const
 		{
-			if ((size_t)m_ptr < (size_t)other.m_ptr) return true;
-			if ((size_t)m_ptr > (size_t)other.m_ptr) return false;
-			if (m_type_id < other.m_type_id) return true;
+			if ((size_t)this->m_ptr < (size_t)other.m_ptr) return true;
+			if ((size_t)this->m_ptr > (size_t)other.m_ptr) return false;
+			if (this->m_type_id < other.m_type_id) return true;
 			return false;
 		}
 	};
 
 	typedef std::map<KnownStructKey, std::string> KNOWN_NAMES;
 
-	std::string m_out;                    ///< the output string
+	format_buffer m_out;                  ///< the output string
 	int m_indent;                         ///< current indent/nesting level
 	std::stack<std::string> m_cur_struct; ///< here we will track the current structure name
 	KNOWN_NAMES m_known_names;            ///< map of known object instances and their structured names
@@ -159,21 +160,26 @@ struct DumpTarget {
 
 	void WriteIndent();
 
-	void WriteValue(const char *name, int value);
-	void WriteValue(const char *name, const char *value_str);
-	void WriteTile(const char *name, TileIndex t);
+	/** Write 'name = value' with indent and new-line. */
+	void WriteValue(std::string_view name, const auto &value)
+	{
+		this->WriteIndent();
+		this->m_out.format("{} = {}\n", name, value);
+	}
+
+	void WriteTile(std::string_view name, TileIndex t);
 
 	/** Dump given enum value (as a number and as named value) */
 	template <typename E> void WriteEnumT(const char *name, E e)
 	{
-		WriteValue(name, ValueStr(e).c_str());
+		WriteValue(name, ValueStr(e));
 	}
 
-	void BeginStruct(size_t type_id, const char *name, const void *ptr);
+	void BeginStruct(size_t type_id, std::string_view name, const void *ptr);
 	void EndStruct();
 
 	/** Dump nested object (or only its name if this instance is already known). */
-	template <typename S> void WriteStructT(const char *name, const S *s)
+	template <typename S> void WriteStructT(std::string_view name, const S *s)
 	{
 		static size_t type_id = ++LastTypeId();
 
@@ -185,8 +191,8 @@ struct DumpTarget {
 		std::string known_as;
 		if (FindKnownName(type_id, s, known_as)) {
 			/* We already know this one, no need to dump it. */
-			std::string known_as_str = std::string("known_as.") + known_as;
-			WriteValue(name, known_as_str.c_str());
+			this->WriteIndent();
+			this->m_out.format("{} = known_as.{}\n", name, known_as);
 		} else {
 			/* Still unknown, dump it */
 			BeginStruct(type_id, name, s);
@@ -197,7 +203,7 @@ struct DumpTarget {
 
 	/** Dump nested object (or only its name if this instance is already known). */
 	template <typename S, uint N>
-	void WriteStructT(const char *name, const BumpAllocContainer<S, N> *s)
+	void WriteStructT(std::string_view name, const BumpAllocContainer<S, N> *s)
 	{
 		static size_t type_id = ++LastTypeId();
 
@@ -209,16 +215,16 @@ struct DumpTarget {
 		std::string known_as;
 		if (FindKnownName(type_id, s, known_as)) {
 			/* We already know this one, no need to dump it. */
-			std::string known_as_str = std::string("known_as.") + known_as;
-			WriteValue(name, known_as_str.c_str());
+			this->WriteIndent();
+			this->m_out.format("{} = known_as.{}\n", name, known_as);
 		} else {
 			/* Still unknown, dump it */
 			BeginStruct(type_id, name, s);
 			size_t num_items = s->size();
-			this->WriteValue("num_items", std::to_string(num_items).c_str());
+			this->WriteValue("num_items", num_items);
 			for (size_t i = 0; i < num_items; i++) {
 				const auto *item = s->Get(i);
-				this->WriteStructT(fmt::format("item[{}]", i).c_str(), item);
+				this->WriteStructT(fmt::format("item[{}]", i), item);
 			}
 			EndStruct();
 		}

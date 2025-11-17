@@ -144,6 +144,13 @@ public:
 		return FileHandle::Open(filename.c_str(), mode);
 	}
 
+	template <typename T> requires std::is_same_v<T, std::string_view>
+	static std::optional<FileHandle> Open(T filename, const char *mode)
+	{
+		std::string filename_str(filename);
+		return FileHandle::Open(filename_str.c_str(), mode);
+	}
+
 	inline int Close()
 	{
 		if (this->f != nullptr) {

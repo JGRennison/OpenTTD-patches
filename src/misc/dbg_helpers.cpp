@@ -76,9 +76,9 @@ std::string TileStr(TileIndex tile)
 std::string DumpTarget::GetCurrentStructName()
 {
 	std::string out;
-	if (!m_cur_struct.empty()) {
+	if (!this->m_cur_struct.empty()) {
 		/* we are inside some named struct, return its name */
-		out = m_cur_struct.top();
+		out = this->m_cur_struct.top();
 	}
 	return out;
 }
@@ -89,8 +89,8 @@ std::string DumpTarget::GetCurrentStructName()
  */
 bool DumpTarget::FindKnownName(size_t type_id, const void *ptr, std::string &name)
 {
-	KNOWN_NAMES::const_iterator it = m_known_names.find(KnownStructKey(type_id, ptr));
-	if (it != m_known_names.end()) {
+	KNOWN_NAMES::const_iterator it = this->m_known_names.find(KnownStructKey(type_id, ptr));
+	if (it != this->m_known_names.end()) {
 		/* we have found it */
 		name = (*it).second;
 		return true;
@@ -101,37 +101,24 @@ bool DumpTarget::FindKnownName(size_t type_id, const void *ptr, std::string &nam
 /** Write some leading spaces into the output. */
 void DumpTarget::WriteIndent()
 {
-	int num_spaces = 2 * m_indent;
+	int num_spaces = 2 * this->m_indent;
 	if (num_spaces > 0) {
-		m_out += std::string(num_spaces, ' ');
+		std::span<char> chars = this->m_out.append_as_span(num_spaces);
+		std::fill(chars.begin(), chars.end(), ' ');
 	}
 }
 
-/** Write 'name = value' with indent and new-line. */
-void DumpTarget::WriteValue(const char *name, int value)
-{
-	WriteIndent();
-	m_out += std::string(name) + " = " + std::to_string(value) + "\n";
-}
-
-/** Write 'name = value' with indent and new-line. */
-void DumpTarget::WriteValue(const char *name, const char *value_str)
-{
-	WriteIndent();
-	m_out += std::string(name) + " = " + value_str + "\n";
-}
-
 /** Write name & TileIndex to the output. */
-void DumpTarget::WriteTile(const char *name, TileIndex tile)
+void DumpTarget::WriteTile(std::string_view name, TileIndex tile)
 {
-	WriteIndent();
-	m_out += std::string(name) + " = " + TileStr(tile) + "\n";
+	this->WriteIndent();
+	this->m_out.format("{} = {}\n", name, TileStr(tile));
 }
 
 /**
  * Open new structure (one level deeper than the current one) 'name = {\<LF\>'.
  */
-void DumpTarget::BeginStruct(size_t type_id, const char *name, const void *ptr)
+void DumpTarget::BeginStruct(size_t type_id, std::string_view name, const void *ptr)
 {
 	/* make composite name */
 	std::string cur_name = GetCurrentStructName();
@@ -142,14 +129,14 @@ void DumpTarget::BeginStruct(size_t type_id, const char *name, const void *ptr)
 	cur_name += name;
 
 	/* put the name onto stack (as current struct name) */
-	m_cur_struct.push(cur_name);
+	this->m_cur_struct.push(cur_name);
 
 	/* put it also to the map of known structures */
-	m_known_names.insert(KNOWN_NAMES::value_type(KnownStructKey(type_id, ptr), cur_name));
+	this->m_known_names.insert(KNOWN_NAMES::value_type(KnownStructKey(type_id, ptr), cur_name));
 
-	WriteIndent();
-	m_out += std::string(name) + " = {\n";
-	m_indent++;
+	this->WriteIndent();
+	this->m_out.format("{} = {{\n", name);
+	this->m_indent++;
 }
 
 /**
@@ -157,10 +144,10 @@ void DumpTarget::BeginStruct(size_t type_id, const char *name, const void *ptr)
  */
 void DumpTarget::EndStruct()
 {
-	m_indent--;
-	WriteIndent();
-	m_out += "}\n";
+	this->m_indent--;
+	this->WriteIndent();
+	this->m_out.append("}\n");
 
 	/* remove current struct name from the stack */
-	m_cur_struct.pop();
+	this->m_cur_struct.pop();
 }

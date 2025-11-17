@@ -15,9 +15,9 @@
 #include <array>
 #include <map>
 
-const char *GetDriverParam(const StringList &parm, const char *name);
-bool GetDriverParamBool(const StringList &parm, const char *name);
-int GetDriverParamInt(const StringList &parm, const char *name, int def);
+std::optional<std::string_view> GetDriverParam(const StringList &parm, std::string_view name);
+bool GetDriverParamBool(const StringList &parm, std::string_view name);
+int GetDriverParamInt(const StringList &parm, std::string_view name, int def);
 
 /** A driver for communicating with the user. */
 class Driver {

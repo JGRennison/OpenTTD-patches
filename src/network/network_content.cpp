@@ -323,14 +323,14 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContent(uint &files, uin
  */
 void ClientNetworkContentSocketHandler::DownloadSelectedContentHTTP(const ContentIDList &content)
 {
-	std::string content_request;
+	format_buffer content_request;
 	for (const ContentID &id : content) {
-		content_request += std::to_string(id) + "\n";
+		content_request.format("{}\n", id);
 	}
 
 	this->http_response_index = -1;
 
-	NetworkHTTPSocketHandler::Connect(NetworkContentMirrorUriString(), this, std::move(content_request));
+	NetworkHTTPSocketHandler::Connect(NetworkContentMirrorUriString(), this, content_request.to_string());
 }
 
 /**

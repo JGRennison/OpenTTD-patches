@@ -58,8 +58,8 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 #endif
 	assert(f1.has_value());
 	assert(f2.has_value());
-	fwrite(dmp1.m_out.c_str(), 1, dmp1.m_out.size(), *f1);
-	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), *f2);
+	fwrite(dmp1.m_out.data(), 1, dmp1.m_out.size(), *f1);
+	fwrite(dmp2.m_out.data(), 1, dmp2.m_out.size(), *f2);
 }
 
 template <class Node>

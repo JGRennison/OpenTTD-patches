@@ -18,6 +18,7 @@
 #include "../core/math_func.hpp"
 #include "../core/mem_func.hpp"
 #include "../core/geometry_func.hpp"
+#include "../core/string_consumer.hpp"
 #include "../core/utf8.hpp"
 #include "../fileio_func.h"
 #include "../framerate_type.h"
@@ -76,7 +77,7 @@ static int GetXDisplayNum()
 	if (!display) return 0;
 	const char *colon = strchr(display, ':');
 	if (!colon) return 0;
-	return atoi(colon + 1);
+	return ParseInteger<int>(colon + 1).value_or(0);
 }
 
 static void FcitxDeinit() {

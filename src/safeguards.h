@@ -54,6 +54,15 @@
 /* No clear replacement. */
 #define strtok    SAFEGUARD_DO_NOT_USE_THIS_METHOD
 
+/* Use ParseInteger or StringConsumer instead. */
+#define atoi      SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define atol      SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define atoll     SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define strtol    SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define strtoll   SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define strtoul   SAFEGUARD_DO_NOT_USE_THIS_METHOD
+#define strtoull  SAFEGUARD_DO_NOT_USE_THIS_METHOD
+
 /* Use our own templated implementation instead of a macro or function with only one type. */
 #ifdef min
 #undef min

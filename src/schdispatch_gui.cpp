@@ -15,6 +15,7 @@
 #include "textbuf_gui.h"
 #include "querystring_gui.h"
 #include "core/string_builder.hpp"
+#include "core/string_consumer.hpp"
 #include "strings_func.h"
 #include "vehicle_base.h"
 #include "string_func.h"
@@ -1563,11 +1564,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (str->empty()) break;
 
-				char *end;
-				int32_t val = std::strtoul(str->c_str(), &end, 10);
-				if (val >= 0 && end != nullptr && *end == 0) {
-					uint minutes = (val % 100) % 60;
-					uint hours = (val / 100) % 24;
+				auto try_value = ParseInteger<uint>(*str);
+				if (try_value.has_value()) {
+					uint minutes = (*try_value % 100) % 60;
+					uint hours = (*try_value / 100) % 24;
 					StateTicks start = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
 					Command<CMD_SCH_DISPATCH_SET_START_DATE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, start);
 				}

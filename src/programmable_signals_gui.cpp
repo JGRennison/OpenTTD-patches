@@ -29,6 +29,7 @@
 #include "zoom_func.h"
 #include "tracerestrict.h"
 #include "tracerestrict_cmd.h"
+#include "core/string_consumer.hpp"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -530,7 +531,10 @@ public:
 					SignalIf *sif = static_cast <SignalIf*>(si);
 					if (!IsConditionComparator(sif->condition)) break;
 
-					Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, atoi(str->c_str()), {});
+					auto try_value = ParseInteger<uint>(*str);
+					if (!try_value.has_value()) break;
+
+					Command<CMD_PROGPRESIG_MODIFY_INSTRUCTION>::Post(STR_PROGSIG_ERROR_CAN_T_MODIFY_INSTRUCTION, this->tile, this->track, si->Id(), PPMCT_VALUE, *try_value, {});
 					break;
 				}
 
@@ -545,8 +549,15 @@ public:
 						data.vehtype = VEH_TRAIN;
 						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 						data.name = std::move(*str);
-						data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+						data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
 						data.follow_up_cmd = std::move(follow_up);
+
+						if (str2.has_value() && !str2->empty()) {
+							auto try_value = ParseInteger<uint>(*str2);
+							if (!try_value.has_value()) break;
+							data.max_occupancy = *try_value;
+						}
+
 						DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 					} else {
 						TraceRestrictCreateCounterCmdData data;

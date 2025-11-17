@@ -27,6 +27,7 @@
 #include "../misc_cmd.h"
 #include "../strings_func.h"
 #include "../core/backup_type.hpp"
+#include "../core/string_consumer.hpp"
 
 #include "script_gui.h"
 #include "script_log.hpp"
@@ -512,10 +513,10 @@ struct ScriptSettingsWindow : public Window {
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value() || str->empty()) return;
-		int32_t value = atoi(str->c_str());
-
-		SetValue(value);
+		if (!str.has_value()) return;
+		auto value = ParseInteger<int32_t>(*str);
+		if (!value.has_value()) return;
+		SetValue(*value);
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index, int) override

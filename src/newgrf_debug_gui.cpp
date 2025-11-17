@@ -26,6 +26,7 @@
 #include "debug_settings.h"
 #include "viewport_func.h"
 #include "dropdown_type.h"
+#include "core/string_consumer.hpp"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -1159,17 +1160,21 @@ struct NewGRFInspectWindow final : Window {
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value() || str->empty()) return;
+		if (!str.has_value()) return;
 
 		if (this->current_edit_param == 0 && this->sprite_dump) {
-			auto iter = this->nfo_line_lines.find(atoi(str->c_str()));
+			auto val = ParseInteger<int32_t>(*str);
+			if (!val.has_value()) return;
+			auto iter = this->nfo_line_lines.find(*val);
 			if (iter != this->nfo_line_lines.end()) {
 				this->vscroll->SetPosition(std::min<int>(iter->second, std::max<int>(0, this->vscroll->GetCount() - this->vscroll->GetCapacity())));
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 			}
 		} else if (this->current_edit_param != 0 && !this->sprite_dump) {
-			this->var60params[this->current_edit_param] = std::strtol(str->c_str(), nullptr, 16);
+			auto val = ParseInteger<uint32_t>(*str, 16);
+			if (!val.has_value()) return;
+			this->var60params[this->current_edit_param] = *val;
 			this->SetDirty();
 		}
 	}
@@ -1749,9 +1754,11 @@ struct SpriteAlignerWindow : Window {
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!str.has_value() || str->empty()) return;
+		if (!str.has_value()) return;
 
-		this->current_sprite = atoi(str->c_str());
+		auto value = ParseInteger(*str);
+		if (!value.has_value()) return;
+		this->current_sprite = *value;
 		if (this->current_sprite >= GetMaxSpriteID()) this->current_sprite = 0;
 		while (GetSpriteType(this->current_sprite) != SpriteType::Normal) {
 			this->current_sprite = (this->current_sprite + 1) % GetMaxSpriteID();

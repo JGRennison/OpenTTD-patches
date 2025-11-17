@@ -53,6 +53,7 @@
 #include "schdispatch.h"
 #include "order_cmd.h"
 #include "vehicle_cmd.h"
+#include "core/string_consumer.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -3685,8 +3686,11 @@ struct VehicleDetailsWindow : Window {
 	{
 		if (!str.has_value() || str->empty()) return;
 
+		auto try_value = ParseInteger<uint>(*str);
+		if (!try_value.has_value()) return;
+
 		const Vehicle *v = Vehicle::Get(this->window_number);
-		Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str->c_str(), nullptr, 10), VEH_TRAIN));
+		Command<CMD_SET_TRAIN_SPEED_RESTRICTION>::Post(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION, v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(*try_value, VEH_TRAIN));
 	}
 
 	void OnResize() override

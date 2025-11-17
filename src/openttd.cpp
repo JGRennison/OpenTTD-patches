@@ -726,7 +726,13 @@ int openttd_main(std::span<char * const> arguments)
 			scanner->join_company_password = mgo.opt;
 			break;
 		case 'r': ParseResolution(&resolution, mgo.opt); break;
-		case 't': scanner->startyear = CalTime::Year(atoi(mgo.opt)); break;
+		case 't':
+			if (auto value = ParseInteger(mgo.opt); value.has_value()) {
+				scanner->startyear = CalTime::Year(*value);
+			} else {
+				fmt::print(stderr, "Invalid start year: {}\n", mgo.opt);
+			}
+			break;
 		case 'd': {
 #if defined(_WIN32)
 				CreateConsole();
@@ -819,10 +825,22 @@ int openttd_main(std::span<char * const> arguments)
 			_skip_all_newgrf_scanning += 1;
 			break;
 		}
-		case 'G': scanner->generation_seed = std::strtoul(mgo.opt, nullptr, 10); break;
+		case 'G':
+			if (auto value = ParseInteger<uint32_t>(mgo.opt); value.has_value()) {
+				scanner->generation_seed = *value;
+			} else {
+				fmt::print(stderr, "Invalid generation seed: {}\n", mgo.opt);
+			}
+			break;
 		case 'c': _config_file = mgo.opt; break;
 		case 'x': scanner->save_config = false; break;
-		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
+		case 'J':
+			if (auto value = ParseInteger<uint32_t>(mgo.opt); value.has_value()) {
+				_quit_after_days = *value;
+			} else {
+				fmt::print(stderr, "Invalid quit after days: {}\n", mgo.opt);
+			}
+			break;
 		case 'Z': {
 			format_buffer buffer;
 			CrashLog::VersionInfoLog(buffer);

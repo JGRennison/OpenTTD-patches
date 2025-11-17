@@ -45,6 +45,7 @@
 #include "scope.h"
 #include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
+#include "core/string_consumer.hpp"
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
@@ -2748,7 +2749,14 @@ public:
 					data.vehtype = VEH_TRAIN;
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
-					data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+					data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+
+					if (str2.has_value() && !str2->empty()) {
+						auto try_value = ParseInteger<uint>(*str2);
+						if (!try_value.has_value()) break;
+						data.max_occupancy = *try_value;
+					}
+
 					data.follow_up_cmd = { GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item.base()) };
 					DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 				}
@@ -2765,7 +2773,7 @@ public:
 
 			case QSM_SET_TEXT:
 				if (type == TRVT_LABEL_INDEX) {
-					this->PostInstructionCommand(TRDCT_SET_TEXT, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM, str->c_str());
+					this->PostInstructionCommand(TRDCT_SET_TEXT, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM, *str);
 				}
 				return;
 		}
@@ -2773,7 +2781,10 @@ public:
 		uint value;
 
 		if (IsIntegerValueType(type) || type == TRVT_PF_PENALTY) {
-			value = ConvertIntegerValue(type, atoi(str->c_str()), false);
+			auto try_value = ParseInteger<uint>(*str);
+			if (!try_value.has_value()) return;
+
+			value = ConvertIntegerValue(type, *try_value, false);
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
 				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true), 0), {}, WL_INFO);
 				return;
@@ -2792,8 +2803,9 @@ public:
 				return;
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-			value = atoi(str->c_str());
-			this->PostInstructionCommand(TRDCT_MODIFY_DUAL_ITEM, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+			auto try_value = ParseInteger<uint>(*str);
+			if (!try_value.has_value()) return;
+			this->PostInstructionCommand(TRDCT_MODIFY_DUAL_ITEM, *try_value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
 		} else {
 			return;
@@ -5007,7 +5019,14 @@ public:
 							data.vehtype = this->vli.vtype;
 							data.parent = this->slot_sel.GetClosestGroupID();
 							data.name = std::move(*str);
-							data.max_occupancy = (str2.has_value() && !str2->empty()) ? atoi(str2->c_str()) : TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+							data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
+
+							if (str2.has_value() && !str2->empty()) {
+								auto try_value = ParseInteger<uint>(*str2);
+								if (!try_value.has_value()) return;
+								data.max_occupancy = *try_value;
+							}
+
 							DoCommandP<CMD_CREATE_TRACERESTRICT_SLOT>(data, STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE, CommandCallback::CreateTraceRestrictSlot);
 						} else {
 							Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME, this->slot_query.GetSlot(), TRASO_RENAME, {}, std::move(*str));
@@ -5023,7 +5042,9 @@ public:
 
 				case QuerySelectorMode::SetMaxOccupancy:
 					if (this->slot_query.type == SlotItemType::Slot && !str->empty()) {
-						Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, this->slot_query.GetSlot(), TRASO_CHANGE_MAX_OCCUPANCY, atoi(str->c_str()), {});
+						auto try_value = ParseInteger<uint>(*str);
+						if (!try_value.has_value()) break;
+						Command<CMD_ALTER_TRACERESTRICT_SLOT>::Post(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY, this->slot_query.GetSlot(), TRASO_CHANGE_MAX_OCCUPANCY, *try_value, {});
 					}
 					break;
 			}
@@ -5510,8 +5531,9 @@ public:
 					break;
 
 				case QTO_SET_VALUE:
-					if (!str->empty()) {
-						Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->ctr_qt_op, TRACO_CHANGE_VALUE, atoi(str->c_str()), {});
+					auto try_value = ParseInteger<uint32_t>(*str);
+					if (try_value.has_value()) {
+						Command<CMD_ALTER_TRACERESTRICT_COUNTER>::Post(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY, this->ctr_qt_op, TRACO_CHANGE_VALUE, *try_value, {});
 					}
 					break;
 			}

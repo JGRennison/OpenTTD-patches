@@ -35,6 +35,7 @@
 #include "vehicle_base.h"
 #include "currency.h"
 #include "core/geometry_func.hpp"
+#include "core/string_consumer.hpp"
 #include "settings_type.h"
 #include "settings_internal.h"
 #include "misc_cmd.h"
@@ -703,12 +704,13 @@ struct CheatWindow : Window {
 
 			int32_t value;
 			if (!str->empty()) {
-				long long llvalue = atoll(str->c_str());
+				auto llvalue = ParseInteger<int64_t>(*str);
+				if (!llvalue.has_value()) return;
 
 				/* Save the correct currency-translated value */
-				if (sd->flags.Test(SettingFlag::GuiCurrency)) llvalue /= GetCurrency().rate;
+				if (sd->flags.Test(SettingFlag::GuiCurrency)) llvalue = *llvalue / GetCurrency().rate;
 
-				value = ClampTo<int32_t>(llvalue);
+				value = ClampTo<int32_t>(*llvalue);
 			} else {
 				value = sd->GetDefaultValue();
 			}
@@ -728,8 +730,11 @@ struct CheatWindow : Window {
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {
+			auto llvalue = ParseInteger<int64_t>(*str);
+			if (!llvalue.has_value()) return;
+
 			if (!_networking) *ce->been_used = true;
-			Money money = std::strtoll(str->c_str(), nullptr, 10) / GetCurrency().rate;
+			Money money = *llvalue / GetCurrency().rate;
 			if (IsNetworkSettingsAdmin()) {
 				Command<CMD_MONEY_CHEAT_ADMIN>::Post(money);
 			} else {
@@ -740,7 +745,9 @@ struct CheatWindow : Window {
 
 		if (_networking) return;
 		int oldvalue = (int32_t)ReadValue(ce->variable, ce->type);
-		int value = atoi(str->c_str());
+		auto try_value = ParseInteger<int>(*str);
+		if (!try_value.has_value()) return;
+		int value = *try_value;
 		*ce->been_used = true;
 		value = ce->proc(value, value - oldvalue);
 

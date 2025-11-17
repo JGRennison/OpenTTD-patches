@@ -44,6 +44,7 @@
 #include "group_gui.h"
 #include "misc_cmd.h"
 #include "core/backup_type.hpp"
+#include "core/string_consumer.hpp"
 
 #include "widgets/company_widget.h"
 
@@ -535,14 +536,17 @@ struct CompanyFinancesWindow : Window {
 		/* Was 'cancel' pressed or nothing entered? */
 		if (!str.has_value() || str->empty()) return;
 
+		auto llvalue = ParseInteger<uint64_t>(*str);
+		if (!llvalue.has_value()) return;
+
 		if (this->query_widget == WID_CF_INCREASE_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, _economy.max_loan - c->current_loan);
+			Money amount = std::min<Money>(*llvalue / GetCurrency().rate, _economy.max_loan - c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			Command<CMD_INCREASE_LOAN>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, LoanCommand::Amount, amount);
 		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, c->current_loan);
+			Money amount = std::min<Money>(*llvalue / GetCurrency().rate, c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			Command<CMD_DECREASE_LOAN>::Post(STR_ERROR_CAN_T_REPAY_LOAN, LoanCommand::Amount, amount);
 		}
@@ -2508,7 +2512,9 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY: {
-				Money money = std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate;
+				auto value = ParseInteger<uint64_t>(*str);
+				if (!value.has_value()) return;
+				Money money = *value / GetCurrency().rate;
 				Command<CMD_GIVE_MONEY>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);
 				break;
 			}

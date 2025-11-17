@@ -18,6 +18,7 @@
 #include "../tunnelbridge_map.h"
 #include "follow_track.hpp"
 #include "../ship.h"
+#include "../string_func.h"
 #include "../3rdparty/fmt/ranges.h"
 #include "../safeguards.h"
 
@@ -281,7 +282,7 @@ public:
 	{
 		Debug(map, 9, "Water region {},{} labels and edge traversability = ...", this->tile_x / WATER_REGION_EDGE_LENGTH, this->tile_y / WATER_REGION_EDGE_LENGTH);
 
-		const size_t max_element_width = std::to_string(this->wr.number_of_patches).size();
+		const size_t max_element_width = GetBase10DigitsRequired(this->wr.number_of_patches);
 
 		std::string traversability = fmt::format("{:0{}b}", this->GetEdgeTraversabilityBits(DIAGDIR_NW), WATER_REGION_EDGE_LENGTH);
 		Debug(map, 9, "    {:{}}", fmt::join(traversability, " "), max_element_width);
@@ -291,8 +292,11 @@ public:
 			std::string line{};
 			for (uint x = 0; x < WATER_REGION_EDGE_LENGTH; ++x) {
 				const auto label = this->GetLabel(TileXY(this->tile_x + x, this->tile_y + y));
-				const std::string label_str = label == INVALID_WATER_REGION_PATCH ? "." : std::to_string(label);
-				line = fmt::format("{:{}}", label_str, max_element_width) + " " + line;
+				if (label == INVALID_WATER_REGION_PATCH) {
+					line = fmt::format("{:{}} {}", ".", max_element_width, line);
+				} else {
+					line = fmt::format("{:{}} {}", label, max_element_width, line);
+				}
 			}
 			Debug(map, 9, "{} | {}| {}", GB(this->GetEdgeTraversabilityBits(DIAGDIR_SW), y, 1), line, GB(this->GetEdgeTraversabilityBits(DIAGDIR_NE), y, 1));
 		}

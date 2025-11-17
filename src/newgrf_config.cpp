@@ -748,12 +748,12 @@ GRFConfig *GetGRFConfig(uint32_t grfid, uint32_t mask)
 /** Build a string containing space separated parameter values, and terminate */
 std::string GRFBuildParamList(const GRFConfig &c)
 {
-	std::string result;
+	format_buffer result;
 	for (const uint32_t &value : c.param) {
-		if (!result.empty()) result += ' ';
-		result += std::to_string(value);
+		if (!result.empty()) result.push_back(' ');
+		result.format("{}", value);
 	}
-	return result;
+	return result.to_string();
 }
 
 /**

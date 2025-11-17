@@ -79,10 +79,10 @@ uint32_t GetNewSignalsSideVariable()
 	return UINT_MAX;
 }
 
-/* virtual */ const SpriteGroup *NewSignalsResolverObject::ResolveReal(const RealSpriteGroup *group) const
+/* virtual */ const SpriteGroup *NewSignalsResolverObject::ResolveReal(const RealSpriteGroup &group) const
 {
-	if (!group->loading.empty()) return group->loading[0];
-	if (!group->loaded.empty())  return group->loaded[0];
+	if (!group.loading.empty()) return group.loading[0];
+	if (!group.loaded.empty())  return group.loaded[0];
 	return nullptr;
 }
 

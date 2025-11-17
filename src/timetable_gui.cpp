@@ -31,6 +31,7 @@
 #include "timetable_cmd.h"
 #include "group_cmd.h"
 #include "core/backup_type.hpp"
+#include "core/string_consumer.hpp"
 
 #include "widgets/timetable_widget.h"
 
@@ -1196,7 +1197,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_CHANGE_TIME: {
 				uint32_t p2;
 				if (this->query_is_speed_query) {
-					uint64_t display_speed = str->empty() ? 0 : std::strtoul(str->c_str(), nullptr, 10);
+					uint64_t display_speed = 0;
+					if (!str->empty()) {
+						auto try_value = ParseInteger<uint64_t>(*str);
+						if (!try_value.has_value()) return;
+						display_speed = *try_value;
+					}
 					uint64_t val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
