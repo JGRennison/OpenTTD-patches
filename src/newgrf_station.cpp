@@ -666,7 +666,7 @@ SpriteID GetCustomStationRelocation(const StationSpec *statspec, BaseStation *st
 {
 	StationResolverObject object(statspec, st, tile, rt, CBID_NO_CALLBACK, var10);
 	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
-	if (group == nullptr || group->num_sprites == 0) return 0;
+	if (group == nullptr) return 0;
 	return group->sprite - SPR_RAIL_PLATFORM_Y_FRONT;
 }
 
