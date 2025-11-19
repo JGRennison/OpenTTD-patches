@@ -115,7 +115,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	assert(start < v->GetNumOrders());
 
 	/* Pre-initialize with unknown time */
-	for (int i = 0; i < v->GetNumOrders(); ++i) {
+	for (VehicleOrderID i = 0; i < v->GetNumOrders(); ++i) {
 		table[i].arrival = table[i].departure = INVALID_TICKS;
 		table[i].flags = 0;
 	}
@@ -299,8 +299,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 	bool have_autoseparate_bad_non_stop_type = false;
 
 	const bool assume_timetabled = v->vehicle_flags.Test(VehicleFlag::AutofillTimetable) || v->vehicle_flags.Test(VehicleFlag::AutomateTimetable);
-	for (int n = 0; n < v->GetNumOrders(); n++) {
-		const Order *order = v->GetOrder(n);
+	for (const Order *order : v->Orders()) {
 		if (order->IsType(OT_CONDITIONAL)) {
 			have_conditional = true;
 			if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
@@ -366,8 +365,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 		};
 		std::vector<bool> seen_sched_dispatch_orders(v->orders->GetScheduledDispatchScheduleCount());
 
-		for (int n = 0; n < v->GetNumOrders(); n++) {
-			const Order *order = v->GetOrder(n);
+		for (const Order *order : v->Orders()) {
 			int schedule_index = order->GetDispatchScheduleIndex();
 			if (schedule_index >= 0) {
 				seen_sched_dispatch_orders[schedule_index] = true;
