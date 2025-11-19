@@ -579,9 +579,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 	void SetButtonDisabledStates()
 	{
 		const Vehicle *v = this->vehicle;
+		const VehicleOrderID order_count = v->GetNumOrders();
+		if (this->sel_index != -1 && order_count == 0) {
+			this->sel_index = -1;
+		}
 		int selected = this->sel_index;
 
-		this->vscroll->SetCount(v->GetNumOrders() * 2);
+		this->vscroll->SetCount(order_count * 2);
 
 		if (v->owner == _local_company) {
 			bool disable = true;
@@ -590,16 +594,18 @@ struct TimetableWindow : GeneralVehicleWindow {
 			bool wait_locked = false;
 			bool clearable_when_wait_locked = false;
 			if (selected != -1) {
-				const Order *order = v->GetOrder(((selected + 1) / 2) % v->GetNumOrders());
-				if (selected % 2 != 0) {
-					/* Travel time */
-					disable = order != nullptr && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT) || order->HasNoTimetableTimes());
-					disable_time = disable;
-					wait_lockable = !disable;
-					wait_locked = wait_lockable && order->IsTravelFixed();
-				} else {
-					/* Wait time */
-					if (order != nullptr) {
+				VehicleOrderID order_number = (selected + 1) / 2;
+				if (order_number >= order_count) order_number = 0;
+				const Order *order = v->GetOrder(order_number);
+				if (order != nullptr) {
+					if (selected % 2 != 0) {
+						/* Travel time */
+						disable = order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT) || order->HasNoTimetableTimes();
+						disable_time = disable;
+						wait_lockable = !disable;
+						wait_locked = wait_lockable && order->IsTravelFixed();
+					} else {
+						/* Wait time */
 						if (order->IsType(OT_GOTO_WAYPOINT)) {
 							disable = false;
 							disable_time = false;
@@ -613,12 +619,9 @@ struct TimetableWindow : GeneralVehicleWindow {
 									(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 							disable_time = disable;
 						}
-					} else {
-						disable = true;
-						disable_time = true;
+						wait_lockable = !disable_time;
+						wait_locked = wait_lockable && order->IsWaitFixed();
 					}
-					wait_lockable = !disable_time;
-					wait_locked = wait_lockable && order->IsWaitFixed();
 				}
 			}
 			bool disable_speed = disable || selected % 2 == 0 || v->type == VEH_AIRCRAFT;
