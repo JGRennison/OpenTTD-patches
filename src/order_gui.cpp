@@ -330,9 +330,11 @@ static std::unique_ptr<NWidgetBase> MakeCargoTypeOrdersRows(bool right)
 	const bool dual_column = (_sorted_standard_cargo_specs.size() >= 32);
 	if (right && !dual_column) return ver;
 
-	const int increment = dual_column ? 2 : 1;
+	const uint second_column_start = static_cast<uint>(dual_column ? (_sorted_standard_cargo_specs.size() + 1) / 2 : _sorted_standard_cargo_specs.size());
+	const uint start = (right ? second_column_start : 0);
+	const uint end = (right ? _sorted_standard_cargo_specs.size() : second_column_start);
 
-	for (int i = (right ? 1 : 0); i < (int)_sorted_standard_cargo_specs.size(); i += increment) {
+	for (uint i = start; i < end; i++) {
 		/* Cargo row */
 		std::unique_ptr<NWidgetBackground> panel = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_ROW_FIRST + i);
 		std::unique_ptr<NWidgetHorizontal> horiz = std::make_unique<NWidgetHorizontal>();
