@@ -116,15 +116,17 @@ static void TrainEnterStation(Train *v, StationID station);
 static void UnreserveBridgeTunnelTile(TileIndex tile);
 static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
 
+static constexpr uint16_t SPEED_ADAPTATION_MIN_SPEED = 50;
+
 /** Return the scaled date ticks by which the speed restriction
  *  at the current position of the train is going to be invalid */
 static StateTicks GetSpeedRestrictionTimeout(const Train *t)
 {
-	const int64_t velocity = std::max<int64_t>(25, t->cur_speed);
-	const int64_t look_ahead_distance = Clamp(t->cur_speed / 8, 4, 16); // In tiles, varying between 4 and 16 depending on current speed
+	if (t->cur_speed < SPEED_ADAPTATION_MIN_SPEED) return _state_ticks;
+	const int64_t look_ahead_distance = Clamp(t->cur_speed / 16, 4, 12); // In tiles, varying between 4 and 12 depending on current speed
 
-	// This assumes travel along the X or Y map axis, not diagonally. See GetAdvanceDistance, GetAdvanceSpeed.
-	const int64_t ticks_per_tile = (192 * 16 * 4 / 3) / velocity;
+	/* This assumes travel along the X or Y map axis, not diagonally. See GetAdvanceDistance, GetAdvanceSpeed. */
+	const int64_t ticks_per_tile = (192 * 16 * 4 / 3) / t->cur_speed;
 
 	const int64_t ticks = ticks_per_tile * look_ahead_distance;
 
@@ -7717,9 +7719,16 @@ void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16_t trac
 	speed_key.signal_track = track;
 	speed_key.last_passing_train_dir = v->GetVehicleTrackdir();
 
+	const Train *first = v->First();
+
+	if (first->cur_speed < SPEED_ADAPTATION_MIN_SPEED) {
+		_signal_speeds.erase(speed_key);
+		return;
+	}
+
 	SignalSpeedValue speed_value = {};
-	speed_value.train_speed = v->First()->cur_speed;
-	speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First());
+	speed_value.train_speed = first->cur_speed;
+	speed_value.time_stamp = GetSpeedRestrictionTimeout(first);
 
 	_signal_speeds[speed_key] = speed_value;
 }
