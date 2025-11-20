@@ -107,20 +107,20 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 		return;
 	}
 
-	if (this->info_list.find(script_name) != this->info_list.end()) {
+	if (auto it = this->info_list.find(script_name); it != this->info_list.end()) {
 		/* This script was already registered */
 #ifdef _WIN32
 		/* Windows doesn't care about the case */
-		if (StrEqualsIgnoreCase(this->info_list[script_name]->GetMainScript(), info->GetMainScript())) {
+		if (StrEqualsIgnoreCase(it->second->GetMainScript(), info->GetMainScript())) {
 #else
-		if (this->info_list[script_name]->GetMainScript() == info->GetMainScript()) {
+		if (it->second->GetMainScript() == info->GetMainScript()) {
 #endif
 			delete info;
 			return;
 		}
 
 		Debug(script, 1, "Registering two scripts with the same name and version");
-		Debug(script, 1, "  1: {}", this->info_list[script_name]->GetMainScript());
+		Debug(script, 1, "  1: {}", it->second->GetMainScript());
 		Debug(script, 1, "  2: {}", info->GetMainScript());
 		Debug(script, 1, "The first is taking precedence.");
 
@@ -221,8 +221,8 @@ static bool IsSameScript(const ContentInfo &ci, bool md5sum, ScriptInfo *info, S
 			if (tar.second.tar_filename != iter->first) continue;
 
 			/* Check the extension. */
-			const char *ext = strrchr(tar.first.c_str(), '.');
-			if (ext == nullptr || !StrEqualsIgnoreCase(ext, ".nut")) continue;
+			auto ext = tar.first.rfind('.');
+			if (ext == std::string_view::npos || !StrEqualsIgnoreCase(tar.first.substr(ext), ".nut")) continue;
 
 			checksum.AddFile(tar.first, 0, tar_filename);
 		}

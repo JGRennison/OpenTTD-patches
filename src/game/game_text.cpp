@@ -98,7 +98,7 @@ struct StringListReader : StringReader {
 	 * @param translation Are we reading a translation?
 	 */
 	StringListReader(StringData &data, const LanguageStrings &strings, bool master, bool translation) :
-			StringReader(data, strings.language.c_str(), master, translation), p(strings.lines.begin()), end(strings.lines.end())
+			StringReader(data, strings.language, master, translation), p(strings.lines.begin()), end(strings.lines.end())
 	{
 	}
 
@@ -140,9 +140,9 @@ struct TranslationWriter : LanguageWriter {
 		/* We don't write the length. */
 	}
 
-	void Write(const char *buffer, size_t length) override
+	void Write(std::string_view buffer) override
 	{
-		this->strings.emplace_back(buffer, length);
+		this->strings.emplace_back(buffer);
 	}
 };
 

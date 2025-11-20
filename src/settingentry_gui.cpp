@@ -126,22 +126,6 @@ uint BaseSettingEntry::Draw(GameSettings *settings_ptr, int left, int right, int
 /* == SettingEntry methods == */
 
 /**
- * Constructor for a single setting in the 'advanced settings' window
- * @param name Name of the setting in the setting table
- */
-SettingEntry::SettingEntry(const char *name)
-{
-	this->name = name;
-	this->setting = nullptr;
-}
-
-SettingEntry::SettingEntry(const IntSettingDesc *setting)
-{
-	this->name = nullptr;
-	this->setting = setting;
-}
-
-/**
  * Initialization of a setting entry
  * @param level      Page nesting level of this entry
  */

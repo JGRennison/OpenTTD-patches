@@ -135,7 +135,7 @@ FiosNumberedSaveName &GetLongTermAutoSaveFiosNumberedSaveName();
 
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = CompanyID::Invalid());
 extern void OSOpenBrowser(const std::string &url);
-extern void ShowOSErrorBox(const char *buf, bool system);
+extern void ShowOSErrorBox(std::string_view buf, bool system);
 [[noreturn]] extern void DoOSAbort();
 extern std::string _config_file;
 extern uint64_t _station_tile_cache_hash;
@@ -157,7 +157,7 @@ static std::atomic<bool> _music_inited;
  */
 void UserErrorI(const std::string &str)
 {
-	ShowOSErrorBox(str.c_str(), false);
+	ShowOSErrorBox(str, false);
 	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
 
 #ifdef __EMSCRIPTEN__
@@ -171,17 +171,6 @@ void UserErrorI(const std::string &str)
 	_exit(1);
 }
 
-[[noreturn]] static void fatalerror_common(const char *msg)
-{
-	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
-		ShowOSErrorBox(msg, true);
-	}
-
-	/* Set the error message for the crash log and then invoke it. */
-	CrashLog::SetErrorMessage(msg);
-	DoOSAbort();
-}
-
 /**
  * Error handling for fatal non-user errors.
  * @param str the string to print.
@@ -191,7 +180,13 @@ void FatalErrorI(const std::string &str)
 {
 	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
 
-	fatalerror_common(str.c_str());
+	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
+		ShowOSErrorBox(str, true);
+	}
+
+	/* Set the error message for the crash log and then invoke it. */
+	CrashLog::SetErrorMessage(str.c_str());
+	DoOSAbort();
 }
 
 /**

@@ -100,7 +100,7 @@ static DBusHandlerResult FcitxDBusMessageFilter(DBusConnection *connection, DBus
 		dbus_message_iter_get_basic(&iter, &text);
 
 		if (text != nullptr && EditBoxInGlobalFocus()) {
-			HandleTextInput(nullptr, true);
+			HandleTextInput({}, true);
 			HandleTextInput(text);
 			SetTextInputRect();
 		}
@@ -114,7 +114,7 @@ static DBusHandlerResult FcitxDBusMessageFilter(DBusConnection *connection, DBus
 		if (!dbus_message_get_args(message, nullptr, DBUS_TYPE_STRING, &text, DBUS_TYPE_INT32, &cursor, DBUS_TYPE_INVALID)) return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 
 		if (text != nullptr && EditBoxInGlobalFocus()) {
-			HandleTextInput(text, true, text + std::min<uint>(cursor, strlen(text)));
+			HandleTextInput(text, true, std::min<size_t>(cursor, strlen(text)));
 		}
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -506,7 +506,7 @@ void VideoDriver_SDL_Base::EditBoxLostFocus()
 		this->edit_box_focused = false;
 	}
 	/* Clear any marked string from the current edit box. */
-	HandleTextInput(nullptr, true);
+	HandleTextInput({}, true);
 }
 
 std::vector<int> VideoDriver_SDL_Base::GetListOfMonitorRefreshRates()
@@ -801,7 +801,7 @@ bool VideoDriver_SDL_Base::PollEvent()
 				auto [len, c] = DecodeUtf8(ev.text.text);
 				if (len > 0) HandleKeypress(keycode, c);
 			} else {
-				HandleTextInput(nullptr, true);
+				HandleTextInput({}, true);
 				HandleTextInput(ev.text.text);
 				SetTextInputRect();
 			}
@@ -815,7 +815,7 @@ bool VideoDriver_SDL_Base::PollEvent()
 			} else {
 				_editing_text += ev.edit.text;
 			}
-			HandleTextInput(_editing_text.c_str(), true, _editing_text.c_str() + _editing_text.size());
+			HandleTextInput(_editing_text, true, _editing_text.size());
 			break;
 		}
 

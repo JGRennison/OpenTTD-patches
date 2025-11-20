@@ -410,7 +410,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 
 	void WriteHeader(const LanguagePackHeader *header) override
 	{
-		this->Write(reinterpret_cast<const char *>(header), sizeof(*header));
+		this->Write({reinterpret_cast<const char *>(header), sizeof(*header)});
 	}
 
 	void Finalise() override
@@ -421,10 +421,10 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 		this->FileWriter::Finalise();
 	}
 
-	void Write(const char *buffer, size_t length) override
+	void Write(std::string_view buffer) override
 	{
-		if (length == 0) return;
-		if (fwrite(buffer, sizeof(*buffer), length, *this->fh) != length) {
+		if (buffer.empty()) return;
+		if (fwrite(buffer.data(), sizeof(*buffer.data()), buffer.size(), *this->fh) != buffer.size()) {
 			FatalError("Could not write to {}", this->filename);
 		}
 	}

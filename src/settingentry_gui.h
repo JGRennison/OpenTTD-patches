@@ -93,10 +93,10 @@ protected:
 
 /** Standard setting */
 struct SettingEntry : BaseSettingEntry {
-	const char *name;              ///< Name of the setting
-	const IntSettingDesc *setting; ///< Setting description of the setting
+	const char *name = nullptr; ///< Name of the setting
+	const IntSettingDesc *setting = nullptr; ///< Setting description of the setting
 
-	SettingEntry(const char *name);
+	SettingEntry(const char *name) : name(name) {}
 
 	void Init(uint8_t level = 0) override;
 	void ResetAll() override;
@@ -108,7 +108,7 @@ struct SettingEntry : BaseSettingEntry {
 	bool IsGUIEditable() const;
 
 protected:
-	SettingEntry(const IntSettingDesc *setting);
+	SettingEntry(const IntSettingDesc *setting) : setting(setting) {}
 	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const override;
 	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const;
 

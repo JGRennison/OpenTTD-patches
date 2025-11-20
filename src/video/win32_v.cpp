@@ -350,8 +350,8 @@ static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
 			/* Transmit text to windowing system. */
 			if (len > 0) {
-				HandleTextInput(nullptr, true); // Clear marked string.
-				HandleTextInput(FS2OTTD(str.get()).c_str());
+				HandleTextInput({}, true); // Clear marked string.
+				HandleTextInput(FS2OTTD(str.get()));
 			}
 			SetCompositionPos(hwnd);
 
@@ -384,9 +384,9 @@ static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
 					++caret;
 				}
 
-				HandleTextInput(utf8_buf, true, utf8_buf + caret.GetByteOffset());
+				HandleTextInput(utf8_buf, true, caret.GetByteOffset());
 			} else {
-				HandleTextInput(nullptr, true);
+				HandleTextInput({}, true);
 			}
 
 			lParam &= ~(GCS_COMPSTR | GCS_COMPATTR | GCS_COMPCLAUSE | GCS_CURSORPOS | GCS_DELTASTART);
@@ -404,7 +404,7 @@ static void CancelIMEComposition(HWND hwnd)
 	if (hIMC != nullptr) ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
 	ImmReleaseContext(hwnd, hIMC);
 	/* Clear any marked string from the current edit box. */
-	HandleTextInput(nullptr, true);
+	HandleTextInput({}, true);
 }
 
 #if defined(_MSC_VER) && defined(NTDDI_WIN10_RS4)
@@ -635,7 +635,7 @@ LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		case WM_IME_ENDCOMPOSITION:
 			/* Clear any pending composition string. */
-			HandleTextInput(nullptr, true);
+			HandleTextInput({}, true);
 			if (DrawIMECompositionString()) return 0;
 			break;
 

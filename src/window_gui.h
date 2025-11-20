@@ -397,7 +397,7 @@ public:
 
 	virtual const struct Textbuf *GetFocusedTextbuf() const;
 	virtual Point GetCaretPosition() const;
-	virtual Rect GetTextBoundingRect(const char *from, const char *to) const;
+	virtual Rect GetTextBoundingRect(size_t from, size_t to) const;
 	virtual ptrdiff_t GetTextCharacterAtPosition(const Point &pt) const;
 
 	void InitNested(WindowNumber number = 0);
@@ -573,7 +573,7 @@ public:
 
 	EventState HandleEditBoxKey(WidgetID wid, char32_t key, uint16_t keycode);
 	bool ClearEditBox(WidgetID wid);
-	virtual void InsertTextString(WidgetID wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end);
+	virtual void InsertTextString(WidgetID wid, std::string_view str, bool marked, std::optional<size_t> caret, std::optional<size_t> insert_location, std::optional<size_t> replacement_end);
 
 	void HandleButtonClick(WidgetID widget);
 	int GetRowFromWidget(int clickpos, WidgetID widget, int padding, int line_height = -1) const;

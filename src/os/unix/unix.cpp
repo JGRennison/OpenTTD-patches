@@ -256,13 +256,13 @@ void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args)
 }
 
 #if !defined(__APPLE__)
-void ShowOSErrorBox(const char *buf, bool)
+void ShowOSErrorBox(std::string_view buf, bool)
 {
 	/* All unix systems, except OSX. Only use escape codes on a TTY. */
 	if (isatty(fileno(stderr))) {
-		fprintf(stderr, "\033[1;31mError: %s\033[0;39m\n", buf);
+		fmt::print(stderr, "\033[1;31mError: {}\033[0;39m\n", buf);
 	} else {
-		fprintf(stderr, "Error: %s\n", buf);
+		fmt::print(stderr, "Error: {}\n", buf);
 	}
 }
 
@@ -295,7 +295,7 @@ std::optional<std::string> GetClipboardContents()
 void OSOpenBrowser(const std::string &url)
 {
 	/* Implementation in pre.js */
-	EM_ASM({ if (window["openttd_open_url"]) window.openttd_open_url($0, $1) }, url.c_str(), url.size());
+	EM_ASM({ if (window["openttd_open_url"]) window.openttd_open_url($0, $1) }, url.data(), url.size());
 }
 #elif !defined( __APPLE__)
 void OSOpenBrowser(const std::string &url)

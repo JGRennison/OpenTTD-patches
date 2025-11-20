@@ -26,7 +26,7 @@
 
 StrgenState _strgen;
 static bool _translated;              ///< Whether the current language is not the master language
-static const char *_cur_ident;
+static std::string_view _cur_ident;
 static ParsedCommandStruct _cur_pcs;
 static size_t _cur_argidx;
 
@@ -772,7 +772,7 @@ void LanguageWriter::WriteLength(size_t length)
 		buffer[offs++] = static_cast<char>(static_cast<uint8_t>((length >> 8) | 0xC0));
 	}
 	buffer[offs++] = static_cast<char>(static_cast<uint8_t>(length & 0xFF));
-	this->Write(buffer, offs);
+	this->Write({buffer, offs});
 }
 
 /**
@@ -815,7 +815,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 
 			format_buffer output;
 			StringBuilder builder(output);
-			_cur_ident = ls->name.c_str();
+			_cur_ident = ls->name;
 			_strgen.cur_line = ls->line;
 
 			/* Produce a message if a string doesn't have a translation. */
@@ -867,7 +867,7 @@ void LanguageWriter::WriteLang(const StringData &data)
 			builder.Put(def_str);
 
 			this->WriteLength(output.size());
-			this->Write(output.data(), output.size());
+			this->Write(output);
 		}
 	}
 }
