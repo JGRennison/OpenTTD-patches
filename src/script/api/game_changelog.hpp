@@ -30,6 +30,7 @@
  * \li GSVehicleList_Waypoint
  * \li GSBaseStation::GetOwner
  * \li GSEngine::GetAllRailTypes
+ * \li GSTile::IsHouseTile
  *
  * Other changes:
  * \li GSBridge::GetBridgeID renamed to GSBridge::GetBridgeType
