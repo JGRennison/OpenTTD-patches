@@ -999,13 +999,13 @@ function Regression::Order()
 	print("  AppendOrder():         " + AIOrder.AppendOrder(12, 33421, AIOrder.OF_NONE));
 
 	print("  GetStopLocation():     " + AIOrder.GetStopLocation(13, 0));
-	print("  BuildVehicle():        " + AIVehicle.BuildVehicle(23596, 8));
+	local veh_id = AIVehicle.BuildVehicle(23596, 8); print("  BuildVehicle():        " + veh_id);
 	print("  BuildRailStation():    " + AIRail.BuildRailStation(7958, AIRail.RAILTRACK_NE_SW, 1, 1, AIStation.STATION_NEW));
-	print("  AppendOrder():         " + AIOrder.AppendOrder(20, 7958, AIOrder.OF_NONE));
-	print("  GetOrderCount():       " + AIOrder.GetOrderCount(20));
-	print("  GetStopLocation():     " + AIOrder.GetStopLocation(20, 0));
-	print("  SetStopLocation():     " + AIOrder.SetStopLocation(20, 0, AIOrder.STOPLOCATION_MIDDLE));
-	print("  GetStopLocation():     " + AIOrder.GetStopLocation(20, 0));
+	print("  AppendOrder():         " + AIOrder.AppendOrder(veh_id, 7958, AIOrder.OF_NONE));
+	print("  GetOrderCount():       " + AIOrder.GetOrderCount(veh_id));
+	print("  GetStopLocation():     " + AIOrder.GetStopLocation(veh_id, 0));
+	print("  SetStopLocation():     " + AIOrder.SetStopLocation(veh_id, 0, AIOrder.STOPLOCATION_MIDDLE));
+	print("  GetStopLocation():     " + AIOrder.GetStopLocation(veh_id, 0));
 
 	local list = AIVehicleList_Station(3);
 
