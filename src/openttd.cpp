@@ -371,9 +371,9 @@ static void WriteSavegameDebugData(const char *name)
  * @param res variable to store the resolution in.
  * @param s   the string to decompose.
  */
-static void ParseResolution(Dimension *res, const char *s)
+static void ParseResolution(Dimension &res, std::string_view s)
 {
-	StringConsumer consumer(std::string_view{s});
+	StringConsumer consumer(s);
 	auto width = consumer.TryReadIntegerBase<uint>(10);
 	auto valid = consumer.ReadIf("x");
 	auto height = consumer.TryReadIntegerBase<uint>(10);
@@ -382,8 +382,8 @@ static void ParseResolution(Dimension *res, const char *s)
 		return;
 	}
 
-	res->width  = std::max<uint>(*width, 64);
-	res->height = std::max<uint>(*height, 64);
+	res.width  = std::max<uint>(*width, 64);
+	res.height = std::max<uint>(*height, 64);
 }
 
 
@@ -720,7 +720,7 @@ int openttd_main(std::span<char * const> arguments)
 		case 'P':
 			scanner->join_company_password = mgo.opt;
 			break;
-		case 'r': ParseResolution(&resolution, mgo.opt); break;
+		case 'r': ParseResolution(resolution, mgo.opt); break;
 		case 't':
 			if (auto value = ParseInteger(mgo.opt); value.has_value()) {
 				scanner->startyear = CalTime::Year(*value);
