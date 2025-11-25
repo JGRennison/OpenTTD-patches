@@ -831,9 +831,12 @@ void ScriptList::RemoveAboveValue(SQInteger value)
 {
 	this->modifications++;
 
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = iter; next_iter++;
-		if (iter->second > value) this->RemoveItem(iter->first);
+	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
+		if (iter->second > value) {
+			iter = this->RemoveIter(iter);
+		} else {
+			++iter;
+		}
 	}
 }
 
@@ -841,9 +844,12 @@ void ScriptList::RemoveBelowValue(SQInteger value)
 {
 	this->modifications++;
 
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = iter; next_iter++;
-		if (iter->second < value) this->RemoveItem(iter->first);
+	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
+		if (iter->second < value) {
+			iter = this->RemoveIter(iter);
+		} else {
+			++iter;
+		}
 	}
 }
 
@@ -851,9 +857,12 @@ void ScriptList::RemoveBetweenValue(SQInteger start, SQInteger end)
 {
 	this->modifications++;
 
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = iter; next_iter++;
-		if (iter->second > start && iter->second < end) this->RemoveItem(iter->first);
+	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
+		if (iter->second > start && iter->second < end) {
+			iter = this->RemoveIter(iter);
+		} else {
+			++iter;
+		}
 	}
 }
 
@@ -861,9 +870,12 @@ void ScriptList::RemoveValue(SQInteger value)
 {
 	this->modifications++;
 
-	for (ScriptListMap::iterator next_iter, iter = this->items.begin(); iter != this->items.end(); iter = next_iter) {
-		next_iter = iter; next_iter++;
-		if (iter->second == value) this->RemoveItem(iter->first);
+	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
+		if (iter->second == value) {
+			iter = this->RemoveIter(iter);
+		} else {
+			++iter;
+		}
 	}
 }
 
