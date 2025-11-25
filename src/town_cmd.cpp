@@ -56,6 +56,8 @@
 #include "zoom_func.h"
 #include "zoning.h"
 #include "terraform_cmd.h"
+#include "clear_map.h"
+#include "tree_map.h"
 #include "scope.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
@@ -2306,9 +2308,11 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 /**
  * Check if it's possible to place a town on a given tile.
  * @param tile The tile to check.
+ * @param city Will this be a city (instead of a town).
+ * @param check_surrounding Should we ensure surrounding tiles are free too?
  * @return A zero cost if allowed, otherwise an error.
  */
-static CommandCost TownCanBePlacedHere(TileIndex tile, bool city)
+static CommandCost TownCanBePlacedHere(TileIndex tile, bool city, bool check_surrounding)
 {
 	/* Check if too close to the edge of map */
 	if (DistanceFromEdge(tile) < 12) {
@@ -2328,6 +2332,40 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city)
 	/* Can only build on clear flat areas, possibly with trees. */
 	if ((!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES)) || !IsTileFlat(tile)) {
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
+	}
+
+	/* We might want to make sure the town has enough room. */
+	if (check_surrounding) {
+		constexpr uint SEARCH_DIAMETER = 5; // Center tile of town + 2 tile radius.
+		/* Half of the tiles in the search must be valid for the town to build upon. */
+		constexpr uint VALID_TILE_GOAL = (SEARCH_DIAMETER * SEARCH_DIAMETER) / 2;
+		const int town_height = GetTileZ(tile);
+		OrthogonalTileArea search_area(tile, 1, 1);
+		search_area.Expand(SEARCH_DIAMETER / 2);
+		uint counter = 0;
+		for (TileIndex t : search_area) {
+			if (counter == VALID_TILE_GOAL) break;
+
+			switch (GetTileType(t)) {
+				case MP_CLEAR:
+					/* Don't allow rough tiles, as they are likely wetlands. */
+					if (GetClearGround(t) == CLEAR_ROUGH) continue;
+					break;
+
+				case MP_TREES:
+					/* Don't allow rough trees, as they are likely wetlands. */
+					if (GetTreeGround(t) == TREE_GROUND_ROUGH) continue;
+					break;
+
+				default:
+					continue;
+			}
+
+			bool elevation_similar = (GetTileMaxZ(t) <= town_height + 1) && (GetTileZ(t) >= town_height - 1);
+			if (elevation_similar) counter++;
+		}
+
+		if (counter < VALID_TILE_GOAL) return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
 	uint min_land_area = city ? _settings_game.economy.min_city_land_area : _settings_game.economy.min_town_land_area;
@@ -2403,7 +2441,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 	if (!Town::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_TOWNS);
 
 	if (!random_location) {
-		CommandCost ret = TownCanBePlacedHere(tile, city);
+		CommandCost ret = TownCanBePlacedHere(tile, city, false);
 		if (ret.Failed()) return ret;
 	}
 
@@ -2601,7 +2639,7 @@ static TileIndex BetterTownPlacementTile(TileIndex tile, bool city, TownLayout l
 		return a.score > b.score;
 	});
 	for (const auto &candidate : candidates) {
-		if (TownCanBePlacedHere(candidate.tile, city).Succeeded()) return candidate.tile;
+		if (TownCanBePlacedHere(candidate.tile, city, true).Succeeded()) return candidate.tile;
 	}
 
 	/* No successful candidates */
@@ -2627,8 +2665,8 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 		/* Generate a tile index not too close from the edge */
 		TileIndex tile = AlignTileToGrid(RandomTile(), layout);
 
-		/* if we tried to place the town on water, slide it over onto
-		 * the nearest likely-looking spot */
+		/* If we tried to place the town on water, find a suitable land tile nearby.
+		 * Otherwise, evaluate the land tile. */
 		if (IsTileType(tile, MP_WATER)) {
 			tile = FindNearestGoodCoastalTownSpot(tile, layout);
 			if (tile == INVALID_TILE) continue;
@@ -2639,7 +2677,7 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 			if (tile == INVALID_TILE) continue;
 		} else {
 			/* Make sure town can be placed here */
-			if (TownCanBePlacedHere(tile, city).Failed()) continue;
+			if (TownCanBePlacedHere(tile, city, true).Failed()) continue;
 		}
 
 		/* Allocate a town struct */
