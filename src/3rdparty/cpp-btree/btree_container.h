@@ -218,6 +218,16 @@ class btree_unique_container : public btree_container<Tree> {
     this->tree_.insert_unique(b, e);
   }
 
+  // Emplace routines.
+  template <typename... Args>
+  std::pair<iterator,bool> emplace(Args&&... args) {
+    return this->insert(value_type(std::forward<Args>(args)...));
+  }
+  template <typename... Args>
+  iterator emplace_hint(iterator position, Args&&... args) {
+    return this->insert(position, value_type(std::forward<Args>(args)...));
+  }
+
   // Deletion routines.
   int erase(const key_type &key) {
     return this->tree_.erase_unique(key);
@@ -338,6 +348,16 @@ class btree_multi_container : public btree_container<Tree> {
   template <typename InputIterator>
   void insert(InputIterator b, InputIterator e) {
     this->tree_.insert_multi(b, e);
+  }
+
+  // Emplace routines.
+  template <typename... Args>
+  iterator emplace(Args&&... args) {
+    return this->insert(value_type(std::forward<Args>(args)...));
+  }
+  template <typename... Args>
+  iterator emplace_hint(iterator position, Args&&... args) {
+    return this->insert(position, value_type(std::forward<Args>(args)...));
   }
 
   // Deletion routines.
