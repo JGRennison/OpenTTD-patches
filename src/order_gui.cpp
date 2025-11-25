@@ -332,7 +332,7 @@ static std::unique_ptr<NWidgetBase> MakeCargoTypeOrdersRows(bool right)
 
 	const uint second_column_start = static_cast<uint>(dual_column ? (_sorted_standard_cargo_specs.size() + 1) / 2 : _sorted_standard_cargo_specs.size());
 	const uint start = (right ? second_column_start : 0);
-	const uint end = (right ? _sorted_standard_cargo_specs.size() : second_column_start);
+	const uint end = (right ? static_cast<uint>(_sorted_standard_cargo_specs.size()) : second_column_start);
 
 	for (uint i = start; i < end; i++) {
 		/* Cargo row */
