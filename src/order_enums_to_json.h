@@ -71,7 +71,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderDepotAction, {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadFlags, {
 	{static_cast<OrderLoadFlags>(-1), nullptr},
-	{OLF_LOAD_IF_POSSIBLE, "load"},
+	{OLF_LOAD_IF_POSSIBLE, "normal"},
 	{OLFB_FULL_LOAD, "full-load"},
 	{OLF_FULL_LOAD_ANY, "full-load-any"},
 	{OLFB_NO_LOAD, "no-load"}
@@ -87,8 +87,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderLeaveType, {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadFlags, {
 	{static_cast<OrderUnloadFlags>(-1), nullptr},
-	{OUF_UNLOAD_IF_POSSIBLE, "unload"},
-	{OUFB_UNLOAD, "unload-and-leave-empty"},
+	{OUF_UNLOAD_IF_POSSIBLE, "normal"},
+	{OUFB_UNLOAD, "unload"},
+	{OUFB_UNLOAD, "unload-and-leave-empty"}, // Import only
 	{OUFB_TRANSFER, "transfer"},
 	{OUFB_NO_UNLOAD, "no-unload"},
 })
