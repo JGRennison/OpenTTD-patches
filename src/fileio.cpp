@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "core/alloc_type.hpp"
+#include "core/string_consumer.hpp"
 #include "fileio_func.h"
 #include "spriteloader/spriteloader.hpp"
 #include "debug.h"
@@ -25,7 +26,6 @@
 #include <unistd.h>
 #include <pwd.h>
 #endif
-#include <charconv>
 #include <sys/stat.h>
 #include <array>
 #include <sstream>
@@ -557,12 +557,12 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 		std::string size = ExtractString(th.size);
 		size_t skip = 0;
 		if (!size.empty()) {
-			StrTrimInPlace(size);
-			auto [_, err] = std::from_chars(size.data(), size.data() + size.size(), skip, 8);
-			if (err != std::errc()) {
+			auto value = ParseInteger<size_t>(size, 8);
+			if (!value.has_value()) {
 				Debug(misc, 0, "The file '{}' has an invalid size for '{}'", filename, name);
 				return false;
 			}
+			skip = *value;
 		}
 
 		switch (th.typeflag) {

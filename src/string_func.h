@@ -90,7 +90,8 @@ bool strtolower(std::string &str, std::string::size_type offs = 0);
 
 [[nodiscard]] bool StrValid(std::span<const char> str);
 void StrTrimInPlace(std::string &str);
-[[nodiscard]] std::string_view StrTrimView(std::string_view str);
+[[nodiscard]] std::string_view StrTrimView(std::string_view str, std::string_view characters_to_trim);
+[[nodiscard]] std::string_view StrTrimView(std::string_view str, struct StringConsumerControlCharFilter characters_to_trim);
 
 std::string_view StrLastPathSegment(std::string_view path);
 

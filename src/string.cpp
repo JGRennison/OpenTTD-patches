@@ -306,17 +306,48 @@ bool StrValid(std::span<const char> str)
  */
 void StrTrimInPlace(std::string &str)
 {
-	str = StrTrimView(str);
+	StringConsumerControlCharFilter characters_to_trim = StringConsumer::WHITESPACE_NO_NEWLINE;
+
+	const char *start = str.data();
+	const char *end = start + str.size();
+	while (start != end) {
+		if (!characters_to_trim.Matches(*(end - 1))) break;
+		end--;
+	}
+	str.resize(end - start);
+
+	start = str.data();
+	end = start + str.size();
+	while (start != end) {
+		if (!characters_to_trim.Matches(*start)) break;
+		start++;
+	}
+	if (start != str.data()) str.erase(0, start - str.data());
 }
 
-std::string_view StrTrimView(std::string_view str)
+std::string_view StrTrimView(std::string_view str, std::string_view characters_to_trim)
 {
-	size_t first_pos = str.find_first_not_of(' ');
+	size_t first_pos = str.find_first_not_of(characters_to_trim);
 	if (first_pos == std::string::npos) {
 		return std::string_view{};
 	}
-	size_t last_pos = str.find_last_not_of(' ');
+	size_t last_pos = str.find_last_not_of(characters_to_trim);
 	return str.substr(first_pos, last_pos - first_pos + 1);
+}
+
+std::string_view StrTrimView(std::string_view str, StringConsumerControlCharFilter characters_to_trim)
+{
+	const char *start = str.data();
+	const char *end = start + str.size();
+	while (start != end) {
+		if (!characters_to_trim.Matches(*start)) break;
+		start++;
+	}
+	while (start != end) {
+		if (!characters_to_trim.Matches(*(end - 1))) break;
+		end--;
+	}
+	return std::string_view(start, end - start);
 }
 
 std::string_view StrLastPathSegment(std::string_view path)

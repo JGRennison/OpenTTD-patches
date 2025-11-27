@@ -467,13 +467,6 @@ static bool CheckCommandsMatch(std::string_view a, std::string_view b, std::stri
 	return result;
 }
 
-[[nodiscard]] static std::string_view StripTrailingWhitespace(std::string_view str)
-{
-	auto len = str.find_last_not_of("\r\n\t ");
-	if (len == std::string_view::npos) return {};
-	return str.substr(0, len + 1);
-}
-
 void StringReader::HandleString(std::string_view src)
 {
 	/* Ignore blank lines */
@@ -486,7 +479,7 @@ void StringReader::HandleString(std::string_view src)
 	}
 
 	/* Read string name */
-	std::string_view str_name = StripTrailingWhitespace(consumer.ReadUntilChar(':', StringConsumer::KEEP_SEPARATOR));
+	std::string_view str_name = StrTrimView(consumer.ReadUntilChar(':', StringConsumer::KEEP_SEPARATOR), StringConsumer::WHITESPACE_NO_NEWLINE);
 	if (!consumer.ReadCharIf(':')) {
 		StrgenError("Line has no ':' delimiter");
 		return;
@@ -627,7 +620,7 @@ void StringReader::ParseFile()
 
 	_strgen.cur_line = 1;
 	while (this->ReadLine(buf, lastof(buf)) != nullptr) {
-		this->HandleString(StripTrailingWhitespace(buf));
+		this->HandleString(StrTrimView(buf, StringConsumer::WHITESPACE_OR_NEWLINE));
 		_strgen.cur_line++;
 	}
 
