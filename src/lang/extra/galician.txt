@@ -311,6 +311,10 @@ STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :Cando se habili
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :Amosar a xerarquía de grupo no nome dos vehículos: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :Cando se habilita, e amosar a xerarquía do grupo no nome está activo, os nomes de vehículos que teñen un nome de grupo inclúen toda a xerarquía superior
 
+STR_CONFIG_SETTING_SHOW_ROUTE_ID_IN_VEHICLE_VIEW                :Amosar o ID de ruta do vehículo na ventá de vista do vehículo: {STRING}
+STR_CONFIG_SETTING_SHOW_ROUTE_ID_IN_VEHICLE_VIEW_HELPTEXT       :Se está activado, o ID de ruta da expedición programada asociada coa última expedición realizada amosarase na barra de título da ventá de vista do vehículo, se corresponde
+STR_VEHICLE_VIEW_CAPTION_ROUTE_ID_SUFFIX                        : [{STRING}]
+
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Amosar o número de orde na ventá de vista do vehículo: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está activado, a orde actual do vehículo amósase na barra de inicio/parada da ventá de vista do vehículo.
 
@@ -443,6 +447,14 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Como debuxar as
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :liñas discontinuas de {COMMA} pixel{P "" es}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :liñas planas
 
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH               :Estilo de debuxo das liñas de plans: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH_HELPTEXT      :Como debuxar as liñas de plans nos visores.
+
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE                 :Debuxar as liñas de plans seleccionadas con: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE_HELPTEXT        :Como debuxar as liñas de plans que están actualmente seleccionadas.
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_LINE             :liña vermella
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_HIGHLIGHT        :resaltado vermello
+
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autogravado: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona o intervalo entre gravados automáticos das partidas
 
@@ -464,6 +476,11 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Escolle se os h
 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Usar horarios para asegurar a separación dos vehículos por defecto: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Escolle se para asegurar a separación dos vehículos deberíase habilitar automáticamente para os novos vehículos
+
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME                      :Mostrar tempo restante no horario: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_HELPTEXT             :Ao converter de ticks a días/minutos nos horarios, mostrar tamén os ticks ou segundos restantes.
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_TICKS                :Ticks
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_SECONDS              :Segundos
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Usar as opcións de tempo do cliente en lugar das da partida gardada: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Selecciona se se usan as opcións do cliente para amosar o tempo, en lugar das opcións da partida gardada.
@@ -681,6 +698,7 @@ STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Ventás
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Ríos e lagoas
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Distribución de carga - por anulacións de carga
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Modo do mapa
+STR_CONFIG_SETTING_PLANS                                        :{ORANGE}Plans
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Capa superposta da ruta do vehículo
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Compartición de infraestrutura
 
@@ -1847,6 +1865,7 @@ STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}{NBSP}ho
 STR_TIMETABLE_MINUTES_SUFFIX                                    : ({STRING})
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} tick{P "" s}
+STR_TIMETABLE_LEFTOVER_SECONDS                                  : {COMMA} segundo{P "" s}
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatizar
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Xestiona os horarios automáticamente actualizando os valores para cada viaxe
@@ -2460,3 +2479,6 @@ STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS                   :{WHITE}A lista 
 STR_ERROR_JSON                                                  :{WHITE}Erro de JSON
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE                             :{WHITE}A importación substituirá todas as ordes existentes na lista. Queres continuar?
 STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirmar importación da lista de ordes
+
+STR_ORDER_UNKNOWN_ERROR                                         :[Error] Erro descoñecido
+STR_ORDER_PARSE_ERROR                                           :[Error] Esta orde non se puido analizar
