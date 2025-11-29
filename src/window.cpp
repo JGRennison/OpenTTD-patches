@@ -3711,6 +3711,10 @@ void ReInitWindow(Window *w, bool zoom_changed)
 /** Re-initialize all windows. */
 void ReInitAllWindows(bool zoom_changed)
 {
+	/* Do this first to suppress any cursor/network chat undraw operations.
+	 * These are not valid in some (e.g. network) contexts in which this function is called. */
+	MarkWholeScreenDirty();
+
 	SetupWidgetDimensions();
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
@@ -3729,12 +3733,10 @@ void ReInitAllWindows(bool zoom_changed)
 		ReInitWindow(w, zoom_changed);
 	}
 
-	if (_networking) NetworkUndrawChatMessage();
 	NetworkReInitChatBoxSize();
 
 	/* Make sure essential parts of all windows are visible */
 	RelocateAllWindows(_screen.width, _screen.height);
-	MarkWholeScreenDirty();
 }
 
 /**
