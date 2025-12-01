@@ -21,6 +21,7 @@
 #include "network.h"
 #include "network_client.h"
 #include "network_base.h"
+#include "../core/backup_type.hpp"
 #include "../core/format.hpp"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 
@@ -221,6 +222,14 @@ void NetworkDrawChatMessage()
 
 	_cur_dpi = &_screen; // switch to _screen painting
 
+	DrawPixelInfo tmp_dpi;
+	if (!FillDrawPixelInfo(&tmp_dpi, x, y, width, height)) {
+		_chatmessage_visible = true;
+		_chatmessage_dirty = false;
+		return;
+	}
+	AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
+
 	auto now = std::chrono::steady_clock::now();
 	int string_height = 0;
 	for (auto &cmsg : _chatmsg_list) {
@@ -230,10 +239,10 @@ void NetworkDrawChatMessage()
 
 	string_height = std::min<uint>(string_height, MAX_CHAT_MESSAGES * (GetCharacterHeight(FS_NORMAL) + NETWORK_CHAT_LINE_SPACING));
 
-	int top = _screen.height - _chatmsg_box.y - string_height - 2;
-	int bottom = _screen.height - _chatmsg_box.y - 2;
+	int top = _screen.height - _chatmsg_box.y - string_height - 2 - y;
+	int bottom = _screen.height - _chatmsg_box.y - 2 - y;
 	/* Paint a half-transparent box behind the chat messages */
-	GfxFillRect(_chatmsg_box.x, top - 2, _chatmsg_box.x + _chatmsg_box.width - 1, bottom,
+	GfxFillRect(0, top - 2, _chatmsg_box.width - 1, bottom,
 			PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR // black, but with some alpha for background
 		);
 
@@ -242,7 +251,7 @@ void NetworkDrawChatMessage()
 
 	for (auto &cmsg : _chatmsg_list) {
 		if (!show_all && cmsg.remove_time < now) continue;
-		ypos = DrawStringMultiLine(_chatmsg_box.x + ScaleGUITrad(3), _chatmsg_box.x + _chatmsg_box.width - 1, top, ypos, cmsg.message, cmsg.colour, SA_LEFT | SA_BOTTOM | SA_FORCE) - NETWORK_CHAT_LINE_SPACING;
+		ypos = DrawStringMultiLine(ScaleGUITrad(3), _chatmsg_box.width - 1, top, ypos, cmsg.message, cmsg.colour, SA_LEFT | SA_BOTTOM | SA_FORCE) - NETWORK_CHAT_LINE_SPACING;
 		if (ypos < top) break;
 	}
 
