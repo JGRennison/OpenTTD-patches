@@ -20,8 +20,6 @@
 #include "../core/alloc_func.hpp"
 #include "../core/string_consumer.hpp"
 
-#include <map>
-
 /**
  * In the memory allocator for Squirrel we want to directly use malloc/realloc, so when the OS
  * does not have enough memory the game does not go into unrecoverable error mode and kill the

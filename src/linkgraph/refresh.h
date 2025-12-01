@@ -14,7 +14,6 @@
 #include "../vehicle_base.h"
 #include "../3rdparty/cpp-btree/btree_set.h"
 #include <vector>
-#include <map>
 
 /**
  * Utility to refresh links a consist will visit.

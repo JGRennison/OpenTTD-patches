@@ -23,7 +23,6 @@
 #include "core/alignment.hpp"
 #include "core/alloc_func.hpp"
 #include "strings_type.h"
-#include <map>
 #include <vector>
 #include <array>
 #include <iterator>

@@ -4,7 +4,6 @@
 #include "../core/math_func.hpp"
 #include "mcf.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
-#include <set>
 
 #include "../safeguards.h"
 

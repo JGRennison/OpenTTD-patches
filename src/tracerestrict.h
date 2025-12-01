@@ -24,7 +24,6 @@
 #include "station_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/svector/svector.h"
-#include <map>
 #include <vector>
 
 struct Train;

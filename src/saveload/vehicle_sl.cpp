@@ -24,7 +24,6 @@
 #include "../disaster_vehicle.h"
 #include "../debug.h"
 
-#include <map>
 #include <vector>
 
 #include "../safeguards.h"

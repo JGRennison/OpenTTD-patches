@@ -24,7 +24,6 @@
 #include "3rdparty/svector/svector.h"
 
 #include <array>
-#include <map>
 #include <vector>
 
 /**

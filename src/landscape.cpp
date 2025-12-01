@@ -40,8 +40,6 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <array>
-#include <list>
-#include <set>
 
 #include "table/strings.h"
 #include "table/sprites.h"

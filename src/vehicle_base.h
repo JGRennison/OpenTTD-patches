@@ -27,8 +27,6 @@
 #include "core/alignment.hpp"
 #include "sl/saveload_common.h"
 #include <array>
-#include <list>
-#include <map>
 #include <vector>
 
 /** Vehicle state bits in #Vehicle::vehstatus. */

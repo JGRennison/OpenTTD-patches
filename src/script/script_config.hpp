@@ -11,7 +11,6 @@
 #define SCRIPT_CONFIG_HPP
 
 #include <map>
-#include <list>
 #include "../company_type.h"
 #include "../textfile_gui.h"
 #include "script_instance.hpp"

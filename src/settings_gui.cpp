@@ -65,7 +65,6 @@
 #include <vector>
 #include <functional>
 #include <iterator>
-#include <set>
 
 #include "safeguards.h"
 
