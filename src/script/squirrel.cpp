@@ -194,7 +194,7 @@ void Squirrel::CompileError(HSQUIRRELVM vm, const SQChar *desc, const SQChar *so
 	engine->crashed = true;
 	SQPrintFunc *func = engine->print_func;
 	if (func == nullptr) {
-		Debug(misc, 0, "[Squirrel] Compile error: {}", msg);
+		Debug(script, 0, "[squirrel] Compile error: {}", StrTrimView(msg, StringConsumer::WHITESPACE_OR_NEWLINE));
 	} else {
 		(*func)(true, msg);
 	}
@@ -205,7 +205,7 @@ void Squirrel::ErrorPrintFunc(HSQUIRRELVM vm, std::string_view s)
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
 	if (func == nullptr) {
-		fmt::print(stderr, "{}", s);
+		Debug(script, 0, "[squirrel] Error: {}", StrTrimView(s, StringConsumer::WHITESPACE_OR_NEWLINE));
 	} else {
 		(*func)(true, s);
 	}
@@ -222,7 +222,7 @@ void Squirrel::RunError(HSQUIRRELVM vm, std::string_view error)
 	Squirrel *engine = (Squirrel *)sq_getforeignptr(vm);
 	SQPrintFunc *func = engine->print_func;
 	if (func == nullptr) {
-		fmt::print(stderr, "{}", msg);
+		Debug(script, 0, "[squirrel] {}", StrTrimView(msg, StringConsumer::WHITESPACE_OR_NEWLINE));
 	} else {
 		(*func)(true, msg);
 	}
@@ -253,7 +253,7 @@ void Squirrel::PrintFunc(HSQUIRRELVM vm, std::string_view s)
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
 	if (func == nullptr) {
-		fmt::print("{}", s);
+		Debug(script, 0, "[squirrel] {}", StrTrimView(s, StringConsumer::WHITESPACE_OR_NEWLINE));
 	} else {
 		(*func)(false, s);
 	}
@@ -311,8 +311,8 @@ void Squirrel::AddClassBegin(std::string_view class_name, std::string_view paren
 	sq_pushstring(this->vm, class_name, -1);
 	sq_pushstring(this->vm, parent_class, -1);
 	if (SQ_FAILED(sq_get(this->vm, -3))) {
-		Debug(misc, 0, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
-		Debug(misc, 0, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
+		Debug(script, 0, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
+		Debug(script, 0, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
 		return;
 	}
 	sq_newclass(this->vm, SQTrue);
@@ -396,7 +396,7 @@ bool Squirrel::CallMethod(HSQOBJECT instance, std::string_view method_name, HSQO
 	/* Find the function-name inside the script */
 	sq_pushstring(this->vm, method_name, -1);
 	if (SQ_FAILED(sq_get(this->vm, -2))) {
-		Debug(misc, 0, "[squirrel] Could not find '{}' in the class", method_name);
+		Debug(script, 0, "[squirrel] Could not find '{}' in the class", method_name);
 		sq_settop(this->vm, top);
 		return false;
 	}
@@ -457,14 +457,14 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, std::string_view method_name, 
 	}
 
 	if (SQ_FAILED(sq_get(vm, -2))) {
-		Debug(misc, 0, "[squirrel] Failed to find class by the name '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		Debug(script, 0, "[squirrel] Failed to find class by the name '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
 
 	/* Create the instance */
 	if (SQ_FAILED(sq_createinstance(vm, -1))) {
-		Debug(misc, 0, "[squirrel] Failed to create instance for class '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
+		Debug(script, 0, "[squirrel] Failed to create instance for class '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
@@ -709,7 +709,7 @@ bool Squirrel::LoadScript(HSQUIRRELVM vm, const std::string &script, bool in_roo
 	}
 
 	vm->_ops_till_suspend = ops_left;
-	Debug(misc, 0, "[squirrel] Failed to compile '{}'", script);
+	Debug(script, 0, "[squirrel] Failed to compile '{}'", script);
 	return false;
 }
 
