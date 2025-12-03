@@ -98,7 +98,7 @@ public:
 
 /* 'Real' sprite groups contain a list of other result or callback sprite
  * groups. */
-struct RealSpriteGroup : SpriteGroup {
+struct RealSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_REAL;
 
 	RealSpriteGroup() : SpriteGroup(SGT_REAL) {}
@@ -489,7 +489,7 @@ enum DeterministicSpriteGroupFlags : uint16_t {
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
-struct DeterministicSpriteGroup : SpriteGroup {
+struct DeterministicSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_DETERMINISTIC;
 
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
@@ -523,7 +523,7 @@ enum RandomizedSpriteGroupCompareMode : uint8_t {
 	RSG_CMP_ALL,
 };
 
-struct RandomizedSpriteGroup : SpriteGroup {
+struct RandomizedSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_RANDOMIZED;
 
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
@@ -546,7 +546,7 @@ extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of
  * CALLBACK_FAILED */
-struct CallbackResultSpriteGroup : SpriteGroup {
+struct CallbackResultSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_CALLBACK;
 
 	/**
@@ -577,7 +577,7 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 	uint16_t GetCallbackResult() const override { return this->result; }
 };
 
-struct CalculatedResultSpriteGroup : SpriteGroup {
+struct CalculatedResultSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_CALCULATED_RESULT;
 
 	CalculatedResultSpriteGroup() : SpriteGroup(SGT_CALCULATED_RESULT) {}
@@ -585,7 +585,7 @@ struct CalculatedResultSpriteGroup : SpriteGroup {
 
 /* A result sprite group returns the first SpriteID and the number of
  * sprites in the set */
-struct ResultSpriteGroup : SpriteGroup {
+struct ResultSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_RESULT;
 
 	/**
@@ -608,7 +608,7 @@ struct ResultSpriteGroup : SpriteGroup {
 /**
  * Action 2 sprite layout for houses, industry tiles, objects and airport tiles.
  */
-struct TileLayoutSpriteGroup : SpriteGroup {
+struct TileLayoutSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_TILELAYOUT;
 
 	TileLayoutSpriteGroup() : SpriteGroup(SGT_TILELAYOUT) {}
@@ -619,7 +619,7 @@ struct TileLayoutSpriteGroup : SpriteGroup {
 	const DrawTileSprites *ProcessRegisters(uint8_t *stage) const;
 };
 
-struct IndustryProductionSpriteGroup : SpriteGroup {
+struct IndustryProductionSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_INDUSTRY_PRODUCTION;
 
 	IndustryProductionSpriteGroup() : SpriteGroup(SGT_INDUSTRY_PRODUCTION) {}
