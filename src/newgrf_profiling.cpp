@@ -116,9 +116,9 @@ uint32_t NewGRFProfiler::Finish()
 	if (!f.has_value()) {
 		IConsolePrint(CC_ERROR, "Failed to open '{}' for writing.", filename);
 	} else {
-		fmt::print(*f, "Tick,Sprite,Feature,Item,CallbackID,Microseconds,Depth,Result\n");
+		fmt_print_no_system_error(*f, "Tick,Sprite,Feature,Item,CallbackID,Microseconds,Depth,Result\n");
 		for (const Call &c : this->calls) {
-			fmt::print(*f, "{},{},0x{:X},{},0x{:X},{},{},{}\n", c.tick, c.root_sprite, c.feat, c.item, (uint)c.cb, c.time, c.subs, c.result);
+			fmt_print_no_system_error(*f, "{},{},0x{:X},{},0x{:X},{},{},{}\n", c.tick, c.root_sprite, c.feat, c.item, (uint)c.cb, c.time, c.subs, c.result);
 			total_microseconds += c.time;
 		}
 	}

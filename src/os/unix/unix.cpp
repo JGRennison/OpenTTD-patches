@@ -244,7 +244,9 @@ std::string FS2OTTD(std::string_view name)
 
 void ShowInfoI(std::string_view str)
 {
-	fmt::print(stderr, "{}\n", str);
+	format_buffer buf;
+	buf.format("{}\n", str);
+	fwrite(buf.data(), 1, buf.size(), stderr);
 }
 
 void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args)
@@ -259,11 +261,13 @@ void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args)
 void ShowOSErrorBox(std::string_view buf, bool)
 {
 	/* All unix systems, except OSX. Only use escape codes on a TTY. */
+	format_buffer buffer;
 	if (isatty(fileno(stderr))) {
-		fmt::print(stderr, "\033[1;31mError: {}\033[0;39m\n", buf);
+		buffer.format("\033[1;31mError: {}\033[0;39m\n", buf);
 	} else {
-		fmt::print(stderr, "Error: {}\n", buf);
+		buffer.format("Error: {}\n", buf);
 	}
+	fwrite(buffer.data(), 1, buffer.size(), stderr);
 }
 
 [[noreturn]] void DoOSAbort()

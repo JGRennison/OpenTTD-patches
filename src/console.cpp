@@ -108,7 +108,7 @@ void IConsolePrint(TextColour colour_code, std::string string)
 
 	if (_network_dedicated) {
 		NetworkAdminConsole("console", string);
-		fmt::print("{}{}\n", log_prefix().GetLogPrefix(), string);
+		fmt_print_no_system_error("{}{}\n", log_prefix().GetLogPrefix(), string);
 		fflush(stdout);
 		IConsoleWriteToLogFile(string);
 		return;

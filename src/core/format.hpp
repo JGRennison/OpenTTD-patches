@@ -553,4 +553,20 @@ public:
 	format_target &as_format_target() { return reinterpret_cast<format_target &>(*this); }
 };
 
+template <typename... T>
+void fmt_print_no_system_error(fmt::format_string<T...> fmtstr, T&&... args)
+{
+	try {
+		fmt::print(fmtstr, std::forward<T>(args)...);
+	} catch (const std::system_error &) {}
+}
+
+template <typename... T>
+void fmt_print_no_system_error(FILE *f, fmt::format_string<T...> fmtstr, T&&... args)
+{
+	try {
+		fmt::print(f, fmtstr, std::forward<T>(args)...);
+	} catch (const std::system_error &) {}
+}
+
 #endif /* FORMAT_HPP */

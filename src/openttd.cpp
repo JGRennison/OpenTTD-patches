@@ -725,7 +725,7 @@ int openttd_main(std::span<char * const> arguments)
 			if (auto value = ParseInteger(mgo.opt); value.has_value()) {
 				scanner->startyear = CalTime::Year(*value);
 			} else {
-				fmt::print(stderr, "Invalid start year: {}\n", mgo.opt);
+				fmt_print_no_system_error(stderr, "Invalid start year: {}\n", mgo.opt);
 			}
 			break;
 		case 'd': {
@@ -824,7 +824,7 @@ int openttd_main(std::span<char * const> arguments)
 			if (auto value = ParseInteger<uint32_t>(mgo.opt); value.has_value()) {
 				scanner->generation_seed = *value;
 			} else {
-				fmt::print(stderr, "Invalid generation seed: {}\n", mgo.opt);
+				fmt_print_no_system_error(stderr, "Invalid generation seed: {}\n", mgo.opt);
 			}
 			break;
 		case 'c': _config_file = mgo.opt; break;
@@ -833,7 +833,7 @@ int openttd_main(std::span<char * const> arguments)
 			if (auto value = ParseInteger<uint32_t>(mgo.opt); value.has_value()) {
 				_quit_after_days = *value;
 			} else {
-				fmt::print(stderr, "Invalid quit after days: {}\n", mgo.opt);
+				fmt_print_no_system_error(stderr, "Invalid quit after days: {}\n", mgo.opt);
 			}
 			break;
 		case 'Z': {

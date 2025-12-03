@@ -29,7 +29,7 @@
  */
 [[noreturn]] void FatalErrorI(const std::string &msg)
 {
-	fmt::print(stderr, "settingsgen: FATAL: {}\n", msg);
+	fmt_print_no_system_error(stderr, "settingsgen: FATAL: {}\n", msg);
 	exit(1);
 }
 

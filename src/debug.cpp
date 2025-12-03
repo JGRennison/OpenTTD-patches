@@ -118,7 +118,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 	if (dbg == DebugLevelID::desync) {
 		static std::optional<FileHandle> f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
 		if (f.has_value()) {
-			fmt::print(*f, "{}{}", log_prefix().GetLogPrefix(true), buf + prefix_size);
+			fmt_print_no_system_error(*f, "{}{}", log_prefix().GetLogPrefix(true), buf + prefix_size);
 			fflush(*f);
 		}
 #ifdef RANDOM_DEBUG
