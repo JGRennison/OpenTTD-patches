@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.68.2 (2025-12-03)
+* Fix crash in timetable window when all orders are removed when selected.
+* Fix crash which could occur when scanning AI/GS scripts with errors on Windows.
+* Fix crash which could occur when using the settings access mechanism from a network client when the chat overlay was shown.
+* Fix incorrect display of some NewGRF rail stations.
+* Fix missing engines/wagons with some NewGRF rail vehicle sets.
+* Fix text input in settings window when setting clicked multiple times.
+* Scheduled dispatch: Reset last dispatch when cloning schedule to another vehicle.
+* Use column order for cargo type orders load/unload window.
+* No longer apply train speed adaptation below 50 km/h.
+
 ### v0.68.1 (2025-11-14)
 * Fix crash when using "send to depot and sell" from vehicle list windows to immediately sell vehicles in depots.
 * Fix crash with some currency replacement NewGRFs.
