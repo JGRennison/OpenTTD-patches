@@ -73,8 +73,8 @@ Fields can depend on the `type` of the order
 | `destination-id`       | int            | Station ID                                                                                |
 | `destination-name`     | string         | Export only.                                                                              |
 | `destination-location` | object         | `{X:int, Y:int}` tile location.                                                           |
-| `load`                 | enum           | `load`, `full-load`, `full-load-any`, `no-load`                                           |
-| `unload`               | enum           | `unload`, `unload-and-leave-empty`, `transfer`, `no-unload`                               |
+| `load`                 | enum           | `normal`, `full-load`, `full-load-any`, `no-load`                                         |
+| `unload`               | enum           | `normal`, `unload`, `transfer`, `no-unload`                                               |
 | `load-by-cargo-type`   | array\<object> | `{"<cargo-id>": {"load": <load>, "unload": <unload>}}`                                    |
 | `timetable-leave-type` | enum           | `normal`, `leave-early`, `leave-early-if-any-cargo-full`, `leave-early-if-all-cargo-full` |
 #### Go to Depot (`type: go-to-depot`)
