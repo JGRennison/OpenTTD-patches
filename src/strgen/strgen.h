@@ -12,12 +12,12 @@
 
 #include "../core/string_consumer.hpp"
 #include "../language.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <unordered_map>
 #include <array>
 
 /** Container for the different cases of a string. */
@@ -55,7 +55,7 @@ struct LangString {
 /** Information about the currently known strings. */
 struct StringData {
 	std::vector<LangString *> strings; ///< List of all known strings.
-	std::unordered_map<std::string_view, LangString *> name_to_string; ///< Lookup table for the strings.
+	robin_hood::unordered_map<std::string_view, LangString *> name_to_string; ///< Lookup table for the strings.
 	uint tabs;            ///< The number of 'tabs' of strings.
 	uint max_strings;     ///< The maximum number of strings.
 	int next_string_id;   ///< The next string ID to allocate.

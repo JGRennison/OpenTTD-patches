@@ -45,6 +45,7 @@
 #include "misc_cmd.h"
 #include "core/backup_type.hpp"
 #include "core/string_consumer.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "widgets/company_widget.h"
 
@@ -1182,7 +1183,7 @@ void DrawCompanyManagerFace(const CompanyManagerFace &cmf, Colours colour, const
 	/* First determine which parts are enabled. */
 	uint64_t active_vars = GetActiveFaceVars(cmf, vars);
 
-	std::unordered_map<uint8_t, PaletteID> palettes;
+	robin_hood::unordered_flat_map<uint8_t, PaletteID> palettes;
 
 	/* Second, get palettes. */
 	for (auto var : SetBitIterator(active_vars)) {

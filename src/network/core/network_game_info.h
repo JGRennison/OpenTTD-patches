@@ -17,8 +17,7 @@
 #include "../../newgrf_config.h"
 #include "../../date_type.h"
 #include "../../landscape_type.h"
-
-#include <unordered_map>
+#include "../../3rdparty/robin_hood/robin_hood.h"
 
 /*
  * NetworkGameInfo has several revisions which we still need to support on the
@@ -132,7 +131,7 @@ struct NamedGRFIdentifier {
 	std::string name;    ///< The name of the NewGRF.
 };
 /** Lookup table for the GameInfo in case of #NST_LOOKUP_ID. */
-typedef std::unordered_map<uint32_t, NamedGRFIdentifier> GameInfoNewGRFLookupTable;
+typedef robin_hood::unordered_map<uint32_t, NamedGRFIdentifier> GameInfoNewGRFLookupTable;
 
 extern NetworkServerGameInfo _network_game_info;
 

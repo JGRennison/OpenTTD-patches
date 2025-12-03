@@ -16,9 +16,9 @@
 #include "newgrf_badge_type.h"
 #include "newgrf_commons.h"
 #include "strings_type.h"
-#include <unordered_map>
+#include "3rdparty/robin_hood/robin_hood.h"
 
-using BadgeFilterChoices = std::unordered_map<BadgeClassID, BadgeID>;
+using BadgeFilterChoices = robin_hood::unordered_map<BadgeClassID, BadgeID>;
 
 class Badge {
 public:

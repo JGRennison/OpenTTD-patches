@@ -10,10 +10,10 @@
 #ifndef LRUCACHE_HPP
 #define LRUCACHE_HPP
 
+#include "../3rdparty/robin_hood/robin_hood.h"
 #include <utility>
 #include <list>
 #include <functional>
-#include <unordered_map>
 #include <stdexcept>
 
 /**
@@ -28,7 +28,7 @@ private:
 	typedef typename std::list<Tpair>::iterator Titer;
 
 	std::list<Tpair> data; ///< Ordered list of all items.
-	std::unordered_map<Tkey, Titer> lookup;  ///< Map of keys to items.
+	robin_hood::unordered_map<Tkey, Titer> lookup;  ///< Map of keys to items.
 
 	const size_t capacity; ///< Number of items to cache.
 
