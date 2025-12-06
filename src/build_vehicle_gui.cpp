@@ -1724,8 +1724,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->SetCargoFilterArray();
 		this->vscroll->SetCount(this->eng_list.size());
 
-		auto container = this->GetWidget<NWidgetContainer>(WID_BV_BADGE_FILTER);
-		this->badge_filters = AddBadgeDropdownFilters(*container, WID_BV_BADGE_FILTER, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
+		this->badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER, WID_BV_BADGE_FILTER, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);
@@ -2697,10 +2696,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->loco.vscroll->SetCount(this->loco.eng_list.size());
 		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
 
-		auto loco_badge_container = this->GetWidget<NWidgetContainer>(WID_BV_BADGE_FILTER_LOCO);
-		this->loco.badge_filters = AddBadgeDropdownFilters(*loco_badge_container, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
-		auto wagon_badge_container = this->GetWidget<NWidgetContainer>(WID_BV_BADGE_FILTER_WAGON);
-		this->wagon.badge_filters = AddBadgeDropdownFilters(*wagon_badge_container, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
+		this->loco.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_LOCO, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
+		this->wagon.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_WAGON, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);

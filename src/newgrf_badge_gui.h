@@ -63,7 +63,7 @@ inline bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint c
 	return HandleBadgeConfigurationDropDownClick(feature, columns, result, click_result, filter_choices);
 }
 
-std::pair<WidgetID, WidgetID> AddBadgeDropdownFilters(NWidgetContainer &container, WidgetID widget, Colours colour, GrfSpecFeature feature);
+std::pair<WidgetID, WidgetID> AddBadgeDropdownFilters(Window *window, WidgetID container_id, WidgetID widget, Colours colour, GrfSpecFeature feature);
 
 class NWidgetBadgeFilter : public NWidgetLeaf {
 public:
