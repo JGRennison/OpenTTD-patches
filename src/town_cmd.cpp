@@ -2777,6 +2777,7 @@ static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stag
 
 enum class CanBuildHouseHereFlag : uint8_t {
 	NoSlope, ///< are slopes (foundations) disallowed
+	Replace, ///< replace existing house
 };
 using CanBuildHouseHereFlags = EnumBitSet<CanBuildHouseHereFlag, uint8_t>;
 
@@ -2803,9 +2804,11 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, CanBuil
 	/* building under a bridge? */
 	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
-	/* can we clear the land? */
-	CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Auto, DoCommandFlag::NoWater, DoCommandFlag::Town}, tile);
-	if (ret.Failed()) return ret;
+	/* We might be replacing an existing house, otherwise check if we can clear land. */
+	if (!(flags.Test(CanBuildHouseHereFlag::Replace) && GetTileType(tile) == MP_HOUSE)) {
+		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Auto, DoCommandFlag::NoWater, DoCommandFlag::Town}, tile);
+		if (ret.Failed()) return ret;
+	}
 
 	/* do not try to build over house owned by another town */
 	if (IsTileType(tile, MP_HOUSE) && GetTownIndex(tile) != town) return CMD_ERROR;
@@ -3142,9 +3145,10 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
  * @param HouseID The HouseID of the house spec.
  * @param is_protected Whether the house is protected from the town upgrading it.
  * @param town_id Town ID, or TownID::Invalid() to pick a town automatically.
+ * @param replace Whether to automatically demolish an existing house on this tile, if present.
  * @return Empty cost or an error.
  */
-CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, bool is_protected, TownID town_id)
+CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, bool is_protected, TownID town_id, bool replace)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.place_houses == PH_FORBIDDEN) return CMD_ERROR;
 
@@ -3168,16 +3172,24 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 	CanBuildHouseHereFlags build_flags{};
 	if (hs->building_flags.Test(BuildingFlag::NotSloped)) build_flags.Set(CanBuildHouseHereFlag::NoSlope);
 
-	uint w = hs->building_flags.Any(BUILDING_2_TILES_X) ? 2 : 1;
-	uint h = hs->building_flags.Any(BUILDING_2_TILES_Y) ? 2 : 1;
-
 	CommandCost cost = IsAnotherHouseTypeAllowedInTown(t, house);
 	if (!cost.Succeeded()) return cost;
 
-	cost = CanBuildHouseHere(TileArea(tile, w, h), t->index, max_z, build_flags);
+	const uint w = hs->building_flags.Any(BUILDING_2_TILES_X) ? 2 : 1;
+	const uint h = hs->building_flags.Any(BUILDING_2_TILES_Y) ? 2 : 1;
+	const TileArea ta(tile, w, h);
+
+	cost = CanBuildHouseHere(ta, t->index, max_z, build_flags);
 	if (!cost.Succeeded()) return cost;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
+		/* If replacing, clear any existing houses first. */
+		if (replace) {
+			for (TileIndex subtile : ta) {
+				if (GetTileType(subtile) == MP_HOUSE) ClearTownHouse(Town::GetByTile(subtile), subtile);
+			}
+		}
+
 		bool house_completed = _settings_game.economy.place_houses == PH_ALLOWED_CONSTRUCTED;
 		BuildTownHouse(t, tile, hs, house, Random(), house_completed, is_protected);
 	}
