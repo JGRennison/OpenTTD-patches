@@ -2775,19 +2775,23 @@ static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stag
 	}
 }
 
+enum class CanBuildHouseHereFlag : uint8_t {
+	NoSlope, ///< are slopes (foundations) disallowed
+};
+using CanBuildHouseHereFlags = EnumBitSet<CanBuildHouseHereFlag, uint8_t>;
 
 /**
  * Checks if a house can be built here. Important is slope, bridge above
  * and ability to clear the land.
  * @param tile tile to check
  * @param town town that is checking
- * @param noslope are slopes (foundations) allowed?
+ * @param flags flags for this test
  * @return success if house can be built here, error message otherwise
  */
-static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, bool noslope)
+static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, CanBuildHouseHereFlags flags)
 {
 	/* cannot build on these slopes... */
-	if (noslope) {
+	if (flags.Test(CanBuildHouseHereFlag::NoSlope)) {
 		if (!IsTileFlat(tile)) return CommandCost(STR_ERROR_FLAT_LAND_REQUIRED);
 	} else {
 		if (IsSteepSlope(GetTileSlope(tile))) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -2817,15 +2821,15 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, bool no
  * @param ta tile area to check
  * @param town town that is checking
  * @param maxz z level of the house, check if all tiles have this max z level
- * @param noslope are slopes (foundations) allowed?
+ * @param flags flags for this test
  * @return success if house can be built here, error message otherwise
  *
  * @see TownLayoutAllowsHouseHere
  */
-static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int maxz, bool noslope)
+static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int maxz, CanBuildHouseHereFlags flags)
 {
 	for (TileIndex tile : ta) {
-		CommandCost ret = CanBuildHouseHere(tile, town, noslope);
+		CommandCost ret = CanBuildHouseHere(tile, town, flags);
 		/* if building on slopes is allowed, there will be flattening foundation (to tile max z) */
 		if (ret.Succeeded() && GetTileMaxZ(tile) != maxz) ret = CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 		if (ret.Failed()) return ret;
@@ -2926,7 +2930,7 @@ static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta, TownEx
  * @param house house type
  * @return where the building can be placed, INVALID_TILE if no lacation was found
  *
- * @pre CanBuildHouseHere(tile, t->index, false)
+ * @pre CanBuildHouseHere(tile, t->index, {})
  *
  * @see CanBuildHouseHere
  */
@@ -2953,10 +2957,13 @@ static TileIndex FindPlaceForTownHouseAroundTile(TileIndex tile, Town *t, HouseI
 		dir = DIAGDIR_NW;
 		count = 2;
 	} else { // TILE_SIZE_1x1
-		/* CanBuildHouseHere(tile, t->index, false) already checked */
+		/* CanBuildHouseHere(tile, t->index, {}) already checked */
 		if (noslope && !IsTileFlat(tile)) return INVALID_TILE;
 		return tile;
 	}
+
+	CanBuildHouseHereFlags build_flags{};
+	if (noslope) build_flags.Set(CanBuildHouseHereFlag::NoSlope);
 
 	int maxz = GetTileMaxZ(tile);
 	/* Drift around the tile and find a place for the house. For 1x2 and 2x1 houses just two
@@ -2964,7 +2971,7 @@ static TileIndex FindPlaceForTownHouseAroundTile(TileIndex tile, Town *t, HouseI
 	 * 4 positions have to be checked (clockwise). */
 	while (count-- > 0) {
 		if (!TownLayoutAllowsHouseHere(t, ta, modes)) continue;
-		if (CanBuildHouseHere(ta, t->index, maxz, noslope).Succeeded()) return ta.tile;
+		if (CanBuildHouseHere(ta, t->index, maxz, build_flags).Succeeded()) return ta.tile;
 		ta.tile += TileOffsByDiagDir(dir);
 		dir = ChangeDiagDir(dir, DIAGDIRDIFF_90RIGHT);
 	}
@@ -3062,7 +3069,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
 	if (!TownLayoutAllowsHouseHere(t, TileArea(tile, 1, 1), modes)) return false;
 
 	/* no house allowed at all, bail out */
-	if (CanBuildHouseHere(tile, t->index, false).Failed()) return false;
+	if (CanBuildHouseHere(tile, t->index, {}).Failed()) return false;
 
 	bool above_snowline = _settings_game.game_creation.landscape == LandscapeType::Arctic && GetTileMaxZ(tile) > HighestSnowLine();
 	HouseZone zone = GetTownRadiusGroup(t, tile);
@@ -3158,7 +3165,8 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 	int max_z = GetTileMaxZ(tile);
 
 	/* Make sure there is no slope? */
-	bool noslope = hs->building_flags.Test(BuildingFlag::NotSloped);
+	CanBuildHouseHereFlags build_flags{};
+	if (hs->building_flags.Test(BuildingFlag::NotSloped)) build_flags.Set(CanBuildHouseHereFlag::NoSlope);
 
 	uint w = hs->building_flags.Any(BUILDING_2_TILES_X) ? 2 : 1;
 	uint h = hs->building_flags.Any(BUILDING_2_TILES_Y) ? 2 : 1;
@@ -3166,7 +3174,7 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 	CommandCost cost = IsAnotherHouseTypeAllowedInTown(t, house);
 	if (!cost.Succeeded()) return cost;
 
-	cost = CanBuildHouseHere(TileArea(tile, w, h), t->index, max_z, noslope);
+	cost = CanBuildHouseHere(TileArea(tile, w, h), t->index, max_z, build_flags);
 	if (!cost.Succeeded()) return cost;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
