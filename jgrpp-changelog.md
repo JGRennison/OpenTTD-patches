@@ -12,6 +12,7 @@
 * Scheduled dispatch: Reset last dispatch when cloning schedule to another vehicle.
 * Use column order for cargo type orders load/unload window.
 * No longer apply train speed adaptation below 50 km/h.
+* Bump trunk base from commit 397319987904bda685e7a242ae30e2e589530b3a to commit 04a6a55e94b40789ca3190f253280170887a196f.
 
 ### v0.68.1 (2025-11-14)
 * Fix crash when using "send to depot and sell" from vehicle list windows to immediately sell vehicles in depots.
