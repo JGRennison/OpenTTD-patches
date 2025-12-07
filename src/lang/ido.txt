@@ -466,6 +466,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 
 
+
 ###length 45
 
 
@@ -475,6 +476,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
+
 
 
 
@@ -539,7 +541,7 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Kustumigita ({N
 ###length 4
 
 
-# Settings tree window
+# Settings tree in the Game Options window
 
 
 

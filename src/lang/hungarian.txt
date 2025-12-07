@@ -1022,22 +1022,26 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}A látk�
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Játékbeállítások
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Általános
-STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Általános beállítások módosítása
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :Általános beállítások kiválasztása
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafika
-STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Grafikus beállítások módosítása
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :Grafikus beállítások módosítása
 STR_GAME_OPTIONS_TAB_SOUND                                      :Hang effektek
-STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Hang- és zenebeállítások módosítása
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :Hang- és zenebeállítások kiválasztása
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Közösségi
-STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Közösségi beállítások módosítása
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :Közösségi beállítások kiválasztása
+STR_GAME_OPTIONS_TAB_ADVANCED                                   :Speciális
+STR_GAME_OPTIONS_TAB_ADVANCED_TOOLTIP                           :Speciális beállítások módosítása
 
 STR_GAME_OPTIONS_VOLUME                                         :Hangerő
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Hang effektek
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Zene
 
+STR_GAME_OPTIONS_SETTING                                        :{STRING}: {ORANGE}{STRING}
+
 STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}%
 
-STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Pénznem
-STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}A használt pénznem kiválasztása
+STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Pénznem
+STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Pénznem kiválasztása
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
@@ -1088,8 +1092,8 @@ STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lett Lat
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugál escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrán hrivnya
 
-STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatikus mentés
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Az automatikus mentések közötti időtartam kiválasztása
+STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automatikus mentés
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Az automatikus mentések közötti időtartam kiválasztása
 
 # Autosave dropdown
 ###length 5
@@ -1099,76 +1103,79 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :30 percenként
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES             :60 percenként
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES            :120 percenként
 
-STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Nyelv
-STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Válassz nyelvet
+STR_GAME_OPTIONS_LANGUAGE                                       :Nyelv
+STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :Válaszd ki a felület nyelvét
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}% lefordítva)
 
-STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Teljes képernyő
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Jelöld be ezt, ha teljes képernyős módban szeretnél játszani az OpenTTD-vel
+STR_GAME_OPTIONS_FULLSCREEN                                     :Teljes képernyő
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Jelöld be, hogy teljes képernyős módban játssz az OpenTTD-vel
 
-STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Képernyő felbontás
-STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Játékhoz használt felbontás kiválasztása
+STR_GAME_OPTIONS_RESOLUTION                                     :Képernyőfelbontás
+STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :Használandó képernyőfelbontás kiválasztása
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :egyéb
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
-STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hardveres gyorsítás
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Bekapcsolásával az OpenTTD hardveres gyorsítást próbál alkalmazni. A beállítás csak a játék újraindítása után lép érvénybe.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :Hardveres gyorsítás
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :Jelöld be, hogy az OpenTTD próbáljon meg hardveres gyorsítást használni. A beállítás csak a játék újraindítása után lép érvénybe.
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Ez a beállítás csak a játék újraindítása után lép érvénybe
 
-STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync (Vertikális Szinkronizáció)
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Jelöld be ezt a négyzetet hogy engedélyezd a v-sync-et. A változtatás csak a játék újraindítása után fog érvényesülni. Kizárólag hardware gyorsítással működik!
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :Függőleges szinkronizáció (VSync)
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Jelöld be a függőleges szinkronizációhoz (VSync). A változtatás csak a játék újraindítása után lép érvénybe. Kizárólag hardveres gyorsítással működik!
 
-STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Jelenlegi meghajtó: {STRING}
+STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :Jelenlegi illesztőprogram: {STRING}
 
-STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Felület mérete
-STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Használd a csúszkát a felület méretének beállításához. Ctrl+húzás a finom állításhoz
-STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Méret automatikus felismerése
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Jelöld be ezt, a felület méretének automatikus felismeréséhez
+STR_GAME_OPTIONS_INTERFACE                                      :Felület
 
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Élek méretezése
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Jelöld be ezt a négyzetet hogy az interfész méretéhez igazítsd az éleket
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Felület mérete
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :Használd a csúszkát a felület méretének beállításához. Ctrl+húzás a finom állításhoz.
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Méret automatikus felismerése
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Jelöld be a felület méretének automatikus felismeréséhez
 
-STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :{BLACK}Hagyományos sprite betűtípus használata
-STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Jelöld be ezt, ha a hagyományos sprite betűtípust akarod használni.
-STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Betűtípusok simítása
-STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Jelöld be ezt, ha lesimított betűket akarsz.
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Szegélyek méretezése
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Jelöld be a szegélyek a felület méretéhez való igazításához
+
+STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Hagyományos sprite betűk használata
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Jelöld be, ha a hagyományos sprite betűket akarod használni.
+STR_GAME_OPTIONS_GUI_FONT_AA                                    :Betűk élsimítása
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Jelöld be a betűk élsimításához
 
 STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automata felmérés
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Részvétel automata felmérésben
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Ha engedélyezve van, az OpenTTD továbbít egy felmérést a játékból kilépéskor
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}Felmérésről és titoktartásról
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Ezzel megnyithatsz egy oldalt a böngészőben ahol további információt érhetsz el az automata felmérésről.
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Felmérés eredményének előnézete
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Mutasd a jelenleg futó játékhoz tartozó felmérés eredményeit.
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :Automatizált felmérés
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :Részvétel az automatizált felmérésben
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :Ha engedélyezve van, az OpenTTD továbbít egy felmérést a játékból való kilépéskor
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :A felmérésről és az adatvédelemről
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :Ez megnyit egy oldalt a böngészőben, ahol további információ érhető el az automatizált felmérésről
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :Felmérés eredményének előnézete
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :A jelenleg futó játék felmérési eredményeinek megjelenítése
 
+STR_GAME_OPTIONS_DISPLAY                                        :Megjelenítés
 
-STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Képernyőfrissítési frekvencia
-STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Játékhoz használt képernyőfrissítési frekvencia kiválasztása
+STR_GAME_OPTIONS_REFRESH_RATE                                   :Képernyőfrissítési gyakoriság
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :A játékhoz használt képernyőfrissítési gyakoriság kiválasztása
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}A 60 Hz-nél nagyobb frekvencia befolyással lehet a teljesítményre.
 
-STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafikus alapcsomag
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}A játékhoz használandó grafikus alapcsomag kiválasztása (nem módosítható a játékban, csak a főmenüben)
-STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}További információk a grafikus alapcsomagról
+STR_GAME_OPTIONS_BASE_GRF                                       :Grafikus alapcsomag
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :A játékhoz használandó grafikus alapcsomag kiválasztása (nem módosítható a játékban, csak a főmenüben)
+STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :További információk a grafikus alapcsomagról
 
-STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}Hang alapcsomag
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Használandó hang alapcsomag kiválasztása (nem módosítható a játékban, csak a főmenüben)
-STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}További információk a hang alapcsomagról
+STR_GAME_OPTIONS_BASE_SFX                                       :Hang alapcsomag
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Használandó hang alapcsomag kiválasztása (nem módosítható a játékban, csak a főmenüben)
+STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :További információk a hang alapcsomagról
 
-STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Zenei alapcsomag
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Használandó zenei alapcsomag kiválasztása
-STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}További információk a zenei alapcsomagról
+STR_GAME_OPTIONS_BASE_MUSIC                                     :Zenei alapcsomag
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :Használandó zenei alapcsomag kiválasztása
+STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :További információk a zenei alapcsomagról
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Tartalom Beszerzése
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Ellenőrízd, hogy letölthető-e új vagy frissített tartalom
 
-STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(nincs közösségi média integrációhoz szükséges kiegészítő telepítve)
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :(nincs közösségi médiás integrációhoz való kiegészítő telepítve)
 
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING} ({STRING})
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :{BLACK}Platform:
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}Kiegészítő állapota:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{STRING} ({STRING})
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :Platform:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :Kiegészítő állapota:
 
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Fut
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Indítás meghiúsult
@@ -1281,11 +1288,11 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Engedékeny (ni
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Nincsen megfelelő elérhető MI...{}{}Letölthetsz néhány MI-t a tartalomletöltő rendszeren keresztül
 
-# Settings tree window
-STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Szűrő kifejezés:
-STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Összes szétnyitása
-STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Összes összecsukása
-STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}Visszaállítja az összes értéket
+# Settings tree in the Game Options window
+STR_CONFIG_SETTING_FILTER_TITLE                                 :Szűrő:
+STR_CONFIG_SETTING_EXPAND_ALL                                   :Összes kibontása
+STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Összes összecsukása
+STR_CONFIG_SETTING_RESET_ALL                                    :Összes érték visszaállítása
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(leírás nem elérhető)
 STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Alapértelmezett érték: {ORANGE}{STRING}
@@ -1298,9 +1305,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Vállalat beál
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Figyelem!
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Ez a művelet minden játékbeállítást visszaállít.{}Biztos, hogy folytatni akarja a műveletet?
 
-STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategória:
-STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Típus:
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Leszűkíti a listát a megadott szűrők segítségével
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :Kategória:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :Típus:
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :Leszűkíti a listát az előre megadott szűrők használatával
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Alap (csak a fontos beállítások)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Haladó (majdnem mindegyik beállítás mutatása)
 STR_CONFIG_SETTING_RESTRICT_ALL                                 :Szakértő (minden beállítás, még az egészen furák is)
@@ -1317,9 +1324,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Vállalatbeáll
 
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Nincs találat -
 ###length 3
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Az összes eredmény mutatása:{}A {SILVER}kategória {BLACK}legyen {WHITE}{STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Az összes eredmény mutatása:{}A {SILVER}típus {BLACK}legyen {WHITE}Minden beállítástípus
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Az összes eredmény mutatása:{}A {SILVER}kategória {BLACK}legyen {WHITE}{STRING} {BLACK}, a {SILVER}típus {BLACK}pedig {WHITE}Minden beállítástípus
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :Az összes találat megjelenítése:{}A {SILVER}kategória {BLACK}legyen {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :Az összes találat megjelenítése:{}A {PUSH_COLOUR}{SILVER}típus {POP_COLOUR}legyen {WHITE}Összes beállítástípus
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :Az összes találat megjelenítése:{}A {SILVER}kategória {BLACK}legyen {WHITE}{STRING} {BLACK}, a {SILVER}típus {BLACK}pedig {WHITE}Összes beállítástípus
 
 ###length 3
 STR_CONFIG_SETTING_OFF                                          :Ki
@@ -1377,7 +1384,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_VALUE                       :{UNITS_YEARS_OR
 STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Nincsenek támogatások
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Építkezési költségek: {STRING}
-STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Építkezések és beszerzésk költségeinek szintje
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Építkezések és beszerzések költségeinek szintje
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Gazdasági válságok: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ha bekapcsolod, időszakonként gazdasági válság fog kitörni. A válság alatt az összes ipar jelentősen kevesebbet termel. (A válság végével a termelés visszaáll az eredeti szintre.)
@@ -2845,7 +2852,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Vasútá
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Vasúti jelzők építése. Ctrl+kattintással váltás az alak- és fényjelzők között{}Kattintás+húzással a sínek mentén végig jelzők épülnek. Ctrl+kattintás+húzással a következő pályakiágazásig vagy jelzőig épít jelzőket. Shift+kattintással csak a becsült költséget jeleníti meg
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Vasúti híd építése. Shift+kattintással csak a becsült költséget jeleníti meg
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Vasúti alagút építése. Shift+kattintással csak a becsült költséget jeleníti meg
-STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Váltás építés/feleszedés között vasúti pályák, jelzők, ellenőrző pontok és vasútállomások esetében. Ctrl+kattintással az ellenőrző pontokon és állomásokon a vasúti pályát is eltávolítja
+STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Váltás építés/felszedés között vasúti pályák, jelzők, ellenőrző pontok és vasútállomások esetében. Ctrl+kattintással az ellenőrző pontokon és állomásokon a vasúti pályát is eltávolítja
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}Sínek átalakítása a kiválasztott típusra. Shift+kattintással csak a becsült költséget jeleníti meg
 
 STR_RAIL_NAME_RAILROAD                                          :Vasút
@@ -4218,6 +4225,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Mindenre, kivé
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maximális vonóerő: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Hatótávolság: {GOLD}{COMMA} mező
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Típus: {GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Sín típusok: {GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Minden rakománytípus
@@ -4401,6 +4409,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Üzemeletetés:
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Üzemeltetés: {CURRENCY_LONG}/időszak
 STR_ENGINE_PREVIEW_CAPACITY                                     :Kapacitás: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Kapacitás: {CARGO_LONG}, {CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :Sín típusok: {STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}{STRING} lecserélése - {STRING}
@@ -4492,10 +4501,10 @@ STR_VEHICLE_VIEW_SHIP_ORDERS_TOOLTIP                            :{BLACK}A hajó 
 STR_VEHICLE_VIEW_AIRCRAFT_ORDERS_TOOLTIP                        :{BLACK}A repülőgép utasításainak mutatása. Ctrl+kattintás a menetrendet mutatja
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}A vonat adatai
-STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}A közúti jármű adatai
-STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}A hajó adatai
-STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}A repülőgép adatai
+STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}Vonat részleteinek megjelenítése. Ctrl+kattintás a vonat csoportjának megjelenítéséhez.
+STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :A jármű adatainak megjelenítése. Ctrl+kattintás a járműcsoport megjelenítéséhez.
+STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Hajó részleteinek megjelenítése. Ctrl+kattintás a hajó csoportjának megjelenítéséhez.
+STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Repülőgép részleteinek megjelenítése. Ctrl+kattintás a repülőgép csoportjának megjelenítéséhez.
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}Aktuális vonatmozgás - kattints ide a vonat elindításához vagy megállításához.
@@ -5980,6 +5989,7 @@ STR_CURRENCY_SHORT_GIGA                                         :{NBSP} Milliár
 STR_CURRENCY_SHORT_TERA                                         :{NBSP} billó
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
+STR_JUST_LEFT_ARROW                                             :{LEFT_ARROW}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}
 STR_JUST_COMMA                                                  :{COMMA}
@@ -6019,3 +6029,11 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
+STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Jelvény beállítások megnyitása
+STR_BADGE_CONFIG_RESET                                          :Visszaállítás
+STR_BADGE_CONFIG_ICONS                                          :{WHITE}Jelvény ikonok
+STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Jelvény szűrők
+STR_BADGE_CONFIG_PREVIEW                                        :Előnézet kép
+STR_BADGE_CONFIG_NAME                                           :Név
+STR_BADGE_FILTER_ANY_LABEL                                      :Bármelyik {STRING}
+STR_BADGE_FILTER_IS_LABEL                                       :{STRING} {STRING}

@@ -672,6 +672,7 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 
 
 
+
 ###length 45
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :पौंड
 STR_GAME_OPTIONS_CURRENCY_USD                                   :डोल्लर
@@ -703,10 +704,11 @@ STR_GAME_OPTIONS_CURRENCY_SKK                                   :स्लोव
 # Autosave dropdown
 ###length 5
 
-STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}भाषा
+STR_GAME_OPTIONS_LANGUAGE                                       :भाषा
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
+
 
 
 
@@ -757,7 +759,7 @@ STR_SUBSIDY_X4                                                  :x४
 ###length 4
 
 
-# Settings tree window
+# Settings tree in the Game Options window
 
 
 

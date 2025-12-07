@@ -958,22 +958,26 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}将主�
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}游戏选项
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :通用
-STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}通用设置
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :修改通用设置
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :图像
-STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}图像设置
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :修改图像设置
 STR_GAME_OPTIONS_TAB_SOUND                                      :音效
-STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}声音设置
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :修改音乐与音效设置
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :社交
-STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}选择社交插件设置
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :修改社交插件设置
+STR_GAME_OPTIONS_TAB_ADVANCED                                   :高级
+STR_GAME_OPTIONS_TAB_ADVANCED_TOOLTIP                           :修改高级设置
 
 STR_GAME_OPTIONS_VOLUME                                         :音量
 STR_GAME_OPTIONS_SFX_VOLUME                                     :音效
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :音乐
 
+STR_GAME_OPTIONS_SETTING                                        :{STRING}：{ORANGE}{STRING}
+
 STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}%
 
-STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}货币单位
-STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}货币单位选择
+STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :货币单位
+STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :选择货币单位
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING}（{STRING}）
 
@@ -1024,8 +1028,8 @@ STR_GAME_OPTIONS_CURRENCY_LVL                                   :拉脱维亚拉
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :葡萄牙埃斯库多
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :乌克兰格里夫纳
 
-STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}自动保存
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}选择自动保存的周期
+STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :自动保存
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :选择自动保存周期
 
 # Autosave dropdown
 ###length 5
@@ -1035,76 +1039,79 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :每 30 分钟
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES             :每 60 分钟
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES            :每 120 分钟
 
-STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}语言
-STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}选择界面语言
+STR_GAME_OPTIONS_LANGUAGE                                       :语言
+STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :选择界面语言
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING}（已完成 {NUM}%）
 
-STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}全屏幕
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}选择此项可以在全屏幕模式下进行 OpenTTD 游戏
+STR_GAME_OPTIONS_FULLSCREEN                                     :全屏幕
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :勾选此框可以在全屏幕模式下游玩 OpenTTD
 
-STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}屏幕分辨率
-STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}选择要使用的屏幕分辨率
+STR_GAME_OPTIONS_RESOLUTION                                     :屏幕分辨率
+STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :选择屏幕分辨率
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :其他
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}×{NUM}
 
-STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}硬件加速
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}点击该复选框，让 OpenTTD 尝试使用硬件加速。修改后的设置将在游戏重启后生效
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :硬件加速
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :勾选此框以让 OpenTTD 尝试使用硬件加速。修改后的设置将在游戏重启后生效
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}修改后的设置将在游戏重启后生效
 
-STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}垂直同步
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}点击该复选框开启垂直同步（V-sync）。修改后的设置将在游戏重启后生效。仅于开启硬件加速时有效
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :垂直同步
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :勾选此框以开启垂直同步（V-sync）。修改后的设置将在游戏重启后生效。仅于开启硬件加速时可用
 
-STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}驱动程序：{STRING}
+STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :驱动程序：{STRING}
 
-STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}界面大小
-STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}拖动滑块以设置界面大小。按住 <Ctrl> 键以精准调整
-STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}自动检测大小
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}选中此框可自动检测界面大小
+STR_GAME_OPTIONS_INTERFACE                                      :界面
 
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}适应边框大小
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}选中此框使边框大小随界面大小而缩放
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :界面大小
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :拖动滑块以设置界面大小。按住 <Ctrl> 键以精准调整
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :自动检测大小
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :勾选此框以自动检测界面大小
+
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :缩放边框
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :勾选此框使边框随界面大小而缩放
 
 STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :使用位图字体
-STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}如果您想使用固定大小的传统位图字体，请勾选此框
-STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}字体抗锯齿
-STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}勾选此框以对游戏字体应用抗锯齿
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :勾选此框以使用固定大小的传统位图字体
+STR_GAME_OPTIONS_GUI_FONT_AA                                    :字体抗锯齿
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :勾选此框以对游戏字体应用抗锯齿
 
 STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}×
 
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}自动体验调查
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}参与自动体验调查
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}“打开”时，OpenTTD 会在结束游戏时传输调查结果
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}关于体验调查和隐私
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}这会提供更多自动体验调查的信息（打开浏览器）
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}预览调查结果
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}展示正在运行的存档的调查结果
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :自动体验调查
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :参与自动体验调查
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :启用后，OpenTTD 会在结束游戏时传输调查结果
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :关于调查与隐私
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :在浏览器中显示关于自动体验调查的更多信息
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :预览调查结果
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :显示当前游戏的结果
 
+STR_GAME_OPTIONS_DISPLAY                                        :显示
 
-STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}显示刷新率
-STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}选择需要的屏幕刷新率
+STR_GAME_OPTIONS_REFRESH_RATE                                   :显示刷新率
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :选择显示刷新率
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}高于 60Hz 的刷新率可能会影响性能。
 
-STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基础图形组
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}选择要使用的基础图形组（只能在主菜单更改，不能在游戏中更改）
-STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}关于基本图组的额外信息
+STR_GAME_OPTIONS_BASE_GRF                                       :基础图形组
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :选择使用的基础图形组（无法在游戏中更改，只能在主菜单更改）
+STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :关于基础图形组的额外信息
 
-STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}基础音效组
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}选择要使用的基础音效组（只能在主菜单更改，不能在游戏中更改）
-STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}有关基础音效组的附加信息
+STR_GAME_OPTIONS_BASE_SFX                                       :基础音效组
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :选择使用的基础音效组（无法在游戏中更改，只能在主菜单更改）
+STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :关于基础音效组的额外信息
 
-STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}基础音乐组
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}选择要使用的基础音乐组
-STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}有关基础音乐组的附加信息
+STR_GAME_OPTIONS_BASE_MUSIC                                     :基础音乐组
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :选择使用的基础音乐组
+STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :关于基础音乐组的额外信息
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :获取内容
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :查询并下载最新内容
 
-STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}（未安装社交平台插件）
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :（未安装社交平台插件）
 
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING}（{STRING}）
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :{BLACK}平台：
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}插件状态：
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{STRING}（{STRING}）
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :平台：
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :插件状态：
 
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}正在运行
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}初始化失败
@@ -1217,11 +1224,11 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :放任（所有
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}无合适的 AI 可用……{}{}可以使用“线上拓展内容”功能下载新的 AI
 
-# Settings tree window
-STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}搜索条目：
-STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}展开全部
-STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}关闭全部
-STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}重置所有值
+# Settings tree in the Game Options window
+STR_CONFIG_SETTING_FILTER_TITLE                                 :搜索：
+STR_CONFIG_SETTING_EXPAND_ALL                                   :展开全部
+STR_CONFIG_SETTING_COLLAPSE_ALL                                 :折叠全部
+STR_CONFIG_SETTING_RESET_ALL                                    :重置所有数值
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :（没有可用的提示）
 STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}默认值：{ORANGE}{STRING}
@@ -1234,9 +1241,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :当前公司设
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}注意！
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}该操作将重置所有游戏设置为默认值。{}确认继续？
 
-STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}筛选设定：
-STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}适用范围：
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}仅显示修改过的选项
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :筛选设定：
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :适用范围：
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :仅显示修改过的选项
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :基本（仅显示重要设置）
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :高级（显示大部分设置）
 STR_CONFIG_SETTING_RESTRICT_ALL                                 :专业（显示所有设置）
@@ -1253,9 +1260,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :当前公司设
 
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- 无 -
 ###length 3
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}在 {SILVER}筛选设定 {BLACK}一栏选择 {WHITE}{STRING} {BLACK}以显示所有搜寻结果
-STR_CONFIG_SETTING_TYPE_HIDES                                   :在 {SILVER}适用范围 {BLACK}一栏选择 {WHITE}所有适用范围 {BLACK}以显示所有搜寻结果
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}在 {SILVER}筛选设定 {BLACK}一栏选择 {WHITE}{STRING} 并在 {SILVER}适用范围 {BLACK}一栏选择 {WHITE}所有适用范围 {BLACK}以显示所有搜寻结果
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :在{PUSH_COLOUR}{SILVER}筛选设定{POP_COLOUR}一栏选择{PUSH_COLOUR}{WHITE}{STRING}{POP_COLOUR}以显示所有结果
+STR_CONFIG_SETTING_TYPE_HIDES                                   :在{PUSH_COLOUR}{SILVER}适用范围{POP_COLOUR}一栏选择{PUSH_COLOUR}{WHITE}所有设置种类{POP_COLOUR}以显示所有结果
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :在{PUSH_COLOUR}{SILVER}筛选设定{POP_COLOUR}一栏选择{PUSH_COLOUR}{WHITE}{STRING}{POP_COLOUR}并在{PUSH_COLOUR}{SILVER}适用范围{POP_COLOUR}一栏选择{PUSH_COLOUR}{WHITE}所有设置种类{POP_COLOUR}以显示所有结果
 
 ###length 3
 STR_CONFIG_SETTING_OFF                                          :关闭
@@ -2378,7 +2385,7 @@ STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}日期
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}当前日期
 STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}{NBSP}时{NBSP}{NUM}{NBSP}分
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :游戏时间
-STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}有戏已进行的时间，不计暂停的时间
+STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}游戏已进行的时间，不计暂停的时间
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}服务器兼容性与验证信息
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}点击列表中的服务器可以选定它
@@ -4154,6 +4161,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :所有货物（
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大牵引力：{GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}航行距离：{GOLD}{COMMA} 格
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}飞机类型：{GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}轨道类型：{GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :所有货物类型
@@ -4337,6 +4345,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :运行费用：
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :运行费用：{CURRENCY_LONG}/周期
 STR_ENGINE_PREVIEW_CAPACITY                                     :容量：{CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :容量：{CARGO_LONG}、{CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :轨道类型：{STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}更新 {STRING} - {STRING}
@@ -5875,6 +5884,7 @@ STR_CURRENCY_SHORT_GIGA                                         :{NBSP}B
 STR_CURRENCY_SHORT_TERA                                         :{NBSP}T
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
+STR_JUST_LEFT_ARROW                                             :{LEFT_ARROW}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}
 STR_JUST_COMMA                                                  :{COMMA}
@@ -5914,3 +5924,11 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING}（{VELOCITY}）
 
 STR_BADGE_NAME_LIST                                             :{STRING}：{GOLD}{STRING}
+STR_BADGE_CONFIG_MENU_TOOLTIP                                   :开启徽章设定
+STR_BADGE_CONFIG_RESET                                          :重置
+STR_BADGE_CONFIG_ICONS                                          :{WHITE}徽章图标
+STR_BADGE_CONFIG_FILTERS                                        :{WHITE}筛选徽章
+STR_BADGE_CONFIG_PREVIEW                                        :预览图
+STR_BADGE_CONFIG_NAME                                           :名称
+STR_BADGE_FILTER_ANY_LABEL                                      :{STRING}：所有
+STR_BADGE_FILTER_IS_LABEL                                       :{STRING}：{STRING}

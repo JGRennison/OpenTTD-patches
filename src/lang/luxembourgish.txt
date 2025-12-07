@@ -285,7 +285,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Fënster
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Fënstertitel - hei zéien fir d'Fënster ze bewegen
 STR_TOOLTIP_SHADE                                               :{BLACK}Fenster verklengeren - Weis nëmmen Titelbar
 STR_TOOLTIP_DEBUG                                               :{BLACK}Weis NewGRF Debug Informatioun
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Änner d'Fënster op d'Standardgréisst. Ctrl+Klick fir déi aktuell Gréisst als Standard ze späichern
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Änner d'Fënster op d'Standardgréisst. Ctrl+Klick fir déi aktuell Gréisst als Standard ze späichern. Dubel Ctrl+Klick fir op de Standard ze resetten
 STR_TOOLTIP_STICKY                                              :{BLACK}Markéier dës Fënster fir net zougemeet ze ginn vun dem "All Fënsteren zoumaachen" Knäppchen. Ctrl+Klick späichert déi Actioun als Standard
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klicken an zéihen fir d'Fënstergréisst ze änneren
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Wiesselt grouss/kleng Fënstergréisst
@@ -958,22 +958,26 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Setzt d'
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spill Optiounen
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Generell
-STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Wiel generell Astellungen aus
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :Wiel generell Astellungen aus
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Wiel Grafik-Astellungen aus
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :Wiel Grafik-Astellungen aus
 STR_GAME_OPTIONS_TAB_SOUND                                      :Sound
-STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Wiel Sound- a Musikastellungen aus
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :Wiel Sound- a Musikastellungen aus
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Social
-STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Wiel Astellungen déi mat Social Media ze dinn hunn
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :Wiel Astellungen déi mat Social Media ze dinn hunn
+STR_GAME_OPTIONS_TAB_ADVANCED                                   :Erweidert
+STR_GAME_OPTIONS_TAB_ADVANCED_TOOLTIP                           :Erweidert Astellungen änneren
 
 STR_GAME_OPTIONS_VOLUME                                         :Volume
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Soundeffekter
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Musik
 
+STR_GAME_OPTIONS_SETTING                                        :{STRING}: {ORANGE}{STRING}
+
 STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}%
 
-STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Währungseenheet
-STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Währungseenheet wielen
+STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Währungseenheet
+STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Währungseenheet wielen
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
@@ -1024,8 +1028,8 @@ STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettesch Lat
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugieseschen Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainesch Hryvnia
 
-STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Autospäicheren
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Wiel den Intervall aus fir d'Autospäicherung
+STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autospäicheren
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Wiel den Intervall aus fir d'Autospäicherung
 
 # Autosave dropdown
 ###length 5
@@ -1035,76 +1039,79 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :All 30 Minuten
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES             :All 60 Minuten
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES            :All 120 Minuten
 
-STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Sprooch
-STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Wielt d'Interfacesprooch aus
+STR_GAME_OPTIONS_LANGUAGE                                       :Sprooch
+STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :Wielt d'Interfacesprooch aus
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}% fäerdeg)
 
-STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Vollbild
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Klick dës Optioun un fir OpenTTD am Vollbild ze spillen
+STR_GAME_OPTIONS_FULLSCREEN                                     :Vollbild
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Klick dës Optioun un fir OpenTTD am Vollbild ze spillen
 
-STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Bildopléisung
-STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Wielt d'Bildopléisung
+STR_GAME_OPTIONS_RESOLUTION                                     :Bildopléisung
+STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :Wielt d'Bildopléisung
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Aaner
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
-STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hardwarebeschleunegung
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Dës Optioun wielen, dass OpenTTD Hardwarebeschleunigung dierf notzen. Wäert just geännert ginn wann d'Spill nei gestart gëtt
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :Hardwarebeschleunegung
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :Dës Optioun wielen, dass OpenTTD Hardwarebeschleunigung dierf notzen. Wäert just geännert ginn wann d'Spill nei gestart gëtt
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}D'Astellung huet réicht en Afloss no engem Neistart vum Spill
 
-STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Wiel des Optioun fir de V-Sync unzeman. Des gëtt eréit no engem Neistart benotzt. Funktionéiert nëmmen wann Hardwarebeschleunigung un ass
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :VSync
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Wiel des Optioun fir de V-Sync unzeman. Des gëtt eréit no engem Neistart benotzt. Funktionéiert nëmmen wann Hardwarebeschleunigung un ass
 
-STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Aktuellen Driver: {STRING}
+STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :Aktuellen Driver: {STRING}
 
-STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Interfacegréisst
-STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}De Slider zéien fir d'Gréisst vum Interface ze änneren. Ctrl+Zéien fir eng kontinuéierlech Ännerung
-STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Gréisst autom. erkennen
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Klick dës Optioun fir d'Interfacegréisst automatesch anzestellen
+STR_GAME_OPTIONS_INTERFACE                                      :Interface
 
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Bevels skaléiren
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Klick dës Optioun fir d'Bevels mat der Gréisst vum Interface ze skaléiren
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Interfacegréisst
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :De Slider zéien fir d'Gréisst vum Interface ze änneren. Ctrl+Zéien fir eng kontinuéierlech Ännerung
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Gréisst autom. erkennen
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Klick dës Optioun fir d'Interfacegréisst automatesch anzestellen
 
-STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :{BLACK}Traditionell Spriteschrëft benotzen
-STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Klick dës Optioun wanns du déi traditionell fix-Gréisst Spriteschrëft wëlls
-STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Anti-alias Schrëften
-STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Klick dës Optioun fir verännerbar Schrëften ze anti-aliasen
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Bevels skaléiren
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Klick dës Optioun fir d'Bevels mat der Gréisst vum Interface ze skaléiren
+
+STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Traditionell Spriteschrëft benotzen
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Klick dës Optioun wanns du déi traditionell fix-Gréisst Spriteschrëft wëlls
+STR_GAME_OPTIONS_GUI_FONT_AA                                    :Anti-alias Schrëften
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Klick dës Optioun fir verännerbar Schrëften ze anti-aliasen
 
 STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automatesch Emfro
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}An enger automatescher Emfro matmaachen
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Falls ugeschalt schéckt OpenTTD eng Emfro wann d'Spill ausgemet gëtt
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}Iwwert Emfroen an Dateschutz
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Dëst start e Browser mat méi Informatiounen iwwert d'automatesch Emfro
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Preview op d'Emfroresultat
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Weis d'Resultat vun der Emfro vum aktuelle Spill un
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :Automatesch Emfro
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :An enger automatescher Emfro matmaachen
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :Falls ugeschalt schéckt OpenTTD eng Emfro wann d'Spill ausgemet gëtt
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :Iwwert Emfroen an Dateschutz
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :Dëst start e Browser mat méi Informatiounen iwwert d'automatesch Emfro
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :Preview op d'Emfroresultat
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :Weis d'Resultat vun der Emfro vum aktuelle Spill un
 
+STR_GAME_OPTIONS_DISPLAY                                        :Display
 
-STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Bildfrequenz
-STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Wiel d'Frequenz vum Bildschirm aus
+STR_GAME_OPTIONS_REFRESH_RATE                                   :Bildfrequenz
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :Wiel d'Frequenz vum Bildschirm aus
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Bildfrequenzen iwwert 60Hz kënnen d'Leeschtung beaflossen
 
-STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basis Grafikset
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Wielt de Basis Grafikset dee soll benotzt ginn (kann net am Spill geännert ginn, nëmmen am Haaptmenu)
-STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}Méi Infos iwwert de Basis Grafikset
+STR_GAME_OPTIONS_BASE_GRF                                       :Basis Grafikset
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :Wielt de Basis Grafikset dee soll benotzt ginn (kann net am Spill geännert ginn, nëmmen am Haaptmenu)
+STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :Méi Infos iwwert de Basis Grafikset
 
-STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}Basis Soundset
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Wiel de Basis Soundset dee soll benotzt ginn (kann net am Spill geännert ginn, nëmmen am Haaptmenu)
-STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Méi Informatiounen iwwer d'Basis Soundset
+STR_GAME_OPTIONS_BASE_SFX                                       :Basis Soundset
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Wiel de Basis Soundset dee soll benotzt ginn (kann net am Spill geännert ginn, nëmmen am Haaptmenu)
+STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :Méi Informatiounen iwwer d'Basis Soundset
 
-STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Basis Musikset
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Wiel de Basis Musikset dee soll benotzt ginn
-STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Méi Informatiounen iwwer de Basis Musikset
+STR_GAME_OPTIONS_BASE_MUSIC                                     :Basis Musikset
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :Wiel de Basis Musikset dee soll benotzt ginn
+STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :Méi Informatiounen iwwer de Basis Musikset
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Inhalt eroflueden
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Sich no neiem an geupdateten Inhalt fir erofzelueden
 
-STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(keng Plugins déi mat Social Platforms kommunizéiren installéiert)
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :(keng Plugins déi mat Sozial-Platforme kommunizéiren installéiert)
 
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING} ({STRING})
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :{BLACK}Plattform:
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}Pluginstatus:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{STRING} ({STRING})
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :Plattform:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :Pluginstatus:
 
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Leeft
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Konnt net initialiséiren
@@ -1217,11 +1224,11 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Fräizügeg (ke
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Keng KI fonnt...{}{}KI kënnen iwwert den 'Online Content' system downgeload ginn
 
-# Settings tree window
-STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filter:
-STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Alles erweideren
-STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Alles reduzéiren
-STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}All Wäerter zerécksetzen
+# Settings tree in the Game Options window
+STR_CONFIG_SETTING_FILTER_TITLE                                 :Filter:
+STR_CONFIG_SETTING_EXPAND_ALL                                   :Alles erweideren
+STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Alles reduzéiren
+STR_CONFIG_SETTING_RESET_ALL                                    :All Wäerter zerécksetzen
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(keng Erklärung verfügbar)
 STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Standardwäert: {ORANGE}{STRING}
@@ -1234,9 +1241,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Firmenastellung
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Opgepasst!
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Des Aktioun setzt all Wäerter op hier Standardastellungen zeréck.{}Bass du sécher, fir weiderzefueren?
 
-STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategorie:
-STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Typ:
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Limitéiert d'Lëscht mat virdefinéierten Filter
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :Kategorie:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :Typ:
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :Limitéiert d'Lëscht mat virdefinéierten Filter
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Basis (nëmmen wichteg Astellungen)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Erweidert (weist déi meescht Astellungen)
 STR_CONFIG_SETTING_RESTRICT_ALL                                 :Expertenastellungen (all Astellungen, och komescher)
@@ -1253,9 +1260,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Firmenastellung
 
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Keng -
 ###length 3
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Weis all Sich-Resultater no der Astellung{}{SILVER}Kategorie {BLACK}bis {WHITE}{STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Weis all Sich-Resultater no der Astellung{}{SILVER}Typ {BLACK}bis {WHITE}All Astellungstypen
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Weis all Sich-Resultater no der Astellung{}{SILVER}Kategorie {BLACK}bis {WHITE}{STRING} {BLACK}an {SILVER}Typ {BLACK}bis {WHITE}All Astellungstypen
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :Weis all Sich-Resultater no der Astellung{}{SILVER}Kategorie {BLACK}bis {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :Weis all Sich-Resultater no der Astellung{}{SILVER}Typ {BLACK}bis {WHITE}All Astellungstypen
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :Weis all Sich-Resultater no der Astellung{}{SILVER}Kategorie {BLACK}bis {WHITE}{STRING} {BLACK}an {SILVER}Typ {BLACK}bis {WHITE}All Astellungstypen
 
 ###length 3
 STR_CONFIG_SETTING_OFF                                          :Aus
@@ -2020,9 +2027,9 @@ STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Ausgeschalt
 
-STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximale Razoom Level: {STRING}
+STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximale Razoomniveau: {STRING}
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maximal Razoomstuf fir Usiichtsfënsteren. Et gëtt méi Späicher gebraucht wann d'Stufen ze grouss ginn
-STR_CONFIG_SETTING_ZOOM_MAX                                     :Maximalen Rauszoom Level: {STRING}
+STR_CONFIG_SETTING_ZOOM_MAX                                     :Maximale Rauszoomniveau: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Maximal Rauszoom-Stuf fir Usiichtsfënsteren. Méi grouss Rauszoom-Stufen kënnen Ruckeler verursaachen
 ###length 6
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
@@ -2057,7 +2064,7 @@ STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Ufangs-Gréisst
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Duerchschnëttsgréisst vu Stied an Proportioun zu normalen Dierfer um Spillstart
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Update de Verdeelergraph all {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Zäit tëschend zwou Neiberechnungen vun der Linkgrafik. All Neiberechnung berechent eng Komponent vun der Grafik. Dëst bedeit dass e Wäert X net heescht dass de ganze Graph all X Sekonne geupdate gëtt. Nëmmen eng Komponent gëtt berechent. Wat de Wäert méi kuerz gesat gëtt, wat méi CPU Leeschtung gebraucht gëtt fir alles ze berechnen. Je gréisser de Wäert gesat gëtt desto méi laang brauch et bis d'Wuereverdeelung op neie Route gestart gëtt
+STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Zäit tëschend zwou Neiberechnungen vun der Linkgrafik. All Neiberechnung berechent eng Komponent vun der Grafik. Dëst bedeit dass e Wäert X net heescht dass déi ganze Grafik all X Sekonne geupdate gëtt. Nëmmen eng Komponent gëtt berechent. Wat de Wäert méi kuerz gesat gëtt, wat méi CPU Leeschtung gebraucht gëtt fir alles ze berechnen. Je gréisser de Wäert gesat gëtt desto méi laang brauch et bis d'Wuereverdeelung op neie Route gestart gëtt
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_TIME                        :Benotz {STRING} fir d'Neiberechnung vum Verdeelergraph
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_TIME_HELPTEXT               :Zäit déi gebrauch gëtt fir all Neiberechnung vun enger Komponent vun der Linkgrafik. Wann eng Neiberechnung gestart gëtt, gëtt e Prozess erstallt den fir des Unzuel u Sekonne lafen dierf. Wat d'Zäit méi kuerz gesat gëtt, wat d'Chance méi grouss ass dass d'Berechnung net fäerdeg gëtt. Dann stopt d'Spill bis d'Berechnung fäerdeg ass ("laggt"). Je länger d'Zäit gesat gëtt desto länger brauch et bis d'Verdeelung geupdate gëtt wann eng Route ännert
 
@@ -2329,16 +2336,19 @@ STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Einfach 
 STR_FACE_LOAD                                                   :{BLACK}Lueden
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Favoriséiert Gesiicht lueden
 STR_FACE_LOAD_DONE                                              :{WHITE}Äert favoriséiert Gesiicht ass aus der OpenTTD Konfiguratiounsdatei geluede ginn.
-STR_FACE_FACECODE                                               :{BLACK}Gesiicht N°.
-STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Kuckt an wielt d'Gesiichtsnummer vum Firmepresident
-STR_FACE_FACECODE_CAPTION                                       :{WHITE}Kuckt an wielt d'Gesiichtsnummer
-STR_FACE_FACECODE_SET                                           :{WHITE}Nei Gesiichtsnummer ass agestallt ginn
-STR_FACE_FACECODE_ERR                                           :{WHITE}Konnt d'Gesiichtsnummer net setzen - muss en numereschen Wäert tëscht 0 an 4,294,967,295 sinn!
+STR_FACE_FACECODE                                               :{BLACK}Gesiichtscode
+STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Kuckt a wielt de Gesiichtscode vum Firmepresident
+STR_FACE_FACECODE_CAPTION                                       :{WHITE}Kuckt a wielt de Gesiichtscode
+STR_FACE_FACECODE_SET                                           :{WHITE}Neit Presidentegesiicht ass agestallt ginn
+STR_FACE_FACECODE_ERR                                           :{WHITE}Konnt de Gesiichtscode net astellen - muss e gültege Label an Nummer sinn
 STR_FACE_SAVE                                                   :{BLACK}Späicheren
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Späichert favoriséiert Gesiicht
 STR_FACE_SAVE_DONE                                              :{WHITE}Dëst Gesiicht gëtt als favoriséiert an der OpenTTD Konfiguratiounsdatei gespäichert.
+STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
+STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Jo
 STR_FACE_NO                                                     :Nee
+STR_FACE_STYLE                                                  :Stil:
 STR_FACE_HAIR                                                   :Hoer:
 STR_FACE_EYEBROWS                                               :Aperhoer:
 STR_FACE_EYECOLOUR                                              :Aafaarf:
@@ -2971,7 +2981,7 @@ STR_AIRPORT_COMMUTER                                            :Pendler
 STR_AIRPORT_INTERCONTINENTAL                                    :Interkontinental
 STR_AIRPORT_HELIPORT                                            :Heliport
 STR_AIRPORT_HELIDEPOT                                           :Helidepot
-STR_AIRPORT_HELISTATION                                         :Helistatioun
+STR_AIRPORT_HELISTATION                                         :Helikoptergare
 
 STR_AIRPORT_CLASS_SMALL                                         :Kleng Fluchhäfen
 STR_AIRPORT_CLASS_LARGE                                         :Grouss Fluchhäfen
@@ -3051,6 +3061,11 @@ STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Wiel d'S
 STR_FOUND_TOWN_CITY                                             :{BLACK}Stad
 STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Stied wuessen méi schnell wéi Dierfer{}Ofhängeg vun den Astellungen, sinn se méi grouss am Ufank
 
+STR_FOUND_TOWN_EXPAND_MODE                                      :{YELLOW}Stadvergéisserung:
+STR_FOUND_TOWN_EXPAND_BUILDINGS                                 :Gebaier
+STR_FOUND_TOWN_EXPAND_BUILDINGS_TOOLTIP                         :Unzuel Gebaier vun der Stad erhéigen
+STR_FOUND_TOWN_EXPAND_ROADS                                     :Stroossen
+STR_FOUND_TOWN_EXPAND_ROADS_TOOLTIP                             :Méi Stroossen an der Stad bauen
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Stroosselayout vun der Stad:
 STR_FOUND_TOWN_SELECT_LAYOUT_TOOLTIP                            :{BLACK}Stroosselayout fir des Stad wielen
@@ -3678,6 +3693,10 @@ STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Wiesselt
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Erweideren
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Stad méi grouss maachen
+STR_TOWN_VIEW_EXPAND_BUILDINGS_BUTTON                           :{BLACK}Gebaier erweideren
+STR_TOWN_VIEW_EXPAND_BUILDINGS_TOOLTIP                          :{BLACK}Gebaier vun der Stad vergréisseren
+STR_TOWN_VIEW_EXPAND_ROADS_BUTTON                               :{BLACK}Stroossen erweideren
+STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP                              :{BLACK}Stroosse vun der Stad erweideren
 STR_TOWN_VIEW_DELETE_BUTTON                                     :{BLACK}Läschen
 STR_TOWN_VIEW_DELETE_TOOLTIP                                    :{BLACK}Des Stad ganz läschen
 
@@ -4005,7 +4024,7 @@ STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Zentréiert d'Siicht op d'Industrie. Ctrl+Klick erstellt eng nei Usiicht op d'Industrie
 STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Produktiounsgrafik
 STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Weist d'Grafik vun der Industrieproduktiounshistorie un
-STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktiounslevel: {YELLOW}{COMMA}%
+STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktiounsniveau: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}D'Industrie annoncéiert dass se zougemaach gëtt
 
 STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Brauch: {YELLOW}{STRING}{STRING}
@@ -4019,7 +4038,7 @@ STR_INDUSTRY_VIEW_ACCEPT_CARGO_NOSUFFIX                         :{YELLOW}{0:STRI
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_NOSUFFIX                  :{YELLOW}{0:STRING}{BLACK}: {1:CARGO_SHORT} warden
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}D'Produktioun änneren (Multipel vun 8, bis op 2040)
-STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Änner de Produktiounslevel (Prozenter, bis zu 800%)
+STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Änner de Produktiounsniveau (Prozenter, bis zu 800%)
 
 # Vehicle lists
 ###length VEHICLE_TYPES
@@ -4142,6 +4161,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Alles ausser {C
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. Zéikraaft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Distanz: {GOLD}{COMMA} Felder
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Fliger Typ: {GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Schinnentypen: {GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :All Wuerentyp
@@ -4325,6 +4345,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Betribskäschte
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Betribskäschten: {CURRENCY_LONG}/Period
 STR_ENGINE_PREVIEW_CAPACITY                                     :Kapazitéit: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Kapazitéit: {CARGO_LONG}, {CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :Schinnentypen: {STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Ersetz {STRING} - {STRING}
@@ -4416,10 +4437,10 @@ STR_VEHICLE_VIEW_SHIP_ORDERS_TOOLTIP                            :{BLACK}Weist d'
 STR_VEHICLE_VIEW_AIRCRAFT_ORDERS_TOOLTIP                        :{BLACK}Weist d'Opträg vum Fliger. Ctrl+Klick weist den Zäitplang
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}Weist d'Detailer vum Zuch
-STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Weist Stroossegefier Detailer
-STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Weis Schëffsdetailer
-STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Weist d'Fligerdetailer
+STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}Weist d'Detailer vum Zuch. Ctrl+Klick fir d'Zuchgrupp unzeweisen
+STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Weist Gefier Detailer. Ctrl+Klick fir d'Gefierergrupp unzeweisen
+STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Weis Schëffsdetailer un. Ctrl+Klick fir d'Schëffsgrupp unzeweisen
+STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Weist d'Fligerdetailer un. Ctrl+Klick fir d'Fligergrupp unzeweisen
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}Aktuell Zuchs-Aktioun - klick fir den Zuch ze stoppen/starten
@@ -4750,8 +4771,8 @@ STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Fuer (während 
 STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Fuer (während {STRING}, ouni Zäitplang) mat maximal {VELOCITY}
 STR_TIMETABLE_STAY_FOR_ESTIMATED                                :{SPACE}(waard {STRING}, ouni Zäitplang)
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :{SPACE}(fuer während {STRING}, ouni Zäitplang)
-STR_TIMETABLE_STAY_FOR                                          :an bleif fir {STRING}
-STR_TIMETABLE_AND_TRAVEL_FOR                                    :an ënnerwee während {STRING}
+STR_TIMETABLE_STAY_FOR                                          :{SPACE} a bleif fir {STRING}
+STR_TIMETABLE_AND_TRAVEL_FOR                                    :{SPACE}an ënnerwee während {STRING}
 
 STR_TIMETABLE_APPROX_TIME                                       :{BLACK}Dësen Zäitplang brauch ongeféier {STRING} fir fäerdeg ze ginn
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Dësen Zäitplang brauch {STRING} fir fäerdeg ze ginn
@@ -4983,6 +5004,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}D'Land m
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Land ass an déi falsch Richtung geneigt
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Kann dat net maachen...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Gebai muss fir d'éischt ofgerapt ginn
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... Gebai ass geschützt
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Kann des Plaz net raumen...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... Plaz net gëeegent
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... scho gebaut
@@ -5070,7 +5092,7 @@ STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}Kann de 
 STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :{WHITE}Kann d'Camionsgare net bauen...
 STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :{WHITE}Kann d'Passagéier-Tramsarrêt net bauen...
 STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}Kann d'Wueren-Tramstatioun net bauen...
-STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Kann den Dock hei net bauen...
+STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Kann de Quai hei net bauen...
 STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Kann de Fluchhafen hei net bauen...
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Grenzt un méi wéi eng Gare un
@@ -5081,9 +5103,9 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Ze vill 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Ze vill Garesdeeler
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Ze vill Busarrêten
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Ze vill Camionsgaren
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Ze no un engem aaneren Hafen
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Ze no un engem aanere Quai
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Ze no un engem aanere Fluchhafen
-STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kann d'Statioun net ëmbenennen...
+STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kann d'Gare net ëmbenennen...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... d'Strooss ass am Besëtz vun der Stad
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... Strooss geet an dei falsch Richtung
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... Duerchfahrtstops kënnen keng Kéiren hunn
@@ -5104,7 +5126,7 @@ STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Busarrê
 STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Muss d'Camionsgare fir d'éischt ofrappen
 STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Muss d'Tramstatioun fir d'éischt ofrappen
 STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Muss d'Tramstatioun fir d'éischt ofrappen
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Muss den Hafen fir déischt ofrappen
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Muss de Quai fir déischt ofrappen
 STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Muss de Fluchhafe fir d'éischt ofrappen
 
 # Waypoint related errors
@@ -5371,7 +5393,7 @@ STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... Flig
 STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Et gëtt keng Zuchgare/statioun
 STR_ERROR_NO_BUS_STATION                                        :{WHITE}Et gëtt keen Busarrêt
 STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}Et gëtt keng Camionsgare
-STR_ERROR_NO_DOCK                                               :{WHITE}Et gëtt keen Dock
+STR_ERROR_NO_DOCK                                               :{WHITE}Et gëtt kee Quai
 STR_ERROR_NO_AIRPORT                                            :{WHITE}Et gëtt keen Fluchhafen/Helikopterlandeplaz
 STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Et gëtt keen Arret mat engem kompatible Stroossentyp
 STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Et gëtt keen Arret mat engem kompatible Tramtyp
@@ -5862,6 +5884,7 @@ STR_CURRENCY_SHORT_GIGA                                         :{NBSP}mia
 STR_CURRENCY_SHORT_TERA                                         :{NBSP}bn
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
+STR_JUST_LEFT_ARROW                                             :{LEFT_ARROW}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}
 STR_JUST_COMMA                                                  :{COMMA}
@@ -5901,3 +5924,11 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
+STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Badgekonfiguratioun opman
+STR_BADGE_CONFIG_RESET                                          :Reset
+STR_BADGE_CONFIG_ICONS                                          :{WHITE}Badgeikoner
+STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Badgefilter
+STR_BADGE_CONFIG_PREVIEW                                        :Bildvirschau
+STR_BADGE_CONFIG_NAME                                           :Numm
+STR_BADGE_FILTER_ANY_LABEL                                      :Iergendeen {STRING}
+STR_BADGE_FILTER_IS_LABEL                                       :{STRING} ass {STRING}

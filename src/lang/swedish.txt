@@ -958,22 +958,26 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}Kopiera 
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelalternativ
 
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Allmänt
-STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :{BLACK}Välj generella inställningar
+STR_GAME_OPTIONS_TAB_GENERAL_TOOLTIP                            :Välj generella inställningar
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :{BLACK}Välj grafikinställningar
+STR_GAME_OPTIONS_TAB_GRAPHICS_TOOLTIP                           :Välj grafikinställningar
 STR_GAME_OPTIONS_TAB_SOUND                                      :Ljud
-STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :{BLACK}Välj ljud- och musikinställningar
+STR_GAME_OPTIONS_TAB_SOUND_TOOLTIP                              :Välj ljud- och musikinställningar
 STR_GAME_OPTIONS_TAB_SOCIAL                                     :Socialt
-STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :{BLACK}Välj inställningar för social integration
+STR_GAME_OPTIONS_TAB_SOCIAL_TOOLTIP                             :Välj socialintegrationsinställningar
+STR_GAME_OPTIONS_TAB_ADVANCED                                   :Avancerade
+STR_GAME_OPTIONS_TAB_ADVANCED_TOOLTIP                           :Ändra avancerade inställningar
 
 STR_GAME_OPTIONS_VOLUME                                         :Volym
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Ljudeffekter
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Musik
 
+STR_GAME_OPTIONS_SETTING                                        :{STRING}: {ORANGE}{STRING}
+
 STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}%
 
-STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valutaenheter
-STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Välj valutaenhet
+STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Valutaenheter
+STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Välj valutaenhet
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
@@ -1024,8 +1028,8 @@ STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettiska Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugisisk escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainsk hryvnia
 
-STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Spara automatiskt
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Välj intervall mellan automatiskt sparande
+STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autospara
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Välj intervall för automatiskt sparande av spelet
 
 # Autosave dropdown
 ###length 5
@@ -1035,74 +1039,77 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_30_MINUTES             :Var 30:e minut
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_60_MINUTES             :Var 60:e minut
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_120_MINUTES            :Var 120:e minut
 
-STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Språk
-STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Välj vilket språk som ska användas
+STR_GAME_OPTIONS_LANGUAGE                                       :Språk
+STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :Välj vilket språk som ska användas i gränssnittet.
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}% färdigt)
 
-STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Helskärm
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Kryssa i den här rutan för att spela OpenTTD i helskärmsläge
+STR_GAME_OPTIONS_FULLSCREEN                                     :Helskärm
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Kryssa i den här rutan för att spela OpenTTD i helskärmsläge
 
-STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skärmupplösning
-STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Välj vilken skärmupplösning som ska användas
+STR_GAME_OPTIONS_RESOLUTION                                     :Skärmupplösning
+STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :Välj vilken skärmupplösning som ska användas
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annan
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
-STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hårdvaruacceleration
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Markera denna rutan för att tillåta OpenTTD att försöka använda hårdvaruacceleration. Ändrad inställning kommer bara att gälla efter omstart.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :Hårdvaruacceleration
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :Markera denna rutan för att tillåta OpenTTD att försöka använda hårdvaruacceleration. Ändrad inställning kommer bara att gälla efter omstart.
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Inställningen kommer bara att gälla efter omstart av spelet
 
-STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Markera den här rutan för att v-synka skärmen. Ändringar i den här inställningen kommer bara att tillämpas vid omstart av spelet. Fungerar bara med hårdvaruacceleration aktiverad.
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :VSync
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Markera den här rutan för att v-synka skärmen. Ändringar i den här inställningen kommer bara att tillämpas vid omstart av spelet. Fungerar bara med hårdvaruacceleration aktiverad.
 
-STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Nuvarande drivrutin: {STRING}
+STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :Nuvarande drivrutin: {STRING}
 
-STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Gränssnittets storlek
-STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Dra i reglaget för att ställa in gränssnittets storlek. Ctrl+Drag för steglös justering
-STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Känn av storleken automatiskt
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Kryssa i den här rutan för automatisk inställning av gränssnittets storlek
+STR_GAME_OPTIONS_INTERFACE                                      :Gränssnitt
 
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Skala bården
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Kryssa i den här rutan för att skala bården efter gränssnittets storlek
+STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Gränssnittets storlek
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :Dra i reglaget för att ställa in gränssnittets storlek. Ctrl+Drag för steglös justering
+STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Känn av storleken automatiskt
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Kryssa i den här rutan för automatisk inställning av gränssnittets storlek
 
-STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :{BLACK}Använd traditionellt sprite-typsnitt
-STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Kryssa i den här rutan om du föredrar att använda det traditionella sprite-typsnittet med fast storlek
-STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Anti-alias-typsnitt
-STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Kryssa i den här rutan för anti-aliasing av typsnitt med justerbar storlek
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Skala bården
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Kryssa i den här rutan för att skala bården efter gränssnittets storlek
+
+STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Använd traditionellt sprite-typsnitt
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Kryssa i den här rutan om du föredrar att använda det traditionella sprite-typsnittet med fast storlek
+STR_GAME_OPTIONS_GUI_FONT_AA                                    :Anti-alias-typsnitt
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Kryssa i den här rutan för anti-aliasing av typsnitt med justerbar storlek
 
 STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automatisk undersökning
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Delta i en automatisk undersökning
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :{BLACK}Om aktiverat, kommer OpenTTD att skicka en enkät när du lämnar ett spel
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :{BLACK}Om undersökning och integritet
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :{BLACK}Detta öppnar en länk i webbläsaren med mer information om den automatiska undersökningen.
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :{BLACK}Förhandsgranska enkätresultat
-STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :{BLACK}Visa enkätresultatet från det nu pågående spelet
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :Automatisk undersökning
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :Delta i en automatisk undersökning
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :Om aktiverat, kommer OpenTTD att skicka en enkät när du lämnar ett spel
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :Om undersökning och integritet
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :Detta öppnar en länk i webbläsaren med mer information om den automatiska undersökningen.
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :Förhandsgranska enkätresultat
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :Visa enkätresultatet från det nu pågående spelet
 
+STR_GAME_OPTIONS_DISPLAY                                        :Skärm
 
-STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Visa uppdateringsfrekvens
-STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Välj skärmens uppdateringsfrekvens
+STR_GAME_OPTIONS_REFRESH_RATE                                   :Visa uppdateringsfrekvens
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :Välj skärmens uppdateringsfrekvens
 STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}uppdateringsfrekvenser högre än 60Hz kan påverka prestandan.
 
-STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafikpaket som standard
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Välj vilket grafikpaket som ska användas som standard (kan ej ändras under spel, utan endast från huvudmenyn)
-STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :{BLACK}Ytterligare information om basgrafik-settet
+STR_GAME_OPTIONS_BASE_GRF                                       :Grundgrafikpaket
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :Välj vilket grafikpaket som ska användas som standard (kan ej ändras under spel, utan endast från huvudmenyn)
+STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :Ytterligare information om grafikpaketet
 
-STR_GAME_OPTIONS_BASE_SFX                                       :{BLACK}Grundljudspaket
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :{BLACK}Välj vilket grundljudspaket som ska användas (kan inte ändras under spel, utan endast från huvudmenyn)
-STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Ytterligare information om grundljudpaketet
+STR_GAME_OPTIONS_BASE_SFX                                       :Grundljudpaket
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Välj vilket ljudpaket som ska användas (kan inte ändras under spel, utan endast från huvudmenyn)
+STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :Ytterligare information om ljudpaketet
 
-STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Musikpaket valt
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Välj vilket musikpaket som ska användas
-STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Yttligare information om musikpaketet
+STR_GAME_OPTIONS_BASE_MUSIC                                     :Grundmusikpaket
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :Välj vilket musikpaket som ska användas
+STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :Ytterligare information om musikpaketet
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Hämta innehåll
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Kontrollera om det finns nytt och uppdaterat innehåll att ladda ned
 
-STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(inga tillägg för att integrera med sociala plattformar installerade)
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :(inga tillägg för att integrera med sociala plattformar installerade)
 
-STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING} ({STRING})
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{STRING} ({STRING})
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :Plattform:
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :Tilläggsstatus:
 
@@ -1217,11 +1224,11 @@ STR_CITY_APPROVAL_PERMISSIVE                                    :Tillåtande (in
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Ingen passande datorspelare finns tillgänglig...{}{}Du kan ladda ner ett flertal datorspelare via systemet för 'online-innehåll'
 
-# Settings tree window
-STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Sökfilter:
-STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Utöka alla
-STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Stäng alla
-STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}Återställ alla värden
+# Settings tree in the Game Options window
+STR_CONFIG_SETTING_FILTER_TITLE                                 :Sökfilter:
+STR_CONFIG_SETTING_EXPAND_ALL                                   :Utöka alla
+STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Stäng alla
+STR_CONFIG_SETTING_RESET_ALL                                    :Återställ alla värden
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(ingen förklaring tillgänglig)
 STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Standardvärde: {ORANGE}{STRING}
@@ -1234,9 +1241,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Företagsinstä
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Varning!
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Detta kommer att återställa alla spelinställningar till deras standardvärden.{}Är du säker på att du vill fortsätta?
 
-STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategori:
-STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Typ:
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Begränsar listan nedan med fördefinierade filter
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :Kategori:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :Typ:
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :Begränsar listan nedan med fördefinierade filter
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Grundläggande (visa endast viktiga inställningar)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Avancerat (visa de flesta inställningarna)
 STR_CONFIG_SETTING_RESTRICT_ALL                                 :Expert (visa alla inställningar, inklusive de konstiga)
@@ -1253,9 +1260,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Företagsinstä
 
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Inga -
 ###length 3
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Visa alla sökresultat genom att sätta{}{SILVER}Kategori {BLACK}till {WHITE}{STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Visa alla sökresultat genom att sätta{}{SILVER}Typ {BLACK}till {WHITE}Alla typer av inställningar
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Visa alla sökresultat genom att sätta{}{SILVER}Kategori {BLACK}till {WHITE}{STRING} {BLACK}och {SILVER}Typ {BLACK}till {WHITE}Alla typer av inställningar
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :Visa alla sökresultat genom att sätta{}{PUSH_COLOUR}{SILVER}Kategori {POP_COLOUR}till {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :Visa alla sökresultat genom att sätta{}{PUSH_COLOUR}{SILVER}Typ {POP_COLOUR}till {WHITE}Alla typer av inställningar
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :Visa alla sökresultat genom att sätta{}{PUSH_COLOUR}{SILVER}Kategori {POP_COLOUR}till {PUSH_COLOUR}{WHITE}{STRING} {POP_COLOUR}och {PUSH_COLOUR}{SILVER}Typ {POP_COLOUR}till {WHITE}Alla typer av inställningar
 
 ###length 3
 STR_CONFIG_SETTING_OFF                                          :Av
@@ -4154,6 +4161,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Allt utom {CARG
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maximal Dragkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Räckvidd: {GOLD}{COMMA} rutor
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flygplanstyp: {GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Järnvägstyper: {GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Alla godstyper
@@ -4337,6 +4345,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Driftkostnad: {
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Driftkostnad: {CURRENCY_LONG}/period
 STR_ENGINE_PREVIEW_CAPACITY                                     :Kapacitet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Kapacitet: {CARGO_LONG}, {CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :Järnvägstyper: {STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Byt ut {STRING} - {STRING}
@@ -4428,10 +4437,10 @@ STR_VEHICLE_VIEW_SHIP_ORDERS_TOOLTIP                            :{BLACK}Visa ske
 STR_VEHICLE_VIEW_AIRCRAFT_ORDERS_TOOLTIP                        :{BLACK}Visa flygplanets order. Ctrl+klick visar flygplanets tidtabell
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}Visa tågdetaljer
-STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Visa vägfordonsdetaljer
-STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Visa skeppdetaljer
-STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Visa flygplan detaljer
+STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP                     :{BLACK}Visa tågdetaljer. Ctrl+klicka för att visa tågets grupp
+STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Visa vägfordonsdetaljer. Ctrl+klicka för att visa fordonets grupp
+STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Visa skeppsdetaljer. Ctrl+klicka för att visa skeppets grupp
+STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Visa flygplansdetaljer. Ctrl+klicka för att visa flygplanets grupp
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}Aktuell tågåtgärd - Tryck för att stoppa/starta tåget
@@ -5875,6 +5884,7 @@ STR_CURRENCY_SHORT_GIGA                                         :{NBSP}md
 STR_CURRENCY_SHORT_TERA                                         :{NBSP}bn
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
+STR_JUST_LEFT_ARROW                                             :{LEFT_ARROW}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}
 STR_JUST_COMMA                                                  :{COMMA}
@@ -5914,3 +5924,11 @@ STR_SHIP                                                        :{BLACK}{SHIP}
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
+STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Öppna märkeskonfiguration
+STR_BADGE_CONFIG_RESET                                          :Återställ
+STR_BADGE_CONFIG_ICONS                                          :{WHITE}Märkesikoner
+STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Märkesfilter
+STR_BADGE_CONFIG_PREVIEW                                        :Förhandsvisning
+STR_BADGE_CONFIG_NAME                                           :Namn
+STR_BADGE_FILTER_ANY_LABEL                                      :Någon {STRING}
+STR_BADGE_FILTER_IS_LABEL                                       :{STRING} är {STRING}
