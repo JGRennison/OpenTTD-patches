@@ -2776,8 +2776,9 @@ static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stag
 }
 
 enum class CanBuildHouseHereFlag : uint8_t {
-	NoSlope, ///< are slopes (foundations) disallowed
-	Replace, ///< replace existing house
+	NoSlope,         ///< are slopes (foundations) disallowed
+	Replace,         ///< replace existing house
+	IgnoreRoadTypes, ///< ignore road types
 };
 using CanBuildHouseHereFlags = EnumBitSet<CanBuildHouseHereFlag, uint8_t>;
 
@@ -2798,8 +2799,10 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, CanBuil
 		if (IsSteepSlope(GetTileSlope(tile))) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	}
 
-	/* at least one RoadTypes allow building the house here? */
-	if (!RoadTypesAllowHouseHere(tile)) return CommandCost(STR_ERROR_NO_SUITABLE_ROAD);
+	if (!flags.Test(CanBuildHouseHereFlag::IgnoreRoadTypes)) {
+		/* at least one RoadType allows building the house here? */
+		if (!RoadTypesAllowHouseHere(tile)) return CommandCost(STR_ERROR_NO_SUITABLE_ROAD);
+	}
 
 	/* building under a bridge? */
 	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -3169,7 +3172,7 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 	int max_z = GetTileMaxZ(tile);
 
 	/* Make sure there is no slope? */
-	CanBuildHouseHereFlags build_flags{};
+	CanBuildHouseHereFlags build_flags{CanBuildHouseHereFlag::IgnoreRoadTypes};
 	if (hs->building_flags.Test(BuildingFlag::NotSloped)) build_flags.Set(CanBuildHouseHereFlag::NoSlope);
 
 	CommandCost cost = IsAnotherHouseTypeAllowedInTown(t, house);
