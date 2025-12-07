@@ -226,6 +226,15 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	}; \
 };
 
+#define DEF_CB_RES_PAYLOAD(cb_, cmd_) \
+ResultPayloadCommandCallback<CmdPayload<cmd_>> Cc ## cb_; \
+template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
+	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
+		Cc ## cb_(result, static_cast<const CmdPayload<cmd_> &>(payload)); \
+		return true; \
+	}; \
+};
+
 template <Commands Tcmd, typename S> struct CommandCallbackTupleHelper;
 
 template <Commands Tcmd, typename... Targs>
@@ -298,6 +307,8 @@ DEF_CB_RES_TILE_TUPLE(RoadStop, CMD_BUILD_ROAD_STOP)
 DEF_CB_RES_TUPLE(StartStopVehicle, CMD_START_STOP_VEHICLE)
 DEF_CB_GENERAL(Game)
 DEF_CB_RES(AddVehicleNewGroup)
+DEF_CB_RES_PAYLOAD(InsertOrder, CMD_INSERT_ORDER)
+DEF_CB_RES_TUPLE(InsertOrdersFromVehicle, CMD_INSERT_ORDERS_FROM_VEH)
 DEF_CB_RES(AddPlan)
 DEF_CB_RES(SetVirtualTrain)
 DEF_CB_RES(VirtualTrainWagonsMoved)

@@ -1727,7 +1727,7 @@ private:
 
 	bool InsertNewOrder(const Order &order)
 	{
-		return DoCommandP<CMD_INSERT_ORDER>(this->vehicle->tile, InsertOrderCmdData(this->vehicle->index, this->OrderGetSel(), order), STR_ERROR_CAN_T_INSERT_NEW_ORDER);
+		return DoCommandP<CMD_INSERT_ORDER>(this->vehicle->tile, InsertOrderCmdData(this->vehicle->index, this->OrderGetSel(), order), STR_ERROR_CAN_T_INSERT_NEW_ORDER, CommandCallback::InsertOrder);
 	}
 
 	bool ModifyOrder(VehicleOrderID sel_ord, ModifyOrderFlags mof, uint16_t data, bool error_msg = true)
@@ -4064,7 +4064,7 @@ public:
 	bool OnVehicleSelect(const Vehicle *v) override
 	{
 		if (this->goto_type == OPOS_INSERT_FROM_VEHICLE) {
-			if (Command<CMD_INSERT_ORDERS_FROM_VEH>::Post(STR_ERROR_CAN_T_COPY_ORDER_LIST, this->vehicle->tile, this->vehicle->index, v->index, this->OrderGetSel())) {
+			if (Command<CMD_INSERT_ORDERS_FROM_VEH>::Post(STR_ERROR_CAN_T_COPY_ORDER_LIST, CommandCallback::InsertOrdersFromVehicle, this->vehicle->tile, this->vehicle->index, v->index, this->OrderGetSel())) {
 				this->selected_order = -1;
 				ResetObjectToPlace();
 			}
@@ -4189,6 +4189,13 @@ public:
 	const Vehicle *GetVehicle()
 	{
 		return this->vehicle;
+	}
+
+	void ScrollTowardsOrder(VehicleOrderID order_pos)
+	{
+		this->vscroll->SetCount(this->vehicle->GetNumOrders() + 1);
+		this->vscroll->ScrollTowards(order_pos);
+		this->SetDirty();
 	}
 
 	static HotkeyList hotkeys;
@@ -4590,4 +4597,27 @@ void ShowOrdersWindow(const Vehicle *v)
 	} else {
 		new OrdersWindow(v->IsGroundVehicle() ? _orders_train_desc : _orders_desc, v);
 	}
+}
+
+void CcInsertOrder(const CommandCost &result, const InsertOrderCmdData &data)
+{
+	if (!result.Succeeded()) return;
+
+	auto pos = result.GetResultData<VehicleOrderID>();
+	if (!pos.has_value()) return;
+
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, data.veh));
+	if (w == nullptr) return;
+
+	w->ScrollTowardsOrder(*pos);
+}
+
+void CcInsertOrdersFromVehicle(const CommandCost &result, VehicleID veh_dst, VehicleID veh_src, VehicleOrderID insert_pos)
+{
+	if (!result.Succeeded()) return;
+
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, veh_dst));
+	if (w == nullptr) return;
+
+	w->ScrollTowardsOrder(insert_pos);
 }

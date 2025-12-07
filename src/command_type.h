@@ -765,6 +765,10 @@ enum class CommandCallback : uint8_t {
 	Terraform,
 	GiveMoney,
 
+	/* order_gui.cpp */
+	InsertOrder,
+	InsertOrdersFromVehicle,
+
 	/* plans_gui.cpp */
 	AddPlan,
 
