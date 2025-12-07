@@ -3774,7 +3774,7 @@ static const SaveLoadFormat _saveload_formats[] = {
  * @param compression_level Output for telling what compression level we want.
  * @return Pointer to SaveLoadFormat struct giving all characteristics of this type of savegame
  */
-static const SaveLoadFormat *GetSavegameFormat(const std::string &full_name, uint8_t *compression_level, SaveModeFlags flags)
+static const SaveLoadFormat *GetSavegameFormat(std::string_view full_name, uint8_t *compression_level, SaveModeFlags flags)
 {
 	const SaveLoadFormat *def = lastof(_saveload_formats);
 
@@ -3785,13 +3785,13 @@ static const SaveLoadFormat *GetSavegameFormat(const std::string &full_name, uin
 		/* Get the ":..." of the compression level out of the way */
 		size_t separator = full_name.find(':');
 		bool has_comp_level = separator != std::string::npos;
-		const std::string name(full_name, 0, has_comp_level ? separator : full_name.size());
+		std::string_view name = has_comp_level ? full_name.substr(0, separator) : full_name;
 
 		for (const SaveLoadFormat *slf = &_saveload_formats[0]; slf != endof(_saveload_formats); slf++) {
 			if (slf->init_write != nullptr && name.compare(slf->name) == 0) {
 				*compression_level = slf->default_compression;
 				if (has_comp_level) {
-					auto complevel = std::string_view(full_name).substr(separator + 1);
+					auto complevel = full_name.substr(separator + 1);
 
 					/* Get the level and determine whether all went fine. */
 					auto level = ParseInteger<uint8_t>(complevel);

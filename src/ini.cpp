@@ -104,7 +104,7 @@ bool IniFile::SaveToDisk(const std::string &filename)
 	return FioFOpenFile(filename, "rb", subdir, size);
 }
 
-/* virtual */ void IniFile::ReportFileError(const char * const pre, const char * const buffer, const char * const post)
+/* virtual */ void IniFile::ReportFileError(std::string_view message)
 {
-	ShowInfo("{}{}{}", pre, buffer, post);
+	ShowInfo("{}", message);
 }

@@ -235,6 +235,8 @@ inline bool IsWhitespace(char32_t c)
 #include <sys/param.h>
 #endif
 
+std::optional<std::string_view> GetEnv(const char *variable);
+
 /**
  * The use of a struct is so that when used as an argument to seprintf/etc, the buffer lives
  * on the stack with a lifetime which lasts until the end of the statement.
