@@ -2852,10 +2852,9 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Subúrbios Peri
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Subúrbios Centrais
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro da localidade
 
-STR_HOUSE_PICKER_PROTECT_TITLE                                  :Impedir atualizações
+STR_HOUSE_PICKER_PROTECT                                        :Impedir atualizações
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Escolha se esta casa será protegida contra a substituição à medida que localidade cresce
-STR_HOUSE_PICKER_PROTECT_OFF                                    :Desativado
-STR_HOUSE_PICKER_PROTECT_ON                                     :Ativado
+
 
 STR_STATION_CLASS_DFLT                                          :Padrão
 STR_STATION_CLASS_DFLT_STATION                                  :Estação padrão

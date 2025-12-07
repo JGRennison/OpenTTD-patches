@@ -2537,6 +2537,7 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tóg st�
 
 
 
+
 STR_STATION_CLASS_DFLT                                          :Stáisiún réamhshocraithe
 STR_STATION_CLASS_WAYP                                          :Pointí bealaigh
 

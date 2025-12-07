@@ -2852,10 +2852,9 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Periferia Dista
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Periferia Próxima
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro da cidade
 
-STR_HOUSE_PICKER_PROTECT_TITLE                                  :Não permitir atualizações
+STR_HOUSE_PICKER_PROTECT                                        :Não permitir atualizações
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Escolher se essa casa será protegida contra substituição quando a cidade crescer
-STR_HOUSE_PICKER_PROTECT_OFF                                    :Desativado
-STR_HOUSE_PICKER_PROTECT_ON                                     :Ativado
+
 
 STR_STATION_CLASS_DFLT                                          :Padrão
 STR_STATION_CLASS_DFLT_STATION                                  :Estação padrão

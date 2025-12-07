@@ -2852,10 +2852,9 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbi exterio
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbi interior
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centre de la població
 
-STR_HOUSE_PICKER_PROTECT_TITLE                                  :Evita les millores
+STR_HOUSE_PICKER_PROTECT                                        :Evita les millores
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Escolliu si aquesta casa s'ha de protegir i evitar que es reemplaci quan creixi la població.
-STR_HOUSE_PICKER_PROTECT_OFF                                    :Desactivat
-STR_HOUSE_PICKER_PROTECT_ON                                     :Activat
+
 
 STR_STATION_CLASS_DFLT                                          :Per defecte
 STR_STATION_CLASS_DFLT_STATION                                  :Estació per defecte
