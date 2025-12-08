@@ -12,8 +12,9 @@
 
 #include "command_type.h"
 #include "signs_type.h"
+#include "gfx_type.h"
 
 DEF_CMD_TUPLE   (CMD_PLACE_SIGN,  CmdPlaceSign,  CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<std::string>)
-DEF_CMD_TUPLE_NT(CMD_RENAME_SIGN, CmdRenameSign, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<SignID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_RENAME_SIGN, CmdRenameSign, CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<SignID, std::string, Colours>)
 
 #endif /* SIGNS_CMD_H */

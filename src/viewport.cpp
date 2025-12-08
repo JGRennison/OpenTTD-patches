@@ -2059,12 +2059,21 @@ static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 
 	/* Signs placed by a game script don't have a frame. */
 	ViewportStringFlags deity_flags{flags};
+	deity_flags.Set(ViewportStringFlag::TextColour);
 	flags.Set(vdd->IsTransparencySet(TO_SIGNS) ? ViewportStringFlag::TransparentRect : ViewportStringFlag::ColourRect);
 
 	for (const Sign *si : signs) {
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &si->sign, (si->owner == OWNER_DEITY) ? deity_flags : flags);
 		if (str != nullptr) {
-			str->FillDetails(STR_SIGN_NAME, si->index.base(), 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
+			Colours colour;
+			if (si->owner == OWNER_NONE) {
+				colour = COLOUR_GREY;
+			} else if (si->owner == OWNER_DEITY) {
+				colour = si->text_colour == COLOUR_WHITE ? INVALID_COLOUR : si->text_colour;
+			} else {
+				colour = _company_colours[si->owner];
+			}
+			str->FillDetails(STR_SIGN_NAME, si->index.base(), 0, colour);
 		}
 	}
 }
