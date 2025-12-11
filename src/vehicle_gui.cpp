@@ -4173,7 +4173,7 @@ public:
 			}
 
 			if (_settings_game.vehicle.improved_breakdowns || w->breakdown_type == BREAKDOWN_RV_CRASH || w->breakdown_type == BREAKDOWN_BRAKE_OVERHEAT) {
-				append(STR_VEHICLE_STATUS_BROKEN_DOWN_VEL, breakdown_str, breakdown_param, std::monostate{}, v->GetDisplaySpeed());
+				append(STR_VEHICLE_STATUS_BROKEN_DOWN_VEL, breakdown_str, breakdown_param, v->GetDisplaySpeed());
 			} else {
 				append(STR_VEHICLE_STATUS_BROKEN_DOWN);
 			}
