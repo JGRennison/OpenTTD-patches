@@ -1229,11 +1229,13 @@ public:
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		if (this->parent->window_class == WC_STATION_VIEW) SetViewportStationRect(Station::Get(this->parent->window_number), false);
-		if (this->parent->window_class == WC_WAYPOINT_VIEW) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
+		if (this->parent != nullptr) {
+			if (this->parent->window_class == WC_STATION_VIEW) SetViewportStationRect(Station::Get(this->parent->window_number), false);
+			if (this->parent->window_class == WC_WAYPOINT_VIEW) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
+		}
 
 		auto has_been_handled = [](const QueryString &editbox) { return editbox.handled; };
-		if (!std::ranges::any_of(editboxes, has_been_handled) && this->parent != nullptr) {
+		if (this->parent != nullptr && !std::ranges::any_of(editboxes, has_been_handled)) {
 			Window *parent = this->parent;
 			this->parent = nullptr; // so parent doesn't try to close us again
 			parent->OnQueryTextFinished(std::nullopt);
