@@ -260,8 +260,10 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	/* When loading at a scheduled station we still have to treat the
 	 * travelling part of the first order. */
 	if (!travelling && table[i].arrival == INVALID_TICKS) {
-		if (!CanDetermineTimeTaken(order, true)) return;
-		sum += order->GetTimetabledTravel();
+		if (!skip_travel) {
+			if (!CanDetermineTimeTaken(order, true)) return;
+			sum += order->GetTimetabledTravel();
+		}
 		table[i].arrival = sum;
 		if (predicted) SetBit(table[i].flags, TADF_ARRIVAL_PREDICTED);
 		if (no_offset) SetBit(table[i].flags, TADF_ARRIVAL_NO_OFFSET);
