@@ -708,14 +708,14 @@ static void Load_PLYP()
 
 	if (crypto_aead_unlock(buffer.data(), mac.data(), _network_company_password_storage_key.data(), nonce.data(), nullptr, 0, buffer.data(), buffer.size()) == 0) {
 		SlLoadFromBuffer(buffer.data(), buffer.size(), [invalid_mask]() {
-			_network_company_server_id.resize(SlReadUint32());
+			_network_company_server_id.resize(SlReadUint32LengthField());
 			ReadBuffer::GetCurrent()->CopyBytes((uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 
 			while (true) {
 				uint16_t cid = SlReadUint16();
 				if (cid >= MAX_COMPANIES) break;
 				std::string password;
-				password.resize(SlReadUint32());
+				password.resize(SlReadUint32LengthField());
 				ReadBuffer::GetCurrent()->CopyBytes((uint8_t *)password.data(), password.size());
 				if (!HasBit(invalid_mask.base(), cid)) {
 					NetworkServerSetCompanyPassword((CompanyID)cid, password, true);

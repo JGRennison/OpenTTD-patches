@@ -1687,7 +1687,7 @@ void Load_VENC()
 		return;
 	}
 
-	_vehicle_vencs.resize(SlReadUint32());
+	_vehicle_vencs.resize(SlReadUint32LengthField());
 	for (vehicle_venc &venc : _vehicle_vencs) {
 		venc.id = static_cast<VehicleID>(SlReadUint32());
 		venc.vcache.cached_max_speed = SlReadUint16();
@@ -1709,7 +1709,7 @@ void Load_VENC()
 		cache.cached_veh_length = SlReadByte();
 	};
 
-	_train_vencs.resize(SlReadUint32());
+	_train_vencs.resize(SlReadUint32LengthField());
 	for (train_venc &venc : _train_vencs) {
 		venc.id = static_cast<VehicleID>(SlReadUint32());
 		read_gv_cache(venc.gvcache);
@@ -1725,13 +1725,13 @@ void Load_VENC()
 		venc.cached_max_curve_speed = SlReadUint16();
 	}
 
-	_roadvehicle_vencs.resize(SlReadUint32());
+	_roadvehicle_vencs.resize(SlReadUint32LengthField());
 	for (roadvehicle_venc &venc : _roadvehicle_vencs) {
 		venc.id = static_cast<VehicleID>(SlReadUint32());
 		read_gv_cache(venc.gvcache);
 	}
 
-	_aircraft_vencs.resize(SlReadUint32());
+	_aircraft_vencs.resize(SlReadUint32LengthField());
 	for (aircraft_venc &venc : _aircraft_vencs) {
 		venc.id = static_cast<VehicleID>(SlReadUint32());
 		venc.cached_max_range = SlReadUint16();

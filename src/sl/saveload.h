@@ -1181,6 +1181,7 @@ void SlLoadTableWithArrayLengthPrefixesMissing();
 
 void SlSetStructListLength(size_t length);
 size_t SlGetStructListLength(size_t limit);
+uint32_t SlReadUint32LengthField();
 
 void SlSkipChunkContents();
 

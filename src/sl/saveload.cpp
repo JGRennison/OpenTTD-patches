@@ -2605,6 +2605,21 @@ size_t SlGetStructListLength(size_t limit)
 	return length;
 }
 
+/**
+ * Read a uint32_t length field and validate that it is plausible for the current chunk/sub-chunk.
+ * @return The length value.
+ */
+uint32_t SlReadUint32LengthField()
+{
+	uint32_t size = SlReadUint32();
+	if (ReadBuffer::GetCurrent()->flags.Test(ReadBufferFlag::InhibitAcquireBytes)) {
+		if (size > ReadBuffer::GetCurrent()->RemainingInBuffer()) SlErrorCorrupt("Length field implausibly large in sub-chunk");
+	} else {
+		if (size > SlGetFieldLength()) SlErrorCorrupt("Length field implausibly large");
+	}
+	return size;
+}
+
 void SlSkipChunkContents()
 {
 	if (SlIsTableChunk()) SlSkipTableHeader();

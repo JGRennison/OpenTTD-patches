@@ -416,7 +416,7 @@ struct ScheduledDispatchNonTableHelper {
 				ds.GetScheduledDispatchMutable().push_back({ slot, 0 });
 			}
 		} else {
-			ds.GetScheduledDispatchMutable().resize(SlReadUint32());
+			ds.GetScheduledDispatchMutable().resize(SlReadUint32LengthField());
 			for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
 				SlObjectLoadFiltered(&slot, this->slot_desc);
 			}
