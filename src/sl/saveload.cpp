@@ -2600,6 +2600,7 @@ size_t SlGetStructListLength(size_t limit)
 {
 	size_t length = SlReadArrayLength();
 	if (length > limit) SlErrorCorruptWithChunk("List exceeds storage size");
+	if (limit >= UINT32_MAX && length > SlGetFieldLength()) SlErrorCorrupt("List size is implausibly large");
 
 	return length;
 }
