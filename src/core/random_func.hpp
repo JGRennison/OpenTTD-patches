@@ -71,6 +71,8 @@ public:
 };
 
 void SetRandomSeed(uint32_t seed);
+void InitialiseRandomSeeds();
+
 #ifdef RANDOM_DEBUG
 #	ifdef __APPLE__
 #		define OTTD_Random() DoRandom(__LINE__, __FILE__)

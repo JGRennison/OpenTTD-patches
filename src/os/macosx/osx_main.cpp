@@ -40,7 +40,7 @@ int CDECL main(int argc, char *argv[])
 	CrashLog::InitialiseCrashLog();
 	CrashLog::InitialiseExceptionTerminateHandler();
 
-	SetRandomSeed(time(nullptr));
+	InitialiseRandomSeeds();
 
 	signal(SIGPIPE, SIG_IGN);
 

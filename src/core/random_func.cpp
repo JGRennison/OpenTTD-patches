@@ -81,7 +81,14 @@ void Randomizer::SetSeed(uint32_t seed)
 void SetRandomSeed(uint32_t seed)
 {
 	_random.SetSeed(seed);
-	_interactive_random.SetSeed(seed * 0x1234567);
+}
+
+void InitialiseRandomSeeds()
+{
+	std::array<uint32_t, 2> random_seeds;
+	RandomBytesWithFallback({ reinterpret_cast<uint8_t *>(random_seeds.data()), std::span(random_seeds).size_bytes() });
+	_random.SetSeed(random_seeds[0]);
+	_interactive_random.SetSeed(random_seeds[1]);
 }
 
 #ifdef RANDOM_DEBUG
